@@ -13,11 +13,12 @@ import {getAction} from '@/api/manage'
  * @return List<Map>
  */
 export async function initDictOptions(dictCode) {
-  if (!dictCode) {
+    if (!dictCode) {
     return '字典Code不能为空!';
   }
   //获取字典数组
   let res = await ajaxGetDictItems(dictCode);
+    console.log(res)
   return res;
 }
 
