@@ -25,9 +25,6 @@
         <a-form-item label="备注" :labelCol="labelCol" :wrapperCol="wrapperCol">
           <a-input v-decorator="[ 'remarks', validatorRules.remarks]" placeholder="请输入备注"></a-input>
         </a-form-item>
-        <div class="table-operator">
-          <a-button type="primary" icon="plus">新增</a-button>
-        </div>
 
       </a-form>
     </a-spin>
