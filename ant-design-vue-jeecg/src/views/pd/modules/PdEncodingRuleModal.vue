@@ -28,7 +28,7 @@
         <div class="table-operator">
           <a-button type="primary" icon="plus">新增</a-button>
         </div>
-        <a-table :columns="columns" :dataSource="data" @change="onChange" />
+
       </a-form>
     </a-spin>
     <a-button type="primary" @click="handleOk">确定</a-button>
@@ -42,81 +42,12 @@
   import pick from 'lodash.pick'
   import { makeWb } from '@/utils/wubi'
 
-  const columns = [
-    {
-      title: '应用标识符',
-      align:"center",
-      dataIndex: 'value'
-    },
-    {
-      title: '应用标识符含义',
-      align:"center",
-      dataIndex: 'meaning'
-    },
-    {
-      title: '内容位数',
-      align:"center",
-      dataIndex: 'length',
-    },
-    {
-      title: '类型',
-      align:"center",
-      dataIndex: 'type'
-    },
-    {
-      title: '顺序',
-      align:"center",
-      dataIndex: 'codeOrder'
-    }
-  ];
-
-  const data = [
-    {
-      key:'1',
-      value: '#',
-      meaning: '占位符',
-      length: 13,
-      type: '固定长度',
-      codeOrder: '1'
-    },
-    {
-      key:'2',
-      value: '10',
-      meaning: '批号',
-      length: 6,
-      type: '可变长度',
-      codeOrder: '2'
-    },
-    {
-      key:'3',
-      value: '17',
-      meaning: '有效期',
-      length: 6,
-      type: '固定长度',
-      codeOrder: '3'
-    },
-    {
-      key:'4',
-      value: '21',
-      meaning: '序列号',
-      length: 3,
-      type: '可变长度',
-      codeOrder: '4'
-    },
-  ];
-
-  function onChange(pagination, filters, sorter) {
-    console.log('params', pagination, filters, sorter);
-  }
-
   export default {
     name: "PdEncodingRuleModal",
     components: { 
     },
     data () {
       return {
-        data,
-        columns,
         form: this.$form.createForm(this),
         title:"操作",
         width:800,
@@ -212,7 +143,6 @@
         var wb = makeWb(val);
         this.form.setFieldsValue({wb:wb});//获取五笔简码
       },
-      onChange,
     }
   }
 </script>
