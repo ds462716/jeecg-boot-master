@@ -9,7 +9,11 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import org.apache.commons.lang.StringUtils;
 import org.jeecg.common.api.vo.Result;
+import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.pd.entity.PdEncodingIdentifier;
@@ -20,6 +24,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
 
+import org.jeecg.modules.system.entity.SysPermission;
 import org.jeecgframework.poi.excel.ExcelImportUtil;
 import org.jeecgframework.poi.excel.def.NormalExcelConstants;
 import org.jeecgframework.poi.excel.entity.ExportParams;
@@ -65,7 +70,37 @@ public class PdEncodingIdentifierController extends JeecgController<PdEncodingId
 		IPage<PdEncodingIdentifier> pageList = pdEncodingIdentifierService.page(page, queryWrapper);
 		return Result.ok(pageList);
 	}
-	
+
+
+	 /**
+	  * 分页列表查询
+	  *
+	  * @return
+	  */
+	 @GetMapping(value = "/getEncodingIdentifierList")
+	 public Result<List<PdEncodingIdentifier>> getEncodingIdentifierList(PdEncodingIdentifier pdEncodingIdentifier) {
+		 long start = System.currentTimeMillis();
+		 Result<List<PdEncodingIdentifier>> result = new Result<>();
+		 try {
+			 LambdaQueryWrapper<PdEncodingIdentifier> query = new LambdaQueryWrapper<PdEncodingIdentifier>();
+			 query.eq(PdEncodingIdentifier::getDelFlag, CommonConstant.DEL_FLAG_0);
+			 if(!StringUtils.isEmpty(pdEncodingIdentifier.getValue())){
+				 query.eq(PdEncodingIdentifier::getValue, pdEncodingIdentifier.getValue());
+			 }
+			 if(!StringUtils.isEmpty(pdEncodingIdentifier.getMeaning())){
+				 query.eq(PdEncodingIdentifier::getMeaning,pdEncodingIdentifier.getMeaning());
+			 }
+			 query.orderByAsc(PdEncodingIdentifier::getUpdateTime);
+			 List<PdEncodingIdentifier> list = pdEncodingIdentifierService.list(query);
+			 result.setResult(list);
+			 result.setSuccess(true);
+		 }catch(Exception e){
+			 log.error(e.getMessage(), e);
+		 }
+		 log.info("======获取一级菜单数据=====耗时:" + (System.currentTimeMillis() - start) + "毫秒");
+		 return result;
+	 }
+
 	/**
 	 *   添加
 	 *

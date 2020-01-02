@@ -62,4 +62,7 @@ public class PdEncodingRuleDetail implements Serializable {
 	/**删除标志*/
     @TableLogic
     private String delFlag;
+
+	/**标识符内容*/
+	private String value;
 }

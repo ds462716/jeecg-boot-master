@@ -25,7 +25,7 @@
         <a-form-item label="备注" :labelCol="labelCol" :wrapperCol="wrapperCol">
           <a-input v-decorator="[ 'remarks', validatorRules.remarks]" placeholder="请输入备注"></a-input>
         </a-form-item>
-
+        <default-table ref="defaultTable"/>
       </a-form>
     </a-spin>
     <a-button type="primary" @click="handleOk">确定</a-button>
@@ -38,10 +38,11 @@
   import { httpAction } from '@/api/manage'
   import pick from 'lodash.pick'
   import { makeWb } from '@/utils/wubi'
+  import DefaultTable from './PdIdentiffierModal'
 
   export default {
     name: "PdEncodingRuleModal",
-    components: { 
+    components: { DefaultTable
     },
     data () {
       return {
@@ -68,7 +69,7 @@
         remarks:{},
         },
         url: {
-          add: "/pd/pdEncodingRule/add",
+          add: "/pd/pdEncodingRule/savePdEncodingRule",
           edit: "/pd/pdEncodingRule/edit",
         }
      
@@ -97,31 +98,40 @@
         // 触发表单验证
         this.form.validateFields((err, values) => {
           if (!err) {
-            that.confirmLoading = true;
-            let httpurl = '';
-            let method = '';
-            if(!this.model.id){
-              httpurl+=this.url.add;
-              method = 'post';
-            }else{
-              httpurl+=this.url.edit;
-               method = 'put';
-            }
-            let formData = Object.assign(this.model, values);
-            console.log("表单提交数据",formData)
-            httpAction(httpurl,formData,method).then((res)=>{
-              if(res.success){
-                that.$message.success(res.message);
-                that.$emit('ok');
+            //选择标识符的校验通过后
+            this.$refs.defaultTable.$refs.editableTable.getValues((error, pdEncodingRuleDetails) => {
+              if(pdEncodingRuleDetails.length>0){
+                if(!error){
+                  //that.confirmLoading = true;
+                  let httpurl = '';
+                  let method = '';
+                  if(!this.model.id){
+                    httpurl+=this.url.add;
+                    method = 'post';
+                  }else{
+                    httpurl+=this.url.edit;
+                    method = 'put';
+                  }
+                  values.pdEncodingRuleDetails = pdEncodingRuleDetails;
+                  let formData = Object.assign(this.model, values);
+                  console.log(formData)
+                  httpAction(httpurl,formData,method).then((res)=>{
+                    if(res.success){
+                      that.$message.success(res.message);
+                      that.$emit('ok');
+                    }else{
+                      that.$message.warning(res.message);
+                    }
+                  }).finally(() => {
+                    that.confirmLoading = false;
+                    that.close();
+                  })
+                }
               }else{
-                that.$message.warning(res.message);
+                this.$message.info('请添加编码规则')
               }
-            }).finally(() => {
-              that.confirmLoading = false;
-              that.close();
-            })
+            });
           }
-         
         })
       },
       handleCancel () {

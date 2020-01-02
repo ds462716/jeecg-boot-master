@@ -2,6 +2,9 @@ package org.jeecg.modules.pd.service;
 
 import org.jeecg.modules.pd.entity.PdEncodingRule;
 import com.baomidou.mybatisplus.extension.service.IService;
+import org.jeecg.modules.pd.entity.PdEncodingRuleDetail;
+
+import java.util.List;
 
 /**
  * @Description: 编码规则表
@@ -11,4 +14,5 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface IPdEncodingRuleService extends IService<PdEncodingRule> {
 
+    void savePdEncodingRule(PdEncodingRule pdEncodingRule);
 }

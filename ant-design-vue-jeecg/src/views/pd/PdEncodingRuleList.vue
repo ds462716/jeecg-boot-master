@@ -10,8 +10,8 @@
             </a-form-item>
           </a-col>
           <a-col :md="6" :sm="8">
-            <a-form-item label="标识查询用">
-              <a-input placeholder="请输入标识查询用" v-model="queryParam.codeQuery"></a-input>
+            <a-form-item label="规则简码">
+              <a-input placeholder="请输入规则简码" v-model="queryParam.codeQuery"></a-input>
             </a-form-item>
           </a-col>
           <a-col :md="6" :sm="8" >
@@ -166,7 +166,7 @@
             dataIndex: 'codeDesc'
           },
           {
-            title:'标识查询用',
+            title:'规则简码',
             align:"center",
             dataIndex: 'codeQuery'
           },

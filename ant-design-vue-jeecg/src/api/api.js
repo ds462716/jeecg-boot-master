@@ -95,6 +95,8 @@ const duplicateCheck = (params)=>getAction("/sys/duplicate/check",params);
 // 加载分类字典
 const loadCategoryData = (params)=>getAction("/sys/category/loadAllData",params);
 
+// 编码标识符
+const getEncodingIdentifierList = (params)=>getAction("/pd/pdEncodingIdentifier/getEncodingIdentifierList",params);
 export {
   // imgView,
   // doMian,
@@ -142,7 +144,8 @@ export {
   queryTreeListForRole,
   getSystemMenuList,
   getSystemSubmenu,
-  loadCategoryData
+  loadCategoryData,
+  getEncodingIdentifierList
 }
 
 

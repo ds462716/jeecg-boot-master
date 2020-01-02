@@ -13,6 +13,7 @@ import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.pd.entity.PdEncodingRule;
+import org.jeecg.modules.pd.entity.PdEncodingRuleDetail;
 import org.jeecg.modules.pd.service.IPdEncodingRuleService;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -77,6 +78,18 @@ public class PdEncodingRuleController extends JeecgController<PdEncodingRule, IP
 		pdEncodingRuleService.save(pdEncodingRule);
 		return Result.ok("添加成功！");
 	}
+
+	 /**
+	  *   添加
+	  *
+	  * @param pdEncodingRule
+	  * @return
+	  */
+	 @PostMapping(value = "/savePdEncodingRule")
+	 public Result<?> savePdEncodingRule(@RequestBody PdEncodingRule pdEncodingRule) {
+		 pdEncodingRuleService.savePdEncodingRule(pdEncodingRule);
+		 return Result.ok("添加成功！");
+	 }
 	
 	/**
 	 *  编辑

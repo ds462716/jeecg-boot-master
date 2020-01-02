@@ -89,3 +89,19 @@ export async function ajaxFilterDictText(dictCode, key) {
     return '';
   }
 }
+/**
+ * 字典值替换文本通用方法(多选)
+ * @param dictOptions  字典数组
+ * @param text  字典值
+ * @return String
+ */
+export function typeText(text) {
+  if(!text){
+    return ""
+  }
+  if(text=="1"){
+    return "固定类型"
+  }else{
+    return "可变类型"
+  }
+}
