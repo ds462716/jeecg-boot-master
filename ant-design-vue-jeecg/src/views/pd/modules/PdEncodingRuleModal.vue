@@ -38,7 +38,7 @@
   import { httpAction } from '@/api/manage'
   import pick from 'lodash.pick'
   import { makeWb } from '@/utils/wubi'
-  import DefaultTable from './PdIdentiffierModal'
+  import DefaultTable from './PdIdentifierModal'
 
   export default {
     name: "PdEncodingRuleModal",
@@ -100,6 +100,7 @@
           if (!err) {
             //选择标识符的校验通过后
             this.$refs.defaultTable.$refs.editableTable.getValues((error, pdEncodingRuleDetails) => {
+            //this.$refs.defaultTable.$refs.editableTable.getValues((error, pdEncodingRuleDetails) => {
               if(pdEncodingRuleDetails.length>0){
                 if(!error){
                   //that.confirmLoading = true;
