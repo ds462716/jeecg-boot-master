@@ -61,10 +61,13 @@ public class PdEncodingRuleController extends JeecgController<PdEncodingRule, IP
 								   @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
 								   @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
 								   HttpServletRequest req) {
-		QueryWrapper<PdEncodingRule> queryWrapper = QueryGenerator.initQueryWrapper(pdEncodingRule, req.getParameterMap());
-		Page<PdEncodingRule> page = new Page<PdEncodingRule>(pageNo, pageSize);
-		IPage<PdEncodingRule> pageList = pdEncodingRuleService.page(page, queryWrapper);
-		return Result.ok(pageList);
+
+		Result<Page<PdEncodingRule>> result = new Result<Page<PdEncodingRule>>();
+		Page<PdEncodingRule> pageList = new Page<PdEncodingRule>(pageNo,pageSize);
+		pageList = pdEncodingRuleService.selectList(pageList,pdEncodingRule);//
+		result.setSuccess(true);
+		result.setResult(pageList);
+		return result;
 	}
 	
 	/**

@@ -20,7 +20,7 @@ import org.jeecg.common.aspect.annotation.Dict;
  */
 @Data
 @TableName("pd_encoding_identifier")
-public class PdEncodingIdentifier implements Serializable {
+public class PdEncodingIdentifier extends BaseEntity {
     private static final long serialVersionUID = 1L;
     
 	/**主键*/
@@ -61,4 +61,5 @@ public class PdEncodingIdentifier implements Serializable {
 	/**删除标志*/
     @TableLogic
     private String delFlag ="0";
+
 }

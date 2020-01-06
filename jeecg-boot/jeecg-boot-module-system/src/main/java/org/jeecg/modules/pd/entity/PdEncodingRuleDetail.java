@@ -4,15 +4,13 @@ import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.util.Date;
 import java.math.BigDecimal;
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
+
+import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.jeecgframework.poi.excel.annotation.Excel;
 import org.jeecg.common.aspect.annotation.Dict;
-import com.baomidou.mybatisplus.annotation.TableLogic;
 
 /**
  * @Description: 编码规则详情表
@@ -22,7 +20,7 @@ import com.baomidou.mybatisplus.annotation.TableLogic;
  */
 @Data
 @TableName("pd_encoding_rule_detail")
-public class PdEncodingRuleDetail implements Serializable {
+public class PdEncodingRuleDetail extends BaseEntity  {
     private static final long serialVersionUID = 1L;
     
 	/**主键*/
@@ -61,8 +59,13 @@ public class PdEncodingRuleDetail implements Serializable {
     private String remarks;
 	/**删除标志*/
     @TableLogic
-    private String delFlag;
+    private String delFlag ="0";;
 
 	/**标识符内容*/
+	@TableField(exist = false)
 	private String value;
+
+	/**标识符类型*/
+	@TableField(exist = false)
+	private String type;
 }

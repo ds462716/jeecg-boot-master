@@ -21,7 +21,7 @@ import org.jeecg.common.aspect.annotation.Dict;
  */
 @Data
 @TableName("${tableName}")
-public class ${entityName} implements Serializable {
+public class ${entityName}  extends BaseEntity {
     private static final long serialVersionUID = 1L;
     
     <#list originalColumns as po>

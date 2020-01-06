@@ -21,7 +21,7 @@ import org.jeecg.common.aspect.annotation.Dict;
  */
 @Data
 @TableName("pd_encoding_rule")
-public class PdEncodingRule implements Serializable {
+public class PdEncodingRule extends BaseEntity  {
     private static final long serialVersionUID = 1L;
     
 	/**主键*/
@@ -45,7 +45,7 @@ public class PdEncodingRule implements Serializable {
 	/**规则描述*/
 	@Excel(name = "规则描述", width = 15)
     private String codeDesc;
-	/**规则简码*/
+	/**规则简码 011710*/
 	@Excel(name = "规则简码", width = 15)
     private String codeQuery;
 	/**总位数*/
@@ -70,11 +70,11 @@ public class PdEncodingRule implements Serializable {
 	/**备注*/
 	@Excel(name = "备注", width = 15)
     private String remarks;
-	/**删除标志*/
-    @TableLogic
-    private String delFlag;
 
 	/** 规则详情*/
+	/**
+	 * 不是数据库字段 2020年1月3日14:50:33 zxh
+	 */
 	@TableField(exist = false)
     private List<PdEncodingRuleDetail> pdEncodingRuleDetails;
 }
