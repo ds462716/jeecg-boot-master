@@ -79,28 +79,32 @@
         queryParam: {},
         // 表头
         columns: [
-          {
-            title: '#',
+/*          {
+            title: '序号',
             dataIndex: '',
             key:'rowIndex',
+            width:60,
             align:"center",
             customRender:function (t,r,index) {
               return parseInt(index)+1;
             }
-          },
+          },*/
           {
             title:'值',
             align:"center",
+            width:60,
             dataIndex: 'value'
           },
           {
             title:'含义',
             align:"center",
+            width:150,
             dataIndex: 'meaning'
           },
           {
             title:'类型',
             align:"center",
+            width:150,
             dataIndex: 'type',
             customRender:(text)=>{
               if(!text){
@@ -113,6 +117,7 @@
           {
             title:'长度',
             align:"center",
+            width:60,
             dataIndex: 'length'
           },
           {
