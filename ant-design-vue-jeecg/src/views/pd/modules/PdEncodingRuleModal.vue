@@ -25,7 +25,7 @@
         <a-form-item label="备注" :labelCol="labelCol" :wrapperCol="wrapperCol">
           <a-input v-decorator="[ 'remarks', validatorRules.remarks]" placeholder="请输入备注"></a-input>
         </a-form-item>
-        <default-table ref="defaultTable"/>
+        <pdIdentifier-modal ref="pdIdentifierModal"></pdIdentifier-modal>
       </a-form>
     </a-spin>
     <a-button type="primary" @click="handleOk">确定</a-button>
@@ -38,12 +38,11 @@
   import { httpAction } from '@/api/manage'
   import pick from 'lodash.pick'
   import { makeWb } from '@/utils/wubi'
-  import DefaultTable from './PdIdentifierModal'
+  import PdIdentifierModal from './PdIdentifierModal'
 
   export default {
     name: "PdEncodingRuleModal",
-    components: { DefaultTable
-    },
+    components: { PdIdentifierModal },
     data () {
       return {
         form: this.$form.createForm(this),

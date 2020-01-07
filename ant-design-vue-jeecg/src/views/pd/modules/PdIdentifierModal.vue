@@ -53,7 +53,7 @@
   import PdEncodingIdentifierAddModal from './PdEncodingIdentifierAddModal'
   import {typeText} from '@/components/dict/JDictSelectUtil'
   export default {
-    name: 'DefaultTable',
+    name: 'PdIdentifierModal',
     components: {PdEncodingIdentifierAddModal},
     data() {
       return {
