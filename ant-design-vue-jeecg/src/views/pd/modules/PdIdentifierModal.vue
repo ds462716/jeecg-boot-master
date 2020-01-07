@@ -49,14 +49,12 @@
 </template>
 
 <script>
-  import { FormTypes } from '@/utils/JEditableTableUtil'
   import { randomUUID, randomNumber } from '@/utils/util'
-  import JEditableTable from '@/components/jeecg/JEditableTable'
   import PdEncodingIdentifierAddModal from './PdEncodingIdentifierAddModal'
   import {typeText} from '@/components/dict/JDictSelectUtil'
   export default {
     name: 'DefaultTable',
-    components: { JEditableTable ,PdEncodingIdentifierAddModal},
+    components: {PdEncodingIdentifierAddModal},
     data() {
       return {
         loading: false,
