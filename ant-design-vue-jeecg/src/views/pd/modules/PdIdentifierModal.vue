@@ -13,19 +13,31 @@
         <th>顺序</th>
       </tr>
       <tr v-for="(item, index) in dataSource">
-        <td><input type="checkbox"  name="chkList"/></td>
-        <td>{{item.value}}</td>
+        <td><input type="checkbox"  name="chkList"/>
+          <a-form-item>
+            <a-input type="hidden" v-decorator="['pdEncodingRuleDetails['+index+'].identifier',{'initialValue':item.id}]"/>
+          </a-form-item>
+        </td>
+        <td>{{item.value}}
+          <a-form-item>
+            <a-input type="hidden" v-decorator="['pdEncodingRuleDetails['+index+'].value',{'initialValue':item.value}]"/>
+          </a-form-item>
+        </td>
         <td>{{item.meaning}}</td>
         <td>
           <a-form-item>
-            <a-input :style="{width: 'calc(100% - 90px)'}" v-if="item.type=='1'" disabled="disabled" v-decorator="['identifier['+index+'].length',{'initialValue':item.length,rules:validatorRules.length}]"/>
-            <a-input :style="{width: 'calc(100% - 90px)'}" v-else="item.type!='1'" v-decorator="['identifier['+index+'].length', {'initialValue':item.length,rules:validatorRules.length}]"/>
+            <a-input :style="{width: 'calc(100% - 90px)'}" v-if="item.type=='1'" disabled="disabled" v-decorator="['pdEncodingRuleDetails['+index+'].length',{'initialValue':item.length}]"/>
+            <a-input :style="{width: 'calc(100% - 90px)'}" v-else="item.type!='1'" v-decorator="['pdEncodingRuleDetails['+index+'].length', {'initialValue':item.length,rules:validatorRules.length}]"/>
           </a-form-item>
         </td>
-        <td>{{item.typeText}}</td>
+        <td>{{item.typeText}}
+          <a-form-item>
+            <a-input type="hidden" v-decorator="['pdEncodingRuleDetails['+index+'].type',{'initialValue':item.type}]"/>
+          </a-form-item>
+        </td>
         <td>
           <a-form-item>
-            <a-input :style="{width: 'calc(100% - 90px)'}"v-decorator="['identifier['+index+'].order',validatorRules.order]"/>
+            <a-input :style="{width: 'calc(100% - 90px)'}"v-decorator="['pdEncodingRuleDetails['+index+'].codeOrder',validatorRules.order]"/>
           </a-form-item>
         </td>
       </tr>

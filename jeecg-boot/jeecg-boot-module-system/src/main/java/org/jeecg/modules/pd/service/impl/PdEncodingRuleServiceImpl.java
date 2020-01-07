@@ -52,7 +52,7 @@ public class PdEncodingRuleServiceImpl extends ServiceImpl<PdEncodingRuleMapper,
                 String codeDetail = "";
                 for (int m=0;m<pdEncodingRuleDetails.size();m++) {
                     PdEncodingRuleDetail pdEncodingRuleDetail = pdEncodingRuleDetails.get(m);
-                    if(pdEncodingRuleDetail.getId()!=null){
+                    if(pdEncodingRuleDetail.getIdentifier()!=null){
                         String kh = "";
                         String ruleVaule = pdEncodingRuleDetail.getValue();
                         int length = pdEncodingRuleDetail.getLength();
@@ -69,7 +69,6 @@ public class PdEncodingRuleServiceImpl extends ServiceImpl<PdEncodingRuleMapper,
                             kh += "X";
                         }
                         str+=kh;
-                        pdEncodingRuleDetail.setIdentifier(pdEncodingRuleDetail.getId());
                         pdEncodingRuleDetail.setCodeId(pdEncodingRule.getId());
                         pdEncodingRuleDetail.setId(UUIDUtil.getUuid());
                         //如果是固定类型

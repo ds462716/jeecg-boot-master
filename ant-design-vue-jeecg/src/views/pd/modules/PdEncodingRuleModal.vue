@@ -99,39 +99,28 @@
         this.form.validateFields((err, values) => {
           if (!err) {
             //选择标识符的校验通过后
-            this.$refs.defaultTable.$refs.editableTable.getValues((error, pdEncodingRuleDetails) => {
-            //this.$refs.defaultTable.$refs.editableTable.getValues((error, pdEncodingRuleDetails) => {
-              if(pdEncodingRuleDetails.length>0){
-                if(!error){
-                  //that.confirmLoading = true;
-                  let httpurl = '';
-                  let method = '';
-                  if(!this.model.id){
-                    httpurl+=this.url.add;
-                    method = 'post';
-                  }else{
-                    httpurl+=this.url.edit;
-                    method = 'put';
-                  }
-                  values.pdEncodingRuleDetails = pdEncodingRuleDetails;
-                  let formData = Object.assign(this.model, values);
-                  console.log(formData)
-                  httpAction(httpurl,formData,method).then((res)=>{
-                    if(res.success){
-                      that.$message.success(res.message);
-                      that.$emit('ok');
-                    }else{
-                      that.$message.warning(res.message);
-                    }
-                  }).finally(() => {
-                    that.confirmLoading = false;
-                    that.close();
-                  })
-                }
+            //that.confirmLoading = true;
+            let httpurl = '';
+            let method = '';
+            if(!this.model.id){
+              httpurl+=this.url.add;
+              method = 'post';
+            }else{
+              httpurl+=this.url.edit;
+              method = 'put';
+            }
+            let formData = Object.assign(this.model, values);
+            httpAction(httpurl,formData,method).then((res)=>{
+              if(res.success){
+                that.$message.success(res.message);
+                that.$emit('ok');
               }else{
-                this.$message.info('请添加编码规则')
+                that.$message.warning(res.message);
               }
-            });
+            }).finally(() => {
+              that.confirmLoading = false;
+              that.close();
+            })
           }
         })
       },
