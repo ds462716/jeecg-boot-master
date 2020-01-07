@@ -98,6 +98,11 @@ public class PdEncodingRuleServiceImpl extends ServiceImpl<PdEncodingRuleMapper,
         return page.setRecords(pdEncodingRuleMapper.selectList(pdEncodingRule));
     }
 
+    @Override
+    public List<PdEncodingRule> selectList(PdEncodingRule pdEncodingRule) {
+        return pdEncodingRuleMapper.selectList(pdEncodingRule);
+    }
+
     //集合对象排序
     public static List<PdEncodingRuleDetail> comparatorSort(List<PdEncodingRuleDetail> pdEncodingRuleDetails){
         Collections.sort(pdEncodingRuleDetails,new Comparator() {

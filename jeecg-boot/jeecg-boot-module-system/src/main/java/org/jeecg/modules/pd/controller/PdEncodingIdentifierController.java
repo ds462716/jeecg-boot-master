@@ -73,7 +73,7 @@ public class PdEncodingIdentifierController extends JeecgController<PdEncodingId
 
 
 	 /**
-	  * 分页列表查询
+	  * 不分页列表查询
 	  *
 	  * @return
 	  */

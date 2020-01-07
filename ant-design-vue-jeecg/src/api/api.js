@@ -97,6 +97,10 @@ const loadCategoryData = (params)=>getAction("/sys/category/loadAllData",params)
 
 // 编码标识符
 const getEncodingIdentifierList = (params)=>getAction("/pd/pdEncodingIdentifier/getEncodingIdentifierList",params);
+//下拉列表查询编码规则
+const getEncodingRuleList = (params)=>getAction("/pd/pdEncodingRule/getEncodingRuleList",params);
+
+
 export {
   // imgView,
   // doMian,

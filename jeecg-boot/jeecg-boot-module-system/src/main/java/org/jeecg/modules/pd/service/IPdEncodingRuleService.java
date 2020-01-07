@@ -18,4 +18,6 @@ public interface IPdEncodingRuleService extends IService<PdEncodingRule> {
     void savePdEncodingRule(PdEncodingRule pdEncodingRule);
 
     Page<PdEncodingRule> selectList(Page<PdEncodingRule> pageList,PdEncodingRule pdEncodingRule);
+
+    List<PdEncodingRule> selectList(PdEncodingRule pdEncodingRule);
 }

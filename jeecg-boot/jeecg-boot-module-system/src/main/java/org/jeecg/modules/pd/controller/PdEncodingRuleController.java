@@ -9,13 +9,16 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.jeecg.common.constant.CommonConstant;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.util.oConvertUtils;
+import org.jeecg.modules.pd.entity.PdEncodingIdentifier;
 import org.jeecg.modules.pd.entity.PdEncodingRule;
 import org.jeecg.modules.pd.entity.PdEncodingRuleDetail;
 import org.jeecg.modules.pd.service.IPdEncodingRuleService;
-
+import org.apache.commons.lang.StringUtils;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -69,6 +72,27 @@ public class PdEncodingRuleController extends JeecgController<PdEncodingRule, IP
 		result.setResult(pageList);
 		return result;
 	}
+
+
+	 /**
+	  * 不分页列表查询
+	  *
+	  * @return
+	  */
+	 @GetMapping(value = "/getEncodingRuleList")
+	 public Result<List<PdEncodingRule>> getEncodingIdentifierList(PdEncodingRule pdEncodingRule) {
+		 long start = System.currentTimeMillis();
+		 Result<List<PdEncodingRule>> result = new Result<>();
+		 try {
+			 List<PdEncodingRule> list = pdEncodingRuleService.selectList(pdEncodingRule);
+			 result.setResult(list);
+			 result.setSuccess(true);
+		 }catch(Exception e){
+			 log.error(e.getMessage(), e);
+		 }
+		 log.info("======获取一级菜单数据=====耗时:" + (System.currentTimeMillis() - start) + "毫秒");
+		 return result;
+	 }
 	
 	/**
 	 *   添加

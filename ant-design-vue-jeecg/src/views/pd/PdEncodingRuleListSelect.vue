@@ -6,7 +6,21 @@
         <a-row :gutter="24">
           <a-col :md="6" :sm="8">
             <a-form-item label="编码名称">
-              <a-input placeholder="请输入编码名称" v-model="queryParam.name"></a-input>
+              <!--<a-input placeholder="请输入编码名称" v-model="queryParam.name"></a-input>-->
+              <a-select
+                showSearch
+                :value="value"
+                placeholder="input search text"
+                style="width: 200px"
+                :defaultActiveFirstOption="false"
+                :showArrow="false"
+                :filterOption="false"
+                @search="handleSearch"
+                @change="handleChange"
+                :notFoundContent="null"
+              >
+                <a-select-option v-for="d in data" :key="d.value">{{d.text}}</a-select-option>
+              </a-select>
             </a-form-item>
           </a-col>
           <a-col :md="6" :sm="8">
@@ -112,8 +126,39 @@
 
   import { JeecgListMixin } from '@/mixins/JeecgListMixin'
   import PdEncodingRuleModal from './modules/PdEncodingRuleModal'
+  import { getEncodingRuleList } from '@/api/api'
   import { getAction } from  '@/api/manage'
 
+  let timeout;
+  let currentValue;
+
+  function fetch(value, callback) {
+    if (timeout) {
+      clearTimeout(timeout);
+      timeout = null;
+    }
+    currentValue = value;
+
+    function fake() {
+      getAction("/pd/pdEncodingRule/getEncodingRuleList",{name:value}).then((res)=>{
+          if (!res.success) {
+            this.cmsFailed(res.message);
+          }
+          if (currentValue === value) {
+            const result = res.result;
+            const data = [];
+            result.forEach(r => {
+              data.push({
+                value: r.id,
+                text: r.name,
+              });
+            });
+            callback(data);
+          }
+        })
+    }
+    timeout = setTimeout(fake, 300);
+  }
   export default {
     name: "PdEncodingRuleList",
     mixins:[JeecgListMixin],
@@ -123,6 +168,8 @@
     data () {
       return {
         description: '编码规则表管理页面',
+        data: [],
+        value: undefined,
         // 表头
         columns: [
           {
@@ -205,7 +252,14 @@
     },
     methods: {
       initDictConfig(){
-      }
+      },
+      handleSearch(value) {
+        fetch(value, data => (this.data = data));
+      },
+      handleChange(value) {
+        this.value = value;
+        fetch(value, data => (this.data = data));
+      },
     }
   }
 </script>

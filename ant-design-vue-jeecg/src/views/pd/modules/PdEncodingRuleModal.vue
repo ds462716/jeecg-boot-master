@@ -99,28 +99,32 @@
         this.form.validateFields((err, values) => {
           if (!err) {
             //选择标识符的校验通过后
-            //that.confirmLoading = true;
-            let httpurl = '';
-            let method = '';
-            if(!this.model.id){
-              httpurl+=this.url.add;
-              method = 'post';
-            }else{
-              httpurl+=this.url.edit;
-              method = 'put';
-            }
-            let formData = Object.assign(this.model, values);
-            httpAction(httpurl,formData,method).then((res)=>{
-              if(res.success){
-                that.$message.success(res.message);
-                that.$emit('ok');
+            if(values.hasOwnProperty("pdEncodingRuleDetails")){
+              //that.confirmLoading = true;
+              let httpurl = '';
+              let method = '';
+              if(!this.model.id){
+                httpurl+=this.url.add;
+                method = 'post';
               }else{
-                that.$message.warning(res.message);
+                httpurl+=this.url.edit;
+                method = 'put';
               }
-            }).finally(() => {
-              that.confirmLoading = false;
-              that.close();
-            })
+              let formData = Object.assign(this.model, values);
+              httpAction(httpurl,formData,method).then((res)=>{
+                if(res.success){
+                  that.$message.success(res.message);
+                  that.$emit('ok');
+                }else{
+                  that.$message.warning(res.message);
+                }
+              }).finally(() => {
+                that.confirmLoading = false;
+                that.close();
+              })
+            }else{
+              that.$message.error("请添加标识符");
+            }
           }
         })
       },
