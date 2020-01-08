@@ -58,8 +58,5 @@ public class PdEncodingIdentifier extends BaseEntity {
 	/**备注*/
 	@Excel(name = "备注", width = 15)
     private String remarks;
-	/**删除标志*/
-    @TableLogic
-    private String delFlag ="0";
 
 }

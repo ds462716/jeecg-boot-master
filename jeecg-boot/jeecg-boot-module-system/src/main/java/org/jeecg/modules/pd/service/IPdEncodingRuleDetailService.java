@@ -1,5 +1,6 @@
 package org.jeecg.modules.pd.service;
 
+import org.jeecg.modules.pd.entity.PdEncodingRule;
 import org.jeecg.modules.pd.entity.PdEncodingRuleDetail;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -11,4 +12,5 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface IPdEncodingRuleDetailService extends IService<PdEncodingRuleDetail> {
 
+    void removeByCodeId(PdEncodingRule pdEncodingRule);
 }

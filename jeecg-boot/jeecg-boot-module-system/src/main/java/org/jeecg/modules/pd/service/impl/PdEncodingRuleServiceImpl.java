@@ -88,6 +88,65 @@ public class PdEncodingRuleServiceImpl extends ServiceImpl<PdEncodingRuleMapper,
     }
 
     /**
+     * 编码规则修改
+     * @param pdEncodingRule
+     */
+    @Override
+    @Transactional
+    public void updatePdEncodingRule(PdEncodingRule pdEncodingRule) {
+        if(pdEncodingRule!=null){
+            pdEncodingRuleDetailService.removeByCodeId(pdEncodingRule);
+            List<PdEncodingRuleDetail> pdEncodingRuleDetails = pdEncodingRule.getPdEncodingRuleDetails();
+            if(pdEncodingRuleDetails!=null && pdEncodingRuleDetails.size()>0){
+                //调整顺序
+                comparatorSort(pdEncodingRuleDetails);
+                //拼接编码描述
+                String str ="";
+                //总位数
+                int totalDigit = 0;
+                //规则简码
+                String codeQueryStr="";
+                //规则详情
+                String codeDetail = "";
+                for (int m=0;m<pdEncodingRuleDetails.size();m++) {
+                    PdEncodingRuleDetail pdEncodingRuleDetail = pdEncodingRuleDetails.get(m);
+                    if(pdEncodingRuleDetail.getIdentifier()!=null){
+                        String kh = "";
+                        String ruleVaule = pdEncodingRuleDetail.getValue();
+                        int length = pdEncodingRuleDetail.getLength();
+                        if(!"#".equals(ruleVaule)){
+                            kh = "("+ruleVaule+")";
+                            codeQueryStr = codeQueryStr +ruleVaule;
+                            codeDetail = codeDetail+ruleVaule+"("+pdEncodingRuleDetail.getLength()+")";
+                            totalDigit +=length+ruleVaule.length();
+                        }else{
+                            totalDigit +=length+ruleVaule.length()-1;
+                            codeDetail = codeDetail+"("+pdEncodingRuleDetail.getLength()+")";
+                        }
+                        for(int i=0;i<length;i++){
+                            kh += "X";
+                        }
+                        str+=kh;
+                        pdEncodingRuleDetail.setCodeId(pdEncodingRule.getId());
+                        pdEncodingRuleDetail.setId(UUIDUtil.getUuid());
+                        //如果是固定类型
+                        if(PdConstant.IDENTIFIER_TYPE_1.equals(pdEncodingRuleDetail.getType())){
+                            pdEncodingRuleDetail.setLength(null);
+                        }
+                    }
+                }
+                pdEncodingRule.setCodeDesc(str);
+                pdEncodingRule.setTotalDigit(totalDigit);
+                pdEncodingRule.setCodeQuery(codeQueryStr);
+                pdEncodingRule.setCodeDetail(codeDetail);
+                pdEncodingRuleDetailService.saveBatch(pdEncodingRuleDetails);
+                this.updateById(pdEncodingRule);
+            }
+        }
+
+    }
+
+    /**
      * 查询编码规则表
      * @param page
      * @param pdEncodingRule

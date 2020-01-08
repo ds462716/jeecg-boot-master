@@ -7,42 +7,93 @@
         <result column="py" property="py" jdbcType="VARCHAR"/>
         <result column="wb" property="wb" jdbcType="VARCHAR"/>
         <result column="zdy" property="zdy" jdbcType="VARCHAR"/>
+        <result column="code_detail" property="codeDetail" jdbcType="VARCHAR"/>
+        <result column="code_desc" property="codeDesc" jdbcType="VARCHAR"/>
+        <result column="code_query" property="codeQuery" jdbcType="VARCHAR"/>
+        <result column="total_digit" property="totalDigit" jdbcType="VARCHAR"/>
         <result column="create_by" property="createBy" jdbcType="VARCHAR"/>
         <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
         <result column="update_by" property="updateBy" jdbcType="VARCHAR"/>
         <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
         <result column="remarks" property="remarks" jdbcType="VARCHAR"/>
         <result column="del_flag" property="delFlag" jdbcType="VARCHAR"/>
-        <collection property="pdEncodingRuleDetails" column="id" select="getPdEncodingRuleDetails"
-                    ofType="org.jeecg.modules.pd.entity.PdEncodingRuleDetail">
+        <collection property="pdEncodingRuleDetails" ofType="org.jeecg.modules.pd.entity.PdEncodingRuleDetail">
+            <id column="id" property="id" jdbcType="VARCHAR"/>
+            <id column="code_id" property="codeId" jdbcType="VARCHAR"/>
+            <id column="identifier" property="identifier" jdbcType="VARCHAR"/>
+            <id column="length" property="length" jdbcType="VARCHAR"/>
+            <id column="code_order" property="codeOrder" jdbcType="VARCHAR"/>
+            <id column="create_by" property="createBy" jdbcType="VARCHAR"/>
+            <id column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+            <id column="update_by" property="updateBy" jdbcType="VARCHAR"/>
+            <id column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
+            <id column="remarks" property="remarks" jdbcType="VARCHAR"/>
+            <id column="del_flag" property="delFlag" jdbcType="VARCHAR"/>
+            <id column="pdEncodingIdentifier.type" property="pdEncodingIdentifier.type" jdbcType="VARCHAR"/>
+            <id column="pdEncodingIdentifier.value" property="pdEncodingIdentifier.value" jdbcType="VARCHAR"/>
+            <id column="pdEncodingIdentifier.length" property="pdEncodingIdentifier.length" jdbcType="VARCHAR"/>
+            <id column="pdEncodingIdentifier.meaning" property="pdEncodingIdentifier.meaning" jdbcType="VARCHAR"/>
         </collection>
     </resultMap>
 
     <sql id="pdEncodingRuleColumns">
-		a.id AS "id",
-		a.name AS "name",
-		a.py AS "py",
-		a.wb AS "wb",
-		a.zdy AS "zdy",
-		a.code_detail AS "codeDetail",
-		a.code_desc AS "codeDesc",
-		a.code_query AS "codeQuery",
-		a.total_digit AS "totalDigit",
-		a.create_by AS "createBy",
-		a.create_time AS "createTime",
-		a.update_by AS "updateBy",
-		a.update_Time AS "updateTime",
-		a.remarks AS "remarks",
-		a.del_flag AS "delFlag"
+		a.id,
+		a.name ,
+		a.py,
+		a.wb,
+		a.zdy,
+		a.code_detail,
+		a.code_desc,
+		a.code_query,
+		a.total_digit,
+		a.create_by,
+		a.create_time,
+		a.update_by,
+		a.update_Time,
+		a.remarks,
+		a.del_flag
 	</sql>
+
+    <sql id="pdEncodingRuleDetailColumns">
+		b.id,
+		b.code_id,
+		b.identifier,
+		b.length ,
+		b.code_order,
+		b.create_by,
+		b.create_time,
+		b.update_by,
+		b.update_time,
+		b.remarks,
+		b.del_flag
+	</sql>
+
+    <sql id="pdEncodingIdentifierColumns">
+		c.type AS "pdEncodingIdentifier.type",
+        c.`value` AS "pdEncodingIdentifier.value",
+        c.length AS "pdEncodingIdentifier.length",
+        c.meaning AS "pdEncodingIdentifier.meaning"
+	</sql>
+
+    <sql id="pdEncodingRuleDetailJoins">
+        LEFT JOIN pd_encoding_rule_detail b on a.id = b.code_id
+    </sql>
+
+    <sql id="pdEncodingIdentifierJoins">
+        LEFT JOIN pd_encoding_identifier c on b.identifier = c.id
+    </sql>
 
     <!-- 编码规则条件查询 -->
     <select id="selectList" resultMap="resultMap" parameterType="org.jeecg.modules.pd.entity.PdEncodingRule">
         SELECT
-          <include refid="pdEncodingRuleColumns"/>
+          <include refid="pdEncodingRuleColumns"/>,
+          <include refid="pdEncodingRuleDetailColumns"/>,
+          <include refid="pdEncodingIdentifierColumns"/>
         FROM pd_encoding_rule a
+        <include refid="pdEncodingRuleDetailJoins"/>
+        <include refid="pdEncodingIdentifierJoins"/>
         <where>
-            a.del_flag = #{DEL_FLAG_NORMAL}
+            a.del_flag = #{DEL_FLAG_NORMAL} and b.del_flag = #{DEL_FLAG_NORMAL}
         </where>
         <if test="name != null and name != ''">
             AND a.name LIKE concat('%',#{name},'%')
@@ -54,9 +105,6 @@
             AND a.code_query LIKE concat('%',#{codeQuery},'%')
         </if>
 
-    </select>
-    <!-- 查询编码规则的详情 -->
-    <select id="getPdEncodingRuleDetails" resultType="org.jeecg.modules.pd.entity.PdEncodingRuleDetail">
-        select * from pd_encoding_rule_detail a WHERE a.code_id = #{id}
+        ORDER BY a.update_time desc,b.code_order
     </select>
 </mapper>

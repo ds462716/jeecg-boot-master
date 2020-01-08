@@ -57,9 +57,6 @@ public class PdEncodingRuleDetail extends BaseEntity  {
 	/**备注*/
 	@Excel(name = "备注", width = 15)
     private String remarks;
-	/**删除标志*/
-    @TableLogic
-    private String delFlag ="0";;
 
 	/**标识符内容*/
 	@TableField(exist = false)
@@ -68,4 +65,10 @@ public class PdEncodingRuleDetail extends BaseEntity  {
 	/**标识符类型*/
 	@TableField(exist = false)
 	private String type;
+
+	/**
+	 * 标识符对象
+	 */
+	@TableField(exist = false)
+	private PdEncodingIdentifier pdEncodingIdentifier;
 }
