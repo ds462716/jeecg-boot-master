@@ -14,4 +14,5 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  */
 public interface PdVenderMapper extends BaseMapper<PdVender> {
 
+    PdVender verify(PdVender pdVender);
 }

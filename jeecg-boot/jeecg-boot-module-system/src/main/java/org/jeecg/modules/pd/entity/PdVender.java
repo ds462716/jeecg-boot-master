@@ -265,4 +265,7 @@ public class PdVender  extends BaseEntity {
 	/**是否过期标识，0未过期，1已过期，2近效期*/
 	@Excel(name = "是否过期标识，0未过期，1已过期，2近效期", width = 15)
     private java.lang.String validityFlag;
+	/**备注*/
+	@Excel(name = "备注", width = 15)
+	private String remarks;
 }

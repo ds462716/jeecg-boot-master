@@ -2,4 +2,97 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.jeecg.modules.pd.mapper.PdVenderMapper">
 
+    <sql id="pdVenderColumns">
+		a.id,
+		a.name,
+		a.py,
+		a.wb,
+		a.zdy,
+		a.licence_name0,
+		a.licence_num0,
+		a.licence_date0,
+		a.licence_site0,
+		a.licence_validity0,
+		a.licence_name1,
+		a.licence_num1,
+		a.licence_date1,
+		a.licence_site1,
+		a.licence_validity1,
+		a.licence_name2,
+		a.licence_num2,
+		a.licence_date2,
+		a.licence_site2,
+		a.licence_validity2,
+		a.licence_name3,
+		a.licence_num3,
+		a.licence_date3,
+		a.licence_site3,
+		a.licence_validity3,
+		a.licence_name4,
+		a.licence_num4,
+		a.licence_date4,
+		a.licence_site4,
+		a.licence_validity4,
+		a.licence_name5,
+		a.licence_num5,
+		a.licence_date5,
+		a.licence_site5,
+		a.licence_validity5,
+		a.licence_name6,
+		a.licence_num6,
+		a.licence_date6,
+		a.licence_site6,
+		a.licence_validity6,
+		a.licence_name7,
+		a.licence_num7,
+		a.licence_date7,
+		a.licence_site7,
+		a.licence_validity7,
+		a.licence_name8,
+		a.licence_num8,
+		a.licence_date8,
+		a.licence_site8,
+		a.licence_validity8,
+		a.licence_name9,
+		a.licence_num9,
+		a.licence_date9,
+		a.licence_site9,
+		a.licence_validity9,
+		a.licence_name10,
+		a.licence_num10,
+		a.licence_date10,
+		a.licence_site10,
+		a.licence_validity10,
+		a.licence_name11,
+		a.licence_num11,
+		a.licence_date11,
+		a.licence_site11,
+		a.licence_validity11,
+		a.create_by,
+		a.create_time,
+		a.update_by,
+		a.update_time,
+		a.sys_org_code,
+		a.validity_flag,
+		a.remarks,
+		a.del_flag
+	</sql>
+
+    <sql id="pdVenderJoins">
+    </sql>
+
+    <!-- 校验生产厂家是否唯一 -->
+    <select id="verify" resultType="org.jeecg.modules.pd.entity.PdVender">
+        SELECT
+        <include refid="pdVenderColumns"/>
+        FROM pd_vender a
+        <include refid="pdVenderJoins"/>
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+            and a.name = #{name}
+            <if test="id != null and id != ''">
+                AND a.id != #{id}
+            </if>
+        </where>
+    </select>
 </mapper>

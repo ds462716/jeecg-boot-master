@@ -160,6 +160,11 @@
             dataIndex: 'updateTime'
           },
           {
+            title:'备注',
+            align:"center",
+            dataIndex: 'remarks'
+          },
+          {
             title: '操作',
             dataIndex: 'action',
             align:"center",

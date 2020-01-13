@@ -40,13 +40,13 @@
                   <j-date placeholder="请选择证照有效期" v-decorator="[ 'licenceDate'+index, validatorRules['licenceDate'+index]]" :trigger-change="true"  />
                 </a-form-item>
               </div>
-              <div class="showpic">查看大图</div>
+              <div class="showpic" @click="handlePreview(index)">查看大图</div>
               <div class="controls">
                 <div class='pictureUploadDiv'>
                   <div class='tR_upPic_icon'>
                     <input type="file" ref="file" class="upPic" style="width: 100%; height: 100%;" v-on:change="handleFileUpload($event,index)">
                     <div class="smallImg"  style='display:block;width:256px;height:160px;' >
-                      <img :src="getAvatarView(index)" v-show="imgIsShow[index].show" ref="upImg"   :key="index" class="card-box_img" />
+                      <img :src="getAvatarView(index)" v-show="imgIsShow[index].show" ref="upImg" :key="index" class="card-box_img" />
                       <div  v-show="imgIsShow[index].show" class="smallImg_cloBtn" @click="closeImg(index)" ref="close"></div>
                     </div>
                     <input type="hidden"/>
@@ -65,6 +65,10 @@
         <a-button style="margin-right: .8rem">取消</a-button>
       </a-popconfirm>
     </div>
+    <a-modal :visible="previewVisible" :footer="null" :width="900" @cancel="handleImgCancel">
+      <img alt="example" style="width: 100%" :src="previewImage" />
+    </a-modal>
+
   </a-drawer>
 </template>
 
@@ -92,12 +96,14 @@
         width:1200,
         visible: false,
         disableSubmit:false,
+        previewVisible: false,
+        previewImage: '',
         model: {},
         imgIsShow:[{show:false},{show:false},{show:false},{show:false},{show:false},{show:false},{show:false},{show:false},{show:false},{show:false},{show:false},{show:false}],
         imgIsValidity:['validity0','validity0','validity0','validity0','validity0','validity0','validity0','validity0','validity0','validity0','validity0','validity0'],//0无过期，1已过期，2近效期
         labelCol: {
           xs: { span: 24 },
-          sm: { span: 5 },
+          sm: { span: 6 },
         },
         wrapperCol: {
           xs: { span: 24 },
@@ -116,11 +122,11 @@
           wb: {rules: [
           ]},
           zdy: {rules: [
-          ]}
+          ]},
         },
         url: {
           add: "/pd/pdVender/save",
-          edit: "/pd/pdVender/edit",
+          edit: "/pd/pdVender/update",
           imgerver: window._CONFIG['domianURL']+"/sys/common/view",
         }
       }
@@ -153,7 +159,7 @@
         this.model = Object.assign({}, record);
         this.visible = true;
         this.$nextTick(() => {
-          this.form.setFieldsValue(pick(this.model,'name','py','wb','zdy','licenceName0','licenceNum0','licenceDate0','licenceName1','licenceNum1','licenceDate1','licenceName2','licenceNum2','licenceDate2','licenceName3','licenceNum3','licenceDate3','licenceName4','licenceNum4','licenceDate4','licenceName5','licenceNum5','licenceDate5','licenceName6','licenceNum6','licenceDate6','licenceName7','licenceNum7','licenceDate7','licenceName8','licenceNum8','licenceDate8','licenceName9','licenceNum9','licenceDate9','licenceName10','licenceNum10','licenceDate10','licenceName11','licenceNum11','licenceDate11'))
+          this.form.setFieldsValue(pick(this.model,'name','py','wb','zdy','licenceName0','licenceNum0','licenceDate0','licenceName1','licenceNum1','licenceDate1','licenceName2','licenceNum2','licenceDate2','licenceName3','licenceNum3','licenceDate3','licenceName4','licenceNum4','licenceDate4','licenceName5','licenceNum5','licenceDate5','licenceName6','licenceNum6','licenceDate6','licenceName7','licenceNum7','licenceDate7','licenceName8','licenceNum8','licenceDate8','licenceName9','licenceNum9','licenceDate9','licenceName10','licenceNum10','licenceDate10','licenceName11','licenceNum11','licenceDate11','remarks'))
         })
       },
       close () {
@@ -174,7 +180,7 @@
               method = 'post';
             }else{
               httpurl+=this.url.edit;
-               method = 'put';
+               method = 'post';
             }
             var formDataAll = new FormData();
             let imgIsShow = this.imgIsShow;
@@ -247,6 +253,18 @@
       getAvatarView(index){
         return this.url.imgerver +"/"+this.model["licenceSite"+index];
       },
+      handleImgCancel () {
+        this.previewVisible = false;
+      },
+      handlePreview (index) {
+       if(this.model["licenceSite"+index]){
+         this.previewImage = this.url.imgerver +"/"+this.model["licenceSite"+index];
+         //window.open(this.previewImage) //新建窗口打开图片
+         this.previewVisible = true;//当前窗口打开图片
+       }else{
+         this.$message.error("请先上传图片!")
+       }
+      },
     }
   }
 </script>
@@ -271,10 +289,11 @@
     float: right;
   }
   .ant-input{
+    margin-left: 20px;
     width:180px;
   }
-  .ant-form label{
-    font-size: 13px;
+  .ant-calendar-picker {
+    margin-left: 20px;
   }
   .card-box{
     width: 300px;
