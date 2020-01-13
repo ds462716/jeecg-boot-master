@@ -8,8 +8,8 @@
     :visible="visible">
   
     <a-spin :spinning="confirmLoading">
-      <a-form :form="form">
-
+      <!--<a-form :form="form" enctype="multipart/form-data">-->
+      <a-form :form="form" enctype="multipart/form-data">
         <a-form-item label="名称" :labelCol="labelCol" :wrapperCol="wrapperCol">
           <a-input @change="pinyinTran" v-decorator="[ 'name', validatorRules.name]" :style="{width:'100%',margin:'0'}" placeholder="请输入名称"></a-input>
         </a-form-item>
@@ -27,215 +27,44 @@
         </a-form-item>
         <label for="" style="float:left;padding-top:15px;">证照扫描件</label>
         <div class="all-card-box" style="padding-left:105px;">
-          <div class="card-box">
-            <div class="card-box-code">
-              <a-form-item label="证照名称" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                <a-input v-decorator="[ 'licenceName1', validatorRules.licenceName1]"  placeholder="请输入证照名称"></a-input>
-              </a-form-item>
-              <a-form-item label="证照号码" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                <a-input v-decorator="[ 'licenceNum1', validatorRules.licenceNum1]"  placeholder="请输入证照号码"></a-input>
-              </a-form-item>
-              <a-form-item label="证照有效期" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                <j-date placeholder="请选择证照有效期" v-decorator="[ 'licenceDate1', validatorRules.licenceDate1]" :trigger-change="true"  />
-              </a-form-item>
-            </div>
-            <div class="showpic">查看大图</div>
-            <div class="controls">
-              <div class='pictureUploadDiv'>
-                <div class='tR_upPic_icon'>
-                  <!--<a-form-item  :labelCol="labelCol" :wrapperCol="wrapperCol">
-                    <a-input type="file" class="upPic" :style="{width: '100%',height: '100%'}"></a-input>
-                  </a-form-item>-->
-                  <input type="file" ref="file1" class="upPic" style="width: 100%; height: 100%;" v-on:change="handleFileUpload($event,1)">
-                  <!--<input type="file" data-code='0' class="upPic" @change="aaa($event)" name="licenceSite1Up" style="width: 100%; height: 100%;"/>-->
-                  <div class="smallImg"  style='display:block;width:256px;height:160px;' >
-                    <img ref="upImg1" :key="1" class="card-box_img" />
-                    <div></div>
-                </div>
-                <input type="hidden" name="licenceSite1" value="${pdVender.licenceSite1 }" />
-                <span class="addIcon">+</span>
+          <template v-for="(item, index) in 12" >
+            <div class="card-box" :class="imgIsValidity[index]">
+              <div class="card-box-code">
+                <a-form-item label="证照名称" :labelCol="labelCol" :wrapperCol="wrapperCol">
+                  <a-input v-decorator="[ 'licenceName'+index, validatorRules['licenceNum'+index]]"  placeholder="请输入证照名称"></a-input>
+                </a-form-item>
+                <a-form-item label="证照号码" :labelCol="labelCol" :wrapperCol="wrapperCol">
+                  <a-input v-decorator="[ 'licenceNum'+index, validatorRules['licenceNum'+index]]"  placeholder="请输入证照号码"></a-input>
+                </a-form-item>
+                <a-form-item label="证照有效期" :labelCol="labelCol" :wrapperCol="wrapperCol">
+                  <j-date placeholder="请选择证照有效期" v-decorator="[ 'licenceDate'+index, validatorRules['licenceDate'+index]]" :trigger-change="true"  />
+                </a-form-item>
               </div>
-            </div>
-            </div>
-          </div>
-          <div class="card-box">
-            <a-form-item label="证照名称" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input v-decorator="[ 'licenceName2', validatorRules.licenceName2]"  placeholder="请输入证照名称"></a-input>
-            </a-form-item>
-            <a-form-item label="证照号码" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input v-decorator="[ 'licenceNum2', validatorRules.licenceNum2]"  placeholder="请输入证照号码"></a-input>
-            </a-form-item>
-            <a-form-item label="证照有效期" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <j-date placeholder="请选择证照有效期" v-decorator="[ 'licenceDate2', validatorRules.licenceDate2]" :trigger-change="true" />
-            </a-form-item>
-            <!--<a-form-item label="证照地址" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <j-upload v-decorator="['licenceSite2', validatorRules.licenceSite2]" :trigger-change="true"></j-upload>
-            </a-form-item>-->
               <div class="showpic">查看大图</div>
               <div class="controls">
                 <div class='pictureUploadDiv'>
                   <div class='tR_upPic_icon'>
-                    <!--<a-form-item  :labelCol="labelCol" :wrapperCol="wrapperCol">
-                      <a-input type="file" class="upPic" :style="{width: '100%',height: '100%'}"></a-input>
-                    </a-form-item>-->
-                    <input type="file"  ref="file2" class="upPic" style="width: 100%; height: 100%;" v-on:change="handleFileUpload($event,2)">
-                    <!--<input type="file" data-code='0' class="upPic" @change="aaa($event)" name="licenceSite1Up" style="width: 100%; height: 100%;"/>-->
+                    <input type="file" ref="file" class="upPic" style="width: 100%; height: 100%;" v-on:change="handleFileUpload($event,index)">
                     <div class="smallImg"  style='display:block;width:256px;height:160px;' >
-                      <img ref="upImg2" class="card-box_img" />
-                      <div></div>
+                      <img :src="getAvatarView(index)" v-show="imgIsShow[index].show" ref="upImg"   :key="index" class="card-box_img" />
+                      <div  v-show="imgIsShow[index].show" class="smallImg_cloBtn" @click="closeImg(index)" ref="close"></div>
                     </div>
-                    <input type="hidden" name="licenceSite1" value="${pdVender.licenceSite1 }" />
+                    <input type="hidden"/>
                     <span class="addIcon">+</span>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
-          <div class="card-box">
-            <a-form-item label="证照名称" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input v-decorator="[ 'licenceName3', validatorRules.licenceName3]" placeholder="请输入证照名称"></a-input>
-            </a-form-item>
-            <a-form-item label="证照号码" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input v-decorator="[ 'licenceNum3', validatorRules.licenceNum3]" placeholder="请输入证照号码"></a-input>
-            </a-form-item>
-            <a-form-item label="证照有效期" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <j-date placeholder="请选择证照有效期" v-decorator="[ 'licenceDate3', validatorRules.licenceDate3]" :trigger-change="true" />
-            </a-form-item>
-            <a-form-item label="证照地址" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <j-upload v-decorator="['licenceSite3', validatorRules.licenceSite3]" :trigger-change="true"></j-upload>
-            </a-form-item>
-          </div>
-          <div class="card-box">
-            <a-form-item label="证照名称" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input v-decorator="[ 'licenceName4', validatorRules.licenceName4]" placeholder="请输入证照名称"></a-input>
-            </a-form-item>
-            <a-form-item label="证照号码" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input v-decorator="[ 'licenceNum4', validatorRules.licenceNum4]" placeholder="请输入证照号码"></a-input>
-            </a-form-item>
-            <a-form-item label="证照有效期" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <j-date placeholder="请选择证照有效期" v-decorator="[ 'licenceDate4', validatorRules.licenceDate4]" :trigger-change="true" />
-            </a-form-item>
-            <a-form-item label="证照地址" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <j-upload v-decorator="['licenceSite4', validatorRules.licenceSite4]" :trigger-change="true"></j-upload>
-            </a-form-item>
-          </div>
-          <div class="card-box">
-            <a-form-item label="证照名称" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input v-decorator="[ 'licenceName5', validatorRules.licenceName5]" placeholder="请输入证照名称"></a-input>
-            </a-form-item>
-            <a-form-item label="证照号码" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input v-decorator="[ 'licenceNum5', validatorRules.licenceNum5]" placeholder="请输入证照号码"></a-input>
-            </a-form-item>
-            <a-form-item label="证照有效期" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <j-date placeholder="请选择证照有效期" v-decorator="[ 'licenceDate5', validatorRules.licenceDate5]" :trigger-change="true" />
-            </a-form-item>
-            <a-form-item label="证照地址" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <j-upload v-decorator="['licenceSite5', validatorRules.licenceSite5]" :trigger-change="true"></j-upload>
-            </a-form-item>
-          </div>
-          <div class="card-box">
-            <a-form-item label="证照名称" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input v-decorator="[ 'licenceName6', validatorRules.licenceName6]" placeholder="请输入证照名称"></a-input>
-            </a-form-item>
-            <a-form-item label="证照号码" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input v-decorator="[ 'licenceNum6', validatorRules.licenceNum6]" placeholder="请输入证照号码"></a-input>
-            </a-form-item>
-            <a-form-item label="证照有效期" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <j-date placeholder="请选择证照有效期" v-decorator="[ 'licenceDate6', validatorRules.licenceDate6]" :trigger-change="true" />
-            </a-form-item>
-            <a-form-item label="证照地址" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <j-upload v-decorator="['licenceSite6', validatorRules.licenceSite6]" :trigger-change="true"></j-upload>
-            </a-form-item>
-          </div>
-          <div class="card-box">
-            <a-form-item label="证照名称" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input v-decorator="[ 'licenceName7', validatorRules.licenceName7]" placeholder="请输入证照名称"></a-input>
-            </a-form-item>
-            <a-form-item label="证照号码" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input v-decorator="[ 'licenceNum7', validatorRules.licenceNum7]" placeholder="请输入证照号码"></a-input>
-            </a-form-item>
-            <a-form-item label="证照有效期" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <j-date placeholder="请选择证照有效期" v-decorator="[ 'licenceDate7', validatorRules.licenceDate7]" :trigger-change="true" />
-            </a-form-item>
-            <a-form-item label="证照地址" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <j-upload v-decorator="['licenceSite7', validatorRules.licenceSite7]" :trigger-change="true"></j-upload>
-            </a-form-item>
-          </div>
-          <div class="card-box">
-            <a-form-item label="证照名称" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input v-decorator="[ 'licenceName8', validatorRules.licenceName8]" placeholder="请输入证照名称"></a-input>
-            </a-form-item>
-            <a-form-item label="证照号码" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input v-decorator="[ 'licenceNum8', validatorRules.licenceNum8]" placeholder="请输入证照号码"></a-input>
-            </a-form-item>
-            <a-form-item label="证照有效期" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <j-date placeholder="请选择证照有效期" v-decorator="[ 'licenceDate8', validatorRules.licenceDate8]" :trigger-change="true" />
-            </a-form-item>
-            <a-form-item label="证照地址" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <j-upload v-decorator="['licenceSite8', validatorRules.licenceSite8]" :trigger-change="true"></j-upload>
-            </a-form-item>
-          </div>
-          <div class="card-box">
-            <a-form-item label="证照名称" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input v-decorator="[ 'licenceName9', validatorRules.licenceName9]" placeholder="请输入证照名称"></a-input>
-            </a-form-item>
-            <a-form-item label="证照号码" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input v-decorator="[ 'licenceNum9', validatorRules.licenceNum9]" placeholder="请输入证照号码"></a-input>
-            </a-form-item>
-            <a-form-item label="证照有效期" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <j-date placeholder="请选择证照有效期" v-decorator="[ 'licenceDate9', validatorRules.licenceDate9]" :trigger-change="true" />
-            </a-form-item>
-            <a-form-item label="证照地址" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <j-upload v-decorator="['licenceSite9', validatorRules.licenceSite9]" :trigger-change="true"></j-upload>
-            </a-form-item>
-          </div>
-          <div class="card-box">
-            <a-form-item label="证照名称" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input v-decorator="[ 'licenceName10', validatorRules.licenceName10]" placeholder="请输入证照名称"></a-input>
-            </a-form-item>
-            <a-form-item label="证照号码" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input v-decorator="[ 'licenceNum10', validatorRules.licenceNum10]" placeholder="请输入证照号码"></a-input>
-            </a-form-item>
-            <a-form-item label="证照有效期" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <j-date placeholder="请选择证照有效期" v-decorator="[ 'licenceDate10', validatorRules.licenceDate10]" :trigger-change="true" />
-            </a-form-item>
-            <a-form-item label="证照地址" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <j-upload v-decorator="['licenceSite10', validatorRules.licenceSite10]" :trigger-change="true"></j-upload>
-            </a-form-item>
-          </div>
-          <div class="card-box">
-            <a-form-item label="证照名称" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input v-decorator="[ 'licenceName11', validatorRules.licenceName11]" placeholder="请输入证照名称"></a-input>
-            </a-form-item>
-            <a-form-item label="证照号码" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input v-decorator="[ 'licenceNum11', validatorRules.licenceNum11]" placeholder="请输入证照号码"></a-input>
-            </a-form-item>
-            <a-form-item label="证照有效期" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <j-date placeholder="请选择证照有效期" v-decorator="[ 'licenceDate11', validatorRules.licenceDate11]" :trigger-change="true" />
-            </a-form-item>
-            <a-form-item label="证照地址" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <j-upload v-decorator="['licenceSite11', validatorRules.licenceSite11]" :trigger-change="true"></j-upload>
-            </a-form-item>
-          </div>
-          <div class="card-box">
-            <a-form-item label="证照名称" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input v-decorator="[ 'licenceName12', validatorRules.licenceName12]" placeholder="请输入证照名称"></a-input>
-            </a-form-item>
-            <a-form-item label="证照号码" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input v-decorator="[ 'licenceNum12', validatorRules.licenceNum12]" placeholder="请输入证照号码"></a-input>
-            </a-form-item>
-            <a-form-item label="证照有效期" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <j-date placeholder="请选择证照有效期" v-decorator="[ 'licenceDate12', validatorRules.licenceDate12]" :trigger-change="true" />
-            </a-form-item>
-            <a-form-item label="证照地址" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <j-upload v-decorator="['licenceSite12', validatorRules.licenceSite12]" :trigger-change="true"></j-upload>
-            </a-form-item>
-          </div>
+          </template>
         </div>
       </a-form>
     </a-spin>
-    <a-button type="primary" @click="handleOk">确定</a-button>
-    <a-button type="primary" @click="handleCancel">取消</a-button>
+    <div class="drawer-bootom-button" v-show="!disableSubmit">
+      <a-button @click="handleOk" type="primary" :loading="confirmLoading">提交</a-button>
+      <a-popconfirm title="确定放弃编辑？" @confirm="handleCancel" okText="确定" cancelText="取消">
+        <a-button style="margin-right: .8rem">取消</a-button>
+      </a-popconfirm>
+    </div>
   </a-drawer>
 </template>
 
@@ -249,7 +78,7 @@
   import { ACCESS_TOKEN } from "@/store/mutation-types"
   import Vue from 'vue'
   import { makeWb } from '@/utils/wubi'
-  var  imgUploadSucCallBack,imgUploadClearCallBack;
+  import axios from 'axios';
   export default {
     name: "PdVenderModal",
     components: { 
@@ -262,8 +91,10 @@
         title:"操作",
         width:1200,
         visible: false,
+        disableSubmit:false,
         model: {},
-        src1:"",
+        imgIsShow:[{show:false},{show:false},{show:false},{show:false},{show:false},{show:false},{show:false},{show:false},{show:false},{show:false},{show:false},{show:false}],
+        imgIsValidity:['validity0','validity0','validity0','validity0','validity0','validity0','validity0','validity0','validity0','validity0','validity0','validity0'],//0无过期，1已过期，2近效期
         labelCol: {
           xs: { span: 24 },
           sm: { span: 5 },
@@ -285,135 +116,50 @@
           wb: {rules: [
           ]},
           zdy: {rules: [
-          ]},
-          licenceName1: {rules: [
-          ]},
-          licenceNum1: {rules: [
-          ]},
-          licenceDate1: {rules: [
-          ]},
-          licenceSite1: {rules: [
-          ]},
-          licenceName2: {rules: [
-          ]},
-          licenceNum2: {rules: [
-          ]},
-          licenceDate2: {rules: [
-          ]},
-          licenceSite2: {rules: [
-          ]},
-          licenceName3: {rules: [
-          ]},
-          licenceNum3: {rules: [
-          ]},
-          licenceDate3: {rules: [
-          ]},
-          licenceSite3: {rules: [
-          ]},
-          licenceName4: {rules: [
-          ]},
-          licenceNum4: {rules: [
-          ]},
-          licenceDate4: {rules: [
-          ]},
-          licenceSite4: {rules: [
-          ]},
-          licenceName5: {rules: [
-          ]},
-          licenceNum5: {rules: [
-          ]},
-          licenceDate5: {rules: [
-          ]},
-          licenceSite5: {rules: [
-          ]},
-          licenceName6: {rules: [
-          ]},
-          licenceNum6: {rules: [
-          ]},
-          licenceDate6: {rules: [
-          ]},
-          licenceSite6: {rules: [
-          ]},
-          licenceName7: {rules: [
-          ]},
-          licenceNum7: {rules: [
-          ]},
-          licenceDate7: {rules: [
-          ]},
-          licenceSite7: {rules: [
-          ]},
-          licenceName8: {rules: [
-          ]},
-          licenceNum8: {rules: [
-          ]},
-          licenceDate8: {rules: [
-          ]},
-          licenceSite8: {rules: [
-          ]},
-          licenceName9: {rules: [
-          ]},
-          licenceNum9: {rules: [
-          ]},
-          licenceDate9: {rules: [
-          ]},
-          licenceSite9: {rules: [
-          ]},
-          licenceName10: {rules: [
-          ]},
-          licenceNum10: {rules: [
-          ]},
-          licenceDate10: {rules: [
-          ]},
-          licenceSite10: {rules: [
-          ]},
-          licenceName11: {rules: [
-          ]},
-          licenceNum11: {rules: [
-          ]},
-          licenceDate11: {rules: [
-          ]},
-          licenceSite11: {rules: [
-          ]},
-          licenceName12: {rules: [
-          ]},
-          licenceNum12: {rules: [
-          ]},
-          licenceDate12: {rules: [
-          ]},
-          licenceSite12: {rules: [
-          ]},
+          ]}
         },
         url: {
-          fileUpload: window._CONFIG['domianURL']+"/sys/common/upload",
-          add: "/pd/pdVender/add",
+          add: "/pd/pdVender/save",
           edit: "/pd/pdVender/edit",
+          imgerver: window._CONFIG['domianURL']+"/sys/common/view",
         }
       }
     },
-    created () {
-      const token = Vue.ls.get(ACCESS_TOKEN);
-      this.headers = {"X-Access-Token":token}
-    },
     computed:{
-      uploadAction:function () {
-        return this.url.fileUpload;
-      }
     },
     methods: {
       add () {
         this.edit({});
       },
       edit (record) {
+        //编辑时显示图片
+        if(record){
+          for(let index = 0;index<12;index++){
+            if(record["licenceSite"+index]){
+              this.imgIsShow[index].show=true;
+            }else{
+              //包括新增时状态重置
+              this.imgIsShow[index].show=false;
+            }
+            if(record["licenceValidity"+index]){
+              this.imgIsValidity[index]="validity"+record["licenceValidity"+index];
+            }else{
+              //包括新增时状态重置
+              this.imgIsValidity[index]="validity0";
+            }
+          }
+        }
         this.form.resetFields();
         this.model = Object.assign({}, record);
         this.visible = true;
         this.$nextTick(() => {
-          this.form.setFieldsValue(pick(this.model,'name','py','wb','zdy','licenceName1','licenceNum1','licenceDate1','licenceSite1','licenceName2','licenceNum2','licenceDate2','licenceSite2','licenceName3','licenceNum3','licenceDate3','licenceSite3','licenceName4','licenceNum4','licenceDate4','licenceSite4','licenceName5','licenceNum5','licenceDate5','licenceSite5','licenceName6','licenceNum6','licenceDate6','licenceSite6','licenceName7','licenceNum7','licenceDate7','licenceSite7','licenceName8','licenceNum8','licenceDate8','licenceSite8','licenceName9','licenceNum9','licenceDate9','licenceSite9','licenceName10','licenceNum10','licenceDate10','licenceSite10','licenceName11','licenceNum11','licenceDate11','licenceSite11','licenceName12','licenceNum12','licenceDate12','licenceSite12','createTime','updateTime'))
+          this.form.setFieldsValue(pick(this.model,'name','py','wb','zdy','licenceName0','licenceNum0','licenceDate0','licenceName1','licenceNum1','licenceDate1','licenceName2','licenceNum2','licenceDate2','licenceName3','licenceNum3','licenceDate3','licenceName4','licenceNum4','licenceDate4','licenceName5','licenceNum5','licenceDate5','licenceName6','licenceNum6','licenceDate6','licenceName7','licenceNum7','licenceDate7','licenceName8','licenceNum8','licenceDate8','licenceName9','licenceNum9','licenceDate9','licenceName10','licenceNum10','licenceDate10','licenceName11','licenceNum11','licenceDate11'))
         })
       },
       close () {
         this.$emit('close');
         this.visible = false;
+        this.disableSubmit = false;
       },
       handleOk () {
         const that = this;
@@ -430,9 +176,20 @@
               httpurl+=this.url.edit;
                method = 'put';
             }
+            var formDataAll = new FormData();
+            let imgIsShow = this.imgIsShow;
+            for(let m in imgIsShow){
+              if(imgIsShow[m].show){
+                var oFile = that.$refs.file[m].files[0];
+                formDataAll.append("licenceSiteUp"+m, oFile);
+              }
+            }
             let formData = Object.assign(this.model, values);
-            console.log("表单提交数据",formData)
-            httpAction(httpurl,formData,method).then((res)=>{
+            for (let obj in formData) {
+              formDataAll.append(obj, formData[obj]?formData[obj]:"");
+            }
+            //console.log("表单提交数据",formData)
+            httpAction(httpurl,formDataAll,method).then((res)=>{
               if(res.success){
                 that.$message.success(res.message);
                 that.$emit('ok');
@@ -450,38 +207,6 @@
       handleCancel () {
         this.close()
       },
-      popupCallback(row){
-        this.form.setFieldsValue(pick(row,'name','py','wb','zdy','licenceName1','licenceNum1','licenceDate1','licenceSite1','licenceName2','licenceNum2','licenceDate2','licenceSite2','licenceName3','licenceNum3','licenceDate3','licenceSite3','licenceName4','licenceNum4','licenceDate4','licenceSite4','licenceName5','licenceNum5','licenceDate5','licenceSite5','licenceName6','licenceNum6','licenceDate6','licenceSite6','licenceName7','licenceNum7','licenceDate7','licenceSite7','licenceName8','licenceNum8','licenceDate8','licenceSite8','licenceName9','licenceNum9','licenceDate9','licenceSite9','licenceName10','licenceNum10','licenceDate10','licenceSite10','licenceName11','licenceNum11','licenceDate11','licenceSite11','licenceName12','licenceNum12','licenceDate12','licenceSite12','createTime','updateTime'))
-      },
-      getAvatarView(){
-        return this.url.imgerver +"/"+ this.model.avatar;
-      },
-      beforeUpload: function(file){
-        var fileType = file.type;
-        if(fileType.indexOf('image')<0){
-          this.$message.warning('请上传图片');
-          return false;
-        }
-        //TODO 验证文件大小
-      },
-      handleChange (info) {
-        this.picUrl = "";
-        if (info.file.status === 'uploading') {
-          this.uploadLoading = true;
-          return
-        }
-        if (info.file.status === 'done') {
-          var response = info.file.response;
-          this.uploadLoading = false;
-          console.log(response);
-          if(response.success){
-            this.model.avatar = response.message;
-            this.picUrl = "Has no pic url yet";
-          }else{
-            this.$message.warning(response.message);
-          }
-        }
-      },
       pinyinTran(e){
         var val = e.target.value;
         let pinyin = require('js-pinyin');
@@ -492,10 +217,11 @@
         var wb = makeWb(val);
         this.form.setFieldsValue({wb:wb});//获取五笔简码
       },
-      handleFileUpload(event,key){
+      handleFileUpload(event,index){
         let that = this;
+        this.imgIsShow[index].show=true;
         event.preventDefault();
-        var oFile = that.$refs[`file${key}`].files[0];
+        var oFile = that.$refs.file[index].files[0];
         var rFilter = /^(image\/bmp|image\/gif|image\/jpeg|image\/png|image\/tiff)$/i;
         if (oFile && !rFilter.test(oFile.type)) {
           alert('上传文件非图片格式');
@@ -507,20 +233,38 @@
         }
         var oReader = new FileReader();
         oReader.onload = function(e){
-          that.$refs[`upImg${key}`].src = e.target.result;
+          that.$refs.upImg[index].src = e.target.result;
         };
         oReader.readAsDataURL(oFile);
-        //图片上传完成回调
-        if(imgUploadSucCallBack &&  typeof(imgUploadSucCallBack)== "function"){
-          imgUploadSucCallBack(this);
-        }
-      }
+        this.imgIsShow[index].show=true;
+      },
+      closeImg(index) {
+        let that = this;
+        that.$refs.upImg[index].src = "";
+        //TODO 虽然清空了src 但是file文件里的内容还没有清空
+        this.imgIsShow[index].show = false;
+      },
+      getAvatarView(index){
+        return this.url.imgerver +"/"+this.model["licenceSite"+index];
+      },
     }
   }
 </script>
 
 <style lang="less" scoped>
 /** Button按钮间距 */
+  .drawer-bootom-button {
+    position: absolute;
+    bottom: -30px;
+    width: 100%;
+    border-top: 1px solid #e8e8e8;
+    padding: 10px 16px;
+    text-align: right;
+    left: 0;
+    background: #fff;
+    border-radius: 0 0 2px 2px;
+    z-index:199;
+  }
   .ant-btn {
     margin-left: 30px;
     margin-bottom: 30px;
@@ -528,6 +272,9 @@
   }
   .ant-input{
     width:180px;
+  }
+  .ant-form label{
+    font-size: 13px;
   }
   .card-box{
     width: 300px;
@@ -547,38 +294,61 @@
     padding-left: 12px;
     cursor:pointer
   }
-.controls{
-  margin-left:0;
-}
-.tR_upPic_icon{
-  width:auto;
-  height: auto;
-  background:none;
-  border:1px solid #ccc;
-  margin:10px 0 0 10px;
-  display:block;
-  margin:10px 10px 10px 10px;
-  border:1px solid #eee;
-  float:left;
-  border-radius:2px;
-  //background:url(../spd/img/icon_add.png) no-repeat center center;
-  background-size:cover;
-  position:relative;
-  overflow:hidden;
-}
-.upPic{
-  display:block;
-  width:100%;
-  height:100%;
-  position:absolute;
-  left:0;
-  top:0;
-  opacity:0;
-  filter:alpha(opacity=0);
-  border:1px solid #333;
-  z-index:99;
-  font-size:100px;
-}
-.addIcon{font-size: 40px;color: #666;font-weight: 600;position: absolute;left: 110px;top: 45px;}
-.smallImg img {width: 100%;height: 100%;position: relative; z-index: 6;}
+  .controls{
+    margin-left:0;
+  }
+  .tR_upPic_icon{
+    width:auto;
+    height: auto;
+    background:none;
+    border:1px solid #ccc;
+    margin:10px 0 0 10px;
+    display:block;
+    margin:10px 10px 10px 10px;
+    border:1px solid #eee;
+    float:left;
+    border-radius:2px;
+    //background:url(../spd/img/icon_add.png) no-repeat center center;
+    background-size:cover;
+    position:relative;
+    overflow:hidden;
+    left: 10px;
+  }
+  .upPic{
+    display:block;
+    width:100%;
+    height:100%;
+    position:absolute;
+    left:0px;
+    top:0;
+    opacity:0;
+    filter:alpha(opacity=0);
+    border:1px solid #333;
+    z-index:99;
+    font-size:100px;
+  }
+  .addIcon{font-size: 40px;color: #666;font-weight: 600;position: absolute;left: 110px;top: 45px;}
+  .smallImg img {width: 100%;height: 100%;position: relative; z-index: 6}
+  .smallImg_cloBtn{
+    width:20px;
+    height:20px;
+    position:absolute;
+    right:0;
+    top:0;
+    background:url(../../../assets/close.png) no-repeat center center;
+    cursor:pointer;
+    background-size:cover;
+    z-index:150;
+  }
+  .validity0{
+    border:1px solid #ccc;
+  }
+  .validity1{
+    border:2px solid red;
+  }
+
+  .validity2{
+    border:2px solid yellow;
+  }
+
 </style>
