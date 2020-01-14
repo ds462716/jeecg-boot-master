@@ -8,6 +8,7 @@
     :visible="visible">
   
     <a-spin :spinning="confirmLoading">
+      <!--<a-form :form="form" enctype="multipart/form-data">-->
       <a-form :form="form" enctype="multipart/form-data">
         <a-form-item label="名称" :labelCol="labelCol" :wrapperCol="wrapperCol">
           <a-input @change="pinyinTran" v-decorator="[ 'name', validatorRules.name]" :style="{width:'100%',margin:'0'}" placeholder="请输入名称"></a-input>
@@ -85,7 +86,7 @@
   import { makeWb } from '@/utils/wubi'
   import axios from 'axios';
   export default {
-    name: "PdVenderModal",
+    name: "PdSupplierModal",
     components: { 
       JDate,
       JUpload,
@@ -126,8 +127,8 @@
           ]},
         },
         url: {
-          add: "/pd/pdVender/save",
-          edit: "/pd/pdVender/update",
+          add: "/pd/pdSupplier/save",
+          edit: "/pd/pdSupplier/update",
           imgerver: window._CONFIG['domianURL']+"/sys/common/view",
         }
       }
