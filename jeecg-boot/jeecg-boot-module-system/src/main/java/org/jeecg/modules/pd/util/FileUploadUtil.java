@@ -31,13 +31,17 @@ public class FileUploadUtil {
 	 * @return
 	 */
 	public static  boolean isImgEmpty(MultipartFile[] imgs){
-		for (int i=0; i<imgs.length; i++) {
-			MultipartFile img = imgs[i];
-			if(img.isEmpty()){
-				return true;
+		if(imgs.length>0){
+			for (int i=0; i<imgs.length; i++) {
+				MultipartFile img = imgs[i];
+				if(img.isEmpty()){
+					return true;
+				}
 			}
+			return false;
+		}else{
+			return true;
 		}
-		return false;
 	}
 
 	/**
@@ -55,24 +59,28 @@ public class FileUploadUtil {
 			if (!file.exists()) {
 				file.mkdirs();// 创建文件根目录
 			}
-			for (int i=0; i<imgs.length; i++) {
-				MultipartFile img = imgs[i];
-				String orgName = img.getOriginalFilename().substring(img.getOriginalFilename().lastIndexOf("."));
-				fileName = orgName.substring(0, orgName.lastIndexOf(".")) + "_" + System.currentTimeMillis() + orgName.substring(orgName.indexOf("."));
-				String savePath = file.getPath() + File.separator + fileName;
-				File savefile = new File(savePath);
-				FileCopyUtils.copy(img.getBytes(), savefile);
-				dbpath = bizPath + File.separator + nowday + File.separator + fileName;
-				if (dbpath.contains("\\")) {
-					dbpath = dbpath.replace("\\", "/");
+			if(imgs.length>0){
+				for (int i=0; i<imgs.length; i++) {
+					MultipartFile img = imgs[i];
+					String orgName = img.getOriginalFilename().substring(img.getOriginalFilename().lastIndexOf("."));
+					fileName = orgName.substring(0, orgName.lastIndexOf(".")) + "_" + System.currentTimeMillis() + orgName.substring(orgName.indexOf("."));
+					String savePath = file.getPath() + File.separator + fileName;
+					File savefile = new File(savePath);
+					FileCopyUtils.copy(img.getBytes(), savefile);
+					dbpath = bizPath + File.separator + nowday + File.separator + fileName;
+					if (dbpath.contains("\\")) {
+						dbpath = dbpath.replace("\\", "/");
+					}
 				}
+			}else{
+				return  "";
 			}
 		}catch (IllegalStateException e) {
 			e.printStackTrace();
-			return  null;
+			return  "";
 		}catch(IOException e){
 			log.error(e.getMessage(), e);
-			return null;
+			return "";
 		}
 		return dbpath;
 	}

@@ -49,7 +49,9 @@
                       <img :src="getAvatarView(index)" v-show="imgIsShow[index].show" ref="upImg" :key="index" class="card-box_img" />
                       <div  v-show="imgIsShow[index].show" class="smallImg_cloBtn" @click="closeImg(index)" ref="close"></div>
                     </div>
-                    <input type="hidden"/>
+                    <a-form-item>
+                      <a-input type="hidden" v-decorator="[ 'licenceSite'+index]"/>
+                    </a-form-item>
                     <span class="addIcon">+</span>
                   </div>
                 </div>
@@ -159,7 +161,7 @@
         this.model = Object.assign({}, record);
         this.visible = true;
         this.$nextTick(() => {
-          this.form.setFieldsValue(pick(this.model,'name','py','wb','zdy','licenceName0','licenceNum0','licenceDate0','licenceName1','licenceNum1','licenceDate1','licenceName2','licenceNum2','licenceDate2','licenceName3','licenceNum3','licenceDate3','licenceName4','licenceNum4','licenceDate4','licenceName5','licenceNum5','licenceDate5','licenceName6','licenceNum6','licenceDate6','licenceName7','licenceNum7','licenceDate7','licenceName8','licenceNum8','licenceDate8','licenceName9','licenceNum9','licenceDate9','licenceName10','licenceNum10','licenceDate10','licenceName11','licenceNum11','licenceDate11','remarks'))
+          this.form.setFieldsValue(pick(this.model,'name','py','wb','zdy','licenceName0','licenceNum0','licenceDate0','licenceSite0','licenceName1','licenceNum1','licenceDate1','licenceSite1','licenceName2','licenceNum2','licenceDate2','licenceSite2','licenceName3','licenceNum3','licenceDate3','licenceSite3','licenceName4','licenceNum4','licenceDate4','licenceSite4','licenceName5','licenceNum5','licenceDate5','licenceSite5','licenceName6','licenceNum6','licenceDate6','licenceSite6','licenceName7','licenceNum7','licenceDate7','licenceSite7','licenceName8','licenceNum8','licenceDate8','licenceSite8','licenceName9','licenceNum9','licenceDate9','licenceSite9','licenceName10','licenceNum10','licenceDate10','licenceSite10','licenceName11','licenceNum11','licenceDate11','licenceSite11','remarks'))
         })
       },
       close () {
@@ -247,7 +249,7 @@
       closeImg(index) {
         let that = this;
         that.$refs.upImg[index].src = "";
-        //TODO 虽然清空了src 但是file文件里的内容还没有清空
+        this.form.setFieldsValue({["licenceSite"+index]:""});
         this.imgIsShow[index].show = false;
       },
       getAvatarView(index){

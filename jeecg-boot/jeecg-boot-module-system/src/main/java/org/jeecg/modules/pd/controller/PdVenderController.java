@@ -188,7 +188,9 @@ public class PdVenderController extends JeecgController<PdVender, IPdVenderServi
                  //先删除再更新
                  FileUploadUtil.deleteFile(pdVender.getLicenceSite0());
              }
-             pdVender.setLicenceSite0(filePath);
+             if(!"".equals(filePath)){
+				 pdVender.setLicenceSite0(filePath);
+			 }
          }
          if(!FileUploadUtil.isImgEmpty(licenceSiteUp1)){
              String filePath = FileUploadUtil.upload(licenceSiteUp1);
@@ -196,7 +198,9 @@ public class PdVenderController extends JeecgController<PdVender, IPdVenderServi
                  //先删除再更新
                  FileUploadUtil.deleteFile(pdVender.getLicenceSite1());
              }
-             pdVender.setLicenceSite1(filePath);
+			 if(!"".equals(filePath)){
+				 pdVender.setLicenceSite1(filePath);
+			 }
          }
          if(!FileUploadUtil.isImgEmpty(licenceSiteUp2)){
              String filePath = FileUploadUtil.upload(licenceSiteUp2);
@@ -204,7 +208,9 @@ public class PdVenderController extends JeecgController<PdVender, IPdVenderServi
                  //先删除再更新
                  FileUploadUtil.deleteFile(pdVender.getLicenceSite2());
              }
-             pdVender.setLicenceSite2(filePath);
+			 if(!"".equals(filePath)){
+				 pdVender.setLicenceSite2(filePath);
+			 }
          }
          if(!FileUploadUtil.isImgEmpty(licenceSiteUp3)){
              String filePath = FileUploadUtil.upload(licenceSiteUp3);
@@ -212,7 +218,9 @@ public class PdVenderController extends JeecgController<PdVender, IPdVenderServi
                  //先删除再更新
                  FileUploadUtil.deleteFile(pdVender.getLicenceSite3());
              }
-             pdVender.setLicenceSite3(filePath);
+			 if(!"".equals(filePath)){
+				 pdVender.setLicenceSite3(filePath);
+			 }
          }
          if(!FileUploadUtil.isImgEmpty(licenceSiteUp4)){
              String filePath = FileUploadUtil.upload(licenceSiteUp4);
@@ -220,7 +228,9 @@ public class PdVenderController extends JeecgController<PdVender, IPdVenderServi
                  //先删除再更新
                  FileUploadUtil.deleteFile(pdVender.getLicenceSite4());
              }
-             pdVender.setLicenceSite4(filePath);
+			 if(!"".equals(filePath)){
+				 pdVender.setLicenceSite4(filePath);
+			 }
          }
          if(!FileUploadUtil.isImgEmpty(licenceSiteUp5)){
              String filePath = FileUploadUtil.upload(licenceSiteUp5);
@@ -228,7 +238,9 @@ public class PdVenderController extends JeecgController<PdVender, IPdVenderServi
                  //先删除再更新
                  FileUploadUtil.deleteFile(pdVender.getLicenceSite5());
              }
-             pdVender.setLicenceSite5(filePath);
+			 if(!"".equals(filePath)){
+				 pdVender.setLicenceSite5(filePath);
+			 }
          }
          if(!FileUploadUtil.isImgEmpty(licenceSiteUp6)){
              String filePath = FileUploadUtil.upload(licenceSiteUp6);
@@ -236,7 +248,9 @@ public class PdVenderController extends JeecgController<PdVender, IPdVenderServi
                  //先删除再更新
                  FileUploadUtil.deleteFile(pdVender.getLicenceSite6());
              }
-             pdVender.setLicenceSite6(filePath);
+			 if(!"".equals(filePath)){
+				 pdVender.setLicenceSite6(filePath);
+			 }
          }
          if(!FileUploadUtil.isImgEmpty(licenceSiteUp7)){
              String filePath = FileUploadUtil.upload(licenceSiteUp7);
@@ -244,7 +258,9 @@ public class PdVenderController extends JeecgController<PdVender, IPdVenderServi
                  //先删除再更新
                  FileUploadUtil.deleteFile(pdVender.getLicenceSite7());
              }
-             pdVender.setLicenceSite7(filePath);
+			 if(!"".equals(filePath)){
+				 pdVender.setLicenceSite7(filePath);
+			 }
          }
          if(!FileUploadUtil.isImgEmpty(licenceSiteUp8)){
              String filePath = FileUploadUtil.upload(licenceSiteUp8);
@@ -252,7 +268,9 @@ public class PdVenderController extends JeecgController<PdVender, IPdVenderServi
                  //先删除再更新
                  FileUploadUtil.deleteFile(pdVender.getLicenceSite8());
              }
-             pdVender.setLicenceSite8(filePath);
+			 if(!"".equals(filePath)){
+				 pdVender.setLicenceSite8(filePath);
+			 }
          }
          if(!FileUploadUtil.isImgEmpty(licenceSiteUp9)){
              String filePath = FileUploadUtil.upload(licenceSiteUp9);
@@ -260,7 +278,9 @@ public class PdVenderController extends JeecgController<PdVender, IPdVenderServi
                  //先删除再更新
                  FileUploadUtil.deleteFile(pdVender.getLicenceSite9());
              }
-             pdVender.setLicenceSite9(filePath);
+			 if(!"".equals(filePath)){
+				 pdVender.setLicenceSite9(filePath);
+			 }
          }
          if(!FileUploadUtil.isImgEmpty(licenceSiteUp10)){
              String filePath = FileUploadUtil.upload(licenceSiteUp10);
@@ -268,7 +288,9 @@ public class PdVenderController extends JeecgController<PdVender, IPdVenderServi
                  //先删除再更新
                  FileUploadUtil.deleteFile(pdVender.getLicenceSite10());
              }
-             pdVender.setLicenceSite10(filePath);
+			 if(!"".equals(filePath)){
+				 pdVender.setLicenceSite10(filePath);
+			 }
          }
          if(!FileUploadUtil.isImgEmpty(licenceSiteUp11)){
              String filePath = FileUploadUtil.upload(licenceSiteUp11);
@@ -276,7 +298,9 @@ public class PdVenderController extends JeecgController<PdVender, IPdVenderServi
                  //先删除再更新
                  FileUploadUtil.deleteFile(pdVender.getLicenceSite11());
              }
-             pdVender.setLicenceSite11(filePath);
+			 if(!"".equals(filePath)){
+				 pdVender.setLicenceSite11(filePath);
+			 }
          }
          pdVenderService.updateById(pdVender);
          return Result.ok("编辑成功！");
