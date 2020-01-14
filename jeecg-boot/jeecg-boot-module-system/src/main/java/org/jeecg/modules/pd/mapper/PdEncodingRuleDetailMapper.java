@@ -9,7 +9,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
 /**
  * @Description: 编码规则详情表
- * @Author: jeecg-boot
+ * @Author: zxh
  * @Date:   2019-12-26
  * @Version: V1.0
  */
