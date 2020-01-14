@@ -56,6 +56,7 @@
         :dataSource="dataSource"
         :pagination="ipagination"
         :loading="loading"
+        :rowClassName="setdataCss"
         :rowSelection="{fixed:true,selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
         
         @change="handleTableChange">
@@ -87,6 +88,9 @@
           <a-dropdown>
             <a class="ant-dropdown-link">更多 <a-icon type="down" /></a>
             <a-menu slot="overlay">
+               <a-menu-item>
+                <a href="javascript:;" @click="handleDetail(record)">详情</a>
+              </a-menu-item>
               <a-menu-item>
                 <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.id)">
                   <a>删除</a>
@@ -189,11 +193,25 @@
     },
     methods: {
       initDictConfig(){
-      }
-       
+      },
+      setdataCss(record,index) {
+        let validityFlag = record.validityFlag;
+        return "validityFlag"+validityFlag;
+      },
     }
   }
 </script>
+
 <style scoped>
   @import '~@assets/less/common.less'
+</style>
+<style>
+  .validityFlag0{
+  }
+  .validityFlag1{
+    background-color:#FF3333;
+  }
+  .validityFlag2{
+    background-color:#FFFFCC;
+  }
 </style>

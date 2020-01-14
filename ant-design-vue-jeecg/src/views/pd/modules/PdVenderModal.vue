@@ -248,7 +248,7 @@
       },
       closeImg(index) {
         let that = this;
-        that.$refs.upImg[index].src = "";
+        //that.$refs.upImg[index].src = "";
         this.form.setFieldsValue({["licenceSite"+index]:""});
         this.imgIsShow[index].show = false;
       },
@@ -365,11 +365,11 @@
     border:1px solid #ccc;
   }
   .validity1{
-    border:2px solid red;
+    border:2px solid #FF3333;
   }
 
   .validity2{
-    border:2px solid yellow;
+    border:2px solid #FFFFCC;
   }
 
 </style>
