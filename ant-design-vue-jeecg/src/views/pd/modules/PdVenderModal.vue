@@ -272,7 +272,6 @@
 </script>
 
 <style lang="less" scoped>
-/** Button按钮间距 */
   .drawer-bootom-button {
     position: absolute;
     bottom: -30px;
@@ -285,6 +284,7 @@
     border-radius: 0 0 2px 2px;
     z-index:199;
   }
+  /** Button按钮间距 */
   .ant-btn {
     margin-left: 30px;
     margin-bottom: 30px;
