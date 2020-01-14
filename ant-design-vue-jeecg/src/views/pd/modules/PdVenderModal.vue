@@ -25,7 +25,7 @@
           <a-input v-decorator="[ 'remarks', validatorRules.remarks]" :style="{width:'100%',margin:'0'}" placeholder="请输入备注"></a-input>
         </a-form-item>
         <label style="float:left;padding-top:15px;">证照扫描件</label>
-        <div class="all-card-box" style="padding-left:105px;">
+        <div class="all-card-box" style="padding-left:105px;margin-bottom: 70px">
           <template v-for="(item, index) in 12" >
             <div class="card-box" :class="imgIsValidity[index]">
               <div class="card-box-code">

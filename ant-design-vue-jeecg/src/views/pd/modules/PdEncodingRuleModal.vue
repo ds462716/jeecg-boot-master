@@ -24,49 +24,49 @@
         <a-form-item label="备注" :labelCol="labelCol" :wrapperCol="wrapperCol">
           <a-input v-decorator="[ 'remarks', validatorRules.remarks]" placeholder="请输入备注"></a-input>
         </a-form-item>
-        <div>
-        <div style="float: left;">
-          <a-button @click="choice" style="margin-left: 0px;margin-bottom: 20px"  type="primary">选择标识符</a-button>
-        </div>
-        <div style="float: left;width:100%">
-          <table id="contentTable" class="tableStyle">
-            <tr>
-              <th>应用标识符</th>
-              <th>应用标识符含义 </th>
-              <th>内容位数 </th>
-              <th>类型 </th>
-              <th>顺序</th>
-            </tr>
-            <tr v-for="(item, index) in dataSource">
-              <td>{{item.value}}
+        <!--<div>-->
+          <div style="float: left;">
+            <a-button @click="choice" style="margin-left: 0px;margin-bottom: 20px"  type="primary">选择标识符</a-button>
+          </div>
+          <div style="float: left;width:100%;margin-bottom: 70px">
+            <table id="contentTable" class="tableStyle">
+              <tr>
+                <th>应用标识符</th>
+                <th>应用标识符含义 </th>
+                <th>内容位数 </th>
+                <th>类型 </th>
+                <th>顺序</th>
+              </tr>
+              <tr v-for="(item, index) in dataSource">
+                <td>{{item.value}}
+                  <a-form-item>
+                    <a-input type="hidden" v-decorator="['pdEncodingRuleDetails['+index+'].value',{'initialValue':item.value}]"/>
+                  </a-form-item>
+                </td>
+                <td>{{item.meaning}}</td>
+                <td>
+                  <a-form-item>
+                    <a-input :style="{width: 'calc(100% - 120px)'}" v-if="item.type=='1'" disabled="disabled" v-decorator="['pdEncodingRuleDetails['+index+'].length',{'initialValue':item.length}]"/>
+                    <a-input :style="{width: 'calc(100% - 120px)'}" v-else="item.type!='1'" v-decorator="['pdEncodingRuleDetails['+index+'].length', {'initialValue':item.length,rules:validatorRules.length}]"/>
+                  </a-form-item>
+                </td>
+                <td>{{item.typeText}}
+                  <a-form-item>
+                    <a-input type="hidden" v-decorator="['pdEncodingRuleDetails['+index+'].type',{'initialValue':item.type}]"/>
+                  </a-form-item>
+                </td>
+                <td>
+                  <a-form-item>
+                    <a-input :style="{width: 'calc(100% - 120px)'}"v-decorator="['pdEncodingRuleDetails['+index+'].codeOrder',{'initialValue':item.codeOrder,rules:validatorRules.order}]"/>
+                  </a-form-item>
+                </td>
                 <a-form-item>
-                  <a-input type="hidden" v-decorator="['pdEncodingRuleDetails['+index+'].value',{'initialValue':item.value}]"/>
+                  <a-input type="hidden" v-decorator="['pdEncodingRuleDetails['+index+'].identifier',{'initialValue':item.id}]"/>
                 </a-form-item>
-              </td>
-              <td>{{item.meaning}}</td>
-              <td>
-                <a-form-item>
-                  <a-input :style="{width: 'calc(100% - 120px)'}" v-if="item.type=='1'" disabled="disabled" v-decorator="['pdEncodingRuleDetails['+index+'].length',{'initialValue':item.length}]"/>
-                  <a-input :style="{width: 'calc(100% - 120px)'}" v-else="item.type!='1'" v-decorator="['pdEncodingRuleDetails['+index+'].length', {'initialValue':item.length,rules:validatorRules.length}]"/>
-                </a-form-item>
-              </td>
-              <td>{{item.typeText}}
-                <a-form-item>
-                  <a-input type="hidden" v-decorator="['pdEncodingRuleDetails['+index+'].type',{'initialValue':item.type}]"/>
-                </a-form-item>
-              </td>
-              <td>
-                <a-form-item>
-                  <a-input :style="{width: 'calc(100% - 120px)'}"v-decorator="['pdEncodingRuleDetails['+index+'].codeOrder',{'initialValue':item.codeOrder,rules:validatorRules.order}]"/>
-                </a-form-item>
-              </td>
-              <a-form-item>
-                <a-input type="hidden" v-decorator="['pdEncodingRuleDetails['+index+'].identifier',{'initialValue':item.id}]"/>
-              </a-form-item>
-            </tr>
-          </table>
-        </div>
-        </div>
+              </tr>
+            </table>
+          </div>
+        <!--</div>-->
         <!-- 表单区域 -->
         <pdEncodingIdentifierAdd-modal ref="pdEncodingIdentifierAddModal" @ok="modalFormOk"></pdEncodingIdentifierAdd-modal>
       </a-form>
@@ -258,6 +258,7 @@
 <style lang="less" scoped>
   .drawer-bootom-button {
     position: absolute;
+    /*top:95%;*/
     bottom: -30px;
     width: 100%;
     border-top: 1px solid #e8e8e8;
