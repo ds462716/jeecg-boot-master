@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.pd.mapper.PdUnitMapper">
+
+    <resultMap id="resultMap" type="org.jeecg.modules.pd.entity.PdUnit" >
+        <result column="id" property="id" jdbcType="VARCHAR"/>
+        <result column="name" property="name" jdbcType="VARCHAR"/>
+        <result column="py" property="py" jdbcType="VARCHAR"/>
+        <result column="wb" property="wb" jdbcType="VARCHAR"/>
+        <result column="zdy" property="zdy" jdbcType="VARCHAR"/>
+        <result column="create_by" property="createBy" jdbcType="VARCHAR"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="update_by" property="updateBy" jdbcType="VARCHAR"/>
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
+        <result column="remarks" property="remarks" jdbcType="VARCHAR"/>
+        <result column="del_flag" property="delFlag" jdbcType="VARCHAR"/>
+        <result column="sys_org_code" property="sysOrgCode" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <select id="queryList" resultMap="resultMap" parameterType="org.jeecg.modules.pd.entity.PdUnit">
+        SELECT
+            a.id,
+            a.name,
+            a.py,
+            a.wb,
+            a.zdy,
+            a.create_by,
+            a.create_time,
+            a.update_by,
+            a.update_time,
+            a.remarks,
+            a.del_flag,
+            a.sys_org_code
+        FROM pd_unit a
+        <where>
+                a.del_flag = #{DEL_FLAG_NORMAL}
+            <if test="name != null and name != ''">
+                AND ( a.name LIKE concat('%',#{name},'%')
+                or a.py LIKE concat('%',#{name},'%')
+                or a.wb LIKE concat('%',#{name},'%')
+                or a.zdy LIKE concat('%',#{name},'%') )
+            </if>
+        </where>
+        ORDER BY a.update_time desc
+    </select>
+</mapper>
