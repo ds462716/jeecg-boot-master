@@ -82,9 +82,8 @@
   import JDate from '@/components/jeecg/JDate'  
   import JUpload from '@/components/jeecg/JUpload'
   import { ACCESS_TOKEN } from "@/store/mutation-types"
-  import Vue from 'vue'
   import { makeWb } from '@/utils/wubi'
-  import axios from 'axios';
+  import { photoCheck } from '@/utils/fileUpload'
   export default {
     name: "PdSupplierModal",
     components: { 
@@ -230,21 +229,15 @@
         this.imgIsShow[index].show=true;
         event.preventDefault();
         var oFile = that.$refs.file[index].files[0];
-        var rFilter = /^(image\/bmp|image\/gif|image\/jpeg|image\/png|image\/tiff)$/i;
-        if (oFile && !rFilter.test(oFile.type)) {
-          alert('上传文件非图片格式');
-          return;
+        var bo = photoCheck(oFile,that);
+        if(bo){
+          var oReader = new FileReader();
+          oReader.onload = function(e){
+            that.$refs.upImg[index].src = e.target.result;
+          };
+          oReader.readAsDataURL(oFile);
+          this.imgIsShow[index].show=true;
         }
-        if (oFile && oFile.size > 5242880) {
-          alert('上传图片不能超过5M');
-          return;
-        }
-        var oReader = new FileReader();
-        oReader.onload = function(e){
-          that.$refs.upImg[index].src = e.target.result;
-        };
-        oReader.readAsDataURL(oFile);
-        this.imgIsShow[index].show=true;
       },
       closeImg(index) {
         let that = this;

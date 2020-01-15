@@ -15,7 +15,7 @@ import org.jeecg.common.aspect.annotation.Dict;
 
 /**
  * @Description: 生产厂家
- * @Author: jeecg-boot
+ * @Author: zxh
  * @Date:   2020-01-09
  * @Version: V1.0
  */

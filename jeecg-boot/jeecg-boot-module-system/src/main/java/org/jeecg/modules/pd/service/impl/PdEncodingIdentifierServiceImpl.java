@@ -9,7 +9,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
 /**
  * @Description: 应用标识符表
- * @Author: jeecg-boot
+ * @Author: zxh
  * @Date:   2019-12-25
  * @Version: V1.0
  */
