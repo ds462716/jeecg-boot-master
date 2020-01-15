@@ -100,6 +100,10 @@ const getEncodingIdentifierList = (params)=>getAction("/pd/pdEncodingIdentifier/
 //下拉列表查询编码规则
 const getEncodingRuleList = (params)=>getAction("/pd/pdEncodingRule/getEncodingRuleList",params);
 
+//分类管理查询树结构
+const queryCategoryTreeList = (params)=>getAction("/pd/pdCategory/queryCategoryTreeList",params);
+const getCategoryList = (params)=>getAction("/pd/pdCategory/list",params);
+
 
 export {
   // imgView,
@@ -149,7 +153,10 @@ export {
   getSystemMenuList,
   getSystemSubmenu,
   loadCategoryData,
-  getEncodingIdentifierList
+  getEncodingIdentifierList,
+  getEncodingRuleList,
+  queryCategoryTreeList,
+  getCategoryList
 }
 
 

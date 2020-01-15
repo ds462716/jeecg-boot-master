@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.jeecg.modules.pd.entity.PdCategory;
 import org.jeecg.modules.system.entity.SysPermission;
 
 /**
@@ -93,6 +94,24 @@ public class TreeModel implements Serializable {
 		this.isLeaf = permission.isLeaf();
 		this.label = permission.getName();
 		if(!permission.isLeaf()) {
+			this.children = new ArrayList<TreeModel>();
+		}
+	}
+
+	/**
+	 * 分类拼接时使用
+	 * @param pdCategory
+	 */
+	public TreeModel(PdCategory pdCategory) {
+		this.key = pdCategory.getId();
+		this.icon = pdCategory.getIcon();
+		this.parentId = pdCategory.getParentId();
+		this.title = pdCategory.getName();
+		this.slotTitle =  pdCategory.getName();
+		this.value = pdCategory.getId();
+		this.isLeaf = pdCategory.isLeaf();
+		this.label = pdCategory.getName();
+		if(!pdCategory.isLeaf()) {
 			this.children = new ArrayList<TreeModel>();
 		}
 	}
