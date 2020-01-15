@@ -32,7 +32,7 @@ public interface SysDictMapper extends BaseMapper<SysDict> {
 	public Long duplicateCheckCountSqlNoDataId(DuplicateCheckVo duplicateCheckVo);
 
 	/**
-	 * 有del_flag的重复校验SQL
+	 * 有del_flag的重复校验SQL add by jiangxz 20200115
 	 * @return
 	 */
 	public Long duplicateCheckCountSqlHasDelFlag(DuplicateCheckVo duplicateCheckVo);
