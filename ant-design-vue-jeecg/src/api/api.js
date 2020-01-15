@@ -92,6 +92,8 @@ const queryUserByDepId = (params)=>getAction("/sys/user/queryUserByDepId",params
 const queryUserRoleMap = (params)=>getAction("/sys/user/queryUserRoleMap",params);
 // 重复校验
 const duplicateCheck = (params)=>getAction("/sys/duplicate/check",params);
+// 有del_flag标志的重复校验 add by jiangxz 20200115
+const duplicateCheckHasDelFlag = (params)=>getAction("/sys/duplicate/checkHasDelFlag",params);
 // 加载分类字典
 const loadCategoryData = (params)=>getAction("/sys/category/loadAllData",params);
 
@@ -145,6 +147,7 @@ export {
   queryUserByDepId,
   queryUserRoleMap,
   duplicateCheck,
+  duplicateCheckHasDelFlag,
   queryTreeListForRole,
   getSystemMenuList,
   getSystemSubmenu,

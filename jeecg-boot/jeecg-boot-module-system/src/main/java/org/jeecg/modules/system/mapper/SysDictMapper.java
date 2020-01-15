@@ -30,7 +30,14 @@ public interface SysDictMapper extends BaseMapper<SysDict> {
 	 */
 	public Long duplicateCheckCountSql(DuplicateCheckVo duplicateCheckVo);
 	public Long duplicateCheckCountSqlNoDataId(DuplicateCheckVo duplicateCheckVo);
-	
+
+	/**
+	 * 有del_flag的重复校验SQL
+	 * @return
+	 */
+	public Long duplicateCheckCountSqlHasDelFlag(DuplicateCheckVo duplicateCheckVo);
+	public Long duplicateCheckCountSqlNoDataIdHasDelFlag(DuplicateCheckVo duplicateCheckVo);
+
 	public List<DictModel> queryDictItemsByCode(@Param("code") String code);
 	public List<DictModel> queryTableDictItemsByCode(@Param("table") String table,@Param("text") String text,@Param("code") String code);
 	public List<DictModel> queryTableDictItemsByCodeAndFilter(@Param("table") String table,@Param("text") String text,@Param("code") String code,@Param("filterSql") String filterSql);
