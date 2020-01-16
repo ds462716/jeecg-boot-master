@@ -154,7 +154,6 @@
         // 触发表单验证
         this.form.validateFields((err, values) => {
           if (!err) {
-            that.confirmLoading = true;
             let httpurl = '';
             let method = '';
             if(!this.model.id){
@@ -165,6 +164,14 @@
                method = 'put';
             }
             let formData = Object.assign(this.model, values);
+            if ((formData.type == 1) && !formData.parentId) {
+              that.validateStatus = 'error';
+              that.$message.error("请检查你填的分类是否正确！");
+              return;
+            } else {
+              that.validateStatus = 'success';
+            }
+            that.confirmLoading = true;
             //console.log("表单提交数据",formData)
             httpAction(httpurl,formData,method).then((res)=>{
               if(res.success){
