@@ -10,8 +10,8 @@
     <a-spin :spinning="confirmLoading">
       <a-form :form="form">
 
-        <a-form-item label="单位名称" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input @change="pinyinTran" v-decorator="[ 'name', validatorRules.name]" placeholder="请输入单位名称"></a-input>
+        <a-form-item label="名称" :labelCol="labelCol" :wrapperCol="wrapperCol">
+          <a-input ref="inputFocus" @change="pinyinTran" v-decorator="[ 'name', validatorRules.name]" placeholder="请输入单位名称"></a-input>
         </a-form-item>
         <a-form-item label="拼音简码" :labelCol="labelCol" :wrapperCol="wrapperCol">
           <a-input v-decorator="[ 'py', validatorRules.py]" placeholder="请输入拼音简码"></a-input>
@@ -93,6 +93,9 @@
         this.unitId = record.id;
         this.$nextTick(() => {
           this.form.setFieldsValue(pick(this.model,'name','py','wb','zdy','remarks'))
+          //获取光标
+          let input = this.$refs['inputFocus'];
+          input.focus()
         })
       },
       pinyinTran(e){

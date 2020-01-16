@@ -11,7 +11,7 @@
       <a-form :form="form">
 
         <a-form-item label="值" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input v-decorator="[ 'value', validatorRules.value]" placeholder="请输入值"></a-input>
+          <a-input ref="inputFocus" v-decorator="[ 'value', validatorRules.value]" placeholder="请输入值"></a-input>
         </a-form-item>
         <a-form-item label="含义" :labelCol="labelCol" :wrapperCol="wrapperCol">
           <a-input v-decorator="[ 'meaning', validatorRules.meaning]" placeholder="请输入含义"></a-input>
@@ -85,6 +85,9 @@
         this.visible = true;
         this.$nextTick(() => {
           this.form.setFieldsValue(pick(this.model,'value','meaning','type','length','remarks'))
+          //获取光标
+          let input = this.$refs['inputFocus'];
+          input.focus()
         })
         //控制长度的显示隐藏
         if(this.model.type==1){

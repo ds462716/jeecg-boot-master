@@ -10,7 +10,7 @@
     <a-spin :spinning="confirmLoading">
       <a-form :form="form">
         <a-form-item label="编码名称" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input @change="pinyinTran"  v-decorator="[ 'name', validatorRules.name]" placeholder="请输入编码名称"></a-input>
+          <a-input ref="inputFocus" @change="pinyinTran"  v-decorator="[ 'name', validatorRules.name]" placeholder="请输入编码名称"></a-input>
         </a-form-item>
         <a-form-item label="编码名称拼音简码" :labelCol="labelCol" :wrapperCol="wrapperCol">
           <a-input v-decorator="[ 'py', validatorRules.py]" placeholder="请输入编码名称拼音简码"></a-input>
@@ -156,6 +156,9 @@
         this.visible = true;
         this.$nextTick(() => {
           this.form.setFieldsValue(pick(this.model,'name','py','wb','zdy','remarks'))
+          //获取光标
+          let input = this.$refs['inputFocus'];
+          input.focus()
         })
       },
       close () {

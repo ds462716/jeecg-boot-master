@@ -10,7 +10,7 @@
     <a-spin :spinning="confirmLoading">
       <a-form :form="form" enctype="multipart/form-data">
         <a-form-item label="名称" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input @change="pinyinTran" v-decorator="[ 'name', validatorRules.name]" :style="{width:'100%',margin:'0'}" placeholder="请输入名称"></a-input>
+          <a-input ref="inputFocus" @change="pinyinTran" v-decorator="[ 'name', validatorRules.name]" :style="{width:'100%',margin:'0'}" placeholder="请输入名称"></a-input>
         </a-form-item>
         <a-form-item label="拼音简码" :labelCol="labelCol" :wrapperCol="wrapperCol">
           <a-input v-decorator="[ 'py', validatorRules.py]" :style="{width:'100%',margin:'0'}" placeholder="请输入拼音简码"></a-input>
@@ -160,6 +160,9 @@
         this.visible = true;
         this.$nextTick(() => {
           this.form.setFieldsValue(pick(this.model,'name','py','wb','zdy','licenceName0','licenceNum0','licenceDate0','licenceSite0','licenceName1','licenceNum1','licenceDate1','licenceSite1','licenceName2','licenceNum2','licenceDate2','licenceSite2','licenceName3','licenceNum3','licenceDate3','licenceSite3','licenceName4','licenceNum4','licenceDate4','licenceSite4','licenceName5','licenceNum5','licenceDate5','licenceSite5','licenceName6','licenceNum6','licenceDate6','licenceSite6','licenceName7','licenceNum7','licenceDate7','licenceSite7','licenceName8','licenceNum8','licenceDate8','licenceSite8','licenceName9','licenceNum9','licenceDate9','licenceSite9','licenceName10','licenceNum10','licenceDate10','licenceSite10','licenceName11','licenceNum11','licenceDate11','licenceSite11','remarks'))
+          //获取光标
+          let input = this.$refs['inputFocus'];
+          input.focus()
         })
       },
       close () {
