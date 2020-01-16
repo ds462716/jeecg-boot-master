@@ -183,11 +183,11 @@
               httpurl+=this.url.edit;
                method = 'post';
             }
-            var formDataAll = new FormData();
+            let formDataAll = new FormData();
             let imgIsShow = this.imgIsShow;
             for(let m in imgIsShow){
               if(imgIsShow[m].show){
-                var oFile = that.$refs.file[m].files[0];
+                let oFile = that.$refs.file[m].files[0];
                 formDataAll.append("licenceSiteUp"+m, oFile);
               }
             }
@@ -215,23 +215,23 @@
         this.close()
       },
       pinyinTran(e){
-        var val = e.target.value;
+        let val = e.target.value;
         let pinyin = require('js-pinyin');
         pinyin.setOptions({checkPolyphone: false, charCase: 0});
-        //var py = pinyin.getFullChars(val);//获取全拼
-        var py = pinyin.getCamelChars(val);//获取简码
+        //let py = pinyin.getFullChars(val);//获取全拼
+        let py = pinyin.getCamelChars(val);//获取简码
         this.form.setFieldsValue({py:py});
-        var wb = makeWb(val);
+        let wb = makeWb(val);
         this.form.setFieldsValue({wb:wb});//获取五笔简码
       },
       handleFileUpload(event,index){
         let that = this;
         this.imgIsShow[index].show=true;
         event.preventDefault();
-        var oFile = that.$refs.file[index].files[0];
-        var bo = photoCheck(oFile,that);
+        let oFile = that.$refs.file[index].files[0];
+        let bo = photoCheck(oFile,that);
         if(bo){
-          var oReader = new FileReader();
+          let oReader = new FileReader();
           oReader.onload = function(e){
             that.$refs.upImg[index].src = e.target.result;
           };

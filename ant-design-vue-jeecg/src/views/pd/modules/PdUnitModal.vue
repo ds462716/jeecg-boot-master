@@ -96,17 +96,17 @@
         })
       },
       pinyinTran(e){
-        var val = e.target.value;
+        let val = e.target.value;
         let pinyin = require('js-pinyin');
         pinyin.setOptions({checkPolyphone: false, charCase: 0});
-        //var py = pinyin.getFullChars(val);//获取全拼
-        var py = pinyin.getCamelChars(val);//获取简码
+        //let py = pinyin.getFullChars(val);//获取全拼
+        let py = pinyin.getCamelChars(val);//获取简码
         this.form.setFieldsValue({py:py});
-        var wb = makeWb(val);
+        let wb = makeWb(val);
         this.form.setFieldsValue({wb:wb});//获取五笔简码
       },
       validateUnitname(rule, value, callback){
-        var params = {
+        let params = {
           tableName: 'pd_unit',
           fieldName: 'name',
           fieldVal: value,
