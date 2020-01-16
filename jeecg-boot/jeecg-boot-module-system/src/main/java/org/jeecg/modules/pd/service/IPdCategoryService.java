@@ -14,4 +14,6 @@ public interface IPdCategoryService extends IService<PdCategory> {
     void addPdCategory(PdCategory pdCategory);
 
     void editPdCategory(PdCategory pdCategory);
+
+    void removePdCategory(String id);
 }

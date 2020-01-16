@@ -1,5 +1,6 @@
 package org.jeecg.modules.pd.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.exception.JeecgBootException;
@@ -7,10 +8,12 @@ import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.pd.entity.PdCategory;
 import org.jeecg.modules.pd.mapper.PdCategoryMapper;
 import org.jeecg.modules.pd.service.IPdCategoryService;
+import org.jeecg.modules.system.entity.SysPermission;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @Description: 产品分类
@@ -86,6 +89,55 @@ public class PdCategoryServiceImpl extends ServiceImpl<PdCategoryMapper, PdCateg
 
             }
 
+        }
+    }
+
+    /**
+     * 删除分类及他的所有子类
+     * @param id
+     */
+    @Override
+    public void removePdCategory(String id) {
+        PdCategory pdCategory = this.getById(id);
+        if(pdCategory==null) {
+            throw new JeecgBootException("未找到分类信息");
+        }
+        String pid = pdCategory.getParentId();
+        int count = this.count(new QueryWrapper<PdCategory>().lambda().eq(PdCategory::getParentId, pid));
+        if(count==1) {
+            //若父节点无其他子节点，则该父节点是叶子节点
+            this.pdCategoryMapper.setMenuLeaf(pid, 1);
+        }
+        this.pdCategoryMapper.removeByCodeId(pdCategory);
+        // 该节点可能是子节点但也可能是其它节点的父节点,所以需要级联删除
+        this.removeChildrenBy(pdCategory.getId());
+    }
+
+    /**
+     * 根据父id删除其关联的子节点数据
+     *
+     * @return
+     */
+    public void removeChildrenBy(String parentId) {
+        LambdaQueryWrapper<PdCategory> query = new LambdaQueryWrapper<>();
+        // 封装查询条件parentId为主键,
+        query.eq(PdCategory::getParentId, parentId);
+        // 查出该主键下的所有子级
+        List<PdCategory> pdCategoryList = this.list(query);
+        if (pdCategoryList != null && pdCategoryList.size() > 0) {
+            String id = ""; // id
+            int num = 0; // 查出的子级数量
+            // 如果查出的集合不为空, 则先删除所有
+            this.remove(query);
+            // 再遍历刚才查出的集合, 根据每个对象,查找其是否仍有子级
+            for (int i = 0, len = pdCategoryList.size(); i < len; i++) {
+                id = pdCategoryList.get(i).getId();
+                num = this.count(new LambdaQueryWrapper<PdCategory>().eq(PdCategory::getParentId, id));
+                // 如果有, 则递归
+                if (num > 0) {
+                    this.removeChildrenBy(id);
+                }
+            }
         }
     }
 }

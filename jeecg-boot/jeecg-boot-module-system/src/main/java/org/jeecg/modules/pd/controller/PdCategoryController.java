@@ -180,7 +180,7 @@ public class PdCategoryController extends JeecgController<PdCategory, IPdCategor
 	 */
 	@DeleteMapping(value = "/delete")
 	public Result<?> delete(@RequestParam(name="id",required=true) String id) {
-		pdCategoryService.removeById(id);
+		pdCategoryService.removePdCategory(id);
 		return Result.ok("删除成功!");
 	}
 	

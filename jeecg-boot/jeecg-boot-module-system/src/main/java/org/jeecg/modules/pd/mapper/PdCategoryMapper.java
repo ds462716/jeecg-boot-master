@@ -20,4 +20,6 @@ public interface PdCategoryMapper extends BaseMapper<PdCategory> {
      */
     @Update("update pd_category set is_leaf=#{leaf} where id = #{id}")
     int setMenuLeaf(@Param("id") String id,@Param("leaf") int leaf);
+
+    void removeByCodeId(PdCategory pdCategory);
 }
