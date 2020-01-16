@@ -6,7 +6,7 @@
         <a-row :gutter="24">
           <a-col :md="6" :sm="8">
             <a-form-item label="名称">
-              <a-input placeholder="请输入名称" v-model="queryParam.name"></a-input>
+              <a-input placeholder="请输入名称"  v-model="queryParam.name"></a-input>
             </a-form-item>
           </a-col>
           <a-col :md="6" :sm="8">
@@ -70,7 +70,7 @@
                 <a href="javascript:;" @click="handleDetail(record)">详情</a>
               </a-menu-item>
               <a-menu-item>
-                <a href="javascript:;" @click="handleAddSub(record)">添加子菜单</a>
+                <a href="javascript:;" @click="handleAddSub(record)">添加二级分类</a>
               </a-menu-item>
               <a-menu-item>
                 <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.id)">
@@ -116,25 +116,29 @@
         // 表头
         columns: [
           {
-            title: '#',
-            dataIndex: '',
-            key:'rowIndex',
-            width:60,
-            align:"center",
-            customRender:function (t,r,index) {
-              return parseInt(index)+1;
-            }
-          },
-          {
             title:'名称',
-            align:"center",
             dataIndex: 'name'
           },
           {
-            title:'类型',
+            title:'拼音简码',
             align:"center",
+            dataIndex: 'py'
+          },
+          {
+            title:'五笔简码',
+            align:"center",
+            dataIndex: 'wb'
+          },
+          {
+            title:'自定义查询码',
+            align:"center",
+            dataIndex: 'zdy'
+          },
+          {
+            title:'类型',
             dataIndex: 'type',
             customRender:(text)=>{
+              text +="";
               if(!text){
                 return ''
               }else{
@@ -144,24 +148,21 @@
           },
           {
             title:'创建日期',
-            align:"center",
             dataIndex: 'createTime'
           },
           {
             title:'更新日期',
-            align:"center",
             dataIndex: 'updateTime'
           },
           {
             title:'备注',
-            align:"center",
             dataIndex: 'remarks'
           },
           {
             title: '操作',
             dataIndex: 'action',
-            align:"center",
-            scopedSlots: { customRender: 'action' }
+            scopedSlots: { customRender: 'action' },
+            width: 150
           }
         ],
         url: {
@@ -183,11 +184,9 @@
     },
     methods: {
       loadData() {
-        console.log(1);
         this.dataSource = []
         getCategoryList().then((res) => {
           if (res.success) {
-            console.log(res.result)
             this.dataSource = res.result
           }
         })
@@ -200,10 +199,10 @@
         })
       },
       handleAddSub(record) {
-        this.$refs.modalForm.title = "添加子菜单";
+        this.$refs.modalForm.title = "添加二级分类";
         this.$refs.modalForm.localCategoryType = 1;
         this.$refs.modalForm.disableSubmit = false;
-        this.$refs.modalForm.edit({status:'1',permsType:'1',route:true,'parentId':record.id});
+        this.$refs.modalForm.edit({route:true,'parentId':record.id});
       }
        
     }

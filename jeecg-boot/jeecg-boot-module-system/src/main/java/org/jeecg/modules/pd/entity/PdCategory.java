@@ -28,6 +28,15 @@ public class PdCategory  extends BaseEntity {
 	/**名称*/
 	@Excel(name = "名称", width = 15)
     private java.lang.String name;
+	/**编码名称拼音简码*/
+	@Excel(name = "编码名称拼音简码", width = 15)
+	private String py;
+	/**编码名称五笔简码*/
+	@Excel(name = "编码名称五笔简码", width = 15)
+	private String wb;
+	/**自定义名称查询码*/
+	@Excel(name = "自定义名称查询码", width = 15)
+	private String zdy;
 	/**类型*/
 	@Excel(name = "类型", width = 15)
     private java.lang.String type;

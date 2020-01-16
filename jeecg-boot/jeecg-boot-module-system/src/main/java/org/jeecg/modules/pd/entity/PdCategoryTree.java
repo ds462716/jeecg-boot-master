@@ -27,6 +27,20 @@ public class PdCategoryTree implements Serializable {
 	 */
 	private String name;
 
+	/**
+	 * 拼音简码
+	 */
+	private String py;
+
+	/**
+	 * 五笔简码
+	 */
+	private String wb;
+
+	/**
+	 * 自定义简码
+	 */
+	private String zdy;
 
 	/**
 	 * 菜单图标
@@ -36,7 +50,7 @@ public class PdCategoryTree implements Serializable {
 	/**
 	 * 类型（0：一级菜单；1：子菜单 ；2：按钮权限）
 	 */
-	private String type;
+	private Integer type;
 
 	/**
 	 * 是否叶子节点: 1:是 0:不是
@@ -82,7 +96,11 @@ public class PdCategoryTree implements Serializable {
 		this.delFlag = pdCategory.getDelFlag();
 		this.icon = pdCategory.getIcon();
 		this.isLeaf = pdCategory.isLeaf();
+		this.type = Integer.parseInt(pdCategory.getType());
 		this.name = pdCategory.getName();
+		this.py = pdCategory.getPy();
+		this.wb = pdCategory.getWb();
+		this.zdy = pdCategory.getZdy();
 		this.parentId = pdCategory.getParentId();
 		this.updateBy = pdCategory.getUpdateBy();
 		this.updateTime = pdCategory.getUpdateTime();
@@ -140,11 +158,11 @@ public class PdCategoryTree implements Serializable {
 		this.icon = icon;
 	}
 
-	public String getType() {
+	public Integer getType() {
 		return type;
 	}
 
-	public void setType(String type) {
+	public void setType(Integer type) {
 		this.type = type;
 	}
 
@@ -202,5 +220,29 @@ public class PdCategoryTree implements Serializable {
 
 	public void setChildren(List<PdCategoryTree> children) {
 		this.children = children;
+	}
+
+	public String getPy() {
+		return py;
+	}
+
+	public void setPy(String py) {
+		this.py = py;
+	}
+
+	public String getWb() {
+		return wb;
+	}
+
+	public void setWb(String wb) {
+		this.wb = wb;
+	}
+
+	public String getZdy() {
+		return zdy;
+	}
+
+	public void setZdy(String zdy) {
+		this.zdy = zdy;
 	}
 }

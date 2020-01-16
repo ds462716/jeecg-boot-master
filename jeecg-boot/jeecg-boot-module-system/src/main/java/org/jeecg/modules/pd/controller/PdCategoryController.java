@@ -74,7 +74,7 @@ public class PdCategoryController extends JeecgController<PdCategory, IPdCategor
 	 */
 	@PostMapping(value = "/add")
 	public Result<?> add(@RequestBody PdCategory pdCategory) {
-		pdCategoryService.save(pdCategory);
+		pdCategoryService.addPdCategory(pdCategory);
 		return Result.ok("添加成功！");
 	}
 	
@@ -86,7 +86,7 @@ public class PdCategoryController extends JeecgController<PdCategory, IPdCategor
 	 */
 	@PutMapping(value = "/edit")
 	public Result<?> edit(@RequestBody PdCategory pdCategory) {
-		pdCategoryService.updateById(pdCategory);
+		pdCategoryService.editPdCategory(pdCategory);
 		return Result.ok("编辑成功!");
 	}
 
@@ -122,6 +122,12 @@ public class PdCategoryController extends JeecgController<PdCategory, IPdCategor
 		 return result;
 	 }
 
+	 /**
+	  * 获取vue的树对象
+	  * @param treeList
+	  * @param metaList
+	  * @param temp
+	  */
 	 private void getTreeList(List<PdCategoryTree> treeList, List<PdCategory> metaList, PdCategoryTree temp) {
 		 for (PdCategory pc : metaList) {
 			 String tempPid = pc.getParentId();
@@ -141,6 +147,12 @@ public class PdCategoryController extends JeecgController<PdCategory, IPdCategor
 		 }
 	 }
 
+     /**
+      * 获取vue的树对象
+      * @param treeList
+      * @param metaList
+      * @param temp
+      */
 	 private void getTreeModelList(List<TreeModel> treeList, List<PdCategory> metaList, TreeModel temp) {
 		 for (PdCategory pdCategory : metaList) {
 			 String tempPid = pdCategory.getParentId();

@@ -11,4 +11,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface IPdCategoryService extends IService<PdCategory> {
 
+    void addPdCategory(PdCategory pdCategory);
+
+    void editPdCategory(PdCategory pdCategory);
 }
