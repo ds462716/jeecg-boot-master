@@ -53,7 +53,7 @@ public class PdCategoryController extends JeecgController<PdCategory, IPdCategor
 		Result<List<PdCategoryTree>> result = new Result<>();
 		try {
 			LambdaQueryWrapper<PdCategory> query = new LambdaQueryWrapper<PdCategory>();
-			query.eq(PdCategory::getDelFlag, CommonConstant.DEL_FLAG_0);
+			//query.eq(PdCategory::getDelFlag, CommonConstant.DEL_FLAG_0);
 			List<PdCategory> list = pdCategoryService.list(query);
 			List<PdCategoryTree> treeList = new ArrayList<>();
 			getTreeList(treeList, list, null);

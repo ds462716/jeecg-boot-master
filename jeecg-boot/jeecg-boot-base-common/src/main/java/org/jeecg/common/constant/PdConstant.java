@@ -7,6 +7,8 @@ package org.jeecg.common.constant;
  */
 public interface PdConstant {
 
+	public static final String ADMIN_DEPART_CODE = "admin";
+
 	/**
 	 * 编码规则  start
 	 */

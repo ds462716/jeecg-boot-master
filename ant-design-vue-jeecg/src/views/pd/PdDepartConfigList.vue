@@ -4,26 +4,6 @@
     <div class="table-page-search-wrapper">
       <a-form layout="inline" @keyup.enter.native="searchQuery">
         <a-row :gutter="24">
-          <a-col :md="6" :sm="8">
-            <a-form-item label="名称">
-              <a-input placeholder="请输入名称" v-model="queryParam.name"></a-input>
-            </a-form-item>
-          </a-col>
-          <a-col :md="6" :sm="8">
-            <a-form-item label="类型">
-              <j-dict-select-tag placeholder="请选择类型" v-model="queryParam.type" dictCode="category_type"/>
-            </a-form-item>
-          </a-col>
-          <a-col :md="6" :sm="8" >
-            <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
-              <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
-              <a-button type="primary" @click="searchReset" icon="reload" style="margin-left: 8px">重置</a-button>
-              <a @click="handleToggleSearch" style="margin-left: 8px">
-                {{ toggleSearchStatus ? '收起' : '展开' }}
-                <a-icon :type="toggleSearchStatus ? 'up' : 'down'"/>
-              </a>
-            </span>
-          </a-col>
 
         </a-row>
       </a-form>
@@ -33,7 +13,7 @@
     <!-- 操作按钮区域 -->
     <div class="table-operator">
       <a-button @click="handleAdd" type="primary" icon="plus">新增</a-button>
-      <a-button type="primary" icon="download" @click="handleExportXls('产品分类')">导出</a-button>
+      <a-button type="primary" icon="download" @click="handleExportXls('部门个性化配置')">导出</a-button>
       <a-upload name="file" :showUploadList="false" :multiple="false" :headers="tokenHeader" :action="importExcelUrl" @change="handleImportExcel">
         <a-button type="primary" icon="import">导入</a-button>
       </a-upload>
@@ -104,27 +84,24 @@
       </a-table>
     </div>
 
-    <pdCategory-modal ref="modalForm" @ok="modalFormOk"></pdCategory-modal>
+    <pdDepartConfig-modal ref="modalForm" @ok="modalFormOk"></pdDepartConfig-modal>
   </a-card>
 </template>
 
 <script>
 
   import { JeecgListMixin } from '@/mixins/JeecgListMixin'
-  import PdCategoryModal from './modules/PdCategoryModal'
-  import JDictSelectTag from '@/components/dict/JDictSelectTag.vue'
-  import {initDictOptions, filterMultiDictText} from '@/components/dict/JDictSelectUtil'
+  import PdDepartConfigModal from './modules/PdDepartConfigModal'
 
   export default {
-    name: "PdCategoryList",
+    name: "PdDepartConfigList",
     mixins:[JeecgListMixin],
     components: {
-      JDictSelectTag,
-      PdCategoryModal
+      PdDepartConfigModal
     },
     data () {
       return {
-        description: '产品分类管理页面',
+        description: '部门个性化配置管理页面',
         // 表头
         columns: [
           {
@@ -143,26 +120,29 @@
             dataIndex: 'name'
           },
           {
+            title:'拼音简码',
+            align:"center",
+            dataIndex: 'py'
+          },
+          {
+            title:'五笔简码',
+            align:"center",
+            dataIndex: 'wb'
+          },
+          {
+            title:'自定义码',
+            align:"center",
+            dataIndex: 'zdy'
+          },
+          {
             title:'类型',
             align:"center",
-            dataIndex: 'type',
-            customRender:(text)=>{
-              if(!text){
-                return ''
-              }else{
-                return filterMultiDictText(this.dictOptions['type'], text+"")
-              }
-            }
+            dataIndex: 'type'
           },
           {
-            title:'创建日期',
+            title:'值',
             align:"center",
-            dataIndex: 'createTime'
-          },
-          {
-            title:'更新日期',
-            align:"center",
-            dataIndex: 'updateTime'
+            dataIndex: 'value'
           },
           {
             title:'备注',
@@ -177,14 +157,13 @@
           }
         ],
         url: {
-          list: "/pd/pdCategory/list",
-          delete: "/pd/pdCategory/delete",
-          deleteBatch: "/pd/pdCategory/deleteBatch",
-          exportXlsUrl: "/pd/pdCategory/exportXls",
-          importExcelUrl: "pd/pdCategory/importExcel",
+          list: "/pd/pdDepartConfig/list",
+          delete: "/pd/pdDepartConfig/delete",
+          deleteBatch: "/pd/pdDepartConfig/deleteBatch",
+          exportXlsUrl: "/pd/pdDepartConfig/exportXls",
+          importExcelUrl: "pd/pdDepartConfig/importExcel",
         },
         dictOptions:{
-         type:[],
         },
       }
     },
@@ -195,11 +174,6 @@
     },
     methods: {
       initDictConfig(){
-        initDictOptions('category_type').then((res) => {
-          if (res.success) {
-            this.$set(this.dictOptions, 'type', res.result)
-          }
-        })
       }
        
     }
