@@ -3,6 +3,8 @@ package org.jeecg.modules.pd.service;
 import org.jeecg.modules.pd.entity.PdVender;
 import com.baomidou.mybatisplus.extension.service.IService;
 
+import java.util.List;
+
 /**
  * @Description: 生产厂家
  * @Author: zxh
@@ -12,4 +14,6 @@ import com.baomidou.mybatisplus.extension.service.IService;
 public interface IPdVenderService extends IService<PdVender> {
 
     PdVender verify(PdVender pdVender);
+
+    List<PdVender> selectList(PdVender pdVender);
 }

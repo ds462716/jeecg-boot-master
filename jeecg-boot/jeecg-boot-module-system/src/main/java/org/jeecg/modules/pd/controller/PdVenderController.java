@@ -66,6 +66,27 @@ public class PdVenderController extends JeecgController<PdVender, IPdVenderServi
 		IPage<PdVender> pageList = pdVenderService.page(page, queryWrapper);
 		return Result.ok(pageList);
 	}
+
+
+	 /**
+	  * 不分页列表查询
+	  *
+	  * @return
+	  */
+	 @GetMapping(value = "/getVenderList")
+	 public Result<List<PdVender>> getEncodingIdentifierList(PdVender pdVender) {
+		 long start = System.currentTimeMillis();
+		 Result<List<PdVender>> result = new Result<>();
+		 try {
+			 List<PdVender> list = pdVenderService.selectList(pdVender);
+			 result.setResult(list);
+			 result.setSuccess(true);
+		 }catch(Exception e){
+			 log.error(e.getMessage(), e);
+		 }
+		 log.info("======获取产品数据=====耗时:" + (System.currentTimeMillis() - start) + "毫秒");
+		 return result;
+	 }
 	
 	/**
 	 *   添加
