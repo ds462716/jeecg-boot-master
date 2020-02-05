@@ -60,7 +60,7 @@
       <a-tabs v-model="activeKey" @change="handleChangeTabs">
         <a-tab-pane tab="定数包明细" :key="refKeys[0]" :forceRender="true">
           <div style="margin-bottom: 8px;">
-            <a-button type="primary" icon="plus" @click="chooseProductList">新增</a-button>
+            <a-button type="primary" icon="plus" @click="handleConfirmAdd">新增</a-button>
             <span style="padding-left: 8px;"></span>
               <a-popconfirm
                 :title="`确定要删除吗?`"
@@ -85,7 +85,7 @@
 
         <!--  如果要用默认的新增、删除按钮，设置 :actionButton="true"
             @deleted="valueChange"   删除行事件
-            @added="valueChange"     新增行事件
+            @added="valueChange"     新增行之后处理的事件
             @valueChange="valueChange"  更改值事件
             -->
       </a-tabs>
@@ -258,7 +258,7 @@
         })
       },
       // 新增行
-      chooseProductList() {
+      handleConfirmAdd() {
         // this.$refs.pdChooseProductListModel.show();
         this.id=this.id+1;
         let data1 = {"productId":this.id,"name":this.id,"spec":"2","unitName":"3","venderName":"4","supplierName":"5","count":this.id+11};
