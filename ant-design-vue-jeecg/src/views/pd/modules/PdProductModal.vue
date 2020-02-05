@@ -21,12 +21,26 @@
         <a-row class="form-row" :gutter="{ xs: 8, sm: 16, md: 24, lg: 32 }">
           <a-col :lg="12">
             <a-form-item label="产品名称" :labelCol="labelCol"  :wrapperCol="wrapperCol">
-              <a-input v-decorator="[ 'name', validatorRules.name]" placeholder="请输入产品名称"></a-input>
+              <a-input autocomplete="off" @change="pinyinTran" v-decorator="[ 'name', validatorRules.name]" placeholder="请输入产品名称"></a-input>
             </a-form-item>
           </a-col>
           <a-col :lg="12">
             <a-form-item label="单位" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input v-decorator="[ 'unitId', validatorRules.unitId]" placeholder="请输入单位"></a-input>
+              <a-select
+                showSearch
+                :unitId="unitValue"
+                placeholder="请选择单位"
+                :defaultActiveFirstOption="false"
+                :showArrow="false"
+                :filterOption="false"
+                @search="unitHandleSearch"
+                @change="unitHandleChange"
+                @focus="unitHandleSearch"
+                :notFoundContent="notFoundContent"
+                v-decorator="[ 'unitId', validatorRules.unitId]"
+              >
+                <a-select-option v-for="d in unitData" :key="d.value">{{d.text}}</a-select-option>
+              </a-select>
             </a-form-item>
           </a-col>
         </a-row>
@@ -42,19 +56,11 @@
             </a-form-item>
           </a-col>
         </a-row>
-        <a-row class="form-row" :gutter="{ xs: 8, sm: 16, md: 24, lg: 32 }">
-          <a-col :lg="12">
-
-          </a-col>
-          <a-col :lg="12">
-
-          </a-col>
-        </a-row>
 
         <a-row class="form-row" :gutter="{ xs: 8, sm: 16, md: 24, lg: 32 }">
           <a-col :lg="12">
             <a-form-item label="产品别名" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input v-decorator="[ 'bname', validatorRules.bname]" placeholder="请输入产品别名"></a-input>
+              <a-input @change="bmPinyinTran" v-decorator="[ 'bname', validatorRules.bname]" placeholder="请输入产品别名"></a-input>
             </a-form-item>
           </a-col>
           <a-col :lg="12">
@@ -92,6 +98,62 @@
 
         <a-row class="form-row" :gutter="{ xs: 8, sm: 16, md: 24, lg: 32 }">
           <a-col :lg="12">
+            <a-form-item label="生产厂家" :labelCol="labelCol" :wrapperCol="wrapperCol">
+              <!--<a-input v-decorator="[ 'venderId', validatorRules.venderId]" placeholder="请选择生产厂家"></a-input>-->
+
+              <a-select
+                showSearch
+                :venderId="venderValue"
+                placeholder="请选择生产厂家"
+                :defaultActiveFirstOption="false"
+                :showArrow="false"
+                :filterOption="false"
+                @search="venderHandleSearch"
+                @change="venderHandleChange"
+                @focus="venderHandleSearch"
+                :notFoundContent="notFoundContent"
+                v-decorator="[ 'venderId', validatorRules.venderId]"
+              >
+                <a-select-option v-for="d in venderData" :key="d.value">{{d.text}}</a-select-option>
+              </a-select>
+
+            </a-form-item>
+          </a-col>
+          <a-col :lg="12">
+            <a-form-item label="供应商" :labelCol="labelCol" :wrapperCol="wrapperCol">
+              <a-input v-decorator="[ 'supplierId', validatorRules.supplierId]" placeholder="请输入供应商"></a-input>
+            </a-form-item>
+          </a-col>
+        </a-row>
+
+        <a-row class="form-row" :gutter="{ xs: 8, sm: 16, md: 24, lg: 32 }">
+          <a-col :lg="12">
+            <a-form-item label="是否计费" :labelCol="labelCol" :wrapperCol="wrapperCol">
+              <a-input v-decorator="[ 'isCharge', validatorRules.isCharge]" placeholder="请输入是否计费"></a-input>
+            </a-form-item>
+          </a-col>
+          <a-col :lg="12">
+            <a-form-item label="产品组别" :labelCol="labelCol" :wrapperCol="wrapperCol">
+              <a-input v-decorator="[ 'groupId', validatorRules.groupId]" placeholder="请输入产品组别"></a-input>
+            </a-form-item>
+          </a-col>
+        </a-row>
+
+        <a-row class="form-row" :gutter="{ xs: 8, sm: 16, md: 24, lg: 32 }">
+          <a-col :lg="12">
+            <a-form-item label="注册证" :labelCol="labelCol" :wrapperCol="wrapperCol">
+              <a-input v-decorator="[ 'registration', validatorRules.registration]" placeholder="请输入注册证，多个注册证以“；”分开"></a-input>
+            </a-form-item>
+          </a-col>
+          <a-col :lg="12">
+            <a-form-item label="产品收费代码" :labelCol="labelCol" :wrapperCol="wrapperCol">
+              <a-input-number v-decorator="[ 'sellingPrice', validatorRules.sellingPrice]" placeholder="请输入产品收费代码" style="width: 100%"/>
+            </a-form-item>
+          </a-col>
+        </a-row>
+
+        <a-row class="form-row" :gutter="{ xs: 8, sm: 16, md: 24, lg: 32 }">
+          <a-col :lg="12">
             <a-form-item label="一级分类" :labelCol="labelCol" :wrapperCol="wrapperCol">
               <a-input v-decorator="[ 'categoryOne', validatorRules.categoryOne]" placeholder="请输入一级分类"></a-input>
             </a-form-item>
@@ -105,33 +167,6 @@
 
         <a-row class="form-row" :gutter="{ xs: 8, sm: 16, md: 24, lg: 32 }">
           <a-col :lg="12">
-            <a-form-item label="产品组别" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input v-decorator="[ 'groupId', validatorRules.groupId]" placeholder="请输入产品组别"></a-input>
-            </a-form-item>
-          </a-col>
-          <a-col :lg="12">
-            <a-form-item label="是否计费" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input v-decorator="[ 'isCharge', validatorRules.isCharge]" placeholder="请输入是否计费"></a-input>
-            </a-form-item>
-          </a-col>
-        </a-row>
-
-        <a-row class="form-row" :gutter="{ xs: 8, sm: 16, md: 24, lg: 32 }">
-          <a-col :lg="12">
-            <a-form-item label="生产厂家" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input v-decorator="[ 'venderId', validatorRules.venderId]" placeholder="请输入生产厂家"></a-input>
-            </a-form-item>
-          </a-col>
-          <a-col :lg="12">
-            <a-form-item label="供应商" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input v-decorator="[ 'supplierId', validatorRules.supplierId]" placeholder="请输入供应商"></a-input>
-            </a-form-item>
-          </a-col>
-        </a-row>
-
-
-        <a-row class="form-row" :gutter="{ xs: 8, sm: 16, md: 24, lg: 32 }">
-          <a-col :lg="12">
             <a-form-item label="进价" :labelCol="labelCol" :wrapperCol="wrapperCol">
               <a-input-number v-decorator="[ 'purchasePrice', validatorRules.purchasePrice]" placeholder="请输入进价" style="width: 100%"/>
             </a-form-item>
@@ -142,10 +177,6 @@
             </a-form-item>
           </a-col>
         </a-row>
-
-        <a-form-item label="注册证" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input v-decorator="[ 'registration', validatorRules.registration]" placeholder="请输入注册证"></a-input>
-        </a-form-item>
 
         <a-form-item label="描述" :labelCol="labelCol" :wrapperCol="wrapperCol">
           <a-textarea v-decorator="[ 'description', validatorRules.description]" placeholder="请输入描述"></a-textarea>
@@ -349,8 +380,41 @@
   import { httpAction } from '@/api/manage'
   import pick from 'lodash.pick'
   import { validateDuplicateValue } from '@/utils/util'
-  import JDate from '@/components/jeecg/JDate'  
-  
+  import JDate from '@/components/jeecg/JDate'
+  import { makeWb } from '@/utils/wubi'
+  import { getAction } from  '@/api/manage'
+
+  let timeout;
+  let currentValue;
+
+  function fetch(value, callback,url) {
+    if (timeout) {
+      clearTimeout(timeout);
+      timeout = null;
+    }
+    currentValue = value;
+
+    function fake() {
+      getAction(url,{name:value}).then((res)=>{
+        if (!res.success) {
+          this.cmsFailed(res.message);
+        }
+        if (currentValue === value) {
+          const result = res.result;
+          const data = [];
+          result.forEach(r => {
+            data.push({
+              value: r.id,
+              text: r.name,
+            });
+          });
+          callback(data);
+        }
+      })
+    }
+    timeout = setTimeout(fake, 300);
+  }
+
   export default {
     name: "PdProductModal",
     components: { 
@@ -358,9 +422,14 @@
     },
     data () {
       return {
+        unitData: [],
+        unitValue: undefined,
+        venderData: [],
+        venderValue: undefined,
+        notFoundContent:"未找到内容",
         form: this.$form.createForm(this),
         title:"操作",
-        width:800,
+        width:1200,
         visible: false,
         model: {},
         labelCol: {
@@ -392,10 +461,12 @@
           zdy: {rules: [
           ]},
           spec: {rules: [
+              {required: true, message: '请输入规格!'},
           ]},
           version: {rules: [
           ]},
           unitId: {rules: [
+              {required: true, message: '请选择单位!'},
           ]},
           categoryOne: {rules: [
           ]},
@@ -404,8 +475,10 @@
           groupId: {rules: [
           ]},
           venderId: {rules: [
+              {required: true, message: '请选择生产厂家!'},
           ]},
           isCharge: {rules: [
+              {required: true, message: '请选择是否计费!'},
           ]},
           supplierId: {rules: [
           ]},
@@ -414,6 +487,7 @@
           sellingPrice: {rules: [
           ]},
           registration: {rules: [
+              {required: true, message: '请输入注册证!'},
           ]},
           description: {rules: [
           ]},
@@ -546,6 +620,8 @@
         url: {
           add: "/pd/pdProduct/add",
           edit: "/pd/pdProduct/edit",
+          queryUnit:"/pd/pdEncodingRule/getEncodingRuleList",
+          queryVender:"/pd/pdVender/getVenderList",
         }
       }
     },
@@ -604,8 +680,45 @@
       },
       popupCallback(row){
         this.form.setFieldsValue(pick(row,'number','name','py','wb','bname','bpy','bwb','zdy','spec','version','unitId','categoryOne','categoryTwo','groupId','venderId','isCharge','supplierId','purchasePrice','sellingPrice','registration','description','licenceName0','licenceNum0','licenceDate0','licenceSite0','licenceValidity0','licenceName1','licenceNum1','licenceDate1','licenceSite1','licenceValidity1','licenceName2','licenceNum2','licenceDate2','licenceSite2','licenceValidity2','licenceName3','licenceNum3','licenceDate3','licenceSite3','licenceValidity3','licenceName4','licenceNum4','licenceDate4','licenceSite4','licenceValidity4','licenceName5','licenceNum5','licenceDate5','licenceSite5','licenceValidity5','licenceName6','licenceNum6','licenceDate6','licenceSite6','licenceValidity6','licenceName7','licenceNum7','licenceDate7','licenceSite7','licenceValidity7','licenceName8','licenceNum8','licenceDate8','licenceSite8','licenceValidity8','licenceName9','licenceNum9','licenceDate9','licenceSite9','licenceValidity9','licenceName10','licenceNum10','licenceDate10','licenceSite10','licenceValidity10','createBy','createTime','updateBy','updateTime','sysOrgCode','validityFlag','delFlag'))
-      }
-      
+      },
+      pinyinTran(e){
+        let val = e.target.value;
+        let pinyin = require('js-pinyin');
+        pinyin.setOptions({checkPolyphone: false, charCase: 0});
+        //let py = pinyin.getFullChars(val);//获取全拼
+        let py = pinyin.getCamelChars(val);//获取简码
+        this.form.setFieldsValue({py:py});
+        let wb = makeWb(val);
+        this.form.setFieldsValue({wb:wb});//获取五笔简码
+      },
+      bmPinyinTran(e){
+        let val = e.target.value;
+        let pinyin = require('js-pinyin');
+        pinyin.setOptions({checkPolyphone: false, charCase: 0});
+        //let py = pinyin.getFullChars(val);//获取全拼
+        let py = pinyin.getCamelChars(val);//获取简码
+        this.form.setFieldsValue({bpy:py});
+        let wb = makeWb(val);
+        this.form.setFieldsValue({bwb:wb});//获取五笔简码
+      },
+     //单位查询start
+      unitHandleSearch(value) {
+        fetch(value, data => (this.unitData = data),this.url.queryUnit);
+      },
+      unitHandleChange(value) {
+        this.unitValue = value;
+        fetch(value, data => (this.unitData = data),this.url.queryUnit);
+      },
+      //单位查询end
+      //生产厂家查询start
+      venderHandleSearch(value) {
+        fetch(value, data => (this.venderData = data),this.url.queryVender);
+      },
+      venderHandleChange(value) {
+        this.venderValue = value;
+        fetch(value, data => (this.venderData = data),this.url.queryVender);
+      },
+      //生产厂家查询end
     }
   }
 </script>
