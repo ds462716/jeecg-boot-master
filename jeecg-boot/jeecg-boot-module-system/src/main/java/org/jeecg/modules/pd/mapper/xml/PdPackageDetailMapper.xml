@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.pd.mapper.PdPackageDetailMapper">
+
+	<delete id="deleteByMainId" parameterType="java.lang.String">
+		UPDATE  pd_package_detail
+		SET del_flag = '1'
+		WHERE
+			 package_id = #{mainId}
+	</delete>
+	
+	<select id="selectByMainId" parameterType="java.lang.String" resultType="org.jeecg.modules.pd.entity.PdPackageDetail">
+		SELECT * 
+		FROM  pd_package_detail
+		WHERE
+			 package_id = #{mainId}
+	</select>
+</mapper>
