@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
+import java.util.List;
+
 /**
  * @Description: 生产厂家
  * @Author: zxh
@@ -22,5 +24,10 @@ public class PdVenderServiceImpl extends ServiceImpl<PdVenderMapper, PdVender> i
     @Override
     public PdVender verify(PdVender pdVender) {
         return pdVenderMapper.verify(pdVender);
+    }
+
+    @Override
+    public List<PdVender> selectList(PdVender pdVender) {
+        return pdVenderMapper.selectList(pdVender);
     }
 }
