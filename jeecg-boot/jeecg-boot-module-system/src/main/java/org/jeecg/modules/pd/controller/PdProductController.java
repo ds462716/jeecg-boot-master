@@ -152,4 +152,22 @@ public class PdProductController extends JeecgController<PdProduct, IPdProductSe
         return super.importExcel(request, response, PdProduct.class);
     }
 
+	 /**
+	  * 查询产品列表，用于选择产品弹出框
+	  * add by jangxz 20200206
+	  * @param pdProduct
+	  * @param pageNo
+	  * @param pageSize
+	  * @param req
+	  * @return
+	  */
+	 @GetMapping(value = "/chooseProductList")
+	 public Result<?> chooseProductList(PdProduct pdProduct,
+									@RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
+									@RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
+									HttpServletRequest req) {
+		 Page<PdProduct> page = new Page<PdProduct>(pageNo, pageSize);
+		 IPage<PdProduct> pageList = pdProductService.chooseProductList(page, pdProduct);
+		 return Result.ok(pageList);
+	 }
 }

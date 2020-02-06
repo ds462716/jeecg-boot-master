@@ -1,8 +1,10 @@
 package org.jeecg.modules.pd.service.impl;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.jeecg.modules.pd.entity.PdProduct;
 import org.jeecg.modules.pd.mapper.PdProductMapper;
 import org.jeecg.modules.pd.service.IPdProductService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -16,4 +18,11 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 @Service
 public class PdProductServiceImpl extends ServiceImpl<PdProductMapper, PdProduct> implements IPdProductService {
 
+    @Autowired
+    private PdProductMapper pdProductMapper;
+
+    @Override
+    public Page<PdProduct> chooseProductList(Page<PdProduct> pageList, PdProduct pdProduct) {
+        return pageList.setRecords(pdProductMapper.chooseProductList(pdProduct));
+    }
 }
