@@ -1,5 +1,6 @@
 package org.jeecg.modules.pd.vo;
 
+import lombok.Data;
 import org.jeecg.modules.pd.entity.PdProduct;
 
 /**
@@ -7,6 +8,7 @@ import org.jeecg.modules.pd.entity.PdProduct;
  * @description 产品VO
  * @date 2020-2-6
  */
+@Data
 public class PdProductPage extends PdProduct {
 
     /** 产品ID **/

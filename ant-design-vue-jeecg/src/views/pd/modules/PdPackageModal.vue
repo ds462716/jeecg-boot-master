@@ -85,7 +85,7 @@
 
         <!--  如果要用默认的新增、删除按钮，设置 :actionButton="true"
             @deleted="valueChange"   删除行事件
-            @added="valueChange"     新增行之后处理的事件
+            @added="valueChange"     新增行之后处理的事件 但是只能取到之前行的值，取不到本次新增行的值
             @valueChange="valueChange"  更改值事件
             -->
       </a-tabs>
@@ -259,14 +259,14 @@
       },
       // 新增行
       handleConfirmAdd() {
-        // this.$refs.pdChooseProductListModel.show();
-        this.id=this.id+1;
-        let data1 = {"productId":this.id,"name":this.id,"spec":"2","unitName":"3","venderName":"4","supplierName":"5","count":this.id+11};
-        this.pdPackageDetailTable.dataSource.push(data1);
-        this.$refs.pdPackageDetail.add();
-        this.$nextTick(() => {
-          this.valueChange();
-        })
+        this.$refs.pdChooseProductListModel.show();
+        // this.id=this.id+1;
+        // let data1 = {"productId":this.id,"name":this.id,"spec":"2","unitName":"3","venderName":"4","supplierName":"5","count":this.id+11};
+        // this.pdPackageDetailTable.dataSource.push(data1);
+        // this.$refs.pdPackageDetail.add();
+        // this.$nextTick(() => {
+        //   this.valueChange();
+        // })
       },
       // 产品数量变更
       valueChange(e) {

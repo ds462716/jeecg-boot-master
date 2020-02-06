@@ -20,6 +20,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
 
+import org.jeecg.modules.pd.vo.PdProductPage;
 import org.jeecgframework.poi.excel.ExcelImportUtil;
 import org.jeecgframework.poi.excel.def.NormalExcelConstants;
 import org.jeecgframework.poi.excel.entity.ExportParams;
@@ -166,8 +167,8 @@ public class PdProductController extends JeecgController<PdProduct, IPdProductSe
 									@RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
 									@RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
 									HttpServletRequest req) {
-		 Page<PdProduct> page = new Page<PdProduct>(pageNo, pageSize);
-		 IPage<PdProduct> pageList = pdProductService.chooseProductList(page, pdProduct);
+		 Page<PdProductPage> page = new Page<PdProductPage>(pageNo, pageSize);
+		 IPage<PdProductPage> pageList = pdProductService.chooseProductList(page, pdProduct);
 		 return Result.ok(pageList);
 	 }
 }

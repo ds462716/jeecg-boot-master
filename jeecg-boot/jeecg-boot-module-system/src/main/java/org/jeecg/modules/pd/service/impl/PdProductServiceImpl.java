@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.jeecg.modules.pd.entity.PdProduct;
 import org.jeecg.modules.pd.mapper.PdProductMapper;
 import org.jeecg.modules.pd.service.IPdProductService;
+import org.jeecg.modules.pd.vo.PdProductPage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,7 +23,8 @@ public class PdProductServiceImpl extends ServiceImpl<PdProductMapper, PdProduct
     private PdProductMapper pdProductMapper;
 
     @Override
-    public Page<PdProduct> chooseProductList(Page<PdProduct> pageList, PdProduct pdProduct) {
+    public Page<PdProductPage> chooseProductList(Page<PdProductPage> pageList, PdProduct pdProduct) {
+
         return pageList.setRecords(pdProductMapper.chooseProductList(pdProduct));
     }
 }

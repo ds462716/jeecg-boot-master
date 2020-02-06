@@ -73,7 +73,7 @@
           {
             title:'产品名称',
             align:"center",
-            dataIndex: 'name'
+            dataIndex: 'productName'
           },
           {
             title:'规格',
@@ -102,12 +102,9 @@
           }
         ],
         url: {
-          list: "/pd/pdPackage/chooseProductList",
+          list: "/pd/pdProduct/chooseProductList",
         }
       }
-    },
-    created () {
-      // loadData();
     },
     methods: {
       add () {
@@ -130,8 +127,6 @@
       },
       popupCallback(row){
       },
-
-
     }
   }
 </script>

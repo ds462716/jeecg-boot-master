@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.jeecg.modules.pd.entity.PdProduct;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.jeecg.modules.pd.vo.PdProductPage;
 
 /**
  * @Description: pd_product
@@ -13,6 +14,6 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  */
 public interface PdProductMapper extends BaseMapper<PdProduct> {
 
-    List<PdProduct> chooseProductList(PdProduct pdProduct);
+    List<PdProductPage> chooseProductList(PdProduct pdProduct);
 
 }

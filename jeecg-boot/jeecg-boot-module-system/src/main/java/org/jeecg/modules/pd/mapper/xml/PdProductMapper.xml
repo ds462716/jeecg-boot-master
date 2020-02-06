@@ -2,9 +2,10 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.jeecg.modules.pd.mapper.PdProductMapper">
 
-    <select id="chooseProductList" parameterType="org.jeecg.modules.pd.vo.PdProductPage">
+    <select id="chooseProductList" resultType="org.jeecg.modules.pd.vo.PdProductPage">
         select
             a.id as productId,
+            a.number as number,
             a.name as productName,
             a.unit_id as unitId,
             a.vender_id as venderId,
