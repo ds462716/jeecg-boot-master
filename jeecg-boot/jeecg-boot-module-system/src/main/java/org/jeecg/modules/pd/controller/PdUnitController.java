@@ -63,7 +63,7 @@ public class PdUnitController extends JeecgController<PdUnit, IPdUnitService> {
 								   @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
 								   HttpServletRequest req) {
 		Page<PdUnit> page = new Page<PdUnit>(pageNo, pageSize);
-		IPage<PdUnit> pageList = pdUnitService.querylist(page, pdUnit);
+		IPage<PdUnit> pageList = pdUnitService.queryList(page, pdUnit);
 		return Result.ok(pageList);
 	}
 	
@@ -153,4 +153,23 @@ public class PdUnitController extends JeecgController<PdUnit, IPdUnitService> {
         return super.importExcel(request, response, PdUnit.class);
     }
 
+	 /**
+	  * 不分页列表查询
+	  *
+	  * @return
+	  */
+	 @GetMapping(value = "/getUnitList")
+	 public Result<List<PdUnit>> getUnitList(PdUnit pdUnit) {
+		 long start = System.currentTimeMillis();
+		 Result<List<PdUnit>> result = new Result<>();
+		 try {
+			 List<PdUnit> list = pdUnitService.queryList(pdUnit);
+			 result.setResult(list);
+			 result.setSuccess(true);
+		 }catch(Exception e){
+			 log.error(e.getMessage(), e);
+		 }
+		 log.info("======获取单位数据=====耗时:" + (System.currentTimeMillis() - start) + "毫秒");
+		 return result;
+	 }
 }

@@ -14,7 +14,7 @@ import java.util.List;
  */
 public interface IPdUnitService extends IService<PdUnit> {
     
-    List<PdUnit> querylist(PdUnit pdUnit);
+    List<PdUnit> queryList(PdUnit pdUnit);
 
-    Page<PdUnit> querylist(Page<PdUnit> pageList, PdUnit pdUnit);
+    Page<PdUnit> queryList(Page<PdUnit> pageList, PdUnit pdUnit);
 }
