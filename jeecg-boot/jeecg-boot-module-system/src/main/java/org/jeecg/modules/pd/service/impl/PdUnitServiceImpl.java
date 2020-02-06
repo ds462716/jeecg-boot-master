@@ -24,12 +24,12 @@ public class PdUnitServiceImpl extends ServiceImpl<PdUnitMapper, PdUnit> impleme
     private PdUnitMapper pdUnitMapper;
 
     @Override
-    public List<PdUnit> querylist(PdUnit pdUnit) {
+    public List<PdUnit> queryList(PdUnit pdUnit) {
         return pdUnitMapper.queryList(pdUnit);
     }
 
     @Override
-    public Page<PdUnit> querylist(Page<PdUnit> pageList, PdUnit pdUnit) {
+    public Page<PdUnit> queryList(Page<PdUnit> pageList, PdUnit pdUnit) {
         return pageList.setRecords(pdUnitMapper.queryList(pdUnit));
     }
 }
