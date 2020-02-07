@@ -9,10 +9,23 @@
 			 package_id = #{mainId}
 	</delete>
 	
-	<select id="selectByMainId" parameterType="java.lang.String" resultType="org.jeecg.modules.pd.entity.PdPackageDetail">
-		SELECT * 
-		FROM  pd_package_detail
+	<select id="selectByMainId" parameterType="java.lang.String" resultType="org.jeecg.modules.pd.vo.PdPackageDetailPage">
+		SELECT
+			a.*,
+            e.number as number,
+            e.name as productName,
+            e.spec as spec,
+            e.version as version,
+            b.name as unitName,
+            c.name as venderName,
+            d.name as supplierName
+		FROM  pd_package_detail a
+        left join pd_product e on a.product_id = e.id
+        left join pd_unit b on e.unit_id = b.id
+        left join pd_vender c on e.vender_id = c.id
+        left join pd_supplier d on e.supplier_id = d.id
 		WHERE
-			 package_id = #{mainId}
+            a.del_flag = '0'
+			and a.package_id = #{mainId}
 	</select>
 </mapper>

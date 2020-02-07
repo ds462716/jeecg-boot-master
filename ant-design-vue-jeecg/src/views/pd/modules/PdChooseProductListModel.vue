@@ -8,16 +8,40 @@
     @cancel="handleCancel"
     cancelText="关闭">
     <a-spin :spinning="confirmLoading">
-      <a-form :form="form">
+      <!-- 查询区域 -->
+      <div class="table-page-search-wrapper">
+        <a-form layout="inline" @keyup.enter.native="searchQuery">
+          <a-row :gutter="24">
+            <a-col :md="6" :sm="8">
+              <a-form-item label="产品编号">
+                <a-input placeholder="请输入产品编号" v-model="queryParam.number"></a-input>
+              </a-form-item>
+            </a-col>
+            <a-col :md="6" :sm="8">
+              <a-form-item label="产品名称">
+                <a-input placeholder="请输入产品名称" v-model="queryParam.name"></a-input>
+              </a-form-item>
+            </a-col>
+            <a-col :md="6" :sm="8">
+            <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
+              <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
+              <a-button type="primary" @click="searchReset" icon="reload" style="margin-left: 8px">重置</a-button>
+              <a @click="handleToggleSearch" style="margin-left: 8px">
+                {{ toggleSearchStatus ? '收起' : '展开' }}
+                <a-icon :type="toggleSearchStatus ? 'up' : 'down'"/>
+              </a>
+            </span>
+            </a-col>
 
-
-      </a-form>
-
+          </a-row>
+        </a-form>
+      </div>
+      <!-- 查询区域-END -->
       <a-table
         ref="table"
         size="middle"
         bordered
-        rowKey="id"
+        rowKey="productId"
         :columns="columns"
         :dataSource="dataSource"
         :pagination="ipagination"
@@ -57,7 +81,7 @@
         columns: [
           {
             title: '#',
-            dataIndex: 'id',
+            dataIndex: 'productId',
             key:'rowIndex',
             width:60,
             align:"center",
@@ -107,12 +131,9 @@
       }
     },
     methods: {
-      add () {
-        this.edit({});
-      },
-      edit (record) {
-      },
       close () {
+        this.selectedRowKeys = [];
+        this.selectionRows = [];
         this.$emit('close');
         this.visible = false;
       },
@@ -120,13 +141,17 @@
         this.visible = true;
       },
       handleOk () {
-
+        let rows = this.selectionRows;
+        this.$emit('ok', rows);
+        this.close();
       },
       handleCancel () {
-        this.close()
+        this.close();
       },
       popupCallback(row){
       },
+
+
     }
   }
 </script>

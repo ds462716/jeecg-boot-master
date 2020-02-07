@@ -14,4 +14,5 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  */
 public interface PdPackageMapper extends BaseMapper<PdPackage> {
 
+    List<PdPackage> queryList(PdPackage pdPackage);
 }
