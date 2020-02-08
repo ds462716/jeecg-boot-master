@@ -44,13 +44,9 @@
             </a-form-item>
           </a-col>
           <!-- <!-- 子表单区域 -->
-          <div style="float: left;" v-show="!disableSubmit">
-            <a-button @click="choice" style="margin-left: 0px;margin-bottom: 20px"  type="primary">选择产品</a-button>
-          </div>
           <div style="float: left;width:100%;margin-bottom: 70px">
             <table id="contentTable" class="tableStyle">
               <tr>
-                <th v-show="!disableSubmit">操作</th>
                 <th>产品编号</th>
                 <th>产品批次号</th>
                 <th>产品有效期</th>
@@ -61,14 +57,13 @@
                 <th>生产厂家</th>
               </tr>
               <tr v-for="(item, index) in pdPurchaseDetailTable.dataSource">
-                <td v-show="!disableSubmit"><a @click="deleteDetail(item.productId)">删除</a></td>
                 <td>{{item.productNo}}</td>
                 <td>{{item.batchNo}}</td>
                 <td>{{item.expireDate}}</td>
                 <td>{{item.inPrice}}</td>
                 <td>
                    <a-form-item>
-                 <a-input  :disabled="disableSubmit" :style="{width: 'calc(80% - 10px)'}" @blur="(e)=>{handleConfirmBlur(e.target,item)}"  v-decorator="['pdPurchaseDetailTable['+index+'].length', {'initialValue':item.applyCount,rules:validatorRules.applyCount}]"/>
+                 <a-input  disabled="disabled" :style="{width: 'calc(80% - 10px)'}" @blur="(e)=>{handleConfirmBlur(e.target,item)}"  v-decorator="['pdPurchaseDetailTable['+index+'].length', {'initialValue':item.applyCount,rules:validatorRules.applyCount}]"/>
                   </a-form-item>
                 </td>
                 <td>{{item.amountMoney}}</td>
@@ -77,14 +72,18 @@
               </tr>
             </table>
           </div>
+         <a-col :span="12">
+          <a-form-item label="审核意见" :labelCol="labelCol" :wrapperCol="wrapperCol">
+            <a-input :disabled="disableSubmit" v-decorator="[ 'refuseReason', validatorRules.refuseReason]" placeholder="请输入审核意见" style="width: 100%;height: 80px"/>
+          </a-form-item>
+        </a-col>
         </a-row>
-        <pd-purchase-detail-add-modal  ref="PdPurchaseDetailAddModal" @ok="modalFormOk"></pd-purchase-detail-add-modal>
       </a-form>
     </a-spin>
     <div class="drawer-bootom-button" v-show="!disableSubmit">
-      <a-button @click="handleOk('submit')" type="primary" :loading="confirmLoading">提交</a-button>
-      <a-button @click="handleOk('save')" type="primary" :loading="confirmLoading">保存</a-button>
-      <a-popconfirm title="确定放弃编辑？" @confirm="handleCancel" okText="确定" cancelText="取消">
+      <a-button @click="handleOk('yes')" type="primary" :loading="confirmLoading">审核通过</a-button>
+      <a-button @click="handleOk('no')" type="primary" :loading="confirmLoading">拒绝</a-button>
+      <a-popconfirm title="确定放弃审核？" @confirm="handleCancel" okText="确定" cancelText="取消">
         <a-button style="margin-right: .8rem">取消</a-button>
       </a-popconfirm>
     </div>
@@ -98,11 +97,10 @@
   import { JEditableTableMixin } from '@/mixins/JEditableTableMixin'
   import JDate from '@/components/jeecg/JDate'
   import JDictSelectTag from "@/components/dict/JDictSelectTag"
-  import PdPurchaseDetailAddModal from './PdEncodingIdentifierAddModal'
   export default {
     name: 'PdPurchaseOrderModal',
     mixins: [JEditableTableMixin],
-    components: {JDate, JDictSelectTag,PdPurchaseDetailAddModal},
+    components: {JDate, JDictSelectTag},
     data() {
       return {
         confirmLoading: false,
@@ -117,6 +115,7 @@
           storeroomName:{},
           amountCount:{},
           amountMoney:{},
+          refuseReason:{},
         },
        refKeys: ['pdPurchaseDetail', ],
         tableKeys:['pdPurchaseDetail', ],
@@ -125,7 +124,6 @@
           dataSource: []
         },
         url: {
-          add: "/pd/pdPurchaseOrder/add",
           edit: "/pd/pdPurchaseOrder/edit",
           pdPurchaseDetail: {
             list: '/pd/pdPurchaseOrder/queryPdPurchaseDetail'
@@ -134,122 +132,17 @@
       }
     },
     methods: {
-      add () {//初始化新增
-        this.pdPurchaseDetailTable.dataSource = [];
-        this.edit({});
-        this.purchaseInfo();
-      },
-      purchaseInfo() { //新增页面初始化
-        getAction("/pd/pdPurchaseOrder/purchaseInfo",{}).then((res)=>{
-          if (res.success) {
-            let model={};
-            this.model.orderNo=res.result.orderNo;//申购编号
-            this.model.purchaseBy=res.result.auditBy;//申购人编号
-            this.model.orderDate=res.result.orderDate;//申购日期
-            this.model.storeroomName="待定";//申购库房名称
-            this.model.amountCount=res.result.amountCount;//申购总数量
-            this.model.amountMoney=res.result.amountMoney;//申购总金额
-            this.$nextTick(() => {
-              this.form.setFieldsValue(pick(this.model,'orderNo','purchaseBy','orderDate','storeroomName','amountCount','amountMoney'))
-            })
-          }
-        })
-      },
-      //修改申购数量后重新计算总数量及总金额
-      handleConfirmBlur(e,m){
-        this.applyCount = e.value;//修改后的申购数量
-        this.inPrice=m.inPrice;//产品单价；
-        m.amountMoney= this.applyCount * this.inPrice;//计算修改后的总金额
-        m.applyCount=e.value;
-       let tableData=this.pdPurchaseDetailTable.dataSource;
-       let count=0;
-       let amountMoney=0;
-        for(let i=0;i<tableData.length;i++){
-           count=count+parseInt(tableData[i].applyCount);//计算总数量
-           amountMoney=amountMoney+Number(tableData[i].amountMoney);//计算申购总金额
-        }
-        let model={};
-        this.model.amountCount=count;//申购总数量
-        this.model.amountMoney=amountMoney;//申购总金额
-        this.$nextTick(() => {
-          this.form.setFieldsValue(pick(this.model,'amountCount','amountMoney'))
-        })
-      },
-
-      //选择产品
-      choice() {
-        this.$refs.PdPurchaseDetailAddModal.show();
-        this.$refs.PdPurchaseDetailAddModal.title = "选择产品";
-      },
-
-      deleteDetail(productId){
-        const newData = this.pdPurchaseDetailTable.dataSource.filter(item => item.productId !== productId);
-        let count=0;
-        let amountMoney=0;
-        for(let i=0;i<newData.length;i++){
-          count=count+parseInt(newData[i].applyCount);//计算总数量
-          amountMoney=amountMoney+Number(newData[i].amountMoney);//计算申购总金额
-        }
-        let model={};
-        this.model.amountCount=count;//申购总数量
-        this.model.amountMoney=amountMoney;//申购总金额
-        this.$nextTick(() => {
-          this.form.setFieldsValue(pick(this.model,'amountCount','amountMoney'))
-        })
-        this.pdPurchaseDetailTable.dataSource = newData;
-      },
-
-      modalFormOk (formData) {//选择产品确定后返回所选择的数据
-        let values = [];
-        let count=0;
-        let amountMoney=0;
-        for(let i=0;i<formData.length;i++){
-          values.push({
-            orderNo: formData[i].value,
-            productId: formData[i].value,
-            productNo: formData[i].value,
-            batchNo: formData[i].value,
-            expireDate:new Date,
-            inPrice: formData[i].value,
-            applyCount: 1,//默认1
-            amountMoney: formData[i].value,
-            stockNum: formData[i].value
-          })
-          count=count+parseInt(formData[i].value);//计算总数量
-          amountMoney=amountMoney+Number(formData[i].value);//计算申购总金额
-        }
-        let model={};
-        this.model.amountCount=count;//申购总数量
-        this.model.amountMoney=amountMoney;//申购总金额
-        this.$nextTick(() => {
-          this.form.setFieldsValue(pick(this.model,'amountCount','amountMoney'))
-        })
-        this.pdPurchaseDetailTable.dataSource = values;
-      },
-      handleOk (submitType) { //提交
-        this.model.submitStart='2';
-        if(submitType=="save"){
-          this.model.submitStart='1';
+      handleOk (type) { //审核提交
+        this.model.orderStatus='2';//审核通过
+        if(type=="no"){
+          this.model.orderStatus='3';//拒绝
         }
         const that = this;
-        // 触发表单验证
-        this.form.validateFields((err, values) => {
-          if (!err) {
-            //选择标识符的校验通过后
-            let pdPurchaseDetailList=this.pdPurchaseDetailTable.dataSource;
-            values.pdPurchaseDetailList=pdPurchaseDetailList;
-            if(pdPurchaseDetailList.length>0){
-              let httpurl = '';
-              let method = '';
-              if(!this.model.id){
-                httpurl+=this.url.add;
-                method = 'post';
-              }else{
-                httpurl+=this.url.edit;
-                method = 'put';
-              }
+        let pdPurchaseDetailList=this.pdPurchaseDetailTable.dataSource;
+        let values=[];
+        values.pdPurchaseDetailList=pdPurchaseDetailList;
               let formData = Object.assign(this.model, values);
-              httpAction(httpurl,formData,method).then((res)=>{
+              httpAction(this.url.edit,formData,'put').then((res)=>{
                  if(res.success){
                   that.$message.success(res.message);
                   that.$emit('ok');
@@ -260,15 +153,10 @@
                 that.confirmLoading = false;
                 that.close();
               })
-            }else{
-              that.$message.error("请选择产品");
-            }
-          }
-        })
       },
       /** 调用完edit()方法之后会自动调用此方法 */
       editAfter() {
-        let fieldval = pick(this.model,'orderNo','purchaseBy','orderDate','storeroomName','orderStatus','amountCount','amountMoney','submitStart')
+        let fieldval = pick(this.model,'orderNo','purchaseBy','orderDate','storeroomName','orderStatus','amountCount','amountMoney','submitStart','refuseReason')
         this.$nextTick(() => {
           this.form.setFieldsValue(fieldval)
         })
@@ -291,7 +179,7 @@
         this.$message.error(msg)
       },
       popupCallback(row){
-        this.form.setFieldsValue(pick(row,'orderNo','purchaseBy','orderDate','storeroomName','orderStatus','amountCount','amountMoney','submitStart'))
+        this.form.setFieldsValue(pick(row,'orderNo','purchaseBy','orderDate','storeroomName','orderStatus','amountCount','amountMoney','submitStart','refuseReason'))
       },
 
     }

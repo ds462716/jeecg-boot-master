@@ -47,6 +47,9 @@
             <if test="orderStatus != null and orderStatus != ''">
                 AND a.order_status = #{orderStatus}
             </if>
+            <if test="submitStart != null and submitStart != ''">
+                AND a.submit_start = #{submitStart}
+            </if>
         </where>
     </select>
 

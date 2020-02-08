@@ -100,7 +100,6 @@ public class PdPurchaseOrderController {
 		PdPurchaseOrder pdPurchaseOrder = new PdPurchaseOrder();
 		BeanUtils.copyProperties(pdPurchaseOrderPage, pdPurchaseOrder);
 		pdPurchaseOrder.setOrderStatus("0");//审核状态  0：待审核
-		pdPurchaseOrder.setSubmitStart("1");//提交状态  1：未提交
 		pdPurchaseOrder.setDelFlag("0");
 		pdPurchaseOrderService.saveMain(pdPurchaseOrder, pdPurchaseOrderPage.getPdPurchaseDetailList());
 		return Result.ok("添加成功！");

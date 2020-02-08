@@ -41,22 +41,6 @@
       </a-form>
     </div>
     <!-- 查询区域-END -->
-    
-    <!-- 操作按钮区域 -->
-    <div class="table-operator">
-      <a-button @click="handleAdd" type="primary" icon="plus">新增</a-button>
-      <!--<a-button type="primary" icon="download" @click="handleExportXls('申购订单主表')">导出</a-button>
-      <a-upload name="file" :showUploadList="false" :multiple="false" :headers="tokenHeader" :action="importExcelUrl" @change="handleImportExcel">
-        <a-button type="primary" icon="import">导入</a-button>
-      </a-upload>-->
-      <a-dropdown v-if="selectedRowKeys.length > 0">
-        <a-menu slot="overlay">
-          <a-menu-item key="1" @click="batchDel"><a-icon type="delete"/>删除</a-menu-item>
-        </a-menu>
-        <a-button style="margin-left: 8px"> 批量操作 <a-icon type="down" /></a-button>
-      </a-dropdown>
-    </div>
-
     <!-- table区域-begin -->
     <div>
       <div class="ant-alert ant-alert-info" style="margin-bottom: 16px;">
@@ -97,28 +81,13 @@
         </template>
 
         <span slot="action" slot-scope="text, record">
-          <a  @click="handleEdit(record)">编辑</a>
-
-          <a-divider type="vertical" />
-          <a-dropdown>
-            <a class="ant-dropdown-link">更多 <a-icon type="down" /></a>
-            <a-menu slot="overlay">
-              <a-menu-item>
-                <a href="javascript:;" @click="handleDetail(record)">详情</a>
-              </a-menu-item>
-              <a-menu-item>
-                <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record)">
-                  <a>删除</a>
-                </a-popconfirm>
-              </a-menu-item>
-            </a-menu>
-          </a-dropdown>
+          <a v-if="record.orderStatus=='0'" @click="handleEdit(record)">审核</a>&nbsp;&nbsp;&nbsp;
+          <a href="javascript:;" @click="handleDetail(record)">详情</a>
         </span>
 
       </a-table>
     </div>
-
-    <pdPurchaseOrder-modal ref="modalForm" @ok="modalFormOk"></pdPurchaseOrder-modal>
+    <pd-purchase-examine-modal ref="modalForm" @ok="modalFormOk"></pd-purchase-examine-modal>
   </a-card>
 </template>
 
@@ -126,16 +95,16 @@
 
   import { JeecgListMixin,handleEdit} from '@/mixins/JeecgListMixin'
   import { deleteAction } from '@/api/manage'
-  import PdPurchaseOrderModal from './modules/PdPurchaseOrderModal'
+  import PdPurchaseExamineModal from './modules/PdPurchaseExamineModal'
   import JDictSelectTag from '@/components/dict/JDictSelectTag.vue'
   import {initDictOptions, filterMultiDictText} from '@/components/dict/JDictSelectUtil'
 
   export default {
-    name: "PdPurchaseOrderList",
+    name: "PdPurchaseExamineList",
     mixins:[JeecgListMixin],
     components: {
       JDictSelectTag,
-      PdPurchaseOrderModal
+      PdPurchaseExamineModal
     },
     data () {
       return {
@@ -199,18 +168,6 @@
             dataIndex: 'amountMoney'
           },
           {
-            title:'提交状态',
-            align:"center",
-            dataIndex: 'submitStart',
-            customRender:(text)=>{
-              if(!text){
-                return ''
-              }else{
-                return filterMultiDictText(this.dictOptions['submitStart'], text+"")
-              }
-            }
-          },
-          {
             title: '操作',
             dataIndex: 'action',
             align:"center",
@@ -231,46 +188,13 @@
       }
     },
     computed: {
-      /*importExcelUrl: function(){
-        return `${window._CONFIG['domianURL']}/${this.url.importExcelUrl}`;
-      }*/
+
     },
     methods: {
-      handleEdit: function (record) {//编译
-        if(record.submitStart=='2'){
-          this.$message.warning("此订单已提交审核，不允许编译！")
-          return
-        }
-        this.$refs.modalForm.edit(record);
-        this.$refs.modalForm.title = "编辑";
-        this.$refs.modalForm.disableSubmit = false;
-      },
-
-      handleDelete: function (record) {//删除
-        if(record.submitStart=='2'){
-          this.$message.warning("此订单已提交审核，不允许删除！")
-          return
-        }
-        var that = this;
-        var id=record.id;
-        deleteAction(that.url.delete, {id: id}).then((res) => {
-          if (res.success) {
-            that.$message.success(res.message);
-            that.loadData();
-          } else {
-            that.$message.warning(res.message);
-          }
-        });
-      },
       initDictConfig(){//静态字典值加载
         initDictOptions('order_status').then((res) => {
           if (res.success) {
             this.$set(this.dictOptions, 'orderStatus', res.result)
-          }
-        })
-        initDictOptions('submit_status').then((res) => {
-          if (res.success) {
-            this.$set(this.dictOptions, 'submitStart', res.result)
           }
         })
       }

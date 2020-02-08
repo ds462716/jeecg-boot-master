@@ -61,7 +61,7 @@ public class PdPurchaseOrder implements Serializable {
 	@JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd")
     @DateTimeFormat(pattern="yyyy-MM-dd")
     private Date auditDate;
-	/**拒绝理由*/
+	/**审核意见*/
     private String refuseReason;
 	/**申购总数量*/
     private Integer amountCount;

@@ -76,7 +76,7 @@ public class PdPurchaseOrderPage {
     @DateTimeFormat(pattern="yyyy-MM-dd")
 	private Date auditDate;
 	/**拒绝理由*/
-	@Excel(name = "拒绝理由", width = 15)
+	@Excel(name = "审核意见", width = 15)
 	private String refuseReason;
 	/**申购总数量*/
 	@Excel(name = "申购总数量", width = 15)
