@@ -227,6 +227,7 @@
         this.pdPurchaseDetailTable.dataSource = values;
       },
       handleOk (submitType) { //提交
+        alert(this.model.storeroomName);
         this.model.submitStart='2';
         if(submitType=="save"){
           this.model.submitStart='1';

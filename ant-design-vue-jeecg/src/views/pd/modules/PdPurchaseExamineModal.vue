@@ -137,22 +137,28 @@
         if(type=="no"){
           this.model.orderStatus='3';//拒绝
         }
-        const that = this;
-        let pdPurchaseDetailList=this.pdPurchaseDetailTable.dataSource;
-        let values=[];
-        values.pdPurchaseDetailList=pdPurchaseDetailList;
-              let formData = Object.assign(this.model, values);
-              httpAction(this.url.edit,formData,'put').then((res)=>{
-                 if(res.success){
-                  that.$message.success(res.message);
-                  that.$emit('ok');
-                }else{
-                  that.$message.warning(res.message);
-                }
-              }).finally(() => {
-                that.confirmLoading = false;
-                that.close();
-              })
+        this.form.validateFields((err, values) => {
+          this.model.refuseReason= values.refuseReason;
+          if (!err) {
+            const that = this;
+            let pdPurchaseDetailList = this.pdPurchaseDetailTable.dataSource;
+            let values = [];
+            values.pdPurchaseDetailList = pdPurchaseDetailList;
+            let formData = Object.assign(this.model, values);
+            httpAction(this.url.edit, formData, 'put').then((res) => {
+              if (res.success) {
+                that.$message.success("操作成功");
+                that.$emit('ok');
+              } else {
+                that.$message.warning(res.message);
+              }
+            }).finally(() => {
+              that.confirmLoading = false;
+              that.close();
+            })
+          }
+          })
+
       },
       /** 调用完edit()方法之后会自动调用此方法 */
       editAfter() {
