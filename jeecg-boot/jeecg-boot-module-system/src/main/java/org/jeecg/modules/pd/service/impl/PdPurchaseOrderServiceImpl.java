@@ -1,6 +1,7 @@
 package org.jeecg.modules.pd.service.impl;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import org.jeecg.modules.pd.entity.PdPackageDetail;
 import org.jeecg.modules.pd.entity.PdPurchaseOrder;
 import org.jeecg.modules.pd.entity.PdPurchaseDetail;
 import org.jeecg.modules.pd.mapper.PdPurchaseDetailMapper;
@@ -40,6 +41,12 @@ public class PdPurchaseOrderServiceImpl extends ServiceImpl<PdPurchaseOrderMappe
 	public Page<PdPurchaseOrder> selectList(Page<PdPurchaseOrder> page, PdPurchaseOrder pdPurchaseOrder) {
 		return page.setRecords(pdPurchaseOrderMapper.selectList(pdPurchaseOrder));
 	}
+
+	@Override
+	public List<PdPurchaseOrder> list(PdPurchaseOrder pdPurchaseOrder) {
+		return pdPurchaseOrderMapper.selectList(pdPurchaseOrder);
+	}
+
 
 	@Override
 	@Transactional

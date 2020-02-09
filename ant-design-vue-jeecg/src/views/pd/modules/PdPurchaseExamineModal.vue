@@ -44,6 +44,7 @@
             </a-form-item>
           </a-col>
           <!-- <!-- 子表单区域 -->
+          <a-button style="float: left;" type="primary" icon="download" @click="exportXls('申购产品列表')">导出</a-button>
           <div style="float: left;width:100%;margin-bottom: 70px">
             <table id="contentTable" class="tableStyle">
               <tr>
@@ -92,7 +93,7 @@
 <script>
 
   import pick from 'lodash.pick'
-  import { httpAction,getAction } from '@/api/manage'
+  import { httpAction,getAction,downFile } from '@/api/manage'
   import { FormTypes,getRefPromise } from '@/utils/JEditableTableUtil'
   import { JEditableTableMixin } from '@/mixins/JEditableTableMixin'
   import JDate from '@/components/jeecg/JDate'
@@ -125,6 +126,7 @@
         },
         url: {
           edit: "/pd/pdPurchaseOrder/edit",
+          exportXlsUrl: "/pd/pdPurchaseOrder/exportXls",
           pdPurchaseDetail: {
             list: '/pd/pdPurchaseOrder/queryPdPurchaseDetail'
           },
@@ -132,6 +134,38 @@
       }
     },
     methods: {
+      /* 导出 */
+      exportXls(fileName){
+        if(!fileName || typeof fileName != "string"){
+          fileName = "导出文件"
+        }
+        if(this.pdPurchaseDetailTable.dataSource.length>0){
+          let param = {"orderNo":this.model.orderNo};
+          console.log("导出参数",param)
+          downFile(this.url.exportXlsUrl,param).then((data)=>{
+            if (!data) {
+              this.$message.warning("文件下载失败")
+              return
+            }
+            if (typeof window.navigator.msSaveBlob !== 'undefined') {
+              window.navigator.msSaveBlob(new Blob([data]), fileName+'.xls')
+            }else{
+              let url = window.URL.createObjectURL(new Blob([data]))
+              let link = document.createElement('a')
+              link.style.display = 'none'
+              link.href = url
+              link.setAttribute('download', fileName+'.xls')
+              document.body.appendChild(link)
+              link.click()
+              document.body.removeChild(link); //下载完成移除元素
+              window.URL.revokeObjectURL(url); //释放掉blob对象
+            }
+          })
+        }else{
+          this.$message.warning("产品为空")
+          return
+        }
+      },
       handleOk (type) { //审核提交
         this.model.orderStatus='2';//审核通过
         if(type=="no"){

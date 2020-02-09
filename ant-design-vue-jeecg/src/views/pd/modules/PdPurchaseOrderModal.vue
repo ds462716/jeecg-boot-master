@@ -44,8 +44,9 @@
             </a-form-item>
           </a-col>
           <!-- <!-- 子表单区域 -->
-          <div style="float: left;" v-show="!disableSubmit">
-            <a-button @click="choice" style="margin-left: 0px;margin-bottom: 20px"  type="primary">选择产品</a-button>
+          <div style="float: left;">
+            <a-button type="primary" icon="download" @click="exportXls('申购产品列表')">导出</a-button>
+            <a-button v-show="!disableSubmit" @click="choice" style="margin-left: 0px;margin-bottom: 20px"  type="primary">选择产品</a-button>
           </div>
           <div style="float: left;width:100%;margin-bottom: 70px">
             <table id="contentTable" class="tableStyle">
@@ -93,8 +94,9 @@
 <script>
 
   import pick from 'lodash.pick'
-  import { httpAction,getAction } from '@/api/manage'
-  import { FormTypes,getRefPromise } from '@/utils/JEditableTableUtil'
+  import { httpAction,getAction,downFile } from '@/api/manage'
+ // import { FormTypes,getRefPromise } from '@/utils/JEditableTableUtil'
+ // import { JeecgListMixin } from '@/mixins/JeecgListMixin'
   import { JEditableTableMixin } from '@/mixins/JEditableTableMixin'
   import JDate from '@/components/jeecg/JDate'
   import JDictSelectTag from "@/components/dict/JDictSelectTag"
@@ -118,7 +120,7 @@
           amountCount:{},
           amountMoney:{},
         },
-       refKeys: ['pdPurchaseDetail', ],
+        refKeys: ['pdPurchaseDetail', ],
         tableKeys:['pdPurchaseDetail', ],
         // 申购单详细表
         pdPurchaseDetailTable: {
@@ -127,6 +129,7 @@
         url: {
           add: "/pd/pdPurchaseOrder/add",
           edit: "/pd/pdPurchaseOrder/edit",
+          exportXlsUrl: "/pd/pdPurchaseOrder/exportXls",
           pdPurchaseDetail: {
             list: '/pd/pdPurchaseOrder/queryPdPurchaseDetail'
           },
@@ -138,6 +141,38 @@
         this.pdPurchaseDetailTable.dataSource = [];
         this.edit({});
         this.purchaseInfo();
+      },
+      /* 导出 */
+       exportXls(fileName){
+        if(!fileName || typeof fileName != "string"){
+          fileName = "导出文件"
+        }
+        if(this.pdPurchaseDetailTable.dataSource.length>0){
+        let param = {"orderNo":this.model.orderNo};
+        console.log("导出参数",param)
+        downFile(this.url.exportXlsUrl,param).then((data)=>{
+          if (!data) {
+            this.$message.warning("文件下载失败")
+            return
+          }
+          if (typeof window.navigator.msSaveBlob !== 'undefined') {
+            window.navigator.msSaveBlob(new Blob([data]), fileName+'.xls')
+          }else{
+            let url = window.URL.createObjectURL(new Blob([data]))
+            let link = document.createElement('a')
+            link.style.display = 'none'
+            link.href = url
+            link.setAttribute('download', fileName+'.xls')
+            document.body.appendChild(link)
+            link.click()
+            document.body.removeChild(link); //下载完成移除元素
+            window.URL.revokeObjectURL(url); //释放掉blob对象
+          }
+        })
+      }else{
+          this.$message.warning("产品为空")
+          return
+        }
       },
       purchaseInfo() { //新增页面初始化
         getAction("/pd/pdPurchaseOrder/purchaseInfo",{}).then((res)=>{
@@ -227,7 +262,6 @@
         this.pdPurchaseDetailTable.dataSource = values;
       },
       handleOk (submitType) { //提交
-        alert(this.model.storeroomName);
         this.model.submitStart='2';
         if(submitType=="save"){
           this.model.submitStart='1';

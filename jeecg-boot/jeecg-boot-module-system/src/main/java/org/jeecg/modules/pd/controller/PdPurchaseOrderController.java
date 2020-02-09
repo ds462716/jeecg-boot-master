@@ -184,37 +184,15 @@ public class PdPurchaseOrderController {
     @RequestMapping(value = "/exportXls")
     public ModelAndView exportXls(HttpServletRequest request, PdPurchaseOrder pdPurchaseOrder) {
       // Step.1 组装查询条件查询数据
-      QueryWrapper<PdPurchaseOrder> queryWrapper = QueryGenerator.initQueryWrapper(pdPurchaseOrder, request.getParameterMap());
       LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
-
       //Step.2 获取导出数据
-      List<PdPurchaseOrder> queryList = pdPurchaseOrderService.list(queryWrapper);
-      // 过滤选中数据
-      String selections = request.getParameter("selections");
-      List<PdPurchaseOrder> pdPurchaseOrderList = new ArrayList<PdPurchaseOrder>();
-      if(oConvertUtils.isEmpty(selections)) {
-          pdPurchaseOrderList = queryList;
-      }else {
-          List<String> selectionList = Arrays.asList(selections.split(","));
-          pdPurchaseOrderList = queryList.stream().filter(item -> selectionList.contains(item.getId())).collect(Collectors.toList());
-      }
-
-      // Step.3 组装pageList
-      List<PdPurchaseOrderPage> pageList = new ArrayList<PdPurchaseOrderPage>();
-      for (PdPurchaseOrder main : pdPurchaseOrderList) {
-          PdPurchaseOrderPage vo = new PdPurchaseOrderPage();
-          BeanUtils.copyProperties(main, vo);
-          List<PdPurchaseDetail> pdPurchaseDetailList = pdPurchaseDetailService.selectByOrderNo(main.getOrderNo());
-          vo.setPdPurchaseDetailList(pdPurchaseDetailList);
-          pageList.add(vo);
-      }
-
-      // Step.4 AutoPoi 导出Excel
+      List<PdPurchaseDetail> pdPurchaseDetailList = pdPurchaseDetailService.selectByOrderNo(pdPurchaseOrder.getOrderNo());
+      // Step.3 AutoPoi 导出Excel
       ModelAndView mv = new ModelAndView(new JeecgEntityExcelView());
-      mv.addObject(NormalExcelConstants.FILE_NAME, "申购订单主表列表");
-      mv.addObject(NormalExcelConstants.CLASS, PdPurchaseOrderPage.class);
-      mv.addObject(NormalExcelConstants.PARAMS, new ExportParams("申购订单主表数据", "导出人:"+sysUser.getRealname(), "申购订单主表"));
-      mv.addObject(NormalExcelConstants.DATA_LIST, pageList);
+      mv.addObject(NormalExcelConstants.FILE_NAME, "申购产品列表");
+      mv.addObject(NormalExcelConstants.CLASS, PdPurchaseDetail.class);
+      mv.addObject(NormalExcelConstants.PARAMS, new ExportParams("申购产品列表数据", "导出人:"+sysUser.getRealname(), "申购产品数据"));
+      mv.addObject(NormalExcelConstants.DATA_LIST, pdPurchaseDetailList);
       return mv;
     }
 

@@ -17,10 +17,18 @@ import java.util.List;
  */
 public interface IPdPurchaseOrderService extends IService<PdPurchaseOrder> {
 
-
-
-
+	/**
+	 * 分页查询
+	 * @param pageList
+	 * @param pdPurchaseOrder
+	 * @return
+	 */
 	Page<PdPurchaseOrder> selectList(Page<PdPurchaseOrder> pageList,PdPurchaseOrder pdPurchaseOrder);
+
+	/**
+	 * 列表查询不分页
+	 */
+	List<PdPurchaseOrder> list(PdPurchaseOrder pdPurchaseOrder);
 
 	/**
 	 * 添加一对多

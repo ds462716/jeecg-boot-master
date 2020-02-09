@@ -45,7 +45,7 @@
     <!-- 操作按钮区域 -->
     <div class="table-operator">
       <a-button @click="handleAdd" type="primary" icon="plus">新增</a-button>
-      <!--<a-button type="primary" icon="download" @click="handleExportXls('申购订单主表')">导出</a-button>
+     <!--<a-button type="primary" icon="download" @click="handleExportXls('申购订单主表')">导出</a-button>
       <a-upload name="file" :showUploadList="false" :multiple="false" :headers="tokenHeader" :action="importExcelUrl" @change="handleImportExcel">
         <a-button type="primary" icon="import">导入</a-button>
       </a-upload>-->
@@ -76,7 +76,7 @@
         :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
         @change="handleTableChange">
 
-        <template slot="htmlSlot" slot-scope="text">
+        <!--<template slot="htmlSlot" slot-scope="text">
           <div v-html="text"></div>
         </template>
         <template slot="imgSlot" slot-scope="text">
@@ -94,7 +94,7 @@
             @click="uploadFile(text)">
             下载
           </a-button>
-        </template>
+        </template>-->
 
         <span slot="action" slot-scope="text, record">
           <a  @click="handleEdit(record)">编辑</a>
@@ -127,14 +127,14 @@
   import { JeecgListMixin,handleEdit} from '@/mixins/JeecgListMixin'
   import { deleteAction } from '@/api/manage'
   import PdPurchaseOrderModal from './modules/PdPurchaseOrderModal'
-  import JDictSelectTag from '@/components/dict/JDictSelectTag.vue'
+  //import JDictSelectTag from '@/components/dict/JDictSelectTag.vue'
   import {initDictOptions, filterMultiDictText} from '@/components/dict/JDictSelectUtil'
 
   export default {
     name: "PdPurchaseOrderList",
     mixins:[JeecgListMixin],
     components: {
-      JDictSelectTag,
+     //JDictSelectTag,
       PdPurchaseOrderModal
     },
     data () {
@@ -245,8 +245,7 @@
         this.$refs.modalForm.title = "编辑";
         this.$refs.modalForm.disableSubmit = false;
       },
-
-      handleDelete: function (record) {//删除
+      handleDelete: function (record) { //删除
         if(record.submitStart=='2'){
           this.$message.warning("此订单已提交审核，不允许删除！")
           return
@@ -262,7 +261,7 @@
           }
         });
       },
-      initDictConfig(){//静态字典值加载
+      initDictConfig(){ //静态字典值加载
         initDictOptions('order_status').then((res) => {
           if (res.success) {
             this.$set(this.dictOptions, 'orderStatus', res.result)
