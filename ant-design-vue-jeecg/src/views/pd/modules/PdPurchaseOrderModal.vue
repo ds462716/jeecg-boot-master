@@ -15,17 +15,17 @@
         <a-row>
           <a-col :span="12">
             <a-form-item label="申购编号" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input disabled="disabled" v-decorator="[ 'orderNo', validatorRules.orderNo]" placeholder="请输入申购编号"></a-input>
+              <a-input disabled="disabled" v-decorator="[ 'orderNo', validatorRules.orderNo]"></a-input>
             </a-form-item>
           </a-col>
           <a-col :span="12">
             <a-form-item label="申购人编号" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input disabled="disabled" v-decorator="[ 'purchaseBy', validatorRules.purchaseBy]" placeholder="请输入申购人编号"></a-input>
+              <a-input disabled="disabled" v-decorator="[ 'purchaseName', validatorRules.purchaseName]"></a-input>
             </a-form-item>
           </a-col>
           <a-col :span="12">
             <a-form-item label="申购日期" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <j-date placeholder="请选择申购日期" disabled="disabled" v-decorator="[ 'orderDate', validatorRules.orderDate]" :trigger-change="true" style="width: 100%"/>
+              <j-date  disabled="disabled" v-decorator="[ 'orderDate', validatorRules.orderDate]" :trigger-change="true" style="width: 100%"/>
             </a-form-item>
           </a-col>
           <a-col :span="12">
@@ -35,12 +35,12 @@
           </a-col>
           <a-col :span="12">
             <a-form-item label="申购总数量" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input-number disabled="disabled" v-decorator="[ 'amountCount', validatorRules.amountCount]" placeholder="请输入申购总数量" style="width: 100%"/>
+              <a-input-number disabled="disabled" v-decorator="[ 'amountCount', validatorRules.amountCount]"  style="width: 100%"/>
             </a-form-item>
           </a-col>
           <a-col :span="12">
             <a-form-item label="申购总金额" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input-number disabled="disabled" v-decorator="[ 'amountMoney', validatorRules.amountMoney]" placeholder="请输入申购总金额" style="width: 100%"/>
+              <a-input-number disabled="disabled" v-decorator="[ 'amountMoney', validatorRules.amountMoney]" style="width: 100%"/>
             </a-form-item>
           </a-col>
           <!-- <!-- 子表单区域 -->
@@ -78,6 +78,11 @@
               </tr>
             </table>
           </div>
+          <a-col :span="12" v-show="disableSubmit">
+            <a-form-item   label="审核意见" :labelCol="labelCol" :wrapperCol="wrapperCol">
+              <a-input  :disabled="disableSubmit"  v-decorator="[ 'refuseReason', validatorRules.refuseReason]"  style="width: 100%;height: 80px"/>
+            </a-form-item>
+          </a-col>
         </a-row>
         <pd-purchase-detail-add-modal  ref="PdPurchaseDetailAddModal" @ok="modalFormOk"></pd-purchase-detail-add-modal>
       </a-form>
@@ -95,8 +100,6 @@
 
   import pick from 'lodash.pick'
   import { httpAction,getAction,downFile } from '@/api/manage'
- // import { FormTypes,getRefPromise } from '@/utils/JEditableTableUtil'
- // import { JeecgListMixin } from '@/mixins/JeecgListMixin'
   import { JEditableTableMixin } from '@/mixins/JEditableTableMixin'
   import JDate from '@/components/jeecg/JDate'
   import JDictSelectTag from "@/components/dict/JDictSelectTag"
@@ -115,10 +118,12 @@
         validatorRules: {
           orderNo:{},
           purchaseBy:{},
+          purchaseName:{},
           orderDate:{},
           storeroomName:{},
           amountCount:{},
           amountMoney:{},
+          refuseReason:{}
         },
         refKeys: ['pdPurchaseDetail', ],
         tableKeys:['pdPurchaseDetail', ],
@@ -179,13 +184,14 @@
           if (res.success) {
             let model={};
             this.model.orderNo=res.result.orderNo;//申购编号
-            this.model.purchaseBy=res.result.auditBy;//申购人编号
+            this.model.purchaseBy=res.result.purchaseBy;//申购人编号
+            this.model.purchaseName=res.result.purchaseName;//申购人名称
             this.model.orderDate=res.result.orderDate;//申购日期
             this.model.storeroomName="待定";//申购库房名称
             this.model.amountCount=res.result.amountCount;//申购总数量
             this.model.amountMoney=res.result.amountMoney;//申购总金额
             this.$nextTick(() => {
-              this.form.setFieldsValue(pick(this.model,'orderNo','purchaseBy','orderDate','storeroomName','amountCount','amountMoney'))
+              this.form.setFieldsValue(pick(this.model,'orderNo','purchaseName','orderDate','storeroomName','amountCount','amountMoney','refuseReason'))
             })
           }
         })
@@ -303,7 +309,7 @@
       },
       /** 调用完edit()方法之后会自动调用此方法 */
       editAfter() {
-        let fieldval = pick(this.model,'orderNo','purchaseBy','orderDate','storeroomName','orderStatus','amountCount','amountMoney','submitStart')
+        let fieldval = pick(this.model,'orderNo','purchaseName','orderDate','storeroomName','orderStatus','amountCount','amountMoney','submitStart','refuseReason')
         this.$nextTick(() => {
           this.form.setFieldsValue(fieldval)
         })
@@ -326,7 +332,7 @@
         this.$message.error(msg)
       },
       popupCallback(row){
-        this.form.setFieldsValue(pick(row,'orderNo','purchaseBy','orderDate','storeroomName','orderStatus','amountCount','amountMoney','submitStart'))
+        this.form.setFieldsValue(pick(row,'orderNo','purchaseName','orderDate','storeroomName','orderStatus','amountCount','amountMoney','submitStart','refuseReason'))
       },
 
     }

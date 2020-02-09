@@ -59,32 +59,10 @@
         :loading="loading"
         :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
         @change="handleTableChange">
-
-        <template slot="htmlSlot" slot-scope="text">
-          <div v-html="text"></div>
-        </template>
-        <template slot="imgSlot" slot-scope="text">
-          <span v-if="!text" style="font-size: 12px;font-style: italic;">无此图片</span>
-          <img v-else :src="getImgView(text)" height="25px" alt="图片不存在" style="max-width:80px;font-size: 12px;font-style: italic;"/>
-        </template>
-        <template slot="fileSlot" slot-scope="text">
-          <span v-if="!text" style="font-size: 12px;font-style: italic;">无此文件</span>
-          <a-button
-            v-else
-            :ghost="true"
-            type="primary"
-            icon="download"
-            size="small"
-            @click="uploadFile(text)">
-            下载
-          </a-button>
-        </template>
-
         <span slot="action" slot-scope="text, record">
           <a v-if="record.orderStatus=='0'" @click="handleEdit(record)">审核</a>&nbsp;&nbsp;&nbsp;
           <a href="javascript:;" @click="handleDetail(record)">详情</a>
         </span>
-
       </a-table>
     </div>
     <pd-purchase-examine-modal ref="modalForm" @ok="modalFormOk"></pd-purchase-examine-modal>
@@ -127,9 +105,9 @@
             dataIndex: 'orderNo'
           },
           {
-            title:'申购人编号',
+            title:'申购人名称',
             align:"center",
-            dataIndex: 'purchaseBy'
+            dataIndex: 'purchaseName'
           },
           {
             title:'申购日期',

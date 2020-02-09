@@ -45,10 +45,6 @@
     <!-- 操作按钮区域 -->
     <div class="table-operator">
       <a-button @click="handleAdd" type="primary" icon="plus">新增</a-button>
-     <!--<a-button type="primary" icon="download" @click="handleExportXls('申购订单主表')">导出</a-button>
-      <a-upload name="file" :showUploadList="false" :multiple="false" :headers="tokenHeader" :action="importExcelUrl" @change="handleImportExcel">
-        <a-button type="primary" icon="import">导入</a-button>
-      </a-upload>-->
       <a-dropdown v-if="selectedRowKeys.length > 0">
         <a-menu slot="overlay">
           <a-menu-item key="1" @click="batchDel"><a-icon type="delete"/>删除</a-menu-item>
@@ -75,27 +71,6 @@
         :loading="loading"
         :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
         @change="handleTableChange">
-
-        <!--<template slot="htmlSlot" slot-scope="text">
-          <div v-html="text"></div>
-        </template>
-        <template slot="imgSlot" slot-scope="text">
-          <span v-if="!text" style="font-size: 12px;font-style: italic;">无此图片</span>
-          <img v-else :src="getImgView(text)" height="25px" alt="图片不存在" style="max-width:80px;font-size: 12px;font-style: italic;"/>
-        </template>
-        <template slot="fileSlot" slot-scope="text">
-          <span v-if="!text" style="font-size: 12px;font-style: italic;">无此文件</span>
-          <a-button
-            v-else
-            :ghost="true"
-            type="primary"
-            icon="download"
-            size="small"
-            @click="uploadFile(text)">
-            下载
-          </a-button>
-        </template>-->
-
         <span slot="action" slot-scope="text, record">
           <a  @click="handleEdit(record)">编辑</a>
 
@@ -127,14 +102,12 @@
   import { JeecgListMixin,handleEdit} from '@/mixins/JeecgListMixin'
   import { deleteAction } from '@/api/manage'
   import PdPurchaseOrderModal from './modules/PdPurchaseOrderModal'
-  //import JDictSelectTag from '@/components/dict/JDictSelectTag.vue'
   import {initDictOptions, filterMultiDictText} from '@/components/dict/JDictSelectUtil'
 
   export default {
     name: "PdPurchaseOrderList",
     mixins:[JeecgListMixin],
     components: {
-     //JDictSelectTag,
       PdPurchaseOrderModal
     },
     data () {
@@ -158,9 +131,9 @@
             dataIndex: 'orderNo'
           },
           {
-            title:'申购人编号',
+            title:'申购人',
             align:"center",
-            dataIndex: 'purchaseBy'
+            dataIndex: 'purchaseName'
           },
           {
             title:'申购日期',

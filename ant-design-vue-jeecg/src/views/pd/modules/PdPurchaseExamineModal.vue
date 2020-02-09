@@ -15,32 +15,32 @@
         <a-row>
           <a-col :span="12">
             <a-form-item label="申购编号" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input disabled="disabled" v-decorator="[ 'orderNo', validatorRules.orderNo]" placeholder="请输入申购编号"></a-input>
+              <a-input disabled="disabled" v-decorator="[ 'orderNo', validatorRules.orderNo]" ></a-input>
             </a-form-item>
           </a-col>
           <a-col :span="12">
-            <a-form-item label="申购人编号" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input disabled="disabled" v-decorator="[ 'purchaseBy', validatorRules.purchaseBy]" placeholder="请输入申购人编号"></a-input>
+            <a-form-item label="申购人" :labelCol="labelCol" :wrapperCol="wrapperCol">
+              <a-input disabled="disabled" v-decorator="[ 'purchaseName', validatorRules.purchaseName]" ></a-input>
             </a-form-item>
           </a-col>
           <a-col :span="12">
             <a-form-item label="申购日期" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <j-date placeholder="请选择申购日期" disabled="disabled" v-decorator="[ 'orderDate', validatorRules.orderDate]" :trigger-change="true" style="width: 100%"/>
+              <j-date disabled="disabled" v-decorator="[ 'orderDate', validatorRules.orderDate]" :trigger-change="true" style="width: 100%"/>
             </a-form-item>
           </a-col>
           <a-col :span="12">
             <a-form-item label="申购库房名称" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input v-decorator="[ 'storeroomName', validatorRules.storeroomName]" placeholder="请输入库房名称"></a-input>
+              <a-input v-decorator="[ 'storeroomName', validatorRules.storeroomName]" ></a-input>
             </a-form-item>
           </a-col>
           <a-col :span="12">
             <a-form-item label="申购总数量" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input-number disabled="disabled" v-decorator="[ 'amountCount', validatorRules.amountCount]" placeholder="请输入申购总数量" style="width: 100%"/>
+              <a-input-number disabled="disabled" v-decorator="[ 'amountCount', validatorRules.amountCount]"  style="width: 100%"/>
             </a-form-item>
           </a-col>
           <a-col :span="12">
             <a-form-item label="申购总金额" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input-number disabled="disabled" v-decorator="[ 'amountMoney', validatorRules.amountMoney]" placeholder="请输入申购总金额" style="width: 100%"/>
+              <a-input-number disabled="disabled" v-decorator="[ 'amountMoney', validatorRules.amountMoney]"  style="width: 100%"/>
             </a-form-item>
           </a-col>
           <!-- <!-- 子表单区域 -->
@@ -112,6 +112,7 @@
         validatorRules: {
           orderNo:{},
           purchaseBy:{},
+          purchaseName:{},
           orderDate:{},
           storeroomName:{},
           amountCount:{},
@@ -172,6 +173,12 @@
           this.model.orderStatus='3';//拒绝
         }
         this.form.validateFields((err, values) => {
+          if(type=="no"){
+            if(values.refuseReason==null || values.refuseReason==''){
+              this.$message.warning("请填写审核意见")
+              return
+            }
+          }
           this.model.refuseReason= values.refuseReason;
           if (!err) {
             const that = this;
@@ -196,7 +203,7 @@
       },
       /** 调用完edit()方法之后会自动调用此方法 */
       editAfter() {
-        let fieldval = pick(this.model,'orderNo','purchaseBy','orderDate','storeroomName','orderStatus','amountCount','amountMoney','submitStart','refuseReason')
+        let fieldval = pick(this.model,'orderNo','purchaseName','orderDate','storeroomName','orderStatus','amountCount','amountMoney','submitStart','refuseReason')
         this.$nextTick(() => {
           this.form.setFieldsValue(fieldval)
         })
@@ -219,7 +226,7 @@
         this.$message.error(msg)
       },
       popupCallback(row){
-        this.form.setFieldsValue(pick(row,'orderNo','purchaseBy','orderDate','storeroomName','orderStatus','amountCount','amountMoney','submitStart','refuseReason'))
+        this.form.setFieldsValue(pick(row,'orderNo','purchaseName','orderDate','storeroomName','orderStatus','amountCount','amountMoney','submitStart','refuseReason'))
       },
 
     }

@@ -5,6 +5,7 @@
         a.id,
         a.order_no,
         a.purchase_by,
+        a.purchase_name,
         a.order_date,
         a.storeroom_id,
         a.storeroom_name,

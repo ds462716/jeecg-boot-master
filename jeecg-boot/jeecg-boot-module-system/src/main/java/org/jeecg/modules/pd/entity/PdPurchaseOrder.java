@@ -43,6 +43,8 @@ public class PdPurchaseOrder implements Serializable {
     private String pid;
 	/**申购人编号*/
     private String purchaseBy;
+    /**申购人名称*/
+    private String purchaseName;
 	/**是否有子节点*/
     private String hasChild;
 	/**申购日期*/

@@ -81,9 +81,10 @@ public class PdPurchaseOrderController {
 		 pdPurchaseOrder.setAmountCount(0);
 		 pdPurchaseOrder.setAmountMoney(BigDecimal.ZERO);
 		 LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
-		 pdPurchaseOrder.setAuditBy(sysUser.getId());
-		result.setResult(pdPurchaseOrder);
-		result.setSuccess(true);
+		 pdPurchaseOrder.setPurchaseBy(sysUser.getId());
+		 pdPurchaseOrder.setPurchaseName(sysUser.getRealname());
+		 result.setResult(pdPurchaseOrder);
+		 result.setSuccess(true);
 		 return result;
 	 }
 

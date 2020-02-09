@@ -50,6 +50,9 @@ public class PdPurchaseOrderPage {
 	/**申购人编号*/
 	@Excel(name = "申购人编号", width = 15)
 	private String purchaseBy;
+	/**申购人编号*/
+	@Excel(name = "申购人名称", width = 15)
+	private String purchaseName;
 	/**是否有子节点*/
 	@Excel(name = "是否有子节点", width = 15)
 	private String hasChild;
