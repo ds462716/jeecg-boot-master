@@ -3,9 +3,11 @@ package org.jeecg.modules.pd.controller;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.*;
-import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import org.jeecg.modules.system.entity.SysDepart;
+import org.jeecg.modules.system.service.ISysDepartService;
 import org.jeecgframework.poi.excel.ExcelImportUtil;
 import org.jeecgframework.poi.excel.def.NormalExcelConstants;
 import org.jeecgframework.poi.excel.entity.ExportParams;
@@ -14,8 +16,6 @@ import org.jeecgframework.poi.excel.view.JeecgEntityExcelView;
 import org.jeecg.common.system.vo.LoginUser;
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
-import org.jeecg.common.system.query.QueryGenerator;
-import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.pd.entity.PdPurchaseDetail;
 import org.jeecg.modules.pd.entity.PdPurchaseOrder;
 import org.jeecg.modules.pd.vo.PdPurchaseOrderPage;
@@ -27,7 +27,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
 
@@ -45,7 +44,9 @@ public class PdPurchaseOrderController {
 	private IPdPurchaseOrderService pdPurchaseOrderService;
 	@Autowired
 	private IPdPurchaseDetailService pdPurchaseDetailService;
-	
+	 @Autowired
+	 private ISysDepartService sysDepartService;
+
 	/**
 	 * 分页列表查询
 	 *
@@ -81,6 +82,9 @@ public class PdPurchaseOrderController {
 		 pdPurchaseOrder.setAmountCount(0);
 		 pdPurchaseOrder.setAmountMoney(BigDecimal.ZERO);
 		 LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		 SysDepart sysDepart=sysDepartService.getDepartByOrgCode(sysUser.getOrgCode());
+		 pdPurchaseOrder.setStoreroomId(sysDepart.getId());
+		 pdPurchaseOrder.setStoreroomName(sysDepart.getDepartName());
 		 pdPurchaseOrder.setPurchaseBy(sysUser.getId());
 		 pdPurchaseOrder.setPurchaseName(sysUser.getRealname());
 		 result.setResult(pdPurchaseOrder);

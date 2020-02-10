@@ -80,9 +80,16 @@ public interface ISysDepartService extends IService<SysDepart>{
 
 	 /**
      * 根据部门id批量删除并删除其可能存在的子级部门
-     * @param id
+     * @param ids
      * @return
      */
 	void deleteBatchWithChildren(List<String> ids);
+    /**
+     * 根据用户名查询部门
+     *
+     * @param orgCode
+     * @return
+     */
+  public  SysDepart getDepartByOrgCode(String orgCode);
     
 }

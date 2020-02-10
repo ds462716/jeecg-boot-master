@@ -35,7 +35,7 @@ public class PdPurchaseOrder implements Serializable {
 	@JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd HH:mm:ss")
     @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
     private Date updateTime;
-	/**所属部门*/
+	/**所属部门标识*/
     private String sysOrgCode;
 	/**申购编号*/
     private String orderNo;

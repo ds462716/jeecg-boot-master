@@ -30,7 +30,7 @@
           </a-col>
           <a-col :span="12">
             <a-form-item label="申购库房名称" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input v-decorator="[ 'storeroomName', validatorRules.storeroomName]" ></a-input>
+              <a-input disabled="disabled" v-decorator="[ 'storeroomName', validatorRules.storeroomName]" ></a-input>
             </a-form-item>
           </a-col>
           <a-col :span="12">

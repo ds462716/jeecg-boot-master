@@ -30,7 +30,7 @@
           </a-col>
           <a-col :span="12">
             <a-form-item label="申购库房名称" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input v-decorator="[ 'storeroomName', validatorRules.storeroomName]" placeholder="请输入库房名称"></a-input>
+              <a-input disabled="disabled" v-decorator="[ 'storeroomName', validatorRules.storeroomName]" placeholder="请输入库房名称"></a-input>
             </a-form-item>
           </a-col>
           <a-col :span="12">
@@ -187,7 +187,8 @@
             this.model.purchaseBy=res.result.purchaseBy;//申购人编号
             this.model.purchaseName=res.result.purchaseName;//申购人名称
             this.model.orderDate=res.result.orderDate;//申购日期
-            this.model.storeroomName="待定";//申购库房名称
+            this.model.storeroomId=res.result.storeroomId;//申购库房Id
+            this.model.storeroomName=res.result.storeroomName;//申购库房名称
             this.model.amountCount=res.result.amountCount;//申购总数量
             this.model.amountMoney=res.result.amountMoney;//申购总金额
             this.$nextTick(() => {
