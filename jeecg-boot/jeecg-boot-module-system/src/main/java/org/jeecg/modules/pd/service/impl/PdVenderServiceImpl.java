@@ -30,4 +30,9 @@ public class PdVenderServiceImpl extends ServiceImpl<PdVenderMapper, PdVender> i
     public List<PdVender> selectList(PdVender pdVender) {
         return pdVenderMapper.selectList(pdVender);
     }
+
+    @Override
+    public void updateValidityFlag(PdVender pdVender){
+        pdVenderMapper.updateValidityFlag(pdVender);
+    };
 }

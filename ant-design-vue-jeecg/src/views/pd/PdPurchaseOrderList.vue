@@ -210,7 +210,7 @@
     },
     methods: {
       handleEdit: function (record) {//编译
-        if(record.submitStart=='2'){
+        if(record.submitStart=='2' && record.orderStatus !='3'){
           this.$message.warning("此订单已提交审核，不允许编译！")
           return
         }

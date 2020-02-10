@@ -7,6 +7,8 @@ import org.jeecg.modules.pd.service.IPdSupplierService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 /**
  * @Description: 供应商
  * @Author: zxh
@@ -21,5 +23,15 @@ public class PdSupplierServiceImpl extends ServiceImpl<PdSupplierMapper, PdSuppl
     @Override
     public PdSupplier verify(PdSupplier pdSupplier) {
         return pdSupplierMapper.verify(pdSupplier);
+    }
+
+    @Override
+    public List<PdSupplier> selectList(PdSupplier pdSupplier) {
+        return pdSupplierMapper.selectList(pdSupplier);
+    }
+
+    @Override
+    public void updateValidityFlag(PdSupplier pdSupplier){
+        pdSupplierMapper.updateValidityFlag(pdSupplier);
     }
 }

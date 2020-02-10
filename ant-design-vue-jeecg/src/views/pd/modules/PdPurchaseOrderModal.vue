@@ -272,6 +272,7 @@
         if(submitType=="save"){
           this.model.submitStart='1';
         }
+        this.model.orderStatus='0';
         const that = this;
         // 触发表单验证
         this.form.validateFields((err, values) => {

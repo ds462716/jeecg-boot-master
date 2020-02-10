@@ -144,7 +144,28 @@
 			or a.wb LIKE concat('%',#{name},'%')
 			or a.zdy LIKE concat('%',#{name},'%')
 		</if>
-		<!-- 为了查询效率 只查询十条记录 -->
-		ORDER BY a.update_time desc LIMIT 0,10
+		<!--&lt;!&ndash; 为了查询效率 只查询十条记录 &ndash;&gt;
+		ORDER BY a.update_time desc LIMIT 0,10-->
 	</select>
+
+
+
+	<!--  修改有效期标识 -->
+	<update id="updateValidityFlag">
+		UPDATE pd_vender SET
+		 licence_validity0 = #{licenceValidity0},
+		 licence_validity1 = #{licenceValidity1},
+		 licence_validity2 = #{licenceValidity2},
+		 licence_validity3 = #{licenceValidity3},
+		 licence_validity4 = #{licenceValidity4},
+		 licence_validity5 = #{licenceValidity5},
+		 licence_validity6 = #{licenceValidity6},
+		 licence_validity7 = #{licenceValidity7},
+		 licence_validity8 = #{licenceValidity8},
+		 licence_validity9 = #{licenceValidity9},
+		 licence_validity10 = #{licenceValidity10},
+		 licence_validity11 = #{licenceValidity11},
+		 validity_flag = #{validityFlag}
+		  where id = #{id}
+	</update>
 </mapper>
