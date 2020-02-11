@@ -3,6 +3,8 @@ package org.jeecg.modules.pd.service;
 import org.jeecg.modules.pd.entity.PdCategory;
 import com.baomidou.mybatisplus.extension.service.IService;
 
+import java.util.List;
+
 /**
  * @Description: 产品分类
  * @Author: zxh
@@ -16,4 +18,6 @@ public interface IPdCategoryService extends IService<PdCategory> {
     void editPdCategory(PdCategory pdCategory);
 
     void removePdCategory(String id);
+
+    List<PdCategory> selectCategoryOneList(PdCategory pdCategory);
 }

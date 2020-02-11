@@ -22,4 +22,6 @@ public interface PdCategoryMapper extends BaseMapper<PdCategory> {
     int setMenuLeaf(@Param("id") String id,@Param("leaf") int leaf);
 
     void removeByCodeId(PdCategory pdCategory);
+
+    List<PdCategory> selectCategoryOneList(PdCategory pdCategory);
 }

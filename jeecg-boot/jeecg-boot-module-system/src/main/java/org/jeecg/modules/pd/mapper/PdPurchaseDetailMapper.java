@@ -1,0 +1,21 @@
+package org.jeecg.modules.pd.mapper;
+
+import java.util.List;
+import org.jeecg.modules.pd.entity.PdPurchaseDetail;
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Param;
+
+/**
+ * @Description: 申购单详细表
+ * @Author: mcb
+ * @Date:   2020-02-04
+ * @Version: V1.0
+ */
+public interface PdPurchaseDetailMapper extends BaseMapper<PdPurchaseDetail> {
+
+	public boolean deleteByMainId(@Param("mainId") String mainId);
+
+	public boolean deleteByOrderNo(@Param("orderNo") String orderNo);
+
+	public List<PdPurchaseDetail> selectByOrderNo(@Param("orderNo") String orderNo);
+}

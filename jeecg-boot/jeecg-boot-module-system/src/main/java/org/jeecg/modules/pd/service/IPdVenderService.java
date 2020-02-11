@@ -2,7 +2,6 @@ package org.jeecg.modules.pd.service;
 
 import org.jeecg.modules.pd.entity.PdVender;
 import com.baomidou.mybatisplus.extension.service.IService;
-
 import java.util.List;
 
 /**
@@ -16,4 +15,12 @@ public interface IPdVenderService extends IService<PdVender> {
     PdVender verify(PdVender pdVender);
 
     List<PdVender> selectList(PdVender pdVender);
+
+    List<PdVender> selectAllList(PdVender pdVender);
+
+    /**
+     * 修改证照有效期标识
+     */
+    void updateValidityFlag(PdVender pdVender);
+
 }

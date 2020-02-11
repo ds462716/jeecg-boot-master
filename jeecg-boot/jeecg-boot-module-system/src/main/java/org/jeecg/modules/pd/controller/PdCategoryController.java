@@ -65,6 +65,26 @@ public class PdCategoryController extends JeecgController<PdCategory, IPdCategor
 		}
 		return result;
 	}
+
+	 /**
+	  * 不分页列表查询
+	  *
+	  * @return
+	  */
+	 @GetMapping(value = "/getCategoryOneList")
+	 public Result<List<PdCategory>> getEncodingIdentifierList(PdCategory pdCategory) {
+		 long start = System.currentTimeMillis();
+		 Result<List<PdCategory>> result = new Result<>();
+		 try {
+			 List<PdCategory> list = pdCategoryService.selectCategoryOneList(pdCategory);
+			 result.setResult(list);
+			 result.setSuccess(true);
+		 }catch(Exception e){
+			 log.error(e.getMessage(), e);
+		 }
+		 log.info("======获取产品数据=====耗时:" + (System.currentTimeMillis() - start) + "毫秒");
+		 return result;
+	 }
 	
 	/**
 	 *   添加

@@ -17,7 +17,7 @@
           <a-input v-decorator="[ 'meaning', validatorRules.meaning]" placeholder="请输入含义"></a-input>
         </a-form-item>
         <a-form-item label="类型" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <j-dict-select-tag type="list" @change="handleChange" v-decorator="['type',validatorRules.type]" :trigger-change="true" dictCode="identifier_type" placeholder="请选择类型"/>
+          <j-dict-select-tag-expand type="list" @change="handleChange" v-decorator="['type',validatorRules.type]" :trigger-change="true" dictCode="identifier_type" placeholder="请选择类型"/>
         </a-form-item>
         <a-form-item label="长度"  v-if="typeValue" :labelCol="labelCol" :wrapperCol="wrapperCol">
           <a-input-number  v-decorator="[ 'length', validatorRules.length]" placeholder="请输入长度" style="width: 100%"/>
@@ -35,12 +35,12 @@
 
   import { httpAction } from '@/api/manage'
   import pick from 'lodash.pick'
-  import JDictSelectTag from "@/components/dict/JDictSelectTag"
+  import JDictSelectTagExpand from "@/components/dict/JDictSelectTagExpand"
 
   export default {
     name: "PdEncodingIdentifierModal",
-    components: { 
-      JDictSelectTag,
+    components: {
+      JDictSelectTagExpand,
     },
     data () {
       return {

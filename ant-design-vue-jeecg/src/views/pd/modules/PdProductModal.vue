@@ -99,8 +99,6 @@
         <a-row class="form-row" :gutter="{ xs: 8, sm: 16, md: 24, lg: 32 }">
           <a-col :lg="12">
             <a-form-item label="生产厂家" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <!--<a-input v-decorator="[ 'venderId', validatorRules.venderId]" placeholder="请选择生产厂家"></a-input>-->
-
               <a-select
                 showSearch
                 :venderId="venderValue"
@@ -112,6 +110,7 @@
                 @change="venderHandleChange"
                 @focus="venderHandleSearch"
                 :notFoundContent="notFoundContent"
+                allowClear="true"
                 v-decorator="[ 'venderId', validatorRules.venderId]"
               >
                 <a-select-option v-for="d in venderData" :key="d.value">{{d.text}}</a-select-option>
@@ -121,20 +120,22 @@
           </a-col>
           <a-col :lg="12">
             <a-form-item label="供应商" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input v-decorator="[ 'supplierId', validatorRules.supplierId]" placeholder="请输入供应商"></a-input>
-            </a-form-item>
-          </a-col>
-        </a-row>
-
-        <a-row class="form-row" :gutter="{ xs: 8, sm: 16, md: 24, lg: 32 }">
-          <a-col :lg="12">
-            <a-form-item label="是否计费" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input v-decorator="[ 'isCharge', validatorRules.isCharge]" placeholder="请输入是否计费"></a-input>
-            </a-form-item>
-          </a-col>
-          <a-col :lg="12">
-            <a-form-item label="产品组别" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input v-decorator="[ 'groupId', validatorRules.groupId]" placeholder="请输入产品组别"></a-input>
+              <a-select
+                showSearch
+                :venderId="supplierValue"
+                placeholder="请选择供应商"
+                :defaultActiveFirstOption="false"
+                :showArrow="false"
+                :filterOption="false"
+                @search="supplierHandleSearch"
+                @change="supplierHandleChange"
+                @focus="supplierHandleSearch"
+                :notFoundContent="notFoundContent"
+                allowClear="true"
+                v-decorator="[ 'supplierId', validatorRules.supplierId]"
+              >
+                <a-select-option v-for="d in supplierData" :key="d.value">{{d.text}}</a-select-option>
+              </a-select>
             </a-form-item>
           </a-col>
         </a-row>
@@ -146,8 +147,24 @@
             </a-form-item>
           </a-col>
           <a-col :lg="12">
+            <a-form-item label="产品组别" :labelCol="labelCol" :wrapperCol="wrapperCol">
+              <a-input v-decorator="[ 'groupId', validatorRules.groupId]" placeholder="请输入产品组别"></a-input>
+            </a-form-item>
+          </a-col>
+        </a-row>
+
+        <a-row class="form-row" :gutter="{ xs: 8, sm: 16, md: 24, lg: 32 }">
+          <a-col :lg="12">
+            <a-form-item label="是否计费" :labelCol="labelCol" :wrapperCol="wrapperCol">
+              <a-select v-decorator="[ 'isCharge',{'initialValue':'1'}]" placeholder="请输入是否计费">
+                <a-select-option value="0">是</a-select-option>
+                <a-select-option value="1">否</a-select-option>
+              </a-select>
+            </a-form-item>
+          </a-col>
+          <a-col :lg="12">
             <a-form-item label="产品收费代码" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input-number v-decorator="[ 'sellingPrice', validatorRules.sellingPrice]" placeholder="请输入产品收费代码" style="width: 100%"/>
+              <a-input v-decorator="[ 'chargeCode', validatorRules.chargeCode]" placeholder="请输入产品收费代码" style="width: 100%"/>
             </a-form-item>
           </a-col>
         </a-row>
@@ -155,12 +172,43 @@
         <a-row class="form-row" :gutter="{ xs: 8, sm: 16, md: 24, lg: 32 }">
           <a-col :lg="12">
             <a-form-item label="一级分类" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input v-decorator="[ 'categoryOne', validatorRules.categoryOne]" placeholder="请输入一级分类"></a-input>
+              <a-select
+                showSearch
+                :venderId="categoryOneValue"
+                placeholder="请选择一级分类"
+                :defaultActiveFirstOption="false"
+                :showArrow="false"
+                :filterOption="false"
+                @search="categoryOneHandleSearch"
+                @change="categoryOneHandleChange"
+                @focus="categoryOneHandleSearch"
+                :notFoundContent="notFoundContent"
+                allowClear="true"
+                v-decorator="[ 'categoryOne', validatorRules.categoryOne]"
+              >
+                <a-select-option v-for="d in categoryOneData" :key="d.value">{{d.text}}</a-select-option>
+              </a-select>
             </a-form-item>
           </a-col>
           <a-col :lg="12">
             <a-form-item label="二级分类" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input v-decorator="[ 'categoryTwo', validatorRules.categoryTwo]" placeholder="请输入二级分类"></a-input>
+             <!-- <a-input v-decorator="[ 'categoryTwo', validatorRules.categoryTwo]" placeholder="请输入二级分类"></a-input>-->
+              <a-select
+                showSearch
+                :venderId="categoryTwoValue"
+                placeholder="请选择二级分类"
+                :defaultActiveFirstOption="false"
+                :showArrow="false"
+                :filterOption="false"
+                @search="categoryTwoHandleSearch"
+                @change="categoryTwoHandleChange"
+                @focus="categoryTwoHandleSearch"
+                :notFoundContent="notFoundContent"
+                allowClear="true"
+                v-decorator="[ 'categoryTwo', validatorRules.categoryTwo]"
+              >
+                <a-select-option v-for="d in categoryTwoData" :key="d.value">{{d.text}}</a-select-option>
+              </a-select>
             </a-form-item>
           </a-col>
         </a-row>
@@ -383,6 +431,7 @@
   import JDate from '@/components/jeecg/JDate'
   import { makeWb } from '@/utils/wubi'
   import { getAction } from  '@/api/manage'
+  import JDictSelectTagExpand from "@/components/dict/JDictSelectTagExpand"
 
   let timeout;
   let currentValue;
@@ -419,6 +468,7 @@
     name: "PdProductModal",
     components: { 
       JDate,
+      JDictSelectTagExpand,
     },
     data () {
       return {
@@ -426,6 +476,12 @@
         unitValue: undefined,
         venderData: [],
         venderValue: undefined,
+        supplierData: [],
+        supplierValue: undefined,
+        categoryOneData: [],
+        categoryOneValue: undefined,
+        categoryTwoData: [],
+        categoryTwoValue: undefined,
         notFoundContent:"未找到内容",
         form: this.$form.createForm(this),
         title:"操作",
@@ -488,6 +544,8 @@
           ]},
           registration: {rules: [
               {required: true, message: '请输入注册证!'},
+          ]},
+          chargeCode: {rules: [
           ]},
           description: {rules: [
           ]},
@@ -622,6 +680,9 @@
           edit: "/pd/pdProduct/edit",
           queryUnit:"/pd/pdEncodingRule/getEncodingRuleList",
           queryVender:"/pd/pdVender/getVenderList",
+          querySupplier:"/pd/pdSupplier/getSupplierList",
+          queryCategoryOne:"/pd/pdCategory/getCategoryOneList?type=0",
+          queryCategoryTwo:"/pd/pdCategory/getCategoryOneList?type=1",
         }
       }
     },
@@ -636,7 +697,7 @@
         this.model = Object.assign({}, record);
         this.visible = true;
         this.$nextTick(() => {
-          this.form.setFieldsValue(pick(this.model,'number','name','py','wb','bname','bpy','bwb','zdy','spec','version','unitId','categoryOne','categoryTwo','groupId','venderId','isCharge','supplierId','purchasePrice','sellingPrice','registration','description','licenceName0','licenceNum0','licenceDate0','licenceSite0','licenceValidity0','licenceName1','licenceNum1','licenceDate1','licenceSite1','licenceValidity1','licenceName2','licenceNum2','licenceDate2','licenceSite2','licenceValidity2','licenceName3','licenceNum3','licenceDate3','licenceSite3','licenceValidity3','licenceName4','licenceNum4','licenceDate4','licenceSite4','licenceValidity4','licenceName5','licenceNum5','licenceDate5','licenceSite5','licenceValidity5','licenceName6','licenceNum6','licenceDate6','licenceSite6','licenceValidity6','licenceName7','licenceNum7','licenceDate7','licenceSite7','licenceValidity7','licenceName8','licenceNum8','licenceDate8','licenceSite8','licenceValidity8','licenceName9','licenceNum9','licenceDate9','licenceSite9','licenceValidity9','licenceName10','licenceNum10','licenceDate10','licenceSite10','licenceValidity10','createBy','createTime','updateBy','updateTime','sysOrgCode','validityFlag','delFlag'))
+          this.form.setFieldsValue(pick(this.model,'number','name','py','wb','bname','bpy','bwb','zdy','spec','version','unitId','categoryOne','categoryTwo','groupId','venderId','isCharge','supplierId','purchasePrice','sellingPrice','registration','chargeCode','description','licenceName0','licenceNum0','licenceDate0','licenceSite0','licenceValidity0','licenceName1','licenceNum1','licenceDate1','licenceSite1','licenceValidity1','licenceName2','licenceNum2','licenceDate2','licenceSite2','licenceValidity2','licenceName3','licenceNum3','licenceDate3','licenceSite3','licenceValidity3','licenceName4','licenceNum4','licenceDate4','licenceSite4','licenceValidity4','licenceName5','licenceNum5','licenceDate5','licenceSite5','licenceValidity5','licenceName6','licenceNum6','licenceDate6','licenceSite6','licenceValidity6','licenceName7','licenceNum7','licenceDate7','licenceSite7','licenceValidity7','licenceName8','licenceNum8','licenceDate8','licenceSite8','licenceValidity8','licenceName9','licenceNum9','licenceDate9','licenceSite9','licenceValidity9','licenceName10','licenceNum10','licenceDate10','licenceSite10','licenceValidity10','createBy','createTime','updateBy','updateTime','sysOrgCode','validityFlag','delFlag'))
         })
       },
       close () {
@@ -679,7 +740,7 @@
         this.close()
       },
       popupCallback(row){
-        this.form.setFieldsValue(pick(row,'number','name','py','wb','bname','bpy','bwb','zdy','spec','version','unitId','categoryOne','categoryTwo','groupId','venderId','isCharge','supplierId','purchasePrice','sellingPrice','registration','description','licenceName0','licenceNum0','licenceDate0','licenceSite0','licenceValidity0','licenceName1','licenceNum1','licenceDate1','licenceSite1','licenceValidity1','licenceName2','licenceNum2','licenceDate2','licenceSite2','licenceValidity2','licenceName3','licenceNum3','licenceDate3','licenceSite3','licenceValidity3','licenceName4','licenceNum4','licenceDate4','licenceSite4','licenceValidity4','licenceName5','licenceNum5','licenceDate5','licenceSite5','licenceValidity5','licenceName6','licenceNum6','licenceDate6','licenceSite6','licenceValidity6','licenceName7','licenceNum7','licenceDate7','licenceSite7','licenceValidity7','licenceName8','licenceNum8','licenceDate8','licenceSite8','licenceValidity8','licenceName9','licenceNum9','licenceDate9','licenceSite9','licenceValidity9','licenceName10','licenceNum10','licenceDate10','licenceSite10','licenceValidity10','createBy','createTime','updateBy','updateTime','sysOrgCode','validityFlag','delFlag'))
+        this.form.setFieldsValue(pick(row,'number','name','py','wb','bname','bpy','bwb','zdy','spec','version','unitId','categoryOne','categoryTwo','groupId','venderId','isCharge','supplierId','purchasePrice','sellingPrice','registration','chargeCode','description','licenceName0','licenceNum0','licenceDate0','licenceSite0','licenceValidity0','licenceName1','licenceNum1','licenceDate1','licenceSite1','licenceValidity1','licenceName2','licenceNum2','licenceDate2','licenceSite2','licenceValidity2','licenceName3','licenceNum3','licenceDate3','licenceSite3','licenceValidity3','licenceName4','licenceNum4','licenceDate4','licenceSite4','licenceValidity4','licenceName5','licenceNum5','licenceDate5','licenceSite5','licenceValidity5','licenceName6','licenceNum6','licenceDate6','licenceSite6','licenceValidity6','licenceName7','licenceNum7','licenceDate7','licenceSite7','licenceValidity7','licenceName8','licenceNum8','licenceDate8','licenceSite8','licenceValidity8','licenceName9','licenceNum9','licenceDate9','licenceSite9','licenceValidity9','licenceName10','licenceNum10','licenceDate10','licenceSite10','licenceValidity10','createBy','createTime','updateBy','updateTime','sysOrgCode','validityFlag','delFlag'))
       },
       pinyinTran(e){
         let val = e.target.value;
@@ -719,6 +780,42 @@
         fetch(value, data => (this.venderData = data),this.url.queryVender);
       },
       //生产厂家查询end
+      //供应商查询start
+      supplierHandleSearch(value) {
+        fetch(value, data => (this.supplierData = data),this.url.querySupplier);
+      },
+      supplierHandleChange(value) {
+        this.supplierValue = value;
+        fetch(value, data => (this.supplierData = data),this.url.querySupplier);
+      },
+      //供应商查询end
+      //一级分类查询start
+      categoryOneHandleSearch(value) {
+        fetch(value, data => (this.categoryOneData = data),this.url.queryCategoryOne);
+      },
+      categoryOneHandleChange(value) {
+        this.categoryOneValue = value;
+        fetch(value, data => (this.categoryOneData = data),this.url.queryCategoryOne);
+        this.form.setFieldsValue({categoryTwo:""});
+      },
+      //一级分类查询end
+      //二级分类查询start
+      categoryTwoHandleSearch(value) {
+        let categoryOne = this.categoryOneValue;
+        if(!categoryOne){
+          categoryOne = "";
+        }
+        fetch(value, data => (this.categoryTwoData = data),this.url.queryCategoryTwo+"&parentId="+categoryOne);
+      },
+      categoryTwoHandleChange(value) {
+        let categoryOne = this.categoryOneValue;
+        if(!categoryOne){
+          categoryOne = "";
+        }
+        this.categoryTwoValue = value;
+        fetch(value, data => (this.categoryTwoData = data),this.url.queryCategoryTwo+"&parentId="+categoryOne);
+      },
+      //一级分类查询end
     }
   }
 </script>

@@ -38,4 +38,6 @@ public interface SysDepartMapper extends BaseMapper<SysDepart> {
 	@Select("select id,parent_id from sys_depart where id=#{departId}")
 	public SysDepart getParentDepartId(@Param("departId") String departId);
 
+	@Select("select id,depart_name,org_code  from sys_depart where org_code=#{orgCode}")
+	public SysDepart getDepartByOrgCode(@Param("orgCode") String orgCode);
 }
