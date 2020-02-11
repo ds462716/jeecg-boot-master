@@ -299,7 +299,4 @@ public class PdProduct  extends BaseEntity {
 	/**是否过期标识，0未过期，1已过期，2近效期*/
 	@Excel(name = "是否过期标识，0未过期，1已过期，2近效期", width = 15)
     private java.lang.String validityFlag;
-	/**delFlag*/
-	@Excel(name = "delFlag", width = 15)
-    private java.lang.String delFlag;
 }
