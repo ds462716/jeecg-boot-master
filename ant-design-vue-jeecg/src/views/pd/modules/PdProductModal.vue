@@ -154,7 +154,7 @@
         <a-row class="form-row" :gutter="{ xs: 8, sm: 16, md: 24, lg: 32 }">
           <a-col :lg="12">
             <a-form-item label="是否计费" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-select v-decorator="[ 'isCharge',{'initialValue':'1'}]" placeholder="请输入是否计费">
+              <a-select v-decorator="[ 'isCharge',{'initialValue':'1',rules:isChargeRules}]" placeholder="请输入是否计费">
                 <a-select-option value="0">是</a-select-option>
                 <a-select-option value="1">否</a-select-option>
               </a-select>
@@ -391,9 +391,6 @@
           venderId: {rules: [
               {required: true, message: '请选择生产厂家!'},
           ]},
-          isCharge: {rules: [
-              {required: true, message: '请选择是否计费!'},
-          ]},
           supplierId: {rules: [
           ]},
           purchasePrice: {rules: [
@@ -406,133 +403,14 @@
           chargeCode: {rules: [
           ]},
           description: {rules: [
-          ]},
-          licenceName0: {rules: [
-          ]},
-          licenceNum0: {rules: [
-          ]},
-          licenceDate0: {rules: [
-          ]},
-          licenceSite0: {rules: [
-          ]},
-          licenceValidity0: {rules: [
-          ]},
-          licenceName1: {rules: [
-          ]},
-          licenceNum1: {rules: [
-          ]},
-          licenceDate1: {rules: [
-          ]},
-          licenceSite1: {rules: [
-          ]},
-          licenceValidity1: {rules: [
-          ]},
-          licenceName2: {rules: [
-          ]},
-          licenceNum2: {rules: [
-          ]},
-          licenceDate2: {rules: [
-          ]},
-          licenceSite2: {rules: [
-          ]},
-          licenceValidity2: {rules: [
-          ]},
-          licenceName3: {rules: [
-          ]},
-          licenceNum3: {rules: [
-          ]},
-          licenceDate3: {rules: [
-          ]},
-          licenceSite3: {rules: [
-          ]},
-          licenceValidity3: {rules: [
-          ]},
-          licenceName4: {rules: [
-          ]},
-          licenceNum4: {rules: [
-          ]},
-          licenceDate4: {rules: [
-          ]},
-          licenceSite4: {rules: [
-          ]},
-          licenceValidity4: {rules: [
-          ]},
-          licenceName5: {rules: [
-          ]},
-          licenceNum5: {rules: [
-          ]},
-          licenceDate5: {rules: [
-          ]},
-          licenceSite5: {rules: [
-          ]},
-          licenceValidity5: {rules: [
-          ]},
-          licenceName6: {rules: [
-          ]},
-          licenceNum6: {rules: [
-          ]},
-          licenceDate6: {rules: [
-          ]},
-          licenceSite6: {rules: [
-          ]},
-          licenceValidity6: {rules: [
-          ]},
-          licenceName7: {rules: [
-          ]},
-          licenceNum7: {rules: [
-          ]},
-          licenceDate7: {rules: [
-          ]},
-          licenceSite7: {rules: [
-          ]},
-          licenceValidity7: {rules: [
-          ]},
-          licenceName8: {rules: [
-          ]},
-          licenceNum8: {rules: [
-          ]},
-          licenceDate8: {rules: [
-          ]},
-          licenceSite8: {rules: [
-          ]},
-          licenceValidity8: {rules: [
-          ]},
-          licenceName9: {rules: [
-          ]},
-          licenceNum9: {rules: [
-          ]},
-          licenceDate9: {rules: [
-          ]},
-          licenceSite9: {rules: [
-          ]},
-          licenceValidity9: {rules: [
-          ]},
-          licenceName10: {rules: [
-          ]},
-          licenceNum10: {rules: [
-          ]},
-          licenceDate10: {rules: [
-          ]},
-          licenceSite10: {rules: [
-          ]},
-          licenceValidity10: {rules: [
-          ]},
-          createBy: {rules: [
-          ]},
-          createTime: {rules: [
-          ]},
-          updateBy: {rules: [
-          ]},
-          updateTime: {rules: [
-          ]},
-          sysOrgCode: {rules: [
-          ]},
-          validityFlag: {rules: [
-          ]},
-          delFlag: {rules: [
-            {required: true, message: '请输入delFlag!'},
-          ]},
+          ]}
         },
+        isChargeRules:[
+          {
+            required: true, // 必填
+            message: '请选择是否计费' // 显示的文本
+          }
+        ],
         url: {
           add: "/pd/pdProduct/add",
           edit: "/pd/pdProduct/edit",

@@ -61,9 +61,11 @@ public class PdProductController extends JeecgController<PdProduct, IPdProductSe
 								   @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
 								   @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
 								   HttpServletRequest req) {
-		QueryWrapper<PdProduct> queryWrapper = QueryGenerator.initQueryWrapper(pdProduct, req.getParameterMap());
-		Page<PdProduct> page = new Page<PdProduct>(pageNo, pageSize);
-		IPage<PdProduct> pageList = pdProductService.page(page, queryWrapper);
+		Result<Page<PdProduct>> result = new Result<Page<PdProduct>>();
+		Page<PdProduct> pageList = new Page<PdProduct>(pageNo,pageSize);
+		pageList =pdProductService.selectList(pageList,pdProduct);//
+		result.setSuccess(true);
+		result.setResult(pageList);
 		return Result.ok(pageList);
 	}
 	

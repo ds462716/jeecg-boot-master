@@ -14,4 +14,6 @@ import org.jeecg.modules.pd.vo.PdProductPage;
 public interface IPdProductService extends IService<PdProduct> {
 
     Page<PdProductPage> chooseProductList(Page<PdProductPage> pageList, PdProduct pdProduct);
+
+    Page<PdProduct> selectList(Page<PdProduct> pageList, PdProduct pdProduct);
 }

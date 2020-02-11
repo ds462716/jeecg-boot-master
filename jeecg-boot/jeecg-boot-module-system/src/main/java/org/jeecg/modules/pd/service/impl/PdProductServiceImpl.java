@@ -27,4 +27,9 @@ public class PdProductServiceImpl extends ServiceImpl<PdProductMapper, PdProduct
 
         return pageList.setRecords(pdProductMapper.chooseProductList(pdProduct));
     }
+
+    @Override
+    public Page<PdProduct> selectList(Page<PdProduct> page, PdProduct pdProduct) {
+        return page.setRecords(pdProductMapper.selectList(pdProduct));
+    }
 }

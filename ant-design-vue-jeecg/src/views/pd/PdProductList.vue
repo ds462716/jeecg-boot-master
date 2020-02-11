@@ -92,6 +92,7 @@
 
   import { JeecgListMixin } from '@/mixins/JeecgListMixin'
   import PdProductModal from './modules/PdProductModal'
+  import {initDictOptions, filterMultiDictText} from '@/components/dict/JDictSelectUtil'
 
   export default {
     name: "PdProductList",
@@ -137,32 +138,39 @@
           {
             title:'单位',
             align:"center",
-            dataIndex: 'unitId'
+            dataIndex: 'unitName'
           },
           {
             title:'二级分类',
             align:"center",
-            dataIndex: 'categoryTwo'
+            dataIndex: 'categoryTwoName'
           },
           {
             title:'产品组别',
             align:"center",
-            dataIndex: 'groupId'
+            dataIndex: 'groupName'
           },
           {
             title:'生产厂家',
             align:"center",
-            dataIndex: 'venderId'
+            dataIndex: 'venderName'
           },
           {
             title:'是否计费',
             align:"center",
-            dataIndex: 'isCharge'
+            dataIndex: 'isCharge',
+            customRender:(text)=>{
+              if(!text){
+                return ''
+              }else{
+                return filterMultiDictText(this.dictOptions['isCharge'], text+"")
+              }
+            }
           },
           {
             title:'供应商',
             align:"center",
-            dataIndex: 'supplierId'
+            dataIndex: 'supplierName'
           },
           {
             title: '操作',
@@ -179,6 +187,7 @@
           importExcelUrl: "pd/pdProduct/importExcel",
         },
         dictOptions:{
+          isCharge:[],
         },
       }
     },
@@ -189,6 +198,11 @@
     },
     methods: {
       initDictConfig(){
+        initDictOptions('is_charge').then((res) => {
+          if (res.success) {
+            this.$set(this.dictOptions, 'isCharge', res.result)
+          }
+        })
       }
        
     }

@@ -16,4 +16,5 @@ public interface PdProductMapper extends BaseMapper<PdProduct> {
 
     List<PdProductPage> chooseProductList(PdProduct pdProduct);
 
+    List<PdProduct> selectList(PdProduct pdProduct);
 }
