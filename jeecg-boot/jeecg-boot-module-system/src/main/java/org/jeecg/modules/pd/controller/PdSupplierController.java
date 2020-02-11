@@ -18,6 +18,7 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Arrays;
+import java.util.List;
 
 /**
 * @Description: 供应商
@@ -51,6 +52,26 @@ public class PdSupplierController extends JeecgController<PdSupplier, IPdSupplie
        IPage<PdSupplier> pageList = pdSupplierService.page(page, queryWrapper);
        return Result.ok(pageList);
    }
+
+    /**
+     * 不分页列表查询
+     *
+     * @return
+     */
+    @GetMapping(value = "/getSupplierList")
+    public Result<List<PdSupplier>> getEncodingIdentifierList(PdSupplier pdSupplier) {
+        long start = System.currentTimeMillis();
+        Result<List<PdSupplier>> result = new Result<>();
+        try {
+            List<PdSupplier> list = pdSupplierService.selectList(pdSupplier);
+            result.setResult(list);
+            result.setSuccess(true);
+        }catch(Exception e){
+            log.error(e.getMessage(), e);
+        }
+        log.info("======获取产品数据=====耗时:" + (System.currentTimeMillis() - start) + "毫秒");
+        return result;
+    }
 
    /**
     *   添加

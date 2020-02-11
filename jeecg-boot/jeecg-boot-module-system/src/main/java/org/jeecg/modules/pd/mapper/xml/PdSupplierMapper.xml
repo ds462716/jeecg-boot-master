@@ -2,7 +2,23 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.jeecg.modules.pd.mapper.PdSupplierMapper">
 
-    <sql id="PdSupplierColumns">
+	<resultMap id="resultMap" type="org.jeecg.modules.pd.entity.PdSupplier">
+		<id column="id" property="id" jdbcType="VARCHAR"></id>
+		<result column="name" property="name" jdbcType="VARCHAR"/>
+		<result column="py" property="py" jdbcType="VARCHAR"/>
+		<result column="wb" property="wb" jdbcType="VARCHAR"/>
+		<result column="zdy" property="zdy" jdbcType="VARCHAR"/>
+		<result column="create_by" property="createBy" jdbcType="VARCHAR"/>
+		<result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+		<result column="update_by" property="updateBy" jdbcType="VARCHAR"/>
+		<result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
+		<result column="sys_org_code" property="sysOrgCode" jdbcType="VARCHAR"/>
+		<result column="validity_flag" property="validityFlag" jdbcType="VARCHAR"/>
+		<result column="remarks" property="remarks" jdbcType="VARCHAR"/>
+		<result column="del_flag" property="delFlag" jdbcType="VARCHAR"/>
+	</resultMap>
+
+    <sql id="pdSupplierColumns">
 		a.id,
 		a.name,
 		a.py,
@@ -78,15 +94,32 @@
 		a.del_flag
 	</sql>
 
-    <sql id="PdSupplierJoins">
+	<!-- 供应商除照片外部分字段 -->
+	<sql id="pdSupplierPartColumns">
+		a.id,
+		a.name,
+		a.py,
+		a.wb,
+		a.zdy,
+		a.create_by,
+		a.create_time,
+		a.update_by,
+		a.update_time,
+		a.sys_org_code,
+		a.validity_flag,
+		a.remarks,
+		a.del_flag
+	</sql>
+
+    <sql id="pdSupplierJoins">
     </sql>
 
     <!-- 校验供应商是否唯一 -->
     <select id="verify" resultType="org.jeecg.modules.pd.entity.PdSupplier">
         SELECT
-        <include refid="PdSupplierColumns"/>
+        <include refid="pdSupplierPartColumns"/>
         FROM pd_supplier a
-        <include refid="PdSupplierJoins"/>
+        <include refid="pdSupplierJoins"/>
         <where>
             a.del_flag = #{DEL_FLAG_NORMAL}
             and a.name = #{name}
@@ -98,16 +131,38 @@
 
 
 	<!-- 供应商条件查询 -->
-	<select id="selectList"  resultType="org.jeecg.modules.pd.entity.PdSupplier">
+	<select id="selectList"  resultMap="resultMap" resultType="org.jeecg.modules.pd.entity.PdSupplier">
 		SELECT
-		<include refid="PdSupplierColumns"/>
+		<include refid="pdSupplierPartColumns"/>
 		FROM pd_supplier a
-		<include refid="PdSupplierJoins"/>
+		<include refid="pdSupplierJoins"/>
 		<where>
-			a.del_flag = '0'
+			a.del_flag = #{DEL_FLAG_NORMAL}
 		</where>
-		<if test="id != null and id != ''">
-			AND a.id != #{id}
+		<if test="name != null and name != ''">
+			AND a.name LIKE concat('%',#{name},'%')
+			or a.py LIKE concat('%',#{name},'%')
+			or a.wb LIKE concat('%',#{name},'%')
+			or a.zdy LIKE concat('%',#{name},'%')
+		</if>
+		<!-- 为了查询效率 只查询十条记录该方法用于下拉选择 -->
+		ORDER BY a.update_time desc LIMIT 0,10
+	</select>
+
+	<!-- 供应商条件查询所有字段 用于定时任务-->
+	<select id="selectAllList"  resultType="org.jeecg.modules.pd.entity.PdSupplier">
+		SELECT
+		<include refid="pdSupplierColumns"/>
+		FROM pd_supplier a
+		<include refid="pdSupplierJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+		<if test="name != null and name != ''">
+			AND a.name LIKE concat('%',#{name},'%')
+			or a.py LIKE concat('%',#{name},'%')
+			or a.wb LIKE concat('%',#{name},'%')
+			or a.zdy LIKE concat('%',#{name},'%')
 		</if>
 	</select>
 

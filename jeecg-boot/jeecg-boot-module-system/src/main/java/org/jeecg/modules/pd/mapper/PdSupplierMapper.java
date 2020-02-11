@@ -18,4 +18,6 @@ public interface PdSupplierMapper extends BaseMapper<PdSupplier> {
     List<PdSupplier> selectList(PdSupplier pdSupplier);
 
     public void updateValidityFlag(PdSupplier pdSupplier);
+
+    List<PdSupplier> selectAllList(PdSupplier pdSupplier);
 }

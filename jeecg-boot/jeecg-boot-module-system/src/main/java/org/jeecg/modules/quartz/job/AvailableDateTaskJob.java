@@ -47,7 +47,7 @@ public class AvailableDateTaskJob implements Job {
         }
         //获取生产厂家信息数据
         PdVender vender = new PdVender();
-        List<PdVender> venderList = pdVenderService.selectList(vender);
+        List<PdVender> venderList = pdVenderService.selectAllList(vender);
         if (venderList != null && venderList.size() > 0) {
             String flag="0"; //所有证照过期标识
             for (PdVender pdVender : venderList) {
@@ -175,7 +175,7 @@ public class AvailableDateTaskJob implements Job {
 //-----------------------
         //获取供应商信息数据
         PdSupplier supplier = new PdSupplier();
-        List<PdSupplier> list = pdSupplierService.selectList(supplier);
+        List<PdSupplier> list = pdSupplierService.selectAllList(supplier);
         if (list != null && list.size() > 0) {
             String flag="0"; //所有证照过期标识
             for (PdSupplier pdSupplier : list) {

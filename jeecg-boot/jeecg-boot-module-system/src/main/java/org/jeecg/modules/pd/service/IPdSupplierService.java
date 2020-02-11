@@ -16,8 +16,10 @@ public interface IPdSupplierService extends IService<PdSupplier> {
     PdSupplier verify(PdSupplier pdSupplier);
 
     List<PdSupplier> selectList(PdSupplier pdSupplier);
+
+    List<PdSupplier> selectAllList(PdSupplier pdSupplier);
     /**
      * 修改证照有效期标识
      */
-    public void updateValidityFlag(PdSupplier pdSupplier);
+    void updateValidityFlag(PdSupplier pdSupplier);
 }

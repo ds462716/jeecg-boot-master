@@ -17,5 +17,7 @@ public interface PdVenderMapper extends BaseMapper<PdVender> {
 
     List<PdVender> selectList(PdVender pdVender);
 
-    public void updateValidityFlag(PdVender pdVender);
+    void updateValidityFlag(PdVender pdVender);
+
+    List<PdVender> selectAllList(PdVender pdVender);
 }

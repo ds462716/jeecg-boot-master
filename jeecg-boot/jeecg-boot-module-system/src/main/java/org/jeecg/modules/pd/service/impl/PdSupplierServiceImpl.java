@@ -31,6 +31,11 @@ public class PdSupplierServiceImpl extends ServiceImpl<PdSupplierMapper, PdSuppl
     }
 
     @Override
+    public List<PdSupplier> selectAllList(PdSupplier pdSupplier) {
+        return pdSupplierMapper.selectAllList(pdSupplier);
+    }
+
+    @Override
     public void updateValidityFlag(PdSupplier pdSupplier){
         pdSupplierMapper.updateValidityFlag(pdSupplier);
     }

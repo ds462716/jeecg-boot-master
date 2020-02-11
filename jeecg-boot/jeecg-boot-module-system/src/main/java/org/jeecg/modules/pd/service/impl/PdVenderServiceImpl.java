@@ -26,9 +26,19 @@ public class PdVenderServiceImpl extends ServiceImpl<PdVenderMapper, PdVender> i
         return pdVenderMapper.verify(pdVender);
     }
 
+    /**
+     * 下拉选择
+     * @param pdVender
+     * @return
+     */
     @Override
     public List<PdVender> selectList(PdVender pdVender) {
         return pdVenderMapper.selectList(pdVender);
+    }
+
+    @Override
+    public List<PdVender> selectAllList(PdVender pdVender) {
+        return pdVenderMapper.selectAllList(pdVender);
     }
 
     @Override

@@ -121,7 +121,22 @@
           </a-col>
           <a-col :lg="12">
             <a-form-item label="供应商" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input v-decorator="[ 'supplierId', validatorRules.supplierId]" placeholder="请输入供应商"></a-input>
+              <!--<a-input v-decorator="[ 'supplierId', validatorRules.supplierId]" placeholder="请输入供应商"></a-input>-->
+              <a-select
+                showSearch
+                :venderId="supplierValue"
+                placeholder="请选择供应商"
+                :defaultActiveFirstOption="false"
+                :showArrow="false"
+                :filterOption="false"
+                @search="supplierHandleSearch"
+                @change="supplierHandleChange"
+                @focus="supplierHandleSearch"
+                :notFoundContent="notFoundContent"
+                v-decorator="[ 'supplierId', validatorRules.supplierId]"
+              >
+                <a-select-option v-for="d in supplierData" :key="d.value">{{d.text}}</a-select-option>
+              </a-select>
             </a-form-item>
           </a-col>
         </a-row>
@@ -426,6 +441,8 @@
         unitValue: undefined,
         venderData: [],
         venderValue: undefined,
+        supplierData: [],
+        supplierValue: undefined,
         notFoundContent:"未找到内容",
         form: this.$form.createForm(this),
         title:"操作",
@@ -622,6 +639,7 @@
           edit: "/pd/pdProduct/edit",
           queryUnit:"/pd/pdEncodingRule/getEncodingRuleList",
           queryVender:"/pd/pdVender/getVenderList",
+          querySupplier:"/pd/pdSupplier/getSupplierList",
         }
       }
     },
@@ -719,6 +737,15 @@
         fetch(value, data => (this.venderData = data),this.url.queryVender);
       },
       //生产厂家查询end
+      //供应商查询start
+      supplierHandleSearch(value) {
+        fetch(value, data => (this.supplierData = data),this.url.querySupplier);
+      },
+      supplierHandleChange(value) {
+        this.supplierValue = value;
+        fetch(value, data => (this.supplierData = data),this.url.querySupplier);
+      },
+      //供应商查询end
     }
   }
 </script>

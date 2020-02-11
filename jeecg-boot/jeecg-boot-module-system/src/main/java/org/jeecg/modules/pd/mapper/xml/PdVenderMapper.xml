@@ -94,7 +94,7 @@
 		a.del_flag
 	</sql>
 
-	<!-- 生产除照片外部分字段 -->
+	<!-- 生产厂家除照片外部分字段 -->
 	<sql id="pdVenderPartColumns">
 		a.id,
 		a.name,
@@ -130,7 +130,7 @@
     </select>
 
 	<!-- 生产厂家条件查询 -->
-	<select id="selectList" resultMap="resultMap" parameterType="org.jeecg.modules.pd.entity.PdVender">
+	<select id="selectList" resultMap="resultMap" resultType="org.jeecg.modules.pd.entity.PdVender">
 		SELECT
 		<include refid="pdVenderPartColumns"/>
 		FROM pd_vender a
@@ -144,8 +144,25 @@
 			or a.wb LIKE concat('%',#{name},'%')
 			or a.zdy LIKE concat('%',#{name},'%')
 		</if>
-		<!--&lt;!&ndash; 为了查询效率 只查询十条记录 &ndash;&gt;
-		ORDER BY a.update_time desc LIMIT 0,10-->
+		<!-- 为了查询效率 只查询十条记录该方法用于下拉选择 -->
+		ORDER BY a.update_time desc LIMIT 0,10
+	</select>
+
+	<!-- 生产厂家条件查询查询所有字段，用于定时任务 -->
+	<select id="selectAllList"  resultType="org.jeecg.modules.pd.entity.PdVender">
+		SELECT
+		<include refid="pdVenderColumns"/>
+		FROM pd_vender a
+		<include refid="pdVenderJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+		<if test="name != null and name != ''">
+			AND a.name LIKE concat('%',#{name},'%')
+			or a.py LIKE concat('%',#{name},'%')
+			or a.wb LIKE concat('%',#{name},'%')
+			or a.zdy LIKE concat('%',#{name},'%')
+		</if>
 	</select>
 
 

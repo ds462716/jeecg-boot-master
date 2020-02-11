@@ -16,9 +16,11 @@ public interface IPdVenderService extends IService<PdVender> {
 
     List<PdVender> selectList(PdVender pdVender);
 
+    List<PdVender> selectAllList(PdVender pdVender);
+
     /**
      * 修改证照有效期标识
      */
-    public void updateValidityFlag(PdVender pdVender);
+    void updateValidityFlag(PdVender pdVender);
 
 }
