@@ -53,8 +53,8 @@
               <tr>
                 <th v-show="!disableSubmit">操作</th>
                 <th>产品编号</th>
-                <th>产品批次号</th>
-                <th>产品有效期</th>
+                <th>批次号</th>
+                <th>有效期</th>
                 <th>产品单价</th>
                 <th>申购数量</th>
                 <th>申购总金额</th>
@@ -364,7 +364,7 @@
   .tableStyle> tr > th{
     border: 1px solid #e8e8e8;
     text-align: center;
-    padding: 16px 16px;
+    padding: 1px 16px;
     font-weight: 500;
     color: rgba(0, 0, 0, 0.85);
     background: #fafafa;
@@ -376,7 +376,7 @@
   .tableStyle> tr > td{
     border:1px solid #e8e8e8;
     text-align: center;
-    padding: 16px 16px;
+    padding: 1px 16px;
     font-weight: 500;
     box-sizing: border-box;
   }
