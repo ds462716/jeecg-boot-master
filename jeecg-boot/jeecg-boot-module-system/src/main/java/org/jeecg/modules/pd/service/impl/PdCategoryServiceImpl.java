@@ -50,6 +50,17 @@ public class PdCategoryServiceImpl extends ServiceImpl<PdCategoryMapper, PdCateg
         this.save(pdCategory);
 
     }
+
+    /**
+     * 产品查询分类
+     * @param pdCategory
+     * @return
+     */
+    @Override
+    public List<PdCategory> selectCategoryOneList(PdCategory pdCategory) {
+        return pdCategoryMapper.selectCategoryOneList(pdCategory);
+    }
+
     /**
      * 修改一级或二级分类
      * @param pdCategory
@@ -112,6 +123,7 @@ public class PdCategoryServiceImpl extends ServiceImpl<PdCategoryMapper, PdCateg
         // 该节点可能是子节点但也可能是其它节点的父节点,所以需要级联删除
         this.removeChildrenBy(pdCategory.getId());
     }
+
 
     /**
      * 根据父id删除其关联的子节点数据
