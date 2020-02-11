@@ -3,6 +3,8 @@ package org.jeecg.modules.pd.service;
 import org.jeecg.modules.pd.entity.PdGroup;
 import com.baomidou.mybatisplus.extension.service.IService;
 
+import java.util.List;
+
 /**
  * @Description: 产品组别
  * @Author: zxh
@@ -11,4 +13,5 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface IPdGroupService extends IService<PdGroup> {
 
+    List<PdGroup> selectList(PdGroup pdGroup);
 }

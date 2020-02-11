@@ -26,6 +26,7 @@
         a.registration,
         a.description,
         a.is_charge,
+        a.charge_code,
         a.create_by,
         a.create_time,
         a.update_by,
@@ -70,6 +71,15 @@
       left join pd_vender f on a.vender_id = f.id
     </sql>
 
+    <!-- 组别 -->
+    <sql id="pdGroupColumns">
+      g.`name` AS "groupName"
+    </sql>
+    <sql id="pdGroupJoins">
+      left join pd_group g on a.group_id = g.id
+    </sql>
+
+
     <!-- 产品条件查询 -->
     <select id="selectList" resultType="org.jeecg.modules.pd.entity.PdProduct">
         SELECT
@@ -77,12 +87,14 @@
         <include refid="pdUnitColumns"/>,
         <include refid="pdCategoryColumns"/>,
         <include refid="pdSupplierColumns"/>,
-        <include refid="pdVenderColumns"/>
+        <include refid="pdVenderColumns"/>,
+        <include refid="pdGroupColumns"/>
         FROM pd_product a
         <include refid="pdUnitJoins"/>
         <include refid="pdCategoryJoins"/>
         <include refid="pdSupplierJoins"/>
         <include refid="pdVenderJoins"/>
+        <include refid="pdGroupJoins"/>
         <where>
             a.del_flag = #{DEL_FLAG_NORMAL}
         </where>

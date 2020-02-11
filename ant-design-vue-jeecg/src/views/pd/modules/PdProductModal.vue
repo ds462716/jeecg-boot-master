@@ -121,7 +121,7 @@
             <a-form-item label="供应商" :labelCol="labelCol" :wrapperCol="wrapperCol">
               <a-select
                 showSearch
-                :venderId="supplierValue"
+                :supplierId="supplierValue"
                 placeholder="请选择供应商"
                 :defaultActiveFirstOption="false"
                 :showArrow="false"
@@ -146,7 +146,21 @@
           </a-col>
           <a-col :lg="12">
             <a-form-item label="产品组别" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input v-decorator="[ 'groupId', validatorRules.groupId]" placeholder="请输入产品组别"></a-input>
+              <a-select
+                showSearch
+                :groupId="groupValue"
+                placeholder="请选择产品组别"
+                :defaultActiveFirstOption="false"
+                :showArrow="false"
+                :filterOption="false"
+                @search="groupHandleSearch"
+                @change="groupHandleChange"
+                @focus="groupHandleSearch"
+                :notFoundContent="notFoundContent"
+                v-decorator="[ 'groupId', validatorRules.groupId]"
+              >
+                <a-select-option v-for="d in groupData" :key="d.value">{{d.text}}</a-select-option>
+              </a-select>
             </a-form-item>
           </a-col>
         </a-row>
@@ -172,7 +186,7 @@
             <a-form-item label="一级分类" :labelCol="labelCol" :wrapperCol="wrapperCol">
               <a-select
                 showSearch
-                :venderId="categoryOneValue"
+                :categoryOne="categoryOneValue"
                 placeholder="请选择一级分类"
                 :defaultActiveFirstOption="false"
                 :showArrow="false"
@@ -192,7 +206,7 @@
              <!-- <a-input v-decorator="[ 'categoryTwo', validatorRules.categoryTwo]" placeholder="请输入二级分类"></a-input>-->
               <a-select
                 showSearch
-                :venderId="categoryTwoValue"
+                :categoryTwo="categoryTwoValue"
                 placeholder="请选择二级分类"
                 :defaultActiveFirstOption="false"
                 :showArrow="false"
@@ -331,6 +345,8 @@
         venderValue: undefined,
         supplierData: [],
         supplierValue: undefined,
+        groupData: [],
+        groupValue: undefined,
         categoryOneData: [],
         categoryOneValue: undefined,
         categoryTwoData: [],
@@ -417,6 +433,7 @@
           queryUnit:"/pd/pdEncodingRule/getEncodingRuleList",
           queryVender:"/pd/pdVender/getVenderList",
           querySupplier:"/pd/pdSupplier/getSupplierList",
+          queryGroup:"/pd/pdGroup/getGroupList",
           queryCategoryOne:"/pd/pdCategory/getCategoryOneList?type=0",
           queryCategoryTwo:"/pd/pdCategory/getCategoryOneList?type=1",
           imgerver: window._CONFIG['domianURL']+"/sys/common/view",
@@ -526,6 +543,15 @@
         fetch(value, data => (this.supplierData = data),this.url.querySupplier);
       },
       //供应商查询end
+      //组别查询start
+      groupHandleSearch(value) {
+        fetch(value, data => (this.groupData = data),this.url.queryGroup);
+      },
+      groupHandleChange(value) {
+        this.groupValue = value;
+        fetch(value, data => (this.groupData = data),this.url.queryGroup);
+      },
+      //组别查询end
       //一级分类查询start
       categoryOneHandleSearch(value) {
         fetch(value, data => (this.categoryOneData = data),this.url.queryCategoryOne);
