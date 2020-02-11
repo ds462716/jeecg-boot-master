@@ -7,4 +7,6 @@ export function photoCheck(oFile,that){
   if (oFile && oFile.size > 5242880) {
     that.$message.error('上传图片不能超过5M');
     return false;
-  }}
+  }
+  return true;
+}
