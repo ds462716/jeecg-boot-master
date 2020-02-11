@@ -13,7 +13,7 @@
         <a-row class="form-row" :gutter="{ xs: 8, sm: 16, md: 24, lg: 32 }">
           <a-col :lg="12">
             <a-form-item label="产品编号" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input v-decorator="[ 'number', validatorRules.number]" placeholder="请输入产品编号"></a-input>
+              <a-input ref="inputFocus" v-decorator="[ 'number', validatorRules.number]" placeholder="请输入产品编号"></a-input>
             </a-form-item>
           </a-col>
         </a-row>
@@ -242,7 +242,7 @@
 
         <label style="float:left;padding-top:15px;">证照扫描件</label>
         <div class="all-card-box" style="padding-left:105px;margin-bottom: 70px">
-          <template v-for="(item, index) in 11" >
+          <template v-for="(item, index) in 12" >
             <div class="card-box" :class="imgIsValidity[index]">
               <div class="card-box-code">
                 <a-form-item label="证照名称" :labelCol="labelCol" :wrapperCol="wrapperCol">
@@ -360,8 +360,8 @@
         previewVisible: false,
         previewImage: '',
         model: {},
-        imgIsShow:[{show:false},{show:false},{show:false},{show:false},{show:false},{show:false},{show:false},{show:false},{show:false},{show:false},{show:false}],
-        imgIsValidity:['validity0','validity0','validity0','validity0','validity0','validity0','validity0','validity0','validity0','validity0','validity0'],//0无过期，1已过期，2近效期
+        imgIsShow:[{show:false},{show:false},{show:false},{show:false},{show:false},{show:false},{show:false},{show:false},{show:false},{show:false},{show:false},{show:false}],
+        imgIsValidity:['validity0','validity0','validity0','validity0','validity0','validity0','validity0','validity0','validity0','validity0','validity0','validity0'],//0无过期，1已过期，2近效期
         labelCol: {
           xs: { span: 24 },
           sm: { span: 5 },
@@ -428,7 +428,7 @@
           }
         ],
         url: {
-          add: "/pd/pdProduct/add",
+          add: "/pd/pdProduct/save",
           edit: "/pd/pdProduct/edit",
           queryUnit:"/pd/pdEncodingRule/getEncodingRuleList",
           queryVender:"/pd/pdVender/getVenderList",
@@ -447,11 +447,31 @@
         this.edit({});
       },
       edit (record) {
+        //编辑时显示图片
+        if(record){
+          for(let index = 0;index<12;index++){
+            if(record["licenceSite"+index]){
+              this.imgIsShow[index].show=true;
+            }else{
+              //包括新增时状态重置
+              this.imgIsShow[index].show=false;
+            }
+            if(record["licenceValidity"+index]){
+              this.imgIsValidity[index]="validity"+record["licenceValidity"+index];
+            }else{
+              //包括新增时状态重置
+              this.imgIsValidity[index]="validity0";
+            }
+          }
+        }
         this.form.resetFields();
         this.model = Object.assign({}, record);
         this.visible = true;
         this.$nextTick(() => {
-          this.form.setFieldsValue(pick(this.model,'number','name','py','wb','bname','bpy','bwb','zdy','spec','version','unitId','categoryOne','categoryTwo','groupId','venderId','isCharge','supplierId','purchasePrice','sellingPrice','registration','chargeCode','description','licenceName0','licenceNum0','licenceDate0','licenceSite0','licenceValidity0','licenceName1','licenceNum1','licenceDate1','licenceSite1','licenceValidity1','licenceName2','licenceNum2','licenceDate2','licenceSite2','licenceValidity2','licenceName3','licenceNum3','licenceDate3','licenceSite3','licenceValidity3','licenceName4','licenceNum4','licenceDate4','licenceSite4','licenceValidity4','licenceName5','licenceNum5','licenceDate5','licenceSite5','licenceValidity5','licenceName6','licenceNum6','licenceDate6','licenceSite6','licenceValidity6','licenceName7','licenceNum7','licenceDate7','licenceSite7','licenceValidity7','licenceName8','licenceNum8','licenceDate8','licenceSite8','licenceValidity8','licenceName9','licenceNum9','licenceDate9','licenceSite9','licenceValidity9','licenceName10','licenceNum10','licenceDate10','licenceSite10','licenceValidity10','createBy','createTime','updateBy','updateTime','sysOrgCode','validityFlag','delFlag'))
+          this.form.setFieldsValue(pick(this.model,'number','name','py','wb','bname','bpy','bwb','zdy','spec','version','unitId','categoryOne','categoryTwo','groupId','venderId','isCharge','supplierId','purchasePrice','sellingPrice','registration','chargeCode','description','licenceName0','licenceNum0','licenceDate0','licenceSite0','licenceValidity0','licenceName1','licenceNum1','licenceDate1','licenceSite1','licenceValidity1','licenceName2','licenceNum2','licenceDate2','licenceSite2','licenceValidity2','licenceName3','licenceNum3','licenceDate3','licenceSite3','licenceValidity3','licenceName4','licenceNum4','licenceDate4','licenceSite4','licenceValidity4','licenceName5','licenceNum5','licenceDate5','licenceSite5','licenceValidity5','licenceName6','licenceNum6','licenceDate6','licenceSite6','licenceValidity6','licenceName7','licenceNum7','licenceDate7','licenceSite7','licenceValidity7','licenceName8','licenceNum8','licenceDate8','licenceSite8','licenceValidity8','licenceName9','licenceNum9','licenceDate9','licenceSite9','licenceValidity9','licenceName10','licenceNum10','licenceDate10','licenceSite10','licenceValidity10','licenceName11','licenceNum11','licenceDate11','licenceSite11','licenceValidity11'))
+          //获取光标
+          let input = this.$refs['inputFocus'];
+          input.focus()
         })
       },
       close () {
@@ -473,9 +493,20 @@
               httpurl+=this.url.edit;
                method = 'put';
             }
+            let formDataAll = new FormData();
+            let imgIsShow = this.imgIsShow;
+            for(let m in imgIsShow){
+              if(imgIsShow[m].show){
+                let oFile = that.$refs.file[m].files[0];
+                formDataAll.append("licenceSiteUp"+m, oFile);
+              }
+            }
             let formData = Object.assign(this.model, values);
+            for (let obj in formData) {
+              formDataAll.append(obj, formData[obj]?formData[obj]:"");
+            }
             console.log("表单提交数据",formData)
-            httpAction(httpurl,formData,method).then((res)=>{
+            httpAction(httpurl,formDataAll,method).then((res)=>{
               if(res.success){
                 that.$message.success(res.message);
                 that.$emit('ok');
@@ -494,7 +525,7 @@
         this.close()
       },
       popupCallback(row){
-        this.form.setFieldsValue(pick(row,'number','name','py','wb','bname','bpy','bwb','zdy','spec','version','unitId','categoryOne','categoryTwo','groupId','venderId','isCharge','supplierId','purchasePrice','sellingPrice','registration','chargeCode','description','licenceName0','licenceNum0','licenceDate0','licenceSite0','licenceValidity0','licenceName1','licenceNum1','licenceDate1','licenceSite1','licenceValidity1','licenceName2','licenceNum2','licenceDate2','licenceSite2','licenceValidity2','licenceName3','licenceNum3','licenceDate3','licenceSite3','licenceValidity3','licenceName4','licenceNum4','licenceDate4','licenceSite4','licenceValidity4','licenceName5','licenceNum5','licenceDate5','licenceSite5','licenceValidity5','licenceName6','licenceNum6','licenceDate6','licenceSite6','licenceValidity6','licenceName7','licenceNum7','licenceDate7','licenceSite7','licenceValidity7','licenceName8','licenceNum8','licenceDate8','licenceSite8','licenceValidity8','licenceName9','licenceNum9','licenceDate9','licenceSite9','licenceValidity9','licenceName10','licenceNum10','licenceDate10','licenceSite10','licenceValidity10','createBy','createTime','updateBy','updateTime','sysOrgCode','validityFlag','delFlag'))
+        this.form.setFieldsValue(pick(row,'number','name','py','wb','bname','bpy','bwb','zdy','spec','version','unitId','categoryOne','categoryTwo','groupId','venderId','isCharge','supplierId','purchasePrice','sellingPrice','registration','chargeCode','description','licenceName0','licenceNum0','licenceDate0','licenceSite0','licenceValidity0','licenceName1','licenceNum1','licenceDate1','licenceSite1','licenceValidity1','licenceName2','licenceNum2','licenceDate2','licenceSite2','licenceValidity2','licenceName3','licenceNum3','licenceDate3','licenceSite3','licenceValidity3','licenceName4','licenceNum4','licenceDate4','licenceSite4','licenceValidity4','licenceName5','licenceNum5','licenceDate5','licenceSite5','licenceValidity5','licenceName6','licenceNum6','licenceDate6','licenceSite6','licenceValidity6','licenceName7','licenceNum7','licenceDate7','licenceSite7','licenceValidity7','licenceName8','licenceNum8','licenceDate8','licenceSite8','licenceValidity8','licenceName9','licenceNum9','licenceDate9','licenceSite9','licenceValidity9','licenceName10','licenceNum10','licenceDate10','licenceSite10','licenceValidity10','licenceName11','licenceNum11','licenceDate11','licenceSite11','licenceValidity11'))
       },
       pinyinTran(e){
         let val = e.target.value;
@@ -633,11 +664,12 @@
   border-radius: 0 0 2px 2px;
   z-index:199;
 }
-  .ant-btn {
-    margin-left: 30px;
-    margin-bottom: 30px;
-    float: right;
-  }
+/** Button按钮间距 */
+.ant-btn {
+  margin-left: 30px;
+  margin-bottom: 30px;
+  float: right;
+}
 .card-box{
   width: 300px;
   height: 410px;

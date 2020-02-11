@@ -290,6 +290,23 @@ public class PdProduct  extends BaseEntity {
 	/**是否过期标识，0未过期，1已过期，2近效期*/
 	@Excel(name = "是否过期标识，0未过期，1已过期，2近效期", width = 15)
     private java.lang.String licenceValidity10;
+	/**证照名称*/
+	@Excel(name = "证照名称", width = 15)
+	private java.lang.String licenceName11;
+	/**证照号码*/
+	@Excel(name = "证照号码", width = 15)
+	private java.lang.String licenceNum11;
+	/**证照有效期*/
+	@Excel(name = "证照有效期", width = 15, format = "yyyy-MM-dd")
+	@JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd")
+	@DateTimeFormat(pattern="yyyy-MM-dd")
+	private java.util.Date licenceDate11;
+	/**证照地址*/
+	@Excel(name = "证照地址", width = 15)
+	private java.lang.String licenceSite11;
+	/**是否过期标识，0未过期，1已过期，2近效期*/
+	@Excel(name = "是否过期标识，0未过期，1已过期，2近效期", width = 15)
+	private java.lang.String licenceValidity11;
 	/**创建人*/
 	@Excel(name = "创建人", width = 15)
     private java.lang.String createBy;
