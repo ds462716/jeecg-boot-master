@@ -429,8 +429,8 @@
         ],
         url: {
           add: "/pd/pdProduct/save",
-          edit: "/pd/pdProduct/edit",
-          queryUnit:"/pd/pdEncodingRule/getEncodingRuleList",
+          edit: "/pd/pdProduct/update",
+          queryUnit:"/pd/pdUnit/getUnitList",
           queryVender:"/pd/pdVender/getVenderList",
           querySupplier:"/pd/pdSupplier/getSupplierList",
           queryGroup:"/pd/pdGroup/getGroupList",
@@ -448,7 +448,7 @@
       },
       edit (record) {
         //编辑时显示图片
-        if(record){
+        if(record.hasOwnProperty("id")){
           for(let index = 0;index<12;index++){
             if(record["licenceSite"+index]){
               this.imgIsShow[index].show=true;
@@ -463,6 +463,48 @@
               this.imgIsValidity[index]="validity0";
             }
           }
+          //单位
+          const unitData = [];
+          unitData.push({
+            value: record.unitId,
+            text: record.unitName,
+          });
+          this.unitData = unitData;
+          //生产厂家
+          const venderData = [];
+          venderData.push({
+            value: record.venderId,
+            text: record.venderName,
+          });
+          this.venderData = venderData;
+          //供应商
+          const supplierData = [];
+          supplierData.push({
+            value: record.supplierId,
+            text: record.supplierName,
+          });
+          this.supplierData = supplierData;
+          //组别
+          const groupData = [];
+          groupData.push({
+            value: record.groupId,
+            text: record.groupName,
+          });
+          this.groupData = groupData;
+          //一级分类
+          const categoryOneData = [];
+          categoryOneData.push({
+            value: record.categoryOne,
+            text: record.categoryOneName,
+          });
+          this.categoryOneData = categoryOneData;
+          //二级分类
+          const categoryTwoData = [];
+          categoryTwoData.push({
+            value: record.categoryTwo,
+            text: record.categoryTwoName,
+          });
+          this.categoryTwoData = categoryTwoData;
         }
         this.form.resetFields();
         this.model = Object.assign({}, record);
@@ -491,7 +533,7 @@
               method = 'post';
             }else{
               httpurl+=this.url.edit;
-               method = 'put';
+               method = 'post';
             }
             let formDataAll = new FormData();
             let imgIsShow = this.imgIsShow;
@@ -505,7 +547,7 @@
             for (let obj in formData) {
               formDataAll.append(obj, formData[obj]?formData[obj]:"");
             }
-            console.log("表单提交数据",formData)
+            //console.log("表单提交数据",formData)
             httpAction(httpurl,formDataAll,method).then((res)=>{
               if(res.success){
                 that.$message.success(res.message);

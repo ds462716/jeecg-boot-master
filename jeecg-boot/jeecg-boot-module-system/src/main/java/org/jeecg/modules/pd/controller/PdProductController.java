@@ -152,6 +152,149 @@ public class PdProductController extends JeecgController<PdProduct, IPdProductSe
 		 pdProductService.save(pdProduct);
 		 return Result.ok("添加成功！");
 	 }
+
+	    /**
+     * 包含文件上传功能
+     * @param pdProduct
+     * @return
+     */
+    @PostMapping(value = "/update")
+    public Result<?> update(PdProduct pdProduct,@RequestParam MultipartFile[] licenceSiteUp0,
+                          @RequestParam MultipartFile[] licenceSiteUp1,
+                          @RequestParam MultipartFile[] licenceSiteUp2,@RequestParam MultipartFile[] licenceSiteUp3,
+                          @RequestParam MultipartFile[] licenceSiteUp4,@RequestParam MultipartFile[] licenceSiteUp5,
+                          @RequestParam MultipartFile[] licenceSiteUp6,@RequestParam MultipartFile[] licenceSiteUp7,
+                          @RequestParam MultipartFile[] licenceSiteUp8,@RequestParam MultipartFile[] licenceSiteUp9,
+                          @RequestParam MultipartFile[] licenceSiteUp10,@RequestParam MultipartFile[] licenceSiteUp11
+    ) {
+        Result<Boolean> result = new Result<>();
+        //如果此参数为false则程序发生异常
+        result.setResult(true);
+        result.setMessage("编辑成功");
+        //存入图片
+        if(!FileUploadUtil.isImgEmpty(licenceSiteUp0)){
+            String filePath = FileUploadUtil.upload(licenceSiteUp0);
+            if(pdProduct.getLicenceSite0()!=null && !"".equals(pdProduct.getLicenceSite0())){
+                //先删除再更新
+                FileUploadUtil.deleteFile(pdProduct.getLicenceSite0());
+            }
+            if(!"".equals(filePath)){
+				pdProduct.setLicenceSite0(filePath);
+            }
+        }
+        if(!FileUploadUtil.isImgEmpty(licenceSiteUp1)){
+            String filePath = FileUploadUtil.upload(licenceSiteUp1);
+            if(pdProduct.getLicenceSite1()!=null && !"".equals(pdProduct.getLicenceSite1())){
+                //先删除再更新
+                FileUploadUtil.deleteFile(pdProduct.getLicenceSite1());
+            }
+            if(!"".equals(filePath)){
+				pdProduct.setLicenceSite1(filePath);
+            }
+        }
+        if(!FileUploadUtil.isImgEmpty(licenceSiteUp2)){
+            String filePath = FileUploadUtil.upload(licenceSiteUp2);
+            if(pdProduct.getLicenceSite2()!=null && !"".equals(pdProduct.getLicenceSite2())){
+                //先删除再更新
+                FileUploadUtil.deleteFile(pdProduct.getLicenceSite2());
+            }
+            if(!"".equals(filePath)){
+                pdProduct.setLicenceSite2(filePath);
+            }
+        }
+        if(!FileUploadUtil.isImgEmpty(licenceSiteUp3)){
+            String filePath = FileUploadUtil.upload(licenceSiteUp3);
+            if(pdProduct.getLicenceSite3()!=null && !"".equals(pdProduct.getLicenceSite3())){
+                //先删除再更新
+                FileUploadUtil.deleteFile(pdProduct.getLicenceSite3());
+            }
+            if(!"".equals(filePath)){
+                pdProduct.setLicenceSite3(filePath);
+            }
+        }
+        if(!FileUploadUtil.isImgEmpty(licenceSiteUp4)){
+            String filePath = FileUploadUtil.upload(licenceSiteUp4);
+            if(pdProduct.getLicenceSite4()!=null && !"".equals(pdProduct.getLicenceSite4())){
+                //先删除再更新
+                FileUploadUtil.deleteFile(pdProduct.getLicenceSite4());
+            }
+            if(!"".equals(filePath)){
+                pdProduct.setLicenceSite4(filePath);
+            }
+        }
+        if(!FileUploadUtil.isImgEmpty(licenceSiteUp5)){
+            String filePath = FileUploadUtil.upload(licenceSiteUp5);
+            if(pdProduct.getLicenceSite5()!=null && !"".equals(pdProduct.getLicenceSite5())){
+                //先删除再更新
+                FileUploadUtil.deleteFile(pdProduct.getLicenceSite5());
+            }
+            if(!"".equals(filePath)){
+                pdProduct.setLicenceSite5(filePath);
+            }
+        }
+        if(!FileUploadUtil.isImgEmpty(licenceSiteUp6)){
+            String filePath = FileUploadUtil.upload(licenceSiteUp6);
+            if(pdProduct.getLicenceSite6()!=null && !"".equals(pdProduct.getLicenceSite6())){
+                //先删除再更新
+                FileUploadUtil.deleteFile(pdProduct.getLicenceSite6());
+            }
+            if(!"".equals(filePath)){
+                pdProduct.setLicenceSite6(filePath);
+            }
+        }
+        if(!FileUploadUtil.isImgEmpty(licenceSiteUp7)){
+            String filePath = FileUploadUtil.upload(licenceSiteUp7);
+            if(pdProduct.getLicenceSite7()!=null && !"".equals(pdProduct.getLicenceSite7())){
+                //先删除再更新
+                FileUploadUtil.deleteFile(pdProduct.getLicenceSite7());
+            }
+            if(!"".equals(filePath)){
+                pdProduct.setLicenceSite7(filePath);
+            }
+        }
+        if(!FileUploadUtil.isImgEmpty(licenceSiteUp8)){
+            String filePath = FileUploadUtil.upload(licenceSiteUp8);
+            if(pdProduct.getLicenceSite8()!=null && !"".equals(pdProduct.getLicenceSite8())){
+                //先删除再更新
+                FileUploadUtil.deleteFile(pdProduct.getLicenceSite8());
+            }
+            if(!"".equals(filePath)){
+                pdProduct.setLicenceSite8(filePath);
+            }
+        }
+        if(!FileUploadUtil.isImgEmpty(licenceSiteUp9)){
+            String filePath = FileUploadUtil.upload(licenceSiteUp9);
+            if(pdProduct.getLicenceSite9()!=null && !"".equals(pdProduct.getLicenceSite9())){
+                //先删除再更新
+                FileUploadUtil.deleteFile(pdProduct.getLicenceSite9());
+            }
+            if(!"".equals(filePath)){
+                pdProduct.setLicenceSite9(filePath);
+            }
+        }
+        if(!FileUploadUtil.isImgEmpty(licenceSiteUp10)){
+            String filePath = FileUploadUtil.upload(licenceSiteUp10);
+            if(pdProduct.getLicenceSite10()!=null && !"".equals(pdProduct.getLicenceSite10())){
+                //先删除再更新
+                FileUploadUtil.deleteFile(pdProduct.getLicenceSite10());
+            }
+            if(!"".equals(filePath)){
+                pdProduct.setLicenceSite10(filePath);
+            }
+        }
+        if(!FileUploadUtil.isImgEmpty(licenceSiteUp11)){
+            String filePath = FileUploadUtil.upload(licenceSiteUp11);
+            if(pdProduct.getLicenceSite11()!=null && !"".equals(pdProduct.getLicenceSite11())){
+                //先删除再更新
+                FileUploadUtil.deleteFile(pdProduct.getLicenceSite11());
+            }
+            if(!"".equals(filePath)){
+                pdProduct.setLicenceSite11(filePath);
+            }
+        }
+        pdProductService.updateById(pdProduct);
+        return Result.ok("编辑成功！");
+    }
 	
 	/**
 	 *  编辑

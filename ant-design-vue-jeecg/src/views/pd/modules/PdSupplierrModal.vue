@@ -140,7 +140,7 @@
       },
       edit (record) {
         //编辑时显示图片
-        if(record){
+        if(record.hasOwnProperty("id")){
           for(let index = 0;index<12;index++){
             if(record["licenceSite"+index]){
               this.imgIsShow[index].show=true;
