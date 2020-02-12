@@ -19,7 +19,7 @@
             </a-form-item>
           </a-col>
           <a-col :span="12">
-            <a-form-item label="申购人编号" :labelCol="labelCol" :wrapperCol="wrapperCol">
+            <a-form-item label="申购人员" :labelCol="labelCol" :wrapperCol="wrapperCol">
               <a-input disabled="disabled" v-decorator="[ 'purchaseName', validatorRules.purchaseName]"></a-input>
             </a-form-item>
           </a-col>
@@ -29,7 +29,7 @@
             </a-form-item>
           </a-col>
           <a-col :span="12">
-            <a-form-item label="申购库房名称" :labelCol="labelCol" :wrapperCol="wrapperCol">
+            <a-form-item label="申购库房" :labelCol="labelCol" :wrapperCol="wrapperCol">
               <a-input disabled="disabled" v-decorator="[ 'storeroomName', validatorRules.storeroomName]" placeholder="请输入库房名称"></a-input>
             </a-form-item>
           </a-col>
@@ -48,33 +48,37 @@
             <a-button type="primary" icon="download" @click="exportXls('申购产品列表')">导出</a-button>
             <a-button v-show="!disableSubmit" @click="choice" style="margin-left: 0px;margin-bottom: 20px"  type="primary">选择产品</a-button>
           </div>
-          <div style="float: left;width:100%;margin-bottom: 70px">
+          <div style="float: left;width:100%;margin-bottom: 70px;overflow-x:auto;overflow-y:hidden;">
             <table id="contentTable" class="tableStyle">
               <tr>
                 <th v-show="!disableSubmit">操作</th>
                 <th>产品编号</th>
-                <th>批次号</th>
-                <th>有效期</th>
-                <th>产品单价</th>
+                <th>产品名称</th>
+                <th>规格</th>
+                <th>型号</th>
+                <th>单位</th>
+                <th>库存数量</th>
                 <th>申购数量</th>
-                <th>申购总金额</th>
-                <th>申购时总库存数量</th>
+                <th>产品单价</th>
+                <th>申购金额</th>
                 <th>生产厂家</th>
               </tr>
               <tr v-for="(item, index) in pdPurchaseDetailTable.dataSource">
                 <td v-show="!disableSubmit"><a @click="deleteDetail(item.productId)">删除</a></td>
                 <td>{{item.productNo}}</td>
-                <td>{{item.batchNo}}</td>
-                <td>{{item.expireDate}}</td>
-                <td>{{item.inPrice}}</td>
+                <td>{{item.productName}}</td>
+                <td>{{item.spec}}</td>
+                <td>{{item.version}}</td>
+                <td>{{item.unitName}}</td>
+                <td>{{item.stockNum}}</td>
                 <td>
                    <a-form-item>
                  <a-input  :disabled="disableSubmit" :style="{width: 'calc(80% - 10px)'}" @blur="(e)=>{handleConfirmBlur(e.target,item)}"  v-decorator="['pdPurchaseDetailTable['+index+'].length', {'initialValue':item.applyCount,rules:validatorRules.applyCount}]"/>
                   </a-form-item>
                 </td>
+                <td>{{item.inPrice}}</td>
                 <td>{{item.amountMoney}}</td>
-                <td>{{item.stockNum}}</td>
-                <td>{{item.meaning}}</td>
+                <td>{{item.venderName}}</td>
               </tr>
             </table>
           </div>
@@ -103,7 +107,7 @@
   import { JEditableTableMixin } from '@/mixins/JEditableTableMixin'
   import JDate from '@/components/jeecg/JDate'
   import JDictSelectTag from "@/components/dict/JDictSelectTag"
-  import PdPurchaseDetailAddModal from './PdEncodingIdentifierAddModal'
+  import PdPurchaseDetailAddModal from './PdChooseProductListModel'
   export default {
     name: 'PdPurchaseOrderModal',
     mixins: [JEditableTableMixin],
@@ -247,15 +251,18 @@
         let amountMoney=0;
         for(let i=0;i<formData.length;i++){
           values.push({
-            orderNo: formData[i].value,
-            productId: formData[i].value,
-            productNo: formData[i].value,
-            batchNo: formData[i].value,
-            expireDate:new Date,
-            inPrice: formData[i].value,
+            productId: formData[i].productId,
+            productNo: formData[i].number,
+            productName: formData[i].productName,
+            spec:formData[i].spec,
+            inPrice: formData[i].sellingPrice,
             applyCount: 1,//默认1
-            amountMoney: formData[i].value,
-            stockNum: formData[i].value
+            version: formData[i].version,
+            stockNum: formData[i].stockNum,
+            unitName:formData[i].unitName,
+            amountMoney:formData[i].sellingPrice * 1,
+            venderName:formData[i].venderName
+
           })
           count=count+parseInt(formData[i].value);//计算总数量
           amountMoney=amountMoney+Number(formData[i].value);//计算申购总金额
@@ -379,6 +386,7 @@
     padding: 1px 16px;
     font-weight: 500;
     box-sizing: border-box;
+
   }
 
   .tableStyle> tr > td >input{

@@ -17,7 +17,7 @@
         ref="table"
         size="middle"
         bordered
-        rowKey="id"
+        rowKey="productId"
         :columns="columns"
         :dataSource="dataSource"
         :pagination="ipagination"
@@ -57,7 +57,7 @@
         columns: [
           {
             title: '#',
-            dataIndex: 'id',
+            dataIndex: 'productId',
             key:'rowIndex',
             width:60,
             align:"center",
@@ -120,12 +120,16 @@
         this.visible = true;
       },
       handleOk () {
-
+        const that = this;
+        let formData = that.selectionRows;
+        that.$emit('ok', formData);
+        that.close();
       },
       handleCancel () {
         this.close()
       },
       popupCallback(row){
+
       },
     }
   }
