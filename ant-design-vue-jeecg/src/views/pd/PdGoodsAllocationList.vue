@@ -72,20 +72,17 @@
       <!---- author:os_chengtgen -- date:20190827 --  for:切换父子勾选模式 =======------>
     </a-col>
     <a-col :md="15" :sm="24" v-show="showGoodsCard">
-      <a-card :bordered="false" :loading="loading">
+      <a-card :bordered="false">
         <a-alert type="info" :showIcon="false">
           <div slot="message">
             <span style="font-weight: bold;color: #2eabff">{{ title1 }} </span> {{ title2 }}
           </div>
-          <!--<div slot="message" v-show="showEdit">-->
-            <!--<span style="font-weight: bold;color: #ff313b">修改 </span>货区/货位-->
-          <!--</div>-->
         </a-alert>
 
         <a-form :form="form" style="margin-top: 10px" >
           <a-form-item label="部门名称" :labelCol="labelCol" :wrapperCol="wrapperCol">
             <a-input disabled v-decorator="['departName', validatorRules.departName ]" placeholder="请输入机构/部门名称"/>
-            <a-input disabled v-decorator="['departId', validatorRules.departId ]" v-show="false"/>
+            <a-input v-decorator="['departId', validatorRules.departId ]" v-show="false"/>
           </a-form-item>
           <!--<a-form-item label="上级机构" :labelCol="labelCol" :wrapperCol="wrapperCol">-->
             <!--<a-tree-select style="width:100%" :dropdownStyle="{maxHeight:'200px',overflow:'auto'}"-->
@@ -160,39 +157,28 @@
           <a-form-item label="备注" :labelCol="labelCol" :wrapperCol="wrapperCol">
             <a-input v-decorator="[ 'remarks', validatorRules.remarks]" placeholder="请输入备注"></a-input>
           </a-form-item>
-          <!--<a-form-item-->
-            <!--:labelCol="labelCol"-->
-            <!--:wrapperCol="wrapperCol"-->
-            <!--label="排序">-->
-            <!--<a-input-number v-decorator="[ 'departOrder',{'initialValue':0}]"/>-->
-          <!--</a-form-item>-->
         </a-form>
         <div class="anty-form-btn">
-          <a-button type="default" @click="cancelCurrForm">取消</a-button>
-          <!--<a-button @click="cancelCurrForm" type="default" htmlType="button" icon="sync">关闭</a-button>-->
+          <a-button @click="cancelCurrForm" type="default" htmlType="button" icon="close">取消</a-button>
           <a-button @click="emptyCurrForm" type="default" htmlType="button" icon="sync">重置</a-button>
           <a-button @click="editCurrForm" type="primary" htmlType="button" icon="form" v-show="showEdit">修改并保存</a-button>
           <a-button @click="submitCurrForm" type="primary" htmlType="button" icon="form" v-show="showSubmit">保存</a-button>
         </div>
       </a-card>
     </a-col>
-    <!--<pdGoodsAllocation-modal ref="modalForm" @ok="modalFormOk"></pdGoodsAllocation-modal>-->
-
   </a-row>
 </template>
 <script>
   import pick from 'lodash.pick'
-  import {queryGoodsAllocationTreeList, searchByKeywords, deleteByDepartId} from '@/api/api'
+  import {queryGoodsAllocationTreeList, searchByKeywords, deleteByDepartId,duplicateCheckHasDelFlag} from '@/api/api'
   import {httpAction, deleteAction, getAction} from '@/api/manage'
   import {JeecgListMixin} from '@/mixins/JeecgListMixin'
   import { makeWb } from '@/utils/wubi'
-  // import PdGoodsAllocationModal from "./modules/PdGoodsAllocationModal";
 
   export default {
-    name: 'DepartList',
+    name: 'PdGoodsAllocationList',
     mixins: [JeecgListMixin],
     components: {
-      // PdGoodsAllocationModal
     },
     data() {
       return {
@@ -218,17 +204,18 @@
         model: {},
         dropTrigger: '',
         depart: {},
-        // columns: columns,
         disableSubmit: false,
         checkedKeys: [],
         selectedKeys: [],
         autoIncr: 1,
         currSelected: {},
-        subCode:'',
         allTreeKeys:[],
         checkStrictly: true, // 父子关联
 
         goodsParentId:"", //货位父ID
+        goodsCode:"",
+        subCode:'',
+        parentCode:'',
 
         form: this.$form.createForm(this),
         labelCol: {
@@ -249,9 +236,9 @@
           subCode: {rules: [{required: true, message: '下级存放单位编号标识!'}]},
           // orgCategory: {rules: [{required: true, message: '请输入机构类型!'}]},
           mobile: {rules: [{validator: this.validateMobile}]},
-          name: {rules: []},
-          code: {rules: []},
-          codeSuffix: {rules: [{required: true, message: '请输入编号后缀!'}]},
+          name: {rules: [{required: true, message: '请输入名称!'}]},
+          code: {rules: [{required: true, message: '请输入编号!'}]},
+          codeSuffix: {rules: [{required: true, message: '请输入编号后缀!'},{validator: this.validateCode}]},
           areaType: {rules: []},
           address: {rules: []},
           area: {rules: [{pattern:/^-?\d+\.?\d*$/, message: '请输入数字!'},]},
@@ -313,7 +300,8 @@
       },
       getCode(e){
         let codeSuffix = e.target.value;
-        this.form.setFieldsValue({code:this.subCode+codeSuffix});
+        this.goodsCode = this.form.getFieldValue("subCode")+codeSuffix;
+        this.form.setFieldsValue({code:this.goodsCode});
       },
       setThisExpandedKeys(node) {
         if (node.children && node.children.length > 0) {
@@ -458,8 +446,9 @@
           // this.loading = true;
           getAction(this.url.queryById, params).then(res => {
             let goodsData = res.result || [];
+            goodsData.departName = record.departName;
             this.model = Object.assign({}, goodsData);
-            this.subCode = this.model.code;
+            this.subCode = this.model.subCode;
             this.currSelected.departId = this.model.departId;
             typeof success === 'function' ? success(res) : ''
             this.$nextTick(() => {
@@ -467,21 +456,27 @@
             })
 
             if(this.currSelected.orgType == "huoqu"){
-              this.showHuoqu = false;
-              this.showHuowei = true;
-              this.title2 = "货区";
               this.$nextTick(() => {
                 this.goodsParentId = this.model.id;
+                this.parentCode = this.model.code;
               })
             }else{
-              this.showHuoqu = false;
-              this.showHuowei = false;
-              this.title2 = "货位";
               this.goodsParentId = "";
+              // this.subCode = this.model.subCode;
             }
           }).finally(() => {
             // this.loading = false
           })
+
+          if(this.currSelected.orgType == "huoqu"){
+            this.showHuoqu = false;
+            this.showHuowei = true;
+            this.title2 = "货区";
+          }else{
+            this.showHuoqu = false;
+            this.showHuowei = false;
+            this.title2 = "货位";
+          }
         }else if(record.hasOwnProperty("orgType") && this.currSelected.orgType == "2"){
           this.showHuoqu = true;
           this.showHuowei = false;
@@ -600,7 +595,7 @@
           this.showSubmit = true;//显示保存按钮
           this.form.setFieldsValue({areaType:"2"});
           this.form.setFieldsValue({state:"1"}); //默认启用
-          this.form.setFieldsValue({subCode:this.subCode});
+          this.form.setFieldsValue({subCode:this.parentCode});
           this.title2 = "货位";
         }else if(this.currSelected.hasOwnProperty("orgType") && (this.currSelected.orgType == "1" || this.currSelected.orgType == "huowei")){
           this.$message.warning('请先选中科室或货区!')
@@ -639,6 +634,22 @@
             this.getFlowGraphData(temp)
           }
         }
+      },
+
+      validateCode(rule, value, callback){
+        let params = {
+          tableName: 'pd_goods_allocation',
+          fieldName: 'code',
+          fieldVal: this.goodsCode,
+          dataId: ""
+        };
+        duplicateCheckHasDelFlag(params).then((res) => {
+          if (res.success) {
+            callback();
+          } else {
+            callback("货位编号已存在，请重新输入编号后缀!");
+          }
+        })
       },
       // <!---- author:os_chengtgen -- date:20190827 --  for:切换父子勾选模式 =======------>
       expandAll () {

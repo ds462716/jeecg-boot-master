@@ -51,6 +51,9 @@
             <if test="parentId != null and parentId != ''">
                 AND a.parent_id LIKE concat('%',#{parentId},'%')
             </if>
+            <if test="code != null and code != ''">
+                AND a.code LIKE concat('%',#{code},'%')
+            </if>
         </where>
         ORDER BY a.name
     </select>
