@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.pd.mapper.PdGoodsAllocationMapper">
+
+    <sql id="pdGoodsAllocation">
+        a.id,
+        a.parent_id,
+        a.depart_id,
+        a.name,
+        a.code,
+        a.area_type,
+        a.address,
+        a.area,
+        a.volume,
+        a.contacts,
+        a.contacts_phone,
+        a.sub_code,
+        a.sub_num,
+        a.state,
+        a.py,
+        a.wb,
+        a.zdy,
+        a.create_by,
+        a.create_time,
+        a.update_by,
+        a.update_time,
+        a.remarks,
+        a.del_flag,
+        a.sys_org_code,
+        a.sys_org_parent_code
+	</sql>
+
+    <select id="selectList" resultType="org.jeecg.modules.pd.vo.PdGoodsAllocationPage" parameterType="org.jeecg.modules.pd.entity.PdGoodsAllocation">
+        SELECT
+        <include refid="pdGoodsAllocation"/>,
+        b.depart_name
+        FROM pd_goods_allocation a
+        left join sys_depart b on a.depart_id = b.id
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+            AND a.area_type = '1'
+            <if test="name != null and name != ''">
+                AND ( a.name LIKE concat('%',#{name},'%')
+                or a.py LIKE concat('%',#{name},'%')
+                or a.wb LIKE concat('%',#{name},'%')
+                or a.zdy LIKE concat('%',#{name},'%') )
+            </if>
+            <if test="departId != null and departId != ''">
+                AND a.depart_id LIKE concat('%',#{departId},'%')
+            </if>
+            <if test="parentId != null and parentId != ''">
+                AND a.parent_id LIKE concat('%',#{parentId},'%')
+            </if>
+        </where>
+        ORDER BY a.name
+    </select>
+
+
+    <select id="selectParentList" resultType="org.jeecg.modules.system.model.SysDepartTreeModel" parameterType="org.jeecg.modules.pd.entity.PdGoodsAllocation">
+        SELECT
+        a.id as id,
+        a.id as 'value',
+        a.id as 'key',
+        a.parent_id as parentId,
+        b.depart_name as departName,
+        a.name as title
+        FROM pd_goods_allocation a
+        left join sys_depart b on a.depart_id = b.id
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+            AND a.area_type = '1'
+            <if test="name != null and name != ''">
+                AND ( a.name LIKE concat('%',#{name},'%')
+                or a.py LIKE concat('%',#{name},'%')
+                or a.wb LIKE concat('%',#{name},'%')
+                or a.zdy LIKE concat('%',#{name},'%') )
+            </if>
+            <if test="departId != null and departId != ''">
+                AND a.depart_id LIKE concat('%',#{departId},'%')
+            </if>
+            <if test="parentId != null and parentId != ''">
+                AND a.parent_id LIKE concat('%',#{parentId},'%')
+            </if>
+        </where>
+        ORDER BY a.name
+    </select>
+
+    <select id="selectChildList" resultType="org.jeecg.modules.system.model.SysDepartTreeModel" parameterType="org.jeecg.modules.pd.entity.PdGoodsAllocation">
+        SELECT
+        a.id as id,
+        a.id as 'value',
+        a.id as 'key',
+        a.parent_id as parentId,
+        b.depart_name as departName,
+        a.name as title
+        FROM pd_goods_allocation a
+        left join sys_depart b on a.depart_id = b.id
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+            AND a.area_type = '2'
+            <if test="name != null and name != ''">
+                AND ( a.name LIKE concat('%',#{name},'%')
+                or a.py LIKE concat('%',#{name},'%')
+                or a.wb LIKE concat('%',#{name},'%')
+                or a.zdy LIKE concat('%',#{name},'%') )
+            </if>
+            <if test="departId != null and departId != ''">
+                AND a.depart_id LIKE concat('%',#{departId},'%')
+            </if>
+            <if test="parentId != null and parentId != ''">
+                AND a.parent_id LIKE concat('%',#{parentId},'%')
+            </if>
+        </where>
+        ORDER BY a.name
+    </select>
+</mapper>

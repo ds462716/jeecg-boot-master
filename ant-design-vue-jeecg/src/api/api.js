@@ -56,6 +56,9 @@ const queryParentName   = (params)=>getAction("/sys/sysDepart/queryParentName",p
 const searchByKeywords   = (params)=>getAction("/sys/sysDepart/searchBy",params);
 const deleteByDepartId   = (params)=>deleteAction("/sys/sysDepart/delete",params);
 
+//货区货位管理
+const queryGoodsAllocationTreeList = (params)=>getAction("/pd/pdGoodsAllocation/queryTreeList",params);
+
 //日志管理
 //const getLogList = (params)=>getAction("/sys/log/list",params);
 const deleteLog = (params)=>deleteAction("/sys/log/delete",params);
@@ -133,6 +136,7 @@ export {
   getPermissionRuleList,
   queryPermissionRule,
   queryDepartTreeList,
+  queryGoodsAllocationTreeList,
   queryIdTree,
   queryParentName,
   searchByKeywords,

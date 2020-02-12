@@ -22,4 +22,7 @@ public interface PdConstant {
 	 * 编码规则  end
 	 */
 
+
+	public static final String GOODS_ALLCATION_FLAG_1 = "huoqu"; //货区货位
+	public static final String GOODS_ALLCATION_FLAG_2 = "huowei"; //货区货位
 }
