@@ -14,66 +14,66 @@
       <a-form :form="form">
         <a-row>
           <a-col :span="12">
-            <a-form-item label="申购编号" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input disabled="disabled" v-decorator="[ 'orderNo', validatorRules.orderNo]" ></a-input>
+            <a-form-item label="申领单号" :labelCol="labelCol" :wrapperCol="wrapperCol">
+              <a-input disabled="disabled" v-decorator="[ 'applyNo', validatorRules.applyNo]"></a-input>
             </a-form-item>
           </a-col>
           <a-col :span="12">
-            <a-form-item label="申购人" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input disabled="disabled" v-decorator="[ 'purchaseName', validatorRules.purchaseName]" ></a-input>
+            <a-form-item label="申领科室" :labelCol="labelCol" :wrapperCol="wrapperCol">
+              <a-input disabled="disabled" v-decorator="[ 'deptName', validatorRules.deptName]"></a-input>
             </a-form-item>
           </a-col>
           <a-col :span="12">
-            <a-form-item label="申购日期" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <j-date disabled="disabled" v-decorator="[ 'orderDate', validatorRules.orderDate]" :trigger-change="true" style="width: 100%"/>
+            <a-form-item label="申领人" :labelCol="labelCol" :wrapperCol="wrapperCol">
+              <a-input disabled="disabled" v-decorator="[ 'applyBy', validatorRules.applyBy]"></a-input>
             </a-form-item>
           </a-col>
           <a-col :span="12">
-            <a-form-item label="申购库房名称" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input disabled="disabled" v-decorator="[ 'storeroomName', validatorRules.storeroomName]" ></a-input>
+            <a-form-item label="申领日期" :labelCol="labelCol" :wrapperCol="wrapperCol">
+              <j-date  disabled="disabled" v-decorator="[ 'applyDate', validatorRules.applyDate]" :trigger-change="true" style="width: 100%"/>
             </a-form-item>
           </a-col>
           <a-col :span="12">
-            <a-form-item label="申购总数量" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input-number disabled="disabled" v-decorator="[ 'amountCount', validatorRules.amountCount]"  style="width: 100%"/>
+            <a-form-item label="申领总数量" :labelCol="labelCol" :wrapperCol="wrapperCol">
+              <a-input-number disabled="disabled" v-decorator="[ 'applyNum', validatorRules.applyNum]"  style="width: 100%"/>
             </a-form-item>
           </a-col>
           <a-col :span="12">
-            <a-form-item label="申购总金额" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input-number disabled="disabled" v-decorator="[ 'amountMoney', validatorRules.amountMoney]"  style="width: 100%"/>
+            <a-form-item   label="备注" :labelCol="labelCol" :wrapperCol="wrapperCol">
+              <a-input  :disabled="disableSubmit"  v-decorator="[ 'remarks', validatorRules.remarks]"  style="width: 100%"/>
             </a-form-item>
           </a-col>
           <!-- <!-- 子表单区域 -->
-          <a-button style="float: left;" type="primary" icon="download" @click="exportXls('申购产品列表')">导出</a-button>
+          <a-button style="float: left;" type="primary" icon="download" @click="exportXls('申领明细列表')">导出</a-button>
           <div style="float: left;width:100%;margin-bottom: 70px;white-space:nowrap;overflow-x:auto;overflow-y:hidden;">
             <table id="contentTable" class="tableStyle">
               <tr>
-                <th>产品编号</th>
+                <th>定数包名称</th>
+                <th>定数包编号</th>
                 <th>产品名称</th>
+                <th>产品编号</th>
                 <th>规格</th>
                 <th>型号</th>
                 <th>单位</th>
+                <th>产品数量</th>
+                <th>申领数量</th>
                 <th>库存数量</th>
-                <th>申购数量</th>
-                <th>产品单价</th>
-                <th>申购金额</th>
-                <th>生产厂家</th>
               </tr>
-              <tr v-for="(item, index) in pdPurchaseDetailTable.dataSource">
-                <td>{{item.productNo}}</td>
+              <tr v-for="(item, index) in pdApplyDetailTable.dataSource">
+                <td>{{item.packageId}}</td>
+                <td>{{item.packageName}}</td>
                 <td>{{item.productName}}</td>
+                <td>{{item.productNo}}</td>
                 <td>{{item.spec}}</td>
                 <td>{{item.version}}</td>
                 <td>{{item.unitName}}</td>
-                <td>{{item.stockNum}}</td>
+                <td>{{item.productNum}}</td>
                 <td>
                    <a-form-item>
                  <a-input  disabled="disabled" :style="{width: 'calc(80% - 10px)'}" @blur="(e)=>{handleConfirmBlur(e.target,item)}"  v-decorator="['pdPurchaseDetailTable['+index+'].length', {'initialValue':item.applyCount,rules:validatorRules.applyCount}]"/>
                   </a-form-item>
                 </td>
-                <td>{{item.inPrice}}</td>
-                <td>{{item.amountMoney}}</td>
-                <td>{{item.venderName}}</td>
+                <td>{{item.stockNum}}</td>
               </tr>
             </table>
           </div>
@@ -103,7 +103,7 @@
   import JDate from '@/components/jeecg/JDate'
   import JDictSelectTag from "@/components/dict/JDictSelectTag"
   export default {
-    name: 'PdPurchaseOrderModal',
+    name: 'PdApplyOrderModal',
     mixins: [JEditableTableMixin],
     components: {JDate, JDictSelectTag},
     data() {
@@ -114,26 +114,24 @@
         labelCol2: {span: 3},
         wrapperCol2: {span: 20},
         validatorRules: {
-          orderNo:{},
-          purchaseBy:{},
-          purchaseName:{},
-          orderDate:{},
-          storeroomName:{},
-          amountCount:{},
-          amountMoney:{},
-          refuseReason:{},
+          applyNo:{},
+          deptName:{},
+          applyDate:{},
+          applyNum:{},
+          applyBy:{},
+          remarks:{}
         },
-       refKeys: ['pdPurchaseDetail', ],
-        tableKeys:['pdPurchaseDetail', ],
+       refKeys: ['pdApplyDetail', ],
+        tableKeys:['pdApplyDetail', ],
         // 申购单详细表
-        pdPurchaseDetailTable: {
+        pdApplyDetailTable: {
           dataSource: []
         },
         url: {
-          edit: "/pd/pdPurchaseOrder/edit",
-          exportXlsUrl: "/pd/pdPurchaseOrder/exportXls",
-          pdPurchaseDetail: {
-            list: '/pd/pdPurchaseOrder/queryPdPurchaseDetail'
+          edit: "/pd/pdApplyOrder/edit",
+          exportXlsUrl: "/pd/pdApplyOrder/exportXls",
+          pdApplyDetail: {
+            list: '/pd/pdApplyOrder/queryApplyDetail'
           },
         }
       }
@@ -144,8 +142,8 @@
         if(!fileName || typeof fileName != "string"){
           fileName = "导出文件"
         }
-        if(this.pdPurchaseDetailTable.dataSource.length>0){
-          let param = {"orderNo":this.model.orderNo};
+        if(this.pdApplyDetailTable.dataSource.length>0){
+          let param = {"applyNo":this.model.applyNo};
           console.log("导出参数",param)
           downFile(this.url.exportXlsUrl,param).then((data)=>{
             if (!data) {
@@ -172,9 +170,9 @@
         }
       },
       handleOk (type) { //审核提交
-        this.model.orderStatus='2';//审核通过
+        this.model.applyStatus='2';//审核通过
         if(type=="no"){
-          this.model.orderStatus='3';//拒绝
+          this.model.applyStatus='3';//拒绝
         }
         this.form.validateFields((err, values) => {
           if(type=="no"){
@@ -186,9 +184,9 @@
           this.model.refuseReason= values.refuseReason;
           if (!err) {
             const that = this;
-            let pdPurchaseDetailList = this.pdPurchaseDetailTable.dataSource;
+            let pdPurchaseDetailList = this.pdApplyDetailTable.dataSource;
             let values = [];
-            values.pdPurchaseDetailList = pdPurchaseDetailList;
+            values.pdApplyDetailList = pdPurchaseDetailList;
             let formData = Object.assign(this.model, values);
             httpAction(this.url.edit, formData, 'put').then((res) => {
               if (res.success) {
@@ -207,14 +205,14 @@
       },
       /** 调用完edit()方法之后会自动调用此方法 */
       editAfter() {
-        let fieldval = pick(this.model,'orderNo','purchaseName','orderDate','storeroomName','orderStatus','amountCount','amountMoney','submitStart','refuseReason')
+        let fieldval = pick(this.model,'applyNo','deptName','applyNum','applyDate','applyBy','remarks')
         this.$nextTick(() => {
           this.form.setFieldsValue(fieldval)
         })
         // 加载子表数据
         if (this.model.id) {
-          let params = { orderNo: this.model.orderNo }
-          this.requestSubTableData(this.url.pdPurchaseDetail.list, params, this.pdPurchaseDetailTable)
+          let params = { applyNo: this.model.applyNo }
+          this.requestSubTableData(this.url.pdApplyDetail.list, params, this.pdApplyDetailTable)
         }
       },
       /** 整理成formData */
@@ -223,15 +221,15 @@
 
         return {
           ...main, // 展开
-          pdPurchaseDetailList: allValues.tablesValue[0].values,
+          pdApplyDetailList: allValues.tablesValue[0].values,
         }
       },
       validateError(msg){
         this.$message.error(msg)
       },
       popupCallback(row){
-        this.form.setFieldsValue(pick(row,'orderNo','purchaseName','orderDate','storeroomName','orderStatus','amountCount','amountMoney','submitStart','refuseReason'))
-      },
+        this.form.setFieldsValue(pick(row,'applyNo','deptName','applyNum','applyDate','applyBy','remarks'))
+       },
 
     }
   }
@@ -260,7 +258,7 @@
   .tableStyle> tr > th{
     border: 1px solid #e8e8e8;
     text-align: center;
-    padding: 10px 16px;
+    padding: 16px 16px;
     font-weight: 500;
     color: rgba(0, 0, 0, 0.85);
     background: #fafafa;

@@ -1,6 +1,5 @@
 package org.jeecg.modules.pd.entity;
 
-import java.io.Serializable;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
@@ -60,4 +59,5 @@ public class PdPackageDetail extends BaseEntity {
 	/**父机构*/
 	@Excel(name = "父机构", width = 15)
 	private String sysOrgParentCode;
+
 }

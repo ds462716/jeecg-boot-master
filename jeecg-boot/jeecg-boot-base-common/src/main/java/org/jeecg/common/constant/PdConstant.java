@@ -22,4 +22,27 @@ public interface PdConstant {
 	 * 编码规则  end
 	 */
 
+	/**
+	 * 采购订单状态
+	 */
+	public static final String  ORDER_STATE_0= "0";//待审核
+	public static final String  ORDER_STATE_1= "1";//审核中
+	public static final String  ORDER_STATE_2= "2";//审核通过
+	public static final String  ORDER_STATE_3= "3";//已拒绝
+
+	/**
+	 * 提交状态
+	 */
+	public static final String  SUBMIT_STATE_1= "1";//未提交
+	public static final String  SUBMIT_STATE_2= "2";//已提交
+
+	/**
+	 * 删除状态
+	 */
+	public static final String  DEL_FLAG_0= "0";//有效
+	public static final String  DEL_FLAG_1= "1";//删除
+
+    //货区货位标识，用于页面中与机构部门标识区分
+	public static final String GOODS_ALLCATION_FLAG_1 = "huoqu"; //货区货位
+	public static final String GOODS_ALLCATION_FLAG_2 = "huowei"; //货区货位
 }

@@ -14,7 +14,7 @@
 
           <a-col :span="12">
             <a-form-item label="定数包编号" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input v-decorator="[ 'code', validatorRules.code]" placeholder="请输入定数包编号"></a-input>
+              <a-input v-decorator="[ 'code', validatorRules.code]" disabled="disabled" placeholder="请输入定数包编号"></a-input>
             </a-form-item>
           </a-col>
           <a-col :span="12">
@@ -92,7 +92,7 @@
 
     </a-spin>
 
-    <pd-choose-product-list-model  ref="pdChooseProductListModel" ></pd-choose-product-list-model>
+    <pd-choose-product-list-model  ref="pdChooseProductListModel" @ok="returnData" ></pd-choose-product-list-model>
 
   </a-modal>
 </template>
@@ -156,7 +156,7 @@
             {
               title: '产品名称',
               align:"center",
-              key: 'name'
+              key: 'productName'
             },
             {
               title: '规格',
@@ -186,8 +186,6 @@
               width:"200px",
               placeholder: '请输入${title}',
               defaultValue: '',
-              // change:true,
-              // valueChange:'countChange()',
               validateRules: [{ required: true, message: '${title}不能为空' },{pattern: '^-?\\d+$',message: '${title}的格式不正确' }]
             },
             // {
@@ -209,6 +207,11 @@
         }
       }
     },
+    mounted() {
+      this.$nextTick(function () {
+
+      })
+    },
     methods: {
       getAllTable() {
         let values = this.tableKeys.map(key => getRefPromise(this, key))
@@ -216,8 +219,9 @@
       },
       /** 调用完edit()方法之后会自动调用此方法 */
       editAfter() {
-        let fieldval = pick(this.model,'code','name','sum','py','wb','zdy','sysOrgParentCode')
+        let fieldval = pick(this.model,'code','name','sum','py','wb','zdy','remarks','sysOrgParentCode');
         this.$nextTick(() => {
+          this.form.setFieldsValue({code:(new Date()).getTime()});
           this.form.setFieldsValue(fieldval)
         })
         // 加载子表数据
@@ -239,7 +243,7 @@
         this.$message.error(msg)
       },
       popupCallback(row){
-        this.form.setFieldsValue(pick(row,'code','name','sum','py','wb','zdy','sysOrgParentCode'))
+        this.form.setFieldsValue(pick(row,'code','name','sum','py','wb','zdy','remarks','sysOrgParentCode'))
       },
       pinyinTran(e){
         let val = e.target.value;
@@ -249,6 +253,15 @@
         this.form.setFieldsValue({py:py});
         let wb = makeWb(val);
         this.form.setFieldsValue({wb:wb});//获取五笔简码
+      },
+      /** 关闭按钮点击事件 */
+      handleCancel() {
+        this.visible = false
+        this.eachAllTable((item) => {
+          item.initialize()
+        })
+        this.$emit('close')
+        this.pdPackageDetailTable.dataSource = [];
       },
       //删除行
       handleConfirmDelete() {
@@ -260,19 +273,12 @@
       // 新增行
       handleConfirmAdd() {
         this.$refs.pdChooseProductListModel.show();
-        // this.id=this.id+1;
-        // let data1 = {"productId":this.id,"name":this.id,"spec":"2","unitName":"3","venderName":"4","supplierName":"5","count":this.id+11};
-        // this.pdPackageDetailTable.dataSource.push(data1);
-        // this.$refs.pdPackageDetail.add();
-        // this.$nextTick(() => {
-        //   this.valueChange();
-        // })
       },
       // 产品数量变更
       valueChange(e) {
         this.$refs.pdPackageDetail.getValues((error, values) => {
           // 错误数 = 0 则代表验证通过
-          if (error === 0) {
+          // if (error === 0) {
             // this.$message.success('验证通过')
             // 将通过后的数组提交到后台或自行进行其他处理
             let sum = 0;
@@ -280,11 +286,50 @@
               sum = sum + Number(item.count);
             })
             this.form.setFieldsValue({sum:sum});
-          } else {
-            this.$message.error('验证未通过')
-          }
+          // } else {
+          //   this.$message.error('验证未通过')
+          // }
         })
       },
+      //弹出框返回调用
+      returnData(formData) {
+        this.$refs.pdPackageDetail.getValues((error, values) => {
+          this.pdPackageDetailTable.dataSource = values;
+          if(values.length > 0){
+            formData.forEach((item, idx) => {
+              let bool = true;
+              values.forEach((value, idx) => {
+                if (value.productId == item.productId){
+                  bool = false;
+                }
+              })
+              if(bool){
+                this.addrows(item);
+              }
+            })
+          }else{
+            formData.forEach((item, idx) => {
+              this.addrows(item);
+            })
+          }
+          this.$nextTick(() => {
+            this.valueChange();
+          })
+        })
+      },
+      addrows(row){
+        let data = {
+          productId: row.productId,
+          productName: row.productName,
+          spec: row.spec,
+          unitName: row.unitName,
+          venderName: row.venderName,
+          supplierName: row.supplierName,
+          count: 1
+        }
+        this.pdPackageDetailTable.dataSource.push(data);
+        this.$refs.pdPackageDetail.add();
+      }
     }
   }
 </script>

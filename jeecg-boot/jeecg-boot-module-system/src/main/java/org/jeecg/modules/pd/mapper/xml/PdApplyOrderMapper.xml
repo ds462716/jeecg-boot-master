@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.pd.mapper.PdApplyOrderMapper">
+
+    <sql id="PdApplyOrderColumns">
+        a.id,
+        a.create_by,
+		a.create_time,
+		a.update_by,
+		a.update_time,
+		a.sys_org_code,
+        a.apply_no,
+        a.apply_by,
+        a.apply_date,
+        a.dept_id,
+        a.dept_name,
+        a.fact_count,
+        a.apply_status,
+        a.audit_by,
+        a.audit_date,
+        a.refuse_reason,
+        a.is_in_refund,
+        a.is_end,
+        a.apply_num,
+        a.submit_start,
+		a.remarks,
+		a.del_flag
+	</sql>
+
+    <sql id="PdApplyOrderJoins">
+    </sql>
+
+    <!-- 列表查询 -->
+    <select id="selectList" resultType="org.jeecg.modules.pd.entity.PdApplyOrder">
+        SELECT
+        <include refid="PdApplyOrderColumns"/>
+        FROM pd_apply_order a
+        <include refid="PdApplyOrderJoins"/>
+        <where>
+            a.del_flag =#{DEL_FLAG_NORMAL}
+            <if test="id != null and id != ''">
+                AND a.id = #{id}
+            </if>
+            <if test="submitStart != null and submitStart != ''">
+                AND a.submit_start = #{submitStart}
+            </if>
+        </where>
+    </select>
+
+
+    <!--删除状态修改-->
+    <update id="deleteByMainId" parameterType="java.lang.String">
+		UPDATE pd_apply_order SET del_flag='1'  WHERE id = #{id}
+       </update>
+</mapper>

@@ -1,7 +1,6 @@
 package org.jeecg.modules.pd.service.impl;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import org.jeecg.modules.pd.entity.PdPackageDetail;
 import org.jeecg.modules.pd.entity.PdPurchaseOrder;
 import org.jeecg.modules.pd.entity.PdPurchaseDetail;
 import org.jeecg.modules.pd.mapper.PdPurchaseDetailMapper;

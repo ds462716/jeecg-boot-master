@@ -11,7 +11,7 @@
           </a-col>
           <a-col :md="6" :sm="8">
             <a-form-item label="定数包名称">
-              <a-input placeholder="请输入定数包名称" v-model="queryParam.name"></a-input>
+              <a-input placeholder="定数包名称\拼音码\五笔码\自定义码" v-model="queryParam.name"></a-input>
             </a-form-item>
           </a-col>
           <a-col :md="6" :sm="8">
@@ -34,9 +34,9 @@
     <div class="table-operator">
       <a-button @click="handleAdd" type="primary" icon="plus">新增</a-button>
       <a-button type="primary" icon="download" @click="handleExportXls('定数包')">导出</a-button>
-      <a-upload name="file" :showUploadList="false" :multiple="false" :headers="tokenHeader" :action="importExcelUrl" @change="handleImportExcel">
-        <a-button type="primary" icon="import">导入</a-button>
-      </a-upload>
+      <!--<a-upload name="file" :showUploadList="false" :multiple="false" :headers="tokenHeader" :action="importExcelUrl" @change="handleImportExcel">-->
+        <!--<a-button type="primary" icon="import">导入</a-button>-->
+      <!--</a-upload>-->
       <a-dropdown v-if="selectedRowKeys.length > 0">
         <a-menu slot="overlay">
           <a-menu-item key="1" @click="batchDel"><a-icon type="delete"/>删除</a-menu-item>

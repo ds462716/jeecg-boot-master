@@ -68,9 +68,10 @@ public class PdPackageController {
 								   @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
 								   @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
 								   HttpServletRequest req) {
-		QueryWrapper<PdPackage> queryWrapper = QueryGenerator.initQueryWrapper(pdPackage, req.getParameterMap());
+//		QueryWrapper<PdPackage> queryWrapper = QueryGenerator.initQueryWrapper(pdPackage, req.getParameterMap());
 		Page<PdPackage> page = new Page<PdPackage>(pageNo, pageSize);
-		IPage<PdPackage> pageList = pdPackageService.page(page, queryWrapper);
+//		IPage<PdPackage> pageList = pdPackageService.page(page, queryWrapper);
+		IPage<PdPackage> pageList = pdPackageService.queryList(page, pdPackage);
 		return Result.ok(pageList);
 	}
 	

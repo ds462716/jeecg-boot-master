@@ -175,6 +175,7 @@
             a.vender_id as venderId,
             a.supplier_id as supplierId,
             a.spec as spec,
+            a.selling_price as sellingPrice,
             a.version as version,
             b.name as unitName,
             c.name as venderName,

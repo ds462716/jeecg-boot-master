@@ -2,6 +2,62 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.jeecg.modules.pd.mapper.PdPurchaseDetailMapper">
 
+	<sql id="pdPurchaseDetailColumns">
+		a.id,
+		a.order_no,
+		a.product_id,
+		a.product_no,
+		a.in_price,
+		a.apply_count,
+		a.amount_money,
+		a.stock_num,
+		a.create_by,
+		a.create_time,
+		a.update_by,
+		a.update_time,
+		a.sys_org_code,
+		a.remarks,
+		a.del_flag
+	</sql>
+
+	<!-- 单位 -->
+	<sql id="pdUnitColumns">
+        b.name AS "unitName"
+    </sql>
+
+	<sql id="pdUnitJoins">
+        LEFT JOIN pd_unit b ON c.unit_id = b.id
+    </sql>
+
+	<!--产品-->
+	<sql id="pdProductColumns">
+		c.id as "productId",
+        c.number as "productNo",
+        c.name as "productName",
+        c.spec as "spec",
+        c.version as "version",
+        c.selling_price as "sellingPrice"
+	</sql>
+	<sql id="pdProductJoins">
+        LEFT JOIN pd_product c ON c.id = a.product_id
+    </sql>
+
+	<!-- 供应商 -->
+	<sql id="pdSupplierColumns">
+      d.name AS "supplierName"
+    </sql>
+	<sql id="pdSupplierJoins">
+      left join pd_supplier d on c.supplier_id = d.id
+    </sql>
+
+	<!-- 生产厂家 -->
+	<sql id="pdVenderColumns">
+      e.name AS "venderName"
+    </sql>
+	<sql id="pdVenderJoins">
+      left join pd_vender e on c.vender_id = e.id
+    </sql>
+
 	<delete id="deleteByMainId" parameterType="java.lang.String">
 		DELETE FROM  pd_purchase_detail 	WHERE id = #{mainId}
    </delete>
@@ -12,6 +68,17 @@
 
 	<!--根据申购编号查询明细信息-->
 	<select id="selectByOrderNo" parameterType="java.lang.String" resultType="org.jeecg.modules.pd.entity.PdPurchaseDetail">
-		SELECT * FROM  pd_purchase_detail	WHERE order_no = #{orderNo}
+		SELECT
+        <include refid="pdPurchaseDetailColumns"/>,
+		<include refid="pdProductColumns"/>,
+		<include refid="pdUnitColumns"/>,
+		<include refid="pdSupplierColumns"/>,
+		<include refid="pdVenderColumns"/>
+		FROM  pd_purchase_detail a
+		<include refid="pdProductJoins"/>
+		<include refid="pdUnitJoins"/>
+		<include refid="pdSupplierJoins"/>
+		<include refid="pdVenderJoins"/>
+		WHERE a.order_no = #{orderNo}
     </select>
 </mapper>
