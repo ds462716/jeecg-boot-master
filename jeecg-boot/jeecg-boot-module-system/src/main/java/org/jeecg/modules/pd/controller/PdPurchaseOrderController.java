@@ -6,6 +6,7 @@ import java.util.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.jeecg.common.constant.PdConstant;
 import org.jeecg.modules.system.entity.SysDepart;
 import org.jeecg.modules.system.service.ISysDepartService;
 import org.jeecgframework.poi.excel.ExcelImportUtil;
@@ -67,7 +68,25 @@ public class PdPurchaseOrderController {
 	}
 
 
-
+	 /**
+	  * 分页列表查询(审核页面)
+	  *
+	  * @param pdPurchaseOrder
+	  * @param pageNo
+	  * @param pageSize
+	  * @param req
+	  * @return
+	  */
+	 @GetMapping(value = "/auditList")
+	 public Result<?> queryPageAuditList(PdPurchaseOrder pdPurchaseOrder,
+									@RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
+									@RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
+									HttpServletRequest req) {
+		 Page<PdPurchaseOrder> page = new Page<PdPurchaseOrder>(pageNo, pageSize);
+		 pdPurchaseOrder.setSubmitStart(PdConstant.SUBMIT_STATE_2);//已提交
+		 page = pdPurchaseOrderService.selectList(page,pdPurchaseOrder);
+		 return Result.ok(page);
+	 }
 	 /**
 	  * 新增初始化操作
 	  *
@@ -104,8 +123,8 @@ public class PdPurchaseOrderController {
 	public Result<?> add(@RequestBody PdPurchaseOrderPage pdPurchaseOrderPage) {
 		PdPurchaseOrder pdPurchaseOrder = new PdPurchaseOrder();
 		BeanUtils.copyProperties(pdPurchaseOrderPage, pdPurchaseOrder);
-		pdPurchaseOrder.setOrderStatus("0");//审核状态  0：待审核
-		pdPurchaseOrder.setDelFlag("0");
+		pdPurchaseOrder.setOrderStatus(PdConstant.ORDER_STATE_0);//审核状态  0：待审核
+		pdPurchaseOrder.setDelFlag(PdConstant.DEL_FLAG_0);
 		pdPurchaseOrderService.saveMain(pdPurchaseOrder, pdPurchaseOrderPage.getPdPurchaseDetailList());
 		return Result.ok("添加成功！");
 	}

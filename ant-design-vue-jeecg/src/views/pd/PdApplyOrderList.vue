@@ -5,27 +5,15 @@
       <a-form layout="inline" @keyup.enter.native="searchQuery">
         <a-row :gutter="24">
           <a-col :md="6" :sm="8">
-            <a-form-item label="申购编号">
-              <a-input placeholder="请输入申购编号" v-model="queryParam.orderNo"></a-input>
+            <a-form-item label="申领单号">
+              <a-input placeholder="请输入申领单号" v-model="queryParam.applyNo"></a-input>
             </a-form-item>
           </a-col>
           <a-col :md="6" :sm="8">
-            <a-form-item label="申购库房名称">
-              <a-input placeholder="请输入申购库房名称" v-model="queryParam.storeroomName"></a-input>
+            <a-form-item label="申领科室名称">
+              <a-input placeholder="请输入申领科室名称" v-model="queryParam.deptName"></a-input>
             </a-form-item>
           </a-col>
-          <template v-if="toggleSearchStatus">
-            <a-col :md="6" :sm="8">
-              <a-form-item label="审核状态">
-                <a-select v-model="queryParam.orderStatus" placeholder="请选择审核状态">
-                  <a-select-option value="0">待审核</a-select-option>
-                  <a-select-option value="1">审核中</a-select-option>
-                  <a-select-option value="2">审核通过</a-select-option>
-                  <a-select-option value="3">已拒绝</a-select-option>
-                </a-select>
-              </a-form-item>
-            </a-col>
-          </template>
           <a-col :md="6" :sm="8">
             <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
               <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
@@ -45,6 +33,10 @@
     <!-- 操作按钮区域 -->
     <div class="table-operator">
       <a-button @click="handleAdd" type="primary" icon="plus">新增</a-button>
+     <!-- <a-button type="primary" icon="download" @click="handleExportXls('申领单主表')">导出</a-button>
+      <a-upload name="file" :showUploadList="false" :multiple="false" :headers="tokenHeader" :action="importExcelUrl" @change="handleImportExcel">
+        <a-button type="primary" icon="import">导入</a-button>
+      </a-upload>-->
       <a-dropdown v-if="selectedRowKeys.length > 0">
         <a-menu slot="overlay">
           <a-menu-item key="1" @click="batchDel"><a-icon type="delete"/>删除</a-menu-item>
@@ -71,8 +63,9 @@
         :loading="loading"
         :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
         @change="handleTableChange">
+
         <span slot="action" slot-scope="text, record">
-          <a  @click="handleEdit(record)">编辑</a>
+          <a @click="handleEdit(record)">编辑</a>
 
           <a-divider type="vertical" />
           <a-dropdown>
@@ -82,7 +75,7 @@
                 <a href="javascript:;" @click="handleDetail(record)">详情</a>
               </a-menu-item>
               <a-menu-item>
-                <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record)">
+                <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.id)">
                   <a>删除</a>
                 </a-popconfirm>
               </a-menu-item>
@@ -93,26 +86,25 @@
       </a-table>
     </div>
 
-    <pdPurchaseOrder-modal ref="modalForm" @ok="modalFormOk"></pdPurchaseOrder-modal>
+    <pdApplyOrder-modal ref="modalForm" @ok="modalFormOk"></pdApplyOrder-modal>
   </a-card>
 </template>
 
 <script>
 
+  import PdApplyOrderModal from './modules/PdApplyOrderModal'
   import { JeecgListMixin,handleEdit} from '@/mixins/JeecgListMixin'
   import { deleteAction } from '@/api/manage'
-  import PdPurchaseOrderModal from './modules/PdPurchaseOrderModal'
   import {initDictOptions, filterMultiDictText} from '@/components/dict/JDictSelectUtil'
-
   export default {
-    name: "PdPurchaseOrderList",
+    name: "PdApplyOrderList",
     mixins:[JeecgListMixin],
     components: {
-      PdPurchaseOrderModal
+      PdApplyOrderModal
     },
     data () {
       return {
-        description: '申购订单主表管理页面',
+        description: '申领管理页面',
         // 表头
         columns: [
           {
@@ -126,50 +118,44 @@
             }
           },
           {
-            title:'申购编号',
+            title:'申领单号',
             align:"center",
-            dataIndex: 'orderNo'
+            dataIndex: 'applyNo'
           },
           {
-            title:'申购人',
+            title:'申领日期',
             align:"center",
-            dataIndex: 'purchaseName'
-          },
-          {
-            title:'申购日期',
-            align:"center",
-            dataIndex: 'orderDate',
+            dataIndex: 'applyDate',
             customRender:function (text) {
               return !text?"":(text.length>10?text.substr(0,10):text)
             }
           },
           {
-            title:'申购库房名称',
+            title:'申领科室',
             align:"center",
-            dataIndex: 'storeroomName'
-
+            dataIndex: 'deptName'
+          },
+          {
+            title:'申领数量',
+            align:"center",
+            dataIndex: 'applyNum'
+          },
+          {
+            title:'实际领用数量',
+            align:"center",
+            dataIndex: 'factCount'
           },
           {
             title:'审核状态',
             align:"center",
-            dataIndex: 'orderStatus',
+            dataIndex: 'applyStatus',
             customRender:(text)=>{
               if(!text){
                 return ''
               }else{
-                return filterMultiDictText(this.dictOptions['orderStatus'], text+"")
+                return filterMultiDictText(this.dictOptions['applyStatus'], text+"")
               }
             }
-          },
-          {
-            title:'申购总数量',
-            align:"center",
-            dataIndex: 'amountCount'
-          },
-          {
-            title:'申购总金额',
-            align:"center",
-            dataIndex: 'amountMoney'
           },
           {
             title:'提交状态',
@@ -184,6 +170,11 @@
             }
           },
           {
+            title:'操作人',
+            align:"center",
+            dataIndex: 'applyBy'
+          },
+          {
             title: '操作',
             dataIndex: 'action',
             align:"center",
@@ -191,27 +182,28 @@
           }
         ],
         url: {
-          list: "/pd/pdPurchaseOrder/list",
-          delete: "/pd/pdPurchaseOrder/delete",
-          deleteBatch: "/pd/pdPurchaseOrder/deleteBatch"
+          list: "/pd/pdApplyOrder/list",
+          delete: "/pd/pdApplyOrder/delete",
+          deleteBatch: "/pd/pdApplyOrder/deleteBatch",
+         /* exportXlsUrl: "/pd/pdApplyOrder/exportXls",
+          importExcelUrl: "pd/pdApplyOrder/importExcel",*/
         },
         dictOptions:{
-         storeroomName:[],
-         orderStatus:[],
-         submitStart:[],
+          applyStatus:[],
+          submitStart:[],
         },
 
       }
     },
     computed: {
-      /*importExcelUrl: function(){
+      importExcelUrl: function(){
         return `${window._CONFIG['domianURL']}/${this.url.importExcelUrl}`;
-      }*/
+      }
     },
     methods: {
       handleEdit: function (record) { //编译
-        if(record.submitStart=='2' && record.orderStatus !='3'){
-          this.$message.warning("此订单已提交审核，不允许编译！")
+        if(record.submitStart=='2' && record.applyStatus !='3'){
+          this.$message.warning("此单已提交审核，不允许编译！")
           return
         }
         this.$refs.modalForm.edit(record);
@@ -220,7 +212,7 @@
       },
       handleDelete: function (record) { //删除
         if(record.submitStart=='2'){
-          this.$message.warning("此订单已提交审核，不允许删除！")
+          this.$message.warning("此单已提交审核，不允许删除！")
           return
         }
         var that = this;
@@ -237,9 +229,9 @@
       initDictConfig(){ //静态字典值加载
         initDictOptions('order_status').then((res) => {
           if (res.success) {
-            this.$set(this.dictOptions, 'orderStatus', res.result)
+            this.$set(this.dictOptions, 'applyStatus', res.result)
           }
-        })
+        }),
         initDictOptions('submit_status').then((res) => {
           if (res.success) {
             this.$set(this.dictOptions, 'submitStart', res.result)

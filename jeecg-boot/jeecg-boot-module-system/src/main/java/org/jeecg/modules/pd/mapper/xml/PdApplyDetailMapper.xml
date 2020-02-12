@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.pd.mapper.PdApplyDetailMapper">
+	<sql id="pdApplyDetailColumns">
+		a.id,
+		a.create_by,
+		a.create_time,
+		a.update_by,
+		a.update_time,
+		a.sys_org_code,
+		a.apply_no,
+		a.product_id,
+		a.product_no,
+		a.batch_no,
+		a.package_id,
+		a.package_count,
+		a.expire_date,
+		a.apply_count,
+		a.stock_num,
+		a.refund_count,
+		a.remarks,
+		a.del_flag
+	</sql>
+
+	<!-- 单位 -->
+	<sql id="pdUnitColumns">
+        b.name AS "unitName"
+    </sql>
+
+	<sql id="pdUnitJoins">
+        LEFT JOIN pd_unit b ON c.unit_id = b.id
+    </sql>
+
+	<!--产品-->
+	<sql id="pdProductColumns">
+		c.id as "productId",
+        c.number as "productNo",
+        c.name as "productName",
+        c.spec as "spec",
+        c.version as "version"
+	</sql>
+	<sql id="pdProductJoins">
+        LEFT JOIN pd_product c ON c.id = a.product_id
+    </sql>
+
+
+	<delete id="deleteByMainId" parameterType="java.lang.String">
+		DELETE FROM  pd_apply_detail WHERE id = #{mainId}
+    </delete>
+
+    <delete id="deleteByApplyNo" parameterType="java.lang.String">
+		DELETE FROM  pd_apply_detail 	WHERE apply_no = #{applyNo}
+   </delete>
+
+	<select id="selectByApplyNo" parameterType="java.lang.String" resultType="org.jeecg.modules.pd.entity.PdApplyDetail">
+		SELECT
+		<include refid="pdApplyDetailColumns"/>,
+		<include refid="pdProductColumns"/>,
+		<include refid="pdUnitColumns"/>
+		FROM  pd_apply_detail a
+		<include refid="pdProductJoins"/>
+		<include refid="pdUnitJoins"/>
+		 WHERE a.apply_no = #{applyNo}
+    </select>
+</mapper>

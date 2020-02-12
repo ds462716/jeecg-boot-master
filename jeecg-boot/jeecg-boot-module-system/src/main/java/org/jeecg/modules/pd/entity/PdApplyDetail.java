@@ -12,14 +12,14 @@ import org.jeecgframework.poi.excel.annotation.Excel;
 import java.util.Date;
 
 /**
- * @Description: 申购单详细表
- * @Author: mcb
- * @Date:   2020-02-04
+ * @Description: 申领单明细表
+ * @Author: jeecg-boot
+ * @Date:   2020-02-11
  * @Version: V1.0
  */
 @Data
-@TableName("pd_purchase_detail")
-public class PdPurchaseDetail extends BaseEntity {
+@TableName("pd_apply_detail")
+public class PdApplyDetail extends BaseEntity {
     private static final long serialVersionUID = 1L;
     
 	/**主键*/
@@ -44,37 +44,43 @@ public class PdPurchaseDetail extends BaseEntity {
 	/**所属部门*/
 	@Excel(name = "所属部门", width = 15)
 	private String sysOrgCode;
-	/**申购单编号*/
-	private String orderNo;
+	/**申领单号*/
+	private String applyNo;
 	/**产品ID*/
 	@Excel(name = "产品ID", width = 15)
 	private String productId;
-	/**产品编号*/
-	@Excel(name = "产品编号", width = 15)
+	/**产品编码*/
+	@Excel(name = "产品编码", width = 15)
 	private String productNo;
-	/*产品批次号
-	@Excel(name = "产品批次号", width = 15)
+	/**批号*/
+	@Excel(name = "批号", width = 15)
 	private String batchNo;
-	/**产品有效期*/
-	/*@Excel(name = "产品有效期", width = 15, format = "yyyy-MM-dd")
+	/**所属包*/
+	@Excel(name = "所属包", width = 15)
+	private String packageId;
+	/**申领定数包个数*/
+	@Excel(name = "申领定数包个数", width = 15)
+	private Integer packageCount;
+	/**有效期*/
+	@Excel(name = "有效期", width = 15, format = "yyyy-MM-dd")
 	@JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd")
     @DateTimeFormat(pattern="yyyy-MM-dd")
-	private Date expireDate;*/
-	/**产品单价*/
-	@Excel(name = "产品单价", width = 15)
-	private java.math.BigDecimal inPrice;
-	/**申购数量*/
-	@Excel(name = "申购数量", width = 15)
+	private Date expireDate;
+	/**申领产品个数*/
+	@Excel(name = "申领产品个数", width = 15)
 	private Integer applyCount;
-	/**申购总金额*/
-	@Excel(name = "申购总金额", width = 15)
-	private java.math.BigDecimal amountMoney;
-	/**申购时总库存数量*/
-	@Excel(name = "申购时总库存数量", width = 15)
+	/**申领时库存*/
+	@Excel(name = "申领时库存", width = 15)
 	private Integer stockNum;
+	/**产品退回个数*/
+	@Excel(name = "产品退回个数", width = 15)
+	private Integer refundCount;
 	/**备注*/
 	@Excel(name = "备注", width = 15)
 	private String remarks;
+	/**删除标识*/
+	@Excel(name = "删除标识", width = 15)
+	private String delFlag;
 	@TableField(exist = false)
 	@Excel(name = "产品名称", width = 15)
 	private String productName;//产品名称
@@ -85,15 +91,6 @@ public class PdPurchaseDetail extends BaseEntity {
 	@Excel(name = "产品型号", width = 15)
 	private String version;//产品型号
 	@TableField(exist = false)
-	@Excel(name = "产品单价", width = 15)
-	private String sellingPrice;//产品单价
-	@TableField(exist = false)
 	@Excel(name = "单位名称", width = 15)
 	private String unitName;//单位名称
-	@TableField(exist = false)
-	@Excel(name = "供应商名称", width = 15)
-	private String supplierName;//供应商名称
-	@TableField(exist = false)
-	@Excel(name = "生产厂家名称", width = 15)
-	private String venderName;//生产厂家名称
 }

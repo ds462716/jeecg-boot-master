@@ -1,5 +1,7 @@
 package org.jeecg.modules.pd.entity;
 
+
+
 import java.io.Serializable;
 import java.util.Date;
 import com.baomidou.mybatisplus.annotation.IdType;
@@ -7,17 +9,19 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.EqualsAndHashCode;
+import lombok.experimental.Accessors;
 import org.springframework.format.annotation.DateTimeFormat;
 
 /**
- * @Description: 申购订单主表
- * @Author: mcb
- * @Date:   2020-02-04
+ * @Description: 申领单主表
+ * @Author: jeecg-boot
+ * @Date:   2020-02-11
  * @Version: V1.0
  */
 @Data
-@TableName("pd_purchase_order")
-public class PdPurchaseOrder extends BaseEntity {
+@TableName("pd_apply_order")
+public class PdApplyOrder extends BaseEntity {
     private static final long serialVersionUID = 1L;
     
 	/**主键*/
@@ -35,29 +39,29 @@ public class PdPurchaseOrder extends BaseEntity {
 	@JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd HH:mm:ss")
     @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
     private Date updateTime;
-	/**所属部门标识*/
+	/**所属部门*/
     private String sysOrgCode;
-	/**申购编号*/
-    private String orderNo;
-	/**父级节点*/
-    private String pid;
-	/**申购人编号*/
-    private String purchaseBy;
-    /**申购人名称*/
-    private String purchaseName;
-	/**是否有子节点*/
-    private String hasChild;
-	/**申购日期*/
+	/**申领单号*/
+    private String applyNo;
+    /*提交状态*/
+    private String submitStart;
+	/**申领人*/
+    private String applyBy;
+	/**申领日期*/
 	@JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd")
     @DateTimeFormat(pattern="yyyy-MM-dd")
-    private Date orderDate;
-	/**申购库房编号*/
-    private String storeroomId;
-	/**申购库房名称*/
-    private String storeroomName;
-	/**审核状态*/
-    private String orderStatus;
-	/**审核人编号*/
+    private Date applyDate;
+	/**申领科室ID*/
+    private String deptId;
+	/**申领科室名称*/
+    private String deptName;
+	/**申领总数*/
+    private Integer applyNum;
+	/**实际领用个数*/
+    private Integer factCount;
+	/**申领单状态*/
+    private String applyStatus;
+	/**审核人*/
     private String auditBy;
 	/**审核时间*/
 	@JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd")
@@ -65,14 +69,12 @@ public class PdPurchaseOrder extends BaseEntity {
     private Date auditDate;
 	/**审核意见*/
     private String refuseReason;
-	/**申购总数量*/
-    private Integer amountCount;
-	/**申购总金额*/
-    private java.math.BigDecimal amountMoney;
-	/**备注信息*/
+	/**备注*/
     private String remarks;
-	/**删除状态*/
+	/**是否在退货中*/
+    private String isInRefund;
+	/**删除标识*/
     private String delFlag;
-	/**提交状态*/
-    private String submitStart;
+	/**是否完结，1是，0否*/
+    private String isEnd;
 }

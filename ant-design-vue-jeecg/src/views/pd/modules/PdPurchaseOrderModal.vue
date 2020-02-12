@@ -262,10 +262,9 @@
             unitName:formData[i].unitName,
             amountMoney:formData[i].sellingPrice * 1,
             venderName:formData[i].venderName
-
           })
-          count=count+parseInt(formData[i].value);//计算总数量
-          amountMoney=amountMoney+Number(formData[i].value);//计算申购总金额
+          count+=1;//计算总数量
+          amountMoney=amountMoney+Number(formData[i].sellingPrice);//计算申购总金额
         }
         let model={};
         this.model.amountCount=count;//申购总数量
