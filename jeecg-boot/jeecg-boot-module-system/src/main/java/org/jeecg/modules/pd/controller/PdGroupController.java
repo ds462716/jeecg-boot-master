@@ -65,7 +65,26 @@ public class PdGroupController extends JeecgController<PdGroup, IPdGroupService>
 		IPage<PdGroup> pageList = pdGroupService.page(page, queryWrapper);
 		return Result.ok(pageList);
 	}
-	
+
+	 /**
+	  * 不分页列表查询
+	  *
+	  * @return
+	  */
+	 @GetMapping(value = "/getGroupList")
+	 public Result<List<PdGroup>> getGroupList(PdGroup pdGroup) {
+		 long start = System.currentTimeMillis();
+		 Result<List<PdGroup>> result = new Result<>();
+		 try {
+			 List<PdGroup> list = pdGroupService.selectList(pdGroup);
+			 result.setResult(list);
+			 result.setSuccess(true);
+		 }catch(Exception e){
+			 log.error(e.getMessage(), e);
+		 }
+		 log.info("======获取产品数据=====耗时:" + (System.currentTimeMillis() - start) + "毫秒");
+		 return result;
+	 }
 	/**
 	 *   添加
 	 *

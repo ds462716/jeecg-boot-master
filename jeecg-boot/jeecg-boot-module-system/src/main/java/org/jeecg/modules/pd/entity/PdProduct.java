@@ -5,6 +5,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.Date;
 import java.math.BigDecimal;
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
@@ -60,24 +61,36 @@ public class PdProduct  extends BaseEntity {
 	/**单位*/
 	@Excel(name = "单位", width = 15)
     private java.lang.String unitId;
+	@TableField(exist = false)
+	private java.lang.String unitName;
 	/**一级分类*/
 	@Excel(name = "一级分类", width = 15)
     private java.lang.String categoryOne;
+	@TableField(exist = false)
+	private java.lang.String categoryOneName;
 	/**二级分类*/
 	@Excel(name = "二级分类", width = 15)
     private java.lang.String categoryTwo;
+	@TableField(exist = false)
+	private java.lang.String categoryTwoName;
 	/**产品组别*/
 	@Excel(name = "产品组别", width = 15)
     private java.lang.String groupId;
+	@TableField(exist = false)
+	private java.lang.String groupName;
 	/**生产厂家*/
 	@Excel(name = "生产厂家", width = 15)
     private java.lang.String venderId;
+	@TableField(exist = false)
+	private java.lang.String venderName;
 	/**是否计费*/
 	@Excel(name = "是否计费", width = 15)
     private java.lang.String isCharge;
 	/**供应商*/
 	@Excel(name = "供应商", width = 15)
     private java.lang.String supplierId;
+	@TableField(exist = false)
+	private java.lang.String supplierName;
 	/**进价*/
 	@Excel(name = "进价", width = 15)
     private java.math.BigDecimal purchasePrice;
@@ -277,6 +290,23 @@ public class PdProduct  extends BaseEntity {
 	/**是否过期标识，0未过期，1已过期，2近效期*/
 	@Excel(name = "是否过期标识，0未过期，1已过期，2近效期", width = 15)
     private java.lang.String licenceValidity10;
+	/**证照名称*/
+	@Excel(name = "证照名称", width = 15)
+	private java.lang.String licenceName11;
+	/**证照号码*/
+	@Excel(name = "证照号码", width = 15)
+	private java.lang.String licenceNum11;
+	/**证照有效期*/
+	@Excel(name = "证照有效期", width = 15, format = "yyyy-MM-dd")
+	@JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd")
+	@DateTimeFormat(pattern="yyyy-MM-dd")
+	private java.util.Date licenceDate11;
+	/**证照地址*/
+	@Excel(name = "证照地址", width = 15)
+	private java.lang.String licenceSite11;
+	/**是否过期标识，0未过期，1已过期，2近效期*/
+	@Excel(name = "是否过期标识，0未过期，1已过期，2近效期", width = 15)
+	private java.lang.String licenceValidity11;
 	/**创建人*/
 	@Excel(name = "创建人", width = 15)
     private java.lang.String createBy;
@@ -299,7 +329,7 @@ public class PdProduct  extends BaseEntity {
 	/**是否过期标识，0未过期，1已过期，2近效期*/
 	@Excel(name = "是否过期标识，0未过期，1已过期，2近效期", width = 15)
     private java.lang.String validityFlag;
-	/**delFlag*/
-	@Excel(name = "delFlag", width = 15)
-    private java.lang.String delFlag;
+	/**产品收费代码*/
+	@Excel(name = "产品收费代码", width = 15)
+    private java.lang.String chargeCode;
 }

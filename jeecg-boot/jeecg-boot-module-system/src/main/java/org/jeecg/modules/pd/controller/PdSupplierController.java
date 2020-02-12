@@ -59,7 +59,7 @@ public class PdSupplierController extends JeecgController<PdSupplier, IPdSupplie
      * @return
      */
     @GetMapping(value = "/getSupplierList")
-    public Result<List<PdSupplier>> getEncodingIdentifierList(PdSupplier pdSupplier) {
+    public Result<List<PdSupplier>> getSupplierList(PdSupplier pdSupplier) {
         long start = System.currentTimeMillis();
         Result<List<PdSupplier>> result = new Result<>();
         try {

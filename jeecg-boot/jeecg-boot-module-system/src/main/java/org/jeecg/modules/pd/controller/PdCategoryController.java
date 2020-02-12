@@ -72,7 +72,7 @@ public class PdCategoryController extends JeecgController<PdCategory, IPdCategor
 	  * @return
 	  */
 	 @GetMapping(value = "/getCategoryOneList")
-	 public Result<List<PdCategory>> getEncodingIdentifierList(PdCategory pdCategory) {
+	 public Result<List<PdCategory>> getCategoryOneList(PdCategory pdCategory) {
 		 long start = System.currentTimeMillis();
 		 Result<List<PdCategory>> result = new Result<>();
 		 try {

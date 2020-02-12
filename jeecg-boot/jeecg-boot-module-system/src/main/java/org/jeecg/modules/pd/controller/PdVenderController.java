@@ -74,7 +74,7 @@ public class PdVenderController extends JeecgController<PdVender, IPdVenderServi
 	  * @return
 	  */
 	 @GetMapping(value = "/getVenderList")
-	 public Result<List<PdVender>> getEncodingIdentifierList(PdVender pdVender) {
+	 public Result<List<PdVender>> getVenderList(PdVender pdVender) {
 		 long start = System.currentTimeMillis();
 		 Result<List<PdVender>> result = new Result<>();
 		 try {

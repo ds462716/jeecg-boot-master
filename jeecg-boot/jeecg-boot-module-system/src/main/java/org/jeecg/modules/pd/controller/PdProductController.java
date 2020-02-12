@@ -20,6 +20,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
 
+import org.jeecg.modules.pd.util.FileUploadUtil;
 import org.jeecg.modules.pd.vo.PdProductPage;
 import org.jeecgframework.poi.excel.ExcelImportUtil;
 import org.jeecgframework.poi.excel.def.NormalExcelConstants;
@@ -61,9 +62,11 @@ public class PdProductController extends JeecgController<PdProduct, IPdProductSe
 								   @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
 								   @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
 								   HttpServletRequest req) {
-		QueryWrapper<PdProduct> queryWrapper = QueryGenerator.initQueryWrapper(pdProduct, req.getParameterMap());
-		Page<PdProduct> page = new Page<PdProduct>(pageNo, pageSize);
-		IPage<PdProduct> pageList = pdProductService.page(page, queryWrapper);
+		Result<Page<PdProduct>> result = new Result<Page<PdProduct>>();
+		Page<PdProduct> pageList = new Page<PdProduct>(pageNo,pageSize);
+		pageList =pdProductService.selectList(pageList,pdProduct);//
+		result.setSuccess(true);
+		result.setResult(pageList);
 		return Result.ok(pageList);
 	}
 	
@@ -78,6 +81,77 @@ public class PdProductController extends JeecgController<PdProduct, IPdProductSe
 		pdProductService.save(pdProduct);
 		return Result.ok("添加成功！");
 	}
+
+	 /**
+	  * 包含文件上传功能
+	  * @param pdProduct
+	  * @return
+	  */
+	 @PostMapping(value = "/save")
+	 public Result<?> save(PdProduct pdProduct,@RequestParam MultipartFile[] licenceSiteUp0,
+						   @RequestParam MultipartFile[] licenceSiteUp1,
+						   @RequestParam MultipartFile[] licenceSiteUp2,@RequestParam MultipartFile[] licenceSiteUp3,
+						   @RequestParam MultipartFile[] licenceSiteUp4,@RequestParam MultipartFile[] licenceSiteUp5,
+						   @RequestParam MultipartFile[] licenceSiteUp6,@RequestParam MultipartFile[] licenceSiteUp7,
+						   @RequestParam MultipartFile[] licenceSiteUp8,@RequestParam MultipartFile[] licenceSiteUp9,
+						   @RequestParam MultipartFile[] licenceSiteUp10,@RequestParam MultipartFile[] licenceSiteUp11
+	 ) {
+		 Result<Boolean> result = new Result<>();
+		 //如果此参数为false则程序发生异常
+		 result.setResult(true);
+		 result.setMessage("添加成功");
+		 //存入图片
+		 if(!FileUploadUtil.isImgEmpty(licenceSiteUp0)){
+			 String filePath = FileUploadUtil.upload(licenceSiteUp0);
+			 pdProduct.setLicenceSite0(filePath);
+		 }
+		 if(!FileUploadUtil.isImgEmpty(licenceSiteUp1)){
+			 String filePath = FileUploadUtil.upload(licenceSiteUp1);
+			 pdProduct.setLicenceSite1(filePath);
+		 }
+		 if(!FileUploadUtil.isImgEmpty(licenceSiteUp2)){
+			 String filePath = FileUploadUtil.upload(licenceSiteUp2);
+			 pdProduct.setLicenceSite2(filePath);
+		 }
+		 if(!FileUploadUtil.isImgEmpty(licenceSiteUp3)){
+			 String filePath = FileUploadUtil.upload(licenceSiteUp3);
+			 pdProduct.setLicenceSite3(filePath);
+		 }
+		 if(!FileUploadUtil.isImgEmpty(licenceSiteUp4)){
+			 String filePath = FileUploadUtil.upload(licenceSiteUp4);
+			 pdProduct.setLicenceSite4(filePath);
+		 }
+		 if(!FileUploadUtil.isImgEmpty(licenceSiteUp5)){
+			 String filePath = FileUploadUtil.upload(licenceSiteUp5);
+			 pdProduct.setLicenceSite5(filePath);
+		 }
+		 if(!FileUploadUtil.isImgEmpty(licenceSiteUp6)){
+			 String filePath = FileUploadUtil.upload(licenceSiteUp6);
+			 pdProduct.setLicenceSite6(filePath);
+		 }
+		 if(!FileUploadUtil.isImgEmpty(licenceSiteUp7)){
+			 String filePath = FileUploadUtil.upload(licenceSiteUp7);
+			 pdProduct.setLicenceSite7(filePath);
+		 }
+		 if(!FileUploadUtil.isImgEmpty(licenceSiteUp8)){
+			 String filePath = FileUploadUtil.upload(licenceSiteUp8);
+			 pdProduct.setLicenceSite8(filePath);
+		 }
+		 if(!FileUploadUtil.isImgEmpty(licenceSiteUp9)){
+			 String filePath = FileUploadUtil.upload(licenceSiteUp9);
+			 pdProduct.setLicenceSite9(filePath);
+		 }
+		 if(!FileUploadUtil.isImgEmpty(licenceSiteUp10)){
+			 String filePath = FileUploadUtil.upload(licenceSiteUp10);
+			 pdProduct.setLicenceSite10(filePath);
+		 }
+		 if(!FileUploadUtil.isImgEmpty(licenceSiteUp11)){
+			 String filePath = FileUploadUtil.upload(licenceSiteUp11);
+			 pdProduct.setLicenceSite11(filePath);
+		 }
+		 pdProductService.save(pdProduct);
+		 return Result.ok("添加成功！");
+	 }
 	
 	/**
 	 *  编辑
