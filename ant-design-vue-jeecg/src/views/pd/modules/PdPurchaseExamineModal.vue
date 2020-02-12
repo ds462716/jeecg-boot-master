@@ -45,31 +45,35 @@
           </a-col>
           <!-- <!-- 子表单区域 -->
           <a-button style="float: left;" type="primary" icon="download" @click="exportXls('申购产品列表')">导出</a-button>
-          <div style="float: left;width:100%;margin-bottom: 70px">
+          <div style="float: left;width:100%;margin-bottom: 70px;white-space:nowrap;overflow-x:auto;overflow-y:hidden;">
             <table id="contentTable" class="tableStyle">
               <tr>
                 <th>产品编号</th>
-                <th>产品批次号</th>
-                <th>产品有效期</th>
-                <th>产品单价</th>
+                <th>产品名称</th>
+                <th>规格</th>
+                <th>型号</th>
+                <th>单位</th>
+                <th>库存数量</th>
                 <th>申购数量</th>
-                <th>申购总金额</th>
-                <th>申购时总库存数量</th>
+                <th>产品单价</th>
+                <th>申购金额</th>
                 <th>生产厂家</th>
               </tr>
               <tr v-for="(item, index) in pdPurchaseDetailTable.dataSource">
                 <td>{{item.productNo}}</td>
-                <td>{{item.batchNo}}</td>
-                <td>{{item.expireDate}}</td>
-                <td>{{item.inPrice}}</td>
+                <td>{{item.productName}}</td>
+                <td>{{item.spec}}</td>
+                <td>{{item.version}}</td>
+                <td>{{item.unitName}}</td>
+                <td>{{item.stockNum}}</td>
                 <td>
                    <a-form-item>
                  <a-input  disabled="disabled" :style="{width: 'calc(80% - 10px)'}" @blur="(e)=>{handleConfirmBlur(e.target,item)}"  v-decorator="['pdPurchaseDetailTable['+index+'].length', {'initialValue':item.applyCount,rules:validatorRules.applyCount}]"/>
                   </a-form-item>
                 </td>
+                <td>{{item.inPrice}}</td>
                 <td>{{item.amountMoney}}</td>
-                <td>{{item.stockNum}}</td>
-                <td>{{item.meaning}}</td>
+                <td>{{item.venderName}}</td>
               </tr>
             </table>
           </div>
@@ -256,7 +260,7 @@
   .tableStyle> tr > th{
     border: 1px solid #e8e8e8;
     text-align: center;
-    padding: 16px 16px;
+    padding: 10px 16px;
     font-weight: 500;
     color: rgba(0, 0, 0, 0.85);
     background: #fafafa;
@@ -268,7 +272,7 @@
   .tableStyle> tr > td{
     border:1px solid #e8e8e8;
     text-align: center;
-    padding: 16px 16px;
+    padding: 1px 16px;
     font-weight: 500;
     box-sizing: border-box;
   }

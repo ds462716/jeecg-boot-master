@@ -2,6 +2,7 @@ package org.jeecg.modules.pd.entity;
 
 import java.io.Serializable;
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
@@ -51,14 +52,14 @@ public class PdPurchaseDetail implements Serializable {
 	/**产品编号*/
 	@Excel(name = "产品编号", width = 15)
 	private String productNo;
-	/**产品批次号*/
+	/*产品批次号
 	@Excel(name = "产品批次号", width = 15)
 	private String batchNo;
 	/**产品有效期*/
-	@Excel(name = "产品有效期", width = 15, format = "yyyy-MM-dd")
+	/*@Excel(name = "产品有效期", width = 15, format = "yyyy-MM-dd")
 	@JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd")
     @DateTimeFormat(pattern="yyyy-MM-dd")
-	private Date expireDate;
+	private Date expireDate;*/
 	/**产品单价*/
 	@Excel(name = "产品单价", width = 15)
 	private java.math.BigDecimal inPrice;
@@ -74,4 +75,18 @@ public class PdPurchaseDetail implements Serializable {
 	/**备注*/
 	@Excel(name = "备注", width = 15)
 	private String remarks;
+	@TableField(exist = false)
+	private String productName;//产品名称
+	@TableField(exist = false)
+	private String spec;//产品规格
+	@TableField(exist = false)
+	private String version;//产品型号
+	@TableField(exist = false)
+	private String sellingPrice;//产品单价
+	@TableField(exist = false)
+	private String unitName;//单位名称
+	@TableField(exist = false)
+	private String supplierName;//供应商名称
+	@TableField(exist = false)
+	private String venderName;//生产厂家名称
 }
