@@ -48,7 +48,7 @@
             <a-button type="primary" icon="download" @click="exportXls('申购产品列表')">导出</a-button>
             <a-button v-show="!disableSubmit" @click="choice" style="margin-left: 0px;margin-bottom: 20px"  type="primary">选择产品</a-button>
           </div>
-          <div style="float: left;width:100%;margin-bottom: 70px;overflow-x:auto;overflow-y:hidden;">
+          <div style="float: left;width:100%;margin-bottom: 70px;white-space:nowrap;overflow-x:auto;overflow-y:hidden;">
             <table id="contentTable" class="tableStyle">
               <tr>
                 <th v-show="!disableSubmit">操作</th>
@@ -63,7 +63,7 @@
                 <th>申购金额</th>
                 <th>生产厂家</th>
               </tr>
-              <tr v-for="(item, index) in pdPurchaseDetailTable.dataSource">
+              <tr  v-for="(item, index) in pdPurchaseDetailTable.dataSource">
                 <td v-show="!disableSubmit"><a @click="deleteDetail(item.productId)">删除</a></td>
                 <td>{{item.productNo}}</td>
                 <td>{{item.productName}}</td>
@@ -73,7 +73,7 @@
                 <td>{{item.stockNum}}</td>
                 <td>
                    <a-form-item>
-                 <a-input  :disabled="disableSubmit" :style="{width: 'calc(80% - 10px)'}" @blur="(e)=>{handleConfirmBlur(e.target,item)}"  v-decorator="['pdPurchaseDetailTable['+index+'].length', {'initialValue':item.applyCount,rules:validatorRules.applyCount}]"/>
+                 <a-input  :disabled="disableSubmit"  @blur="(e)=>{handleConfirmBlur(e.target,item)}"  v-decorator="['pdPurchaseDetailTable['+index+'].length', {'initialValue':item.applyCount,rules:validatorRules.applyCount}]"/>
                   </a-form-item>
                 </td>
                 <td>{{item.inPrice}}</td>
@@ -371,7 +371,7 @@
   .tableStyle> tr > th{
     border: 1px solid #e8e8e8;
     text-align: center;
-    padding: 1px 16px;
+    padding: 10px 16px;
     font-weight: 500;
     color: rgba(0, 0, 0, 0.85);
     background: #fafafa;
