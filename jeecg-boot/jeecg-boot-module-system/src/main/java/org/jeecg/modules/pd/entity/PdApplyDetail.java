@@ -59,28 +59,25 @@ public class PdApplyDetail extends BaseEntity {
 	@Excel(name = "所属包", width = 15)
 	private String packageId;
 	/**申领定数包个数*/
-	@Excel(name = "申领定数包个数", width = 15)
-	private Integer packageCount;
+	@Excel(name = "申领定数包数量", width = 15)
+	private Double packageCount;
 	/**有效期*/
 	@Excel(name = "有效期", width = 15, format = "yyyy-MM-dd")
 	@JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd")
     @DateTimeFormat(pattern="yyyy-MM-dd")
 	private Date expireDate;
 	/**申领产品个数*/
-	@Excel(name = "申领产品个数", width = 15)
-	private Integer applyCount;
+	@Excel(name = "申领产品数量", width = 15)
+	private Double applyCount;
 	/**申领时库存*/
 	@Excel(name = "申领时库存", width = 15)
-	private Integer stockNum;
+	private Double stockNum;
 	/**产品退回个数*/
-	@Excel(name = "产品退回个数", width = 15)
-	private Integer refundCount;
+	@Excel(name = "产品退回数量", width = 15)
+	private Double refundCount;
 	/**备注*/
 	@Excel(name = "备注", width = 15)
 	private String remarks;
-	/**删除标识*/
-	@Excel(name = "删除标识", width = 15)
-	private String delFlag;
 	@TableField(exist = false)
 	@Excel(name = "产品名称", width = 15)
 	private String productName;//产品名称

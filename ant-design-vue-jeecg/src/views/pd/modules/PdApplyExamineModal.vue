@@ -70,7 +70,7 @@
                 <td>{{item.productNum}}</td>
                 <td>
                    <a-form-item>
-                 <a-input  disabled="disabled" :style="{width: 'calc(80% - 10px)'}" @blur="(e)=>{handleConfirmBlur(e.target,item)}"  v-decorator="['pdPurchaseDetailTable['+index+'].length', {'initialValue':item.applyCount,rules:validatorRules.applyCount}]"/>
+                 <a-input  disabled="disabled"   @blur="(e)=>{handleConfirmBlur(e.target,item)}"  v-decorator="['pdPurchaseDetailTable['+index+'].length', {'initialValue':item.applyCount,rules:validatorRules.applyCount}]"/>
                   </a-form-item>
                 </td>
                 <td>{{item.stockNum}}</td>

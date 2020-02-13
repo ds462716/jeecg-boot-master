@@ -103,7 +103,7 @@ public class PdApplyOrderController {
 		 PdApplyOrderPage pdApplyOrder=new PdApplyOrderPage();
 		 pdApplyOrder.setApplyNo("SL"+System.currentTimeMillis());
 		 pdApplyOrder.setApplyDate(new Date());
-		 pdApplyOrder.setApplyNum(0);
+		 pdApplyOrder.setApplyNum(0.00);
 		 LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
 		 SysDepart sysDepart=sysDepartService.getDepartByOrgCode(sysUser.getOrgCode());
 		 pdApplyOrder.setApplyBy(sysUser.getId());

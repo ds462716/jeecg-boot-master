@@ -1,6 +1,7 @@
 package org.jeecg.modules.pd.entity;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Date;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -74,10 +75,10 @@ public class PdPurchaseOrder extends BaseEntity {
     private String refuseReason;
 	/**申购总数量*/
     @Excel(name = "申购总数量", width = 15)
-    private Integer amountCount;
+    private Double amountCount;
 	/**申购总金额*/
     @Excel(name = "申购总金额", width = 15)
-    private java.math.BigDecimal amountMoney;
+    private BigDecimal amountMoney;
 	/**备注信息*/
     @Excel(name = "备注信息", width = 15)
     private String remarks;

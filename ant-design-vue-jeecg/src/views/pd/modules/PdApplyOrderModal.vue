@@ -198,7 +198,7 @@
         const that = this;
         let applyCount = e.value;//修改后的申领数量
         let stockNum=m.stockNum;//目前库存数量
-        if(parseInt(stockNum)<parseInt(applyCount)){
+        if(parseFloat(stockNum)<parseFloat(applyCount)){
           that.$message.error("库存数量小于申领数量");
           return;
         }
@@ -206,7 +206,7 @@
         let tableData=this.pdApplyDetailTable.dataSource;
         let count=0;
         for(let i=0;i<tableData.length;i++){
-          count=count+parseInt(tableData[i].applyCount);//计算总数量
+          count=count+parseFloat(tableData[i].applyCount);//计算总数量
         }
         let model={};
         this.model.applyNum=count;//申购总数量
@@ -225,7 +225,7 @@
         const newData = this.pdApplyDetailTable.dataSource.filter(item => item.productId !== productId);
         let count=0;
         for(let i=0;i<newData.length;i++){
-          count=count+parseInt(newData[i].applyCount);//计算总数量
+          count=count+parseFloat(newData[i].applyCount);//计算总数量
         }
         let model={};
         this.model.applyNum=count;//申购总数量

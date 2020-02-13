@@ -9,6 +9,8 @@ import lombok.Data;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.jeecgframework.poi.excel.annotation.Excel;
+
+import java.math.BigDecimal;
 import java.util.Date;
 
 /**
@@ -54,16 +56,16 @@ public class PdPurchaseDetail extends BaseEntity {
 	private String productNo;
 	/**产品单价*/
 	@Excel(name = "产品单价", width = 15)
-	private java.math.BigDecimal inPrice;
+	private BigDecimal inPrice;
 	/**申购数量*/
 	@Excel(name = "申购数量", width = 15)
-	private Integer applyCount;
+	private Double applyCount;
 	/**申购总金额*/
 	@Excel(name = "申购总金额", width = 15)
-	private java.math.BigDecimal amountMoney;
+	private BigDecimal amountMoney;
 	/**申购时总库存数量*/
 	@Excel(name = "申购时总库存数量", width = 15)
-	private Integer stockNum;
+	private Double stockNum;
 	/**备注*/
 	@Excel(name = "备注", width = 15)
 	private String remarks;
@@ -78,7 +80,7 @@ public class PdPurchaseDetail extends BaseEntity {
 	private String version;//产品型号
 	@TableField(exist = false)
 	@Excel(name = "产品单价", width = 15)
-	private String sellingPrice;//产品单价
+	private BigDecimal sellingPrice;//产品单价
 	@TableField(exist = false)
 	@Excel(name = "单位名称", width = 15)
 	private String unitName;//单位名称

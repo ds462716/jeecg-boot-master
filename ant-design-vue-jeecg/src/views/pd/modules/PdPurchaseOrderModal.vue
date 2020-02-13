@@ -207,18 +207,18 @@
       handleConfirmBlur(e,m){
         this.applyCount = e.value;//修改后的申购数量
         this.inPrice=m.inPrice;//产品单价；
-        m.amountMoney= this.applyCount * this.inPrice;//计算修改后的总金额
+        m.amountMoney= (this.applyCount * this.inPrice).toFixed(2);//计算修改后的总金额
         m.applyCount=e.value;
        let tableData=this.pdPurchaseDetailTable.dataSource;
        let count=0;
        let amountMoney=0;
         for(let i=0;i<tableData.length;i++){
-           count=count+parseInt(tableData[i].applyCount);//计算总数量
+           count=count+parseFloat(tableData[i].applyCount);//计算总数量
            amountMoney=amountMoney+Number(tableData[i].amountMoney);//计算申购总金额
         }
         let model={};
         this.model.amountCount=count;//申购总数量
-        this.model.amountMoney=amountMoney;//申购总金额
+        this.model.amountMoney=amountMoney.toFixed(2);//申购总金额
         this.$nextTick(() => {
           this.form.setFieldsValue(pick(this.model,'amountCount','amountMoney'))
         })
@@ -235,12 +235,12 @@
         let count=0;
         let amountMoney=0;
         for(let i=0;i<newData.length;i++){
-          count=count+parseInt(newData[i].applyCount);//计算总数量
+          count=count+parseFloat(newData[i].applyCount);//计算总数量
           amountMoney=amountMoney+Number(newData[i].amountMoney);//计算申购总金额
         }
         let model={};
         this.model.amountCount=count;//申购总数量
-        this.model.amountMoney=amountMoney;//申购总金额
+        this.model.amountMoney=amountMoney.toFixed(2);//申购总金额
         this.$nextTick(() => {
           this.form.setFieldsValue(pick(this.model,'amountCount','amountMoney'))
         })
@@ -272,7 +272,7 @@
         }
         let model={};
         this.model.amountCount=count;//申购总数量
-        this.model.amountMoney=amountMoney;//申购总金额
+        this.model.amountMoney=amountMoney.toFixed(2);//申购总金额
         this.$nextTick(() => {
           this.form.setFieldsValue(pick(this.model,'amountCount','amountMoney'))
         })
