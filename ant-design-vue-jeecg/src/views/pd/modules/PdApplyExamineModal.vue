@@ -25,7 +25,7 @@
           </a-col>
           <a-col :span="12">
             <a-form-item label="申领人" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input disabled="disabled" v-decorator="[ 'applyBy', validatorRules.applyBy]"></a-input>
+              <a-input disabled="disabled" v-decorator="[ 'realName', validatorRules.realName]"></a-input>
             </a-form-item>
           </a-col>
           <a-col :span="12">
@@ -40,7 +40,7 @@
           </a-col>
           <a-col :span="12">
             <a-form-item   label="备注" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input  :disabled="disableSubmit"  v-decorator="[ 'remarks', validatorRules.remarks]"  style="width: 100%"/>
+              <a-input  disabled="disabled"  v-decorator="[ 'remarks', validatorRules.remarks]"  style="width: 100%"/>
             </a-form-item>
           </a-col>
           <!-- <!-- 子表单区域 -->
@@ -118,7 +118,7 @@
           deptName:{},
           applyDate:{},
           applyNum:{},
-          applyBy:{},
+          realName:{},
           remarks:{}
         },
        refKeys: ['pdApplyDetail', ],
@@ -205,7 +205,7 @@
       },
       /** 调用完edit()方法之后会自动调用此方法 */
       editAfter() {
-        let fieldval = pick(this.model,'applyNo','deptName','applyNum','applyDate','applyBy','remarks')
+        let fieldval = pick(this.model,'applyNo','deptName','applyNum','applyDate','realName','remarks')
         this.$nextTick(() => {
           this.form.setFieldsValue(fieldval)
         })
@@ -228,7 +228,7 @@
         this.$message.error(msg)
       },
       popupCallback(row){
-        this.form.setFieldsValue(pick(row,'applyNo','deptName','applyNum','applyDate','applyBy','remarks'))
+        this.form.setFieldsValue(pick(row,'applyNo','deptName','applyNum','applyDate','realName','remarks'))
        },
 
     }

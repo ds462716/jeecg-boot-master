@@ -25,7 +25,7 @@
           </a-col>
           <a-col :span="12">
             <a-form-item label="申领人" :labelCol="labelCol" :wrapperCol="wrapperCol">
-            <a-input disabled="disabled" v-decorator="[ 'applyBy', validatorRules.applyBy]"></a-input>
+            <a-input disabled="disabled" v-decorator="[ 'realName', validatorRules.realName]"></a-input>
           </a-form-item>
           </a-col>
           <a-col :span="12">
@@ -75,7 +75,7 @@
                 <td>{{item.productNum}}</td>
                 <td>
                   <a-form-item>
-                    <a-input-number  :disabled="disableSubmit" :style="{width: 'calc(80% - 10px)'}" @blur="(e)=>{handleConfirmBlur(e.target,item)}"  v-decorator="['pdApplyDetailTable['+index+'].length', {'initialValue':item.applyCount,rules:validatorRules.applyCount}]"/>
+                    <a-input-number  :disabled="disableSubmit" :style="{width: 'calc(120% - 5px)'}" @blur="(e)=>{handleConfirmBlur(e.target,item)}"  v-decorator="['pdApplyDetailTable['+index+'].length', {'initialValue':item.applyCount,rules:validatorRules.applyCount}]"/>
                   </a-form-item>
                 </td>
                 <td>{{item.stockNum}}</td>
@@ -119,7 +119,7 @@
           deptName:{},
           applyDate:{},
           applyNum:{},
-          applyBy:{},
+          realName:{},
           remarks:{}
         },
         refKeys: ['pdApplyDetail', ],
@@ -185,9 +185,10 @@
             this.model.deptId=res.result.deptId;//申领科室id
             this.model.applyDate=res.result.applyDate;//申领日期
             this.model.applyNum=res.result.applyNum;//申领总数量
-            this.model.applyBy=res.result.applyBy;//申领人
+            this.model.applyBy=res.result.applyBy;//申领人编号
+            this.model.realName=res.result.realName;//申领人姓名
             this.$nextTick(() => {
-              this.form.setFieldsValue(pick(this.model,'applyNo','deptName','applyNum','applyDate','applyBy','remarks'))
+              this.form.setFieldsValue(pick(this.model,'applyNo','deptName','applyNum','applyDate','realName','remarks'))
             })
           }
         })
@@ -300,7 +301,7 @@
       },
       /** 调用完edit()方法之后会自动调用此方法 */
       editAfter() {
-        let fieldval = pick(this.model,'applyNo','deptName','applyNum','applyDate','applyBy','remarks')
+        let fieldval = pick(this.model,'applyNo','deptName','applyNum','applyDate','realName','remarks')
         this.$nextTick(() => {
           this.form.setFieldsValue(fieldval)
         })
@@ -323,7 +324,7 @@
         this.$message.error(msg)
       },
       popupCallback(row){
-        this.form.setFieldsValue(pick(row,'applyNo','deptName','applyNum','applyDate','applyBy','remarks'))
+        this.form.setFieldsValue(pick(row,'applyNo','deptName','applyNum','applyDate','realname','remarks'))
       },
 
     }

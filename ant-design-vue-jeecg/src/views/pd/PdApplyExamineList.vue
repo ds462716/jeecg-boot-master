@@ -10,8 +10,8 @@
             </a-form-item>
           </a-col>
           <a-col :md="6" :sm="8">
-            <a-form-item label="申领库房">
-              <a-input placeholder="请输入申领库房名称" v-model="queryParam.deptName"></a-input>
+            <a-form-item label="申领科室">
+              <a-input placeholder="请输入申领科室" v-model="queryParam.deptName"></a-input>
             </a-form-item>
           </a-col>
           <template v-if="toggleSearchStatus">
@@ -103,7 +103,7 @@
           {
             title:'申领人',
             align:"center",
-            dataIndex: 'applyBy'
+            dataIndex: 'realName'
           },
           {
             title:'申领日期',
