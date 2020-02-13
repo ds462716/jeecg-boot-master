@@ -97,7 +97,7 @@ public class PdGoodsAllocationController extends JeecgController<PdGoodsAllocati
 	 */
 	@PostMapping(value = "/add")
 	public Result<?> add(@RequestBody PdGoodsAllocation pdGoodsAllocation) {
-		pdGoodsAllocationService.save(pdGoodsAllocation);
+		pdGoodsAllocationService.savePdGoodsAllocation(pdGoodsAllocation);
 		return Result.ok("添加成功！");
 	}
 	
@@ -109,7 +109,7 @@ public class PdGoodsAllocationController extends JeecgController<PdGoodsAllocati
 	 */
 	@PutMapping(value = "/edit")
 	public Result<?> edit(@RequestBody PdGoodsAllocation pdGoodsAllocation) {
-		pdGoodsAllocationService.updateById(pdGoodsAllocation);
+		pdGoodsAllocationService.updatePdGoodsAllocation(pdGoodsAllocation);
 		return Result.ok("编辑成功!");
 	}
 	

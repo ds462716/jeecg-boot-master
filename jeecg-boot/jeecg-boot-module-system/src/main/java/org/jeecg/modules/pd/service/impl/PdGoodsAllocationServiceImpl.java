@@ -65,10 +65,57 @@ public class PdGoodsAllocationServiceImpl extends ServiceImpl<PdGoodsAllocationM
     }
 
     @Override
-    public List<PdGoodsAllocationPage> selectList(PdGoodsAllocation pdGoodsAllocation) {
-        // TODO 组装 childList
-        return pdGoodsAllocationMapper.selectList(pdGoodsAllocation);
+    public List<PdGoodsAllocationPage> selectAllList(PdGoodsAllocation pdGoodsAllocation) {
+        return pdGoodsAllocationMapper.selectAllList(pdGoodsAllocation);
     }
 
+    @Override
+    public boolean updatePdGoodsAllocation(PdGoodsAllocation pdGoodsAllocation) {
+        Boolean bool = super.updateById(pdGoodsAllocation);
+
+        if(bool && PdConstant.GOODS_ALLCATION_AREA_TYPE_2.equals(pdGoodsAllocation.getAreaType())){
+            //货位更新 需要变更货区的数量
+            PdGoodsAllocation queryItem = new PdGoodsAllocation();
+            queryItem.setParentId(pdGoodsAllocation.getParentId());
+            List<PdGoodsAllocationPage> list = this.selectAllList(queryItem);
+            if(CollectionUtils.isNotEmpty(list)){
+                Integer sum = 0;
+                for (PdGoodsAllocationPage item : list) {
+                    sum = sum + (item.getSubNum() == null ? 0 : item.getSubNum());
+                }
+
+                PdGoodsAllocation parentItem = new PdGoodsAllocation();
+                parentItem.setId(pdGoodsAllocation.getParentId());
+                parentItem.setSubNum(sum);
+                super.updateById(parentItem);
+            }
+        }
+        return bool;
+    }
+
+    @Override
+    public boolean savePdGoodsAllocation(PdGoodsAllocation pdGoodsAllocation) {
+        Boolean bool = super.save(pdGoodsAllocation);
+
+        if(bool && PdConstant.GOODS_ALLCATION_AREA_TYPE_2.equals(pdGoodsAllocation.getAreaType())){
+            //货位新增 需要变更货区的数量
+            PdGoodsAllocation queryItem = new PdGoodsAllocation();
+            queryItem.setParentId(pdGoodsAllocation.getParentId());
+            List<PdGoodsAllocationPage> list = this.selectAllList(queryItem);
+            if(CollectionUtils.isNotEmpty(list)){
+                Integer sum = 0;
+                for (PdGoodsAllocationPage item : list) {
+                    sum = sum + (item.getSubNum() == null ? 0 : item.getSubNum());
+                }
+
+                PdGoodsAllocation parentItem = new PdGoodsAllocation();
+                parentItem.setId(pdGoodsAllocation.getParentId());
+                parentItem.setSubNum(sum);
+                super.updateById(parentItem);
+            }
+        }
+
+        return bool;
+    }
 
 }

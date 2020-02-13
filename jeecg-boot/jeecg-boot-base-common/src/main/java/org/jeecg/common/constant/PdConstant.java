@@ -42,7 +42,11 @@ public interface PdConstant {
 	public static final String  DEL_FLAG_0= "0";//有效
 	public static final String  DEL_FLAG_1= "1";//删除
 
-    //货区货位标识，用于页面中与机构部门标识区分
+    //货区货位标识，用于页面中与机构部门标识区分 add by jiangxz 20200212
 	public static final String GOODS_ALLCATION_FLAG_1 = "huoqu"; //货区货位
 	public static final String GOODS_ALLCATION_FLAG_2 = "huowei"; //货区货位
+
+	/**货区货位数据字典  add by jiangxz 20200213*/
+	public static final String GOODS_ALLCATION_AREA_TYPE_1 = "1"; //货区
+	public static final String GOODS_ALLCATION_AREA_TYPE_2 = "2"; //货位
 }

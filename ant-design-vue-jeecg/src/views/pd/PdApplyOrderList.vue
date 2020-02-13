@@ -172,7 +172,7 @@
           {
             title:'操作人',
             align:"center",
-            dataIndex: 'applyBy'
+            dataIndex: 'realName'
           },
           {
             title: '操作',

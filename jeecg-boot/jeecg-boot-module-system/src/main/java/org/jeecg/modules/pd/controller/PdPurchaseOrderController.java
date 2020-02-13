@@ -93,17 +93,17 @@ public class PdPurchaseOrderController {
 	  * @return
 	  */
 	 @GetMapping(value = "/purchaseInfo")
-	 public Result<PdPurchaseOrder> purchaseInfo() {
-		 Result<PdPurchaseOrder> result = new Result<>();
-		 PdPurchaseOrder pdPurchaseOrder=new PdPurchaseOrder();
+	 public Result<PdPurchaseOrderPage> purchaseInfo() {
+		 Result<PdPurchaseOrderPage> result = new Result<>();
+		 PdPurchaseOrderPage pdPurchaseOrder=new PdPurchaseOrderPage();
 		 pdPurchaseOrder.setOrderNo("SG"+System.currentTimeMillis());
 		 pdPurchaseOrder.setOrderDate(new Date());
 		 pdPurchaseOrder.setAmountCount(0);
 		 pdPurchaseOrder.setAmountMoney(BigDecimal.ZERO);
 		 LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
 		 SysDepart sysDepart=sysDepartService.getDepartByOrgCode(sysUser.getOrgCode());
-		 pdPurchaseOrder.setStoreroomId(sysDepart.getId());
-		 pdPurchaseOrder.setStoreroomName(sysDepart.getDepartName());
+		 pdPurchaseOrder.setDeptId(sysDepart.getId());
+		 pdPurchaseOrder.setDeptName(sysDepart.getDepartName());
 		 pdPurchaseOrder.setPurchaseBy(sysUser.getId());
 		 pdPurchaseOrder.setPurchaseName(sysUser.getRealname());
 		 result.setResult(pdPurchaseOrder);
@@ -142,6 +142,12 @@ public class PdPurchaseOrderController {
 		PdPurchaseOrder pdPurchaseOrderEntity = pdPurchaseOrderService.getById(pdPurchaseOrder.getId());
 		if(pdPurchaseOrderEntity==null) {
 			return Result.error("未找到对应数据");
+		}
+		String orderStatus=pdPurchaseOrder.getOrderStatus();//审核状态
+		if((PdConstant.ORDER_STATE_2).equals(orderStatus) || (PdConstant.ORDER_STATE_3).equals(orderStatus)){
+			LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+			pdPurchaseOrder.setAuditBy(sysUser.getId());
+			pdPurchaseOrder.setAuditDate(new Date());
 		}
 		pdPurchaseOrderService.updateMain(pdPurchaseOrder, pdPurchaseOrderPage.getPdPurchaseDetailList());
 		return Result.ok("编辑成功!");
