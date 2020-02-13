@@ -89,18 +89,6 @@
               <!--:treeData="treeData" :disabled="disable" v-model="model.departParentId" placeholder="无">-->
             <!--</a-tree-select>-->
           <!--</a-form-item>-->
-          <a-form-item :label="title2+'名称'" :labelCol="labelCol" :wrapperCol="wrapperCol">
-            <a-input v-decorator="['name', validatorRules.name ]" @change="pinyinTran" placeholder="请输入名称"/>
-          </a-form-item>
-          <a-form-item label="下级存放单位编号标识" :labelCol="labelCol" :wrapperCol="wrapperCol">
-            <a-input disabled v-decorator="['subCode', validatorRules.subCode ]" placeholder="请输入下级存放单位编号标识" />
-          </a-form-item>
-          <a-form-item label="编号后缀" :labelCol="labelCol" :wrapperCol="wrapperCol">
-            <a-input v-decorator="['codeSuffix', validatorRules.codeSuffix ]" @change="getCode" placeholder="请输入编号后缀" />
-          </a-form-item>
-          <a-form-item :label="title2+'编号'" :labelCol="labelCol" :wrapperCol="wrapperCol">
-            <a-input disabled v-decorator="[ 'code', validatorRules.code]" placeholder="请输入编号"></a-input>
-          </a-form-item>
           <a-form-item label="类型" :labelCol="labelCol" :wrapperCol="wrapperCol">
             <template>
               <a-radio-group disabled v-decorator="['areaType',validatorRules.areaType]" placeholder="类型">
@@ -113,7 +101,21 @@
               </a-radio-group>
             </template>
           </a-form-item>
-
+          <a-form-item :label="title2+'名称'" :labelCol="labelCol" :wrapperCol="wrapperCol">
+            <a-input v-decorator="['name', validatorRules.name ]" @change="pinyinTran" placeholder="请输入名称"/>
+          </a-form-item>
+          <a-form-item label="下级存放单位编号标识" :labelCol="labelCol" :wrapperCol="wrapperCol">
+            <a-input disabled v-decorator="['subCode', validatorRules.subCode ]" placeholder="请输入下级存放单位编号标识" />
+          </a-form-item>
+          <a-form-item label="编号后缀" :labelCol="labelCol" :wrapperCol="wrapperCol">
+            <a-input v-decorator="['codeSuffix', validatorRules.codeSuffix ]" @change="getCode" placeholder="请输入编号后缀" />
+          </a-form-item>
+          <a-form-item :label="title2+'编号'" :labelCol="labelCol" :wrapperCol="wrapperCol">
+            <a-input disabled v-decorator="[ 'code', validatorRules.code]" placeholder="请输入编号"></a-input>
+          </a-form-item>
+          <a-form-item label="下级存放单位数量" :labelCol="labelCol" :wrapperCol="wrapperCol" v-show="showSubNum">
+            <a-input-number v-decorator="[ 'subNum', validatorRules.subNum]" placeholder="请输入下级存放单位数量" :min="0" :defaultValue="0" style="width: 100%"/>
+          </a-form-item>
           <a-form-item label="地址" :labelCol="labelCol" :wrapperCol="wrapperCol">
             <a-input v-decorator="[ 'address', validatorRules.address]" placeholder="请输入地址"></a-input>
           </a-form-item>
@@ -130,12 +132,9 @@
           <a-form-item label="联系方式" :labelCol="labelCol" :wrapperCol="wrapperCol">
             <a-input v-decorator="[ 'contactsPhone', validatorRules.contactsPhone]" placeholder="请输入联系方式"></a-input>
           </a-form-item>
-          <a-form-item label="下级存放单位数量" :labelCol="labelCol" :wrapperCol="wrapperCol">
-            <a-input-number v-decorator="[ 'subNum', validatorRules.subNum]" placeholder="请输入下级存放单位数量" style="width: 100%"/>
-          </a-form-item>
           <a-form-item label="状态" :labelCol="labelCol" :wrapperCol="wrapperCol">
             <template>
-              <a-radio-group v-decorator="['state',validatorRules.state]" placeholder="类型">
+              <a-radio-group v-decorator="['state',validatorRules.state]" placeholder="状态">
                 <a-radio value="0">
                   未启用
                 </a-radio>
@@ -185,6 +184,7 @@
         title1:'',
         title2:'',
         showGoodsCard:false,
+        showSubNum:false,
         showEdit:false,
         showSubmit:false,
         showDelete:false,
@@ -245,7 +245,7 @@
           volume: {rules: [{pattern:/^-?\d+\.?\d*$/, message: '请输入数字!'},]},
           contacts: {rules: []},
           contactsPhone: {rules: [{pattern:/^1[3456789]\d{9}$/, message: '请输入正确的手机号码!'},]},
-          subNum: {rules: [{pattern:/^-?\d+$/, message: '请输入整数!'},]},
+          subNum: {rules: [{required: true, message: '请输入整数!'},{pattern:/^-?\d+$/, message: '请输入整数!'},]},
           state: {rules: []},
           py: {rules: []},
           wb: {rules: []},
@@ -471,10 +471,12 @@
           if(this.currSelected.orgType == "huoqu"){
             this.showHuoqu = false;
             this.showHuowei = true;
+            this.showSubNum = false;
             this.title2 = "货区";
           }else{
             this.showHuoqu = false;
             this.showHuowei = false;
+            this.showSubNum = true;
             this.title2 = "货位";
           }
         }else if(record.hasOwnProperty("orgType") && this.currSelected.orgType == "2"){
@@ -584,6 +586,7 @@
           this.showGoodsCard = true;//显示货区货位新增页面
           this.showEdit = false; //不显示修改按钮
           this.showSubmit = true;//显示保存按钮
+          this.showSubNum = fasle;
           this.form.setFieldsValue({areaType:"1"});
           this.form.setFieldsValue({state:"1"}); //默认启用
           this.title2 = "货区";
@@ -593,6 +596,7 @@
           this.showGoodsCard = true;//显示货区货位新增页面
           this.showEdit = false; //不显示修改按钮
           this.showSubmit = true;//显示保存按钮
+          this.showSubNum = true;
           this.form.setFieldsValue({areaType:"2"});
           this.form.setFieldsValue({state:"1"}); //默认启用
           this.form.setFieldsValue({subCode:this.parentCode});

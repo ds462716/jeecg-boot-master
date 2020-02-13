@@ -19,5 +19,5 @@ public interface PdGoodsAllocationMapper extends BaseMapper<PdGoodsAllocation> {
 
     List<SysDepartTreeModel> selectChildList(PdGoodsAllocation pdGoodsAllocation);
 
-    List<PdGoodsAllocationPage> selectList(PdGoodsAllocation pdGoodsAllocation);
+    List<PdGoodsAllocationPage> selectAllList(PdGoodsAllocation pdGoodsAllocation);
 }

@@ -20,5 +20,9 @@ public interface IPdGoodsAllocationService extends IService<PdGoodsAllocation> {
      */
     List<SysDepartTreeModel> queryTreeList(List<SysDepartTreeModel> departTreeList);
 
-    List<PdGoodsAllocationPage> selectList(PdGoodsAllocation pdGoodsAllocation);
+    List<PdGoodsAllocationPage> selectAllList(PdGoodsAllocation pdGoodsAllocation);
+
+    boolean updatePdGoodsAllocation(PdGoodsAllocation pdGoodsAllocation);
+
+    boolean savePdGoodsAllocation(PdGoodsAllocation pdGoodsAllocation);
 }

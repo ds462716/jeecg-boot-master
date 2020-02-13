@@ -30,7 +30,7 @@
         a.sys_org_parent_code
 	</sql>
 
-    <select id="selectList" resultType="org.jeecg.modules.pd.vo.PdGoodsAllocationPage" parameterType="org.jeecg.modules.pd.entity.PdGoodsAllocation">
+    <select id="selectAllList" resultType="org.jeecg.modules.pd.vo.PdGoodsAllocationPage" parameterType="org.jeecg.modules.pd.entity.PdGoodsAllocation">
         SELECT
         <include refid="pdGoodsAllocation"/>,
         b.depart_name
@@ -38,7 +38,6 @@
         left join sys_depart b on a.depart_id = b.id
         <where>
             a.del_flag = #{DEL_FLAG_NORMAL}
-            AND a.area_type = '1'
             <if test="name != null and name != ''">
                 AND ( a.name LIKE concat('%',#{name},'%')
                 or a.py LIKE concat('%',#{name},'%')
@@ -46,10 +45,10 @@
                 or a.zdy LIKE concat('%',#{name},'%') )
             </if>
             <if test="departId != null and departId != ''">
-                AND a.depart_id LIKE concat('%',#{departId},'%')
+                AND a.depart_id = #{departId}
             </if>
             <if test="parentId != null and parentId != ''">
-                AND a.parent_id LIKE concat('%',#{parentId},'%')
+                AND a.parent_id = #{parentId}
             </if>
             <if test="code != null and code != ''">
                 AND a.code LIKE concat('%',#{code},'%')
