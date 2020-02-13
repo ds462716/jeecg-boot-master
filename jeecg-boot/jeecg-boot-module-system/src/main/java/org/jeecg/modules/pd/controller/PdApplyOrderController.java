@@ -98,15 +98,16 @@ public class PdApplyOrderController {
 	  * @return
 	  */
 	 @GetMapping(value = "/applyInfo")
-	 public Result<PdApplyOrder> purchaseInfo() {
-		 Result<PdApplyOrder> result = new Result<>();
-		 PdApplyOrder pdApplyOrder=new PdApplyOrder();
+	 public Result<PdApplyOrderPage> purchaseInfo() {
+		 Result<PdApplyOrderPage> result = new Result<>();
+		 PdApplyOrderPage pdApplyOrder=new PdApplyOrderPage();
 		 pdApplyOrder.setApplyNo("SL"+System.currentTimeMillis());
 		 pdApplyOrder.setApplyDate(new Date());
 		 pdApplyOrder.setApplyNum(0);
 		 LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
 		 SysDepart sysDepart=sysDepartService.getDepartByOrgCode(sysUser.getOrgCode());
 		 pdApplyOrder.setApplyBy(sysUser.getId());
+		 pdApplyOrder.setRealName(sysUser.getRealname());
 		 pdApplyOrder.setDeptId(sysDepart.getId());
 		 pdApplyOrder.setDeptName(sysDepart.getDepartName());
 		 result.setResult(pdApplyOrder);
@@ -142,6 +143,13 @@ public class PdApplyOrderController {
 		PdApplyOrder pdApplyOrderEntity = pdApplyOrderService.getById(pdApplyOrder.getId());
 		if(pdApplyOrderEntity==null) {
 			return Result.error("未找到对应数据");
+		}
+
+		String applyStatus=pdApplyOrder.getApplyStatus();//审核状态
+		if((PdConstant.ORDER_STATE_2).equals(applyStatus) || (PdConstant.ORDER_STATE_3).equals(applyStatus)){
+			LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+			pdApplyOrder.setAuditBy(sysUser.getId());
+			pdApplyOrder.setAuditDate(new Date());
 		}
 		pdApplyOrderService.updateMain(pdApplyOrder, pdApplyOrderPage.getPdApplyDetailList());
 		return Result.ok("编辑成功!");

@@ -10,8 +10,8 @@
             </a-form-item>
           </a-col>
           <a-col :md="6" :sm="8">
-            <a-form-item label="申购库房名称">
-              <a-input placeholder="请输入申购库房名称" v-model="queryParam.storeroomName"></a-input>
+            <a-form-item label="申购科室">
+              <a-input placeholder="请输入申购科室名称" v-model="queryParam.deptName"></a-input>
             </a-form-item>
           </a-col>
           <template v-if="toggleSearchStatus">
@@ -144,9 +144,9 @@
             }
           },
           {
-            title:'申购库房名称',
+            title:'申购科室',
             align:"center",
-            dataIndex: 'storeroomName'
+            dataIndex: 'deptName'
 
           },
           {
@@ -196,7 +196,7 @@
           deleteBatch: "/pd/pdPurchaseOrder/deleteBatch"
         },
         dictOptions:{
-         storeroomName:[],
+          deptName:[],
          orderStatus:[],
          submitStart:[],
         },

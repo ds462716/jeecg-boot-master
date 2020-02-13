@@ -29,8 +29,8 @@
             </a-form-item>
           </a-col>
           <a-col :span="12">
-            <a-form-item label="申购库房" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input disabled="disabled" v-decorator="[ 'storeroomName', validatorRules.storeroomName]" placeholder="请输入库房名称"></a-input>
+            <a-form-item label="申购科室" :labelCol="labelCol" :wrapperCol="wrapperCol">
+              <a-input disabled="disabled" v-decorator="[ 'deptName', validatorRules.deptName]" placeholder="请输入库房名称"></a-input>
             </a-form-item>
           </a-col>
           <a-col :span="12">
@@ -124,7 +124,7 @@
           purchaseBy:{},
           purchaseName:{},
           orderDate:{},
-          storeroomName:{},
+          deptName:{},
           amountCount:{},
           amountMoney:{},
           refuseReason:{}
@@ -191,12 +191,12 @@
             this.model.purchaseBy=res.result.purchaseBy;//申购人编号
             this.model.purchaseName=res.result.purchaseName;//申购人名称
             this.model.orderDate=res.result.orderDate;//申购日期
-            this.model.storeroomId=res.result.storeroomId;//申购库房Id
-            this.model.storeroomName=res.result.storeroomName;//申购库房名称
+            this.model.deptId=res.result.deptId;//申购科室Id
+            this.model.deptName=res.result.deptName;//申购科室名称
             this.model.amountCount=res.result.amountCount;//申购总数量
             this.model.amountMoney=res.result.amountMoney;//申购总金额
             this.$nextTick(() => {
-              this.form.setFieldsValue(pick(this.model,'orderNo','purchaseName','orderDate','storeroomName','amountCount','amountMoney','refuseReason'))
+              this.form.setFieldsValue(pick(this.model,'orderNo','purchaseName','orderDate','deptName','amountCount','amountMoney','refuseReason'))
             })
           }
         })
@@ -317,7 +317,7 @@
       },
       /** 调用完edit()方法之后会自动调用此方法 */
       editAfter() {
-        let fieldval = pick(this.model,'orderNo','purchaseName','orderDate','storeroomName','orderStatus','amountCount','amountMoney','submitStart','refuseReason')
+        let fieldval = pick(this.model,'orderNo','purchaseName','orderDate','deptName','orderStatus','amountCount','amountMoney','submitStart','refuseReason')
         this.$nextTick(() => {
           this.form.setFieldsValue(fieldval)
         })
@@ -340,7 +340,7 @@
         this.$message.error(msg)
       },
       popupCallback(row){
-        this.form.setFieldsValue(pick(row,'orderNo','purchaseName','orderDate','storeroomName','orderStatus','amountCount','amountMoney','submitStart','refuseReason'))
+        this.form.setFieldsValue(pick(row,'orderNo','purchaseName','orderDate','deptName','orderStatus','amountCount','amountMoney','submitStart','refuseReason'))
       },
 
     }

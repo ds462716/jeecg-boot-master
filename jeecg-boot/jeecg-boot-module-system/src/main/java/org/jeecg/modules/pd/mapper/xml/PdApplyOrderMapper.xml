@@ -30,12 +30,23 @@
     <sql id="PdApplyOrderJoins">
     </sql>
 
+
+    <!--用户-->
+    <sql id="pdSysUserColumns">
+        b.realname as "realname"
+	</sql>
+    <sql id="pdSysUserJoins">
+        LEFT JOIN sys_user b ON b.id = a.apply_by
+    </sql>
+
     <!-- 列表查询 -->
-    <select id="selectList" resultType="org.jeecg.modules.pd.entity.PdApplyOrder">
+    <select id="selectList" resultType="org.jeecg.modules.pd.vo.PdApplyOrderPage">
         SELECT
-        <include refid="PdApplyOrderColumns"/>
+        <include refid="PdApplyOrderColumns"/>,
+        <include refid="pdSysUserColumns"/>
         FROM pd_apply_order a
         <include refid="PdApplyOrderJoins"/>
+        <include refid="pdSysUserJoins"/>
         <where>
             a.del_flag =#{DEL_FLAG_NORMAL}
             <if test="id != null and id != ''">

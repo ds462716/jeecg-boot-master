@@ -29,8 +29,8 @@
             </a-form-item>
           </a-col>
           <a-col :span="12">
-            <a-form-item label="申购库房名称" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input disabled="disabled" v-decorator="[ 'storeroomName', validatorRules.storeroomName]" ></a-input>
+            <a-form-item label="申购科室" :labelCol="labelCol" :wrapperCol="wrapperCol">
+              <a-input disabled="disabled" v-decorator="[ 'deptName', validatorRules.deptName]" ></a-input>
             </a-form-item>
           </a-col>
           <a-col :span="12">
@@ -118,7 +118,7 @@
           purchaseBy:{},
           purchaseName:{},
           orderDate:{},
-          storeroomName:{},
+          deptName:{},
           amountCount:{},
           amountMoney:{},
           refuseReason:{},
@@ -207,7 +207,7 @@
       },
       /** 调用完edit()方法之后会自动调用此方法 */
       editAfter() {
-        let fieldval = pick(this.model,'orderNo','purchaseName','orderDate','storeroomName','orderStatus','amountCount','amountMoney','submitStart','refuseReason')
+        let fieldval = pick(this.model,'orderNo','purchaseName','orderDate','deptName','orderStatus','amountCount','amountMoney','submitStart','refuseReason')
         this.$nextTick(() => {
           this.form.setFieldsValue(fieldval)
         })
@@ -230,7 +230,7 @@
         this.$message.error(msg)
       },
       popupCallback(row){
-        this.form.setFieldsValue(pick(row,'orderNo','purchaseName','orderDate','storeroomName','orderStatus','amountCount','amountMoney','submitStart','refuseReason'))
+        this.form.setFieldsValue(pick(row,'orderNo','purchaseName','orderDate','deptName','orderStatus','amountCount','amountMoney','submitStart','refuseReason'))
       },
 
     }

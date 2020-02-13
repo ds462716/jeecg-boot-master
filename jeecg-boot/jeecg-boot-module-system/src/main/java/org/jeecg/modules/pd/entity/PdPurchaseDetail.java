@@ -52,14 +52,6 @@ public class PdPurchaseDetail extends BaseEntity {
 	/**产品编号*/
 	@Excel(name = "产品编号", width = 15)
 	private String productNo;
-	/*产品批次号
-	@Excel(name = "产品批次号", width = 15)
-	private String batchNo;
-	/**产品有效期*/
-	/*@Excel(name = "产品有效期", width = 15, format = "yyyy-MM-dd")
-	@JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd")
-    @DateTimeFormat(pattern="yyyy-MM-dd")
-	private Date expireDate;*/
 	/**产品单价*/
 	@Excel(name = "产品单价", width = 15)
 	private java.math.BigDecimal inPrice;
