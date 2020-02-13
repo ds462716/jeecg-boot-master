@@ -89,7 +89,7 @@ public class PdProductController extends JeecgController<PdProduct, IPdProductSe
 	  * @return
 	  */
 	 @PostMapping(value = "/save")
-	 public Result<?> save(PdProduct pdProduct,@RequestParam MultipartFile[] licenceSiteUp0,
+	 public Result<?> save(@ModelAttribute PdProduct pdProduct,@RequestParam MultipartFile[] licenceSiteUp0,
 						   @RequestParam MultipartFile[] licenceSiteUp1,
 						   @RequestParam MultipartFile[] licenceSiteUp2,@RequestParam MultipartFile[] licenceSiteUp3,
 						   @RequestParam MultipartFile[] licenceSiteUp4,@RequestParam MultipartFile[] licenceSiteUp5,
@@ -160,7 +160,7 @@ public class PdProductController extends JeecgController<PdProduct, IPdProductSe
      * @return
      */
     @PostMapping(value = "/update")
-    public Result<?> update(PdProduct pdProduct,@RequestParam MultipartFile[] licenceSiteUp0,
+    public Result<?> update(@ModelAttribute PdProduct pdProduct,@RequestParam MultipartFile[] licenceSiteUp0,
                           @RequestParam MultipartFile[] licenceSiteUp1,
                           @RequestParam MultipartFile[] licenceSiteUp2,@RequestParam MultipartFile[] licenceSiteUp3,
                           @RequestParam MultipartFile[] licenceSiteUp4,@RequestParam MultipartFile[] licenceSiteUp5,

@@ -342,5 +342,5 @@ public class PdProduct  extends BaseEntity {
 	 * 产品关联的编码规则
 	 */
 	@TableField(exist = false)
-	private String pdProductRules;
+	private List<String> pdProductRules;
 }

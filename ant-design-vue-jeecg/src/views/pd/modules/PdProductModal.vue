@@ -226,7 +226,7 @@
         <a-row class="form-row" :gutter="{ xs: 8, sm: 16, md: 24, lg: 32 }">
           <a-col :lg="12">
             <a-form-item label="编码规则" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <j-select-encodingRule placeholder="请选择编码规则"  v-decorator="['pdProductRules']"/>
+              <j-select-encodingRule placeholder="请选择编码规则" :multiple="true" v-decorator="['pdProductRules']"/>
             </a-form-item>
           </a-col>
           <a-col :lg="12">
@@ -517,6 +517,20 @@
             text: record.categoryTwoName,
           });
           this.categoryTwoData = categoryTwoData;
+          //编码规则
+          var pdProductRules = record.pdProductRules;
+          if(pdProductRules  instanceof Array){
+            let pdProductRuleStr = "";
+            if(pdProductRules.length>0){
+              for(let i = 0;i<pdProductRules.length;i++){
+                pdProductRuleStr+=pdProductRules[i]+",";
+              }
+              if(pdProductRuleStr.charAt(pdProductRuleStr.length - 1) == ","){
+                pdProductRuleStr = pdProductRuleStr.substr(0, pdProductRuleStr.length - 1);
+              }
+            }
+            record.pdProductRules = pdProductRuleStr;
+          }
         }else{
           for(let index = 0;index<12;index++){
             if(!record["licenceSite"+index]){
@@ -531,7 +545,7 @@
         this.model = Object.assign({}, record);
         this.visible = true;
         this.$nextTick(() => {
-          this.form.setFieldsValue(pick(this.model,'number','name','py','wb','bname','bpy','bwb','zdy','spec','version','unitId','power','categoryOne','categoryTwo','groupId','venderId','isCharge','supplierId','purchasePrice','sellingPrice','registration','chargeCode','description','licenceName0','licenceNum0','licenceDate0','licenceSite0','licenceName1','licenceNum1','licenceDate1','licenceSite1','licenceName2','licenceNum2','licenceDate2','licenceSite2','licenceName3','licenceNum3','licenceDate3','licenceSite3','licenceName4','licenceNum4','licenceDate4','licenceSite4','licenceName5','licenceNum5','licenceDate5','licenceSite5','licenceName6','licenceNum6','licenceDate6','licenceSite6','licenceName7','licenceNum7','licenceDate7','licenceSite7','licenceName8','licenceNum8','licenceDate8','licenceSite8','licenceName9','licenceNum9','licenceDate9','licenceSite9','licenceName10','licenceNum10','licenceDate10','licenceSite10','licenceName11','licenceNum11','licenceDate11','licenceSite11'))
+          this.form.setFieldsValue(pick(this.model,'number','name','py','wb','bname','bpy','bwb','zdy','spec','version','unitId','power','pdProductRules','categoryOne','categoryTwo','groupId','venderId','isCharge','supplierId','purchasePrice','sellingPrice','registration','chargeCode','description','licenceName0','licenceNum0','licenceDate0','licenceSite0','licenceName1','licenceNum1','licenceDate1','licenceSite1','licenceName2','licenceNum2','licenceDate2','licenceSite2','licenceName3','licenceNum3','licenceDate3','licenceSite3','licenceName4','licenceNum4','licenceDate4','licenceSite4','licenceName5','licenceNum5','licenceDate5','licenceSite5','licenceName6','licenceNum6','licenceDate6','licenceSite6','licenceName7','licenceNum7','licenceDate7','licenceSite7','licenceName8','licenceNum8','licenceDate8','licenceSite8','licenceName9','licenceNum9','licenceDate9','licenceSite9','licenceName10','licenceNum10','licenceDate10','licenceSite10','licenceName11','licenceNum11','licenceDate11','licenceSite11'))
           //获取光标
           let input = this.$refs['inputFocus'];
           input.focus()

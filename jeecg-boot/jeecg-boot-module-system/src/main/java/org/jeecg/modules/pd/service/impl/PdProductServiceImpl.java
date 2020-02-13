@@ -56,7 +56,7 @@ public class PdProductServiceImpl extends ServiceImpl<PdProductMapper, PdProduct
         pdProductMapper.insert(pdProduct);
         //判断有没有编码规则
         if(pdProduct.getPdProductRules()!=null && !"".equals(pdProduct.getPdProductRules())){
-            List<String> rules = Arrays.asList(pdProduct.getPdProductRules().split(","));
+            List<String> rules = pdProduct.getPdProductRules();
             List<PdProductRule> pdProductRules = new ArrayList<>();
             for(String str :rules){
                 PdProductRule pdProductRule = new PdProductRule();
@@ -81,7 +81,7 @@ public class PdProductServiceImpl extends ServiceImpl<PdProductMapper, PdProduct
         pdProductMapper.updateById(pdProduct);
         //判断有没有编码规则
         if(pdProduct.getPdProductRules()!=null && !"".equals(pdProduct.getPdProductRules())){
-            List<String> rules = Arrays.asList(pdProduct.getPdProductRules().split(","));
+            List<String> rules = pdProduct.getPdProductRules();
             List<PdProductRule> pdProductRules = new ArrayList<>();
             for(String str :rules){
                 PdProductRule pdProductRule = new PdProductRule();

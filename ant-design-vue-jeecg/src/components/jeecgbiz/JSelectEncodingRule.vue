@@ -13,7 +13,7 @@
   import JSelectBizComponent from './JSelectBizComponent'
 
   export default {
-    name: 'JSelectMultiUser',
+    name: 'JSelectEncodingRule',
     components: { JSelectBizComponent },
     props: ['value'],
     data() {

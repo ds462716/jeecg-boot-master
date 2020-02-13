@@ -2,6 +2,118 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.jeecg.modules.pd.mapper.PdProductMapper">
 
+    <resultMap id="resultMap" type="org.jeecg.modules.pd.entity.PdProduct">
+        <id column="id" property="id" jdbcType="VARCHAR"></id>
+        <result column="number" property="number" jdbcType="VARCHAR"/>
+        <result column="name" property="name" jdbcType="VARCHAR"/>
+        <result column="py" property="py" jdbcType="VARCHAR"/>
+        <result column="wb" property="wb" jdbcType="VARCHAR"/>
+        <result column="bname" property="bname" jdbcType="VARCHAR"/>
+        <result column="bpy" property="bpy" jdbcType="VARCHAR"/>
+        <result column="bwb" property="bwb" jdbcType="VARCHAR"/>
+        <result column="zdy" property="zdy" jdbcType="VARCHAR"/>
+        <result column="spec" property="spec" jdbcType="VARCHAR"/>
+        <result column="version" property="version" jdbcType="VARCHAR"/>
+        <result column="unit_id" property="unitId" jdbcType="VARCHAR"/>
+        <result column="unitName" property="unitName" jdbcType="VARCHAR"/>
+        <result column="power" property="power" jdbcType="VARCHAR"/>
+        <result column="category_one" property="categoryOne" jdbcType="VARCHAR"/>
+        <result column="categoryOneName" property="categoryOneName" jdbcType="VARCHAR"/>
+        <result column="category_two" property="categoryTwo" jdbcType="VARCHAR"/>
+        <result column="categoryTwoName" property="categoryTwoName" jdbcType="VARCHAR"/>
+        <result column="group_id" property="groupId" jdbcType="VARCHAR"/>
+        <result column="groupName" property="groupName" jdbcType="VARCHAR"/>
+        <result column="vender_id" property="venderId" jdbcType="VARCHAR"/>
+        <result column="venderName" property="venderName" jdbcType="VARCHAR"/>
+        <result column="supplier_id" property="supplierId" jdbcType="VARCHAR"/>
+        <result column="supplierName" property="supplierName" jdbcType="VARCHAR"/>
+        <result column="purchase_price" property="purchasePrice" jdbcType="DECIMAL"/>
+        <result column="selling_price" property="sellingPrice" jdbcType="DECIMAL"/>
+        <result column="registration" property="registration" jdbcType="VARCHAR"/>
+        <result column="description" property="description" jdbcType="VARCHAR"/>
+        <result column="is_charge" property="isCharge" jdbcType="VARCHAR"/>
+        <result column="charge_code" property="chargeCode" jdbcType="VARCHAR"/>
+        <result column="licence_name0" property="licenceName0" jdbcType="VARCHAR"/>
+        <result column="licence_num0" property="licenceNum0" jdbcType="VARCHAR"/>
+        <result column="licence_date0" property="licenceDate0" jdbcType="DATE"/>
+        <result column="licence_site0" property="licenceSite0" jdbcType="VARCHAR"/>
+        <result column="licence_validity0" property="licenceValidity0" jdbcType="VARCHAR"/>
+        <result column="licence_name1" property="licenceName1" jdbcType="VARCHAR"/>
+        <result column="licence_num1" property="licenceNum1" jdbcType="VARCHAR"/>
+        <result column="licence_date1" property="licenceDate1" jdbcType="DATE"/>
+        <result column="licence_site1" property="licenceSite1" jdbcType="VARCHAR"/>
+        <result column="licence_validity1" property="licenceValidity1" jdbcType="VARCHAR"/>
+        <result column="licence_name2" property="licenceName2" jdbcType="VARCHAR"/>
+        <result column="licence_num2" property="licenceNum2" jdbcType="VARCHAR"/>
+        <result column="licence_date2" property="licenceDate2" jdbcType="DATE"/>
+        <result column="licence_site2" property="licenceSite2" jdbcType="VARCHAR"/>
+        <result column="licence_validity2" property="licenceValidity2" jdbcType="VARCHAR"/>
+        <result column="licence_name3" property="licenceName3" jdbcType="VARCHAR"/>
+        <result column="licence_num3" property="licenceNum3" jdbcType="VARCHAR"/>
+        <result column="licence_date3" property="licenceDate3" jdbcType="DATE"/>
+        <result column="licence_site3" property="licenceSite3" jdbcType="VARCHAR"/>
+        <result column="licence_validity3" property="licenceValidity3" jdbcType="VARCHAR"/>
+        <result column="licence_name4" property="licenceName4" jdbcType="VARCHAR"/>
+        <result column="licence_num4" property="licenceNum4" jdbcType="VARCHAR"/>
+        <result column="licence_date4" property="licenceDate4" jdbcType="DATE"/>
+        <result column="licence_site4" property="licenceSite4" jdbcType="VARCHAR"/>
+        <result column="licence_validity4" property="licenceValidity4" jdbcType="VARCHAR"/>
+        <result column="licence_name5" property="licenceName5" jdbcType="VARCHAR"/>
+        <result column="licence_num5" property="licenceNum5" jdbcType="VARCHAR"/>
+        <result column="licence_date5" property="licenceDate5" jdbcType="DATE"/>
+        <result column="licence_site5" property="licenceSite5" jdbcType="VARCHAR"/>
+        <result column="licence_validity5" property="licenceValidity5" jdbcType="VARCHAR"/>
+        <result column="licence_name6" property="licenceName6" jdbcType="VARCHAR"/>
+        <result column="licence_num6" property="licenceNum6" jdbcType="VARCHAR"/>
+        <result column="licence_date6" property="licenceDate6" jdbcType="DATE"/>
+        <result column="licence_site6" property="licenceSite6" jdbcType="VARCHAR"/>
+        <result column="licence_validity6" property="licenceValidity6" jdbcType="VARCHAR"/>
+        <result column="licence_name7" property="licenceName7" jdbcType="VARCHAR"/>
+        <result column="licence_num7" property="licenceNum7" jdbcType="VARCHAR"/>
+        <result column="licence_date7" property="licenceDate7" jdbcType="DATE"/>
+        <result column="licence_site7" property="licenceSite7" jdbcType="VARCHAR"/>
+        <result column="licence_validity7" property="licenceValidity7" jdbcType="VARCHAR"/>
+        <result column="licence_name8" property="licenceName8" jdbcType="VARCHAR"/>
+        <result column="licence_num8" property="licenceNum8" jdbcType="VARCHAR"/>
+        <result column="licence_date8" property="licenceDate8" jdbcType="DATE"/>
+        <result column="licence_site8" property="licenceSite8" jdbcType="VARCHAR"/>
+        <result column="licence_validity8" property="licenceValidity8" jdbcType="VARCHAR"/>
+        <result column="licence_name9" property="licenceName9" jdbcType="VARCHAR"/>
+        <result column="licence_num9" property="licenceNum9" jdbcType="VARCHAR"/>
+        <result column="licence_date9" property="licenceDate9" jdbcType="DATE"/>
+        <result column="licence_site9" property="licenceSite9" jdbcType="VARCHAR"/>
+        <result column="licence_validity9" property="licenceValidity9" jdbcType="VARCHAR"/>
+        <result column="licence_name10" property="licenceName10" jdbcType="VARCHAR"/>
+        <result column="licence_num10" property="licenceNum10" jdbcType="VARCHAR"/>
+        <result column="licence_date10" property="licenceDate10" jdbcType="DATE"/>
+        <result column="licence_site10" property="licenceSite10" jdbcType="VARCHAR"/>
+        <result column="licence_validity10" property="licenceValidity10" jdbcType="VARCHAR"/>
+        <result column="licence_name11" property="licenceName11" jdbcType="VARCHAR"/>
+        <result column="licence_num11" property="licenceNum11" jdbcType="VARCHAR"/>
+        <result column="licence_date11" property="licenceDate11" jdbcType="DATE"/>
+        <result column="licence_site11" property="licenceSite11" jdbcType="VARCHAR"/>
+        <result column="licence_validity11" property="licenceValidity11" jdbcType="VARCHAR"/>
+        <result column="create_by" property="createBy" jdbcType="VARCHAR"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="update_by" property="updateBy" jdbcType="VARCHAR"/>
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
+        <result column="remarks" property="remarks" jdbcType="VARCHAR"/>
+        <result column="validity_flag" property="validityFlag" jdbcType="VARCHAR"/>
+        <result column="del_flag" property="delFlag" jdbcType="VARCHAR"/>
+        <collection property="pdProductRules" ofType="String">
+            <!--<id column="id" property="id" jdbcType="VARCHAR"/>
+            <id column="product_id" property="productId" jdbcType="VARCHAR"/>-->
+            <id column="rule_id" property="ruleId" jdbcType="VARCHAR"/>
+            <!--<id column="create_by" property="createBy" jdbcType="VARCHAR"/>
+            <id column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+            <id column="update_by" property="updateBy" jdbcType="VARCHAR"/>
+            <id column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
+            <id column="sys_org_code" property="sysOrgCode" jdbcType="VARCHAR"/>
+            <id column="remarks" property="remarks" jdbcType="VARCHAR"/>
+            <id column="del_flag" property="delFlag" jdbcType="VARCHAR"/>-->
+        </collection>
+    </resultMap>
+
     <sql id="pdProductPartColumns">
 		a.id,
         a.number,
@@ -139,22 +251,34 @@
       left join pd_group g on a.group_id = g.id
     </sql>
 
+    <!-- 编码规则 -->
+    <sql id="pdRuleColumns">
+      h.id,
+      h.product_id,
+      h.rule_id
+    </sql>
+    <sql id="pdRuleJoins">
+      LEFT JOIN (select * from pd_product_rule where del_flag = '0') h ON a.id = h.product_id
+    </sql>
+
 
     <!-- 产品条件查询 -->
-    <select id="selectList" resultType="org.jeecg.modules.pd.entity.PdProduct">
+    <select id="selectList" resultMap="resultMap" parameterType="org.jeecg.modules.pd.entity.PdProduct">
         SELECT
         <include refid="pdProductPartColumns"/>,
         <include refid="pdUnitColumns"/>,
         <include refid="pdCategoryColumns"/>,
         <include refid="pdSupplierColumns"/>,
         <include refid="pdVenderColumns"/>,
-        <include refid="pdGroupColumns"/>
+        <include refid="pdGroupColumns"/>,
+        <include refid="pdRuleColumns"/>
         FROM pd_product a
         <include refid="pdUnitJoins"/>
         <include refid="pdCategoryJoins"/>
         <include refid="pdSupplierJoins"/>
         <include refid="pdVenderJoins"/>
         <include refid="pdGroupJoins"/>
+        <include refid="pdRuleJoins"/>
         <where>
             a.del_flag = #{DEL_FLAG_NORMAL}
         </where>
