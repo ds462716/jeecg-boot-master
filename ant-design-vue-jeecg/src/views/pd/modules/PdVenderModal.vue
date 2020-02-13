@@ -143,14 +143,17 @@
           for(let index = 0;index<12;index++){
             if(record["licenceSite"+index]){
               this.imgIsShow[index].show=true;
-            }else{
-              //包括新增时状态重置
-              this.imgIsShow[index].show=false;
             }
             if(record["licenceValidity"+index]){
               this.imgIsValidity[index]="validity"+record["licenceValidity"+index];
-            }else{
-              //包括新增时状态重置
+            }
+          }
+        }else{
+          for(let index = 0;index<12;index++){
+            if(!record["licenceSite"+index]){
+              this.imgIsShow[index].show=false;
+            }
+            if(!record["licenceValidity"+index]){
               this.imgIsValidity[index]="validity0";
             }
           }

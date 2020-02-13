@@ -13,6 +13,7 @@ import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.pd.entity.PdProduct;
+import org.jeecg.modules.pd.entity.PdProductRule;
 import org.jeecg.modules.pd.service.IPdProductService;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -149,7 +150,7 @@ public class PdProductController extends JeecgController<PdProduct, IPdProductSe
 			 String filePath = FileUploadUtil.upload(licenceSiteUp11);
 			 pdProduct.setLicenceSite11(filePath);
 		 }
-		 pdProductService.save(pdProduct);
+		 pdProductService.saveProduct(pdProduct);
 		 return Result.ok("添加成功！");
 	 }
 
@@ -292,7 +293,7 @@ public class PdProductController extends JeecgController<PdProduct, IPdProductSe
                 pdProduct.setLicenceSite11(filePath);
             }
         }
-        pdProductService.updateById(pdProduct);
+        pdProductService.updateProduct(pdProduct);
         return Result.ok("编辑成功！");
     }
 	

@@ -159,10 +159,10 @@
             a.del_flag = #{DEL_FLAG_NORMAL}
         </where>
         <if test="name != null and name != ''">
-            AND a.name LIKE concat('%',#{name},'%')
+            AND (a.name LIKE concat('%',#{name},'%')
             or a.py LIKE concat('%',#{name},'%')
             or a.wb LIKE concat('%',#{name},'%')
-            or a.zdy LIKE concat('%',#{name},'%')
+            or a.zdy LIKE concat('%',#{name},'%'))
         </if>
     </select>
 

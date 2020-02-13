@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.util.Date;
 import java.math.BigDecimal;
+import java.util.List;
+
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -63,6 +65,9 @@ public class PdProduct  extends BaseEntity {
     private java.lang.String unitId;
 	@TableField(exist = false)
 	private java.lang.String unitName;
+	/**产品权限*/
+	@Excel(name = "产品权限", width = 15)
+	private java.lang.String power;
 	/**一级分类*/
 	@Excel(name = "一级分类", width = 15)
     private java.lang.String categoryOne;
@@ -332,4 +337,10 @@ public class PdProduct  extends BaseEntity {
 	/**产品收费代码*/
 	@Excel(name = "产品收费代码", width = 15)
     private java.lang.String chargeCode;
+
+	/**
+	 * 产品关联的编码规则
+	 */
+	@TableField(exist = false)
+	private String pdProductRules;
 }

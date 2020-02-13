@@ -96,15 +96,13 @@
             a.del_flag = #{DEL_FLAG_NORMAL} and b.del_flag = #{DEL_FLAG_NORMAL}
         </where>
         <if test="name != null and name != ''">
-            AND a.name LIKE concat('%',#{name},'%')
+            AND (a.name LIKE concat('%',#{name},'%')
             or a.py LIKE concat('%',#{name},'%')
             or a.wb LIKE concat('%',#{name},'%')
             or a.zdy LIKE concat('%',#{name},'%')
+            or a.code_query LIKE concat('%',#{name},'%')
+            )
         </if>
-        <if test="codeQuery != null and codeQuery != ''">
-            AND a.code_query LIKE concat('%',#{codeQuery},'%')
-        </if>
-
         ORDER BY a.update_time desc,b.code_order
     </select>
 </mapper>

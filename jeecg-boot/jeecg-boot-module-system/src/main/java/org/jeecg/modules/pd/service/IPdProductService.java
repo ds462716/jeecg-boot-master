@@ -16,4 +16,8 @@ public interface IPdProductService extends IService<PdProduct> {
     Page<PdProductPage> chooseProductList(Page<PdProductPage> pageList, PdProduct pdProduct);
 
     Page<PdProduct> selectList(Page<PdProduct> pageList, PdProduct pdProduct);
+
+    void updateProduct(PdProduct pdProduct);
+
+    void saveProduct(PdProduct pdProduct);
 }
