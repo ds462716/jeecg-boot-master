@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.jeecg.common.constant.PdConstant;
+import org.jeecg.modules.pd.util.UUIDUtil;
 import org.jeecg.modules.system.entity.SysDepart;
 import org.jeecg.modules.system.service.ISysDepartService;
 import org.jeecgframework.poi.excel.ExcelImportUtil;
@@ -96,7 +97,8 @@ public class PdPurchaseOrderController {
 	 public Result<PdPurchaseOrderPage> purchaseInfo() {
 		 Result<PdPurchaseOrderPage> result = new Result<>();
 		 PdPurchaseOrderPage pdPurchaseOrder=new PdPurchaseOrderPage();
-		 pdPurchaseOrder.setOrderNo("SG"+System.currentTimeMillis());
+		 String orderNo=UUIDUtil.generateOrderNoByType(PdConstant.ORDER_NO_FIRST_LETTER_SG);
+		 pdPurchaseOrder.setOrderNo(orderNo);
 		 pdPurchaseOrder.setOrderDate(new Date());
 		 pdPurchaseOrder.setAmountCount(0.00);
 		 pdPurchaseOrder.setAmountMoney(BigDecimal.ZERO);

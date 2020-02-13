@@ -14,6 +14,7 @@ import org.jeecg.modules.pd.entity.PdPurchaseDetail;
 import org.jeecg.modules.pd.entity.PdPurchaseOrder;
 import org.jeecg.modules.pd.service.IPdApplyDetailService;
 import org.jeecg.modules.pd.service.IPdApplyOrderService;
+import org.jeecg.modules.pd.util.UUIDUtil;
 import org.jeecg.modules.pd.vo.PdApplyOrderPage;
 import org.jeecg.modules.system.entity.SysDepart;
 import org.jeecg.modules.system.service.ISysDepartService;
@@ -101,7 +102,8 @@ public class PdApplyOrderController {
 	 public Result<PdApplyOrderPage> purchaseInfo() {
 		 Result<PdApplyOrderPage> result = new Result<>();
 		 PdApplyOrderPage pdApplyOrder=new PdApplyOrderPage();
-		 pdApplyOrder.setApplyNo("SL"+System.currentTimeMillis());
+		 String applyNo= UUIDUtil.generateOrderNoByType(PdConstant.ORDER_NO_FIRST_LETTER_SL);
+		 pdApplyOrder.setApplyNo(applyNo);
 		 pdApplyOrder.setApplyDate(new Date());
 		 pdApplyOrder.setApplyNum(0.00);
 		 LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();

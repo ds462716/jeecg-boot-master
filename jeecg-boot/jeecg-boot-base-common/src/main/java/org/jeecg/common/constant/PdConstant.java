@@ -49,4 +49,17 @@ public interface PdConstant {
 	/**货区货位数据字典  add by jiangxz 20200213*/
 	public static final String GOODS_ALLCATION_AREA_TYPE_1 = "1"; //货区
 	public static final String GOODS_ALLCATION_AREA_TYPE_2 = "2"; //货位
+
+	/***编码规则*/
+	//各种类型单号首字母
+	public final static String ORDER_NO_FIRST_LETTER_RK = "RK";//入库单
+	public final static String ORDER_NO_FIRST_LETTER_CK = "CK";//出库单
+	public final static String ORDER_NO_FIRST_LETTER_TH = "TH";//退货单
+	public final static String ORDER_NO_FIRST_LETTER_YL = "YL";//用量单
+	public final static String ORDER_NO_FIRST_LETTER_TYL = "TYL";//用量退回单
+	public final static String ORDER_NO_FIRST_LETTER_DB = "DB";//调拨单
+	public final static String ORDER_NO_FIRST_LETTER_SL = "SL";//申领单
+	public final static String ORDER_NO_FIRST_LETTER_SG = "SG";//申购单
+	public final static String ORDER_NO_FIRST_LETTER_XC = "XC";//巡查单
+	public final static String ORDER_NO_FIRST_LETTER_PD = "PD";//盘点单
 }
