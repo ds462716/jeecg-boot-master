@@ -20,9 +20,9 @@ import org.springframework.format.annotation.DateTimeFormat;
 @TableName("pd_purchase_order")
 public class PdPurchaseOrder extends BaseEntity {
     private static final long serialVersionUID = 1L;
-    
-	/**主键*/
-	@TableId(type = IdType.ID_WORKER_STR)
+
+    /**主键*/
+    @TableId(type = IdType.ID_WORKER_STR)
     private String id;
 	/**创建人*/
     @Excel(name = "创建人", width = 15)
@@ -81,8 +81,6 @@ public class PdPurchaseOrder extends BaseEntity {
 	/**备注信息*/
     @Excel(name = "备注信息", width = 15)
     private String remarks;
-	/**删除状态*/
-    private String delFlag;
 	/**提交状态*/
     @Excel(name = "提交状态", width = 15)
     private String submitStart;

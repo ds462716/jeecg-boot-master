@@ -1,6 +1,7 @@
 package org.jeecg.modules.pd.service.impl;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import org.jeecg.common.constant.PdConstant;
 import org.jeecg.modules.pd.entity.PdPurchaseOrder;
 import org.jeecg.modules.pd.entity.PdPurchaseDetail;
 import org.jeecg.modules.pd.mapper.PdPurchaseDetailMapper;
@@ -78,21 +79,4 @@ public class PdPurchaseOrderServiceImpl extends ServiceImpl<PdPurchaseOrderMappe
 		}
 	}
 
-	@Override
-	@Transactional
-	public void delMain(String id) {
-		pdPurchaseDetailMapper.deleteByMainId(id);
-		 pdPurchaseOrderMapper.deleteByMainId(id);
-
-	}
-
-	@Override
-	@Transactional
-	public void delBatchMain(Collection<? extends Serializable> idList) {
-		for(Serializable id:idList) {
-			pdPurchaseDetailMapper.deleteByMainId(id.toString());
-			pdPurchaseOrderMapper.deleteByMainId(id.toString());
-		}
-	}
-	
 }

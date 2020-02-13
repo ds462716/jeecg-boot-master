@@ -39,15 +39,5 @@ public interface IPdApplyOrderService extends IService<PdApplyOrder> {
 	 * 
 	 */
 	public void updateMain(PdApplyOrder pdApplyOrder, List<PdApplyDetail> pdApplyDetailList);
-	
-	/**
-	 * 删除一对多
-	 */
-	public void delMain(String id);
-	
-	/**
-	 * 批量删除一对多
-	 */
-	public void delBatchMain(Collection<? extends Serializable> idList);
-	
+
 }

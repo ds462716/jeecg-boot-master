@@ -41,15 +41,4 @@ public interface IPdPurchaseOrderService extends IService<PdPurchaseOrder> {
 	 * 
 	 */
 	public void updateMain(PdPurchaseOrder pdPurchaseOrder, List<PdPurchaseDetail> pdPurchaseDetailList);
-	
-	/**
-	 * 删除一对多
-	 */
-	public void delMain(String id);
-	
-	/**
-	 * 批量删除一对多
-	 */
-	public void delBatchMain(Collection<? extends Serializable> idList);
-	
 }
