@@ -98,7 +98,7 @@ public class PdPurchaseOrderController {
 		 PdPurchaseOrderPage pdPurchaseOrder=new PdPurchaseOrderPage();
 		 pdPurchaseOrder.setOrderNo("SG"+System.currentTimeMillis());
 		 pdPurchaseOrder.setOrderDate(new Date());
-		 pdPurchaseOrder.setAmountCount(0);
+		 pdPurchaseOrder.setAmountCount(0.00);
 		 pdPurchaseOrder.setAmountMoney(BigDecimal.ZERO);
 		 LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
 		 SysDepart sysDepart=sysDepartService.getDepartByOrgCode(sysUser.getOrgCode());
