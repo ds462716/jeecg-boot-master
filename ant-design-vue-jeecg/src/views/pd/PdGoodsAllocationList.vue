@@ -114,7 +114,7 @@
             <a-input disabled v-decorator="[ 'code', validatorRules.code]" placeholder="请输入编号"></a-input>
           </a-form-item>
           <a-form-item label="下级存放单位数量" :labelCol="labelCol" :wrapperCol="wrapperCol" v-show="showSubNum">
-            <a-input-number v-decorator="[ 'subNum', validatorRules.subNum]" placeholder="请输入下级存放单位数量" :min="0" :defaultValue="0" style="width: 100%"/>
+            <a-input-number v-decorator="[ 'subNum', validatorRules.subNum]" placeholder="请输入下级存放单位数量" :min="0" style="width: 100%"/>
           </a-form-item>
           <a-form-item label="地址" :labelCol="labelCol" :wrapperCol="wrapperCol">
             <a-input v-decorator="[ 'address', validatorRules.address]" placeholder="请输入地址"></a-input>
@@ -586,7 +586,7 @@
           this.showGoodsCard = true;//显示货区货位新增页面
           this.showEdit = false; //不显示修改按钮
           this.showSubmit = true;//显示保存按钮
-          this.showSubNum = fasle;
+          this.showSubNum = false;
           this.form.setFieldsValue({areaType:"1"});
           this.form.setFieldsValue({state:"1"}); //默认启用
           this.title2 = "货区";

@@ -18,7 +18,7 @@
           label="机构名称"
           :hidden="false"
           hasFeedback >
-          <a-input id="departName" placeholder="请输入机构/部门名称" v-decorator="['departName', validatorRules.departName ]"/>
+          <a-input id="departName" placeholder="请输入机构/部门名称" @change="pinyinTran" v-decorator="['departName', validatorRules.departName ]"/>
         </a-form-item>
         <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" :hidden="seen" label="上级部门" hasFeedback>
         <a-tree-select
@@ -46,9 +46,9 @@
               <a-radio value="2">
                 部门
               </a-radio>
-              <a-radio value="3">
-                岗位
-              </a-radio>
+              <!--<a-radio value="3">-->
+                <!--岗位-->
+              <!--</a-radio>-->
             </a-radio-group>
           </template>
         </a-form-item>
@@ -76,6 +76,15 @@
           label="排序">
           <a-input-number v-decorator="[ 'departOrder',{'initialValue':0}]" />
         </a-form-item>
+        <a-form-item label="拼音码" :labelCol="labelCol" :wrapperCol="wrapperCol">
+          <a-input v-decorator="[ 'py', validatorRules.py]" placeholder="请输入拼音码"></a-input>
+        </a-form-item>
+        <a-form-item label="五笔码" :labelCol="labelCol" :wrapperCol="wrapperCol">
+          <a-input v-decorator="[ 'wb', validatorRules.wb]" placeholder="请输入五笔码"></a-input>
+        </a-form-item>
+        <a-form-item label="自定义码" :labelCol="labelCol" :wrapperCol="wrapperCol">
+          <a-input v-decorator="[ 'zdy', validatorRules.zdy]" placeholder="请输入自定义码"></a-input>
+        </a-form-item>
         <a-form-item
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
@@ -93,6 +102,7 @@
   import { queryIdTree } from '@/api/api'
   import pick from 'lodash.pick'
   import ATextarea from 'ant-design-vue/es/input/TextArea'
+  import { makeWb } from '@/utils/wubi'
   export default {
     name: "SysDepartModal",
     components: { ATextarea },
@@ -124,7 +134,10 @@
         validatorRules:{
         departName:{rules: [{ required: true, message: '请输入机构/部门名称!' }]},
         orgCode:{rules: [{ required: true, message: '请输入机构编码!' }]},
-         mobile:{rules: [{validator:this.validateMobile}]}
+         mobile:{rules: [{validator:this.validateMobile}]},
+          py: {rules: []},
+          wb: {rules: []},
+          zdy: {rules: []},
         },
         url: {
           add: "/sys/sysDepart/add",
@@ -170,7 +183,7 @@
             this.model.orgCategory = '2';
           }
           this.$nextTick(() => {
-            this.form.setFieldsValue(pick(this.model,'orgCategory','departName','departNameEn','departNameAbbr','departOrder','description','orgType','orgCode','mobile','fax','address','memo','status','delFlag'))
+            this.form.setFieldsValue(pick(this.model,'orgCategory','departName','departNameEn','departNameAbbr','departOrder','description','orgType','orgCode','mobile','fax','address','memo','status','delFlag','py','wb','zdy'))
           });
       },
       close () {
@@ -205,6 +218,15 @@
       },
       handleCancel () {
         this.close()
+      },
+      pinyinTran(e){
+        let val = e.target.value;
+        let pinyin = require('js-pinyin');
+        pinyin.setOptions({checkPolyphone: false, charCase: 0});
+        let py = pinyin.getCamelChars(val);//获取简码
+        this.form.setFieldsValue({py:py});
+        let wb = makeWb(val);
+        this.form.setFieldsValue({wb:wb});//获取五笔简码
       },
       validateMobile(rule,value,callback){
         if (!value || new RegExp(/^1([38][0-9]|4[579]|5[0-3,5-9]|6[6]|7[0135678]|9[89])\d{8}$/).test(value)){

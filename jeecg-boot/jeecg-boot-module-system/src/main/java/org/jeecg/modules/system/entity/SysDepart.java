@@ -88,6 +88,15 @@ public class SysDepart implements Serializable {
 	@JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd HH:mm:ss")
     @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
 	private Date updateTime;
+	/**拼音码*/
+	@Excel(name = "拼音码", width = 15)
+	private String py;
+	/**五笔码*/
+	@Excel(name = "五笔码", width = 15)
+	private String wb;
+	/**自定义码*/
+	@Excel(name = "自定义码", width = 15)
+	private String zdy;
 	
 	/**
 	 * 重写equals方法

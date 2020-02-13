@@ -5,7 +5,7 @@
 
         <!-- 按钮操作区域 -->
         <a-row style="margin-left: 14px">
-          <a-button @click="handleAdd(2)" type="primary">添加子部门</a-button>
+          <a-button @click="handleAdd(2)" type="primary" v-show="showZBMBtn">添加子部门</a-button>
           <a-button @click="handleAdd(1)" type="primary">添加一级部门</a-button>
           <a-button type="primary" icon="download" @click="handleExportXls('部门信息')">导出</a-button>
           <a-upload name="file" :showUploadList="false" :multiple="false" :headers="tokenHeader" :action="importExcelUrl" @change="handleImportExcel">
@@ -78,7 +78,7 @@
             :labelCol="labelCol"
             :wrapperCol="wrapperCol"
             label="机构名称">
-            <a-input placeholder="请输入机构/部门名称" v-decorator="['departName', validatorRules.departName ]"/>
+            <a-input placeholder="请输入机构/部门名称" @change="pinyinTran" v-decorator="['departName', validatorRules.departName ]"/>
           </a-form-item>
           <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="上级部门">
             <a-tree-select
@@ -112,9 +112,9 @@
                 <a-radio value="2">
                   部门
                 </a-radio>
-                <a-radio value="3">
-                  岗位
-                </a-radio>
+                <!--<a-radio value="3">-->
+                  <!--岗位-->
+                <!--</a-radio>-->
               </a-radio-group>
             </template>
           </a-form-item>
@@ -135,6 +135,15 @@
             :wrapperCol="wrapperCol"
             label="地址">
             <a-input placeholder="请输入地址" v-decorator="['address', {'initialValue':''}]"/>
+          </a-form-item>
+          <a-form-item label="拼音码" :labelCol="labelCol" :wrapperCol="wrapperCol">
+            <a-input v-decorator="[ 'py', validatorRules.py]" placeholder="请输入拼音码"></a-input>
+          </a-form-item>
+          <a-form-item label="五笔码" :labelCol="labelCol" :wrapperCol="wrapperCol">
+            <a-input v-decorator="[ 'wb', validatorRules.wb]" placeholder="请输入五笔码"></a-input>
+          </a-form-item>
+          <a-form-item label="自定义码" :labelCol="labelCol" :wrapperCol="wrapperCol">
+            <a-input v-decorator="[ 'zdy', validatorRules.zdy]" placeholder="请输入自定义码"></a-input>
           </a-form-item>
           <a-form-item
             :labelCol="labelCol"
@@ -158,6 +167,7 @@
   import {queryDepartTreeList, searchByKeywords, deleteByDepartId} from '@/api/api'
   import {httpAction, deleteAction} from '@/api/manage'
   import {JeecgListMixin} from '@/mixins/JeecgListMixin'
+  import { makeWb } from '@/utils/wubi'
   // 表头
   const columns = [
     {
@@ -205,6 +215,7 @@
     },
     data() {
       return {
+        showZBMBtn:false,
         iExpandedKeys: [],
         loading: false,
         autoExpandParent: true,
@@ -246,7 +257,10 @@
           departName: {rules: [{required: true, message: '请输入机构/部门名称!'}]},
           orgCode: {rules: [{required: true, message: '请输入机构编码!'}]},
           orgCategory: {rules: [{required: true, message: '请输入机构类型!'}]},
-          mobile: {rules: [{validator: this.validateMobile}]}
+          mobile: {rules: [{validator: this.validateMobile}]},
+          py: {rules: []},
+          wb: {rules: []},
+          zdy: {rules: []},
         },
         url: {
           delete: '/sys/sysDepart/delete',
@@ -403,7 +417,11 @@
         this.selectedKeys = [record.key]
         this.model.parentId = record.parentId
         this.setValuesToForm(record)
-
+        if(record.orgType == "1"){
+          this.showZBMBtn = true;
+        }else{
+          this.showZBMBtn = false;
+        }
 
       },
       // 触发onSelect事件时,为部门树右侧的form表单赋值
@@ -414,7 +432,7 @@
           this.orgCategoryDisabled = false;
         }
         this.form.getFieldDecorator('fax', {initialValue: ''})
-        this.form.setFieldsValue(pick(record, 'departName','orgCategory', 'orgCode', 'departOrder', 'mobile', 'fax', 'address', 'memo'))
+        this.form.setFieldsValue(pick(record, 'departName','orgCategory', 'orgCode', 'departOrder', 'mobile', 'fax', 'address', 'memo','py','wb','zdy'))
       },
       getCurrSelectedTitle() {
         return !this.currSelected.title ? '' : this.currSelected.title
@@ -547,9 +565,18 @@
             this.getAllKeys(node.children[a])
           }
         }
-      }
+      },
       // <!---- author:os_chengtgen -- date:20190827 --  for:切换父子勾选模式 =======------>
-      
+
+      pinyinTran(e){
+        let val = e.target.value;
+        let pinyin = require('js-pinyin');
+        pinyin.setOptions({checkPolyphone: false, charCase: 0});
+        let py = pinyin.getCamelChars(val);//获取简码
+        this.form.setFieldsValue({py:py});
+        let wb = makeWb(val);
+        this.form.setFieldsValue({wb:wb});//获取五笔简码
+      },
     },
     created() {
       this.currFlowId = this.$route.params.id
