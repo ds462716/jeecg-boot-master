@@ -73,21 +73,4 @@ public class PdApplyOrderServiceImpl extends ServiceImpl<PdApplyOrderMapper, PdA
 			}
 		}
 	}
-
-	@Override
-	@Transactional
-	public void delMain(String id) {
-		pdApplyDetailMapper.deleteByMainId(id);
-		pdApplyOrderMapper.deleteByMainId(id);
-	}
-
-	@Override
-	@Transactional
-	public void delBatchMain(Collection<? extends Serializable> idList) {
-		for(Serializable id:idList) {
-			pdApplyDetailMapper.deleteByMainId(id.toString());
-			pdApplyOrderMapper.deleteByMainId(id.toString());
-		}
-	}
-	
 }

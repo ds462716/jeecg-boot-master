@@ -16,5 +16,4 @@ public interface PdPurchaseOrderMapper extends BaseMapper<PdPurchaseOrder> {
 
     List<PdPurchaseOrder> selectList(PdPurchaseOrder pdPurchaseOrder);
 
-    public boolean deleteByMainId(@Param("id") String id);
-}
+ }

@@ -61,6 +61,7 @@
                 <th>申购数量</th>
                 <th>产品单价</th>
                 <th>申购金额</th>
+                <th>供应商</th>
                 <th>生产厂家</th>
               </tr>
               <tr  v-for="(item, index) in pdPurchaseDetailTable.dataSource">
@@ -78,6 +79,7 @@
                 </td>
                 <td>{{item.inPrice}}</td>
                 <td>{{item.amountMoney}}</td>
+                <td>{{item.supplierName}}</td>
                 <td>{{item.venderName}}</td>
               </tr>
             </table>
@@ -261,7 +263,9 @@
             stockNum: formData[i].stockNum,
             unitName:formData[i].unitName,
             amountMoney:formData[i].sellingPrice * 1,
-            venderName:formData[i].venderName
+            venderName:formData[i].venderName,
+            supplierId:formData[i].supplierId,
+            supplierName:formData[i].supplierName
           })
           count+=1;//计算总数量
           amountMoney=amountMoney+Number(formData[i].sellingPrice);//计算申购总金额

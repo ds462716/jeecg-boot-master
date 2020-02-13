@@ -163,7 +163,7 @@ public class PdApplyOrderController {
 	 */
 	@DeleteMapping(value = "/delete")
 	public Result<?> delete(@RequestParam(name="id",required=true) String id) {
-		pdApplyOrderService.delMain(id);
+		pdApplyOrderService.removeById(id);
 		return Result.ok("删除成功!");
 	}
 	
@@ -175,7 +175,7 @@ public class PdApplyOrderController {
 	 */
 	@DeleteMapping(value = "/deleteBatch")
 	public Result<?> deleteBatch(@RequestParam(name="ids",required=true) String ids) {
-		this.pdApplyOrderService.delBatchMain(Arrays.asList(ids.split(",")));
+		this.pdApplyOrderService.removeByIds(Arrays.asList(ids.split(",")));
 		return Result.ok("批量删除成功！");
 	}
 	

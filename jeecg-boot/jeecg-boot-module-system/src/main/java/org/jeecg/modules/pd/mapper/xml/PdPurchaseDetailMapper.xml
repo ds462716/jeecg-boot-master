@@ -16,6 +16,7 @@
 		a.update_by,
 		a.update_time,
 		a.sys_org_code,
+		a.supplier_id,
 		a.remarks,
 		a.del_flag
 	</sql>
@@ -47,7 +48,7 @@
       d.name AS "supplierName"
     </sql>
 	<sql id="pdSupplierJoins">
-      left join pd_supplier d on c.supplier_id = d.id
+      left join pd_supplier d on a.supplier_id = d.id
     </sql>
 
 	<!-- 生产厂家 -->

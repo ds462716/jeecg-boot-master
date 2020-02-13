@@ -82,6 +82,9 @@ public class PdPurchaseDetail extends BaseEntity {
 	@TableField(exist = false)
 	@Excel(name = "单位名称", width = 15)
 	private String unitName;//单位名称
+	/**供应商id*/
+	@Excel(name = "供应商ID", width = 15)
+	private String supplierId;
 	@TableField(exist = false)
 	@Excel(name = "供应商名称", width = 15)
 	private String supplierName;//供应商名称

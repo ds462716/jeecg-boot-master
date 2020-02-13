@@ -57,10 +57,4 @@
             </if>
         </where>
     </select>
-
-
-    <!--删除状态修改-->
-    <update id="deleteByMainId" parameterType="java.lang.String">
-		UPDATE pd_apply_order SET del_flag='1'  WHERE id = #{id}
-       </update>
 </mapper>

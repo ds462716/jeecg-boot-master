@@ -15,6 +15,4 @@ import java.util.List;
 public interface PdApplyOrderMapper extends BaseMapper<PdApplyOrder> {
 
     List<PdApplyOrder> selectList(PdApplyOrder pdApplyOrder);
-
-    public boolean deleteByMainId(@Param("id") String id);
 }

@@ -161,7 +161,7 @@ public class PdPurchaseOrderController {
 	 */
 	@DeleteMapping(value = "/delete")
 	public Result<?> delete(@RequestParam(name="id",required=true) String id) {
-		pdPurchaseOrderService.delMain(id);
+		pdPurchaseOrderService.removeById(id);
 		return Result.ok("删除成功!");
 	}
 	
@@ -173,7 +173,7 @@ public class PdPurchaseOrderController {
 	 */
 	@DeleteMapping(value = "/deleteBatch")
 	public Result<?> deleteBatch(@RequestParam(name="ids",required=true) String ids) {
-		this.pdPurchaseOrderService.delBatchMain(Arrays.asList(ids.split(",")));
+		this.pdPurchaseOrderService.removeByIds(Arrays.asList(ids.split(",")));
 		return Result.ok("批量删除成功！");
 	}
 	

@@ -57,6 +57,7 @@
                 <th>申购数量</th>
                 <th>产品单价</th>
                 <th>申购金额</th>
+                <th>供应商</th>
                 <th>生产厂家</th>
               </tr>
               <tr v-for="(item, index) in pdPurchaseDetailTable.dataSource">
@@ -73,6 +74,7 @@
                 </td>
                 <td>{{item.inPrice}}</td>
                 <td>{{item.amountMoney}}</td>
+                <td>{{item.supplierName}}</td>
                 <td>{{item.venderName}}</td>
               </tr>
             </table>

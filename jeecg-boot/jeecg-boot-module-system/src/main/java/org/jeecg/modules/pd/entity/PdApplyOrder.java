@@ -92,8 +92,6 @@ public class PdApplyOrder extends BaseEntity {
 	/**是否在退货中*/
     @Excel(name = "是否在退货中", width = 15)
     private String isInRefund;
-	/**删除标识*/
-    private String delFlag;
 	/**是否完结，1是，0否*/
     @Excel(name = "是否完结", width = 15)
     private String isEnd;
