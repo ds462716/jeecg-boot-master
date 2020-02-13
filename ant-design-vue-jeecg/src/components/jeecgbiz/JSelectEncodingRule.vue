@@ -32,6 +32,7 @@
           displayKey: 'name',
           returnKeys: ['id', 'id'],
           queryParamText: '编码名称',
+          queryParamCode:'name',
         }
       }
     },
