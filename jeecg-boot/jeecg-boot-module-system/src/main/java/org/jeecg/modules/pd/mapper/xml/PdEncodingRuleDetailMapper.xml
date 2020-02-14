@@ -39,7 +39,7 @@
 	</update>
 
 
-	<select id="selectList" resultType="PdEncodingRuleDetail">
+	<select id="selectList" resultType="org.jeecg.modules.pd.entity.PdEncodingRuleDetail">
 		SELECT
 		<include refid="pdEncodingRuleDetailColumns"/>,
 		<include refid="pdEncodingIdentifierColumns"/>
