@@ -734,14 +734,12 @@
       },
       //扫码自动截取产品编号
       getPrdNumber(e){
-        /*const that = this;
+        const that = this;
         let val = e.target.value;
         if(val.substring(0,2)!='93'){
           let number = getPrdNumber(val,that);
           this.form.setFieldsValue({number:number});
-        }*/
-        const that = this;
-        scanCode("1111111","22222222",that);
+        }
       }
     }
   }
