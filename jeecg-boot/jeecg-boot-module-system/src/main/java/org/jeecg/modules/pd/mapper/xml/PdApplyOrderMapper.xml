@@ -52,6 +52,15 @@
             <if test="id != null and id != ''">
                 AND a.id = #{id}
             </if>
+            <if test="applyNo != null and applyNo != ''">
+                AND a.apply_no = #{applyNo}
+            </if>
+            <if test="deptName != null and deptName != ''">
+                AND a.dept_name = #{deptName}
+            </if>
+            <if test="applyStatus != null and applyStatus != ''">
+                AND a.apply_status = #{applyStatus}
+            </if>
             <if test="submitStart != null and submitStart != ''">
                 AND a.submit_start = #{submitStart}
             </if>

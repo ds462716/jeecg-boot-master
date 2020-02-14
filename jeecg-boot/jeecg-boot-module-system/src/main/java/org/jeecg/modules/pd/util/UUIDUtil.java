@@ -39,7 +39,7 @@ public class UUIDUtil {
 
 	//获取时间精确到毫秒
 	public static String getCurrentTimeNum(){
-		return DateUtils.getDate("MMddHHmmss");
+		return DateUtils.getDate("yyMMddHHmmss");
 	}
 
 
