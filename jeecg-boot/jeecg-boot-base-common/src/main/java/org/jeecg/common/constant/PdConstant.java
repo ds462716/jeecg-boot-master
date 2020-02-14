@@ -50,6 +50,11 @@ public interface PdConstant {
 	public static final String GOODS_ALLCATION_AREA_TYPE_1 = "1"; //货区
 	public static final String GOODS_ALLCATION_AREA_TYPE_2 = "2"; //货位
 
+	/**入库类型 add by jiangxz 20200214*/
+	public static final String IN_TYPE_1 = "1";//正常入库
+	public static final String IN_TYPE_2 = "2";//退货入库
+	public static final String IN_TYPE_3 = "3";//调拨入库
+
 	/***编码规则*/
 	//各种类型单号首字母
 	public final static String ORDER_NO_FIRST_LETTER_RK = "RK";//入库单
