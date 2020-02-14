@@ -2,6 +2,25 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.jeecg.modules.pd.mapper.PdProductRuleMapper">
 
+
+	<sql id="pdProductRuleColumns">
+		a.id AS ,
+		a.product_id ,
+		a.rule_id
+	</sql>
+	<!-- 编码规则  -->
+	<sql id="pdEncodingRuleColumns">
+		b.`name` as "ruleName",
+		b.total_digit as "totalDigit"
+	</sql>
+
+	<sql id="pdProductRuleJoins">
+	</sql>
+
+	<sql id="pdEncodingRuleJoins">
+		  LEFT JOIN pd_encoding_rule b on a.rule_id = b.id
+	</sql>
+
     <!--  修改修改 -->
     <update id="removeByProductId">
 		UPDATE pd_product_rule
@@ -11,4 +30,28 @@
 		update_by =#{updateBy}
 		  where product_id = #{productId}
 	</update>
+
+	<select id="getByRuleId" resultType="org.jeecg.modules.pd.entity.PdProductRule">
+		SELECT
+		<include refid="pdProductRuleColumns"/>
+		FROM pd_product_rule a
+		<include refid="pdProductRuleJoins"/>
+		WHERE a.id = #{id}
+	</select>
+
+	<!-- 根据编号查询产品信息 -->
+	<select id="selectList" resultType="org.jeecg.modules.pd.entity.PdProductRule">
+		SELECT
+		<include refid="pdProductRuleColumns"/>,
+		<include refid="pdEncodingRuleColumns"/>
+		FROM pd_product_rule a
+		<include refid="pdProductRuleJoins"/>
+		<include refid="pdEncodingRuleJoins"/>
+		<where>
+			1 = 1
+			<if test="productId != null and productId != ''">
+				AND a.product_id = #{productId}
+			</if>
+		</where>
+	</select>
 </mapper>

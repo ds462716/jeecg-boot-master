@@ -71,4 +71,9 @@ public class PdEncodingRuleDetail extends BaseEntity  {
 	 */
 	@TableField(exist = false)
 	private PdEncodingIdentifier pdEncodingIdentifier;
+
+	//冗余
+	private String Meaning;//标识符的含义
+	private String size;//标识符固定长度
+
 }

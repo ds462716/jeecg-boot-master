@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Param;
 import org.jeecg.modules.pd.entity.PdEncodingRule;
 import org.jeecg.modules.pd.entity.PdEncodingRuleDetail;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.jeecg.modules.pd.entity.PdProductRule;
 
 /**
  * @Description: 编码规则详情表
@@ -16,4 +17,6 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 public interface PdEncodingRuleDetailMapper extends BaseMapper<PdEncodingRuleDetail> {
 
     void removeByCodeId(PdEncodingRule pdEncodingRule);
+
+    List<PdEncodingRuleDetail> selectList(PdEncodingRuleDetail pdEncodingRuleDetail);
 }

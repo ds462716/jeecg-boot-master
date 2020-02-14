@@ -2,6 +2,32 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.jeecg.modules.pd.mapper.PdEncodingRuleDetailMapper">
 
+	<sql id="pdEncodingRuleDetailColumns">
+		a.id ,
+		a.code_id ,
+		a.identifier ,
+		a.length ,
+		a.code_order ,
+		a.create_by ,
+		a.create_date,
+		a.update_by,
+		a.update_date,
+		a.remarks ,
+		a.del_flag
+	</sql>
+
+	<sql id="pdEncodingRuleDetailJoins">
+	</sql>
+
+	<!-- 应用标识符表 -->
+	<sql id="pdEncodingIdentifierJoins">
+		LEFT JOIN pd_encoding_identifier b on a.identifier = b.id
+	</sql>
+
+	<sql id="pdEncodingIdentifierColumns">
+		b.`value` as "value" ,b.meaning as "meaning",b.type as "type",b.length as "size"
+	</sql>
+
     <!--  修改修改 -->
     <update id="removeByCodeId">
 		UPDATE pd_encoding_rule_detail
@@ -11,4 +37,24 @@
 		create_by =#{createBy}
 		  where code_id = #{id}
 	</update>
+
+
+	<select id="selectList" resultType="PdEncodingRuleDetail">
+		SELECT
+		<include refid="pdEncodingRuleDetailColumns"/>,
+		<include refid="pdEncodingIdentifierColumns"/>
+		FROM pd_encoding_rule_detail a
+		<include refid="pdEncodingRuleDetailJoins"/>
+		<include refid="pdEncodingIdentifierJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="codeId != null and codeId != ''">
+				AND a.code_id = #{codeId}
+			</if>
+			<if test="identifier != null and identifier != ''">
+				AND a.identifier = #{identifier}
+			</if>
+
+		</where>
+	</select>
 </mapper>

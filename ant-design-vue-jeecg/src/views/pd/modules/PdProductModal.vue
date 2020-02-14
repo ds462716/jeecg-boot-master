@@ -13,11 +13,13 @@
         <a-row class="form-row" :gutter="{ xs: 8, sm: 16, md: 24, lg: 32 }">
           <a-col :lg="12">
             <a-form-item label="产品编号" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input ref="inputFocus" v-decorator="[ 'number', validatorRules.number]" placeholder="请输入产品编号"></a-input>
+              <a-input ref="inputFocus" @keyup.enter.native="getPrdNumber" v-decorator="[ 'number', validatorRules.number]" placeholder="请输入产品编号"></a-input>
             </a-form-item>
           </a-col>
+          <a-col :lg="1">
+            <a-button @click="getNumber" type="primary">生成</a-button>
+          </a-col>
         </a-row>
-
         <a-row class="form-row" :gutter="{ xs: 8, sm: 16, md: 24, lg: 32 }">
           <a-col :lg="12">
             <a-form-item label="产品名称" :labelCol="labelCol"  :wrapperCol="wrapperCol">
@@ -316,6 +318,7 @@
   import JDictSelectTagExpand from "@/components/dict/JDictSelectTagExpand"
   import { photoCheck } from '@/utils/fileUpload'
   import JSelectEncodingRule from '@/components/jeecgbiz/JSelectEncodingRule'
+  import { generateNumber,getPrdNumber,scanCode } from '@/utils/barcode'
 
   let timeout;
   let currentValue;
@@ -723,6 +726,23 @@
           this.$message.error("请先上传图片!")
         }
       },
+      //生成产品编号
+      getNumber(){
+        let code = "93";
+        let number = generateNumber(code);
+        this.form.setFieldsValue({number:number});
+      },
+      //扫码自动截取产品编号
+      getPrdNumber(e){
+        /*const that = this;
+        let val = e.target.value;
+        if(val.substring(0,2)!='93'){
+          let number = getPrdNumber(val,that);
+          this.form.setFieldsValue({number:number});
+        }*/
+        const that = this;
+        scanCode("1111111","22222222",that);
+      }
     }
   }
 </script>

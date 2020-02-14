@@ -1,6 +1,7 @@
 package org.jeecg.modules.pd.controller;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -308,7 +309,23 @@ public class PdProductController extends JeecgController<PdProduct, IPdProductSe
 		pdProductService.updateById(pdProduct);
 		return Result.ok("编辑成功!");
 	}
-	
+
+	 /**
+	  * 条码规则解析
+	  * @param Barcode1
+	  * @param Barcode2
+	  * @param req
+	  * @return
+	  */
+	@PostMapping(value = "scanCode")
+	public Result<?> scanCode(String Barcode1,String Barcode2,
+								HttpServletRequest req) {
+		Map<String,Object> resultMap = new HashMap<String,Object>();
+		resultMap = pdProductService.getScanCode(Barcode1,Barcode2);
+
+		return null;
+	}
+
 	/**
 	 *   通过id删除
 	 *

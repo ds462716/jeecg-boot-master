@@ -5,6 +5,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.Date;
 import java.math.BigDecimal;
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
@@ -52,4 +53,11 @@ public class PdProductRule  extends BaseEntity {
 	/**所属部门*/
 	@Excel(name = "所属部门", width = 15)
     private java.lang.String sysOrgCode;
+	/**
+	 * 总位数
+	 */
+	@TableField(exist = false)
+	private String totalDigit;
+	@TableField(exist = false)
+	private String ruleName;   //编码规则名称
 }

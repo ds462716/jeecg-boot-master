@@ -5,6 +5,8 @@ import org.jeecg.modules.pd.entity.PdProduct;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.jeecg.modules.pd.vo.PdProductPage;
 
+import java.util.Map;
+
 /**
  * @Description: pd_product
  * @Author: zxh
@@ -20,4 +22,6 @@ public interface IPdProductService extends IService<PdProduct> {
     void updateProduct(PdProduct pdProduct);
 
     void saveProduct(PdProduct pdProduct);
+
+    Map<String, Object> getScanCode(String barcode1, String barcode2);
 }
