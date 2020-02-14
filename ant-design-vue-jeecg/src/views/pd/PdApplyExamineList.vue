@@ -20,7 +20,7 @@
                 <a-select v-model="queryParam.applyStatus" placeholder="请选择审核状态">
                   <a-select-option value="0">待审核</a-select-option>
                   <a-select-option value="2">审核通过</a-select-option>
-                  <a-select-option value="3">已拒绝</a-select-option>
+                  <a-select-option value="3">审核不通过</a-select-option>
                 </a-select>
               </a-form-item>
             </a-col>
@@ -114,7 +114,7 @@
             }
           },
           {
-            title:'申领库房',
+            title:'申领科室',
             align:"center",
             dataIndex: 'deptName'
 

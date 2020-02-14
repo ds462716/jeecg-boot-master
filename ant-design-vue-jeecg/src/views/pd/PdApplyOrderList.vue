@@ -14,6 +14,17 @@
               <a-input placeholder="请输入申领科室名称" v-model="queryParam.deptName"></a-input>
             </a-form-item>
           </a-col>
+          <template v-if="toggleSearchStatus">
+            <a-col :md="6" :sm="8">
+              <a-form-item label="审核状态">
+                <a-select v-model="queryParam.applyStatus" placeholder="请选择审核状态">
+                  <a-select-option value="0">待审核</a-select-option>
+                  <a-select-option value="2">审核通过</a-select-option>
+                  <a-select-option value="3">审核不通过</a-select-option>
+                </a-select>
+              </a-form-item>
+            </a-col>
+          </template>
           <a-col :md="6" :sm="8">
             <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
               <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>

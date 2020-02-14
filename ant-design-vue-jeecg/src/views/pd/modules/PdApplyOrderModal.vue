@@ -82,6 +82,11 @@
               </tr>
             </table>
           </div>
+          <a-col :span="12" v-show="disableSubmit">
+            <a-form-item   label="审核意见" :labelCol="labelCol" :wrapperCol="wrapperCol">
+              <a-input  :disabled="disableSubmit"  v-decorator="[ 'refuseReason', validatorRules.refuseReason]"  style="width: 100%;height: 80px"/>
+            </a-form-item>
+          </a-col>
         </a-row>
         <pd-apply-detail-add-modal  ref="PdApplyDetailAddModal" @ok="modalFormOk"></pd-apply-detail-add-modal>
       </a-form>
@@ -120,7 +125,8 @@
           applyDate:{},
           applyNum:{},
           realName:{},
-          remarks:{}
+          remarks:{},
+          refuseReason:{}
         },
         refKeys: ['pdApplyDetail', ],
         tableKeys:['pdApplyDetail', ],
@@ -301,7 +307,7 @@
       },
       /** 调用完edit()方法之后会自动调用此方法 */
       editAfter() {
-        let fieldval = pick(this.model,'applyNo','deptName','applyNum','applyDate','realName','remarks')
+        let fieldval = pick(this.model,'applyNo','deptName','applyNum','applyDate','realName','remarks','refuseReason')
         this.$nextTick(() => {
           this.form.setFieldsValue(fieldval)
         })
@@ -324,7 +330,7 @@
         this.$message.error(msg)
       },
       popupCallback(row){
-        this.form.setFieldsValue(pick(row,'applyNo','deptName','applyNum','applyDate','realname','remarks'))
+        this.form.setFieldsValue(pick(row,'applyNo','deptName','applyNum','applyDate','realname','remarks','refuseReason'))
       },
 
     }

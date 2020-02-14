@@ -119,7 +119,8 @@
           applyDate:{},
           applyNum:{},
           realName:{},
-          remarks:{}
+          remarks:{},
+          refuseReason:{}
         },
        refKeys: ['pdApplyDetail', ],
         tableKeys:['pdApplyDetail', ],
@@ -205,7 +206,7 @@
       },
       /** 调用完edit()方法之后会自动调用此方法 */
       editAfter() {
-        let fieldval = pick(this.model,'applyNo','deptName','applyNum','applyDate','realName','remarks')
+        let fieldval = pick(this.model,'applyNo','deptName','applyNum','applyDate','realName','remarks','refuseReason')
         this.$nextTick(() => {
           this.form.setFieldsValue(fieldval)
         })
@@ -228,7 +229,7 @@
         this.$message.error(msg)
       },
       popupCallback(row){
-        this.form.setFieldsValue(pick(row,'applyNo','deptName','applyNum','applyDate','realName','remarks'))
+        this.form.setFieldsValue(pick(row,'applyNo','deptName','applyNum','applyDate','realName','remarks','refuseReason'))
        },
 
     }
