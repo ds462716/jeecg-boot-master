@@ -12,6 +12,9 @@ import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+import org.apache.commons.lang.StringUtils;
 import org.jeecg.modules.pd.entity.PdProductStock;
 import org.jeecg.modules.pd.entity.PdProductStockTotal;
 import org.jeecg.modules.pd.service.IPdProductStockService;
@@ -49,86 +52,68 @@ import com.alibaba.fastjson.JSON;
 @RequestMapping("/stock/pdProductStockTotal")
 @Slf4j
 public class PdProductStockTotalController {
-	@Autowired
-	private IPdProductStockTotalService pdProductStockTotalService;
-	@Autowired
-	private IPdProductStockService pdProductStockService;
+	 @Autowired
+	 private IPdProductStockTotalService pdProductStockTotalService;
+	 @Autowired
+	 private IPdProductStockService pdProductStockService;
+
+	 /**
+	  * 分页列表查询
+	  *
+	  * @param pdProductStockTotal
+	  * @param pageNo
+	  * @param pageSize
+	  * @param req
+	  * @return
+	  */
+	 @GetMapping(value = "/list")
+	 public Result<?> queryPageList(PdProductStockTotal pdProductStockTotal,
+									@RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
+									@RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
+									HttpServletRequest req) {
+		 QueryWrapper<PdProductStockTotal> queryWrapper = QueryGenerator.initQueryWrapper(pdProductStockTotal, req.getParameterMap());
+		 Page<PdProductStockTotal> page = new Page<PdProductStockTotal>(pageNo, pageSize);
+		 IPage<PdProductStockTotal> pageList = pdProductStockTotalService.page(page, queryWrapper);
+		 return Result.ok(pageList);
+	 }
+
+	 /**
+	  * 编辑
+	  *
+	  * @param pdProductStockTotalPage
+	  * @return
+	  */
+	 @PutMapping(value = "/edit")
+	 public Result<?> edit(@RequestBody PdProductStockTotalPage pdProductStockTotalPage,
+						   @RequestParam(name = "upNum") String upNum,
+						   @RequestParam(name = "downNum") String downNum) {
+
+		 String ids = "";
+		 ids = ids.replace("&quot;", "\"");
+		 JSONArray arr = JSONArray.parseArray(ids);
+		 for (int i = 0; i < arr.size(); i++) {
+			 JSONObject obj = (JSONObject) arr.get(i);
+			 String sid = (String) obj.get("storeroomId");
+			 String pid = (String) obj.get("productId");
+			 PdProductStockTotal stockTotal = new PdProductStockTotal();
+			 stockTotal.setProductId(pid);
+			 if (StringUtils.isNotEmpty(downNum)) {
+				 stockTotal.setLimitDown(Double.valueOf(downNum));
+			 }
+			 if (StringUtils.isNotEmpty(upNum)) {
+				 stockTotal.setLimitUp(Double.valueOf(upNum));
+			 }
+			 if (StringUtils.isNotEmpty(sid)) {
+				 stockTotal.setStoreroomId(sid);
+				 pdProductStockTotalService.updateProductStock(stockTotal);
+			 }
+		 }
+		 return Result.ok("编辑成功!");
+	 }
+
+
 	
-	/**
-	 * 分页列表查询
-	 *
-	 * @param pdProductStockTotal
-	 * @param pageNo
-	 * @param pageSize
-	 * @param req
-	 * @return
-	 */
-	@GetMapping(value = "/list")
-	public Result<?> queryPageList(PdProductStockTotal pdProductStockTotal,
-								   @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
-								   @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
-								   HttpServletRequest req) {
-		QueryWrapper<PdProductStockTotal> queryWrapper = QueryGenerator.initQueryWrapper(pdProductStockTotal, req.getParameterMap());
-		Page<PdProductStockTotal> page = new Page<PdProductStockTotal>(pageNo, pageSize);
-		IPage<PdProductStockTotal> pageList = pdProductStockTotalService.page(page, queryWrapper);
-		return Result.ok(pageList);
-	}
-	
-	/**
-	 *   添加
-	 *
-	 * @param pdProductStockTotalPage
-	 * @return
-	 */
-	@PostMapping(value = "/add")
-	public Result<?> add(@RequestBody PdProductStockTotalPage pdProductStockTotalPage) {
-		PdProductStockTotal pdProductStockTotal = new PdProductStockTotal();
-		BeanUtils.copyProperties(pdProductStockTotalPage, pdProductStockTotal);
-		pdProductStockTotalService.saveMain(pdProductStockTotal, pdProductStockTotalPage.getPdProductStockList());
-		return Result.ok("添加成功！");
-	}
-	
-	/**
-	 *  编辑
-	 *
-	 * @param pdProductStockTotalPage
-	 * @return
-	 */
-	@PutMapping(value = "/edit")
-	public Result<?> edit(@RequestBody PdProductStockTotalPage pdProductStockTotalPage) {
-		PdProductStockTotal pdProductStockTotal = new PdProductStockTotal();
-		BeanUtils.copyProperties(pdProductStockTotalPage, pdProductStockTotal);
-		PdProductStockTotal pdProductStockTotalEntity = pdProductStockTotalService.getById(pdProductStockTotal.getId());
-		if(pdProductStockTotalEntity==null) {
-			return Result.error("未找到对应数据");
-		}
-		pdProductStockTotalService.updateMain(pdProductStockTotal, pdProductStockTotalPage.getPdProductStockList());
-		return Result.ok("编辑成功!");
-	}
-	
-	/**
-	 *   通过id删除
-	 *
-	 * @param id
-	 * @return
-	 */
-	@DeleteMapping(value = "/delete")
-	public Result<?> delete(@RequestParam(name="id",required=true) String id) {
-		pdProductStockTotalService.delMain(id);
-		return Result.ok("删除成功!");
-	}
-	
-	/**
-	 *  批量删除
-	 *
-	 * @param ids
-	 * @return
-	 */
-	@DeleteMapping(value = "/deleteBatch")
-	public Result<?> deleteBatch(@RequestParam(name="ids",required=true) String ids) {
-		this.pdProductStockTotalService.delBatchMain(Arrays.asList(ids.split(",")));
-		return Result.ok("批量删除成功！");
-	}
+
 	
 	/**
 	 * 通过id查询
@@ -199,45 +184,6 @@ public class PdProductStockTotalController {
       mv.addObject(NormalExcelConstants.PARAMS, new ExportParams("库存总表数据", "导出人:"+sysUser.getRealname(), "库存总表"));
       mv.addObject(NormalExcelConstants.DATA_LIST, pageList);
       return mv;
-    }
-
-    /**
-    * 通过excel导入数据
-    *
-    * @param request
-    * @param response
-    * @return
-    */
-    @RequestMapping(value = "/importExcel", method = RequestMethod.POST)
-    public Result<?> importExcel(HttpServletRequest request, HttpServletResponse response) {
-      MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
-      Map<String, MultipartFile> fileMap = multipartRequest.getFileMap();
-      for (Map.Entry<String, MultipartFile> entity : fileMap.entrySet()) {
-          MultipartFile file = entity.getValue();// 获取上传文件对象
-          ImportParams params = new ImportParams();
-          params.setTitleRows(2);
-          params.setHeadRows(1);
-          params.setNeedSave(true);
-          try {
-              List<PdProductStockTotalPage> list = ExcelImportUtil.importExcel(file.getInputStream(), PdProductStockTotalPage.class, params);
-              for (PdProductStockTotalPage page : list) {
-                  PdProductStockTotal po = new PdProductStockTotal();
-                  BeanUtils.copyProperties(page, po);
-                  pdProductStockTotalService.saveMain(po, page.getPdProductStockList());
-              }
-              return Result.ok("文件导入成功！数据行数:" + list.size());
-          } catch (Exception e) {
-              log.error(e.getMessage(),e);
-              return Result.error("文件导入失败:"+e.getMessage());
-          } finally {
-              try {
-                  file.getInputStream().close();
-              } catch (IOException e) {
-                  e.printStackTrace();
-              }
-          }
-      }
-      return Result.ok("文件导入失败！");
     }
 
 }

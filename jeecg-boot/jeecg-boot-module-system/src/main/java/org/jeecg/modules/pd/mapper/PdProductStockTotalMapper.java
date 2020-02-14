@@ -11,4 +11,7 @@ import org.jeecg.modules.pd.entity.PdProductStockTotal;
  */
 public interface PdProductStockTotalMapper extends BaseMapper<PdProductStockTotal> {
 
+
+    public void updateProductStock(PdProductStockTotal stockTotal);
+
 }

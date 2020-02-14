@@ -5,13 +5,13 @@
       <a-form layout="inline" @keyup.enter.native="searchQuery">
         <a-row :gutter="24">
           <a-col :md="6" :sm="8">
-            <a-form-item label="仓库id">
-              <a-input placeholder="请输入仓库id" v-model="queryParam.storeroomId"></a-input>
+            <a-form-item label="科室">
+              <a-input placeholder="请选择科室" v-model="queryParam.storeroomId"></a-input>
             </a-form-item>
           </a-col>
           <a-col :md="6" :sm="8">
-            <a-form-item label="产品id">
-              <a-input placeholder="请输入产品id" v-model="queryParam.productId"></a-input>
+            <a-form-item label="产品名称">
+              <a-input placeholder="请选择产品名称" v-model="queryParam.productName"></a-input>
             </a-form-item>
           </a-col>
           <a-col :md="6" :sm="8">
@@ -29,20 +29,16 @@
       </a-form>
     </div>
     <!-- 查询区域-END -->
-    
+    <div class="numberWARAP">
+      <div class="total">总数量：<span id="totalNum">22</span></div>
+      <div class="nearTime">近效期数量：<span id="nearNum">33</span></div>
+      <div class="overTime">过期数量：<span id="overNum">44</span></div>
+    </div>
     <!-- 操作按钮区域 -->
     <div class="table-operator">
-      <a-button @click="handleAdd" type="primary" icon="plus">新增</a-button>
-      <a-button type="primary" icon="download" @click="handleExportXls('库存总表')">导出</a-button>
-      <a-upload name="file" :showUploadList="false" :multiple="false" :headers="tokenHeader" :action="importExcelUrl" @change="handleImportExcel">
-        <a-button type="primary" icon="import">导入</a-button>
-      </a-upload>
-      <a-dropdown v-if="selectedRowKeys.length > 0">
-        <a-menu slot="overlay">
-          <a-menu-item key="1" @click="batchDel"><a-icon type="delete"/>删除</a-menu-item>
-        </a-menu>
-        <a-button style="margin-left: 8px"> 批量操作 <a-icon type="down" /></a-button>
-      </a-dropdown>
+      <a-button @click="handleAdd" type="primary" icon="plus">批量设置库存下限</a-button>
+      <a-button @click="handleAdd" type="primary" icon="plus">批量设置库存上限</a-button>
+      <a-button type="primary" icon="download" @click="handleExportXls('库存明细')">导出</a-button>
     </div>
 
     <!-- table区域-begin -->
@@ -53,6 +49,7 @@
       </div>
 
       <a-table
+        CLASS="changeColor"
         ref="table"
         size="middle"
         bordered
@@ -64,40 +61,9 @@
         :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
         @change="handleTableChange">
 
-        <template slot="htmlSlot" slot-scope="text">
-          <div v-html="text"></div>
-        </template>
-        <template slot="imgSlot" slot-scope="text">
-          <span v-if="!text" style="font-size: 12px;font-style: italic;">无此图片</span>
-          <img v-else :src="getImgView(text)" height="25px" alt="图片不存在" style="max-width:80px;font-size: 12px;font-style: italic;"/>
-        </template>
-        <template slot="fileSlot" slot-scope="text">
-          <span v-if="!text" style="font-size: 12px;font-style: italic;">无此文件</span>
-          <a-button
-            v-else
-            :ghost="true"
-            type="primary"
-            icon="download"
-            size="small"
-            @click="uploadFile(text)">
-            下载
-          </a-button>
-        </template>
-
         <span slot="action" slot-scope="text, record">
-          <a @click="handleEdit(record)">编辑</a>
-
-          <a-divider type="vertical" />
-          <a-dropdown>
-            <a class="ant-dropdown-link">更多 <a-icon type="down" /></a>
-            <a-menu slot="overlay">
-              <a-menu-item>
-                <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.id)">
-                  <a>删除</a>
-                </a-popconfirm>
-              </a-menu-item>
-            </a-menu>
-          </a-dropdown>
+          <a @click="handleEdit(record)">库存明细</a>&nbsp;&nbsp;&nbsp;
+         <a  @click="handleDetail(record)">出入库明细</a>
         </span>
 
       </a-table>
@@ -120,11 +86,11 @@
     },
     data () {
       return {
-        description: '库存总表管理页面',
+        description: '库存管理页面',
         // 表头
         columns: [
           {
-            title: '#',
+            title: '序号',
             dataIndex: '',
             key:'rowIndex',
             width:60,
@@ -134,35 +100,34 @@
             }
           },
           {
-            title:'仓库id',
+            title:'所属科室',
             align:"center",
             dataIndex: 'storeroomId'
           },
           {
-            title:'产品id',
+            title:'产品名称',
             align:"center",
             dataIndex: 'productId'
           },
           {
-            title:'库存数量',
+            title:'产品编号',
             align:"center",
-            dataIndex: 'stockNum'
+            dataIndex: 'productId'
           },
           {
-            title:'生产日期',
+            title:'规格',
             align:"center",
-            dataIndex: 'produceDate',
-            customRender:function (text) {
-              return !text?"":(text.length>10?text.substr(0,10):text)
-            }
+            dataIndex: 'productId'
           },
           {
-            title:'产品有效期',
+            title:'型号',
             align:"center",
-            dataIndex: 'validDate',
-            customRender:function (text) {
-              return !text?"":(text.length>10?text.substr(0,10):text)
-            }
+            dataIndex: 'productId'
+          },
+          {
+            title:'单位',
+            align:"center",
+            dataIndex: 'productId'
           },
           {
             title:'库存上限',
@@ -175,24 +140,14 @@
             dataIndex: 'limitDown'
           },
           {
-            title:'过期标识',
+            title:'数量',
+            align:"center",
+            dataIndex: 'stockNum'
+          },
+          {
+            title:'是否过期',
             align:"center",
             dataIndex: 'expire'
-          },
-          {
-            title:'供应商ID',
-            align:"center",
-            dataIndex: 'supplierId'
-          },
-          {
-            title:'备注',
-            align:"center",
-            dataIndex: 'remarks'
-          },
-          {
-            title:'删除标识 ',
-            align:"center",
-            dataIndex: 'delFlag'
           },
           {
             title:'是否永存',
@@ -208,10 +163,8 @@
         ],
         url: {
           list: "/stock/pdProductStockTotal/list",
-          delete: "/stock/pdProductStockTotal/delete",
           deleteBatch: "/stock/pdProductStockTotal/deleteBatch",
           exportXlsUrl: "/stock/pdProductStockTotal/exportXls",
-          importExcelUrl: "stock/pdProductStockTotal/importExcel",
         },
         dictOptions:{
         },
@@ -231,5 +184,10 @@
   }
 </script>
 <style scoped>
+  .numberWARAP{width:100%;height:60px;line-height:60px;margin:20px 0;}
+  .numberWARAP>div{float:left;width:33%;height:60px;line-height:60px;color:#666;font-size:16px;text-align:center;border-right:1px solid #ccc;}
+  .numberWARAP>div:nth-child(3){border:none;}
+  .changeColor .red td,.changeColor .red td a{color: red}
+  /*.alert_close_btn:hover{color:#fff;border-bottom:1px solid #dedede}*/
   @import '~@assets/less/common.less'
 </style>
