@@ -1,10 +1,12 @@
 package org.jeecg.modules.pd.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import org.jeecg.modules.pd.entity.PdEncodingRule;
 import org.jeecg.modules.pd.entity.PdPurchaseDetail;
 import org.jeecg.modules.pd.entity.PdPurchaseOrder;
 import com.baomidou.mybatisplus.extension.service.IService;
+import org.jeecg.modules.pd.vo.PdProductPage;
+import org.jeecg.modules.pd.vo.PdPurchaseOrderPage;
+
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
@@ -41,4 +43,18 @@ public interface IPdPurchaseOrderService extends IService<PdPurchaseOrder> {
 	 * 
 	 */
 	public void updateMain(PdPurchaseOrder pdPurchaseOrder, List<PdPurchaseDetail> pdPurchaseDetailList);
+
+	/**
+	 * 用于采购单弹出选择框
+	 * @param pdPurchaseOrderPage
+	 * @return
+	 */
+	Page<PdPurchaseOrderPage> choosePurchaseOrderList(Page<PdPurchaseOrderPage> pageList, PdPurchaseOrderPage pdPurchaseOrderPage);
+
+	/**
+	 * 用于采购单弹出选择框
+	 * @param pdPurchaseOrderPage
+	 * @return
+	 */
+	List<PdProductPage> choosePurchaseOrderDetailList(PdPurchaseOrderPage pdPurchaseOrderPage);
 }

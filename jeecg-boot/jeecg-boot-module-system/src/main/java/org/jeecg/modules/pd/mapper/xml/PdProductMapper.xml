@@ -331,7 +331,8 @@
         order by a.create_time desc, a.update_time desc
     </select>
 
-    <select id="chooseProductList" resultType="org.jeecg.modules.pd.vo.PdProductPage">
+    <!-- 用于产品弹出框 -->
+    <select id="chooseProductList" resultType="org.jeecg.modules.pd.vo.PdProductPage" parameterType="org.jeecg.modules.pd.entity.PdProduct">
         select
             a.id as productId,
             a.number as number,
@@ -364,7 +365,10 @@
                 )
             </if>
             <if test="id != null and id != ''">
-                AND a.id = #{name}
+                AND a.id = #{id}
+            </if>
+            <if test="number != null and number != ''">
+                AND a.number LIKE concat('%',#{number},'%')
             </if>
             <if test="supplierId != null and supplierId != ''">
                 AND a.supplier_id = #{supplierId}

@@ -59,9 +59,6 @@
 <script>
 
   import { httpAction,getAction } from '@/api/manage'
-  // import pick from 'lodash.pick'
-  import { makeWb } from '@/utils/wubi'
-  import { duplicateCheckHasDelFlag } from '@/api/api'
   import { JeecgListMixin } from '@/mixins/JeecgListMixin'
 
   export default {

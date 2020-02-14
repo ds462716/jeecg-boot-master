@@ -1,19 +1,21 @@
 package org.jeecg.modules.pd.service.impl;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import org.jeecg.common.constant.PdConstant;
+import org.apache.commons.collections.CollectionUtils;
 import org.jeecg.modules.pd.entity.PdPurchaseOrder;
 import org.jeecg.modules.pd.entity.PdPurchaseDetail;
 import org.jeecg.modules.pd.mapper.PdPurchaseDetailMapper;
 import org.jeecg.modules.pd.mapper.PdPurchaseOrderMapper;
 import org.jeecg.modules.pd.service.IPdPurchaseOrderService;
+import org.jeecg.modules.pd.vo.PdProductPage;
+import org.jeecg.modules.pd.vo.PdPurchaseOrderPage;
 import org.springframework.stereotype.Service;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
-import java.io.Serializable;
+
+import java.math.BigDecimal;
 import java.util.List;
-import java.util.Collection;
 
 /**
  * @Description: 申购订单主表
@@ -79,4 +81,27 @@ public class PdPurchaseOrderServiceImpl extends ServiceImpl<PdPurchaseOrderMappe
 		}
 	}
 
+	@Override
+	public Page<PdPurchaseOrderPage> choosePurchaseOrderList(Page<PdPurchaseOrderPage> pageList, PdPurchaseOrderPage pdPurchaseOrderPage) {
+		List queryDate = pdPurchaseOrderPage.getQueryDate();
+		if(CollectionUtils.isNotEmpty(queryDate)){
+			pdPurchaseOrderPage.setQueryDateStart((String) queryDate.get(0));
+			pdPurchaseOrderPage.setQueryDateStart((String) queryDate.get(1));
+		}
+		return pageList.setRecords(pdPurchaseOrderMapper.choosePurchaseOrderList(pdPurchaseOrderPage));
+	}
+
+	@Override
+	public List<PdProductPage> choosePurchaseOrderDetailList(PdPurchaseOrderPage pdPurchaseOrderPage) {
+		List<PdProductPage> list = pdPurchaseOrderMapper.choosePurchaseOrderDetailList(pdPurchaseOrderPage);
+		if(CollectionUtils.isNotEmpty(list)){
+			for (PdProductPage item : list) {
+				item.setPrice(
+						(item.getInPrice() == null ? BigDecimal.ZERO:item.getInPrice())
+								.multiply(BigDecimal.valueOf(item.getApplyCount())));
+			}
+		}
+
+		return list;
+	}
 }

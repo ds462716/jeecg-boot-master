@@ -6,8 +6,11 @@ import java.util.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import org.jeecg.common.constant.PdConstant;
+import org.jeecg.modules.pd.entity.PdProduct;
 import org.jeecg.modules.pd.util.UUIDUtil;
+import org.jeecg.modules.pd.vo.PdProductPage;
 import org.jeecg.modules.system.entity.SysDepart;
 import org.jeecg.modules.system.service.ISysDepartService;
 import org.jeecgframework.poi.excel.ExcelImportUtil;
@@ -267,4 +270,27 @@ public class PdPurchaseOrderController {
       return Result.ok("文件导入失败！");
     }
 
+	 /**
+	  * 采购订单选择框
+	  * @param pdPurchaseOrderPage
+	  * @param pageNo
+	  * @param pageSize
+	  * @param req
+	  * @return
+	  */
+	@GetMapping(value = "/choosePurchaseOrderList")
+	public Result<?> choosePurchaseOrderList(PdPurchaseOrderPage pdPurchaseOrderPage,
+								@RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
+								@RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
+								HttpServletRequest req) {
+		Page<PdPurchaseOrderPage> page = new Page<PdPurchaseOrderPage>(pageNo, pageSize);
+		IPage<PdPurchaseOrderPage> pageList = pdPurchaseOrderService.choosePurchaseOrderList(page, pdPurchaseOrderPage);
+		return Result.ok(pageList);
+	}
+
+	 @GetMapping(value = "/choosePurchaseOrderDetailList")
+	 public Result<?> choosePurchaseOrderDetailList(PdPurchaseOrderPage pdPurchaseOrderPage,HttpServletRequest req) {
+		 List<PdProductPage> list = pdPurchaseOrderService.choosePurchaseOrderDetailList(pdPurchaseOrderPage);
+		 return Result.ok(list);
+	 }
 }

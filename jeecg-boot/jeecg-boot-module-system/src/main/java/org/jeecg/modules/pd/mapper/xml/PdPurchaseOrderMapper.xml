@@ -64,4 +64,77 @@
         </where>
     </select>
 
+    <!-- 用于采购订单选择框 -->
+    <select id="choosePurchaseOrderList" resultType="org.jeecg.modules.pd.vo.PdPurchaseOrderPage"  parameterType="org.jeecg.modules.pd.vo.PdPurchaseOrderPage">
+        SELECT DISTINCT
+        a.id as purchaseId,
+        a.order_no as orderNo,
+        a.order_date as orderDate,
+        a.dept_name as deptName,
+        a.order_status as orderStatus,
+        c.realname as auditByName
+        FROM
+        pd_purchase_order a
+        LEFT JOIN pd_purchase_detail b on a.order_no = b.order_no
+        LEFT JOIN sys_user c ON c.id = a.audit_by
+        LEFT JOIN pd_product d on b.product_id = d.id
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+            AND a.order_status = '2'
+            <if test="id != null and id != ''">
+                AND a.id = #{id}
+            </if>
+            <if test="orderNo != null and orderNo != ''">
+                AND a.order_no LIKE concat('%',#{orderNo},'%')
+            </if>
+            <if test="productName != null and productName != ''">
+                AND (
+                   d.name LIKE concat('%',#{productName},'%')
+                or d.py LIKE concat('%',#{productName},'%')
+                or d.wb LIKE concat('%',#{productName},'%')
+                or d.bname LIKE concat('%',#{productName},'%')
+                or d.bpy LIKE concat('%',#{productName},'%')
+                or d.bwb LIKE concat('%',#{productName},'%')
+                or d.zdy LIKE concat('%',#{productName},'%')
+                )
+            </if>
+            <if test="supplierId != null and supplierId != ''">
+                AND d.supplier_id = #{supplierId}
+            </if>
+            <if test="productNumber != null and productNumber != ''">
+                AND d.number LIKE concat('%',#{number},'%')
+            </if>
+            <if test="queryDateStart != null and queryDateStart != ''">
+                AND a.order_date &gt;= #{queryDateStart}
+            </if>
+            <if test="queryDateEnd != null and queryDateEnd != ''">
+                AND a.order_date &lt;= #{queryDateEnd}
+            </if>
+        </where>
+        order  by a.order_date desc
+    </select>
+
+    <select id="choosePurchaseOrderDetailList" resultType="org.jeecg.modules.pd.vo.PdProductPage"  parameterType="org.jeecg.modules.pd.vo.PdPurchaseOrderPage">
+        SELECT
+            a.id as purchaseDetailId,
+            a.apply_count AS applyCount,
+            a.in_price as inPrice,
+            b.number,
+            b.NAME as productName,
+            b.spec,
+            b.version,
+            c.NAME AS unitName,
+            d.NAME AS supplierName,
+            e.NAME AS venderName
+        FROM
+            pd_purchase_detail a
+            LEFT JOIN pd_product b ON a.product_id = b.id
+            LEFT JOIN pd_unit c ON b.unit_id = c.id
+            LEFT JOIN pd_supplier d ON b.supplier_id = d.id
+            LEFT JOIN pd_vender e ON b.vender_id = e.id
+        WHERE
+            a.del_flag = #{DEL_FLAG_NORMAL}
+            AND a.order_no = #{orderNo}
+
+    </select>
 </mapper>

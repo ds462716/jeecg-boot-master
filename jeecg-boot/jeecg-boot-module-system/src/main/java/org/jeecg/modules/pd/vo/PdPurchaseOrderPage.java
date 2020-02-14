@@ -19,6 +19,30 @@ public class PdPurchaseOrderPage extends PdPurchaseOrder{
 	@Excel(name = "申购人名称", width = 15)
 	private String purchaseName;
 
+	/**审核人姓名*/
+	private String auditByName;
+
+	/**采购订单id*/
+	private String purchaseId;
+
+	/**供应商ID，用于查询条件*/
+	private String supplierId;
+
+	/**产品编号，用于查询条件*/
+	private String productNumber;
+
+	/**产品名称，用于查询条件*/
+	private String productName;
+
+	/** 查询日期范围 **/
+	private List<Object> queryDate;
+
+	/** 查询日期起始 **/
+	private String queryDateStart;
+
+	/** 查询日期结束 **/
+	private String queryDateEnd;
+
 	@ExcelCollection(name="申购单详细表")
 	private List<PdPurchaseDetail> pdPurchaseDetailList;	
 }
