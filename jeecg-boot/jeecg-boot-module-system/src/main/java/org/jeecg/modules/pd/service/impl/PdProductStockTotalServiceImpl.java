@@ -1,10 +1,13 @@
 package org.jeecg.modules.pd.service.impl;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.jeecg.modules.pd.entity.PdProductStock;
 import org.jeecg.modules.pd.entity.PdProductStockTotal;
+import org.jeecg.modules.pd.entity.PdPurchaseOrder;
 import org.jeecg.modules.pd.mapper.PdProductStockMapper;
 import org.jeecg.modules.pd.mapper.PdProductStockTotalMapper;
 import org.jeecg.modules.pd.service.IPdProductStockTotalService;
+import org.jeecg.modules.pd.vo.PdProductStockTotalPage;
 import org.springframework.stereotype.Service;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +29,23 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
 	private PdProductStockTotalMapper pdProductStockTotalMapper;
 	@Autowired
 	private PdProductStockMapper pdProductStockMapper;
-	
+
+
+	/**
+	 * 查询列表
+	 * @param page
+	 * @param stockTotal
+	 * @return
+	 */
+	@Override
+	public Page<PdProductStockTotalPage> selectList(Page<PdProductStockTotalPage> page, PdProductStockTotal stockTotal) {
+		return page.setRecords(pdProductStockTotalMapper.selectList(stockTotal));
+	}
+
+	@Override
+	public List<PdProductStockTotalPage> findListForQuery(PdProductStockTotal stockTotal) {
+		return pdProductStockTotalMapper.selectList(stockTotal);
+	}
 
 
 	@Override

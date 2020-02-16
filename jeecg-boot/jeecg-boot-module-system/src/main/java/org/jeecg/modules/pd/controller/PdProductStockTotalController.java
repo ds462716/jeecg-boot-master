@@ -3,10 +3,7 @@ package org.jeecg.modules.pd.controller;
 import java.io.UnsupportedEncodingException;
 import java.io.IOException;
 import java.net.URLDecoder;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
@@ -14,9 +11,12 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.toolkit.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
+import org.jeecg.common.constant.PdConstant;
 import org.jeecg.modules.pd.entity.PdProductStock;
 import org.jeecg.modules.pd.entity.PdProductStockTotal;
+import org.jeecg.modules.pd.entity.PdPurchaseOrder;
 import org.jeecg.modules.pd.service.IPdProductStockService;
 import org.jeecg.modules.pd.service.IPdProductStockTotalService;
 import org.jeecg.modules.pd.vo.PdProductStockTotalPage;
@@ -49,7 +49,7 @@ import com.alibaba.fastjson.JSON;
  * @Version: V1.0
  */
 @RestController
-@RequestMapping("/stock/pdProductStockTotal")
+@RequestMapping("/pd/pdProductStockTotal")
 @Slf4j
 public class PdProductStockTotalController {
 	 @Autowired
@@ -71,44 +71,79 @@ public class PdProductStockTotalController {
 									@RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
 									@RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
 									HttpServletRequest req) {
-		 QueryWrapper<PdProductStockTotal> queryWrapper = QueryGenerator.initQueryWrapper(pdProductStockTotal, req.getParameterMap());
-		 Page<PdProductStockTotal> page = new Page<PdProductStockTotal>(pageNo, pageSize);
-		 IPage<PdProductStockTotal> pageList = pdProductStockTotalService.page(page, queryWrapper);
-		 return Result.ok(pageList);
-	 }
 
+         Page<PdProductStockTotalPage> page = new Page<PdProductStockTotalPage>(pageNo, pageSize);
+         page = pdProductStockTotalService.selectList(page,pdProductStockTotal);
+		//计算总库存数量，近效期数量，过期数量等值；
+         //**************************
+         List<PdProductStockTotalPage> aList = pdProductStockTotalService.findListForQuery(pdProductStockTotal);
+         Double gCount=0.00;//过期数量
+         Double jCount=0.00;//近效期数量
+         Double isLcount=0.00;//久存产品数量
+         Double pCount=0.00;//总数量
+         Double limtCount=0.00;//超出库房上下限产品数量
+         if(aList!=null&&!aList.isEmpty()){
+             for (PdProductStockTotal p : aList) {
+                 if(PdConstant.PD_STATE_1.equals(p.getExpire())){
+                     gCount++;
+                 }else if(PdConstant.PD_STATE_0.equals(p.getExpire())){
+                     jCount++;
+                 }
+                 if(PdConstant.IS_LONG_1.equals(p.getIsLong())){
+                     isLcount++;
+                 }
+                 if(ObjectUtils.isNotEmpty(p.getLimitUp()) && ObjectUtils.isEmpty(p.getLimitDown())){
+                     Double up=p.getLimitUp();
+                     if(p.getStockNum()>up)limtCount++;
+                 }
+                 if(ObjectUtils.isNotEmpty(p.getLimitDown())&&ObjectUtils.isEmpty(p.getLimitUp())){
+                     Double down =  p.getLimitDown();
+                     if(p.getStockNum()<down)limtCount++;
+                 }
+                 if(ObjectUtils.isNotEmpty(p.getLimitDown())&&ObjectUtils.isNotEmpty(p.getLimitUp())){
+                     Double up= p.getLimitUp();
+                     Double down =p.getLimitDown();
+                     if(p.getStockNum()>up||p.getStockNum()<down){
+                         limtCount++;
+                     }
+                 }
+                 pCount+=p.getStockNum();
+             }
+         }
+		Map map=new HashMap();
+		 map.put("records",page);
+		 map.put("gCount",gCount);//过期数量
+		 map.put("jCount",jCount);//近效期数量
+		 map.put("isLcount",isLcount);//久存产品数量
+		 map.put("pCount",pCount);//总数量
+		 map.put("limtCount",limtCount);//超出库房上下限产品数量
+		 return Result.ok(map);
+	 }
 	 /**
-	  * 编辑
+	  * 设置库存上下线数值
 	  *
 	  * @param pdProductStockTotalPage
 	  * @return
 	  */
-	 @PutMapping(value = "/edit")
-	 public Result<?> edit(@RequestBody PdProductStockTotalPage pdProductStockTotalPage,
-						   @RequestParam(name = "upNum") String upNum,
-						   @RequestParam(name = "downNum") String downNum) {
-
-		 String ids = "";
-		 ids = ids.replace("&quot;", "\"");
-		 JSONArray arr = JSONArray.parseArray(ids);
+	 @PutMapping(value = "/updateProductStock")
+	 public Result<?> updateProductStock(@RequestBody PdProductStockTotalPage pdProductStockTotalPage) {
+		 String ids = pdProductStockTotalPage.getIds();
+		 Double upNum=pdProductStockTotalPage.getLimitUp();
+		 Double downNum=pdProductStockTotalPage.getLimitDown();
+		 List arr = Arrays.asList(ids.split(","));
 		 for (int i = 0; i < arr.size(); i++) {
-			 JSONObject obj = (JSONObject) arr.get(i);
-			 String sid = (String) obj.get("storeroomId");
-			 String pid = (String) obj.get("productId");
+			 String id=(String)arr.get(i);
 			 PdProductStockTotal stockTotal = new PdProductStockTotal();
-			 stockTotal.setProductId(pid);
-			 if (StringUtils.isNotEmpty(downNum)) {
-				 stockTotal.setLimitDown(Double.valueOf(downNum));
+			 stockTotal.setId(id);
+			 if (ObjectUtils.isNotEmpty(downNum)) {
+				 stockTotal.setLimitDown(downNum);
 			 }
-			 if (StringUtils.isNotEmpty(upNum)) {
-				 stockTotal.setLimitUp(Double.valueOf(upNum));
+			 if (ObjectUtils.isNotEmpty(upNum)) {
+				 stockTotal.setLimitUp(upNum);
 			 }
-			 if (StringUtils.isNotEmpty(sid)) {
-				 stockTotal.setStoreroomId(sid);
-				 pdProductStockTotalService.updateProductStock(stockTotal);
-			 }
+			pdProductStockTotalService.updateProductStock(stockTotal);
 		 }
-		 return Result.ok("编辑成功!");
+		 return Result.ok("设置成功!");
 	 }
 
 
@@ -142,6 +177,51 @@ public class PdProductStockTotalController {
 		List<PdProductStock> pdProductStockList = pdProductStockService.selectByMainId(id);
 		return Result.ok(pdProductStockList);
 	}
+
+
+
+	 /**
+	  * 分页查询库存明细信息
+	  *
+	  * @param stockTotalPage
+	  * @param pageNo
+	  * @param pageSize
+	  * @param req
+	  * @return
+	  */
+	 @GetMapping(value = "/chooseProductStockList")
+	 public Result<?> chooseProductStockList(PdProductStockTotalPage stockTotalPage,
+									@RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
+									@RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
+									HttpServletRequest req) {
+
+		 Page<PdProductStock> page = new Page<PdProductStock>(pageNo, pageSize);
+		 page = pdProductStockService.selectList(page,stockTotalPage);
+		 //计算总库存数量，近效期数量，过期数量等值；
+		 //**************************
+		 List<PdProductStock> aList = pdProductStockService.findListForQuery(stockTotalPage);
+		 Double gCount=0.00;//过期数量
+		 Double jCount=0.00;//近效期数量
+		 Double pCount=0.00;//总数量
+		 if(aList!=null&&!aList.isEmpty()){
+			 for (PdProductStock p : aList) {
+				 if(PdConstant.PD_STATE_1.equals(p.getPdState())){
+					 gCount++;
+				 }else if(PdConstant.PD_STATE_0.equals(p.getPdState())){
+					 jCount++;
+				 }
+				 pCount+=p.getStockNum();
+			 }
+		 }
+		 Map map=new HashMap();
+		 map.put("records",page);
+		 map.put("gCount",gCount);//过期数量
+		 map.put("jCount",jCount);//近效期数量
+		 map.put("pCount",pCount);//总数量
+		 return Result.ok(map);
+	 }
+
+
 
     /**
     * 导出excel

@@ -1,8 +1,11 @@
 package org.jeecg.modules.pd.service.impl;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.jeecg.modules.pd.entity.PdProductStock;
+import org.jeecg.modules.pd.entity.PdProductStockTotal;
 import org.jeecg.modules.pd.mapper.PdProductStockMapper;
 import org.jeecg.modules.pd.service.IPdProductStockService;
+import org.jeecg.modules.pd.vo.PdProductStockTotalPage;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -19,7 +22,24 @@ public class PdProductStockServiceImpl extends ServiceImpl<PdProductStockMapper,
 	
 	@Autowired
 	private PdProductStockMapper pdProductStockMapper;
-	
+
+
+	/**
+	 * 查询列表
+	 * @param page
+	 * @param stockTotalPage
+	 * @return
+	 */
+	@Override
+	public Page<PdProductStock> selectList(Page<PdProductStock> page, PdProductStockTotalPage stockTotalPage) {
+		return page.setRecords(pdProductStockMapper.selectList(stockTotalPage));
+	}
+
+	@Override
+	public List<PdProductStock> findListForQuery(PdProductStockTotalPage stockTotalPage) {
+		return pdProductStockMapper.selectList(stockTotalPage);
+	}
+
 	@Override
 	public List<PdProductStock> selectByMainId(String mainId) {
 		return pdProductStockMapper.selectByMainId(mainId);

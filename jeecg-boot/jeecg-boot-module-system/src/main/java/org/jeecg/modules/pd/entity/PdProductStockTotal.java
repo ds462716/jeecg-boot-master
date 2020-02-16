@@ -1,8 +1,8 @@
 package org.jeecg.modules.pd.entity;
 
-import java.io.Serializable;
 import java.util.Date;
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
@@ -42,9 +42,12 @@ public class PdProductStockTotal extends BaseEntity {
 	/**所属部门*/
     @Excel(name = "所属部门", width = 15)
     private String sysOrgCode;
-	/***/
+	/**仓库id*/
     @Excel(name = "仓库id", width = 15)
     private String storeroomId;
+    /**仓库名称*/
+    @Excel(name = "仓库名称", width = 15)
+    private String storeroomName;
 	/**产品id*/
     @Excel(name = "产品id", width = 15)
     private String productId;
@@ -82,4 +85,20 @@ public class PdProductStockTotal extends BaseEntity {
 	/**是否永存*/
     @Excel(name = "是否永存", width = 15)
     private String isLong;
+
+    /**产品名称*/
+    @TableField(exist = false)
+    private String productName;
+    /**产品编号*/
+    @TableField(exist = false)
+    private String productNo;
+    /**单位名称*/
+    @TableField(exist = false)
+    private String unitName;
+    /**规格*/
+    @TableField(exist = false)
+    private String spec;
+    /**型号*/
+    @TableField(exist = false)
+    private String version;
 }
