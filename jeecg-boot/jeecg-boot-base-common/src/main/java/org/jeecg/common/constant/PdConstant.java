@@ -78,4 +78,10 @@ public interface PdConstant {
 	public final static String IS_LONG="";
 	public final static String IS_LONG_0="0";//否
 	public final static String IS_LONG_1="1";//是
+
+
+	//出入库类型
+	public final static String STOCK_RECORD_TYPE = "stock_record_type";
+	public final static String STOCK_RECORD_TYPE_IN = "0";		//入库
+	public final static String STOCK_RECORD_TYPE_OUT = "1";		//出库
 }

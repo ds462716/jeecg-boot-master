@@ -38,8 +38,8 @@
     </div>
     <!-- 操作按钮区域 -->
      <div class="table-operator">
-      <a-button @click="handleUpdate('Up')" type="primary" icon="plus">批量设置库存下限</a-button>
-      <a-button @click="handleUpdate('Down')" type="primary" icon="plus">批量设置库存上限</a-button>
+      <a-button @click="handleUpdate('Up')" type="primary" icon="plus">批量设置库存上限</a-button>
+      <a-button @click="handleUpdate('Down')" type="primary" icon="plus">批量设置库存下限</a-button>
       <a-button type="primary" icon="download" @click="handleExportXls('库存明细')">导出</a-button>
     </div>
     <!-- table区域-begin -->
@@ -64,15 +64,16 @@
 
         <span slot="action" slot-scope="text, record">
           <a @click="handleEdit(record)">库存明细</a>&nbsp;&nbsp;&nbsp;
-         <a  @click="handleDetail(record)">出入库明细</a>
+         <a  @click="handleRecordEdit(record)">出入库明细</a>
         </span>
-
       </a-table>
     </div>
 <!--设置库存上下限弹出框-->
     <pdProductStockTotal-modal ref="modalForm1" @ok="modalFormOk"></pdProductStockTotal-modal>
     <!--库存明细查看页面-->
     <pdProductStock-modal ref="stockForm" @ok="modalFormOk"></pdProductStock-modal>
+    <!--出入库明细查看页面-->
+    <pd-stock-record-detail-info-modal ref="stockForm2" @ok="modalFormOk"></pd-stock-record-detail-info-modal>
   </a-card>
 </template>
 <script>
@@ -80,6 +81,8 @@
   import { JeecgListMixin ,handleEdit} from '@/mixins/JeecgListMixin'
   import PdProductStockTotalModal from './modules/PdProductStockTotalModal'
   import PdProductStockModal from './modules/PdProductStockModal'
+  import PdStockRecordDetailInfoModal from './modules/PdStockRecordDetailInfoModal'
+
   import { getAction } from '@/api/manage'
   import {initDictOptions, filterMultiDictText} from '@/components/dict/JDictSelectUtil'
 
@@ -87,7 +90,9 @@
     name: "PdProductStockTotalList",
     mixins:[JeecgListMixin],
     components: {
-      PdProductStockTotalModal,PdProductStockModal
+      PdProductStockTotalModal,
+      PdProductStockModal,
+      PdStockRecordDetailInfoModal
     },
     data () {
       return {
@@ -231,6 +236,11 @@
         this.$refs.stockForm.edit(record);
         this.$refs.stockForm.title = "库存明细";
         this.$refs.stockForm.disableSubmit = false;
+      },
+      handleRecordEdit: function (record) { //编译
+        this.$refs.stockForm2.edit(record);
+        this.$refs.stockForm2.title = "出入库明细";
+        this.$refs.stockForm2.disableSubmit = false;
       },
       handleUpdate(type) { //设置库存上限
         if (this.selectedRowKeys.length <= 0) {

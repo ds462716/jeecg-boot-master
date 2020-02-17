@@ -75,7 +75,7 @@
                 <td>{{item.productNum}}</td>
                 <td>
                   <a-form-item>
-                    <a-input-number  :disabled="disableSubmit" :style="{width: 'calc(120% - 5px)'}" @blur="(e)=>{handleConfirmBlur(e.target,item)}"  v-decorator="['pdApplyDetailTable['+index+'].length', {'initialValue':item.applyCount,rules:validatorRules.applyCount}]"/>
+                    <a-input  :disabled="disableSubmit" :style="{width: 'calc(120% - 5px)'}" @blur="(e)=>{handleConfirmBlur(e.target,item)}"  v-decorator="['pdApplyDetailTable['+index+'].applyCount', {'initialValue':item.applyCount,rules:validatorRules.applyCount}]"/>
                   </a-form-item>
                 </td>
                 <td>{{item.stockNum}}</td>
@@ -126,7 +126,12 @@
           applyNum:{},
           realName:{},
           remarks:{},
-          refuseReason:{}
+          refuseReason:{},
+          applyCount:[
+            {required: true,message: '请输入值'},
+            {pattern: '^([1-9][0-9]*)+(.[0-9]{1,2})?$',
+              message: '格式不正确'
+            }]
         },
         refKeys: ['pdApplyDetail', ],
         tableKeys:['pdApplyDetail', ],

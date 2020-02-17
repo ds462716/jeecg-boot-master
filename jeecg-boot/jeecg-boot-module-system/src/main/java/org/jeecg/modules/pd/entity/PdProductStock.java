@@ -44,8 +44,8 @@ public class PdProductStock extends BaseEntity {
 	/**所属部门*/
 	@Excel(name = "所属部门", width = 15)
 	private String sysOrgCode;
-	/**库房ID*/
-	private String storeroomId;
+	/**科室ID*/
+	private String deptId;
 	/**产品id*/
 	@Excel(name = "产品id", width = 15)
 	private String productId;

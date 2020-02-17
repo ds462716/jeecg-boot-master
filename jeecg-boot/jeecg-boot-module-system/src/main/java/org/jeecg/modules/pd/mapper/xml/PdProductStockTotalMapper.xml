@@ -6,8 +6,8 @@
 		a.id,
 		a.product_id,
 		a.stock_num,
-		a.storeroom_id,
-		a.storeroom_name,
+		a.dept_id,
+		a.dept_name,
 		a.limit_up,
 		a.limit_down,
 		a.expire,
@@ -61,8 +61,8 @@
             <if test="id != null and id != ''">
                 AND a.id = #{id}
             </if>
-            <if test="storeroomName != null and storeroomName != ''">
-                AND a.storeroom_name = #{storeroomName}
+            <if test="deptName != null and deptName != ''">
+                AND a.dept_name = #{deptName}
             </if>
             <if test="productName != null and productName != ''">
                 AND c.name = #{productName}
@@ -74,7 +74,7 @@
 
     <update id="updateProductStock">
         UPDATE pd_product_stock_total   SET
-        <if test="limitUp!=null and limitUp!='' ">
+        <if test="limitUp !=null and limitUp !=''  ">
             limit_up = #{limitUp}
         </if>
         <if test="limitDown!=null and limitDown!='' ">
@@ -90,8 +90,8 @@
         <if test="id != null and id != ''">
             AND id = #{id}
         </if>
-        <if test="storeroomId != null and storeroomId != ''">
-            AND storeroom_id = #{storeroomId}
+        <if test="deptId != null and deptId != ''">
+            AND dept_id = #{deptId}
         </if>
         <if test="productId != null and productId != ''">
             AND product_id = #{productId}

@@ -43,11 +43,11 @@ public class PdProductStockTotal extends BaseEntity {
     @Excel(name = "所属部门", width = 15)
     private String sysOrgCode;
 	/**仓库id*/
-    @Excel(name = "仓库id", width = 15)
-    private String storeroomId;
+    @Excel(name = "科室id", width = 15)
+    private String deptId;
     /**仓库名称*/
-    @Excel(name = "仓库名称", width = 15)
-    private String storeroomName;
+    @Excel(name = "科室名称", width = 15)
+    private String deptName;
 	/**产品id*/
     @Excel(name = "产品id", width = 15)
     private String productId;

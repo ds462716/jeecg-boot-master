@@ -74,8 +74,8 @@
                 <td>{{item.stockNum}}</td>
                 <td>
                    <a-form-item>
-                 <a-input  :disabled="disableSubmit"  @blur="(e)=>{handleConfirmBlur(e.target,item)}"  v-decorator="['pdPurchaseDetailTable['+index+'].length', {'initialValue':item.applyCount,rules:validatorRules.applyCount}]"/>
-                  </a-form-item>
+                 <a-input  :disabled="disableSubmit"  @blur="(e)=>{handleConfirmBlur(e.target,item)}"  v-decorator="['pdPurchaseDetailTable['+index+'].applyCount', {'initialValue':item.applyCount,rules:validatorRules.applyCount}]"/>
+                   </a-form-item>
                 </td>
                 <td>{{item.inPrice}}</td>
                 <td>{{item.amountMoney}}</td>
@@ -129,7 +129,12 @@
           deptName:{},
           amountCount:{},
           amountMoney:{},
-          refuseReason:{}
+          refuseReason:{},
+          applyCount:[
+            {required: true,message: '请输入值'},
+            {pattern: '^([1-9][0-9]*)+(.[0-9]{1,2})?$',
+              message: '格式不正确'
+            }],
         },
         refKeys: ['pdPurchaseDetail', ],
         tableKeys:['pdPurchaseDetail', ],

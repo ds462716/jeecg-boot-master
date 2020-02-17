@@ -10,10 +10,10 @@
   <a-spin :spinning="confirmLoading">
     <a-form :form="form">
       <a-form-item v-if="model.type=='Up'"  label="库存上限"    :labelCol="labelCol" :wrapperCol="wrapperCol">
-        <a-input ref="inputFocus" v-decorator="[ 'limitUp', validatorRules.limitUp]" placeholder="请输入值"></a-input>
+        <a-input  style="width:100%;"  ref="inputFocus" v-decorator="[ 'limitUp', validatorRules.limitUp]" placeholder="请输入值"></a-input>
       </a-form-item>
         <a-form-item  v-if="model.type=='Down'"  label="库存下限"    :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input ref="inputFocus" v-decorator="[ 'limitDown', validatorRules.limitDown]" placeholder="请输入值"></a-input>
+          <a-input  style="width:100%;" ref="inputFocus" v-decorator="[ 'limitDown', validatorRules.limitDown]" placeholder="请输入值"></a-input>
         </a-form-item>
     </a-form>
   </a-spin>
@@ -48,8 +48,14 @@
         typeValue : false,
         confirmLoading: false,
         validatorRules:{
-          limitUp:{rules: [{ required: true, message: '请输入值!' }]},
-          limitDown:{rules: [{ required: true, message: '请输入值!' }]},
+          limitUp:{rules: [{ required: true, message: '请输入值!' },
+              {pattern: '^([1-9][0-9]*)+(.[0-9]{1,2})?$',
+                message: '格式不正确'
+              }]},
+          limitDown:{rules: [{ required: true, message: '请输入值!' },
+              {pattern: '^([1-9][0-9]*)+(.[0-9]{1,2})?$',
+                message: '格式不正确'
+              }]},
         },
         url: {
           edit : "/pd/pdProductStockTotal/updateProductStock",

@@ -10,9 +10,10 @@
       <a-button type="primary" @click="handleCancel">返回</a-button>
     </template>
     <div class="numberWARAP">
-      <div class="total">总数量：<span id="totalNum">{{this.validatorRules.pCount}}</span></div>
-      <div class="nearTime">近效期数量：<span id="nearNum">{{this.validatorRules.jCount}}</span></div>
-      <div class="overTime">过期数量：<span id="overNum">{{this.validatorRules.gCount}}</span></div>
+      <div class="total">入库总数量：<span id="totalNum">{{this.validatorRules.productTotNum}}</span></div>
+      <div class="nearTime">入库总金额：<span id="nearNum">{{this.validatorRules.inPrice}}</span></div>
+      <div class="overTime">出库总数量：<span id="overNum">{{this.validatorRules.productOutTotNum}}</span></div>
+      <div class="overMomy">出库总金额：<span id="overMomy">{{this.validatorRules.outPrice}}</span></div>
     </div>
     <a-spin :spinning="confirmLoading">
       <!-- 查询区域 -->
@@ -20,13 +21,13 @@
         <a-form layout="inline" @keyup.enter.native="searchQuery">
           <a-row :gutter="24">
             <a-col :md="6" :sm="8">
-              <a-form-item label="产品编号">
-                <a-input placeholder="请输入产品编号" v-model="queryParam.productNo"></a-input>
+              <a-form-item label="生产厂家">
+                <a-input placeholder="请输入生产厂家" v-model="queryParam.venderName"></a-input>
               </a-form-item>
             </a-col>
             <a-col :md="6" :sm="8">
-              <a-form-item label="产品名称">
-                <a-input placeholder="请输入产品名称" v-model="queryParam.productName"></a-input>
+              <a-form-item label="产品批号">
+                <a-input placeholder="请输入产品批号" v-model="queryParam.batchNo"></a-input>
               </a-form-item>
             </a-col>
             <a-col :md="6" :sm="8">
@@ -58,28 +59,26 @@
     </a-spin>
   </a-modal>
 </template>
-
 <script>
-
   import { httpAction,getAction } from '@/api/manage'
   import { JeecgListMixin } from '@/mixins/JeecgListMixin'
   import {initDictOptions, filterMultiDictText} from '@/components/dict/JDictSelectUtil'
-
   export default {
-    name: "PdProductStockModel",
+    name: "PdStockRecordDetailInfoModal",
     mixins:[JeecgListMixin],
     components: {
     },
     data () {
       return {
         form: this.$form.createForm(this),
-        title:"库存产品",
+        title:"出入库明细",
         width:1200,
         visible: false,
         validatorRules: {
-          pCount:{},//总数量
-          gCount:{},//过期数量
-          jCount:{},//近效期数量
+          productTotNum:{},//入库总数量
+          productOutTotNum:{},//出库总数量
+          inPrice:{},//入库总金额
+          outPrice:{},//出库总金额
         },
         confirmLoading: false,
         // 表头
@@ -93,11 +92,6 @@
             title:'产品编号',
             align:"center",
             dataIndex: 'productNo'
-          },
-          {
-            title:'产品条码',
-            align:"center",
-            dataIndex: 'productBarCode'
           },
           {
             title:'规格',
@@ -117,7 +111,7 @@
           {
             title:'有效期',
             align:"center",
-            dataIndex: 'validDate'
+            dataIndex: 'limitDate'
           },
           {
             title:'单位',
@@ -125,8 +119,53 @@
             dataIndex: 'unitName'
           },
           {
-            title: '生产厂家',
+            title:'出入库类型',
+            align:"center",
+            dataIndex: 'recodeType'
+          },
+          {
+            title:'数量',
+            align:"center",
+            dataIndex: 'productNum'
+          },
+          {
+            title: '入库单价',
             align: "center",
+            dataIndex: 'inPrice'
+          },
+          {
+            title:'入库金额',
+            align:"center",
+            dataIndex: 'outPrice'
+          },
+          {
+            title: '出库单价',
+            align: "center",
+            dataIndex: 'outPrice'
+          },
+          {
+            title:'出库金额',
+            align:"center",
+            dataIndex: 'stockNum'
+          },
+          {
+            title:'入库科室',
+            align:"center",
+            dataIndex: 'inDepaetId'
+          },
+          {
+            title:'出库科室',
+            align:"center",
+            dataIndex: 'outDepartId'
+          },
+          {
+            title:'出入库时间',
+            align:"center",
+            dataIndex: 'recordDate'
+          },
+          {
+            title:'生产厂家',
+            align:"center",
             dataIndex: 'venderName'
           },
           {
@@ -134,38 +173,10 @@
             align:"center",
             dataIndex: 'registration'
           },
-          {
-            title:'数量',
-            align:"center",
-            dataIndex: 'stockNum'
-          },
-          {
-            title:'是否过期',
-            align:"center",
-            dataIndex: 'pdState',
-            customRender:(text)=>{
-              if(!text){
-                return ''
-              }else{
-                return filterMultiDictText(this.dictOptions['pdState'], text+"")
-              }
-            }
-          },
-          {
-            title:'是否久存',
-            align:"center",
-            dataIndex: 'isLong',
-            customRender:(text)=>{
-              if(!text){
-                return ''
-              }else{
-                return filterMultiDictText(this.dictOptions['isLong'], text+"")
-              }
-            }
-          }
+
         ],
         url: {
-          list: "/pd/pdProductStockTotal/chooseProductStockList",
+          list: "/pd/pdProductStockTotal/stockInAndOutRecordDetailQuery",
         },
         dictOptions:{
           pdState:[],
@@ -191,11 +202,12 @@
         this.loading = true;
         getAction(this.url.list, params).then((res) => {
           if (res.success) {
-            this.validatorRules.pCount=res.result.pCount;
-            this.validatorRules.gCount=res.result.gCount;
-            this.validatorRules.jCount=res.result.jCount;
-            this.dataSource = res.result.records.records;
-            this.ipagination.total = res.result.records.total;
+            this.validatorRules.productTotNum=res.result.productTotNum;
+            this.validatorRules.productOutTotNum=res.result.productOutTotNum;
+            this.validatorRules.inPrice=res.result.inPrice;
+            this.validatorRules.outPrice=res.result.outPrice;
+            this.dataSource = res.result.page.records;
+            this.ipagination.total = res.result.page.total;
           }
           if(res.code===510){
             this.$message.warning(res.message)
@@ -248,8 +260,8 @@
 </script>
 <style scoped>
   .numberWARAP{width:100%;height:20px;line-height:20px;margin:1px 0;}
-  .numberWARAP>div{float:left;width:33%;height:30px;line-height:30px;color:#666;font-size:16px;text-align:center;border-right:1px solid #ccc;}
-  .numberWARAP>div:nth-child(3){border:none;}
+  .numberWARAP>div{float:left;width:25%;height:30px;line-height:30px;color:#666;font-size:16px;text-align:center;border-right:1px solid #ccc;}
+  .numberWARAP>div:nth-child(4){border:none;}
   .changeColor .red td,.changeColor .red td a{color: red}
   @import '~@assets/less/common.less'
 </style>

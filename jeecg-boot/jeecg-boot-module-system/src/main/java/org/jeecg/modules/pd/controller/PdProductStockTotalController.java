@@ -2,6 +2,7 @@ package org.jeecg.modules.pd.controller;
 
 import java.io.UnsupportedEncodingException;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.net.URLDecoder;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -13,12 +14,15 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.toolkit.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.jeecg.common.constant.PdConstant;
 import org.jeecg.modules.pd.entity.PdProductStock;
 import org.jeecg.modules.pd.entity.PdProductStockTotal;
 import org.jeecg.modules.pd.entity.PdPurchaseOrder;
+import org.jeecg.modules.pd.entity.PdStockRecordDetail;
 import org.jeecg.modules.pd.service.IPdProductStockService;
 import org.jeecg.modules.pd.service.IPdProductStockTotalService;
+import org.jeecg.modules.pd.service.IPdStockRecordDetailService;
 import org.jeecg.modules.pd.vo.PdProductStockTotalPage;
 import org.jeecgframework.poi.excel.ExcelImportUtil;
 import org.jeecgframework.poi.excel.def.NormalExcelConstants;
@@ -32,6 +36,7 @@ import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.util.oConvertUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.multipart.MultipartFile;
@@ -56,7 +61,8 @@ public class PdProductStockTotalController {
 	 private IPdProductStockTotalService pdProductStockTotalService;
 	 @Autowired
 	 private IPdProductStockService pdProductStockService;
-
+	 @Autowired
+	 private IPdStockRecordDetailService pdStockRecordDetailService;
 	 /**
 	  * 分页列表查询
 	  *
@@ -181,7 +187,7 @@ public class PdProductStockTotalController {
 
 
 	 /**
-	  * 分页查询库存明细信息
+	  * 分页查询库存明细信息  mcb  --20200217   用于库存管理查询库存明细信息
 	  *
 	  * @param stockTotalPage
 	  * @param pageNo
@@ -222,6 +228,54 @@ public class PdProductStockTotalController {
 	 }
 
 
+
+
+	 /**
+	  * 查询出入库明细  mcb  --20200217 用于库存管理查询出入库明细
+	  * @param stockTotalPage
+	  * @param pageNo
+	  * @param pageSize
+	  * @param req
+	  * @return
+	  */
+	 @GetMapping(value = "/stockInAndOutRecordDetailQuery")
+	 public Result<?> stockInAndOutRecordDetailQuery(PdProductStockTotalPage stockTotalPage,
+											 @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
+											 @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
+											 HttpServletRequest req) {
+
+		 Page<PdStockRecordDetail> page = new Page<PdStockRecordDetail>(pageNo, pageSize);
+		 //page = pdStockRecordDetailService.stockInAndOutRecordDetailQueryForPage(page,stockTotalPage);
+		 Double productTotNum = 0.00;//入库总数量
+		 Double productOutTotNum = 0.00;//出库总数量
+		 BigDecimal inPrice = new BigDecimal(0);//入库总金额
+		 BigDecimal outPrice = new BigDecimal(0);//出库总金额
+
+		 List<PdStockRecordDetail> list =null;// pdStockRecordDetailService.stockInAndOutRecordDetailQuery(stockTotalPage);
+		 if(list != null && list.size() > 0){
+			/* for (PdStockRecordDetail item : list) {
+					 if(PdConstant.STOCK_RECORD_TYPE_IN.equals(item.getRecodeType())){
+					 productTotNum += item.getProductNum();
+					 if(item.getInPrice() != null){
+						 inPrice = inPrice.add(item.getInPrice());
+					 }
+				 }else if(PdConstant.STOCK_RECORD_TYPE_OUT.equals(item.getRecodeType())){
+					 productOutTotNum += item.getProductNum();
+					 if(item.getOutPrice() != null){
+						 outPrice = outPrice.add(item.getOutPrice());
+					 }
+				 }
+			 }*/
+		 }
+
+		 Map map=new HashMap();
+		 map.put("page",page);
+		 map.put("productTotNum",productTotNum);//入库总数量
+		 map.put("productOutTotNum",productOutTotNum);//出库总数量
+		 map.put("inPrice",inPrice);//入库总金额
+		 map.put("outPrice",outPrice);//出库总金额
+		 return Result.ok(map);
+	 }
 
     /**
     * 导出excel
