@@ -48,7 +48,7 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @RequestMapping("/pd/pdStockRecord")
 @Slf4j
-public class PdStockRecordController {
+public class PdStockRecordInController {
 	@Autowired
 	private IPdStockRecordService pdStockRecordService;
 	@Autowired
