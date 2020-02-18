@@ -177,6 +177,7 @@
         this.model.orderStatus='2';//审核通过
         if(type=="no"){
           this.model.orderStatus='3';//拒绝
+          this.model.submitStart='3';//已撤回
         }
         this.form.validateFields((err, values) => {
           if(type=="no"){

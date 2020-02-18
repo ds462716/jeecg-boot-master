@@ -65,31 +65,34 @@ public class PdApplyOrderController {
 	 * @return
 	 */
 	@GetMapping(value = "/list")
-	public Result<?> queryPageList(PdApplyOrder pdApplyOrder,
+	public Result<?> queryPageList(PdApplyOrderPage pdApplyOrderPage,
 								   @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
 								   @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
 								   HttpServletRequest req) {
 		Page<PdApplyOrder> page = new Page<PdApplyOrder>(pageNo, pageSize);
-		IPage<PdApplyOrder> pageList = pdApplyOrderService.selectList(page, pdApplyOrder);
+		IPage<PdApplyOrder> pageList = pdApplyOrderService.selectList(page, pdApplyOrderPage);
 		return Result.ok(pageList);
 	}
 	 /**
 	  * 分页列表查询(审核页面)
 	  *
-	  * @param pdApplyOrder
+	  * @param pdApplyOrderPage
 	  * @param pageNo
 	  * @param pageSize
 	  * @param req
 	  * @return
 	  */
 	 @GetMapping(value = "/auditList")
-	 public Result<?> queryPageAuditList(PdApplyOrder pdApplyOrder,
+	 public Result<?> queryPageAuditList(PdApplyOrderPage pdApplyOrderPage,
 									@RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
 									@RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
 									HttpServletRequest req) {
 		 Page<PdApplyOrder> page = new Page<PdApplyOrder>(pageNo, pageSize);
-		 pdApplyOrder.setSubmitStart(PdConstant.SUBMIT_STATE_2);// 已提交
-		 IPage<PdApplyOrder> pageList = pdApplyOrderService.selectList(page, pdApplyOrder);
+		 List<String> list=new ArrayList<>();
+		 list.add(PdConstant.SUBMIT_STATE_2);//已提交
+		 list.add(PdConstant.SUBMIT_STATE_3);//已撤回
+		 pdApplyOrderPage.setSubmitStartList(list);
+		 IPage<PdApplyOrder> pageList = pdApplyOrderService.selectList(page, pdApplyOrderPage);
 		 return Result.ok(pageList);
 	 }
 
@@ -112,6 +115,8 @@ public class PdApplyOrderController {
 		 pdApplyOrder.setRealName(sysUser.getRealname());
 		 pdApplyOrder.setDeptId(sysDepart.getId());
 		 pdApplyOrder.setDeptName(sysDepart.getDepartName());
+		 pdApplyOrder.setSubmitStart(PdConstant.SUBMIT_STATE_1);
+		 pdApplyOrder.setApplyStatus(PdConstant.ORDER_STATE_0);
 		 result.setResult(pdApplyOrder);
 		 result.setSuccess(true);
 		 return result;

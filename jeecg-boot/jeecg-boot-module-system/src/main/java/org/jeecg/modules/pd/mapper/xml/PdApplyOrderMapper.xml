@@ -64,6 +64,13 @@
             <if test="submitStart != null and submitStart != ''">
                 AND a.submit_start = #{submitStart}
             </if>
+            <if test="submitStartList != null and submitStartList.size() > 0">
+                and a.submit_start IN
+                <foreach collection="submitStartList" item="item" separator="," open="(" close=")">
+                    #{item}
+                </foreach>
+            </if>
+            ORDER BY a.apply_date DESC
         </where>
     </select>
 </mapper>

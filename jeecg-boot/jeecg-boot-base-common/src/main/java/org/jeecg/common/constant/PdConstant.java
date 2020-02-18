@@ -33,9 +33,9 @@ public interface PdConstant {
 	/**
 	 * 提交状态
 	 */
-	public static final String  SUBMIT_STATE_1= "1";//未提交
+	public static final String  SUBMIT_STATE_1= "1";//待提交
 	public static final String  SUBMIT_STATE_2= "2";//已提交
-
+	public static final String  SUBMIT_STATE_3= "3";//已撤回
 	/**
 	 * 删除状态
 	 */

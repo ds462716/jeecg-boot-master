@@ -90,9 +90,9 @@ public class PdProductStockTotalController {
          Double limtCount=0.00;//超出库房上下限产品数量
          if(aList!=null&&!aList.isEmpty()){
              for (PdProductStockTotal p : aList) {
-                 if(PdConstant.PD_STATE_1.equals(p.getExpire())){
+                 if(PdConstant.PD_STATE_2.equals(p.getExpire())){
                      gCount++;
-                 }else if(PdConstant.PD_STATE_0.equals(p.getExpire())){
+                 }else if(PdConstant.PD_STATE_1.equals(p.getExpire())){
                      jCount++;
                  }
                  if(PdConstant.IS_LONG_1.equals(p.getIsLong())){
@@ -211,9 +211,9 @@ public class PdProductStockTotalController {
 		 Double pCount=0.00;//总数量
 		 if(aList!=null&&!aList.isEmpty()){
 			 for (PdProductStock p : aList) {
-				 if(PdConstant.PD_STATE_1.equals(p.getPdState())){
+				 if(PdConstant.PD_STATE_2.equals(p.getPdState())){
 					 gCount++;
-				 }else if(PdConstant.PD_STATE_0.equals(p.getPdState())){
+				 }else if(PdConstant.PD_STATE_1.equals(p.getPdState())){
 					 jCount++;
 				 }
 				 pCount+=p.getStockNum();
@@ -277,6 +277,25 @@ public class PdProductStockTotalController {
 		 return Result.ok(map);
 	 }
 
+
+	 /**
+	  * 分页查询库存明细信息  mcb  --20200217   用于统计查询库存明细信息
+	  *
+	  * @param stockTotalPage
+	  * @param pageNo
+	  * @param pageSize
+	  * @param req
+	  * @return
+	  */
+	 @GetMapping(value = "/queryList")
+	 public Result<?> queryList(PdProductStockTotalPage stockTotalPage,
+											 @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
+											 @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
+											 HttpServletRequest req) {
+		 Page<PdProductStock> page = new Page<PdProductStock>(pageNo, pageSize);
+		 page = pdProductStockService.selectList(page,stockTotalPage);
+		 return Result.ok(page);
+	 }
     /**
     * 导出excel
     *
