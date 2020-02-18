@@ -23,6 +23,27 @@
               </a-form-item>
             </a-col>
             <a-col :md="6" :sm="8">
+              <a-form-item label="供应商">
+                <a-select
+                  ref="supplierSelect"
+                  showSearch
+                  :supplierId="supplierValue"
+                  placeholder="请选择供应商"
+                  :defaultActiveFirstOption="false"
+                  :showArrow="true"
+                  :filterOption="false"
+                  @search="supplierHandleSearch"
+                  @change="supplierHandleChange"
+                  @focus="supplierHandleSearch"
+                  :notFoundContent="notFoundContent"
+                  v-model="queryParam.supplierId"
+                  :disabled="supplierSelecDisabled"
+                >
+                  <a-select-option v-for="d in supplierData" :key="d.value">{{d.text}}</a-select-option>
+                </a-select>
+              </a-form-item>
+            </a-col>
+            <a-col :md="6" :sm="8">
             <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
               <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
               <a-button type="primary" @click="searchReset" icon="reload" style="margin-left: 8px">重置</a-button>
@@ -47,10 +68,7 @@
         :pagination="ipagination"
         :loading="loading"
         :rowSelection="{fixed:true,selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
-
         @change="handleTableChange">
-
-
       </a-table>
     </a-spin>
   </a-modal>
@@ -58,6 +76,7 @@
 
 <script>
 
+  import Vue from 'vue'
   import { httpAction,getAction } from '@/api/manage'
   import { JeecgListMixin } from '@/mixins/JeecgListMixin'
   import { FormTypes } from '@/utils/JEditableTableUtil'
@@ -73,8 +92,15 @@
         title:"选择产品",
         width:1200,
         visible: false,
+        supplierId:"", //供应商ID 用于入库时查询产品
         // model: {},
         confirmLoading: false,
+
+        supplierSelecDisabled:false,
+        supplierValue: undefined,
+        notFoundContent:"未找到内容",
+        supplierData: [],
+
         // 表头
         columns: [
           {
@@ -125,16 +151,31 @@
           {
             title: '进价',
             align:"center",
+            colSpan: 0,
             dataIndex: 'purchasePrice',
+            customRender: (value, row, index) => {
+              const obj = {
+                attrs: {colSpan:0},
+              };
+              return obj;
+            },
           },
           {
             title: '出价',
             align:"center",
+            colSpan: 0,
             dataIndex: 'sellingPrice',
+            customRender: (value, row, index) => {
+              const obj = {
+                attrs: {colSpan:0},
+              };
+              return obj;
+            },
           },
         ],
         url: {
           list: "/pd/pdProduct/chooseProductList",
+          querySupplier:"/pd/pdSupplier/getSupplierList",
         }
       }
     },
@@ -142,10 +183,24 @@
       close () {
         this.selectedRowKeys = [];
         this.selectionRows = [];
+        // this.queryParam.supplierId="";
+        this.queryParam = {};
+        this.loadData(1);
+        // this.supplierData = [];
         this.$emit('close');
         this.visible = false;
       },
-      show() {
+      show(params) {
+        if(params && params.supplierId){
+          this.supplierId = params.supplierId;
+          this.$nextTick(() => {
+            // this.$refs.supplierSelect.disabled="disabled";
+            this.supplierHandleSearch(); //初始化供应商
+            this.queryParam.supplierId = this.supplierId; //默认选择父页面传来的供应商
+            this.supplierSelecDisabled = true;
+            this.loadData(1);
+          })
+        }
         this.visible = true;
       },
       handleOk () {
@@ -159,8 +214,72 @@
       popupCallback(row){
 
       },
+      loadData(arg) {
+        if(!this.url.list){
+          this.$message.error("请设置url.list属性!")
+          return
+        }
+        //加载数据 若传入参数1则加载第一页的内容
+        if (arg === 1) {
+          this.ipagination.current = 1;
+        }
+        var params = this.getQueryParams();//查询条件
+        if(this.supplierId){
+          params.supplierId = this.supplierId;
+        }
+        this.loading = true;
+        getAction(this.url.list, params).then((res) => {
+          if (res.success) {
+            this.dataSource = res.result.records;
+            this.ipagination.total = res.result.total;
+          }
+          if(res.code===510){
+            this.$message.warning(res.message)
+          }
+          this.loading = false;
+        })
+      },
 
-
+      //供应商查询start
+      supplierHandleSearch(value) {
+        fetch(value, data => (this.supplierData = data),this.url.querySupplier);
+      },
+      supplierHandleChange(value) {
+        this.supplierValue = value;
+        fetch(value, data => (this.supplierData = data),this.url.querySupplier);
+      },
+      //供应商查询end
     }
+  }
+
+  let timeout;
+  let currentValue;
+
+  function fetch(value, callback,url) {
+    if (timeout) {
+      clearTimeout(timeout);
+      timeout = null;
+    }
+    currentValue = value;
+
+    function fake() {
+      getAction(url, {name: value}).then((res) => {
+        if (!res.success) {
+          this.cmsFailed(res.message);
+        }
+        if (currentValue === value) {
+          const result = res.result;
+          const data = [];
+          result.forEach(r => {
+            data.push({
+              value: r.id,
+              text: r.name,
+            });
+          });
+          callback(data);
+        }
+      })
+    }
+    timeout = setTimeout(fake, 0); //这边不延迟
   }
 </script>

@@ -142,33 +142,16 @@
                       <a-input ref="productBarCodeInput" placeholder="请输入二级条码" v-model="queryParam.productBarCode" @keyup.enter.native="searchQuery(1)"></a-input>
                     </a-form-item>
                   </a-col>
-                  <a-col :md="6" :sm="8">
-                    <a-form-item label="" :labelCol="labelCol" :wrapperCol="wrapperCol" style="text-align: right">
+                  <a-col :md="12" :sm="8">
+                    <a-form-item label="" :labelCol="labelCol" :wrapperCol="wrapperCol" style="text-align: left;padding-left: 15px;">
                       提示：按<span style="color: red">Ctrl+Alt</span>键快速定位到扫码输入框
                     </a-form-item>
                   </a-col>
                 </a-row>
-                <!--<a-row>-->
-                  <!--<a-col :md="6" :sm="8">-->
-                    <!--<a-form-item label="产品名称" :labelCol="labelCol" :wrapperCol="wrapperCol">-->
-                      <!--<a-input placeholder="请输入产品编号" v-model="queryParam.productName" @keyup.enter.native="searchQuery(2)"></a-input>-->
-                    <!--</a-form-item>-->
-                  <!--</a-col>-->
-                  <!--<a-col :md="6" :sm="8">-->
-                    <!--<a-form-item label="规格" :labelCol="labelCol" :wrapperCol="wrapperCol">-->
-                      <!--<a-input placeholder="请输入规格" v-model="queryParam.spec" @keyup.enter.native="searchQuery(2)"></a-input>-->
-                    <!--</a-form-item>-->
-                  <!--</a-col>-->
-                  <!--<a-col :md="6" :sm="8">-->
-                    <!--<a-form-item label="型号" :labelCol="labelCol" :wrapperCol="wrapperCol">-->
-                      <!--<a-input placeholder="请输入型号" v-model="queryParam.version" @keyup.enter.native="searchQuery(2)"></a-input>-->
-                    <!--</a-form-item>-->
-                  <!--</a-col>-->
-                <!--</a-row>-->
               </a-form>
 
               <div style="margin-bottom: 8px;">
-                <a-button type="primary" icon="plus" @click="handleConfirmAdd">新增</a-button>
+                <a-button type="primary" icon="plus" @click="handleConfirmAdd">选择产品</a-button>
                 <span style="padding-left: 8px;"></span>
                 <a-popconfirm
                   :title="`确定要删除吗?`"
@@ -183,11 +166,22 @@
                 :loading="pdStockRecordDetailTable.loading"
                 :columns="pdStockRecordDetailTable.columns"
                 :dataSource="pdStockRecordDetailTable.dataSource"
-                :maxHeight="600"
+                :maxHeight="500"
                 :rowNumber="true"
                 :rowSelection="true"
                 :actionButton="false"
                 @valueChange="valueChange" />
+              <!--:maxHeight="600"-->
+
+
+              <a-row style="margin-top:10px;">
+                <a-col :md="6" :sm="8">
+                  <span style="font-weight: bold;font-size: large">总数量：{{ totalSum }}</span>
+                </a-col>
+                <a-col :md="6" :sm="8">
+                  <span style="font-weight: bold;font-size: large">总金额：{{ totalPrice }}</span>
+                </a-col>
+              </a-row>
             </a-tab-pane>
           </a-tabs>
         </a-card>
@@ -198,8 +192,8 @@
         <a-popconfirm title="确定放弃编辑？" @confirm="handleCancel" okText="确定" cancelText="取消">
           <a-button style="margin-right: 15px;">取  消</a-button>
         </a-popconfirm>
-        <a-button @click="handleOk" type="primary" :loading="confirmLoading" style="margin-right: 15px;">保存草稿</a-button>
-        <a-button @click="handleOk" type="primary" :loading="confirmLoading" style="margin-right: 15px;">提  交</a-button>
+        <a-button @click="saveBtn" type="primary" :loading="confirmLoading" style="margin-right: 15px;">保存草稿</a-button>
+        <a-button @click="submitBtn" type="primary" :loading="confirmLoading" style="margin-right: 15px;">提  交</a-button>
       </div>
 
     </a-spin>
@@ -262,6 +256,9 @@
         supplierData: [],
         //供应商下拉列表 end
         showOrderTable:false,
+
+        totalSum:'0',
+        totalPrice:'0.0000',
 
         //货区货位二级联动下拉框
         goodsAllocationList:[],
@@ -492,6 +489,7 @@
         this.visible = false;
         this.showOrderTable = false;
         this.pdPurchaseOrderDetailTable.dataSource = [];
+        this.queryParam = {};
         this.eachAllTable((item) => {
           item.initialize()
         })
@@ -542,8 +540,12 @@
           this.loading = false;
         })
       },
+      /** 保存草稿 **/
+      saveBtn() {
+
+      },
       /** 确定按钮点击事件 */
-      handleOk() {
+      submitBtn() {
         /** 触发表单验证 */
         this.getAllTable().then(tables => {
           /** 一次性验证主表和所有的次表 */
@@ -554,7 +556,8 @@
           }
           let formData = this.classifyIntoFormData(allValues)
           // 发起请求
-          // return this.request(formData)
+          return "";
+          // return this.request(formData);
         }).catch(e => {
           if (e.error === VALIDATE_NO_PASSED) {
             // 如果有未通过表单验证的子表，就自动跳转到它所在的tab
@@ -562,6 +565,25 @@
           } else {
             console.error(e)
           }
+        })
+      },
+      request(formData) {
+        let url = this.url.add, method = 'post'
+        if (this.model.id) {
+          url = this.url.edit
+          method = 'put'
+        }
+        this.confirmLoading = true
+        httpAction(url, formData, method).then((res) => {
+          if (res.success) {
+            this.$message.success(res.message)
+            this.$emit('ok')
+            this.close()
+          } else {
+            this.$message.warning(res.message)
+          }
+        }).finally(() => {
+          this.confirmLoading = false
         })
       },
       /** 整理成formData */
@@ -605,28 +627,28 @@
       },
       //选择订单后回调函数
       returnPurchaseOrderData(data) {
-        // this.$refs.pdPurchaseOrderDetail.getValues((error, values) => {
-          this.showOrderTable = true;
-          this.pdPurchaseOrderDetailTable.dataSource = data;
-        // })
-      },
-      returnProductData(data) {
-
+        this.showOrderTable = true;
+        this.pdPurchaseOrderDetailTable.dataSource = data;
       },
       //删除行
       handleConfirmDelete() {
         if(this.$refs.pdStockRecordDetail.selectedRowIds.length > 0){
           this.$refs.pdStockRecordDetail.removeSelectedRows();
+          this.$nextTick(() => {
+            this.valueChange();
+          })
         }else{
           this.$message.error("请选择需要删除的数据！")
         }
-        // this.$nextTick(() => {
-        //   this.valueChange();
-        // })
       },
       // 新增行
       handleConfirmAdd() {
-        this.$refs.pdChooseProductListModel.show();
+        let supplierId = this.form.getFieldValue("supplierId")
+        if(supplierId){
+          this.$refs.pdChooseProductListModel.show({supplierId:supplierId,supplierName:""});
+        }else{
+          this.$message.error("请先选择供应商！")
+        }
       },
       returnProductData(data) {
         this.$refs.pdStockRecordDetail.getValues((error, values) => {
@@ -661,6 +683,7 @@
           spec: row.spec,
           version: row.version,
           inPrice:row.purchasePrice,
+          price:Number(row.purchasePrice).toFixed(4),
           unitName: row.unitName,
           venderName: row.venderName,
           supplierName: row.supplierName,
@@ -671,28 +694,44 @@
       },
       // 产品数量变更
       valueChange(event) {
-        const { type, row, column, value, target } = event;
+        if(event){
+          const { type, row, column, value, target } = event;
+          // 库区库位二级联动
+          if (type === FormTypes.select) {
+            if (column.key === 'huoqu') {
+              let options = this.goodsAllocationList.filter(i => i.parent === value)
+              this.pdStockRecordDetailTable.columns[13].options = options
+              // 清空库区下拉框数据
+              target.setValues([{
+                rowKey: row.id,
+                values: { goodsAllocationId: '' }
+              }])
+            }
+          }
 
-        if (type === FormTypes.select) {
-          if (column.key === 'huoqu') {
-
-            let options = this.goodsAllocationList.filter(i => i.parent === value)
-            this.pdStockRecordDetailTable.columns[13].options = options
-            // 清空库区下拉框数据
-            target.setValues([{
-              rowKey: row.id,
-              values: { goodsAllocationId: '' }
-            }])
+          if(type === FormTypes.input){
+            if(column.key === "productNum"){
+              // 计算每条产品的价格
+              let price = (Number(row.inPrice) * Number(value)).toFixed(4);
+              target.setValues([{
+                rowKey: row.id,
+                values: { price: price }
+              }])
+            }
           }
         }
 
-        // this.$refs.pdStockRecordDetail.getValues((error, values) => {
-          // let sum = 0;
-          // values.forEach((item, idx) => {
-          //   sum = sum + Number(item.count);
-          // })
-          // this.form.setFieldsValue({sum:sum});
-        // })
+        // 计算总数量和总价格
+        this.$refs.pdStockRecordDetail.getValues((error, values) => {
+          let totalSum = 0;
+          let totalPrice = 0;
+          values.forEach((item, idx) => {
+            totalSum = totalSum + Number(item.productNum);
+            totalPrice = totalPrice + Number(item.price);
+          })
+          this.totalSum = totalSum;
+          this.totalPrice = totalPrice.toFixed(4);
+        })
       },
       searchQuery(num) {
         if(num == 0){
