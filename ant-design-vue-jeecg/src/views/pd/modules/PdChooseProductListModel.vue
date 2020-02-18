@@ -60,6 +60,7 @@
 
   import { httpAction,getAction } from '@/api/manage'
   import { JeecgListMixin } from '@/mixins/JeecgListMixin'
+  import { FormTypes } from '@/utils/JEditableTableUtil'
 
   export default {
     name: "PdChooseProductListModel",
@@ -120,7 +121,17 @@
             title: '生产厂家',
             align:"center",
             dataIndex: 'venderName'
-          }
+          },
+          {
+            title: '进价',
+            align:"center",
+            dataIndex: 'purchasePrice',
+          },
+          {
+            title: '出价',
+            align:"center",
+            dataIndex: 'sellingPrice',
+          },
         ],
         url: {
           list: "/pd/pdProduct/chooseProductList",

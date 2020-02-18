@@ -19,6 +19,9 @@ public class PdProductPage extends PdProduct {
     /** 产品名称 **/
     private String productName;
 
+    /** 产品编号 **/
+    private String productNumber;
+
     /** 单位名称 **/
     private String unitName;
 
@@ -38,7 +41,7 @@ public class PdProductPage extends PdProduct {
     /** 采购单价 **/
     private BigDecimal inPrice;
 
-    /** 采购价格 **/
+    /** 采购总价格 **/
     private BigDecimal price;
     //-------end 用于采购弹出框显示产品明细
 }

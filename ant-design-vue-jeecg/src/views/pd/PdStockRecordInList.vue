@@ -136,7 +136,7 @@
           {
             title:'入库库房',
             align:"center",
-            dataIndex: 'inDepaetId'
+            dataIndex: 'inDepartId'
           },
           {
             title:'供应商',
@@ -174,11 +174,11 @@
           }
         ],
         url: {
-          list: "/pd/pdStockRecord/list",
-          delete: "/pd/pdStockRecord/delete",
-          deleteBatch: "/pd/pdStockRecord/deleteBatch",
-          exportXlsUrl: "/pd/pdStockRecord/exportXls",
-          importExcelUrl: "pd/pdStockRecord/importExcel",
+          list: "/pd/pdStockRecordIn/list",
+          delete: "/pd/pdStockRecordIn/delete",
+          deleteBatch: "/pd/pdStockRecordIn/deleteBatch",
+          exportXlsUrl: "/pd/pdStockRecordIn/exportXls",
+          importExcelUrl: "pd/pdStockRecordIn/importExcel",
         },
         dictOptions:{
         },

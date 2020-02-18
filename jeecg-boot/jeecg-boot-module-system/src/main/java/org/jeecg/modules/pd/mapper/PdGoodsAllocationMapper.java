@@ -1,6 +1,7 @@
 package org.jeecg.modules.pd.mapper;
 
 import java.util.List;
+import java.util.Map;
 
 import org.jeecg.modules.pd.entity.PdGoodsAllocation;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
@@ -20,4 +21,6 @@ public interface PdGoodsAllocationMapper extends BaseMapper<PdGoodsAllocation> {
     List<SysDepartTreeModel> selectChildList(PdGoodsAllocation pdGoodsAllocation);
 
     List<PdGoodsAllocationPage> selectAllList(PdGoodsAllocation pdGoodsAllocation);
+
+    List<PdGoodsAllocationPage> getOptionsForSelect(PdGoodsAllocation pdGoodsAllocation);
 }

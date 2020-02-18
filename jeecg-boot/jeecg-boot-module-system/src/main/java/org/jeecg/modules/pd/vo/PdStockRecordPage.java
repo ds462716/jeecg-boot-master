@@ -87,7 +87,7 @@ public class PdStockRecordPage {
 	private String outDepartId;
 	/**入库部门ID*/
 	@Excel(name = "入库部门ID", width = 15)
-	private String inDepaetId;
+	private String inDepartId;
 	/**供应商ID*/
 	@Excel(name = "供应商ID", width = 15)
 	private String supplierId;
@@ -138,6 +138,11 @@ public class PdStockRecordPage {
 
 
 	@ExcelCollection(name="出入库明细表")
-	private List<PdStockRecordDetail> pdStockRecordDetailList;	
+	private List<PdStockRecordDetail> pdStockRecordDetailList;
+
+	/**
+	 * 货区货位列表 用于二级联动下拉框
+	 */
+	List<PdGoodsAllocationPage> goodsAllocationList;
 	
 }

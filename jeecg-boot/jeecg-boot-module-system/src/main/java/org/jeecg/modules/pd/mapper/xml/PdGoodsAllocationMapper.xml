@@ -78,10 +78,10 @@
                 or a.zdy LIKE concat('%',#{name},'%') )
             </if>
             <if test="departId != null and departId != ''">
-                AND a.depart_id LIKE concat('%',#{departId},'%')
+                AND a.depart_id = #{departId}
             </if>
             <if test="parentId != null and parentId != ''">
-                AND a.parent_id LIKE concat('%',#{parentId},'%')
+                AND a.parent_id = #{parentId}
             </if>
         </where>
         ORDER BY a.name
@@ -107,12 +107,26 @@
                 or a.zdy LIKE concat('%',#{name},'%') )
             </if>
             <if test="departId != null and departId != ''">
-                AND a.depart_id LIKE concat('%',#{departId},'%')
+                AND a.depart_id = #{departId}
             </if>
             <if test="parentId != null and parentId != ''">
-                AND a.parent_id LIKE concat('%',#{parentId},'%')
+                AND a.parent_id = #{parentId}
             </if>
         </where>
         ORDER BY a.name
+    </select>
+
+    <select id="getOptionsForSelect" resultType="org.jeecg.modules.pd.vo.PdGoodsAllocationPage" parameterType="org.jeecg.modules.pd.entity.PdGoodsAllocation">
+        SELECT
+            a.NAME AS label,
+            a.id AS 'value',
+            a.parent_id AS parent
+        FROM
+            pd_goods_allocation a
+        WHERE
+            a.del_flag = #{DEL_FLAG_NORMAL}
+        <if test="departId != null and departId != ''">
+            AND a.depart_id = #{departId}
+        </if>
     </select>
 </mapper>
