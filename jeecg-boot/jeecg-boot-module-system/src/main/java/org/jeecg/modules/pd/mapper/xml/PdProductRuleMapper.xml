@@ -4,7 +4,7 @@
 
 
 	<sql id="pdProductRuleColumns">
-		a.id AS ,
+		a.id,
 		a.product_id ,
 		a.rule_id
 	</sql>
@@ -31,14 +31,6 @@
 		  where product_id = #{productId}
 	</update>
 
-	<select id="getByRuleId" resultType="org.jeecg.modules.pd.entity.PdProductRule">
-		SELECT
-		<include refid="pdProductRuleColumns"/>
-		FROM pd_product_rule a
-		<include refid="pdProductRuleJoins"/>
-		WHERE a.id = #{id}
-	</select>
-
 	<!-- 根据编号查询产品信息 -->
 	<select id="selectList" resultType="org.jeecg.modules.pd.entity.PdProductRule">
 		SELECT
@@ -48,7 +40,7 @@
 		<include refid="pdProductRuleJoins"/>
 		<include refid="pdEncodingRuleJoins"/>
 		<where>
-			1 = 1
+			a.del_flag = #{DEL_FLAG_NORMAL} and b.del_flag = #{DEL_FLAG_NORMAL}
 			<if test="productId != null and productId != ''">
 				AND a.product_id = #{productId}
 			</if>

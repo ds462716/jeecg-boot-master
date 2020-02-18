@@ -1,14 +1,17 @@
 package org.jeecg.modules.pd.service.impl;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.PdConstant;
 import org.jeecg.modules.pd.entity.PdEncodingRule;
 import org.jeecg.modules.pd.entity.PdEncodingRuleDetail;
 import org.jeecg.modules.pd.entity.PdProduct;
 import org.jeecg.modules.pd.entity.PdProductRule;
 import org.jeecg.modules.pd.mapper.PdEncodingRuleDetailMapper;
+import org.jeecg.modules.pd.mapper.PdEncodingRuleMapper;
 import org.jeecg.modules.pd.mapper.PdProductMapper;
 import org.jeecg.modules.pd.mapper.PdProductRuleMapper;
+import org.jeecg.modules.pd.service.IPdEncodingRuleService;
 import org.jeecg.modules.pd.service.IPdProductRuleService;
 import org.jeecg.modules.pd.service.IPdProductService;
 import org.jeecg.modules.pd.vo.PdProductPage;
@@ -40,6 +43,9 @@ public class PdProductServiceImpl extends ServiceImpl<PdProductMapper, PdProduct
 
     @Autowired
     private PdProductMapper pdProductMapper;
+
+    @Autowired
+    private IPdEncodingRuleService pdEncodingRuleService;
 
     @Override
     public Page<PdProductPage> chooseProductList(Page<PdProductPage> pageList, PdProduct pdProduct) {
@@ -89,7 +95,7 @@ public class PdProductServiceImpl extends ServiceImpl<PdProductMapper, PdProduct
      * @return
      */
     @Override
-    public Map<String, Object> getScanCode(String barcode1, String barcode2) {
+    public Result<Map>  getScanCode(String barcode1, String barcode2, Result<Map> result) {
         Map<String,Object> resultMap = new HashMap<String,Object>();
         if(barcode1 != null && !"".equals(barcode1) && barcode2 != null && !"".equals(barcode2)){
             //如果是一个条码，两个值相同，不同是两段条码
@@ -119,13 +125,13 @@ public class PdProductServiceImpl extends ServiceImpl<PdProductMapper, PdProduct
                         }
                     }
                     //如果绑定多条编码规则且编码规则长度一致 只能取其中一条作为扫码规则
-                    PdEncodingRule encodingRule = pdProductRuleMapper.getByRuleId(pdProductRules.get(0).getRuleId());
+                    PdEncodingRule encodingRule = pdEncodingRuleService.getById(pdProductRules.get(0).getRuleId());
                     PdEncodingRuleDetail pdEncodingRuleDetail = new PdEncodingRuleDetail();
                     pdEncodingRuleDetail.setCodeId(pdProductRules.get(0).getRuleId());
                     List<PdEncodingRuleDetail> pdEncodingRuleDetails = pdEncodingRuleDetailMapper.selectList(pdEncodingRuleDetail);
                     //如果编码和条码为同一条
                     if(barcode.length()==encodingRule.getTotalDigit()){
-                        resultMap.put("code","200");
+                        result.setCode(200);
                         int barLength = barcode.length();
                         resultMap.put("secondCode",barcode.substring(endIndex,barLength));
                         String temp = barcode;
@@ -156,25 +162,26 @@ public class PdProductServiceImpl extends ServiceImpl<PdProductMapper, PdProduct
 
                     }
                     else{
-                        resultMap.put("code","500");
-                        resultMap.put("msg","解析失败，扫描的编码与绑定的规则长度不一致");
+                        result.setCode(500);
+                        result.setMessage("解析失败，扫描的编码与绑定的规则长度不一致");
                     }
                 }
                 else{
                     //没有绑定扫码规则
-                    resultMap.put("code","201");
+                    result.setCode(201);
                 }
             }
             else{
                 //没有绑定扫码规则
-                resultMap.put("code","201");
+                result.setCode(201);
             }
 
         }else{
-            resultMap.put("code","500");
-            resultMap.put("msg","解析失败，参数不正确");
+            result.setCode(500);
+            result.setMessage("解析失败，参数不正确");
         }
-        return  resultMap;
+        result.setResult(resultMap);
+        return  result;
 
     }
 

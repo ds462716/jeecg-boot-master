@@ -9,9 +9,9 @@
 		a.length ,
 		a.code_order ,
 		a.create_by ,
-		a.create_date,
+		a.create_time,
 		a.update_by,
-		a.update_date,
+		a.update_time,
 		a.remarks ,
 		a.del_flag
 	</sql>

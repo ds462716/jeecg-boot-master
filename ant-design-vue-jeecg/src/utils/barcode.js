@@ -2,18 +2,10 @@ var upn;//编号
 var _Lot;//批次
 var _ExpDate;//有效期
 var _secondCode;//二级条码
-var url ="/pd/pdProduct/scanCode"
+let url ="/pd/pdProduct/scanCode"
 
 import { httpAction } from '@/api/manage'
 
-export default
-{
-  upn,
-  _Lot,
-  _ExpDate,
-  _secondCode
-
-}
 
 //扫码取产品编号
 export function getPrdNumber(Barcode,that){
@@ -32,162 +24,83 @@ export function getPrdNumber(Barcode,that){
   return upn;
 }
 
-//判断是否符合扫码规则
-export function checkRule(Barcode){
-  if(Barcode.substr(0, 2) == "01"){
-    return true;
-  }else if(Barcode.substr(0, 2) == "00"){
-    return true;
-  }
-  //return false;2019年9月6日09:11:17什么码都集成
-  return true;
-}
 
 //扫码
-export function scanCode(Barcode1, Barcode2,that){
-  debugger
+export async function scanCode(Barcode1, Barcode2,that){
+  var barcodeObj = {};
   //扫码前校验该产品是否关联编码规则，如果关联编码规则用后台返回值，如果没有则继续使用
   //codeFlag true 有规则  false没有;
   let codeFlag = true;
-  let ruleFlag = checkRule(Barcode1);
-  if(ruleFlag){
-    //截取字符串01后面14位，根据编码查询是否关联编码规则
-    let resultUpn = true;
-    let formData = new URLSearchParams();
-    formData.append("Barcode1",Barcode1);
-    formData.append("Barcode2",Barcode2);
-    httpAction(url,formData,"post").then((res)=>{
-      if(res.success){
-        let json=eval(data);
-        if(json.code=="200"){
-          let flag = false;
-          if(data.hasOwnProperty("01")&&!data.hasOwnProperty("00")&&!data.hasOwnProperty("#")){
-            flag = true;
-            upn = json["01"];
-          }else if(data.hasOwnProperty("00")&&!data.hasOwnProperty("01")&&!data.hasOwnProperty("#")){
-            flag = true;
-            upn = json["00"];
-          }else if(data.hasOwnProperty("#")&&!data.hasOwnProperty("00")&&!data.hasOwnProperty("01")){
-            flag = true;
-            upn = json["#"];
-          }else{
-            upn = "";
-            //that.$message.error("没有解析出产品编号"  );
-          }
-          if(data.hasOwnProperty("10")&&!data.hasOwnProperty("21")){
-            flag = true;
-            _Lot = json["10"];
-          }else if(!data.hasOwnProperty("10")&&data.hasOwnProperty("21")){
-            flag = true;
-            _Lot = json["21"];
-          }else if(data.hasOwnProperty("10")&&data.hasOwnProperty("21")){
-            flag = true;
-            let key1 =  json["10"];
-            let key2 =  json["21"];
-            _Lot = key1+key2;
-          }else{
-            _Lot = "";
-            //that.$message.error("没有解析出批号"  );
-          }
-          if(data.hasOwnProperty("17")){
-            flag = true;
-            _ExpDate = json["17"];
-            _ExpDate = "20" + _ExpDate.substr(0, 2) + "-" + _ExpDate.substr(2, 2) + "-" + _ExpDate.substr(4, 2);  //   20YY-MM-DD
-          }else{
-            _ExpDate = "";
-            //that.$message.error("没有解析有效期" );
-          }
-          _secondCode = json["secondCode"];
-          if(!flag){
-            resultUpn = false;
-          }
-        }else if(json.code=="201"){
-          //没有规则
-          codeFlag = false;
+  //截取字符串01后面14位，根据编码查询是否关联编码规则
+  let resultUpn = true;
+  //封装查询参数
+  let formData = new URLSearchParams();
+  formData.append("Barcode1",Barcode1);
+  formData.append("Barcode2",Barcode2);
+  let res = await httpAction(url,formData,"post");
+    if(res.success){
+      if(res.code==200){
+        let json = res.result;
+        let flag = false;
+        if(json.hasOwnProperty("01")&&!json.hasOwnProperty("00")&&!json.hasOwnProperty("#")){
+          flag = true;
+          upn = json["01"];
+        }else if(json.hasOwnProperty("00")&&!json.hasOwnProperty("01")&&!json.hasOwnProperty("#")){
+          flag = true;
+          upn = json["00"];
+        }else if(json.hasOwnProperty("#")&&!json.hasOwnProperty("00")&&!json.hasOwnProperty("01")){
+          flag = true;
+          upn = json["#"];
         }else{
-          //后台错误
-          resultUpn = false;
-          that.$message.error(data.msg );
+          upn = "";
+          that.$message.error("没有解析出产品编号"  );
         }
+        //赋值编号
+        barcodeObj.upn = upn;
+        if(json.hasOwnProperty("10")&&!json.hasOwnProperty("21")){
+          _Lot = json["10"];
+        }else if(!json.hasOwnProperty("10")&&json.hasOwnProperty("21")){
+          _Lot = json["21"];
+        }else if(json.hasOwnProperty("10")&&json.hasOwnProperty("21")){
+          let key1 =  json["10"];
+          let key2 =  json["21"];
+          _Lot = key1+key2;
+        }else{
+          _Lot = "";
+          //that.$message.error("没有解析出批号"  );
+        }
+        //赋值批号
+        barcodeObj._Lot = _Lot;
+        if(json.hasOwnProperty("17")){
+          _ExpDate = json["17"];
+          _ExpDate = "20" + _ExpDate.substr(0, 2) + "-" + _ExpDate.substr(2, 2) + "-" + _ExpDate.substr(4, 2);  //   20YY-MM-DD
+        }else{
+          _ExpDate = "";
+          //that.$message.error("没有解析有效期" );
+        }
+        //赋值有效期
+        barcodeObj._ExpDate = _ExpDate;
+        _secondCode = json["secondCode"];
+        //赋值条码
+        barcodeObj._secondCode = _secondCode;
+        if(!flag){
+          resultUpn = false;
+        }
+      }else if(res.code==201){
+        //没有规则
+        codeFlag = false;
       }else{
-        that.$message.warning(res.message);
+        //后台错误
+        resultUpn = false;
+        that.$message.error(res.message );
       }
-    }).finally(() => {
-      that.close();
-    })
-
-    /*$.ajax({
-      async:false,
-      type:"POST",
-      url:"/spd/admin/pd/pdProduct/scanCode",
-      data:{
-        "Barcode1":Barcode1,
-        "Barcode2":Barcode2
-      },
-      dataType:"json",
-      success:function(data){
-        let json=eval(data);
-        if(json.code=="200"){
-          let flag = false;
-          if(data.hasOwnProperty("01")&&!data.hasOwnProperty("00")&&!data.hasOwnProperty("#")){
-            flag = true;
-            upn = json["01"];
-          }else if(data.hasOwnProperty("00")&&!data.hasOwnProperty("01")&&!data.hasOwnProperty("#")){
-            flag = true;
-            upn = json["00"];
-          }else if(data.hasOwnProperty("#")&&!data.hasOwnProperty("00")&&!data.hasOwnProperty("01")){
-            flag = true;
-            upn = json["#"];
-          }else{
-            upn = "";
-            //that.$message.error("没有解析出产品编号"  );
-          }
-          if(data.hasOwnProperty("10")&&!data.hasOwnProperty("21")){
-            flag = true;
-            _Lot = json["10"];
-          }else if(!data.hasOwnProperty("10")&&data.hasOwnProperty("21")){
-            flag = true;
-            _Lot = json["21"];
-          }else if(data.hasOwnProperty("10")&&data.hasOwnProperty("21")){
-            flag = true;
-            let key1 =  json["10"];
-            let key2 =  json["21"];
-            _Lot = key1+key2;
-          }else{
-            _Lot = "";
-            //that.$message.error("没有解析出批号"  );
-          }
-          if(data.hasOwnProperty("17")){
-            flag = true;
-            _ExpDate = json["17"];
-            _ExpDate = "20" + _ExpDate.substr(0, 2) + "-" + _ExpDate.substr(2, 2) + "-" + _ExpDate.substr(4, 2);  //   20YY-MM-DD
-          }else{
-            _ExpDate = "";
-            //that.$message.error("没有解析有效期" );
-          }
-          _secondCode = json["secondCode"];
-          if(!flag){
-            resultUpn = false;
-          }
-        }else if(json.code=="201"){
-          //没有规则
-          codeFlag = false;
-        }else{
-          //后台错误
-          resultUpn = false;
-          that.$message.error(data.msg );
-        }
-      }
-    })*/
-    //如果有规则 在返回该处标识
-    if(codeFlag){
-      return resultUpn;
+    }else{
+      that.$message.error(res.message );
     }
+  //如果有规则 在返回该处标识
+  if(codeFlag){
+    return barcodeObj;
   }else{
-    codeFlag = false;
-  }
-
-  if(codeFlag == false){
     //没有绑定扫码规则的 用现有的规则
     if(Barcode1.indexOf("+") == 0 && Barcode2.indexOf("+") == 0){
       //HIBC扫码
@@ -197,9 +110,9 @@ export function scanCode(Barcode1, Barcode2,that){
       //	that.$message.error('条形码格式错误',{icon:0});
       //	return false;
       //}
-    }else{
+    }else {
       //EAN扫码
-      let rt = EANBarcodeDec(Barcode1, Barcode2,that);
+      let rt = EANBarcodeDec(Barcode1, Barcode2, that);
       return rt;
       //if(!rt){
       //	that.$message.error('条形码格式错误',{icon:0});
@@ -207,6 +120,7 @@ export function scanCode(Barcode1, Barcode2,that){
       //}
     }
   }
+
 }
 
 export function HIBCBarcodeDec(Barcode1, Barcode2,that){

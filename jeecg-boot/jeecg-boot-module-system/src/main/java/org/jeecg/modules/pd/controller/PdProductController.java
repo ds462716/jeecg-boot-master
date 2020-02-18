@@ -318,12 +318,17 @@ public class PdProductController extends JeecgController<PdProduct, IPdProductSe
 	  * @return
 	  */
 	@PostMapping(value = "scanCode")
-	public Result<?> scanCode(String Barcode1,String Barcode2,
+	public Result<Map> scanCode(String Barcode1,String Barcode2,
 								HttpServletRequest req) {
-		Map<String,Object> resultMap = new HashMap<String,Object>();
-		resultMap = pdProductService.getScanCode(Barcode1,Barcode2);
-
-		return null;
+		Result<Map> result = new Result<Map>();
+		try{
+			result = pdProductService.getScanCode(Barcode1,Barcode2,result);
+			result.setSuccess(true);
+		}catch(Exception e){
+			log.error(e.getMessage(), e);
+			result.setSuccess(false);
+		}
+		return result;
 	}
 
 	/**
