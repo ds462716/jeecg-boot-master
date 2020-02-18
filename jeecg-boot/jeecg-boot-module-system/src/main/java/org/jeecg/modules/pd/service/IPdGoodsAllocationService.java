@@ -6,6 +6,7 @@ import org.jeecg.modules.pd.vo.PdGoodsAllocationPage;
 import org.jeecg.modules.system.model.SysDepartTreeModel;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Description: 货区货位表
@@ -25,4 +26,6 @@ public interface IPdGoodsAllocationService extends IService<PdGoodsAllocation> {
     boolean updatePdGoodsAllocation(PdGoodsAllocation pdGoodsAllocation);
 
     boolean savePdGoodsAllocation(PdGoodsAllocation pdGoodsAllocation);
+
+    List<PdGoodsAllocationPage> getOptionsForSelect(PdGoodsAllocation pdGoodsAllocation);
 }

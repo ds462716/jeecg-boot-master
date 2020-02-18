@@ -62,7 +62,7 @@ public class PdStockRecord extends BaseEntity {
 	/**出库部门ID*/
     private String outDepartId;
 	/**入库部门ID*/
-    private String inDepaetId;
+    private String inDepartId;
 	/**供应商ID*/
     private String supplierId;
 	/**审核人*/

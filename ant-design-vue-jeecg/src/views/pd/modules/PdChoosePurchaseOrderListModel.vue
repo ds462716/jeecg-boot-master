@@ -113,7 +113,7 @@
     data () {
       return {
         form: this.$form.createForm(this),
-        title:"选择产品",
+        title:"选择订单",
         width:1200,
         visible: false,
         innerData:[],
@@ -231,8 +231,9 @@
         ],
         url: {
           list: "/pd/pdPurchaseOrder/choosePurchaseOrderList",
-          detailList:"/pd/pdPurchaseOrder/choosePurchaseOrderDetailList",
+          chooseDetailList:"/pd/pdPurchaseOrder/choosePurchaseOrderDetailList",
           querySupplier:"/pd/pdSupplier/getSupplierList",
+          detailList:"/pd/pdPurchaseOrder/queryPdPurchaseDetail",
         },
         dictOptions:{
           // deptName:[],
@@ -248,7 +249,7 @@
         if(expanded===true){
           this.subloading = true;
           this.expandedRowKeys.push(record.purchaseId);
-          getAction(this.url.detailList, {orderNo: record.orderNo}).then((res) => {
+          getAction(this.url.chooseDetailList, {orderNo: record.orderNo}).then((res) => {
             if (res.success) {
               this.subloading = false;
               this.innerData = res.result;
@@ -266,9 +267,19 @@
         this.visible = true;
       },
       handleOk () {
-        let rows = this.selectionRows;
-        this.$emit('ok', rows);
-        this.close();
+        if(this.selectionRows.length > 0){
+          let params = { orderNo: this.selectionRows[0].orderNo }
+          getAction(this.url.detailList, params).then((res) => {
+            if (res.success) {
+              let data = res.result;
+              this.$emit('ok', data);
+              this.close();
+            }
+          });
+
+        }else{
+          this.$message.error("请选择一行数据!")
+        }
       },
       handleCancel () {
         this.close();

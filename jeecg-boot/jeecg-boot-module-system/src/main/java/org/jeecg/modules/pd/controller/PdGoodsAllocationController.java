@@ -23,6 +23,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
 
+import org.jeecg.modules.pd.vo.PdGoodsAllocationPage;
 import org.jeecg.modules.system.model.SysDepartTreeModel;
 import org.jeecg.modules.system.service.ISysDepartService;
 import org.jeecgframework.poi.excel.ExcelImportUtil;
@@ -175,4 +176,20 @@ public class PdGoodsAllocationController extends JeecgController<PdGoodsAllocati
         return super.importExcel(request, response, PdGoodsAllocation.class);
     }
 
+	 /**
+	  * 获取 货区货位二级联动下拉框数据
+	  * @return
+	  */
+	@RequestMapping(value = "/getOptions", method = RequestMethod.GET)
+    public Result<List<PdGoodsAllocationPage>> getOptionsForSelect(PdGoodsAllocation pdGoodsAllocation){
+		Result<List<PdGoodsAllocationPage>> result = new Result<>();
+		try {
+			List<PdGoodsAllocationPage> list = pdGoodsAllocationService.getOptionsForSelect(pdGoodsAllocation);
+			result.setResult(list);
+			result.setSuccess(true);
+		} catch (Exception e) {
+			log.error(e.getMessage(),e);
+		}
+		return result;
+	}
 }

@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Description: 货区货位表
@@ -116,6 +117,11 @@ public class PdGoodsAllocationServiceImpl extends ServiceImpl<PdGoodsAllocationM
         }
 
         return bool;
+    }
+
+    @Override
+    public List<PdGoodsAllocationPage> getOptionsForSelect(PdGoodsAllocation pdGoodsAllocation) {
+        return pdGoodsAllocationMapper.getOptionsForSelect(pdGoodsAllocation);
     }
 
 }

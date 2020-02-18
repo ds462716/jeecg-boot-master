@@ -12,9 +12,14 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.jeecg.common.constant.PdConstant;
 import org.jeecg.common.util.DateUtils;
+import org.jeecg.modules.pd.entity.PdGoodsAllocation;
+import org.jeecg.modules.pd.service.IPdGoodsAllocationService;
 import org.jeecg.modules.pd.service.IPdStockRecordDetailService;
 import org.jeecg.modules.pd.service.IPdStockRecordService;
 import org.jeecg.modules.pd.util.UUIDUtil;
+import org.jeecg.modules.pd.vo.PdGoodsAllocationPage;
+import org.jeecg.modules.system.entity.SysDepart;
+import org.jeecg.modules.system.service.ISysDepartService;
 import org.jeecgframework.poi.excel.ExcelImportUtil;
 import org.jeecgframework.poi.excel.def.NormalExcelConstants;
 import org.jeecgframework.poi.excel.entity.ExportParams;
@@ -46,13 +51,17 @@ import lombok.extern.slf4j.Slf4j;
  * @Version: V1.0
  */
 @RestController
-@RequestMapping("/pd/pdStockRecord")
+@RequestMapping("/pd/pdStockRecordIn")
 @Slf4j
 public class PdStockRecordInController {
 	@Autowired
 	private IPdStockRecordService pdStockRecordService;
 	@Autowired
 	private IPdStockRecordDetailService pdStockRecordDetailService;
+	@Autowired
+	private ISysDepartService sysDepartService;
+	@Autowired
+	 private IPdGoodsAllocationService pdGoodsAllocationService;
 
 	 /**
 	  * 初始化Modal页面
@@ -62,8 +71,16 @@ public class PdStockRecordInController {
 	@GetMapping(value = "/initModal")
 	public Result<?> initModal(HttpServletRequest req) {
 		PdStockRecordPage pdStockRecord = new PdStockRecordPage();
-		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
 
+		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		SysDepart sysDepart = sysDepartService.getDepartByOrgCode(sysUser.getOrgCode());
+
+		PdGoodsAllocation pdGoodsAllocation = new PdGoodsAllocation();
+		pdGoodsAllocation.setDepartId(sysDepart.getId());
+
+		List<PdGoodsAllocationPage> goodsAllocationList = pdGoodsAllocationService.getOptionsForSelect(pdGoodsAllocation);
+		//部门id
+		pdStockRecord.setInDepartId(sysDepart.getId());
 		//获取入库单号
 		pdStockRecord.setRecordNo(UUIDUtil.generateOrderNoByType(PdConstant.ORDER_NO_FIRST_LETTER_RK));
 		//获取当前日期
@@ -74,6 +91,8 @@ public class PdStockRecordInController {
 		pdStockRecord.setRecordPeopleName(sysUser.getRealname());
 		//默认入库类型
 		pdStockRecord.setInType(PdConstant.IN_TYPE_1);
+		//库区库位二级联动下拉框
+		pdStockRecord.setGoodsAllocationList(goodsAllocationList);
 
 		return Result.ok(pdStockRecord);
 	}
