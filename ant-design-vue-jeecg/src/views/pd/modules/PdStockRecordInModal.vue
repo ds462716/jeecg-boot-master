@@ -41,7 +41,8 @@
               </a-col>
               <a-col :span="6">
                 <a-form-item label="入库类型" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                  <j-dict-select-tag :triggerChange="true" v-decorator="['inType', validatorRules.inType]" title="入库类型" dictCode="in_type"/>
+                  <!--<j-dict-select-tag :triggerChange="true" v-decorator="['inType', validatorRules.inType]" title="入库类型" dictCode="in_type"/>-->
+                  <j-dict-select-tag-expand type="list" v-decorator="['inType', validatorRules.inType]" :trigger-change="true" dictCode="in_type" placeholder="请选择入库类型"/>
                 </a-form-item>
               </a-col>
               <a-col :span="6">
@@ -133,7 +134,7 @@
                 <a-row>
                   <a-col :md="6" :sm="8">
                     <a-form-item label="产品编号" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                      <a-input ref="productNumberInput" v-focus placeholder="请输入产品编号" v-model="queryParam.productNumber" @keyup.enter.native="searchQuery(0)"></a-input>
+                      <a-input ref="inputFocus" v-focus placeholder="请输入产品编号" v-model="queryParam.productNumber" @keyup.enter.native="searchQuery(0)"></a-input>
                     </a-form-item>
                   </a-col>
                   <a-col :md="6" :sm="8">
@@ -218,6 +219,7 @@
   import {httpAction, deleteAction, getAction} from '@/api/manage'
   import PdChoosePurchaseOrderListModel from "./PdChoosePurchaseOrderListModel";
   import PdChooseProductListModel from "./PdChooseProductListModel";
+  import JDictSelectTagExpand from "@/components/dict/JDictSelectTagExpand"
 
   const VALIDATE_NO_PASSED = Symbol()
   export { FormTypes, VALIDATE_NO_PASSED }
@@ -243,6 +245,7 @@
       PdChooseProductListModel,
       PdChoosePurchaseOrderListModel,
       JDate,
+      JDictSelectTagExpand
     },
     data() {
       return {
@@ -530,6 +533,9 @@
             this.goodsAllocationList = this.initData.goodsAllocationList;
             this.$nextTick(() => {
               this.form.setFieldsValue(fieldval)
+              //获取光标
+              let input = this.$refs['inputFocus'];
+              input.focus()
               this.pdStockRecordDetailTable.columns[12].options = this.goodsAllocationList.filter(i => i.parent === null)
             })
           }
