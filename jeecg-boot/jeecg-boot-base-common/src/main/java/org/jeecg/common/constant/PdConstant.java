@@ -71,8 +71,9 @@ public interface PdConstant {
 
 	//是否过期
 	public final static String PD_STATE="pd_state";
-	public final static String PD_STATE_0="0";//即将过期
-	public final static String PD_STATE_1="1";//过期
+	public final static String PD_STATE_0="0";//未过期
+	public final static String PD_STATE_1="1";//即将过期
+	public final static String PD_STATE_2="2";//过期
 
 	//是否久存
 	public final static String IS_LONG="";

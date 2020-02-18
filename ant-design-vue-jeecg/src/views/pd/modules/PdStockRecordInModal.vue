@@ -134,7 +134,7 @@
                 <a-row>
                   <a-col :md="6" :sm="8">
                     <a-form-item label="产品编号" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                      <a-input ref="productNumberInput" v-focus placeholder="请输入产品编号" v-model="queryParam.productNumber" @keyup.enter.native="searchQuery(0)"></a-input>
+                      <a-input ref="inputFocus" v-focus placeholder="请输入产品编号" v-model="queryParam.productNumber" @keyup.enter.native="searchQuery(0)"></a-input>
                     </a-form-item>
                   </a-col>
                   <a-col :md="6" :sm="8">
@@ -531,6 +531,9 @@
             this.goodsAllocationList = this.initData.goodsAllocationList;
             this.$nextTick(() => {
               this.form.setFieldsValue(fieldval)
+              //获取光标
+              let input = this.$refs['inputFocus'];
+              input.focus()
               this.pdStockRecordDetailTable.columns[12].options = this.goodsAllocationList.filter(i => i.parent === null)
             })
           }
