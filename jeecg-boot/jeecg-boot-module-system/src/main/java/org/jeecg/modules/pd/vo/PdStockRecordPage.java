@@ -27,7 +27,7 @@ public class PdStockRecordPage {
 	private String recordNo;
 	/**出入库类型：1-入库；2-出库*/
 	@Excel(name = "出入库类型：1-入库；2-出库", width = 15)
-	private String recodeType;
+	private String recordType;
 	/**出库类型 : 1-正常出库，2-调拨出库，3-退货出库*/
 	@Excel(name = "出库类型 : 1-正常出库，2-调拨出库，3-退货出库", width = 15)
 	private String outType;
@@ -110,8 +110,8 @@ public class PdStockRecordPage {
 	@Excel(name = "扩展3", width = 15)
 	private String extend3;
 	/** 删除标记（0：正常；1：删除）*/
-	@Excel(name = " 删除标记（0：正常；1：删除）", width = 15)
-	private String delFlag;
+//	@Excel(name = " 删除标记（0：正常；1：删除）", width = 15)
+//	private String delFlag;
 	/**创建人*/
 	@Excel(name = "创建人", width = 15)
 	private String createBy;

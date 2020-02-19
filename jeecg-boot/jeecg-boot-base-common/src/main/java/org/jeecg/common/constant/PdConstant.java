@@ -50,10 +50,20 @@ public interface PdConstant {
 	public static final String GOODS_ALLCATION_AREA_TYPE_1 = "1"; //货区
 	public static final String GOODS_ALLCATION_AREA_TYPE_2 = "2"; //货位
 
+	/** 出入库类型  add by jiangxz 20200219 **/
+	public static final String RECODE_TYPE_1 = "1"; //入库
+	public static final String RECODE_TYPE_2 = "2"; //出库
+
 	/**入库类型 add by jiangxz 20200214*/
 	public static final String IN_TYPE_1 = "1";//正常入库
 	public static final String IN_TYPE_2 = "2";//退货入库
 	public static final String IN_TYPE_3 = "3";//调拨入库
+
+	/** 出入库流程状态 add by jiangxz 20200219 **/
+	public static final String RECODE_STATE_0 = "0"; //待提交
+	public static final String RECODE_STATE_1 = "1"; //待审核
+	public static final String RECODE_STATE_2 = "2"; //已通过
+	public static final String RECODE_STATE_3 = "3"; //已拒绝
 
 	/***编码规则*/
 	//各种类型单号首字母

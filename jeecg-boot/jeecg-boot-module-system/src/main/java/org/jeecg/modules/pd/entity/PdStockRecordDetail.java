@@ -33,8 +33,11 @@ public class PdStockRecordDetail extends BaseEntity {
 	@Excel(name = "产品条码", width = 15)
 	private String productBarCode;
 	/**货位ID*/
+	@Excel(name = "货区ID", width = 15)
+	private String huoquId;
+	/**货位ID*/
 	@Excel(name = "货位ID", width = 15)
-	private String goodsAllocationId;
+	private String huoweiId;
 	/**产品批号*/
 	@Excel(name = "产品批号", width = 15)
 	private String batchNo;
@@ -43,10 +46,10 @@ public class PdStockRecordDetail extends BaseEntity {
 	private Double productNum;
 	/**出库单价*/
 	@Excel(name = "出库单价", width = 15)
-	private java.math.BigDecimal outPrice;
+	private java.math.BigDecimal sellingPrice;
 	/**入库单价*/
 	@Excel(name = "入库单价", width = 15)
-	private java.math.BigDecimal inPrice;
+	private java.math.BigDecimal purchasePrice;
 	/**有效期*/
 	@Excel(name = "有效期", width = 15, format = "yyyy-MM-dd")
 	@JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd")

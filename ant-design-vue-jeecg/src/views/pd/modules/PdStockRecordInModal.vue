@@ -49,11 +49,14 @@
                 <a-form-item label="操作人" :labelCol="labelCol" :wrapperCol="wrapperCol">
                   <a-input disabled v-decorator="[ 'recordPeopleName', validatorRules.recordPeopleName]" placeholder="请输入操作人"></a-input>
                 </a-form-item>
-                <a-form-item v-show="false">
+                <a-form-item v-show="false" label="操作人ID">
                   <a-input v-show="false" v-decorator="[ 'recordPeople', {}]"></a-input>
                 </a-form-item>
                 <a-form-item v-show="false" label="入库部门ID">
                   <a-input v-show="false" v-decorator="[ 'inDepartId', {}]" ></a-input>
+                </a-form-item>
+                <a-form-item v-show="false" label="采购订单号">
+                  <a-input v-show="false" v-decorator="[ 'orderNo', {}]" ></a-input>
                 </a-form-item>
               </a-col>
               <a-col :span="6">
@@ -76,33 +79,7 @@
                   </a-select>
                 </a-form-item>
               </a-col>
-              <!--<a-col :span="12">-->
-                <!--<a-form-item label="备注" :labelCol="labelCol" :wrapperCol="wrapperCol">-->
-                  <!--<a-input v-decorator="[ 'remarks', validatorRules.remarks]" placeholder="请输入备注"></a-input>-->
-                <!--</a-form-item>-->
-              <!--</a-col>-->
-              <!--<a-col :span="12">-->
-                <!--<a-form-item label="验收结果 : 0-合格；1-不合格" :labelCol="labelCol" :wrapperCol="wrapperCol">-->
-                  <!--<a-input v-decorator="[ 'testResult', validatorRules.testResult]" placeholder="请输入验收结果 : 0-合格；1-不合格"></a-input>-->
-                <!--</a-form-item>-->
-              <!--</a-col>-->
-              <!--<a-col :span="12">-->
-                <!--<a-form-item label="储运状态 : 0-合格；1-不合格" :labelCol="labelCol" :wrapperCol="wrapperCol">-->
-                  <!--<a-input v-decorator="[ 'storageResult', validatorRules.storageResult]" placeholder="请输入储运状态 : 0-合格；1-不合格"></a-input>-->
-                <!--</a-form-item>-->
-              <!--</a-col>-->
-              <!--<a-col :span="12">-->
-                <!--<a-form-item label="温度" :labelCol="labelCol" :wrapperCol="wrapperCol">-->
-                  <!--<a-input v-decorator="[ 'temperature', validatorRules.temperature]" placeholder="请输入温度"></a-input>-->
-                <!--</a-form-item>-->
-              <!--</a-col>-->
-              <!--<a-col :span="12">-->
-                <!--<a-form-item label="湿度" :labelCol="labelCol" :wrapperCol="wrapperCol">-->
-                  <!--<a-input v-decorator="[ 'humidity', validatorRules.humidity]" placeholder="请输入湿度"></a-input>-->
-                <!--</a-form-item>-->
-              <!--</a-col>-->
-              <!--<a-col :span="12">-->
-              <!--</a-col>-->
+
             </a-row>
           </a-form>
 
@@ -127,7 +104,7 @@
         </a-card>
 
         <!-- 子表单区域 -->
-        <a-card style="">
+        <a-card style="margin-bottom: 10px;">
           <a-tabs v-model="activeKey" @change="handleChangeTabs">
             <a-tab-pane tab="产品明细" :key="refKeys[0]" :forceRender="true">
               <a-form >
@@ -174,7 +151,7 @@
               <!--:maxHeight="600"-->
 
 
-              <a-row style="margin-top:10px;">
+              <a-row style="margin-top:10px;text-align: right">
                 <a-col :md="6" :sm="8">
                   <span style="font-weight: bold;font-size: large">总数量：{{ totalSum }}</span>
                 </a-col>
@@ -186,6 +163,42 @@
           </a-tabs>
         </a-card>
 
+        <a-form :form="form">
+        <!-- 验收区域 -->
+          <a-card style="">
+            <a-row>
+              <a-col :span="6">
+                <a-form-item label="验收结果" :labelCol="labelCol" :wrapperCol="wrapperCol">
+                  <j-dict-select-tag  v-decorator="[ 'testResult', validatorRules.testResult]" placeholder="请选择验收结果" :type="'radio'" :triggerChange="true" dictCode="test_result"/>
+                </a-form-item>
+              </a-col>
+              <a-col :span="6">
+                <a-form-item label="储运状态" :labelCol="labelCol" :wrapperCol="wrapperCol">
+                  <j-dict-select-tag  v-decorator="[ 'storageResult', validatorRules.storageResult]" placeholder="请选择储运状态" :type="'radio'" :triggerChange="true" dictCode="storage_result"/>
+                </a-form-item>
+              </a-col>
+            </a-row>
+            <a-row>
+              <a-col :span="6">
+                <a-form-item label="温度（℃）" :labelCol="labelCol3" :wrapperCol="wrapperCol3">
+                 <a-input v-decorator="[ 'temperature', validatorRules.temperature]" placeholder=""></a-input>
+                </a-form-item>
+              </a-col>
+              <a-col :span="6">
+                <a-form-item label="湿度（%）" :labelCol="labelCol3" :wrapperCol="wrapperCol3">
+                  <a-input v-decorator="[ 'humidity', validatorRules.humidity]" placeholder=""></a-input>
+                </a-form-item>
+              </a-col>
+            </a-row>
+            <a-row>
+              <a-col :span="12">
+                <a-form-item label="备注" :labelCol="labelCol2" :wrapperCol="wrapperCol2" style="text-align: left">
+                  <a-textarea v-decorator="[ 'remarks', validatorRules.remarks]" placeholder="请输入备注"></a-textarea>
+                </a-form-item>
+              </a-col>
+            </a-row>
+          </a-card>
+        </a-form>
       </div>
 
       <div class="drawer-bootom-button">
@@ -214,6 +227,7 @@
   import PdChoosePurchaseOrderListModel from "./PdChoosePurchaseOrderListModel";
   import PdChooseProductListModel from "./PdChooseProductListModel";
   import JDictSelectTagExpand from "@/components/dict/JDictSelectTagExpand"
+  import ATextarea from "ant-design-vue/es/input/TextArea";
   import {scanCode} from '@/utils/barcode'
 
   const VALIDATE_NO_PASSED = Symbol()
@@ -237,6 +251,7 @@
     name: 'PdStockRecordInModal',
     mixins: [JEditableTableMixin],
     components: {
+      ATextarea,
       PdChooseProductListModel,
       PdChoosePurchaseOrderListModel,
       JDate,
@@ -248,6 +263,8 @@
         wrapperCol: {span: 16},
         labelCol2: {span: 3},
         wrapperCol2: {span: 20},
+        labelCol3: {span: 6},
+        wrapperCol3: {span: 3},
 
         initData:{},
         queryParam:{},
@@ -268,7 +285,7 @@
         addDefaultRowNum: 0,
         validatorRules: {
           recordNo:{},
-          recodeType:{},
+          recordType:{},
           outType:{},
           inType:{rules: [{required: true, message: '请选择入库类型!'}]},
           orderNo:{},
@@ -281,10 +298,10 @@
           recordState:{},
           rejectReason:{},
           remarks:{},
-          testResult:{},
-          storageResult:{},
-          temperature:{},
-          humidity:{},
+          testResult:{rules: [{required: true, message: '请选择验收结果!'}]},
+          storageResult:{rules: [{required: true, message: '请选择储运状态!'}]},
+          temperature:{rules: [{required: true, message: '请输入温度!'},{pattern: '^-?\\d+$',message: '只能输入数字' }]},
+          humidity:{rules: [{required: true, message: '请输入湿度!'},{pattern: '^-?\\d+$',message: '只能输入数字' }]},
           outDepartId:{},
           inDepartId:{},
           supplierId:{rules: [{required: true, message: '请选择供应商!'}]},
@@ -309,7 +326,13 @@
               title: '产品ID',
               align:"center",
               dataIndex: 'productId',
-              type: FormTypes.hidden
+              colSpan: 0,
+              customRender: (value, row, index) => {
+                const obj = {
+                  attrs: {colSpan:0},
+                };
+                return obj;
+              },
             },
             {
               title: '申购单号',
@@ -436,7 +459,7 @@
             },
             {
               title: '入库单价',
-              key: 'inPrice',
+              key: 'purchasePrice',
               align:"center",
               width:"80px",
             },
@@ -448,7 +471,7 @@
             },
             {
               title: '货区',
-              key: 'huoqu',
+              key: 'huoquId',
               type: FormTypes.select,
               width:"150px",
               options: [],
@@ -457,7 +480,7 @@
             },
             {
               title: '货位',
-              key: 'goodsAllocationId',
+              key: 'huoweiId',
               type: FormTypes.select,
               width:"150px",
               options: [],
@@ -504,7 +527,7 @@
       editAfter() {
         // 加载子表数据
         if (this.model.id) {
-          let fieldval = pick(this.model,'recordNo','inType','recordPeople','recordPeopleName','recordDate','remarks','inDepartId','supplierId')
+          let fieldval = pick(this.model,'recordNo','inType','recordPeople','recordPeopleName','recordDate','remarks','inDepartId','supplierId','testResult','storageResult','temperature','humidity','remarks')
           this.$nextTick(() => {
             this.form.setFieldsValue(fieldval)
           })
@@ -527,8 +550,11 @@
         getAction(this.url.init, {}).then((res) => {
           if (res.success) {
             this.initData = res.result;
-            // this.initData.resultData = res.result.resultDataStr;
-            let fieldval = pick(this.initData,'recordNo','inType','recordPeople','recordPeopleName','recordDate','remarks','inDepartId','supplierId');
+            this.initData.testResult = "0";
+            this.initData.storageResult = "0";
+            this.initData.temperature = "25";
+            this.initData.humidity = "50";
+            let fieldval = pick(this.initData,'recordNo','inType','recordPeople','recordPeopleName','recordDate','remarks','inDepartId','supplierId','testResult','storageResult','temperature','humidity','remarks');
             this.goodsAllocationList = this.initData.goodsAllocationList;
             this.$nextTick(() => {
               this.form.setFieldsValue(fieldval)
@@ -560,8 +586,7 @@
           }
           let formData = this.classifyIntoFormData(allValues)
           // 发起请求
-          return "";
-          // return this.request(formData);
+          return this.request(formData);
         }).catch(e => {
           if (e.error === VALIDATE_NO_PASSED) {
             // 如果有未通过表单验证的子表，就自动跳转到它所在的tab
@@ -603,7 +628,7 @@
         this.$message.error(msg)
       },
       popupCallback(row){
-        this.form.setFieldsValue(pick(row,'recordNo','recodeType','outType','inType','orderNo','allocationNo','applyNo','dosagertNo','recordPeople','recordDate','recordState','rejectReason','remarks','testResult','storageResult','temperature','humidity','outDepartId','inDepartId','supplierId','checkPeople','checkTime','returnState','extend1','extend2','extend3','delFlag','sysOrgParentCode'))
+        this.form.setFieldsValue(pick(row,'recordNo','recordType','outType','inType','orderNo','allocationNo','applyNo','dosagertNo','recordPeople','recordDate','recordState','rejectReason','remarks','testResult','storageResult','temperature','humidity','outDepartId','inDepartId','supplierId','checkPeople','checkTime','returnState','extend1','extend2','extend3','delFlag','sysOrgParentCode'))
       },
       /** 切换全屏显示 */
       handleClickToggleFullScreen() {
@@ -633,6 +658,7 @@
       returnPurchaseOrderData(data) {
         this.showOrderTable = true;
         this.pdPurchaseOrderDetailTable.dataSource = data;
+        this.form.setFieldsValue({orderNo:data[0].orderNo});
       },
       //删除行
       handleConfirmDelete() {
@@ -686,7 +712,7 @@
           productNumber:row.number,
           spec: row.spec,
           version: row.version,
-          inPrice:row.purchasePrice,
+          purchasePrice:row.purchasePrice,
           price:Number(row.purchasePrice).toFixed(4),
           unitName: row.unitName,
           venderName: row.venderName,
@@ -702,13 +728,13 @@
           const { type, row, column, value, target } = event;
           // 库区库位二级联动
           if (type === FormTypes.select) {
-            if (column.key === 'huoqu') {
+            if (column.key === 'huoquId') {
               let options = this.goodsAllocationList.filter(i => i.parent === value)
               this.pdStockRecordDetailTable.columns[13].options = options
               // 清空库区下拉框数据
               target.setValues([{
                 rowKey: row.id,
-                values: { goodsAllocationId: '' }
+                values: { huoweiId: '' }
               }])
             }
           }
@@ -716,7 +742,7 @@
           if(type === FormTypes.input){
             if(column.key === "productNum"){
               // 计算每条产品的价格
-              let price = (Number(row.inPrice) * Number(value)).toFixed(4);
+              let price = (Number(row.purchasePrice) * Number(value)).toFixed(4);
               target.setValues([{
                 rowKey: row.id,
                 values: { price: price }

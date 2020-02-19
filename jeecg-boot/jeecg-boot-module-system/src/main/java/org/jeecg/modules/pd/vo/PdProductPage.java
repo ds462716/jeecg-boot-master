@@ -39,7 +39,7 @@ public class PdProductPage extends PdProduct {
     private Double applyCount;
 
     /** 采购单价 **/
-    private BigDecimal inPrice;
+    private BigDecimal purchasePrice;
 
     /** 采购总价格 **/
     private BigDecimal price;

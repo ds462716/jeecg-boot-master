@@ -26,7 +26,7 @@ public class PdStockRecord extends BaseEntity {
 	/**出入库单号*/
     private String recordNo;
 	/**出入库类型：1-入库；2-出库*/
-    private String recodeType;
+    private String recordType;//recodeType;
 	/**出库类型 : 1-正常出库，2-调拨出库，3-退货出库*/
     private String outType;
 	/**入库类型 : 1-正常入库，2-退货入库，3-调拨入库*/

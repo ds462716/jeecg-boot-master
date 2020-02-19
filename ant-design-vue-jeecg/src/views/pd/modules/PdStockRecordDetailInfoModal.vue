@@ -11,9 +11,9 @@
     </template>
     <div class="numberWARAP">
       <div class="total">入库总数量：<span id="totalNum">{{this.validatorRules.productTotNum}}</span></div>
-      <div class="nearTime">入库总金额：<span id="nearNum">{{this.validatorRules.inPrice}}</span></div>
+      <div class="nearTime">入库总金额：<span id="nearNum">{{this.validatorRules.purchasePrice}}</span></div>
       <div class="overTime">出库总数量：<span id="overNum">{{this.validatorRules.productOutTotNum}}</span></div>
-      <div class="overMomy">出库总金额：<span id="overMomy">{{this.validatorRules.outPrice}}</span></div>
+      <div class="overMomy">出库总金额：<span id="overMomy">{{this.validatorRules.sellingPrice}}</span></div>
     </div>
     <a-spin :spinning="confirmLoading">
       <!-- 查询区域 -->
@@ -77,8 +77,8 @@
         validatorRules: {
           productTotNum:{},//入库总数量
           productOutTotNum:{},//出库总数量
-          inPrice:{},//入库总金额
-          outPrice:{},//出库总金额
+          purchasePrice:{},//入库总金额
+          sellingPrice:{},//出库总金额
         },
         confirmLoading: false,
         // 表头
@@ -131,17 +131,17 @@
           {
             title: '入库单价',
             align: "center",
-            dataIndex: 'inPrice'
+            dataIndex: 'purchasePrice'
           },
           {
             title:'入库金额',
             align:"center",
-            dataIndex: 'outPrice'
+            dataIndex: 'sellingPrice'
           },
           {
             title: '出库单价',
             align: "center",
-            dataIndex: 'outPrice'
+            dataIndex: 'sellingPrice'
           },
           {
             title:'出库金额',
@@ -204,8 +204,8 @@
           if (res.success) {
             this.validatorRules.productTotNum=res.result.productTotNum;
             this.validatorRules.productOutTotNum=res.result.productOutTotNum;
-            this.validatorRules.inPrice=res.result.inPrice;
-            this.validatorRules.outPrice=res.result.outPrice;
+            this.validatorRules.purchasePrice=res.result.purchasePrice;
+            this.validatorRules.sellingPrice=res.result.sellingPrice;
             this.dataSource = res.result.page.records;
             this.ipagination.total = res.result.page.total;
           }

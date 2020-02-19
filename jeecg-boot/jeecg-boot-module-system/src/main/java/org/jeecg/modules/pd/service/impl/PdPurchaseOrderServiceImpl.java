@@ -97,7 +97,7 @@ public class PdPurchaseOrderServiceImpl extends ServiceImpl<PdPurchaseOrderMappe
 		if(CollectionUtils.isNotEmpty(list)){
 			for (PdProductPage item : list) {
 				item.setPrice(
-						(item.getInPrice() == null ? BigDecimal.ZERO:item.getInPrice())
+						(item.getPurchasePrice() == null ? BigDecimal.ZERO:item.getPurchasePrice())
 								.multiply(BigDecimal.valueOf(item.getApplyCount())));
 			}
 		}

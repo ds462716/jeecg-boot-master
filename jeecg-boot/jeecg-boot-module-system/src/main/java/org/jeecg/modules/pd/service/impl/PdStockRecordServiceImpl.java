@@ -1,5 +1,6 @@
 package org.jeecg.modules.pd.service.impl;
 
+import org.jeecg.common.constant.PdConstant;
 import org.jeecg.modules.pd.entity.PdStockRecord;
 import org.jeecg.modules.pd.entity.PdStockRecordDetail;
 import org.jeecg.modules.pd.mapper.PdStockRecordDetailMapper;
@@ -30,9 +31,11 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
 	@Override
 	@Transactional
 	public void saveMain(PdStockRecord pdStockRecord, List<PdStockRecordDetail> pdStockRecordDetailList) {
+		pdStockRecord.setRecordType(PdConstant.RECODE_TYPE_1); // 入库
+		pdStockRecord.setRecordState(PdConstant.RECODE_STATE_1); // 待提交
 		pdStockRecordMapper.insert(pdStockRecord);
 		if(pdStockRecordDetailList!=null && pdStockRecordDetailList.size()>0) {
-			for(PdStockRecordDetail entity:pdStockRecordDetailList) {
+			for(PdStockRecordDetail entity : pdStockRecordDetailList) {
 				//外键设置
 				entity.setRecordId(pdStockRecord.getId());
 				pdStockRecordDetailMapper.insert(entity);

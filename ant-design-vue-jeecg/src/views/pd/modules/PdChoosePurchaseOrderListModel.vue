@@ -206,7 +206,7 @@
           {
             title:'申购单价',
             align:"center",
-            dataIndex: 'inPrice'
+            dataIndex: 'purchasePrice'
           },
           {
             title:'价格',

@@ -125,7 +125,7 @@
         SELECT
             a.id as purchaseDetailId,
             a.apply_count AS applyCount,
-            a.in_price as inPrice,
+            a.purchase_price as purchasePrice,
             b.number,
             b.NAME as productName,
             b.spec,
