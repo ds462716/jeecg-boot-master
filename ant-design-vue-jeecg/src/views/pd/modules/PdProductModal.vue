@@ -5,6 +5,7 @@
     placement="right"
     :closable="false"
     @close="close"
+    :maskClosable="false"
     :visible="visible">
   
     <a-spin :spinning="confirmLoading">
