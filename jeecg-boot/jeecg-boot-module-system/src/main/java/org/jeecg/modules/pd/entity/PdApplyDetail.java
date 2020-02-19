@@ -45,13 +45,11 @@ public class PdApplyDetail extends BaseEntity {
 	@Excel(name = "所属部门", width = 15)
 	private String sysOrgCode;
 	/**申领单号*/
+	@Excel(name = "申领单号", width = 15)
 	private String applyNo;
 	/**产品ID*/
 	@Excel(name = "产品ID", width = 15)
 	private String productId;
-	/**产品编码*/
-	@Excel(name = "产品编码", width = 15)
-	private String productNo;
 	/**批号*/
 	@Excel(name = "批号", width = 15)
 	private String batchNo;
@@ -60,27 +58,30 @@ public class PdApplyDetail extends BaseEntity {
 	private String packageId;
 	/**申领定数包个数*/
 	@Excel(name = "申领定数包数量", width = 15)
-	private Double packageCount;
+	private Double packageNum;
 	/**有效期*/
 	@Excel(name = "有效期", width = 15, format = "yyyy-MM-dd")
 	@JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd")
     @DateTimeFormat(pattern="yyyy-MM-dd")
-	private Date expireDate;
+	private Date expDate;
 	/**申领产品个数*/
 	@Excel(name = "申领产品数量", width = 15)
-	private Double applyCount;
+	private Double applyNum;
 	/**申领时库存*/
 	@Excel(name = "申领时库存", width = 15)
 	private Double stockNum;
 	/**产品退回个数*/
 	@Excel(name = "产品退回数量", width = 15)
-	private Double refundCount;
+	private Double refundNum;
 	/**备注*/
 	@Excel(name = "备注", width = 15)
 	private String remarks;
 	@TableField(exist = false)
 	@Excel(name = "产品名称", width = 15)
 	private String productName;//产品名称
+	@TableField(exist = false)
+	@Excel(name = "产品编号", width = 15)
+	private String number;//产品编号
 	@TableField(exist = false)
 	@Excel(name = "产品规格", width = 15)
 	private String spec;//产品规格

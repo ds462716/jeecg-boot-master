@@ -49,12 +49,6 @@ public class PdProductStock extends BaseEntity {
 	/**产品id*/
 	@Excel(name = "产品id", width = 15)
 	private String productId;
-	/**产品名称*/
-	@Excel(name = "产品名称", width = 15)
-	private String productName;
-	/**产品编号*/
-	@Excel(name = "产品编号", width = 15)
-	private String productNo;
 	/**产品条码*/
 	@Excel(name = "产品条码", width = 15)
 	private String productBarCode;
@@ -73,10 +67,10 @@ public class PdProductStock extends BaseEntity {
 	@Excel(name = "有效期", width = 15, format = "yyyy-MM-dd")
 	@JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd")
     @DateTimeFormat(pattern="yyyy-MM-dd")
-	private Date validDate;
+	private Date expDate;
 	/**过期状态*/
 	@Excel(name = "过期状态", width = 15)
-	private String pdState;
+	private String expStatus;
 	/**供应商ID*/
 	@Excel(name = "供应商ID", width = 15)
 	private String supplierId;

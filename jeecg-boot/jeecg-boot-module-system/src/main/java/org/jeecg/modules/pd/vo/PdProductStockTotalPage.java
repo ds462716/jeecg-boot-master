@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
 import org.jeecg.modules.pd.entity.PdProductStock;
 import org.jeecg.modules.pd.entity.PdProductStockTotal;
+import org.jeecgframework.poi.excel.annotation.Excel;
 import org.jeecgframework.poi.excel.annotation.ExcelCollection;
 
 /**
@@ -35,6 +36,8 @@ public class PdProductStockTotalPage extends PdProductStockTotal {
 	/**超出库房上下限产品数量*/
 	@TableField(exist = false)
 	private Double limtCount;
+	/**申购科室名称*/
+	private String deptName;
 	@ExcelCollection(name="库存明细表")
 	private List<PdProductStock> pdProductStockList;
 	

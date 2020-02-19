@@ -25,8 +25,7 @@ public interface PdConstant {
 	/**
 	 * 采购订单状态
 	 */
-	public static final String  ORDER_STATE_0= "0";//待审核
-	public static final String  ORDER_STATE_1= "1";//审核中
+	public static final String  ORDER_STATE_1= "1";//待审核
 	public static final String  ORDER_STATE_2= "2";//审核通过
 	public static final String  ORDER_STATE_3= "3";//已拒绝
 
