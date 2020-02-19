@@ -6,7 +6,7 @@
         <a-row :gutter="24">
           <a-col :md="6" :sm="8">
             <a-form-item label="科室">
-              <a-input placeholder="请选择科室" v-model="queryParam.storeroomId"></a-input>
+              <a-input placeholder="请选择科室" v-model="queryParam.deptName"></a-input>
             </a-form-item>
           </a-col>
           <a-col :md="6" :sm="8">
@@ -120,7 +120,7 @@
           {
             title:'所属科室',
             align:"center",
-            dataIndex: 'storeroomName'
+            dataIndex: 'deptName'
           },
           {
             title:'产品名称',
@@ -285,8 +285,6 @@
   .numberWARAP>div{float:left;width:33%;height:30px;line-height:30px;color:#666;font-size:16px;text-align:center;border-right:1px solid #ccc;}
   .numberWARAP>div:nth-child(3){border:none;}
   .changeColor .red td,.changeColor .red td a{color: red}
-  /*.alert_close_btn:hover{color:#fff;border-bottom:1px solid #dedede}*/
-  @import '~@assets/less/common.less'
 </style>
 
 <style>

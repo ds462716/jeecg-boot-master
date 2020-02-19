@@ -132,9 +132,8 @@
           refuseReason:{},
           applyCount:[
             {required: true,message: '请输入值'},
-            {pattern: '^([1-9][0-9]*)+(.[0-9]{1,2})?$',
-              message: '格式不正确'
-            }],
+            {pattern: '^([1-9][0-9]*)+(.[0-9]{1,2})?$', message: '格式不正确'}
+            ],
         },
         refKeys: ['pdPurchaseDetail', ],
         tableKeys:['pdPurchaseDetail', ],
@@ -202,6 +201,8 @@
             this.model.deptName=res.result.deptName;//申购科室名称
             this.model.amountCount=res.result.amountCount;//申购总数量
             this.model.amountMoney=res.result.amountMoney;//申购总金额
+            this.model.submitStart=res.result.submitStart;//提交状态
+            this.model.orderStatus=res.result.orderStatus;//审核状态
             this.$nextTick(() => {
               this.form.setFieldsValue(pick(this.model,'orderNo','purchaseName','orderDate','deptName','amountCount','amountMoney','refuseReason'))
             })
@@ -284,11 +285,10 @@
         this.pdPurchaseDetailTable.dataSource = values;
       },
       handleOk (submitType) { //提交
-        this.model.submitStart='2';
-        if(submitType=="save"){
-          this.model.submitStart='1';
+        if(submitType=="submit"){
+          this.model.submitStart='2';
+          this.model.orderStatus='0';
         }
-        this.model.orderStatus='0';
         const that = this;
         // 触发表单验证
         this.form.validateFields((err, values) => {

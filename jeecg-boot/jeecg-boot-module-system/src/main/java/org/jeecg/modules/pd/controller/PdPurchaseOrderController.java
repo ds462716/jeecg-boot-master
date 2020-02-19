@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.sun.tools.javac.code.Attribute;
 import org.jeecg.common.constant.PdConstant;
 import org.jeecg.modules.pd.entity.PdProduct;
 import org.jeecg.modules.pd.util.UUIDUtil;
@@ -62,12 +63,12 @@ public class PdPurchaseOrderController {
 	 * @return
 	 */
 	@GetMapping(value = "/list")
-	public Result<?> queryPageList(PdPurchaseOrder pdPurchaseOrder,
+	public Result<?> queryPageList(PdPurchaseOrderPage pdPurchaseOrderPage,
 								   @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
 								   @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
 								   HttpServletRequest req) {
 		Page<PdPurchaseOrder> page = new Page<PdPurchaseOrder>(pageNo, pageSize);
-		page = pdPurchaseOrderService.selectList(page,pdPurchaseOrder);
+		page = pdPurchaseOrderService.selectList(page,pdPurchaseOrderPage);
 		return Result.ok(page);
 	}
 
@@ -82,13 +83,16 @@ public class PdPurchaseOrderController {
 	  * @return
 	  */
 	 @GetMapping(value = "/auditList")
-	 public Result<?> queryPageAuditList(PdPurchaseOrder pdPurchaseOrder,
+	 public Result<?> queryPageAuditList(PdPurchaseOrderPage pdPurchaseOrderPage,
 									@RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
 									@RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
 									HttpServletRequest req) {
 		 Page<PdPurchaseOrder> page = new Page<PdPurchaseOrder>(pageNo, pageSize);
-		 pdPurchaseOrder.setSubmitStart(PdConstant.SUBMIT_STATE_2);//已提交
-		 page = pdPurchaseOrderService.selectList(page,pdPurchaseOrder);
+		 List<String> list=new ArrayList<>();
+		 list.add(PdConstant.SUBMIT_STATE_2);//已提交
+		 list.add(PdConstant.SUBMIT_STATE_3);//已撤回
+		 pdPurchaseOrderPage.setSubmitStartList(list);
+		 page = pdPurchaseOrderService.selectList(page,pdPurchaseOrderPage);
 		 return Result.ok(page);
 	 }
 	 /**
@@ -111,6 +115,8 @@ public class PdPurchaseOrderController {
 		 pdPurchaseOrder.setDeptName(sysDepart.getDepartName());
 		 pdPurchaseOrder.setPurchaseBy(sysUser.getId());
 		 pdPurchaseOrder.setPurchaseName(sysUser.getRealname());
+		 pdPurchaseOrder.setSubmitStart(PdConstant.SUBMIT_STATE_1);
+		 pdPurchaseOrder.setOrderStatus(PdConstant.ORDER_STATE_0);
 		 result.setResult(pdPurchaseOrder);
 		 result.setSuccess(true);
 		 return result;

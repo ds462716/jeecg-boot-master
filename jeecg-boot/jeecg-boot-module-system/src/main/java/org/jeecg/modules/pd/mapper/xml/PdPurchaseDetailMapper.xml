@@ -81,5 +81,6 @@
 		<include refid="pdSupplierJoins"/>
 		<include refid="pdVenderJoins"/>
 		WHERE a.order_no = #{orderNo}
+		ORDER BY a.create_time DESC
     </select>
 </mapper>

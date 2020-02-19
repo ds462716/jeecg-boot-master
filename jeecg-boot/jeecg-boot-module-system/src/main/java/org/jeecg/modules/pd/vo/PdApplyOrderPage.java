@@ -21,6 +21,8 @@ public class PdApplyOrderPage extends PdApplyOrder {
 	
 	/**操作人名称 */
 	private String realName;
+	/** 提交状态集合 **/
+	private List<String> submitStartList;
 	@ExcelCollection(name="申领单明细表")
 	private List<PdApplyDetail> pdApplyDetailList;
 	

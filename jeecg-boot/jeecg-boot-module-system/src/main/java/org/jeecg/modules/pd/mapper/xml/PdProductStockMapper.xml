@@ -63,7 +63,14 @@
       left join pd_vender e on c.vender_id = e.id
     </sql>
 
+	<!-- 科室 -->
+	<sql id="sysDepartColumns">
+        f.depart_name AS "deptName"
+    </sql>
 
+	<sql id="sysDepartJoins">
+        LEFT JOIN sys_depart f ON a.dept_id = f.id
+    </sql>
 
 	<!-- 列表查询 -->
 	<select id="selectList" resultType="org.jeecg.modules.pd.entity.PdProductStock">
@@ -71,12 +78,16 @@
 		<include refid="pdProductStockColumns"/>,
 		<include refid="pdUnitColumns"/>,
 		<include refid="pdProductColumns"/>,
-		<include refid="pdVenderColumns"/>
+		<include refid="pdVenderColumns"/>,
+		<include refid="pdSupplierColumns"/>,
+		<include refid="sysDepartColumns"/>
 		FROM pd_product_stock a
 		<include refid="pdProductStockJoins"/>
 		<include refid="pdProductJoins"/>
 		<include refid="pdUnitJoins"/>
 		<include refid="pdVenderJoins"/>
+		<include refid="pdSupplierJoins"/>
+		<include refid="sysDepartJoins"/>
 		<where>
 			a.del_flag =#{DEL_FLAG_NORMAL}
 			<if test="id != null and id != ''">

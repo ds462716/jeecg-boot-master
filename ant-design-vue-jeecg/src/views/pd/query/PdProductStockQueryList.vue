@@ -6,7 +6,7 @@
         <a-row :gutter="24">
           <a-col :md="6" :sm="8">
             <a-form-item label="科室">
-              <a-input placeholder="请选择科室" v-model="queryParam.storeroomId"></a-input>
+              <a-input placeholder="请选择科室" v-model="queryParam.deptName"></a-input>
             </a-form-item>
           </a-col>
           <a-col :md="6" :sm="8">
@@ -16,7 +16,7 @@
           </a-col>
           <a-col :md="6" :sm="8">
             <a-form-item label="产品编号">
-              <a-input placeholder="请输入产品编号" v-model="queryParam.productName"></a-input>
+              <a-input placeholder="请输入产品编号" v-model="queryParam.productNo"></a-input>
             </a-form-item>
           </a-col>
           <a-col :md="6" :sm="8">
@@ -59,9 +59,6 @@
 
   import { JeecgListMixin ,handleEdit} from '@/mixins/JeecgListMixin'
 
-  import { getAction } from '@/api/manage'
-  import {initDictOptions, filterMultiDictText} from '@/components/dict/JDictSelectUtil'
-
   export default {
     name: "PdProductStockQueryList",
     mixins:[JeecgListMixin],
@@ -85,7 +82,7 @@
           {
             title:'所属科室',
             align:"center",
-            dataIndex: 'storeroomName'
+            dataIndex: 'deptName'
           },
           {
             title:'产品名称',
@@ -100,7 +97,7 @@
           {
             title:'产品条码',
             align:"center",
-            dataIndex: 'productNo'
+            dataIndex: 'productBarCode'
           },
           {
             title:'规格',
@@ -115,36 +112,34 @@
           {
             title:'批号',
             align:"center",
-            dataIndex: 'unitName'
+            dataIndex: 'batchNo'
           },
           {
             title:'有效期',
             align:"center",
-            dataIndex: 'limitUp'
+            dataIndex: 'validDate'
           },
           {
             title:'数量',
             align:"center",
-            dataIndex: 'limitDown'
+            dataIndex: 'stockNum'
           },
           {
             title:'生产厂家',
             align:"center",
-            dataIndex: 'stockNum'
+            dataIndex: 'venderName'
           },
           {
             title:'供应商',
             align:"center",
-            dataIndex: 'stockNum'
+            dataIndex: 'supplierName'
           }
         ],
         url: {
-          list: "/pd/pdProductStockTotal/list",
+          list: "/pd/pdProductStockTotal/queryList",
           exportXlsUrl: "/pd/pdProductStockTotal/exportXls",
         },
         dictOptions:{
-          expire:[],
-          isLong:[]
         },
 
       }
@@ -155,77 +150,9 @@
       }
     },
     methods: {
-      loadData(arg) {
-        //加载数据 若传入参数1则加载第一页的内容
-        if (arg === 1) {
-          this.ipagination.current = 1;
-        }
-        var params = this.getQueryParams();//查询条件
-        this.loading = true;
-        getAction(this.url.list, params).then((res) => {
-          if (res.success) {
-            this.validatorRules.pCount=res.result.pCount;
-            this.validatorRules.gCount=res.result.gCount;
-            this.validatorRules.jCount=res.result.jCount;
-            this.validatorRules.isLcount=res.result.isLcount;
-            this.validatorRules.limtCount=res.result.limtCount;
-            this.dataSource = res.result.records.records;
-            this.ipagination.total = res.result.records.total;
-          }
-          if(res.code===510){
-            this.$message.warning(res.message)
-          }
-          this.loading = false;
-        })
-      },
-      handleEdit: function (record) { //编译
-        this.$refs.stockForm.edit(record);
-        this.$refs.stockForm.title = "库存明细";
-        this.$refs.stockForm.disableSubmit = false;
-      },
-      handleRecordEdit: function (record) { //编译
-        this.$refs.stockForm2.edit(record);
-        this.$refs.stockForm2.title = "出入库明细";
-        this.$refs.stockForm2.disableSubmit = false;
-      },
-      handleUpdate(type) { //设置库存上限
-        if (this.selectedRowKeys.length <= 0) {
-          this.$message.warning('请勾选需要设置的数据！');
-          return;
-        }
-        let  ids="";
-        for (var a = 0; a < this.selectedRowKeys.length; a++) {
-          ids += this.selectedRowKeys[a] + ",";
-        }
-        var name="下限";
-        if(type=='Up'){
-            name="上限"
-        }
-        this.$refs.modalForm1.edit({"ids":ids,"type":type});
-        this.$refs.modalForm1.title = "设置"+name;
-        this.$refs.modalForm1.disableSubmit = false;
-      },
 
-      initDictConfig(){ //静态字典值加载
-        initDictOptions('pd_state').then((res) => { //是否过期字典转换
-          if (res.success) {
-            this.$set(this.dictOptions, 'expire', res.result)
-          }
-        })
-        initDictOptions('pd_isLong').then((res) => {
-          if (res.success) {
-            this.$set(this.dictOptions, 'isLong', res.result)
-          }
-        })
-      }
     }
   }
 </script>
 <style scoped>
-  .numberWARAP{width:100%;height:30px;line-height:30px;margin:20px 0;}
-  .numberWARAP>div{float:left;width:33%;height:30px;line-height:30px;color:#666;font-size:16px;text-align:center;border-right:1px solid #ccc;}
-  .numberWARAP>div:nth-child(3){border:none;}
-  .changeColor .red td,.changeColor .red td a{color: red}
-  /*.alert_close_btn:hover{color:#fff;border-bottom:1px solid #dedede}*/
-  @import '~@assets/less/common.less'
 </style>

@@ -198,6 +198,8 @@
             this.model.applyNum=res.result.applyNum;//申领总数量
             this.model.applyBy=res.result.applyBy;//申领人编号
             this.model.realName=res.result.realName;//申领人姓名
+            this.model.submitStart=res.result.submitStart;//提交状态
+            this.model.applyStatus=res.result.applyStatus;//审核状态
             this.$nextTick(() => {
               this.form.setFieldsValue(pick(this.model,'applyNo','deptName','applyNum','applyDate','realName','remarks'))
             })
@@ -270,11 +272,10 @@
         this.pdApplyDetailTable.dataSource = values;
       },
       handleOk (submitType) { //提交
-        this.model.submitStart='2';
-        if(submitType=="save"){
-          this.model.submitStart='1';
+        if(submitType=="submit"){
+          this.model.submitStart='2';
+          this.model.applyStatus='0';
         }
-        this.model.applyStatus='0';
         const that = this;
         // 触发表单验证
         this.form.validateFields((err, values) => {
