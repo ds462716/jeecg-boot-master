@@ -92,7 +92,6 @@ export async function scanCode(Barcode1, Barcode2,that){
       //系统报错
       that.$message.error(res.message );
     }
-    console.log(barcodeObj);
     return barcodeObj;
 }
 
