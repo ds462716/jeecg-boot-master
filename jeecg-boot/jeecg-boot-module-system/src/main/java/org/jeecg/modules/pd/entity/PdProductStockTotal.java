@@ -88,7 +88,7 @@ public class PdProductStockTotal extends BaseEntity {
     private String productName;
     /**产品编号*/
     @TableField(exist = false)
-    private String productNo;
+    private String number;
     /**单位名称*/
     @TableField(exist = false)
     private String unitName;

@@ -9,7 +9,8 @@
 		a.dept_id,
 		a.limit_up,
 		a.limit_down,
-		a.expire,
+		a.exp_date,
+		a.exp_status,
 		a.is_long,
 		a.supplier_id,
 		a.create_by,
@@ -35,7 +36,7 @@
     <!--产品-->
     <sql id="pdProductColumns">
 		c.id as "productId",
-        c.number as "productNo",
+        c.number as "number",
         c.name as "productName",
         c.spec as "spec",
         c.version as "version"
@@ -45,16 +46,27 @@
     </sql>
 
 
+    <!-- 科室 -->
+    <sql id="sysDepartColumns">
+        f.depart_name AS "deptName"
+    </sql>
+
+    <sql id="sysDepartJoins">
+        LEFT JOIN sys_depart f ON a.dept_id = f.id
+    </sql>
+
     <!-- 列表查询 -->
     <select id="selectList" resultType="org.jeecg.modules.pd.vo.PdProductStockTotalPage">
         SELECT
         <include refid="pdProductStockTotalColumns"/>,
         <include refid="pdProductColumns"/>,
-        <include refid="pdUnitColumns"/>
+        <include refid="pdUnitColumns"/>,
+        <include refid="sysDepartColumns"/>
         FROM pd_product_stock_total a
         <include refid="pdProductStockTotalJoins"/>
         <include refid="pdProductJoins"/>
         <include refid="pdUnitJoins"/>
+        <include refid="sysDepartJoins"/>
         <where>
             a.del_flag =#{DEL_FLAG_NORMAL}
             <if test="id != null and id != ''">
@@ -76,8 +88,8 @@
         <if test="limitDown!=null and limitDown!='' ">
             limit_down = #{limitDown}
         </if>
-        <if test="expire!=null and expire!='' ">
-            expire = #{expire}
+        <if test="expDate!=null and expDate!='' ">
+            exp_date = #{expDate}
         </if>
         <if test="isLong!=null and isLong!='' ">
             is_long = #{isLong}

@@ -212,7 +212,7 @@
           that.$message.error("库存数量小于申领数量");
           return;
         }
-        m.applyCount=e.value;
+        m.applyNum=e.value;
         let tableData=this.pdApplyDetailTable.dataSource;
         let totalNum=0;
         for(let i=0;i<tableData.length;i++){
@@ -256,7 +256,7 @@
             spec: formData[i].spec,
             version: formData[i].version,
             unitName: formData[i].unitName,
-            totalNum: 1,//默认1
+            applyNum: 1,//默认1
             stockNum: formData[i].stockNum
           })
           totalNum=totalNum+1;//计算总数量

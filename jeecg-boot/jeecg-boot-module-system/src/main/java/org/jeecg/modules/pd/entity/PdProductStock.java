@@ -87,6 +87,12 @@ public class PdProductStock extends BaseEntity {
 	/**单位名称*/
 	@TableField(exist = false)
 	private String unitName;
+	/**产品名称*/
+	@TableField(exist = false)
+	private String productName;
+	/**产品编号*/
+	@TableField(exist = false)
+	private String number;
 	/**规格*/
 	@TableField(exist = false)
 	private String spec;

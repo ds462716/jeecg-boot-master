@@ -20,7 +20,7 @@
         a.refuse_reason,
         a.is_in_refund,
         a.is_end,
-        a.apply_num,
+        a.total_num,
         a.submit_status,
 		a.remarks,
 		a.del_flag
@@ -38,14 +38,25 @@
         LEFT JOIN sys_user b ON b.id = a.apply_by
     </sql>
 
+    <!-- 科室 -->
+    <sql id="sysDepartColumns">
+        f.depart_name AS "deptName"
+    </sql>
+
+    <sql id="sysDepartJoins">
+        LEFT JOIN sys_depart f ON a.dept_id = f.id
+    </sql>
+
     <!-- 列表查询 -->
     <select id="selectList" resultType="org.jeecg.modules.pd.vo.PdApplyOrderPage">
         SELECT
         <include refid="PdApplyOrderColumns"/>,
-        <include refid="pdSysUserColumns"/>
+        <include refid="pdSysUserColumns"/>,
+        <include refid="sysDepartColumns"/>
         FROM pd_apply_order a
         <include refid="PdApplyOrderJoins"/>
         <include refid="pdSysUserJoins"/>
+        <include refid="sysDepartJoins"/>
         <where>
             a.del_flag =#{DEL_FLAG_NORMAL}
             <if test="id != null and id != ''">
