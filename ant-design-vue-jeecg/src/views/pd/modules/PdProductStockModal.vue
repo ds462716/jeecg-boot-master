@@ -21,7 +21,7 @@
           <a-row :gutter="24">
             <a-col :md="6" :sm="8">
               <a-form-item label="产品编号">
-                <a-input placeholder="请输入产品编号" v-model="queryParam.productNo"></a-input>
+                <a-input placeholder="请输入产品编号" v-model="queryParam.number"></a-input>
               </a-form-item>
             </a-col>
             <a-col :md="6" :sm="8">
@@ -92,7 +92,7 @@
           {
             title:'产品编号',
             align:"center",
-            dataIndex: 'productNo'
+            dataIndex: 'number'
           },
           {
             title:'产品条码',
@@ -117,7 +117,7 @@
           {
             title:'有效期',
             align:"center",
-            dataIndex: 'validDate'
+            dataIndex: 'expDate'
           },
           {
             title:'单位',
@@ -142,12 +142,12 @@
           {
             title:'是否过期',
             align:"center",
-            dataIndex: 'pdState',
+            dataIndex: 'expStatus',
             customRender:(text)=>{
               if(!text){
                 return ''
               }else{
-                return filterMultiDictText(this.dictOptions['pdState'], text+"")
+                return filterMultiDictText(this.dictOptions['expStatus'], text+"")
               }
             }
           },
@@ -168,7 +168,7 @@
           list: "/pd/pdProductStockTotal/chooseProductStockList",
         },
         dictOptions:{
-          pdState:[],
+          expStatus:[],
           isLong:[],
         },
       }
@@ -232,9 +232,9 @@
       },
 
       initDictConfig(){ //静态字典值加载
-        initDictOptions('pd_state').then((res) => { //是否过期字典转换
+        initDictOptions('exp_status').then((res) => { //是否过期字典转换
           if (res.success) {
-            this.$set(this.dictOptions, 'pdState', res.result)
+            this.$set(this.dictOptions, 'expStatus', res.result)
           }
         })
         initDictOptions('pd_isLong').then((res) => {
@@ -251,5 +251,4 @@
   .numberWARAP>div{float:left;width:33%;height:30px;line-height:30px;color:#666;font-size:16px;text-align:center;border-right:1px solid #ccc;}
   .numberWARAP>div:nth-child(3){border:none;}
   .changeColor .red td,.changeColor .red td a{color: red}
-  @import '~@assets/less/common.less'
 </style>

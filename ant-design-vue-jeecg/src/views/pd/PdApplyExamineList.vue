@@ -59,7 +59,7 @@
         :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
         @change="handleTableChange">
         <span slot="action" slot-scope="text, record">
-          <a v-if="record.applyStatus=='0'" @click="handleEdit(record)">审核</a>&nbsp;&nbsp;&nbsp;
+          <a v-if="record.auditStatus=='1'" @click="handleEdit(record)">审核</a>&nbsp;&nbsp;&nbsp;
           <a href="javascript:;" @click="handleDetail(record)">详情</a>
         </span>
       </a-table>

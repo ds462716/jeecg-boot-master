@@ -10,15 +10,13 @@
 		a.update_time,
         a.sys_org_code,
 		a.product_id,
-		a.product_name,
 		a.dept_id,
-		a.product_no,
 		a.product_bar_code,
 		a.batch_no,
 		a.stock_num,
 		a.produce_date,
-		a.valid_date,
-		a.pd_state,
+		a.exp_date,
+		a.exp_status,
 		a.supplier_id,
 		a.is_long,
 		a.remarks,
@@ -39,6 +37,8 @@
 
 	<!--产品-->
 	<sql id="pdProductColumns">
+        c.name as "productName",
+        c.number as "number",
         c.spec as "spec",
         c.version as "version",
         c.registration as "registration"
@@ -99,8 +99,8 @@
 			<if test="deptId != null and deptId != ''">
 				AND a.dept_id = #{deptId}
 			</if>
-			<if test="productNo != null and productNo != ''">
-				AND c.number = #{productNo}
+			<if test="number != null and number != ''">
+				AND c.number = #{number}
 			</if>
 			<if test="productName != null and productName != ''">
 				AND a.product_name = #{productName}
@@ -110,15 +110,13 @@
 
 
 	<delete id="deleteByMainId" parameterType="java.lang.String">
-		DELETE 
-		FROM  pd_product_stock 
-		WHERE
-			 dept_id = #{mainId} 	</delete>
+		DELETE  FROM  pd_product_stock  WHERE dept_id = #{mainId}
+</delete>
 	
 	<select id="selectByMainId" parameterType="java.lang.String" resultType="org.jeecg.modules.pd.entity.PdProductStock">
-		SELECT * 
-		FROM  pd_product_stock
-		WHERE
-			 dept_id = #{mainId}
+		SELECT
+            <include refid="pdProductStockColumns"/>
+		 FROM  pd_product_stock
+		WHERE  dept_id = #{mainId}
 </select>
 </mapper>

@@ -130,7 +130,7 @@
           {
             title:'产品编号',
             align:"center",
-            dataIndex: 'productNo'
+            dataIndex: 'number'
           },
           {
             title:'规格',
@@ -165,12 +165,12 @@
           {
             title:'是否过期',
             align:"center",
-            dataIndex: 'expire',
+            dataIndex: 'expStatus',
             customRender:(text)=>{
               if(!text){
                 return ''
               }else{
-                return filterMultiDictText(this.dictOptions['expire'], text+"")
+                return filterMultiDictText(this.dictOptions['expStatus'], text+"")
               }
             }
           },
@@ -198,7 +198,7 @@
           exportXlsUrl: "/pd/pdProductStockTotal/exportXls",
         },
         dictOptions:{
-          expire:[],
+          expStatus:[],
           isLong:[]
         },
 
@@ -262,9 +262,9 @@
       },
 
       initDictConfig(){ //静态字典值加载
-        initDictOptions('pd_state').then((res) => { //是否过期字典转换
+        initDictOptions('exp_status').then((res) => { //是否过期字典转换
           if (res.success) {
-            this.$set(this.dictOptions, 'expire', res.result)
+            this.$set(this.dictOptions, 'expStatus', res.result)
           }
         })
         initDictOptions('pd_isLong').then((res) => {
@@ -274,7 +274,7 @@
         })
       },
       setdataCss(record,index) {
-        let expire = record.expire;
+        let expire = record.expStatus;
         return "expire"+expire;
       },
     }
