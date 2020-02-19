@@ -38,9 +38,6 @@ public class PdProductPage extends PdProduct {
     /** 产品采购数量 **/
     private Double applyCount;
 
-    /** 采购单价 **/
-    private BigDecimal purchasePrice;
-
     /** 采购总价格 **/
     private BigDecimal price;
     //-------end 用于采购弹出框显示产品明细
