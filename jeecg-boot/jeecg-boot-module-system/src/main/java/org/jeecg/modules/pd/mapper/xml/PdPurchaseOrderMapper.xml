@@ -7,14 +7,13 @@
         a.purchase_by,
         a.order_date,
         a.dept_id,
-        a.dept_name,
-        a.order_status,
+        a.audit_status,
         a.audit_by,
         a.audit_date,
         a.refuse_reason,
-        a.amount_count,
-        a.amount_money,
-        a.submit_start,
+        a.total_num,
+        a.total_price,
+        a.submit_status,
 		a.create_by,
 		a.create_time,
 		a.update_by,
@@ -28,6 +27,15 @@
     </sql>
 
 
+    <!-- 科室 -->
+    <sql id="sysDepartColumns">
+        f.depart_name AS "deptName"
+    </sql>
+
+    <sql id="sysDepartJoins">
+        LEFT JOIN sys_depart f ON a.dept_id = f.id
+    </sql>
+
     <!--用户-->
     <sql id="pdSysUserColumns">
         b.realname as "purchaseName"
@@ -40,10 +48,12 @@
     <select id="selectList" resultType="org.jeecg.modules.pd.vo.PdPurchaseOrderPage">
         SELECT
         <include refid="PdPurchaseOrderColumns"/>,
-        <include refid="pdSysUserColumns"/>
+        <include refid="pdSysUserColumns"/>,
+        <include refid="sysDepartColumns"/>
         FROM pd_purchase_order a
         <include refid="PdPurchaseOrderJoins"/>
         <include refid="pdSysUserJoins"/>
+        <include refid="sysDepartJoins"/>
         <where>
             a.del_flag =#{DEL_FLAG_NORMAL}
             <if test="id != null and id != ''">
@@ -52,18 +62,15 @@
             <if test="orderNo != null and orderNo != ''">
                 AND a.order_no = #{orderNo}
             </if>
-            <if test="deptName != null and deptName != ''">
-                AND a.dept_name = #{deptName}
+            <if test="auditStatus != null and auditStatus != ''">
+                AND a.audit_status = #{auditStatus}
             </if>
-            <if test="orderStatus != null and orderStatus != ''">
-                AND a.order_status = #{orderStatus}
+            <if test="submitStatus != null and submitStatus != ''">
+                AND a.submit_status = #{submitStatus}
             </if>
-            <if test="submitStart != null and submitStart != ''">
-                AND a.submit_start = #{submitStart}
-            </if>
-            <if test="submitStartList != null and submitStartList.size() > 0">
-                and a.submit_start IN
-                <foreach collection="submitStartList" item="item" separator="," open="(" close=")">
+            <if test="submitStatusList != null and submitStatusList.size() > 0">
+                and a.submit_status IN
+                <foreach collection="submitStatusList" item="item" separator="," open="(" close=")">
                     #{item}
                 </foreach>
             </if>
@@ -77,7 +84,7 @@
         a.id as purchaseId,
         a.order_no as orderNo,
         a.order_date as orderDate,
-        a.dept_name as deptName,
+        f.depart_name AS deptName,
         a.order_status as orderStatus,
         c.realname as auditByName
         FROM
@@ -85,9 +92,10 @@
         LEFT JOIN pd_purchase_detail b on a.order_no = b.order_no
         LEFT JOIN sys_user c ON c.id = a.audit_by
         LEFT JOIN pd_product d on b.product_id = d.id
+        LEFT JOIN sys_depart f ON a.dept_id = f.id
         <where>
             a.del_flag = #{DEL_FLAG_NORMAL}
-            AND a.order_status = '2'
+            AND a.audit_status = '2'
             <if test="id != null and id != ''">
                 AND a.id = #{id}
             </if>
@@ -124,7 +132,7 @@
     <select id="choosePurchaseOrderDetailList" resultType="org.jeecg.modules.pd.vo.PdProductPage"  parameterType="org.jeecg.modules.pd.vo.PdPurchaseOrderPage">
         SELECT
             a.id as purchaseDetailId,
-            a.apply_count AS applyCount,
+            a.order_num AS applyCount,
             a.purchase_price as purchasePrice,
             b.number,
             b.NAME as productName,

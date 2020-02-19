@@ -10,14 +10,13 @@
 		a.sys_org_code,
 		a.apply_no,
 		a.product_id,
-		a.product_no,
-		a.batch_no,
+ 		a.batch_no,
 		a.package_id,
-		a.package_count,
-		a.expire_date,
-		a.apply_count,
+		a.package_num,
+		a.exp_date,
+		a.apply_num,
 		a.stock_num,
-		a.refund_count,
+		a.refund_num,
 		a.remarks,
 		a.del_flag
 	</sql>
@@ -34,7 +33,7 @@
 	<!--产品-->
 	<sql id="pdProductColumns">
 		c.id as "productId",
-        c.number as "productNo",
+        c.number as "number",
         c.name as "productName",
         c.spec as "spec",
         c.version as "version"

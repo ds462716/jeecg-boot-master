@@ -35,12 +35,12 @@
           </a-col>
           <a-col :span="12">
             <a-form-item label="申购总数量" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input-number disabled="disabled" v-decorator="[ 'amountCount', validatorRules.amountCount]"  style="width: 100%"/>
+              <a-input-number disabled="disabled" v-decorator="[ 'totalNum', validatorRules.totalNum]"  style="width: 100%"/>
             </a-form-item>
           </a-col>
           <a-col :span="12">
             <a-form-item label="申购总金额" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input-number disabled="disabled" v-decorator="[ 'amountMoney', validatorRules.amountMoney]" style="width: 100%"/>
+              <a-input-number disabled="disabled" v-decorator="[ 'totalPrice', validatorRules.totalPrice]" style="width: 100%"/>
             </a-form-item>
           </a-col>
           <!-- <!-- 子表单区域 -->
@@ -66,7 +66,7 @@
               </tr>
               <tr  v-for="(item, index) in pdPurchaseDetailTable.dataSource">
                 <td v-show="!disableSubmit"><a @click="deleteDetail(item.productId)">删除</a></td>
-                <td>{{item.productNo}}</td>
+                <td>{{item.number}}</td>
                 <td>{{item.productName}}</td>
                 <td>{{item.spec}}</td>
                 <td>{{item.version}}</td>
@@ -74,11 +74,11 @@
                 <td>{{item.stockNum}}</td>
                 <td>
                    <a-form-item>
-                 <a-input  :disabled="disableSubmit"  @blur="(e)=>{handleConfirmBlur(e.target,item)}"  v-decorator="['pdPurchaseDetailTable['+index+'].applyCount', {'initialValue':item.applyCount,rules:validatorRules.applyCount}]"/>
+                 <a-input-number  :disabled="disableSubmit"  @blur="(e)=>{handleConfirmBlur(e.target,item)}"  v-decorator="['pdPurchaseDetailTable['+index+'].orderNum', {'initialValue':item.orderNum,rules:validatorRules.orderNum}]"/>
                    </a-form-item>
                 </td>
-                <td>{{item.inPrice}}</td>
-                <td>{{item.amountMoney}}</td>
+                <td>{{item.purchasePrice}}</td>
+                <td>{{item.orderMoney}}</td>
                 <td>{{item.supplierName}}</td>
                 <td>{{item.venderName}}</td>
               </tr>
@@ -95,7 +95,7 @@
     </a-spin>
     <div class="drawer-bootom-button" v-show="!disableSubmit">
       <a-button @click="handleOk('submit')" type="primary" :loading="confirmLoading">提交</a-button>
-      <a-button @click="handleOk('save')" type="primary" :loading="confirmLoading">保存</a-button>
+      <a-button @click="handleOk('save')" type="primary" :loading="confirmLoading">保存草稿</a-button>
       <a-popconfirm title="确定放弃编辑？" @confirm="handleCancel" okText="确定" cancelText="取消">
         <a-button style="margin-right: .8rem">取消</a-button>
       </a-popconfirm>
@@ -108,7 +108,7 @@
   import { httpAction,getAction,downFile } from '@/api/manage'
   import { JEditableTableMixin } from '@/mixins/JEditableTableMixin'
   import JDate from '@/components/jeecg/JDate'
-  import JDictSelectTag from "@/components/dict/JDictSelectTag"
+  import {JDictSelectTag,typeText}from "@/components/dict/JDictSelectTag"
   import PdPurchaseDetailAddModal from './PdChooseProductListModel'
   export default {
     name: 'PdPurchaseOrderModal',
@@ -127,13 +127,11 @@
           purchaseName:{},
           orderDate:{},
           deptName:{},
-          amountCount:{},
-          amountMoney:{},
+          totalNum:{},
+          totalPrice:{},
           refuseReason:{},
           applyCount:[
-            {required: true,message: '请输入值'},
-            {pattern: '^([1-9][0-9]*)+(.[0-9]{1,2})?$', message: '格式不正确'}
-            ],
+            {required: true,message: '请输入值'}],
         },
         refKeys: ['pdPurchaseDetail', ],
         tableKeys:['pdPurchaseDetail', ],
@@ -199,34 +197,34 @@
             this.model.orderDate=res.result.orderDate;//申购日期
             this.model.deptId=res.result.deptId;//申购科室Id
             this.model.deptName=res.result.deptName;//申购科室名称
-            this.model.amountCount=res.result.amountCount;//申购总数量
-            this.model.amountMoney=res.result.amountMoney;//申购总金额
-            this.model.submitStart=res.result.submitStart;//提交状态
-            this.model.orderStatus=res.result.orderStatus;//审核状态
+            this.model.totalNum=res.result.totalNum;//申购总数量
+            this.model.totalPrice=res.result.totalPrice;//申购总金额
+            this.model.submitStatus=res.result.submitStatus;//提交状态
+            this.model.auditStatus=res.result.auditStatus;//审核状态
             this.$nextTick(() => {
-              this.form.setFieldsValue(pick(this.model,'orderNo','purchaseName','orderDate','deptName','amountCount','amountMoney','refuseReason'))
+              this.form.setFieldsValue(pick(this.model,'orderNo','purchaseName','orderDate','deptName','totalNum','totalPrice','refuseReason'))
             })
           }
         })
       },
       //修改申购数量后重新计算总数量及总金额
       handleConfirmBlur(e,m){
-        this.applyCount = e.value;//修改后的申购数量
-        this.inPrice=m.inPrice;//产品单价；
-        m.amountMoney= (this.applyCount * this.inPrice).toFixed(2);//计算修改后的总金额
-        m.applyCount=e.value;
+        this.orderNum = e.value;//修改后的申购数量
+        this.purchasePrice=m.purchasePrice;//产品单价；
+        m.orderMoney= (this.orderNum * this.purchasePrice).toFixed(2);//计算修改后的总金额
+        m.orderNum=e.value;
        let tableData=this.pdPurchaseDetailTable.dataSource;
-       let count=0;
-       let amountMoney=0;
+       let totalNum=0;
+       let totalPrice=0;
         for(let i=0;i<tableData.length;i++){
-           count=count+parseFloat(tableData[i].applyCount);//计算总数量
-           amountMoney=amountMoney+Number(tableData[i].amountMoney);//计算申购总金额
+          totalNum=totalNum+parseFloat(tableData[i].orderNum);//计算总数量
+          totalPrice=totalPrice+Number(tableData[i].orderMoney);//计算申购总金额
         }
         let model={};
-        this.model.amountCount=count;//申购总数量
-        this.model.amountMoney=amountMoney.toFixed(2);//申购总金额
+        this.model.totalNum=totalNum;//申购总数量
+        this.model.totalPrice=totalPrice.toFixed(2);//申购总金额
         this.$nextTick(() => {
-          this.form.setFieldsValue(pick(this.model,'amountCount','amountMoney'))
+          this.form.setFieldsValue(pick(this.model,'totalNum','totalPrice'))
         })
       },
 
@@ -238,56 +236,56 @@
 
       deleteDetail(productId){
         const newData = this.pdPurchaseDetailTable.dataSource.filter(item => item.productId !== productId);
-        let count=0;
-        let amountMoney=0;
+        let totalNum=0;
+        let totalPrice=0;
         for(let i=0;i<newData.length;i++){
-          count=count+parseFloat(newData[i].applyCount);//计算总数量
-          amountMoney=amountMoney+Number(newData[i].amountMoney);//计算申购总金额
+          totalNum=totalNum+parseFloat(newData[i].applyCount);//计算总数量
+          totalPrice=totalPrice+Number(newData[i].amountMoney);//计算申购总金额
         }
         let model={};
-        this.model.amountCount=count;//申购总数量
-        this.model.amountMoney=amountMoney.toFixed(2);//申购总金额
+        this.model.totalNum=totalNum;//申购总数量
+        this.model.totalPrice=totalPrice.toFixed(2);//申购总金额
         this.$nextTick(() => {
-          this.form.setFieldsValue(pick(this.model,'amountCount','amountMoney'))
+          this.form.setFieldsValue(pick(this.model,'totalNum','totalPrice'))
         })
         this.pdPurchaseDetailTable.dataSource = newData;
       },
 
       modalFormOk (formData) {//选择产品确定后返回所选择的数据
         let values = [];
-        let count=0;
-        let amountMoney=0;
+        let totalNum=0;
+        let totalPrice=0;
         for(let i=0;i<formData.length;i++){
           values.push({
             productId: formData[i].productId,
-            productNo: formData[i].number,
+            number: formData[i].number,
             productName: formData[i].productName,
             spec:formData[i].spec,
-            inPrice: formData[i].sellingPrice,
-            applyCount: 1,//默认1
+            purchasePrice: formData[i].purchasePrice,
+            orderNum: 1.00,//默认1
             version: formData[i].version,
             stockNum: formData[i].stockNum,
             unitName:formData[i].unitName,
-            amountMoney:formData[i].sellingPrice * 1,
+            orderMoney:formData[i].purchasePrice * 1,
             venderName:formData[i].venderName,
             supplierId:formData[i].supplierId,
             supplierName:formData[i].supplierName
           })
-          count+=1;//计算总数量
-          amountMoney=amountMoney+Number(formData[i].sellingPrice);//计算申购总金额
+          totalNum+=1;//计算总数量
+          totalPrice=totalPrice+Number(formData[i].purchasePrice);//计算申购总金额
         }
         let model={};
-        this.model.amountCount=count;//申购总数量
-        this.model.amountMoney=amountMoney.toFixed(2);//申购总金额
+        this.model.totalNum=totalNum;//申购总数量
+        this.model.totalPrice=totalPrice.toFixed(2);//申购总金额
         this.$nextTick(() => {
-          this.form.setFieldsValue(pick(this.model,'amountCount','amountMoney'))
+          this.form.setFieldsValue(pick(this.model,'totalNum','totalPrice'))
         })
         this.pdPurchaseDetailTable.dataSource = values;
       },
       handleOk (submitType) { //提交
         if(submitType=="submit"){
-          this.model.submitStart='2';
-          this.model.orderStatus='0';
+          this.model.submitStatus='2';
+          this.model.auditStatus='1';
         }
         const that = this;
         // 触发表单验证
@@ -326,7 +324,7 @@
       },
       /** 调用完edit()方法之后会自动调用此方法 */
       editAfter() {
-        let fieldval = pick(this.model,'orderNo','purchaseName','orderDate','deptName','orderStatus','amountCount','amountMoney','submitStart','refuseReason')
+        let fieldval = pick(this.model,'orderNo','purchaseName','orderDate','deptName','auditStatus','totalNum','totalPrice','submitStatus','refuseReason')
         this.$nextTick(() => {
           this.form.setFieldsValue(fieldval)
         })
@@ -349,9 +347,8 @@
         this.$message.error(msg)
       },
       popupCallback(row){
-        this.form.setFieldsValue(pick(row,'orderNo','purchaseName','orderDate','deptName','orderStatus','amountCount','amountMoney','submitStart','refuseReason'))
+        this.form.setFieldsValue(pick(row,'orderNo','purchaseName','orderDate','deptName','auditStatus','totalNum','totalPrice','submitStatus','refuseReason'))
       },
-
     }
   }
 </script>

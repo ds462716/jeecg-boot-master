@@ -6,10 +6,9 @@
 		a.id,
 		a.order_no,
 		a.product_id,
-		a.product_no,
-		a.in_price,
-		a.apply_count,
-		a.amount_money,
+		a.purchase_price,
+		a.order_num,
+		a.order_money,
 		a.stock_num,
 		a.create_by,
 		a.create_time,
@@ -33,11 +32,11 @@
 	<!--产品-->
 	<sql id="pdProductColumns">
 		c.id as "productId",
-        c.number as "productNo",
+        c.number as "number",
         c.name as "productName",
         c.spec as "spec",
         c.version as "version",
-        c.selling_price as "sellingPrice"
+        c.purchase_price as "purchasePrice"
 	</sql>
 	<sql id="pdProductJoins">
         LEFT JOIN pd_product c ON c.id = a.product_id

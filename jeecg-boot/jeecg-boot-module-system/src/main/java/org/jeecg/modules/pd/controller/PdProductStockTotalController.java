@@ -90,9 +90,9 @@ public class PdProductStockTotalController {
          Double limtCount=0.00;//超出库房上下限产品数量
          if(aList!=null&&!aList.isEmpty()){
              for (PdProductStockTotal p : aList) {
-                 if(PdConstant.PD_STATE_2.equals(p.getExpire())){
+                 if(PdConstant.PD_STATE_2.equals(p.getExpStatus())){
                      gCount++;
-                 }else if(PdConstant.PD_STATE_1.equals(p.getExpire())){
+                 }else if(PdConstant.PD_STATE_1.equals(p.getExpStatus())){
                      jCount++;
                  }
                  if(PdConstant.IS_LONG_1.equals(p.getIsLong())){
@@ -211,9 +211,9 @@ public class PdProductStockTotalController {
 		 Double pCount=0.00;//总数量
 		 if(aList!=null&&!aList.isEmpty()){
 			 for (PdProductStock p : aList) {
-				 if(PdConstant.PD_STATE_2.equals(p.getPdState())){
+				 if(PdConstant.PD_STATE_2.equals(p.getExpStatus())){
 					 gCount++;
-				 }else if(PdConstant.PD_STATE_1.equals(p.getPdState())){
+				 }else if(PdConstant.PD_STATE_1.equals(p.getExpStatus())){
 					 jCount++;
 				 }
 				 pCount+=p.getStockNum();

@@ -17,9 +17,8 @@
           <template v-if="toggleSearchStatus">
             <a-col :md="6" :sm="8">
               <a-form-item label="审核状态">
-                <a-select v-model="queryParam.orderStatus" placeholder="请选择审核状态">
-                  <a-select-option value="0">待审核</a-select-option>
-                  <!--<a-select-option value="1">审核中</a-select-option>-->
+                <a-select v-model="queryParam.auditStatus" placeholder="请选择审核状态">
+                  <a-select-option value="1">待审核</a-select-option>
                   <a-select-option value="2">审核通过</a-select-option>
                   <a-select-option value="3">审核不通过</a-select-option>
                 </a-select>
@@ -60,7 +59,7 @@
         :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
         @change="handleTableChange">
         <span slot="action" slot-scope="text, record">
-          <a v-if="record.orderStatus=='0'" @click="handleEdit(record)">审核</a>&nbsp;&nbsp;&nbsp;
+          <a v-if="record.auditStatus=='1'" @click="handleEdit(record)">审核</a>&nbsp;&nbsp;&nbsp;
           <a href="javascript:;" @click="handleDetail(record)">详情</a>
         </span>
       </a-table>
@@ -126,24 +125,24 @@
           {
             title:'审核状态',
             align:"center",
-            dataIndex: 'orderStatus',
+            dataIndex: 'auditStatus',
             customRender:(text)=>{
               if(!text){
                 return ''
               }else{
-                return filterMultiDictText(this.dictOptions['orderStatus'], text+"")
+                return filterMultiDictText(this.dictOptions['auditStatus'], text+"")
               }
             }
           },
           {
             title:'申购总数量',
             align:"center",
-            dataIndex: 'amountCount'
+            dataIndex: 'totalNum'
           },
           {
             title:'申购总金额',
             align:"center",
-            dataIndex: 'amountMoney'
+            dataIndex: 'totalPrice'
           },
           {
             title: '操作',
@@ -158,10 +157,8 @@
           deleteBatch: "/pd/pdPurchaseOrder/deleteBatch"
         },
         dictOptions:{
-          orderStatus:[],
-         submitStart:[],
-        },
-
+          auditStatus:[],
+         },
       }
     },
     computed: {
@@ -169,9 +166,9 @@
     },
     methods: {
       initDictConfig(){//静态字典值加载
-        initDictOptions('order_status').then((res) => {
+        initDictOptions('audit_status').then((res) => {
           if (res.success) {
-            this.$set(this.dictOptions, 'orderStatus', res.result)
+            this.$set(this.dictOptions, 'auditStatus', res.result)
           }
         })
       }

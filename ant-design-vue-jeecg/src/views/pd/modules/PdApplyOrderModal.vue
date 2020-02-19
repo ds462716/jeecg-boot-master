@@ -35,7 +35,7 @@
           </a-col>
           <a-col :span="12">
             <a-form-item label="申领总数量" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input-number disabled="disabled" v-decorator="[ 'applyNum', validatorRules.applyNum]"  style="width: 100%"/>
+              <a-input-number disabled="disabled" v-decorator="[ 'totalNum', validatorRules.totalNum]"  style="width: 100%"/>
             </a-form-item>
           </a-col>
           <a-col :span="12">
@@ -68,14 +68,14 @@
                 <td>{{item.packageId}}</td>
                 <td>{{item.packageName}}</td>
                 <td>{{item.productName}}</td>
-                <td>{{item.productNo}}</td>
+                <td>{{item.number}}</td>
                 <td>{{item.spec}}</td>
                 <td>{{item.version}}</td>
                 <td>{{item.unitName}}</td>
                 <td>{{item.productNum}}</td>
                 <td>
                   <a-form-item>
-                    <a-input  :disabled="disableSubmit" :style="{width: 'calc(120% - 5px)'}" @blur="(e)=>{handleConfirmBlur(e.target,item)}"  v-decorator="['pdApplyDetailTable['+index+'].applyCount', {'initialValue':item.applyCount,rules:validatorRules.applyCount}]"/>
+                    <a-input-number  :disabled="disableSubmit" :style="{width: 'calc(120% - 5px)'}" @blur="(e)=>{handleConfirmBlur(e.target,item)}"  v-decorator="['pdApplyDetailTable['+index+'].applyNum', {'initialValue':item.applyNum,rules:validatorRules.applyNum}]"/>
                   </a-form-item>
                 </td>
                 <td>{{item.stockNum}}</td>
@@ -93,7 +93,7 @@
     </a-spin>
     <div class="drawer-bootom-button" v-show="!disableSubmit">
       <a-button @click="handleOk('submit')" type="primary" :loading="confirmLoading">提交</a-button>
-      <a-button @click="handleOk('save')" type="primary" :loading="confirmLoading">保存</a-button>
+      <a-button @click="handleOk('save')" type="primary" :loading="confirmLoading">保存草稿</a-button>
       <a-popconfirm title="确定放弃编辑？" @confirm="handleCancel" okText="确定" cancelText="取消">
         <a-button style="margin-right: .8rem">取消</a-button>
       </a-popconfirm>
@@ -123,15 +123,12 @@
           applyNo:{},
           deptName:{},
           applyDate:{},
-          applyNum:{},
+          totalNum:{},
           realName:{},
           remarks:{},
           refuseReason:{},
-          applyCount:[
-            {required: true,message: '请输入值'},
-            {pattern: '^([1-9][0-9]*)+(.[0-9]{1,2})?$',
-              message: '格式不正确'
-            }]
+          applyNum:[
+            {required: true,message: '请输入值'}]
         },
         refKeys: ['pdApplyDetail', ],
         tableKeys:['pdApplyDetail', ],
@@ -195,13 +192,13 @@
             this.model.deptName=res.result.deptName;//申领科室名称
             this.model.deptId=res.result.deptId;//申领科室id
             this.model.applyDate=res.result.applyDate;//申领日期
-            this.model.applyNum=res.result.applyNum;//申领总数量
+            this.model.totalNum=res.result.totalNum;//申领总数量
             this.model.applyBy=res.result.applyBy;//申领人编号
             this.model.realName=res.result.realName;//申领人姓名
-            this.model.submitStart=res.result.submitStart;//提交状态
-            this.model.applyStatus=res.result.applyStatus;//审核状态
+            this.model.submitStatus=res.result.submitStatus;//提交状态
+            this.model.auditStatus=res.result.auditStatus;//审核状态
             this.$nextTick(() => {
-              this.form.setFieldsValue(pick(this.model,'applyNo','deptName','applyNum','applyDate','realName','remarks'))
+              this.form.setFieldsValue(pick(this.model,'applyNo','deptName','totalNum','applyDate','realName','remarks'))
             })
           }
         })
@@ -209,22 +206,22 @@
       //修改申购数量后重新计算总数量及总金额
       handleConfirmBlur(e,m){
         const that = this;
-        let applyCount = e.value;//修改后的申领数量
+        let applyNum = e.value;//修改后的申领数量
         let stockNum=m.stockNum;//目前库存数量
-        if(parseFloat(stockNum)<parseFloat(applyCount)){
+        if(parseFloat(stockNum)<parseFloat(applyNum)){
           that.$message.error("库存数量小于申领数量");
           return;
         }
         m.applyCount=e.value;
         let tableData=this.pdApplyDetailTable.dataSource;
-        let count=0;
+        let totalNum=0;
         for(let i=0;i<tableData.length;i++){
-          count=count+parseFloat(tableData[i].applyCount);//计算总数量
+          totalNum=totalNum+parseFloat(tableData[i].applyNum);//计算总数量
         }
         let model={};
-        this.model.applyNum=count;//申购总数量
+        this.model.totalNum=totalNum;//申购总数量
         this.$nextTick(() => {
-          this.form.setFieldsValue(pick(this.model,'applyNum'))
+          this.form.setFieldsValue(pick(this.model,'totalNum'))
         })
       },
 
@@ -236,45 +233,45 @@
 
       deleteDetail(productId){
         const newData = this.pdApplyDetailTable.dataSource.filter(item => item.productId !== productId);
-        let count=0;
+        let totalNum=0;
         for(let i=0;i<newData.length;i++){
-          count=count+parseFloat(newData[i].applyCount);//计算总数量
+          totalNum=totalNum+parseFloat(newData[i].applyNum);//计算总数量
         }
         let model={};
-        this.model.applyNum=count;//申购总数量
+        this.model.totalNum=totalNum;//申购总数量
         this.$nextTick(() => {
-          this.form.setFieldsValue(pick(this.model,'applyNum'))
+          this.form.setFieldsValue(pick(this.model,'totalNum'))
         })
         this.pdApplyDetailTable.dataSource = newData;
       },
 
       modalFormOk (formData) {//选择产品确定后返回所选择的数据
         let values = [];
-        let count=0;
+        let totalNum=0;
         for(let i=0;i<formData.length;i++){
           values.push({
             productId: formData[i].productId,
-            productNo: formData[i].number,
+            number: formData[i].number,
             productName: formData[i].productName,
             spec: formData[i].spec,
             version: formData[i].version,
             unitName: formData[i].unitName,
-            applyCount: 1,//默认1
+            totalNum: 1,//默认1
             stockNum: formData[i].stockNum
           })
-          count=count+1;//计算总数量
+          totalNum=totalNum+1;//计算总数量
         }
         let model={};
-        this.model.applyNum=count;//申领总数量
+        this.model.totalNum=totalNum;//申领总数量
         this.$nextTick(() => {
-          this.form.setFieldsValue(pick(this.model,'applyNum'))
+          this.form.setFieldsValue(pick(this.model,'totalNum'))
         })
         this.pdApplyDetailTable.dataSource = values;
       },
       handleOk (submitType) { //提交
         if(submitType=="submit"){
-          this.model.submitStart='2';
-          this.model.applyStatus='0';
+          this.model.submitStatus='2';
+          this.model.auditStatus='1';
         }
         const that = this;
         // 触发表单验证
@@ -313,7 +310,7 @@
       },
       /** 调用完edit()方法之后会自动调用此方法 */
       editAfter() {
-        let fieldval = pick(this.model,'applyNo','deptName','applyNum','applyDate','realName','remarks','refuseReason')
+        let fieldval = pick(this.model,'applyNo','deptName','totalNum','applyDate','realName','remarks','refuseReason')
         this.$nextTick(() => {
           this.form.setFieldsValue(fieldval)
         })
@@ -336,7 +333,7 @@
         this.$message.error(msg)
       },
       popupCallback(row){
-        this.form.setFieldsValue(pick(row,'applyNo','deptName','applyNum','applyDate','realname','remarks','refuseReason'))
+        this.form.setFieldsValue(pick(row,'applyNo','deptName','totalNum','applyDate','realname','remarks','refuseReason'))
       },
 
     }

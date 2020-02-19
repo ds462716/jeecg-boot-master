@@ -17,8 +17,8 @@
           <template v-if="toggleSearchStatus">
             <a-col :md="6" :sm="8">
               <a-form-item label="审核状态">
-                <a-select v-model="queryParam.applyStatus" placeholder="请选择审核状态">
-                  <a-select-option value="0">待审核</a-select-option>
+                <a-select v-model="queryParam.auditStatus" placeholder="请选择审核状态">
+                  <a-select-option value="1">待审核</a-select-option>
                   <a-select-option value="2">审核通过</a-select-option>
                   <a-select-option value="3">审核不通过</a-select-option>
                 </a-select>
@@ -44,16 +44,12 @@
     <!-- 操作按钮区域 -->
     <div class="table-operator">
       <a-button @click="handleAdd" type="primary" icon="plus">新增</a-button>
-     <!-- <a-button type="primary" icon="download" @click="handleExportXls('申领单主表')">导出</a-button>
-      <a-upload name="file" :showUploadList="false" :multiple="false" :headers="tokenHeader" :action="importExcelUrl" @change="handleImportExcel">
-        <a-button type="primary" icon="import">导入</a-button>
-      </a-upload>-->
-      <a-dropdown v-if="selectedRowKeys.length > 0">
+      <!--<a-dropdown v-if="selectedRowKeys.length > 0">
         <a-menu slot="overlay">
           <a-menu-item key="1" @click="batchDel"><a-icon type="delete"/>删除</a-menu-item>
         </a-menu>
         <a-button style="margin-left: 8px"> 批量操作 <a-icon type="down" /></a-button>
-      </a-dropdown>
+      </a-dropdown>-->
     </div>
 
     <!-- table区域-begin -->
@@ -149,34 +145,34 @@
           {
             title:'申领数量',
             align:"center",
-            dataIndex: 'applyNum'
+            dataIndex: 'totalNum'
           },
           {
             title:'实际领用数量',
             align:"center",
-            dataIndex: 'factCount'
+            dataIndex: 'factNum'
           },
           {
             title:'审核状态',
             align:"center",
-            dataIndex: 'applyStatus',
+            dataIndex: 'auditStatus',
             customRender:(text)=>{
               if(!text){
                 return ''
               }else{
-                return filterMultiDictText(this.dictOptions['applyStatus'], text+"")
+                return filterMultiDictText(this.dictOptions['auditStatus'], text+"")
               }
             }
           },
           {
             title:'提交状态',
             align:"center",
-            dataIndex: 'submitStart',
+            dataIndex: 'submitStatus',
             customRender:(text)=>{
               if(!text){
                 return ''
               }else{
-                return filterMultiDictText(this.dictOptions['submitStart'], text+"")
+                return filterMultiDictText(this.dictOptions['submitStatus'], text+"")
               }
             }
           },
@@ -200,8 +196,8 @@
           importExcelUrl: "pd/pdApplyOrder/importExcel",*/
         },
         dictOptions:{
-          applyStatus:[],
-          submitStart:[],
+          auditStatus:[],
+          submitStatus:[],
         },
 
       }
@@ -213,7 +209,7 @@
     },
     methods: {
       handleEdit: function (record) { //编译
-        if(record.submitStart=='2' && record.applyStatus !='3'){
+        if(record.submitStatus=='2' && record.auditStatus !='3'){
           this.$message.warning("此单已提交审核，不允许编译！")
           return
         }
@@ -222,7 +218,7 @@
         this.$refs.modalForm.disableSubmit = false;
       },
       handleDelete: function (record) { //删除
-        if(record.submitStart=='2'){
+        if(record.submitStatus=='2'){
           this.$message.warning("此单已提交审核，不允许删除！")
           return
         }
@@ -238,14 +234,14 @@
         });
       },
       initDictConfig(){ //静态字典值加载
-        initDictOptions('order_status').then((res) => {
+        initDictOptions('audit_status').then((res) => {
           if (res.success) {
-            this.$set(this.dictOptions, 'applyStatus', res.result)
+            this.$set(this.dictOptions, 'auditStatus', res.result)
           }
         }),
         initDictOptions('submit_status').then((res) => {
           if (res.success) {
-            this.$set(this.dictOptions, 'submitStart', res.result)
+            this.$set(this.dictOptions, 'submitStatus', res.result)
           }
         })
       }

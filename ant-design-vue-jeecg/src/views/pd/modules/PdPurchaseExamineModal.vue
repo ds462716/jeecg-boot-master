@@ -35,12 +35,12 @@
           </a-col>
           <a-col :span="12">
             <a-form-item label="申购总数量" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input-number disabled="disabled" v-decorator="[ 'amountCount', validatorRules.amountCount]"  style="width: 100%"/>
+              <a-input-number disabled="disabled" v-decorator="[ 'totalNum', validatorRules.totalNum]"  style="width: 100%"/>
             </a-form-item>
           </a-col>
           <a-col :span="12">
             <a-form-item label="申购总金额" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input-number disabled="disabled" v-decorator="[ 'amountMoney', validatorRules.amountMoney]"  style="width: 100%"/>
+              <a-input-number disabled="disabled" v-decorator="[ 'totalPrice', validatorRules.totalPrice]"  style="width: 100%"/>
             </a-form-item>
           </a-col>
           <!-- <!-- 子表单区域 -->
@@ -61,7 +61,7 @@
                 <th>生产厂家</th>
               </tr>
               <tr v-for="(item, index) in pdPurchaseDetailTable.dataSource">
-                <td>{{item.productNo}}</td>
+                <td>{{item.number}}</td>
                 <td>{{item.productName}}</td>
                 <td>{{item.spec}}</td>
                 <td>{{item.version}}</td>
@@ -69,11 +69,11 @@
                 <td>{{item.stockNum}}</td>
                 <td>
                    <a-form-item>
-                 <a-input  disabled="disabled"   @blur="(e)=>{handleConfirmBlur(e.target,item)}"  v-decorator="['pdPurchaseDetailTable['+index+'].length', {'initialValue':item.applyCount,rules:validatorRules.applyCount}]"/>
+                 <a-input  disabled="disabled"   @blur="(e)=>{handleConfirmBlur(e.target,item)}"  v-decorator="['pdPurchaseDetailTable['+index+'].orderNum', {'initialValue':item.orderNum,rules:validatorRules.orderNum}]"/>
                   </a-form-item>
                 </td>
-                <td>{{item.inPrice}}</td>
-                <td>{{item.amountMoney}}</td>
+                <td>{{item.purchasePrice}}</td>
+                <td>{{item.orderMoney}}</td>
                 <td>{{item.supplierName}}</td>
                 <td>{{item.venderName}}</td>
               </tr>
@@ -121,8 +121,8 @@
           purchaseName:{},
           orderDate:{},
           deptName:{},
-          amountCount:{},
-          amountMoney:{},
+          totalNum:{},
+          totalPrice:{},
           refuseReason:{},
         },
        refKeys: ['pdPurchaseDetail', ],
@@ -174,10 +174,10 @@
         }
       },
       handleOk (type) { //审核提交
-        this.model.orderStatus='2';//审核通过
+        this.model.auditStatus='2';//审核通过
         if(type=="no"){
-          this.model.orderStatus='3';//拒绝
-          this.model.submitStart='3';//已撤回
+          this.model.auditStatus='3';//拒绝
+          this.model.submitStatus='3';//已撤回
         }
         this.form.validateFields((err, values) => {
           if(type=="no"){
@@ -210,7 +210,7 @@
       },
       /** 调用完edit()方法之后会自动调用此方法 */
       editAfter() {
-        let fieldval = pick(this.model,'orderNo','purchaseName','orderDate','deptName','orderStatus','amountCount','amountMoney','submitStart','refuseReason')
+        let fieldval = pick(this.model,'orderNo','purchaseName','orderDate','deptName','auditStatus','totalNum','totalPrice','submitStatus','refuseReason')
         this.$nextTick(() => {
           this.form.setFieldsValue(fieldval)
         })
@@ -233,7 +233,7 @@
         this.$message.error(msg)
       },
       popupCallback(row){
-        this.form.setFieldsValue(pick(row,'orderNo','purchaseName','orderDate','deptName','orderStatus','amountCount','amountMoney','submitStart','refuseReason'))
+        this.form.setFieldsValue(pick(row,'orderNo','purchaseName','orderDate','deptName','auditStatus','totalNum','totalPrice','submitStatus','refuseReason'))
       },
 
     }

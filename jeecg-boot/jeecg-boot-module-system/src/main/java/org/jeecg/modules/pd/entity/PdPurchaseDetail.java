@@ -47,22 +47,20 @@ public class PdPurchaseDetail extends BaseEntity {
 	@Excel(name = "所属部门", width = 15)
 	private String sysOrgCode;
 	/**申购单编号*/
+	@Excel(name = "申购单编号", width = 15)
 	private String orderNo;
 	/**产品ID*/
 	@Excel(name = "产品ID", width = 15)
 	private String productId;
-	/**产品编号*/
-	@Excel(name = "产品编号", width = 15)
-	private String productNo;
 	/**产品单价*/
 	@Excel(name = "产品单价", width = 15)
-	private BigDecimal inPrice;
+	private BigDecimal purchasePrice;
 	/**申购数量*/
 	@Excel(name = "申购数量", width = 15)
-	private Double applyCount;
+	private Double orderNum;
 	/**申购总金额*/
 	@Excel(name = "申购总金额", width = 15)
-	private BigDecimal amountMoney;
+	private BigDecimal orderMoney;
 	/**申购时总库存数量*/
 	@Excel(name = "申购时总库存数量", width = 15)
 	private Double stockNum;
@@ -73,14 +71,14 @@ public class PdPurchaseDetail extends BaseEntity {
 	@Excel(name = "产品名称", width = 15)
 	private String productName;//产品名称
 	@TableField(exist = false)
+	@Excel(name = "产品编号", width = 15)
+	private String number;//产品编号
+	@TableField(exist = false)
 	@Excel(name = "产品规格", width = 15)
 	private String spec;//产品规格
 	@TableField(exist = false)
 	@Excel(name = "产品型号", width = 15)
 	private String version;//产品型号
-	@TableField(exist = false)
-	@Excel(name = "产品单价", width = 15)
-	private BigDecimal sellingPrice;//产品单价
 	@TableField(exist = false)
 	@Excel(name = "单位名称", width = 15)
 	private String unitName;//单位名称
@@ -94,3 +92,5 @@ public class PdPurchaseDetail extends BaseEntity {
 	@Excel(name = "生产厂家名称", width = 15)
 	private String venderName;//生产厂家名称
 }
+
+

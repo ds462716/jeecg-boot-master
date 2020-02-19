@@ -42,9 +42,11 @@ public class PdPurchaseOrderPage extends PdPurchaseOrder{
 
 	/** 查询日期结束 **/
 	private String queryDateEnd;
-
+	/**申购科室名称*/
+	@Excel(name = "申购科室名称", width = 15)
+	private String deptName;
 	/** 提交状态集合 **/
-	private List<String> submitStartList;
+	private List<String> submitStatusList;
 
 	@ExcelCollection(name="申购单详细表")
 	private List<PdPurchaseDetail> pdPurchaseDetailList;	

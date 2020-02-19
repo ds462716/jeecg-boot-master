@@ -7,7 +7,6 @@
 		a.product_id,
 		a.stock_num,
 		a.dept_id,
-		a.dept_name,
 		a.limit_up,
 		a.limit_down,
 		a.expire,
@@ -60,9 +59,6 @@
             a.del_flag =#{DEL_FLAG_NORMAL}
             <if test="id != null and id != ''">
                 AND a.id = #{id}
-            </if>
-            <if test="deptName != null and deptName != ''">
-                AND a.dept_name = #{deptName}
             </if>
             <if test="productName != null and productName != ''">
                 AND c.name = #{productName}
