@@ -214,6 +214,7 @@
   import PdChoosePurchaseOrderListModel from "./PdChoosePurchaseOrderListModel";
   import PdChooseProductListModel from "./PdChooseProductListModel";
   import JDictSelectTagExpand from "@/components/dict/JDictSelectTagExpand"
+  import {scanCode} from '@/utils/barcode'
 
   const VALIDATE_NO_PASSED = Symbol()
   export { FormTypes, VALIDATE_NO_PASSED }
@@ -737,15 +738,37 @@
         })
       },
       searchQuery(num) {
+        let that = this;
+        let productNumber = that.queryParam.productNumber;
         if(num == 0){
           //产品编号扫码
-          if(!this.queryParam.productNumber){
-            this.$message.error("请输入产品编号！")
+          if(!productNumber){
+            that.$message.error("请输入产品编号！")
           }else{
-            this.$refs.productBarCodeInput.focus();
+            that.$refs.productBarCodeInput.focus();
           }
         }else if(num == 1){
-          //条码扫码查询 TODO
+          if(!productNumber){
+            that.$message.error("请输入产品编号！")
+            that.$refs.inputFocus.focus();
+          }else{
+            //条码扫码查询
+            let productBarCode = that.queryParam.productBarCode;
+            //var barCodeObj = scanCode(productNumber,productBarCode,that);
+            scanCode(productNumber,productBarCode,that).then((res) => {
+              let data = {
+                /*productId: row.productId,
+                productName: row.productName,*/
+                productNumber:res.upn,
+                productBarCode:res._secondCode,
+                limitDate:res._ExpDate,
+                batchNo:res._Lot,
+                productNum: 1
+              }
+              this.pdStockRecordDetailTable.dataSource.push(data);
+              this.$refs.pdStockRecordDetail.add();
+            })
+          }
         }else if(num == 2){
           //名称 规格 型号 查询 TODO
         }

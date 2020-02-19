@@ -24,15 +24,13 @@ export function getPrdNumber(Barcode,that){
   return upn;
 }
 
-
-//扫码
+//扫码前校验该产品是否关联编码规则，如果关联编码规则用后台返回值，如果没有则继续使用
 export async function scanCode(Barcode1, Barcode2,that){
+  //返回对象
   var barcodeObj = {};
-  //扫码前校验该产品是否关联编码规则，如果关联编码规则用后台返回值，如果没有则继续使用
-  //codeFlag true 有规则  false没有;
-  let codeFlag = true;
-  //截取字符串01后面14位，根据编码查询是否关联编码规则
-  let resultUpn = true;
+  barcodeObj.code = "500";
+  //初始化方法
+  initObj();
   //封装查询参数
   let formData = new URLSearchParams();
   formData.append("Barcode1",Barcode1);
@@ -41,86 +39,61 @@ export async function scanCode(Barcode1, Barcode2,that){
     if(res.success){
       if(res.code==200){
         let json = res.result;
-        let flag = false;
-        if(json.hasOwnProperty("01")&&!json.hasOwnProperty("00")&&!json.hasOwnProperty("#")){
-          flag = true;
-          upn = json["01"];
-        }else if(json.hasOwnProperty("00")&&!json.hasOwnProperty("01")&&!json.hasOwnProperty("#")){
-          flag = true;
-          upn = json["00"];
-        }else if(json.hasOwnProperty("#")&&!json.hasOwnProperty("00")&&!json.hasOwnProperty("01")){
-          flag = true;
-          upn = json["#"];
+        //产品对象
+        var productObj = json["pdProduct"];
+        //获得产品编号
+        upn = getNumber(json);
+        //获得产品批号
+        _Lot = getBatchNo(json);
+        //获得有效期
+        _ExpDate = getExpDate(json);
+        //产品条码修正
+        if(Barcode1.indexOf(Barcode2) != -1){
+          barcodeObj.productBarCode = Barcode1;
         }else{
-          upn = "";
-          that.$message.error("没有解析出产品编号"  );
+          barcodeObj.productBarCode = Barcode1 + Barcode2;
         }
-        //赋值编号
-        barcodeObj.upn = upn;
-        if(json.hasOwnProperty("10")&&!json.hasOwnProperty("21")){
-          _Lot = json["10"];
-        }else if(!json.hasOwnProperty("10")&&json.hasOwnProperty("21")){
-          _Lot = json["21"];
-        }else if(json.hasOwnProperty("10")&&json.hasOwnProperty("21")){
-          let key1 =  json["10"];
-          let key2 =  json["21"];
-          _Lot = key1+key2;
-        }else{
-          _Lot = "";
-          //that.$message.error("没有解析出批号"  );
-        }
-        //赋值批号
-        barcodeObj._Lot = _Lot;
-        if(json.hasOwnProperty("17")){
-          _ExpDate = json["17"];
-          _ExpDate = "20" + _ExpDate.substr(0, 2) + "-" + _ExpDate.substr(2, 2) + "-" + _ExpDate.substr(4, 2);  //   20YY-MM-DD
-        }else{
-          _ExpDate = "";
-          //that.$message.error("没有解析有效期" );
-        }
-        //赋值有效期
-        barcodeObj._ExpDate = _ExpDate;
-        _secondCode = json["secondCode"];
-        //赋值条码
-        barcodeObj._secondCode = _secondCode;
-        if(!flag){
-          resultUpn = false;
-        }
+        //产品对象
+        barcodeObj.number = upn;
+        barcodeObj.batchNo = _Lot;
+        barcodeObj.expDate = _ExpDate;
+        barcodeObj.productObj = productObj;
+        barcodeObj.code = "200";
       }else if(res.code==201){
         //没有规则
-        codeFlag = false;
+        let json = res.result;
+        //产品对象
+        var productObj = json["pdProduct"];
+        //没有绑定扫码规则的 用现有的规则
+        if(Barcode1.indexOf("+") == 0 && Barcode2.indexOf("+") == 0){
+          //HIBC扫码
+          var rt = HIBCBarcodeDec(Barcode1, Barcode2);
+        }else{
+          //EAN扫码
+          var rt = EANBarcodeDec(Barcode1, Barcode2);
+        }
+        //产品对象
+        barcodeObj.number = upn;
+        barcodeObj.batchNo = _Lot;
+        barcodeObj.expDate = _ExpDate;
+        //产品条码修正
+        if(Barcode1.indexOf(Barcode2) != -1){
+          barcodeObj.productBarCode = Barcode1;
+        }else{
+          barcodeObj.productBarCode = Barcode1 + Barcode2;
+        }
+        barcodeObj.productObj = productObj;
+        barcodeObj.code = "200";
       }else{
-        //后台错误
-        resultUpn = false;
+        //根据产品没有找到条码或者参数不正确
         that.$message.error(res.message );
       }
     }else{
+      //系统报错
       that.$message.error(res.message );
     }
-  //如果有规则 在返回该处标识
-  if(codeFlag){
+    console.log(barcodeObj);
     return barcodeObj;
-  }else{
-    //没有绑定扫码规则的 用现有的规则
-    if(Barcode1.indexOf("+") == 0 && Barcode2.indexOf("+") == 0){
-      //HIBC扫码
-      let rt = HIBCBarcodeDec(Barcode1, Barcode2,that);
-      return rt;
-      //if(!rt){
-      //	that.$message.error('条形码格式错误',{icon:0});
-      //	return false;
-      //}
-    }else {
-      //EAN扫码
-      let rt = EANBarcodeDec(Barcode1, Barcode2, that);
-      return rt;
-      //if(!rt){
-      //	that.$message.error('条形码格式错误',{icon:0});
-      //	return false;
-      //}
-    }
-  }
-
 }
 
 export function HIBCBarcodeDec(Barcode1, Barcode2,that){
@@ -636,4 +609,50 @@ export function generateNumber(code){
   let milliseconds = date.getMilliseconds(); //毫秒
   code = code + year + month+data+hours+minute+second+milliseconds;
   return code;
+}
+
+//初始化方法
+function initObj(){
+  upn = "";//编号
+  _Lot = "";//批次
+  _ExpDate = "";//有效期
+  _secondCode = "";//二级条码
+}
+
+//解析后台的产品编号
+function getNumber(json){
+  var number = "";
+  if(json.hasOwnProperty("01")&&!json.hasOwnProperty("00")&&!json.hasOwnProperty("#")){
+    number = json["01"];
+  }else if(json.hasOwnProperty("00")&&!json.hasOwnProperty("01")&&!json.hasOwnProperty("#")){
+    number = json["00"];
+  }else if(json.hasOwnProperty("#")&&!json.hasOwnProperty("00")&&!json.hasOwnProperty("01")){
+    number = json["#"];
+  }
+  return number;
+}
+
+//解析后台的产品批号
+function getBatchNo(json){
+  var batchNo = "";
+  if(json.hasOwnProperty("10")&&!json.hasOwnProperty("21")){
+    batchNo = json["10"];
+  }else if(!json.hasOwnProperty("10")&&json.hasOwnProperty("21")){
+    batchNo = json["21"];
+  }else if(json.hasOwnProperty("10")&&json.hasOwnProperty("21")){
+    let key1 =  json["10"];
+    let key2 =  json["21"];
+    batchNo = key1+key2;
+  }
+  return batchNo;
+}
+
+//解析后台的产品有效期
+function getExpDate(json){
+  var expDate = "";
+  if(json.hasOwnProperty("17")){
+    expDate = json["17"];
+    expDate = "20" + expDate.substr(0, 2) + "-" + expDate.substr(2, 2) + "-" + expDate.substr(4, 2);  //   20YY-MM-DD
+  }
+  return expDate;
 }
