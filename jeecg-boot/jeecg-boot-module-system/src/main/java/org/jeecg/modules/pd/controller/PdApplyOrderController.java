@@ -58,7 +58,7 @@ public class PdApplyOrderController {
 	/**
 	 * 分页列表查询
 	 *
-	 * @param pdApplyOrder
+	 * @param pdApplyOrderPage
 	 * @param pageNo
 	 * @param pageSize
 	 * @param req
@@ -91,7 +91,7 @@ public class PdApplyOrderController {
 		 List<String> list=new ArrayList<>();
 		 list.add(PdConstant.SUBMIT_STATE_2);//已提交
 		 list.add(PdConstant.SUBMIT_STATE_3);//已撤回
-		 pdApplyOrderPage.setSubmitStartList(list);
+		 pdApplyOrderPage.setSubmitStatusList(list);
 		 IPage<PdApplyOrder> pageList = pdApplyOrderService.selectList(page, pdApplyOrderPage);
 		 return Result.ok(pageList);
 	 }
@@ -108,15 +108,15 @@ public class PdApplyOrderController {
 		 String applyNo= UUIDUtil.generateOrderNoByType(PdConstant.ORDER_NO_FIRST_LETTER_SL);
 		 pdApplyOrder.setApplyNo(applyNo);
 		 pdApplyOrder.setApplyDate(new Date());
-		 pdApplyOrder.setApplyNum(0.00);
+		 pdApplyOrder.setTotalNum(0.00);
 		 LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
 		 SysDepart sysDepart=sysDepartService.getDepartByOrgCode(sysUser.getOrgCode());
 		 pdApplyOrder.setApplyBy(sysUser.getId());
 		 pdApplyOrder.setRealName(sysUser.getRealname());
 		 pdApplyOrder.setDeptId(sysDepart.getId());
 		 pdApplyOrder.setDeptName(sysDepart.getDepartName());
-		 pdApplyOrder.setSubmitStart(PdConstant.SUBMIT_STATE_1);
-		 pdApplyOrder.setApplyStatus(PdConstant.ORDER_STATE_0);
+		 pdApplyOrder.setSubmitStatus(PdConstant.SUBMIT_STATE_1);
+		 pdApplyOrder.setAuditStatus(PdConstant.ORDER_STATE_1);
 		 result.setResult(pdApplyOrder);
 		 result.setSuccess(true);
 		 return result;
@@ -132,7 +132,7 @@ public class PdApplyOrderController {
 	public Result<?> add(@RequestBody PdApplyOrderPage pdApplyOrderPage) {
 		PdApplyOrder pdApplyOrder = new PdApplyOrder();
 		BeanUtils.copyProperties(pdApplyOrderPage, pdApplyOrder);
-		pdApplyOrder.setApplyStatus(PdConstant.ORDER_STATE_0);//审核状态  0：待审核
+		pdApplyOrder.setAuditStatus(PdConstant.ORDER_STATE_1);//审核状态  1：待审核
 		pdApplyOrderService.saveMain(pdApplyOrder, pdApplyOrderPage.getPdApplyDetailList());
 		return Result.ok("添加成功！");
 	}
@@ -152,7 +152,7 @@ public class PdApplyOrderController {
 			return Result.error("未找到对应数据");
 		}
 
-		String applyStatus=pdApplyOrder.getApplyStatus();//审核状态
+		String applyStatus=pdApplyOrder.getAuditStatus();//审核状态
 		if((PdConstant.ORDER_STATE_2).equals(applyStatus) || (PdConstant.ORDER_STATE_3).equals(applyStatus)){
 			LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
 			pdApplyOrder.setAuditBy(sysUser.getId());

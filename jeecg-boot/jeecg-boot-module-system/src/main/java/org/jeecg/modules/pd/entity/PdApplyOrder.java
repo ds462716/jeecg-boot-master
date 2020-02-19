@@ -51,9 +51,9 @@ public class PdApplyOrder extends BaseEntity {
     @Excel(name = "申领单号", width = 15)
     private String applyNo;
     /*提交状态*/
-    private String submitStart;
-	/**申领人*/
-    @Excel(name = "申领人", width = 15)
+    private String submitStatus;
+	/**申领人编号*/
+    @Excel(name = "申领人编号", width = 15)
     private String applyBy;
 	/**申领日期*/
     @Excel(name = "申领日期", width = 15, format = "yyyy-MM-dd")
@@ -63,18 +63,15 @@ public class PdApplyOrder extends BaseEntity {
 	/**申领科室ID*/
     @Excel(name = "申领科室ID", width = 15)
     private String deptId;
-	/**申领科室名称*/
-    @Excel(name = "申领科室名称", width = 15)
-    private String deptName;
 	/**申领总数*/
     @Excel(name = "申领总数", width = 15)
-    private Double applyNum;
+    private Double totalNum;
 	/**实际领用个数*/
     @Excel(name = "实际领用数量", width = 15)
-    private Double factCount;
+    private Double factNum;
 	/**申领单状态*/
     @Excel(name = "申领单状态", width = 15)
-    private String applyStatus;
+    private String auditStatus;
 	/**审核人*/
     @Excel(name = "审核人", width = 15)
     private String auditBy;

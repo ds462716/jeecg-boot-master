@@ -17,8 +17,8 @@
           <template v-if="toggleSearchStatus">
             <a-col :md="6" :sm="8">
               <a-form-item label="审核状态">
-                <a-select v-model="queryParam.applyStatus" placeholder="请选择审核状态">
-                  <a-select-option value="0">待审核</a-select-option>
+                <a-select v-model="queryParam.auditStatus" placeholder="请选择审核状态">
+                  <a-select-option value="1">待审核</a-select-option>
                   <a-select-option value="2">审核通过</a-select-option>
                   <a-select-option value="3">审核不通过</a-select-option>
                 </a-select>
@@ -122,24 +122,24 @@
           {
             title:'审核状态',
             align:"center",
-            dataIndex: 'applyStatus',
+            dataIndex: 'auditStatus',
             customRender:(text)=>{
               if(!text){
                 return ''
               }else{
-                return filterMultiDictText(this.dictOptions['applyStatus'], text+"")
+                return filterMultiDictText(this.dictOptions['auditStatus'], text+"")
               }
             }
           },
           {
             title:'申领数量',
             align:"center",
-            dataIndex: 'applyNum'
+            dataIndex: 'totalNum'
           },
           {
             title:'实际领用数量',
             align:"center",
-            dataIndex: 'factCount'
+            dataIndex: 'factNum'
           },
           {
             title: '操作',
@@ -154,7 +154,7 @@
           deleteBatch: "/pd/pdApplyOrder/deleteBatch"
         },
         dictOptions:{
-          applyStatus:[],
+          auditStatus:[],
         },
 
       }
@@ -164,9 +164,9 @@
     },
     methods: {
       initDictConfig(){//静态字典值加载
-        initDictOptions('order_status').then((res) => {
+        initDictOptions('audit_status').then((res) => {
           if (res.success) {
-            this.$set(this.dictOptions, 'applyStatus', res.result)
+            this.$set(this.dictOptions, 'auditStatus', res.result)
           }
         })
       }

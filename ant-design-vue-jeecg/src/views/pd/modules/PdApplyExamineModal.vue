@@ -35,7 +35,7 @@
           </a-col>
           <a-col :span="12">
             <a-form-item label="申领总数量" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input-number disabled="disabled" v-decorator="[ 'applyNum', validatorRules.applyNum]"  style="width: 100%"/>
+              <a-input-number disabled="disabled" v-decorator="[ 'totalNum', validatorRules.totalNum]"  style="width: 100%"/>
             </a-form-item>
           </a-col>
           <a-col :span="12">
@@ -63,14 +63,14 @@
                 <td>{{item.packageId}}</td>
                 <td>{{item.packageName}}</td>
                 <td>{{item.productName}}</td>
-                <td>{{item.productNo}}</td>
+                <td>{{item.number}}</td>
                 <td>{{item.spec}}</td>
                 <td>{{item.version}}</td>
                 <td>{{item.unitName}}</td>
                 <td>{{item.productNum}}</td>
                 <td>
                    <a-form-item>
-                 <a-input  disabled="disabled"   @blur="(e)=>{handleConfirmBlur(e.target,item)}"  v-decorator="['pdPurchaseDetailTable['+index+'].length', {'initialValue':item.applyCount,rules:validatorRules.applyCount}]"/>
+                 <a-input  disabled="disabled"   @blur="(e)=>{handleConfirmBlur(e.target,item)}"  v-decorator="['pdPurchaseDetailTable['+index+'].applyNum', {'initialValue':item.applyNum,rules:validatorRules.applyNum}]"/>
                   </a-form-item>
                 </td>
                 <td>{{item.stockNum}}</td>
@@ -117,7 +117,7 @@
           applyNo:{},
           deptName:{},
           applyDate:{},
-          applyNum:{},
+          totalNum:{},
           realName:{},
           remarks:{},
           refuseReason:{}
@@ -171,10 +171,10 @@
         }
       },
       handleOk (type) { //审核提交
-        this.model.applyStatus='2';//审核通过
+        this.model.auditStatus='2';//审核通过
         if(type=="no"){
-          this.model.applyStatus='3';//拒绝
-          this.model.submitStart='3';//已撤回
+          this.model.auditStatus='3';//拒绝
+          this.model.submitStatus='3';//已撤回
         }
         this.form.validateFields((err, values) => {
           if(type=="no"){
@@ -207,7 +207,7 @@
       },
       /** 调用完edit()方法之后会自动调用此方法 */
       editAfter() {
-        let fieldval = pick(this.model,'applyNo','deptName','applyNum','applyDate','realName','remarks','refuseReason')
+        let fieldval = pick(this.model,'applyNo','deptName','totalNum','applyDate','realName','remarks','refuseReason')
         this.$nextTick(() => {
           this.form.setFieldsValue(fieldval)
         })
@@ -230,7 +230,7 @@
         this.$message.error(msg)
       },
       popupCallback(row){
-        this.form.setFieldsValue(pick(row,'applyNo','deptName','applyNum','applyDate','realName','remarks','refuseReason'))
+        this.form.setFieldsValue(pick(row,'applyNo','deptName','totalNum','applyDate','realName','remarks','refuseReason'))
        },
 
     }

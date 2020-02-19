@@ -13,16 +13,15 @@
         a.apply_by,
         a.apply_date,
         a.dept_id,
-        a.dept_name,
-        a.fact_count,
-        a.apply_status,
+        a.fact_num,
+        a.audit_status,
         a.audit_by,
         a.audit_date,
         a.refuse_reason,
         a.is_in_refund,
         a.is_end,
         a.apply_num,
-        a.submit_start,
+        a.submit_status,
 		a.remarks,
 		a.del_flag
 	</sql>
@@ -55,18 +54,15 @@
             <if test="applyNo != null and applyNo != ''">
                 AND a.apply_no = #{applyNo}
             </if>
-            <if test="deptName != null and deptName != ''">
-                AND a.dept_name = #{deptName}
+            <if test="auditStatus != null and auditStatus != ''">
+                AND a.audit_status = #{auditStatus}
             </if>
-            <if test="applyStatus != null and applyStatus != ''">
-                AND a.apply_status = #{applyStatus}
+            <if test="submitStatus != null and submitStatus != ''">
+                AND a.submit_status = #{submitStatus}
             </if>
-            <if test="submitStart != null and submitStart != ''">
-                AND a.submit_start = #{submitStart}
-            </if>
-            <if test="submitStartList != null and submitStartList.size() > 0">
-                and a.submit_start IN
-                <foreach collection="submitStartList" item="item" separator="," open="(" close=")">
+            <if test="submitStatusList != null and submitStatusList.size() > 0">
+                and a.submit_status IN
+                <foreach collection="submitStatusList" item="item" separator="," open="(" close=")">
                     #{item}
                 </foreach>
             </if>

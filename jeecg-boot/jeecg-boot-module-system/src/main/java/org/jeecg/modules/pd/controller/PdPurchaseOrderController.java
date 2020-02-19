@@ -5,11 +5,8 @@ import java.math.BigDecimal;
 import java.util.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.sun.tools.javac.code.Attribute;
 import org.jeecg.common.constant.PdConstant;
-import org.jeecg.modules.pd.entity.PdProduct;
 import org.jeecg.modules.pd.util.UUIDUtil;
 import org.jeecg.modules.pd.vo.PdProductPage;
 import org.jeecg.modules.system.entity.SysDepart;
@@ -56,7 +53,7 @@ public class PdPurchaseOrderController {
 	/**
 	 * 分页列表查询
 	 *
-	 * @param pdPurchaseOrder
+	 * @param pdPurchaseOrderPage
 	 * @param pageNo
 	 * @param pageSize
 	 * @param req
@@ -76,7 +73,7 @@ public class PdPurchaseOrderController {
 	 /**
 	  * 分页列表查询(审核页面)
 	  *
-	  * @param pdPurchaseOrder
+	  * @param pdPurchaseOrderPage
 	  * @param pageNo
 	  * @param pageSize
 	  * @param req
@@ -91,7 +88,7 @@ public class PdPurchaseOrderController {
 		 List<String> list=new ArrayList<>();
 		 list.add(PdConstant.SUBMIT_STATE_2);//已提交
 		 list.add(PdConstant.SUBMIT_STATE_3);//已撤回
-		 pdPurchaseOrderPage.setSubmitStartList(list);
+		 pdPurchaseOrderPage.setSubmitStatusList(list);
 		 page = pdPurchaseOrderService.selectList(page,pdPurchaseOrderPage);
 		 return Result.ok(page);
 	 }
@@ -107,16 +104,16 @@ public class PdPurchaseOrderController {
 		 String orderNo=UUIDUtil.generateOrderNoByType(PdConstant.ORDER_NO_FIRST_LETTER_SG);
 		 pdPurchaseOrder.setOrderNo(orderNo);
 		 pdPurchaseOrder.setOrderDate(new Date());
-		 pdPurchaseOrder.setAmountCount(0.00);
-		 pdPurchaseOrder.setAmountMoney(BigDecimal.ZERO);
+		 pdPurchaseOrder.setTotalNum(0.00);
+		 pdPurchaseOrder.setTotalPrice(BigDecimal.ZERO);
 		 LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
 		 SysDepart sysDepart=sysDepartService.getDepartByOrgCode(sysUser.getOrgCode());
 		 pdPurchaseOrder.setDeptId(sysDepart.getId());
 		 pdPurchaseOrder.setDeptName(sysDepart.getDepartName());
 		 pdPurchaseOrder.setPurchaseBy(sysUser.getId());
 		 pdPurchaseOrder.setPurchaseName(sysUser.getRealname());
-		 pdPurchaseOrder.setSubmitStart(PdConstant.SUBMIT_STATE_1);
-		 pdPurchaseOrder.setOrderStatus(PdConstant.ORDER_STATE_0);
+		 pdPurchaseOrder.setSubmitStatus(PdConstant.SUBMIT_STATE_1);
+		 pdPurchaseOrder.setAuditStatus(PdConstant.ORDER_STATE_1);
 		 result.setResult(pdPurchaseOrder);
 		 result.setSuccess(true);
 		 return result;
@@ -134,7 +131,7 @@ public class PdPurchaseOrderController {
 	public Result<?> add(@RequestBody PdPurchaseOrderPage pdPurchaseOrderPage) {
 		PdPurchaseOrder pdPurchaseOrder = new PdPurchaseOrder();
 		BeanUtils.copyProperties(pdPurchaseOrderPage, pdPurchaseOrder);
-		pdPurchaseOrder.setOrderStatus(PdConstant.ORDER_STATE_0);//审核状态  0：待审核
+		pdPurchaseOrder.setAuditStatus(PdConstant.ORDER_STATE_1);//审核状态  1：待审核
 		pdPurchaseOrder.setDelFlag(PdConstant.DEL_FLAG_0);
 		pdPurchaseOrderService.saveMain(pdPurchaseOrder, pdPurchaseOrderPage.getPdPurchaseDetailList());
 		return Result.ok("添加成功！");
@@ -154,7 +151,7 @@ public class PdPurchaseOrderController {
 		if(pdPurchaseOrderEntity==null) {
 			return Result.error("未找到对应数据");
 		}
-		String orderStatus=pdPurchaseOrder.getOrderStatus();//审核状态
+		String orderStatus=pdPurchaseOrder.getAuditStatus();//审核状态
 		if((PdConstant.ORDER_STATE_2).equals(orderStatus) || (PdConstant.ORDER_STATE_3).equals(orderStatus)){
 			LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
 			pdPurchaseOrder.setAuditBy(sysUser.getId());

@@ -56,12 +56,9 @@ public class PdPurchaseOrder extends BaseEntity {
 	/**申购科室编号*/
     @Excel(name = "申购科室编号", width = 15)
     private String deptId;
-	/**申购科室名称*/
-    @Excel(name = "申购科室名称", width = 15)
-    private String deptName;
 	/**审核状态*/
     @Excel(name = "审核状态", width = 15)
-    private String orderStatus;
+    private String auditStatus;
 	/**审核人编号*/
     @Excel(name = "审核人编号", width = 15)
     private String auditBy;
@@ -75,14 +72,17 @@ public class PdPurchaseOrder extends BaseEntity {
     private String refuseReason;
 	/**申购总数量*/
     @Excel(name = "申购总数量", width = 15)
-    private Double amountCount;
+    private Double totalNum;
 	/**申购总金额*/
     @Excel(name = "申购总金额", width = 15)
-    private BigDecimal amountMoney;
+    private BigDecimal totalPrice;
 	/**备注信息*/
     @Excel(name = "备注信息", width = 15)
     private String remarks;
 	/**提交状态*/
     @Excel(name = "提交状态", width = 15)
-    private String submitStart;
+    private String submitStatus;
 }
+
+
+

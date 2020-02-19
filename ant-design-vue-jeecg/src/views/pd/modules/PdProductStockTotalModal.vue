@@ -48,14 +48,8 @@
         typeValue : false,
         confirmLoading: false,
         validatorRules:{
-          limitUp:{rules: [{ required: true, message: '请输入值!' },
-              {pattern: '^([1-9][0-9]*)+(.[0-9]{1,2})?$',
-                message: '格式不正确'
-              }]},
-          limitDown:{rules: [{ required: true, message: '请输入值!' },
-              {pattern: '^([1-9][0-9]*)+(.[0-9]{1,2})?$',
-                message: '格式不正确'
-              }]},
+          limitUp:{rules: [{ required: true, message: '请输入值!' }]},
+          limitDown:{rules: [{ required: true, message: '请输入值!'}]},
         },
         url: {
           edit : "/pd/pdProductStockTotal/updateProductStock",
