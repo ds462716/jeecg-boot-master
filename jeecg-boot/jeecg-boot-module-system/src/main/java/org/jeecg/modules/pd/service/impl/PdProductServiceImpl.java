@@ -113,6 +113,8 @@ public class PdProductServiceImpl extends ServiceImpl<PdProductMapper, PdProduct
             String productNumber = barcode.substring(startIndex,endIndex);
             PdProduct pdProduct = this.findByNumber(productNumber);
             if(pdProduct!=null){
+                //产品对象
+                resultMap.put("pdProduct",pdProduct);
                 PdProductRule pdProductRule = new PdProductRule();
                 pdProductRule.setProductId(pdProduct.getId());
                 List<PdProductRule> pdProductRules = pdProductRuleMapper.selectList(pdProductRule);
@@ -132,8 +134,9 @@ public class PdProductServiceImpl extends ServiceImpl<PdProductMapper, PdProduct
                     //如果编码和条码为同一条
                     if(barcode.length()==encodingRule.getTotalDigit()){
                         result.setCode(200);
-                        int barLength = barcode.length();
-                        resultMap.put("secondCode",barcode.substring(endIndex,barLength));
+                        //完整条码根据扫码来
+                        /*int barLength = barcode.length();
+                        resultMap.put("secondCode",barcode.substring(endIndex,barLength));*/
                         String temp = barcode;
                         for(PdEncodingRuleDetail erd :pdEncodingRuleDetails){
                             String key = erd.getValue();
@@ -173,7 +176,8 @@ public class PdProductServiceImpl extends ServiceImpl<PdProductMapper, PdProduct
             }
             else{
                 //没有绑定扫码规则
-                result.setCode(201);
+                result.setCode(500);
+                result.setMessage("没有找到该条码对应的产品");
             }
 
         }else{

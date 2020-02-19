@@ -327,6 +327,7 @@ public class PdProductController extends JeecgController<PdProduct, IPdProductSe
 		}catch(Exception e){
 			log.error(e.getMessage(), e);
 			result.setSuccess(false);
+			result.setMessage("系统异常");
 		}
 		return result;
 	}
