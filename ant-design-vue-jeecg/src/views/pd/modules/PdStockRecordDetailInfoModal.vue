@@ -121,7 +121,7 @@
           {
             title:'出入库类型',
             align:"center",
-            dataIndex: 'recodeType'
+            dataIndex: 'recordType'
           },
           {
             title:'数量',
