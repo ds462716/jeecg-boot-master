@@ -178,4 +178,11 @@ public interface ISysUserService extends IService<SysUser> {
 	 */
 	Result checkUserIsEffective(SysUser sysUser);
 
+	/**
+	 * 根据角色编码获取该角色下的用户id
+	 * @param roleCode
+	 * @return
+	 */
+	List<String> getUserIdByRoleCode(String roleCode);
+
 }
