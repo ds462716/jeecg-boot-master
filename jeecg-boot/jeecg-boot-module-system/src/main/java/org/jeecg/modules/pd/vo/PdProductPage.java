@@ -35,8 +35,14 @@ public class PdProductPage extends PdProduct {
     /** 采购明细id **/
     private String purchaseDetailId;
 
+    /**订单编号**/
+    private String orderNo;
+
     /** 产品采购数量 **/
     private Double orderNum;
+
+    /** 产品到货数量 **/
+    private Double arrivalNum;
 
     /** 采购总价格 **/
     private BigDecimal price;

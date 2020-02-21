@@ -133,6 +133,7 @@
         SELECT
             a.id as purchaseDetailId,
             a.order_num AS orderNum,
+            a.arrival_num AS arrivalNum,
             a.purchase_price as purchasePrice,
             b.number,
             b.NAME as productName,
