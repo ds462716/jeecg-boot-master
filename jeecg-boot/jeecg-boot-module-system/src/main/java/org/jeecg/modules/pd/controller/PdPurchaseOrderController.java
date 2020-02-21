@@ -319,18 +319,21 @@ public class PdPurchaseOrderController {
 	 public boolean sendMsg(PdPurchaseOrderPage purchaseOrderPage) {
 		 Map<String, Object> map = new HashMap<>();
 		 //获取具有器械科管理员的角色用户Id;
-		 List<String> userIdList=sysUserService.getUserIdByRoleCode("qxk_admin");
-		 String userIds = String.join(",", userIdList);
-		 Map<String, String> strMap = new HashMap<>();
-		 LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
-		 //模板注入参数
-		 strMap.put("userName", sysUser.getRealname());
-		 strMap.put("orderNo", purchaseOrderPage.getOrderNo());
-		 map.put("map", strMap);
-		 //需要发送消息的用户id
-		 map.put("userIds",userIds+",");
-		 //短信模板标识
-		 map.put("templateCode",PdConstant.PURCHASE_SUBMIT_MSG);
-		return pushMsgUtil.newSendMessage(map);
+		 List<String> userIdList = sysUserService.getUserIdByRoleCode("qxk_admin");
+		 if (userIdList != null) {
+			 String userIds = String.join(",", userIdList);
+			 Map<String, String> strMap = new HashMap<>();
+			 LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+			 //模板注入参数
+			 strMap.put("userName", sysUser.getRealname());
+			 strMap.put("orderNo", purchaseOrderPage.getOrderNo());
+			 map.put("map", strMap);
+			 //需要发送消息的用户id
+			 map.put("userIds", userIds + ",");
+			 //短信模板标识
+			 map.put("templateCode", PdConstant.PURCHASE_SUBMIT_MSG);
+			 return pushMsgUtil.newSendMessage(map);
+		 }
+		 return false;
 	 }
  }
