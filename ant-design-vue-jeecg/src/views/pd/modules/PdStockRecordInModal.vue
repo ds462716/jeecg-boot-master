@@ -59,7 +59,6 @@
               </a-col>
               <a-col :span="6">
                 <a-form-item label="供应商" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                  <!--<a-input v-decorator="[ 'supplierId', validatorRules.supplierId]" placeholder="请输入供应商ID"></a-input>-->
                   <a-select
                     showSearch
                     :supplierId="supplierValue"
@@ -77,23 +76,13 @@
                   </a-select>
                 </a-form-item>
               </a-col>
-              <!--<a-col :span="8">-->
-                <!--<a-form-item label="允许入库非订单产品" :labelCol="labelCol4" :wrapperCol="wrapperCol4">-->
-                  <!--<j-dict-select-tag  v-decorator="[ 'isAllowProduct', validatorRules.isAllowProduct]" placeholder="" :type="'radio'" :triggerChange="true" dictCode="yn"/>-->
-                <!--</a-form-item>-->
-              <!--</a-col>-->
-              <!--<a-col :span="8">-->
-                <!--<a-form-item label="允许入库量大于订单量" :labelCol="labelCol4" :wrapperCol="wrapperCol4">-->
-                  <!--<j-dict-select-tag  v-decorator="[ 'isAllowNum', validatorRules.isAllowNum]" placeholder="" :type="'radio'" :triggerChange="true" dictCode="yn"/>-->
-                <!--</a-form-item>-->
-              <!--</a-col>-->
             </a-row>
           </a-form>
 
           <div class="table-operator">
             <a-button @click="choosePurchaseOrder" type="primary" icon="import">从订单导入</a-button>
           </div>
-          <!-- 订单明细表区域 ref="pdPurchaseOrderDetail"-->
+          <!-- 订单明细表区域 -->
           <a-table
             v-show="showOrderTable"
             ref="table"
@@ -113,7 +102,7 @@
         <!-- 产品列表区域 -->
         <a-card style="margin-bottom: 10px;">
           <a-tabs v-model="activeKey" @change="handleChangeTabs">
-            <a-tab-pane tab="产品明细" :key="refKeys[0]" :forceRender="true">
+            <a-tab-pane tab="产品扫码" :key="refKeys[0]" :forceRender="true">
               <a-form >
                 <a-row>
                   <a-col :md="6" :sm="8">
@@ -278,6 +267,8 @@
 
         initData:{},
         queryParam:{},
+        allowInMoreOrder:"",		//开关-是否允许入库量大于订单量   1-允许入库量大于订单量；0-不允许入库量大于订单量
+        allowNotOrderProduct:"",		//开关-是否允许入库非订单产品     1-允许非订单产品；0-不允许非订单产品
         //供应商下拉列表 start
         supplierValue: undefined,
         notFoundContent:"未找到内容",
@@ -563,8 +554,11 @@
             this.initData.storageResult = "0";
             this.initData.temperature = "25";
             this.initData.humidity = "50";
+            this.allowInMoreOrder = this.initData.allowInMoreOrder;
+            this.allowNotOrderProduct = this.initData.allowNotOrderProduct;
+
             let fieldval = pick(this.initData,'recordNo','inType','recordPeople','recordPeopleName','recordDate','remarks','inDepartId','supplierId',
-                                              'testResult','storageResult','temperature','humidity','remarks','isAllowProduct','isAllowNum');
+                                              'testResult','storageResult','temperature','humidity','remarks');
             this.goodsAllocationList = this.initData.goodsAllocationList;
             this.$nextTick(() => {
               this.form.setFieldsValue(fieldval);
@@ -664,7 +658,7 @@
         fetch(value, data => (this.supplierData = data),this.url.querySupplier);
       },
       supplierHandleChange(value) {
-        this.pdPurchaseOrderDetailTable.dataSource = [];
+        // this.pdPurchaseOrderDetailTable.dataSource = [];
         this.totalSum = '0';
         this.totalPrice = '0.0000';
         this.eachAllTable((item) => {
@@ -681,7 +675,7 @@
       },
       //选择订单后回调函数
       returnPurchaseOrderData(data) {
-        this.pdPurchaseOrderDetailTable.dataSource = [];
+        // this.pdPurchaseOrderDetailTable.dataSource = [];
         this.showOrderTable = true;
         this.pdPurchaseOrderDetailTable.dataSource = data;
         this.orderNo = data[0].orderNo;
@@ -707,7 +701,8 @@
           this.$message.error("请先选择供应商！");
           return;
         }
-        if(isAllowProduct === "0") {
+        //开关-是否允许入库非订单产品     1-允许非订单产品；0-不允许非订单产品
+        if(this.allowNotOrderProduct === "0") {
           if(!this.orderNo){
             this.$message.error("请先导入订单！");
             return;
@@ -860,6 +855,7 @@
         if(num == 0){       //产品编号扫码
           // 焦点条码输入框
           this.$refs.productBarCodeInput.focus();
+
         }else if(num == 1){ //条码扫码
           let productBarCode = this.queryParam.productBarCode;
           if(!productBarCode){
@@ -870,21 +866,17 @@
           scanCode(productNumber,productBarCode,that).then((res) => {
             if(res.code === "200"){
               let product = res.productObj;
-              let supplierId = this.form.getFieldValue("supplierId")
-              if(supplierId){
-                if(supplierId != product.supplierId){
-                  this.$message.error("产品("+product.name+")的供应商与选中的供应商不一致！");
-                  //清空扫码框
-                  this.clearQueryParam();
-                  return;
-                }
-              }else{
-                //默认选中扫码产品的供应商
-                this.form.setFieldsValue({supplierId:product.supplierId});
+
+              //校验开关-是否允许入库非订单产品
+              if(!this.checkAllowNotOrderProduct(product)){
+                return;
+              }
+              //校验供应商
+              if(!this.checkSupplier(product)){
+                return;
               }
 
               let isAddRow = true;// 是否增加一行
-
               // 循环表格数据
               this.$refs.pdStockRecordDetail.getValues((error, values) => {
                 this.pdStockRecordDetailTable.dataSource = values;
@@ -907,7 +899,8 @@
                       break;
                     }
                   }
-                }else{ //表格没数据 新增一行
+                }else{
+                  //表格没数据 新增一行
                   isAddRow = true;
                 }
               })
@@ -926,8 +919,46 @@
           })
         }
       },
-
-
+      checkSupplier(product){
+        let supplierId = this.form.getFieldValue("supplierId")
+        if(supplierId){
+          if(supplierId != product.supplierId){
+            this.$message.error("产品("+product.name+")的供应商与选中的供应商不一致！");
+            //清空扫码框
+            this.clearQueryParam();
+            return false;
+          }
+        }else{
+          //默认选中扫码产品的供应商
+          this.form.setFieldsValue({supplierId:product.supplierId});
+        }
+        return true;
+      },
+      checkAllowNotOrderProduct(product){
+        if(this.allowNotOrderProduct === "0"){
+          if(!this.orderNo){
+            this.$message.error("请先导入订单！");
+            //清空扫码框
+            this.clearQueryParam();
+            return false;
+          }
+          let bool = true;
+          let purchaseOrderDetail = this.pdPurchaseOrderDetailTable.dataSource;
+          for(let i = 0;i<purchaseOrderDetail.length; i++ ){
+            if(purchaseOrderDetail[i].number == product.number){
+              bool = false;
+              break;
+            }
+          }
+          if(bool){
+            this.$message.error("扫码产品("+product.name+")不是订单中的产品！");
+            //清空扫码框
+            this.clearQueryParam();
+            return false;
+          }
+        }
+        return true;
+      },
     }
   }
 

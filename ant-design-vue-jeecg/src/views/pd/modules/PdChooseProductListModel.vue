@@ -193,11 +193,13 @@
       show(params) {
         if(params && params.supplierId){
           this.supplierId = params.supplierId;
+          this.orderNo = params.orderNo;
           this.$nextTick(() => {
             // this.$refs.supplierSelect.disabled="disabled";
             this.supplierHandleSearch(); //初始化供应商
             this.queryParam.supplierId = this.supplierId; //默认选择父页面传来的供应商
             this.supplierSelecDisabled = true;
+
             this.loadData(1);
           })
         }
@@ -226,6 +228,9 @@
         var params = this.getQueryParams();//查询条件
         if(this.supplierId){
           params.supplierId = this.supplierId;
+        }
+        if(this.orderNo){
+          params.orderNo = this.orderNo;
         }
         this.loading = true;
         getAction(this.url.list, params).then((res) => {
