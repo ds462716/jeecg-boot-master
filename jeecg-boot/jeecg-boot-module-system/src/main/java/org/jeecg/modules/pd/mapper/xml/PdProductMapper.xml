@@ -332,7 +332,7 @@
     </select>
 
     <!-- 用于产品弹出框 -->
-    <select id="chooseProductList" resultType="org.jeecg.modules.pd.vo.PdProductPage" parameterType="org.jeecg.modules.pd.entity.PdProduct">
+    <select id="chooseProductList" resultType="org.jeecg.modules.pd.vo.PdProductPage" parameterType="org.jeecg.modules.pd.vo.PdProductPage">
         select
             a.id as productId,
             a.number as number,
