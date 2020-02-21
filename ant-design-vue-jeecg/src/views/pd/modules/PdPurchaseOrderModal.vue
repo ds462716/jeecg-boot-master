@@ -108,12 +108,11 @@
   import { httpAction,getAction,downFile,inArray } from '@/api/manage'
   import { JEditableTableMixin } from '@/mixins/JEditableTableMixin'
   import JDate from '@/components/jeecg/JDate'
-  import {JDictSelectTag,typeText}from "@/components/dict/JDictSelectTag"
   import PdPurchaseDetailAddModal from './PdChooseProductListModel'
   export default {
     name: 'PdPurchaseOrderModal',
     mixins: [JEditableTableMixin],
-    components: {JDate, JDictSelectTag,PdPurchaseDetailAddModal},
+    components: {JDate,PdPurchaseDetailAddModal},
     data() {
       return {
         confirmLoading: false,
