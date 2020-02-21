@@ -16,7 +16,7 @@
           </a-col>
           <a-col :md="6" :sm="8">
             <a-form-item label="产品编号">
-              <a-input placeholder="请输入产品编号" v-model="queryParam.productNo"></a-input>
+              <a-input placeholder="请输入产品编号" v-model="queryParam.number"></a-input>
             </a-form-item>
           </a-col>
           <a-col :md="6" :sm="8">
@@ -92,7 +92,7 @@
           {
             title:'产品编号',
             align:"center",
-            dataIndex: 'productNo'
+            dataIndex: 'number'
           },
           {
             title:'产品条码',
@@ -117,7 +117,7 @@
           {
             title:'有效期',
             align:"center",
-            dataIndex: 'validDate'
+            dataIndex: 'expDate'
           },
           {
             title:'数量',

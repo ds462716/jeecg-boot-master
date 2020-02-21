@@ -52,6 +52,7 @@
         :columns="columns"
         :dataSource="dataSource"
         :pagination="ipagination"
+        :rowClassName="setdataCss"
         :loading="loading"
         @change="handleTableChange">
       </a-table>
@@ -242,7 +243,11 @@
             this.$set(this.dictOptions, 'isLong', res.result)
           }
         })
-      }
+      },
+      setdataCss(record,index) {
+        let expire = record.expStatus;
+        return "expire"+expire;
+      },
     }
   }
 </script>
@@ -251,4 +256,14 @@
   .numberWARAP>div{float:left;width:33%;height:30px;line-height:30px;color:#666;font-size:16px;text-align:center;border-right:1px solid #ccc;}
   .numberWARAP>div:nth-child(3){border:none;}
   .changeColor .red td,.changeColor .red td a{color: red}
+</style>
+<style>
+  .expire0{
+  }
+  .expire1{
+    background-color:#FFFFCC;
+  }
+  .expire2{
+    background-color:#FF3333;
+  }
 </style>

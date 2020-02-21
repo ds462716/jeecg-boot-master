@@ -68,13 +68,17 @@
         <include refid="pdUnitJoins"/>
         <include refid="sysDepartJoins"/>
         <where>
-            a.del_flag =#{DEL_FLAG_NORMAL}
+            a.del_flag =#{DEL_FLAG_NORMAL} AND a.stock_num > 0
             <if test="id != null and id != ''">
                 AND a.id = #{id}
             </if>
             <if test="productName != null and productName != ''">
                 AND c.name = #{productName}
             </if>
+            <if test="deptName != null and deptName != ''">
+                AND  f.depart_name=#{deptName}
+            </if>
+            order by  exp_status  desc,create_time desc
         </where>
     </select>
 

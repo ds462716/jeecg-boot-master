@@ -68,13 +68,16 @@
             <if test="submitStatus != null and submitStatus != ''">
                 AND a.submit_status = #{submitStatus}
             </if>
+            <if test="deptName != null and deptName != ''">
+                AND f.depart_name = #{deptName}
+            </if>
             <if test="submitStatusList != null and submitStatusList.size() > 0">
                 and a.submit_status IN
                 <foreach collection="submitStatusList" item="item" separator="," open="(" close=")">
                     #{item}
                 </foreach>
             </if>
-            ORDER BY order_date DESC
+            ORDER BY  audit_status , update_time DESC
         </where>
     </select>
 
