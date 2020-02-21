@@ -77,7 +77,16 @@
                   </a-select>
                 </a-form-item>
               </a-col>
-
+              <!--<a-col :span="8">-->
+                <!--<a-form-item label="允许入库非订单产品" :labelCol="labelCol4" :wrapperCol="wrapperCol4">-->
+                  <!--<j-dict-select-tag  v-decorator="[ 'isAllowProduct', validatorRules.isAllowProduct]" placeholder="" :type="'radio'" :triggerChange="true" dictCode="yn"/>-->
+                <!--</a-form-item>-->
+              <!--</a-col>-->
+              <!--<a-col :span="8">-->
+                <!--<a-form-item label="允许入库量大于订单量" :labelCol="labelCol4" :wrapperCol="wrapperCol4">-->
+                  <!--<j-dict-select-tag  v-decorator="[ 'isAllowNum', validatorRules.isAllowNum]" placeholder="" :type="'radio'" :triggerChange="true" dictCode="yn"/>-->
+                <!--</a-form-item>-->
+              <!--</a-col>-->
             </a-row>
           </a-form>
 
@@ -257,10 +266,15 @@
       return {
         labelCol: {span: 6},
         wrapperCol: {span: 16},
+
         labelCol2: {span: 3},
         wrapperCol2: {span: 20},
+
         labelCol3: {span: 6},
         wrapperCol3: {span: 3},
+
+        labelCol4: {span: 13},
+        wrapperCol4: {span: 5},
 
         initData:{},
         queryParam:{},
@@ -296,6 +310,8 @@
           recordState:{},
           rejectReason:{},
           remarks:{},
+          isAllowProduct:{rules: [{required: true, message: '请选择!'}]},
+          isAllowNum:{rules: [{required: true, message: '请选择!'}]},
           testResult:{rules: [{required: true, message: '请选择验收结果!'}]},
           storageResult:{rules: [{required: true, message: '请选择储运状态!'}]},
           temperature:{rules: [{required: true, message: '请输入温度!'},{pattern: '^-?\\d+$',message: '只能输入数字' }]},
@@ -362,6 +378,11 @@
               title: '数量',
               align:"center",
               dataIndex: 'orderNum'
+            },
+            {
+              title:'到货数量',
+              align:"center",
+              dataIndex: 'arrivalNum'
             },
             {
               title: '单位',
@@ -520,7 +541,8 @@
       editAfter() {
         // 加载子表数据
         if (this.model.id) {
-          let fieldval = pick(this.model,'recordNo','inType','recordPeople','recordPeopleName','recordDate','remarks','inDepartId','supplierId','testResult','storageResult','temperature','humidity','remarks')
+          let fieldval = pick(this.model,'recordNo','inType','recordPeople','recordPeopleName','recordDate','remarks','inDepartId','supplierId',
+                                         'testResult','storageResult','temperature','humidity','remarks')
           this.$nextTick(() => {
             this.form.setFieldsValue(fieldval)
           })
@@ -535,11 +557,14 @@
         getAction(this.url.init, {}).then((res) => {
           if (res.success) {
             this.initData = res.result;
+            this.initData.isAllowProduct = "0";
+            this.initData.isAllowNum = "0";
             this.initData.testResult = "0";
             this.initData.storageResult = "0";
             this.initData.temperature = "25";
             this.initData.humidity = "50";
-            let fieldval = pick(this.initData,'recordNo','inType','recordPeople','recordPeopleName','recordDate','remarks','inDepartId','supplierId','testResult','storageResult','temperature','humidity','remarks');
+            let fieldval = pick(this.initData,'recordNo','inType','recordPeople','recordPeopleName','recordDate','remarks','inDepartId','supplierId',
+                                              'testResult','storageResult','temperature','humidity','remarks','isAllowProduct','isAllowNum');
             this.goodsAllocationList = this.initData.goodsAllocationList;
             this.$nextTick(() => {
               this.form.setFieldsValue(fieldval);
@@ -675,12 +700,21 @@
       },
       // 选择产品 新增行
       chooseProductList() {
-        let supplierId = this.form.getFieldValue("supplierId")
-        if(supplierId){
-          this.$refs.pdChooseProductListModel.show({supplierId:supplierId,supplierName:""});
-        }else{
-          this.$message.error("请先选择供应商！")
+        let supplierId = this.form.getFieldValue("supplierId");
+        let isAllowProduct = this.form.getFieldValue("isAllowProduct");
+        let orderNo = "";
+        if(!supplierId) {
+          this.$message.error("请先选择供应商！");
+          return;
         }
+        if(isAllowProduct === "0") {
+          if(!this.orderNo){
+            this.$message.error("请先导入订单！");
+            return;
+          }
+          orderNo = this.orderNo;
+        }
+        this.$refs.pdChooseProductListModel.show({supplierId:supplierId,supplierName:"",orderNo:orderNo});
       },
       // 选择产品弹出框回调函数
       returnProductData(data) {
@@ -855,10 +889,10 @@
               this.$refs.pdStockRecordDetail.getValues((error, values) => {
                 this.pdStockRecordDetailTable.dataSource = values;
                 if(values.length > 0){ //表格有数据
-                  // 1.比较被扫码产品与列表产品条码是否一致：一致则数量相加，不一致则加一行
-                  // 2.如果列表中的产品条码为空，则比较产品ID、批号、有效期，如果一致则数量相加，不一致则加一行
                   for(let i = 0;i<values.length; i++ ){
                     let item = values[i];
+                    // 1.比较被扫码产品与列表产品条码是否一致：一致则数量相加，不一致则加一行
+                    // 2.如果列表中的产品条码为空，则比较产品ID、批号、有效期，如果一致则数量相加，不一致则加一行
                     if((item.productBarCode && item.productBarCode == productBarCode)
                       || (!item.productBarCode && item.productId == product.id && item.batchNo == res.batchNo && item.limitDate == res.expDate)){
                       //条码一致 则数量相加
@@ -872,39 +906,7 @@
                       isAddRow = false;
                       break;
                     }
-
-                    // if(!item.productBarCode && item.productId == product.id && item.batchNo == res.batchNo && item.limitDate == res.expDate){
-                    //   //条码一致 则数量相加
-                    //   let productNum = Number(item.productNum) + 1;
-                    //   let price = (Number(item.purchasePrice) * Number(productNum)).toFixed(4);
-                    //
-                    //   this.$nextTick(() => {
-                    //     // this.valueChange();
-                    //     this.$refs.pdStockRecordDetail.setValues([{rowKey: item.id, values: { productNum: productNum,price: price,productBarCode:productBarCode }}]);
-                    //     this.getTotalNumAndPrice();
-                    //   })
-                    //   isAddRow = false;
-                    //   break;
-                    // }
                   }
-                  // values.forEach((item, idx) => {
-                  //   if(item.productBarCode && item.productBarCode == productBarCode){
-                  //     //条码一致 则数量相加
-                  //     let productNum = Number(item.productNum) + 1;
-                  //     let price = (Number(item.purchasePrice) * Number(productNum)).toFixed(4);
-                  //     this.$refs.pdStockRecordDetail.setValues([
-                  //         {
-                  //           rowKey: item.id,
-                  //           values: {
-                  //             productNum: productNum,
-                  //             price: price
-                  //           }
-                  //         }
-                  //       ]);
-                  //     this.getTotalNumAndPrice();
-                  //     isAddRow = false;
-                  //   }
-                  // })
                 }else{ //表格没数据 新增一行
                   isAddRow = true;
                 }

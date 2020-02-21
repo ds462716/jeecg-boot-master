@@ -204,6 +204,11 @@
             dataIndex: 'orderNum'
           },
           {
+            title:'到货数量',
+            align:"center",
+            dataIndex: 'arrivalNum'
+          },
+          {
             title:'申购单价',
             align:"center",
             dataIndex: 'purchasePrice'

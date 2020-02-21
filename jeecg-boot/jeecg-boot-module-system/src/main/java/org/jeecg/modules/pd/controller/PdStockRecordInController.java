@@ -10,7 +10,9 @@ import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.jeecg.common.constant.PdConstant;
+import org.jeecg.common.system.vo.DictModel;
 import org.jeecg.common.util.DateUtils;
 import org.jeecg.modules.pd.entity.PdGoodsAllocation;
 import org.jeecg.modules.pd.service.IPdGoodsAllocationService;
@@ -19,7 +21,9 @@ import org.jeecg.modules.pd.service.IPdStockRecordService;
 import org.jeecg.modules.pd.util.UUIDUtil;
 import org.jeecg.modules.pd.vo.PdGoodsAllocationPage;
 import org.jeecg.modules.system.entity.SysDepart;
+import org.jeecg.modules.system.entity.SysDict;
 import org.jeecg.modules.system.service.ISysDepartService;
+import org.jeecg.modules.system.service.ISysDictService;
 import org.jeecgframework.poi.excel.ExcelImportUtil;
 import org.jeecgframework.poi.excel.def.NormalExcelConstants;
 import org.jeecgframework.poi.excel.entity.ExportParams;
@@ -61,7 +65,9 @@ public class PdStockRecordInController {
 	@Autowired
 	private ISysDepartService sysDepartService;
 	@Autowired
-	 private IPdGoodsAllocationService pdGoodsAllocationService;
+	private IPdGoodsAllocationService pdGoodsAllocationService;
+	@Autowired
+	private ISysDictService sysDictService;
 
 	 /**
 	  * 初始化Modal页面
@@ -77,8 +83,18 @@ public class PdStockRecordInController {
 
 		PdGoodsAllocation pdGoodsAllocation = new PdGoodsAllocation();
 		pdGoodsAllocation.setDepartId(sysDepart.getId());
-
 		List<PdGoodsAllocationPage> goodsAllocationList = pdGoodsAllocationService.getOptionsForSelect(pdGoodsAllocation);
+
+		//开关-是否允许入库量大于订单量   1-允许入库量大于订单量；0-不允许入库量大于订单量
+		List<DictModel> allowInMoreOrder = sysDictService.queryDictItemsByCode(PdConstant.ON_OFF_ALLOW_IN_MORE_ORDER);
+		//开关-是否允许入库非订单产品     1-允许非订单产品；0-不允许非订单产品
+		List<DictModel> allowNotOrderProduct = sysDictService.queryDictItemsByCode(PdConstant.ON_OFF_ALLOW_NOT_ORDER_PRODUCT);
+		if(CollectionUtils.isNotEmpty(allowInMoreOrder)){
+			pdStockRecord.setAllowInMoreOrder(allowInMoreOrder.get(0).getValue());
+		}
+		if(CollectionUtils.isNotEmpty(allowNotOrderProduct)){
+			pdStockRecord.setAllowNotOrderProduct(allowNotOrderProduct.get(0).getValue());
+		}
 		//部门id
 		pdStockRecord.setInDepartId(sysDepart.getId());
 		//获取入库单号

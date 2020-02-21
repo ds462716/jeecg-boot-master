@@ -77,7 +77,6 @@ public interface PdConstant {
 	public final static String ORDER_NO_FIRST_LETTER_XC = "XC";//巡查单
 	public final static String ORDER_NO_FIRST_LETTER_PD = "PD";//盘点单
 
-
 	//是否过期
 	public final static String PD_STATE="pd_state";
 	public final static String PD_STATE_0="0";//未过期
@@ -94,4 +93,13 @@ public interface PdConstant {
 	public final static String STOCK_RECORD_TYPE = "stock_record_type";
 	public final static String STOCK_RECORD_TYPE_IN = "0";		//入库
 	public final static String STOCK_RECORD_TYPE_OUT = "1";		//出库
+
+	/**开关-是否允许入库量大于订单量**/
+	public final static String ON_OFF_ALLOW_IN_MORE_ORDER = "on_off_allow_in_more_order"; //数据字典 code
+	public final static String ON_OFF_ALLOW_IN_MORE_ORDER_0 = "0"; // 0-不允许入库量大于订单量
+	public final static String ON_OFF_ALLOW_IN_MORE_ORDER_1 = "1"; // 1-允许入库量大于订单量
+	/**开关-是否允许入库非订单产品**/
+	public final static String ON_OFF_ALLOW_NOT_ORDER_PRODUCT = "on_off_allow_not_order_product"; //数据字典 code
+	public final static String ON_OFF_ALLOW_NOT_ORDER_PRODUCT_0 = "0"; // 0-不允许非订单产品
+	public final static String ON_OFF_ALLOW_NOT_ORDER_PRODUCT_1 = "1"; // 1-允许非订单产品
 }
