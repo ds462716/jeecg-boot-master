@@ -1,48 +1,26 @@
 package org.jeecg.modules.pd.controller;
 
-import java.io.UnsupportedEncodingException;
-import java.io.IOException;
 import java.math.BigDecimal;
-import java.net.URLDecoder;
 import java.util.*;
-import java.util.stream.Collectors;
-
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.toolkit.ObjectUtils;
-import org.apache.commons.lang.StringUtils;
-import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.jeecg.common.constant.PdConstant;
 import org.jeecg.modules.pd.entity.*;
 import org.jeecg.modules.pd.service.IPdProductStockService;
 import org.jeecg.modules.pd.service.IPdProductStockTotalService;
 import org.jeecg.modules.pd.service.IPdStockRecordDetailService;
 import org.jeecg.modules.pd.vo.PdProductStockTotalPage;
-import org.jeecgframework.poi.excel.ExcelImportUtil;
 import org.jeecgframework.poi.excel.def.NormalExcelConstants;
 import org.jeecgframework.poi.excel.entity.ExportParams;
-import org.jeecgframework.poi.excel.entity.ImportParams;
 import org.jeecgframework.poi.excel.view.JeecgEntityExcelView;
 import org.jeecg.common.system.vo.LoginUser;
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
-import org.jeecg.common.system.query.QueryGenerator;
-import org.jeecg.common.util.oConvertUtils;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.MultipartHttpServletRequest;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
-import com.alibaba.fastjson.JSON;
 
  /**
  * @Description: 库存总表
@@ -70,16 +48,16 @@ public class PdProductStockTotalController {
 	  * @return
 	  */
 	 @GetMapping(value = "/list")
-	 public Result<?> queryPageList(PdProductStockTotal pdProductStockTotal,
+	 public Result<?> queryPageList(PdProductStockTotalPage stockTotalPage,
 									@RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
 									@RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
 									HttpServletRequest req) {
 
          Page<PdProductStockTotalPage> page = new Page<PdProductStockTotalPage>(pageNo, pageSize);
-         page = pdProductStockTotalService.selectList(page,pdProductStockTotal);
+         page = pdProductStockTotalService.selectList(page,stockTotalPage);
 		//计算总库存数量，近效期数量，过期数量等值；
          //**************************
-         List<PdProductStockTotalPage> aList = pdProductStockTotalService.findListForQuery(pdProductStockTotal);
+         List<PdProductStockTotalPage> aList = pdProductStockTotalService.findListForQuery(stockTotalPage);
          Double gCount=0.00;//过期数量
          Double jCount=0.00;//近效期数量
          Double isLcount=0.00;//久存产品数量
@@ -88,26 +66,36 @@ public class PdProductStockTotalController {
          if(aList!=null&&!aList.isEmpty()){
              for (PdProductStockTotal p : aList) {
                  if(PdConstant.PD_STATE_2.equals(p.getExpStatus())){
-                     gCount++;
+					 gCount+=p.getStockNum();
+                     //gCount++;
                  }else if(PdConstant.PD_STATE_1.equals(p.getExpStatus())){
-                     jCount++;
+                     //jCount++;
+					 jCount+=p.getStockNum();
                  }
                  if(PdConstant.IS_LONG_1.equals(p.getIsLong())){
-                     isLcount++;
+					 isLcount+=p.getStockNum();
+                    // isLcount++;
                  }
                  if(ObjectUtils.isNotEmpty(p.getLimitUp()) && ObjectUtils.isEmpty(p.getLimitDown())){
                      Double up=p.getLimitUp();
-                     if(p.getStockNum()>up)limtCount++;
+                     if(p.getStockNum()>up){
+						 limtCount+=p.getStockNum();
+                     	//limtCount++;
+					 }
                  }
                  if(ObjectUtils.isNotEmpty(p.getLimitDown())&&ObjectUtils.isEmpty(p.getLimitUp())){
                      Double down =  p.getLimitDown();
-                     if(p.getStockNum()<down)limtCount++;
+                     if(p.getStockNum()<down){
+						 limtCount+=p.getStockNum();
+                     	//limtCount++;
+					 }
                  }
                  if(ObjectUtils.isNotEmpty(p.getLimitDown())&&ObjectUtils.isNotEmpty(p.getLimitUp())){
                      Double up= p.getLimitUp();
                      Double down =p.getLimitDown();
                      if(p.getStockNum()>up||p.getStockNum()<down){
-                         limtCount++;
+                         //limtCount++;
+						 limtCount+=p.getStockNum();
                      }
                  }
                  pCount+=p.getStockNum();
@@ -209,9 +197,11 @@ public class PdProductStockTotalController {
 		 if(aList!=null&&!aList.isEmpty()){
 			 for (PdProductStock p : aList) {
 				 if(PdConstant.PD_STATE_2.equals(p.getExpStatus())){
-					 gCount++;
+					 gCount+=p.getStockNum();
+					 //gCount++;
 				 }else if(PdConstant.PD_STATE_1.equals(p.getExpStatus())){
-					 jCount++;
+					 jCount+=p.getStockNum();
+				 	//jCount++;
 				 }
 				 pCount+=p.getStockNum();
 			 }
