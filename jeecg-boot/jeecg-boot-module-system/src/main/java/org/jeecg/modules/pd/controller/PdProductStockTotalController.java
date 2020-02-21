@@ -41,7 +41,7 @@ public class PdProductStockTotalController {
 	 /**
 	  * 分页列表查询
 	  *
-	  * @param pdProductStockTotal
+	  * @param stockTotalPage
 	  * @param pageNo
 	  * @param pageSize
 	  * @param req

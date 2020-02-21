@@ -102,4 +102,8 @@ public interface PdConstant {
 	public final static String ON_OFF_ALLOW_NOT_ORDER_PRODUCT = "on_off_allow_not_order_product"; //数据字典 code
 	public final static String ON_OFF_ALLOW_NOT_ORDER_PRODUCT_0 = "0"; // 0-不允许非订单产品
 	public final static String ON_OFF_ALLOW_NOT_ORDER_PRODUCT_1 = "1"; // 1-允许非订单产品
+
+	//系统消息提醒模板CODE
+	public final static String PURCHASE_SUBMIT_MSG = "purchase_submitMsg";		//采购提交提醒
+
 }
