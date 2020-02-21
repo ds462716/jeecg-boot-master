@@ -85,7 +85,7 @@
         a.order_no as orderNo,
         a.order_date as orderDate,
         f.depart_name AS deptName,
-        a.order_status as orderStatus,
+        a.audit_status as auditStatus,
         c.realname as auditByName
         FROM
         pd_purchase_order a
@@ -132,7 +132,7 @@
     <select id="choosePurchaseOrderDetailList" resultType="org.jeecg.modules.pd.vo.PdProductPage"  parameterType="org.jeecg.modules.pd.vo.PdPurchaseOrderPage">
         SELECT
             a.id as purchaseDetailId,
-            a.order_num AS applyCount,
+            a.order_num AS orderNum,
             a.purchase_price as purchasePrice,
             b.number,
             b.NAME as productName,

@@ -161,12 +161,12 @@
           {
             title:'审核状态',
             align:"center",
-            dataIndex: 'orderStatus',
+            dataIndex: 'auditStatus',
             customRender:(text)=>{
               if(!text){
                 return ''
               }else{
-                return filterMultiDictText(this.dictOptions['orderStatus'], text+"")
+                return filterMultiDictText(this.dictOptions['auditStatus'], text+"")
               }
             }
           },
@@ -201,7 +201,7 @@
           {
             title:'申购数量',
             align:"center",
-            dataIndex: 'applyCount'
+            dataIndex: 'orderNum'
           },
           {
             title:'申购单价',
@@ -288,14 +288,14 @@
 
       },
       initDictConfig(){ //静态字典值加载
-        initDictOptions('order_status').then((res) => {
+        initDictOptions('audit_status').then((res) => {
           if (res.success) {
-            this.$set(this.dictOptions, 'orderStatus', res.result)
+            this.$set(this.dictOptions, 'auditStatus', res.result)
           }
         })
         initDictOptions('submit_status').then((res) => {
           if (res.success) {
-            this.$set(this.dictOptions, 'submitStart', res.result)
+            this.$set(this.dictOptions, 'submitStatus', res.result)
           }
         })
       },

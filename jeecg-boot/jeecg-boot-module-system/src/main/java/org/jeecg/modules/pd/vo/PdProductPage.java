@@ -36,7 +36,7 @@ public class PdProductPage extends PdProduct {
     private String purchaseDetailId;
 
     /** 产品采购数量 **/
-    private Double applyCount;
+    private Double orderNum;
 
     /** 采购总价格 **/
     private BigDecimal price;
