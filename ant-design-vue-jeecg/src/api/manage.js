@@ -112,3 +112,17 @@ export function downFile(url,parameter){
   })
 }
 
+  export  function inArray( elem, array ) {
+    if ( !array ) {
+      return -1;
+    }
+    for ( var i = 0, length = array.length; i < length; i++ ) {
+      if ( array[ i ] === elem ) {
+        return i;
+      }
+    }
+    return -1;
+  }
+
+
+

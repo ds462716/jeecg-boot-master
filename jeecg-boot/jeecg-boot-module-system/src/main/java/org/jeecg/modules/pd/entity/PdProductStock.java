@@ -26,18 +26,14 @@ public class PdProductStock extends BaseEntity {
 	@TableId(type = IdType.ID_WORKER_STR)
 	private String id;
 	/**创建人*/
-	@Excel(name = "创建人", width = 15)
 	private String createBy;
 	/**创建日期*/
-	@Excel(name = "创建日期", width = 20, format = "yyyy-MM-dd HH:mm:ss")
 	@JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd HH:mm:ss")
     @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
 	private Date createTime;
 	/**更新人*/
-	@Excel(name = "更新人", width = 15)
 	private String updateBy;
 	/**更新日期*/
-	@Excel(name = "更新日期", width = 20, format = "yyyy-MM-dd HH:mm:ss")
 	@JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd HH:mm:ss")
     @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
 	private Date updateTime;
@@ -72,44 +68,49 @@ public class PdProductStock extends BaseEntity {
 	@Excel(name = "过期状态", width = 15)
 	private String expStatus;
 	/**供应商ID*/
-	@Excel(name = "供应商ID", width = 15)
 	private String supplierId;
 	/**备注*/
-	@Excel(name = "备注", width = 15)
 	private String remarks;
 	/**删除标识*/
-	@Excel(name = "删除标识", width = 15)
 	private String delFlag;
 	/**是否永存*/
 	@Excel(name = "是否永存", width = 15)
 	private String isLong;
 
 	/**单位名称*/
+	@Excel(name = "单位名称", width = 15)
 	@TableField(exist = false)
 	private String unitName;
 	/**产品名称*/
+	@Excel(name = "产品名称", width = 15)
 	@TableField(exist = false)
 	private String productName;
 	/**产品编号*/
+	@Excel(name = "产品编号", width = 15)
 	@TableField(exist = false)
 	private String number;
 	/**规格*/
+	@Excel(name = "规格", width = 15)
 	@TableField(exist = false)
 	private String spec;
 	/**型号*/
+	@Excel(name = "型号", width = 15)
 	@TableField(exist = false)
 	private String version;
 	/**注册证号*/
+	@Excel(name = "注册证号", width = 15)
 	@TableField(exist = false)
 	private String registration;
 	/**厂家名称*/
+	@Excel(name = "厂家名称", width = 15)
 	@TableField(exist = false)
 	private String venderName;
 	/**供应商名称*/
+	@Excel(name = "供应商名称", width = 15)
 	@TableField(exist = false)
 	private String supplierName;
 	/**科室名称*/
+	@Excel(name = "科室名称", width = 15)
 	@TableField(exist = false)
 	private String deptName;
-
 }

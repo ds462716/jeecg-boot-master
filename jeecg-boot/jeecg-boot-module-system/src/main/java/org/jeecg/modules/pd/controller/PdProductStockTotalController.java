@@ -16,10 +16,7 @@ import com.baomidou.mybatisplus.core.toolkit.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.jeecg.common.constant.PdConstant;
-import org.jeecg.modules.pd.entity.PdProductStock;
-import org.jeecg.modules.pd.entity.PdProductStockTotal;
-import org.jeecg.modules.pd.entity.PdPurchaseOrder;
-import org.jeecg.modules.pd.entity.PdStockRecordDetail;
+import org.jeecg.modules.pd.entity.*;
 import org.jeecg.modules.pd.service.IPdProductStockService;
 import org.jeecg.modules.pd.service.IPdProductStockTotalService;
 import org.jeecg.modules.pd.service.IPdStockRecordDetailService;
@@ -296,47 +293,28 @@ public class PdProductStockTotalController {
 		 page = pdProductStockService.selectList(page,stockTotalPage);
 		 return Result.ok(page);
 	 }
-    /**
-    * 导出excel
-    *
-    * @param request
-    * @param pdProductStockTotal
-    */
-    @RequestMapping(value = "/exportXls")
-    public ModelAndView exportXls(HttpServletRequest request, PdProductStockTotal pdProductStockTotal) {
-      // Step.1 组装查询条件查询数据
-      QueryWrapper<PdProductStockTotal> queryWrapper = QueryGenerator.initQueryWrapper(pdProductStockTotal, request.getParameterMap());
-      LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
 
-      //Step.2 获取导出数据
-      List<PdProductStockTotal> queryList = pdProductStockTotalService.list(queryWrapper);
-      // 过滤选中数据
-      String selections = request.getParameter("selections");
-      List<PdProductStockTotal> pdProductStockTotalList = new ArrayList<PdProductStockTotal>();
-      if(oConvertUtils.isEmpty(selections)) {
-          pdProductStockTotalList = queryList;
-      }else {
-          List<String> selectionList = Arrays.asList(selections.split(","));
-          pdProductStockTotalList = queryList.stream().filter(item -> selectionList.contains(item.getId())).collect(Collectors.toList());
-      }
 
-      // Step.3 组装pageList
-      List<PdProductStockTotalPage> pageList = new ArrayList<PdProductStockTotalPage>();
-      for (PdProductStockTotal main : pdProductStockTotalList) {
-          PdProductStockTotalPage vo = new PdProductStockTotalPage();
-          BeanUtils.copyProperties(main, vo);
-          List<PdProductStock> pdProductStockList = pdProductStockService.selectByMainId(main.getId());
-          vo.setPdProductStockList(pdProductStockList);
-          pageList.add(vo);
-      }
 
-      // Step.4 AutoPoi 导出Excel
-      ModelAndView mv = new ModelAndView(new JeecgEntityExcelView());
-      mv.addObject(NormalExcelConstants.FILE_NAME, "库存总表列表");
-      mv.addObject(NormalExcelConstants.CLASS, PdProductStockTotalPage.class);
-      mv.addObject(NormalExcelConstants.PARAMS, new ExportParams("库存总表数据", "导出人:"+sysUser.getRealname(), "库存总表"));
-      mv.addObject(NormalExcelConstants.DATA_LIST, pageList);
-      return mv;
-    }
+	 /**
+	  * 导出excel
+	  *
+	  * @param request
+	  * @param stockTotalPage
+	  */
+	 @RequestMapping(value = "/exportXls")
+	 public ModelAndView exportXls(HttpServletRequest request, PdProductStockTotalPage stockTotalPage) {
+		 // Step.1 组装查询条件查询数据
+		 LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		 //Step.2 获取导出数据
+		 List<PdProductStockTotalPage> aList = pdProductStockTotalService.findListForQuery(stockTotalPage);
+		 // Step.3 AutoPoi 导出Excel
+		 ModelAndView mv = new ModelAndView(new JeecgEntityExcelView());
+		 mv.addObject(NormalExcelConstants.FILE_NAME, "库存产品列表");
+		 mv.addObject(NormalExcelConstants.CLASS, PdProductStockTotal.class);
+		 mv.addObject(NormalExcelConstants.PARAMS, new ExportParams("库存列表数据", "导出人:"+sysUser.getRealname(), "库存产品数据"));
+		 mv.addObject(NormalExcelConstants.DATA_LIST, aList);
+		 return mv;
+	 }
 
 }

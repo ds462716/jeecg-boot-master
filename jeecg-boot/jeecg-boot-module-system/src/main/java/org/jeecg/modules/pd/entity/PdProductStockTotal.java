@@ -24,18 +24,14 @@ public class PdProductStockTotal extends BaseEntity {
 	@TableId(type = IdType.ID_WORKER_STR)
     private String id;
 	/**创建人*/
-    @Excel(name = "创建人", width = 15)
     private String createBy;
 	/**创建日期*/
-    @Excel(name = "创建日期", width = 20, format = "yyyy-MM-dd HH:mm:ss")
 	@JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd HH:mm:ss")
     @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
     private Date createTime;
 	/**更新人*/
-    @Excel(name = "更新人", width = 15)
     private String updateBy;
 	/**更新日期*/
-    @Excel(name = "更新日期", width = 20, format = "yyyy-MM-dd HH:mm:ss")
 	@JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd HH:mm:ss")
     @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
     private Date updateTime;
@@ -43,10 +39,8 @@ public class PdProductStockTotal extends BaseEntity {
     @Excel(name = "所属部门", width = 15)
     private String sysOrgCode;
 	/**科室id*/
-    @Excel(name = "科室id", width = 15)
     private String deptId;
 	/**产品id*/
-    @Excel(name = "产品id", width = 15)
     private String productId;
 	/**库存数量*/
     @Excel(name = "库存数量", width = 15)
@@ -71,31 +65,33 @@ public class PdProductStockTotal extends BaseEntity {
     @Excel(name = "过期标识", width = 15)
     private String expStatus;
 	/**供应商ID*/
-    @Excel(name = "供应商ID", width = 15)
     private String supplierId;
 	/**备注*/
-    @Excel(name = "备注", width = 15)
     private String remarks;
 	/**删除标识 */
-    @Excel(name = "删除标识 ", width = 15)
     private String delFlag;
 	/**是否永存*/
     @Excel(name = "是否永存", width = 15)
     private String isLong;
 
     /**产品名称*/
+    @Excel(name = "产品名称", width = 15)
     @TableField(exist = false)
     private String productName;
     /**产品编号*/
+    @Excel(name = "产品编号", width = 15)
     @TableField(exist = false)
     private String number;
     /**单位名称*/
+    @Excel(name = "单位名称", width = 15)
     @TableField(exist = false)
     private String unitName;
     /**规格*/
+    @Excel(name = "规格", width = 15)
     @TableField(exist = false)
     private String spec;
     /**型号*/
+    @Excel(name = "型号", width = 15)
     @TableField(exist = false)
     private String version;
 }
