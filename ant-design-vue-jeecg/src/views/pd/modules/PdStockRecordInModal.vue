@@ -222,7 +222,7 @@
   import PdChooseProductListModel from "./PdChooseProductListModel";
   import JDictSelectTagExpand from "@/components/dict/JDictSelectTagExpand"
   import ATextarea from "ant-design-vue/es/input/TextArea";
-  import {scanCode} from '@/utils/barcode'
+  import {stockScanCode } from '@/utils/barcode'
 
   const VALIDATE_NO_PASSED = Symbol()
   export { FormTypes, VALIDATE_NO_PASSED }
@@ -863,7 +863,7 @@
             return;
           }
           //解析条码
-          scanCode(productNumber,productBarCode,that).then((res) => {
+          stockScanCode (productNumber,productBarCode,that).then((res) => {
             if(res.code === "200"){
               let product = res.productObj;
 

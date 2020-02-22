@@ -1,6 +1,7 @@
 package org.jeecg.modules.pd.util;
 
 
+import org.jeecg.common.constant.MessageConstant;
 import org.jeecg.common.constant.PdConstant;
 import org.jeecg.common.util.DateUtils;
 import java.text.ParseException;
@@ -76,8 +77,8 @@ public class BarCodeUtil {
 	 * @return
 	 */
 	public static   Map<String,Object>  HIBCBarcodeDec(String Barcode1, String Barcode2,Map<String,Object> result){
-		result.put("code","200");
-		result.put("msg","扫码成功");
+		result.put("code",MessageConstant.CODE_STATE_200);
+		result.put("msg",MessageConstant.CODE_MESSAGE_2);
 		//条码扫了两遍
 		if (Barcode1.equals(Barcode2)){
 			int x = getSubCount(Barcode1,"+");
@@ -150,8 +151,8 @@ public class BarCodeUtil {
 	 */
 	public static  Map<String,Object> EANBarcodeDec(String Barcode1, String Barcode2,Map<String,Object> result){
 		//条码正常
-		result.put("code","200");
-        result.put("msg","扫码成功");
+		result.put("code",MessageConstant.CODE_STATE_200);
+        result.put("msg",MessageConstant.CODE_MESSAGE_2);
 		//Barcode1 = 01XXXXXXXXXXXXXX17XXXXXX10XXXXXX   ,Barcode2 = 01XXXXXXXXXXXXXX17XXXXXX10XXXXXX
 		//Barcode1 = 01XXXXXXXXXXXXXX, Barcode2 = 17XXXXXX10XXXXXX
 		if (Barcode1.equals(Barcode2)){
@@ -331,20 +332,20 @@ public class BarCodeUtil {
 				if (difDays < PdConstant.REMINDER_TIME){
 					if (difDays < 0) {
 						//产品过期
-						result.put("code","201");
-						result.put("msg","该产品已过期，禁止入库");
+						result.put("code",MessageConstant.CODE_STATE_201);
+						result.put("msg", MessageConstant.CODE_MESSAGE_6);
 					}else{
 						//近有效期
-						result.put("code","201");
-						result.put("msg","扫描成功.但请注意该产品的有效期!");
+						result.put("code",MessageConstant.ICODE_STATE_203);
+						result.put("msg",MessageConstant.CODE_MESSAGE_7);
 					}
 				}
 			}
 			result.put("expDate",expDate);
 			result.put("batchNo",batchNo);
 		}catch (Exception e){
-			result.put("code","500");
-			result.put("msg","系统异常，扫码规则出错");
+			result.put("code",MessageConstant.CODE_STATE_500);
+			result.put("msg",MessageConstant.CODE_MESSAGE_8);
 			e.printStackTrace();
 		}
 		return result;
@@ -388,15 +389,15 @@ public class BarCodeUtil {
 					long difDays = dateDiff(expDate);
 					//效期提醒时间
 					if (difDays < PdConstant.REMINDER_TIME){
-						if (difDays < 0) {
-							//产品过期
-							result.put("code","201");
-							result.put("msg","该产品已过期，禁止入库");
-						}else{
-							//近有效期
-							result.put("code","201");
-							result.put("msg","扫描成功.但请注意该产品的有效期!");
-						}
+                        if (difDays < 0) {
+                            //产品过期
+                            result.put("code",MessageConstant.CODE_STATE_201);
+                            result.put("msg", MessageConstant.CODE_MESSAGE_6);
+                        }else{
+                            //近有效期
+                            result.put("code",MessageConstant.ICODE_STATE_203);
+                            result.put("msg",MessageConstant.CODE_MESSAGE_7);
+                        }
 					}
 				}
 			}
@@ -437,8 +438,8 @@ public class BarCodeUtil {
 			}
 			result.put("batchNo",batchNo.toUpperCase());
 		}catch(Exception e){
-			result.put("code","500");
-			result.put("msg","系统异常，扫码规则出错");
+            result.put("code",MessageConstant.CODE_STATE_500);
+            result.put("msg",MessageConstant.CODE_MESSAGE_8);
 			e.printStackTrace();
 		}
 		return result;
@@ -471,8 +472,8 @@ public class BarCodeUtil {
 			resultMap.put("number",tempMap.get("#"));
 		}else{
 			//不包含产品编号 出错
-			resultMap.put("code","500");
-			resultMap.put("msg","没有找到该条码对应的产品");
+			resultMap.put("code",MessageConstant.CODE_STATE_500);
+			resultMap.put("msg",MessageConstant.CODE_MESSAGE_4);
 		}
 		return resultMap;
 	}
@@ -495,8 +496,8 @@ public class BarCodeUtil {
 			resultMap.put("number",tempMap.get("10")+tempMap.get("21"));
 		}else{
 			//不包含产品编号 出错
-			resultMap.put("code","500");
-			resultMap.put("msg","没有找到该条码对应的产品");
+            resultMap.put("code",MessageConstant.CODE_STATE_500);
+            resultMap.put("msg",MessageConstant.CODE_MESSAGE_4);
 		}
 		return resultMap;
 	}
@@ -519,12 +520,12 @@ public class BarCodeUtil {
                 if (difDays < PdConstant.REMINDER_TIME){
                     if (difDays < 0) {
                         //产品过期
-                        resultMap.put("code","201");
-                        resultMap.put("msg","该产品已过期，禁止入库");
+                        resultMap.put("code",MessageConstant.CODE_STATE_201);
+                        resultMap.put("msg", MessageConstant.CODE_MESSAGE_6);
                     }else{
                         //近有效期
-                        resultMap.put("code","201");
-                        resultMap.put("msg","扫描成功.但请注意该产品的有效期!");
+                        resultMap.put("code",MessageConstant.ICODE_STATE_203);
+                        resultMap.put("msg",MessageConstant.CODE_MESSAGE_7);
                     }
                 }
             }
@@ -564,64 +565,6 @@ public class BarCodeUtil {
 	}
 
 	public static void main(String [] args  ){
-	    Map<String,Object> map = new HashMap<>();
-		//HIBC测试
-		scanCode("+J123123451","+122713C001L5",map);
-		scanCode("+J123123451/122713C001L5","+J123123451/122713C001L5",map);
-		scanCode("+J123123451","+$3C001LV",map);
-		scanCode("+J123123451/$3C001LV","+J123123451/$3C001LV",map);
-		scanCode("+J123123451","+$$02123C001LW",map);
-		scanCode("+J123123451/$$02123C001LW","+J123123451/$$02123C001LW",map);
-		scanCode("+J123123451","+$$12123C001LW",map);
-		scanCode("+J123123451/$$12123C001LW","+J123123451/$$12123C001LW",map);
-		scanCode("+J123123451","+$$20215123C001L/",map);
-		scanCode("+J123123451/$$20215123C001L/","+J123123451/$$20215123C001L/",map);
-		scanCode("+J123123451","+$$31202153C001L+",map);
-		scanCode("+J123123451/$$31202153C001L+","+J123123451/$$31202153C001L+",map);
-		scanCode("+J123123451","+$$4120216113C001L2",map);
-		scanCode("+J123123451/$$4120216113C001L2","+J123123451/$$4120216113C001L2",map);
-		scanCode("+J123123451","+$$5122713C001L2",map);
-		scanCode("+J123123451/$$5122713C001L2","+J123123451/$$5122713C001L2",map);
-		scanCode("+J123123451","+$$612271113C001L5 ",map);
-		scanCode("+J123123451/$$612271113C001L5 ","+J123123451/$$612271113C001L5 ",map);
-		scanCode("+J123123451","+$$73C001LY  ",map);
-		scanCode("+J123123451/$$73C001LY  ","+J123123451/$$73C001LY  ",map);
-		scanCode("+J123123451","+$$82402123C001L3  ",map);
-		scanCode("+J123123451/$$82402123C001L3  ","+J123123451/$$82402123C001L3  ",map);
-		scanCode("+J123123451","+$$82412123C001L3  ",map);
-		scanCode("+J123123451/$$82412123C001L3  ","+J123123451/$$82412123C001L3  ",map);
-		scanCode("+J123123451","+$$82420216123C001LC  ",map);
-		scanCode("+J123123451/$$82420216123C001LC  ","+J123123451/$$82420216123C001LC  ",map);
-		scanCode("+J123123451","+$$82431202163C001LD  ",map);
-		scanCode("+J123123451/$$82431202163C001LD  ","+J123123451/$$82431202163C001LD  ",map);
-		scanCode("+J123123451","+$$8244120216183C001LN  ",map);
-		scanCode("+J123123451/$$8244120216183C001LN  ","+J123123451/$$8244120216183C001LN  ",map);
-		scanCode("+J123123451","+$$8245122713C001LG  ",map);
-		scanCode("+J123123451/$$8245122713C001LG  ","+J123123451/$$8245122713C001LG  ",map);
-		scanCode("+J123123451","+$$824612271183C001LQ  ",map);
-		scanCode("+J123123451/$$824612271183C001LQ  ","+J123123451/$$824612271183C001LQ  ",map);
-		scanCode("+J123123451","+$$82473C001L5  ",map);
-		scanCode("+J123123451/$$82473C001L5  ","+J123123451/$$82473C001L5  ",map);
-		scanCode("+J123123451","+$$824LP  ",map);
-		scanCode("+J123123451/$$824LP  ","+J123123451/$$824LP  ",map);
-		scanCode("+J123123451","+$$90010009953C001LH  ",map);
-		scanCode("+J123123451/$$90010009953C001LH  ","+J123123451/$$90010009953C001LH  ",map);
-		scanCode("+J123123451","/$$31202153C001L+",map);
-		scanCode("+J123123451","+$$31202153C001L+",map);
-		scanCode("+J123123451/$$31202153C001L+","+J123123451/$$31202153C001L+",map);
-		scanCode("+A123BJC5D6E71G","+83278f8G9h0j2G",map);
 
-		//GS1扫码测试
-		scanCode("01006139947416081719011421NWU092663G","01006139947416081719011421NWU092663G",map);
-		scanCode("010064316926546217191212100008918409","010064316926546217191212100008918409",map);
-		scanCode("010064316926540017191218100008926988","010064316926540017191218100008926988",map);
-		scanCode("01045473270852361721033130110180404A48A","01045473270852361721033130110180404A48A",map);
-		scanCode("01245473270618141720013130110170131K011","01245473270618141720013130110170131K011",map);
-		scanCode("0104987350625717","1720090010171011",map);
-		scanCode("0106936775502064","171807253011002160102",map);
-		scanCode("0104987350369116","1720070010170804",map);
-		scanCode("0108717648073854","17191231108011771",map);
-		scanCode("0106942180385123","17191201108512012891001",map);
-		//System.out.println(getSubCount("+J123123451+$$90010009953C001LH++","+"));
 	}
 }

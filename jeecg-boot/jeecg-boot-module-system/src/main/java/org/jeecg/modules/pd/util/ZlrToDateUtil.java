@@ -1,5 +1,7 @@
 package org.jeecg.modules.pd.util;
 
+import org.jeecg.common.util.DateUtils;
+
 import java.util.*;
 
 /**
@@ -50,43 +52,6 @@ public class ZlrToDateUtil {
 		}
 	}
 
-	public static void main(String[] args) {
-		//System.out.println(getDateStr("2021","207"));
-//		System.out.println(BarCode.scanCode("+J123123451","+122713C001L/"));
-//		System.out.println(BarCode.scanCode("+J123123451+122713C001L/","+J123123451+122713C001L/"));
-//		System.out.println(BarCode.scanCode("+J1231234+/+122713C001L/","+J1231234+/+122713C001L/"));
-//		System.out.println(BarCode.scanCode("+J1231234+/","+122713C001L/"));
-//		System.out.println(BarCode.scanCode("+J123123411+","+122713C001L/"));
-//		System.out.println(BarCode.scanCode("+J12312341++","+122713C001L/"));
-//		System.out.println(BarCode.scanCode("+J12312341+1","+122713C001L/"));
-//		System.out.println(BarCode.scanCode("+J12312341/1","+122713C001L/"));
-//		System.out.println(BarCode.scanCode("9320200222085037656","9320200222085037656"));
-//		System.out.println(BarCode.scanCode("+J12312341/","+122713C001L/"));
-//		System.out.println(BarCode.getPrdNumber("+J12312341/"));
-//		System.out.println(BarCode.getPrdNumber("+J123123451"));
-//		System.out.println(BarCode.getPrdNumber("+J1231234+/"));
-//		System.out.println(BarCode.getPrdNumber("9320200222085037656"));
-		System.out.println(BarCodeUtil.GetEANUPN("93202002220850376561718061910180616061"));
-		System.out.println(BarCodeUtil.getPrdNumber("01006139947416081719011421NWU092663G"));
-		System.out.println(BarCodeUtil.getPrdNumber("010064316926546217191212100008918409"));
-		System.out.println(BarCodeUtil.getPrdNumber("010064316926540017191218100008926988"));
-		System.out.println(BarCodeUtil.getPrdNumber("01045473270852361721033130110180404A48A"));
-		System.out.println(BarCodeUtil.getPrdNumber("01245473270618141720013130110170131K011"));
-		System.out.println(BarCodeUtil.getPrdNumber("0104987350625717"));
-		System.out.println(BarCodeUtil.getPrdNumber("0106936775502064"));
-		System.out.println(BarCodeUtil.getPrdNumber("0104987350369116"));
-		System.out.println(BarCodeUtil.getPrdNumber("0108717648073854"));
-		System.out.println(BarCodeUtil.getPrdNumber("0106942180385123"));
-		System.out.println(BarCodeUtil.getPrdNumber("6938777608669"));
-		System.out.println(BarCodeUtil.getPrdNumber("8033837912460"));
-		System.out.println(BarCodeUtil.getPrdNumber("+J123123451"));
-		System.out.println(BarCodeUtil.getPrdNumber("+J123123451+122713C001L/"));
-		System.out.println(BarCodeUtil.getPrdNumber("+J1231234+/+122713C001L/"));
-		System.out.println(BarCodeUtil.getPrdNumber("+J1231234+/"));
-		System.out.println(BarCodeUtil.getPrdNumber("+J123123411+"));
-		System.out.println(BarCodeUtil.getPrdNumber("+J12312341++"));
-		System.out.println(BarCodeUtil.getPrdNumber("+J12312341+1"));
-		System.out.println(BarCodeUtil.getPrdNumber("+J12312341/1"));
-	}
+
 
 }

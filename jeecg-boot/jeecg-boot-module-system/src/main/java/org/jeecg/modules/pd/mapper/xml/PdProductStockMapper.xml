@@ -105,6 +105,16 @@
 			<if test="productName != null and productName != ''">
 				AND a.product_name = #{productName}
 			</if>
+			<if test="productBarCode != null and productBarCode != ''">
+				AND a.product_bar_code = #{productBarCode}
+			</if>
+			<if test="batchNo != null and batchNo != ''">
+				AND a.batch_no = #{batchNo}
+			</if>
+			<if test="expDate != null">
+				AND DATE_FORMAT(a.exp_date,'%Y-%m-%d') = DATE_FORMAT( #{expDate}, '%Y-%m-%d')
+			</if>
+
 			order by  exp_status  desc,create_time desc
 		</where>
 	</select>

@@ -34,35 +34,15 @@ export async function scanCode(Barcode1, Barcode2,that){
  * @param that
  * @returns {Promise<*>}
  */
-/*export async function stockScanCode(Barcode1, Barcode2,that){
-  let result = {};
-  result.code = "500";
-  let productBarCode;
-  //产品条码修正
-  if(Barcode1.indexOf(Barcode2) != -1){
-    productBarCode = Barcode1;
-  }else{
-    productBarCode = Barcode1 + Barcode2;
-  }
+export async function stockScanCode(Barcode1, Barcode2,that){
   //封装查询参数
   let formData = new URLSearchParams();
-  formData.append("productBarCode",productBarCode);
+  formData.append("Barcode1",Barcode1);
+  formData.append("Barcode2",Barcode2);
   let res = await httpAction(stockUrl,formData,"post");
-  if(res.success){
-    let json = res.result;
-    let stocks = json["stocks"];
-    //判断如果查询到库存
-    if(stocks){
-      result.code = "200";
-      result.stocks = stocks;
-    }
-    result.stocks = stocks;
-  }else{
-    //系统报错
-    that.$message.error(res.message);
-  }
-  return result;
-}*/
+  console.log(res);
+  return res;
+}
 
 /**
  * 扫码取产品编号  如果修改  需要同步修改BarCodeUtil的getPrdNumber方法 和HIBCBarcodeDec方法  2020年2月22日11:19:57
