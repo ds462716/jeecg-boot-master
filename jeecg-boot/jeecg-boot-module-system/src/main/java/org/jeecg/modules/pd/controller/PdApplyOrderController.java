@@ -1,23 +1,21 @@
 package org.jeecg.modules.pd.controller;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.util.*;
-import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.jeecg.common.constant.PdConstant;
+import org.jeecg.modules.message.util.PushMsgUtil;
 import org.jeecg.modules.pd.entity.PdApplyDetail;
 import org.jeecg.modules.pd.entity.PdApplyOrder;
-import org.jeecg.modules.pd.entity.PdPurchaseDetail;
-import org.jeecg.modules.pd.entity.PdPurchaseOrder;
 import org.jeecg.modules.pd.service.IPdApplyDetailService;
 import org.jeecg.modules.pd.service.IPdApplyOrderService;
 import org.jeecg.modules.pd.util.UUIDUtil;
 import org.jeecg.modules.pd.vo.PdApplyOrderPage;
 import org.jeecg.modules.system.entity.SysDepart;
 import org.jeecg.modules.system.service.ISysDepartService;
+import org.jeecg.modules.system.service.ISysUserService;
 import org.jeecgframework.poi.excel.ExcelImportUtil;
 import org.jeecgframework.poi.excel.def.NormalExcelConstants;
 import org.jeecgframework.poi.excel.entity.ExportParams;
@@ -26,15 +24,12 @@ import org.jeecgframework.poi.excel.view.JeecgEntityExcelView;
 import org.jeecg.common.system.vo.LoginUser;
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
-import org.jeecg.common.system.query.QueryGenerator;
-import org.jeecg.common.util.oConvertUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
@@ -55,6 +50,10 @@ public class PdApplyOrderController {
 	private IPdApplyDetailService pdApplyDetailService;
 	 @Autowired
 	 private ISysDepartService sysDepartService;
+	 @Autowired
+	 private PushMsgUtil pushMsgUtil;
+	 @Autowired
+	 private ISysUserService sysUserService;
 	/**
 	 * 分页列表查询
 	 *
@@ -134,6 +133,9 @@ public class PdApplyOrderController {
 		BeanUtils.copyProperties(pdApplyOrderPage, pdApplyOrder);
 		pdApplyOrder.setAuditStatus(PdConstant.ORDER_STATE_1);//审核状态  1：待审核
 		pdApplyOrderService.saveMain(pdApplyOrder, pdApplyOrderPage.getPdApplyDetailList());
+		if (pdApplyOrderPage.getSubmitStatus().equals(PdConstant.SUBMIT_STATE_2)) {//如果是已提交
+			this.sendMsg(pdApplyOrderPage);//消息推送
+		}
 		return Result.ok("添加成功！");
 	}
 	
@@ -157,6 +159,9 @@ public class PdApplyOrderController {
 			LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
 			pdApplyOrder.setAuditBy(sysUser.getId());
 			pdApplyOrder.setAuditDate(new Date());
+		}
+		if (PdConstant.ORDER_STATE_1.equals(applyStatus) && pdApplyOrderPage.getSubmitStatus().equals(PdConstant.SUBMIT_STATE_2)) {//如果是已提交
+			this.sendMsg(pdApplyOrderPage);//消息推送
 		}
 		pdApplyOrderService.updateMain(pdApplyOrder, pdApplyOrderPage.getPdApplyDetailList());
 		return Result.ok("编辑成功!");
@@ -274,4 +279,30 @@ public class PdApplyOrderController {
       return Result.ok("文件导入失败！");
     }
 
+
+	 /**
+	  * 消息推送
+	  * @param pdApplyOrderPage
+	  * @return
+	  */
+	 public boolean sendMsg(PdApplyOrderPage pdApplyOrderPage) {
+		 Map<String, Object> map = new HashMap<>();
+		 //获取具有器械科管理员的角色用户Id;
+		 List<String> userIdList = sysUserService.getUserIdByRoleCode("qxk_admin");
+		 if (userIdList != null) {
+			 String userIds = String.join(",", userIdList);
+			 Map<String, String> strMap = new HashMap<>();
+			 LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+			 //模板注入参数
+			 strMap.put("userName", sysUser.getRealname());
+			 strMap.put("applyNo", pdApplyOrderPage.getApplyNo());
+			 map.put("map", strMap);
+			 //需要发送消息的用户id
+			 map.put("userIds", userIds + ",");
+			 //短信模板标识
+			 map.put("templateCode", PdConstant.APPLY_SUBMIT_MSG);
+			 return pushMsgUtil.newSendMessage(map);
+		 }
+		 return false;
+	 }
 }

@@ -50,7 +50,7 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
 
 	@Override
 	@Transactional
-	public void updateProductStock(PdProductStockTotal stockTotal) {
-		pdProductStockTotalMapper.updateProductStock(stockTotal);
+	public void updateProductStockTotal(PdProductStockTotal stockTotal) {
+		pdProductStockTotalMapper.updateProductStockTotal(stockTotal);
 	}
 }

@@ -619,4 +619,37 @@ public class DateUtils extends PropertyEditorSupport {
 		return calendar.get(Calendar.YEAR);
 	}
 
+	/**
+	 * 获得指定日期之后nDay日
+	 * muchuanbo 2020.2.22
+	 */
+	static public Date getDateToAddDate(Date tsDate, int nDay) {
+		if (null == tsDate)
+			return null;
+		GregorianCalendar calendar = new GregorianCalendar();
+		calendar.setTime(tsDate);
+		calendar.add(Calendar.DATE, nDay);
+		Date resDate = calendar.getTime();
+		return resDate;
+	}
+
+	/**
+	 * 判断两个日期是否是同一天
+	 * @param date1
+	 * @param date2
+	 * muchuanbo 2020.2.22
+	 * @return
+	 */
+	public static boolean isSameDay(Date date1, Date date2) {
+		if (date1 == null || date2 == null) {
+			throw new IllegalArgumentException("The date must not be null");
+		}
+		Calendar cal1 = Calendar.getInstance();
+		cal1.setTime(date1);
+		Calendar cal2 = Calendar.getInstance();
+		cal2.setTime(date2);
+		return (cal1.get(Calendar.ERA) == cal2.get(Calendar.ERA) &&
+				cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR) &&
+				cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR));
+	}
 }

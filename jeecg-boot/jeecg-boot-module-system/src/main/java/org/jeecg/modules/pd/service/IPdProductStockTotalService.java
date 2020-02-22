@@ -31,5 +31,5 @@ public interface IPdProductStockTotalService extends IService<PdProductStockTota
 	/**
 	 * 修改库存总表上下限数量
 	 */
-	public void updateProductStock(PdProductStockTotal stockTotal) ;
+	public void updateProductStockTotal(PdProductStockTotal stockTotal) ;
 }

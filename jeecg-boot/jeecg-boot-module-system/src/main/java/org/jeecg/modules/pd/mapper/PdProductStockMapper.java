@@ -23,4 +23,6 @@ public interface PdProductStockMapper extends BaseMapper<PdProductStock> {
 	public List<PdProductStock> selectByMainId(@Param("mainId") String mainId);
 
     List<PdProductStock> selectList(PdProductStock pdProductStock);
+
+	public void updateProductStock(PdProductStock productStock);
 }
