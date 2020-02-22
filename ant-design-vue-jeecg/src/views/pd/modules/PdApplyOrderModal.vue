@@ -103,7 +103,7 @@
 <script>
 
   import pick from 'lodash.pick'
-  import { httpAction,getAction,downFile } from '@/api/manage'
+  import { httpAction,getAction,downFile,inArray} from '@/api/manage'
   import { JEditableTableMixin } from '@/mixins/JEditableTableMixin'
   import JDate from '@/components/jeecg/JDate'
   import JDictSelectTag from "@/components/dict/JDictSelectTag"
@@ -206,7 +206,7 @@
       //修改申购数量后重新计算总数量及总金额
       handleConfirmBlur(e,m){
         const that = this;
-        let applyNum = e.value;//修改后的申领数量
+        let applyNum=e.value;//修改后的申领数量
         let stockNum=m.stockNum;//目前库存数量
         if(parseFloat(stockNum)<parseFloat(applyNum)){
           that.$message.error("库存数量小于申领数量");
@@ -216,7 +216,7 @@
         let tableData=this.pdApplyDetailTable.dataSource;
         let totalNum=0;
         for(let i=0;i<tableData.length;i++){
-          totalNum=totalNum+parseFloat(tableData[i].applyNum);//计算总数量
+          totalNum+=parseFloat(tableData[i].applyNum);//计算总数量
         }
         let model={};
         this.model.totalNum=totalNum;//申购总数量
@@ -235,7 +235,7 @@
         const newData = this.pdApplyDetailTable.dataSource.filter(item => item.productId !== productId);
         let totalNum=0;
         for(let i=0;i<newData.length;i++){
-          totalNum=totalNum+parseFloat(newData[i].applyNum);//计算总数量
+          totalNum+=parseFloat(newData[i].applyNum);//计算总数量
         }
         let model={};
         this.model.totalNum=totalNum;//申购总数量
@@ -246,20 +246,31 @@
       },
 
       modalFormOk (formData) {//选择产品确定后返回所选择的数据
+        let idList = [];
         let values = [];
         let totalNum=0;
+        let data= this.pdApplyDetailTable.dataSource;
+        for(let j=0;j<data.length;j++) {
+          totalNum+=data[j].applyNum;
+          let prodId=data[j].productId;
+          idList.push(prodId);
+        }
+        values=data;
         for(let i=0;i<formData.length;i++){
-          values.push({
-            productId: formData[i].productId,
-            number: formData[i].number,
-            productName: formData[i].productName,
-            spec: formData[i].spec,
-            version: formData[i].version,
-            unitName: formData[i].unitName,
-            applyNum: 1,//默认1
-            stockNum: formData[i].stockNum
-          })
-          totalNum=totalNum+1;//计算总数量
+          let prodId=formData[i].productId;
+          if(inArray(prodId, idList) ==-1) {
+            values.push({
+              productId: formData[i].productId,
+              number: formData[i].number,
+              productName: formData[i].productName,
+              spec: formData[i].spec,
+              version: formData[i].version,
+              unitName: formData[i].unitName,
+              applyNum: 1,//默认1
+              stockNum: formData[i].stockNum
+            })
+            totalNum+=1;//计算总数量
+          }
         }
         let model={};
         this.model.totalNum=totalNum;//申领总数量

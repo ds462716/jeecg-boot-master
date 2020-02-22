@@ -144,5 +144,15 @@ public class PdStockRecordPage {
 	 * 货区货位列表 用于二级联动下拉框
 	 */
 	List<PdGoodsAllocationPage> goodsAllocationList;
+
+	/**
+	 * 1-允许入库量大于订单量；0-不允许入库量大于订单量
+	 */
+	private String allowInMoreOrder;
+
+	/**
+	 * 1-允许非订单产品；0-不允许非订单产品
+	 */
+	private String allowNotOrderProduct;
 	
 }

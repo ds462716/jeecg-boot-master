@@ -37,6 +37,7 @@ public class PdProductStockTotalPage extends PdProductStockTotal {
 	@TableField(exist = false)
 	private Double limtCount;
 	/**申购科室名称*/
+	@Excel(name = "申购科室名称", width = 15)
 	private String deptName;
 	@ExcelCollection(name="库存明细表")
 	private List<PdProductStock> pdProductStockList;

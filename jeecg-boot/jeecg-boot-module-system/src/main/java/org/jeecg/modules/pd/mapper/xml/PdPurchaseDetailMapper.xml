@@ -17,6 +17,7 @@
 		a.sys_org_code,
 		a.supplier_id,
 		a.remarks,
+		a.arrival_num,
 		a.del_flag
 	</sql>
 

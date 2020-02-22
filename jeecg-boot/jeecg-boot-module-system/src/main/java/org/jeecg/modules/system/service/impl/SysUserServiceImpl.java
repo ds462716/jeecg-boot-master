@@ -336,4 +336,11 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 		}
 		return result;
 	}
+
+
+	// 根据角色编码获取该角色下的用户id
+	@Override
+	public List<String> getUserIdByRoleCode(String roleCode) {
+		return sysUserRoleMapper.getUserIdByRoleCode(roleCode);
+	}
 }

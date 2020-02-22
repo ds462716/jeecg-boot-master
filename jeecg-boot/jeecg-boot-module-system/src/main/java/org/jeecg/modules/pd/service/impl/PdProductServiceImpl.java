@@ -48,7 +48,7 @@ public class PdProductServiceImpl extends ServiceImpl<PdProductMapper, PdProduct
     private IPdEncodingRuleService pdEncodingRuleService;
 
     @Override
-    public Page<PdProductPage> chooseProductList(Page<PdProductPage> pageList, PdProduct pdProduct) {
+    public Page<PdProductPage> chooseProductList(Page<PdProductPage> pageList, PdProductPage pdProduct) {
 
         return pageList.setRecords(pdProductMapper.chooseProductList(pdProduct));
     }

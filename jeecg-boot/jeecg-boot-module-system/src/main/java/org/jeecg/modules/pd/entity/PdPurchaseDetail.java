@@ -28,29 +28,23 @@ public class PdPurchaseDetail extends BaseEntity {
 	@TableId(type = IdType.ID_WORKER_STR)
 	private String id;
 	/**创建人*/
-	@Excel(name = "创建人", width = 15)
 	private String createBy;
 	/**创建日期*/
-	@Excel(name = "创建日期", width = 20, format = "yyyy-MM-dd HH:mm:ss")
 	@JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd HH:mm:ss")
     @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
 	private Date createTime;
 	/**更新人*/
-	@Excel(name = "更新人", width = 15)
 	private String updateBy;
 	/**更新日期*/
-	@Excel(name = "更新日期", width = 20, format = "yyyy-MM-dd HH:mm:ss")
 	@JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd HH:mm:ss")
     @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
 	private Date updateTime;
 	/**所属部门*/
-	@Excel(name = "所属部门", width = 15)
 	private String sysOrgCode;
 	/**申购单编号*/
 	@Excel(name = "申购单编号", width = 15)
 	private String orderNo;
 	/**产品ID*/
-	@Excel(name = "产品ID", width = 15)
 	private String productId;
 	/**产品单价*/
 	@Excel(name = "产品单价", width = 15)
@@ -64,8 +58,10 @@ public class PdPurchaseDetail extends BaseEntity {
 	/**申购时总库存数量*/
 	@Excel(name = "申购时总库存数量", width = 15)
 	private Double stockNum;
+	/**到货数量*/
+	@Excel(name = "到货数量", width = 15)
+	private Double arrivalNum;
 	/**备注*/
-	@Excel(name = "备注", width = 15)
 	private String remarks;
 	@TableField(exist = false)
 	@Excel(name = "产品名称", width = 15)
@@ -83,7 +79,6 @@ public class PdPurchaseDetail extends BaseEntity {
 	@Excel(name = "单位名称", width = 15)
 	private String unitName;//单位名称
 	/**供应商id*/
-	@Excel(name = "供应商ID", width = 15)
 	private String supplierId;
 	@TableField(exist = false)
 	@Excel(name = "供应商名称", width = 15)

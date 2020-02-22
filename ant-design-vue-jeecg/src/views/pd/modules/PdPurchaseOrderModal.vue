@@ -105,15 +105,14 @@
 <script>
 
   import pick from 'lodash.pick'
-  import { httpAction,getAction,downFile } from '@/api/manage'
+  import { httpAction,getAction,downFile,inArray } from '@/api/manage'
   import { JEditableTableMixin } from '@/mixins/JEditableTableMixin'
   import JDate from '@/components/jeecg/JDate'
-  import {JDictSelectTag,typeText}from "@/components/dict/JDictSelectTag"
   import PdPurchaseDetailAddModal from './PdChooseProductListModel'
   export default {
     name: 'PdPurchaseOrderModal',
     mixins: [JEditableTableMixin],
-    components: {JDate, JDictSelectTag,PdPurchaseDetailAddModal},
+    components: {JDate,PdPurchaseDetailAddModal},
     data() {
       return {
         confirmLoading: false,
@@ -130,7 +129,7 @@
           totalNum:{},
           totalPrice:{},
           refuseReason:{},
-          applyCount:[
+          orderNum:[
             {required: true,message: '请输入值'}],
         },
         refKeys: ['pdPurchaseDetail', ],
@@ -217,8 +216,8 @@
        let totalNum=0;
        let totalPrice=0;
         for(let i=0;i<tableData.length;i++){
-          totalNum=totalNum+parseFloat(tableData[i].orderNum);//计算总数量
-          totalPrice=totalPrice+Number(tableData[i].orderMoney);//计算申购总金额
+          totalNum+=parseFloat(tableData[i].orderNum);//计算总数量
+          totalPrice+=Number(tableData[i].orderMoney);//计算申购总金额
         }
         let model={};
         this.model.totalNum=totalNum;//申购总数量
@@ -239,8 +238,8 @@
         let totalNum=0;
         let totalPrice=0;
         for(let i=0;i<newData.length;i++){
-          totalNum=totalNum+parseFloat(newData[i].applyCount);//计算总数量
-          totalPrice=totalPrice+Number(newData[i].amountMoney);//计算申购总金额
+          totalNum+=parseFloat(newData[i].orderNum);//计算总数量
+          totalPrice+=+Number(newData[i].orderMoney);//计算申购总金额
         }
         let model={};
         this.model.totalNum=totalNum;//申购总数量
@@ -252,27 +251,39 @@
       },
 
       modalFormOk (formData) {//选择产品确定后返回所选择的数据
+        let idList = [];
         let values = [];
         let totalNum=0;
         let totalPrice=0;
+       let data= this.pdPurchaseDetailTable.dataSource;
+        for(let j=0;j<data.length;j++) {
+          totalPrice+=data[j].orderMoney;
+          totalNum+=data[j].orderNum;
+          let prodId=data[j].productId;
+          idList.push(prodId);
+        }
+        values=data;
         for(let i=0;i<formData.length;i++){
-          values.push({
-            productId: formData[i].productId,
-            number: formData[i].number,
-            productName: formData[i].productName,
-            spec:formData[i].spec,
-            purchasePrice: formData[i].purchasePrice,
-            orderNum: 1.00,//默认1
-            version: formData[i].version,
-            stockNum: formData[i].stockNum,
-            unitName:formData[i].unitName,
-            orderMoney:formData[i].purchasePrice * 1,
-            venderName:formData[i].venderName,
-            supplierId:formData[i].supplierId,
-            supplierName:formData[i].supplierName
-          })
-          totalNum+=1;//计算总数量
-          totalPrice=totalPrice+Number(formData[i].purchasePrice);//计算申购总金额
+       let prodId=formData[i].productId;
+          if(inArray(prodId, idList) ==-1){
+              values.push({
+                   productId: formData[i].productId,
+                   number: formData[i].number,
+                   productName: formData[i].productName,
+                   spec:formData[i].spec,
+                   purchasePrice: formData[i].purchasePrice,
+                   orderNum: 1.00,//默认1
+                   version: formData[i].version,
+                   stockNum: formData[i].stockNum,
+                   unitName:formData[i].unitName,
+                   orderMoney:formData[i].purchasePrice * 1,
+                   venderName:formData[i].venderName,
+                   supplierId:formData[i].supplierId,
+                   supplierName:formData[i].supplierName
+                 })
+            totalNum+=1;//计算总数量
+            totalPrice+=formData[i].purchasePrice * 1;//计算申购总金额
+          }
         }
         let model={};
         this.model.totalNum=totalNum;//申购总数量

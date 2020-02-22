@@ -332,8 +332,8 @@
     </select>
 
     <!-- 用于产品弹出框 -->
-    <select id="chooseProductList" resultType="org.jeecg.modules.pd.vo.PdProductPage" parameterType="org.jeecg.modules.pd.entity.PdProduct">
-        select
+    <select id="chooseProductList" resultType="org.jeecg.modules.pd.vo.PdProductPage" parameterType="org.jeecg.modules.pd.vo.PdProductPage">
+        select DISTINCT
             a.id as productId,
             a.number as number,
             a.number as productNumber,
@@ -348,10 +348,16 @@
             b.name as unitName,
             c.name as venderName,
             d.name as supplierName
+        <if test="orderNo != null and orderNo != ''">
+            ,e.order_no as orderNo
+        </if>
         from pd_product a
         left join pd_unit b on a.unit_id = b.id
         left join pd_vender c on a.vender_id = c.id
         left join pd_supplier d on a.supplier_id = d.id
+        <if test="orderNo != null and orderNo != ''">
+        left join pd_purchase_detail e on e.product_id = a.id
+        </if>
         <where>
             a.del_flag = #{DEL_FLAG_NORMAL}
             <if test="name != null and name != ''">
@@ -377,6 +383,9 @@
             </if>
             <if test="venderId != null and venderId != ''">
                 AND a.vender_id = #{venderId}
+            </if>
+            <if test="orderNo != null and orderNo != ''">
+                AND e.order_no = #{orderNo}
             </if>
         </where>
         ORDER BY a.update_time desc

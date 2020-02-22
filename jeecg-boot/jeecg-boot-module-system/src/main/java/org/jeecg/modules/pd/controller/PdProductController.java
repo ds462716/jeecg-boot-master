@@ -404,7 +404,7 @@ public class PdProductController extends JeecgController<PdProduct, IPdProductSe
 	  * @return
 	  */
 	 @GetMapping(value = "/chooseProductList")
-	 public Result<?> chooseProductList(PdProduct pdProduct,
+	 public Result<?> chooseProductList(PdProductPage pdProduct,
 									@RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
 									@RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
 									HttpServletRequest req) {

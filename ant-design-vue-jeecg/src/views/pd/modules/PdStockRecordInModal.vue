@@ -8,8 +8,9 @@
     @cancel="handleCancel"
     :footer="null"
   >
-    <!--@ok="handleOk"-->
-    <!--@cancel="handleCancel"-->
+    <!--:footer="null" 隐藏自带的保存、取消按钮，用自定义按钮-->
+    <!--@ok="handleOk" 保存按钮方法-->
+    <!--@cancel="handleCancel" 取消按钮方法-->
 
     <template slot="title">
       <div style="width: 100%;height:20px;padding-right:32px;">
@@ -19,9 +20,6 @@
         </div>
       </div>
     </template>
-    <!--<template>-->
-    <!--<p>这是主体内容，高度是自适应的</p>-->
-    <!--</template>-->
 
     <a-spin :spinning="confirmLoading">
       <!-- 主表单区域 -->
@@ -61,7 +59,6 @@
               </a-col>
               <a-col :span="6">
                 <a-form-item label="供应商" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                  <!--<a-input v-decorator="[ 'supplierId', validatorRules.supplierId]" placeholder="请输入供应商ID"></a-input>-->
                   <a-select
                     showSearch
                     :supplierId="supplierValue"
@@ -79,20 +76,19 @@
                   </a-select>
                 </a-form-item>
               </a-col>
-
             </a-row>
           </a-form>
 
           <div class="table-operator">
             <a-button @click="choosePurchaseOrder" type="primary" icon="import">从订单导入</a-button>
           </div>
-          <!-- 订单明细表区域 ref="pdPurchaseOrderDetail"-->
+          <!-- 订单明细表区域 -->
           <a-table
             v-show="showOrderTable"
             ref="table"
             size="middle"
             bordered
-            rowKey="productId"
+            rowKey="id"
             :pagination="false"
             :columns="pdPurchaseOrderDetailTable.columns"
             :dataSource="pdPurchaseOrderDetailTable.dataSource"
@@ -103,15 +99,15 @@
           </a-table>
         </a-card>
 
-        <!-- 子表单区域 -->
+        <!-- 产品列表区域 -->
         <a-card style="margin-bottom: 10px;">
           <a-tabs v-model="activeKey" @change="handleChangeTabs">
-            <a-tab-pane tab="产品明细" :key="refKeys[0]" :forceRender="true">
+            <a-tab-pane tab="产品扫码" :key="refKeys[0]" :forceRender="true">
               <a-form >
                 <a-row>
                   <a-col :md="6" :sm="8">
                     <a-form-item label="产品编号" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                      <a-input ref="inputFocus" v-focus placeholder="请输入产品编号" v-model="queryParam.productNumber" @keyup.enter.native="searchQuery(0)"></a-input>
+                      <a-input ref="productNumberInput" v-focus placeholder="请输入产品编号" v-model="queryParam.productNumber" @keyup.enter.native="searchQuery(0)"></a-input>
                     </a-form-item>
                   </a-col>
                   <a-col :md="6" :sm="8">
@@ -128,7 +124,7 @@
               </a-form>
 
               <div style="margin-bottom: 8px;">
-                <a-button type="primary" icon="plus" @click="handleConfirmAdd">选择产品</a-button>
+                <a-button type="primary" icon="plus" @click="chooseProductList">选择产品</a-button>
                 <span style="padding-left: 8px;"></span>
                 <a-popconfirm
                   :title="`确定要删除吗?`"
@@ -139,6 +135,7 @@
               </div>
 
               <j-editable-table
+                bordered
                 :ref="refKeys[0]"
                 :loading="pdStockRecordDetailTable.loading"
                 :columns="pdStockRecordDetailTable.columns"
@@ -147,25 +144,22 @@
                 :rowNumber="true"
                 :rowSelection="true"
                 :actionButton="false"
-                @valueChange="valueChange" />
-              <!--:maxHeight="600"-->
-
-
-              <a-row style="margin-top:10px;text-align: right">
-                <a-col :md="6" :sm="8">
-                  <span style="font-weight: bold;font-size: large">总数量：{{ totalSum }}</span>
-                </a-col>
-                <a-col :md="6" :sm="8">
+                @valueChange="valueChange"
+                style="text-overflow: ellipsis;"
+              >
+              <!--:maxHeight 大于 600 后就会有BUG 一次性选择9条以上产品，会少显示一条-->
+              </j-editable-table>
+              <a-row style="margin-top:10px;text-align: right;padding-right: 5%">
+                  <span style="font-weight: bold;font-size: large;padding-right: 5%">总数量：{{ totalSum }}</span>
                   <span style="font-weight: bold;font-size: large">总金额：{{ totalPrice }}</span>
-                </a-col>
               </a-row>
             </a-tab-pane>
           </a-tabs>
         </a-card>
 
-        <a-form :form="form">
         <!-- 验收区域 -->
-          <a-card style="">
+        <a-card style="">
+          <a-form :form="form">
             <a-row>
               <a-col :span="6">
                 <a-form-item label="验收结果" :labelCol="labelCol" :wrapperCol="wrapperCol">
@@ -197,8 +191,8 @@
                 </a-form-item>
               </a-col>
             </a-row>
-          </a-card>
-        </a-form>
+          </a-form>
+        </a-card>
       </div>
 
       <div class="drawer-bootom-button">
@@ -240,7 +234,7 @@
       //全局监听键盘事件
       document.onkeydown = function(event) {
         if(event.ctrlKey && event.altKey) {
-          // 聚焦元素
+          // 按ctrl+alt  聚焦元素
           el.focus()
         }
       }
@@ -261,25 +255,34 @@
       return {
         labelCol: {span: 6},
         wrapperCol: {span: 16},
+
         labelCol2: {span: 3},
         wrapperCol2: {span: 20},
+
         labelCol3: {span: 6},
         wrapperCol3: {span: 3},
 
+        labelCol4: {span: 13},
+        wrapperCol4: {span: 5},
+
         initData:{},
         queryParam:{},
+        allowInMoreOrder:"",		//开关-是否允许入库量大于订单量   1-允许入库量大于订单量；0-不允许入库量大于订单量
+        allowNotOrderProduct:"",		//开关-是否允许入库非订单产品     1-允许非订单产品；0-不允许非订单产品
         //供应商下拉列表 start
         supplierValue: undefined,
         notFoundContent:"未找到内容",
         supplierData: [],
         //供应商下拉列表 end
         showOrderTable:false,
-
+        orderNo:"",
         totalSum:'0',
         totalPrice:'0.0000',
 
         //货区货位二级联动下拉框
         goodsAllocationList:[],
+        huoquOptions:[],
+        huoweiOptions:[],
 
         // 新增时子表默认添加几行空数据
         addDefaultRowNum: 0,
@@ -298,6 +301,8 @@
           recordState:{},
           rejectReason:{},
           remarks:{},
+          isAllowProduct:{rules: [{required: true, message: '请选择!'}]},
+          isAllowNum:{rules: [{required: true, message: '请选择!'}]},
           testResult:{rules: [{required: true, message: '请选择验收结果!'}]},
           storageResult:{rules: [{required: true, message: '请选择储运状态!'}]},
           temperature:{rules: [{required: true, message: '请输入温度!'},{pattern: '^-?\\d+$',message: '只能输入数字' }]},
@@ -342,7 +347,7 @@
             {
               title: '产品编码',
               align:"center",
-              dataIndex: 'productNo'
+              dataIndex: 'number'
             },
             {
               title: '产品名称',
@@ -363,7 +368,12 @@
             {
               title: '数量',
               align:"center",
-              dataIndex: 'applyCount'
+              dataIndex: 'orderNum'
+            },
+            {
+              title:'到货数量',
+              align:"center",
+              dataIndex: 'arrivalNum'
             },
             {
               title: '单位',
@@ -382,7 +392,7 @@
             },
           ],
         },
-        // 出入库明细表
+        // 出入库明细表(产品明细)
         pdStockRecordDetailTable: {
           loading: false,
           dataSource: [],
@@ -391,49 +401,41 @@
               title: '产品ID',
               key: 'productId',
               type: FormTypes.hidden,
-              align:"center",
             },
             {
               title: '产品名称',
               key: 'productName',
-              align:"center",
-              width:"150px",
+              width:"220px",
             },
             {
               title: '产品编号',
               key: 'productNumber',
-              align:"center",
               width:"150px",
             },
             {
               title: '产品条码',
               key: 'productBarCode',
-              align:"center",
-              width:"150px",
+              width:"200px",
             },
             {
               title: '规格',
               key: 'spec',
-              align:"center",
-              width:"80px",
+              width:"150px",
             },
             {
               title: '型号',
               key: 'version',
-              align:"center",
-              width:"80px",
+              width:"150px",
             },
             {
               title: '单位',
               key: 'unitName',
-              align:"center",
               width:"50px",
             },
             {
               title: '批号',
               key: 'batchNo',
               width:"120px",
-              align:"center",
               type: FormTypes.input,
               placeholder: '${title}',
               defaultValue: '',
@@ -460,21 +462,19 @@
             {
               title: '入库单价',
               key: 'purchasePrice',
-              align:"center",
               width:"80px",
             },
             {
               title: '金额',
               key: 'price',
-              align:"center",
-              width:"80px",
+              width:"90px",
             },
             {
               title: '货区',
               key: 'huoquId',
               type: FormTypes.select,
               width:"150px",
-              options: [],
+              options: this.huoquOptions,
               placeholder: '${title}',
               validateRules: [{ required: true, message: '${title}不能为空' }]
             },
@@ -486,6 +486,11 @@
               options: [],
               placeholder: '${title}',
               validateRules: [{ required: true, message: '${title}不能为空' }]
+            },
+            {
+              title: '申购单号',
+              key: 'orderNo',
+              width:"180px",
             }
           ]
         },
@@ -527,7 +532,8 @@
       editAfter() {
         // 加载子表数据
         if (this.model.id) {
-          let fieldval = pick(this.model,'recordNo','inType','recordPeople','recordPeopleName','recordDate','remarks','inDepartId','supplierId','testResult','storageResult','temperature','humidity','remarks')
+          let fieldval = pick(this.model,'recordNo','inType','recordPeople','recordPeopleName','recordDate','remarks','inDepartId','supplierId',
+                                         'testResult','storageResult','temperature','humidity','remarks')
           this.$nextTick(() => {
             this.form.setFieldsValue(fieldval)
           })
@@ -536,32 +542,35 @@
         }else{
           this.loadData();
         }
-        // this.$nextTick(() => { //这种写法有问题 用自定义钩子函数v-focus
-        //   document.onkeydown = function(event) {
-        //     if(event.ctrlKey && event.altKey) {
-        //       // 聚焦元素
-        //       this.$refs.productNumberInput.focus();
-        //     }
-        //   }
-        // })
       },
       loadData() {
         this.loading = true;
         getAction(this.url.init, {}).then((res) => {
           if (res.success) {
             this.initData = res.result;
+            this.initData.isAllowProduct = "0";
+            this.initData.isAllowNum = "0";
             this.initData.testResult = "0";
             this.initData.storageResult = "0";
             this.initData.temperature = "25";
             this.initData.humidity = "50";
-            let fieldval = pick(this.initData,'recordNo','inType','recordPeople','recordPeopleName','recordDate','remarks','inDepartId','supplierId','testResult','storageResult','temperature','humidity','remarks');
+            this.allowInMoreOrder = this.initData.allowInMoreOrder;
+            this.allowNotOrderProduct = this.initData.allowNotOrderProduct;
+
+            let fieldval = pick(this.initData,'recordNo','inType','recordPeople','recordPeopleName','recordDate','remarks','inDepartId','supplierId',
+                                              'testResult','storageResult','temperature','humidity','remarks');
             this.goodsAllocationList = this.initData.goodsAllocationList;
             this.$nextTick(() => {
-              this.form.setFieldsValue(fieldval)
+              this.form.setFieldsValue(fieldval);
+              //初始化供应商，用于产品扫码后能回显供应商
+              this.supplierHandleSearch();
               //获取光标
-              let input = this.$refs['inputFocus'];
-              input.focus()
-              this.pdStockRecordDetailTable.columns[12].options = this.goodsAllocationList.filter(i => i.parent === null)
+              this.$refs['productNumberInput'].focus();
+              this.pdStockRecordDetailTable.columns.forEach((item, idx) => {
+                if(item.key === "huoquId"){
+                  item.options = this.goodsAllocationList.filter(i => i.parent === null);
+                }
+              })
             })
           }
           if(res.code===510){
@@ -596,6 +605,7 @@
           }
         })
       },
+      // 保存 提交 修改 请求函数
       request(formData) {
         let url = this.url.add, method = 'post'
         if (this.model.id) {
@@ -642,22 +652,33 @@
         }
         this.popModal.fullScreen = mode
       },
+
       //-----------------供应商查询start
       supplierHandleSearch(value) {
         fetch(value, data => (this.supplierData = data),this.url.querySupplier);
       },
       supplierHandleChange(value) {
+        // this.pdPurchaseOrderDetailTable.dataSource = [];
+        this.totalSum = '0';
+        this.totalPrice = '0.0000';
+        this.eachAllTable((item) => {
+          item.initialize()
+        })
         this.supplierValue = value;
         fetch(value, data => (this.supplierData = data),this.url.querySupplier);
       },
       //----------------供应商查询end
+
+      //选择采购单
       choosePurchaseOrder() {
         this.$refs.pdChoosePurchaseOrderListModel.show();
       },
       //选择订单后回调函数
       returnPurchaseOrderData(data) {
+        // this.pdPurchaseOrderDetailTable.dataSource = [];
         this.showOrderTable = true;
         this.pdPurchaseOrderDetailTable.dataSource = data;
+        this.orderNo = data[0].orderNo;
         this.form.setFieldsValue({orderNo:data[0].orderNo});
       },
       //删除行
@@ -671,15 +692,26 @@
           this.$message.error("请选择需要删除的数据！")
         }
       },
-      // 新增行
-      handleConfirmAdd() {
-        let supplierId = this.form.getFieldValue("supplierId")
-        if(supplierId){
-          this.$refs.pdChooseProductListModel.show({supplierId:supplierId,supplierName:""});
-        }else{
-          this.$message.error("请先选择供应商！")
+      // 选择产品 新增行
+      chooseProductList() {
+        let supplierId = this.form.getFieldValue("supplierId");
+        let isAllowProduct = this.form.getFieldValue("isAllowProduct");
+        let orderNo = "";
+        if(!supplierId) {
+          this.$message.error("请先选择供应商！");
+          return;
         }
+        //开关-是否允许入库非订单产品     1-允许非订单产品；0-不允许非订单产品
+        if(this.allowNotOrderProduct === "0") {
+          if(!this.orderNo){
+            this.$message.error("请先导入订单！");
+            return;
+          }
+          orderNo = this.orderNo;
+        }
+        this.$refs.pdChooseProductListModel.show({supplierId:supplierId,supplierName:"",orderNo:orderNo});
       },
+      // 选择产品弹出框回调函数
       returnProductData(data) {
         this.$refs.pdStockRecordDetail.getValues((error, values) => {
           this.pdStockRecordDetailTable.dataSource = values;
@@ -705,6 +737,7 @@
           })
         })
       },
+      // 点“选择产品”按钮后 调用 新增一行
       addrows(row){
         let data = {
           productId: row.productId,
@@ -713,35 +746,71 @@
           spec: row.spec,
           version: row.version,
           purchasePrice:row.purchasePrice,
-          price:Number(row.purchasePrice).toFixed(4),
+          price:Number(!row.purchasePrice ? 0 : row.purchasePrice).toFixed(4),
           unitName: row.unitName,
           venderName: row.venderName,
           supplierName: row.supplierName,
-          productNum: 1
+          productBarCode:"",
+          limitDate:"",
+          batchNo:"",
+          productNum: 1,
+          orderNo:this.orderNo,
+          huoquId:"",
+          huoweiId:""
         }
         this.pdStockRecordDetailTable.dataSource.push(data);
         this.$refs.pdStockRecordDetail.add();
       },
-      // 产品数量变更
+      // 扫码 调用 新增一行
+      addrowsByScanCode(row){
+        let data = {
+          productId: row.productObj.id,
+          productName: row.productObj.name,
+          productNumber:row.number,
+          spec: row.productObj.spec,
+          version: row.productObj.version,
+          purchasePrice: row.productObj.purchasePrice,
+          price:Number(!row.productObj.purchasePrice ? 0 : row.productObj.purchasePrice).toFixed(4),
+          unitName: row.productObj.unitName,
+          venderName: row.productObj.venderName,
+          supplierName: row.productObj.supplierName,
+          productBarCode:row.productBarCode,
+          limitDate:row.expDate,
+          batchNo:row.batchNo,
+          productNum: 1,
+          orderNo:this.orderNo,
+          huoquId:"",
+          huoweiId:""
+        }
+        this.pdStockRecordDetailTable.dataSource.push(data);
+        this.$refs.pdStockRecordDetail.add();
+      },
+
+      // 表格数据变更
       valueChange(event) {
         if(event){
           const { type, row, column, value, target } = event;
-          // 库区库位二级联动
           if (type === FormTypes.select) {
             if (column.key === 'huoquId') {
+              // 库区库位二级联动
               let options = this.goodsAllocationList.filter(i => i.parent === value)
-              this.pdStockRecordDetailTable.columns[13].options = options
+              this.huoweiOptions = options;
+              this.pdStockRecordDetailTable.columns.forEach((item, idx) => {
+                if(item.key === "huoweiId"){
+                  item.options = options;
+                }
+              })
               // 清空库区下拉框数据
               target.setValues([{
                 rowKey: row.id,
                 values: { huoweiId: '' }
               }])
-            }
-          }
+            }else if(column.key === 'huoweiId'){
 
-          if(type === FormTypes.input){
+            }
+          }else if(type === FormTypes.input){
             if(column.key === "productNum"){
-              // 计算每条产品的价格
+              // 产品数量变更 计算每条产品的价格
               let price = (Number(row.purchasePrice) * Number(value)).toFixed(4);
               target.setValues([{
                 rowKey: row.id,
@@ -750,8 +819,12 @@
             }
           }
         }
-
         // 计算总数量和总价格
+        this.getTotalNumAndPrice();
+      },
+
+      // 计算总数量和总价格
+      getTotalNumAndPrice(){
         this.$refs.pdStockRecordDetail.getValues((error, values) => {
           let totalSum = 0;
           let totalPrice = 0;
@@ -763,44 +836,128 @@
           this.totalPrice = totalPrice.toFixed(4);
         })
       },
+      //清空扫码框
+      clearQueryParam(){
+        this.queryParam.productNumber = "";
+        this.queryParam.productBarCode = "";
+        this.$refs.productNumberInput.focus();
+      },
+      // 扫码查询
       searchQuery(num) {
         let that = this;
-        let productNumber = that.queryParam.productNumber;
-        if(num == 0){
-          //产品编号扫码
-          if(!productNumber){
-            that.$message.error("请输入产品编号！")
-          }else{
-            that.$refs.productBarCodeInput.focus();
+        let productNumber = this.queryParam.productNumber;
+        if(!productNumber){
+          this.$message.error("请输入产品编号！");
+          this.$refs.productNumberInput.focus();
+          return;
+        }
+
+        if(num == 0){       //产品编号扫码
+          // 焦点条码输入框
+          this.$refs.productBarCodeInput.focus();
+
+        }else if(num == 1){ //条码扫码
+          let productBarCode = this.queryParam.productBarCode;
+          if(!productBarCode){
+            this.$message.error("请输入二级条码！");
+            return;
           }
-        }else if(num == 1){
-          if(!productNumber){
-            that.$message.error("请输入产品编号！")
-            that.$refs.inputFocus.focus();
-          }else{
-            //条码扫码查询
-            let productBarCode = that.queryParam.productBarCode;
-            //var barCodeObj = scanCode(productNumber,productBarCode,that);
-            scanCode(productNumber,productBarCode,that).then((res) => {
-              let data = {
-                /*productId: row.productId,
-                productName: row.productName,*/
-                productNumber:res.upn,
-                productBarCode:res._secondCode,
-                limitDate:res._ExpDate,
-                batchNo:res._Lot,
-                productNum: 1
+          //解析条码
+          scanCode(productNumber,productBarCode,that).then((res) => {
+            if(res.code === "200"){
+              let product = res.productObj;
+
+              //校验开关-是否允许入库非订单产品
+              if(!this.checkAllowNotOrderProduct(product)){
+                return;
               }
-              this.pdStockRecordDetailTable.dataSource.push(data);
-              this.$refs.pdStockRecordDetail.add();
-            })
-          }
-        }else if(num == 2){
-          //名称 规格 型号 查询 TODO
+              //校验供应商
+              if(!this.checkSupplier(product)){
+                return;
+              }
+
+              let isAddRow = true;// 是否增加一行
+              // 循环表格数据
+              this.$refs.pdStockRecordDetail.getValues((error, values) => {
+                this.pdStockRecordDetailTable.dataSource = values;
+                if(values.length > 0){ //表格有数据
+                  for(let i = 0;i<values.length; i++ ){
+                    let item = values[i];
+                    // 1.比较被扫码产品与列表产品条码是否一致：一致则数量相加，不一致则加一行
+                    // 2.如果列表中的产品条码为空，则比较产品ID、批号、有效期，如果一致则数量相加，不一致则加一行
+                    if((item.productBarCode && item.productBarCode == productBarCode)
+                      || (!item.productBarCode && item.productId == product.id && item.batchNo == res.batchNo && item.limitDate == res.expDate)){
+                      //条码一致 则数量相加
+                      let productNum = Number(item.productNum) + 1;
+                      let price = (Number(item.purchasePrice) * Number(productNum)).toFixed(4);
+
+                      this.$nextTick(() => {
+                        this.$refs.pdStockRecordDetail.setValues([{rowKey: item.id, values: { productNum: productNum,price: price,productBarCode:productBarCode }}]);
+                        this.getTotalNumAndPrice();
+                      })
+                      isAddRow = false;
+                      break;
+                    }
+                  }
+                }else{
+                  //表格没数据 新增一行
+                  isAddRow = true;
+                }
+              })
+
+              if(isAddRow){
+                //条码新增一行
+                this.addrowsByScanCode(res);
+                this.$nextTick(() => {
+                  // 计算总数量和总价格
+                  this.getTotalNumAndPrice();
+                })
+              }
+            }
+            //清空扫码框
+            this.clearQueryParam();
+          })
         }
       },
-      searchProductList(num){
-
+      checkSupplier(product){
+        let supplierId = this.form.getFieldValue("supplierId")
+        if(supplierId){
+          if(supplierId != product.supplierId){
+            this.$message.error("产品("+product.name+")的供应商与选中的供应商不一致！");
+            //清空扫码框
+            this.clearQueryParam();
+            return false;
+          }
+        }else{
+          //默认选中扫码产品的供应商
+          this.form.setFieldsValue({supplierId:product.supplierId});
+        }
+        return true;
+      },
+      checkAllowNotOrderProduct(product){
+        if(this.allowNotOrderProduct === "0"){
+          if(!this.orderNo){
+            this.$message.error("请先导入订单！");
+            //清空扫码框
+            this.clearQueryParam();
+            return false;
+          }
+          let bool = true;
+          let purchaseOrderDetail = this.pdPurchaseOrderDetailTable.dataSource;
+          for(let i = 0;i<purchaseOrderDetail.length; i++ ){
+            if(purchaseOrderDetail[i].number == product.number){
+              bool = false;
+              break;
+            }
+          }
+          if(bool){
+            this.$message.error("扫码产品("+product.name+")不是订单中的产品！");
+            //清空扫码框
+            this.clearQueryParam();
+            return false;
+          }
+        }
+        return true;
       },
     }
   }
