@@ -120,4 +120,28 @@
 		 FROM  pd_product_stock
 		WHERE  dept_id = #{mainId}
 </select>
+
+
+
+	<!--修改库存明细相关信息-->
+	<update id="updateProductStock">
+		UPDATE pd_product_stock   SET
+
+		<if test="expStatus!=null and expStatus!='' ">
+			exp_status = #{expStatus}
+		</if>
+		<if test="isLong!=null and isLong!='' ">
+			is_long = #{isLong}
+		</if>
+		WHERE 1=1
+		<if test="id != null and id != ''">
+			AND id = #{id}
+		</if>
+		<if test="deptId != null and deptId != ''">
+			AND dept_id = #{deptId}
+		</if>
+		<if test="productId != null and productId != ''">
+			AND product_id = #{productId}
+		</if>
+	</update>
 </mapper>

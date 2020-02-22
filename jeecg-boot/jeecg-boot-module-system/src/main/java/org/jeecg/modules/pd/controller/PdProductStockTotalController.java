@@ -132,7 +132,7 @@ public class PdProductStockTotalController {
 			 if (ObjectUtils.isNotEmpty(upNum)) {
 				 stockTotal.setLimitUp(upNum);
 			 }
-			pdProductStockTotalService.updateProductStock(stockTotal);
+			 pdProductStockTotalService.updateProductStockTotal(stockTotal);
 		 }
 		 return Result.ok("设置成功!");
 	 }

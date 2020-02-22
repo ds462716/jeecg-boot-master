@@ -11,6 +11,8 @@ import java.util.List;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import javax.transaction.Transactional;
+
 /**
  * @Description: 库存明细表
  * @Author: jeecg-boot
@@ -53,5 +55,12 @@ public class PdProductStockServiceImpl extends ServiceImpl<PdProductStockMapper,
 	@Override
 	public List<PdProductStock> selectList(PdProductStock pdProductStock) {
 		return pdProductStockMapper.selectList(pdProductStock);
+	}
+
+
+	@Override
+	@Transactional
+	public void updateProductStock(PdProductStock productStock) {
+		pdProductStockMapper.updateProductStock(productStock);
 	}
 }

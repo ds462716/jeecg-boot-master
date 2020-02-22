@@ -105,7 +105,7 @@ public interface PdConstant {
 
 	//系统消息提醒模板CODE
 	public final static String PURCHASE_SUBMIT_MSG = "purchase_submitMsg";		//采购提交提醒
-	
+	public final static String APPLY_SUBMIT_MSG = "apply_submitMsg";		    //领用提交审核提醒
 	//扫码近效期提醒时间
 	public final static int REMINDER_TIME = 90;
 

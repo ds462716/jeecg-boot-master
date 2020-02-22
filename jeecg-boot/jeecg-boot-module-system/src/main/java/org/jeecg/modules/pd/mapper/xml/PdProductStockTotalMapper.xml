@@ -84,7 +84,8 @@
 
 
 
-    <update id="updateProductStock">
+    <!--修改库存相关信息-->
+    <update id="updateProductStockTotal">
         UPDATE pd_product_stock_total   SET
         <if test="limitUp !=null and limitUp !=''  ">
             limit_up = #{limitUp}
@@ -94,6 +95,9 @@
         </if>
         <if test="expDate!=null and expDate!='' ">
             exp_date = #{expDate}
+        </if>
+        <if test="expStatus!=null and expStatus!='' ">
+            exp_status = #{expStatus}
         </if>
         <if test="isLong!=null and isLong!='' ">
             is_long = #{isLong}

@@ -17,6 +17,6 @@ public interface PdProductStockTotalMapper extends BaseMapper<PdProductStockTota
 
     List<PdProductStockTotalPage> selectList(PdProductStockTotal stockTotal);
 
-    public void updateProductStock(PdProductStockTotal stockTotal);
+    public void updateProductStockTotal(PdProductStockTotal stockTotal);
 
 }

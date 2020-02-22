@@ -33,4 +33,10 @@ public interface IPdProductStockService extends IService<PdProductStock> {
 	public List<PdProductStock> selectByMainId(String mainId);
 
     List<PdProductStock> selectList(PdProductStock pdProductStock);
+
+	/**
+	 * 更新库存明细表过期状态
+	 */
+	public void updateProductStock(PdProductStock productStock);
+
 }
