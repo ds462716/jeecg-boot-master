@@ -9,22 +9,13 @@ import { httpAction } from '@/api/manage'
  * @param that
  * @returns {Promise<void>}
  */
-export async function scanCode(Barcode1, Barcode2,that){
+export async function scanCode(Barcode1, Barcode2){
   //封装查询参数
   let formData = new URLSearchParams();
   formData.append("Barcode1",Barcode1);
   formData.append("Barcode2",Barcode2);
-  let result = {};
-  result.code = "500";
   let res = await httpAction(url,formData,"post");
-  if(res.code==200){
-    result = res.result;
-  }else{
-   //系统报错
-    that.$message.error(res.message );
-  }
-  console.log(result);
-  return result;
+  return res;
 }
 
 /**
@@ -34,13 +25,12 @@ export async function scanCode(Barcode1, Barcode2,that){
  * @param that
  * @returns {Promise<*>}
  */
-export async function stockScanCode(Barcode1, Barcode2,that){
+export async function stockScanCode(Barcode1, Barcode2){
   //封装查询参数
   let formData = new URLSearchParams();
   formData.append("Barcode1",Barcode1);
   formData.append("Barcode2",Barcode2);
   let res = await httpAction(stockUrl,formData,"post");
-  console.log(res);
   return res;
 }
 
