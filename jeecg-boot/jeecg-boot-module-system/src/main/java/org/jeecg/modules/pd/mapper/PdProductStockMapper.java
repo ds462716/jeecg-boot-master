@@ -21,4 +21,6 @@ public interface PdProductStockMapper extends BaseMapper<PdProductStock> {
 	public boolean deleteByMainId(@Param("mainId") String mainId);
     
 	public List<PdProductStock> selectByMainId(@Param("mainId") String mainId);
+
+    List<PdProductStock> selectList(PdProductStock pdProductStock);
 }

@@ -15,6 +15,7 @@ import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.pd.entity.PdProduct;
 import org.jeecg.modules.pd.entity.PdProductRule;
+import org.jeecg.modules.pd.entity.PdProductStock;
 import org.jeecg.modules.pd.service.IPdProductService;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -311,7 +312,7 @@ public class PdProductController extends JeecgController<PdProduct, IPdProductSe
 	}
 
 	 /**
-	  * 条码规则解析
+	  * 入库条码规则解析
 	  * @param Barcode1
 	  * @param Barcode2
 	  * @param req
@@ -331,6 +332,28 @@ public class PdProductController extends JeecgController<PdProduct, IPdProductSe
 		}
 		return result;
 	}
+
+	 /**
+	  * 条码解析并查询库存
+	  * @param productBarCode
+	  * @param req
+	  * @return
+	  */
+	 @PostMapping(value = "stockScanCode")
+	 public Result<List<PdProductStock>> stockScanCode(String Barcode1,String Barcode2,
+													   HttpServletRequest req) {
+		 Result<List<PdProductStock>> result = new Result<List<PdProductStock>>();
+		 try{
+			 result = pdProductService.getStocks(Barcode1,Barcode2,result);
+			 result.setSuccess(true);
+		 }catch(Exception e){
+			 log.error(e.getMessage(), e);
+			 result.setSuccess(false);
+			 result.setMessage("系统异常");
+		 }
+		 return result;
+	 }
+
 
 	/**
 	 *   通过id删除

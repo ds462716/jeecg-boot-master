@@ -44,4 +44,14 @@ public class PdProductStockServiceImpl extends ServiceImpl<PdProductStockMapper,
 	public List<PdProductStock> selectByMainId(String mainId) {
 		return pdProductStockMapper.selectByMainId(mainId);
 	}
+
+	/**
+	 * 根据各种条件查询库存
+	 * @param pdProductStock
+	 * @return
+	 */
+	@Override
+	public List<PdProductStock> selectList(PdProductStock pdProductStock) {
+		return pdProductStockMapper.selectList(pdProductStock);
+	}
 }

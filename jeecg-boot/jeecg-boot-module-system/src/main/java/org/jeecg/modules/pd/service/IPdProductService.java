@@ -4,8 +4,10 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.modules.pd.entity.PdProduct;
 import com.baomidou.mybatisplus.extension.service.IService;
+import org.jeecg.modules.pd.entity.PdProductStock;
 import org.jeecg.modules.pd.vo.PdProductPage;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -16,7 +18,7 @@ import java.util.Map;
  */
 public interface IPdProductService extends IService<PdProduct> {
 
-    Page<PdProductPage> chooseProductList(Page<PdProductPage> pageList, PdProductPage pdProduct);
+    Page<PdProductPage> chooseProductList(Page<PdProductPage> pageList, PdProduct pdProduct);
 
     Page<PdProduct> selectList(Page<PdProduct> pageList, PdProduct pdProduct);
 
@@ -24,5 +26,7 @@ public interface IPdProductService extends IService<PdProduct> {
 
     void saveProduct(PdProduct pdProduct);
 
-    Result<Map> getScanCode(String barcode1, String barcode2, Result<Map> result);
+    Result<Map>  getScanCode(String Barcode1, String Barcode2, Result<Map> result);
+
+    Result<List<PdProductStock>> getStocks(String productBarCode, String Barcode2, Result<List<PdProductStock>> result);
 }

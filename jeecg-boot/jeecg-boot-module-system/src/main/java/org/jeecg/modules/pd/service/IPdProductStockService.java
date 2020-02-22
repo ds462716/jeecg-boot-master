@@ -31,4 +31,6 @@ public interface IPdProductStockService extends IService<PdProductStock> {
 
 
 	public List<PdProductStock> selectByMainId(String mainId);
+
+    List<PdProductStock> selectList(PdProductStock pdProductStock);
 }
