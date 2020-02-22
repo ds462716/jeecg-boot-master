@@ -21,17 +21,16 @@ public class BarCodeUtil {
 	 * @param Barcode1
 	 * @param Barcode2
 	 */
-	public static Map<String,Object> scanCode(String Barcode1, String Barcode2){
-		Map<String,Object> result = new HashMap<>();
+	public static Map<String,Object> scanCode(String Barcode1, String Barcode2,Map<String,Object> resultMap){
 		if((Barcode1.startsWith("+") && Barcode2.startsWith("+")) ||(Barcode1.startsWith("+")  && Barcode2.startsWith("/"))){
 			//HIBC扫码
-			result = HIBCBarcodeDec(Barcode1, Barcode2,result);
+            resultMap = HIBCBarcodeDec(Barcode1, Barcode2,resultMap);
 		}else{
 			//EAN扫码
-			result = EANBarcodeDec(Barcode1, Barcode2,result);
+            resultMap = EANBarcodeDec(Barcode1, Barcode2,resultMap);
 		}
-		System.out.println(result);
-		return result;
+		System.out.println(resultMap);
+		return resultMap;
 	}
 
 	/**
@@ -78,6 +77,7 @@ public class BarCodeUtil {
 	 */
 	public static   Map<String,Object>  HIBCBarcodeDec(String Barcode1, String Barcode2,Map<String,Object> result){
 		result.put("code","200");
+		result.put("msg","扫码成功");
 		//条码扫了两遍
 		if (Barcode1.equals(Barcode2)){
 			int x = getSubCount(Barcode1,"+");
@@ -151,6 +151,7 @@ public class BarCodeUtil {
 	public static  Map<String,Object> EANBarcodeDec(String Barcode1, String Barcode2,Map<String,Object> result){
 		//条码正常
 		result.put("code","200");
+        result.put("msg","扫码成功");
 		//Barcode1 = 01XXXXXXXXXXXXXX17XXXXXX10XXXXXX   ,Barcode2 = 01XXXXXXXXXXXXXX17XXXXXX10XXXXXX
 		//Barcode1 = 01XXXXXXXXXXXXXX, Barcode2 = 17XXXXXX10XXXXXX
 		if (Barcode1.equals(Barcode2)){
@@ -512,6 +513,21 @@ public class BarCodeUtil {
 			expDate = tempMap.get("17");
 			expDate = "20" + expDate.substring(0, 2) + "-" + expDate.substring(2, 4) + "-" + expDate.substring(4, 6);  //   20YY-MM-DD
 			resultMap.put("expDate",expDate);
+            if(expDate!=null && !"".equals(expDate)){
+                long difDays = dateDiff(expDate);
+                //效期提醒时间
+                if (difDays < PdConstant.REMINDER_TIME){
+                    if (difDays < 0) {
+                        //产品过期
+                        resultMap.put("code","201");
+                        resultMap.put("msg","该产品已过期，禁止入库");
+                    }else{
+                        //近有效期
+                        resultMap.put("code","201");
+                        resultMap.put("msg","扫描成功.但请注意该产品的有效期!");
+                    }
+                }
+            }
 		}
 		return resultMap;
 	}
@@ -548,64 +564,64 @@ public class BarCodeUtil {
 	}
 
 	public static void main(String [] args  ){
+	    Map<String,Object> map = new HashMap<>();
 		//HIBC测试
-		scanCode("+J123123451","+122713C001L5");
-		scanCode("+J123123451/122713C001L5","+J123123451/122713C001L5");
-		scanCode("+J123123451","+$3C001LV");
-		scanCode("+J123123451/$3C001LV","+J123123451/$3C001LV");
-		scanCode("+J123123451","+$$02123C001LW");
-		scanCode("+J123123451/$$02123C001LW","+J123123451/$$02123C001LW");
-		scanCode("+J123123451","+$$12123C001LW");
-		scanCode("+J123123451/$$12123C001LW","+J123123451/$$12123C001LW");
-		scanCode("+J123123451","+$$20215123C001L/");
-		scanCode("+J123123451/$$20215123C001L/","+J123123451/$$20215123C001L/");
-		scanCode("+J123123451","+$$31202153C001L+");
-		scanCode("+J123123451/$$31202153C001L+","+J123123451/$$31202153C001L+");
-		scanCode("+J123123451","+$$4120216113C001L2");
-		scanCode("+J123123451/$$4120216113C001L2","+J123123451/$$4120216113C001L2");
-		scanCode("+J123123451","+$$5122713C001L2");
-		scanCode("+J123123451/$$5122713C001L2","+J123123451/$$5122713C001L2");
-		scanCode("+J123123451","+$$612271113C001L5 ");
-		scanCode("+J123123451/$$612271113C001L5 ","+J123123451/$$612271113C001L5 ");
-		scanCode("+J123123451","+$$73C001LY  ");
-		scanCode("+J123123451/$$73C001LY  ","+J123123451/$$73C001LY  ");
-		scanCode("+J123123451","+$$82402123C001L3  ");
-		scanCode("+J123123451/$$82402123C001L3  ","+J123123451/$$82402123C001L3  ");
-		scanCode("+J123123451","+$$82412123C001L3  ");
-		scanCode("+J123123451/$$82412123C001L3  ","+J123123451/$$82412123C001L3  ");
-		scanCode("+J123123451","+$$82420216123C001LC  ");
-		scanCode("+J123123451/$$82420216123C001LC  ","+J123123451/$$82420216123C001LC  ");
-		scanCode("+J123123451","+$$82431202163C001LD  ");
-		scanCode("+J123123451/$$82431202163C001LD  ","+J123123451/$$82431202163C001LD  ");
-		scanCode("+J123123451","+$$8244120216183C001LN  ");
-		scanCode("+J123123451/$$8244120216183C001LN  ","+J123123451/$$8244120216183C001LN  ");
-		scanCode("+J123123451","+$$8245122713C001LG  ");
-		scanCode("+J123123451/$$8245122713C001LG  ","+J123123451/$$8245122713C001LG  ");
-		scanCode("+J123123451","+$$824612271183C001LQ  ");
-		scanCode("+J123123451/$$824612271183C001LQ  ","+J123123451/$$824612271183C001LQ  ");
-		scanCode("+J123123451","+$$82473C001L5  ");
-		scanCode("+J123123451/$$82473C001L5  ","+J123123451/$$82473C001L5  ");
-		scanCode("+J123123451","+$$824LP  ");
-		scanCode("+J123123451/$$824LP  ","+J123123451/$$824LP  ");
-		scanCode("+J123123451","+$$90010009953C001LH  ");
-		scanCode("+J123123451/$$90010009953C001LH  ","+J123123451/$$90010009953C001LH  ");
-		scanCode("+J123123451","/$$31202153C001L+");
-		scanCode("+J123123451","+$$31202153C001L+");
-		scanCode("+J123123451/$$31202153C001L+","+J123123451/$$31202153C001L+");
-		scanCode("+A123BJC5D6E71G","+83278f8G9h0j2G");
+		scanCode("+J123123451","+122713C001L5",map);
+		scanCode("+J123123451/122713C001L5","+J123123451/122713C001L5",map);
+		scanCode("+J123123451","+$3C001LV",map);
+		scanCode("+J123123451/$3C001LV","+J123123451/$3C001LV",map);
+		scanCode("+J123123451","+$$02123C001LW",map);
+		scanCode("+J123123451/$$02123C001LW","+J123123451/$$02123C001LW",map);
+		scanCode("+J123123451","+$$12123C001LW",map);
+		scanCode("+J123123451/$$12123C001LW","+J123123451/$$12123C001LW",map);
+		scanCode("+J123123451","+$$20215123C001L/",map);
+		scanCode("+J123123451/$$20215123C001L/","+J123123451/$$20215123C001L/",map);
+		scanCode("+J123123451","+$$31202153C001L+",map);
+		scanCode("+J123123451/$$31202153C001L+","+J123123451/$$31202153C001L+",map);
+		scanCode("+J123123451","+$$4120216113C001L2",map);
+		scanCode("+J123123451/$$4120216113C001L2","+J123123451/$$4120216113C001L2",map);
+		scanCode("+J123123451","+$$5122713C001L2",map);
+		scanCode("+J123123451/$$5122713C001L2","+J123123451/$$5122713C001L2",map);
+		scanCode("+J123123451","+$$612271113C001L5 ",map);
+		scanCode("+J123123451/$$612271113C001L5 ","+J123123451/$$612271113C001L5 ",map);
+		scanCode("+J123123451","+$$73C001LY  ",map);
+		scanCode("+J123123451/$$73C001LY  ","+J123123451/$$73C001LY  ",map);
+		scanCode("+J123123451","+$$82402123C001L3  ",map);
+		scanCode("+J123123451/$$82402123C001L3  ","+J123123451/$$82402123C001L3  ",map);
+		scanCode("+J123123451","+$$82412123C001L3  ",map);
+		scanCode("+J123123451/$$82412123C001L3  ","+J123123451/$$82412123C001L3  ",map);
+		scanCode("+J123123451","+$$82420216123C001LC  ",map);
+		scanCode("+J123123451/$$82420216123C001LC  ","+J123123451/$$82420216123C001LC  ",map);
+		scanCode("+J123123451","+$$82431202163C001LD  ",map);
+		scanCode("+J123123451/$$82431202163C001LD  ","+J123123451/$$82431202163C001LD  ",map);
+		scanCode("+J123123451","+$$8244120216183C001LN  ",map);
+		scanCode("+J123123451/$$8244120216183C001LN  ","+J123123451/$$8244120216183C001LN  ",map);
+		scanCode("+J123123451","+$$8245122713C001LG  ",map);
+		scanCode("+J123123451/$$8245122713C001LG  ","+J123123451/$$8245122713C001LG  ",map);
+		scanCode("+J123123451","+$$824612271183C001LQ  ",map);
+		scanCode("+J123123451/$$824612271183C001LQ  ","+J123123451/$$824612271183C001LQ  ",map);
+		scanCode("+J123123451","+$$82473C001L5  ",map);
+		scanCode("+J123123451/$$82473C001L5  ","+J123123451/$$82473C001L5  ",map);
+		scanCode("+J123123451","+$$824LP  ",map);
+		scanCode("+J123123451/$$824LP  ","+J123123451/$$824LP  ",map);
+		scanCode("+J123123451","+$$90010009953C001LH  ",map);
+		scanCode("+J123123451/$$90010009953C001LH  ","+J123123451/$$90010009953C001LH  ",map);
+		scanCode("+J123123451","/$$31202153C001L+",map);
+		scanCode("+J123123451","+$$31202153C001L+",map);
+		scanCode("+J123123451/$$31202153C001L+","+J123123451/$$31202153C001L+",map);
+		scanCode("+A123BJC5D6E71G","+83278f8G9h0j2G",map);
 
-		System.out.println("===========================================================");
 		//GS1扫码测试
-		scanCode("01006139947416081719011421NWU092663G","01006139947416081719011421NWU092663G");
-		scanCode("010064316926546217191212100008918409","010064316926546217191212100008918409");
-		scanCode("010064316926540017191218100008926988","010064316926540017191218100008926988");
-		scanCode("01045473270852361721033130110180404A48A","01045473270852361721033130110180404A48A");
-		scanCode("01245473270618141720013130110170131K011","01245473270618141720013130110170131K011");
-		scanCode("0104987350625717","1720090010171011");
-		scanCode("0106936775502064","171807253011002160102");
-		scanCode("0104987350369116","1720070010170804");
-		scanCode("0108717648073854","17191231108011771");
-		scanCode("0106942180385123","17191201108512012891001");
+		scanCode("01006139947416081719011421NWU092663G","01006139947416081719011421NWU092663G",map);
+		scanCode("010064316926546217191212100008918409","010064316926546217191212100008918409",map);
+		scanCode("010064316926540017191218100008926988","010064316926540017191218100008926988",map);
+		scanCode("01045473270852361721033130110180404A48A","01045473270852361721033130110180404A48A",map);
+		scanCode("01245473270618141720013130110170131K011","01245473270618141720013130110170131K011",map);
+		scanCode("0104987350625717","1720090010171011",map);
+		scanCode("0106936775502064","171807253011002160102",map);
+		scanCode("0104987350369116","1720070010170804",map);
+		scanCode("0108717648073854","17191231108011771",map);
+		scanCode("0106942180385123","17191201108512012891001",map);
 		//System.out.println(getSubCount("+J123123451+$$90010009953C001LH++","+"));
 	}
 }

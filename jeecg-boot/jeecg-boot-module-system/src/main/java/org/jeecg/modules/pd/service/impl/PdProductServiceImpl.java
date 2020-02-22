@@ -107,6 +107,8 @@ public class PdProductServiceImpl extends ServiceImpl<PdProductMapper, PdProduct
             //查询产品是否存在
             PdProduct pdProduct = this.findByNumber(productNumber);
             if(pdProduct!=null){
+                result.setCode(200);
+                result.setMessage("成功");
                 //产品对象
                 resultMap.put("pdProduct",pdProduct);
                 String productBarCode;
@@ -126,7 +128,7 @@ public class PdProductServiceImpl extends ServiceImpl<PdProductMapper, PdProduct
                 resultMap.put("batchNo","");
                 //如果是HIB条码直接使用工具类解析，暂无条码规则
                 if(productBarCode.startsWith("+")){
-                    resultMap =  BarCodeUtil.scanCode(Barcode1,Barcode2);
+                    resultMap =  BarCodeUtil.scanCode(Barcode1,Barcode2,resultMap);
                 }else{
                     PdProductRule pdProductRule = new PdProductRule();
                     pdProductRule.setProductId(pdProduct.getId());
@@ -148,7 +150,6 @@ public class PdProductServiceImpl extends ServiceImpl<PdProductMapper, PdProduct
                         List<PdEncodingRuleDetail> pdEncodingRuleDetails = pdEncodingRuleDetailMapper.selectList(pdEncodingRuleDetail);
                         //如果编码和条码为同一条
                         if(productBarCode.length()==encodingRule.getTotalDigit()){
-                            result.setCode(200);
                             //完整条码根据扫码来
                             Map<String,String> tempMap = new HashMap<>();
                             String temp = productBarCode;
@@ -176,6 +177,8 @@ public class PdProductServiceImpl extends ServiceImpl<PdProductMapper, PdProduct
                                     temp = temp.substring(value.length(),tempLength);
                                 }
                             }
+                            resultMap.put("code","200");
+                            resultMap.put("msg","扫码成功");
                             //解析产品编号，批号，有效期
                             resultMap = BarCodeUtil.getProductNumber(resultMap,tempMap);
                             resultMap = BarCodeUtil.getProductBatchNo(resultMap,tempMap);
@@ -186,7 +189,7 @@ public class PdProductServiceImpl extends ServiceImpl<PdProductMapper, PdProduct
                         }
                     }else{
                         //没有绑定扫码规则 使用条码规则进行扫码
-                        resultMap =  BarCodeUtil.scanCode(Barcode1,Barcode2);
+                        resultMap =  BarCodeUtil.scanCode(Barcode1,Barcode2,resultMap);
                     }
                 }
             }else{

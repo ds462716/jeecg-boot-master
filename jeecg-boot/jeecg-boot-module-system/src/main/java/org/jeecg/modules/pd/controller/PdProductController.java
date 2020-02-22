@@ -324,10 +324,9 @@ public class PdProductController extends JeecgController<PdProduct, IPdProductSe
 		Result<Map> result = new Result<Map>();
 		try{
 			result = pdProductService.getScanCode(Barcode1,Barcode2,result);
-			result.setSuccess(true);
 		}catch(Exception e){
 			log.error(e.getMessage(), e);
-			result.setSuccess(false);
+			result.setCode(500);
 			result.setMessage("系统异常");
 		}
 		return result;
@@ -335,7 +334,8 @@ public class PdProductController extends JeecgController<PdProduct, IPdProductSe
 
 	 /**
 	  * 条码解析并查询库存
-	  * @param productBarCode
+	  * @param Barcode1
+	  * @param Barcode2
 	  * @param req
 	  * @return
 	  */

@@ -16,16 +16,15 @@ export async function scanCode(Barcode1, Barcode2,that){
   formData.append("Barcode2",Barcode2);
   let result = {};
   result.code = "500";
-  result.msg = "系统异常";
   let res = await httpAction(url,formData,"post");
-    if(res.success){
-      result = res.result;
-    }else{
-      //系统报错
-      that.$message.error(res.message );
-    }
-    console.log(result);
-    return result;
+  if(res.code==200){
+    result = res.result;
+  }else{
+   //系统报错
+    that.$message.error(res.message );
+  }
+  console.log(result);
+  return result;
 }
 
 /**
