@@ -109,7 +109,7 @@ public class PdProductServiceImpl extends ServiceImpl<PdProductMapper, PdProduct
             //查询产品是否存在
             PdProduct pdProduct = this.findByNumber(productNumber);
             if(pdProduct!=null){
-                result.setCode(MessageConstant.ICODE_STATE_500);
+                result.setCode(MessageConstant.ICODE_STATE_200);
                 result.setMessage(MessageConstant.CODE_MESSAGE_2);
                 //产品对象
                 resultMap.put("pdProduct",pdProduct);
