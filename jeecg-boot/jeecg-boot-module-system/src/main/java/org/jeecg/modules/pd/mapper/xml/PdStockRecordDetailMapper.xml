@@ -1,16 +1,117 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.jeecg.modules.pd.mapper.PdStockRecordDetailMapper">
+	<sql id="PdStockRecordDetailColumns">
+        a.id,
+        a.record_id,
+        a.product_id,
+        a.product_bar_code,
+        a.huoqu_id,
+        a.huowei_id,
+        a.batch_no,
+        a.product_num,
+        IFNULL(a.selling_price,0) as sellingPrice,
+        IFNULL(a.purchase_price,0) as purchasePrice,
+        a.product_num * IFNULL(a.purchase_price,0) as pdTotalPrice,
+        a.product_num * IFNULL(a.selling_price,0) as pdOutTotalPrice,
+        a.limit_date,
+        a.package_id,
+        a.high_low_supplies,
+        a.import_no,
+        a.remarks,
+        a.sys_org_code,
+		a.create_by,
+		a.create_time,
+		a.update_by,
+		a.update_time
+	</sql>
+
+	<sql id="PdStockRecordDetailJoins">
+	</sql>
+
+	<!-- 单位 -->
+	<sql id="pdUnitColumns">
+        b.name AS "unitName"
+    </sql>
+
+	<sql id="pdUnitJoins">
+        LEFT JOIN pd_unit b ON c.unit_id = b.id
+    </sql>
+
+	<!--产品-->
+	<sql id="pdProductColumns">
+        c.number as "number",
+        c.name as "productName",
+        c.spec as "spec",
+        c.version as "version",
+        c.registration as "registration"
+	</sql>
+	<sql id="pdProductJoins">
+        LEFT JOIN pd_product c ON c.id = a.product_id
+    </sql>
+
+	<!-- 生产厂家 -->
+	<sql id="pdVenderColumns">
+      e.name AS "venderName"
+    </sql>
+	<sql id="pdVenderJoins">
+      left join pd_vender e on c.vender_id = e.id
+    </sql>
+
+	<!-- 出入库主表 -->
+	<sql id="PdStockRecordColumns">
+      g.record_date AS "recordDate",
+      g.record_type AS "recordType"
+    </sql>
+	<sql id="PdStockRecordJoins">
+      LEFT JOIN pd_stock_record g ON g.id = a.record_id
+    </sql>
+
 
 	<delete id="deleteByMainId" parameterType="java.lang.String">
-		DELETE 
-		FROM  pd_stock_record_detail 
+		DELETE
+		FROM  pd_stock_record_detail
 		WHERE
 			 record_id = #{mainId} 	</delete>
-	
+
 	<select id="selectByMainId" parameterType="java.lang.String" resultType="org.jeecg.modules.pd.entity.PdStockRecordDetail">
-		SELECT * 
+		SELECT *
 		FROM  pd_stock_record_detail
 		WHERE
 			 record_id = #{mainId} 	</select>
+
+
+	<!-- 入库明细列表查询 -->
+	<select id="selectList" resultType="org.jeecg.modules.pd.entity.PdStockRecordDetail">
+		SELECT
+		<include refid="PdStockRecordDetailColumns"/>,
+		<include refid="pdUnitColumns"/>,
+		<include refid="pdProductColumns"/>,
+		<include refid="pdVenderColumns"/>,
+		<include refid="PdStockRecordColumns"/>,
+ 		(select r.depart_name from sys_depart r where r.id=g.in_depart_id) AS "inDeptName",
+		(select r.depart_name from sys_depart r where r.id=g.out_depart_id) AS "outDeptName"
+		FROM pd_stock_record_detail a
+		<include refid="PdStockRecordDetailJoins"/>
+		<include refid="PdStockRecordJoins"/>
+		<include refid="pdProductJoins"/>
+		<include refid="pdUnitJoins"/>
+		<include refid="pdVenderJoins"/>
+ 		<where>
+			a.del_flag =#{DEL_FLAG_NORMAL}
+			<if test="id != null and id != ''">
+				AND a.id = #{id}
+			</if>
+			<if test="recordState != null and recordState != ''">
+				AND g.record_state = #{recordState}
+			</if>
+			<if test="productId != null and productId != ''">
+				AND a.product_id = #{productId}
+			</if>
+			<if test="deptId != null and deptId != ''">
+				AND ((g.record_type = '0' AND g.out_depart_id = #{deptId})
+				OR (g.record_type = '1' AND g.in_depart_id =#{deptId}))
+			</if>
+		</where>
+	</select>
 </mapper>

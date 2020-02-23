@@ -11,9 +11,9 @@
     </template>
     <div class="numberWARAP">
       <div class="total">入库总数量：<span id="totalNum">{{this.validatorRules.productTotNum}}</span></div>
-      <div class="nearTime">入库总金额：<span id="nearNum">{{this.validatorRules.purchasePrice}}</span></div>
+      <div class="nearTime">入库总金额：<span id="nearNum">{{this.validatorRules.inPrice}}</span></div>
       <div class="overTime">出库总数量：<span id="overNum">{{this.validatorRules.productOutTotNum}}</span></div>
-      <div class="overMomy">出库总金额：<span id="overMomy">{{this.validatorRules.sellingPrice}}</span></div>
+      <div class="overMomy">出库总金额：<span id="overMomy">{{this.validatorRules.outPrice}}</span></div>
     </div>
     <a-spin :spinning="confirmLoading">
       <!-- 查询区域 -->
@@ -77,8 +77,8 @@
         validatorRules: {
           productTotNum:{},//入库总数量
           productOutTotNum:{},//出库总数量
-          purchasePrice:{},//入库总金额
-          sellingPrice:{},//出库总金额
+          inPrice:{},//入库总金额
+          outPrice:{},//出库总金额
         },
         confirmLoading: false,
         // 表头
@@ -91,7 +91,7 @@
           {
             title:'产品编号',
             align:"center",
-            dataIndex: 'productNo'
+            dataIndex: 'number'
           },
           {
             title:'规格',
@@ -121,7 +121,14 @@
           {
             title:'出入库类型',
             align:"center",
-            dataIndex: 'recordType'
+            dataIndex: 'recordType',
+            customRender:(text)=>{
+              if(!text){
+                return ''
+              }else{
+                return filterMultiDictText(this.dictOptions['recordType'], text+"")
+              }
+            }
           },
           {
             title:'数量',
@@ -136,7 +143,7 @@
           {
             title:'入库金额',
             align:"center",
-            dataIndex: 'sellingPrice'
+            dataIndex: 'pdTotalPrice'
           },
           {
             title: '出库单价',
@@ -146,22 +153,25 @@
           {
             title:'出库金额',
             align:"center",
-            dataIndex: 'stockNum'
+            dataIndex: 'pdOutTotalPrice'
           },
           {
             title:'入库科室',
             align:"center",
-            dataIndex: 'inDepaetId'
+            dataIndex: 'inDeptName'
           },
           {
             title:'出库科室',
             align:"center",
-            dataIndex: 'outDepartId'
+            dataIndex: 'outDeptName'
           },
           {
             title:'出入库时间',
             align:"center",
-            dataIndex: 'recordDate'
+            dataIndex: 'recordDate',
+            customRender:function (text) {
+              return !text?"":(text.length>10?text.substr(0,10):text)
+            }
           },
           {
             title:'生产厂家',
@@ -179,8 +189,7 @@
           list: "/pd/pdProductStockTotal/stockInAndOutRecordDetailQuery",
         },
         dictOptions:{
-          pdState:[],
-          isLong:[],
+          recordType:[],
         },
       }
     },
@@ -204,8 +213,8 @@
           if (res.success) {
             this.validatorRules.productTotNum=res.result.productTotNum;
             this.validatorRules.productOutTotNum=res.result.productOutTotNum;
-            this.validatorRules.purchasePrice=res.result.purchasePrice;
-            this.validatorRules.sellingPrice=res.result.sellingPrice;
+            this.validatorRules.inPrice=res.result.inPrice;
+            this.validatorRules.outPrice=res.result.outPrice;
             this.dataSource = res.result.page.records;
             this.ipagination.total = res.result.page.total;
           }
@@ -244,16 +253,12 @@
       },
 
       initDictConfig(){ //静态字典值加载
-        initDictOptions('pd_state').then((res) => { //是否过期字典转换
+        initDictOptions('stock_record_type').then((res) => { //出入库类型
           if (res.success) {
-            this.$set(this.dictOptions, 'pdState', res.result)
+            this.$set(this.dictOptions, 'recordType', res.result)
           }
         })
-        initDictOptions('pd_isLong').then((res) => {
-          if (res.success) {
-            this.$set(this.dictOptions, 'isLong', res.result)
-          }
-        })
+
       }
     }
   }

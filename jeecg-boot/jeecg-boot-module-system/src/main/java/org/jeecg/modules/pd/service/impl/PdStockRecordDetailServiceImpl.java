@@ -1,5 +1,7 @@
 package org.jeecg.modules.pd.service.impl;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import org.jeecg.modules.pd.entity.PdPurchaseOrder;
 import org.jeecg.modules.pd.entity.PdStockRecordDetail;
 import org.jeecg.modules.pd.mapper.PdStockRecordDetailMapper;
 import org.jeecg.modules.pd.service.IPdStockRecordDetailService;
@@ -23,5 +25,20 @@ public class PdStockRecordDetailServiceImpl extends ServiceImpl<PdStockRecordDet
 	@Override
 	public List<PdStockRecordDetail> selectByMainId(String mainId) {
 		return pdStockRecordDetailMapper.selectByMainId(mainId);
+	}
+
+	/**
+	 * 查询列表
+	 * @param page
+	 * @param pdStockRecordDetail
+	 * @return
+	 */
+	@Override
+	public Page<PdStockRecordDetail> selectList(Page<PdStockRecordDetail> page, PdStockRecordDetail pdStockRecordDetail) {
+		return page.setRecords(pdStockRecordDetailMapper.selectList(pdStockRecordDetail));
+	}
+	@Override
+	public List<PdStockRecordDetail> queryPdStockRecordDetail(PdStockRecordDetail pdStockRecordDetail) {
+		return pdStockRecordDetailMapper.selectList(pdStockRecordDetail);
 	}
 }

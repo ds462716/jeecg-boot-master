@@ -2,12 +2,15 @@ package org.jeecg.modules.pd.entity;
 
 import java.io.Serializable;
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.jeecgframework.poi.excel.annotation.Excel;
+
+import java.math.BigDecimal;
 import java.util.Date;
 
 /**
@@ -101,4 +104,39 @@ public class PdStockRecordDetail extends BaseEntity {
 	/**所属父部门*/
 	@Excel(name = "所属父部门", width = 15)
 	private String sysOrgParentCode;
+
+
+    /*不是明细表字段*/
+	@TableField(exist = false)
+	private String productName;//产品名称
+	@TableField(exist = false)
+	private String number;//产品编号
+	@TableField(exist = false)
+	private String spec;//产品规格
+	@TableField(exist = false)
+	private String version;//产品型号
+	@TableField(exist = false)
+	private String unitName;//单位名称
+	@TableField(exist = false)
+	private String venderName;//生产厂家名称
+	@TableField(exist = false)
+	private String registration;//注册证号
+	@TableField(exist = false)
+	private String inDeptName;//入库科室名称
+	@TableField(exist = false)
+	private String outDeptName;//出库科室名称
+	@TableField(exist = false)
+	@JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd HH:mm:ss")
+	@DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
+	private Date recordDate;//出入库时间
+	@TableField(exist = false)
+	private String recordType;//出入库类型
+	@TableField(exist = false)
+	private BigDecimal pdOutTotalPrice;//出库金额
+	@TableField(exist = false)
+	private  BigDecimal pdTotalPrice;//入库金额
+	@TableField(exist = false)
+	private String recordState;//记录状态
+	@TableField(exist = false)
+	private String deptId;//科室ID
 }

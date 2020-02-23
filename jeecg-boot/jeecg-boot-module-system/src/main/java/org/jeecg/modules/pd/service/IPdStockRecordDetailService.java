@@ -1,5 +1,7 @@
 package org.jeecg.modules.pd.service;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import org.jeecg.modules.pd.entity.PdPurchaseOrder;
 import org.jeecg.modules.pd.entity.PdStockRecordDetail;
 import com.baomidou.mybatisplus.extension.service.IService;
 import java.util.List;
@@ -13,4 +15,12 @@ import java.util.List;
 public interface IPdStockRecordDetailService extends IService<PdStockRecordDetail> {
 
 	public List<PdStockRecordDetail> selectByMainId(String mainId);
+
+	Page<PdStockRecordDetail> selectList(Page<PdStockRecordDetail> pageList, PdStockRecordDetail pdStockRecordDetail);
+	/**
+	 * 通过条件查询出入库明细
+	 * @param pdStockRecordDetail
+	 * @return
+	 */
+	public List<PdStockRecordDetail> queryPdStockRecordDetail(PdStockRecordDetail pdStockRecordDetail);
 }

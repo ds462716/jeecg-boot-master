@@ -232,27 +232,26 @@ public class PdProductStockTotalController {
 											 HttpServletRequest req) {
 
 		 Page<PdStockRecordDetail> page = new Page<PdStockRecordDetail>(pageNo, pageSize);
-		 //page = pdStockRecordDetailService.stockInAndOutRecordDetailQueryForPage(page,stockTotalPage);
+		 PdStockRecordDetail pdStockRecordDetail=new PdStockRecordDetail();
+		 pdStockRecordDetail.setProductId(stockTotalPage.getProductId());
+		 pdStockRecordDetail.setRecordState("1");
+		 pdStockRecordDetail.setDeptId(stockTotalPage.getDeptId());
+		 page = pdStockRecordDetailService.selectList(page,pdStockRecordDetail);
 		 Double productTotNum = 0.00;//入库总数量
 		 Double productOutTotNum = 0.00;//出库总数量
 		 BigDecimal inPrice = new BigDecimal(0);//入库总金额
 		 BigDecimal outPrice = new BigDecimal(0);//出库总金额
-
-		 List<PdStockRecordDetail> list =null;// pdStockRecordDetailService.stockInAndOutRecordDetailQuery(stockTotalPage);
+		 List<PdStockRecordDetail> list = pdStockRecordDetailService.queryPdStockRecordDetail(pdStockRecordDetail);
 		 if(list != null && list.size() > 0){
-			/* for (PdStockRecordDetail item : list) {
-					 if(PdConstant.STOCK_RECORD_TYPE_IN.equals(item.getRecodeType())){
-					 productTotNum += item.getProductNum();
-					 if(item.getInPrice() != null){
-						 inPrice = inPrice.add(item.getInPrice());
-					 }
-				 }else if(PdConstant.STOCK_RECORD_TYPE_OUT.equals(item.getRecodeType())){
-					 productOutTotNum += item.getProductNum();
-					 if(item.getOutPrice() != null){
-						 outPrice = outPrice.add(item.getOutPrice());
-					 }
-				 }
-			 }*/
+			   for (PdStockRecordDetail item : list) {
+				   outPrice=outPrice.add(item.getPdOutTotalPrice());
+				   inPrice=inPrice.add(item.getPdTotalPrice());
+				   if(PdConstant.STOCK_RECORD_TYPE_IN.equals(item.getRecordType())){//入库
+					   productTotNum+=item.getProductNum();
+				   }else if(PdConstant.STOCK_RECORD_TYPE_OUT.equals(item.getRecordType())){//出库
+					   productOutTotNum+=item.getProductNum();
+				   }
+			  }
 		 }
 
 		 Map map=new HashMap();
