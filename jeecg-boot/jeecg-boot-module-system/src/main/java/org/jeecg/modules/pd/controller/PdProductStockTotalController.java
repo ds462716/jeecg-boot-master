@@ -174,23 +174,23 @@ public class PdProductStockTotalController {
 	 /**
 	  * 分页查询库存明细信息  mcb  --20200217   用于库存管理查询库存明细信息
 	  *
-	  * @param stockTotalPage
+	  * @param productStock
 	  * @param pageNo
 	  * @param pageSize
 	  * @param req
 	  * @return
 	  */
 	 @GetMapping(value = "/chooseProductStockList")
-	 public Result<?> chooseProductStockList(PdProductStockTotalPage stockTotalPage,
+	 public Result<?> chooseProductStockList(PdProductStock productStock,
 									@RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
 									@RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
 									HttpServletRequest req) {
 
 		 Page<PdProductStock> page = new Page<PdProductStock>(pageNo, pageSize);
-		 page = pdProductStockService.selectList(page,stockTotalPage);
+		 page = pdProductStockService.selectList(page,productStock);
 		 //计算总库存数量，近效期数量，过期数量等值；
 		 //**************************
-		 List<PdProductStock> aList = pdProductStockService.findListForQuery(stockTotalPage);
+		 List<PdProductStock> aList = pdProductStockService.selectList(productStock);
 		 Double gCount=0.00;//过期数量
 		 Double jCount=0.00;//近效期数量
 		 Double pCount=0.00;//总数量
@@ -268,19 +268,19 @@ public class PdProductStockTotalController {
 	 /**
 	  * 分页查询库存明细信息  mcb  --20200217   用于统计查询库存明细信息
 	  *
-	  * @param stockTotalPage
+	  * @param productStock
 	  * @param pageNo
 	  * @param pageSize
 	  * @param req
 	  * @return
 	  */
 	 @GetMapping(value = "/queryList")
-	 public Result<?> queryList(PdProductStockTotalPage stockTotalPage,
+	 public Result<?> queryList(PdProductStock productStock,
 											 @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
 											 @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
 											 HttpServletRequest req) {
 		 Page<PdProductStock> page = new Page<PdProductStock>(pageNo, pageSize);
-		 page = pdProductStockService.selectList(page,stockTotalPage);
+		 page = pdProductStockService.selectList(page,productStock);
 		 return Result.ok(page);
 	 }
 

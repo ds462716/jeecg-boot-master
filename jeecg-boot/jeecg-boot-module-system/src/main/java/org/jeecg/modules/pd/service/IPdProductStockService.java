@@ -20,15 +20,10 @@ public interface IPdProductStockService extends IService<PdProductStock> {
 	/**
 	 * 分页查询
 	 * @param pageList
-	 * @param stockTotalPage
+	 * @param productStock
 	 * @return
 	 */
-	Page<PdProductStock> selectList(Page<PdProductStock> pageList, PdProductStockTotalPage stockTotalPage);
-	/**
-	 * 查询不分页
-	 */
-	List<PdProductStock> findListForQuery(PdProductStockTotalPage stockTotalPage);
-
+	Page<PdProductStock> selectList(Page<PdProductStock> pageList, PdProductStock productStock);
 
 	public List<PdProductStock> selectByMainId(String mainId);
 

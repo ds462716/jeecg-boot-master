@@ -32,9 +32,7 @@ public class QuartPdStockLongJob implements Job {
          *
          */
         log.info("-------------------更新久存状态开始-------------------");
-
-        PdProductStockTotalPage stockTotalPage = new PdProductStockTotalPage();
-        List<PdProductStock> list = pdProductStockService.findListForQuery(stockTotalPage);
+        List<PdProductStock> list = pdProductStockService.selectList(new PdProductStock());
         Map<String, Set<String>> m=new HashMap<String, Set<String>>();
         for (PdProductStock pdProductStock : list) {
             PdProductStock pd=new PdProductStock();
@@ -82,10 +80,10 @@ public class QuartPdStockLongJob implements Job {
             String deptId = iter.next();
             Set<String> set = m.get(deptId);
             for (String pid : set) {
-                PdProductStockTotalPage totalPage = new PdProductStockTotalPage();
-                totalPage.setDeptId(deptId);
-                totalPage.setProductId(pid);
-                List<PdProductStock> l = pdProductStockService.findListForQuery(totalPage);
+                PdProductStock productStock = new PdProductStock();
+                productStock.setDeptId(deptId);
+                productStock.setProductId(pid);
+                List<PdProductStock> l = pdProductStockService.selectList(productStock);
                 PdProductStock pk = l.get(0);
                 PdProductStockTotal stockTotal = new PdProductStockTotal();
                 stockTotal.setExpStatus(pk.getExpStatus());

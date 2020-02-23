@@ -29,17 +29,12 @@ public class PdProductStockServiceImpl extends ServiceImpl<PdProductStockMapper,
 	/**
 	 * 查询列表
 	 * @param page
-	 * @param stockTotalPage
+	 * @param productStock
 	 * @return
 	 */
 	@Override
-	public Page<PdProductStock> selectList(Page<PdProductStock> page, PdProductStockTotalPage stockTotalPage) {
-		return page.setRecords(pdProductStockMapper.selectList(stockTotalPage));
-	}
-
-	@Override
-	public List<PdProductStock> findListForQuery(PdProductStockTotalPage stockTotalPage) {
-		return pdProductStockMapper.selectList(stockTotalPage);
+	public Page<PdProductStock> selectList(Page<PdProductStock> page, PdProductStock productStock) {
+		return page.setRecords(pdProductStockMapper.selectList(productStock));
 	}
 
 	@Override
