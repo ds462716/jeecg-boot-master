@@ -46,6 +46,9 @@ public class PdProductPage extends PdProduct {
 
     /** 采购总价格 **/
     private BigDecimal price;
+
+    /** 产品库存数量 **/
+    private Double stockNum;
     //-------end 用于采购弹出框显示产品明细
 }
 
