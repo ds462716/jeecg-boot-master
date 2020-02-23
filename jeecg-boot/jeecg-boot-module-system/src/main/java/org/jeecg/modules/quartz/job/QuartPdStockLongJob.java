@@ -40,16 +40,15 @@ public class QuartPdStockLongJob implements Job {
             Integer remind = 7;//久存期提醒
             Date validDate = pdProductStock.getExpDate();
             Date ndate = new Date();
-            if((!DateUtils.isSameDay(ndate,validDate))&&ndate.after(validDate)){//过期
-                pd.setExpStatus(PdConstant.PD_STATE_2);
+            if((!DateUtils.isSameDay(ndate,validDate))&&ndate.after(validDate)){//否
+                pd.setIsLong(PdConstant.IS_LONG_0);
             }
-            Date afterMonthDate = DateUtils.getDateToAddDate(validDate, remind);
+           /* Date afterMonthDate = DateUtils.getDateToAddDate(validDate, remind);
             if((ndate.before(validDate)&&ndate.after(afterMonthDate))||(DateUtils.isSameDay(ndate,validDate)||DateUtils.isSameDay(ndate,afterMonthDate))){//近效期
                 pd.setExpStatus(PdConstant.PD_STATE_1);
-            }
-
-            String pdState = pd.getExpStatus();
-            if(StringUtils.isNotEmpty(pdState) && !PdConstant.PD_STATE_0.equals(pdState)){
+            }*/
+            String isLong = pd.getIsLong();
+            if(StringUtils.isNotEmpty(isLong) && !PdConstant.IS_LONG_0.equals(isLong)){
                 pd.setId(pdProductStock.getId());
                 pd.setDeptId(deptId);
                 pdProductStockService.updateProductStock(pd);
@@ -86,7 +85,7 @@ public class QuartPdStockLongJob implements Job {
                 List<PdProductStock> l = pdProductStockService.selectList(productStock);
                 PdProductStock pk = l.get(0);
                 PdProductStockTotal stockTotal = new PdProductStockTotal();
-                stockTotal.setExpStatus(pk.getExpStatus());
+                stockTotal.setIsLong(pk.getIsLong());
                 stockTotal.setProductId(pid);
                 stockTotal.setDeptId(deptId);
                 pdProductStockTotalService.updateProductStockTotal(stockTotal);

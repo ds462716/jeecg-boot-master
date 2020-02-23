@@ -10,11 +10,14 @@ import org.jeecg.modules.message.entity.SysMessageTemplate;
 import org.jeecg.modules.message.handle.enums.SendMsgStatusEnum;
 import org.jeecg.modules.message.service.ISysMessageService;
 import org.jeecg.modules.message.service.ISysMessageTemplateService;
+import org.jeecg.modules.message.websocket.WebSocket;
 import org.jeecg.modules.system.entity.SysAnnouncement;
 import org.jeecg.modules.system.service.ISysAnnouncementService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import com.alibaba.fastjson.JSONObject;
+
+import javax.annotation.Resource;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -33,6 +36,8 @@ public class PushMsgUtil {
     private ISysMessageTemplateService sysMessageTemplateService;
     @Autowired
     private ISysAnnouncementService sysAnnouncementService;
+    @Resource
+    private WebSocket webSocket;
 
     /**
      * @param msgType      消息类型 1短信 2邮件 3微信
@@ -79,11 +84,13 @@ public class PushMsgUtil {
         Map<String,String> map =MapUtils.getMap(params,"map");
         String templateCode=MapUtils.getString(params,"templateCode");//purchase_submitMsg
         String userIds=MapUtils.getString(params,"userIds");
+        String title ="";
         List<SysMessageTemplate> sysSmsTemplates = sysMessageTemplateService.selectByCode(templateCode);
+        SysAnnouncement sysAnnouncement = new SysAnnouncement();
         if (sysSmsTemplates.size() > 0) {
             SysMessageTemplate sysSmsTemplate = sysSmsTemplates.get(0);
             //模板标题
-            String title = sysSmsTemplate.getTemplateName();
+             title = sysSmsTemplate.getTemplateName();
             //模板内容
             String content = sysSmsTemplate.getTemplateContent();
             if (map != null) {
@@ -93,7 +100,6 @@ public class PushMsgUtil {
                     content = content.replace(str, entry.getValue());
                 }
             }
-                SysAnnouncement sysAnnouncement = new SysAnnouncement();
                 sysAnnouncement.setTitile(title);//标题
                 sysAnnouncement.setMsgContent(content);//内容
                 sysAnnouncement.setUserIds(userIds);//接收用户Id
@@ -106,7 +112,13 @@ public class PushMsgUtil {
                 sysAnnouncement.setDelFlag(CommonConstant.DEL_FLAG_0.toString());
                 sysAnnouncement.setSendStatus(CommonSendStatus.PUBLISHED_STATUS_1);//发布状态（0未发布，1已发布，2已撤销）
                 sysAnnouncementService.saveAnnouncement(sysAnnouncement);
-        }
+            String[] userIdList = userIds.substring(0, (userIds.length()-1)).split(",");
+            JSONObject obj = new JSONObject();
+            obj.put("cmd", "user");
+            obj.put("msgId", sysAnnouncement.getId());
+            obj.put("msgTxt",title);
+            webSocket.sendMoreMessage(userIdList, obj.toJSONString());
+           }
         return false;
     }
 }
