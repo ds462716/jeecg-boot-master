@@ -348,7 +348,9 @@
             b.name as unitName,
             c.name as venderName,
             d.name as supplierName,
-            e.stock_num as stockNum
+        case when e.stock_num is null then '0'
+        when e.stock_num is not null then
+        e.stock_num end as stockNum
         <if test="orderNo != null and orderNo != ''">
             ,e.order_no as orderNo
         </if>
