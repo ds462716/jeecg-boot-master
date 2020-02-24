@@ -91,11 +91,11 @@ public interface PdConstant {
 
 
 
-	/**开关-是否允许入库量大于订单量**/
+	/**开关-是否允许入库量大于订单量 add by jiangxz 20200222 **/
 	public final static String ON_OFF_ALLOW_IN_MORE_ORDER = "on_off_allow_in_more_order"; //数据字典 code
 	public final static String ON_OFF_ALLOW_IN_MORE_ORDER_0 = "0"; // 0-不允许入库量大于订单量
 	public final static String ON_OFF_ALLOW_IN_MORE_ORDER_1 = "1"; // 1-允许入库量大于订单量
-	/**开关-是否允许入库非订单产品**/
+	/**开关-是否允许入库非订单产品 add by jiangxz 20200222 **/
 	public final static String ON_OFF_ALLOW_NOT_ORDER_PRODUCT = "on_off_allow_not_order_product"; //数据字典 code
 	public final static String ON_OFF_ALLOW_NOT_ORDER_PRODUCT_0 = "0"; // 0-不允许非订单产品
 	public final static String ON_OFF_ALLOW_NOT_ORDER_PRODUCT_1 = "1"; // 1-允许非订单产品
