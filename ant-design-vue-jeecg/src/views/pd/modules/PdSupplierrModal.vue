@@ -3,8 +3,9 @@
     :title="title"
     :width="width"
     placement="right"
-    :closable="false"
+    :closable="true"
     @close="close"
+    :maskClosable=disableSubmit
     :visible="visible">
   
     <a-spin :spinning="confirmLoading">

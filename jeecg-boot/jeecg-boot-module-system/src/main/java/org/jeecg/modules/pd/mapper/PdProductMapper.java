@@ -18,5 +18,4 @@ public interface PdProductMapper extends BaseMapper<PdProduct> {
 
     List<PdProduct> selectList(PdProduct pdProduct);
 
-    PdProduct findByNumber(String productNumber);
 }

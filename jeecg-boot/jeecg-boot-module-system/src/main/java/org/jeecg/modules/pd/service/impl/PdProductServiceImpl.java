@@ -1,5 +1,6 @@
 package org.jeecg.modules.pd.service.impl;
 
+import com.aliyuncs.regions.ProductDomain;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.MessageConstant;
@@ -86,11 +87,6 @@ public class PdProductServiceImpl extends ServiceImpl<PdProductMapper, PdProduct
 
     }
 
-    //根据编号查询产品信息
-    public PdProduct findByNumber(String productNumber) {
-        return pdProductMapper.findByNumber(productNumber);
-    }
-
     /**
      * 条码规则解析
      * @param Barcode1
@@ -106,9 +102,12 @@ public class PdProductServiceImpl extends ServiceImpl<PdProductMapper, PdProduct
         if(Barcode1 != null && !"".equals(Barcode1) && Barcode2 != null && !"".equals(Barcode2) ){
             //获得产品编号
             String productNumber = BarCodeUtil.getPrdNumber(Barcode1);
+            PdProduct pdProduct = new PdProduct();
+            pdProduct.setNumber(productNumber);
             //查询产品是否存在
-            PdProduct pdProduct = this.findByNumber(productNumber);
-            if(pdProduct!=null){
+            List<PdProduct> pdProducts = pdProductMapper.selectList(pdProduct);
+            if(pdProducts!=null && pdProducts.size()>0){
+                pdProduct = pdProducts.get(0);
                 result.setCode(MessageConstant.ICODE_STATE_200);
                 result.setMessage(MessageConstant.CODE_MESSAGE_2);
                 //产品对象
@@ -222,9 +221,12 @@ public class PdProductServiceImpl extends ServiceImpl<PdProductMapper, PdProduct
         if(Barcode1 != null && !"".equals(Barcode1) && Barcode2 != null && !"".equals(Barcode2) ){
             //获得产品编号
             String productNumber = BarCodeUtil.getPrdNumber(Barcode1);
+            PdProduct pdProduct = new PdProduct();
+            pdProduct.setNumber(productNumber);
             //查询产品是否存在
-            PdProduct pdProduct = this.findByNumber(productNumber);
-            if(pdProduct!=null){
+           List<PdProduct> pdProducts = pdProductMapper.selectList(pdProduct);
+            if(pdProducts!=null && pdProducts.size()>0){
+                pdProduct = pdProducts.get(0);
                 String productBarCode;
                 //产品条码修正
                 if(Barcode1.indexOf(Barcode2) != -1){

@@ -3,7 +3,8 @@
     :title="title"
     :width="width"
     placement="right"
-    :closable="false"
+    :closable="true"
+    :maskClosable=disableSubmit
     @close="close"
     :visible="visible">
   

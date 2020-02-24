@@ -129,21 +129,13 @@
         // 表头
         columns: [
           {
-            title: '#',
-            dataIndex: '',
-            key:'rowIndex',
-            width:60,
+            title:'名称',
             align:"center",
-            customRender:function (t,r,index) {
-              return parseInt(index)+1;
-            }
+            dataIndex: 'name',
+            width:120,
           },
-          {
-            title:'编码名称',
-            align:"center",
-            dataIndex: 'name'
-          },
-          {
+          //内容过多  表格很丑
+          /*{
             title:'拼音简码',
             align:"center",
             dataIndex: 'py'
@@ -157,7 +149,7 @@
             title:'自定义查询码',
             align:"center",
             dataIndex: 'zdy'
-          },
+          },*/
           {
             title:'规则详情',
             align:"center",
@@ -166,7 +158,8 @@
           {
             title:'规则描述',
             align:"center",
-            dataIndex: 'codeDesc'
+            dataIndex: 'codeDesc',
+            width:120,
           },
           {
             title:'规则简码',
@@ -187,6 +180,7 @@
             title: '操作',
             dataIndex: 'action',
             align:"center",
+            width:120,
             scopedSlots: { customRender: 'action' }
           }
         ],

@@ -3,9 +3,10 @@
     :title="title"
     :width="drawerWidth"
     placement="right"
-    :closable="false"
+    :closable="true"
     @close="close"
     :visible="visible"
+    :maskClosable=disableSubmit
     :wrapStyle="{height: 'calc(100% - 108px)',overflow: 'auto',paddingBottom: '108px'}"
   >
     <a-spin :spinning="confirmLoading">

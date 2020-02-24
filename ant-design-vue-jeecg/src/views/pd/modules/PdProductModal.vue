@@ -5,9 +5,9 @@
     placement="right"
     :closable="true"
     @close="close"
-    :maskClosable="false"
+    :maskClosable=disableSubmit
     :visible="visible">
-  
+
     <a-spin :spinning="confirmLoading">
       <a-form :form="form">
 
