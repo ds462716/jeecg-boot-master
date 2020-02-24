@@ -5,7 +5,7 @@
     placement="right"
     :closable="false"
     @close="close"
-    :maskClosable="true"
+    :maskClosable="disableSubmit"
     :confirmLoading="confirmLoading"
     @cancel="handleCancel"
     :visible="visible">
