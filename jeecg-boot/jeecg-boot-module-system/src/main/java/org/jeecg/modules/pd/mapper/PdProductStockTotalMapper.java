@@ -1,6 +1,7 @@
 package org.jeecg.modules.pd.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.jeecg.modules.pd.entity.PdProductStock;
 import org.jeecg.modules.pd.entity.PdProductStockTotal;
 import org.jeecg.modules.pd.entity.PdPurchaseOrder;
 import org.jeecg.modules.pd.vo.PdProductStockTotalPage;
@@ -19,4 +20,18 @@ public interface PdProductStockTotalMapper extends BaseMapper<PdProductStockTota
 
     public void updateProductStockTotal(PdProductStockTotal stockTotal);
 
+    /**
+     * 库存总表加锁查询，有事务时使用
+     * @param  stockTotal
+     * @return List<PdProductStockTotal>
+     */
+    public List<PdProductStockTotal> findForUpdate(PdProductStockTotal stockTotal);
+
+    /**
+     * 更新库存总表库存数量
+     * @param stockTotal
+     */
+    public void updateStockNum(PdProductStockTotal stockTotal);
+
+    public void updateForDosagert(PdProductStockTotal stockTotal);
 }
