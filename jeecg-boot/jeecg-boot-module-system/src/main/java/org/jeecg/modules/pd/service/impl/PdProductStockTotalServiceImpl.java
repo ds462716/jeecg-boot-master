@@ -141,14 +141,13 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
 	 * 	库存出库更新库存信息
 	 *
 	 * @param  outDeptId       出库科室ID
-	 * @param  inDeptId        入库科室ID
 	 * @param stockRecordDetails   出库明细列表
 	 * @return  String   更新库存结果  入库成功，返回字符串“true”，否则返回错误信息
 	 */
 	@Transactional
-	public Map updateOutStock(String outDeptId, String inDeptId,List<PdStockRecordDetail> stockRecordDetails){
+	public Map updateOutStock(String outDeptId,List<PdStockRecordDetail> stockRecordDetails){
 		Map rtMap = new HashMap<String, String>();
-		if(StringUtils.isEmpty(inDeptId) || stockRecordDetails == null
+		if(StringUtils.isEmpty(outDeptId) || stockRecordDetails == null
 				|| stockRecordDetails.size() == 0){
 			rtMap.put("code", "201");
 			rtMap.put("msg", "传入参数有误");
