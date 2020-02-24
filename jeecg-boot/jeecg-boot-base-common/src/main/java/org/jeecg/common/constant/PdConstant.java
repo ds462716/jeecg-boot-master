@@ -89,10 +89,7 @@ public interface PdConstant {
 	public final static String IS_LONG_1="1";//是
 
 
-	//出入库类型
-	public final static String STOCK_RECORD_TYPE = "stock_record_type";
-	public final static String STOCK_RECORD_TYPE_IN = "0";		//入库
-	public final static String STOCK_RECORD_TYPE_OUT = "1";		//出库
+
 
 	/**开关-是否允许入库量大于订单量**/
 	public final static String ON_OFF_ALLOW_IN_MORE_ORDER = "on_off_allow_in_more_order"; //数据字典 code
