@@ -120,6 +120,8 @@ public class PdStockRecordDetail extends BaseEntity {
 	@TableField(exist = false)
 	private String venderName;//生产厂家名称
 	@TableField(exist = false)
+	private String supplierName;//供应商名称
+	@TableField(exist = false)
 	private String registration;//注册证号
 	@TableField(exist = false)
 	private String inDeptName;//入库科室名称
@@ -139,4 +141,13 @@ public class PdStockRecordDetail extends BaseEntity {
 	private String recordState;//记录状态
 	@TableField(exist = false)
 	private String deptId;//科室ID
+	@TableField(exist = false)
+	private String recordNo;//出入库单号
+	@TableField(exist = false)
+	private String realname;//操作人名称
+	@TableField(exist = false)
+	private String outType;//出库类型
+	@TableField(exist = false)
+	private String inType;//入库类型
+
 }

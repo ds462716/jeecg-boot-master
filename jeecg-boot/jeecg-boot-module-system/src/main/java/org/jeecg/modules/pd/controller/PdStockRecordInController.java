@@ -1,10 +1,8 @@
 package org.jeecg.modules.pd.controller;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.math.BigDecimal;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
@@ -20,6 +18,7 @@ import org.jeecg.modules.pd.service.IPdStockRecordDetailService;
 import org.jeecg.modules.pd.service.IPdStockRecordService;
 import org.jeecg.modules.pd.util.UUIDUtil;
 import org.jeecg.modules.pd.vo.PdGoodsAllocationPage;
+import org.jeecg.modules.pd.vo.PdProductStockTotalPage;
 import org.jeecg.modules.system.entity.SysDepart;
 import org.jeecg.modules.system.entity.SysDict;
 import org.jeecg.modules.system.service.ISysDepartService;
@@ -298,4 +297,44 @@ public class PdStockRecordInController {
       return Result.ok("文件导入失败！");
     }
 
-}
+
+	 /**
+	  * 查询入库明细  mcb  --20200224 用于统计查询
+	  * @param pdStockRecordDetail
+	  * @param pageNo
+	  * @param pageSize
+	  * @param req
+	  * @return
+	  */
+	 @GetMapping(value = "/queryPdStockRecordInList")
+	 public Result<?> queryPdStockRecordInList(PdStockRecordDetail pdStockRecordDetail,
+													 @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
+													 @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
+													 HttpServletRequest req) {
+
+		 Page<PdStockRecordDetail> page = new Page<PdStockRecordDetail>(pageNo, pageSize);
+		 pdStockRecordDetail.setRecordType(PdConstant.RECODE_TYPE_1);
+		 page = pdStockRecordDetailService.selectList(page,pdStockRecordDetail);
+		 return Result.ok(page);
+	 }
+
+	 /**
+	  * 查询出库明细  mcb  --20200224 用于统计查询
+	  * @param pdStockRecordDetail
+	  * @param pageNo
+	  * @param pageSize
+	  * @param req
+	  * @return
+	  */
+	 @GetMapping(value = "/queryPdStockRecordOutList")
+	 public Result<?> queryPdStockRecordOutList(PdStockRecordDetail pdStockRecordDetail,
+											   @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
+											   @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
+											   HttpServletRequest req) {
+
+		 Page<PdStockRecordDetail> page = new Page<PdStockRecordDetail>(pageNo, pageSize);
+		 pdStockRecordDetail.setRecordType(PdConstant.RECODE_TYPE_2);
+ 		 page = pdStockRecordDetailService.selectList(page,pdStockRecordDetail);
+		 return Result.ok(page);
+	 }
+ }
