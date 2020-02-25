@@ -1,6 +1,7 @@
 package org.jeecg.modules.pd.service.impl;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import org.jeecg.common.constant.PdConstant;
 import org.jeecg.modules.pd.entity.PdPackage;
 import org.jeecg.modules.pd.entity.PdPackageDetail;
 import org.jeecg.modules.pd.mapper.PdPackageDetailMapper;
@@ -36,7 +37,7 @@ public class PdPackageServiceImpl extends ServiceImpl<PdPackageMapper, PdPackage
 			for(PdPackageDetail entity:pdPackageDetailList) {
 				//外键设置
 				entity.setPackageId(pdPackage.getId());
-				entity.setDelFlag("0");
+				entity.setDelFlag(PdConstant.DEL_FLAG_0);
 				entity.setId(null);
 				pdPackageDetailMapper.insert(entity);
 			}
@@ -57,7 +58,7 @@ public class PdPackageServiceImpl extends ServiceImpl<PdPackageMapper, PdPackage
 				//外键设置
 				entity.setPackageId(pdPackage.getId());
 				entity.setId(null);
-				entity.setDelFlag("0");
+				entity.setDelFlag(PdConstant.DEL_FLAG_0);
 				pdPackageDetailMapper.insert(entity);
 			}
 		}

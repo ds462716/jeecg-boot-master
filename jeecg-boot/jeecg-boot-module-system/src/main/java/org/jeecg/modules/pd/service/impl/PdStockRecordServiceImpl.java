@@ -1,5 +1,6 @@
 package org.jeecg.modules.pd.service.impl;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.jeecg.common.constant.PdConstant;
 import org.jeecg.modules.pd.entity.PdStockRecord;
 import org.jeecg.modules.pd.entity.PdStockRecordDetail;
@@ -34,10 +35,11 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
 		pdStockRecord.setRecordType(PdConstant.RECODE_TYPE_1); // 入库
 		pdStockRecord.setRecordState(PdConstant.RECODE_STATE_1); // 待提交
 		pdStockRecordMapper.insert(pdStockRecord);
-		if(pdStockRecordDetailList!=null && pdStockRecordDetailList.size()>0) {
+		if(CollectionUtils.isNotEmpty(pdStockRecordDetailList)) {
 			for(PdStockRecordDetail entity : pdStockRecordDetailList) {
-				//外键设置
-				entity.setRecordId(pdStockRecord.getId());
+				entity.setId(null);//初始化ID (从前端传过来会自带页面列表行的ID)
+				entity.setRecordId(pdStockRecord.getId());//外键设置
+				entity.setDelFlag(PdConstant.DEL_FLAG_0);
 				pdStockRecordDetailMapper.insert(entity);
 			}
 		}
