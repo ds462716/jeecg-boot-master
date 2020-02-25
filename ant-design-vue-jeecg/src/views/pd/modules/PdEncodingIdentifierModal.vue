@@ -48,6 +48,7 @@
         form: this.$form.createForm(this),
         title:"操作",
         width:800,
+        disableSubmit:false,
         visible: false,
         model: {},
         labelCol: {
