@@ -355,9 +355,7 @@
             b.name as unitName,
             c.name as venderName,
             d.name as supplierName,
-        case when e.stock_num is null then '0'
-        when e.stock_num is not null then
-        e.stock_num end as stockNum
+            IFNULL(f.stock_num,0) as stockNum
         <if test="orderNo != null and orderNo != ''">
             ,e.order_no as orderNo
         </if>
@@ -365,7 +363,7 @@
         left join pd_unit b on a.unit_id = b.id
         left join pd_vender c on a.vender_id = c.id
         left join pd_supplier d on a.supplier_id = d.id
-        left join pd_product_stock_total e on e.product_id = a.id
+        left join pd_product_stock_total f on f.product_id = a.id
         <if test="orderNo != null and orderNo != ''">
         left join pd_purchase_detail e on e.product_id = a.id
         </if>
