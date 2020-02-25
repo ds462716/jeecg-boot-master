@@ -41,6 +41,7 @@
         :dataSource="dataSource"
         :pagination="ipagination"
         :loading="loading"
+        :customRow="onClickRow"
         :rowSelection="{fixed:true,selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
         
         @change="handleTableChange">
@@ -198,8 +199,28 @@
             this.$set(this.dictOptions, 'isCharge', res.result)
           }
         })
+      },
+
+      /**
+       * 点击行选中checkbox
+       * @param record
+       * @returns {{on: {click: on.click}}}
+       */
+      onClickRow(record) {
+        return {
+          on: {
+            click: () => {
+              let recordId = record.id;
+              let index = this.selectedRowKeys.indexOf(recordId);
+              if(index>=0){
+                this.selectedRowKeys.splice(index, 1);
+              }else{
+                this.selectedRowKeys.push(recordId);
+              }
+            }
+          }
+        }
       }
-       
     }
   }
 </script>
