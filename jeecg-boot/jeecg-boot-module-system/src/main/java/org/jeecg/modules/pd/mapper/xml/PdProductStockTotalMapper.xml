@@ -113,4 +113,37 @@
             AND product_id = #{productId}
         </if>
     </update>
+
+
+    <select id="findForUpdate" resultType="org.jeecg.modules.pd.entity.PdProductStockTotal">
+        SELECT
+        <include refid="pdProductStockTotalColumns"/>
+        FROM pd_product_stock_total a
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+            <if test="deptId != null and deptId != ''">
+                AND a.dept_id = #{deptId}
+            </if>
+            <if test="productId != null and productId != ''">
+                AND a.product_id = #{productId}
+            </if>
+        </where>
+        FOR UPDATE
+    </select>
+
+    <update id="updateStockNum">
+		UPDATE pd_product_stock_total SET
+			stock_num = #{stockNum}
+		WHERE  id= #{id}
+	</update>
+
+
+    <update id="updateForDosagert">
+        UPDATE pd_product_stock_total SET
+        <if test="stockNum!=null and stockNum!='' ">
+            stock_num = #{stockNum}
+        </if>
+        WHERE product_id = #{productId}
+        AND storeroom_id = #{storeroomId}
+    </update>
 </mapper>

@@ -58,13 +58,32 @@
       left join pd_vender e on c.vender_id = e.id
     </sql>
 
+	<!-- 供应商 -->
+	<sql id="pdSupplierColumns">
+      d.name AS "supplierName"
+    </sql>
+	<sql id="pdSupplierJoins">
+      left join pd_supplier d on g.supplier_id = d.id
+    </sql>
+
 	<!-- 出入库主表 -->
 	<sql id="PdStockRecordColumns">
       g.record_date AS "recordDate",
-      g.record_type AS "recordType"
+      g.record_type AS "recordType",
+      g.record_no AS "recordNo",
+      g.in_type AS "inType",
+      g.out_type AS "outType"
     </sql>
 	<sql id="PdStockRecordJoins">
       LEFT JOIN pd_stock_record g ON g.id = a.record_id
+    </sql>
+
+	<!--用户-->
+	<sql id="pdSysUserColumns">
+        h.realname as "realname"
+	</sql>
+	<sql id="pdSysUserJoins">
+        LEFT JOIN sys_user h ON h.id = g.record_people
     </sql>
 
 
@@ -89,6 +108,8 @@
 		<include refid="pdProductColumns"/>,
 		<include refid="pdVenderColumns"/>,
 		<include refid="PdStockRecordColumns"/>,
+		<include refid="pdSupplierColumns"/>,
+		<include refid="pdSysUserColumns"/>,
  		(select r.depart_name from sys_depart r where r.id=g.in_depart_id) AS "inDeptName",
 		(select r.depart_name from sys_depart r where r.id=g.out_depart_id) AS "outDeptName"
 		FROM pd_stock_record_detail a
@@ -97,6 +118,8 @@
 		<include refid="pdProductJoins"/>
 		<include refid="pdUnitJoins"/>
 		<include refid="pdVenderJoins"/>
+		<include refid="pdSupplierJoins"/>
+		<include refid="pdSysUserJoins"/>
  		<where>
 			a.del_flag =#{DEL_FLAG_NORMAL}
 			<if test="id != null and id != ''">
@@ -108,10 +131,14 @@
 			<if test="productId != null and productId != ''">
 				AND a.product_id = #{productId}
 			</if>
+			<if test="recordType != null and recordType != ''">
+				AND g.record_type = #{recordType}
+			</if>
 			<if test="deptId != null and deptId != ''">
 				AND ((g.record_type = '0' AND g.out_depart_id = #{deptId})
 				OR (g.record_type = '1' AND g.in_depart_id =#{deptId}))
 			</if>
+			ORDER BY create_time desc
 		</where>
 	</select>
 </mapper>

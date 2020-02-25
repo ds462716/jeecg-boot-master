@@ -25,4 +25,17 @@ public interface PdProductStockMapper extends BaseMapper<PdProductStock> {
     List<PdProductStock> selectList(PdProductStock pdProductStock);
 
 	public void updateProductStock(PdProductStock productStock);
+
+	/**
+	 * 库存明细锁表查询
+	 * 注意：带事务方法调用时使用
+	 * @param pdProductStock
+	 */
+	public List<PdProductStock> findForUpdate(PdProductStock pdProductStock);
+
+	/**
+	 * 更新库存明细库存数量
+	 * @param pdProductStock
+	 */
+	public void updateStockNum(PdProductStock pdProductStock);
 }

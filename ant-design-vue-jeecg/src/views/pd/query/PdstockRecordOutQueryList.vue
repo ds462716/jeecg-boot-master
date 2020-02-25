@@ -58,6 +58,7 @@
 <script>
 
   import { JeecgListMixin} from '@/mixins/JeecgListMixin'
+  import {initDictOptions, filterMultiDictText} from '@/components/dict/JDictSelectUtil'
 
   export default {
     name: "PdstockRecordOutQueryList",
@@ -69,7 +70,7 @@
         description: '出库明细查询',
         // 表头
         columns: [
-          {
+        /*  {
             title: '序号',
             dataIndex: '',
             key:'rowIndex',
@@ -78,26 +79,29 @@
             customRender:function (t,r,index) {
               return parseInt(index)+1;
             }
-          },
+          },*/
           {
             title:'出库单号',
             align:"center",
-            dataIndex: 'deptName'
+            dataIndex: 'recordNo'
           },
           {
             title:'出库日期',
             align:"center",
-            dataIndex: 'deptName'
+            dataIndex: 'recordDate',
+            customRender:function (text) {
+              return !text?"":(text.length>10?text.substr(0,10):text)
+            }
           },
           {
             title:'出库科室',
             align:"center",
-            dataIndex: 'deptName'
+            dataIndex: 'outDeptName'
           },
           {
             title:'入库科室',
             align:"center",
-            dataIndex: 'deptName'
+            dataIndex: 'inDeptName'
           },
           {
             title:'产品名称',
@@ -107,12 +111,12 @@
           {
             title:'产品编号',
             align:"center",
-            dataIndex: 'productNo'
+            dataIndex: 'number'
           },
           {
             title:'产品条码',
             align:"center",
-            dataIndex: 'productNo'
+            dataIndex: 'productBarCode'
           },
           {
             title:'规格',
@@ -127,31 +131,34 @@
           {
             title:'批号',
             align:"center",
-            dataIndex: 'unitName'
+            dataIndex: 'batchNo'
           },
           {
             title:'有效期',
             align:"center",
-            dataIndex: 'limitUp'
+            dataIndex: 'limitDate',
+            customRender:function (text) {
+              return !text?"":(text.length>10?text.substr(0,10):text)
+            }
           },
           {
             title:'数量',
             align:"center",
-            dataIndex: 'limitDown'
+            dataIndex: 'productNum'
           },
           {
             title:'备注',
             align:"center",
-            dataIndex: 'stockNum'
+            dataIndex: 'remarks'
           },
           {
             title:'操作人',
             align:"center",
-            dataIndex: 'stockNum'
+            dataIndex: 'realname'
           }
         ],
         url: {
-          list: "",
+          list: "/pd/pdStockRecordIn/queryPdStockRecordOutList",
           exportXlsUrl: "",
         },
       }

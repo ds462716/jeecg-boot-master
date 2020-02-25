@@ -58,6 +58,7 @@
 <script>
 
   import { JeecgListMixin} from '@/mixins/JeecgListMixin'
+  import {initDictOptions, filterMultiDictText} from '@/components/dict/JDictSelectUtil'
 
   export default {
     name: "PdstockRecordInQueryList",
@@ -69,7 +70,7 @@
         description: '入库明细查询',
         // 表头
         columns: [
-          {
+         /* {
             title: '序号',
             dataIndex: '',
             key:'rowIndex',
@@ -78,21 +79,24 @@
             customRender:function (t,r,index) {
               return parseInt(index)+1;
             }
-          },
+          },*/
           {
             title:'入库单号',
             align:"center",
-            dataIndex: 'stockNum'
+            dataIndex: 'recordNo'
           },
           {
             title:'入库日期',
             align:"center",
-            dataIndex: 'deptName'
+            dataIndex: 'recordDate',
+            customRender:function (text) {
+              return !text?"":(text.length>10?text.substr(0,10):text)
+            }
           },
           {
-            title:'所属科室',
+            title:'入库科室',
             align:"center",
-            dataIndex: 'deptName'
+            dataIndex: 'inDeptName'
           },
           {
             title:'产品名称',
@@ -102,12 +106,12 @@
           {
             title:'产品编号',
             align:"center",
-            dataIndex: 'productNo'
+            dataIndex: 'number'
           },
           {
             title:'产品条码',
             align:"center",
-            dataIndex: 'productNo'
+            dataIndex: 'productBarCode'
           },
           {
             title:'规格',
@@ -122,62 +126,75 @@
           {
             title:'批号',
             align:"center",
-            dataIndex: 'unitName'
+            dataIndex: 'batchNo'
           },
           {
             title:'有效期',
             align:"center",
-            dataIndex: 'limitUp'
+            dataIndex: 'limitDate',
+            customRender:function (text) {
+              return !text?"":(text.length>10?text.substr(0,10):text)
+            }
           },
           {
             title:'数量',
             align:"center",
-            dataIndex: 'limitDown'
+            dataIndex: 'productNum'
           },
           {
             title:'单位',
             align:"center",
-            dataIndex: 'limitDown'
+            dataIndex: 'unitName'
           },
           {
             title:'单价',
             align:"center",
-            dataIndex: 'limitDown'
+            dataIndex: 'purchasePrice'
           },
           {
             title:'金额',
             align:"center",
-            dataIndex: 'limitDown'
+            dataIndex: 'pdTotalPrice'
           },
           {
             title:'生产厂家',
             align:"center",
-            dataIndex: 'stockNum'
+            dataIndex: 'venderName'
           },
           {
             title:'供应商',
             align:"center",
-            dataIndex: 'stockNum'
+            dataIndex: 'supplierName'
           },
           {
             title:'备注',
             align:"center",
-            dataIndex: 'stockNum'
+            dataIndex: 'remarks'
           },
           {
             title:'入库类型',
             align:"center",
-            dataIndex: 'stockNum'
+            dataIndex: 'inType',
+            customRender:(text)=>{
+              if(!text){
+                return ''
+              }else{
+                return filterMultiDictText(this.dictOptions['inType'], text+"")
+              }
+            }
           },
           {
             title:'操作人',
             align:"center",
-            dataIndex: 'stockNum'
+            dataIndex: 'realname'
           }
         ],
         url: {
-          list: "",
+          list: "/pd/pdStockRecordIn/queryPdStockRecordInList",
           exportXlsUrl: "",
+        },
+        dictOptions:{
+          inType:[],
         },
       }
     },
@@ -187,6 +204,14 @@
       }
     },
     methods: {
+      initDictConfig(){ //静态字典值加载
+        initDictOptions('in_type').then((res) => { //入库类型
+          if (res.success) {
+            this.$set(this.dictOptions, 'inType', res.result)
+          }
+        })
+
+      }
 
     }
   }
