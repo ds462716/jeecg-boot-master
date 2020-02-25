@@ -47,6 +47,7 @@
         :dataSource="dataSource"
         :pagination="false"
         :loading="loading"
+        :customRow="onClickRow"
         :rowSelection="{fixed:true,selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
         :scroll="{ y: 280 }"
         @change="handleTableChange">
@@ -165,7 +166,28 @@
         let formData = that.selectionRows;
         that.$emit('ok', formData);
         that.close();
-      }
+      },
+      /**
+       * 点击行选中checkbox
+       * @param record
+       * @returns {{on: {click: on.click}}}
+       */
+      onClickRow(record) {
+        return {
+          on: {
+            click: () => {
+              //操作那一行
+              let recordId = record.id;
+              let index = this.selectedRowKeys.indexOf(recordId);
+              if(index>=0){
+                this.selectedRowKeys.splice(index, 1);
+              }else{
+                this.selectedRowKeys.push(recordId);
+              }
+             }
+            }
+          }
+        }
     }
   }
 </script>

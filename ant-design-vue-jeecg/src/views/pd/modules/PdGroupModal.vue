@@ -49,6 +49,7 @@
         title:"操作",
         width:800,
         visible: false,
+        disableSubmit:false,
         model: {},
         labelCol: {
           xs: { span: 24 },
@@ -89,7 +90,7 @@
         this.model = Object.assign({}, record);
         this.visible = true;
         this.$nextTick(() => {
-          this.form.setFieldsValue(pick(this.model,'name','py','wb','zdy','createTime','updateTime','remarks'))
+          this.form.setFieldsValue(pick(this.model,'name','py','wb','zdy','remarks'))
           //获取光标
           let input = this.$refs['inputFocus'];
           input.focus()
