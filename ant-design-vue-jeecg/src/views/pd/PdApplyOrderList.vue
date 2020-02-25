@@ -44,12 +44,12 @@
     <!-- 操作按钮区域 -->
     <div class="table-operator">
       <a-button @click="handleAdd" type="primary" icon="plus">新增</a-button>
-      <!--<a-dropdown v-if="selectedRowKeys.length > 0">
+       -<a-dropdown v-if="selectedRowKeys.length > 0">
         <a-menu slot="overlay">
           <a-menu-item key="1" @click="batchDel"><a-icon type="delete"/>删除</a-menu-item>
         </a-menu>
         <a-button style="margin-left: 8px"> 批量操作 <a-icon type="down" /></a-button>
-      </a-dropdown>-->
+      </a-dropdown>
     </div>
 
     <!-- table区域-begin -->
@@ -68,6 +68,7 @@
         :dataSource="dataSource"
         :pagination="ipagination"
         :loading="loading"
+        :customRow="onClickRow"
         :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
         @change="handleTableChange">
 
@@ -244,6 +245,35 @@
             this.$set(this.dictOptions, 'submitStatus', res.result)
           }
         })
+      },
+      onClickRow(record) {
+        return {
+          on: {
+            click: (e) => {
+              //点击操作那一行不选中表格的checkbox
+              let pathArray = e.path;
+              //获取当前点击的是第几列
+              let td = pathArray[0];
+              let cellIndex = td.cellIndex;
+              //获取tr
+              let tr = pathArray[1];
+              //获取一共多少列
+              let lie = tr.childElementCount;
+              if(lie && cellIndex){
+                if(parseInt(lie)-parseInt(cellIndex)!=1){
+                  //操作那一行
+                  let recordId = record.id;
+                  let index = this.selectedRowKeys.indexOf(recordId);
+                  if(index>=0){
+                    this.selectedRowKeys.splice(index, 1);
+                  }else{
+                    this.selectedRowKeys.push(recordId);
+                  }
+                }
+              }
+            }
+          }
+        }
       }
        
     }
