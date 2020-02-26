@@ -112,17 +112,31 @@ export function downFile(url,parameter){
   })
 }
 
-  export  function inArray( elem, array ) {
-    if ( !array ) {
-      return -1;
-    }
-    for ( var i = 0, length = array.length; i < length; i++ ) {
-      if ( array[ i ] === elem ) {
-        return i;
-      }
-    }
+export  function inArray( elem, array ) {
+  if ( !array ) {
     return -1;
   }
+  for ( var i = 0, length = array.length; i < length; i++ ) {
+    if ( array[ i ] === elem ) {
+      return i;
+    }
+  }
+  return -1;
+}
 
 
 
+/**
+ * 获取文件访问路径
+ * @param avatar
+ * @param imgerver
+ * @param str
+ * @returns {*}
+ */
+export function getFileAccessHttpUrl(avatar,imgerver,subStr) {
+  if(avatar && avatar.indexOf(subStr) != -1 ){
+    return avatar;
+  }else{
+    return imgerver + "/" + avatar;
+  }
+}

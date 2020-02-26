@@ -447,7 +447,7 @@ public class BarCodeUtil {
 
 	//计算传入时间与现在时间天数差
 	public static long  dateDiff(String sDate){
-		Date d1 = DateUtils.str2Date(sDate,DateUtils.date_sdf);
+		Date d1 = DateUtils.str2Date(sDate,DateUtils.date_sdf.get());
 		Date now = new Date();
 		long days = d1.getTime() - now.getTime();
 		long time = (days / (1000 * 60 * 60 * 24));

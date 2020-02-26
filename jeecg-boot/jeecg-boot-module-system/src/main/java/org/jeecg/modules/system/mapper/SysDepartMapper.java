@@ -40,4 +40,18 @@ public interface SysDepartMapper extends BaseMapper<SysDepart> {
 
 	@Select("select id,depart_name,org_code  from sys_depart where org_code=#{orgCode}")
 	public SysDepart getDepartByOrgCode(@Param("orgCode") String orgCode);
+	/**
+	 *  根据部门Id查询,当前和下级所有部门IDS
+	 * @param departId
+	 * @return
+	 */
+	List<String> getSubDepIdsByDepId(@Param("departId") String departId);
+
+	/**
+	 * 根据部门编码获取部门下所有IDS
+	 * @param orgCodes
+	 * @return
+	 */
+	List<String> getSubDepIdsByOrgCodes(@org.apache.ibatis.annotations.Param("orgCodes") String[] orgCodes);
+
 }

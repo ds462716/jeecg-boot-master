@@ -128,7 +128,7 @@
         url: {
           add: "/pd/pdVender/save",
           edit: "/pd/pdVender/update",
-          imgerver: window._CONFIG['domianURL']+"/sys/common/view",
+          imgerver: window._CONFIG['staticDomainURL'],
         }
       }
     },

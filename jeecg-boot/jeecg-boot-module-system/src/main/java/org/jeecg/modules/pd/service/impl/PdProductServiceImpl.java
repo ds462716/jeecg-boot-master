@@ -339,7 +339,7 @@ public class PdProductServiceImpl extends ServiceImpl<PdProductMapper, PdProduct
                     //不根据number查询
                     //pdProductStock.setNumber((String) resultMap.get("number"));
                     //查询条件为  产品id 产品批号  产品有效期
-                    pdProductStock.setExpDate(DateUtils.str2Date((String)resultMap.get("expDate"),DateUtils.date_sdf));
+                    pdProductStock.setExpDate(DateUtils.str2Date((String)resultMap.get("expDate"),DateUtils.date_sdf.get()));
                     pdProductStock.setBatchNo((String) resultMap.get("batchNo"));
                     //根据条件查询库存
                     pdProductStocks = pdProductStockService.selectList(pdProductStock);

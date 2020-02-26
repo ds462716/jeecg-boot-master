@@ -129,7 +129,7 @@
         url: {
           add: "/pd/pdSupplier/save",
           edit: "/pd/pdSupplier/update",
-          imgerver: window._CONFIG['domianURL']+"/sys/common/view",
+          imgerver:window._CONFIG['staticDomainURL'],
         }
       }
     },

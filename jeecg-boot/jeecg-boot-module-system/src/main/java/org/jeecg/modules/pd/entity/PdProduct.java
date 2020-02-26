@@ -328,6 +328,8 @@ public class PdProduct  extends BaseEntity {
 	@JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd")
     @DateTimeFormat(pattern="yyyy-MM-dd")
     private java.util.Date updateTime;
+	@Excel(name = "备注", width = 15)
+	private java.lang.String remarks;
 	/**所属部门*/
 	@Excel(name = "所属部门", width = 15)
     private java.lang.String sysOrgCode;

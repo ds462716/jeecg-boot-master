@@ -69,9 +69,9 @@ public class PushMsgUtil {
             sysMessage.setEsSendTime(new Date());
             sysMessage.setEsSendStatus(SendMsgStatusEnum.WAIT.getCode());
             sysMessage.setEsSendNum(0);
-             if (sysMessageService.save(sysMessage)) {
-                    return true;
-             }
+            if (sysMessageService.save(sysMessage)) {
+                return true;
+            }
         }
         return false;
     }
@@ -90,7 +90,7 @@ public class PushMsgUtil {
         if (sysSmsTemplates.size() > 0) {
             SysMessageTemplate sysSmsTemplate = sysSmsTemplates.get(0);
             //模板标题
-             title = sysSmsTemplate.getTemplateName();
+            title = sysSmsTemplate.getTemplateName();
             //模板内容
             String content = sysSmsTemplate.getTemplateContent();
             if (map != null) {
@@ -100,25 +100,25 @@ public class PushMsgUtil {
                     content = content.replace(str, entry.getValue());
                 }
             }
-                sysAnnouncement.setTitile(title);//标题
-                sysAnnouncement.setMsgContent(content);//内容
-                sysAnnouncement.setUserIds(userIds);//接收用户Id
-                sysAnnouncement.setPriority(CommonConstant.PRIORITY_L);//优先级（L低，M中，H高）
-                sysAnnouncement.setMsgCategory(CommonConstant.MSG_CATEGORY_2);//消息类型1:通知公告2:系统消息
-                sysAnnouncement.setMsgType(CommonConstant.MSG_TYPE_UESR);//消息对象类型（USER:指定用户，ALL:全体用户）
-                LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
-                sysAnnouncement.setSender(sysUser.getRealname());//发布人
-                sysAnnouncement.setSendTime(new Date());
-                sysAnnouncement.setDelFlag(CommonConstant.DEL_FLAG_0.toString());
-                sysAnnouncement.setSendStatus(CommonSendStatus.PUBLISHED_STATUS_1);//发布状态（0未发布，1已发布，2已撤销）
-                sysAnnouncementService.saveAnnouncement(sysAnnouncement);
+            sysAnnouncement.setTitile(title);//标题
+            sysAnnouncement.setMsgContent(content);//内容
+            sysAnnouncement.setUserIds(userIds);//接收用户Id
+            sysAnnouncement.setPriority(CommonConstant.PRIORITY_L);//优先级（L低，M中，H高）
+            sysAnnouncement.setMsgCategory(CommonConstant.MSG_CATEGORY_2);//消息类型1:通知公告2:系统消息
+            sysAnnouncement.setMsgType(CommonConstant.MSG_TYPE_UESR);//消息对象类型（USER:指定用户，ALL:全体用户）
+            LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+            sysAnnouncement.setSender(sysUser.getRealname());//发布人
+            sysAnnouncement.setSendTime(new Date());
+            sysAnnouncement.setDelFlag(CommonConstant.DEL_FLAG_0.toString());
+            sysAnnouncement.setSendStatus(CommonSendStatus.PUBLISHED_STATUS_1);//发布状态（0未发布，1已发布，2已撤销）
+            sysAnnouncementService.saveAnnouncement(sysAnnouncement);
             String[] userIdList = userIds.substring(0, (userIds.length()-1)).split(",");
             JSONObject obj = new JSONObject();
             obj.put("cmd", "user");
             obj.put("msgId", sysAnnouncement.getId());
             obj.put("msgTxt",title);
             webSocket.sendMoreMessage(userIdList, obj.toJSONString());
-           }
+        }
         return false;
     }
 }

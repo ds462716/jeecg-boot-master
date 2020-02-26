@@ -31,21 +31,21 @@ public interface SysDictMapper extends BaseMapper<SysDict> {
 	public Long duplicateCheckCountSql(DuplicateCheckVo duplicateCheckVo);
 	public Long duplicateCheckCountSqlNoDataId(DuplicateCheckVo duplicateCheckVo);
 
-	/**
-	 * 有del_flag的重复校验SQL add by jiangxz 20200115
-	 * @return
-	 */
-	public Long duplicateCheckCountSqlHasDelFlag(DuplicateCheckVo duplicateCheckVo);
-	public Long duplicateCheckCountSqlNoDataIdHasDelFlag(DuplicateCheckVo duplicateCheckVo);
+    /**
+     * 有del_flag的重复校验SQL add by jiangxz 20200115
+     * @return
+     */
+    public Long duplicateCheckCountSqlHasDelFlag(DuplicateCheckVo duplicateCheckVo);
+    public Long duplicateCheckCountSqlNoDataIdHasDelFlag(DuplicateCheckVo duplicateCheckVo);
 
-	public List<DictModel> queryDictItemsByCode(@Param("code") String code);
-	public List<DictModel> queryTableDictItemsByCode(@Param("table") String table,@Param("text") String text,@Param("code") String code);
-	public List<DictModel> queryTableDictItemsByCodeAndFilter(@Param("table") String table,@Param("text") String text,@Param("code") String code,@Param("filterSql") String filterSql);
+    public List<DictModel> queryDictItemsByCode(@Param("code") String code);
+	public List<DictModel> queryTableDictItemsByCode(@Param("table") String table, @Param("text") String text, @Param("code") String code);
+	public List<DictModel> queryTableDictItemsByCodeAndFilter(@Param("table") String table, @Param("text") String text, @Param("code") String code, @Param("filterSql") String filterSql);
 
 
-	public String queryDictTextByKey(@Param("code") String code,@Param("key") String key);
+	public String queryDictTextByKey(@Param("code") String code, @Param("key") String key);
 
-	public String queryTableDictTextByKey(@Param("table") String table,@Param("text") String text,@Param("code") String code,@Param("key") String key);
+	public String queryTableDictTextByKey(@Param("table") String table, @Param("text") String text, @Param("code") String code, @Param("key") String key);
 
 	public List<DictModel> queryTableDictByKeys(@Param("table") String table, @Param("text") String text, @Param("code") String code, @Param("keyArray") String[] keyArray);
 
@@ -69,7 +69,7 @@ public interface SysDictMapper extends BaseMapper<SysDict> {
 	 * @param keyword
 	 * @return
 	 */
-	public List<DictModel> queryTableDictItems(@Param("table") String table,@Param("text") String text,@Param("code") String code,@Param("keyword") String keyword); 
+	public List<DictModel> queryTableDictItems(@Param("table") String table, @Param("text") String text, @Param("code") String code, @Param("keyword") String keyword);
 
 	/**
 	  * 根据表名、显示字段名、存储字段名 查询树
@@ -80,7 +80,7 @@ public interface SysDictMapper extends BaseMapper<SysDict> {
 	 * @param hasChildField
 	 * @return
 	 */
-	List<TreeSelectModel> queryTreeList(@Param("query") Map<String, String> query,@Param("table") String table,@Param("text") String text,@Param("code") String code,@Param("pidField") String pidField,@Param("pid") String pid,@Param("hasChildField") String hasChildField);
+	List<TreeSelectModel> queryTreeList(@Param("query") Map<String, String> query, @Param("table") String table, @Param("text") String text, @Param("code") String code, @Param("pidField") String pidField, @Param("pid") String pid, @Param("hasChildField") String hasChildField);
 
 	/**
 	 * 删除

@@ -514,7 +514,7 @@
           queryGroup:"/pd/pdGroup/getGroupList",
           queryCategoryOne:"/pd/pdCategory/getCategoryOneList?type=0",
           queryCategoryTwo:"/pd/pdCategory/getCategoryOneList?type=1",
-          imgerver: window._CONFIG['domianURL']+"/sys/common/view",
+          imgerver: window._CONFIG['staticDomainURL'],
         }
       }
     },

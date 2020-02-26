@@ -96,6 +96,6 @@ public class CodeTest {
 		System.out.println(BarCodeUtil.getPrdNumber("+J12312341+1"));
 		System.out.println(BarCodeUtil.getPrdNumber("+J12312341/1"));
 
-        System.out.println(DateUtils.str2Date("2018-08-09",DateUtils.date_sdf));
+        System.out.println(DateUtils.str2Date("2018-08-09",DateUtils.date_sdf.get()));
     }
 }

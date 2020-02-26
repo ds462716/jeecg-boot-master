@@ -21,7 +21,7 @@
     props: {
       title: {
         type: String,
-        default: 'SPD管理平台',
+        default: 'Jeecg-Boot Pro',
         required: false
       },
       showTitle: {
