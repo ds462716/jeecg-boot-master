@@ -3,11 +3,10 @@
       :visible="visible"
       :width="popModal.width"
       :style="popModal.style"
-      :maskClosable="disableSubmit"
+      :maskClosable="false"
       :confirmLoading="confirmLoading"
       @cancel="handleCancel"
-      :footer="null"
-    >
+      :footer="null">
       <template slot="title">
         <div style="width: 100%;height:20px;padding-right:32px;">
           <div style="float: left;">{{ title }}</div>
@@ -16,8 +15,11 @@
           </div>
         </div>
       </template>
+
     <a-spin :spinning="confirmLoading">
       <!-- 主表单区域 -->
+      <div style="background:#ECECEC; padding:20px">
+        <a-card title="" style="margin-bottom: 10px;">
       <a-form :form="form">
         <a-row>
           <a-col :span="12">
@@ -50,63 +52,63 @@
               <a-input-number disabled="disabled" v-decorator="[ 'totalPrice', validatorRules.totalPrice]" style="width: 100%"/>
             </a-form-item>
           </a-col>
-          <!-- <!-- 子表单区域 -->
-          <div style="float: left;">
-            <a-button type="primary" icon="download" @click="exportXls('申购产品列表')">导出</a-button>
-            <a-button v-show="!disableSubmit" @click="choice" style="margin-left: 0px;margin-bottom: 20px"  type="primary">选择产品</a-button>
-          </div>
-          <div style="float: left;width:100%;margin-bottom: 70px;white-space:nowrap;overflow-x:auto;overflow-y:hidden;">
-            <table id="contentTable" class="tableStyle" style="width:100%">
-              <tr>
-                <th v-show="!disableSubmit">操作</th>
-                <th >产品编号</th>
-                <th>产品名称</th>
-                <th>规格</th>
-                <th>型号</th>
-                <th>单位</th>
-                <th>库存数量</th>
-                <th>申购数量</th>
-                <th>产品单价</th>
-                <th>申购金额</th>
-                <th>供应商</th>
-                <th>生产厂家</th>
-              </tr>
-              <tr  v-for="(item, index) in pdPurchaseDetailTable.dataSource">
-                <td v-show="!disableSubmit"><a @click="deleteDetail(item.productId)">删除</a></td>
-                <td>{{item.number}}</td>
-                <td>{{item.productName}}</td>
-                <td>{{item.spec}}</td>
-                <td>{{item.version}}</td>
-                <td>{{item.unitName}}</td>
-                <td>{{item.stockNum}}</td>
-                <td>
-                   <a-form-item>
-                 <a-input-number  :disabled="disableSubmit"  @blur="(e)=>{handleConfirmBlur(e.target,item)}"  v-decorator="['pdPurchaseDetailTable['+index+'].orderNum', {'initialValue':item.orderNum,rules:validatorRules.orderNum}]"/>
-                   </a-form-item>
-                </td>
-                <td>{{item.purchasePrice}}</td>
-                <td>{{item.orderMoney}}</td>
-                <td>{{item.supplierName}}</td>
-                <td>{{item.venderName}}</td>
-              </tr>
-            </table>
-          </div>
-          <a-col :span="12" v-show="disableSubmit">
-            <a-form-item   label="审核意见" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input  :disabled="disableSubmit"  v-decorator="[ 'refuseReason', validatorRules.refuseReason]"  style="width: 100%;height: 80px"/>
-            </a-form-item>
-          </a-col>
         </a-row>
         <pd-purchase-detail-add-modal  ref="PdPurchaseDetailAddModal" @ok="modalFormOk"></pd-purchase-detail-add-modal>
       </a-form>
+        </a-card>
+        <a-card style="margin-bottom: 10px;">
+
+          <a-tabs v-model="activeKey" @change="handleChangeTabs">
+            <a-tab-pane tab="申购明细表" :key="refKeys[0]" :forceRender="true">
+              <div style="margin-bottom: 8px;" >
+                <a-button  v-show="!disableSubmit" type="primary" icon="plus" @click="choice">选择产品</a-button>
+                <span style="padding-left: 8px;"></span>
+                <a-popconfirm
+                  :title="`确定要删除吗?`"
+                  @confirm="handleConfirmDelete">
+                  <a-button  v-show="!disableSubmit" type="primary" icon="minus">删除</a-button>
+                  <span class="gap"></span>
+                </a-popconfirm>
+                <span style="padding-left: 8px;"></span>
+                  <a-button type="primary" icon="download" @click="exportXls('申购产品列表')">导出</a-button>
+              </div>
+              <j-editable-table
+                bordered
+                :ref="refKeys[0]"
+                :loading="pdPurchaseDetailTable.loading"
+                :columns="pdPurchaseDetailTable.columns"
+                :dataSource="pdPurchaseDetailTable.dataSource"
+                :maxHeight="500"
+                :rowNumber="true"
+                :rowSelection="true"
+                :disabled="disableSubmit"
+                :actionButton="false"
+                @valueChange="valueChange"
+                style="text-overflow: ellipsis;"
+              />
+            </a-tab-pane>
+          </a-tabs>
+        </a-card>
+        <a-card style="margin-bottom: 10px;" v-show="disableSubmit">
+          <a-form :form="form">
+            <a-row>
+              <a-col :span="12">
+                <a-form-item label="审核意见" :labelCol="labelCol" :wrapperCol="wrapperCol">
+                  <a-input :disabled="true" v-decorator="[ 'refuseReason', validatorRules.refuseReason]" placeholder="请输入审核意见" style="width: 100%;height: 80px"/>
+                </a-form-item>
+              </a-col>
+            </a-row>
+          </a-form>
+        </a-card>
+      </div>
     </a-spin>
-    <div class="drawer-bootom-button" v-show="!disableSubmit">
-      <a-button @click="handleOk('submit')" type="primary" :loading="confirmLoading">提交</a-button>
-      <a-button @click="handleOk('save')" type="primary" :loading="confirmLoading">保存草稿</a-button>
-      <a-popconfirm title="确定放弃编辑？" @confirm="handleCancel" okText="确定" cancelText="取消">
-        <a-button style="margin-right: .8rem">取消</a-button>
-      </a-popconfirm>
-    </div>
+      <div class="drawer-bootom-button" v-show="!disableSubmit">
+        <a-button @click="handleOk('submit')" type="primary" :loading="confirmLoading" style="margin-right: 15px;">提交</a-button>
+        <a-button @click="handleOk('save')" type="primary" :loading="confirmLoading" style="margin-right: 15px;">保存草稿</a-button>
+        <a-popconfirm title="确定放弃编辑？" @confirm="handleCancel" okText="确定" cancelText="取消">
+          <a-button style="margin-right: 15px;">取消</a-button>
+        </a-popconfirm>
+      </div>
   </a-modal>
 </template>
 <script>
@@ -115,6 +117,7 @@
   import { httpAction,getAction,downFile,inArray } from '@/api/manage'
   import { JEditableTableMixin } from '@/mixins/JEditableTableMixin'
   import JDate from '@/components/jeecg/JDate'
+  import { FormTypes,getRefPromise,validateFormAndTables } from '@/utils/JEditableTableUtil'
   import PdPurchaseDetailAddModal from './PdChooseProductListModel'
   export default {
     name: 'PdPurchaseOrderModal',
@@ -122,6 +125,7 @@
     components: {JDate,PdPurchaseDetailAddModal},
     data() {
       return {
+        disableSubmit:false,
         confirmLoading: false,
         labelCol: {span: 6},
         wrapperCol: {span: 16},
@@ -136,14 +140,31 @@
           totalNum:{},
           totalPrice:{},
           refuseReason:{},
-          orderNum:[
-            {required: true,message: '请输入值'}],
         },
         refKeys: ['pdPurchaseDetail', ],
         tableKeys:['pdPurchaseDetail', ],
+        activeKey: 'pdPurchaseDetail',
         // 申购单详细表
         pdPurchaseDetailTable: {
-          dataSource: []
+          loading: false,
+          dataSource: [],
+          columns: [
+            { title: '产品ID', key: 'productId', type: FormTypes.hidden },
+            { title: '产品名称', width:"250px",  key: 'productName' },
+            { title: '产品编号',width:"150px", align:"center", key: 'number' },
+            { title: '规格',width:"240px", align:"center", key: 'spec' },
+            { title: '单位',width:"50px", align:"center", key: 'unitName' },
+            { title: '库存数量', width:"100px",align:"center", key: 'stockNum' },
+            {title: '申购数量', key: 'orderNum', type: FormTypes.input, width:"80px",
+              placeholder: '${title}', defaultValue: '1',
+              validateRules: [{ required: true, message: '${title}不能为空' },{ pattern: '^-?\\d+\\.?\\d*$',message: '${title}的格式不正确' }]
+            },
+            { title: '产品单价', align:"center", key: 'purchasePrice' },
+            { title: '申购金额', align:"center", key: 'orderMoney' },
+            { title: '供应商', width:"250px",align:"center", key: 'supplierName' },
+            { title: '供应商Id',   key: 'supplierId',type: FormTypes.hidden  },
+            { title: '生产厂家', width:"250px",align:"center", key: 'venderName' },
+          ]
         },
         url: {
           add: "/pd/pdPurchaseOrder/add",
@@ -220,23 +241,34 @@
           }
         })
       },
-      //修改申购数量后重新计算总数量及总金额
-      handleConfirmBlur(e,m){
-        this.orderNum = e.value;//修改后的申购数量
-        this.purchasePrice=m.purchasePrice;//产品单价；
-        m.orderMoney= (this.orderNum * this.purchasePrice).toFixed(2);//计算修改后的总金额
-        m.orderNum=e.value;
-       let tableData=this.pdPurchaseDetailTable.dataSource;
-       let totalNum=0;
-       let totalPrice=0;
-        for(let i=0;i<tableData.length;i++){
-          totalNum+=parseFloat(tableData[i].orderNum);//计算总数量
-          totalPrice+=Number(tableData[i].orderMoney);//计算申购总金额
+
+      // 表格数据变更
+      valueChange(event) {
+        if(event){
+          const { type, row, column, value, target } = event;
+          if(type === FormTypes.input){
+            if(column.key === "orderNum"){
+              // 申领数量变更
+              let rows = target.getValuesSync({ validate: false });
+              let orderMoney = (Number(row.orderNum) * Number(row.purchasePrice)).toFixed(2);
+              target.setValues([{rowKey: row.id, values: {orderNum :row.orderNum,orderMoney :orderMoney }}]);
+              // 计算总数量
+              this.getTotalNumAndPrice();
+            }
+          }
         }
-        let model={};
-        this.model.totalNum=totalNum;//申购总数量
-        this.model.totalPrice=totalPrice.toFixed(2);//申购总金额
-        this.$nextTick(() => {
+      },
+      // 计算总数量及总金额
+      getTotalNumAndPrice(){
+        this.$refs.pdPurchaseDetail.getValues((error, values) => {
+          let totalNum = 0;
+          let totalPrice=0;
+          values.forEach((item, idx) => {
+            totalNum+=parseFloat(item.orderNum);
+            totalPrice+=Number(item.orderMoney);
+          })
+          this.model.totalNum = totalNum;
+          this.model.totalPrice=totalPrice.toFixed(2);//申购总金额
           this.form.setFieldsValue(pick(this.model,'totalNum','totalPrice'))
         })
       },
@@ -247,23 +279,17 @@
         this.$refs.PdPurchaseDetailAddModal.title = "选择产品";
       },
 
-      deleteDetail(productId){
-        const newData = this.pdPurchaseDetailTable.dataSource.filter(item => item.productId !== productId);
-        let totalNum=0;
-        let totalPrice=0;
-        for(let i=0;i<newData.length;i++){
-          totalNum+=parseFloat(newData[i].orderNum);//计算总数量
-          totalPrice+=+Number(newData[i].orderMoney);//计算申购总金额
+      handleConfirmDelete() {
+        if(this.$refs.pdPurchaseDetail.selectedRowIds.length > 0){
+          this.$refs.pdPurchaseDetail.removeSelectedRows();
+          this.$nextTick(() => {
+            // 计算总数量和总金额
+            this.getTotalNumAndPrice();
+          })
+        }else{
+          this.$message.error("请选择需要删除的数据！")
         }
-        let model={};
-        this.model.totalNum=totalNum;//申购总数量
-        this.model.totalPrice=totalPrice.toFixed(2);//申购总金额
-        this.$nextTick(() => {
-          this.form.setFieldsValue(pick(this.model,'totalNum','totalPrice'))
-        })
-        this.pdPurchaseDetailTable.dataSource = newData;
       },
-
       modalFormOk (formData) {//选择产品确定后返回所选择的数据
         let idList = [];
         let values = [];
@@ -307,43 +333,59 @@
         })
         this.pdPurchaseDetailTable.dataSource = values;
       },
+      close () {
+        this.$emit('close');
+        this.visible = false;
+        this.disableSubmit = false;
+      },
       handleOk (submitType) { //提交
-        if(submitType=="submit"){
-          this.model.submitStatus='2';
-          this.model.auditStatus='1';
+        if (submitType == "submit") {
+          this.model.submitStatus = '2';
+          this.model.auditStatus = '1';
         }
         const that = this;
         // 触发表单验证
-        this.form.validateFields((err, values) => {
-          if (!err) {
-            //选择标识符的校验通过后
-            let pdPurchaseDetailList=this.pdPurchaseDetailTable.dataSource;
-            values.pdPurchaseDetailList=pdPurchaseDetailList;
-            if(pdPurchaseDetailList.length>0){
-              let httpurl = '';
-              let method = '';
-              if(!this.model.id){
-                httpurl+=this.url.add;
-                method = 'post';
-              }else{
-                httpurl+=this.url.edit;
-                method = 'put';
-              }
-              let formData = Object.assign(this.model, values);
-              httpAction(httpurl,formData,method).then((res)=>{
-                 if(res.success){
-                  that.$message.success(res.message);
-                  that.$emit('ok');
-                }else{
-                  that.$message.warning(res.message);
-                }
-              }).finally(() => {
-                that.confirmLoading = false;
-                that.close();
-              })
-            }else{
-              that.$message.error("请选择产品");
+        // 触发表单验证
+        this.getAllTable().then(tables => {
+          /** 一次性验证主表和所有的次表 */
+          return validateFormAndTables(this.form, tables)
+        }).then(allValues => {
+          if (typeof this.classifyIntoFormData !== 'function') {
+            throw this.throwNotFunction('classifyIntoFormData')
+          }
+          let formData = this.classifyIntoFormData(allValues)
+          // 发起请求
+          let pdPurchaseDetailList = formData.pdPurchaseDetailList;
+          if (pdPurchaseDetailList.length > 0) {
+            let httpurl = '';
+            let method = '';
+            if (!this.model.id) {
+              httpurl += this.url.add;
+              method = 'post';
+            } else {
+              httpurl += this.url.edit;
+              method = 'put';
             }
+            httpAction(httpurl, formData, method).then((res) => {
+              if (res.success) {
+                that.$message.success(res.message);
+                that.$emit('ok');
+              } else {
+                that.$message.warning(res.message);
+              }
+            }).finally(() => {
+              that.confirmLoading = false;
+              that.close();
+            })
+          } else {
+            that.$message.error("请选择产品");
+          }
+        }).catch(e => {
+          if (e.error === VALIDATE_NO_PASSED) {
+            // 如果有未通过表单验证的子表，就自动跳转到它所在的tab
+            this.activeKey = e.index == null ? this.activeKey : this.refKeys[e.index]
+          } else {
+            console.error(e)
           }
         })
       },
@@ -392,28 +434,15 @@
 
 <style scoped>
   .drawer-bootom-button {
-    position: absolute;
-    /*top:95%;*/
-    bottom: -30px;
     width: 100%;
-    border-top: 1px solid #e8e8e8;
-    padding: 10px 16px;
     text-align: right;
-    left: 0;
     background: #fff;
-    border-radius: 0 0 2px 2px;
-    z-index:199;
-  }
-  /** Button按钮间距 */
-  .ant-btn {
-    margin-left: 30px;
-    margin-bottom: 30px;
-    float: right;
+    margin-top:10px;
   }
   .tableStyle> tr > th{
     border: 1px solid #e8e8e8;
     text-align: center;
-    padding: 10px 16px;
+    padding: 16px 16px;
     font-weight: 500;
     color: rgba(0, 0, 0, 0.85);
     background: #fafafa;
@@ -428,7 +457,6 @@
     padding: 1px 16px;
     font-weight: 500;
     box-sizing: border-box;
-
   }
 
   .tableStyle> tr > td >input{
