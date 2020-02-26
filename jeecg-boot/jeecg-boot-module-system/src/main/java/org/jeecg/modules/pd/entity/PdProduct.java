@@ -339,6 +339,24 @@ public class PdProduct  extends BaseEntity {
     private java.lang.String chargeCode;
 
 	/**
+	 * 是否是紧急产品
+	 */
+	@Excel(name = "是否紧急产品", width = 15)
+	private java.lang.String isUrgent;
+
+	/**
+	 * 紧急产品需要采购数量
+	 */
+	@Excel(name = "紧急产品需要采购数量", width = 15)
+	private Double upQuantity;
+
+	/**
+	 * 紧急产品已采购数量
+	 */
+	@Excel(name = "紧急产品已采购数量", width = 15)
+	private Double purchasedQuantity;
+
+	/**
 	 * 产品关联的编码规则
 	 */
 	@TableField(exist = false)

@@ -106,7 +106,7 @@
     },
     data () {
       return {
-        description: 'pd_product管理页面',
+        description: '产品管理页面',
         // 表头
         columns: [
           {
