@@ -1,14 +1,20 @@
 <template>
-  <a-drawer
-    :title="title"
-    :width="800"
-    placement="right"
-    :closable="false"
-    @close="close"
+  <a-modal
+    :visible="visible"
+    :width="popModal.width"
+    :style="popModal.style"
     :maskClosable="true"
     :confirmLoading="confirmLoading"
     @cancel="handleCancel"
-    :visible="visible">
+    :footer="null">
+  <template slot="title">
+    <div style="width: 100%;height:20px;padding-right:32px;">
+      <div style="float: left;">{{ title }}</div>
+      <div style="float: right;">
+        <a-button icon="fullscreen" style="width:56px;height:100%;border:0" @click="handleClickToggleFullScreen"/>
+      </div>
+    </div>
+  </template>
     <a-spin :spinning="confirmLoading">
       <!-- 主表单区域 -->
       <a-form :form="form">
@@ -46,7 +52,7 @@
           <!-- <!-- 子表单区域 -->
           <a-button style="float: left;" type="primary" icon="download" @click="exportXls('申领明细列表')">导出</a-button>
           <div style="float: left;width:100%;margin-bottom: 70px;white-space:nowrap;overflow-x:auto;overflow-y:hidden;">
-            <table id="contentTable" class="tableStyle">
+            <table id="contentTable" class="tableStyle" style="width:100%">
               <tr>
                 <th>定数包名称</th>
                 <th>定数包编号</th>
@@ -84,6 +90,7 @@
         </a-col>
         </a-row>
       </a-form>
+      <pd-apply-stock-record-out-modal ref="stockForm" @ok="modalFormOk"></pd-apply-stock-record-out-modal>
     </a-spin>
     <div class="drawer-bootom-button" v-show="!disableSubmit">
       <a-button @click="handleOk('yes')" type="primary" :loading="confirmLoading">审核通过</a-button>
@@ -92,7 +99,7 @@
         <a-button style="margin-right: .8rem">取消</a-button>
       </a-popconfirm>
     </div>
-  </a-drawer>
+  </a-modal>
 </template>
 <script>
 
@@ -102,10 +109,13 @@
   import { JEditableTableMixin } from '@/mixins/JEditableTableMixin'
   import JDate from '@/components/jeecg/JDate'
   import JDictSelectTag from "@/components/dict/JDictSelectTag"
+  import PdApplyStockRecordOutModal from './PdApplyStockRecordOutModal'
+
+
   export default {
     name: 'PdApplyOrderModal',
     mixins: [JEditableTableMixin],
-    components: {JDate, JDictSelectTag},
+    components: {JDate, JDictSelectTag,PdApplyStockRecordOutModal},
     data() {
       return {
         confirmLoading: false,
@@ -134,7 +144,14 @@
           pdApplyDetail: {
             list: '/pd/pdApplyOrder/queryApplyDetail'
           },
-        }
+        },
+        popModal: {
+          title: '这里是标题',
+          visible: false,
+          width: '100%',
+          style: { top: '20px' },
+          fullScreen: true
+        },
       }
     },
     methods: {
@@ -192,7 +209,12 @@
             let formData = Object.assign(this.model, values);
             httpAction(this.url.edit, formData, 'put').then((res) => {
               if (res.success) {
-                that.$message.success("操作成功");
+                 if(type=="yes"){
+                   this.$refs.stockForm.edit(pdPurchaseDetailList);
+                   this.$refs.stockForm.title = "新增出库";
+                   this.$refs.stockForm.disableSubmit = false;
+                }
+               // that.$message.success("操作成功");
                 that.$emit('ok');
               } else {
                 that.$message.warning(res.message);
@@ -225,6 +247,18 @@
           ...main, // 展开
           pdApplyDetailList: allValues.tablesValue[0].values,
         }
+      },
+      /** 切换全屏显示 */
+      handleClickToggleFullScreen() {
+        let mode = !this.popModal.fullScreen
+        if (mode) {
+          this.popModal.width = '100%'
+          this.popModal.style.top = '20px'
+        } else {
+          this.popModal.width = '1200px'
+          this.popModal.style.top = '50px'
+        }
+        this.popModal.fullScreen = mode
       },
       validateError(msg){
         this.$message.error(msg)
