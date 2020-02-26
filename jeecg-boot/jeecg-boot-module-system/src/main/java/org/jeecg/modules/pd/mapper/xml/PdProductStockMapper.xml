@@ -20,6 +20,7 @@
 		a.supplier_id,
 		a.is_long,
 		a.remarks,
+		a.huowei_code,
 		a.del_flag
 	</sql>
 
@@ -110,6 +111,9 @@
 			</if>
 			<if test="batchNo != null and batchNo != ''">
 				AND a.batch_no = #{batchNo}
+			</if>
+			<if test="huoweiCode != null and huoweiCode != ''">
+				AND a.huowei_code = #{huoweiCode}
 			</if>
 			<if test="expDate != null">
 				AND DATE_FORMAT(a.exp_date,'%Y-%m-%d') = DATE_FORMAT( #{expDate}, '%Y-%m-%d')

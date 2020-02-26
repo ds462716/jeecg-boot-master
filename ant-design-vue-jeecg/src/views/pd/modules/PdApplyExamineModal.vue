@@ -16,6 +16,8 @@
     </div>
   </template>
     <a-spin :spinning="confirmLoading">
+      <div style="background:#ECECEC; padding:20px">
+        <a-card title="" style="margin-bottom: 10px;">
       <!-- 主表单区域 -->
       <a-form :form="form">
         <a-row>
@@ -49,48 +51,43 @@
               <a-input  disabled="disabled"  v-decorator="[ 'remarks', validatorRules.remarks]"  style="width: 100%"/>
             </a-form-item>
           </a-col>
-          <!-- <!-- 子表单区域 -->
-          <a-button style="float: left;" type="primary" icon="download" @click="exportXls('申领明细列表')">导出</a-button>
-          <div style="float: left;width:100%;margin-bottom: 70px;white-space:nowrap;overflow-x:auto;overflow-y:hidden;">
-            <table id="contentTable" class="tableStyle" style="width:100%">
-              <tr>
-                <th>定数包名称</th>
-                <th>定数包编号</th>
-                <th>产品名称</th>
-                <th>产品编号</th>
-                <th>规格</th>
-                <th>型号</th>
-                <th>单位</th>
-                <th>产品数量</th>
-                <th>申领数量</th>
-                <th>库存数量</th>
-              </tr>
-              <tr v-for="(item, index) in pdApplyDetailTable.dataSource">
-                <td>{{item.packageId}}</td>
-                <td>{{item.packageName}}</td>
-                <td>{{item.productName}}</td>
-                <td>{{item.number}}</td>
-                <td>{{item.spec}}</td>
-                <td>{{item.version}}</td>
-                <td>{{item.unitName}}</td>
-                <td>{{item.productNum}}</td>
-                <td>
-                   <a-form-item>
-                 <a-input  disabled="disabled"   @blur="(e)=>{handleConfirmBlur(e.target,item)}"  v-decorator="['pdPurchaseDetailTable['+index+'].applyNum', {'initialValue':item.applyNum,rules:validatorRules.applyNum}]"/>
-                  </a-form-item>
-                </td>
-                <td>{{item.stockNum}}</td>
-              </tr>
-            </table>
-          </div>
-         <a-col :span="12">
-          <a-form-item label="审核意见" :labelCol="labelCol" :wrapperCol="wrapperCol">
-            <a-input :disabled="disableSubmit" v-decorator="[ 'refuseReason', validatorRules.refuseReason]" placeholder="请输入审核意见" style="width: 100%;height: 80px"/>
-          </a-form-item>
-        </a-col>
         </a-row>
       </a-form>
-      <pd-apply-stock-record-out-modal ref="stockForm" @ok="modalFormOk"></pd-apply-stock-record-out-modal>
+        </a-card>
+        <a-card style="margin-bottom: 10px;">
+          <a-tabs v-model="activeKey" @change="handleChangeTabs">
+            <a-tab-pane tab="申领明细表" :key="refKeys[0]" :forceRender="true">
+              <div style="margin-bottom: 8px;">
+                <a-button type="primary" icon="download" @click="exportXls('申领产品列表')">导出</a-button>
+              </div>
+              <j-editable-table
+                bordered
+                :ref="refKeys[0]"
+                :loading="pdApplyDetailTable.loading"
+                :columns="pdApplyDetailTable.columns"
+                :dataSource="pdApplyDetailTable.dataSource"
+                :maxHeight="500"
+                :rowNumber="true"
+                :rowSelection="true"
+                :actionButton="false"
+                style="text-overflow: ellipsis;"
+              />
+            </a-tab-pane>
+          </a-tabs>
+        </a-card>
+        <a-card style="margin-bottom: 10px;">
+        <a-form :form="form">
+          <a-row>
+            <a-col :span="12">
+              <a-form-item label="审核意见" :labelCol="labelCol" :wrapperCol="wrapperCol">
+                <a-input :disabled="disableSubmit" v-decorator="[ 'refuseReason', validatorRules.refuseReason]" placeholder="请输入审核意见" style="width: 100%;height: 80px"/>
+              </a-form-item>
+            </a-col>
+          </a-row>
+        </a-form>
+      </a-card>
+      </div>
+      <pd-apply-stock-record-out-modal ref="stockForm"></pd-apply-stock-record-out-modal>
     </a-spin>
     <div class="drawer-bootom-button" v-show="!disableSubmit">
       <a-button @click="handleOk('yes')" type="primary" :loading="confirmLoading">审核通过</a-button>
@@ -118,6 +115,7 @@
     components: {JDate, JDictSelectTag,PdApplyStockRecordOutModal},
     data() {
       return {
+         disableSubmit:false,
         confirmLoading: false,
         labelCol: {span: 6},
         wrapperCol: {span: 16},
@@ -134,9 +132,24 @@
         },
        refKeys: ['pdApplyDetail', ],
         tableKeys:['pdApplyDetail', ],
+        activeKey: 'pdApplyDetail',
         // 申购单详细表
         pdApplyDetailTable: {
-          dataSource: []
+          loading: false,
+          dataSource: [],
+          columns: [
+            { title: '定数包编号', width:"130px",   key: 'packageId' },
+            { title: '定数包名称',  width:"130px", key: 'packageName' },
+            { title: '产品ID', key: 'productId', type: FormTypes.hidden },
+            { title: '产品名称', width:"250px",  key: 'productName' },
+            { title: '产品编号',width:"200px", align:"center", key: 'number' },
+            { title: '规格',width:"240px", align:"center", key: 'spec' },
+            { title: '型号', width:"240px",align:"center", key: 'version' },
+            { title: '单位',width:"50px", align:"center", key: 'unitName' },
+            { title: '产品数量', width:"100px",align:"center", key: 'productNum' },
+            {title: '申领数量',  width:"100px",align:"center",key: 'applyNum'},
+            { title: '库存数量', align:"center", key: 'stockNum' },
+          ]
         },
         url: {
           edit: "/pd/pdApplyOrder/edit",
@@ -286,11 +299,11 @@
     z-index:199;
   }
   /** Button按钮间距 */
-  .ant-btn {
+  /*.ant-btn {
     margin-left: 30px;
     margin-bottom: 30px;
     float: right;
-  }
+  }*/
   .tableStyle> tr > th{
     border: 1px solid #e8e8e8;
     text-align: center;

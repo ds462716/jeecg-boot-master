@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.pd.mapper.PdAllocationRecordMapper">
+
+
+    <sql id="PdAllocationRecordColumns">
+        a.id,
+        a.create_by,
+		a.create_time,
+		a.update_by,
+		a.update_time,
+		a.sys_org_code,
+        a.allocation_no,
+		a.allocation_date,
+        a.allocation_by,
+        a.out_dept_id,
+         a.in_dept_id,
+         a.total_num,
+         a.audit_status,
+         a.audit_by,
+         a.audit_date,
+          a.reject_reason,
+          a.remarks,
+          a.submit_status,
+           a.del_flag
+	</sql>
+
+    <sql id="PdAllocationRecordJoins">
+    </sql>
+
+
+    <!-- 列表查询 -->
+    <select id="selectList" resultType="org.jeecg.modules.pd.entity.PdAllocationRecord">
+        SELECT
+        <include refid="PdAllocationRecordColumns"/>
+        FROM pd_allocation_record a
+        <include refid="PdAllocationRecordJoins"/>
+        <where>
+            a.del_flag =#{DEL_FLAG_NORMAL}
+            <if test="id != null and id != ''">
+                AND a.id = #{id}
+            </if>
+            <if test="allocationNo != null and allocationNo != ''">
+                AND a.allocation_no = #{allocationNo}
+            </if>
+            <if test="auditStatus != null and auditStatus != ''">
+                AND a.audit_status = #{auditStatus}
+            </if>
+            <if test="submitStatus != null and submitStatus != ''">
+                AND a.submit_status = #{submitStatus}
+            </if>
+        </where>
+    </select>
+
+</mapper>

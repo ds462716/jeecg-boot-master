@@ -118,6 +118,7 @@
     components: {JDate, JDictSelectTag},
     data() {
       return {
+        disableSubmit:false,
         confirmLoading: false,
         labelCol: {span: 6},
         wrapperCol: {span: 16},
