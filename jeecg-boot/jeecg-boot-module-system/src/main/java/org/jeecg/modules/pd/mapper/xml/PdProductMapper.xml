@@ -33,6 +33,9 @@
         <result column="description" property="description" jdbcType="VARCHAR"/>
         <result column="is_charge" property="isCharge" jdbcType="VARCHAR"/>
         <result column="charge_code" property="chargeCode" jdbcType="VARCHAR"/>
+        <result column="is_urgent" property="isUrgent" jdbcType="VARCHAR"/>
+        <result column="up_quantity" property="upQuantity" jdbcType="DOUBLE"/>
+        <result column="purchased_quantity" property="purchasedQuantity" jdbcType="DOUBLE"/>
         <result column="licence_name0" property="licenceName0" jdbcType="VARCHAR"/>
         <result column="licence_num0" property="licenceNum0" jdbcType="VARCHAR"/>
         <result column="licence_date0" property="licenceDate0" jdbcType="DATE"/>
@@ -139,6 +142,9 @@
         a.description,
         a.is_charge,
         a.charge_code,
+        a.is_urgent,
+        a.up_quantity,
+        a.purchased_quantity,
         a.licence_name0,
         a.licence_num0,
         a.licence_date0,
@@ -235,6 +241,9 @@
         a.description,
         a.is_charge,
         a.charge_code,
+        a.is_urgent,
+        a.up_quantity,
+        a.purchased_quantity,
         a.create_by,
         a.create_time,
         a.update_by,

@@ -175,15 +175,54 @@
         <a-row class="form-row" :gutter="{ xs: 8, sm: 16, md: 24, lg: 32 }">
           <a-col :lg="12">
             <a-form-item label="是否计费" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-select v-decorator="[ 'isCharge',{'initialValue':'1',rules:isChargeRules}]" placeholder="请选择是否计费">
+              <a-select @change="isChargeChange" v-decorator="[ 'isCharge',{'initialValue':'1',rules:isChargeRules}]" placeholder="请选择是否计费">
                 <a-select-option value="0">是</a-select-option>
                 <a-select-option value="1">否</a-select-option>
               </a-select>
             </a-form-item>
           </a-col>
-          <a-col :lg="12">
+          <a-col :lg="12" v-if="isChargeBl">
             <a-form-item label="产品收费代码" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input v-decorator="[ 'chargeCode', validatorRules.chargeCode]" placeholder="请输入产品收费代码" style="width: 100%"/>
+              <a-input v-decorator="[ 'chargeCode', validatorRules.chargeCodeF]" placeholder="请输入产品收费代码" style="width: 100%"/>
+            </a-form-item>
+          </a-col>
+          <a-col :lg="12" v-else="!isChargeBl">
+            <a-form-item label="产品收费代码" :labelCol="labelCol" :wrapperCol="wrapperCol">
+              <a-input v-decorator="[ 'chargeCode', validatorRules.chargeCodeT]" placeholder="请输入产品收费代码" style="width: 100%"/>
+            </a-form-item>
+          </a-col>
+        </a-row>
+
+        <a-row class="form-row" :gutter="{ xs: 8, sm: 16, md: 24, lg: 32 }">
+          <a-col :lg="12">
+            <a-form-item label="是否紧急产品" :labelCol="labelCol" :wrapperCol="wrapperCol">
+              <a-select @change="isUrgentChange" v-decorator="[ 'isUrgent',{'initialValue':'1',rules:isUrgentRules}]" placeholder="请选择是否是紧急产品">
+                <a-select-option value="0">是</a-select-option>
+                <a-select-option value="1">否</a-select-option>
+              </a-select>
+            </a-form-item>
+          </a-col>
+          <a-col :lg="12" v-if="isUrgentBl">
+            <a-form-item label="紧急采购数量" :labelCol="labelCol" :wrapperCol="wrapperCol">
+              <a-input-number disabled v-decorator="[ 'upQuantity', validatorRules.upQuantityF]" style="width: 100%"/>
+            </a-form-item>
+          </a-col>
+          <a-col :lg="12" v-if="!isUrgentBl">
+            <a-form-item label="紧急产品数量" :labelCol="labelCol" :wrapperCol="wrapperCol">
+              <a-input-number v-decorator="[ 'upQuantity',validatorRules.upQuantityT]" placeholder="请输入紧急产品采购数量" style="width: 100%"/>
+            </a-form-item>
+          </a-col>
+        </a-row>
+
+        <a-row class="form-row" :gutter="{ xs: 8, sm: 16, md: 24, lg: 32 }">
+          <a-col :lg="12">
+            <a-form-item label="已采购数量" :labelCol="labelCol" :wrapperCol="wrapperCol">
+              <a-input disabled v-decorator="[ 'purchasedQuantity']" style="width: 100%"/>
+            </a-form-item>
+          </a-col>
+          <a-col :lg="12">
+            <a-form-item label="编码规则" :labelCol="labelCol" :wrapperCol="wrapperCol">
+              <j-select-encodingRule placeholder="请选择编码规则" :multiple="true" v-decorator="['pdProductRules']"/>
             </a-form-item>
           </a-col>
         </a-row>
@@ -234,22 +273,6 @@
 
         <a-row class="form-row" :gutter="{ xs: 8, sm: 16, md: 24, lg: 32 }">
           <a-col :lg="12">
-            <a-form-item label="编码规则" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <j-select-encodingRule placeholder="请选择编码规则" :multiple="true" v-decorator="['pdProductRules']"/>
-            </a-form-item>
-          </a-col>
-          <a-col :lg="12">
-            <a-form-item label="产品权限" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-select v-decorator="[ 'power',{'initialValue':'0'}]" placeholder="请选择产品权限">
-                <a-select-option value="0">公有</a-select-option>
-                <a-select-option value="1">自有</a-select-option>
-              </a-select>
-            </a-form-item>
-          </a-col>
-        </a-row>
-
-        <a-row class="form-row" :gutter="{ xs: 8, sm: 16, md: 24, lg: 32 }">
-          <a-col :lg="12">
             <a-form-item label="进价" :labelCol="labelCol" :wrapperCol="wrapperCol">
               <a-input-number v-decorator="[ 'purchasePrice', validatorRules.purchasePrice]" placeholder="请输入进价" style="width: 100%"/>
             </a-form-item>
@@ -257,6 +280,17 @@
           <a-col :lg="12">
             <a-form-item label="出价" :labelCol="labelCol" :wrapperCol="wrapperCol">
               <a-input-number v-decorator="[ 'sellingPrice', validatorRules.sellingPrice]" placeholder="请输入出价" style="width: 100%"/>
+            </a-form-item>
+          </a-col>
+        </a-row>
+
+        <a-row class="form-row" :gutter="{ xs: 8, sm: 16, md: 24, lg: 32 }">
+          <a-col :lg="12">
+            <a-form-item label="产品权限" :labelCol="labelCol" :wrapperCol="wrapperCol">
+              <a-select v-decorator="[ 'power',{'initialValue':'0'}]" placeholder="请选择产品权限">
+                <a-select-option value="0">公有</a-select-option>
+                <a-select-option value="1">自有</a-select-option>
+              </a-select>
             </a-form-item>
           </a-col>
         </a-row>
@@ -380,6 +414,8 @@
         categoryTwoData: [],
         categoryTwoValue: undefined,
         notFoundContent:"未找到内容",
+        isChargeBl:true,
+        isUrgentBl:true,
         form: this.$form.createForm(this),
         title:"操作",
         width:1200,
@@ -444,8 +480,16 @@
           registration: {rules: [
               {required: true, message: '请输入注册证!'},
           ]},
-          chargeCode: {rules: [
-          ]},
+          chargeCodeF: {rules: [
+            ]},
+          chargeCodeT: {rules: [
+              {required: true, message: '请输入产品收费代码!'},
+            ]},
+          upQuantityF: {rules: [
+            ]},
+          upQuantityT: {rules: [
+              {required: true, message: '请输入紧急产品数量!'},
+            ]},
           description: {rules: [
           ]}
         },
@@ -453,6 +497,12 @@
           {
             required: true, // 必填
             message: '请选择是否计费' // 显示的文本
+          }
+        ],
+        isUrgentRules:[
+          {
+            required: true, // 必填
+            message: '请选择是否是紧急产品' // 显示的文本
           }
         ],
         url: {
@@ -541,6 +591,12 @@
             }
             record.pdProductRules = pdProductRuleStr;
           }
+          //紧急产品状态还原
+          let isUrgent = record.isUrgent;
+          this.isUrgentChange(isUrgent);
+          //收费代码还原
+          let isCharge = record.isCharge;
+          this.isChargeChange(isCharge);
         }else{
           for(let index = 0;index<12;index++){
             if(!record["licenceSite"+index]){
@@ -549,13 +605,16 @@
             if(!record["licenceValidity"+index]){
               this.imgIsValidity[index]="validity0";
             }
-          }
+          };
+          //是否计费状态还原；
+          this.isChargeBl = true;
+          this.isUrgentBl = true;
         }
         this.form.resetFields();
         this.model = Object.assign({}, record);
         this.visible = true;
         this.$nextTick(() => {
-          this.form.setFieldsValue(pick(this.model,'number','name','py','wb','bname','bpy','bwb','zdy','spec','version','unitId','power','pdProductRules','categoryOne','categoryTwo','groupId','venderId','isCharge','supplierId','purchasePrice','sellingPrice','registration','chargeCode','description','licenceName0','licenceNum0','licenceDate0','licenceSite0','licenceName1','licenceNum1','licenceDate1','licenceSite1','licenceName2','licenceNum2','licenceDate2','licenceSite2','licenceName3','licenceNum3','licenceDate3','licenceSite3','licenceName4','licenceNum4','licenceDate4','licenceSite4','licenceName5','licenceNum5','licenceDate5','licenceSite5','licenceName6','licenceNum6','licenceDate6','licenceSite6','licenceName7','licenceNum7','licenceDate7','licenceSite7','licenceName8','licenceNum8','licenceDate8','licenceSite8','licenceName9','licenceNum9','licenceDate9','licenceSite9','licenceName10','licenceNum10','licenceDate10','licenceSite10','licenceName11','licenceNum11','licenceDate11','licenceSite11'))
+          this.form.setFieldsValue(pick(this.model,'number','name','py','wb','bname','bpy','bwb','zdy','spec','version','unitId','power','pdProductRules','categoryOne','categoryTwo','groupId','venderId','isCharge','supplierId','purchasePrice','sellingPrice','registration','chargeCode','description','isUrgent','upQuantity','purchasedQuantity','licenceName0','licenceNum0','licenceDate0','licenceSite0','licenceName1','licenceNum1','licenceDate1','licenceSite1','licenceName2','licenceNum2','licenceDate2','licenceSite2','licenceName3','licenceNum3','licenceDate3','licenceSite3','licenceName4','licenceNum4','licenceDate4','licenceSite4','licenceName5','licenceNum5','licenceDate5','licenceSite5','licenceName6','licenceNum6','licenceDate6','licenceSite6','licenceName7','licenceNum7','licenceDate7','licenceSite7','licenceName8','licenceNum8','licenceDate8','licenceSite8','licenceName9','licenceNum9','licenceDate9','licenceSite9','licenceName10','licenceNum10','licenceDate10','licenceSite10','licenceName11','licenceNum11','licenceDate11','licenceSite11'))
           //获取光标
           let input = this.$refs['inputFocus'];
           input.focus()
@@ -612,7 +671,7 @@
         this.close()
       },
       popupCallback(row){
-        this.form.setFieldsValue(pick(row,'number','name','py','wb','bname','bpy','bwb','zdy','spec','version','unitId','power','categoryOne','categoryTwo','groupId','venderId','isCharge','supplierId','purchasePrice','sellingPrice','registration','chargeCode','description','licenceName0','licenceNum0','licenceDate0','licenceSite0','licenceName1','licenceNum1','licenceDate1','licenceSite1','licenceName2','licenceNum2','licenceDate2','licenceSite2','licenceName3','licenceNum3','licenceDate3','licenceSite3','licenceName4','licenceNum4','licenceDate4','licenceSite4','licenceName5','licenceNum5','licenceDate5','licenceSite5','licenceName6','licenceNum6','licenceDate6','licenceSite6','licenceName7','licenceNum7','licenceDate7','licenceSite7','licenceName8','licenceNum8','licenceDate8','licenceSite8','licenceName9','licenceNum9','licenceDate9','licenceSite9','licenceName10','licenceNum10','licenceDate10','licenceSite10','licenceName11','licenceNum11','licenceDate11','licenceSite11'))
+        this.form.setFieldsValue(pick(row,'number','name','py','wb','bname','bpy','bwb','zdy','spec','version','unitId','power','categoryOne','categoryTwo','groupId','venderId','isCharge','supplierId','purchasePrice','sellingPrice','registration','chargeCode','description','isUrgent','upQuantity','purchasedQuantity','licenceName0','licenceNum0','licenceDate0','licenceSite0','licenceName1','licenceNum1','licenceDate1','licenceSite1','licenceName2','licenceNum2','licenceDate2','licenceSite2','licenceName3','licenceNum3','licenceDate3','licenceSite3','licenceName4','licenceNum4','licenceDate4','licenceSite4','licenceName5','licenceNum5','licenceDate5','licenceSite5','licenceName6','licenceNum6','licenceDate6','licenceSite6','licenceName7','licenceNum7','licenceDate7','licenceSite7','licenceName8','licenceNum8','licenceDate8','licenceSite8','licenceName9','licenceNum9','licenceDate9','licenceSite9','licenceName10','licenceNum10','licenceDate10','licenceSite10','licenceName11','licenceNum11','licenceDate11','licenceSite11'))
       },
       pinyinTran(e){
         let val = e.target.value;
@@ -745,6 +804,24 @@
         let val = e.target.value;
         let number = getPrdNumber(val,that);
         this.form.setFieldsValue({number:number});
+      },
+      //是否需要校验产品收费代码
+      isChargeChange(value){
+        if(value=="0"){
+          //需要校验产品收费代码
+          this.isChargeBl = false;
+        }else{
+          this.isChargeBl = true;
+        }
+      },
+      //是否是紧急产品
+      isUrgentChange(value){
+        if(value=="0"){
+          //需要校验产品收费代码
+          this.isUrgentBl = false;
+        }else{
+          this.isUrgentBl = true;
+        }
       }
     }
   }
