@@ -119,7 +119,7 @@
     <select id="getOptionsForSelect" resultType="org.jeecg.modules.pd.vo.PdGoodsAllocationPage" parameterType="org.jeecg.modules.pd.entity.PdGoodsAllocation">
         SELECT
             a.NAME AS label,
-            a.id AS 'value',
+            a.code AS 'value',
             a.parent_id AS parent
         FROM
             pd_goods_allocation a
@@ -127,6 +127,9 @@
             a.del_flag = #{DEL_FLAG_NORMAL}
         <if test="departId != null and departId != ''">
             AND a.depart_id = #{departId}
+        </if>
+        <if test="areaType != null and areaType != ''">
+            AND a.area_type = #{areaType}
         </if>
     </select>
 </mapper>

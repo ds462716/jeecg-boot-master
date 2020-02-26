@@ -1,5 +1,6 @@
 package org.jeecg.modules.pd.service.impl;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.commons.collections.CollectionUtils;
 import org.jeecg.common.constant.PdConstant;
 import org.jeecg.modules.pd.entity.PdStockRecord;
@@ -33,7 +34,7 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
 	@Transactional
 	public void saveMain(PdStockRecord pdStockRecord, List<PdStockRecordDetail> pdStockRecordDetailList) {
 		pdStockRecord.setRecordType(PdConstant.RECODE_TYPE_1); // 入库
-		pdStockRecord.setRecordState(PdConstant.RECODE_STATE_1); // 待提交
+		pdStockRecord.setSubmitStatus(PdConstant.RECODE_STATE_1); // 待提交
 		pdStockRecordMapper.insert(pdStockRecord);
 		if(CollectionUtils.isNotEmpty(pdStockRecordDetailList)) {
 			for(PdStockRecordDetail entity : pdStockRecordDetailList) {
@@ -78,5 +79,15 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
 			pdStockRecordMapper.deleteById(id);
 		}
 	}
-	
+
+	@Override
+	public List<PdStockRecord> queryList(PdStockRecord pdStockRecord) {
+		return pdStockRecordMapper.selectList(pdStockRecord);
+	}
+
+	@Override
+	public Page<PdStockRecord> queryList(Page<PdStockRecord> pageList, PdStockRecord pdStockRecord) {
+		return pageList.setRecords(pdStockRecordMapper.selectList(pdStockRecord));
+	}
+
 }

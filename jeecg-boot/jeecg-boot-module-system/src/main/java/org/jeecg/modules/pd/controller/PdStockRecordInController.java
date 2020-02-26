@@ -35,7 +35,6 @@ import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.pd.entity.PdStockRecordDetail;
 import org.jeecg.modules.pd.entity.PdStockRecord;
-import org.jeecg.modules.pd.vo.PdStockRecordPage;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -75,13 +74,14 @@ public class PdStockRecordInController {
 	  */
 	@GetMapping(value = "/initModal")
 	public Result<?> initModal(HttpServletRequest req) {
-		PdStockRecordPage pdStockRecord = new PdStockRecordPage();
+		PdStockRecord pdStockRecord = new PdStockRecord();
 
 		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
 		SysDepart sysDepart = sysDepartService.getDepartByOrgCode(sysUser.getOrgCode());
 
 		PdGoodsAllocation pdGoodsAllocation = new PdGoodsAllocation();
 		pdGoodsAllocation.setDepartId(sysDepart.getId());
+		pdGoodsAllocation.setAreaType(PdConstant.GOODS_ALLCATION_AREA_TYPE_2);
 		List<PdGoodsAllocationPage> goodsAllocationList = pdGoodsAllocationService.getOptionsForSelect(pdGoodsAllocation);
 
 		//开关-是否允许入库量大于订单量   1-允许入库量大于订单量；0-不允许入库量大于订单量
@@ -99,11 +99,11 @@ public class PdStockRecordInController {
 		//获取入库单号
 		pdStockRecord.setRecordNo(UUIDUtil.generateOrderNoByType(PdConstant.ORDER_NO_FIRST_LETTER_RK));
 		//获取当前日期
-		pdStockRecord.setRecordDateStr(DateUtils.formatDate());
-		pdStockRecord.setRecordDate(DateUtils.getDate());
+		pdStockRecord.setSubmitDateStr(DateUtils.formatDate());
+		pdStockRecord.setSubmitDate(DateUtils.getDate());
 		//登录人姓名
-		pdStockRecord.setRecordPeople(sysUser.getId());
-		pdStockRecord.setRecordPeopleName(sysUser.getRealname());
+		pdStockRecord.setSubmitBy(sysUser.getId());
+		pdStockRecord.setSubmitByName(sysUser.getRealname());
 		//默认入库类型
 		pdStockRecord.setInType(PdConstant.IN_TYPE_1);
 		//库区库位二级联动下拉框
@@ -125,41 +125,43 @@ public class PdStockRecordInController {
 								   @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
 								   @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
 								   HttpServletRequest req) {
-		QueryWrapper<PdStockRecord> queryWrapper = QueryGenerator.initQueryWrapper(pdStockRecord, req.getParameterMap());
+//		QueryWrapper<PdStockRecord> queryWrapper = QueryGenerator.initQueryWrapper(pdStockRecord, req.getParameterMap());
 		Page<PdStockRecord> page = new Page<PdStockRecord>(pageNo, pageSize);
-		IPage<PdStockRecord> pageList = pdStockRecordService.page(page, queryWrapper);
+//		IPage<PdStockRecord> pageList = pdStockRecordService.page(page, queryWrapper);
+		pdStockRecord.setRecordType(PdConstant.RECODE_TYPE_1);
+		IPage<PdStockRecord> pageList = pdStockRecordService.queryList(page, pdStockRecord);
 		return Result.ok(pageList);
 	}
 	
 	/**
 	 *   添加
 	 *
-	 * @param pdStockRecordPage
+	 * @param PdStockRecord
 	 * @return
 	 */
 	@PostMapping(value = "/add")
-	public Result<?> add(@RequestBody PdStockRecordPage pdStockRecordPage) {
+	public Result<?> add(@RequestBody PdStockRecord PdStockRecord) {
 		PdStockRecord pdStockRecord = new PdStockRecord();
-		BeanUtils.copyProperties(pdStockRecordPage, pdStockRecord);
-		pdStockRecordService.saveMain(pdStockRecord, pdStockRecordPage.getPdStockRecordDetailList());
+		BeanUtils.copyProperties(PdStockRecord, pdStockRecord);
+		pdStockRecordService.saveMain(pdStockRecord, PdStockRecord.getPdStockRecordDetailList());
 		return Result.ok("添加成功！");
 	}
 	
 	/**
 	 *  编辑
 	 *
-	 * @param pdStockRecordPage
+	 * @param PdStockRecord
 	 * @return
 	 */
 	@PutMapping(value = "/edit")
-	public Result<?> edit(@RequestBody PdStockRecordPage pdStockRecordPage) {
+	public Result<?> edit(@RequestBody PdStockRecord PdStockRecord) {
 		PdStockRecord pdStockRecord = new PdStockRecord();
-		BeanUtils.copyProperties(pdStockRecordPage, pdStockRecord);
+		BeanUtils.copyProperties(PdStockRecord, pdStockRecord);
 		PdStockRecord pdStockRecordEntity = pdStockRecordService.getById(pdStockRecord.getId());
 		if(pdStockRecordEntity==null) {
 			return Result.error("未找到对应数据");
 		}
-		pdStockRecordService.updateMain(pdStockRecord, pdStockRecordPage.getPdStockRecordDetailList());
+		pdStockRecordService.updateMain(pdStockRecord, PdStockRecord.getPdStockRecordDetailList());
 		return Result.ok("编辑成功!");
 	}
 	
@@ -240,9 +242,9 @@ public class PdStockRecordInController {
       }
 
       // Step.3 组装pageList
-      List<PdStockRecordPage> pageList = new ArrayList<PdStockRecordPage>();
+      List<PdStockRecord> pageList = new ArrayList<PdStockRecord>();
       for (PdStockRecord main : pdStockRecordList) {
-          PdStockRecordPage vo = new PdStockRecordPage();
+          PdStockRecord vo = new PdStockRecord();
           BeanUtils.copyProperties(main, vo);
           List<PdStockRecordDetail> pdStockRecordDetailList = pdStockRecordDetailService.selectByMainId(main.getId());
           vo.setPdStockRecordDetailList(pdStockRecordDetailList);
@@ -252,7 +254,7 @@ public class PdStockRecordInController {
       // Step.4 AutoPoi 导出Excel
       ModelAndView mv = new ModelAndView(new JeecgEntityExcelView());
       mv.addObject(NormalExcelConstants.FILE_NAME, "出入库记录表列表");
-      mv.addObject(NormalExcelConstants.CLASS, PdStockRecordPage.class);
+      mv.addObject(NormalExcelConstants.CLASS, PdStockRecord.class);
       mv.addObject(NormalExcelConstants.PARAMS, new ExportParams("出入库记录表数据", "导出人:"+sysUser.getRealname(), "出入库记录表"));
       mv.addObject(NormalExcelConstants.DATA_LIST, pageList);
       return mv;
@@ -276,8 +278,8 @@ public class PdStockRecordInController {
           params.setHeadRows(1);
           params.setNeedSave(true);
           try {
-              List<PdStockRecordPage> list = ExcelImportUtil.importExcel(file.getInputStream(), PdStockRecordPage.class, params);
-              for (PdStockRecordPage page : list) {
+              List<PdStockRecord> list = ExcelImportUtil.importExcel(file.getInputStream(), PdStockRecord.class, params);
+              for (PdStockRecord page : list) {
                   PdStockRecord po = new PdStockRecord();
                   BeanUtils.copyProperties(page, po);
                   pdStockRecordService.saveMain(po, page.getPdStockRecordDetailList());

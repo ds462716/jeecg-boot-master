@@ -34,7 +34,7 @@
               </a-col>
               <a-col :span="6">
                 <a-form-item label="出库日期" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                  <j-date disabled placeholder="请选择入库日期" v-decorator="[ 'recordDate', validatorRules.recordDate]" :trigger-change="true" style="width: 100%"/>
+                  <j-date disabled placeholder="请选择入库日期" v-decorator="[ 'submitDate', validatorRules.submitDate]" :trigger-change="true" style="width: 100%"/>
                 </a-form-item>
               </a-col>
               <a-col :span="6">
@@ -45,10 +45,10 @@
               </a-col>
               <a-col :span="6">
                 <a-form-item label="操作人" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                  <a-input disabled v-decorator="[ 'recordPeopleName', validatorRules.recordPeopleName]" placeholder="请输入操作人"></a-input>
+                  <a-input disabled v-decorator="[ 'submitByName', validatorRules.submitByName]" placeholder="请输入操作人"></a-input>
                 </a-form-item>
                 <a-form-item v-show="false" label="操作人ID">
-                  <a-input v-show="false" v-decorator="[ 'recordPeople', {}]"></a-input>
+                  <a-input v-show="false" v-decorator="[ 'submitBy', {}]"></a-input>
                 </a-form-item>
                 <a-form-item v-show="false" label="入库部门ID">
                   <a-input v-show="false" v-decorator="[ 'inDepartId', {}]" ></a-input>
@@ -295,11 +295,11 @@
           allocationNo:{},
           applyNo:{},
           dosagertNo:{},
-          recordPeople:{},
-          recordPeopleName:{},
-          recordDate:{},
-          recordState:{},
-          rejectReason:{},
+          submitBy:{},
+          submitByName:{},
+          submitDate:{},
+          submitStatus:{},
+          refuseReason:{},
           remarks:{},
           isAllowProduct:{rules: [{required: true, message: '请选择!'}]},
           isAllowNum:{rules: [{required: true, message: '请选择!'}]},
@@ -310,9 +310,9 @@
           outDepartId:{},
           inDepartId:{},
           supplierId:{rules: [{required: true, message: '请选择供应商!'}]},
-          checkPeople:{},
-          checkTime:{},
-          returnState:{},
+          auditBy:{},
+          auditDate:{},
+          returnStatus:{},
           extend1:{},
           extend2:{},
           extend3:{},
@@ -541,7 +541,7 @@
       editAfter() {
         // 加载子表数据
         if (this.model.id) {
-          let fieldval = pick(this.model,'recordNo','inType','recordPeople','recordPeopleName','recordDate','remarks','inDepartId','supplierId',
+          let fieldval = pick(this.model,'recordNo','inType','submitBy','submitByName','submitDate','remarks','inDepartId','supplierId',
                                          'testResult','storageResult','temperature','humidity','remarks')
           this.$nextTick(() => {
             this.form.setFieldsValue(fieldval)
@@ -566,7 +566,7 @@
             this.allowInMoreOrder = this.initData.allowInMoreOrder;
             this.allowNotOrderProduct = this.initData.allowNotOrderProduct;
 
-            let fieldval = pick(this.initData,'recordNo','inType','recordPeople','recordPeopleName','recordDate','remarks','inDepartId','supplierId',
+            let fieldval = pick(this.initData,'recordNo','inType','submitBy','submitByName','submitDate','remarks','inDepartId','supplierId',
                                               'testResult','storageResult','temperature','humidity','remarks');
             this.goodsAllocationList = this.initData.goodsAllocationList;
             this.$nextTick(() => {
@@ -647,7 +647,7 @@
         this.$message.error(msg)
       },
       popupCallback(row){
-        this.form.setFieldsValue(pick(row,'recordNo','recordType','outType','inType','orderNo','allocationNo','applyNo','dosagertNo','recordPeople','recordDate','recordState','rejectReason','remarks','testResult','storageResult','temperature','humidity','outDepartId','inDepartId','supplierId','checkPeople','checkTime','returnState','extend1','extend2','extend3','delFlag','sysOrgParentCode'))
+        this.form.setFieldsValue(pick(row,'recordNo','recordType','outType','inType','orderNo','allocationNo','applyNo','dosagertNo','submitBy','submitDate','submitStatus','refuseReason','remarks','testResult','storageResult','temperature','humidity','outDepartId','inDepartId','supplierId','auditBy','auditDate','returnStatus','extend1','extend2','extend3','delFlag','sysOrgParentCode'))
       },
       /** 切换全屏显示 */
       handleClickToggleFullScreen() {

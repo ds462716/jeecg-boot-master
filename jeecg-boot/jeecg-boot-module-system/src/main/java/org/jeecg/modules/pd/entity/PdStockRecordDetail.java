@@ -36,11 +36,11 @@ public class PdStockRecordDetail extends BaseEntity {
 	@Excel(name = "产品条码", width = 15)
 	private String productBarCode;
 	/**货位ID*/
-	@Excel(name = "货区ID", width = 15)
-	private String huoquId;
+//	@Excel(name = "货区ID", width = 15)
+//	private String huoquId;
 	/**货位ID*/
-	@Excel(name = "货位ID", width = 15)
-	private String huoweiId;
+	@Excel(name = "货位Code", width = 15)
+	private String huoweiCode;
 	/**产品批号*/
 	@Excel(name = "产品批号", width = 15)
 	private String batchNo;
@@ -124,13 +124,13 @@ public class PdStockRecordDetail extends BaseEntity {
 	@TableField(exist = false)
 	private String registration;//注册证号
 	@TableField(exist = false)
-	private String inDeptName;//入库科室名称
+	private String inDepartName;//入库科室名称
 	@TableField(exist = false)
-	private String outDeptName;//出库科室名称
+	private String outDepartName;//出库科室名称
 	@TableField(exist = false)
 	@JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd HH:mm:ss")
 	@DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
-	private Date recordDate;//出入库时间
+	private Date submitDate;//出入库时间
 	@TableField(exist = false)
 	private String recordType;//出入库类型
 	@TableField(exist = false)
@@ -138,7 +138,7 @@ public class PdStockRecordDetail extends BaseEntity {
 	@TableField(exist = false)
 	private  BigDecimal pdTotalPrice;//入库金额
 	@TableField(exist = false)
-	private String recordState;//记录状态
+	private String submitStatus;//记录状态
 	@TableField(exist = false)
 	private String deptId;//科室ID
 	@TableField(exist = false)

@@ -2,4 +2,107 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.jeecg.modules.pd.mapper.PdStockRecordMapper">
 
+    <sql id="PdStockRecordDetailColumns">
+        a.id,
+        a.record_no,
+        a.record_type,
+        a.out_type,
+        a.in_type,
+        a.order_no,
+        a.allocation_no,
+        a.apply_no,
+        a.dosagert_no,
+        a.submit_by,
+        a.submit_date,
+        a.submit_status,
+        a.refuse_reason,
+        a.remarks,
+        a.test_result,
+        a.storage_result,
+        a.temperature,
+        a.humidity,
+        a.out_depart_id,
+        a.in_depart_id,
+        a.supplier_id,
+        a.audit_by,
+        a.audit_date,
+        a.return_status,
+        a.extend1,
+        a.extend2,
+        a.extend3,
+        a.del_flag,
+        a.create_by,
+        a.create_time,
+        a.update_by,
+        a.update_time,
+        a.sys_org_code,
+        a.sys_org_parent_code
+	</sql>
+
+
+
+    <select id="selectList" resultType="org.jeecg.modules.pd.entity.PdStockRecord" parameterType="org.jeecg.modules.pd.entity.PdStockRecord">
+      select
+        <include refid="PdStockRecordDetailColumns"/>,
+        b.depart_name as inDepartName,
+        c.depart_name as outDepartName,
+        d.name as supplierName,
+        e.realname as submitByName,
+        e.realname as auditByName
+      from
+        pd_stock_record a
+        left join sys_depart b on a.in_depart_id = b.id
+        left join sys_depart c on a.out_depart_id = b.id
+        left join pd_supplier d on a.supplier_id = d.id
+        left join sys_user e on a.submit_by = e.id
+        left join sys_user f on a.audit_by = f.id
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+            <if test="recordNo != null and recordNo != ''">
+                AND a.record_no = #{recordNo}
+            </if>
+            <if test="recordType != null and recordType != ''">
+                AND a.record_type = #{recordType}
+            </if>
+            <if test="outType != null and outType != ''">
+                AND a.out_type = #{outType}
+            </if>
+            <if test="inType != null and inType != ''">
+                AND a.in_type = #{inType}
+            </if>
+            <if test="orderNo != null and orderNo != ''">
+                AND a.order_no = #{orderNo}
+            </if>
+            <if test="allocationNo != null and allocationNo != ''">
+                AND a.allocation_no = #{allocationNo}
+            </if>
+            <if test="applyNo != null and applyNo != ''">
+                AND a.apply_no = #{applyNo}
+            </if>
+            <if test="dosagertNo != null and dosagertNo != ''">
+                AND a.dosagert_no = #{dosagertNo}
+            </if>
+
+
+            <if test="submitBy != null and submitBy != ''">
+                AND a.submit_by = #{submitBy}
+            </if>
+
+            <if test="submitStatus != null and submitStatus != ''">
+                AND a.submit_status = #{submitStatus}
+            </if>
+            <if test="outDepartId != null and outDepartId != ''">
+                AND a.out_depart_id = #{outDepartId}
+            </if>
+            <if test="inDepartId != null and inDepartId != ''">
+                AND a.in_depart_id = #{inDepartId}
+            </if>
+            <if test="supplierId != null and supplierId != ''">
+                AND a.supplier_id = #{supplierId}
+            </if>
+
+        </where>
+        order by a.update_time desc
+    </select>
+
 </mapper>

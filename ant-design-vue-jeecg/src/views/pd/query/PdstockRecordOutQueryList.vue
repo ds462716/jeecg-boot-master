@@ -88,7 +88,7 @@
           {
             title:'出库日期',
             align:"center",
-            dataIndex: 'recordDate',
+            dataIndex: 'submitDate',
             customRender:function (text) {
               return !text?"":(text.length>10?text.substr(0,10):text)
             }
@@ -96,12 +96,12 @@
           {
             title:'出库科室',
             align:"center",
-            dataIndex: 'outDeptName'
+            dataIndex: 'outDepartName'
           },
           {
             title:'入库科室',
             align:"center",
-            dataIndex: 'inDeptName'
+            dataIndex: 'inDepartName'
           },
           {
             title:'产品名称',

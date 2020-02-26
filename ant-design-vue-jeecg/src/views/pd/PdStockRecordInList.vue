@@ -29,15 +29,15 @@
     <div class="table-operator">
       <a-button @click="handleAdd" type="primary" icon="plus">新增</a-button>
       <a-button type="primary" icon="download" @click="handleExportXls('出入库记录表')">导出</a-button>
-      <a-upload name="file" :showUploadList="false" :multiple="false" :headers="tokenHeader" :action="importExcelUrl" @change="handleImportExcel">
-        <a-button type="primary" icon="import">导入</a-button>
-      </a-upload>
-      <a-dropdown v-if="selectedRowKeys.length > 0">
-        <a-menu slot="overlay">
-          <a-menu-item key="1" @click="batchDel"><a-icon type="delete"/>删除</a-menu-item>
-        </a-menu>
-        <a-button style="margin-left: 8px"> 批量操作 <a-icon type="down" /></a-button>
-      </a-dropdown>
+      <!--<a-upload name="file" :showUploadList="false" :multiple="false" :headers="tokenHeader" :action="importExcelUrl" @change="handleImportExcel">-->
+        <!--<a-button type="primary" icon="import">导入</a-button>-->
+      <!--</a-upload>-->
+      <!--<a-dropdown v-if="selectedRowKeys.length > 0">-->
+        <!--<a-menu slot="overlay">-->
+          <!--<a-menu-item key="1" @click="batchDel"><a-icon type="delete"/>删除</a-menu-item>-->
+        <!--</a-menu>-->
+        <!--<a-button style="margin-left: 8px"> 批量操作 <a-icon type="down" /></a-button>-->
+      <!--</a-dropdown>-->
     </div>
 
     <!-- table区域-begin -->
@@ -80,19 +80,19 @@
         </template>
 
         <span slot="action" slot-scope="text, record">
-          <a @click="handleEdit(record)">编辑</a>
+          <a @click="handleEdit(record)">查看</a>
 
-          <a-divider type="vertical" />
-          <a-dropdown>
-            <a class="ant-dropdown-link">更多 <a-icon type="down" /></a>
-            <a-menu slot="overlay">
-              <a-menu-item>
-                <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.id)">
-                  <a>删除</a>
-                </a-popconfirm>
-              </a-menu-item>
-            </a-menu>
-          </a-dropdown>
+          <!--<a-divider type="vertical" />-->
+          <!--<a-dropdown>-->
+            <!--<a class="ant-dropdown-link">更多 <a-icon type="down" /></a>-->
+            <!--<a-menu slot="overlay">-->
+              <!--<a-menu-item>-->
+                <!--<a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.id)">-->
+                  <!--<a>删除</a>-->
+                <!--</a-popconfirm>-->
+              <!--</a-menu-item>-->
+            <!--</a-menu>-->
+          <!--</a-dropdown>-->
         </span>
 
       </a-table>
@@ -136,17 +136,17 @@
           {
             title:'入库库房',
             align:"center",
-            dataIndex: 'inDepartId'
+            dataIndex: 'inDepartName'
           },
           {
             title:'供应商',
             align:"center",
-            dataIndex: 'supplierId'
+            dataIndex: 'supplierName'
           },
           {
             title:'入库时间',
             align:"center",
-            dataIndex: 'recordDate',
+            dataIndex: 'submitDate',
             customRender:function (text) {
               return !text?"":(text.length>10?text.substr(0,10):text)
             }
@@ -159,12 +159,12 @@
           {
             title:'操作人',
             align:"center",
-            dataIndex: 'recordPeople'
+            dataIndex: 'submitByName'
           },
           {
             title:'状态',
             align:"center",
-            dataIndex: 'recordState'
+            dataIndex: 'submitStatus'
           },
           {
             title: '操作',
@@ -178,16 +178,16 @@
           delete: "/pd/pdStockRecordIn/delete",
           deleteBatch: "/pd/pdStockRecordIn/deleteBatch",
           exportXlsUrl: "/pd/pdStockRecordIn/exportXls",
-          importExcelUrl: "pd/pdStockRecordIn/importExcel",
+          // importExcelUrl: "pd/pdStockRecordIn/importExcel",
         },
         dictOptions:{
         },
       }
     },
     computed: {
-      importExcelUrl: function(){
-        return `${window._CONFIG['domianURL']}/${this.url.importExcelUrl}`;
-      }
+      // importExcelUrl: function(){
+      //   return `${window._CONFIG['domianURL']}/${this.url.importExcelUrl}`;
+      // }
     },
     methods: {
       initDictConfig(){

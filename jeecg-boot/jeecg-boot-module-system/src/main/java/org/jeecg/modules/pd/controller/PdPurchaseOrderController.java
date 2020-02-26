@@ -122,7 +122,7 @@ public class PdPurchaseOrderController {
 		 pdPurchaseOrder.setPurchaseBy(sysUser.getId());
 		 pdPurchaseOrder.setPurchaseName(sysUser.getRealname());
 		 pdPurchaseOrder.setSubmitStatus(PdConstant.SUBMIT_STATE_1);
-		 pdPurchaseOrder.setAuditStatus(PdConstant.ORDER_STATE_1);
+		 pdPurchaseOrder.setAuditStatus(PdConstant.AUDIT_STATE_1);
 		 result.setResult(pdPurchaseOrder);
 		 result.setSuccess(true);
 		 return result;
@@ -138,7 +138,7 @@ public class PdPurchaseOrderController {
 	 public Result<?> add(@RequestBody PdPurchaseOrderPage pdPurchaseOrderPage) {
 		 PdPurchaseOrder pdPurchaseOrder = new PdPurchaseOrder();
 		 BeanUtils.copyProperties(pdPurchaseOrderPage, pdPurchaseOrder);
-		 pdPurchaseOrder.setAuditStatus(PdConstant.ORDER_STATE_1);//审核状态  1：待审核
+		 pdPurchaseOrder.setAuditStatus(PdConstant.AUDIT_STATE_1);//审核状态  1：待审核
 		 pdPurchaseOrder.setDelFlag(PdConstant.DEL_FLAG_0);
 		 pdPurchaseOrderService.saveMain(pdPurchaseOrder, pdPurchaseOrderPage.getPdPurchaseDetailList());
 		 if (pdPurchaseOrderPage.getSubmitStatus().equals(PdConstant.SUBMIT_STATE_2)) {//如果是已提交
@@ -162,12 +162,12 @@ public class PdPurchaseOrderController {
 			 return Result.error("未找到对应数据");
 		 }
 		 String orderStatus = pdPurchaseOrder.getAuditStatus();//审核状态
-		 if ((PdConstant.ORDER_STATE_2).equals(orderStatus) || (PdConstant.ORDER_STATE_3).equals(orderStatus)) {
+		 if ((PdConstant.AUDIT_STATE_2).equals(orderStatus) || (PdConstant.AUDIT_STATE_3).equals(orderStatus)) {
 			 LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
 			 pdPurchaseOrder.setAuditBy(sysUser.getId());
 			 pdPurchaseOrder.setAuditDate(new Date());
 		 }
-		 if (PdConstant.ORDER_STATE_1.equals(orderStatus) && pdPurchaseOrderPage.getSubmitStatus().equals(PdConstant.SUBMIT_STATE_2)) {//如果是已提交
+		 if (PdConstant.AUDIT_STATE_1.equals(orderStatus) && pdPurchaseOrderPage.getSubmitStatus().equals(PdConstant.SUBMIT_STATE_2)) {//如果是已提交
 			 this.sendMsg(pdPurchaseOrderPage);//消息推送
 		 }
 		 pdPurchaseOrderService.updateMain(pdPurchaseOrder, pdPurchaseOrderPage.getPdPurchaseDetailList());

@@ -115,7 +115,7 @@ public class PdApplyOrderController {
 		 pdApplyOrder.setDeptId(sysDepart.getId());
 		 pdApplyOrder.setDeptName(sysDepart.getDepartName());
 		 pdApplyOrder.setSubmitStatus(PdConstant.SUBMIT_STATE_1);
-		 pdApplyOrder.setAuditStatus(PdConstant.ORDER_STATE_1);
+		 pdApplyOrder.setAuditStatus(PdConstant.AUDIT_STATE_1);
 		 result.setResult(pdApplyOrder);
 		 result.setSuccess(true);
 		 return result;
@@ -131,7 +131,7 @@ public class PdApplyOrderController {
 	public Result<?> add(@RequestBody PdApplyOrderPage pdApplyOrderPage) {
 		PdApplyOrder pdApplyOrder = new PdApplyOrder();
 		BeanUtils.copyProperties(pdApplyOrderPage, pdApplyOrder);
-		pdApplyOrder.setAuditStatus(PdConstant.ORDER_STATE_1);//审核状态  1：待审核
+		pdApplyOrder.setAuditStatus(PdConstant.AUDIT_STATE_1);//审核状态  1：待审核
 		pdApplyOrderService.saveMain(pdApplyOrder, pdApplyOrderPage.getPdApplyDetailList());
 		if (pdApplyOrderPage.getSubmitStatus().equals(PdConstant.SUBMIT_STATE_2)) {//如果是已提交
 			this.sendMsg(pdApplyOrderPage);//消息推送
@@ -155,12 +155,12 @@ public class PdApplyOrderController {
 		}
 
 		String applyStatus=pdApplyOrder.getAuditStatus();//审核状态
-		if((PdConstant.ORDER_STATE_2).equals(applyStatus) || (PdConstant.ORDER_STATE_3).equals(applyStatus)){
+		if((PdConstant.AUDIT_STATE_2).equals(applyStatus) || (PdConstant.AUDIT_STATE_3).equals(applyStatus)){
 			LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
 			pdApplyOrder.setAuditBy(sysUser.getId());
 			pdApplyOrder.setAuditDate(new Date());
 		}
-		if (PdConstant.ORDER_STATE_1.equals(applyStatus) && pdApplyOrderPage.getSubmitStatus().equals(PdConstant.SUBMIT_STATE_2)) {//如果是已提交
+		if (PdConstant.AUDIT_STATE_1.equals(applyStatus) && pdApplyOrderPage.getSubmitStatus().equals(PdConstant.SUBMIT_STATE_2)) {//如果是已提交
 			this.sendMsg(pdApplyOrderPage);//消息推送
 		}
 		pdApplyOrderService.updateMain(pdApplyOrder, pdApplyOrderPage.getPdApplyDetailList());

@@ -34,7 +34,7 @@
               </a-col>
               <a-col :span="6">
                 <a-form-item label="入库日期" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                  <j-date disabled placeholder="请选择入库日期" v-decorator="[ 'recordDate', validatorRules.recordDate]" :trigger-change="true" style="width: 100%"/>
+                  <j-date disabled placeholder="请选择入库日期" v-decorator="[ 'submitDate', validatorRules.submitDate]" :trigger-change="true" style="width: 100%"/>
                 </a-form-item>
               </a-col>
               <a-col :span="6">
@@ -45,10 +45,10 @@
               </a-col>
               <a-col :span="6">
                 <a-form-item label="操作人" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                  <a-input disabled v-decorator="[ 'recordPeopleName', validatorRules.recordPeopleName]" placeholder="请输入操作人"></a-input>
+                  <a-input disabled v-decorator="[ 'submitByName', validatorRules.submitByName]" placeholder="请输入操作人"></a-input>
                 </a-form-item>
                 <a-form-item v-show="false" label="操作人ID">
-                  <a-input v-show="false" v-decorator="[ 'recordPeople', {}]"></a-input>
+                  <a-input v-show="false" v-decorator="[ 'submitBy', {}]"></a-input>
                 </a-form-item>
                 <a-form-item v-show="false" label="入库部门ID">
                   <a-input v-show="false" v-decorator="[ 'inDepartId', {}]" ></a-input>
@@ -278,6 +278,7 @@
         orderNo:"",
         totalSum:'0',
         totalPrice:'0.0000',
+        submitDateStr:"",
 
         //货区货位二级联动下拉框
         goodsAllocationList:[],
@@ -295,11 +296,11 @@
           allocationNo:{},
           applyNo:{},
           dosagertNo:{},
-          recordPeople:{},
-          recordPeopleName:{},
-          recordDate:{},
-          recordState:{},
-          rejectReason:{},
+          submitBy:{},
+          submitByName:{},
+          submitDate:{},
+          submitStatus:{},
+          refuseReason:{},
           remarks:{},
           isAllowProduct:{rules: [{required: true, message: '请选择!'}]},
           isAllowNum:{rules: [{required: true, message: '请选择!'}]},
@@ -310,9 +311,9 @@
           outDepartId:{},
           inDepartId:{},
           supplierId:{rules: [{required: true, message: '请选择供应商!'}]},
-          checkPeople:{},
-          checkTime:{},
-          returnState:{},
+          auditBy:{},
+          auditDate:{},
+          returnStatus:{},
           extend1:{},
           extend2:{},
           extend3:{},
@@ -359,7 +360,7 @@
             { title: '产品编号', key: 'productNumber', width:"150px" },
             { title: '产品条码', key: 'productBarCode', width:"200px" },
             { title: '规格', key: 'spec', width:"150px" },
-            { title: '型号', key: 'version', width:"150px" },
+            // { title: '型号', key: 'version', width:"150px" },
             { title: '单位', key: 'unitName', width:"50px" },
             {
               title: '有效期', key: 'limitDate', type: FormTypes.date, width:"130px",
@@ -378,12 +379,12 @@
             },
             { title: '入库单价', key: 'purchasePrice', width:"80px" },
             { title: '金额', key: 'price', width:"90px" },
+            // {
+            //   title: '货区', key: 'huoquId', type: FormTypes.select, width:"150px", options: this.huoquOptions,allowSearch:true,
+            //   placeholder: '${title}', validateRules: [{ required: true, message: '${title}不能为空' }]
+            // },
             {
-              title: '货区', key: 'huoquId', type: FormTypes.select, width:"150px", options: this.huoquOptions,allowSearch:true,
-              placeholder: '${title}', validateRules: [{ required: true, message: '${title}不能为空' }]
-            },
-            {
-              title: '货位', key: 'huoweiId', type: FormTypes.select, width:"150px", options: [],allowSearch:true,
+              title: '货位', key: 'huoweiCode', type: FormTypes.select, width:"150px", options: [],allowSearch:true,
               placeholder: '${title}', validateRules: [{ required: true, message: '${title}不能为空' }]
             },
             { title: '申购单号', key: 'orderNo', width:"180px" }
@@ -429,7 +430,7 @@
       editAfter() {
         // 加载子表数据
         if (this.model.id) {
-          let fieldval = pick(this.model,'recordNo','inType','recordPeople','recordPeopleName','recordDate','remarks','inDepartId','supplierId',
+          let fieldval = pick(this.model,'recordNo','inType','submitBy','submitByName','submitDate','remarks','inDepartId','supplierId',
                                          'testResult','storageResult','temperature','humidity','remarks')
           this.$nextTick(() => {
             this.form.setFieldsValue(fieldval)
@@ -444,28 +445,32 @@
         this.loading = true;
         getAction(this.url.init, {}).then((res) => {
           if (res.success) {
-            this.initData = res.result;
-            this.initData.isAllowProduct = "0";
-            this.initData.isAllowNum = "0";
-            this.initData.testResult = "0";
-            this.initData.storageResult = "0";
-            this.initData.temperature = "25";
-            this.initData.humidity = "50";
-            this.allowInMoreOrder = this.initData.allowInMoreOrder;
-            this.allowNotOrderProduct = this.initData.allowNotOrderProduct;
-
-            let fieldval = pick(this.initData,'recordNo','inType','recordPeople','recordPeopleName','recordDate','remarks','inDepartId','supplierId',
-                                              'testResult','storageResult','temperature','humidity','remarks');
-            this.goodsAllocationList = this.initData.goodsAllocationList;
             this.$nextTick(() => {
+              this.initData = res.result;
+              this.initData.isAllowProduct = "0";
+              this.initData.isAllowNum = "0";
+              this.initData.testResult = "0";
+              this.initData.storageResult = "0";
+              this.initData.temperature = "25";
+              this.initData.humidity = "50";
+              this.allowInMoreOrder = res.result.allowInMoreOrder;
+              this.allowNotOrderProduct = res.result.allowNotOrderProduct;
+              this.submitDateStr = res.result.submitDateStr;
+              let fieldval = pick(this.initData,'recordNo','inType','submitBy','submitByName','submitDate','remarks','inDepartId','supplierId',
+                'testResult','storageResult','temperature','humidity','remarks');
+              this.goodsAllocationList = this.initData.goodsAllocationList;
+
               this.form.setFieldsValue(fieldval);
               //初始化供应商，用于产品扫码后能回显供应商
               this.supplierHandleSearch();
               //获取光标
               this.$refs['productNumberInput'].focus();
               this.pdStockRecordDetailTable.columns.forEach((item, idx) => {
-                if(item.key === "huoquId"){
-                  item.options = this.goodsAllocationList.filter(i => i.parent === null);
+                // if(item.key === "huoquId"){
+                //   item.options = this.goodsAllocationList.filter(i => i.parent === null);
+                // }
+                if(item.key === "huoweiCode"){
+                  item.options = this.goodsAllocationList;
                 }
               })
             })
@@ -491,10 +496,18 @@
             throw this.throwNotFunction('classifyIntoFormData')
           }
           let formData = this.classifyIntoFormData(allValues);
-          // TODO  各种校验
-
-
-
+          if(formData.pdStockRecordDetailList.length <= 0){
+            this.$message.warning("入库产品数据为空，请扫码入库或选择产品");
+            return;
+          }
+          // 校验是否有过期产品
+          if(!this.checkLimitDate()){
+            return;
+          }
+          // 如果不允许入库量大于订单量，则校验入库量是否>订单量
+          if(!this.checkAllowInMoreOrderForSubmit()){
+            return;
+          }
           // 发起请求
           return this.request(formData);
         }).catch(e => {
@@ -539,7 +552,8 @@
         this.$message.error(msg)
       },
       popupCallback(row){
-        this.form.setFieldsValue(pick(row,'recordNo','recordType','outType','inType','orderNo','allocationNo','applyNo','dosagertNo','recordPeople','recordDate','recordState','rejectReason','remarks','testResult','storageResult','temperature','humidity','outDepartId','inDepartId','supplierId','checkPeople','checkTime','returnState','extend1','extend2','extend3','delFlag','sysOrgParentCode'))
+        this.form.setFieldsValue(pick(row,'recordNo','inType','submitBy','submitByName','submitDate','remarks','inDepartId','supplierId',
+          'testResult','storageResult','temperature','humidity','remarks'))
       },
       /** 切换全屏显示 */
       handleClickToggleFullScreen() {
@@ -670,8 +684,7 @@
           batchNo:"",
           productNum: 1,
           orderNo:"",
-          huoquId:"",
-          huoweiId:""
+          huoweiCode:""
         }
         let purchaseOrderDetail = this.pdPurchaseOrderDetailTable.dataSource;
         for (let detail of purchaseOrderDetail) {
@@ -701,8 +714,7 @@
           batchNo:row.batchNo,
           productNum: 1,
           orderNo:"",
-          huoquId:"",
-          huoweiId:""
+          huoweiCode:""
         }
         let purchaseOrderDetail = this.pdPurchaseOrderDetailTable.dataSource;
         // 产品如果在订单列表中 则添加订单编号
@@ -738,19 +750,19 @@
         if(event){
           const { type, row, column, value, target } = event;
           if (type === FormTypes.select) {
-            if (column.key === 'huoquId') {
-              // 货区货位二级联动
-              let options = this.goodsAllocationList.filter(i => i.parent === value)
-              let rows = target.getValuesSync({ validate: false });
-              this.huoweiOptions = options;
-              this.pdStockRecordDetailTable.columns.forEach((item, idx) => {
-                if(item.key === "huoweiId"){
-                  item.options = options;
-                }
-              })
-              // 清空货位下拉框数据
-              target.setValues([{rowKey: row.id, values: { huoweiId: '' }}])
-            }
+            // if (column.key === 'huoquId') {
+            //   // 货区货位二级联动
+            //   let options = this.goodsAllocationList.filter(i => i.parent === value)
+            //   let rows = target.getValuesSync({ validate: false });
+            //   this.huoweiOptions = options;
+            //   this.pdStockRecordDetailTable.columns.forEach((item, idx) => {
+            //     if(item.key === "huoweiId"){
+            //       item.options = options;
+            //     }
+            //   })
+            //   // 清空货位下拉框数据
+            //   target.setValues([{rowKey: row.id, values: { huoweiId: '' }}])
+            // }
           }else if(type === FormTypes.input){
             if(column.key === "productNum"){
               // 产品数量变更 计算每条产品的价格
@@ -948,7 +960,7 @@
             for(let row of rows){
               if(row.productId == detail.productId){
                 totalNum = totalNum + Number(row.productNum);
-                if(currentRow.id != row.id){
+                if(currentRow.id != row.id && currentRow.productId == detail.productId){
                   exceptNum = exceptNum + Number(row.productNum);
                 }
               }
@@ -1046,7 +1058,58 @@
           }
         }
         return true;
-      }
+      },
+      /* 提交时调用 校验是否允许入库量大于订单量 1-允许入库量大于订单量；0-不允许入库量大于订单量
+         校验当前入库的产品 入库数量是否大于订单量
+       */
+      checkAllowInMoreOrderForSubmit(){
+        let bool = true;
+        let name = "";
+        if(this.allowInMoreOrder === "0"){
+          let purchaseOrderDetail = this.pdPurchaseOrderDetailTable.dataSource;
+          if(purchaseOrderDetail.length <= 0){
+            return true;
+          }
+          this.$refs.pdStockRecordDetail.getValues((error, values) => {
+            for (let detail of purchaseOrderDetail) {
+              let totalNum = 0; //当前产品总数量
+              for(let row of values){
+                if(row.productId == detail.productId){
+                  totalNum = totalNum + Number(row.productNum);
+                }
+              }
+              if(Number(detail.arrivalNum) + Number(totalNum) > Number(detail.orderNum)){
+                name = name + "  " + detail.productName;
+                bool = false;
+              }
+            }
+          })
+        }
+        if(!bool){
+          this.$message.error("入库产品["+name+"]数量不能大于订单产品数量！");
+          return false;
+        }
+        return true;
+      },
+      checkLimitDate(){
+        let name = ""
+        let bool = true;
+        this.$refs.pdStockRecordDetail.getValues((error, values) => {
+          for(let row of values){
+            // let limitDate = row.limitDate;
+            let submitDate = this.form.getFieldValue("submitDate")
+            if(submitDate >=  row.limitDate){
+              bool = false;
+              name = name + "  " + row.productName;
+            }
+          }
+        })
+        if(!bool){
+          this.$message.error("入库产品["+name+"]已到期，不能入库！");
+          return false;
+        }
+        return true;
+      },
     },
   }
 

@@ -14,4 +14,6 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  */
 public interface PdStockRecordMapper extends BaseMapper<PdStockRecord> {
 
+
+    List<PdStockRecord> selectList(PdStockRecord pdStockRecord);
 }

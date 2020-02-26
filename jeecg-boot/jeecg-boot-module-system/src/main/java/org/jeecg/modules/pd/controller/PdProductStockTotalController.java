@@ -234,7 +234,7 @@ public class PdProductStockTotalController {
 		 Page<PdStockRecordDetail> page = new Page<PdStockRecordDetail>(pageNo, pageSize);
 		 PdStockRecordDetail pdStockRecordDetail=new PdStockRecordDetail();
 		 pdStockRecordDetail.setProductId(stockTotalPage.getProductId());
-		 pdStockRecordDetail.setRecordState("1");
+		 pdStockRecordDetail.setSubmitStatus("1");
 		 pdStockRecordDetail.setDeptId(stockTotalPage.getDeptId());
 		 page = pdStockRecordDetailService.selectList(page,pdStockRecordDetail);
 		 Double productTotNum = 0.00;//入库总数量
