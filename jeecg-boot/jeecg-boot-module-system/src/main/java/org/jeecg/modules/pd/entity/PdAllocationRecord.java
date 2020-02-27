@@ -1,8 +1,8 @@
 package org.jeecg.modules.pd.entity;
 
-import java.io.Serializable;
 import java.util.*;
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
@@ -73,9 +73,22 @@ public class PdAllocationRecord extends BaseEntity {
     private String remarks;
 	/**提交状态*/
     private String submitStatus;
-	/**删除状态*/
-    private String delFlag;
 
+    @TableField(exist = false)
     @ExcelCollection(name="调拨明细表")
     private List<PdAllocationDetail> pdAllocationDetailList;
+
+/**不在表里的字段***/
+    /**操作人名称 */
+    @TableField(exist = false)
+    private String realName;
+    /**入库科室名称 */
+    @TableField(exist = false)
+    private String inDeptName;
+    /**出库科室名称 */
+    @TableField(exist = false)
+    private String outDeptName;
+    /** 提交状态集合 **/
+    @TableField(exist = false)
+    private List<String> submitStatusList;
 }

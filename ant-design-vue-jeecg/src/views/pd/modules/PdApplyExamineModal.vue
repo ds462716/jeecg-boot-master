@@ -91,7 +91,9 @@
     </a-spin>
     <div class="drawer-bootom-button" v-show="!disableSubmit">
       <a-button @click="handleOk('yes')" type="primary" :loading="confirmLoading">审核通过</a-button>
+      <span style="padding-left: 8px;"></span>
       <a-button @click="handleOk('no')" type="primary" :loading="confirmLoading">拒绝</a-button>
+      <span style="padding-left: 8px;"></span>
       <a-popconfirm title="确定放弃审核？" @confirm="handleCancel" okText="确定" cancelText="取消">
         <a-button style="margin-right: .8rem">取消</a-button>
       </a-popconfirm>

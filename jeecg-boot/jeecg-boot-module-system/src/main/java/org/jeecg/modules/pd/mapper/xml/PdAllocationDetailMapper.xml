@@ -1,16 +1,65 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.jeecg.modules.pd.mapper.PdAllocationDetailMapper">
+	<sql id="pdApplyDetailColumns">
+		a.id,
+		a.create_by,
+		a.create_time,
+		a.update_by,
+		a.update_time,
+		a.sys_org_code,
+		a.allocation_no,
+		a.product_id,
+ 		a.batch_no,
+		a.product_bar_code,
+		a.allocation_num,
+		a.stock_num,
+		a.product_attr,
+		a.package_id,
+		a.package_num,
+		a.del_flag
+	</sql>
+
+	<!-- 单位 -->
+	<sql id="pdUnitColumns">
+        b.name AS "unitName"
+    </sql>
+
+	<sql id="pdUnitJoins">
+        LEFT JOIN pd_unit b ON c.unit_id = b.id
+    </sql>
+
+	<!--产品-->
+	<sql id="pdProductColumns">
+		c.id as "productId",
+        c.number as "number",
+        c.name as "productName",
+        c.spec as "spec",
+        c.version as "version"
+	</sql>
+	<sql id="pdProductJoins">
+        LEFT JOIN pd_product c ON c.id = a.product_id
+    </sql>
+
+
+
+
+
 
 	<delete id="deleteByMainId" parameterType="java.lang.String">
-		DELETE 
-		FROM  pd_allocation_detail 
-		WHERE
-			 allocation_no = #{mainId} 	</delete>
+		DELETE 	FROM  pd_allocation_detail WHERE allocation_no = #{mainId}
+    </delete>
 	
-	<select id="selectByMainId" parameterType="java.lang.String" resultType="org.jeecg.modules.pd.entity.PdAllocationDetail">
-		SELECT * 
-		FROM  pd_allocation_detail
-		WHERE
-			 allocation_no = #{mainId} 	</select>
+
+	<select id="selectByAllocationNo" parameterType="java.lang.String" resultType="org.jeecg.modules.pd.entity.PdAllocationDetail">
+		SELECT
+		<include refid="pdApplyDetailColumns"/>,
+		<include refid="pdProductColumns"/>,
+		<include refid="pdUnitColumns"/>
+		FROM  pd_allocation_detail a
+		<include refid="pdProductJoins"/>
+		<include refid="pdUnitJoins"/>
+		WHERE a.allocation_no = #{allocationNo}
+		ORDER BY a.create_time DESC
+	</select>
 </mapper>

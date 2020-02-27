@@ -2,6 +2,7 @@ package org.jeecg.modules.pd.entity;
 
 import java.io.Serializable;
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
@@ -63,4 +64,23 @@ public class PdAllocationDetail extends BaseEntity {
 	/**产品属性：1、产品 2、定数包*/
 	@Excel(name = "产品属性：1、产品 2、定数包", width = 15)
 	private String productAttr;
+
+
+
+	/*不是明细表字段*/
+	@TableField(exist = false)
+	@Excel(name = "产品名称", width = 15)
+	private String productName;//产品名称
+	@TableField(exist = false)
+	@Excel(name = "产品编号", width = 15)
+	private String number;//产品编号
+	@TableField(exist = false)
+	@Excel(name = "产品规格", width = 15)
+	private String spec;//产品规格
+	@TableField(exist = false)
+	@Excel(name = "产品型号", width = 15)
+	private String version;//产品型号
+	@TableField(exist = false)
+	@Excel(name = "单位名称", width = 15)
+	private String unitName;//单位名称
 }

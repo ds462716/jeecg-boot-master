@@ -1,13 +1,18 @@
 package org.jeecg.modules.pd.controller;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import org.jeecg.common.constant.PdConstant;
+import org.jeecg.modules.pd.entity.PdApplyDetail;
+import org.jeecg.modules.pd.entity.PdApplyOrder;
+import org.jeecg.modules.pd.util.UUIDUtil;
+import org.jeecg.modules.pd.vo.PdApplyOrderPage;
+import org.jeecg.modules.system.entity.SysDepart;
+import org.jeecg.modules.system.service.ISysDepartService;
 import org.jeecgframework.poi.excel.ExcelImportUtil;
 import org.jeecgframework.poi.excel.def.NormalExcelConstants;
 import org.jeecgframework.poi.excel.entity.ExportParams;
@@ -40,14 +45,15 @@ import lombok.extern.slf4j.Slf4j;
  * @Version: V1.0
  */
 @RestController
-@RequestMapping("/pds/pdAllocationRecord")
+@RequestMapping("/pd/pdAllocationRecord")
 @Slf4j
 public class PdAllocationRecordController {
 	@Autowired
 	private IPdAllocationRecordService pdAllocationRecordService;
 	@Autowired
 	private IPdAllocationDetailService pdAllocationDetailService;
-	
+	 @Autowired
+	 private ISysDepartService sysDepartService;
 	/**
 	 * 分页列表查询
 	 *
@@ -66,6 +72,57 @@ public class PdAllocationRecordController {
 		IPage<PdAllocationRecord> pageList =pdAllocationRecordService.selectList(page, pdAllocationRecord);
 		return Result.ok(pageList);
 	}
+
+
+	 /**
+	  * 分页列表查询(审核页面)
+	  *
+	  * @param allocationRecord
+	  * @param pageNo
+	  * @param pageSize
+	  * @param req
+	  * @return
+	  */
+	 @GetMapping(value = "/auditList")
+	 public Result<?> queryPageAuditList(PdAllocationRecord allocationRecord,
+										 @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
+										 @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
+										 HttpServletRequest req) {
+		 Page<PdAllocationRecord> page = new Page<PdAllocationRecord>(pageNo, pageSize);
+		 List<String> list=new ArrayList<>();
+		 list.add(PdConstant.SUBMIT_STATE_2);//已提交
+		 list.add(PdConstant.SUBMIT_STATE_3);//已撤回
+		 allocationRecord.setSubmitStatusList(list);
+		 IPage<PdAllocationRecord> pageList = pdAllocationRecordService.selectList(page, allocationRecord);
+		 return Result.ok(pageList);
+	 }
+
+
+	 /**
+	  * 新增初始化操作
+	  *
+	  * @return
+	  */
+	 @GetMapping(value = "/allocationInfo")
+	 public Result<PdAllocationRecord> purchaseInfo() {
+		 Result<PdAllocationRecord> result = new Result<>();
+		 PdAllocationRecord allocationRecord=new PdAllocationRecord();
+		 String allocationNo= UUIDUtil.generateOrderNoByType(PdConstant.ORDER_NO_FIRST_LETTER_DB);
+		 allocationRecord.setAllocationNo(allocationNo);
+		 allocationRecord.setAllocationDate(new Date());
+		 allocationRecord.setTotalNum(0.00);
+		 LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		 SysDepart sysDepart=sysDepartService.getDepartByOrgCode(sysUser.getOrgCode());
+		 allocationRecord.setAllocationBy(sysUser.getId());
+		 allocationRecord.setRealName(sysUser.getRealname());
+		 allocationRecord.setInDeptId(sysDepart.getId());//入库科室
+		 allocationRecord.setInDeptName(sysDepart.getDepartName());
+		 allocationRecord.setSubmitStatus(PdConstant.SUBMIT_STATE_1);
+		 allocationRecord.setAuditStatus(PdConstant.AUDIT_STATE_1);
+		 result.setResult(allocationRecord);
+		 result.setSuccess(true);
+		 return result;
+	 }
 	
 	/**
 	 *   添加
@@ -75,7 +132,7 @@ public class PdAllocationRecordController {
 	 */
 	@PostMapping(value = "/add")
 	public Result<?> add(@RequestBody PdAllocationRecord pdAllocationRecord) {
- 		pdAllocationRecordService.saveMain(pdAllocationRecord, pdAllocationRecord.getPdAllocationDetailList());
+		pdAllocationRecordService.saveMain(pdAllocationRecord, pdAllocationRecord.getPdAllocationDetailList());
 		return Result.ok("添加成功！");
 	}
 	
@@ -91,33 +148,39 @@ public class PdAllocationRecordController {
 		if(pdAllocationRecordEntity==null) {
 			return Result.error("未找到对应数据");
 		}
+		String auditStatus=pdAllocationRecord.getAuditStatus();//审核状态
+		if((PdConstant.AUDIT_STATE_2).equals(auditStatus) || (PdConstant.AUDIT_STATE_3).equals(auditStatus)){
+			LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+			pdAllocationRecord.setAuditBy(sysUser.getId());
+			pdAllocationRecord.setAuditDate(new Date());
+		}
 		pdAllocationRecordService.updateMain(pdAllocationRecord, pdAllocationRecord.getPdAllocationDetailList());
 		return Result.ok("编辑成功!");
 	}
 	
-	/**
-	 *   通过id删除
-	 *
-	 * @param id
-	 * @return
-	 */
-	@DeleteMapping(value = "/delete")
-	public Result<?> delete(@RequestParam(name="id",required=true) String id) {
-		pdAllocationRecordService.delMain(id);
-		return Result.ok("删除成功!");
-	}
-	
-	/**
-	 *  批量删除
-	 *
-	 * @param ids
-	 * @return
-	 */
-	@DeleteMapping(value = "/deleteBatch")
-	public Result<?> deleteBatch(@RequestParam(name="ids",required=true) String ids) {
-		this.pdAllocationRecordService.delBatchMain(Arrays.asList(ids.split(",")));
-		return Result.ok("批量删除成功！");
-	}
+	 /**
+	  *   通过id删除
+	  *
+	  * @param id
+	  * @return
+	  */
+	 @DeleteMapping(value = "/delete")
+	 public Result<?> delete(@RequestParam(name="id",required=true) String id) {
+		 pdAllocationRecordService.removeById(id);
+		 return Result.ok("删除成功!");
+	 }
+
+	 /**
+	  *  批量删除
+	  *
+	  * @param ids
+	  * @return
+	  */
+	 @DeleteMapping(value = "/deleteBatch")
+	 public Result<?> deleteBatch(@RequestParam(name="ids",required=true) String ids) {
+		 this.pdAllocationRecordService.removeByIds(Arrays.asList(ids.split(",")));
+		 return Result.ok("批量删除成功！");
+	 }
 	
 	/**
 	 * 通过id查询
@@ -135,17 +198,18 @@ public class PdAllocationRecordController {
 
 	}
 	
-	/**
-	 * 通过id查询
-	 *
-	 * @param id
-	 * @return
-	 */
-	@GetMapping(value = "/queryPdAllocationDetailByMainId")
-	public Result<?> queryPdAllocationDetailListByMainId(@RequestParam(name="id",required=true) String id) {
-		List<PdAllocationDetail> pdAllocationDetailList = pdAllocationDetailService.selectByMainId(id);
-		return Result.ok(pdAllocationDetailList);
-	}
+
+	 /**
+	  * 通过调拨单号查询明细表
+	  *
+	  * @param allocationNo
+	  * @return
+	  */
+	 @GetMapping(value = "/queryPdAllocationDetailList")
+	 public Result<?> queryPdAllocationDetailList(@RequestParam(name="allocationNo",required=true) String allocationNo) {
+		 List<PdAllocationDetail> pdAllocationDetailList = pdAllocationDetailService.selectByAllocationNo(allocationNo);
+		 return Result.ok(pdAllocationDetailList);
+	 }
 
     /**
     * 导出excel
@@ -176,7 +240,7 @@ public class PdAllocationRecordController {
       for (PdAllocationRecord main : pdAllocationRecordList) {
           PdAllocationRecord vo = new PdAllocationRecord();
           BeanUtils.copyProperties(main, vo);
-          List<PdAllocationDetail> pdAllocationDetailList = pdAllocationDetailService.selectByMainId(main.getId());
+          List<PdAllocationDetail> pdAllocationDetailList = pdAllocationDetailService.selectByAllocationNo(main.getAllocationNo());
           vo.setPdAllocationDetailList(pdAllocationDetailList);
           pageList.add(vo);
       }
