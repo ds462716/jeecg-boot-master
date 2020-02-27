@@ -48,7 +48,7 @@
           </a-col>
           <a-col :span="12">
             <a-form-item   label="备注" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input  :disabled="disableSubmit"  v-decorator="[ 'remarks', validatorRules.remarks]"  style="width: 100%"/>
+              <a-input  :disabled="disableSubmit"  v-decorator="[ 'remarks', validatorRules.remarks]"  style="width: 100%;height: 60px"/>
             </a-form-item>
           </a-col>
         </a-row>
