@@ -71,6 +71,8 @@ public class PdPackageController {
 //		QueryWrapper<PdPackage> queryWrapper = QueryGenerator.initQueryWrapper(pdPackage, req.getParameterMap());
 		Page<PdPackage> page = new Page<PdPackage>(pageNo, pageSize);
 //		IPage<PdPackage> pageList = pdPackageService.page(page, queryWrapper);
+		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		pdPackage.setDepartParentId(sysUser.getDepartParentId());
 		IPage<PdPackage> pageList = pdPackageService.queryList(page, pdPackage);
 		return Result.ok(pageList);
 	}

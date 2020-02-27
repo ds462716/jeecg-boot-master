@@ -104,9 +104,9 @@ public class PdStockRecordDetail extends BaseEntity {
 	/**所属部门*/
 	@Excel(name = "所属部门", width = 15)
 	private String sysOrgCode;
-	/**所属父部门*/
-	@Excel(name = "所属父部门", width = 15)
-	private String sysOrgParentCode;
+	/**所属部门*/
+	private String departId;
+	private String departParentId;
 
 
     /*不是明细表字段*/

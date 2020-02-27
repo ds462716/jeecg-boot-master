@@ -11,8 +11,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.system.query.QueryGenerator;
+import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.pd.entity.PdUnit;
 import org.jeecg.modules.pd.service.IPdUnitService;
@@ -63,6 +65,8 @@ public class PdUnitController extends JeecgController<PdUnit, IPdUnitService> {
 								   @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
 								   HttpServletRequest req) {
 		Page<PdUnit> page = new Page<PdUnit>(pageNo, pageSize);
+		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		pdUnit.setDepartParentId(sysUser.getDepartParentId());
 		IPage<PdUnit> pageList = pdUnitService.queryList(page, pdUnit);
 		return Result.ok(pageList);
 	}
@@ -163,6 +167,8 @@ public class PdUnitController extends JeecgController<PdUnit, IPdUnitService> {
 		 long start = System.currentTimeMillis();
 		 Result<List<PdUnit>> result = new Result<>();
 		 try {
+			 LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+			 pdUnit.setDepartParentId(sysUser.getDepartParentId());
 			 List<PdUnit> list = pdUnitService.queryList(pdUnit);
 			 result.setResult(list);
 			 result.setSuccess(true);

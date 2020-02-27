@@ -56,8 +56,8 @@ public class PdPackageDetail extends BaseEntity {
 	/**所属部门*/
 	@Excel(name = "所属部门", width = 15)
 	private String sysOrgCode;
-	/**父机构*/
-	@Excel(name = "父机构", width = 15)
-	private String sysOrgParentCode;
+	/**所属部门*/
+	private String departId;
+	private String departParentId;
 
 }

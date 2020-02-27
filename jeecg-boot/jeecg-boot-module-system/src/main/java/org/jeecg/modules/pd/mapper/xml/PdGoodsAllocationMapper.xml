@@ -27,7 +27,8 @@
         a.remarks,
         a.del_flag,
         a.sys_org_code,
-        a.sys_org_parent_code
+        a.depart_id,
+        a.depart_parent_id
 	</sql>
 
     <select id="selectAllList" resultType="org.jeecg.modules.pd.vo.PdGoodsAllocationPage" parameterType="org.jeecg.modules.pd.entity.PdGoodsAllocation">

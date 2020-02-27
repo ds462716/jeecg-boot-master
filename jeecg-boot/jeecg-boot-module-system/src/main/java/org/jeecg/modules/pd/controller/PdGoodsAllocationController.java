@@ -11,8 +11,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.alibaba.fastjson.JSONObject;
+import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.system.query.QueryGenerator;
+import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.FillRuleUtil;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.pd.entity.PdGoodsAllocation;
@@ -84,6 +86,9 @@ public class PdGoodsAllocationController extends JeecgController<PdGoodsAllocati
 								   @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
 								   @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
 								   HttpServletRequest req) {
+		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		pdGoodsAllocation.setDepartId(sysUser.getCurrentDepartId());
+		pdGoodsAllocation.setDepartParentId(sysUser.getDepartParentId());
 		QueryWrapper<PdGoodsAllocation> queryWrapper = QueryGenerator.initQueryWrapper(pdGoodsAllocation, req.getParameterMap());
 		Page<PdGoodsAllocation> page = new Page<PdGoodsAllocation>(pageNo, pageSize);
 		IPage<PdGoodsAllocation> pageList = pdGoodsAllocationService.page(page, queryWrapper);
@@ -161,6 +166,9 @@ public class PdGoodsAllocationController extends JeecgController<PdGoodsAllocati
     */
     @RequestMapping(value = "/exportXls")
     public ModelAndView exportXls(HttpServletRequest request, PdGoodsAllocation pdGoodsAllocation) {
+		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		pdGoodsAllocation.setDepartId(sysUser.getCurrentDepartId());
+		pdGoodsAllocation.setDepartParentId(sysUser.getDepartParentId());
         return super.exportXls(request, pdGoodsAllocation, PdGoodsAllocation.class, "货区货位表");
     }
 
@@ -184,6 +192,9 @@ public class PdGoodsAllocationController extends JeecgController<PdGoodsAllocati
     public Result<List<PdGoodsAllocationPage>> getOptionsForSelect(PdGoodsAllocation pdGoodsAllocation){
 		Result<List<PdGoodsAllocationPage>> result = new Result<>();
 		try {
+//			LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+//			pdGoodsAllocation.setDepartId(sysUser.getCurrentDepartId());
+//			pdGoodsAllocation.setDepartParentId(sysUser.getDepartParentId());
 			List<PdGoodsAllocationPage> list = pdGoodsAllocationService.getOptionsForSelect(pdGoodsAllocation);
 			result.setResult(list);
 			result.setSuccess(true);

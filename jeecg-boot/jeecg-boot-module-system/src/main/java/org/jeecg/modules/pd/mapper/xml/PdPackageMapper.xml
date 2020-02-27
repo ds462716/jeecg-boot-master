@@ -18,7 +18,8 @@
         a.remarks,
         a.del_flag,
         a.sys_org_code,
-        a.sys_org_parent_code
+        a.depart_id,
+        a.depart_parent_id
         FROM pd_package a
         <where>
             a.del_flag = #{DEL_FLAG_NORMAL}

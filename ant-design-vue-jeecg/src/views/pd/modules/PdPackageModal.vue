@@ -49,7 +49,7 @@
           </a-col>
           <!--<a-col :span="12">-->
             <!--<a-form-item label="父机构" :labelCol="labelCol" :wrapperCol="wrapperCol">-->
-              <!--<a-input v-decorator="[ 'sysOrgParentCode', validatorRules.sysOrgParentCode]" placeholder="请输入父机构"></a-input>-->
+              <!--<a-input v-decorator="[ 'departParentId', validatorRules.departParentId]" placeholder="请输入父机构"></a-input>-->
             <!--</a-form-item>-->
           <!--</a-col>-->
 
@@ -134,8 +134,7 @@
           py:{},
           wb:{},
           zdy:{},
-          remarks:{},
-          sysOrgParentCode:{},
+          remarks:{}
         },
         refKeys: ['pdPackageDetail', ],
         tableKeys:['pdPackageDetail', ],
@@ -219,7 +218,7 @@
       },
       /** 调用完edit()方法之后会自动调用此方法 */
       editAfter() {
-        let fieldval = pick(this.model,'code','name','sum','py','wb','zdy','remarks','sysOrgParentCode');
+        let fieldval = pick(this.model,'code','name','sum','py','wb','zdy','remarks');
         this.$nextTick(() => {
           this.form.setFieldsValue({code:(new Date()).getTime()});
           this.form.setFieldsValue(fieldval)
@@ -243,7 +242,7 @@
         this.$message.error(msg)
       },
       popupCallback(row){
-        this.form.setFieldsValue(pick(row,'code','name','sum','py','wb','zdy','remarks','sysOrgParentCode'))
+        this.form.setFieldsValue(pick(row,'code','name','sum','py','wb','zdy','remarks'))
       },
       pinyinTran(e){
         let val = e.target.value;

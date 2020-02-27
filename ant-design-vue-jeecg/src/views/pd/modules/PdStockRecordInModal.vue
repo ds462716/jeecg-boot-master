@@ -326,7 +326,6 @@
           extend2:{},
           extend3:{},
           delFlag:{},
-          sysOrgParentCode:{},
         },
         refKeys: ['pdStockRecordDetail',],
         tableKeys:['pdStockRecordDetail', ],

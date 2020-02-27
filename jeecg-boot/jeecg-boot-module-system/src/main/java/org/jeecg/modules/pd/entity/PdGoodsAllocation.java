@@ -104,6 +104,5 @@ public class PdGoodsAllocation  extends BaseEntity {
 	@Excel(name = "所属部门", width = 15)
     private String sysOrgCode;
 	/**父部门*/
-	@Excel(name = "父部门", width = 15)
-    private String sysOrgParentCode;
+	private String departParentId;
 }

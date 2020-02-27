@@ -147,6 +147,12 @@
 				AND ((g.record_type = '0' AND g.out_depart_id = #{deptId})
 				OR (g.record_type = '1' AND g.in_depart_id =#{deptId}))
 			</if>
+			<if test="departId != null and departId != ''">
+				AND a.depart_id = #{departId}
+			</if>
+			<if test="departParentId != null and departParentId != ''">
+				AND a.depart_parent_id = #{departParentId}
+			</if>
 			ORDER BY create_time desc
 		</where>
 	</select>
