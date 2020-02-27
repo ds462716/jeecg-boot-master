@@ -76,6 +76,9 @@ public class PdProductStock extends BaseEntity {
 	/**是否永存*/
 	@Excel(name = "是否永存", width = 15)
 	private String isLong;
+	/**是否永存*/
+	@Excel(name = "货位编号", width = 15)
+	private String huoweiCode;
 
 	/**单位名称*/
 	@Excel(name = "单位名称", width = 15)
