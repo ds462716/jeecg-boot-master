@@ -396,7 +396,7 @@
         },
         url: {
           init:"/pd/pdStockRecordIn/initModal",
-          add: "/pd/pdStockRecordIn/add",
+          submit: "/pd/pdStockRecordIn/submit",
           edit: "/pd/pdStockRecordIn/edit",
           querySupplier:"/pd/pdSupplier/getSupplierList",
           pdStockRecordDetail: {
@@ -531,7 +531,7 @@
       },
       // 保存 提交 修改 请求函数
       request(formData) {
-        let url = this.url.add, method = 'post'
+        let url = this.url.submit, method = 'post'
         if (this.model.id) {
           url = this.url.edit
           method = 'put'
@@ -642,7 +642,6 @@
       returnProductData(data) {
         let rows = [];
         this.$refs.pdStockRecordDetail.getValues((error, values) => {
-          this.pdStockRecordDetailTable.dataSource = values;
           if(values.length > 0){
             // 如果列表中有相同产品则不加行
             data.forEach((item, idx) => {
@@ -667,6 +666,8 @@
           }
 
           rows.forEach((item, idx) => {
+            // j-editable-table表格（可能是BUG）：values变更 不会同步变更到dataSource，新增行时需要手动赋值到dataSource
+            this.pdStockRecordDetailTable.dataSource = values;
             this.addrows(item);
           })
 
@@ -727,8 +728,8 @@
           huoweiCode:""
         }
         let purchaseOrderDetail = this.pdPurchaseOrderDetailTable.dataSource;
-        // 产品如果在订单列表中 则添加订单编号
         purchaseOrderDetail.forEach((detail, idx) => {
+          // 产品如果在订单列表中 则添加订单编号
           if(detail.number == data.productNumber){
             data.orderNo = detail.orderNo;
           }
@@ -760,19 +761,7 @@
         if(event){
           const { type, row, column, value, target } = event;
           if (type === FormTypes.select) {
-            // if (column.key === 'huoquId') {
-            //   // 货区货位二级联动
-            //   let options = this.goodsAllocationList.filter(i => i.parent === value)
-            //   let rows = target.getValuesSync({ validate: false });
-            //   this.huoweiOptions = options;
-            //   this.pdStockRecordDetailTable.columns.forEach((item, idx) => {
-            //     if(item.key === "huoweiId"){
-            //       item.options = options;
-            //     }
-            //   })
-            //   // 清空货位下拉框数据
-            //   target.setValues([{rowKey: row.id, values: { huoweiId: '' }}])
-            // }
+
           }else if(type === FormTypes.input){
             if(column.key === "productNum"){
               // 产品数量变更 计算每条产品的价格
@@ -832,7 +821,6 @@
                 let isAddRow = true;// 是否增加一行
                 // 循环表格数据
                 this.$refs.pdStockRecordDetail.getValues((error, values) => {
-                  this.pdStockRecordDetailTable.dataSource = values;
                   if(values.length > 0){ //表格有数据
                     for(let item of values){
                       // 1.比较被扫码产品与列表产品条码是否一致：一致则数量相加，不一致则加一行
@@ -848,8 +836,8 @@
                         let productNum = Number(item.productNum) + 1;
                         let inTotalPrice = (Number(item.purchasePrice) * Number(productNum)).toFixed(4);
 
-                        this.$nextTick(() => {
                           this.$refs.pdStockRecordDetail.setValues([{rowKey: item.id, values: { productNum: productNum,inTotalPrice: inTotalPrice,productBarCode:productBarCode }}]);
+                        this.$nextTick(() => {
                           this.getTotalNumAndPrice();
                         })
                         isAddRow = false;
@@ -868,18 +856,22 @@
                       isAddRow = false;
                     }
                   }
+
+                  if(isAddRow){
+                    // j-editable-table表格（可能是BUG）：values变更 不会同步变更到dataSource，新增行时需要手动赋值到dataSource
+                    this.pdStockRecordDetailTable.dataSource = values;
+                    //条码新增一行
+                    this.addrowsByScanCode(result);
+                    this.$nextTick(() => {
+                      // 计算总数量和总价格
+                      this.getTotalNumAndPrice();
+                    })
+                  }
+
+                  if(result.code == "203"){ // 近效期提醒
+                    this.$message.error(result.msg);
+                  }
                 })
-                if(isAddRow){
-                  //条码新增一行
-                  this.addrowsByScanCode(result);
-                  this.$nextTick(() => {
-                    // 计算总数量和总价格
-                    this.getTotalNumAndPrice();
-                  })
-                }
-                if(result.code == "203"){
-                  this.$message.error(result.msg);
-                }
               }else if(result.code ==="201"){
                 this.$message.error(result.msg);
               }else{
