@@ -83,4 +83,29 @@
 		WHERE a.order_no = #{orderNo}
 		ORDER BY a.create_time DESC
     </select>
+
+	<!-- 增加到货数量 用于入库保存/提交 add by jiangxz 20200227 -->
+	<select id="additionArrivalNum" parameterType="org.jeecg.modules.pd.entity.PdPurchaseDetail">
+		UPDATE
+			pd_purchase_detail
+		SET
+			arrival_num = arrival_num + #{arrivalNum}
+		WHERE
+			del_flag =#{DEL_FLAG_NORMAL}
+			and order_no = #{orderNo}
+			and product_id = #{productId}
+	</select>
+
+	<!-- 扣减到货数量 用于入库拒绝 add by jiangxz 20200227 -->
+	<select id="subtractArrivalNum" parameterType="org.jeecg.modules.pd.entity.PdPurchaseDetail">
+		UPDATE
+			pd_purchase_detail
+		SET
+			arrival_num = arrival_num - #{arrivalNum}
+		WHERE
+			del_flag =#{DEL_FLAG_NORMAL}
+			and order_no = #{orderNo}
+			and product_id = #{productId}
+
+	</select>
 </mapper>

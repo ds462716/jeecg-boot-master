@@ -142,7 +142,7 @@ public class PdStockRecordInController {
 	}
 	
 	/**
-	 *   添加
+	 *   保存
 	 *
 	 * @param PdStockRecord
 	 * @return
@@ -154,7 +154,21 @@ public class PdStockRecordInController {
 		pdStockRecordService.saveMain(pdStockRecord, PdStockRecord.getPdStockRecordDetailList());
 		return Result.ok("添加成功！");
 	}
-	
+
+	 /**
+	  *   提交
+	  *
+	  * @param PdStockRecord
+	  * @return
+	  */
+	 @PostMapping(value = "/submit")
+	 public Result<?> submit(@RequestBody PdStockRecord PdStockRecord) {
+		 PdStockRecord pdStockRecord = new PdStockRecord();
+		 BeanUtils.copyProperties(PdStockRecord, pdStockRecord);
+		 pdStockRecordService.saveMain(pdStockRecord, PdStockRecord.getPdStockRecordDetailList());
+		 return Result.ok("添加成功！");
+	 }
+
 	/**
 	 *  编辑
 	 *

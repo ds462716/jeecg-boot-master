@@ -115,6 +115,8 @@ public class PdStockRecordDetail extends BaseEntity {
 	@TableField(exist = false)
 	private String number;//产品编号
 	@TableField(exist = false)
+	private String productNumber;//产品编号
+	@TableField(exist = false)
 	private String spec;//产品规格
 	@TableField(exist = false)
 	private String version;//产品型号

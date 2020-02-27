@@ -41,6 +41,7 @@
 	<!--产品-->
 	<sql id="pdProductColumns">
         c.number as "number",
+        c.number as "productNumber",
         c.name as "productName",
         c.spec as "spec",
         c.version as "version",
@@ -97,7 +98,7 @@
 		SELECT
 		<include refid="PdStockRecordDetailColumns"/>,
 		<include refid="pdUnitColumns"/>,
-		<include refid="pdProductColumns"/>,
+		<include refid="pdProductColumns"/>
 		FROM  pd_stock_record_detail a
 		<include refid="pdProductJoins"/>
 		<include refid="pdUnitJoins"/>
