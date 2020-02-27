@@ -80,30 +80,34 @@
             </a-row>
           </a-form>
 
-          <div class="table-operator" v-show="!disableSubmit">
-            <a-button @click="choosePurchaseOrder" type="primary" icon="import" style="margin-bottom: 8px;">从订单导入</a-button>
+          <div class="table-operator">
             <!-- 订单明细表区域 -->
-            <a-table
-              v-show="showOrderTable"
-              ref="table"
-              size="middle"
-              bordered
-              rowKey="id"
-              :pagination="false"
-              :columns="pdPurchaseOrderDetailTable.columns"
-              :dataSource="pdPurchaseOrderDetailTable.dataSource"
-              :loading="pdPurchaseOrderDetailTable.loading" >
-              <template slot="htmlSlot" slot-scope="text">
-                <div v-html="text"></div>
-              </template>
-            </a-table>
+            <a-tabs>
+              <a-tab-pane tab="订单明细" :forceRender="true">
+                <a-button @click="choosePurchaseOrder" type="primary" icon="import" style="margin-bottom: 8px;" v-show="!disableSubmit">从订单导入</a-button>
+                <a-table
+                  v-show="showOrderTable"
+                  ref="table"
+                  size="middle"
+                  bordered
+                  rowKey="id"
+                  :pagination="false"
+                  :columns="pdPurchaseOrderDetailTable.columns"
+                  :dataSource="pdPurchaseOrderDetailTable.dataSource"
+                  :loading="pdPurchaseOrderDetailTable.loading" >
+                  <template slot="htmlSlot" slot-scope="text">
+                    <div v-html="text"></div>
+                  </template>
+                </a-table>
+              </a-tab-pane>
+            </a-tabs>
           </div>
         </a-card>
 
         <!-- 产品列表区域 -->
         <a-card style="margin-bottom: 10px;">
           <a-tabs v-model="activeKey" @change="handleChangeTabs">
-            <a-tab-pane tab="产品扫码" :key="refKeys[0]" :forceRender="true">
+            <a-tab-pane tab="产品明细" :key="refKeys[0]" :forceRender="true">
               <a-form v-show="!disableSubmit">
                 <a-row>
                   <a-col :md="6" :sm="8">
@@ -400,7 +404,10 @@
           edit: "/pd/pdStockRecordIn/edit",
           querySupplier:"/pd/pdSupplier/getSupplierList",
           pdStockRecordDetail: {
-            list: '/pd/pdStockRecordIn/queryPdStockRecordDetailByMainId'
+            list: "/pd/pdStockRecordIn/queryPdStockRecordDetailByMainId"
+          },
+          pdPurchaseDetail: {
+            list: "/pd/pdPurchaseOrder/queryPdPurchaseDetail"
           },
         },
         popModal: {
@@ -436,24 +443,47 @@
         if (this.model.id) {
           let fieldval = pick(this.model,'recordNo','inType','submitBy','submitByName','submitDate','remarks','inDepartId','supplierId',
                                          'testResult','storageResult','temperature','humidity','remarks')
+
+          let params = { id: this.model.id }
+          this.requestSubTableData(this.url.pdStockRecordDetail.list, params, this.pdStockRecordDetailTable)
+
+          // getAction(this.pdPurchaseDetail.list, params).then((res) => {
+          //   if (res.success) {
+          //     this.dataSource = res.result.records;
+          //     this.ipagination.total = res.result.total;
+          //   }
+          //   if(res.code===510){
+          //     this.$message.warning(res.message)
+          //   }
+          //   this.loading = false;
+          // })
+
           this.$nextTick(() => {
             this.form.setFieldsValue(fieldval);
             //初始化供应商，用于回显供应商
             // this.supplierHandleSearch();
-            this.loadData(true);
+            this.loadData();
           })
-          let params = { id: this.model.id }
-          this.requestSubTableData(this.url.pdStockRecordDetail.list, params, this.pdStockRecordDetailTable)
+
         }else{
-          this.loadData(false);
+          this.loadData();
         }
       },
-      loadData(see) {
+      loadData() {
         this.loading = true;
-        getAction(this.url.init, {see:see}).then((res) => {
+        let params = {};
+        if(this.model.id){
+          params = { id: this.model.id }
+        }else{
+          params = { id: "" }
+        }
+        getAction(this.url.init, params).then((res) => {
           if (res.success) {
             this.$nextTick(() => {
-              if(!see){
+              if(this.model.id){
+                this.showOrderTable = true;
+                this.pdPurchaseOrderDetailTable.dataSource = res.result.pdPurchaseDetailList;
+              }else{
                 this.initData = res.result;
                 this.initData.isAllowProduct = "0";
                 this.initData.isAllowNum = "0";
@@ -836,7 +866,7 @@
                         let productNum = Number(item.productNum) + 1;
                         let inTotalPrice = (Number(item.purchasePrice) * Number(productNum)).toFixed(4);
 
-                          this.$refs.pdStockRecordDetail.setValues([{rowKey: item.id, values: { productNum: productNum,inTotalPrice: inTotalPrice,productBarCode:productBarCode }}]);
+                        this.$refs.pdStockRecordDetail.setValues([{rowKey: item.id, values: { productNum: productNum,inTotalPrice: inTotalPrice,productBarCode:productBarCode }}]);
                         this.$nextTick(() => {
                           this.getTotalNumAndPrice();
                         })

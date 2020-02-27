@@ -141,6 +141,11 @@ public class PdStockRecord extends BaseEntity {
     @ExcelCollection(name="出入库明细表")
     @TableField(exist = false)
     private List<PdStockRecordDetail> pdStockRecordDetailList;
+
+    // 采购订单明细
+    @TableField(exist = false)
+    private List<PdPurchaseDetail> pdPurchaseDetailList;
+
     /**出入库日期 字符串格式*/
     @TableField(exist = false)
     private String submitDateStr;

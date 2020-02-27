@@ -24,12 +24,12 @@ public interface PdPurchaseDetailMapper extends BaseMapper<PdPurchaseDetail> {
 	 * @param detail
 	 * @return
 	 */
-	public boolean additionArrivalNum(PdPurchaseDetail detail);
+	public void additionArrivalNum(PdPurchaseDetail detail);
 
 	/**
 	 * 扣减到货数量 用于入库拒绝 add by jiangxz 20200227
 	 * @param detail
 	 * @return
 	 */
-	public boolean subtractArrivalNum(PdPurchaseDetail detail);
+	public void subtractArrivalNum(PdPurchaseDetail detail);
 }
