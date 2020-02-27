@@ -14,7 +14,7 @@ import java.util.List;
  */
 public interface IPdStockRecordDetailService extends IService<PdStockRecordDetail> {
 
-	public List<PdStockRecordDetail> selectByMainId(String mainId);
+	public List<PdStockRecordDetail> selectByMainId(PdStockRecordDetail pdStockRecordDetail);
 
 	Page<PdStockRecordDetail> selectList(Page<PdStockRecordDetail> pageList, PdStockRecordDetail pdStockRecordDetail);
 	/**

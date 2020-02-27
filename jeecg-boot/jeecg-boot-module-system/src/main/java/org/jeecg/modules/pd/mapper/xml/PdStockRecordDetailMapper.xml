@@ -8,11 +8,12 @@
         a.product_bar_code,
         a.huowei_code,
         a.batch_no,
+        a.order_no,
         a.product_num,
         IFNULL(a.selling_price,0) as sellingPrice,
         IFNULL(a.purchase_price,0) as purchasePrice,
-        a.product_num * IFNULL(a.purchase_price,0) as pdTotalPrice,
-        a.product_num * IFNULL(a.selling_price,0) as pdOutTotalPrice,
+        a.product_num * IFNULL(a.purchase_price,0) as inTotalPrice,
+        a.product_num * IFNULL(a.selling_price,0) as outTotalPrice,
         a.limit_date,
         a.package_id,
         a.high_low_supplies,
@@ -40,6 +41,7 @@
 	<!--产品-->
 	<sql id="pdProductColumns">
         c.number as "number",
+        c.number as "productNumber",
         c.name as "productName",
         c.spec as "spec",
         c.version as "version",
@@ -92,11 +94,19 @@
 		WHERE
 			 record_id = #{mainId} 	</delete>
 
-	<select id="selectByMainId" parameterType="java.lang.String" resultType="org.jeecg.modules.pd.entity.PdStockRecordDetail">
-		SELECT *
-		FROM  pd_stock_record_detail
+	<select id="selectByMainId" parameterType="org.jeecg.modules.pd.entity.PdStockRecordDetail" resultType="org.jeecg.modules.pd.entity.PdStockRecordDetail">
+		SELECT
+		<include refid="PdStockRecordDetailColumns"/>,
+		<include refid="pdUnitColumns"/>,
+		<include refid="pdProductColumns"/>
+		FROM  pd_stock_record_detail a
+		<include refid="pdProductJoins"/>
+		<include refid="pdUnitJoins"/>
 		WHERE
-			 record_id = #{mainId} 	</select>
+		        a.del_flag =#{DEL_FLAG_NORMAL}
+			and record_id = #{recordId}
+
+	</select>
 
 
 	<!-- 入库明细列表查询 -->

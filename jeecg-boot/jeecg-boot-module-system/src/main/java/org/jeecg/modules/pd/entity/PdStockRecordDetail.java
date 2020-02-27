@@ -35,6 +35,9 @@ public class PdStockRecordDetail extends BaseEntity {
 	/**产品条码*/
 	@Excel(name = "产品条码", width = 15)
 	private String productBarCode;
+	/**采购订单号*/
+	@Excel(name = "采购订单号", width = 15)
+	private String orderNo;
 	/**货位ID*/
 //	@Excel(name = "货区ID", width = 15)
 //	private String huoquId;
@@ -112,6 +115,8 @@ public class PdStockRecordDetail extends BaseEntity {
 	@TableField(exist = false)
 	private String number;//产品编号
 	@TableField(exist = false)
+	private String productNumber;//产品编号
+	@TableField(exist = false)
 	private String spec;//产品规格
 	@TableField(exist = false)
 	private String version;//产品型号
@@ -134,9 +139,9 @@ public class PdStockRecordDetail extends BaseEntity {
 	@TableField(exist = false)
 	private String recordType;//出入库类型
 	@TableField(exist = false)
-	private BigDecimal pdOutTotalPrice;//出库金额
+	private BigDecimal outTotalPrice;//出库金额
 	@TableField(exist = false)
-	private  BigDecimal pdTotalPrice;//入库金额
+	private BigDecimal inTotalPrice;// 入库金额
 	@TableField(exist = false)
 	private String submitStatus;//记录状态
 	@TableField(exist = false)
@@ -149,5 +154,10 @@ public class PdStockRecordDetail extends BaseEntity {
 	private String outType;//出库类型
 	@TableField(exist = false)
 	private String inType;//入库类型
+
+	@TableField(exist = false)
+	private BigDecimal totalPrice;//总金额	@TableField(exist = false)
+	@TableField(exist = false)
+	private Double totalSum;//总数量
 
 }

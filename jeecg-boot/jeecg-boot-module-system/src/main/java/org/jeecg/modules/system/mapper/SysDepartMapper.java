@@ -54,4 +54,7 @@ public interface SysDepartMapper extends BaseMapper<SysDepart> {
 	 */
 	List<String> getSubDepIdsByOrgCodes(@org.apache.ibatis.annotations.Param("orgCodes") String[] orgCodes);
 
+	@Select("select * from sys_depart where org_code=#{orgCode}")
+	SysDepart queryDepartByOrgCode(@Param("orgCode") String orgCode);
+
 }

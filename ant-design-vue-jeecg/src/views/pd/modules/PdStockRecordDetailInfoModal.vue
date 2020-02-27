@@ -143,7 +143,7 @@
           {
             title:'入库金额',
             align:"center",
-            dataIndex: 'pdTotalPrice'
+            dataIndex: 'inTotalPrice'
           },
           {
             title: '出库单价',
@@ -153,7 +153,7 @@
           {
             title:'出库金额',
             align:"center",
-            dataIndex: 'pdOutTotalPrice'
+            dataIndex: 'outTotalPrice'
           },
           {
             title:'入库科室',

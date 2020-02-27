@@ -1,13 +1,13 @@
 <component name="libraryTable">
-  <library name="Maven: org.jeecgframework:autopoi:1.0.5">
+  <library name="Maven: org.jeecgframework:autopoi:1.0.4">
     <CLASSES>
-      <root url="jar://$USER_HOME$/.m2/repository/org/jeecgframework/autopoi/1.0.5/autopoi-1.0.5.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../../apache-maven-3.2.1/repository_jeecg_boot/org/jeecgframework/autopoi/1.0.4/autopoi-1.0.4.jar!/" />
     </CLASSES>
     <JAVADOC>
-      <root url="jar://$USER_HOME$/.m2/repository/org/jeecgframework/autopoi/1.0.5/autopoi-1.0.5-javadoc.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../../apache-maven-3.2.1/repository_jeecg_boot/org/jeecgframework/autopoi/1.0.4/autopoi-1.0.4-javadoc.jar!/" />
     </JAVADOC>
     <SOURCES>
-      <root url="jar://$USER_HOME$/.m2/repository/org/jeecgframework/autopoi/1.0.5/autopoi-1.0.5-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../../apache-maven-3.2.1/repository_jeecg_boot/org/jeecgframework/autopoi/1.0.4/autopoi-1.0.4-sources.jar!/" />
     </SOURCES>
   </library>
 </component>

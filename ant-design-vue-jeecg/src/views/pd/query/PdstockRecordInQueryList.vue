@@ -154,7 +154,7 @@
           {
             title:'金额',
             align:"center",
-            dataIndex: 'pdTotalPrice'
+            dataIndex: 'inTotalPrice'
           },
           {
             title:'生产厂家',

@@ -26,6 +26,12 @@ public class DateUtils extends PropertyEditorSupport {
             return new SimpleDateFormat("yyyy-MM-dd");
         }
     };
+    public static ThreadLocal<SimpleDateFormat> yyMMdd = new ThreadLocal<SimpleDateFormat>() {
+        @Override
+        protected SimpleDateFormat initialValue() {
+            return new SimpleDateFormat("yyMMdd");
+        }
+    };
     public static ThreadLocal<SimpleDateFormat> yyyyMMdd = new ThreadLocal<SimpleDateFormat>() {
         @Override
         protected SimpleDateFormat initialValue() {

@@ -10,8 +10,11 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.system.query.QueryGenerator;
+import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.pd.entity.PdProduct;
 import org.jeecg.modules.pd.entity.PdProductRule;
@@ -67,6 +70,9 @@ public class PdProductController extends JeecgController<PdProduct, IPdProductSe
 								   HttpServletRequest req) {
 		Result<Page<PdProduct>> result = new Result<Page<PdProduct>>();
 		Page<PdProduct> pageList = new Page<PdProduct>(pageNo,pageSize);
+		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		pdProduct.setDepartId(sysUser.getCurrentDepartId());
+		pdProduct.setDepartParentId(sysUser.getDepartParentId());
 		pageList =pdProductService.selectList(pageList,pdProduct);//
 		result.setSuccess(true);
 		result.setResult(pageList);

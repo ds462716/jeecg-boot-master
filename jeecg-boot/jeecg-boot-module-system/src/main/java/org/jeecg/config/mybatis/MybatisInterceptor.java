@@ -7,6 +7,7 @@ import org.apache.ibatis.mapping.MappedStatement;
 import org.apache.ibatis.mapping.SqlCommandType;
 import org.apache.ibatis.plugin.*;
 import org.apache.shiro.SecurityUtils;
+import org.jeecg.common.constant.PdConstant;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.oConvertUtils;
 import org.springframework.stereotype.Component;
@@ -78,6 +79,34 @@ public class MybatisInterceptor implements Interceptor {
 							if (sysUser != null) {
 								field.setAccessible(true);
 								field.set(parameter, sysUser.getOrgCode());
+								field.setAccessible(false);
+							}
+						}
+					}
+					//注入所属部门
+					if (PdConstant.CURRENT_DEPARTID.equals(field.getName())) {
+						field.setAccessible(true);
+						Object currentParentId = field.get(parameter);
+						field.setAccessible(false);
+						if (currentParentId == null || currentParentId.equals("")) {
+							// 获取登录用户信息
+							if (sysUser != null) {
+								field.setAccessible(true);
+								field.set(parameter, sysUser.getCurrentDepartId());
+								field.setAccessible(false);
+							}
+						}
+					}
+					//注入所属顶级部门
+					if (PdConstant.DEPART_PARENT_ID.equals(field.getName())) {
+						field.setAccessible(true);
+						Object departParentId = field.get(parameter);
+						field.setAccessible(false);
+						if (departParentId == null || departParentId.equals("")) {
+							// 获取登录用户信息
+							if (sysUser != null) {
+								field.setAccessible(true);
+								field.set(parameter, sysUser.getDepartParentId());
 								field.setAccessible(false);
 							}
 						}

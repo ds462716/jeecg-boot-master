@@ -26,6 +26,7 @@
         a.supplier_id,
         a.audit_by,
         a.audit_date,
+        a.audit_status,
         a.return_status,
         a.extend1,
         a.extend2,
@@ -102,7 +103,7 @@
             </if>
 
         </where>
-        order by a.update_time desc
+        order by a.submit_date desc
     </select>
 
 </mapper>
