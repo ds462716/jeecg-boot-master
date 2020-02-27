@@ -110,5 +110,6 @@ public interface ISysDepartService extends IService<SysDepart>{
      * @return
      */
     public  SysDepart getDepartByOrgCode(String orgCode);
-    
+
+    SysDepart queryDepartByOrgCode(String orgCode);
 }

@@ -100,4 +100,8 @@ public interface PdConstant {
 	//扫码近效期提醒时间
 	public final static int REMINDER_TIME = 90;
 
+	//当前登录的部门属性
+	public final static String  CURRENT_DEPARTID = "departId";
+	public final static String  DEPART_PARENT_ID = "departParentId";
+
 }

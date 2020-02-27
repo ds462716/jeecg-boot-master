@@ -373,4 +373,14 @@ public class SysDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart
 	public SysDepart getDepartByOrgCode(String orgCode) {
 		return sysDepartMapper.getDepartByOrgCode(orgCode);
 	}
+
+	/**
+	 * 根据部门code查询部门
+	 * @param orgCode
+	 * @return
+	 */
+	@Override
+	public SysDepart queryDepartByOrgCode(String orgCode) {
+		return sysDepartMapper.queryDepartByOrgCode(orgCode);
+	}
 }
