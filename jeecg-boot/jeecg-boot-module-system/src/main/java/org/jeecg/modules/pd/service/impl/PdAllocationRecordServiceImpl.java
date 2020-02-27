@@ -34,7 +34,7 @@ public class PdAllocationRecordServiceImpl extends ServiceImpl<PdAllocationRecor
 	/**
 	 * 查询列表
 	 * @param page
-	 * @param pdApplyOrder
+	 * @param allocationRecord
 	 * @return
 	 */
 	@Override
@@ -58,10 +58,8 @@ public class PdAllocationRecordServiceImpl extends ServiceImpl<PdAllocationRecor
 	@Transactional
 	public void updateMain(PdAllocationRecord pdAllocationRecord,List<PdAllocationDetail> pdAllocationDetailList) {
 		pdAllocationRecordMapper.updateById(pdAllocationRecord);
-		
 		//1.先删除子表数据
-		pdAllocationDetailMapper.deleteByMainId(pdAllocationRecord.getId());
-		
+		pdAllocationDetailMapper.deleteByMainId(pdAllocationRecord.getAllocationNo());
 		//2.子表数据重新插入
 		if(pdAllocationDetailList!=null && pdAllocationDetailList.size()>0) {
 			for(PdAllocationDetail entity:pdAllocationDetailList) {

@@ -2,6 +2,8 @@ package org.jeecg.modules.pd.service;
 
 import org.jeecg.modules.pd.entity.PdAllocationDetail;
 import com.baomidou.mybatisplus.extension.service.IService;
+import org.jeecg.modules.pd.entity.PdApplyDetail;
+
 import java.util.List;
 
 /**
@@ -12,5 +14,6 @@ import java.util.List;
  */
 public interface IPdAllocationDetailService extends IService<PdAllocationDetail> {
 
-	public List<PdAllocationDetail> selectByMainId(String mainId);
+
+	public List<PdAllocationDetail> selectByAllocationNo(String allocationNo);
 }

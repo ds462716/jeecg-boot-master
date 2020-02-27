@@ -15,5 +15,6 @@ public interface PdAllocationDetailMapper extends BaseMapper<PdAllocationDetail>
 
 	public boolean deleteByMainId(@Param("mainId") String mainId);
     
-	public List<PdAllocationDetail> selectByMainId(@Param("mainId") String mainId);
+
+	public List<PdAllocationDetail> selectByAllocationNo(@Param("allocationNo") String allocationNo);
 }

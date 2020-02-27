@@ -127,6 +127,7 @@
     components: {JDate, JDictSelectTag,PdApplyDetailAddModal},
     data() {
       return {
+        model:{},
         disableSubmit:false,
         confirmLoading: false,
         labelCol: {span: 6},
@@ -224,16 +225,7 @@
       applyInfo() { //新增页面初始化
         getAction("/pd/pdApplyOrder/applyInfo",{}).then((res)=>{
           if (res.success) {
-            let model={};
-            this.model.applyNo=res.result.applyNo;//申领编号
-            this.model.deptName=res.result.deptName;//申领科室名称
-            this.model.deptId=res.result.deptId;//申领科室id
-            this.model.applyDate=res.result.applyDate;//申领日期
-            this.model.totalNum=res.result.totalNum;//申领总数量
-            this.model.applyBy=res.result.applyBy;//申领人编号
-            this.model.realName=res.result.realName;//申领人姓名
-            this.model.submitStatus=res.result.submitStatus;//提交状态
-            this.model.auditStatus=res.result.auditStatus;//审核状态
+            this.model=res.result;
             this.$nextTick(() => {
               this.form.setFieldsValue(pick(this.model,'applyNo','deptName','totalNum','applyDate','realName','remarks'))
             })
@@ -301,7 +293,7 @@
 
         })
       },
-      modalFormOk (formData) {//选择产品确定后返回所选择的数据
+      modalFormOk (formData) { //选择产品确定后返回所选择的数据
         let idList = [];
         let values = [];
         let totalNum=0;
