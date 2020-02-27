@@ -23,7 +23,7 @@ public interface PdConstant {
 	 */
 
 	/**
-	 * 采购订单状态
+	 * 审核状态
 	 */
 	public static final String  AUDIT_STATE_1= "1";//待审核
 	public static final String  AUDIT_STATE_2= "2";//审核通过
@@ -57,12 +57,6 @@ public interface PdConstant {
 	public static final String IN_TYPE_1 = "1";//正常入库
 	public static final String IN_TYPE_2 = "2";//退货入库
 	public static final String IN_TYPE_3 = "3";//调拨入库
-
-	/** 出入库流程状态 add by jiangxz 20200219 **/
-	public static final String RECODE_STATE_0 = "0"; //待提交
-	public static final String RECODE_STATE_1 = "1"; //待审核
-	public static final String RECODE_STATE_2 = "2"; //已通过
-	public static final String RECODE_STATE_3 = "3"; //已拒绝
 
 	/***编码规则*/
 	//各种类型单号首字母

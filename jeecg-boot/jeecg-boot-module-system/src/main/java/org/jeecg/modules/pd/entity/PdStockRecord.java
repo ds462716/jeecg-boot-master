@@ -100,7 +100,7 @@ public class PdStockRecord extends BaseEntity {
     @DateTimeFormat(pattern="yyyy-MM-dd")
     private Date auditDate;
     /**审核状态**/
-    @Excel(name = "审核时间", width = 15)
+    @Excel(name = "审核状态", width = 15)
     private String auditStatus;
     /**退货单状态*/
     @Excel(name = "退货单状态", width = 15)

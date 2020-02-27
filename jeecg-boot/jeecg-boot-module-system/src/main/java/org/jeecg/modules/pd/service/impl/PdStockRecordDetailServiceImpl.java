@@ -23,8 +23,8 @@ public class PdStockRecordDetailServiceImpl extends ServiceImpl<PdStockRecordDet
 	private PdStockRecordDetailMapper pdStockRecordDetailMapper;
 	
 	@Override
-	public List<PdStockRecordDetail> selectByMainId(String mainId) {
-		return pdStockRecordDetailMapper.selectByMainId(mainId);
+	public List<PdStockRecordDetail> selectByMainId(PdStockRecordDetail pdStockRecordDetail) {
+		return pdStockRecordDetailMapper.selectByMainId(pdStockRecordDetail);
 	}
 
 	/**

@@ -15,7 +15,7 @@ public interface PdStockRecordDetailMapper extends BaseMapper<PdStockRecordDetai
 
 	public boolean deleteByMainId(@Param("mainId") String mainId);
     
-	public List<PdStockRecordDetail> selectByMainId(@Param("mainId") String mainId);
+	public List<PdStockRecordDetail> selectByMainId(PdStockRecordDetail pdStockRecordDetail);
 
 	public List<PdStockRecordDetail> selectList(PdStockRecordDetail pdStockRecordDetail);
 

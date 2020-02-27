@@ -80,7 +80,9 @@
         </template>
 
         <span slot="action" slot-scope="text, record">
-          <a @click="handleEdit(record)">查看</a>
+          <!--<a @click="handleEdit(record)">修改</a>-->
+          <a @click="handleDetail(record)">详情</a>
+
 
           <!--<a-divider type="vertical" />-->
           <!--<a-dropdown>-->
@@ -106,6 +108,7 @@
 
   import { JeecgListMixin } from '@/mixins/JeecgListMixin'
   import PdStockRecordInModal from './modules/PdStockRecordInModal'
+  import {initDictOptions, filterMultiDictText} from '@/components/dict/JDictSelectUtil'
 
   export default {
     name: "PdStockRecordInList",
@@ -144,7 +147,7 @@
             dataIndex: 'supplierName'
           },
           {
-            title:'入库时间',
+            title:'提交时间',
             align:"center",
             dataIndex: 'submitDate',
             customRender:function (text) {
@@ -154,7 +157,14 @@
           {
             title:'入库类型',
             align:"center",
-            dataIndex: 'inType'
+            dataIndex: 'inType',
+            customRender:(text)=>{
+              if(!text){
+                return ''
+              }else{
+                return filterMultiDictText(this.dictOptions['inType'], text+"")
+              }
+            }
           },
           {
             title:'操作人',
@@ -162,9 +172,28 @@
             dataIndex: 'submitByName'
           },
           {
-            title:'状态',
+            title:'提交状态',
             align:"center",
-            dataIndex: 'submitStatus'
+            dataIndex: 'submitStatus',
+            customRender:(text)=>{
+              if(!text){
+                return ''
+              }else{
+                return filterMultiDictText(this.dictOptions['submitStatus'], text+"")
+              }
+            }
+          },
+          {
+            title:'审核状态',
+            align:"center",
+            dataIndex: 'auditStatus',
+            customRender:(text)=>{
+              if(!text){
+                return ''
+              }else{
+                return filterMultiDictText(this.dictOptions['auditStatus'], text+"")
+              }
+            }
           },
           {
             title: '操作',
@@ -190,7 +219,22 @@
       // }
     },
     methods: {
-      initDictConfig(){
+      initDictConfig(){ //静态字典值加载
+        initDictOptions('audit_status').then((res) => {
+          if (res.success) {
+            this.$set(this.dictOptions, 'auditStatus', res.result)
+          }
+        })
+        initDictOptions('submit_status').then((res) => {
+          if (res.success) {
+            this.$set(this.dictOptions, 'submitStatus', res.result)
+          }
+        })
+        initDictOptions('in_type').then((res) => {
+          if (res.success) {
+            this.$set(this.dictOptions, 'inType', res.result)
+          }
+        })
       },
        
     }

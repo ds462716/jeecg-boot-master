@@ -34,7 +34,8 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
 	@Transactional
 	public void saveMain(PdStockRecord pdStockRecord, List<PdStockRecordDetail> pdStockRecordDetailList) {
 		pdStockRecord.setRecordType(PdConstant.RECODE_TYPE_1); // 入库
-		pdStockRecord.setSubmitStatus(PdConstant.RECODE_STATE_1); // 待提交
+		pdStockRecord.setSubmitStatus(PdConstant.SUBMIT_STATE_2); // 待提交
+		pdStockRecord.setAuditStatus(PdConstant.AUDIT_STATE_1);   // 待审核
 		pdStockRecordMapper.insert(pdStockRecord);
 		if(CollectionUtils.isNotEmpty(pdStockRecordDetailList)) {
 			for(PdStockRecordDetail entity : pdStockRecordDetailList) {

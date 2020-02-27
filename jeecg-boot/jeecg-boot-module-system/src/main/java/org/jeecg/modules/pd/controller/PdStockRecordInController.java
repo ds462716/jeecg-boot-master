@@ -13,9 +13,11 @@ import org.jeecg.common.constant.PdConstant;
 import org.jeecg.common.system.vo.DictModel;
 import org.jeecg.common.util.DateUtils;
 import org.jeecg.modules.pd.entity.PdGoodsAllocation;
+import org.jeecg.modules.pd.entity.PdSupplier;
 import org.jeecg.modules.pd.service.IPdGoodsAllocationService;
 import org.jeecg.modules.pd.service.IPdStockRecordDetailService;
 import org.jeecg.modules.pd.service.IPdStockRecordService;
+import org.jeecg.modules.pd.service.IPdSupplierService;
 import org.jeecg.modules.pd.util.UUIDUtil;
 import org.jeecg.modules.pd.vo.PdGoodsAllocationPage;
 import org.jeecg.modules.pd.vo.PdProductStockTotalPage;
@@ -66,6 +68,8 @@ public class PdStockRecordInController {
 	private IPdGoodsAllocationService pdGoodsAllocationService;
 	@Autowired
 	private ISysDictService sysDictService;
+	@Autowired
+	private IPdSupplierService pdSupplierService;
 
 	 /**
 	  * 初始化Modal页面
@@ -73,7 +77,7 @@ public class PdStockRecordInController {
 	  * @return
 	  */
 	@GetMapping(value = "/initModal")
-	public Result<?> initModal(HttpServletRequest req) {
+	public Result<?> initModal(@RequestParam(name="see") Boolean see, HttpServletRequest req) {
 		PdStockRecord pdStockRecord = new PdStockRecord();
 
 		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
@@ -83,31 +87,35 @@ public class PdStockRecordInController {
 		pdGoodsAllocation.setDepartId(sysDepart.getId());
 		pdGoodsAllocation.setAreaType(PdConstant.GOODS_ALLCATION_AREA_TYPE_2);
 		List<PdGoodsAllocationPage> goodsAllocationList = pdGoodsAllocationService.getOptionsForSelect(pdGoodsAllocation);
-
-		//开关-是否允许入库量大于订单量   1-允许入库量大于订单量；0-不允许入库量大于订单量
-		List<DictModel> allowInMoreOrder = sysDictService.queryDictItemsByCode(PdConstant.ON_OFF_ALLOW_IN_MORE_ORDER);
-		//开关-是否允许入库非订单产品     1-允许非订单产品；0-不允许非订单产品
-		List<DictModel> allowNotOrderProduct = sysDictService.queryDictItemsByCode(PdConstant.ON_OFF_ALLOW_NOT_ORDER_PRODUCT);
-		if(CollectionUtils.isNotEmpty(allowInMoreOrder)){
-			pdStockRecord.setAllowInMoreOrder(allowInMoreOrder.get(0).getValue());
-		}
-		if(CollectionUtils.isNotEmpty(allowNotOrderProduct)){
-			pdStockRecord.setAllowNotOrderProduct(allowNotOrderProduct.get(0).getValue());
-		}
-		//部门id
-		pdStockRecord.setInDepartId(sysDepart.getId());
-		//获取入库单号
-		pdStockRecord.setRecordNo(UUIDUtil.generateOrderNoByType(PdConstant.ORDER_NO_FIRST_LETTER_RK));
-		//获取当前日期
-		pdStockRecord.setSubmitDateStr(DateUtils.formatDate());
-		pdStockRecord.setSubmitDate(DateUtils.getDate());
-		//登录人姓名
-		pdStockRecord.setSubmitBy(sysUser.getId());
-		pdStockRecord.setSubmitByName(sysUser.getRealname());
-		//默认入库类型
-		pdStockRecord.setInType(PdConstant.IN_TYPE_1);
 		//库区库位二级联动下拉框
 		pdStockRecord.setGoodsAllocationList(goodsAllocationList);
+
+		if(!see){
+
+			//开关-是否允许入库量大于订单量   1-允许入库量大于订单量；0-不允许入库量大于订单量
+			List<DictModel> allowInMoreOrder = sysDictService.queryDictItemsByCode(PdConstant.ON_OFF_ALLOW_IN_MORE_ORDER);
+			//开关-是否允许入库非订单产品     1-允许非订单产品；0-不允许非订单产品
+			List<DictModel> allowNotOrderProduct = sysDictService.queryDictItemsByCode(PdConstant.ON_OFF_ALLOW_NOT_ORDER_PRODUCT);
+			if(CollectionUtils.isNotEmpty(allowInMoreOrder)){
+				pdStockRecord.setAllowInMoreOrder(allowInMoreOrder.get(0).getValue());
+			}
+			if(CollectionUtils.isNotEmpty(allowNotOrderProduct)){
+				pdStockRecord.setAllowNotOrderProduct(allowNotOrderProduct.get(0).getValue());
+			}
+
+			//部门id
+			pdStockRecord.setInDepartId(sysDepart.getId());
+			//获取入库单号
+			pdStockRecord.setRecordNo(UUIDUtil.generateOrderNoByType(PdConstant.ORDER_NO_FIRST_LETTER_RK));
+			//获取当前日期
+			pdStockRecord.setSubmitDateStr(DateUtils.formatDate());
+			pdStockRecord.setSubmitDate(DateUtils.getDate());
+			//登录人姓名
+			pdStockRecord.setSubmitBy(sysUser.getId());
+			pdStockRecord.setSubmitByName(sysUser.getRealname());
+			//默认入库类型
+			pdStockRecord.setInType(PdConstant.IN_TYPE_1);
+		}
 
 		return Result.ok(pdStockRecord);
 	}
@@ -213,7 +221,9 @@ public class PdStockRecordInController {
 	 */
 	@GetMapping(value = "/queryPdStockRecordDetailByMainId")
 	public Result<?> queryPdStockRecordDetailListByMainId(@RequestParam(name="id",required=true) String id) {
-		List<PdStockRecordDetail> pdStockRecordDetailList = pdStockRecordDetailService.selectByMainId(id);
+		PdStockRecordDetail pdStockRecordDetail = new PdStockRecordDetail();
+		pdStockRecordDetail.setRecordId(id);
+		List<PdStockRecordDetail> pdStockRecordDetailList = pdStockRecordDetailService.selectByMainId(pdStockRecordDetail);
 		return Result.ok(pdStockRecordDetailList);
 	}
 
@@ -245,8 +255,10 @@ public class PdStockRecordInController {
       List<PdStockRecord> pageList = new ArrayList<PdStockRecord>();
       for (PdStockRecord main : pdStockRecordList) {
           PdStockRecord vo = new PdStockRecord();
+		  PdStockRecordDetail pdStockRecordDetail = new PdStockRecordDetail();
+		  pdStockRecordDetail.setRecordId(main.getId());
           BeanUtils.copyProperties(main, vo);
-          List<PdStockRecordDetail> pdStockRecordDetailList = pdStockRecordDetailService.selectByMainId(main.getId());
+          List<PdStockRecordDetail> pdStockRecordDetailList = pdStockRecordDetailService.selectByMainId(pdStockRecordDetail);
           vo.setPdStockRecordDetailList(pdStockRecordDetailList);
           pageList.add(vo);
       }

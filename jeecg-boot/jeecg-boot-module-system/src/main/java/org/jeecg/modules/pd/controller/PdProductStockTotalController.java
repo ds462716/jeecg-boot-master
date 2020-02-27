@@ -244,8 +244,8 @@ public class PdProductStockTotalController {
 		 List<PdStockRecordDetail> list = pdStockRecordDetailService.queryPdStockRecordDetail(pdStockRecordDetail);
 		 if(list != null && list.size() > 0){
 			   for (PdStockRecordDetail item : list) {
-				   outPrice=outPrice.add(item.getPdOutTotalPrice());
-				   inPrice=inPrice.add(item.getPdTotalPrice());
+				   outPrice=outPrice.add(item.getOutTotalPrice());
+				   inPrice=inPrice.add(item.getInTotalPrice());
 				   if(PdConstant.RECODE_TYPE_1.equals(item.getRecordType())){//入库
 					   productTotNum+=item.getProductNum();
 				   }else if(PdConstant.RECODE_TYPE_2.equals(item.getRecordType())){//出库

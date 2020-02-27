@@ -13,7 +13,7 @@ import com.baomidou.mybatisplus.annotation.TableLogic;
 
 /**
  * @Description: ${tableVo.ftlDescription}
- * @Author: jeecg-boot
+ * @Author: jiangxz
  * @Date:   ${.now?string["yyyy-MM-dd"]}
  * @Version: V1.0
  */
