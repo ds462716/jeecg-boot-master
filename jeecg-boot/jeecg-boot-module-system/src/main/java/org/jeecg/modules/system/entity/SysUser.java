@@ -2,6 +2,7 @@ package org.jeecg.modules.system.entity;
 
 import java.util.Date;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -170,4 +171,16 @@ public class SysUser implements Serializable {
     @Excel(name="负责部门",width = 15,dictTable ="sys_depart",dicText = "depart_name",dicCode = "id")
     @Dict(dictTable ="sys_depart",dicText = "depart_name",dicCode = "id")
     private String departIds;
+
+    /**
+     * 当前部门
+     */
+    @TableField(exist = false)
+    private String currentDepartId;
+
+    /**
+     *最顶级部门id（医院id）
+     */
+    @TableField(exist = false)
+    private String departParentId;
 }

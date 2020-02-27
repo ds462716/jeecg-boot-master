@@ -6,10 +6,7 @@ import java.util.Date;
 import java.math.BigDecimal;
 import java.util.List;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -357,6 +354,18 @@ public class PdProduct  extends BaseEntity {
 	 */
 	@Excel(name = "紧急产品已采购数量", width = 15)
 	private Double purchasedQuantity;
+
+	/**
+	 * 所属部门
+	 */
+	@TableField(strategy = FieldStrategy.NOT_EMPTY)
+	private String departId;
+
+	/**
+	 * 所属顶级部门（医院id）
+	 */
+	@TableField(strategy = FieldStrategy.NOT_EMPTY)
+	private String departParentId;
 
 	/**
 	 * 产品关联的编码规则

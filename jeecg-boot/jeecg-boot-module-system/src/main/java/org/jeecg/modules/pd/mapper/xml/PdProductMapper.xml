@@ -344,6 +344,12 @@
         <if test="number != null and number != ''">
             AND a.number LIKE concat('%',#{number},'%')
         </if>
+        <if test="departId != null and departId != ''">
+            AND a.depart_id LIKE concat('%',#{departId},'%')
+        </if>
+        <if test="departParentId != null and departParentId != ''">
+            AND a.depart_parent_id LIKE concat('%',#{departParentId},'%')
+        </if>
         order by a.create_time desc, a.update_time desc
     </select>
 

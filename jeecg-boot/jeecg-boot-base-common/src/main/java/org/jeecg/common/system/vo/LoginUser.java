@@ -103,4 +103,8 @@ public class LoginUser {
 	 */
 	private String currentDepartId;
 
+	/**
+	 *最顶级部门id（医院id）
+	 */
+	private String departParentId;
 }
