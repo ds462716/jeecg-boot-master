@@ -117,6 +117,12 @@ const getEncodingRuleList = (params)=>getAction("/pd/pdEncodingRule/getEncodingR
 const queryCategoryTreeList = (params)=>getAction("/pd/pdCategory/queryCategoryTreeList",params);
 const getCategoryList = (params)=>getAction("/pd/pdCategory/list",params);
 
+//新版本部门管理
+const queryPdDepaTreeList = (params)=>getAction("/pd/pdDepart/queryTreeList",params);
+const queryPdDepartTreeList = (params)=>getAction("/pd/pdDepart/queryPdDepartTreeList",params);
+const queryPermissionTreeList = (params)=>getAction("/pd/pdDepart/queryPermissionTreeList",params);
+
+
 
 export {
   // imgView,
@@ -179,7 +185,10 @@ export {
   queryTreeListForDeptRole,
   queryDeptRolePermission,
   saveDeptRolePermission,
-  queryMyDepartTreeList
+  queryMyDepartTreeList,
+  queryPdDepaTreeList,
+  queryPdDepartTreeList,
+  queryPermissionTreeList
 }
 
 
