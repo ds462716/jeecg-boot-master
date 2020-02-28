@@ -104,4 +104,10 @@ public interface PdConstant {
 	public final static String  CURRENT_DEPARTID = "departId";
 	public final static String  DEPART_PARENT_ID = "departParentId";
 
+	//菜单是否是业务菜单 0是1否
+	public final static String PERMISSION_BUSINESS_TYPE_0 = "0";
+	public final static String PERMISSION_BUSINESS_TYPE_1 = "1";
+
+
+
 }

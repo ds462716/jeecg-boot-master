@@ -68,6 +68,11 @@ public class SysPermissionTree implements Serializable {
 	private Integer menuType;
 
 	/**
+	 * 是否是业务菜单
+	 */
+	private String businessType;
+
+	/**
 	 * 是否叶子节点: 1:是 0:不是
 	 */
 	private boolean isLeaf;
@@ -144,6 +149,7 @@ public class SysPermissionTree implements Serializable {
 		this.icon = permission.getIcon();
 		this.isLeaf = permission.isLeaf();
 		this.menuType = permission.getMenuType();
+		this.businessType = permission.getBusinessType();
 		this.name = permission.getName();
 		this.parentId = permission.getParentId();
 		this.sortNo = permission.getSortNo();
@@ -284,6 +290,14 @@ public class SysPermissionTree implements Serializable {
 
 	public void setMenuType(Integer menuType) {
 		this.menuType = menuType;
+	}
+
+	public String getBusinessType() {
+		return businessType;
+	}
+
+	public void setBusinessType(String businessType) {
+		this.businessType = businessType;
 	}
 
 	public String getDescription() {

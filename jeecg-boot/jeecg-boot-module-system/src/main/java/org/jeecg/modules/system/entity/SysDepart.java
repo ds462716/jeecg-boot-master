@@ -91,6 +91,10 @@ public class SysDepart implements Serializable {
 	private Date updateTime;
 
 	/**
+	 * 建立该部门的部门
+	 */
+	private String departId;
+	/**
 	 * 最顶级部门id（医院id）
 	 */
 	private String departParentId;
