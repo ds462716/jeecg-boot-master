@@ -11,18 +11,30 @@
   >
     <a-spin :spinning="confirmLoading">
       <a-form :form="form">
-        <a-form-item label="类型" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-radio-group @change="onChangeMenuType" v-decorator="['type',{'initialValue':localCategoryType}]">
-            <a-radio :value="0">一级分类</a-radio>
-            <a-radio :value="1">二级分类</a-radio>
-          </a-radio-group>
+        <a-form-item
+          v-if="localDepartType!=0"
+          v-show="false"
+          :labelCol="labelCol"
+          :wrapperCol="wrapperCol"
+          label="类型">
+          <a-input  placeholder="请输入类型"  v-decorator="['orgType', {'initialValue':2}]"/>
         </a-form-item>
+
+        <a-form-item
+          v-else
+          v-show="false"
+          :labelCol="labelCol"
+          :wrapperCol="wrapperCol"
+          label="类型">
+          <a-input  placeholder="请输入类型" v-decorator="['orgType',  {'initialValue':1}]"/>
+        </a-form-item>
+
         <a-form-item
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
           :label="menuLabel"
            >
-          <a-input placeholder="请输入名称" ref="inputFocus" @change="pinyinTran"  v-decorator="[ 'name', validatorRules.name]"/>
+          <a-input placeholder="请输入名称" ref="inputFocus" @change="pinyinTran"  v-decorator="[ 'departName', validatorRules.departName]"/>
         </a-form-item>
         <a-form-item label="拼音简码" :labelCol="labelCol" :wrapperCol="wrapperCol">
           <a-input v-decorator="[ 'py', validatorRules.py]" placeholder="请输入拼音简码"></a-input>
@@ -33,37 +45,68 @@
         <a-form-item label="自定义码" :labelCol="labelCol" :wrapperCol="wrapperCol">
           <a-input v-decorator="[ 'zdy', validatorRules.zdy]" placeholder="请输入自定义码"></a-input>
         </a-form-item>
-
+        <a-form-item
+          :labelCol="labelCol"
+          :wrapperCol="wrapperCol"
+          label="机构编码">
+          <a-input disabled placeholder="请输入机构编码" v-decorator="['orgCode']"/>
+        </a-form-item>
 
         <a-form-item
-          v-show="localCategoryType!=0"
-          label="一级分类"
+          v-show="localDepartType!=0"
+          label="上级部门"
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
           :validate-status="validateStatus"
           :hasFeedback="true"
           :required="true">
-          <span slot="help">{{ validateStatus=='error'?'请选择一级分类':'&nbsp;&nbsp;' }}</span>
+          <span slot="help">{{ validateStatus=='error'?'请选择上级部门':'&nbsp;&nbsp;' }}</span>
           <a-tree-select
             style="width:100%"
             :dropdownStyle="{ maxHeight: '200px', overflow: 'auto' }"
             :treeData="treeData"
             v-model="model.parentId"
-            placeholder="请选择一级分类"
+            placeholder="请选择上级部门"
             :disabled="disableSubmit"
             @change="handleParentIdChange">
           </a-tree-select>
         </a-form-item>
-
-        <a-form-item label="备注" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input v-decorator="[ 'remarks', validatorRules.remarks]" placeholder="请输入备注"></a-input>
+        <a-form-item
+          :labelCol="labelCol"
+          :wrapperCol="wrapperCol"
+          label="电话">
+          <a-input placeholder="请输入电话" v-decorator="['mobile',validatorRules.mobile]" />
         </a-form-item>
-        
+        <a-form-item
+          :labelCol="labelCol"
+          :wrapperCol="wrapperCol"
+          label="传真">
+          <a-input placeholder="请输入传真" v-decorator="['fax', {}]"  />
+        </a-form-item>
+        <a-form-item
+          :labelCol="labelCol"
+          :wrapperCol="wrapperCol"
+          label="地址">
+          <a-input placeholder="请输入地址" v-decorator="['address', {}]"  />
+        </a-form-item>
+        <a-form-item
+          :labelCol="labelCol"
+          :wrapperCol="wrapperCol"
+          label="排序">
+          <a-input-number v-decorator="[ 'departOrder',{'initialValue':0}]" />
+        </a-form-item>
+        <a-form-item
+          :labelCol="labelCol"
+          :wrapperCol="wrapperCol"
+          label="备注">
+          <a-textarea placeholder="请输入备注" v-decorator="['memo', {}]"  />
+        </a-form-item>
+
       </a-form>
     </a-spin>
     <div class="drawer-bootom-button" v-show="!disableSubmit">
       <a-button type="primary" :loading="confirmLoading" @click="handleOk">确定</a-button>
-      <a-button  @click="handleCancel">取消</a-button>
+      <a-button type="primary" @click="handleCancel">取消</a-button>
     </div>
 
   </a-drawer>
@@ -75,11 +118,11 @@
   import pick from 'lodash.pick'
   import { validateDuplicateValue } from '@/utils/util'
   import JDictSelectTag from "@/components/dict/JDictSelectTag"
-  import {queryCategoryTreeList} from '@/api/api'
+  import {queryPdDepartTreeList} from '@/api/api'
   import { makeWb } from '@/utils/wubi'
   
   export default {
-    name: "PdCategoryModal",
+    name: "PdDepartModal",
     components: { 
       JDictSelectTag,
     },
@@ -90,7 +133,7 @@
         drawerWidth:800,
         visible: false,
         model: {},
-        localCategoryType:0,
+        localDepartType:0,
         show:true,//根据菜单类型，动态显示隐藏表单元素
         treeData:[],
         validateStatus:"",
@@ -106,19 +149,14 @@
         },
         confirmLoading: false,
         validatorRules: {
-          name: {rules: [
-            {required: true, message: '请输入名称!'},
-            /*{ validator: (rule, value, callback) => validateDuplicateValue('pd_category', 'name', value, this.model.id, callback)},*/
-          ]},
-          type: {rules: [
-            {required: true, message: '请输入类型!'},
-          ]},
-          remarks: {rules: [
-          ]},
+          departName: {rules: [{required: true, message: '请输入机构/部门名称!'}]},
+          orgCode: {rules: [{required: true, message: '请输入机构编码!'}]},
+          orgType: {rules: [{required: true, message: '请输入机构类型!'}]},
+          mobile: {rules: [{validator: this.validateMobile}]}
         },
         url: {
-          add: "/pd/pdCategory/add",
-          edit: "/pd/pdCategory/edit",
+          add: "/sys/sysDepart/add",
+          edit: '/sys/sysDepart/edit',
         }
       }
     },
@@ -133,14 +171,14 @@
         this.form.resetFields();
         this.model = Object.assign({}, record);
         if(this.model.parentId){
-          this.localCategoryType = 1;
+          this.localDepartType = 1;
         }else{
-          this.localCategoryType = 0;
+          this.localDepartType = 0;
         }
         this.visible = true;
         this.loadTree();
         this.$nextTick(() => {
-          this.form.setFieldsValue(pick(this.model,'name','py','wb','zdy','type','remarks'));
+          this.form.setFieldsValue(pick(this.model,'departName','py','wb','zdy','departOrder','orgType','orgCode','mobile','fax','address','memo'));
           //获取光标
           let input = this.$refs['inputFocus'];
           input.focus()
@@ -165,9 +203,9 @@
                method = 'put';
             }
             let formData = Object.assign(this.model, values);
-            if ((formData.type == 1) && !formData.parentId) {
+            if ((formData.orgType == 2) && !formData.parentId) {
               that.validateStatus = 'error';
-              that.$message.error("请检查你填的分类是否正确！");
+              that.$message.error("请检查你填的部门是否正确！");
               return;
             } else {
               that.validateStatus = 'success';
@@ -193,10 +231,10 @@
         this.close()
       },
       popupCallback(row){
-        this.form.setFieldsValue(pick(row,'name','type','createTime','updateTime','remarks'))
+        this.form.setFieldsValue(pick(row,'departName','py','wb','zdy','departOrder','orgType','orgCode','mobile','fax','address','memo'))
       },
       onChangeMenuType(e) {
-        this.localCategoryType=e.target.value
+        this.localDepartType=e.target.value
         this.show = true;
       },
       handleParentIdChange(value){
@@ -208,7 +246,7 @@
       },
       loadTree(){
         let that = this;
-        queryCategoryTreeList().then((res)=>{
+        queryPdDepartTreeList().then((res)=>{
           if(res.success){
             that.treeData = [];
             let treeList = res.result.treeList
@@ -240,7 +278,14 @@
         let wb = makeWb(val);
         this.form.setFieldsValue({wb:wb});//获取五笔简码
       },
-      
+      validateMobile(rule,value,callback){
+        if (!value || new RegExp(/^1([38][0-9]|4[579]|5[0-3,5-9]|6[6]|7[0135678]|9[89])\d{8}$/).test(value)){
+          callback();
+        }else{
+          callback("您的手机号码格式不正确!");
+        }
+
+      }
     }
   }
 </script>

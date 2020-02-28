@@ -73,6 +73,14 @@ public class SysDepartTreeModel implements Serializable{
 
     private Date updateTime;
 
+    /**拼音码*/
+    private String py;
+    /**五笔码*/
+    private String wb;
+    /**自定义码*/
+    private String zdy;
+
+
     private List<SysDepartTreeModel> children = new ArrayList<>();
 
 
@@ -87,6 +95,9 @@ public class SysDepartTreeModel implements Serializable{
         this.id = sysDepart.getId();
         this.parentId = sysDepart.getParentId();
         this.departName = sysDepart.getDepartName();
+        this.py = sysDepart.getPy();
+        this.wb = sysDepart.getWb();
+        this.zdy = sysDepart.getZdy();
         this.departNameEn = sysDepart.getDepartNameEn();
         this.departNameAbbr = sysDepart.getDepartNameAbbr();
         this.departOrder = sysDepart.getDepartOrder();
@@ -320,6 +331,30 @@ public class SysDepartTreeModel implements Serializable{
     }
 
     public SysDepartTreeModel() { }
+
+    public String getPy() {
+        return py;
+    }
+
+    public void setPy(String py) {
+        this.py = py;
+    }
+
+    public String getWb() {
+        return wb;
+    }
+
+    public void setWb(String wb) {
+        this.wb = wb;
+    }
+
+    public String getZdy() {
+        return zdy;
+    }
+
+    public void setZdy(String zdy) {
+        this.zdy = zdy;
+    }
 
     /**
      * 重写equals方法

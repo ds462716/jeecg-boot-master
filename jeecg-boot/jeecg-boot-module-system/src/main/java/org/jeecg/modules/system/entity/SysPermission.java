@@ -87,6 +87,11 @@ public class SysPermission implements Serializable {
 	private Integer menuType;
 
 	/**
+	 * 是否是业务菜单
+	 */
+	private String businessType;
+
+	/**
 	 * 是否叶子节点: 1:是  0:不是
 	 */
 	@TableField(value="is_leaf")
