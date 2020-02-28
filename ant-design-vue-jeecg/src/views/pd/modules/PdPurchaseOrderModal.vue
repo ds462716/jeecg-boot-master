@@ -151,8 +151,8 @@
           dataSource: [],
           columns: [
             { title: '产品ID', key: 'productId', type: FormTypes.hidden },
-            { title: '产品名称', width:"250px",  key: 'productName' },
             { title: '产品编号',width:"150px", align:"center", key: 'number' },
+            { title: '产品名称', width:"250px",  key: 'productName' },
             { title: '规格',width:"240px", align:"center", key: 'spec' },
             { title: '单位',width:"50px", align:"center", key: 'unitName' },
             { title: '库存数量', width:"100px",align:"center", key: 'stockNum' },

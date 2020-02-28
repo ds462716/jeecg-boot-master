@@ -108,7 +108,7 @@
 
 <script>
 
-  import { JeecgListMixin } from '@/mixins/JeecgListMixin'
+  import { JeecgListMixin,batchDel } from '@/mixins/JeecgListMixin'
   import {initDictOptions, filterMultiDictText} from '@/components/dict/JDictSelectUtil'
   import PdAllocationRecordModal from './modules/PdAllocationRecordModal'
 
@@ -221,9 +221,50 @@
       }
     },
     methods: {
+
+      batchDel: function () { //批量删除
+        if (this.selectionRows.length <= 0) {
+          this.$message.warning('请选择一条记录！');
+          return;
+        } else {
+          var ids = "";
+          var allocationNos="";
+          for (let a = 0; a < this.selectionRows.length; a++) {
+            let submitStatus= this.selectionRows[a].submitStatus;
+            if(submitStatus=='2'){
+              allocationNos+=this.selectionRows[a].allocationNo + ",";
+            }else{
+              ids += this.selectionRows[a].id + ",";
+            }
+          }
+          if(allocationNos != ""){
+            this.$message.warning("调拨编号["+allocationNos.substring(0,allocationNos.length-1)+"]已提交审核，不允许删除！")
+            return
+          }
+          var that = this;
+          this.$confirm({
+            title: "确认删除",
+            content: "是否删除选中数据?",
+            onOk: function () {
+              that.loading = true;
+              deleteAction(that.url.deleteBatch, {ids: ids}).then((res) => {
+                if (res.success) {
+                  that.$message.success(res.message);
+                  that.loadData();
+                  that.onClearSelected();
+                } else {
+                  that.$message.warning(res.message);
+                }
+              }).finally(() => {
+                that.loading = false;
+              });
+            }
+          });
+        }
+      },
       handleEdit: function (record) { //编译
         if(record.submitStatus=='2' && record.auditStatus !='3'){
-          this.$message.warning("此单已提交审核，不允许编译！")
+          this.$message.warning("此单已提交审核，不允许修改！")
           return
         }
         this.$refs.modalForm.edit(record);
