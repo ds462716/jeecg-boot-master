@@ -51,7 +51,7 @@
               <a-input-number disabled="disabled" v-decorator="[ 'totalPrice', validatorRules.totalPrice]"  style="width: 100%"/>
             </a-form-item>
           </a-col>
-          <!-- <!-- 子表单区域 -->
+          <!-- 子表单区域 -->
           <a-button style="float: left;" type="primary" icon="download" @click="exportXls('申购产品列表')">导出</a-button>
           <div style="float: left;width:100%;margin-bottom: 70px;white-space:nowrap;overflow-x:auto;overflow-y:hidden;">
             <table id="contentTable" class="tableStyle" style="width:100%">
