@@ -62,7 +62,7 @@
       </a-form>
     </a-spin>
     <div class="drawer-bootom-button" v-show="!disableSubmit">
-      <a-button type="primary" @click="handleOk">确定</a-button>
+      <a-button type="primary" :loading="confirmLoading" @click="handleOk">确定</a-button>
       <a-button type="primary" @click="handleCancel">取消</a-button>
     </div>
 
@@ -252,4 +252,17 @@
     margin-bottom: 30px;
     float: right;
   }
+.drawer-bootom-button {
+  position: absolute;
+  /*top:95%;*/
+  bottom: -30px;
+  width: 100%;
+  border-top: 1px solid #e8e8e8;
+  padding: 10px 16px;
+  text-align: right;
+  left: 0;
+  background: #fff;
+  border-radius: 0 0 2px 2px;
+  z-index:199;
+}
 </style>
