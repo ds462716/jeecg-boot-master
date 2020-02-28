@@ -20,8 +20,10 @@ public class PdAllocationDetailServiceImpl extends ServiceImpl<PdAllocationDetai
 	@Autowired
 	private PdAllocationDetailMapper pdAllocationDetailMapper;
 	
+
 	@Override
-	public List<PdAllocationDetail> selectByMainId(String mainId) {
-		return pdAllocationDetailMapper.selectByMainId(mainId);
+	public List<PdAllocationDetail> selectByAllocationNo(String allocationNo) {
+		return pdAllocationDetailMapper.selectByAllocationNo(allocationNo);
 	}
+
 }

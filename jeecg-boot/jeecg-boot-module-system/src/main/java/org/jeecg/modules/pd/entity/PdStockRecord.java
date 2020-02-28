@@ -133,14 +133,22 @@ public class PdStockRecord extends BaseEntity {
     /**所属部门*/
     @Excel(name = "所属部门", width = 15)
     private String sysOrgCode;
-    /**所属父部门*/
-    @Excel(name = "所属父部门", width = 15)
-    private String sysOrgParentCode;
+    /**所属部门*/
+    private String departId;
+    private String departParentId;
+
+
+
 
     // pd_stock_record表外字段 ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
     @ExcelCollection(name="出入库明细表")
     @TableField(exist = false)
     private List<PdStockRecordDetail> pdStockRecordDetailList;
+
+    // 采购订单明细
+    @TableField(exist = false)
+    private List<PdPurchaseDetail> pdPurchaseDetailList;
+
     /**出入库日期 字符串格式*/
     @TableField(exist = false)
     private String submitDateStr;

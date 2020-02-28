@@ -47,21 +47,6 @@
         </a-row>
       </a-form>
     </div>
-    <!-- 操作按钮区域 -->
-    <div class="table-operator">
-      <a-button @click="handleAdd" type="primary" icon="plus">新增</a-button>
-      <!-- <a-button type="primary" icon="download" @click="handleExportXls('调拨记录表')">导出</a-button>
-     <a-upload name="file" :showUploadList="false" :multiple="false" :headers="tokenHeader" :action="importExcelUrl" @change="handleImportExcel">
-        <a-button type="primary" icon="import">导入</a-button>
-      </a-upload>-->
-      <a-dropdown v-if="selectedRowKeys.length > 0">
-        <a-menu slot="overlay">
-          <a-menu-item key="1" @click="batchDel"><a-icon type="delete"/>删除</a-menu-item>
-        </a-menu>
-        <a-button style="margin-left: 8px"> 批量操作 <a-icon type="down" /></a-button>
-      </a-dropdown>
-    </div>
-
     <!-- table区域-begin -->
     <div>
       <div class="ant-alert ant-alert-info" style="margin-bottom: 16px;">
@@ -81,46 +66,28 @@
         :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
         @change="handleTableChange">
         <span slot="action" slot-scope="text, record">
-          <a @click="handleEdit(record)">编辑</a>
-
-          <a-divider type="vertical" />
-          <a-dropdown>
-            <a class="ant-dropdown-link">更多 <a-icon type="down" /></a>
-            <a-menu slot="overlay">
-              <a-menu-item>
-                <a href="javascript:;" @click="handleDetail(record)">详情</a>
-              </a-menu-item>
-              <a-menu-item>
-                <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record)">
-                  <a>删除</a>
-                </a-popconfirm>
-              </a-menu-item>
-            </a-menu>
-          </a-dropdown>
+          <a v-if="record.auditStatus=='1'" @click="handleEdit(record)">审核</a>&nbsp;&nbsp;&nbsp;
+          <a href="javascript:;" @click="handleDetail(record)">详情</a>
         </span>
-
       </a-table>
     </div>
-
-    <pdAllocationRecord-modal ref="modalForm" @ok="modalFormOk"></pdAllocationRecord-modal>
+    <pd-allocation-examine-modal ref="modalForm" @ok="modalFormOk"></pd-allocation-examine-modal>
   </a-card>
 </template>
 
 <script>
 
-  import { JeecgListMixin,batchDel } from '@/mixins/JeecgListMixin'
+  import { JeecgListMixin,handleEdit } from '@/mixins/JeecgListMixin'
   import {initDictOptions, filterMultiDictText} from '@/components/dict/JDictSelectUtil'
-  import PdAllocationRecordModal from './modules/PdAllocationRecordModal'
-
+  import PdAllocationExamineModal from './modules/PdAllocationExamineModal'
   export default {
-    name: "PdAllocationRecordList",
+    name: "PdAllocationExamineList",
     mixins:[JeecgListMixin],
-    components: {
-      PdAllocationRecordModal
+    components: {PdAllocationExamineModal
     },
     data () {
       return {
-        description: '调拨记录表管理页面',
+        description: '调拨记录审核页面',
         // 表头
         columns: [
           {
@@ -179,18 +146,6 @@
             }
           },
           {
-            title:'提交状态',
-            align:"center",
-            dataIndex: 'submitStatus',
-            customRender:(text)=>{
-              if(!text){
-                return ''
-              }else{
-                return filterMultiDictText(this.dictOptions['submitStatus'], text+"")
-              }
-            }
-          },
-          {
             title:'备注',
             align:"center",
             dataIndex: 'remarks'
@@ -203,14 +158,12 @@
           }
         ],
         url: {
-          list: "/pd/pdAllocationRecord/list",
-          delete: "/pd/pdAllocationRecord/delete",
-          deleteBatch: "/pd/pdAllocationRecord/deleteBatch",
+          list: "/pd/pdAllocationRecord/auditList",
+          exportXlsUrl: "/pd/pdAllocationRecord/exportXls",
 
         },
         dictOptions:{
           auditStatus:[],
-          submitStatus:[],
         },
 
       }
@@ -221,84 +174,12 @@
       }
     },
     methods: {
-
-      batchDel: function () { //批量删除
-        if (this.selectionRows.length <= 0) {
-          this.$message.warning('请选择一条记录！');
-          return;
-        } else {
-          var ids = "";
-          var allocationNos="";
-          for (let a = 0; a < this.selectionRows.length; a++) {
-            let submitStatus= this.selectionRows[a].submitStatus;
-            if(submitStatus=='2'){
-              allocationNos+=this.selectionRows[a].allocationNo + ",";
-            }else{
-              ids += this.selectionRows[a].id + ",";
-            }
-          }
-          if(allocationNos != ""){
-            this.$message.warning("调拨编号["+allocationNos.substring(0,allocationNos.length-1)+"]已提交审核，不允许删除！")
-            return
-          }
-          var that = this;
-          this.$confirm({
-            title: "确认删除",
-            content: "是否删除选中数据?",
-            onOk: function () {
-              that.loading = true;
-              deleteAction(that.url.deleteBatch, {ids: ids}).then((res) => {
-                if (res.success) {
-                  that.$message.success(res.message);
-                  that.loadData();
-                  that.onClearSelected();
-                } else {
-                  that.$message.warning(res.message);
-                }
-              }).finally(() => {
-                that.loading = false;
-              });
-            }
-          });
-        }
-      },
-      handleEdit: function (record) { //编译
-        if(record.submitStatus=='2' && record.auditStatus !='3'){
-          this.$message.warning("此单已提交审核，不允许修改！")
-          return
-        }
-        this.$refs.modalForm.edit(record);
-        this.$refs.modalForm.title = "编辑";
-        this.$refs.modalForm.disableSubmit = false;
-      },
-      handleDelete: function (record) { //删除
-        if(record.submitStatus=='2'){
-          this.$message.warning("此单已提交审核，不允许删除！")
-          return
-        }
-        var that = this;
-        var id=record.id;
-        deleteAction(that.url.delete, {id: id}).then((res) => {
-          if (res.success) {
-            that.$message.success(res.message);
-            that.loadData();
-          } else {
-            that.$message.warning(res.message);
-          }
-        });
-      },
-
       initDictConfig(){ //静态字典值加载
         initDictOptions('audit_status').then((res) => {
           if (res.success) {
             this.$set(this.dictOptions, 'auditStatus', res.result)
           }
-        }),
-          initDictOptions('submit_status').then((res) => {
-            if (res.success) {
-              this.$set(this.dictOptions, 'submitStatus', res.result)
-            }
-          })
+        })
       },
        
     }

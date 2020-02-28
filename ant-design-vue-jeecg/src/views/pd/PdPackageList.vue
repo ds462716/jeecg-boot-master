@@ -163,11 +163,11 @@
             align:"center",
             dataIndex: 'zdy'
           },
-          {
-            title:'父机构',
-            align:"center",
-            dataIndex: 'sysOrgParentCode'
-          },
+          // {
+          //   title:'父机构',
+          //   align:"center",
+          //   dataIndex: 'departParentId'
+          // },
           {
             title: '操作',
             dataIndex: 'action',

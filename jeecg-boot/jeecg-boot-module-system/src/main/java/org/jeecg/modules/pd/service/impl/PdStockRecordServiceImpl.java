@@ -3,7 +3,9 @@ package org.jeecg.modules.pd.service.impl;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.constant.PdConstant;
+import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.DateUtils;
 import org.jeecg.modules.pd.entity.PdPurchaseDetail;
 import org.jeecg.modules.pd.entity.PdStockRecord;
@@ -101,11 +103,15 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
 
 	@Override
 	public List<PdStockRecord> queryList(PdStockRecord pdStockRecord) {
+		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		pdStockRecord.setDepartParentId(sysUser.getDepartParentId());
 		return pdStockRecordMapper.selectList(pdStockRecord);
 	}
 
 	@Override
 	public Page<PdStockRecord> queryList(Page<PdStockRecord> pageList, PdStockRecord pdStockRecord) {
+		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		pdStockRecord.setDepartParentId(sysUser.getDepartParentId());
 		return pageList.setRecords(pdStockRecordMapper.selectList(pdStockRecord));
 	}
 

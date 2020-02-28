@@ -125,6 +125,7 @@
     components: {JDate,PdPurchaseDetailAddModal},
     data() {
       return {
+        model:{},
         disableSubmit:false,
         confirmLoading: false,
         labelCol: {span: 6},
@@ -150,8 +151,8 @@
           dataSource: [],
           columns: [
             { title: '产品ID', key: 'productId', type: FormTypes.hidden },
-            { title: '产品名称', width:"250px",  key: 'productName' },
             { title: '产品编号',width:"150px", align:"center", key: 'number' },
+            { title: '产品名称', width:"250px",  key: 'productName' },
             { title: '规格',width:"240px", align:"center", key: 'spec' },
             { title: '单位',width:"50px", align:"center", key: 'unitName' },
             { title: '库存数量', width:"100px",align:"center", key: 'stockNum' },
@@ -224,17 +225,7 @@
       purchaseInfo() { //新增页面初始化
         getAction("/pd/pdPurchaseOrder/purchaseInfo",{}).then((res)=>{
           if (res.success) {
-            let model={};
-            this.model.orderNo=res.result.orderNo;//申购编号
-            this.model.purchaseBy=res.result.purchaseBy;//申购人编号
-            this.model.purchaseName=res.result.purchaseName;//申购人名称
-            this.model.orderDate=res.result.orderDate;//申购日期
-            this.model.deptId=res.result.deptId;//申购科室Id
-            this.model.deptName=res.result.deptName;//申购科室名称
-            this.model.totalNum=res.result.totalNum;//申购总数量
-            this.model.totalPrice=res.result.totalPrice;//申购总金额
-            this.model.submitStatus=res.result.submitStatus;//提交状态
-            this.model.auditStatus=res.result.auditStatus;//审核状态
+              this.model = res.result;
             this.$nextTick(() => {
               this.form.setFieldsValue(pick(this.model,'orderNo','purchaseName','orderDate','deptName','totalNum','totalPrice','refuseReason'))
             })

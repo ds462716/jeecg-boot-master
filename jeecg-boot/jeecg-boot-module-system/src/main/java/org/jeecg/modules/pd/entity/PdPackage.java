@@ -51,6 +51,7 @@ public class PdPackage extends BaseEntity {
     private Date updateTime;
 	/**所属部门*/
     private String sysOrgCode;
-	/**父机构*/
-    private String sysOrgParentCode;
+    /**所属部门*/
+    private String departId;
+    private String departParentId;
 }

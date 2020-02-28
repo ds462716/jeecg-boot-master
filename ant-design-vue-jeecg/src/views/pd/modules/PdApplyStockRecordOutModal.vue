@@ -317,7 +317,6 @@
           extend2:{},
           extend3:{},
           delFlag:{},
-          sysOrgParentCode:{},
         },
         refKeys: ['pdStockRecordDetail',],
         tableKeys:['pdStockRecordDetail', ],
@@ -647,7 +646,7 @@
         this.$message.error(msg)
       },
       popupCallback(row){
-        this.form.setFieldsValue(pick(row,'recordNo','recordType','outType','inType','orderNo','allocationNo','applyNo','dosagertNo','submitBy','submitDate','submitStatus','refuseReason','remarks','testResult','storageResult','temperature','humidity','outDepartId','inDepartId','supplierId','auditBy','auditDate','returnStatus','extend1','extend2','extend3','delFlag','sysOrgParentCode'))
+        this.form.setFieldsValue(pick(row,'recordNo','recordType','outType','inType','orderNo','allocationNo','applyNo','dosagertNo','submitBy','submitDate','submitStatus','refuseReason','remarks','testResult','storageResult','temperature','humidity','outDepartId','inDepartId','supplierId','auditBy','auditDate','returnStatus','extend1','extend2','extend3','delFlag'))
       },
       /** 切换全屏显示 */
       handleClickToggleFullScreen() {

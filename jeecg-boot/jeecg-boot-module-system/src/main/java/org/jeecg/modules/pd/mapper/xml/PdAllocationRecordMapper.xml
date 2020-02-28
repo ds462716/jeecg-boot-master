@@ -27,14 +27,35 @@
 
     <sql id="PdAllocationRecordJoins">
     </sql>
+    <!--用户-->
+    <sql id="pdSysUserColumns">
+        b.realname as "realname"
+	</sql>
+    <sql id="pdSysUserJoins">
+        LEFT JOIN sys_user b ON b.id = a.allocation_by
+     </sql>
 
+    <!-- 科室 -->
+    <sql id="sysDepartColumns">
+        c.depart_name AS "outDeptName",
+        d.depart_name AS "inDeptName"
+    </sql>
+
+    <sql id="sysDepartJoins">
+        LEFT JOIN sys_depart c ON a.out_dept_id = c.id
+        LEFT JOIN sys_depart d ON a.in_dept_id = d.id
+    </sql>
 
     <!-- 列表查询 -->
     <select id="selectList" resultType="org.jeecg.modules.pd.entity.PdAllocationRecord">
         SELECT
-        <include refid="PdAllocationRecordColumns"/>
+        <include refid="PdAllocationRecordColumns"/>,
+        <include refid="pdSysUserColumns"/>,
+        <include refid="sysDepartColumns"/>
         FROM pd_allocation_record a
         <include refid="PdAllocationRecordJoins"/>
+        <include refid="pdSysUserJoins"/>
+        <include refid="sysDepartJoins"/>
         <where>
             a.del_flag =#{DEL_FLAG_NORMAL}
             <if test="id != null and id != ''">
@@ -48,6 +69,12 @@
             </if>
             <if test="submitStatus != null and submitStatus != ''">
                 AND a.submit_status = #{submitStatus}
+            </if>
+            <if test="submitStatusList != null and submitStatusList.size() > 0">
+                and a.submit_status IN
+                <foreach collection="submitStatusList" item="item" separator="," open="(" close=")">
+                    #{item}
+                </foreach>
             </if>
         </where>
     </select>

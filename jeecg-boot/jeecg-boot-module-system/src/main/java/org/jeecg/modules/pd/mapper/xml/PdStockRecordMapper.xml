@@ -37,7 +37,8 @@
         a.update_by,
         a.update_time,
         a.sys_org_code,
-        a.sys_org_parent_code
+        a.depart_id,
+        a.depart_parent_id
 	</sql>
 
 
@@ -101,7 +102,12 @@
             <if test="supplierId != null and supplierId != ''">
                 AND a.supplier_id = #{supplierId}
             </if>
-
+            <if test="departId != null and departId != ''">
+                AND a.depart_id = #{departId}
+            </if>
+            <if test="departParentId != null and departParentId != ''">
+                AND a.depart_parent_id = #{departParentId}
+            </if>
         </where>
         order by a.submit_date desc
     </select>

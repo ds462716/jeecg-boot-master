@@ -101,7 +101,7 @@
 <script>
 
   import PdApplyOrderModal from './modules/PdApplyOrderModal'
-  import { JeecgListMixin,handleEdit} from '@/mixins/JeecgListMixin'
+  import { JeecgListMixin,handleEdit,batchDel} from '@/mixins/JeecgListMixin'
   import { deleteAction } from '@/api/manage'
   import {initDictOptions, filterMultiDictText} from '@/components/dict/JDictSelectUtil'
   export default {
@@ -209,9 +209,52 @@
       }
     },
     methods: {
-      handleEdit: function (record) { //编译
+
+      batchDel: function () { //批量删除
+        if (this.selectionRows.length <= 0) {
+          this.$message.warning('请选择一条记录！');
+          return;
+        } else {
+          var ids = "";
+          var applyNos="";
+          for (let a = 0; a < this.selectionRows.length; a++) {
+            let submitStatus= this.selectionRows[a].submitStatus;
+            if(submitStatus=='2'){
+              applyNos+=this.selectionRows[a].applyNo + ",";
+            }else{
+              ids += this.selectionRows[a].id + ",";
+            }
+          }
+          if(applyNos != ""){
+            this.$message.warning("申领编号["+applyNos.substring(0,applyNos.length-1)+"]已提交审核，不允许删除！")
+            return
+          }
+          var that = this;
+          this.$confirm({
+            title: "确认删除",
+            content: "是否删除选中数据?",
+            onOk: function () {
+              that.loading = true;
+              deleteAction(that.url.deleteBatch, {ids: ids}).then((res) => {
+                if (res.success) {
+                  that.$message.success(res.message);
+                  that.loadData();
+                  that.onClearSelected();
+                } else {
+                  that.$message.warning(res.message);
+                }
+              }).finally(() => {
+                that.loading = false;
+              });
+            }
+          });
+        }
+      },
+
+
+      handleEdit: function (record) { //修改
         if(record.submitStatus=='2' && record.auditStatus !='3'){
-          this.$message.warning("此单已提交审核，不允许编译！")
+          this.$message.warning("此单已提交审核，不允许修改！")
           return
         }
         this.$refs.modalForm.edit(record);

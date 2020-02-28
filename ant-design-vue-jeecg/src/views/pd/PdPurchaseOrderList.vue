@@ -14,7 +14,7 @@
               <a-input placeholder="请输入申购科室名称" v-model="queryParam.deptName"></a-input>
             </a-form-item>
           </a-col>
-          <template v-if="toggleSearchStatus">
+          <template :md="6" v-if="toggleSearchStatus">
             <a-col :md="6" :sm="8">
               <a-form-item label="审核状态">
                 <a-select v-model="queryParam.auditStatus" placeholder="请选择审核状态">
@@ -72,7 +72,7 @@
         :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
         @change="handleTableChange">
         <span slot="action" slot-scope="text, record">
-          <a  @click="handleEdit(record)">编辑</a>
+          <a  @click="handleEdit(record)">修改</a>
 
           <a-divider type="vertical" />
           <a-dropdown>
@@ -99,7 +99,7 @@
 
 <script>
 
-  import { JeecgListMixin,handleEdit} from '@/mixins/JeecgListMixin'
+  import { JeecgListMixin,handleEdit,batchDel} from '@/mixins/JeecgListMixin'
   import { deleteAction } from '@/api/manage'
   import PdPurchaseOrderModal from './modules/PdPurchaseOrderModal'
   import {initDictOptions, filterMultiDictText} from '@/components/dict/JDictSelectUtil'
@@ -208,9 +208,51 @@
       }*/
     },
     methods: {
-      handleEdit: function (record) { //编译
+      batchDel: function () { //批量删除
+        if (this.selectionRows.length <= 0) {
+          this.$message.warning('请选择一条记录！');
+          return;
+        } else {
+          var ids = "";
+          var orderNos="";
+          for (let a = 0; a < this.selectionRows.length; a++) {
+                let submitStatus= this.selectionRows[a].submitStatus;
+            if(submitStatus=='2'){
+              orderNos+=this.selectionRows[a].orderNo + ",";
+            }else{
+              ids += this.selectionRows[a].id + ",";
+            }
+          }
+          if(orderNos != ""){
+            this.$message.warning("采购编号["+orderNos.substring(0,orderNos.length-1)+"]已提交审核，不允许删除！")
+            return
+          }
+          var that = this;
+          this.$confirm({
+            title: "确认删除",
+            content: "是否删除选中数据?",
+            onOk: function () {
+              that.loading = true;
+              deleteAction(that.url.deleteBatch, {ids: ids}).then((res) => {
+                if (res.success) {
+                  that.$message.success(res.message);
+                  that.loadData();
+                  that.onClearSelected();
+                } else {
+                  that.$message.warning(res.message);
+                }
+              }).finally(() => {
+                that.loading = false;
+              });
+            }
+          });
+        }
+      },
+
+
+      handleEdit: function (record) { //修改
         if(record.submitStatus=='2' && record.auditStatus !='3'){
-          this.$message.warning("此订单已提交审核，不允许编译！")
+          this.$message.warning("此订单已提交审核，不允许修改！")
           return
         }
         this.$refs.modalForm.edit(record);

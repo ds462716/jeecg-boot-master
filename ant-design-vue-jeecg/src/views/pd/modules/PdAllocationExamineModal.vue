@@ -17,11 +17,10 @@
     </template>
     <a-spin :spinning="confirmLoading">
       <div style="background:#ECECEC; padding:20px">
-      <a-card style="margin-bottom: 10px;">
+        <a-card style="margin-bottom: 10px;">
       <!-- 主表单区域 -->
       <a-form :form="form">
         <a-row>
-
           <a-col :span="12">
             <a-form-item label="调拨单编号" :labelCol="labelCol" :wrapperCol="wrapperCol">
               <a-input disabled="disabled" v-decorator="[ 'allocationNo', validatorRules.allocationNo]"></a-input>
@@ -54,26 +53,17 @@
           </a-col>
           <a-col :span="12">
             <a-form-item label="备注" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input v-decorator="[ 'remarks', validatorRules.remarks]"  style="width: 100%;height: 60px"></a-input>
+              <a-input disabled="disabled" v-decorator="[ 'remarks', validatorRules.remarks]"  style="width: 100%;height: 60px"></a-input>
             </a-form-item>
           </a-col>
         </a-row>
       </a-form>
-        </a-card>
+          </a-card>
       <!-- 子表单区域 -->
-      <a-card style="margin-bottom: 10px;">
+        <a-card style="margin-bottom: 10px;">
       <a-tabs v-model="activeKey" @change="handleChangeTabs">
         <a-tab-pane tab="调拨明细表" :key="refKeys[0]" :forceRender="true">
           <div style="margin-bottom: 8px;">
-            <a-button v-show="!disableSubmit" type="primary" icon="plus" @click="choice">选择产品</a-button>
-            <span style="padding-left: 8px;"></span>
-            <a-popconfirm
-              :title="`确定要删除吗?`"
-              @confirm="handleConfirmDelete">
-              <a-button v-show="!disableSubmit" type="primary" icon="minus">删除</a-button>
-              <span class="gap"></span>
-            </a-popconfirm>
-            <span style="padding-left: 8px;"></span>
             <a-button type="primary" icon="download" @click="exportXls('调拨产品列表')">导出</a-button>
           </div>
           <j-editable-table
@@ -87,33 +77,34 @@
             :rowSelection="true"
             :disabled="disableSubmit"
             :actionButton="false"
-            @valueChange="valueChange"
             style="text-overflow: ellipsis;"
           />
         </a-tab-pane>
       </a-tabs>
         </a-card>
-        <a-card style="margin-bottom: 10px;" v-show="disableSubmit">
+        <a-card style="margin-bottom: 10px;">
           <a-form :form="form">
             <a-row>
               <a-col :span="12">
                 <a-form-item label="审核意见" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                  <a-input :disabled="true" v-decorator="[ 'rejectReason', validatorRules.rejectReason]" placeholder="请输入审核意见" style="width: 100%;height: 80px"/>
+                  <a-input :disabled="disableSubmit" v-decorator="[ 'rejectReason', validatorRules.rejectReason]" placeholder="请输入审核意见" style="width: 100%;height: 80px"/>
                 </a-form-item>
               </a-col>
             </a-row>
           </a-form>
         </a-card>
       </div>
+      <pd-apply-stock-record-out-modal ref="stockForm"></pd-apply-stock-record-out-modal>
     </a-spin>
     <div class="drawer-bootom-button" v-show="!disableSubmit">
-      <a-button @click="handleOk('submit')" type="primary" :loading="confirmLoading" style="margin-right: 15px;">提交</a-button>
-      <a-button @click="handleOk('save')" type="primary" :loading="confirmLoading" style="margin-right: 15px;">保存草稿</a-button>
-      <a-popconfirm title="确定放弃编辑？" @confirm="handleCancel" okText="确定" cancelText="取消">
-        <a-button style="margin-right: 15px;">取消</a-button>
+      <a-button @click="handleOk('yes')" type="primary" :loading="confirmLoading">审核通过</a-button>
+      <span style="padding-left: 8px;"></span>
+      <a-button @click="handleOk('no')" type="primary" :loading="confirmLoading">拒绝</a-button>
+      <span style="padding-left: 8px;"></span>
+      <a-popconfirm title="确定放弃审核？" @confirm="handleCancel" okText="确定" cancelText="取消">
+        <a-button style="margin-right: .8rem">取消</a-button>
       </a-popconfirm>
     </div>
-    <pd-allocation-detail-add-modal ref="PdAllocationDetailAddModal"   @ok="modalFormOk"></pd-allocation-detail-add-modal>
   </a-modal>
 </template>
 
@@ -124,7 +115,9 @@
   import { JEditableTableMixin } from '@/mixins/JEditableTableMixin'
   import JDate from '@/components/jeecg/JDate'
   import { httpAction,getAction,downFile,inArray} from '@/api/manage'
-  import PdAllocationDetailAddModal from './PdChooseProductListModel'
+  import PdApplyStockRecordOutModal from './PdApplyStockRecordOutModal'
+  import JDictSelectTag from "@/components/dict/JDictSelectTag"
+
 
   const VALIDATE_NO_PASSED = Symbol()
   export { FormTypes, VALIDATE_NO_PASSED }
@@ -132,7 +125,7 @@
     name: 'PdAllocationRecordModal',
     mixins: [JEditableTableMixin],
     components: {
-      JDate,PdAllocationDetailAddModal
+      JDate,PdApplyStockRecordOutModal,JDictSelectTag
     },
     data() {
       return {
@@ -181,15 +174,11 @@
             { title: '型号', width:"240px",align:"center", key: 'version' },
             { title: '单位',width:"50px", align:"center", key: 'unitName' },
             { title: '产品数量', width:"100px",align:"center", key: 'productNum' },
-            {title: '调拨数量', key: 'allocationNum', type: FormTypes.input, width:"100px",
-              placeholder: '${title}', defaultValue: '1',
-              validateRules: [{ required: true, message: '${title}不能为空' },{ pattern: '^-?\\d+\\.?\\d*$',message: '${title}的格式不正确' }]
-            },
+            {title: '调拨数量',  width:"100px",align:"center",key: 'allocationNum'},
             { title: '本科室库存数量', align:"center", key: 'stockNum' },
           ]
         },
         url: {
-          add: "/pd/pdAllocationRecord/add",
           edit: "/pd/pdAllocationRecord/edit",
           exportXlsUrl: "/pd/pdAllocationRecord/exportXls",
           pdAllocationDetail: {
@@ -206,83 +195,6 @@
       }
     },
     methods: {
-      add () { //初始化新增
-        this.pdAllocationDetailTable.dataSource = [];
-        this.edit({});
-        this.allocationInfo();
-      },
-
-
-      allocationInfo() { //新增页面初始化
-        getAction("/pd/pdAllocationRecord/allocationInfo",{}).then((res)=>{
-          if (res.success) {
-            let model={};
-            this.model=res.result;
-            this.$nextTick(() => {
-              this.form.setFieldsValue(pick(this.model,'allocationNo','allocationDate','totalNum','inDeptName','realName','remarks','rejectReason'))
-            })
-          }
-        })
-      },
-
-      //选择产品
-      choice() {
-        this.$refs.PdAllocationDetailAddModal.show();
-        this.$refs.PdAllocationDetailAddModal.title = "选择产品";
-      },
-
-      handleConfirmDelete() {
-        if(this.$refs.pdAllocationDetail.selectedRowIds.length > 0){
-          this.$refs.pdAllocationDetail.removeSelectedRows();
-          this.$nextTick(() => {
-            // 计算总数量
-           this.getTotalNumAndPrice();
-          })
-        }else{
-          this.$message.error("请选择需要删除的数据！")
-        }
-      },
-// 表格数据变更
-      valueChange(event) {
-        if(event){
-          const { type, row, column, value, target } = event;
-          if(type === FormTypes.input){
-            if(column.key === "allocationNum"){
-              // 申领数量变更
-              let rows = target.getValuesSync({ validate: false });
-              /*if(row.applyNum>row.stockNum){
-                this.$message.error("申领数量不能大于库存数量！");
-                let pdApplyDetailList = this.pdApplyDetailTable.dataSource;
-                for(let i=0;i<pdApplyDetailList.length;i++){
-                 let pdApplyDetail=pdApplyDetailList[i];
-                  if(pdApplyDetail.id==row.id){
-                  target.setValues([{rowKey: row.id, values: {applyNum :pdApplyDetail.applyNum }}]);
-                  break;
-                  }
-                }
-              }else{*/
-              target.setValues([{rowKey: row.id, values: {allocationNum :row.allocationNum }}]);
-              // 计算总数量
-              this.getTotalNumAndPrice();
-              /*}*/
-
-            }
-          }
-        }
-      },
-      // 计算总数量
-      getTotalNumAndPrice(){
-        this.$refs.pdAllocationDetail.getValues((error, values) => {
-          let totalNum = 0;
-          values.forEach((item, idx) => {
-            totalNum+=parseFloat(item.allocationNum);
-          })
-          this.model.totalNum = totalNum;
-          this.form.setFieldsValue(pick(this.model,'totalNum'))
-
-        })
-      },
-
       /* 导出 */
       exportXls(fileName){
         if(!fileName || typeof fileName != "string"){
@@ -315,88 +227,45 @@
           return
         }
       },
-      modalFormOk (formData) { //选择产品确定后返回所选择的数据
-        let idList = [];
-        let values = [];
-        let totalNum=0;
-        let data= this.pdAllocationDetailTable.dataSource;
-        for(let j=0;j<data.length;j++) {
-          totalNum+=data[j].allocationNum;
-          let prodId=data[j].productId;
-          idList.push(prodId);
+      handleOk (type) { //审核提交
+        this.model.auditStatus='2';//审核通过
+        if(type=="no"){
+          this.model.auditStatus='3';//拒绝
+          this.model.submitStatus='3';//已撤回
         }
-        values=data;
-        for(let i=0;i<formData.length;i++){
-          let prodId=formData[i].productId;
-          if(inArray(prodId, idList) ==-1) {
-            values.push({
-              productId: formData[i].productId,
-              number: formData[i].number,
-              productName: formData[i].productName,
-              spec: formData[i].spec,
-              version: formData[i].version,
-              unitName: formData[i].unitName,
-              allocationNum: "1",//默认 1
-              stockNum: formData[i].stockNum
-            })
-            totalNum+=1;//计算总数量
-          }
-        }
-        this.model.totalNum=totalNum;//调拨总数量
-        this.$nextTick(() => {
-          this.form.setFieldsValue(pick(this.model,'totalNum'))
-        })
-        this.pdAllocationDetailTable.dataSource = values;
-      },
-      handleOk (submitType) { //提交
-        if(submitType=="submit"){
-          this.model.submitStatus='2';
-          this.model.auditStatus='1';
-        }
-        const that = this;
-        // 触发表单验证
-        this.getAllTable().then(tables => {
-          /** 一次性验证主表和所有的次表 */
-          return validateFormAndTables(this.form, tables)
-        }).then(allValues => {
-          if (typeof this.classifyIntoFormData !== 'function') {
-            throw this.throwNotFunction('classifyIntoFormData')
-          }
-          let formData = this.classifyIntoFormData(allValues)
-          // 发起请求
-          let pdAllocationDetailList=formData.pdAllocationDetailList;
-          if(pdAllocationDetailList.length>0){
-            let httpurl = '';
-            let method = '';
-            if(!this.model.id){
-              httpurl+=this.url.add;
-              method = 'post';
-            }else{
-              httpurl+=this.url.edit;
-              method = 'put';
+        this.form.validateFields((err, values) => {
+          if(type=="no"){
+            if(values.rejectReason==null || values.rejectReason==''){
+              this.$message.warning("请填写审核意见")
+              return
             }
-            httpAction(httpurl,formData,method).then((res)=>{
-              if(res.success){
-                that.$message.success(res.message);
+          }
+          this.model.rejectReason= values.rejectReason;
+          if (!err) {
+            const that = this;
+            let pdAllocationDetailList = this.pdAllocationDetailTable.dataSource;
+            let values = [];
+            values.pdAllocationDetailList = pdAllocationDetailList;
+            let formData = Object.assign(this.model, values);
+            httpAction(this.url.edit, formData, 'put').then((res) => {
+              if (res.success) {
+                if(type=="yes"){
+                  this.$refs.stockForm.edit(pdAllocationDetailList);
+                  this.$refs.stockForm.title = "新增出库";
+                  this.$refs.stockForm.disableSubmit = false;
+                }
+                // that.$message.success("操作成功");
                 that.$emit('ok');
-              }else{
+              } else {
                 that.$message.warning(res.message);
               }
             }).finally(() => {
               that.confirmLoading = false;
               that.close();
             })
-          }else{
-            that.$message.error("请选择产品");
-          }
-        }).catch(e => {
-          if (e.error === VALIDATE_NO_PASSED) {
-            // 如果有未通过表单验证的子表，就自动跳转到它所在的tab
-            this.activeKey = e.index == null ? this.activeKey : this.refKeys[e.index]
-          } else {
-            console.error(e)
           }
         })
+
       },
 
       getAllTable() {

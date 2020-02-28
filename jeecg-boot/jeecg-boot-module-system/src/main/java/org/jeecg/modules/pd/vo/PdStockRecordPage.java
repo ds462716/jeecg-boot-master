@@ -128,9 +128,9 @@ public class PdStockRecordPage {
 	/**所属部门*/
 	@Excel(name = "所属部门", width = 15)
 	private String sysOrgCode;
-	/**所属父部门*/
-	@Excel(name = "所属父部门", width = 15)
-	private String sysOrgParentCode;
+	/**所属部门*/
+	private String departId;
+	private String departParentId;
 
 	@ExcelCollection(name="出入库明细表")
 	private List<PdStockRecordDetail> pdStockRecordDetailList;
