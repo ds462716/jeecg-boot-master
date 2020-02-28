@@ -121,6 +121,11 @@
             dataIndex: 'expDate'
           },
           {
+            title:'货位',
+            align:"center",
+            dataIndex: 'huoweiCode'
+          },
+          {
             title:'单位',
             align:"center",
             dataIndex: 'unitName'
