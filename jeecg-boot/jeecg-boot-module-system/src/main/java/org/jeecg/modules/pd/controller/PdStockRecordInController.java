@@ -2,6 +2,7 @@ package org.jeecg.modules.pd.controller;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -88,7 +89,24 @@ public class PdStockRecordInController {
 
 		if(StringUtils.isNotEmpty(id)){ // 查看页面
 			pdStockRecord = pdStockRecordService.getById(id);
+
+			//查入库单明细
+			PdStockRecordDetail pdStockRecordDetail = new PdStockRecordDetail();
+			pdStockRecordDetail.setRecordId(id);
+			List<PdStockRecordDetail> pdStockRecordDetailList = pdStockRecordDetailService.selectByMainId(pdStockRecordDetail);
+			BigDecimal totalPrice = new BigDecimal(0);//总金额	@TableField(exist = false)
+			Double totalSum = new Double(0);//总数量
+			for (PdStockRecordDetail item : pdStockRecordDetailList) {
+				totalSum = totalSum + item.getProductNum();
+				BigDecimal purchasePrice = item.getPurchasePrice() == null ? new BigDecimal(0) : item.getPurchasePrice();
+				totalPrice = totalPrice.add(purchasePrice.multiply(BigDecimal.valueOf(item.getProductNum())).setScale(4, BigDecimal.ROUND_HALF_UP));
+			}
+			pdStockRecord.setTotalSum(totalSum);
+			pdStockRecord.setTotalPrice(totalPrice);
+			pdStockRecord.setPdStockRecordDetailList(pdStockRecordDetailList);
+
 			if(StringUtils.isNotEmpty(pdStockRecord.getOrderNo())){
+				//查订单列表
 				List<PdPurchaseDetail> pdPurchaseDetailList = pdPurchaseDetailService.selectByOrderNo(pdStockRecord.getOrderNo());
 				pdStockRecord.setPdPurchaseDetailList(pdPurchaseDetailList);
 			}
@@ -137,14 +155,33 @@ public class PdStockRecordInController {
 								   @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
 								   @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
 								   HttpServletRequest req) {
-//		QueryWrapper<PdStockRecord> queryWrapper = QueryGenerator.initQueryWrapper(pdStockRecord, req.getParameterMap());
 		Page<PdStockRecord> page = new Page<PdStockRecord>(pageNo, pageSize);
-//		IPage<PdStockRecord> pageList = pdStockRecordService.page(page, queryWrapper);
 		pdStockRecord.setRecordType(PdConstant.RECODE_TYPE_1);
 		IPage<PdStockRecord> pageList = pdStockRecordService.queryList(page, pdStockRecord);
 		return Result.ok(pageList);
 	}
-	
+
+	 /**
+	  * 分页列表查询
+	  *
+	  * @param pdStockRecord
+	  * @param pageNo
+	  * @param pageSize
+	  * @param req
+	  * @return
+	  */
+	 @GetMapping(value = "/examineList")
+	 public Result<?> queryExaminePageList(PdStockRecord pdStockRecord,
+									@RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
+									@RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
+									HttpServletRequest req) {
+		 Page<PdStockRecord> page = new Page<PdStockRecord>(pageNo, pageSize);
+		 pdStockRecord.setRecordType(PdConstant.RECODE_TYPE_1);
+		 pdStockRecord.setSubmitStatus(PdConstant.SUBMIT_STATE_2); //已提交状态
+		 IPage<PdStockRecord> pageList = pdStockRecordService.queryList(page, pdStockRecord);
+		 return Result.ok(pageList);
+	 }
+
 	/**
 	 *   保存
 	 *
@@ -173,6 +210,24 @@ public class PdStockRecordInController {
 		 return Result.ok("添加成功！");
 	 }
 
+	 /**
+	  * 审批
+	  *
+	  * @param PdStockRecord
+	  * @return
+	  */
+	 @PostMapping(value = "/audit")
+	 public Result<?> audit(@RequestBody PdStockRecord PdStockRecord) {
+		 PdStockRecord pdStockRecord = new PdStockRecord();
+		 BeanUtils.copyProperties(PdStockRecord, pdStockRecord);
+		 PdStockRecord pdStockRecordEntity = pdStockRecordService.getOne(PdStockRecord);
+		 if(pdStockRecordEntity==null) {
+			 return Result.error("未找到对应数据");
+		 }
+		 String message = pdStockRecordService.audit(pdStockRecord,pdStockRecordEntity);
+
+		 return Result.ok(message);
+	 }
 	/**
 	 *  编辑
 	 *

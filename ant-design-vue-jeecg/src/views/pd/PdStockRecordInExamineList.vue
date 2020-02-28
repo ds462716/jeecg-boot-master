@@ -27,7 +27,6 @@
     
     <!-- 操作按钮区域 -->
     <div class="table-operator">
-      <a-button @click="handleAdd" type="primary" icon="plus">新增</a-button>
       <a-button type="primary" icon="download" @click="handleExportXls('出入库记录表')">导出</a-button>
     </div>
 
@@ -71,7 +70,7 @@
         </template>
 
         <span slot="action" slot-scope="text, record">
-          <!--<a @click="handleEdit(record)">修改</a>-->
+          <a v-if="record.auditStatus=='1'" @click="handleExamine(record)">审核</a> &nbsp;&nbsp;&nbsp;
           <a @click="handleDetail(record)">详情</a>
 
 
@@ -91,7 +90,7 @@
       </a-table>
     </div>
 
-    <pd-stock-record-in-modal ref="modalForm" @ok="modalFormOk"></pd-stock-record-in-modal>
+    <pd-stock-record-in-examine-modal ref="modalForm" @ok="modalFormOk"></pd-stock-record-in-examine-modal>
   </a-card>
 </template>
 
@@ -100,12 +99,13 @@
   import { JeecgListMixin } from '@/mixins/JeecgListMixin'
   import PdStockRecordInModal from './modules/PdStockRecordInModal'
   import {initDictOptions, filterMultiDictText} from '@/components/dict/JDictSelectUtil'
+  import PdStockRecordInExamineModal from "./modules/PdStockRecordInExamineModal";
 
   export default {
-    name: "PdStockRecordInList",
+    name: "PdStockRecordInExamineList",
     mixins:[JeecgListMixin],
     components: {
-      PdStockRecordInModal
+      PdStockRecordInExamineModal
     },
     data () {
       return {
@@ -163,18 +163,6 @@
             dataIndex: 'submitByName'
           },
           {
-            title:'提交状态',
-            align:"center",
-            dataIndex: 'submitStatus',
-            customRender:(text)=>{
-              if(!text){
-                return ''
-              }else{
-                return filterMultiDictText(this.dictOptions['submitStatus'], text+"")
-              }
-            }
-          },
-          {
             title:'审核状态',
             align:"center",
             dataIndex: 'auditStatus',
@@ -194,7 +182,7 @@
           }
         ],
         url: {
-          list: "/pd/pdStockRecordIn/list",
+          list: "/pd/pdStockRecordIn/examineList",
           // delete: "/pd/pdStockRecordIn/delete",
           // deleteBatch: "/pd/pdStockRecordIn/deleteBatch",
           exportXlsUrl: "/pd/pdStockRecordIn/exportXls",
@@ -227,7 +215,11 @@
           }
         })
       },
-       
+      handleExamine: function (record) {
+        this.$refs.modalForm.edit(record);
+        this.$refs.modalForm.title = "审核";
+        this.$refs.modalForm.disableSubmit = false;
+      },
     }
   }
 </script>

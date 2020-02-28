@@ -8,11 +8,15 @@ import org.jeecg.common.constant.PdConstant;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.DateUtils;
 import org.jeecg.modules.pd.entity.PdPurchaseDetail;
+import org.jeecg.modules.pd.entity.PdStockLog;
 import org.jeecg.modules.pd.entity.PdStockRecord;
 import org.jeecg.modules.pd.entity.PdStockRecordDetail;
 import org.jeecg.modules.pd.mapper.PdPurchaseDetailMapper;
+import org.jeecg.modules.pd.mapper.PdStockLogMapper;
 import org.jeecg.modules.pd.mapper.PdStockRecordDetailMapper;
 import org.jeecg.modules.pd.mapper.PdStockRecordMapper;
+import org.jeecg.modules.pd.service.IPdProductStockTotalService;
+import org.jeecg.modules.pd.service.IPdStockLogService;
 import org.jeecg.modules.pd.service.IPdStockRecordService;
 import org.springframework.stereotype.Service;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -20,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Collection;
 
@@ -38,7 +43,15 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
 	private PdStockRecordDetailMapper pdStockRecordDetailMapper;
 	@Autowired
 	private PdPurchaseDetailMapper pdPurchaseDetailMapper;
-	
+	@Autowired
+	private IPdProductStockTotalService pdProductStockTotalService;
+	@Autowired
+	private PdStockLogMapper pdStockLogMapper;
+	@Autowired
+	private IPdStockLogService pdStockLogService;
+
+
+
 	@Override
 	@Transactional
 	public void saveMain(PdStockRecord pdStockRecord, List<PdStockRecordDetail> pdStockRecordDetailList) {
@@ -115,4 +128,87 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
 		return pageList.setRecords(pdStockRecordMapper.selectList(pdStockRecord));
 	}
 
+	@Override
+	public PdStockRecord getOne(PdStockRecord pdStockRecord) {
+		return pdStockRecordMapper.getOne(pdStockRecord);
+	}
+
+	@Override
+	@Transactional(rollbackFor = Exception.class)
+	public String audit(PdStockRecord auditEntity,PdStockRecord pdStockRecord) {
+		String message = "";
+		// 变更审批意见 以及 审批状态
+		auditEntity.setAuditDate(DateUtils.getDate());
+		pdStockRecordMapper.updateById(auditEntity);
+
+		if(PdConstant.AUDIT_STATE_2.equals(auditEntity.getAuditStatus())){
+			//审核通过
+			String inType = pdStockRecord.getInType();
+
+			if(PdConstant.IN_TYPE_1.equals(inType)){  //正常入库
+				// TODO 紧急产品处理逻辑
+
+			}else if(PdConstant.IN_TYPE_2.equals(inType)){  //退货入库
+
+
+			}else if(PdConstant.IN_TYPE_3.equals(inType)) {  //调拨入库
+
+			}
+
+			PdStockRecordDetail pdStockRecordDetail = new PdStockRecordDetail();
+			pdStockRecordDetail.setRecordId(pdStockRecord.getId());
+			List<PdStockRecordDetail> pdStockRecordDetailList = pdStockRecordDetailMapper.selectByMainId(pdStockRecordDetail);
+			pdStockRecord.setPdStockRecordDetailList(pdStockRecordDetailList);
+			//处理库存
+			String inStr = pdProductStockTotalService.updateInStock(pdStockRecord);
+
+			if(PdConstant.TRUE.equals(inStr)){
+				//保存出入库记录日志
+				this.saveStockLog(pdStockRecord);
+			}else{
+				throw new RuntimeException(inStr);
+			}
+
+			message = "审核成功！";
+		}else if(PdConstant.AUDIT_STATE_3.equals(auditEntity.getAuditStatus())){
+			//驳回
+			message = "驳回成功！";
+		}
+
+		return message;
+	}
+
+	/**
+	 * 保存出入库记录日志
+	 * @param pdStockRecord
+	 */
+	private void saveStockLog(PdStockRecord pdStockRecord){
+		//日志
+		List<PdStockRecordDetail> detail = pdStockRecord.getPdStockRecordDetailList();
+		List<PdStockLog> logList = new ArrayList<PdStockLog>();
+		PdStockLog stockLog;
+		for(PdStockRecordDetail psd : detail){
+			stockLog = new PdStockLog();
+
+			stockLog.setInvoiceNo(psd.getRecordNo());
+			stockLog.setProductId(psd.getProductId());
+			stockLog.setProductBarCode(psd.getProductBarCode());
+			stockLog.setBatchNo(psd.getBatchNo());
+			stockLog.setProductNum(psd.getProductNum());
+			if(StringUtils.isNotEmpty(pdStockRecord.getSupplierId())){
+				stockLog.setInFrom(pdStockRecord.getSupplierName());
+			}else{
+				stockLog.setInFrom(pdStockRecord.getOutDepartName());
+			}
+			stockLog.setOutTo(pdStockRecord.getInDepartName());
+			if(PdConstant.IN_TYPE_2.equals(pdStockRecord.getInType())){
+				stockLog.setLogType(PdConstant.STOCK_LOG_TYPE_5);
+			}else{
+				stockLog.setLogType(PdConstant.STOCK_LOG_TYPE_1);
+			}
+			stockLog.setRecordTime(DateUtils.getDate());
+			logList.add(stockLog);
+		}
+		pdStockLogService.saveBatch(logList);
+	}
 }

@@ -1,11 +1,14 @@
 package org.jeecg.modules.pd.service.impl;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.jeecg.modules.pd.entity.PdPurchaseOrder;
 import org.jeecg.modules.pd.entity.PdStockRecordDetail;
 import org.jeecg.modules.pd.mapper.PdStockRecordDetailMapper;
 import org.jeecg.modules.pd.service.IPdStockRecordDetailService;
 import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
 import java.util.List;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +27,8 @@ public class PdStockRecordDetailServiceImpl extends ServiceImpl<PdStockRecordDet
 	
 	@Override
 	public List<PdStockRecordDetail> selectByMainId(PdStockRecordDetail pdStockRecordDetail) {
-		return pdStockRecordDetailMapper.selectByMainId(pdStockRecordDetail);
+		List<PdStockRecordDetail> list = pdStockRecordDetailMapper.selectByMainId(pdStockRecordDetail);
+		return list;
 	}
 
 	/**

@@ -85,7 +85,6 @@
                 AND a.dosagert_no = #{dosagertNo}
             </if>
 
-
             <if test="submitBy != null and submitBy != ''">
                 AND a.submit_by = #{submitBy}
             </if>
@@ -109,7 +108,33 @@
                 AND a.depart_parent_id = #{departParentId}
             </if>
         </where>
-        order by a.submit_date desc
+        order by a.create_time desc
+    </select>
+
+    <select id="getOne" resultType="org.jeecg.modules.pd.entity.PdStockRecord" parameterType="org.jeecg.modules.pd.entity.PdStockRecord">
+        select
+        <include refid="PdStockRecordDetailColumns"/>,
+        b.depart_name as inDepartName,
+        c.depart_name as outDepartName,
+        d.name as supplierName,
+        e.realname as submitByName,
+        e.realname as auditByName
+        from
+        pd_stock_record a
+        left join sys_depart b on a.in_depart_id = b.id
+        left join sys_depart c on a.out_depart_id = b.id
+        left join pd_supplier d on a.supplier_id = d.id
+        left join sys_user e on a.submit_by = e.id
+        left join sys_user f on a.audit_by = f.id
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+            <if test="id != null and id != ''">
+                AND a.id = #{id}
+            </if>
+            <if test="recordNo != null and recordNo != ''">
+                AND a.record_no = #{recordNo}
+            </if>
+        </where>
     </select>
 
 </mapper>

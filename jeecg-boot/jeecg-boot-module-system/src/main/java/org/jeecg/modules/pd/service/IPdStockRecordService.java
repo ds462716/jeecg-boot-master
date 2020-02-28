@@ -52,5 +52,17 @@ public interface IPdStockRecordService extends IService<PdStockRecord> {
 	 * @return
 	 */
 	Page<PdStockRecord> queryList(Page<PdStockRecord> pageList, PdStockRecord pdStockRecord);
+
+	/**
+	 * 获取一条记录
+	 * @param pdStockRecord
+	 * @return
+	 */
+	PdStockRecord getOne(PdStockRecord pdStockRecord);
+
+	/**
+	 * 审批
+	 */
+	String audit(PdStockRecord auditEntity,PdStockRecord entity);
 	
 }

@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.jeecg.modules.pd.entity.PdProductStockTotal;
 import org.jeecg.modules.pd.entity.PdPurchaseOrder;
+import org.jeecg.modules.pd.entity.PdStockRecord;
 import org.jeecg.modules.pd.entity.PdStockRecordDetail;
 import org.jeecg.modules.pd.vo.PdProductStockTotalPage;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,12 +40,10 @@ public interface IPdProductStockTotalService extends IService<PdProductStockTota
 
     /**
      * 耗材入库更新库存信息
-     * @param inDeptId
-     * @param supplierId
-     * @param stockRecordDetails
+     * @param pdStockRecord
      * @return
      */
-    public String updateInStock(String inDeptId, String supplierId, List<PdStockRecordDetail> stockRecordDetails);
+    public String updateInStock(PdStockRecord pdStockRecord);
 
     /**
      * 库存出库更新库存信息

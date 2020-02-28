@@ -9,39 +9,32 @@ public interface PdConstant {
 
 	public static final String ADMIN_DEPART_CODE = "admin";
 
-	/**
-	 * 编码规则  start
-	 */
-
+	/** 编码规则  start */
 	//应用标识符类型 固定长度
 	public static final String  IDENTIFIER_TYPE_1= "1";
 	//应用标识符类型 可变长度
 	public static final String  IDENTIFIER_TYPE_2= "2";
+	/** * 编码规则  end */
 
-	/**
-	 * 编码规则  end
-	 */
-
-	/**
-	 * 审核状态
-	 */
+	/** 审核状态 */
 	public static final String  AUDIT_STATE_1= "1";//待审核
 	public static final String  AUDIT_STATE_2= "2";//审核通过
 	public static final String  AUDIT_STATE_3= "3";//已拒绝
 
-	/**
-	 * 提交状态
-	 */
+	/** 提交状态 */
 	public static final String  SUBMIT_STATE_1= "1";//待提交
 	public static final String  SUBMIT_STATE_2= "2";//已提交
 	public static final String  SUBMIT_STATE_3= "3";//已撤回
-	/**
-	 * 删除状态
-	 */
+
+	/** * 删除状态 */
 	public static final String  DEL_FLAG_0= "0";//有效
 	public static final String  DEL_FLAG_1= "1";//删除
 
-    //货区货位标识，用于页面中与机构部门标识区分 add by jiangxz 20200212
+	// true or false add by jiangxz 20200228
+	public final static String TRUE = "true";
+	public final static String FALSE = "false";
+
+	//货区货位标识，用于页面中与机构部门标识区分 add by jiangxz 20200212
 	public static final String GOODS_ALLCATION_FLAG_1 = "huoqu"; //货区货位
 	public static final String GOODS_ALLCATION_FLAG_2 = "huowei"; //货区货位
 
@@ -82,9 +75,6 @@ public interface PdConstant {
 	public final static String IS_LONG_0="0";//否
 	public final static String IS_LONG_1="1";//是
 
-
-
-
 	/**开关-是否允许入库量大于订单量 add by jiangxz 20200222 **/
 	public final static String ON_OFF_ALLOW_IN_MORE_ORDER = "on_off_allow_in_more_order"; //数据字典 code
 	public final static String ON_OFF_ALLOW_IN_MORE_ORDER_0 = "0"; // 0-不允许入库量大于订单量
@@ -104,10 +94,13 @@ public interface PdConstant {
 	public final static String  CURRENT_DEPARTID = "departId";
 	public final static String  DEPART_PARENT_ID = "departParentId";
 
-	//菜单是否是业务菜单 0是1否
-	public final static String PERMISSION_BUSINESS_TYPE_0 = "0";
-	public final static String PERMISSION_BUSINESS_TYPE_1 = "1";
-
-
-
+	//院内物流操作类型  add by jiangxz 20200228
+	public final static String STOCK_LOG_TYPE = "stock_log_type";
+	public final static String STOCK_LOG_TYPE_1 = "1";//耗材入库
+	public final static String STOCK_LOG_TYPE_2 = "2";//耗材出库
+	public final static String STOCK_LOG_TYPE_3 = "3";//用量使用
+	public final static String STOCK_LOG_TYPE_4 = "4";//用量退回
+	public final static String STOCK_LOG_TYPE_5 = "5";//耗材退货
+	public final static String STOCK_LOG_TYPE_6 = "6";//执行收费
+	public final static String STOCK_LOG_TYPE_7 = "7";//耗材院外退货
 }

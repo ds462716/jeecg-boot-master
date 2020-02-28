@@ -16,4 +16,11 @@ public interface PdStockRecordMapper extends BaseMapper<PdStockRecord> {
 
 
     List<PdStockRecord> selectList(PdStockRecord pdStockRecord);
+
+    /**
+     * 获取一条记录
+     * @param pdStockRecord
+     * @return
+     */
+    PdStockRecord getOne(PdStockRecord pdStockRecord);
 }

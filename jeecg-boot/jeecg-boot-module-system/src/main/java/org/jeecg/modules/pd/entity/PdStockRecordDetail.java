@@ -155,9 +155,4 @@ public class PdStockRecordDetail extends BaseEntity {
 	@TableField(exist = false)
 	private String inType;//入库类型
 
-	@TableField(exist = false)
-	private BigDecimal totalPrice;//总金额	@TableField(exist = false)
-	@TableField(exist = false)
-	private Double totalSum;//总数量
-
 }

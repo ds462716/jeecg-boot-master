@@ -298,17 +298,8 @@
         validatorRules: {
           recordNo:{},
           recordType:{},
-          outType:{},
           inType:{rules: [{required: true, message: '请选择入库类型!'}]},
           orderNo:{},
-          allocationNo:{},
-          applyNo:{},
-          dosagertNo:{},
-          submitBy:{},
-          submitByName:{},
-          submitDate:{},
-          submitStatus:{},
-          refuseReason:{},
           remarks:{},
           isAllowProduct:{rules: [{required: true, message: '请选择!'}]},
           isAllowNum:{rules: [{required: true, message: '请选择!'}]},
@@ -319,13 +310,6 @@
           outDepartId:{},
           inDepartId:{},
           supplierId:{rules: [{required: true, message: '请选择供应商!'}]},
-          auditBy:{},
-          auditDate:{},
-          returnStatus:{},
-          extend1:{},
-          extend2:{},
-          extend3:{},
-          delFlag:{},
         },
         refKeys: ['pdStockRecordDetail',],
         tableKeys:['pdStockRecordDetail', ],
@@ -438,40 +422,21 @@
       },
       /** 调用完edit()方法之后会自动调用此方法 */
       editAfter() {
-        // 加载子表数据
-        if (this.model.id) {
-          let fieldval = pick(this.model,'recordNo','inType','submitBy','submitByName','submitDate','remarks','inDepartId','supplierId',
-                                         'testResult','storageResult','temperature','humidity','remarks')
-
-          let params = { id: this.model.id }
-          this.requestSubTableData(this.url.pdStockRecordDetail.list, params, this.pdStockRecordDetailTable)
-
-          // getAction(this.pdPurchaseDetail.list, params).then((res) => {
-          //   if (res.success) {
-          //     this.dataSource = res.result.records;
-          //     this.ipagination.total = res.result.total;
-          //   }
-          //   if(res.code===510){
-          //     this.$message.warning(res.message)
-          //   }
-          //   this.loading = false;
-          // })
-
-          this.$nextTick(() => {
-            this.form.setFieldsValue(fieldval);
-            //初始化供应商，用于回显供应商
-            // this.supplierHandleSearch();
-            this.loadData();
-          })
-
-        }else{
           this.loadData();
-        }
       },
       loadData() {
         this.loading = true;
+
+        //初始化供应商，用于回显供应商
+        this.supplierHandleSearch();
+
         let params = {};
         if(this.model.id){
+          let fieldval = pick(this.model,'recordNo','inType','submitBy','submitByName','submitDate','remarks','inDepartId','supplierId',
+            'testResult','storageResult','temperature','humidity','remarks')
+          this.$nextTick(() => {
+            this.form.setFieldsValue(fieldval);
+          })
           params = { id: this.model.id }
         }else{
           params = { id: "" }
@@ -481,7 +446,10 @@
             this.$nextTick(() => {
               if(this.model.id){
                 this.showOrderTable = true;
-                this.pdPurchaseOrderDetailTable.dataSource = res.result.pdPurchaseDetailList;
+                this.pdPurchaseOrderDetailTable.dataSource = res.result.pdPurchaseDetailList || [];
+                this.pdStockRecordDetailTable.dataSource = res.result.pdStockRecordDetailList || [];
+                this.totalSum = res.result.totalSum;
+                this.totalPrice = res.result.totalPrice.toString();
               }else{
                 this.initData = res.result;
                 this.initData.isAllowProduct = "0";
@@ -495,13 +463,12 @@
                 this.submitDateStr = res.result.submitDateStr;
                 let fieldval = pick(this.initData,'recordNo','inType','submitBy','submitByName','submitDate','remarks','inDepartId','supplierId',
                   'testResult','storageResult','temperature','humidity','remarks');
-                this.goodsAllocationList = this.initData.goodsAllocationList;
                 this.form.setFieldsValue(fieldval);
                 //获取光标
                 this.$refs['productNumberInput'].focus();
               }
-              //初始化供应商，用于产品扫码后能回显供应商
-              this.supplierHandleSearch();
+
+              this.goodsAllocationList = res.result.goodsAllocationList;
               this.pdStockRecordDetailTable.columns.forEach((item, idx) => {
                 if(item.key === "huoweiCode"){
                   item.options = this.goodsAllocationList;
@@ -548,7 +515,7 @@
             return;
           }
           // 发起请求
-          return this.request(formData);
+          // return this.request(formData);
         }).catch(e => {
           if (e.error === VALIDATE_NO_PASSED) {
             // 如果有未通过表单验证的子表，就自动跳转到它所在的tab

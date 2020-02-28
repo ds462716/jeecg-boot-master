@@ -1,6 +1,7 @@
 package org.jeecg.modules.pd.entity;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -184,5 +185,10 @@ public class PdStockRecord extends BaseEntity {
     /** 审批人姓名 **/
     @TableField(exist = false)
     private String auditByName;
+
+    @TableField(exist = false)
+    private BigDecimal totalPrice;//总金额	@TableField(exist = false)
+    @TableField(exist = false)
+    private Double totalSum;//总数量
 
 }

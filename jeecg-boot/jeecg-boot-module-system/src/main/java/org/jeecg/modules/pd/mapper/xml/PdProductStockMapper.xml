@@ -179,6 +179,9 @@
 			<if test="batchNo != null and batchNo != ''">
 				AND a.batch_no = #{batchNo}
 			</if>
+			<if test="huoweiCode != null and huoweiCode != ''">
+				AND a.huowei_code = #{huoweiCode}
+			</if>
 		</where>
 		FOR UPDATE
 	</select>

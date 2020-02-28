@@ -1,9 +1,11 @@
 package org.jeecg.modules.pd.service.impl;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.jeecg.modules.pd.entity.PdProductStock;
 import org.jeecg.modules.pd.entity.PdProductStockTotal;
+import org.jeecg.modules.pd.entity.PdStockRecord;
 import org.jeecg.modules.pd.entity.PdStockRecordDetail;
 import org.jeecg.modules.pd.mapper.PdProductStockMapper;
 import org.jeecg.modules.pd.mapper.PdProductStockTotalMapper;
@@ -63,17 +65,20 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
 	/***
 	 * 	耗材入库更新库存信息
 	 *
-	 * @param  inDeptId       入库科室ID
-	 * @param   supplierId    供应商ID
-	 * @param stockRecordDetails  入库明细列表
+	 * @param   pdStockRecord    入库记录
 	 * @return  String   更新库存结果  入库成功，返回字符串“true”，否则返回错误信息
 	 */
 	@Transactional
-	public String updateInStock(String inDeptId, String supplierId, List<PdStockRecordDetail> stockRecordDetails){
-		if(StringUtils.isEmpty(inDeptId) || stockRecordDetails == null
-				|| stockRecordDetails.size() == 0){
+	public String updateInStock(PdStockRecord pdStockRecord){
+
+		if(pdStockRecord == null || CollectionUtils.isEmpty(pdStockRecord.getPdStockRecordDetailList())){
 			return "参数有误";
 		}
+
+		String inDeptId = pdStockRecord.getInDepartId();
+		String supplierId = pdStockRecord.getSupplierId();
+		List<PdStockRecordDetail> stockRecordDetails = pdStockRecord.getPdStockRecordDetailList();
+
 		for(PdStockRecordDetail stockRecordDetail :stockRecordDetails){
 			String productId = stockRecordDetail.getProductId();            //产品ID
 			String productBarCode = stockRecordDetail.getProductBarCode();  //产品条码
@@ -82,6 +87,7 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
 			String number=stockRecordDetail.getNumber();
 			Double productNum = stockRecordDetail.getProductNum();  //数量
 			BigDecimal inPrice = stockRecordDetail.getPurchasePrice();//入库单价
+			String huoweiCode = stockRecordDetail.getHuoweiCode(); //货位编号
 			//2、增加入库库存
 			PdProductStockTotal stockTotalqi = new PdProductStockTotal();
 			stockTotalqi.setDeptId(inDeptId);
@@ -100,8 +106,7 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
 				super.save(productStockTotal);
 			}else{ //如果库存总表存在，则增加库存数量
 				PdProductStockTotal productStockTotal = i_productStockTotals.get(0);
-				productNum+=productStockTotal.getStockNum();
-				productStockTotal.setStockNum(productNum);
+				productStockTotal.setStockNum(productNum + productStockTotal.getStockNum());
 				pdProductStockTotalMapper.updateStockNum(productStockTotal);
 			}
 			//增加入库库存明细
@@ -110,6 +115,7 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
 			i_productStockq.setProductId(productId);
 			i_productStockq.setProductBarCode(productBarCode);//2019年7月24日16:53:43 放开
 			i_productStockq.setBatchNo(batchNo);
+			i_productStockq.setHuoweiCode(huoweiCode);
 			List<PdProductStock> i_productStocks = pdProductStockMapper.findForUpdate(i_productStockq);
 			//如果库存明细表不存在，则新增
 			if(i_productStocks == null || i_productStocks.size() == 0){
@@ -121,6 +127,7 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
 				productStock.setProductName(productName);
 				productStock.setBatchNo(batchNo);
 				productStock.setNumber(number);
+				productStock.setHuoweiCode(huoweiCode);
 				productStock.setExpDate(stockRecordDetail.getLimitDate());
 				if(StringUtils.isNotEmpty(supplierId)){
 					productStock.setSupplierId(supplierId);
@@ -128,8 +135,7 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
 				productStockService.save(productStock);
 			}else{//存在，则增加库存数量
 				PdProductStock productStock = i_productStocks.get(0);
-				productNum+=productStock.getStockNum();
-				productStock.setStockNum(productNum);
+				productStock.setStockNum(productNum + productStock.getStockNum());
 				pdProductStockMapper.updateStockNum(productStock);
 			}
 		}
