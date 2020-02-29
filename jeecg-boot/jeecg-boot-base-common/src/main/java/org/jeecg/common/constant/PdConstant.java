@@ -109,5 +109,9 @@ public interface PdConstant {
 	public final static String PERMISSION_BUSINESS_TYPE_1 = "1";
 
 
-
+	/**
+	 * 盘点完成状态
+	 */
+	public static final String  CHECK_STATE_0= "0";//未完成
+	public static final String  CHECK_STATE_1= "1";//已完成
 }

@@ -1,42 +1,42 @@
 package org.jeecg.modules.pd.controller;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.shiro.SecurityUtils;
+import org.jeecg.common.api.vo.Result;
+import org.jeecg.common.aspect.annotation.AutoLog;
+import org.jeecg.common.constant.PdConstant;
+import org.jeecg.common.system.query.QueryGenerator;
+import org.jeecg.common.system.vo.LoginUser;
+import org.jeecg.common.util.oConvertUtils;
+import org.jeecg.modules.pd.entity.PdProductStockCheck;
+import org.jeecg.modules.pd.entity.PdProductStockCheckChild;
+import org.jeecg.modules.pd.service.IPdProductStockCheckChildService;
+import org.jeecg.modules.pd.service.IPdProductStockCheckService;
+import org.jeecg.modules.pd.util.UUIDUtil;
+import org.jeecg.modules.system.entity.SysDepart;
+import org.jeecg.modules.system.service.ISysDepartService;
 import org.jeecgframework.poi.excel.ExcelImportUtil;
 import org.jeecgframework.poi.excel.def.NormalExcelConstants;
 import org.jeecgframework.poi.excel.entity.ExportParams;
 import org.jeecgframework.poi.excel.entity.ImportParams;
 import org.jeecgframework.poi.excel.view.JeecgEntityExcelView;
-import org.jeecg.common.system.vo.LoginUser;
-import org.apache.shiro.SecurityUtils;
-import org.jeecg.common.api.vo.Result;
-import org.jeecg.common.system.query.QueryGenerator;
-import org.jeecg.common.util.oConvertUtils;
-import org.jeecg.modules.pd.entity.PdProductStockCheckChild;
-import org.jeecg.modules.pd.entity.PdProductStockCheck;
-import org.jeecg.modules.pd.service.IPdProductStockCheckService;
-import org.jeecg.modules.pd.service.IPdProductStockCheckChildService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import lombok.extern.slf4j.Slf4j;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import org.jeecg.common.aspect.annotation.AutoLog;
+import org.springframework.web.servlet.ModelAndView;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.*;
+import java.util.stream.Collectors;
 
  /**
  * @Description: 盘点记录表
@@ -53,7 +53,8 @@ public class PdProductStockCheckController {
 	private IPdProductStockCheckService pdProductStockCheckService;
 	@Autowired
 	private IPdProductStockCheckChildService pdProductStockCheckChildService;
-	
+	 @Autowired
+	 private ISysDepartService sysDepartService;
 	/**
 	 * 分页列表查询
 	 *
@@ -75,7 +76,34 @@ public class PdProductStockCheckController {
 		IPage<PdProductStockCheck> pageList = pdProductStockCheckService.page(page, queryWrapper);
 		return Result.ok(pageList);
 	}
-	
+
+
+	 /**
+	  * 新增初始化操作
+	  *
+	  * @return
+	  */
+	 @GetMapping(value = "/checkInfo")
+	 public Result<PdProductStockCheck> checkInfo() {
+		 Result<PdProductStockCheck> result = new Result<>();
+		 PdProductStockCheck productStockCheck = new PdProductStockCheck();
+		 String checkNo = UUIDUtil.generateOrderNoByType(PdConstant.ORDER_NO_FIRST_LETTER_PD);
+		 productStockCheck.setCheckNo(checkNo);
+		 productStockCheck.setCheckDate(new Date());
+		 LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		 SysDepart sysDepart = sysDepartService.getDepartByOrgCode(sysUser.getOrgCode());
+		 productStockCheck.setDeptId(sysDepart.getId());
+		 productStockCheck.setDeptName(sysDepart.getDepartName());
+		 productStockCheck.setCheckBy(sysUser.getId());
+		 productStockCheck.setCheckName(sysUser.getRealname());
+		 productStockCheck.setCheckStatus(PdConstant.CHECK_STATE_1);
+		 productStockCheck.setCheckCount(0.00);
+		 productStockCheck.setProfitLossCount(0.00);
+		 productStockCheck.setShouldCount(0.00);
+		 result.setResult(productStockCheck);
+		 result.setSuccess(true);
+		 return result;
+	 }
 	/**
 	 *   添加
 	 *

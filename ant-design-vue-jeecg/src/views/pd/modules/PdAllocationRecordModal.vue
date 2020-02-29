@@ -37,9 +37,27 @@
               <a-input disabled="disabled" v-decorator="[ 'realName', validatorRules.realName]"></a-input>
             </a-form-item>
           </a-col>
-          <a-col :span="12">
+          <!--<a-col :span="12">
             <a-form-item label="出库科室" :labelCol="labelCol" :wrapperCol="wrapperCol">
               <a-input disabled="disabled" v-decorator="[ 'outDeptId', validatorRules.outDeptId]"></a-input>
+            </a-form-item>
+          </a-col>-->
+          <a-col :span="12">
+            <a-form-item label="出库科室" :labelCol="labelCol" :wrapperCol="wrapperCol">
+              <a-select
+                showSearch
+                placeholder="请选择出库科室"
+                :disabled="disableSubmit"
+                :outDeptId="outDeptValue"
+                :defaultActiveFirstOption="false"
+                :showArrow="true"
+                :filterOption="false"
+                @search="sysDeptHandleSearch"
+                :notFoundContent="notFoundContent"
+                v-decorator="[ 'outDeptId', validatorRules.outDeptId]"
+              >
+                <a-select-option v-for="d in outDeptData" :key="d.value">{{d.text}}</a-select-option>
+              </a-select>
             </a-form-item>
           </a-col>
           <a-col :span="12">
@@ -150,6 +168,11 @@
         },
         model:{},
         disableSubmit:false,
+        //出库科室下拉列表 start
+        outDeptValue: undefined,
+        notFoundContent:"未找到内容",
+        outDeptData: [],
+        //出库科室下拉列表 end
         // 新增时子表默认添加几行空数据
         addDefaultRowNum: 1,
         validatorRules: {
@@ -157,10 +180,11 @@
           allocationDate:{},
           allocationBy:{},
           realName:{},
-          outDeptId:{},
+          outDeptId:{ rules: [{ required: true, message: '请选择出库科室!' }] },
+          outDeptName:{},
           inDeptId:{},
           inDeptName:{},
-          totalNum: { rules: [{ required: true, message: '请输入调拨总数量!' }] },
+          totalNum: {},
           remarks:{},
           rejectReason:{}
         },
@@ -183,7 +207,8 @@
             { title: '产品数量', width:"100px",align:"center", key: 'productNum' },
             {title: '调拨数量', key: 'allocationNum', type: FormTypes.input, width:"100px",
               placeholder: '${title}', defaultValue: '1',
-              validateRules: [{ required: true, message: '${title}不能为空' },{ pattern: '^-?\\d+\\.?\\d*$',message: '${title}的格式不正确' }]
+              validateRules: [{ required: true, message: '${title}不能为空' },
+                { pattern: '^(?:[1-9][0-9]*(?:\\.[0-9]+)?|0\\.(?!0+$)[0-9]+)$',message: '${title}的格式不正确' }]
             },
             { title: '本科室库存数量', align:"center", key: 'stockNum' },
           ]
@@ -192,6 +217,7 @@
           add: "/pd/pdAllocationRecord/add",
           edit: "/pd/pdAllocationRecord/edit",
           exportXlsUrl: "/pd/pdAllocationRecord/exportXls",
+          querySysDepartList:"/sys/sysDepart/queryTreeList",
           pdAllocationDetail: {
             list: '/pd/pdAllocationRecord/queryPdAllocationDetailList'
           },
@@ -219,7 +245,7 @@
             let model={};
             this.model=res.result;
             this.$nextTick(() => {
-              this.form.setFieldsValue(pick(this.model,'allocationNo','allocationDate','totalNum','inDeptName','realName','remarks','rejectReason'))
+              this.form.setFieldsValue(pick(this.model,'allocationNo','allocationDate','totalNum','inDeptName','outDeptName','realName','remarks','rejectReason'))
             })
           }
         })
@@ -405,9 +431,11 @@
       },
       /** 调用完edit()方法之后会自动调用此方法 */
       editAfter() {
-        let fieldval = pick(this.model,'allocationNo','allocationDate','totalNum','inDeptName','realName','remarks','rejectReason')
+        let fieldval = pick(this.model,'allocationNo','allocationDate','totalNum','inDeptName','outDeptId','outDeptName','realName','remarks','rejectReason')
         this.$nextTick(() => {
           this.form.setFieldsValue(fieldval)
+          //初始化出库科室
+          this.sysDeptHandleSearch();
         })
         // 加载子表数据
         if (this.model.id) {
@@ -428,7 +456,7 @@
         this.$message.error(msg)
       },
      popupCallback(row){
-       this.form.setFieldsValue(pick(row,'allocationNo','allocationDate','totalNum','inDeptName','realName','remarks','rejectReason'))
+       this.form.setFieldsValue(pick(row,'allocationNo','allocationDate','totalNum','inDeptName','outDeptName','realName','remarks','rejectReason'))
      },
       /** 切换全屏显示 */
       handleClickToggleFullScreen() {
@@ -442,7 +470,25 @@
         }
         this.popModal.fullScreen = mode
       },
+
+
+      //-----------------出库科室查询start
+      sysDeptHandleSearch(value) {
+        fetch(value, data => (this.outDeptData = data),this.url.querySysDepartList);
+      },
     }
+  }
+
+
+
+
+  function fetch(value, callback,url) {
+    return getAction(url,{name:value}).then((res)=>{
+          const result = res.result;
+          const data = [];
+          result.forEach(r => {data.push({value: r.id, text: r.departName,})});
+          callback(data);
+      })
   }
 </script>
 

@@ -50,7 +50,8 @@
         :dataSource="dataSource"
         :pagination="ipagination"
         :loading="loading"
-        @change="handleTableChange">
+        @change="handleTableChange"
+        >
       </a-table>
     </div>
   </a-card>
@@ -69,7 +70,7 @@
         description: '库存明细查询',
         // 表头
         columns: [
-          {
+          /*{
             title: '序号',
             dataIndex: '',
             key:'rowIndex',
@@ -78,11 +79,16 @@
             customRender:function (t,r,index) {
               return parseInt(index)+1;
             }
-          },
+          },*/
           {
             title:'所属科室',
             align:"center",
             dataIndex: 'deptName'
+          },
+          {
+            title:'货位',
+            align:"center",
+            dataIndex: 'huoweiCode'
           },
           {
             title:'产品名称',
@@ -103,11 +109,6 @@
             title:'规格',
             align:"center",
             dataIndex: 'spec'
-          },
-          {
-            title:'型号',
-            align:"center",
-            dataIndex: 'version'
           },
           {
             title:'批号',

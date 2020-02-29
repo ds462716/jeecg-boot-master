@@ -25,43 +25,43 @@
 
           <a-col :span="12">
             <a-form-item label="盘点编号" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input v-decorator="[ 'checkNo', validatorRules.checkNo]" placeholder="请输入盘点编号"></a-input>
+              <a-input  disabled="disabled" v-decorator="[ 'checkNo', validatorRules.checkNo]"></a-input>
             </a-form-item>
           </a-col>
           <a-col :span="12">
             <a-form-item label="盘点科室" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input v-decorator="[ 'deptId', validatorRules.deptId]" placeholder="请输入科室ID"></a-input>
+              <a-input disabled="disabled" v-decorator="[ 'deptName', validatorRules.deptName]"></a-input>
             </a-form-item>
           </a-col>
           <a-col :span="12">
             <a-form-item label="盘点日期" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <j-date placeholder="请选择盘点日期" v-decorator="[ 'checkDate', validatorRules.checkDate]" :trigger-change="true" style="width: 100%"/>
+              <j-date disabled="disabled" v-decorator="[ 'checkDate', validatorRules.checkDate]" :trigger-change="true" style="width: 100%"/>
             </a-form-item>
           </a-col>
           <a-col :span="12">
             <a-form-item label="盘点人" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input v-decorator="[ 'checkBy', validatorRules.checkBy]" placeholder="请输入盘点人编号"></a-input>
+              <a-input disabled="disabled" v-decorator="[ 'checkName', validatorRules.checkName]" ></a-input>
             </a-form-item>
           </a-col>
           <a-col :span="12">
             <a-form-item label="盘点产品量" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input-number v-decorator="[ 'shouldCount', validatorRules.shouldCount]" placeholder="请输入理论总数量" style="width: 100%"/>
+              <a-input-number disabled="disabled" v-decorator="[ 'shouldCount', validatorRules.shouldCount]"  style="width: 100%"/>
             </a-form-item>
           </a-col>
           <a-col :span="12">
             <a-form-item label="已盘产品量" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input-number v-decorator="[ 'checkCount', validatorRules.checkCount]" placeholder="请输入盘点总数量" style="width: 100%"/>
+              <a-input-number  disabled="disabled" v-decorator="[ 'checkCount', validatorRules.checkCount]"  style="width: 100%"/>
             </a-form-item>
           </a-col>
           <a-col :span="12">
             <a-form-item label="盘盈盘亏数量" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input-number v-decorator="[ 'profitLossCount', validatorRules.profitLossCount]" placeholder="请输入盘盈盘亏数量" style="width: 100%"/>
+              <a-input-number disabled="disabled" v-decorator="[ 'profitLossCount', validatorRules.profitLossCount]"  style="width: 100%"/>
             </a-form-item>
           </a-col>
 
           <a-col :span="12">
             <a-form-item label="备注" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input v-decorator="[ 'remarks', validatorRules.remarks]" placeholder="请输入备注"></a-input>
+              <a-input :disabled="disableSubmit" v-decorator="[ 'remarks', validatorRules.remarks]" placeholder="请输入备注"></a-input>
             </a-form-item>
           </a-col>
         </a-row>
@@ -124,40 +124,26 @@
     },
     data() {
       return {
-        labelCol: {
-          span: 6
-        },
-        wrapperCol: {
-          span: 16
-        },
-        labelCol2: {
-          span: 3
-        },
-        wrapperCol2: {
-          span: 20
-        },
+        model:{},
+        disableSubmit:false,
+        labelCol: {span: 6},
+        wrapperCol: {span: 16},
+        labelCol2: {span: 3},
+        wrapperCol2: {span: 20},
         // 新增时子表默认添加几行空数据
         addDefaultRowNum: 1,
         validatorRules: {
-          checkNo: {rules: [
-          ]},
-          deptId: {rules: [
-          ]},
-          checkDate: {rules: [
-          ]},
-          checkBy: {rules: [
-          ]},
-          shouldCount: {rules: [
-          ]},
-          checkCount: {rules: [
-          ]},
-          profitLossCount: {rules: [
-          ]},
-          checkStatus: {rules: [
-          ]},
-          remarks: {rules: [
-          ]},
-
+          checkNo: {rules: []},
+          deptId: {rules: []},
+          deptName: {rules: []},
+          checkDate: {rules: []},
+          checkBy: {rules: []},
+          checkName: {rules: []},
+          shouldCount: {rules: []},
+          checkCount: {rules: []},
+          profitLossCount: {rules: []},
+          checkStatus: {rules: []},
+          remarks: {rules: []},
         },
         refKeys: ['pdProductStockCheckChild', ],
         tableKeys:['pdProductStockCheckChild', ],
@@ -197,7 +183,22 @@
       }
     },
     methods: {
+      add () {//初始化新增
+        this.pdProductStockCheckChildTable.dataSource = [];
+        this.edit({});
+        this.checkInfo();
+      },
 
+      checkInfo() { //新增页面初始化
+        getAction("/pd/pdProductStockCheck/checkInfo",{}).then((res)=>{
+          if (res.success) {
+            this.model = res.result;
+            this.$nextTick(() => {
+             this.form.setFieldsValue(pick(this.model,'checkNo','deptName','checkDate','checkName','shouldCount','checkCount','profitLossCount','remarks'))
+            })
+          }
+        })
+      },
 
       //选择产品
       choice() {
@@ -205,8 +206,19 @@
         this.$refs.PdProductStockCheckAddModal.title = "选择产品";
       },
 
-      modalFormOk (formData) { //选择产品确定后返回所选择的数据
+      handleConfirmDelete() { //删除产品
+        if(this.$refs.PdProductStockCheckModal.selectedRowIds.length > 0){
+          this.$refs.PdProductStockCheckModal.removeSelectedRows();
+          this.$nextTick(() => {
+            // 计算总数量
+           // this.getTotalNumAndPrice();
+          })
+        }else{
+          this.$message.error("请选择需要删除的数据！")
+        }
+      },
 
+      modalFormOk (formData) { //选择产品确定后返回所选择的数据
         let idList = [];
         let values = [];
         let checkCount=0;
