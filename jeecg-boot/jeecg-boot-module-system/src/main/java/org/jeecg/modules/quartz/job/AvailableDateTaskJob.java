@@ -1,19 +1,27 @@
 package org.jeecg.modules.quartz.job;
 
+import cn.hutool.core.util.ObjectUtil;
+import com.baomidou.mybatisplus.core.toolkit.ObjectUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.constant.PdConstant;
 import org.jeecg.common.util.DateUtils;
+import org.jeecg.modules.message.util.PushMsgUtil;
 import org.jeecg.modules.pd.entity.PdSupplier;
 import org.jeecg.modules.pd.entity.PdVender;
 import org.jeecg.modules.pd.service.IPdSupplierService;
 import org.jeecg.modules.pd.service.IPdVenderService;
+import org.jeecg.modules.system.entity.SysAnnouncementSend;
+import org.jeecg.modules.system.service.ISysAnnouncementSendService;
+import org.jeecg.modules.system.service.ISysUserService;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
-import java.util.Date;
-import java.util.List;
+
+import java.util.*;
+
 /**
  * 生产厂家及供应商证照有效期到期定时任务
  *
@@ -26,6 +34,13 @@ public class AvailableDateTaskJob implements Job {
     private IPdVenderService pdVenderService;
     @Autowired
     private IPdSupplierService pdSupplierService;
+    @Autowired
+    private PushMsgUtil pushMsgUtil;
+    @Autowired
+    private ISysUserService sysUserService;
+    @Autowired
+    private ISysAnnouncementSendService announcementSendService;
+
 
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
@@ -48,8 +63,10 @@ public class AvailableDateTaskJob implements Job {
         PdVender vender = new PdVender();
         List<PdVender> venderList = pdVenderService.selectAllList(vender);
         if (venderList != null && venderList.size() > 0) {
-            String flag="0"; //所有证照过期标识
+            StringBuffer verderName1=new StringBuffer();
+            StringBuffer verderName2=new StringBuffer();
             for (PdVender pdVender : venderList) {
+                String flag="0";//所有证照过期标识
                 Date afterMonthDate = null;
                 String valType = "0";// 0：未过期  1：即将过期    2：已过期
                 Date licenceDate = pdVender.getLicenceDate0();//获取第一组证件有效期
@@ -163,12 +180,23 @@ public class AvailableDateTaskJob implements Job {
                 }
                 if (flag.indexOf("2")!=-1){
                     pdVender.setValidityFlag(PdConstant.PD_STATE_2);
+                    verderName2.append(pdVender.getName()).append(",");
                 }else if(flag.indexOf("1")!=-1){
                     pdVender.setValidityFlag(PdConstant.PD_STATE_1);
+                    verderName1.append(pdVender.getName()).append(",");
                 }else{
                     pdVender.setValidityFlag(PdConstant.PD_STATE_0);
                 }
                 pdVenderService.updateValidityFlag(pdVender);
+            }
+            //发送消息提醒  暂定发送给器械科管理员用户
+            if(ObjectUtil.isNotEmpty(verderName1)){ //即将过期提醒
+                String verderName1Str=verderName1.toString();
+                this.sendMsg(verderName1Str,"validity_code","生产厂家");
+            }
+            if(ObjectUtil.isNotEmpty(verderName2)){ //已过期提醒
+                String verderName2Str=verderName2.toString();
+                this.sendMsg(verderName2Str,"validityFlag_code","生产厂家");
             }
         }
 //-----------------------
@@ -176,8 +204,10 @@ public class AvailableDateTaskJob implements Job {
         PdSupplier supplier = new PdSupplier();
         List<PdSupplier> list = pdSupplierService.selectAllList(supplier);
         if (list != null && list.size() > 0) {
-            String flag="0"; //所有证照过期标识
+            StringBuffer supplierName1=new StringBuffer();
+            StringBuffer supplierName2=new StringBuffer();
             for (PdSupplier pdSupplier : list) {
+                String flag="0"; //所有证照过期标识
                 Date afterMonthDate = null;
                 Date validityTerm = null;
                 String valType = "0";// 0：未过期  1：即将过期    2：已过期
@@ -292,12 +322,23 @@ public class AvailableDateTaskJob implements Job {
                 }
                 if (flag.indexOf("2")!=-1){
                     pdSupplier.setValidityFlag(PdConstant.PD_STATE_2);
+                    supplierName1.append(pdSupplier.getName()).append(",");
                 }else if(flag.indexOf("1")!=-1){
                     pdSupplier.setValidityFlag(PdConstant.PD_STATE_1);
+                    supplierName2.append(pdSupplier.getName()).append(",");
                 }else{
                     pdSupplier.setValidityFlag(PdConstant.PD_STATE_0);
                 }
                 pdSupplierService.updateValidityFlag(pdSupplier);
+            }
+            //发送消息提醒  暂定发送给器械科管理员用户
+            if(ObjectUtil.isNotEmpty(supplierName1)){ //即将过期提醒
+                String supperName1Str=supplierName1.toString();
+                this.sendMsg(supperName1Str,"validity_code","供应商");
+            }
+            if(ObjectUtil.isNotEmpty(supplierName2)){ //已过期提醒
+                String supperName2Str=supplierName2.toString();
+                this.sendMsg(supperName2Str,"validityFlag_code","供应商");
             }
         }
     }
@@ -318,5 +359,47 @@ public class AvailableDateTaskJob implements Job {
             avlType = PdConstant.PD_STATE_1;
         }
         return avlType;
+    }
+
+
+
+    /**
+     * 消息推送
+     * @param name   公司名称
+     * @param templateCode   提醒模板
+     * @param validName  供应商/生产厂家
+     * @return
+     */
+    public boolean sendMsg(String name,String templateCode,String validName) {
+        Map<String, Object> map = new HashMap<>();
+        //获取具有器械科管理员的角色用户Id;
+        List<String> ids =new ArrayList<>();
+       List<String> userIdList = sysUserService.getUserIdByRoleCode("qxk_admin");
+        if (userIdList != null) {
+      for(String userId:userIdList) {
+          List<SysAnnouncementSend> list = this.announcementSendService.selectMyAnnouncementSendList(templateCode, userId);
+          if (list == null || list.size()== 0) {
+              ids.add(userId);
+          }
+         }
+         if(ObjectUtils.isNotEmpty(ids)){
+          String userIds = String.join(",", ids);
+          Map<String, String> strMap = new HashMap<>();
+          //模板注入参数
+          strMap.put("validName", validName);
+          strMap.put("name", name);
+          map.put("map", strMap);
+          //需要发送消息的用户id
+          map.put("userIds", userIds + ",");
+          //提醒优先级
+          map.put("priority", CommonConstant.PRIORITY_H);
+          //短信模板标识
+          map.put("templateCode", templateCode);
+          //发布人
+          map.put("realname", "系统管理员");
+          return pushMsgUtil.newSendMessage(map);
+           }
+        }
+        return false;
     }
 }

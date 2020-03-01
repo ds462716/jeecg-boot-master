@@ -199,10 +199,9 @@
             this.supplierHandleSearch(); //初始化供应商
             this.queryParam.supplierId = this.supplierId; //默认选择父页面传来的供应商
             this.supplierSelecDisabled = true;
-
-            this.loadData(1);
           })
         }
+        this.loadData(1);
         this.visible = true;
       },
       handleOk () {

@@ -1,17 +1,8 @@
 package org.jeecg.modules.system.controller;
 
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.CacheConstant;
 import org.jeecg.common.constant.CommonConstant;
@@ -23,7 +14,6 @@ import org.jeecg.modules.system.entity.SysDepart;
 import org.jeecg.modules.system.model.DepartIdModel;
 import org.jeecg.modules.system.model.SysDepartTreeModel;
 import org.jeecg.modules.system.service.ISysDepartService;
-import org.jeecg.modules.system.util.FindsDepartsChildrenUtil;
 import org.jeecgframework.poi.excel.ExcelImportUtil;
 import org.jeecgframework.poi.excel.def.NormalExcelConstants;
 import org.jeecgframework.poi.excel.entity.ExportParams;
@@ -31,19 +21,15 @@ import org.jeecgframework.poi.excel.entity.ImportParams;
 import org.jeecgframework.poi.excel.view.JeecgEntityExcelView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.util.CollectionUtils;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-
-import lombok.extern.slf4j.Slf4j;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.*;
 
 /**
  * <p>
@@ -108,6 +94,30 @@ public class SysDepartController {
 		return result;
 	}
 
+
+
+	/**
+	 * 获取医院下除本部门外所有部门
+	 *
+	 * @return
+	 */
+	@GetMapping(value = "/getSysDepartList")
+	public Result<List<SysDepart>> getSysDepartList(SysDepart sysDepart) {
+		Result<List<SysDepart>> result = new Result<>();
+		try {
+			LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+			sysDepart.setDepartParentId(sysUser.getDepartParentId());
+			sysDepart.setParentFlag("1");//随便传，有值就会过滤掉本部门
+			sysDepart.setOrgType("2");
+			sysDepart.setOrgCode(sysUser.getOrgCode());
+			List<SysDepart> list = sysDepartService.getSysDepartList(sysDepart);
+			result.setResult(list);
+			result.setSuccess(true);
+		}catch(Exception e){
+			log.error(e.getMessage(), e);
+		}
+ 		return result;
+	}
 	/**
 	 * 添加新数据 添加用户新建的部门对象数据,并保存到数据库
 	 * 

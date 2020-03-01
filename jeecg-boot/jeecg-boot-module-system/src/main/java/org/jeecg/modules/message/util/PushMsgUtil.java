@@ -1,6 +1,7 @@
 package org.jeecg.modules.message.util;
 
 import org.apache.commons.collections.MapUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.constant.CommonSendStatus;
@@ -81,9 +82,24 @@ public class PushMsgUtil {
      * @param params 消息参数
      */
     public boolean newSendMessage(Map<String, Object> params) {
-        Map<String,String> map =MapUtils.getMap(params,"map");
-        String templateCode=MapUtils.getString(params,"templateCode");//purchase_submitMsg
-        String userIds=MapUtils.getString(params,"userIds");
+        //必填项
+        Map<String,String> map =MapUtils.getMap(params,"map");//模板参数
+        String templateCode=MapUtils.getString(params,"templateCode");//消息提醒模板code
+        String userIds=MapUtils.getString(params,"userIds");//需要发送消息的用户ID集合
+        //非必填项
+        //提醒优先级: 优先级（L低，M中，H高） 没传的话默认是低优先级
+        String Priority=MapUtils.getString(params,"priority");
+        String realname=MapUtils.getString(params,"realname");//发布人
+        if(StringUtils.isEmpty(templateCode) || StringUtils.isEmpty(userIds)){
+            throw new ClassCastException("参数不全");
+        }
+        if(StringUtils.isEmpty(Priority)){
+            Priority=CommonConstant.PRIORITY_L;
+        }
+        if(StringUtils.isEmpty(realname)){//定时任务过来的提醒，都要传发布人名称
+            LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+            realname=sysUser.getRealname();
+        }
         String title ="";
         List<SysMessageTemplate> sysSmsTemplates = sysMessageTemplateService.selectByCode(templateCode);
         SysAnnouncement sysAnnouncement = new SysAnnouncement();
@@ -103,12 +119,12 @@ public class PushMsgUtil {
             sysAnnouncement.setTitile(title);//标题
             sysAnnouncement.setMsgContent(content);//内容
             sysAnnouncement.setUserIds(userIds);//接收用户Id
-            sysAnnouncement.setPriority(CommonConstant.PRIORITY_L);//优先级（L低，M中，H高）
+            sysAnnouncement.setPriority(Priority);//优先级（L低，M中，H高）
             sysAnnouncement.setMsgCategory(CommonConstant.MSG_CATEGORY_2);//消息类型1:通知公告2:系统消息
             sysAnnouncement.setMsgType(CommonConstant.MSG_TYPE_UESR);//消息对象类型（USER:指定用户，ALL:全体用户）
-            LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
-            sysAnnouncement.setSender(sysUser.getRealname());//发布人
+            sysAnnouncement.setSender(realname);//发布人
             sysAnnouncement.setSendTime(new Date());
+            sysAnnouncement.setTemplateCode(templateCode);//消息提醒模板
             sysAnnouncement.setDelFlag(CommonConstant.DEL_FLAG_0.toString());
             sysAnnouncement.setSendStatus(CommonSendStatus.PUBLISHED_STATUS_1);//发布状态（0未发布，1已发布，2已撤销）
             sysAnnouncementService.saveAnnouncement(sysAnnouncement);

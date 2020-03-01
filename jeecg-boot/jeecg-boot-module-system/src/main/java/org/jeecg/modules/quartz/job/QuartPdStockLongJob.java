@@ -1,5 +1,6 @@
 package org.jeecg.modules.quartz.job;
 
+import cn.hutool.core.util.ObjectUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.jeecg.common.constant.PdConstant;
@@ -8,7 +9,6 @@ import org.jeecg.modules.pd.entity.PdProductStock;
 import org.jeecg.modules.pd.entity.PdProductStockTotal;
 import org.jeecg.modules.pd.service.IPdProductStockService;
 import org.jeecg.modules.pd.service.IPdProductStockTotalService;
-import org.jeecg.modules.pd.vo.PdProductStockTotalPage;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -35,41 +35,38 @@ public class QuartPdStockLongJob implements Job {
         List<PdProductStock> list = pdProductStockService.selectList(new PdProductStock());
         Map<String, Set<String>> m=new HashMap<String, Set<String>>();
         for (PdProductStock pdProductStock : list) {
-            PdProductStock pd=new PdProductStock();
+            PdProductStock pd = new PdProductStock();
             String deptId = pdProductStock.getDeptId();
             Integer remind = 7;//久存期提醒
             Date validDate = pdProductStock.getExpDate();
-            Date ndate = new Date();
-            if((!DateUtils.isSameDay(ndate,validDate))&&ndate.after(validDate)){//否
-                pd.setIsLong(PdConstant.IS_LONG_0);
-            }
-           /* Date afterMonthDate = DateUtils.getDateToAddDate(validDate, remind);
-            if((ndate.before(validDate)&&ndate.after(afterMonthDate))||(DateUtils.isSameDay(ndate,validDate)||DateUtils.isSameDay(ndate,afterMonthDate))){//近效期
-                pd.setExpStatus(PdConstant.PD_STATE_1);
-            }*/
-            String isLong = pd.getIsLong();
-            if(StringUtils.isNotEmpty(isLong) && !PdConstant.IS_LONG_0.equals(isLong)){
-                pd.setId(pdProductStock.getId());
-                pd.setDeptId(deptId);
-                pdProductStockService.updateProductStock(pd);
-                if(m.containsKey(deptId)){
-                    Set<String> pids  = (Set<String>) m.get(deptId);
-                    String pid = pdProductStock.getProductId();
-                    if(pids.contains(pid)){
-                        continue;
-                    }else{
+            Date date = new Date();
+            if (ObjectUtil.isNotEmpty(validDate)){
+                if ((!DateUtils.isSameDay(date, validDate)) && date.after(validDate)) {//否
+                    pd.setIsLong(PdConstant.IS_LONG_0);
+                }
+                String isLong = pd.getIsLong();
+                if (StringUtils.isNotEmpty(isLong) && !PdConstant.IS_LONG_0.equals(isLong)) {
+                    pd.setId(pdProductStock.getId());
+                    pd.setDeptId(deptId);
+                    pdProductStockService.updateProductStock(pd);
+                    if (m.containsKey(deptId)) {
+                        Set<String> pids = (Set<String>) m.get(deptId);
+                        String pid = pdProductStock.getProductId();
+                        if (pids.contains(pid)) {
+                            continue;
+                        } else {
+                            pids.add(pid);
+                            m.put(deptId, pids);
+                        }
+                    } else {
+                        Set<String> pids = new HashSet<String>();
+                        String pid = pdProductStock.getProductId();
                         pids.add(pid);
                         m.put(deptId, pids);
                     }
-                }else{
-                    Set<String> pids=new HashSet<String>();
-                    String pid = pdProductStock.getProductId();
-                    pids.add(pid);
-                    m.put(deptId, pids);
                 }
             }
         }
-
 
 
         log.info("-------------------更新的主表产品久存状态-------------------");

@@ -111,7 +111,7 @@
   import { JeecgListMixin,batchDel } from '@/mixins/JeecgListMixin'
   import {initDictOptions, filterMultiDictText} from '@/components/dict/JDictSelectUtil'
   import PdAllocationRecordModal from './modules/PdAllocationRecordModal'
-
+  import { deleteAction } from '@/api/manage'
   export default {
     name: "PdAllocationRecordList",
     mixins:[JeecgListMixin],

@@ -1,12 +1,11 @@
 package org.jeecg.modules.system.service;
 
-import java.util.List;
-
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.IService;
 import org.jeecg.modules.system.entity.SysAnnouncementSend;
 import org.jeecg.modules.system.model.AnnouncementSendModel;
 
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.baomidou.mybatisplus.extension.service.IService;
+import java.util.List;
 
 /**
  * @Description: 用户通告阅读标记表
@@ -24,5 +23,13 @@ public interface ISysAnnouncementSendService extends IService<SysAnnouncementSen
 	 * @return
 	 */
 	public Page<AnnouncementSendModel> getMyAnnouncementSendPage(Page<AnnouncementSendModel> page,AnnouncementSendModel announcementSendModel);
+
+	/**
+	 *
+	 * @param userId
+	 * @param templateCode
+	 * @return
+	 */
+	public List<SysAnnouncementSend> selectMyAnnouncementSendList(String templateCode, String userId);
 
 }

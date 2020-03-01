@@ -4,13 +4,11 @@ import com.baomidou.mybatisplus.annotation.*;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import org.jeecg.common.aspect.annotation.Dict;
-import org.jeecg.modules.system.model.SysDepartTreeModel;
 import org.jeecgframework.poi.excel.annotation.Excel;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.List;
 import java.util.Objects;
 
 /**
@@ -105,6 +103,10 @@ public class SysDepart implements Serializable {
 	 * 最顶级部门id（医院id）
 	 */
 	private String departParentId;
+
+	/**过滤本部门标识*/
+	@TableField(exist = false)
+	private String parentFlag;
 	/**
 	 * 重写equals方法
 	 */

@@ -53,6 +53,7 @@
                 :showArrow="true"
                 :filterOption="false"
                 @search="sysDeptHandleSearch"
+                @change="sysDeptHandleChange"
                 :notFoundContent="notFoundContent"
                 v-decorator="[ 'outDeptId', validatorRules.outDeptId]"
               >
@@ -217,7 +218,7 @@
           add: "/pd/pdAllocationRecord/add",
           edit: "/pd/pdAllocationRecord/edit",
           exportXlsUrl: "/pd/pdAllocationRecord/exportXls",
-          querySysDepartList:"/sys/sysDepart/queryTreeList",
+          querySysDepartList:"/sys/sysDepart/getSysDepartList",
           pdAllocationDetail: {
             list: '/pd/pdAllocationRecord/queryPdAllocationDetailList'
           },
@@ -253,8 +254,13 @@
 
       //选择产品
       choice() {
-        this.$refs.PdAllocationDetailAddModal.show();
-        this.$refs.PdAllocationDetailAddModal.title = "选择产品";
+        //判断是否选择了出库科室
+        let outDeptId = this.form.getFieldValue("outDeptId");
+        if(outDeptId==null){
+          this.$message.warning("请先选择出库科室")
+          return
+        }
+        this.$refs.PdAllocationDetailAddModal.show({deptId:outDeptId});
       },
 
       handleConfirmDelete() {
@@ -475,6 +481,14 @@
       //-----------------出库科室查询start
       sysDeptHandleSearch(value) {
         fetch(value, data => (this.outDeptData = data),this.url.querySysDepartList);
+      },
+
+      sysDeptHandleChange(value) {
+         this.eachAllTable((item) => {
+          item.initialize()
+        })
+       // this.model.outDeptId = value;
+       // fetch(value, data => (this.supplierData = data),this.url.querySupplier);
       },
     }
   }
