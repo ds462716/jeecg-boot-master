@@ -143,7 +143,9 @@ public class PdStockRecordDetail extends BaseEntity {
 	@TableField(exist = false)
 	private BigDecimal inTotalPrice;// 入库金额
 	@TableField(exist = false)
-	private String submitStatus;//记录状态
+	private String submitStatus;//记录提交状态
+	@TableField(exist = false)
+	private String auditStatus;//记录审核状态
 	@TableField(exist = false)
 	private String deptId;//科室ID
 	@TableField(exist = false)

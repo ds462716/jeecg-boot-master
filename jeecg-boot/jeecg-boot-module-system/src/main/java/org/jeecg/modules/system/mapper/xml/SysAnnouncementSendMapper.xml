@@ -50,5 +50,11 @@
 	   </if>
 	   order by sa.send_time desc
 	</select>
-	
+
+
+	<select id="selectMyAnnouncementSendList" parameterType="String"  resultMap="AnnouncementSendModel">
+	    select * from sys_announcement_send a
+	     where annt_id in(select b.id from sys_announcement b where b.template_code=#{templateCode} and b.del_flag = '0')
+             and a.user_id=#{userId}
+    </select>
 </mapper>

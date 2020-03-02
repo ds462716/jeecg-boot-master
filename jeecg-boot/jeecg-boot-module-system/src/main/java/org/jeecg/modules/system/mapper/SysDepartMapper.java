@@ -3,8 +3,6 @@ package org.jeecg.modules.system.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Select;
 import org.jeecg.modules.system.entity.SysDepart;
-import org.jeecg.modules.system.model.SysDepartTreeModel;
-import org.jeecg.modules.system.model.TreeModel;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
@@ -56,5 +54,8 @@ public interface SysDepartMapper extends BaseMapper<SysDepart> {
 
 	@Select("select * from sys_depart where org_code=#{orgCode}")
 	SysDepart queryDepartByOrgCode(@Param("orgCode") String orgCode);
+
+
+	List<SysDepart> getSysDepartList(SysDepart sysDepart);
 
 }

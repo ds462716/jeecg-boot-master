@@ -108,7 +108,7 @@
         },
         // 表头
         columns: [
-          {
+          /*{
             title: '序号',
             dataIndex: '',
             key:'rowIndex',
@@ -117,7 +117,7 @@
             customRender:function (t,r,index) {
               return parseInt(index)+1;
             }
-          },
+          },*/
           {
             title:'所属科室',
             align:"center",

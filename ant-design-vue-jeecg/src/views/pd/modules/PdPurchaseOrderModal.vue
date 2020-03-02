@@ -158,7 +158,8 @@
             { title: '库存数量', width:"100px",align:"center", key: 'stockNum' },
             {title: '申购数量', key: 'orderNum', type: FormTypes.input, width:"80px",
               placeholder: '${title}', defaultValue: '1',
-              validateRules: [{ required: true, message: '${title}不能为空' },{ pattern: '^-?\\d+\\.?\\d*$',message: '${title}的格式不正确' }]
+              validateRules: [{ required: true, message: '${title}不能为空' },
+                { pattern: '^(?:[1-9][0-9]*(?:\\.[0-9]+)?|0\\.(?!0+$)[0-9]+)$',message: '${title}的格式不正确' }]
             },
             { title: '产品单价', align:"center", key: 'purchasePrice' },
             { title: '申购金额', align:"center", key: 'orderMoney' },

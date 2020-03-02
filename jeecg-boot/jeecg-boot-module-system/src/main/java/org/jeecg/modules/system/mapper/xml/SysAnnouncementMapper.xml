@@ -25,6 +25,7 @@
 		<result column="bus_id" property="busId" jdbcType="VARCHAR"/>
 		<result column="open_type" property="openType" jdbcType="VARCHAR"/>
 		<result column="open_page" property="openPage" jdbcType="VARCHAR"/>
+		<result column="template_code" property="templateCode" jdbcType="VARCHAR"/>
 	</resultMap>
 	
 	

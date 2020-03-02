@@ -148,8 +148,8 @@
             { title: '规格',width:"240px", align:"center", key: 'spec' },
             { title: '型号', width:"240px",align:"center", key: 'version' },
             { title: '单位',width:"50px", align:"center", key: 'unitName' },
-            { title: '产品数量', width:"100px",align:"center", key: 'productNum' },
-            {title: '申领数量',  width:"100px",align:"center",key: 'applyNum'},
+            { title: '发货数量', width:"100px",align:"center", key: 'productNum' },
+            { title: '申领数量',  width:"100px",align:"center",key: 'applyNum'},
             { title: '库存数量', align:"center", key: 'stockNum' },
           ]
         },

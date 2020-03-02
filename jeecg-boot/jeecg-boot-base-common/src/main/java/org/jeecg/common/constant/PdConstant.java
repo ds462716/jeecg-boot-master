@@ -94,6 +94,16 @@ public interface PdConstant {
 	public final static String  CURRENT_DEPARTID = "departId";
 	public final static String  DEPART_PARENT_ID = "departParentId";
 
+	//菜单是否是业务菜单 0是1否
+	public final static String PERMISSION_BUSINESS_TYPE_0 = "0";
+	public final static String PERMISSION_BUSINESS_TYPE_1 = "1";
+
+	/**
+	 * 盘点完成状态
+	 */
+	public static final String  CHECK_STATE_0= "0";//未完成
+	public static final String  CHECK_STATE_1= "1";//已完成
+
 	//院内物流操作类型  add by jiangxz 20200228
 	public final static String STOCK_LOG_TYPE = "stock_log_type";
 	public final static String STOCK_LOG_TYPE_1 = "1";//耗材入库

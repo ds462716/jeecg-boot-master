@@ -134,6 +134,9 @@
 			<if test="id != null and id != ''">
 				AND a.id = #{id}
 			</if>
+			<if test="auditStatus != null and auditStatus != ''">
+				AND g.audit_status = #{auditStatus}
+			</if>
 			<if test="submitStatus != null and submitStatus != ''">
 				AND g.submit_status = #{submitStatus}
 			</if>
@@ -144,7 +147,7 @@
 				AND g.record_type = #{recordType}
 			</if>
 			<if test="deptId != null and deptId != ''">
-				AND ((g.record_type = '0' AND g.out_depart_id = #{deptId})
+				AND ((g.record_type = '2' AND g.out_depart_id = #{deptId})
 				OR (g.record_type = '1' AND g.in_depart_id =#{deptId}))
 			</if>
 			<if test="departId != null and departId != ''">

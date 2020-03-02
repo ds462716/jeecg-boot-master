@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import org.jeecg.modules.system.entity.SysDepart;
 import org.jeecg.modules.system.model.DepartIdModel;
 import org.jeecg.modules.system.model.SysDepartTreeModel;
+
 import java.util.List;
 
 /**
@@ -112,4 +113,12 @@ public interface ISysDepartService extends IService<SysDepart>{
     public  SysDepart getDepartByOrgCode(String orgCode);
 
     SysDepart queryDepartByOrgCode(String orgCode);
+
+    /**
+     * 根据条件获取部门信息
+     *
+     * @param
+     * @return
+     */
+    List<SysDepart> getSysDepartList(SysDepart sysDepart);
 }
