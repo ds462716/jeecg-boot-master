@@ -515,7 +515,7 @@
             return;
           }
           // 发起请求
-          // return this.request(formData);
+          return this.request(formData);
         }).catch(e => {
           if (e.error === VALIDATE_NO_PASSED) {
             // 如果有未通过表单验证的子表，就自动跳转到它所在的tab
