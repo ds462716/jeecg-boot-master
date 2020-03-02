@@ -516,23 +516,35 @@
           // }
 
           let isexp = false;
+          let iszero = false;
           let bool = false;
           let name = "";
+          let name1 = "";
 
 
           this.$refs.pdStockRecordDetail.getValues((error, values) => {
             for(let row of values){
-              // let limitDate = row.limitDate;
               let submitDate = this.form.getFieldValue("submitDate")
               if(submitDate >=  row.limitDate){
                 isexp = true;
                 name = name + "  " + row.productName;
               }
             }
+            for(let row of values){
+              if(Number(row.productNum) <= 0){
+                iszero = true;
+                name1 = name1 + "  " + row.productName;
+              }
+            }
             if(isexp){
               this.$message.error("入库产品["+name+"]已到期，不能入库！");
               return;
             }
+            if(iszero){
+              this.$message.error("入库产品["+name1+"]数量必须大于0！");
+              return;
+            }
+
             if(this.allowInMoreOrder === "0"){
               let purchaseOrderDetail = this.pdPurchaseOrderDetailTable.dataSource;
               if(purchaseOrderDetail.length > 0){
@@ -557,7 +569,7 @@
 
             // 发起请求
             let a =1;
-            // return this.request(formData);
+            return this.request(formData);
           })
         }).catch(e => {
           if (e.error === VALIDATE_NO_PASSED) {
