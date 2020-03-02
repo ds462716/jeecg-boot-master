@@ -507,15 +507,58 @@
             return;
           }
           // 校验是否有过期产品
-          if(!this.checkLimitDate()){
-            return;
-          }
+          // if(!this.checkLimitDate()){
+          //   return;
+          // }
           // 如果不允许入库量大于订单量，则校验入库量是否>订单量
-          if(!this.checkAllowInMoreOrderForSubmit()){
-            return;
-          }
-          // 发起请求
-          return this.request(formData);
+          // if(!this.checkAllowInMoreOrderForSubmit()){
+          //   return;
+          // }
+
+          let isexp = false;
+          let bool = false;
+          let name = "";
+
+
+          this.$refs.pdStockRecordDetail.getValues((error, values) => {
+            for(let row of values){
+              // let limitDate = row.limitDate;
+              let submitDate = this.form.getFieldValue("submitDate")
+              if(submitDate >=  row.limitDate){
+                isexp = true;
+                name = name + "  " + row.productName;
+              }
+            }
+            if(isexp){
+              this.$message.error("入库产品["+name+"]已到期，不能入库！");
+              return;
+            }
+            if(this.allowInMoreOrder === "0"){
+              let purchaseOrderDetail = this.pdPurchaseOrderDetailTable.dataSource;
+              if(purchaseOrderDetail.length > 0){
+                for (let detail of purchaseOrderDetail) {
+                  let totalNum = 0; //当前产品总数量
+                  for(let row of values){
+                    if(row.productId == detail.productId){
+                      totalNum = totalNum + Number(row.productNum);
+                    }
+                  }
+                  if(Number(detail.arrivalNum) + Number(totalNum) > Number(detail.orderNum)){
+                    name = name + "  " + detail.productName;
+                    bool = true;
+                  }
+                }
+                if(bool){
+                  this.$message.error("入库产品["+name+"]数量不能大于订单产品数量！");
+                  return;
+                }
+              }
+            }
+
+            // 发起请求
+            let a =1;
+            // return this.request(formData);
+          })
         }).catch(e => {
           if (e.error === VALIDATE_NO_PASSED) {
             // 如果有未通过表单验证的子表，就自动跳转到它所在的tab
@@ -890,10 +933,12 @@
               this.$refs.pdStockRecordDetail.setValues([{rowKey: row.id, values: { orderNo: "" }}]);
               for (let detail of purchaseOrderDetail) {
                 if(detail.number == row.productNumber){
-                  this.$refs.pdStockRecordDetail.setValues([{rowKey: row.id, values: { orderNo: detail.orderNo }}]);
+                    this.$refs.pdStockRecordDetail.setValues([{rowKey: row.id, values: {orderNo: detail.orderNo,productNum:row.productNum}}]);
                 }
               }
             }
+            //刷新列表
+            this.$refs.pdStockRecordDetail.getValues((error, values) => {})
           }
         })
       },
@@ -956,7 +1001,7 @@
             let totalNum = 0; //当前产品总数量
             let exceptNum = 0;//产品数量(除了当前编辑行)
             for(let row of rows){
-              if(row.productId == detail.productId){
+              if(row.productId == detail.productId && currentRow.productId == detail.productId){
                 totalNum = totalNum + Number(row.productNum);
                 if(currentRow.id != row.id && currentRow.productId == detail.productId){
                   exceptNum = exceptNum + Number(row.productNum);
@@ -1060,54 +1105,66 @@
       /* 提交时调用 校验是否允许入库量大于订单量 1-允许入库量大于订单量；0-不允许入库量大于订单量
          校验当前入库的产品 入库数量是否大于订单量
        */
-      checkAllowInMoreOrderForSubmit(){
-        let bool = true;
-        let name = "";
-        if(this.allowInMoreOrder === "0"){
-          let purchaseOrderDetail = this.pdPurchaseOrderDetailTable.dataSource;
-          if(purchaseOrderDetail.length <= 0){
-            return true;
-          }
-          this.$refs.pdStockRecordDetail.getValues((error, values) => {
-            for (let detail of purchaseOrderDetail) {
-              let totalNum = 0; //当前产品总数量
-              for(let row of values){
-                if(row.productId == detail.productId){
-                  totalNum = totalNum + Number(row.productNum);
-                }
-              }
-              if(Number(detail.arrivalNum) + Number(totalNum) > Number(detail.orderNum)){
-                name = name + "  " + detail.productName;
-                bool = false;
-              }
-            }
-          })
-        }
-        if(!bool){
-          this.$message.error("入库产品["+name+"]数量不能大于订单产品数量！");
-          return false;
-        }
-        return true;
-      },
-      checkLimitDate(){
-        let name = ""
-        let bool = true;
-        this.$refs.pdStockRecordDetail.getValues((error, values) => {
-          for(let row of values){
-            // let limitDate = row.limitDate;
-            let submitDate = this.form.getFieldValue("submitDate")
-            if(submitDate >=  row.limitDate){
-              bool = false;
-              name = name + "  " + row.productName;
-            }
-          }
-        })
-        if(!bool){
-          this.$message.error("入库产品["+name+"]已到期，不能入库！");
-          return false;
-        }
-        return true;
-      },
+      // checkAllowInMoreOrderForSubmit(){
+      //   let isexp = false;
+      //   let bool = false;
+      //   let name = "";
+      //
+      //   this.$refs.pdStockRecordDetail.getValues((error, values) => {
+      //     for(let row of values){
+      //       // let limitDate = row.limitDate;
+      //       let submitDate = this.form.getFieldValue("submitDate")
+      //       if(submitDate >=  row.limitDate){
+      //         isexp = true;
+      //         name = name + "  " + row.productName;
+      //       }
+      //     }
+      //     if(isexp){
+      //       this.$message.error("入库产品["+name+"]已到期，不能入库！");
+      //       return false;
+      //     }
+      //     if(this.allowInMoreOrder === "0"){
+      //       let purchaseOrderDetail = this.pdPurchaseOrderDetailTable.dataSource;
+      //       if(purchaseOrderDetail.length > 0){
+      //         for (let detail of purchaseOrderDetail) {
+      //           let totalNum = 0; //当前产品总数量
+      //           for(let row of values){
+      //             if(row.productId == detail.productId){
+      //               totalNum = totalNum + Number(row.productNum);
+      //             }
+      //           }
+      //           if(Number(detail.arrivalNum) + Number(totalNum) > Number(detail.orderNum)){
+      //             name = name + "  " + detail.productName;
+      //             bool = true;
+      //           }
+      //         }
+      //         if(bool){
+      //           this.$message.error("入库产品["+name+"]数量不能大于订单产品数量！");
+      //           return false;
+      //         }
+      //       }
+      //     }
+      //   })
+      // },
+      // checkLimitDate(){
+      //   let name = ""
+      //   let bool = true;
+      //   this.$refs.pdStockRecordDetail.getValues((error, values) => {
+      //     for(let row of values){
+      //       // let limitDate = row.limitDate;
+      //       let submitDate = this.form.getFieldValue("submitDate")
+      //       if(submitDate >=  row.limitDate){
+      //         bool = false;
+      //         name = name + "  " + row.productName;
+      //       }
+      //     }
+      //     if(!bool){
+      //       this.$message.error("入库产品["+name+"]已到期，不能入库！");
+      //       return false;
+      //     }
+      //     return true;
+      //   })
+      // },
     },
   }
 
