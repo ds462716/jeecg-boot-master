@@ -9,8 +9,11 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.system.query.QueryGenerator;
+import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.pd.entity.PdGroup;
 import org.jeecg.modules.pd.service.IPdGroupService;
@@ -60,6 +63,9 @@ public class PdGroupController extends JeecgController<PdGroup, IPdGroupService>
 								   @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
 								   @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
 								   HttpServletRequest req) {
+		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		pdGroup.setDepartId(sysUser.getCurrentDepartId());
+		pdGroup.setDepartParentId(sysUser.getDepartParentId());
 		QueryWrapper<PdGroup> queryWrapper = QueryGenerator.initQueryWrapper(pdGroup, req.getParameterMap());
 		Page<PdGroup> page = new Page<PdGroup>(pageNo, pageSize);
 		IPage<PdGroup> pageList = pdGroupService.page(page, queryWrapper);
