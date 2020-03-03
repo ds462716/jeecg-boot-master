@@ -1,10 +1,9 @@
 package org.jeecg.modules.pd.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.IService;
 import org.jeecg.modules.pd.entity.PdAllocationDetail;
 import org.jeecg.modules.pd.entity.PdAllocationRecord;
-import com.baomidou.mybatisplus.extension.service.IService;
-import org.jeecg.modules.pd.entity.PdApplyOrder;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -50,5 +49,11 @@ public interface IPdAllocationRecordService extends IService<PdAllocationRecord>
 	 * 批量删除一对多
 	 */
 	public void delBatchMain(Collection<? extends Serializable> idList);
-	
+	/**
+	 * 用于调拨单单弹出选择框
+	 * @param allocationRecord
+	 * @return
+	 */
+	Page<PdAllocationRecord> chooseAllocationList(Page<PdAllocationRecord> pageList, PdAllocationRecord allocationRecord);
+
 }

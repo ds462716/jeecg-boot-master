@@ -1,8 +1,8 @@
 package org.jeecg.modules.pd.mapper;
 
-import org.apache.ibatis.annotations.Param;
-import org.jeecg.modules.pd.entity.PdApplyOrder;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.jeecg.modules.pd.entity.PdApplyOrder;
+import org.jeecg.modules.pd.vo.PdApplyOrderPage;
 
 import java.util.List;
 
@@ -15,4 +15,7 @@ import java.util.List;
 public interface PdApplyOrderMapper extends BaseMapper<PdApplyOrder> {
 
     List<PdApplyOrder> selectList(PdApplyOrder pdApplyOrder);
+
+    List<PdApplyOrderPage> chooseApplyOrderList(PdApplyOrderPage applyOrderPage);
+
 }

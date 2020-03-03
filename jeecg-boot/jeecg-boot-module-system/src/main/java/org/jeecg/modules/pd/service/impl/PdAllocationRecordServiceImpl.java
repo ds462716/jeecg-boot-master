@@ -1,19 +1,21 @@
 package org.jeecg.modules.pd.service.impl;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import org.jeecg.modules.pd.entity.PdAllocationRecord;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.apache.commons.collections.CollectionUtils;
 import org.jeecg.modules.pd.entity.PdAllocationDetail;
-import org.jeecg.modules.pd.entity.PdApplyOrder;
+import org.jeecg.modules.pd.entity.PdAllocationRecord;
 import org.jeecg.modules.pd.mapper.PdAllocationDetailMapper;
 import org.jeecg.modules.pd.mapper.PdAllocationRecordMapper;
 import org.jeecg.modules.pd.service.IPdAllocationRecordService;
-import org.springframework.stereotype.Service;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.jeecg.modules.pd.vo.PdApplyOrderPage;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.io.Serializable;
-import java.util.List;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * @Description: 调拨记录表
@@ -85,5 +87,13 @@ public class PdAllocationRecordServiceImpl extends ServiceImpl<PdAllocationRecor
 			pdAllocationRecordMapper.deleteById(id);
 		}
 	}
-	
+	@Override
+	public Page<PdAllocationRecord> chooseAllocationList(Page<PdAllocationRecord> pageList, PdAllocationRecord allocationRecord) {
+		List queryDate = allocationRecord.getQueryDate();
+		if(CollectionUtils.isNotEmpty(queryDate)){
+			allocationRecord.setQueryDateStart((String) queryDate.get(0));
+			allocationRecord.setQueryDateStart((String) queryDate.get(1));
+		}
+		return pageList.setRecords(pdAllocationRecordMapper.chooseAllocationList(allocationRecord));
+	}
 }

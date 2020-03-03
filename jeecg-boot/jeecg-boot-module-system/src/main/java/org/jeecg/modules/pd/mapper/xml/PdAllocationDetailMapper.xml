@@ -41,7 +41,15 @@
         LEFT JOIN pd_product c ON c.id = a.product_id
     </sql>
 
+	<!--定数包-->
+	<sql id="pdPackageColumns">
+		 d.name AS "packageName",
+         d.code AS "packageCode"
 
+	</sql>
+	<sql id="pdPackageJoins">
+       LEFT JOIN pd_package d ON a.package_id=d.id
+    </sql>
 
 
 
@@ -55,10 +63,12 @@
 		SELECT
 		<include refid="pdApplyDetailColumns"/>,
 		<include refid="pdProductColumns"/>,
-		<include refid="pdUnitColumns"/>
+		<include refid="pdUnitColumns"/>,
+		<include refid="pdPackageColumns"/>
 		FROM  pd_allocation_detail a
 		<include refid="pdProductJoins"/>
 		<include refid="pdUnitJoins"/>
+		<include refid="pdPackageJoins"/>
 		WHERE a.allocation_no = #{allocationNo}
 		ORDER BY a.create_time DESC
 	</select>

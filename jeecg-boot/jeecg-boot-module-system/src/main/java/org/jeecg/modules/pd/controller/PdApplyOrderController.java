@@ -1,11 +1,13 @@
 package org.jeecg.modules.pd.controller;
 
-import java.io.IOException;
-import java.util.*;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.shiro.SecurityUtils;
+import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.PdConstant;
+import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.modules.message.util.PushMsgUtil;
 import org.jeecg.modules.pd.entity.PdApplyDetail;
 import org.jeecg.modules.pd.entity.PdApplyOrder;
@@ -21,18 +23,17 @@ import org.jeecgframework.poi.excel.def.NormalExcelConstants;
 import org.jeecgframework.poi.excel.entity.ExportParams;
 import org.jeecgframework.poi.excel.entity.ImportParams;
 import org.jeecgframework.poi.excel.view.JeecgEntityExcelView;
-import org.jeecg.common.system.vo.LoginUser;
-import org.apache.shiro.SecurityUtils;
-import org.jeecg.common.api.vo.Result;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.servlet.ModelAndView;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.*;
 
  /**
  * @Description: 申领单主表
@@ -278,7 +279,24 @@ public class PdApplyOrderController {
       }
       return Result.ok("文件导入失败！");
     }
-
+	 /**
+	  * 申领订单选择框
+	  *
+	  * @param pdApplyOrderPage
+	  * @param pageNo
+	  * @param pageSize
+	  * @param req
+	  * @return
+	  */
+	 @GetMapping(value = "/chooseApplyOrderList")
+	 public Result<?> chooseApplyOrderList(PdApplyOrderPage pdApplyOrderPage,
+											  @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
+											  @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
+											  HttpServletRequest req) {
+		 Page<PdApplyOrderPage> page = new Page<PdApplyOrderPage>(pageNo, pageSize);
+		 IPage<PdApplyOrderPage> pageList = pdApplyOrderService.chooseApplyOrderList(page, pdApplyOrderPage);
+		 return Result.ok(pageList);
+	 }
 
 	 /**
 	  * 消息推送
@@ -289,7 +307,7 @@ public class PdApplyOrderController {
 		 Map<String, Object> map = new HashMap<>();
 		 //获取具有器械科管理员的角色用户Id;
 		 List<String> userIdList = sysUserService.getUserIdByRoleCode("qxk_admin");
-		 if (userIdList != null) {
+		 if (CollectionUtils.isNotEmpty(userIdList)) {
 			 String userIds = String.join(",", userIdList);
 			 Map<String, String> strMap = new HashMap<>();
 			 LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();

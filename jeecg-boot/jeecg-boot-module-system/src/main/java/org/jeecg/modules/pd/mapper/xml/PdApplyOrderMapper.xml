@@ -83,4 +83,53 @@
             ORDER BY   audit_status , update_time DESC
         </where>
     </select>
+
+
+    <!-- 用于采购订单选择框 -->
+    <select id="chooseApplyOrderList" resultType="org.jeecg.modules.pd.vo.PdApplyOrderPage"  parameterType="org.jeecg.modules.pd.vo.PdApplyOrderPage">
+        SELECT DISTINCT
+        a.id as id,
+        a.apply_no as applyNo,
+        a.apply_date as applyDate,
+        a.total_num as totalNum,
+        f.depart_name AS deptName,
+        a.audit_status as auditStatus,
+        c.realname as auditByName
+        FROM   pd_apply_order a
+        LEFT JOIN pd_apply_detail b on a.apply_no = b.apply_no
+        LEFT JOIN sys_user c ON c.id = a.audit_by
+        LEFT JOIN pd_product d on b.product_id = d.id
+        LEFT JOIN sys_depart f ON a.dept_id = f.id
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+            AND a.audit_status = '2'
+            <if test="id != null and id != ''">
+                AND a.id = #{id}
+            </if>
+            <if test="applyNo != null and applyNo != ''">
+                AND a.apply_no LIKE concat('%',#{applyNo},'%')
+            </if>
+            <if test="productName != null and productName != ''">
+                AND (
+                d.name LIKE concat('%',#{productName},'%')
+                or d.py LIKE concat('%',#{productName},'%')
+                or d.wb LIKE concat('%',#{productName},'%')
+                or d.bname LIKE concat('%',#{productName},'%')
+                or d.bpy LIKE concat('%',#{productName},'%')
+                or d.bwb LIKE concat('%',#{productName},'%')
+                or d.zdy LIKE concat('%',#{productName},'%')
+                )
+            </if>
+            <if test="number != null and number != ''">
+                AND d.number LIKE concat('%',#{number},'%')
+            </if>
+            <if test="queryDateStart != null and queryDateStart != ''">
+                AND a.apply_date &gt;= #{queryDateStart}
+            </if>
+            <if test="queryDateEnd != null and queryDateEnd != ''">
+                AND a.apply_date &lt;= #{queryDateEnd}
+            </if>
+        </where>
+        order  by a.apply_date desc
+    </select>
 </mapper>

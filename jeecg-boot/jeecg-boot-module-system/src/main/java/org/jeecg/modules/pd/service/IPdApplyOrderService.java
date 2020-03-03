@@ -1,15 +1,11 @@
 package org.jeecg.modules.pd.service;
 
-
-
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.IService;
 import org.jeecg.modules.pd.entity.PdApplyDetail;
 import org.jeecg.modules.pd.entity.PdApplyOrder;
-import com.baomidou.mybatisplus.extension.service.IService;
-import org.jeecg.modules.pd.entity.PdPurchaseOrder;
+import org.jeecg.modules.pd.vo.PdApplyOrderPage;
 
-import java.io.Serializable;
-import java.util.Collection;
 import java.util.List;
 
 /**
@@ -39,5 +35,11 @@ public interface IPdApplyOrderService extends IService<PdApplyOrder> {
 	 * 
 	 */
 	public void updateMain(PdApplyOrder pdApplyOrder, List<PdApplyDetail> pdApplyDetailList);
+	/**
+	 * 用于申领单单弹出选择框
+	 * @param applyOrderPage
+	 * @return
+	 */
+	Page<PdApplyOrderPage> chooseApplyOrderList(Page<PdApplyOrderPage> pageList, PdApplyOrderPage applyOrderPage);
 
 }
