@@ -164,7 +164,7 @@
             { title: '定数包Id', key: 'packageId', type: FormTypes.hidden },
             { title: '定数包编号', width:"130px",   key: 'packageCode' },
             { title: '定数包名称',  width:"130px", key: 'packageName' },
-            { title: '定数包产品数量',  width:"130px", key: 'packageNum' },
+            { title: '定数包产品数量',  width:"130px",type: FormTypes.normal, key: 'packageNum' },
             { title: '产品名称', width:"250px",  key: 'productName' },
             { title: '产品编号',width:"150px", align:"center", key: 'number' },
             { title: '规格',width:"240px", align:"center", key: 'spec' },
@@ -255,7 +255,7 @@
               let rows = target.getValuesSync({ validate: false });
                     target.setValues([{rowKey: row.id, values: {applyNum :row.applyNum }}]);
                     // 计算总数量
-                    this.getTotalNumAndPrice();
+                    this.getTotalNumAndPrice([]);
             }
           }
         }
@@ -277,17 +277,21 @@
           this.$refs.pdApplyDetail.removeSelectedRows();
           this.$nextTick(() => {
             // 计算总数量
-            this.getTotalNumAndPrice();
+             this.getTotalNumAndPrice([]);
           })
         }else{
           this.$message.error("请选择需要删除的数据！")
         }
       },
        // 计算总数量
-      getTotalNumAndPrice(){
-          this.$refs.pdApplyDetail.getValues((error, values) => {
+      getTotalNumAndPrice(rows){
+        this.$nextTick(() => {
+          if (rows.length <= 0) {
+            let {values} = this.$refs.pdApplyDetail.getValuesSync({validate: false});
+            rows = values;
+          }
           let totalNum = 0;
-          values.forEach((item, idx) => {
+          rows.forEach((item, idx) => {
             if(item.packageCode !='' && item.packageCode !=null ){
               totalNum+=parseFloat(item.applyNum) * parseFloat(item.packageNum) ;
             }else{
@@ -296,7 +300,7 @@
           })
           this.model.totalNum = totalNum;
           this.form.setFieldsValue(pick(this.model,'totalNum'))
-        })
+        });
       },
       modalFormOk (formData) { //选择产品确定后返回所选择的数据
         let data = [];
@@ -321,7 +325,7 @@
           })
           this.$nextTick(() => {
             // 计算总数量
-            this.getTotalNumAndPrice();
+            this.getTotalNumAndPrice(values);
           })
         })
       },
@@ -367,7 +371,7 @@
           })
           this.$nextTick(() => {
             // 计算总数量
-            this.getTotalNumAndPrice();
+            this.getTotalNumAndPrice(values);
           })
         })
       },

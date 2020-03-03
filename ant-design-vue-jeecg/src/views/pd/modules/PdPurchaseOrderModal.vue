@@ -245,24 +245,29 @@
               let orderMoney = (Number(row.orderNum) * Number(row.purchasePrice)).toFixed(2);
               target.setValues([{rowKey: row.id, values: {orderNum :row.orderNum,orderMoney :orderMoney }}]);
               // 计算总数量
-              this.getTotalNumAndPrice();
+              this.getTotalNumAndPrice([]);
             }
           }
         }
       },
       // 计算总数量及总金额
-      getTotalNumAndPrice(){
-        this.$refs.pdPurchaseDetail.getValues((error, values) => {
-          let totalNum = 0;
-          let totalPrice=0;
-          values.forEach((item, idx) => {
-            totalNum+=parseFloat(item.orderNum);
-            totalPrice+=Number(item.orderMoney);
-          })
-          this.model.totalNum = totalNum;
-          this.model.totalPrice=totalPrice.toFixed(2);//申购总金额
-          this.form.setFieldsValue(pick(this.model,'totalNum','totalPrice'))
-        })
+      getTotalNumAndPrice(rows){
+        this.$nextTick(() => {
+          if (rows.length <= 0) {
+            let {values} = this.$refs.pdPurchaseDetail.getValuesSync({validate: false});
+            rows = values;
+          }
+            let totalNum = 0;
+            let totalPrice = 0;
+             rows.forEach((item, idx) => {
+              totalNum += parseFloat(item.orderNum);
+              totalPrice += Number(item.orderMoney);
+            })
+            this.model.totalNum = totalNum;
+            this.model.totalPrice = totalPrice.toFixed(2);//申购总金额
+            this.form.setFieldsValue(pick(this.model, 'totalNum', 'totalPrice'))
+
+        });
       },
 
       //选择产品
@@ -276,7 +281,7 @@
           this.$refs.pdPurchaseDetail.removeSelectedRows();
           this.$nextTick(() => {
             // 计算总数量和总金额
-            this.getTotalNumAndPrice();
+            this.getTotalNumAndPrice([]);
           })
         }else{
           this.$message.error("请选择需要删除的数据！")
@@ -302,7 +307,7 @@
           })
           this.$nextTick(() => {
             // 计算总数量及总金额
-            this.getTotalNumAndPrice();
+            this.getTotalNumAndPrice(values);
           })
         })
       },
