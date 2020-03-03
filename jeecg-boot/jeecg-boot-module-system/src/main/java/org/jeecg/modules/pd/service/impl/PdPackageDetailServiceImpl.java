@@ -1,12 +1,15 @@
 package org.jeecg.modules.pd.service.impl;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.jeecg.modules.pd.entity.PdPackageDetail;
 import org.jeecg.modules.pd.mapper.PdPackageDetailMapper;
 import org.jeecg.modules.pd.service.IPdPackageDetailService;
-import org.springframework.stereotype.Service;
-import java.util.List;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.jeecg.modules.pd.vo.PdPurchaseOrderPage;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 /**
  * @Description: 定数包明细
@@ -24,4 +27,16 @@ public class PdPackageDetailServiceImpl extends ServiceImpl<PdPackageDetailMappe
 	public List<PdPackageDetail> selectByMainId(String mainId) {
 		return pdPackageDetailMapper.selectByMainId(mainId);
 	}
+
+	@Override
+	public Page<PdPackageDetail> selectList(Page<PdPackageDetail> pageList, PdPackageDetail packageDetail) {
+		return pageList.setRecords(pdPackageDetailMapper.selectList(packageDetail));
+
+	}
+
+	@Override
+	public List<PdPackageDetail> queryPdPackageList(PdPackageDetail packageDetail) {
+		return pdPackageDetailMapper.selectList(packageDetail);
+	}
+
 }

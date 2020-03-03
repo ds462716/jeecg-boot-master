@@ -1,43 +1,42 @@
 package org.jeecg.modules.pd.controller;
 
-import java.io.UnsupportedEncodingException;
-import java.io.IOException;
-import java.net.URLDecoder;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.shiro.SecurityUtils;
+import org.jeecg.common.api.vo.Result;
+import org.jeecg.common.system.query.QueryGenerator;
+import org.jeecg.common.system.vo.LoginUser;
+import org.jeecg.common.util.oConvertUtils;
+import org.jeecg.modules.pd.entity.PdPackage;
+import org.jeecg.modules.pd.entity.PdPackageDetail;
+import org.jeecg.modules.pd.service.IPdPackageDetailService;
+import org.jeecg.modules.pd.service.IPdPackageService;
+import org.jeecg.modules.pd.service.IPdProductStockTotalService;
+import org.jeecg.modules.pd.vo.PdPackagePage;
+import org.jeecg.modules.pd.vo.PdProductStockTotalPage;
 import org.jeecgframework.poi.excel.ExcelImportUtil;
 import org.jeecgframework.poi.excel.def.NormalExcelConstants;
 import org.jeecgframework.poi.excel.entity.ExportParams;
 import org.jeecgframework.poi.excel.entity.ImportParams;
 import org.jeecgframework.poi.excel.view.JeecgEntityExcelView;
-import org.jeecg.common.system.vo.LoginUser;
-import org.apache.shiro.SecurityUtils;
-import org.jeecg.common.api.vo.Result;
-import org.jeecg.common.system.query.QueryGenerator;
-import org.jeecg.common.util.oConvertUtils;
-import org.jeecg.modules.pd.entity.PdPackageDetail;
-import org.jeecg.modules.pd.entity.PdPackage;
-import org.jeecg.modules.pd.vo.PdPackagePage;
-import org.jeecg.modules.pd.service.IPdPackageService;
-import org.jeecg.modules.pd.service.IPdPackageDetailService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import lombok.extern.slf4j.Slf4j;
-import com.alibaba.fastjson.JSON;
+import org.springframework.web.servlet.ModelAndView;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
  /**
  * @Description: 定数包
@@ -53,6 +52,8 @@ public class PdPackageController {
 	private IPdPackageService pdPackageService;
 	@Autowired
 	private IPdPackageDetailService pdPackageDetailService;
+	@Autowired
+	private IPdProductStockTotalService pdProductStockTotalService;
 
 	 /**
 	 * 分页列表查询
@@ -243,4 +244,52 @@ public class PdPackageController {
       return Result.ok("文件导入失败！");
     }
 
+
+	 /**
+	  * 定数包选择器用
+	  *
+	  * @param pdPackage
+	  * @param pageNo
+	  * @param pageSize
+	  * @param req
+	  * @return
+	  */
+	 @GetMapping(value = "/queryPackgeList")
+	 public Result<?> queryPackgeList(PdPackage pdPackage,
+									@RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
+									@RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
+									HttpServletRequest req) {
+		 Page<PdPackage> page = new Page<PdPackage>(pageNo, pageSize);
+		 IPage<PdPackage> pageList = pdPackageService.queryList(page, pdPackage);
+		 return Result.ok(pageList);
+	 }
+	 /**
+	  *  查询定数包明细   申领单及调拨单用
+	  * @param pdPackageDetail
+	  * @return
+	  */
+	 @GetMapping(value = "queryPdPackageDetailList")
+	 public Result<?> queryPdPackageList(PdPackageDetail pdPackageDetail,
+									@RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
+									@RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
+									HttpServletRequest req) {
+
+		 LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		 List<PdPackageDetail> detailList = pdPackageDetailService.queryPdPackageList(pdPackageDetail);
+		    if(CollectionUtils.isNotEmpty(detailList)){
+                  for(PdPackageDetail detail:detailList){
+                      //查询本科室下库存数量
+					  PdProductStockTotalPage total = new PdProductStockTotalPage();
+					  total.setDeptId(sysUser.getCurrentDepartId());
+					  total.setProductId(detail.getProductId());
+					  List<PdProductStockTotalPage> list = pdProductStockTotalService.findListForQuery(total);
+					  if(CollectionUtils.isNotEmpty(list)){
+						  detail.setStockNum(list.get(0).getStockNum());
+					  }else{
+						  detail.setStockNum(0.00);
+					  }
+				  }
+			  }
+		 return Result.ok(detailList);
+	 }
 }

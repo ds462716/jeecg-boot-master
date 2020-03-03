@@ -13,13 +13,13 @@
         <a-form layout="inline" @keyup.enter.native="searchQuery">
           <a-row :gutter="24">
             <a-col :md="6" :sm="8">
-              <a-form-item label="申领单号">
-                <a-input placeholder="请输入申领单号" v-model="queryParam.applyNo"></a-input>
+              <a-form-item label="定数包编号">
+                <a-input placeholder="请输入定数包编号" v-model="queryParam.code"></a-input>
               </a-form-item>
             </a-col>
             <a-col :md="6" :sm="8">
-              <a-form-item label="申领日期">
-                <a-range-picker @change="orderDateChange" v-model="queryParam.queryDate"/>
+              <a-form-item label="定数包名称">
+                <a-input placeholder="请输入定数包名称" v-model="queryParam.name"></a-input>
               </a-form-item>
             </a-col>
             <template v-if="toggleSearchStatus">
@@ -87,21 +87,19 @@
   import { filterObj } from '@/utils/util';
 
   export default {
-    name: "PdChooseApplyOrderListModel",
+    name: "PdChoosePackageListModel",
     mixins:[JeecgListMixin],
     components: {
     },
     data () {
       return {
         form: this.$form.createForm(this),
-        title:"选择订单",
+        title:"选择定数包",
         width:1200,
         visible: false,
         innerData:[],
         expandedRowKeys:[],
         subloading:false,
-        queryDate:[],
-        // model: {},
         confirmLoading: false,
         // 表头
         columns: [
@@ -116,44 +114,27 @@
             }
           },
           {
-            title:'申领单号',
+            title:'定数包编号',
             align:"center",
-            dataIndex: 'applyNo'
+            dataIndex: 'code'
           },
           {
-            title:'申领日期',
+            title:'定数包名称',
             align:"center",
-            dataIndex: 'applyDate',
+            dataIndex: 'name',
             customRender:function (text) {
               return !text?"":(text.length>10?text.substr(0,10):text)
             }
           },
           {
-            title:'申领科室',
+            title:'产品总数',
             align:"center",
-            dataIndex: 'deptName'
+            dataIndex: 'sum'
           },
           {
-            title:'申领数量',
+            title:'备注',
             align:"center",
-            dataIndex: 'totalNum'
-          },
-          {
-            title:'审核状态',
-            align:"center",
-            dataIndex: 'auditStatus',
-            customRender:(text)=>{
-              if(!text){
-                return ''
-              }else{
-                return filterMultiDictText(this.dictOptions['auditStatus'], text+"")
-              }
-            }
-          },
-          {
-            title:'审核人',
-            align:"center",
-            dataIndex: 'auditByName'
+            dataIndex: 'remarks'
           }
         ],
         innerColumns:[
@@ -161,18 +142,18 @@
             title:'定数包编号',
             align:"center",
             width: 100,
-            dataIndex: 'packageCode'
+            dataIndex: 'code'
           }, {
             title:'定数包名称',
             align:"center",
             width: 100,
-            dataIndex: 'packageName'
+            dataIndex: 'name'
           },
           {
             title:'定数包产品数量',
             align:"center",
             width: 100,
-            dataIndex: 'packageNum'
+            dataIndex: 'count'
           },
           {
             title:'产品编号',
@@ -201,22 +182,16 @@
             dataIndex: 'unitName'
           },
           {
-            title:'申领数量',
-            align:"center",
-            dataIndex: 'applyNum'
-          },
-          {
             title:'库存数量',
             align:"center",
             dataIndex: 'stockNum'
           },
         ],
         url: {
-          list: "/pd/pdApplyOrder/chooseApplyOrderList",
-          chooseDetailList:"/pd/pdApplyOrder/queryApplyDetail",
+          list: "/pd/pdPackage/queryPackgeList",
+          chooseDetailList:"/pd/pdPackage/queryPdPackageDetailList",
         },
         dictOptions:{
-          auditStatus:[],
         },
       }
     },
@@ -227,7 +202,7 @@
         if(expanded===true){
           this.subloading = true;
           this.expandedRowKeys.push(record.id);
-          getAction(this.url.chooseDetailList, {applyNo: record.applyNo}).then((res) => {
+          getAction(this.url.chooseDetailList, {packageId: record.id}).then((res) => {
             if (res.success) {
               this.subloading = false;
               this.innerData = res.result;
@@ -246,7 +221,7 @@
       },
       handleOk () {
         if(this.selectionRows.length > 0){
-          let params = { applyNo: this.selectionRows[0].applyNo }
+          let params = { packageId: this.selectionRows[0].id }
           getAction(this.url.chooseDetailList, params).then((res) => {
             if (res.success) {
               let data = res.result;
@@ -265,17 +240,10 @@
 
       },
       initDictConfig(){ //静态字典值加载
-        initDictOptions('audit_status').then((res) => {
-          if (res.success) {
-            this.$set(this.dictOptions, 'auditStatus', res.result)
-          }
-        })
+
       },
 
-      orderDateChange: function (value, dateString) {
-        this.queryParam.queryDateStart=dateString[0];
-        this.queryParam.queryDateEnd=dateString[1];
-      },
+
       getQueryParams() {
         //获取查询条件
         let sqp = {}

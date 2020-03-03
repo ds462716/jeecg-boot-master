@@ -95,7 +95,7 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
 			//先查询库存总表下是否存在该产品；
 			List<PdProductStockTotal> i_productStockTotals = pdProductStockTotalMapper.findForUpdate(stockTotalqi);
 			//如果库存总表不存在产品，则新增产品库存总表信息
-			if(i_productStockTotals == null || i_productStockTotals.size() == 0){
+			if(CollectionUtils.isEmpty(i_productStockTotals) || i_productStockTotals.size() == 0){
 				PdProductStockTotal productStockTotal = new PdProductStockTotal();
 				productStockTotal.setDeptId(inDeptId);  //库房
 				productStockTotal.setProductId(productId);    //产品ID
@@ -118,7 +118,7 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
 			i_productStockq.setHuoweiCode(huoweiCode);
 			List<PdProductStock> i_productStocks = pdProductStockMapper.findForUpdate(i_productStockq);
 			//如果库存明细表不存在，则新增
-			if(i_productStocks == null || i_productStocks.size() == 0){
+			if(CollectionUtils.isEmpty(i_productStocks) || i_productStocks.size() == 0){
 				PdProductStock productStock = new PdProductStock();
 				productStock.setDeptId(inDeptId);
 				productStock.setProductId(productId);
@@ -153,7 +153,7 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
 	@Transactional
 	public Map updateOutStock(String outDeptId,List<PdStockRecordDetail> stockRecordDetails){
 		Map rtMap = new HashMap<String, String>();
-		if(StringUtils.isEmpty(outDeptId) || stockRecordDetails == null
+		if(StringUtils.isEmpty(outDeptId) || CollectionUtils.isEmpty(stockRecordDetails)
 				|| stockRecordDetails.size() == 0){
 			rtMap.put("code", "201");
 			rtMap.put("msg", "传入参数有误");
@@ -170,7 +170,9 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
 			stockTotalq.setDeptId(outDeptId);
 			stockTotalq.setProductId(productId);
 			List<PdProductStockTotalPage> productStockTotals = pdProductStockTotalMapper.selectList(stockTotalq);
-			if(productStockTotals != null && productStockTotals.size() == 1){
+
+			if(CollectionUtils.isNotEmpty(productStockTotals)
+					&& productStockTotals.size() == 1){
 				PdProductStockTotal productStockTotal = productStockTotals.get(0);
 				Double stockNum = productStockTotal.getStockNum();
 				Double num = stockNum - productNum;
@@ -184,7 +186,7 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
 			o_productStockq.setProductBarCode(productBarCode);
 			o_productStockq.setBatchNo(batchNo);
 			List<PdProductStock> productStocks = pdProductStockMapper.selectList(o_productStockq);
-			if(productStocks != null && productStocks.size() >= 1){
+			if(CollectionUtils.isNotEmpty(productStocks) && productStocks.size() >= 1){
 				PdProductStock productStock = productStocks.get(0);
 				Double stockNum = productStock.getStockNum();
 				Double num = stockNum - productNum;

@@ -78,6 +78,9 @@
             <if test="deptName != null and deptName != ''">
                 AND  f.depart_name=#{deptName}
             </if>
+            <if test="deptId != null and deptId != ''">
+                AND  a.dept_id=#{deptId}
+            </if>
             order by  exp_status  desc,create_time desc
         </where>
     </select>

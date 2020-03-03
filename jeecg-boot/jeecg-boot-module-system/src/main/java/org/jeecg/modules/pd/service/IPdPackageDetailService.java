@@ -1,7 +1,9 @@
 package org.jeecg.modules.pd.service;
 
-import org.jeecg.modules.pd.entity.PdPackageDetail;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
+import org.jeecg.modules.pd.entity.PdPackageDetail;
+
 import java.util.List;
 
 /**
@@ -13,4 +15,9 @@ import java.util.List;
 public interface IPdPackageDetailService extends IService<PdPackageDetail> {
 
 	public List<PdPackageDetail> selectByMainId(String mainId);
+
+	Page<PdPackageDetail> selectList(Page<PdPackageDetail> pageList, PdPackageDetail packageDetail);
+
+	public List<PdPackageDetail> queryPdPackageList(PdPackageDetail packageDetail);
+
 }
