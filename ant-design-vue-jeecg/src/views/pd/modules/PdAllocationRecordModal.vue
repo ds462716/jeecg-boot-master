@@ -460,7 +460,6 @@
           stockNum: row.stockNum
         }
         this.pdAllocationDetailTable.dataSource.push(data)
-        this.$refs.pdAllocationDetail.add();
       },
 
       handleOk (submitType) { //提交

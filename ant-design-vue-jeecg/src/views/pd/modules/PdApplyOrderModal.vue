@@ -345,7 +345,6 @@
           stockNum:row.stockNum
         }
         this.pdApplyDetailTable.dataSource.push(data)
-        this.$refs.pdApplyDetail.add();
       },
 
       modalFormInfoOk (formData) { //选择定数包产品确定后返回所选择的数据

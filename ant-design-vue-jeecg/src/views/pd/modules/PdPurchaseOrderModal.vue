@@ -329,7 +329,6 @@
           supplierName:row.supplierName
         }
         this.pdPurchaseDetailTable.dataSource.push(data)
-        this.$refs.pdPurchaseDetail.add();
       },
       close () {
         this.$emit('close');
