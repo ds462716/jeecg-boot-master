@@ -70,6 +70,12 @@
             <if test="submitStatus != null and submitStatus != ''">
                 AND a.submit_status = #{submitStatus}
             </if>
+            <if test="inDeptId != null and inDeptId != ''">
+                AND a.in_dept_id = #{inDeptId}
+            </if>
+            <if test="outDeptId != null and outDeptId != ''">
+                AND a.out_dept_id = #{outDeptId}
+            </if>
             <if test="submitStatusList != null and submitStatusList.size() > 0">
                 and a.submit_status IN
                 <foreach collection="submitStatusList" item="item" separator="," open="(" close=")">

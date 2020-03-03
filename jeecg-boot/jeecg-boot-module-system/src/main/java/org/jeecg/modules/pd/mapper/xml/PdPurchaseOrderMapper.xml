@@ -71,6 +71,9 @@
             <if test="deptName != null and deptName != ''">
                 AND f.depart_name = #{deptName}
             </if>
+            <if test="deptId != null and deptId != ''">
+                AND a.dept_id = #{deptId}
+            </if>
             <if test="submitStatusList != null and submitStatusList.size() > 0">
                 and a.submit_status IN
                 <foreach collection="submitStatusList" item="item" separator="," open="(" close=")">

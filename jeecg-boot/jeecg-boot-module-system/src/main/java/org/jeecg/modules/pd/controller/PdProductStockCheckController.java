@@ -73,6 +73,8 @@ public class PdProductStockCheckController {
 								   HttpServletRequest req) {
 		QueryWrapper<PdProductStockCheck> queryWrapper = QueryGenerator.initQueryWrapper(pdProductStockCheck, req.getParameterMap());
 		Page<PdProductStockCheck> page = new Page<PdProductStockCheck>(pageNo, pageSize);
+		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		pdProductStockCheck.setDeptId(sysUser.getCurrentDepartId());
 		IPage<PdProductStockCheck> pageList = pdProductStockCheckService.page(page, queryWrapper);
 		return Result.ok(pageList);
 	}

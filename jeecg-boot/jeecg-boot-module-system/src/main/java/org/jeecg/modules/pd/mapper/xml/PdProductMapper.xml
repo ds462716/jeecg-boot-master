@@ -411,6 +411,9 @@
             <if test="orderNo != null and orderNo != ''">
                 AND e.order_no = #{orderNo}
             </if>
+            <if test="departParentId != null and departParentId != ''">
+                AND a.depart_parent_id = #{departParentId}
+            </if>
         </where>
         ORDER BY a.update_time desc
     </select>

@@ -75,6 +75,8 @@ public class PdPurchaseOrderController {
 									@RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
 									HttpServletRequest req) {
 		 Page<PdPurchaseOrder> page = new Page<PdPurchaseOrder>(pageNo, pageSize);
+		 LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		 pdPurchaseOrderPage.setDeptId(sysUser.getCurrentDepartId());
 		 page = pdPurchaseOrderService.selectList(page, pdPurchaseOrderPage);
 		 return Result.ok(page);
 	 }
