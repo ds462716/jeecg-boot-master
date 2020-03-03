@@ -283,47 +283,48 @@
         }
       },
       modalFormOk (formData) {//选择产品确定后返回所选择的数据
-        let idList = [];
-        let values = [];
-        let totalNum=0;
-        let totalPrice=0;
-       let data= this.pdPurchaseDetailTable.dataSource;
-        for(let j=0;j<data.length;j++) {
-          totalPrice+=data[j].orderMoney;
-          totalNum+=data[j].orderNum;
-          let prodId=data[j].productId;
-          idList.push(prodId);
-        }
-        values=data;
-        for(let i=0;i<formData.length;i++){
-       let prodId=formData[i].productId;
-          if(inArray(prodId, idList) ==-1){
-              values.push({
-                   productId: formData[i].productId,
-                   number: formData[i].number,
-                   productName: formData[i].productName,
-                   spec:formData[i].spec,
-                   purchasePrice: formData[i].purchasePrice,
-                   orderNum: 1.00,//默认1
-                   version: formData[i].version,
-                   stockNum: formData[i].stockNum,
-                   unitName:formData[i].unitName,
-                   orderMoney:formData[i].purchasePrice * 1,
-                   venderName:formData[i].venderName,
-                   supplierId:formData[i].supplierId,
-                   supplierName:formData[i].supplierName
-                 })
-            totalNum+=1;//计算总数量
-            totalPrice+=formData[i].purchasePrice * 1;//计算申购总金额
-          }
-        }
-        let model={};
-        this.model.totalNum=totalNum;//申购总数量
-        this.model.totalPrice=totalPrice.toFixed(2);//申购总金额
-        this.$nextTick(() => {
-          this.form.setFieldsValue(pick(this.model,'totalNum','totalPrice'))
+        let data = [];
+        this.$refs.pdPurchaseDetail.getValues((error, values) => {
+          formData.forEach((item, idx) => {
+            let bool = true;
+            values.forEach((value, idx) => {
+                if(item.productId==value.productId){
+                  bool=false;
+                }
+            })
+            if(bool){
+              data.push(item);
+            }
+          })
+          data.forEach((item, idx) => {
+            this.pdPurchaseDetailTable.dataSource = values;
+            this.addrows(item);
+          })
+          this.$nextTick(() => {
+            // 计算总数量及总金额
+            this.getTotalNumAndPrice();
+          })
         })
-        this.pdPurchaseDetailTable.dataSource = values;
+      },
+
+      addrows(row) {
+        let data = {
+          productId: row.productId,
+          number: row.number,
+          productName: row.productName,
+          spec:row.spec,
+          purchasePrice: row.purchasePrice,
+          orderNum: 1.00,//默认1
+          version: row.version,
+          stockNum: row.stockNum,
+          unitName:row.unitName,
+          orderMoney:row.purchasePrice * 1,
+          venderName:row.venderName,
+          supplierId:row.supplierId,
+          supplierName:row.supplierName
+        }
+        this.pdPurchaseDetailTable.dataSource.push(data)
+        this.$refs.pdPurchaseDetail.add();
       },
       close () {
         this.$emit('close');
