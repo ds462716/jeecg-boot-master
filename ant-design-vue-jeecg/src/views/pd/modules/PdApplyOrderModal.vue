@@ -60,6 +60,8 @@
               <div style="margin-bottom: 8px;">
                 <a-button v-show="!disableSubmit" type="primary" icon="plus" @click="choice">选择产品</a-button>
                 <span style="padding-left: 8px;"></span>
+                <a-button v-show="!disableSubmit" type="primary" icon="plus" @click="choicePackage">选择定数包</a-button>
+                <span style="padding-left: 8px;"></span>
                 <a-popconfirm
                   :title="`确定要删除吗?`"
                   @confirm="handleConfirmDelete">
@@ -82,7 +84,8 @@
                 :actionButton="false"
                 @valueChange="valueChange"
                 style="text-overflow: ellipsis;"
-              />
+              >
+              </j-editable-table>
             </a-tab-pane>
           </a-tabs>
         </a-card>
@@ -107,6 +110,7 @@
         </a-popconfirm>
       </div>
       <pd-apply-detail-add-modal  ref="PdApplyDetailAddModal" @ok="modalFormOk"></pd-apply-detail-add-modal>
+      <pd-apply-package-add-modal  ref="PdApplyPackageAddModal" @ok="modalFormInfoOk"></pd-apply-package-add-modal>
     </a-modal>
 </template>
 <script>
@@ -118,13 +122,18 @@
   import JDate from '@/components/jeecg/JDate'
   import JDictSelectTag from "@/components/dict/JDictSelectTag"
   import PdApplyDetailAddModal from './PdChooseProductListModel'
+  import PdApplyPackageAddModal from './PdChoosePackageListModel'
 
   const VALIDATE_NO_PASSED = Symbol()
   export { FormTypes, VALIDATE_NO_PASSED }
   export default {
     name: 'PdApplyOrderModal',
     mixins: [JEditableTableMixin],
-    components: {JDate, JDictSelectTag,PdApplyDetailAddModal},
+    components: {
+      JDate,
+      JDictSelectTag,
+      PdApplyDetailAddModal,
+      PdApplyPackageAddModal},
     data() {
       return {
         model:{},
@@ -151,15 +160,17 @@
           loading: false,
           dataSource: [],
           columns: [
-            { title: '定数包编号', width:"130px",   key: 'packageId' },
-            { title: '定数包名称',  width:"130px", key: 'packageName' },
             { title: '产品ID', key: 'productId', type: FormTypes.hidden },
+            { title: '定数包Id', key: 'packageId', type: FormTypes.hidden },
+            { title: '定数包编号', width:"130px",   key: 'packageCode' },
+            { title: '定数包名称',  width:"130px", key: 'packageName' },
+            { title: '定数包产品数量',  width:"130px", key: 'productNum' },
             { title: '产品名称', width:"250px",  key: 'productName' },
             { title: '产品编号',width:"150px", align:"center", key: 'number' },
             { title: '规格',width:"240px", align:"center", key: 'spec' },
             { title: '型号', width:"240px",align:"center", key: 'version' },
             { title: '单位',width:"50px", align:"center", key: 'unitName' },
-            { title: '发货数量', width:"100px",align:"center", key: 'productNum' },
+            { title: '发货数量', width:"100px",align:"center", key: 'deliverNum' },
             { title: '申领数量', key: 'applyNum', type: FormTypes.input, width:"80px",
               placeholder: '${title}', defaultValue: '1',
               validateRules: [{ required: true, message: '${title}不能为空' },
@@ -242,33 +253,23 @@
             if(column.key === "applyNum"){
               // 申领数量变更
               let rows = target.getValuesSync({ validate: false });
-                  /*if(row.applyNum>row.stockNum){
-                    this.$message.error("申领数量不能大于库存数量！");
-                    let pdApplyDetailList = this.pdApplyDetailTable.dataSource;
-                    for(let i=0;i<pdApplyDetailList.length;i++){
-                     let pdApplyDetail=pdApplyDetailList[i];
-                      if(pdApplyDetail.id==row.id){
-                      target.setValues([{rowKey: row.id, values: {applyNum :pdApplyDetail.applyNum }}]);
-                      break;
-                      }
-                    }
-                  }else{*/
                     target.setValues([{rowKey: row.id, values: {applyNum :row.applyNum }}]);
                     // 计算总数量
                     this.getTotalNumAndPrice();
-                   /*}*/
-
             }
           }
         }
       },
-
-
-
       //选择产品
       choice() {
         this.$refs.PdApplyDetailAddModal.show();
         this.$refs.PdApplyDetailAddModal.title = "选择产品";
+      },
+
+      //选择定数包产品
+      choicePackage() {
+        this.$refs.PdApplyPackageAddModal.show();
+        this.$refs.PdApplyPackageAddModal.title = "选择定数包";
       },
 
       handleConfirmDelete() {
@@ -287,47 +288,90 @@
         this.$refs.pdApplyDetail.getValues((error, values) => {
           let totalNum = 0;
           values.forEach((item, idx) => {
-            totalNum+=parseFloat(item.applyNum);
+            if(item.packageCode !='' && item.packageCode !=null ){
+              totalNum+=parseFloat(item.applyNum) * parseFloat(item.productNum) ;
+            }else{
+              totalNum+=parseFloat(item.applyNum);
+            }
           })
           this.model.totalNum = totalNum;
           this.form.setFieldsValue(pick(this.model,'totalNum'))
-
         })
       },
       modalFormOk (formData) { //选择产品确定后返回所选择的数据
-        let idList = [];
-        let values = [];
-        let totalNum=0;
-        let data= this.pdApplyDetailTable.dataSource;
-        for(let j=0;j<data.length;j++) {
-          totalNum+=data[j].applyNum;
-          let prodId=data[j].productId;
-          idList.push(prodId);
-        }
-        values=data;
-        for(let i=0;i<formData.length;i++){
-          let prodId=formData[i].productId;
-          if(inArray(prodId, idList) ==-1) {
-            values.push({
-              productId: formData[i].productId,
-              number: formData[i].number,
-              productName: formData[i].productName,
-              spec: formData[i].spec,
-              version: formData[i].version,
-              unitName: formData[i].unitName,
-              applyNum: "1",//默认 1
-              stockNum: formData[i].stockNum
+        let data = [];
+        this.$refs.pdApplyDetail.getValues((error, values) => {
+          formData.forEach((item, idx) => {
+            let bool = true;
+              values.forEach((value, idx) => {
+                let packageCode = value.packageCode;
+                if (packageCode == "" ||  packageCode == null  ) {
+                      if(item.productId==value.productId){
+                        bool=false;
+                       }
+                    }
+              })
+            if(bool){
+              data.push(item);
+            }
             })
-            totalNum+=1;//计算总数量
-          }
-        }
-        let model={};
-        this.model.totalNum=totalNum;//申领总数量
-        this.$nextTick(() => {
-          this.form.setFieldsValue(pick(this.model,'totalNum'))
+          data.forEach((item, idx) => {
+            this.pdApplyDetailTable.dataSource = values;
+            this.addrows(item);
+          })
+          this.$nextTick(() => {
+            // 计算总数量
+            this.getTotalNumAndPrice();
+          })
         })
-        this.pdApplyDetailTable.dataSource = values;
       },
+      addrows(row) {
+        let data = {
+          packageId:row.packageId,
+          packageCode:row.code,
+          packageName:row.name,
+          productNum:row.count,
+          productId: row.productId,
+          number: row.number,
+          productName:row.productName,
+          spec: row.spec,
+          version:row.version,
+          unitName:row.unitName,
+          applyNum: "1",//默认 1
+          stockNum:row.stockNum
+        }
+        this.pdApplyDetailTable.dataSource.push(data)
+        this.$refs.pdApplyDetail.add();
+      },
+
+      modalFormInfoOk (formData) { //选择定数包产品确定后返回所选择的数据
+        let data = [];
+        this.$refs.pdApplyDetail.getValues((error, values) => {
+          formData.forEach((item, idx) => {
+            let bool = true;
+            values.forEach((value, idx) => {
+              let packageCode = value.packageCode;
+              if (packageCode != "" &&  packageCode != null  ) {
+                if(item.productId==value.productId){
+                  bool=false;
+                }
+              }
+            })
+            if(bool){
+              data.push(item);
+            }
+          })
+          data.forEach((item, idx) => {
+            this.pdApplyDetailTable.dataSource = values;
+            this.addrows(item);
+          })
+          this.$nextTick(() => {
+            // 计算总数量
+            this.getTotalNumAndPrice();
+          })
+        })
+      },
+
       handleOk (submitType) { //提交
         if(submitType=="submit"){
           this.model.submitStatus='2';

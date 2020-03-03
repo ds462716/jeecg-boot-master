@@ -62,9 +62,6 @@ public class PdPackageDetail extends BaseEntity {
 	private String departId;
 	private String departParentId;
 
-
-	@TableField(exist = false)
-	private List<String> prodIdList;
     /*本科室库存数量*/
 	@TableField(exist = false)
 	private Double stockNum;

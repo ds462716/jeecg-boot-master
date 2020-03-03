@@ -1,16 +1,21 @@
 package org.jeecg.modules.pd.controller;
 
-import java.io.IOException;
-import java.math.BigDecimal;
-import java.util.*;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.shiro.SecurityUtils;
+import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.PdConstant;
-import org.jeecg.common.system.api.ISysBaseAPI;
+import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.modules.message.util.PushMsgUtil;
+import org.jeecg.modules.pd.entity.PdPurchaseDetail;
+import org.jeecg.modules.pd.entity.PdPurchaseOrder;
+import org.jeecg.modules.pd.service.IPdPurchaseDetailService;
+import org.jeecg.modules.pd.service.IPdPurchaseOrderService;
 import org.jeecg.modules.pd.util.UUIDUtil;
 import org.jeecg.modules.pd.vo.PdProductPage;
+import org.jeecg.modules.pd.vo.PdPurchaseOrderPage;
 import org.jeecg.modules.system.entity.SysDepart;
 import org.jeecg.modules.system.service.ISysDepartService;
 import org.jeecg.modules.system.service.ISysUserService;
@@ -19,22 +24,18 @@ import org.jeecgframework.poi.excel.def.NormalExcelConstants;
 import org.jeecgframework.poi.excel.entity.ExportParams;
 import org.jeecgframework.poi.excel.entity.ImportParams;
 import org.jeecgframework.poi.excel.view.JeecgEntityExcelView;
-import org.jeecg.common.system.vo.LoginUser;
-import org.apache.shiro.SecurityUtils;
-import org.jeecg.common.api.vo.Result;
-import org.jeecg.modules.pd.entity.PdPurchaseDetail;
-import org.jeecg.modules.pd.entity.PdPurchaseOrder;
-import org.jeecg.modules.pd.vo.PdPurchaseOrderPage;
-import org.jeecg.modules.pd.service.IPdPurchaseOrderService;
-import org.jeecg.modules.pd.service.IPdPurchaseDetailService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.servlet.ModelAndView;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.util.*;
 
  /**
  * @Description: 申购订单主表
@@ -320,7 +321,7 @@ public class PdPurchaseOrderController {
 		 Map<String, Object> map = new HashMap<>();
 		 //获取具有器械科管理员的角色用户Id;
 		 List<String> userIdList = sysUserService.getUserIdByRoleCode("qxk_admin");
-		 if (userIdList != null) {
+		 if (CollectionUtils.isNotEmpty(userIdList)) {
 			 String userIds = String.join(",", userIdList);
 			 Map<String, String> strMap = new HashMap<>();
 			 LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();

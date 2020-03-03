@@ -1,11 +1,16 @@
 package org.jeecg.modules.pd.controller;
 
-import java.math.BigDecimal;
-import java.util.*;
-import javax.servlet.http.HttpServletRequest;
 import com.baomidou.mybatisplus.core.toolkit.ObjectUtils;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.shiro.SecurityUtils;
+import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.PdConstant;
-import org.jeecg.modules.pd.entity.*;
+import org.jeecg.common.system.vo.LoginUser;
+import org.jeecg.modules.pd.entity.PdProductStock;
+import org.jeecg.modules.pd.entity.PdProductStockTotal;
+import org.jeecg.modules.pd.entity.PdStockRecordDetail;
 import org.jeecg.modules.pd.service.IPdProductStockService;
 import org.jeecg.modules.pd.service.IPdProductStockTotalService;
 import org.jeecg.modules.pd.service.IPdStockRecordDetailService;
@@ -13,14 +18,16 @@ import org.jeecg.modules.pd.vo.PdProductStockTotalPage;
 import org.jeecgframework.poi.excel.def.NormalExcelConstants;
 import org.jeecgframework.poi.excel.entity.ExportParams;
 import org.jeecgframework.poi.excel.view.JeecgEntityExcelView;
-import org.jeecg.common.system.vo.LoginUser;
-import org.apache.shiro.SecurityUtils;
-import org.jeecg.common.api.vo.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import lombok.extern.slf4j.Slf4j;
+
+import javax.servlet.http.HttpServletRequest;
+import java.math.BigDecimal;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
  /**
  * @Description: 库存总表
@@ -63,7 +70,7 @@ public class PdProductStockTotalController {
          Double isLcount=0.00;//久存产品数量
          Double pCount=0.00;//总数量
          Double limtCount=0.00;//超出库房上下限产品数量
-         if(aList!=null&&!aList.isEmpty()){
+         if(CollectionUtils.isNotEmpty(aList)){
              for (PdProductStockTotal p : aList) {
                  if(PdConstant.PD_STATE_2.equals(p.getExpStatus())){
 					 gCount+=p.getStockNum();
@@ -194,7 +201,7 @@ public class PdProductStockTotalController {
 		 Double gCount=0.00;//过期数量
 		 Double jCount=0.00;//近效期数量
 		 Double pCount=0.00;//总数量
-		 if(aList!=null&&!aList.isEmpty()){
+		 if(CollectionUtils.isNotEmpty(aList)){
 			 for (PdProductStock p : aList) {
 				 if(PdConstant.PD_STATE_2.equals(p.getExpStatus())){
 					 gCount+=p.getStockNum();
@@ -242,7 +249,7 @@ public class PdProductStockTotalController {
 		 BigDecimal inPrice = new BigDecimal(0);//入库总金额
 		 BigDecimal outPrice = new BigDecimal(0);//出库总金额
 		 List<PdStockRecordDetail> list = pdStockRecordDetailService.queryPdStockRecordDetail(pdStockRecordDetail);
-		 if(list != null && list.size() > 0){
+		 if(CollectionUtils.isNotEmpty(list) && list.size() > 0){
 			   for (PdStockRecordDetail item : list) {
 				   outPrice=outPrice.add(item.getOutTotalPrice());
 				   inPrice=inPrice.add(item.getInTotalPrice());
