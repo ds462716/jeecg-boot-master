@@ -66,6 +66,8 @@ public class PdAllocationRecordController {
 								   @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
 								   HttpServletRequest req) {
  		Page<PdAllocationRecord> page = new Page<PdAllocationRecord>(pageNo, pageSize);
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        pdAllocationRecord.setInDeptId(sysUser.getCurrentDepartId());
 		IPage<PdAllocationRecord> pageList =pdAllocationRecordService.selectList(page, pdAllocationRecord);
 		return Result.ok(pageList);
 	}

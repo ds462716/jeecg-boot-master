@@ -70,6 +70,8 @@ public class PdApplyOrderController {
 								   @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
 								   HttpServletRequest req) {
 		Page<PdApplyOrder> page = new Page<PdApplyOrder>(pageNo, pageSize);
+		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		pdApplyOrderPage.setDeptId(sysUser.getCurrentDepartId());
 		IPage<PdApplyOrder> pageList = pdApplyOrderService.selectList(page, pdApplyOrderPage);
 		return Result.ok(pageList);
 	}
