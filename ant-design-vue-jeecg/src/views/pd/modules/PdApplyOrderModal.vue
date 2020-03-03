@@ -164,13 +164,13 @@
             { title: '定数包Id', key: 'packageId', type: FormTypes.hidden },
             { title: '定数包编号', width:"130px",   key: 'packageCode' },
             { title: '定数包名称',  width:"130px", key: 'packageName' },
-            { title: '定数包产品数量',  width:"130px", key: 'productNum' },
+            { title: '定数包产品数量',  width:"130px", key: 'packageNum' },
             { title: '产品名称', width:"250px",  key: 'productName' },
             { title: '产品编号',width:"150px", align:"center", key: 'number' },
             { title: '规格',width:"240px", align:"center", key: 'spec' },
             { title: '型号', width:"240px",align:"center", key: 'version' },
             { title: '单位',width:"50px", align:"center", key: 'unitName' },
-            { title: '发货数量', width:"100px",align:"center", key: 'deliverNum' },
+            { title: '发货数量', width:"100px",align:"center", key: 'refundNum' },
             { title: '申领数量', key: 'applyNum', type: FormTypes.input, width:"80px",
               placeholder: '${title}', defaultValue: '1',
               validateRules: [{ required: true, message: '${title}不能为空' },
@@ -285,11 +285,11 @@
       },
        // 计算总数量
       getTotalNumAndPrice(){
-        this.$refs.pdApplyDetail.getValues((error, values) => {
+          this.$refs.pdApplyDetail.getValues((error, values) => {
           let totalNum = 0;
           values.forEach((item, idx) => {
             if(item.packageCode !='' && item.packageCode !=null ){
-              totalNum+=parseFloat(item.applyNum) * parseFloat(item.productNum) ;
+              totalNum+=parseFloat(item.applyNum) * parseFloat(item.packageNum) ;
             }else{
               totalNum+=parseFloat(item.applyNum);
             }
@@ -300,7 +300,7 @@
       },
       modalFormOk (formData) { //选择产品确定后返回所选择的数据
         let data = [];
-        this.$refs.pdApplyDetail.getValues((error, values) => {
+         this.$refs.pdApplyDetail.getValues((error, values) => {
           formData.forEach((item, idx) => {
             let bool = true;
               values.forEach((value, idx) => {
@@ -330,7 +330,7 @@
           packageId:row.packageId,
           packageCode:row.code,
           packageName:row.name,
-          productNum:row.count,
+          packageNum:row.count,
           productId: row.productId,
           number: row.number,
           productName:row.productName,

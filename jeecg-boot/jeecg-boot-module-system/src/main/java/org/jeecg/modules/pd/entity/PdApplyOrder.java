@@ -2,17 +2,15 @@ package org.jeecg.modules.pd.entity;
 
 
 
-import java.io.Serializable;
-import java.util.Date;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import lombok.Data;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import lombok.EqualsAndHashCode;
-import lombok.experimental.Accessors;
+import lombok.Data;
 import org.jeecgframework.poi.excel.annotation.Excel;
 import org.springframework.format.annotation.DateTimeFormat;
+
+import java.util.Date;
 
 /**
  * @Description: 申领单主表
@@ -64,10 +62,10 @@ public class PdApplyOrder extends BaseEntity {
     @Excel(name = "申领科室ID", width = 15)
     private String deptId;
 	/**申领总数*/
-    @Excel(name = "申领总数", width = 15)
+    @Excel(name = "申领总数量", width = 15)
     private Double totalNum;
 	/**实际领用个数*/
-    @Excel(name = "实际领用数量", width = 15)
+    @Excel(name = "实际发货总数量", width = 15)
     private Double factNum;
 	/**申领单状态*/
     @Excel(name = "申领单状态", width = 15)

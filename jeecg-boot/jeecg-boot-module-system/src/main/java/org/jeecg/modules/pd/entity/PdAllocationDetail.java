@@ -64,7 +64,10 @@ public class PdAllocationDetail extends BaseEntity {
 	/**产品属性：1、产品 2、定数包*/
 	@Excel(name = "产品属性：1、产品 2、定数包", width = 15)
 	private String productAttr;
-
+	/**所属定数包ID*/
+	private String packageId;
+	/**'调拨时定数包产品数量'*/
+	private Double packageNum;
 
 
 	/*不是明细表字段*/
