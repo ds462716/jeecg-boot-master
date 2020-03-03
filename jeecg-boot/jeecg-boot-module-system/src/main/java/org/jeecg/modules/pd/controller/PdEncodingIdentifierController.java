@@ -84,10 +84,10 @@ public class PdEncodingIdentifierController extends JeecgController<PdEncodingId
 		 try {
 			 LambdaQueryWrapper<PdEncodingIdentifier> query = new LambdaQueryWrapper<PdEncodingIdentifier>();
 			 query.eq(PdEncodingIdentifier::getDelFlag, CommonConstant.DEL_FLAG_0);
-			 if(!StringUtils.isEmpty(pdEncodingIdentifier.getValue())){
+			 if(!oConvertUtils.isEmpty(pdEncodingIdentifier.getValue())){
 				 query.eq(PdEncodingIdentifier::getValue, pdEncodingIdentifier.getValue());
 			 }
-			 if(!StringUtils.isEmpty(pdEncodingIdentifier.getMeaning())){
+			 if(!oConvertUtils.isEmpty(pdEncodingIdentifier.getMeaning())){
 				 query.eq(PdEncodingIdentifier::getMeaning,pdEncodingIdentifier.getMeaning());
 			 }
 			 query.orderByAsc(PdEncodingIdentifier::getUpdateTime);

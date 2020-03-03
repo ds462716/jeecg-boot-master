@@ -1,10 +1,11 @@
 <template>
   <a-drawer :bordered="false"
-  :visible="visible"
-  :closable="true"
-  :width="drawerWidth"
-  @close="close"
-  :wrapStyle="{height: 'calc(100% - 108px)',overflow: 'auto',paddingBottom: '108px'}"
+            :visible="visible"
+            :closable="true"
+            :width="drawerWidth"
+            @close="close"
+            :title="title"
+            :wrapStyle="{height: 'calc(100% - 108px)',overflow: 'auto',paddingBottom: '108px'}"
   >
 
       <a-spin :spinning="loading">
@@ -72,7 +73,7 @@
         allTreeKeys:[],
         autoExpandParent: true,
         checkStrictly: false,
-        title:"部门权限配置",
+        title:"",
         visible: false,
         loading: false,
         selectedKeys:[]
@@ -162,6 +163,7 @@
         this.form.resetFields()
       },
       loadData(){
+        this.loading = true;
         queryPermissionTreeList().then((res) => {
           this.treeData = res.result.treeList
           this.allTreeKeys = res.result.ids
@@ -183,6 +185,7 @@
             this.defaultCheckedKeys = [...halfCheckedKeys, ...checkedKeys];
             //默认不展开所有
             //this.expandedKeysss = this.allTreeKeys;
+            this.loading = false;
           })
         })
       },

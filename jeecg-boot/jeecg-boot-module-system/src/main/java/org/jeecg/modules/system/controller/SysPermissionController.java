@@ -210,15 +210,7 @@ public class SysPermissionController {
 			String username = JwtUtil.getUsername(token);
 			// 获取登录用户信息
 			LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
-			String departCode = sysUser.getOrgCode();
-			if(departCode.equals("A02A02")){
-				sysUser.setCurrentDepartId("5159cde220114246b045e574adceafe9");
-			}else{
-				sysUser.setCurrentDepartId("a7d7e77e06c84325a40932163adcdaa6");
-			}
 			List<SysPermission> metaList = sysPermissionService.queryByUser(sysUser);
-
-			//2020年2月24日18:10:54  TODO  代办 根据部门绑定的权限来显示菜单
 			//添加首页路由
 			//update-begin-author:taoyan date:20200211 for: TASK #3368 【路由缓存】首页的缓存设置有问题，需要根据后台的路由配置来实现是否缓存
 			if(!PermissionDataUtil.hasIndexPage(metaList)){

@@ -1,8 +1,10 @@
 package org.jeecg.modules.pd.service;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.jeecg.modules.system.entity.SysDepart;
+import org.jeecg.modules.system.entity.SysUser;
 import org.jeecg.modules.system.model.SysDepartTreeModel;
 
 import java.util.List;
@@ -17,4 +19,10 @@ public interface IPdDepartService extends IService<SysDepart> {
     List<SysDepartTreeModel> queryTreeList(SysDepart sysDepart);
 
     List<String> findSysDepart(SysDepart sysDepart);
+
+    IPage<SysUser> departUserList(Page<SysUser> page, Map<String, Object> parMap);
+
+    void saveDeptRolePermission(String roleId, String permissionIds, String lastPermissionIds, String departId);
+
+    IPage<SysUser> findUserList(Page<SysUser> page, Map<String, Object> parMap);
 }

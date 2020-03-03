@@ -48,8 +48,14 @@
               <a-menu-item>
                 <a href="javascript:;" @click="handleAddSub(record)">添加部门</a>
               </a-menu-item>
+              <a-menu-item >
+                <a href="javascript:;" @click="handleAddUserSub(record)">添加用户</a>
+              </a-menu-item>
                <a-menu-item>
                 <a href="javascript:;" @click="handleAddPermissionSub(record)">添加部门权限</a>
+              </a-menu-item>
+              <a-menu-item>
+                <a href="javascript:;" @click="handleAddRoleSub(record)">添加部门角色</a>
               </a-menu-item>
               <a-menu-item>
                 <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.id)">
@@ -72,6 +78,8 @@
 
     <pdDepart-modal ref="modalForm" @ok="modalFormOk"></pdDepart-modal>
     <depart-auth-modal ref="departAuth"></depart-auth-modal>
+    <dept-role-info ref="deptRoleInfo"></dept-role-info>
+    <dept-User-Info ref="deptUserInfo"></dept-User-Info>
   </a-card>
 </template>
 
@@ -80,6 +88,8 @@
   import { JeecgListMixin } from '@/mixins/JeecgListMixin'
   import PdDepartModal from './modules/PdDepartModal'
   import DepartAuthModal from './modules/DepartAuthModal'
+  import DeptRoleInfo from './modules/DeptRoleInfo'
+  import DeptUserInfo from './modules/DeptUserInfo'
   import JDictSelectTag from '@/components/dict/JDictSelectTag.vue'
   import {initDictOptions, filterMultiDictText} from '@/components/dict/JDictSelectUtil'
   import { queryPdDepaTreeList } from '@/api/api'
@@ -91,6 +101,8 @@
       JDictSelectTag,
       PdDepartModal,
       DepartAuthModal,
+      DeptRoleInfo,
+      DeptUserInfo
     },
     data () {
       return {
@@ -195,9 +207,31 @@
         this.$refs.modalForm.disableSubmit = false;
       },
       handleAddPermissionSub(record) {
-        this.$refs.departAuth.title = "添加部门权限";
-        this.$refs.departAuth.disableSubmit = false;
-        this.$refs.departAuth.show(record.id);
+        if(record.parentId){
+          this.$refs.departAuth.title = "当前选择部门:"+record.departName;
+          this.$refs.departAuth.disableSubmit = false;
+          this.$refs.departAuth.show(record.id);
+        }else{
+          this.$message.error("当前机构不能添加权限!")
+        }
+      },
+      handleAddRoleSub(record){
+        if(record.parentId){
+          this.$refs.deptRoleInfo.title = "当前选择部门:"+record.departName;
+          this.$refs.deptRoleInfo.disableSubmit = false;
+          this.$refs.deptRoleInfo.show(record.id);
+        }else{
+          this.$message.error("当前机构不能添加角色!")
+        }
+      },
+      handleAddUserSub(record){
+        if(record.parentId){
+          this.$refs.deptUserInfo.title = "当前选择部门:"+record.departName;
+          this.$refs.deptUserInfo.disableSubmit = false;
+          this.$refs.deptUserInfo.show(record.id);
+        }else{
+          this.$message.error("当前机构不能添加用户!")
+        }
       },
       /**
        * 点击行选中checkbox

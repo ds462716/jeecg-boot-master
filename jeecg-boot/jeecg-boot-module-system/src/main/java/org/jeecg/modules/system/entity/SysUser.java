@@ -181,6 +181,5 @@ public class SysUser implements Serializable {
     /**
      *最顶级部门id（医院id）
      */
-    @TableField(exist = false)
     private String departParentId;
 }

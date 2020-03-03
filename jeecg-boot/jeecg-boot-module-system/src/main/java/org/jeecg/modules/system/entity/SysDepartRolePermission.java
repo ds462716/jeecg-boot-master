@@ -52,6 +52,11 @@ public class SysDepartRolePermission {
 	public SysDepartRolePermission() {
 	}
 
+	public SysDepartRolePermission(String roleId, String permissionId,String departId) {
+		this.roleId = roleId;
+		this.permissionId = permissionId;
+		this.departId = departId;
+	}
 	public SysDepartRolePermission(String roleId, String permissionId) {
 		this.roleId = roleId;
 		this.permissionId = permissionId;
