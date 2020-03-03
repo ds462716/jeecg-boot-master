@@ -1,11 +1,9 @@
 package org.jeecg.modules.pd.mapper;
 
-import java.util.List;
-
-import org.apache.ibatis.annotations.Param;
-import org.jeecg.modules.pd.entity.PdAllocationRecord;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import org.jeecg.modules.pd.entity.PdApplyOrder;
+import org.jeecg.modules.pd.entity.PdAllocationRecord;
+
+import java.util.List;
 
 /**
  * @Description: 调拨记录表
@@ -17,4 +15,5 @@ public interface PdAllocationRecordMapper extends BaseMapper<PdAllocationRecord>
 
     List<PdAllocationRecord> selectList(PdAllocationRecord allocationRecord);
 
+    List<PdAllocationRecord> chooseAllocationList(PdAllocationRecord allocationRecord);
 }

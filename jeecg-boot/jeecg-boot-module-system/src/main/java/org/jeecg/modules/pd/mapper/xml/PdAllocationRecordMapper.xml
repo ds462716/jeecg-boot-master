@@ -79,4 +79,56 @@
         </where>
     </select>
 
+
+
+    <!-- 用于调拨订单选择框 -->
+    <select id="chooseAllocationList" resultType="org.jeecg.modules.pd.entity.PdAllocationRecord">
+        SELECT DISTINCT
+        a.id as id,
+        a.allocation_no as allocationNo,
+        a.allocation_date as allocationDate,
+        a.total_num as totalNum,
+        f.depart_name AS inDeptName,
+        e.depart_name AS outDeptName,
+        a.audit_status as auditStatus,
+        c.realname as auditByName
+        FROM   pd_allocation_record a
+        LEFT JOIN pd_allocation_detail b on a.allocation_no = b.allocation_no
+        LEFT JOIN sys_user c ON c.id = a.audit_by
+        LEFT JOIN pd_product d on b.product_id = d.id
+        LEFT JOIN sys_depart e ON a.out_dept_id = e.id
+        LEFT JOIN sys_depart f ON a.in_dept_id = f.id
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+            AND a.audit_status = '2'
+            <if test="id != null and id != ''">
+                AND a.id = #{id}
+            </if>
+            <if test="allocationNo != null and allocationNo != ''">
+                AND a.allocation_no LIKE concat('%',#{allocationNo},'%')
+            </if>
+            <if test="productName != null and productName != ''">
+                AND (
+                d.name LIKE concat('%',#{productName},'%')
+                or d.py LIKE concat('%',#{productName},'%')
+                or d.wb LIKE concat('%',#{productName},'%')
+                or d.bname LIKE concat('%',#{productName},'%')
+                or d.bpy LIKE concat('%',#{productName},'%')
+                or d.bwb LIKE concat('%',#{productName},'%')
+                or d.zdy LIKE concat('%',#{productName},'%')
+                )
+            </if>
+            <if test="number != null and number != ''">
+                AND d.number LIKE concat('%',#{number},'%')
+            </if>
+            <if test="queryDateStart != null and queryDateStart != ''">
+                AND a.allocation_date &gt;= #{queryDateStart}
+            </if>
+            <if test="queryDateEnd != null and queryDateEnd != ''">
+                AND a.allocation_date &lt;= #{queryDateEnd}
+            </if>
+        </where>
+        order  by a.allocation_date desc
+    </select>
+
 </mapper>

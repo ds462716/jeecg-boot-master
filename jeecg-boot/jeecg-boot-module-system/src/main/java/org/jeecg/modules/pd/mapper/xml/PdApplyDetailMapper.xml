@@ -42,6 +42,16 @@
         LEFT JOIN pd_product c ON c.id = a.product_id
     </sql>
 
+	<!--定数包-->
+	<sql id="pdPackageColumns">
+		 d.name AS "packageName",
+         d.code AS "packageCode"
+
+	</sql>
+	<sql id="pdPackageJoins">
+       LEFT JOIN pd_package d ON a.package_id=d.id
+    </sql>
+
 	<delete id="deleteByMainId" parameterType="java.lang.String">
 		DELETE FROM  pd_apply_detail WHERE id = #{mainId}
     </delete>
@@ -54,10 +64,12 @@
 		SELECT
 		<include refid="pdApplyDetailColumns"/>,
 		<include refid="pdProductColumns"/>,
-		<include refid="pdUnitColumns"/>
+		<include refid="pdUnitColumns"/>,
+		<include refid="pdPackageColumns"/>
 		FROM  pd_apply_detail a
 		<include refid="pdProductJoins"/>
 		<include refid="pdUnitJoins"/>
+		<include refid="pdPackageJoins"/>
 		 WHERE a.apply_no = #{applyNo}
 		  ORDER BY a.create_time DESC
     </select>

@@ -1,16 +1,20 @@
 package org.jeecg.modules.pd.controller;
 
-import java.io.IOException;
-import java.util.*;
-import java.util.stream.Collectors;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.shiro.SecurityUtils;
+import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.PdConstant;
-import org.jeecg.modules.pd.entity.PdApplyDetail;
-import org.jeecg.modules.pd.entity.PdApplyOrder;
+import org.jeecg.common.system.query.QueryGenerator;
+import org.jeecg.common.system.vo.LoginUser;
+import org.jeecg.common.util.oConvertUtils;
+import org.jeecg.modules.pd.entity.PdAllocationDetail;
+import org.jeecg.modules.pd.entity.PdAllocationRecord;
+import org.jeecg.modules.pd.service.IPdAllocationDetailService;
+import org.jeecg.modules.pd.service.IPdAllocationRecordService;
 import org.jeecg.modules.pd.util.UUIDUtil;
-import org.jeecg.modules.pd.vo.PdApplyOrderPage;
 import org.jeecg.modules.system.entity.SysDepart;
 import org.jeecg.modules.system.service.ISysDepartService;
 import org.jeecgframework.poi.excel.ExcelImportUtil;
@@ -18,25 +22,18 @@ import org.jeecgframework.poi.excel.def.NormalExcelConstants;
 import org.jeecgframework.poi.excel.entity.ExportParams;
 import org.jeecgframework.poi.excel.entity.ImportParams;
 import org.jeecgframework.poi.excel.view.JeecgEntityExcelView;
-import org.jeecg.common.system.vo.LoginUser;
-import org.apache.shiro.SecurityUtils;
-import org.jeecg.common.api.vo.Result;
-import org.jeecg.common.system.query.QueryGenerator;
-import org.jeecg.common.util.oConvertUtils;
-import org.jeecg.modules.pd.entity.PdAllocationDetail;
-import org.jeecg.modules.pd.entity.PdAllocationRecord;
-import org.jeecg.modules.pd.service.IPdAllocationRecordService;
-import org.jeecg.modules.pd.service.IPdAllocationDetailService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.servlet.ModelAndView;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.*;
+import java.util.stream.Collectors;
 
  /**
  * @Description: 调拨记录表
@@ -293,4 +290,23 @@ public class PdAllocationRecordController {
       return Result.ok("文件导入失败！");
     }
 
-}
+	 /**
+	  * 调拨订单选择框
+	  *
+	  * @param allocationRecord
+	  * @param pageNo
+	  * @param pageSize
+	  * @param req
+	  * @return
+	  */
+	 @GetMapping(value = "/chooseAllocationList")
+	 public Result<?> chooseAllocationList(PdAllocationRecord allocationRecord,
+										   @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
+										   @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
+										   HttpServletRequest req) {
+		 Page<PdAllocationRecord> page = new Page<PdAllocationRecord>(pageNo, pageSize);
+		 IPage<PdAllocationRecord> pageList = pdAllocationRecordService.chooseAllocationList(page, allocationRecord);
+		 return Result.ok(pageList);
+	 }
+
+ }

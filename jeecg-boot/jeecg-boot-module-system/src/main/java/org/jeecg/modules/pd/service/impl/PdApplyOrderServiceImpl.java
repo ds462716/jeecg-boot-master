@@ -1,18 +1,19 @@
 package org.jeecg.modules.pd.service.impl;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import org.jeecg.modules.pd.entity.PdApplyOrder;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.apache.commons.collections.CollectionUtils;
 import org.jeecg.modules.pd.entity.PdApplyDetail;
+import org.jeecg.modules.pd.entity.PdApplyOrder;
 import org.jeecg.modules.pd.mapper.PdApplyDetailMapper;
 import org.jeecg.modules.pd.mapper.PdApplyOrderMapper;
 import org.jeecg.modules.pd.service.IPdApplyOrderService;
-import org.springframework.stereotype.Service;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.jeecg.modules.pd.vo.PdApplyOrderPage;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import java.io.Serializable;
+
 import java.util.List;
-import java.util.Collection;
 
 /**
  * @Description: 申领单主表
@@ -51,6 +52,31 @@ public class PdApplyOrderServiceImpl extends ServiceImpl<PdApplyOrderMapper, PdA
 		pdApplyOrderMapper.insert(pdApplyOrder);
 		if(pdApplyDetailList!=null && pdApplyDetailList.size()>0) {
 			for(PdApplyDetail entity:pdApplyDetailList) {
+//------------------------
+				/*if(StringUtils.isEmpty(entity.getPackageId())){
+					entity.setApplyNo(pdApplyOrder.getApplyNo());
+					entity.setProductId(pad.getProdId());
+					entity.setNumber(pad.getProdNo());
+					entity.setApplyCount(pad.getApplyCount());
+					prodNum = prodNum + Integer.valueOf(pad.getApplyCount());
+					tempArray.add(pad);
+				}else{
+					List<PdProductMPackage> pmpList = pdProductMPackageDao.getProdListByPackageId(UserUtils.getUser().getStoreroomId(),null, pad.getPackageId());
+					for(PdProductMPackage ppmp : pmpList){
+						PdApplyDetail pd = new PdApplyDetail();
+						pd.preInsert();
+						pd.setApplyNo(pdApplyOrder.getApplyNo());
+						pd.setPackageId(pad.getPackageId());
+						pd.setProdId(ppmp.getProductId());
+						pd.setProdNo(ppmp.getPdProduct().getNumber());
+						packProdNum = packProdNum + Integer.valueOf(pad.getPackageCount()) * ppmp.getProductCount();
+						pd.setPackageCount(pad.getPackageCount());
+						pd.setApplyCount(pad.getPackageCount() * ppmp.getProductCount());
+						pd.setStockNum(Integer.valueOf(ppmp.getStockNum()));
+						tempArray.add(pd);
+					}
+				}*/
+//--------------------------
 				//外键设置
 				entity.setApplyNo(pdApplyOrder.getApplyNo());
 				pdApplyDetailMapper.insert(entity);
@@ -72,5 +98,15 @@ public class PdApplyOrderServiceImpl extends ServiceImpl<PdApplyOrderMapper, PdA
 				pdApplyDetailMapper.insert(entity);
 			}
 		}
+	}
+
+	@Override
+	public Page<PdApplyOrderPage> chooseApplyOrderList(Page<PdApplyOrderPage> pageList, PdApplyOrderPage applyOrderPage) {
+		List queryDate = applyOrderPage.getQueryDate();
+		if(CollectionUtils.isNotEmpty(queryDate)){
+			applyOrderPage.setQueryDateStart((String) queryDate.get(0));
+			applyOrderPage.setQueryDateStart((String) queryDate.get(1));
+		}
+		return pageList.setRecords(pdApplyOrderMapper.chooseApplyOrderList(applyOrderPage));
 	}
 }

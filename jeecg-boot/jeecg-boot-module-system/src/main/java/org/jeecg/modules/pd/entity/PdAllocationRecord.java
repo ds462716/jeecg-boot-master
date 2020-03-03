@@ -1,15 +1,17 @@
 package org.jeecg.modules.pd.entity;
 
-import java.util.*;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import lombok.Data;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.Data;
 import org.jeecgframework.poi.excel.annotation.Excel;
 import org.jeecgframework.poi.excel.annotation.ExcelCollection;
 import org.springframework.format.annotation.DateTimeFormat;
+
+import java.util.Date;
+import java.util.List;
 
 /**
  * @Description: 调拨记录表
@@ -82,6 +84,9 @@ public class PdAllocationRecord extends BaseEntity {
     /**操作人名称 */
     @TableField(exist = false)
     private String realName;
+    /**审核人名称 */
+    @TableField(exist = false)
+    private String auditByName;
     /**入库科室名称 */
     @TableField(exist = false)
     private String inDeptName;
@@ -91,4 +96,19 @@ public class PdAllocationRecord extends BaseEntity {
     /** 提交状态集合 **/
     @TableField(exist = false)
     private List<String> submitStatusList;
+    /** 查询日期范围 **/
+    @TableField(exist = false)
+    private List<Object> queryDate;
+    /** 查询日期起始 **/
+    @TableField(exist = false)
+    private String queryDateStart;
+    /** 查询日期结束 **/
+    @TableField(exist = false)
+    private String queryDateEnd;
+    /** 产品名称 **/
+    @TableField(exist = false)
+    private String productName;
+    /** 产品编号 **/
+    @TableField(exist = false)
+    private String number;
 }
