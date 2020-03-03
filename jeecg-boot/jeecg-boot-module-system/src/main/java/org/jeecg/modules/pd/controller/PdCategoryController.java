@@ -2,6 +2,8 @@ package org.jeecg.modules.pd.controller;
 
 import java.util.*;
 
+import org.apache.shiro.SecurityUtils;
+import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.pd.entity.PdCategoryTree;
 import org.jeecg.modules.system.model.TreeModel;
@@ -54,6 +56,9 @@ public class PdCategoryController extends JeecgController<PdCategory, IPdCategor
 		try {
 			LambdaQueryWrapper<PdCategory> query = new LambdaQueryWrapper<PdCategory>();
 			//query.eq(PdCategory::getDelFlag, CommonConstant.DEL_FLAG_0);
+			LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+			query.eq(PdCategory::getDepartParentId, sysUser.getDepartParentId());
+			query.eq(PdCategory::getDepartId, sysUser.getCurrentDepartId());
 			List<PdCategory> list = pdCategoryService.list(query);
 			List<PdCategoryTree> treeList = new ArrayList<>();
 			getTreeList(treeList, list, null);
