@@ -71,6 +71,18 @@ public class PdEncodingRule extends BaseEntity  {
 	@Excel(name = "备注", width = 15)
     private String remarks;
 
+	/**
+	 * 所属部门
+	 */
+	@TableField(strategy = FieldStrategy.NOT_EMPTY)
+	private String departId;
+
+	/**
+	 * 所属顶级部门（医院id）
+	 */
+	@TableField(strategy = FieldStrategy.NOT_EMPTY)
+	private String departParentId;
+
 	/** 规则详情*/
 	/**
 	 * 不是数据库字段 2020年1月3日14:50:33 zxh

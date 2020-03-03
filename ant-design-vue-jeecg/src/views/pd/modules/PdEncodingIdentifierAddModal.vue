@@ -181,8 +181,10 @@
               let index = this.selectedRowKeys.indexOf(recordId);
               if(index>=0){
                 this.selectedRowKeys.splice(index, 1);
+                this.selectionRows.splice(index, 1);
               }else{
                 this.selectedRowKeys.push(recordId);
+                this.selectionRows.push(record);
               }
              }
             }

@@ -9,10 +9,13 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.constant.CommonConstant;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.system.query.QueryGenerator;
+import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.pd.entity.PdEncodingIdentifier;
 import org.jeecg.modules.pd.entity.PdEncodingRule;
@@ -67,6 +70,9 @@ public class PdEncodingRuleController extends JeecgController<PdEncodingRule, IP
 
 		Result<Page<PdEncodingRule>> result = new Result<Page<PdEncodingRule>>();
 		Page<PdEncodingRule> pageList = new Page<PdEncodingRule>(pageNo,pageSize);
+		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		pdEncodingRule.setDepartId(sysUser.getCurrentDepartId());
+		pdEncodingRule.setDepartParentId(sysUser.getDepartParentId());
 		pageList = pdEncodingRuleService.selectList(pageList,pdEncodingRule);//
 		result.setSuccess(true);
 		result.setResult(pageList);
