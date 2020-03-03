@@ -779,7 +779,7 @@ public class SysPermissionController {
 	 * @return
 	 */
 	@RequestMapping(value = "/saveDepartPermission", method = RequestMethod.POST)
-	@RequiresRoles({ "admin" })
+	//@RequiresRoles({ "admin" }) 取消必须管理员才能授权
 	public Result<String> saveDepartPermission(@RequestBody JSONObject json) {
 		long start = System.currentTimeMillis();
 		Result<String> result = new Result<>();
