@@ -1,8 +1,6 @@
 package org.jeecg.modules.pd.entity;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.*;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import org.jeecgframework.poi.excel.annotation.Excel;
@@ -262,6 +260,17 @@ public class PdSupplier extends BaseEntity {
 	/**是否过期标识，0未过期，1已过期，2近效期*/
 	@Excel(name = "是否过期标识，0未过期，1已过期，2近效期", width = 15)
     private String validityFlag;
+	/**
+	 * 所属部门
+	 */
+	@TableField(strategy = FieldStrategy.NOT_EMPTY)
+	private String departId;
+
+	/**
+	 * 所属顶级部门（医院id）
+	 */
+	@TableField(strategy = FieldStrategy.NOT_EMPTY)
+	private String departParentId;
 	/**备注*/
 	@Excel(name = "备注", width = 15)
 	private String remarks;

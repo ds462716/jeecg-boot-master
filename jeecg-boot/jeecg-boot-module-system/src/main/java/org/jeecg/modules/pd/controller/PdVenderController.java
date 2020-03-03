@@ -9,8 +9,11 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.system.query.QueryGenerator;
+import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.pd.entity.PdVender;
 import org.jeecg.modules.pd.service.IPdVenderService;
@@ -61,6 +64,9 @@ public class PdVenderController extends JeecgController<PdVender, IPdVenderServi
 								   @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
 								   @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
 								   HttpServletRequest req) {
+		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		pdVender.setDepartId(sysUser.getCurrentDepartId());
+		pdVender.setDepartParentId(sysUser.getDepartParentId());
 		QueryWrapper<PdVender> queryWrapper = QueryGenerator.initQueryWrapper(pdVender, req.getParameterMap());
 		Page<PdVender> page = new Page<PdVender>(pageNo, pageSize);
 		IPage<PdVender> pageList = pdVenderService.page(page, queryWrapper);

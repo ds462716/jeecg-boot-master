@@ -4,9 +4,11 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.system.base.controller.JeecgController;
 import org.jeecg.common.system.query.QueryGenerator;
+import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.modules.pd.entity.PdSupplier;
 import org.jeecg.modules.pd.service.IPdSupplierService;
 import org.jeecg.modules.pd.util.FileUploadUtil;
@@ -47,6 +49,9 @@ public class PdSupplierController extends JeecgController<PdSupplier, IPdSupplie
                                   @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
                                   @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
                                   HttpServletRequest req) {
+       LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+       pdSupplier.setDepartId(sysUser.getCurrentDepartId());
+       pdSupplier.setDepartParentId(sysUser.getDepartParentId());
        QueryWrapper<PdSupplier> queryWrapper = QueryGenerator.initQueryWrapper(pdSupplier, req.getParameterMap());
        Page<PdSupplier> page = new Page<PdSupplier>(pageNo, pageSize);
        IPage<PdSupplier> pageList = pdSupplierService.page(page, queryWrapper);

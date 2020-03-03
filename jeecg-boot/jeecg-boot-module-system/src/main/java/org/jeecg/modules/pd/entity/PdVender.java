@@ -4,9 +4,8 @@ import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.util.Date;
 import java.math.BigDecimal;
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
+
+import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -265,6 +264,17 @@ public class PdVender  extends BaseEntity {
 	/**是否过期标识，0未过期，1已过期，2近效期*/
 	@Excel(name = "是否过期标识，0未过期，1已过期，2近效期", width = 15)
     private java.lang.String validityFlag;
+	/**
+	 * 所属部门
+	 */
+	@TableField(strategy = FieldStrategy.NOT_EMPTY)
+	private String departId;
+
+	/**
+	 * 所属顶级部门（医院id）
+	 */
+	@TableField(strategy = FieldStrategy.NOT_EMPTY)
+	private String departParentId;
 	/**备注*/
 	@Excel(name = "备注", width = 15)
 	private String remarks;
