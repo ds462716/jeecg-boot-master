@@ -1,71 +1,66 @@
 <template>
-  <a-drawer :bordered="false"
-            :visible="visible"
-            :closable="true"
-            :width="drawerWidth"
-            @close="close"
-            :title="title"
-            :wrapStyle="{height: 'calc(100% - 108px)',overflow: 'auto',paddingBottom: '108px'}"
-  >
+  <a-drawer
+    :title="title"
+    :maskClosable="true"
+    width=650
+    placement="right"
+    :closable="true"
+    @close="close"
+    :visible="visible"
+    style="height: calc(100% - 55px);overflow: auto;padding-bottom: 53px;">
+    <a-spin :spinning="loading">
+      <a-form>
+        <a-form-item label='所拥有的部门权限'>
 
-      <a-spin :spinning="loading">
-        <a-form>
-          <a-form-item label='所拥有的权限'>
-            <a-tree
-              checkable
-              @check="onCheck"
-              :checkedKeys="checkedKeys"
-              :treeData="treeData"
-              @expand="onExpand"
-              @select="onTreeNodeSelect"
-              :selectedKeys="selectedKeys"
-              :expandedKeys="expandedKeysss"
-              :checkStrictly="checkStrictly"
-              >
-              <span slot="hasDatarule" slot-scope="{slotTitle,ruleFlag}">
-                {{ slotTitle }}
-                <a-icon v-if="ruleFlag" type="align-left" style="margin-left:5px;color: red;"></a-icon>
-              </span>
-            </a-tree>
-          </a-form-item>
-        </a-form>
-      </a-spin>
-      <div class="drawer-bootom-button">
-        <a-dropdown style="float: left" :trigger="['click']" placement="topCenter">
-          <a-menu slot="overlay">
-            <!-- 简化Tree逻辑，使用默认checkStrictly为false的行为，即默认父子关联
-            <a-menu-item key="1" @click="switchCheckStrictly(1)">父子关联</a-menu-item>
-            <a-menu-item key="2" @click="switchCheckStrictly(2)">取消关联</a-menu-item>
-            -->
-            <a-menu-item key="3" @click="checkALL">全部勾选</a-menu-item>
-            <a-menu-item key="4" @click="cancelCheckALL">取消全选</a-menu-item>
-            <a-menu-item key="5" @click="expandAll">展开所有</a-menu-item>
-            <a-menu-item key="6" @click="closeAll">合并所有</a-menu-item>
-          </a-menu>
-          <a-button>
-            树操作 <a-icon type="up" />
-          </a-button>
-        </a-dropdown>
-        <div v-show="!disableSubmit">
-          <a-button type="primary" :loading="loading" @click="handleSubmit">确定</a-button>
-          <a-button  @click="handleCancel">取消</a-button>
-        </div>
-      </div>
-
+          <a-tree
+            v-if="treeData.length>0"
+            checkable
+            @check="onCheck"
+            :checkedKeys="checkedKeys"
+            :treeData="treeData"
+            @expand="onExpand"
+            :selectedKeys="selectedKeys"
+            :expandedKeys="expandedKeysss"
+            :checkStrictly="checkStrictly">
+            <span slot="hasDatarule" slot-scope="{slotTitle,ruleFlag}">
+              {{ slotTitle }}<a-icon v-if="ruleFlag" type="align-left" style="margin-left:5px;color: red;"></a-icon>
+            </span>
+          </a-tree>
+          <div v-else><h3>无可配置部门权限!</h3></div>
+        </a-form-item>
+      </a-form>
+    </a-spin>
+    <div class="drawer-bootom-button">
+      <a-dropdown style="float: left" :trigger="['click']" placement="topCenter">
+        <a-menu slot="overlay">
+          <a-menu-item key="3" @click="checkALL">全部勾选</a-menu-item>
+          <a-menu-item key="4" @click="cancelCheckALL">取消全选</a-menu-item>
+          <a-menu-item key="5" @click="expandAll">展开所有</a-menu-item>
+          <a-menu-item key="6" @click="closeAll">合并所有</a-menu-item>
+        </a-menu>
+        <a-button>
+          树操作 <a-icon type="up" />
+        </a-button>
+      </a-dropdown>
+      <a-popconfirm title="确定放弃编辑？" @confirm="close" okText="确定" cancelText="取消">
+        <a-button style="margin-right: .8rem">取消</a-button>
+      </a-popconfirm>
+      <a-button @click="handleSubmit(false)" type="primary" :loading="loading" ghost style="margin-right: 0.8rem">仅保存</a-button>
+      <a-button @click="handleSubmit(true)" type="primary" :loading="loading">保存并关闭</a-button>
+    </div>
   </a-drawer>
-</template>
 
+</template>
 <script>
-  import {queryPermissionTreeList,queryDepartPermission,saveDepartPermission} from '@/api/api'
+  import {queryTreeListForDeptRole,queryDeptRolePermission,saveNDeptRolePermission} from '@/api/api'
 
   export default {
-    name: 'DepartAuthModal',
+    name: "DeptRoleAuthModal",
     data(){
       return {
         departId:"",
-        drawerWidth:800,
+        roleId:"",
         treeData: [],
-        disableSubmit:false,
         defaultCheckedKeys:[],
         checkedKeys:[],
         halfCheckedKeys:[],
@@ -73,28 +68,22 @@
         allTreeKeys:[],
         autoExpandParent: true,
         checkStrictly: false,
-        title:"",
+        title:"部门角色权限配置",
         visible: false,
         loading: false,
         selectedKeys:[]
       }
     },
     methods: {
-      onTreeNodeSelect(id){
-        if(id && id.length>0){
-          this.selectedKeys = id
-        }
-      },
       onCheck (checkedKeys, { halfCheckedKeys }) {
         // 保存选中的和半选中的，后面保存的时候合并提交
         this.checkedKeys = checkedKeys
         this.halfCheckedKeys = halfCheckedKeys
       },
-      show(departId){
-        this.resetScreenSize(); // 调用此方法,根据屏幕宽度自适应调整抽屉的宽度
+      show(roleId,departId){
+        this.departId = departId
+        this.roleId=roleId
         this.visible = true;
-        this.departId=departId
-        this.loadData();
       },
       close () {
         this.reset()
@@ -126,28 +115,33 @@
       handleCancel () {
         this.close()
       },
-      handleSubmit() {
+      handleSubmit(exit) {
         let that = this;
-        if(!that.departId){
-          this.$message.warning('请点击选择一个部门!')
-        }
         let checkedKeys = [...that.checkedKeys, ...that.halfCheckedKeys]
         const permissionIds = checkedKeys.join(",")
         let params =  {
-          departId:that.departId,
+          roleId:that.roleId,
           permissionIds,
           lastpermissionIds:that.defaultCheckedKeys.join(","),
+          departId:this.departId
         };
         that.loading = true;
-        saveDepartPermission(params).then((res)=>{
+        console.log("请求参数：",params);
+        saveNDeptRolePermission(params).then((res)=>{
           if(res.success){
             that.$message.success(res.message);
             that.loading = false;
-            that.loadData();
+            if (exit) {
+              that.close()
+            }
           }else {
             that.$message.error(res.message);
             that.loading = false;
+            if (exit) {
+              that.close()
+            }
           }
+          this.loadData();
         })
       },
       convertTreeListToKeyLeafPairs(treeList, keyLeafPair = []) {
@@ -159,16 +153,13 @@
         }
         return keyLeafPair;
       },
-      emptyCurrForm() {
-        this.form.resetFields()
-      },
       loadData(){
         this.loading = true;
-        queryPermissionTreeList().then((res) => {
+        queryTreeListForDeptRole({departId:this.departId}).then((res) => {
           this.treeData = res.result.treeList
           this.allTreeKeys = res.result.ids
           const keyLeafPairs = this.convertTreeListToKeyLeafPairs(this.treeData)
-          queryDepartPermission({departId:this.departId}).then((res)=>{
+          queryDeptRolePermission({roleId:this.roleId}).then((res)=>{
             // 过滤出 leaf node 即可，即选中的
             // Tree组件中checkStrictly默认为false的时候，选中子节点，父节点会自动设置选中或半选中
             // 保存 checkedKeys 以及 halfCheckedKeys 以便于未做任何操作时提交表单数据
@@ -183,35 +174,26 @@
             this.checkedKeys = [...checkedKeys];
             this.halfCheckedKeys = [...halfCheckedKeys]
             this.defaultCheckedKeys = [...halfCheckedKeys, ...checkedKeys];
-            //默认不展开所有
-            //this.expandedKeysss = this.allTreeKeys;
+            this.expandedKeysss = this.allTreeKeys;
             this.loading = false;
           })
         })
-      },
-      // 根据屏幕变化,设置抽屉尺寸
-      resetScreenSize(){
-        let screenWidth = document.body.clientWidth;
-        if(screenWidth < 500){
-          this.drawerWidth = screenWidth;
-        }else{
-          this.drawerWidth = 700;
-        }
-      },
+      }
     },
+    watch: {
+      visible () {
+        if (this.visible ) {
+          this.loadData();
+        }
+      }
+    }
   }
-</script>
 
-<style scoped>
-  .ant-btn {
-    margin-left: 30px;
-    margin-bottom: 30px;
-    float: right;
-  }
+</script>
+<style lang="scss" scoped>
   .drawer-bootom-button {
     position: absolute;
-    /*top:95%;*/
-    bottom: -10px;
+    bottom: 0;
     width: 100%;
     border-top: 1px solid #e8e8e8;
     padding: 10px 16px;
@@ -219,6 +201,6 @@
     left: 0;
     background: #fff;
     border-radius: 0 0 2px 2px;
-    z-index:199;
   }
+
 </style>

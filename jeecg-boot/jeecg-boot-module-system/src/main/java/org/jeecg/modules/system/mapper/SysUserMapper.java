@@ -11,6 +11,7 @@ import org.jeecg.modules.system.model.SysUserSysDepartModel;
 import org.jeecg.modules.system.vo.SysUserDepVo;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -62,7 +63,7 @@ public interface SysUserMapper extends BaseMapper<SysUser> {
 	/**
 	 * 根据用户名设置部门ID
 	 * @param username
-	 * @param departId
+	 * @param orgCode
 	 */
 	void updateUserDepart(@Param("username") String username, @Param("orgCode") String orgCode);
 	
@@ -130,4 +131,7 @@ public interface SysUserMapper extends BaseMapper<SysUser> {
 	 */
 	int deleteLogicDeleted(@Param("userIds") String userIds);
 
+    IPage<SysUser> departUserList(Page<SysUser> page, @Param("parMap")Map<String, Object> parMap);
+
+	IPage<SysUser> findUserList(Page<SysUser> page, @Param("parMap")Map<String, Object> parMap);
 }

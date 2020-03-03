@@ -144,4 +144,47 @@
 		DELETE FROM sys_user WHERE del_flag = "1" AND id IN (${userIds})
 	</delete>
 
+	<select id="departUserList" resultType="org.jeecg.modules.system.entity.SysUser">
+		select * from sys_user a
+		LEFT JOIN sys_user_depart b on a.id = b.user_id
+		<where>
+			a.del_flag = #{parMap.DEL_FLAG_NORMAL}
+		</where>
+		<if test="parMap.name != null and parMap.name != ''">
+			and a.realname like concat('%',#{parMap.name},'%')
+		</if>
+		<if test="parMap.username != null and parMap.username != ''">
+			and a.username like concat('%',#{parMap.username},'%')
+		</if>
+		<if test="parMap.deptId != null and parMap.deptId != ''">
+			and b.dep_id = #{parMap.deptId}
+		</if>
+		<if test="parMap.admin != null and parMap.admin != ''">
+			and a.username != #{parMap.admin}
+		</if>
+		<if test="parMap.deptParentId != null and parMap.deptParentId != ''">
+			and a.depart_parent_id = #{parMap.deptParentId}
+		</if>
+	</select>
+
+
+	<select id="findUserList" resultType="org.jeecg.modules.system.entity.SysUser">
+		select * from sys_user a
+		<where>
+			a.del_flag = #{parMap.DEL_FLAG_NORMAL}
+		</where>
+		<if test="parMap.name != null and parMap.name != ''">
+			and a.realname like concat('%',#{parMap.name},'%')
+		</if>
+		<if test="parMap.username != null and parMap.username != ''">
+			and a.username like concat('%',#{parMap.username},'%')
+		</if>
+		<if test="parMap.admin != null and parMap.admin != ''">
+			and a.username != #{parMap.admin}
+		</if>
+		<if test="parMap.deptParentId != null and parMap.deptParentId != ''">
+			and a.depart_parent_id = #{parMap.deptParentId}
+		</if>
+	</select>
+
 </mapper>

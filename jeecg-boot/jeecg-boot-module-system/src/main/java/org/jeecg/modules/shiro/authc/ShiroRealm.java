@@ -134,7 +134,7 @@ public class ShiroRealm extends AuthorizingRealm {
 			throw new AuthenticationException("Token失效，请重新登录!");
 		}
 
-		if(StringUtils.isEmpty(loginUser.getCurrentDepartId()) ||  StringUtils.isEmpty(loginUser.getDepartParentId())){
+		if(oConvertUtils.isEmpty(loginUser.getCurrentDepartId()) ||  oConvertUtils.isEmpty(loginUser.getDepartParentId())){
 			//查询用户的当前部门 2020年2月27日10:25:26   zxh
 			SysDepart sysDepart =  sysDepartService.queryDepartByOrgCode(loginUser.getOrgCode());
 			loginUser.setCurrentDepartId(sysDepart.getId());
