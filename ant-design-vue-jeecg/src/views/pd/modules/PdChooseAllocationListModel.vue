@@ -162,59 +162,16 @@
           }
         ],
         innerColumns:[
-          {
-            title:'定数包编号',
-            align:"center",
-            width: 100,
-            dataIndex: 'packageCode'
-          }, {
-            title:'定数包名称',
-            align:"center",
-            width: 100,
-            dataIndex: 'packageName'
-          },
-          {
-            title:'定数包产品数量',
-            align:"center",
-            width: 100,
-            dataIndex: 'packageNum'
-          },
-          {
-            title:'产品编号',
-            align:"center",
-            width: 100,
-            dataIndex: 'number'
-          },
-          {
-            title:'产品名称',
-            align:"center",
-            dataIndex: 'productName'
-          },
-          {
-            title:'规格',
-            align:"center",
-            dataIndex: 'spec'
-          },
-          {
-            title:'型号',
-            align:"center",
-            dataIndex: 'version'
-          },
-          {
-            title:'单位',
-            align:"center",
-            dataIndex: 'unitName'
-          },
-          {
-            title:'调拨数量',
-            align:"center",
-            dataIndex: 'allocationNum'
-          },
-          {
-            title:'库存数量',
-            align:"center",
-            dataIndex: 'stockNum'
-          },
+          {title:'定数包编号', align:"center", width: 100, dataIndex: 'packageCode'},
+          {title:'定数包名称', align:"center", width: 100, dataIndex: 'packageName'},
+          {title:'定数包产品数量', align:"center", width: 100, dataIndex: 'packageNum'},
+          {title:'产品编号', align:"center", width: 100, dataIndex: 'number'},
+          {title:'产品名称', align:"center", dataIndex: 'productName'},
+          {title:'规格', align:"center", dataIndex: 'spec'},
+          {title:'型号', align:"center", dataIndex: 'version'},
+          {title:'单位', align:"center", dataIndex: 'unitName'},
+          {title:'调拨数量', align:"center", dataIndex: 'allocationNum'},
+          {title:'库存数量', align:"center", dataIndex: 'stockNum'},
         ],
         url: {
           list: "/pd/pdAllocationRecord/chooseAllocationList",
@@ -251,9 +208,14 @@
       },
       handleOk () {
         if(this.selectionRows.length > 0){
-          let rows = this.selectionRows;
-          this.$emit('ok', rows);
-          this.close();
+          let params = { allocationNo: this.selectionRows[0].allocationNo }
+          getAction(this.url.chooseDetailList, params).then((res) => {
+            if (res.success) {
+              let data = res.result;
+              this.$emit('ok', data);
+              this.close();
+            }
+          });
         }else{
           this.$message.error("请选择一行数据!")
         }

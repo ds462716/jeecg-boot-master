@@ -246,9 +246,14 @@
       },
       handleOk () {
         if(this.selectionRows.length > 0){
-          let rows = this.selectionRows;
-          this.$emit('ok', rows);
-          this.close();
+          let params = { applyNo: this.selectionRows[0].applyNo }
+          getAction(this.url.chooseDetailList, params).then((res) => {
+            if (res.success) {
+              let data = res.result;
+              this.$emit('ok', data);
+              this.close();
+            }
+          });
         }else{
           this.$message.error("请选择一行数据!")
         }
