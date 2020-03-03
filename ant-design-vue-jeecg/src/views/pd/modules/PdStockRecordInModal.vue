@@ -29,7 +29,7 @@
             <a-row>
               <a-col :span="6">
                 <a-form-item label="入库单号" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                  <a-input disabled v-decorator="[ 'recordNo', validatorRules.recordNo]" placeholder="请输入出入库单号"></a-input>
+                  <a-input disabled v-decorator="[ 'recordNo', validatorRules.recordNo]" placeholder="请输入入库单号"></a-input>
                 </a-form-item>
               </a-col>
               <a-col :span="6">

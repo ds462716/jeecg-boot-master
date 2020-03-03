@@ -27,7 +27,7 @@
     
     <!-- 操作按钮区域 -->
     <div class="table-operator">
-      <a-button type="primary" icon="download" @click="handleExportXls('出入库记录表')">导出</a-button>
+      <a-button type="primary" icon="download" @click="handleExportXls('入库记录表')">导出</a-button>
     </div>
 
     <!-- table区域-begin -->
@@ -109,7 +109,7 @@
     },
     data () {
       return {
-        description: '出入库记录表管理页面',
+        description: '入库记录表管理页面',
         // 表头
         columns: [
           {

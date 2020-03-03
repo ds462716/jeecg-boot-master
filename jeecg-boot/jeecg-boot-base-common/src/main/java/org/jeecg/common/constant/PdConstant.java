@@ -51,6 +51,11 @@ public interface PdConstant {
 	public static final String IN_TYPE_2 = "2";//退货入库
 	public static final String IN_TYPE_3 = "3";//调拨入库
 
+	/**入库类型 add by jiangxz 20200302*/
+	public static final String OUT_TYPE_1 = "1";//正常出库
+	public static final String OUT_TYPE_2 = "2";//科室出库
+	public static final String OUT_TYPE_3 = "3";//调拨出库
+
 	/***编码规则*/
 	//各种类型单号首字母
 	public final static String ORDER_NO_FIRST_LETTER_RK = "RK";//入库单
