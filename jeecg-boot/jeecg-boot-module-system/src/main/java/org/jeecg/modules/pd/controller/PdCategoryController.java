@@ -81,6 +81,9 @@ public class PdCategoryController extends JeecgController<PdCategory, IPdCategor
 		 long start = System.currentTimeMillis();
 		 Result<List<PdCategory>> result = new Result<>();
 		 try {
+			 LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+			 pdCategory.setDepartId(sysUser.getCurrentDepartId());
+			 pdCategory.setDepartParentId(sysUser.getDepartParentId());
 			 List<PdCategory> list = pdCategoryService.selectCategoryOneList(pdCategory);
 			 result.setResult(list);
 			 result.setSuccess(true);

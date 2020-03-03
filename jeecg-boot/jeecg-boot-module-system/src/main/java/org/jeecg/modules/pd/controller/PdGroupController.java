@@ -82,6 +82,9 @@ public class PdGroupController extends JeecgController<PdGroup, IPdGroupService>
 		 long start = System.currentTimeMillis();
 		 Result<List<PdGroup>> result = new Result<>();
 		 try {
+			 LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+			 pdGroup.setDepartId(sysUser.getCurrentDepartId());
+			 pdGroup.setDepartParentId(sysUser.getDepartParentId());
 			 List<PdGroup> list = pdGroupService.selectList(pdGroup);
 			 result.setResult(list);
 			 result.setSuccess(true);

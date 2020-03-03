@@ -68,6 +68,9 @@ public class PdSupplierController extends JeecgController<PdSupplier, IPdSupplie
         long start = System.currentTimeMillis();
         Result<List<PdSupplier>> result = new Result<>();
         try {
+            LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+            pdSupplier.setDepartId(sysUser.getCurrentDepartId());
+            pdSupplier.setDepartParentId(sysUser.getDepartParentId());
             List<PdSupplier> list = pdSupplierService.selectList(pdSupplier);
             result.setResult(list);
             result.setSuccess(true);

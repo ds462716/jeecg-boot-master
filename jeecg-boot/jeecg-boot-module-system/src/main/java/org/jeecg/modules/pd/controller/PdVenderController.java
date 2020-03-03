@@ -84,6 +84,9 @@ public class PdVenderController extends JeecgController<PdVender, IPdVenderServi
 		 long start = System.currentTimeMillis();
 		 Result<List<PdVender>> result = new Result<>();
 		 try {
+			 LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+			 pdVender.setDepartId(sysUser.getCurrentDepartId());
+			 pdVender.setDepartParentId(sysUser.getDepartParentId());
 			 List<PdVender> list = pdVenderService.selectList(pdVender);
 			 result.setResult(list);
 			 result.setSuccess(true);
