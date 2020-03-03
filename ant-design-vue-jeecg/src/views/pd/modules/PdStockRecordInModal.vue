@@ -798,7 +798,7 @@
         this.queryParam.productBarCode = "";
         this.$refs.productNumberInput.focus();
       },
-      // 表格数据变更 TODO
+      // 表格数据变更
       valueChange(event) {
         if(event){
           const { type, row, column, value, target } = event;
@@ -907,10 +907,8 @@
                   this.pdStockRecordDetailTable.dataSource = values;
                   //条码新增一行
                   this.addrowsByScanCode(result);
-                  // this.$nextTick(() => {
-                    // 计算总数量和总价格 TODO
-                    this.getTotalNumAndPrice(values);
-                  // })
+                    // 计算总数量和总价格
+                  this.getTotalNumAndPrice(values);
                 }
 
                 if(result.code == "203"){ // 近效期提醒
