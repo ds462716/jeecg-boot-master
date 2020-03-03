@@ -1325,6 +1325,115 @@
         })
         return true
       },
+      /** 获取表格表单里的值（同步版） */
+      getValuesSync(options = {}) {
+        let { validate, rowIds } = options
+        if (typeof validate !== 'boolean') validate = true
+        if (!(rowIds instanceof Array)) rowIds = null
+        // console.log('options:', { validate, rowIds })
+
+        let error = 0
+        let inputValues = cloneObject(this.inputValues)
+        let tooltips = Object.assign({}, this.tooltips)
+        let notPassedIds = cloneObject(this.notPassedIds)
+        // 用于存储合并后的值
+        let values = []
+        // 遍历inputValues来获取每行的值
+        for (let value of inputValues) {
+          let rowIdsFlag = false
+          // 如果带有rowIds，那么就只存这几行的数据
+          if (rowIds == null) {
+            rowIdsFlag = true
+          } else {
+            for (let rowId of rowIds) {
+              if (rowId === value.id || `${this.caseId}${rowId}` === value.id) {
+                rowIdsFlag = true
+                break
+              }
+            }
+          }
+
+          if (!rowIdsFlag) continue
+
+          this.columns.forEach(column => {
+            let inputId = column.key + value.id
+            if (column.type === FormTypes.checkbox) {
+              let checked = this.checkboxValues[inputId]
+              if (column.customValue instanceof Array) {
+                value[column.key] = checked ? column.customValue[0] : column.customValue[1]
+              } else {
+                value[column.key] = checked
+              }
+
+            } else if (column.type === FormTypes.select) {
+              let selected = this.selectValues[inputId]
+              if (selected instanceof Array) {
+                value[column.key] = cloneObject(selected)
+              } else {
+                value[column.key] = selected
+              }
+
+            } else if (column.type === FormTypes.date || column.type === FormTypes.datetime) {
+              value[column.key] = this.jdateValues[inputId]
+
+            } else if (column.type === FormTypes.upload) {
+              value[column.key] = cloneObject(this.uploadValues[inputId] || null)
+
+            } else if (column.type === FormTypes.image || column.type === FormTypes.file) {
+              let currUploadObj = cloneObject(this.uploadValues[inputId] || null)
+              if (currUploadObj) {
+                value[column.key] = currUploadObj['path'] || null
+              }
+
+            } else if (column.type === FormTypes.popup) {
+              if (!value[column.key]) {
+                value[column.key] = this.popupValues[inputId] || null
+              }
+            } else if (column.type === FormTypes.radio) {
+              value[column.key] = this.radioValues[inputId]
+            } else if (column.type === FormTypes.sel_search) {
+              value[column.key] = this.searchSelectValues[inputId]
+            } else if (column.type === FormTypes.list_multi) {
+              if (!this.multiSelectValues[inputId] || this.multiSelectValues[inputId].length == 0) {
+                value[column.key] = ''
+              } else {
+                value[column.key] = this.multiSelectValues[inputId].join(',')
+              }
+            } else if (column.type === FormTypes.slot) {
+              value[column.key] = this.slotValues[inputId]
+            }
+
+
+            // 检查表单验证
+            if (validate === true) {
+              let results = this.validateOneInput(value[column.key], value, column, notPassedIds, false, 'getValues')
+              tooltips[inputId] = results[0]
+              if (tooltips[inputId].passed === false) {
+                error++
+                // if (error++ === 0) {
+                // let element = document.getElementById(inputId)
+                // while (element.className !== 'tr') {
+                //   element = element.parentElement
+                // }
+                // this.jumpToId(inputId, element)
+                // }
+              }
+              tooltips[inputId].visible = false
+              notPassedIds = results[1]
+            }
+          })
+          // 将caseId去除
+          value.id = this.removeCaseId(value.id)
+          values.push(value)
+
+        }
+
+        if (validate === true) {
+          this.tooltips = tooltips
+          this.notPassedIds = notPassedIds
+        }
+        return { error, values }
+      },
 
       /** 获取表格表单里的值（异步版） */
       getValuesAsync(options = {}, callback) {
@@ -1455,9 +1564,9 @@
       },
 
       /** 获取表格表单里的值（同步版） */
-      getValuesSync(options = {}) {
-        return this.getValuesAsync(options)
-      },
+      // getValuesSync(options = {}) {
+      //   return this.getValuesAsync(options)
+      // },
 
       /** 获取表格表单里的值 */
       getValues(callback, validate = true, rowIds) {

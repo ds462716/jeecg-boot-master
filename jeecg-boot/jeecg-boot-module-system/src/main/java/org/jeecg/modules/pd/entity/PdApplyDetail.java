@@ -46,9 +46,9 @@ public class PdApplyDetail extends BaseEntity {
 	private String productId;
 	/**批号*/
 	private String batchNo;
-	/**所属包*/
+	/**所属定数包ID*/
 	private String packageId;
-	/**申领定数包个数*/
+	/**'申领时定数包产品数量'*/
 	private Double packageNum;
 	/**有效期*/
 	@JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd")
@@ -57,14 +57,18 @@ public class PdApplyDetail extends BaseEntity {
 	/**申领产品个数*/
 	@Excel(name = "申领产品数量", width = 15)
 	private Double applyNum;
-	/**申领时库存*/
-	@Excel(name = "申领时库存", width = 15)
+	/**申领时库存数量*/
+	@Excel(name = "申领时库存数量", width = 15)
 	private Double stockNum;
-	/**产品退回个数*/
-	@Excel(name = "产品退回数量", width = 15)
+	/**实际发货数量*/
+	@Excel(name = "实际发货数量", width = 15)
 	private Double refundNum;
 	/**备注*/
 	private String remarks;
+
+
+
+	/*字段不在PdApplyDetail中**/
 	@TableField(exist = false)
 	@Excel(name = "产品名称", width = 15)
 	private String productName;//产品名称
@@ -80,13 +84,14 @@ public class PdApplyDetail extends BaseEntity {
 	@TableField(exist = false)
 	@Excel(name = "单位名称", width = 15)
 	private String unitName;//单位名称
-
-
 	@TableField(exist = false)
 	private String packageName;//定数包名称
-
 	@TableField(exist = false)
 	private String packageCode;//定数包编号
 
-
 }
+
+
+
+
+
