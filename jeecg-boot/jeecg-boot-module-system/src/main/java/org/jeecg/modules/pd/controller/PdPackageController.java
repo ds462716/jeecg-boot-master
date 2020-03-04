@@ -260,6 +260,8 @@ public class PdPackageController {
 									@RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
 									HttpServletRequest req) {
 		 Page<PdPackage> page = new Page<PdPackage>(pageNo, pageSize);
+		 LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		 pdPackage.setDepartParentId(sysUser.getDepartParentId());
 		 IPage<PdPackage> pageList = pdPackageService.queryList(page, pdPackage);
 		 return Result.ok(pageList);
 	 }

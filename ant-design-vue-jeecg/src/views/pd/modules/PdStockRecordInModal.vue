@@ -826,7 +826,7 @@
       // 扫码查询
       searchQuery(num) {
         let that = this;
-        let productNumber = this.queryParam.productNumber;
+        let productNumber = this.queryParam.productNumber.trim();
         if(!productNumber){
           this.$message.error("请输入产品编号！");
           this.$refs.productNumberInput.focus();
@@ -838,7 +838,7 @@
           this.$refs.productBarCodeInput.focus();
 
         }else if(num == 1){ //条码扫码
-          let productBarCode = this.queryParam.productBarCode;
+          let productBarCode = this.queryParam.productBarCode.trim();
           if(!productBarCode){
             this.$message.error("请输入二级条码！");
             return;
