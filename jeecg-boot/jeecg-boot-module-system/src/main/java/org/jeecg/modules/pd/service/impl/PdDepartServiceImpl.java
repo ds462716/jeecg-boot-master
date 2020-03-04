@@ -35,6 +35,9 @@ public class PdDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart>
     @Autowired
     private ISysDepartRolePermissionService sysDepartRolePermissionService;
 
+    @Autowired
+    private SysDepartMapper sysDepartMapper;
+
     @Cacheable(value = CacheConstant.SYS_DEPARTS_CACHE)
     @Override
     /**
@@ -117,6 +120,11 @@ public class PdDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart>
     @Override
     public IPage<SysUser> findUserList(Page<SysUser> page, Map<String, Object> parMap) {
         return userMapper.findUserList(page,parMap);
+    }
+
+    @Override
+    public List<SysDepart> selectList(SysDepart sysDepart) {
+        return sysDepartMapper.selectList(sysDepart);
     }
 
     /**

@@ -275,4 +275,31 @@ public class PdDepartController extends JeecgController<PdDepartConfig, IPdDepar
         log.info(pageList.toString());
         return result;
     }
+
+    /**
+	  * 查询院内所有科室 ，parentFlag传0包括当前科室，不传 则不包括当前科室不分页列表查询
+	  *
+	  * @return
+	  */
+	 @GetMapping(value = "/getSysDepartList")
+	 public Result<List<SysDepart>> getSysDepartList(SysDepart sysDepart) {
+		 long start = System.currentTimeMillis();
+		 Result<List<SysDepart>> result = new Result<>();
+		 try {
+             LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		     if("0".equals(sysDepart.getParentFlag())){
+                 sysDepart.setDepartParentId(sysUser.getDepartParentId());
+             }else{
+                 sysDepart.setDepartParentId(sysUser.getDepartParentId());
+                 sysDepart.setDepartId(sysUser.getCurrentDepartId());
+             }
+			 List<SysDepart> list = pdDepartService.selectList(sysDepart);
+			 result.setResult(list);
+			 result.setSuccess(true);
+		 }catch(Exception e){
+			 log.error(e.getMessage(), e);
+		 }
+		 log.info("======获取产品数据=====耗时:" + (System.currentTimeMillis() - start) + "毫秒");
+		 return result;
+	 }
 }

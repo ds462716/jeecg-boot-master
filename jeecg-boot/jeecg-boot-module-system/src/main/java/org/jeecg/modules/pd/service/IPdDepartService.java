@@ -25,4 +25,6 @@ public interface IPdDepartService extends IService<SysDepart> {
     void saveDeptRolePermission(String roleId, String permissionIds, String lastPermissionIds, String departId);
 
     IPage<SysUser> findUserList(Page<SysUser> page, Map<String, Object> parMap);
+
+    List<SysDepart> selectList(SysDepart sysDepart);
 }

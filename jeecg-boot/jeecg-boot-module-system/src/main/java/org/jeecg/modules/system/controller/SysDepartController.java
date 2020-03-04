@@ -94,30 +94,6 @@ public class SysDepartController {
 		return result;
 	}
 
-
-
-	/**
-	 * 获取医院下除本部门外所有部门
-	 *
-	 * @return
-	 */
-	@GetMapping(value = "/getSysDepartList")
-	public Result<List<SysDepart>> getSysDepartList(SysDepart sysDepart) {
-		Result<List<SysDepart>> result = new Result<>();
-		try {
-			LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
-			sysDepart.setDepartParentId(sysUser.getDepartParentId());
-			sysDepart.setParentFlag("1");//随便传，有值就会过滤掉本部门
-			sysDepart.setOrgType("2");
-			sysDepart.setOrgCode(sysUser.getOrgCode());
-			List<SysDepart> list = sysDepartService.getSysDepartList(sysDepart);
-			result.setResult(list);
-			result.setSuccess(true);
-		}catch(Exception e){
-			log.error(e.getMessage(), e);
-		}
- 		return result;
-	}
 	/**
 	 * 添加新数据 添加用户新建的部门对象数据,并保存到数据库
 	 * 
