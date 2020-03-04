@@ -242,7 +242,7 @@ public class PdProductStockTotalController {
 		 PdStockRecordDetail pdStockRecordDetail=new PdStockRecordDetail();
 		 pdStockRecordDetail.setProductId(stockTotalPage.getProductId());
 		 pdStockRecordDetail.setAuditStatus(PdConstant.AUDIT_STATE_2);
-		 pdStockRecordDetail.setDeptId(stockTotalPage.getDeptId());
+		 pdStockRecordDetail.setDeptId(stockTotalPage.getDepartId());
 		 page = pdStockRecordDetailService.selectList(page,pdStockRecordDetail);
 		 Double productTotNum = 0.00;//入库总数量
 		 Double productOutTotNum = 0.00;//出库总数量

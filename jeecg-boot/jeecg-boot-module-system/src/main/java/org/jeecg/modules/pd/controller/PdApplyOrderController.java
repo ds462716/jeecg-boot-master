@@ -71,7 +71,7 @@ public class PdApplyOrderController {
 								   HttpServletRequest req) {
 		Page<PdApplyOrder> page = new Page<PdApplyOrder>(pageNo, pageSize);
 		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
-		pdApplyOrderPage.setDeptId(sysUser.getCurrentDepartId());
+		pdApplyOrderPage.setDepartId(sysUser.getCurrentDepartId());
 		IPage<PdApplyOrder> pageList = pdApplyOrderService.selectList(page, pdApplyOrderPage);
 		return Result.ok(pageList);
 	}
@@ -115,7 +115,7 @@ public class PdApplyOrderController {
 		 SysDepart sysDepart=sysDepartService.getDepartByOrgCode(sysUser.getOrgCode());
 		 pdApplyOrder.setApplyBy(sysUser.getId());
 		 pdApplyOrder.setRealName(sysUser.getRealname());
-		 pdApplyOrder.setDeptId(sysDepart.getId());
+		 pdApplyOrder.setDepartId(sysDepart.getId());
 		 pdApplyOrder.setDeptName(sysDepart.getDepartName());
 		 pdApplyOrder.setSubmitStatus(PdConstant.SUBMIT_STATE_1);
 		 pdApplyOrder.setAuditStatus(PdConstant.AUDIT_STATE_1);

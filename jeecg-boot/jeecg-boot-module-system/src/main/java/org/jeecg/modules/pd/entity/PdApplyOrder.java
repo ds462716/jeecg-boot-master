@@ -1,10 +1,6 @@
 package org.jeecg.modules.pd.entity;
 
-
-
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.*;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import org.jeecgframework.poi.excel.annotation.Excel;
@@ -58,9 +54,6 @@ public class PdApplyOrder extends BaseEntity {
 	@JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd")
     @DateTimeFormat(pattern="yyyy-MM-dd")
     private Date applyDate;
-	/**申领科室ID*/
-    @Excel(name = "申领科室ID", width = 15)
-    private String deptId;
 	/**申领总数*/
     @Excel(name = "申领总数量", width = 15)
     private Double totalNum;
@@ -90,4 +83,11 @@ public class PdApplyOrder extends BaseEntity {
 	/**是否完结，1是，0否*/
     @Excel(name = "是否完结", width = 15)
     private String isEnd;
+
+    /**申领科室ID*/
+    @TableField(strategy = FieldStrategy.NOT_EMPTY)
+    private String departId;
+    /** 所属父部门*/
+    @TableField(strategy = FieldStrategy.NOT_EMPTY)
+    private String departParentId;
 }

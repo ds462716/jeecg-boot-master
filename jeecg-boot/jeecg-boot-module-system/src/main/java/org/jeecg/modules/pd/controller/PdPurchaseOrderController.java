@@ -76,7 +76,7 @@ public class PdPurchaseOrderController {
 									HttpServletRequest req) {
 		 Page<PdPurchaseOrder> page = new Page<PdPurchaseOrder>(pageNo, pageSize);
 		 LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
-		 pdPurchaseOrderPage.setDeptId(sysUser.getCurrentDepartId());
+		 pdPurchaseOrderPage.setDepartId(sysUser.getCurrentDepartId());
 		 page = pdPurchaseOrderService.selectList(page, pdPurchaseOrderPage);
 		 return Result.ok(page);
 	 }
@@ -120,7 +120,7 @@ public class PdPurchaseOrderController {
 		 pdPurchaseOrder.setTotalPrice(BigDecimal.ZERO);
 		 LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
 		 SysDepart sysDepart = sysDepartService.getDepartByOrgCode(sysUser.getOrgCode());
-		 pdPurchaseOrder.setDeptId(sysDepart.getId());
+		 pdPurchaseOrder.setDepartId(sysDepart.getId());
 		 pdPurchaseOrder.setDeptName(sysDepart.getDepartName());
 		 pdPurchaseOrder.setPurchaseBy(sysUser.getId());
 		 pdPurchaseOrder.setPurchaseName(sysUser.getRealname());

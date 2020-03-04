@@ -1,9 +1,6 @@
 package org.jeecg.modules.pd.entity;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.*;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import org.jeecgframework.poi.excel.annotation.Excel;
@@ -111,4 +108,7 @@ public class PdAllocationRecord extends BaseEntity {
     /** 产品编号 **/
     @TableField(exist = false)
     private String number;
+    /** 所属父部门*/
+    @TableField(strategy = FieldStrategy.NOT_EMPTY)
+    private String departParentId;
 }

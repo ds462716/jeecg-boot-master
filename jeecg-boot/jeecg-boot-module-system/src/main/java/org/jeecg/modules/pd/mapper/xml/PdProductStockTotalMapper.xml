@@ -6,7 +6,7 @@
 		a.id,
 		a.product_id,
 		a.stock_num,
-		a.dept_id,
+		a.depart_id,
 		a.limit_up,
 		a.limit_down,
 		a.exp_date,
@@ -52,7 +52,7 @@
     </sql>
 
     <sql id="sysDepartJoins">
-        LEFT JOIN sys_depart f ON a.dept_id = f.id
+        LEFT JOIN sys_depart f ON a.depart_id = f.id
     </sql>
 
     <!-- 列表查询 -->
@@ -78,8 +78,8 @@
             <if test="deptName != null and deptName != ''">
                 AND  f.depart_name=#{deptName}
             </if>
-            <if test="deptId != null and deptId != ''">
-                AND  a.dept_id=#{deptId}
+            <if test="departId != null and departId != ''">
+                AND  a.depart_id=#{departId}
             </if>
             order by  exp_status  desc,create_time desc
         </where>
@@ -109,8 +109,8 @@
         <if test="id != null and id != ''">
             AND id = #{id}
         </if>
-        <if test="deptId != null and deptId != ''">
-            AND dept_id = #{deptId}
+        <if test="departId != null and departId != ''">
+            AND depart_id = #{departId}
         </if>
         <if test="productId != null and productId != ''">
             AND product_id = #{productId}
@@ -124,8 +124,8 @@
         FROM pd_product_stock_total a
         <where>
             a.del_flag = #{DEL_FLAG_NORMAL}
-            <if test="deptId != null and deptId != ''">
-                AND a.dept_id = #{deptId}
+            <if test="departId != null and departId != ''">
+                AND a.depart_id = #{departId}
             </if>
             <if test="productId != null and productId != ''">
                 AND a.product_id = #{productId}

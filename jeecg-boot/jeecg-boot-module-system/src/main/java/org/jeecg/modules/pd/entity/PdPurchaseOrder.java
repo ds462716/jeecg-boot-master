@@ -1,15 +1,13 @@
 package org.jeecg.modules.pd.entity;
 
-import java.io.Serializable;
-import java.math.BigDecimal;
-import java.util.Date;
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
-import lombok.Data;
+import com.baomidou.mybatisplus.annotation.*;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.Data;
 import org.jeecgframework.poi.excel.annotation.Excel;
 import org.springframework.format.annotation.DateTimeFormat;
+
+import java.math.BigDecimal;
+import java.util.Date;
 
 /**
  * @Description: 申购订单主表
@@ -53,9 +51,6 @@ public class PdPurchaseOrder extends BaseEntity {
     @JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd")
     @DateTimeFormat(pattern="yyyy-MM-dd")
     private Date orderDate;
-	/**申购科室编号*/
-    @Excel(name = "申购科室编号", width = 15)
-    private String deptId;
 	/**审核状态*/
     @Excel(name = "审核状态", width = 15)
     private String auditStatus;
@@ -82,6 +77,14 @@ public class PdPurchaseOrder extends BaseEntity {
 	/**提交状态*/
     @Excel(name = "提交状态", width = 15)
     private String submitStatus;
+
+    /**申购科室编号*/
+    @TableField(strategy = FieldStrategy.NOT_EMPTY)
+    @Excel(name = "申购科室id", width = 15)
+    private String departId;
+    /** 所属父部门*/
+    @TableField(strategy = FieldStrategy.NOT_EMPTY)
+    private String departParentId;
 }
 
 

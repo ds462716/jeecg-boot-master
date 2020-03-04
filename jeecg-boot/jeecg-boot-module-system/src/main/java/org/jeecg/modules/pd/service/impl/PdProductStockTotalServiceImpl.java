@@ -90,14 +90,14 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
 			String huoweiCode = stockRecordDetail.getHuoweiCode(); //货位编号
 			//2、增加入库库存
 			PdProductStockTotal stockTotalqi = new PdProductStockTotal();
-			stockTotalqi.setDeptId(inDeptId);
+			stockTotalqi.setDepartId(inDeptId);
 			stockTotalqi.setProductId(productId);
 			//先查询库存总表下是否存在该产品；
 			List<PdProductStockTotal> i_productStockTotals = pdProductStockTotalMapper.findForUpdate(stockTotalqi);
 			//如果库存总表不存在产品，则新增产品库存总表信息
 			if(CollectionUtils.isEmpty(i_productStockTotals) || i_productStockTotals.size() == 0){
 				PdProductStockTotal productStockTotal = new PdProductStockTotal();
-				productStockTotal.setDeptId(inDeptId);  //库房
+				productStockTotal.setDepartId(inDeptId);  //库房
 				productStockTotal.setProductId(productId);    //产品ID
 				productStockTotal.setStockNum(productNum);    //入库数量
 				if(StringUtils.isNotEmpty(supplierId)){
@@ -111,7 +111,7 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
 			}
 			//增加入库库存明细
 			PdProductStock i_productStockq = new PdProductStock();
-			i_productStockq.setDeptId(inDeptId);
+			i_productStockq.setDepartId(inDeptId);
 			i_productStockq.setProductId(productId);
 			i_productStockq.setProductBarCode(productBarCode);//2019年7月24日16:53:43 放开
 			i_productStockq.setBatchNo(batchNo);
@@ -120,7 +120,7 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
 			//如果库存明细表不存在，则新增
 			if(CollectionUtils.isEmpty(i_productStocks) || i_productStocks.size() == 0){
 				PdProductStock productStock = new PdProductStock();
-				productStock.setDeptId(inDeptId);
+				productStock.setDepartId(inDeptId);
 				productStock.setProductId(productId);
 				productStock.setProductBarCode(productBarCode);
 				productStock.setStockNum(productNum);
@@ -167,7 +167,7 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
 			String batchNo = stockRecordDetail.getBatchNo();          //批次号
 			Double productNum = stockRecordDetail.getProductNum();  //数量
 			PdProductStockTotal stockTotalq = new PdProductStockTotal();
-			stockTotalq.setDeptId(outDeptId);
+			stockTotalq.setDepartId(outDeptId);
 			stockTotalq.setProductId(productId);
 			List<PdProductStockTotalPage> productStockTotals = pdProductStockTotalMapper.selectList(stockTotalq);
 
@@ -181,7 +181,7 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
 			}
 
 			PdProductStock o_productStockq = new PdProductStock();
-			o_productStockq.setDeptId(outDeptId);
+			o_productStockq.setDepartId(outDeptId);
 			o_productStockq.setProductId(productId);
 			o_productStockq.setProductBarCode(productBarCode);
 			o_productStockq.setBatchNo(batchNo);

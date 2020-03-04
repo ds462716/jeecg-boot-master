@@ -74,7 +74,7 @@ public class PdProductStockCheckController {
 		QueryWrapper<PdProductStockCheck> queryWrapper = QueryGenerator.initQueryWrapper(pdProductStockCheck, req.getParameterMap());
 		Page<PdProductStockCheck> page = new Page<PdProductStockCheck>(pageNo, pageSize);
 		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
-		pdProductStockCheck.setDeptId(sysUser.getCurrentDepartId());
+		pdProductStockCheck.setDepartId(sysUser.getCurrentDepartId());
 		IPage<PdProductStockCheck> pageList = pdProductStockCheckService.page(page, queryWrapper);
 		return Result.ok(pageList);
 	}
@@ -94,7 +94,7 @@ public class PdProductStockCheckController {
 		 productStockCheck.setCheckDate(new Date());
 		 LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
 		 SysDepart sysDepart = sysDepartService.getDepartByOrgCode(sysUser.getOrgCode());
-		 productStockCheck.setDeptId(sysDepart.getId());
+		 productStockCheck.setDepartId(sysDepart.getId());
 		 productStockCheck.setDeptName(sysDepart.getDepartName());
 		 productStockCheck.setCheckBy(sysUser.getId());
 		 productStockCheck.setCheckName(sysUser.getRealname());

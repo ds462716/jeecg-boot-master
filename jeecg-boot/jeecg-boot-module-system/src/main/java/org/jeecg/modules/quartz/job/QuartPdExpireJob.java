@@ -49,7 +49,7 @@ public class QuartPdExpireJob implements Job {
         Map<String, Set<String>> m=new HashMap<String, Set<String>>();
         for (PdProductStock pdProductStock : list) {
             PdProductStock pd = new PdProductStock();
-            String deptId = pdProductStock.getDeptId();
+            String deptId = pdProductStock.getDepartId();
             Integer remind = 7;//有效期提醒
             Date validDate = pdProductStock.getExpDate();
             Date date = new Date();
@@ -67,7 +67,7 @@ public class QuartPdExpireJob implements Job {
                 String pdState = pd.getExpStatus();
                 if (StringUtils.isNotEmpty(pdState) && !PdConstant.PD_STATE_0.equals(pdState)) {
                     pd.setId(pdProductStock.getId());
-                    pd.setDeptId(deptId);
+                    pd.setDepartId(deptId);
                     pdProductStockService.updateProductStock(pd);
                     if (m.containsKey(deptId)) {
                         Set<String> pids = (Set<String>) m.get(deptId);
@@ -98,14 +98,14 @@ public class QuartPdExpireJob implements Job {
             Set<String> set = m.get(deptId);
             for (String pid : set) {
                 PdProductStock productStock = new PdProductStock();
-                productStock.setDeptId(deptId);
+                productStock.setDepartId(deptId);
                 productStock.setProductId(pid);
                 List<PdProductStock> l = pdProductStockService.selectList(productStock);
                 PdProductStock pk = l.get(0);
                 PdProductStockTotal stockTotal = new PdProductStockTotal();
                 stockTotal.setExpStatus(pk.getExpStatus());
                 stockTotal.setProductId(pid);
-                stockTotal.setDeptId(deptId);
+                stockTotal.setDepartId(deptId);
                 pdProductStockTotalService.updateProductStockTotal(stockTotal);
                 prodNames.add(pk.getProductName());
                 deptName=pk.getDeptName();

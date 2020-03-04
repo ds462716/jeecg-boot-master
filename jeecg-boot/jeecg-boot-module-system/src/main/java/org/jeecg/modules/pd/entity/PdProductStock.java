@@ -1,14 +1,14 @@
 package org.jeecg.modules.pd.entity;
 
-import java.io.Serializable;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import lombok.Data;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import org.springframework.format.annotation.DateTimeFormat;
+import lombok.Data;
 import org.jeecgframework.poi.excel.annotation.Excel;
+import org.springframework.format.annotation.DateTimeFormat;
+
 import java.util.Date;
 
 /**
@@ -41,7 +41,7 @@ public class PdProductStock extends BaseEntity {
 	@Excel(name = "所属部门", width = 15)
 	private String sysOrgCode;
 	/**科室ID*/
-	private String deptId;
+	private String departId;
 	/**产品id*/
 	@Excel(name = "产品id", width = 15)
 	private String productId;

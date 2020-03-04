@@ -21,22 +21,6 @@
       <!-- 主表单区域 -->
       <a-form :form="form">
         <a-row>
-
-          <a-col :span="12">
-            <a-form-item label="调拨单编号" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input disabled="disabled" v-decorator="[ 'allocationNo', validatorRules.allocationNo]"></a-input>
-            </a-form-item>
-          </a-col>
-          <a-col :span="12">
-            <a-form-item label="调拨日期" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <j-date disabled="disabled"  v-decorator="[ 'allocationDate', validatorRules.allocationDate]" :trigger-change="true" style="width: 100%"/>
-            </a-form-item>
-          </a-col>
-          <a-col :span="12">
-            <a-form-item label="操作人" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input disabled="disabled" v-decorator="[ 'realName', validatorRules.realName]"></a-input>
-            </a-form-item>
-          </a-col>
           <a-col :span="12">
             <a-form-item label="出库科室" :labelCol="labelCol" :wrapperCol="wrapperCol">
               <a-select
@@ -54,6 +38,21 @@
               >
                 <a-select-option v-for="d in outDeptData" :key="d.value">{{d.text}}</a-select-option>
               </a-select>
+            </a-form-item>
+          </a-col>
+          <a-col :span="12">
+            <a-form-item label="调拨单编号" :labelCol="labelCol" :wrapperCol="wrapperCol">
+              <a-input disabled="disabled" v-decorator="[ 'allocationNo', validatorRules.allocationNo]"></a-input>
+            </a-form-item>
+          </a-col>
+          <a-col :span="12">
+            <a-form-item label="调拨日期" :labelCol="labelCol" :wrapperCol="wrapperCol">
+              <j-date disabled="disabled"  v-decorator="[ 'allocationDate', validatorRules.allocationDate]" :trigger-change="true" style="width: 100%"/>
+            </a-form-item>
+          </a-col>
+          <a-col :span="12">
+            <a-form-item label="操作人" :labelCol="labelCol" :wrapperCol="wrapperCol">
+              <a-input disabled="disabled" v-decorator="[ 'realName', validatorRules.realName]"></a-input>
             </a-form-item>
           </a-col>
           <a-col :span="12">
@@ -218,7 +217,7 @@
           add: "/pd/pdAllocationRecord/add",
           edit: "/pd/pdAllocationRecord/edit",
           exportXlsUrl: "/pd/pdAllocationRecord/exportXls",
-          querySysDepartList:"/sys/sysDepart/getSysDepartList",
+          querySysDepartList:"/pd/pdDepart/getSysDepartList",
           pdAllocationDetail: {
             list: '/pd/pdAllocationRecord/queryPdAllocationDetailList'
           },
@@ -260,7 +259,7 @@
           this.$message.warning("请先选择出库科室")
           return
         }
-        this.$refs.PdAllocationDetailAddModal.show({deptId:outDeptId});
+        this.$refs.PdAllocationDetailAddModal.show({departId:outDeptId});
       },
 
       //选择定数包产品
@@ -579,7 +578,7 @@
 
 
   function fetch(value, callback,url) {
-    return getAction(url,{name:value}).then((res)=>{
+    return getAction(url,{departName:value}).then((res)=>{
           const result = res.result;
           const data = [];
           result.forEach(r => {data.push({value: r.id, text: r.departName,})});
