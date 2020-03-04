@@ -36,7 +36,7 @@
 
 
     <!--根据条件获取部门信息-->
-    <select id="selectList" resultType="org.jeecg.modules.system.entity.SysDepart">
+    <select id="selectDepartList" resultType="org.jeecg.modules.system.entity.SysDepart">
         select * from sys_depart a
         <where>
             a.del_flag = '0'

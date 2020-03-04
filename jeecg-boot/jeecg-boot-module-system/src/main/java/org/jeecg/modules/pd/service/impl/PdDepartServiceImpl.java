@@ -124,7 +124,7 @@ public class PdDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart>
 
     @Override
     public List<SysDepart> selectList(SysDepart sysDepart) {
-        return sysDepartMapper.selectList(sysDepart);
+        return sysDepartMapper.selectDepartList(sysDepart);
     }
 
     /**

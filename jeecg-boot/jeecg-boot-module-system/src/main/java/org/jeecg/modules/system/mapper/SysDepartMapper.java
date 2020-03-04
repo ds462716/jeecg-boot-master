@@ -55,5 +55,5 @@ public interface SysDepartMapper extends BaseMapper<SysDepart> {
 	@Select("select * from sys_depart where org_code=#{orgCode}")
 	SysDepart queryDepartByOrgCode(@Param("orgCode") String orgCode);
 
-    List<SysDepart> selectList(SysDepart sysDepart);
+    List<SysDepart> selectDepartList(SysDepart sysDepart);
 }
