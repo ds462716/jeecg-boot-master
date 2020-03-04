@@ -40,8 +40,8 @@ public class PdPackageRecord extends BaseEntity {
     @ApiModelProperty(value = "定数包ID")
     private String packageId;
 	/**定数包名称*/
-	@Excel(name = "定数包名称", width = 15)
-    @ApiModelProperty(value = "定数包名称")
+	@Excel(name = "产品ID", width = 15)
+    @ApiModelProperty(value = "产品ID")
     private String productId;
 	/**库存ID*/
 	@Excel(name = "库存ID", width = 15)
