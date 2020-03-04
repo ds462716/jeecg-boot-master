@@ -37,11 +37,6 @@
               <a-input disabled="disabled" v-decorator="[ 'realName', validatorRules.realName]"></a-input>
             </a-form-item>
           </a-col>
-          <!--<a-col :span="12">
-            <a-form-item label="出库科室" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input disabled="disabled" v-decorator="[ 'outDeptId', validatorRules.outDeptId]"></a-input>
-            </a-form-item>
-          </a-col>-->
           <a-col :span="12">
             <a-form-item label="出库科室" :labelCol="labelCol" :wrapperCol="wrapperCol">
               <a-select
@@ -85,6 +80,8 @@
         <a-tab-pane tab="调拨明细表" :key="refKeys[0]" :forceRender="true">
           <div style="margin-bottom: 8px;">
             <a-button v-show="!disableSubmit" type="primary" icon="plus" @click="choice">选择产品</a-button>
+            <span style="padding-left: 8px;"></span>
+            <a-button v-show="!disableSubmit" type="primary" icon="plus" @click="choicePackage">选择定数包</a-button>
             <span style="padding-left: 8px;"></span>
             <a-popconfirm
               :title="`确定要删除吗?`"
@@ -133,6 +130,7 @@
       </a-popconfirm>
     </div>
     <pd-allocation-detail-add-modal ref="PdAllocationDetailAddModal"   @ok="modalFormOk"></pd-allocation-detail-add-modal>
+    <pd-allocation-package-add-modal ref="PdAllocationPackageAddModal"  @ok="modalFormInfoOk"></pd-allocation-package-add-modal>
   </a-modal>
 </template>
 
@@ -144,6 +142,7 @@
   import JDate from '@/components/jeecg/JDate'
   import { httpAction,getAction,downFile,inArray} from '@/api/manage'
   import PdAllocationDetailAddModal from './PdChooseProductListModel'
+  import PdAllocationPackageAddModal from './PdChoosePackageListModel'
 
   const VALIDATE_NO_PASSED = Symbol()
   export { FormTypes, VALIDATE_NO_PASSED }
@@ -151,7 +150,7 @@
     name: 'PdAllocationRecordModal',
     mixins: [JEditableTableMixin],
     components: {
-      JDate,PdAllocationDetailAddModal
+      JDate,PdAllocationDetailAddModal,PdAllocationPackageAddModal
     },
     data() {
       return {
@@ -197,15 +196,16 @@
           loading: false,
           dataSource: [],
           columns: [
+            { title: '定数包编号', width:"130px",   key: 'packageCode' },
             { title: '定数包名称', width:"130px",   key: 'packageName' },
-            { title: '定数包编号', width:"130px",   key: 'packageId' },
+            { title: '定数包产品数量',  width:"130px", key: 'packageNum' },
+            { title: '定数包Id', key: 'packageId', type: FormTypes.hidden },
             { title: '产品ID', key: 'productId', type: FormTypes.hidden },
             { title: '产品名称', width:"250px",  key: 'productName' },
             { title: '产品编号',width:"150px", align:"center", key: 'number' },
             { title: '规格',width:"240px", align:"center", key: 'spec' },
             { title: '型号', width:"240px",align:"center", key: 'version' },
             { title: '单位',width:"50px", align:"center", key: 'unitName' },
-            { title: '产品数量', width:"100px",align:"center", key: 'productNum' },
             {title: '调拨数量', key: 'allocationNum', type: FormTypes.input, width:"100px",
               placeholder: '${title}', defaultValue: '1',
               validateRules: [{ required: true, message: '${title}不能为空' },
@@ -263,12 +263,18 @@
         this.$refs.PdAllocationDetailAddModal.show({deptId:outDeptId});
       },
 
+      //选择定数包产品
+      choicePackage() {
+        this.$refs.PdAllocationPackageAddModal.show();
+        this.$refs.PdAllocationPackageAddModal.title = "选择定数包";
+      },
+
       handleConfirmDelete() {
         if(this.$refs.pdAllocationDetail.selectedRowIds.length > 0){
           this.$refs.pdAllocationDetail.removeSelectedRows();
           this.$nextTick(() => {
             // 计算总数量
-           this.getTotalNumAndPrice();
+           this.getTotalNumAndPrice([]);
           })
         }else{
           this.$message.error("请选择需要删除的数据！")
@@ -282,37 +288,32 @@
             if(column.key === "allocationNum"){
               // 申领数量变更
               let rows = target.getValuesSync({ validate: false });
-              /*if(row.applyNum>row.stockNum){
-                this.$message.error("申领数量不能大于库存数量！");
-                let pdApplyDetailList = this.pdApplyDetailTable.dataSource;
-                for(let i=0;i<pdApplyDetailList.length;i++){
-                 let pdApplyDetail=pdApplyDetailList[i];
-                  if(pdApplyDetail.id==row.id){
-                  target.setValues([{rowKey: row.id, values: {applyNum :pdApplyDetail.applyNum }}]);
-                  break;
-                  }
-                }
-              }else{*/
               target.setValues([{rowKey: row.id, values: {allocationNum :row.allocationNum }}]);
               // 计算总数量
-              this.getTotalNumAndPrice();
-              /*}*/
-
+              this.getTotalNumAndPrice([]);
             }
           }
         }
       },
       // 计算总数量
-      getTotalNumAndPrice(){
-        this.$refs.pdAllocationDetail.getValues((error, values) => {
+      getTotalNumAndPrice(rows){
+        this.$nextTick(() => {
+          if (rows.length <= 0) {
+            let {values} = this.$refs.pdAllocationDetail.getValuesSync({validate: false});
+            rows = values;
+          }
           let totalNum = 0;
-          values.forEach((item, idx) => {
-            totalNum+=parseFloat(item.allocationNum);
+          rows.forEach((item, idx) => {
+            if (item.packageCode != '' && item.packageCode != null) {
+              totalNum += parseFloat(item.allocationNum) * parseFloat(item.packageNum);
+            } else {
+              totalNum += parseFloat(item.allocationNum);
+            }
           })
           this.model.totalNum = totalNum;
-          this.form.setFieldsValue(pick(this.model,'totalNum'))
+          this.form.setFieldsValue(pick(this.model, 'totalNum'))
+          })
 
-        })
       },
 
       /* 导出 */
@@ -348,20 +349,57 @@
         }
       },
       modalFormOk (formData) { //选择产品确定后返回所选择的数据
-        let idList = [];
+        let data = [];
+        this.$refs.pdAllocationDetail.getValues((error, values) => {
+          formData.forEach((item, idx) => {
+            let bool = true;
+            values.forEach((value, idx) => {
+              let packageCode = value.packageCode;
+              if (packageCode == "" ||  packageCode == null  ) {
+                if(item.productId==value.productId){
+                  bool=false;
+                }
+              }
+            })
+            if(bool){
+              data.push(item);
+            }
+          })
+          data.forEach((item, idx) => {
+            this.pdAllocationDetailTable.dataSource = values;
+            this.addrows(item);
+          })
+          this.$nextTick(() => {
+            // 计算总数量
+            this.getTotalNumAndPrice(values);
+          })
+        })
+      },
+
+
+
+      modalFormInfoOk (formData) { //选择定数包产品确定后返回所选择的数据
+        /*let idList = [];
         let values = [];
         let totalNum=0;
         let data= this.pdAllocationDetailTable.dataSource;
         for(let j=0;j<data.length;j++) {
-          totalNum+=data[j].allocationNum;
+          totalNum+=parseFloat(data[j].allocationNum);
           let prodId=data[j].productId;
-          idList.push(prodId);
+          let packageCode=data[j].packageCode;
+          if(packageCode!=null && packageCode!=""){
+            idList.push(prodId);
+          }
+          values.push(data[j]);
         }
-        values=data;
         for(let i=0;i<formData.length;i++){
           let prodId=formData[i].productId;
           if(inArray(prodId, idList) ==-1) {
             values.push({
+              packageId:formData[i].packageId,
+              packageCode:formData[i].code,
+              packageName:formData[i].name,
+              packageNum:formData[i].count,
               productId: formData[i].productId,
               number: formData[i].number,
               productName: formData[i].productName,
@@ -378,8 +416,52 @@
         this.$nextTick(() => {
           this.form.setFieldsValue(pick(this.model,'totalNum'))
         })
-        this.pdAllocationDetailTable.dataSource = values;
+        this.pdAllocationDetailTable.dataSource = values;*/
+        let data = [];
+        this.$refs.pdAllocationDetail.getValues((error, values) => {
+          formData.forEach((item, idx) => {
+            let bool = true;
+            values.forEach((value, idx) => {
+              let packageCode = value.packageCode;
+              if (packageCode != "" &&  packageCode != null  ) {
+                if(item.productId==value.productId){
+                  bool=false;
+                }
+              }
+            })
+            if(bool){
+              data.push(item);
+            }
+          })
+          data.forEach((item, idx) => {
+            this.pdAllocationDetailTable.dataSource = values;
+            this.addrows(item);
+          })
+          this.$nextTick(() => {
+            // 计算总数量
+            this.getTotalNumAndPrice(values);
+          })
+        })
       },
+
+      addrows(row) {
+        let data = {
+          packageId:row.packageId,
+          packageCode:row.code,
+          packageName:row.name,
+          packageNum:row.count,
+          productId: row.productId,
+          number: row.number,
+          productName:row.productName,
+          spec: row.spec,
+          version: row.version,
+          unitName: row.unitName,
+          allocationNum: "1",//默认 1
+          stockNum: row.stockNum
+        }
+        this.pdAllocationDetailTable.dataSource.push(data)
+      },
+
       handleOk (submitType) { //提交
         if(submitType=="submit"){
           this.model.submitStatus='2';
