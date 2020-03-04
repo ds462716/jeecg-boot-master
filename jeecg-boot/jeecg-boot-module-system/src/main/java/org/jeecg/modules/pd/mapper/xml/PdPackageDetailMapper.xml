@@ -54,5 +54,11 @@
 		<if test="packageId != null and packageId != ''">
 			AND a.package_id = #{packageId}
 		</if>
+		<if test="departParentId != null and departParentId != ''">
+			AND a.depart_parent_id = #{departParentId}
+		</if>
+		<if test="departId != null and departId != ''">
+			AND a.depart_id = #{departId}
+		</if>
 	</select>
 </mapper>

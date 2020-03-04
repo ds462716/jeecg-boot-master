@@ -1,9 +1,6 @@
 package org.jeecg.modules.pd.entity;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.*;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import org.jeecgframework.poi.excel.annotation.Excel;
@@ -58,8 +55,17 @@ public class PdPackageDetail extends BaseEntity {
 	/**所属部门*/
 	@Excel(name = "所属部门", width = 15)
 	private String sysOrgCode;
-	/**所属部门*/
+
+	/**
+	 * 所属部门
+	 */
+	@TableField(strategy = FieldStrategy.NOT_EMPTY)
 	private String departId;
+
+	/**
+	 * 所属顶级部门（医院id）
+	 */
+	@TableField(strategy = FieldStrategy.NOT_EMPTY)
 	private String departParentId;
 
     /*本科室库存数量*/
