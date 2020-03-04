@@ -71,7 +71,6 @@ public class PdEncodingRuleController extends JeecgController<PdEncodingRule, IP
 		Result<Page<PdEncodingRule>> result = new Result<Page<PdEncodingRule>>();
 		Page<PdEncodingRule> pageList = new Page<PdEncodingRule>(pageNo,pageSize);
 		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
-		pdEncodingRule.setDepartId(sysUser.getCurrentDepartId());
 		pdEncodingRule.setDepartParentId(sysUser.getDepartParentId());
 		pageList = pdEncodingRuleService.selectList(pageList,pdEncodingRule);//
 		result.setSuccess(true);

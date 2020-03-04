@@ -58,7 +58,6 @@ public class PdCategoryController extends JeecgController<PdCategory, IPdCategor
 			//query.eq(PdCategory::getDelFlag, CommonConstant.DEL_FLAG_0);
 			LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
 			query.eq(PdCategory::getDepartParentId, sysUser.getDepartParentId());
-			query.eq(PdCategory::getDepartId, sysUser.getCurrentDepartId());
 			List<PdCategory> list = pdCategoryService.list(query);
 			List<PdCategoryTree> treeList = new ArrayList<>();
 			getTreeList(treeList, list, null);
@@ -82,7 +81,6 @@ public class PdCategoryController extends JeecgController<PdCategory, IPdCategor
 		 Result<List<PdCategory>> result = new Result<>();
 		 try {
 			 LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
-			 pdCategory.setDepartId(sysUser.getCurrentDepartId());
 			 pdCategory.setDepartParentId(sysUser.getDepartParentId());
 			 List<PdCategory> list = pdCategoryService.selectCategoryOneList(pdCategory);
 			 result.setResult(list);
