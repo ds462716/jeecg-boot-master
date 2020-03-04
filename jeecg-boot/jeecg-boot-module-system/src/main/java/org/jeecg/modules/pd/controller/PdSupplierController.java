@@ -50,7 +50,6 @@ public class PdSupplierController extends JeecgController<PdSupplier, IPdSupplie
                                   @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
                                   HttpServletRequest req) {
        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
-       pdSupplier.setDepartId(sysUser.getCurrentDepartId());
        pdSupplier.setDepartParentId(sysUser.getDepartParentId());
        QueryWrapper<PdSupplier> queryWrapper = QueryGenerator.initQueryWrapper(pdSupplier, req.getParameterMap());
        Page<PdSupplier> page = new Page<PdSupplier>(pageNo, pageSize);
@@ -69,7 +68,6 @@ public class PdSupplierController extends JeecgController<PdSupplier, IPdSupplie
         Result<List<PdSupplier>> result = new Result<>();
         try {
             LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
-            pdSupplier.setDepartId(sysUser.getCurrentDepartId());
             pdSupplier.setDepartParentId(sysUser.getDepartParentId());
             List<PdSupplier> list = pdSupplierService.selectList(pdSupplier);
             result.setResult(list);

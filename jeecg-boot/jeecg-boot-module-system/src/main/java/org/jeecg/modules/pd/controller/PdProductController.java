@@ -53,7 +53,6 @@ public class PdProductController extends JeecgController<PdProduct, IPdProductSe
 		Result<Page<PdProduct>> result = new Result<Page<PdProduct>>();
 		Page<PdProduct> pageList = new Page<PdProduct>(pageNo,pageSize);
 		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
-		pdProduct.setDepartId(sysUser.getCurrentDepartId());
 		pdProduct.setDepartParentId(sysUser.getDepartParentId());
 		pageList =pdProductService.selectList(pageList,pdProduct);//
 		result.setSuccess(true);

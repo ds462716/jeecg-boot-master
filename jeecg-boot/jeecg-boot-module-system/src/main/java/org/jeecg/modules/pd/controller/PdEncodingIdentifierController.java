@@ -68,7 +68,6 @@ public class PdEncodingIdentifierController extends JeecgController<PdEncodingId
 								   @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
 								   HttpServletRequest req) {
 		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
-		pdEncodingIdentifier.setDepartId(sysUser.getCurrentDepartId());
 		pdEncodingIdentifier.setDepartParentId(sysUser.getDepartParentId());
 		QueryWrapper<PdEncodingIdentifier> queryWrapper = QueryGenerator.initQueryWrapper(pdEncodingIdentifier, req.getParameterMap());
 		Page<PdEncodingIdentifier> page = new Page<PdEncodingIdentifier>(pageNo, pageSize);
@@ -89,7 +88,6 @@ public class PdEncodingIdentifierController extends JeecgController<PdEncodingId
 		 try {
 			 LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
 			 LambdaQueryWrapper<PdEncodingIdentifier> query = new LambdaQueryWrapper<PdEncodingIdentifier>();
-			 query.eq(PdEncodingIdentifier::getDepartId, sysUser.getCurrentDepartId());
 			 query.eq(PdEncodingIdentifier::getDepartParentId, sysUser.getDepartParentId());
 			 if(!oConvertUtils.isEmpty(pdEncodingIdentifier.getValue())){
 				 query.eq(PdEncodingIdentifier::getValue, pdEncodingIdentifier.getValue());

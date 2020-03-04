@@ -64,7 +64,6 @@ public class PdGroupController extends JeecgController<PdGroup, IPdGroupService>
 								   @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
 								   HttpServletRequest req) {
 		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
-		pdGroup.setDepartId(sysUser.getCurrentDepartId());
 		pdGroup.setDepartParentId(sysUser.getDepartParentId());
 		QueryWrapper<PdGroup> queryWrapper = QueryGenerator.initQueryWrapper(pdGroup, req.getParameterMap());
 		Page<PdGroup> page = new Page<PdGroup>(pageNo, pageSize);
@@ -83,7 +82,6 @@ public class PdGroupController extends JeecgController<PdGroup, IPdGroupService>
 		 Result<List<PdGroup>> result = new Result<>();
 		 try {
 			 LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
-			 pdGroup.setDepartId(sysUser.getCurrentDepartId());
 			 pdGroup.setDepartParentId(sysUser.getDepartParentId());
 			 List<PdGroup> list = pdGroupService.selectList(pdGroup);
 			 result.setResult(list);

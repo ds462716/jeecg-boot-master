@@ -65,7 +65,6 @@ public class PdVenderController extends JeecgController<PdVender, IPdVenderServi
 								   @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
 								   HttpServletRequest req) {
 		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
-		pdVender.setDepartId(sysUser.getCurrentDepartId());
 		pdVender.setDepartParentId(sysUser.getDepartParentId());
 		QueryWrapper<PdVender> queryWrapper = QueryGenerator.initQueryWrapper(pdVender, req.getParameterMap());
 		Page<PdVender> page = new Page<PdVender>(pageNo, pageSize);
@@ -85,7 +84,6 @@ public class PdVenderController extends JeecgController<PdVender, IPdVenderServi
 		 Result<List<PdVender>> result = new Result<>();
 		 try {
 			 LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
-			 pdVender.setDepartId(sysUser.getCurrentDepartId());
 			 pdVender.setDepartParentId(sysUser.getDepartParentId());
 			 List<PdVender> list = pdVenderService.selectList(pdVender);
 			 result.setResult(list);
