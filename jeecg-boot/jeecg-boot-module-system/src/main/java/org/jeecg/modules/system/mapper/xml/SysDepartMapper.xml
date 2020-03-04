@@ -41,6 +41,12 @@
         <where>
             a.del_flag = '0'
         </where>
+        <if test="departName != null and departName != ''">
+            AND (a.depart_name LIKE concat('%',#{departName},'%')
+            or a.py LIKE concat('%',#{departName},'%')
+            or a.wb LIKE concat('%',#{departName},'%')
+            or a.zdy LIKE concat('%',#{departName},'%'))
+        </if>
         <if test="parentId != null and parentId != ''">
             AND a.parent_id = #{parentId}
         </if>
