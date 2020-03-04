@@ -114,11 +114,4 @@ public interface ISysDepartService extends IService<SysDepart>{
 
     SysDepart queryDepartByOrgCode(String orgCode);
 
-    /**
-     * 根据条件获取部门信息
-     *
-     * @param
-     * @return
-     */
-    List<SysDepart> getSysDepartList(SysDepart sysDepart);
 }

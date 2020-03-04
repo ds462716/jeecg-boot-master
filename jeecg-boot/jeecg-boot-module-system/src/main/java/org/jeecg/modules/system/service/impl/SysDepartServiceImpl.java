@@ -381,9 +381,4 @@ public class SysDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart
 		return sysDepartMapper.queryDepartByOrgCode(orgCode);
 	}
 
-	@Override
-	public List<SysDepart> getSysDepartList(SysDepart sysDepart) {
-		return sysDepartMapper.getSysDepartList(sysDepart);
-	}
-
 }

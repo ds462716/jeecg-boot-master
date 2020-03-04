@@ -36,10 +36,11 @@
 
 
     <!--根据条件获取部门信息-->
-    <select id="getSysDepartList" resultType="org.jeecg.modules.system.entity.SysDepart">
+    <select id="selectList" resultType="org.jeecg.modules.system.entity.SysDepart">
         select * from sys_depart a
-        where
-        a.del_flag = '0'
+        <where>
+            a.del_flag = '0'
+        </where>
         <if test="parentId != null and parentId != ''">
             AND a.parent_id = #{parentId}
         </if>
@@ -47,11 +48,12 @@
         AND a.org_type = #{orgType}
         </if>
         /*过滤本部门标识：如果不为null,则过滤*/
-        <if test="parentFlag != null and orgCode !=null">
-            AND a.org_code != #{orgCode}
-        </if>
         <if test="departParentId != null and departParentId != ''">
             AND a.depart_parent_id = #{departParentId}
+            AND a.id != #{departParentId}
+        </if>
+        <if test="departId != null and departId != ''">
+            AND a.id != #{departId}
         </if>
 
 </select>
