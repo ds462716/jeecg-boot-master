@@ -14,7 +14,7 @@
         IFNULL(a.purchase_price,0) as purchasePrice,
         a.product_num * IFNULL(a.purchase_price,0) as inTotalPrice,
         a.product_num * IFNULL(a.selling_price,0) as outTotalPrice,
-        a.limit_date,
+        a.exp_date,
         a.package_id,
         a.high_low_supplies,
         a.import_no,

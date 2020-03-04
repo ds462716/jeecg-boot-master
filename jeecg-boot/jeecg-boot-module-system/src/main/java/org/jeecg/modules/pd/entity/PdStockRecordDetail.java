@@ -60,7 +60,7 @@ public class PdStockRecordDetail extends BaseEntity {
 	@Excel(name = "有效期", width = 15, format = "yyyy-MM-dd")
 	@JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd")
     @DateTimeFormat(pattern="yyyy-MM-dd")
-	private Date limitDate;
+	private Date expDate;
 	/**定数包ID*/
 	@Excel(name = "定数包ID", width = 15)
 	private String packageId;

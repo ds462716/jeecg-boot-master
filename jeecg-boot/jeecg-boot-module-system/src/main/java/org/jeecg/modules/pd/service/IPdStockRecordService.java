@@ -64,5 +64,18 @@ public interface IPdStockRecordService extends IService<PdStockRecord> {
 	 * 审批
 	 */
 	String audit(PdStockRecord auditEntity,PdStockRecord entity);
-	
+
+	/**
+	 * 初始化入库页面
+	 * @param id
+	 * @return
+	 */
+	PdStockRecord initInModal(String id);
+
+	/**
+	 * 初始化出库页面
+	 * @param id
+	 * @return
+	 */
+	PdStockRecord initOutModal(String id);
 }

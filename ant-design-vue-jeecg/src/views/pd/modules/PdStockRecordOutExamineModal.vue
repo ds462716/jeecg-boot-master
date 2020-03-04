@@ -222,7 +222,7 @@
   })
 
   export default {
-    name: 'PdStockRecordInExamineModal',
+    name: 'PdStockRecordOutExamineModal',
     mixins: [JEditableTableMixin],
     components: {
       ATextarea,

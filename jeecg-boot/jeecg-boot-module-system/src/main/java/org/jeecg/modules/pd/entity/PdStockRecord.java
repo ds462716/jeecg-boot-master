@@ -12,6 +12,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import org.jeecg.modules.pd.vo.PdGoodsAllocationPage;
+import org.jeecg.modules.system.entity.SysDepart;
 import org.jeecgframework.poi.excel.annotation.Excel;
 import org.jeecgframework.poi.excel.annotation.ExcelCollection;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -157,6 +158,10 @@ public class PdStockRecord extends BaseEntity {
     /** 货区货位列表 用于二级联动下拉框 */
     @TableField(exist = false)
     List<PdGoodsAllocationPage> goodsAllocationList;
+
+    /** 部门列表 用户部门下拉框 **/
+    @TableField(exist = false)
+    List<SysDepart> sysDepartList;
 
     /** 1-允许入库量大于订单量；0-不允许入库量大于订单量 */
     @TableField(exist = false)

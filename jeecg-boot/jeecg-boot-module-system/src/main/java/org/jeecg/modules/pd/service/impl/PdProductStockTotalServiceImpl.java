@@ -128,7 +128,7 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
 				productStock.setBatchNo(batchNo);
 				productStock.setNumber(number);
 				productStock.setHuoweiCode(huoweiCode);
-				productStock.setExpDate(stockRecordDetail.getLimitDate());
+				productStock.setExpDate(stockRecordDetail.getExpDate());
 				if(StringUtils.isNotEmpty(supplierId)){
 					productStock.setSupplierId(supplierId);
 				}

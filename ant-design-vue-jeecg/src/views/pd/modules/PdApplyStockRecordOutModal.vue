@@ -442,7 +442,7 @@
             },
             {
               title: '有效期',
-              key: 'limitDate',
+              key: 'expDate',
               type: FormTypes.date,
               width:"130px",
               placeholder: '${title}',
@@ -759,7 +759,7 @@
           venderName: row.venderName,
           supplierName: row.supplierName,
           productBarCode:"",
-          limitDate:"",
+          expDate:"",
           batchNo:"",
           productNum: 1,
           orderNo:this.orderNo,
@@ -783,7 +783,7 @@
           venderName: row.productObj.venderName,
           supplierName: row.productObj.supplierName,
           productBarCode:row.productBarCode,
-          limitDate:row.expDate,
+          expDate:row.expDate,
           batchNo:row.batchNo,
           productNum: 1,
           orderNo:this.orderNo,
@@ -894,7 +894,7 @@
                     // 1.比较被扫码产品与列表产品条码是否一致：一致则数量相加，不一致则加一行
                     // 2.如果列表中的产品条码为空，则比较产品ID、批号、有效期，如果一致则数量相加，不一致则加一行
                     if((item.productBarCode && item.productBarCode == productBarCode)
-                      || (!item.productBarCode && item.productId == product.id && item.batchNo == res.batchNo && item.limitDate == res.expDate)){
+                      || (!item.productBarCode && item.productId == product.id && item.batchNo == res.batchNo && item.expDate == res.expDate)){
                       //条码一致 则数量相加
                       let productNum = Number(item.productNum) + 1;
                       let price = (Number(item.purchasePrice) * Number(productNum)).toFixed(4);

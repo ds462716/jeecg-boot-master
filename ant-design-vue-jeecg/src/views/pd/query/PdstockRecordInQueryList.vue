@@ -131,7 +131,7 @@
           {
             title:'有效期',
             align:"center",
-            dataIndex: 'limitDate',
+            dataIndex: 'expDate',
             customRender:function (text) {
               return !text?"":(text.length>10?text.substr(0,10):text)
             }

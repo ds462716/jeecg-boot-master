@@ -77,68 +77,7 @@ public class PdStockRecordInController {
 	  */
 	@GetMapping(value = "/initModal")
 	public Result<?> initModal(@RequestParam(name="id") String id, HttpServletRequest req) {
-		PdStockRecord pdStockRecord = new PdStockRecord();
-
-		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
-		SysDepart sysDepart = sysDepartService.getDepartByOrgCode(sysUser.getOrgCode());
-
-		PdGoodsAllocation pdGoodsAllocation = new PdGoodsAllocation();
-		pdGoodsAllocation.setDepartId(sysDepart.getId());
-		pdGoodsAllocation.setAreaType(PdConstant.GOODS_ALLCATION_AREA_TYPE_2);
-		List<PdGoodsAllocationPage> goodsAllocationList = pdGoodsAllocationService.getOptionsForSelect(pdGoodsAllocation);
-
-		if(StringUtils.isNotEmpty(id)){ // 查看页面
-			pdStockRecord = pdStockRecordService.getById(id);
-
-			//查入库单明细
-			PdStockRecordDetail pdStockRecordDetail = new PdStockRecordDetail();
-			pdStockRecordDetail.setRecordId(id);
-			List<PdStockRecordDetail> pdStockRecordDetailList = pdStockRecordDetailService.selectByMainId(pdStockRecordDetail);
-			BigDecimal totalPrice = new BigDecimal(0);//总金额	@TableField(exist = false)
-			Double totalSum = new Double(0);//总数量
-			for (PdStockRecordDetail item : pdStockRecordDetailList) {
-				totalSum = totalSum + item.getProductNum();
-				BigDecimal purchasePrice = item.getPurchasePrice() == null ? new BigDecimal(0) : item.getPurchasePrice();
-				totalPrice = totalPrice.add(purchasePrice.multiply(BigDecimal.valueOf(item.getProductNum())).setScale(4, BigDecimal.ROUND_HALF_UP));
-			}
-			pdStockRecord.setTotalSum(totalSum);
-			pdStockRecord.setTotalPrice(totalPrice);
-			pdStockRecord.setPdStockRecordDetailList(pdStockRecordDetailList);
-
-			if(StringUtils.isNotEmpty(pdStockRecord.getOrderNo())){
-				//查订单列表
-				List<PdPurchaseDetail> pdPurchaseDetailList = pdPurchaseDetailService.selectByOrderNo(pdStockRecord.getOrderNo());
-				pdStockRecord.setPdPurchaseDetailList(pdPurchaseDetailList);
-			}
-		}else{  // 新增页面
-			//开关-是否允许入库量大于订单量   1-允许入库量大于订单量；0-不允许入库量大于订单量
-			List<DictModel> allowInMoreOrder = sysDictService.queryDictItemsByCode(PdConstant.ON_OFF_ALLOW_IN_MORE_ORDER);
-			//开关-是否允许入库非订单产品     1-允许非订单产品；0-不允许非订单产品
-			List<DictModel> allowNotOrderProduct = sysDictService.queryDictItemsByCode(PdConstant.ON_OFF_ALLOW_NOT_ORDER_PRODUCT);
-			if(CollectionUtils.isNotEmpty(allowInMoreOrder)){
-				pdStockRecord.setAllowInMoreOrder(allowInMoreOrder.get(0).getValue());
-			}
-			if(CollectionUtils.isNotEmpty(allowNotOrderProduct)){
-				pdStockRecord.setAllowNotOrderProduct(allowNotOrderProduct.get(0).getValue());
-			}
-
-			//部门id
-			pdStockRecord.setInDepartId(sysDepart.getId());
-			//获取入库单号
-			pdStockRecord.setRecordNo(UUIDUtil.generateOrderNoByType(PdConstant.ORDER_NO_FIRST_LETTER_RK));
-			//获取当前日期
-			pdStockRecord.setSubmitDateStr(DateUtils.formatDate());
-			pdStockRecord.setSubmitDate(DateUtils.getDate());
-			//登录人姓名
-			pdStockRecord.setSubmitBy(sysUser.getId());
-			pdStockRecord.setSubmitByName(sysUser.getRealname());
-			//默认入库类型
-			pdStockRecord.setInType(PdConstant.IN_TYPE_1);
-
-		}
-
-		//库区库位下拉框
-		pdStockRecord.setGoodsAllocationList(goodsAllocationList);
+		PdStockRecord pdStockRecord = pdStockRecordService.initInModal(id);
 		return Result.ok(pdStockRecord);
 	}
 	/**

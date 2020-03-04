@@ -28,7 +28,7 @@
 
         <template v-if="!model.id">
           <a-form-item label="登陆密码" :labelCol="labelCol" :wrapperCol="wrapperCol" >
-            <a-input type="password" placeholder="请输入登陆密码" autocomplete="off" v-decorator="[ 'password', validatorRules.password]" />
+            <a-input type="password" placeholder="请输入登陆密码" autocomplete="off" v-decorator="[ 'password', {}]" />
           </a-form-item>
 
           <a-form-item label="确认密码" :labelCol="labelCol" :wrapperCol="wrapperCol" >

@@ -111,7 +111,7 @@
           {
             title:'有效期',
             align:"center",
-            dataIndex: 'limitDate'
+            dataIndex: 'expDate'
           },
           {
             title:'单位',

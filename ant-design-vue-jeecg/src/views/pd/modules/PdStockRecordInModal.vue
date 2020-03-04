@@ -354,7 +354,7 @@
             // { title: '型号', key: 'version', width:"150px"  disabled },
             { title: '单位', key: 'unitName', width:"50px" },
             {
-              title: '有效期', key: 'limitDate', type: FormTypes.date, width:"130px",
+              title: '有效期', key: 'expDate', type: FormTypes.date, width:"130px",
               placeholder: '${title}', defaultValue: '',
               validateRules: [{ required: true, message: '${title}不能为空' }]
             },
@@ -516,7 +516,7 @@
           let { values } = this.$refs.pdStockRecordDetail.getValuesSync({ validate: false });
           for(let row of values){
             let submitDate = this.form.getFieldValue("submitDate")
-            if(submitDate >=  row.limitDate){
+            if(submitDate >=  row.expDate){
               isexp = true;
               name = name + "  " + row.productName;
             }
@@ -689,7 +689,7 @@
             let bool = true;
             values.forEach((value, idx) => {
               if (value.productId == item.productId
-                && value.batchNo == "" && value.limitDate == ""){
+                && value.batchNo == "" && value.expDate == ""){
                 bool = false;
               }
             })
@@ -729,7 +729,7 @@
           venderName: row.venderName,
           supplierName: row.supplierName,
           productBarCode:"",
-          limitDate:"",
+          expDate:"",
           batchNo:"",
           productNum: 1,
           orderNo:"",
@@ -759,7 +759,7 @@
           venderName: row.pdProduct.venderName,
           supplierName: row.pdProduct.supplierName,
           productBarCode:row.productBarCode,
-          limitDate:row.expDate,
+          expDate:row.expDate,
           batchNo:row.batchNo,
           productNum: 1,
           orderNo:"",
@@ -868,7 +868,7 @@
                     // 1.比较被扫码产品与列表产品条码是否一致：一致则数量相加，不一致则加一行
                     // 2.如果列表中的产品条码为空，则比较产品ID、批号、有效期，如果一致则数量相加，不一致则加一行
                     if((item.productBarCode && item.productBarCode == productBarCode)
-                      || (!item.productBarCode && item.productId == product.id && item.batchNo == result.batchNo && item.limitDate == result.expDate)){
+                      || (!item.productBarCode && item.productId == product.id && item.batchNo == result.batchNo && item.expDate == result.expDate)){
                       isAddRow = false;
                       //校验是否允许入库量大于订单量
                       if(!this.checkAllowInMoreOrderForScanCode(product.id,values)){
