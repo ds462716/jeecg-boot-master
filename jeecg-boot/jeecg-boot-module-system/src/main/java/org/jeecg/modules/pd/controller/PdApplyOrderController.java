@@ -72,6 +72,7 @@ public class PdApplyOrderController {
 		Page<PdApplyOrder> page = new Page<PdApplyOrder>(pageNo, pageSize);
 		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
 		pdApplyOrderPage.setDepartId(sysUser.getCurrentDepartId());
+		pdApplyOrderPage.setDepartParentId(sysUser.getDepartParentId());
 		IPage<PdApplyOrder> pageList = pdApplyOrderService.selectList(page, pdApplyOrderPage);
 		return Result.ok(pageList);
 	}
@@ -94,6 +95,8 @@ public class PdApplyOrderController {
 		 list.add(PdConstant.SUBMIT_STATE_2);//已提交
 		 list.add(PdConstant.SUBMIT_STATE_3);//已撤回
 		 pdApplyOrderPage.setSubmitStatusList(list);
+		 LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		 pdApplyOrderPage.setDepartParentId(sysUser.getDepartParentId());
 		 IPage<PdApplyOrder> pageList = pdApplyOrderService.selectList(page, pdApplyOrderPage);
 		 return Result.ok(pageList);
 	 }

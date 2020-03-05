@@ -61,6 +61,8 @@ public class PdProductStockTotalController {
 									HttpServletRequest req) {
 
          Page<PdProductStockTotalPage> page = new Page<PdProductStockTotalPage>(pageNo, pageSize);
+		 LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		 stockTotalPage.setDepartParentId(sysUser.getDepartParentId());
          page = pdProductStockTotalService.selectList(page,stockTotalPage);
 		//计算总库存数量，近效期数量，过期数量等值；
          //**************************
@@ -194,6 +196,7 @@ public class PdProductStockTotalController {
 									HttpServletRequest req) {
 
 		 Page<PdProductStock> page = new Page<PdProductStock>(pageNo, pageSize);
+		 LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
 		 page = pdProductStockService.selectList(page,productStock);
 		 //计算总库存数量，近效期数量，过期数量等值；
 		 //**************************

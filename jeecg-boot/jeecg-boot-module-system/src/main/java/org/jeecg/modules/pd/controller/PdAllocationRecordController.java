@@ -68,6 +68,7 @@ public class PdAllocationRecordController {
  		Page<PdAllocationRecord> page = new Page<PdAllocationRecord>(pageNo, pageSize);
         LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
         pdAllocationRecord.setInDeptId(sysUser.getCurrentDepartId());
+		pdAllocationRecord.setDepartParentId(sysUser.getDepartParentId());
 		IPage<PdAllocationRecord> pageList =pdAllocationRecordService.selectList(page, pdAllocationRecord);
 		return Result.ok(pageList);
 	}
@@ -92,6 +93,8 @@ public class PdAllocationRecordController {
 		 list.add(PdConstant.SUBMIT_STATE_2);//已提交
 		 list.add(PdConstant.SUBMIT_STATE_3);//已撤回
 		 allocationRecord.setSubmitStatusList(list);
+		 LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		 allocationRecord.setDepartParentId(sysUser.getDepartParentId());
 		 IPage<PdAllocationRecord> pageList = pdAllocationRecordService.selectList(page, allocationRecord);
 		 return Result.ok(pageList);
 	 }
@@ -307,6 +310,8 @@ public class PdAllocationRecordController {
 										   @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
 										   HttpServletRequest req) {
 		 Page<PdAllocationRecord> page = new Page<PdAllocationRecord>(pageNo, pageSize);
+		 LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		 allocationRecord.setDepartParentId(sysUser.getDepartParentId());
 		 IPage<PdAllocationRecord> pageList = pdAllocationRecordService.chooseAllocationList(page, allocationRecord);
 		 return Result.ok(pageList);
 	 }

@@ -81,6 +81,9 @@
             <if test="departId != null and departId != ''">
                 AND  a.depart_id=#{departId}
             </if>
+            <if test="departParentId != null and departParentId != ''">
+                AND a.depart_parent_id = #{departParentId}
+            </if>
             order by  exp_status  desc,create_time desc
         </where>
     </select>
