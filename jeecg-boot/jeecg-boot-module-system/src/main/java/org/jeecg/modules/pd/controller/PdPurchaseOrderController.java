@@ -77,6 +77,7 @@ public class PdPurchaseOrderController {
 		 Page<PdPurchaseOrder> page = new Page<PdPurchaseOrder>(pageNo, pageSize);
 		 LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
 		 pdPurchaseOrderPage.setDepartId(sysUser.getCurrentDepartId());
+		 pdPurchaseOrderPage.setDepartParentId(sysUser.getDepartParentId());
 		 page = pdPurchaseOrderService.selectList(page, pdPurchaseOrderPage);
 		 return Result.ok(page);
 	 }
@@ -100,6 +101,8 @@ public class PdPurchaseOrderController {
 		 list.add(PdConstant.SUBMIT_STATE_2);//已提交
 		 list.add(PdConstant.SUBMIT_STATE_3);//已撤回
 		 pdPurchaseOrderPage.setSubmitStatusList(list);
+		 LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		 pdPurchaseOrderPage.setDepartParentId(sysUser.getDepartParentId());
 		 page = pdPurchaseOrderService.selectList(page, pdPurchaseOrderPage);
 		 return Result.ok(page);
 	 }
