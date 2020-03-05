@@ -130,7 +130,7 @@
           {
             title:'科室',
             align:"center",
-            dataIndex: 'deptId'
+            dataIndex: 'departId'
           },
           {
             title:'盘点日期',

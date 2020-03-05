@@ -6,7 +6,7 @@
         a.order_no,
         a.purchase_by,
         a.order_date,
-        a.dept_id,
+        a.depart_id,
         a.audit_status,
         a.audit_by,
         a.audit_date,
@@ -33,7 +33,7 @@
     </sql>
 
     <sql id="sysDepartJoins">
-        LEFT JOIN sys_depart f ON a.dept_id = f.id
+        LEFT JOIN sys_depart f ON a.depart_id = f.id
     </sql>
 
     <!--用户-->
@@ -71,8 +71,8 @@
             <if test="deptName != null and deptName != ''">
                 AND f.depart_name = #{deptName}
             </if>
-            <if test="deptId != null and deptId != ''">
-                AND a.dept_id = #{deptId}
+            <if test="departId != null and departId != ''">
+                AND a.depart_id = #{departId}
             </if>
             <if test="submitStatusList != null and submitStatusList.size() > 0">
                 and a.submit_status IN
@@ -98,7 +98,7 @@
         LEFT JOIN pd_purchase_detail b on a.order_no = b.order_no
         LEFT JOIN sys_user c ON c.id = a.audit_by
         LEFT JOIN pd_product d on b.product_id = d.id
-        LEFT JOIN sys_depart f ON a.dept_id = f.id
+        LEFT JOIN sys_depart f ON a.depart_id = f.id
         <where>
             a.del_flag = #{DEL_FLAG_NORMAL}
             AND a.audit_status = '2'

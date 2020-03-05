@@ -282,7 +282,7 @@ public class PdPackageController {
                   for(PdPackageDetail detail:detailList){
                       //查询本科室下库存数量
 					  PdProductStockTotalPage total = new PdProductStockTotalPage();
-					  total.setDeptId(sysUser.getCurrentDepartId());
+					  total.setDepartId(sysUser.getCurrentDepartId());
 					  total.setProductId(detail.getProductId());
 					  List<PdProductStockTotalPage> list = pdProductStockTotalService.findListForQuery(total);
 					  if(CollectionUtils.isNotEmpty(list)){

@@ -1,14 +1,12 @@
 package org.jeecg.modules.pd.entity;
 
-import java.util.Date;
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
-import lombok.Data;
+import com.baomidou.mybatisplus.annotation.*;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.Data;
 import org.jeecgframework.poi.excel.annotation.Excel;
 import org.springframework.format.annotation.DateTimeFormat;
+
+import java.util.Date;
 
 /**
  * @Description: 库存总表
@@ -38,8 +36,6 @@ public class PdProductStockTotal extends BaseEntity {
 	/**所属部门*/
     @Excel(name = "所属部门", width = 15)
     private String sysOrgCode;
-	/**科室id*/
-    private String deptId;
 	/**产品id*/
     private String productId;
 	/**库存数量*/
@@ -73,6 +69,14 @@ public class PdProductStockTotal extends BaseEntity {
 	/**是否永存*/
     @Excel(name = "是否永存", width = 15)
     private String isLong;
+
+    /**科室id*/
+    @TableField(strategy = FieldStrategy.NOT_EMPTY)
+    @Excel(name = "科室ID", width = 15)
+    private String departId;
+    /** 所属父部门*/
+    @TableField(strategy = FieldStrategy.NOT_EMPTY)
+    private String departParentId;
 
     /**产品名称*/
     @Excel(name = "产品名称", width = 15)

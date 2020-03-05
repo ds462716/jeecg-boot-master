@@ -1,9 +1,6 @@
 package org.jeecg.modules.pd.entity;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.*;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
 import lombok.Data;
@@ -32,9 +29,6 @@ public class PdProductStockCheck extends BaseEntity {
 	/**盘点编号*/
 	@Excel(name = "盘点编号", width = 15)
     private String checkNo;
-	/**科室ID*/
-	@Excel(name = "科室ID", width = 15)
-    private String deptId;
 	/**盘点日期*/
 	@Excel(name = "盘点日期", width = 15, format = "yyyy-MM-dd")
 	@JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd")
@@ -75,7 +69,13 @@ public class PdProductStockCheck extends BaseEntity {
 	@Excel(name = "备注", width = 15)
     private String remarks;
 
-
+	/**科室ID*/
+	@TableField(strategy = FieldStrategy.NOT_EMPTY)
+	@Excel(name = "科室ID", width = 15)
+	private String departId;
+	/** 所属父部门*/
+	@TableField(strategy = FieldStrategy.NOT_EMPTY)
+	private String departParentId;
     @ExcelCollection(name="盘点明细表")
     @TableField(exist = false)
     private List<PdProductStockCheckChild> pdProductStockCheckChildList;

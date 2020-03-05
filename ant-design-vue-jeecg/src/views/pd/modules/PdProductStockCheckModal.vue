@@ -134,7 +134,7 @@
         addDefaultRowNum: 1,
         validatorRules: {
           checkNo: {rules: []},
-          deptId: {rules: []},
+          departId: {rules: []},
           deptName: {rules: []},
           checkDate: {rules: []},
           checkBy: {rules: []},
@@ -260,7 +260,7 @@
       },
       /** 调用完edit()方法之后会自动调用此方法 */
       editAfter() {
-        let fieldval = pick(this.model,'checkNo','deptId','checkDate','checkBy','shouldCount','checkCount','profitLossCount','checkStatus','createTime','createBy','updateTime','updateBy','remarks','delFlag')
+        let fieldval = pick(this.model,'checkNo','departId','checkDate','checkBy','shouldCount','checkCount','profitLossCount','checkStatus','createTime','createBy','updateTime','updateBy','remarks','delFlag')
         this.$nextTick(() => {
           this.form.setFieldsValue(fieldval)
         })
@@ -283,7 +283,7 @@
         this.$message.error(msg)
       },
      popupCallback(row){
-       this.form.setFieldsValue(pick(row,'checkNo','deptId','checkDate','checkBy','shouldCount','checkCount','profitLossCount','checkStatus','createTime','createBy','updateTime','updateBy','remarks','delFlag'))
+       this.form.setFieldsValue(pick(row,'checkNo','departId','checkDate','checkBy','shouldCount','checkCount','profitLossCount','checkStatus','createTime','createBy','updateTime','updateBy','remarks','delFlag'))
      },
       /** 切换全屏显示 */
       handleClickToggleFullScreen() {
