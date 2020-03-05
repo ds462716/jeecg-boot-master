@@ -74,6 +74,9 @@
             <if test="departId != null and departId != ''">
                 AND a.depart_id = #{departId}
             </if>
+            <if test="departParentId != null and departParentId != ''">
+                AND a.depart_parent_id = #{departParentId}
+            </if>
             <if test="submitStatusList != null and submitStatusList.size() > 0">
                 and a.submit_status IN
                 <foreach collection="submitStatusList" item="item" separator="," open="(" close=")">

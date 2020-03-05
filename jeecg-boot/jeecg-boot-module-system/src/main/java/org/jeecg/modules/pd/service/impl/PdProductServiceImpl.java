@@ -2,9 +2,11 @@ package org.jeecg.modules.pd.service.impl;
 
 import com.aliyuncs.regions.ProductDomain;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.MessageConstant;
 import org.jeecg.common.constant.PdConstant;
+import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.DateUtils;
 import org.jeecg.modules.pd.entity.*;
 import org.jeecg.modules.pd.mapper.PdEncodingRuleDetailMapper;
@@ -104,6 +106,8 @@ public class PdProductServiceImpl extends ServiceImpl<PdProductMapper, PdProduct
             String productNumber = BarCodeUtil.getPrdNumber(Barcode1);
             PdProduct pdProduct = new PdProduct();
             pdProduct.setNumber(productNumber);
+            LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+            pdProduct.setDepartParentId(sysUser.getDepartParentId());
             //查询产品是否存在
             List<PdProduct> pdProducts = pdProductMapper.selectList(pdProduct);
             if(pdProducts!=null && pdProducts.size()>0){
@@ -223,6 +227,8 @@ public class PdProductServiceImpl extends ServiceImpl<PdProductMapper, PdProduct
             String productNumber = BarCodeUtil.getPrdNumber(Barcode1);
             PdProduct pdProduct = new PdProduct();
             pdProduct.setNumber(productNumber);
+            LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+            pdProduct.setDepartParentId(sysUser.getDepartParentId());
             //查询产品是否存在
            List<PdProduct> pdProducts = pdProductMapper.selectList(pdProduct);
             if(pdProducts!=null && pdProducts.size()>0){

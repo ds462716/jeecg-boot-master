@@ -33,6 +33,7 @@
                 :filterOption="false"
                 @search="sysDeptHandleSearch"
                 @change="sysDeptHandleChange"
+                @focus="sysDeptHandleSearch"
                 :notFoundContent="notFoundContent"
                 v-decorator="[ 'outDeptId', validatorRules.outDeptId]"
               >
@@ -378,44 +379,6 @@
 
 
       modalFormInfoOk (formData) { //选择定数包产品确定后返回所选择的数据
-        /*let idList = [];
-        let values = [];
-        let totalNum=0;
-        let data= this.pdAllocationDetailTable.dataSource;
-        for(let j=0;j<data.length;j++) {
-          totalNum+=parseFloat(data[j].allocationNum);
-          let prodId=data[j].productId;
-          let packageCode=data[j].packageCode;
-          if(packageCode!=null && packageCode!=""){
-            idList.push(prodId);
-          }
-          values.push(data[j]);
-        }
-        for(let i=0;i<formData.length;i++){
-          let prodId=formData[i].productId;
-          if(inArray(prodId, idList) ==-1) {
-            values.push({
-              packageId:formData[i].packageId,
-              packageCode:formData[i].code,
-              packageName:formData[i].name,
-              packageNum:formData[i].count,
-              productId: formData[i].productId,
-              number: formData[i].number,
-              productName: formData[i].productName,
-              spec: formData[i].spec,
-              version: formData[i].version,
-              unitName: formData[i].unitName,
-              allocationNum: "1",//默认 1
-              stockNum: formData[i].stockNum
-            })
-            totalNum+=1;//计算总数量
-          }
-        }
-        this.model.totalNum=totalNum;//调拨总数量
-        this.$nextTick(() => {
-          this.form.setFieldsValue(pick(this.model,'totalNum'))
-        })
-        this.pdAllocationDetailTable.dataSource = values;*/
         let data = [];
         this.$refs.pdAllocationDetail.getValues((error, values) => {
           formData.forEach((item, idx) => {
@@ -568,22 +531,42 @@
          this.eachAllTable((item) => {
           item.initialize()
         })
-       // this.model.outDeptId = value;
-       // fetch(value, data => (this.supplierData = data),this.url.querySupplier);
+        this.outDeptValue = value;
+        fetch(value, data => (this.outDeptData = data),this.url.querySysDepartList);
       },
     }
   }
 
 
-
+  let timeout;
+  let currentValue;
 
   function fetch(value, callback,url) {
-    return getAction(url,{departName:value}).then((res)=>{
+    if (timeout) {
+      clearTimeout(timeout);
+      timeout = null;
+    }
+    currentValue = value;
+
+    function fake() {
+      getAction(url,{departName:value}).then((res)=>{
+        if (!res.success) {
+          this.cmsFailed(res.message);
+        }
+        if (currentValue === value) {
           const result = res.result;
           const data = [];
-          result.forEach(r => {data.push({value: r.id, text: r.departName,})});
+          result.forEach(r => {
+            data.push({
+              value: r.id,
+              text: r.departName,
+            });
+          });
           callback(data);
+        }
       })
+    }
+    timeout = setTimeout(fake, 0); //这边不延迟
   }
 </script>
 
