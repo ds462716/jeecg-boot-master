@@ -838,7 +838,6 @@
           }
           //解析条码
           scanCode(productNumber,productBarCode).then((res) => {
-            console.log(res)
             if(res.code == "200" ){
               let result = res.result;
               if(result.code == "200" || result.code == "203"){
@@ -872,7 +871,6 @@
                       let inTotalPrice = (Number(item.purchasePrice) * Number(productNum)).toFixed(4);
                       // this.$nextTick(() => {
                         this.$refs.pdStockRecordDetail.setValues([{rowKey: item.id, values: {
-                          productName:productNum,productNumber:productNum,
                           productNum: productNum,inTotalPrice: inTotalPrice,productBarCode:productBarCode }}]);
                       // })
                       // this.pdStockRecordDetailTable.dataSource = values;
