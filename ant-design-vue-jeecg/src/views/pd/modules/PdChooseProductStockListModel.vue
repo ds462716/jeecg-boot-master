@@ -152,6 +152,18 @@
               return obj;
             },
           },
+          {
+            title: '库存明细id',
+            align:"center",
+            dataIndex: 'id',
+            colSpan: 0,
+            customRender: (value, row, index) => {
+              const obj = {
+                attrs: {colSpan:0},
+              };
+              return obj;
+            },
+          },
         ],
         url: {
           list: "/pd/pdProductStockTotal/chooseProductStockList",

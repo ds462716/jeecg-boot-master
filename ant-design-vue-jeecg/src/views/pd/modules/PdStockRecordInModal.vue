@@ -415,7 +415,7 @@
       },
       /** 调用完edit()方法之后会自动调用此方法 */
       editAfter() {
-          this.loadData();
+        this.loadData();
       },
       loadData() {
         this.loading = true;
@@ -644,11 +644,8 @@
       handleConfirmDelete() {
         if(this.$refs.pdStockRecordDetail.selectedRowIds.length > 0){
           this.$refs.pdStockRecordDetail.removeSelectedRows();
-          // this.$nextTick(() => {
-            // this.valueChange();
-            // 计算总数量和总价格
-            this.getTotalNumAndPrice([]);
-          // })
+          // 计算总数量和总价格
+          this.getTotalNumAndPrice([]);
         }else{
           this.$message.error("请选择需要删除的数据！")
         }
@@ -869,14 +866,10 @@
                       //条码一致 则数量相加
                       let productNum = Number(item.productNum) + 1;
                       let inTotalPrice = (Number(item.purchasePrice) * Number(productNum)).toFixed(4);
-                      // this.$nextTick(() => {
-                        this.$refs.pdStockRecordDetail.setValues([{rowKey: item.id, values: {
+                      this.$refs.pdStockRecordDetail.setValues([{rowKey: item.id, values: {
                           productNum: productNum,inTotalPrice: inTotalPrice,productBarCode:productBarCode }}]);
-                      // })
-                      // this.pdStockRecordDetailTable.dataSource = values;
-                      // this.$nextTick(() => {
-                        this.getTotalNumAndPrice([]);
-                      // })
+
+                      this.getTotalNumAndPrice([]);
                       break;
                     }else{
                       //校验是否允许入库量大于订单量

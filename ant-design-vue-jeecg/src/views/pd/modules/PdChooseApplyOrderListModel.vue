@@ -103,6 +103,7 @@
         queryDate:[],
         // model: {},
         confirmLoading: false,
+        departId:"",
         // 表头
         columns: [
           {
@@ -238,11 +239,14 @@
       close () {
         this.selectedRowKeys = [];
         this.selectionRows = [];
-        this.$emit('close');
         this.visible = false;
+        this.departId = "";
+        this.$emit('close');
       },
-      show() {
+      show(param) {
         this.visible = true;
+        this.departId = param.departId;
+        this.loadData();
       },
       handleOk () {
         if(this.selectionRows.length > 0){
@@ -271,10 +275,31 @@
           }
         })
       },
-
       orderDateChange: function (value, dateString) {
         this.queryParam.queryDateStart=dateString[0];
         this.queryParam.queryDateEnd=dateString[1];
+      },
+      loadData(arg) {
+        if(!this.url.list){
+          this.$message.error("请设置url.list属性!")
+          return
+        }
+        //加载数据 若传入参数1则加载第一页的内容
+        if (arg === 1) {
+          this.ipagination.current = 1;
+        }
+        var params = this.getQueryParams();//查询条件
+        this.loading = true;
+        getAction(this.url.list, params).then((res) => {
+          if (res.success) {
+            this.dataSource = res.result.records;
+            this.ipagination.total = res.result.total;
+          }
+          if(res.code===510){
+            this.$message.warning(res.message)
+          }
+          this.loading = false;
+        })
       },
       getQueryParams() {
         //获取查询条件
@@ -286,6 +311,7 @@
         param.field = this.getQueryField();
         param.pageNo = this.ipagination.current;
         param.pageSize = this.ipagination.pageSize;
+        param.departId = this.departId;
         delete param.queryDate; //范围参数不传递后台，传后台会报错
         return filterObj(param);
       },

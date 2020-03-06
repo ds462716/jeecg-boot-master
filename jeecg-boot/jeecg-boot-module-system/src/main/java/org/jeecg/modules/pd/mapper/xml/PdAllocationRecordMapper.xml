@@ -136,6 +136,12 @@
             <if test="queryDateEnd != null and queryDateEnd != ''">
                 AND a.allocation_date &lt;= #{queryDateEnd}
             </if>
+            <if test="inDeptId != null and inDeptId != ''">
+                AND a.in_dept_id = #{inDeptId}
+            </if>
+            <if test="outDeptId != null and outDeptId != ''">
+                AND a.out_dept_id = #{outDeptId}
+            </if>
         </where>
         order  by a.allocation_date desc
     </select>
