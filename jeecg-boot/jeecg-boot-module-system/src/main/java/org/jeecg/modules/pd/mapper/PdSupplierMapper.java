@@ -13,7 +13,7 @@ import java.util.List;
  */
 public interface PdSupplierMapper extends BaseMapper<PdSupplier> {
 
-    PdSupplier verify(PdSupplier pdSupplier);
+    List<PdSupplier> verify(PdSupplier pdSupplier);
 
     List<PdSupplier> selectList(PdSupplier pdSupplier);
 

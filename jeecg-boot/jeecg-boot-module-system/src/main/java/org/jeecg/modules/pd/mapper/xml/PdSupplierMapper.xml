@@ -128,6 +128,9 @@
             <if test="id != null and id != ''">
                 AND a.id != #{id}
             </if>
+			<if test="departParentId != null and departParentId != ''">
+				AND a.depart_parent_id = #{departParentId}
+			</if>
         </where>
     </select>
 

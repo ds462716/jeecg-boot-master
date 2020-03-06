@@ -12,7 +12,7 @@ import java.util.List;
  */
 public interface IPdVenderService extends IService<PdVender> {
 
-    PdVender verify(PdVender pdVender);
+    List<PdVender> verify(PdVender pdVender);
 
     List<PdVender> selectList(PdVender pdVender);
 
