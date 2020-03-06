@@ -287,7 +287,10 @@
     },
     methods: {
       getAvatarView: function (avatar) {
-        return getFileAccessHttpUrl(avatar,this.url.imgerver,"http")
+        //没有上传头像404错误优化
+        if(!avatar.startsWith("[")){
+          return getFileAccessHttpUrl(avatar,this.url.imgerver,"http");
+        }
       },
 
       batchFrozen: function (status) {
