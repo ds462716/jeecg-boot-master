@@ -445,7 +445,8 @@
                 //获取光标
                 this.$refs['productNumberInput'].focus();
 
-                if(this.args){
+                // 从申领单或调拨单直接打开
+                if(this.args && this.args.outType){
                   let outType = this.args.outType;//	1-申领出库; 2-科室出库; 3-调拨出库
                   let data = this.args.data;
                   let inDepartId = this.args.inDepartId;

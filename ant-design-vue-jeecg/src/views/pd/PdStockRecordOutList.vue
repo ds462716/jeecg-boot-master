@@ -205,7 +205,7 @@
     methods: {
       // handleAdd: function () {
       //   let args = {};
-      //   args.outType = "1";  //	1-申领出库; 2-科室出库; 3-调拨出库
+      //   args.outType = "3";  //	1-申领出库; 2-科室出库; 3-调拨出库
       //   args.data = [];  // 申领单或调拨单明细 按选择器传值就行
       //   args.inDepartId = "862b03041cc64dadb9b882d3505abeb1"; // 入库部门ID
       //   this.$refs.modalForm.add(args);
