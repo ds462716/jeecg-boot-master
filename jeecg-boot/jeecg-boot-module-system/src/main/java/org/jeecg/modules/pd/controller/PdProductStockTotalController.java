@@ -317,4 +317,24 @@ public class PdProductStockTotalController {
 		 return mv;
 	 }
 
+
+	 /**
+	  * 查询盘点库存明细信息
+	  *
+	  * @param productStock
+	  * @param pageNo
+	  * @param pageSize
+	  * @param req
+	  * @return
+	  */
+	 @GetMapping(value = "/queryCheckStockList")
+	 public Result<?> queryCheckStockList(PdProductStock productStock,
+								@RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
+								@RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
+								HttpServletRequest req) {
+		 Page<PdProductStock> page = new Page<PdProductStock>(pageNo, pageSize);
+		 page = pdProductStockService.selectList(page,productStock);
+		 return Result.ok(page);
+	 }
+
 }

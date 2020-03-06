@@ -1,7 +1,8 @@
 package org.jeecg.modules.pd.service;
 
-import org.jeecg.modules.pd.entity.PdProductStockCheckChild;
 import com.baomidou.mybatisplus.extension.service.IService;
+import org.jeecg.modules.pd.entity.PdProductStockCheckChild;
+
 import java.util.List;
 
 /**
@@ -13,4 +14,6 @@ import java.util.List;
 public interface IPdProductStockCheckChildService extends IService<PdProductStockCheckChild> {
 
 	public List<PdProductStockCheckChild> selectByMainId(String mainId);
+
+	public List<PdProductStockCheckChild> selectByCheckNo(String checkNo);
 }

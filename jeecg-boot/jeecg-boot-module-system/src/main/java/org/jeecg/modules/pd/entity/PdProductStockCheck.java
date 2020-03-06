@@ -2,7 +2,6 @@ package org.jeecg.modules.pd.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import io.swagger.annotations.ApiModel;
 import lombok.Data;
 import org.jeecgframework.poi.excel.annotation.Excel;
 import org.jeecgframework.poi.excel.annotation.ExcelCollection;
@@ -17,7 +16,6 @@ import java.util.List;
  * @Date:   2020-02-28
  * @Version: V1.0
  */
-@ApiModel(value="pd_product_stock_check对象", description="盘点记录表")
 @Data
 @TableName("pd_product_stock_check")
 public class PdProductStockCheck extends BaseEntity {

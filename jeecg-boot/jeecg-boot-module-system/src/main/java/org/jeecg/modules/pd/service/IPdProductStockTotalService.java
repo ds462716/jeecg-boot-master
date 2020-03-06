@@ -3,11 +3,9 @@ package org.jeecg.modules.pd.service;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.jeecg.modules.pd.entity.PdProductStockTotal;
-import org.jeecg.modules.pd.entity.PdPurchaseOrder;
 import org.jeecg.modules.pd.entity.PdStockRecord;
 import org.jeecg.modules.pd.entity.PdStockRecordDetail;
 import org.jeecg.modules.pd.vo.PdProductStockTotalPage;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
@@ -60,4 +58,11 @@ public interface IPdProductStockTotalService extends IService<PdProductStockTota
      * */
     public Map<String,String> updateStockNumByProdIdAndDeptId(PdProductStockTotal stockTotal);
 
-    }
+
+    /**
+     * 获取待盘点产品总数量
+     * @param stockTotal
+     * @return
+     */
+    public Double queryCheckTotalNum(PdProductStockTotal stockTotal);
+}

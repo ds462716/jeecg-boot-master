@@ -152,4 +152,12 @@
         WHERE product_id = #{productId}
         AND storeroom_id = #{storeroomId}
     </update>
+
+    <!--获取待盘点产品总数量-->
+    <select id="queryCheckTotalNum" resultType="double">
+        SELECT  sum(stock_num)  FROM pd_product_stock_total a
+       where a.del_flag = #{DEL_FLAG_NORMAL} AND stock_num>0
+         AND a.depart_id = #{departId}
+         AND a.depart_parent_id = #{departParentId}
+    </select>
 </mapper>
