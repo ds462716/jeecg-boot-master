@@ -370,14 +370,7 @@
             },
             { title: '入库单价', key: 'purchasePrice', width:"80px" },
             { title: '金额', key: 'inTotalPrice', type: FormTypes.input, disabled:true, width:"100px" },
-            // {
-            //   title: '货区', key: 'huoquId', type: FormTypes.select, width:"150px", options: this.huoquOptions,allowSearch:true,
-            //   placeholder: '${title}', validateRules: [{ required: true, message: '${title}不能为空' }]
-            // },
-            {
-              title: '货位', key: 'huoweiCode', type: FormTypes.select, width:"150px", options: [],allowSearch:true,
-              placeholder: '${title}', validateRules: [{ required: true, message: '${title}不能为空' }]
-            },
+            { title: '货位', key: 'huoweiCode', type: FormTypes.select, width:"150px", options: [],allowSearch:true, placeholder: '${title}' },
             { title: '申购单号', key: 'orderNo', type: FormTypes.input, disabled:true, width:"180px" }
           ]
         },

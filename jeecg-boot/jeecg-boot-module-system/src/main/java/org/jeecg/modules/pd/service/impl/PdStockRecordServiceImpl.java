@@ -336,7 +336,7 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
 		for(PdStockRecordDetail psd : detail){
 			stockLog = new PdStockLog();
 
-			stockLog.setInvoiceNo(psd.getRecordNo());
+			stockLog.setInvoiceNo(pdStockRecord.getRecordNo());
 			stockLog.setProductId(psd.getProductId());
 			stockLog.setProductBarCode(psd.getProductBarCode());
 			stockLog.setBatchNo(psd.getBatchNo());

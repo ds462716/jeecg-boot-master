@@ -207,7 +207,7 @@
   // import PdChooseProductListModel from "./PdChooseProductListModel";
   import JDictSelectTagExpand from "@/components/dict/JDictSelectTagExpand"
   import ATextarea from "ant-design-vue/es/input/TextArea";
-  import {scanCode} from '@/utils/barcode'
+  import {stockScanCode} from '@/utils/barcode'
   import PdChooseProductStockListModel from "./PdChooseProductStockListModel";
 
   const VALIDATE_NO_PASSED = Symbol()
@@ -322,6 +322,7 @@
           loading: false,
           dataSource: [],
           columns: [
+            { title: '库存明细ID', key: 'productStockId', type: FormTypes.hidden },
             { title: '产品ID', key: 'productId', type: FormTypes.hidden },
             { title: '产品名称', key: 'productName', type: FormTypes.normal,width:"220px" },
             { title: '产品编号', key: 'productNumber', width:"160px" },
@@ -340,10 +341,7 @@
             { title: '出库金额', key: 'outTotalPrice', type: FormTypes.input, disabled:true, width:"100px" },
             { title: '库存数量', key: 'stockNum', width:"80px" },
             { title: '出库货位', key: 'outhuoweiName', width:"100px" },
-            {
-              title: '入库货位', key: 'inHuoweiCode', type: FormTypes.select, width:"150px", options: [],allowSearch:true,
-              placeholder: '${title}', validateRules: [{ required: true, message: '${title}不能为空' }]
-            },
+            { title: '入库货位', key: 'inHuoweiCode', type: FormTypes.select, width:"150px", options: [],allowSearch:true, placeholder: '${title}' },
           ]
         },
         url: {
@@ -351,6 +349,8 @@
           submit: "/pd/pdStockRecordOut/submit",
           edit: "/pd/pdStockRecordOut/edit",
           querySupplier:"/pd/pdSupplier/getSupplierList",
+          departList:"/pd/pdDepart/getSysDepartList",
+          huoweiList:"/pd/pdGoodsAllocation/getOptions",
           pdStockRecordDetail: {
             list: "/pd/pdStockRecordOut/queryPdStockRecordDetailByMainId"
           },
@@ -423,14 +423,6 @@
                 //获取光标
                 this.$refs['productNumberInput'].focus();
               }
-
-              this.goodsAllocationList = res.result.goodsAllocationList;
-              this.departList = res.result.sysDepartList;
-              this.pdStockRecordDetailTable.columns.forEach((item, idx) => {
-                if(item.key === "inHuoweiCode"){ // TODO 查询入库货位
-                  item.options = this.goodsAllocationList;
-                }
-              })
             })
           }
           if(res.code===510){
@@ -542,11 +534,33 @@
         }
         this.popModal.fullScreen = mode
       },
-      departHandleSearch(){
-
+      // 部门下拉框搜索
+      departHandleSearch(value){
+        getAction(this.url.departList,{departName:value}).then((res)=>{
+          if (!res.success) {
+            this.cmsFailed(res.message);
+          }
+          this.departList = res.result;
+        })
       },
-      departHandleChange(){
-
+      // 部门下拉框变更
+      departHandleChange(value){
+        let { values } = this.$refs.pdStockRecordDetail.getValuesSync({ validate: false });
+        values.forEach((item, idx) => {
+          // 清空货位
+          this.$refs.pdStockRecordDetail.setValues([{rowKey: item.id, values: { inHuoweiCode:"" }}]);
+        })
+        getAction(this.url.huoweiList,{departId:value,areaType:'2'}).then((res)=>{
+          if (!res.success) {
+            this.cmsFailed(res.message);
+          }
+          this.goodsAllocationList = res.result;
+          this.pdStockRecordDetailTable.columns.forEach((item, idx) => {
+            if(item.key === "inHuoweiCode"){
+              item.options = this.goodsAllocationList;
+            }
+          })
+        })
       },
       //删除行
       handleConfirmDelete() {
@@ -570,21 +584,21 @@
       chooseProductList() {
         let outType = this.form.getFieldValue("outType");
         let inDepartId = this.form.getFieldValue("inDepartId");
-        // if(!inDepartId){
-        //   this.$message.error("请选择入库科室！");
-        //   return;
-        // }
-        //
-        // if(outType == "1"){        //申领单
-        //   this.$refs.pdChooseProductStockListModel.show({supplierId:supplierId,supplierName:"",orderNo:orderNo});
-        // }else if(outType == "2"){
+        if(!inDepartId){
+          this.$message.error("请选择入库科室！");
+          return;
+        }
+
+        if(outType == "1"){        //申领单
+          // this.$refs.pdChooseProductStockListModel.show({supplierId:supplierId,supplierName:"",orderNo:orderNo});
+        }else if(outType == "2"){
           this.$refs.pdChooseProductStockListModel.show({});
-        // }else if(outType == "3"){  //调拨单
-        //   this.$refs.pdChooseProductStockListModel.show({supplierId:supplierId,supplierName:"",orderNo:orderNo});
-        // }else{
-        //   this.$message.error("请选择出库类型！");
-        //   return;
-        // }
+        }else if(outType == "3"){  //调拨单
+          // this.$refs.pdChooseProductStockListModel.show({supplierId:supplierId,supplierName:"",orderNo:orderNo});
+        }else{
+          this.$message.error("请选择出库类型！");
+          return;
+        }
       },
       // 选择产品后返回
       returnProductStockData(data) {
@@ -595,7 +609,6 @@
           this.pdStockRecordDetailTable.dataSource = values;
           this.addrows(item);
         })
-
         // 计算总数量和总价格
         this.getTotalNumAndPrice(values);
       },
@@ -627,7 +640,25 @@
       },
       // 扫码 调用 新增一行
       addrowsByScanCode(row){
-
+        let data = {
+          productId: row.productId,
+          productName: row.productName,
+          productNumber:row.number,
+          productBarCode:row.productBarCode,
+          spec: row.spec,
+          batchNo:row.batchNo,
+          unitName:row.unitName,
+          expDate:row.expDate,
+          sellingPrice:row.sellingPrice,
+          productNum: 1,
+          purchasePrice:row.purchasePrice,
+          outTotalPrice:Number(!row.sellingPrice ? 0 : row.sellingPrice).toFixed(4),
+          stockNum:row.stockNum,
+          outhuoweiName:row.huoweiName,
+          inHuoweiCode:""
+        }
+        this.pdStockRecordDetailTable.dataSource.push(data);
+        this.$refs.pdStockRecordDetail.add();
       },
       // 计算总数量和总价格
       getTotalNumAndPrice(rows){
@@ -690,30 +721,30 @@
             return;
           }
           //解析条码
-          scanCode(productNumber,productBarCode).then((res) => {
+          stockScanCode(productNumber,productBarCode).then((res) => {
             console.log(res)
-            if(res.code == "200" ){
-              let result = res.result;
-              if(result.code == "200" || result.code == "203"){
-                let product = result.pdProduct;
+            if(res.code == "200" || res.code == "203"){
+              let pdProduct = res.result[0];
 
-                let isAddRow = true;// 是否增加一行
-                // 循环表格数据
-                this.$refs.pdStockRecordDetail.getValues((error, values) => {
+              let isAddRow = true;// 是否增加一行
+              // 循环表格数据
+              let { values } = this.$refs.pdStockRecordDetail.getValuesSync({ validate: false });
+              if(values.length > 0) { //表格有数据
 
-                  if(isAddRow){
-
-                  }
-
-                  if(result.code == "203"){ // 近效期提醒
-                    this.$message.error(result.msg);
-                  }
-                })
-              }else if(result.code ==="201"){
-                this.$message.error(result.msg);
-              }else{
-                this.$message.error(result.msg);
               }
+
+              if(isAddRow){
+                this.pdStockRecordDetailTable.dataSource = values;
+                //条码新增一行
+                this.addrowsByScanCode(pdProduct);
+                // 计算总数量和总价格
+                this.getTotalNumAndPrice(values);
+              }
+              if(res.code == "203"){ // 近效期提醒
+                this.$message.error(result.message);
+              }
+            }else if(res.code ==="201"){
+              this.$message.error(res.message);
             }else{
               this.$message.error(res.message);
             }
