@@ -42,7 +42,9 @@
         c.number as "number",
         c.spec as "spec",
         c.version as "version",
-        c.registration as "registration"
+        c.registration as "registration",
+        c.purchase_price as "purchasePrice",
+        c.selling_price as "sellingPrice"
 	</sql>
 	<sql id="pdProductJoins">
         LEFT JOIN pd_product c ON c.id = a.product_id
@@ -73,6 +75,14 @@
         LEFT JOIN sys_depart f ON a.depart_id = f.id
     </sql>
 
+
+	<sql id="pdGoodsAllocationColumns">
+      g.name AS "huoweiName"
+    </sql>
+	<sql id="pdGoodsAllocation">
+        LEFT JOIN pd_goods_allocation g ON a.huowei_code = g.code
+    </sql>
+
 	<!-- 列表查询 -->
 	<select id="selectList" resultType="org.jeecg.modules.pd.entity.PdProductStock">
 		SELECT
@@ -81,7 +91,8 @@
 		<include refid="pdProductColumns"/>,
 		<include refid="pdVenderColumns"/>,
 		<include refid="pdSupplierColumns"/>,
-		<include refid="sysDepartColumns"/>
+		<include refid="sysDepartColumns"/>,
+		<include refid="pdGoodsAllocationColumns"/>
 		FROM pd_product_stock a
 		<include refid="pdProductStockJoins"/>
 		<include refid="pdProductJoins"/>
@@ -89,6 +100,7 @@
 		<include refid="pdVenderJoins"/>
 		<include refid="pdSupplierJoins"/>
 		<include refid="sysDepartJoins"/>
+		<include refid="pdGoodsAllocation"/>
 		<where>
 			a.del_flag =#{DEL_FLAG_NORMAL} AND a.stock_num > 0
 			<if test="id != null and id != ''">
@@ -104,7 +116,7 @@
 				AND c.number = #{number}
 			</if>
 			<if test="productName != null and productName != ''">
-				AND a.product_name = #{productName}
+				AND c.name LIKE concat('%',#{productName},'%')
 			</if>
 			<if test="productBarCode != null and productBarCode != ''">
 				AND a.product_bar_code = #{productBarCode}
@@ -112,11 +124,20 @@
 			<if test="batchNo != null and batchNo != ''">
 				AND a.batch_no = #{batchNo}
 			</if>
+			<if test="supplierId != null and supplierId != ''">
+				AND a.supplier_id = #{supplierId}
+			</if>
 			<if test="huoweiCode != null and huoweiCode != ''">
 				AND a.huowei_code = #{huoweiCode}
 			</if>
 			<if test="expDate != null">
 				AND DATE_FORMAT(a.exp_date,'%Y-%m-%d') = DATE_FORMAT( #{expDate}, '%Y-%m-%d')
+			</if>
+			<if test="queryDateStart != null and queryDateStart != ''">
+				AND a.exp_date &gt;= #{queryDateStart}
+			</if>
+			<if test="queryDateEnd != null and queryDateEnd != ''">
+				AND a.exp_date &lt;= #{queryDateEnd}
 			</if>
 
 			order by  exp_status  desc,create_time desc

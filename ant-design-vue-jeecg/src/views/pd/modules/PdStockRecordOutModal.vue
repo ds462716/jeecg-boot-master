@@ -191,9 +191,7 @@
       </div>
 
     </a-spin>
-
-    <!--<pd-choose-purchase-order-list-model  ref="pdChoosePurchaseOrderListModel" @ok="returnPurchaseOrderData" ></pd-choose-purchase-order-list-model>-->
-    <!--<pd-choose-product-list-model  ref="pdChooseProductListModel" @ok="returnProductData" ></pd-choose-product-list-model>-->
+    <pd-choose-product-stock-list-model ref="pdChooseProductStockListModel" @ok="returnProductStockData" ></pd-choose-product-stock-list-model>
   </a-modal>
 </template>
 
@@ -210,6 +208,7 @@
   import JDictSelectTagExpand from "@/components/dict/JDictSelectTagExpand"
   import ATextarea from "ant-design-vue/es/input/TextArea";
   import {scanCode} from '@/utils/barcode'
+  import PdChooseProductStockListModel from "./PdChooseProductStockListModel";
 
   const VALIDATE_NO_PASSED = Symbol()
   export { FormTypes, VALIDATE_NO_PASSED }
@@ -232,9 +231,8 @@
     name: 'PdStockRecordOutModal',
     mixins: [JEditableTableMixin],
     components: {
+      PdChooseProductStockListModel,
       ATextarea,
-      // PdChooseProductListModel,
-      // PdChoosePurchaseOrderListModel,
       JDate,
       JDictSelectTagExpand
     },
@@ -325,34 +323,27 @@
           dataSource: [],
           columns: [
             { title: '产品ID', key: 'productId', type: FormTypes.hidden },
-            { title: '产品名称', key: 'productName', width:"220px" },
-            { title: '产品编号', key: 'productNumber', width:"150px" },
-            { title: '产品条码', key: 'productBarCode', width:"200px" },
+            { title: '产品名称', key: 'productName', type: FormTypes.normal,width:"220px" },
+            { title: '产品编号', key: 'productNumber', width:"160px" },
+            { title: '产品条码', key: 'productBarCode', type: FormTypes.input, disabled:true, width:"200px" },
             { title: '规格', key: 'spec', width:"150px" },
-            // { title: '型号', key: 'version', width:"150px" },
+            { title: '批号', key: 'batchNo', width:"100px" },
             { title: '单位', key: 'unitName', width:"50px" },
+            { title: '有效期', key: 'expDate', width:"100px" },
+            { title: '入库单价', key: 'purchasePrice', width:"80px" },
+            { title: '出库单价', key: 'sellingPrice', width:"80px" },
             {
-              title: '有效期', key: 'expDate', type: FormTypes.date, width:"130px",
-              placeholder: '${title}', defaultValue: '',
-              validateRules: [{ required: true, message: '${title}不能为空' }]
-            },
-            {
-              title: '批号', key: 'batchNo', width:"120px", type: FormTypes.input,
-              placeholder: '${title}', defaultValue: '',
-              validateRules: [{ required: true, message: '${title}不能为空' }]
-            },
-            {
-              title: '数量', key: 'productNum', type: FormTypes.input, width:"80px",
+              title: '出库数量', key: 'productNum', type: FormTypes.input, width:"80px",
               placeholder: '${title}', defaultValue: '1',
               validateRules: [{ required: true, message: '${title}不能为空' },{ pattern: '^-?\\d+\\.?\\d*$',message: '${title}的格式不正确' }]
             },
-            { title: '入库单价', key: 'purchasePrice', width:"80px" },
-            { title: '金额', key: 'inTotalPrice', width:"90px" },
+            { title: '出库金额', key: 'outTotalPrice', type: FormTypes.input, disabled:true, width:"100px" },
+            { title: '库存数量', key: 'stockNum', width:"80px" },
+            { title: '出库货位', key: 'outhuoweiName', width:"100px" },
             {
-              title: '货位', key: 'huoweiCode', type: FormTypes.select, width:"150px", options: [],allowSearch:true,
+              title: '入库货位', key: 'inHuoweiCode', type: FormTypes.select, width:"150px", options: [],allowSearch:true,
               placeholder: '${title}', validateRules: [{ required: true, message: '${title}不能为空' }]
             },
-            { title: '申购单号', key: 'orderNo', width:"180px" }
           ]
         },
         url: {
@@ -436,7 +427,7 @@
               this.goodsAllocationList = res.result.goodsAllocationList;
               this.departList = res.result.sysDepartList;
               this.pdStockRecordDetailTable.columns.forEach((item, idx) => {
-                if(item.key === "huoweiCode"){
+                if(item.key === "inHuoweiCode"){ // TODO 查询入库货位
                   item.options = this.goodsAllocationList;
                 }
               })
@@ -577,13 +568,36 @@
       },
       // 选择产品 新增行
       chooseProductList() {
-
         let outType = this.form.getFieldValue("outType");
+        let inDepartId = this.form.getFieldValue("inDepartId");
+        // if(!inDepartId){
+        //   this.$message.error("请选择入库科室！");
+        //   return;
+        // }
+        //
+        // if(outType == "1"){        //申领单
+        //   this.$refs.pdChooseProductStockListModel.show({supplierId:supplierId,supplierName:"",orderNo:orderNo});
+        // }else if(outType == "2"){
+          this.$refs.pdChooseProductStockListModel.show({});
+        // }else if(outType == "3"){  //调拨单
+        //   this.$refs.pdChooseProductStockListModel.show({supplierId:supplierId,supplierName:"",orderNo:orderNo});
+        // }else{
+        //   this.$message.error("请选择出库类型！");
+        //   return;
+        // }
+      },
+      // 选择产品后返回
+      returnProductStockData(data) {
+        let rows = data;
+        let { values } = this.$refs.pdStockRecordDetail.getValuesSync({ validate: false });
+        rows.forEach((item, idx) => {
+          // j-editable-table表格（可能是BUG）：values变更 不会同步变更到dataSource，新增行时需要手动赋值到dataSource
+          this.pdStockRecordDetailTable.dataSource = values;
+          this.addrows(item);
+        })
 
-        if(outType == "1"){        //申领单
-        }else if(outType == "2"){
-        }else if(outType == "3"){  //调拨单
-        }
+        // 计算总数量和总价格
+        this.getTotalNumAndPrice(values);
       },
       // 选择定数包
       choosePackageList() {
@@ -591,15 +605,46 @@
       },
       // 点“选择产品”按钮后 调用 新增一行
       addrows(row){
-
+        let data = {
+          productId: row.productId,
+          productName: row.productName,
+          productNumber:row.number,
+          productBarCode:row.productBarCode,
+          spec: row.spec,
+          batchNo:row.batchNo,
+          unitName:row.unitName,
+          expDate:row.expDate,
+          sellingPrice:row.sellingPrice,
+          productNum: 1,
+          purchasePrice:row.purchasePrice,
+          outTotalPrice:Number(!row.sellingPrice ? 0 : row.sellingPrice).toFixed(4),
+          stockNum:row.stockNum,
+          outhuoweiName:row.huoweiName,
+          inHuoweiCode:""
+        }
+        this.pdStockRecordDetailTable.dataSource.push(data);
+        this.$refs.pdStockRecordDetail.add();
       },
       // 扫码 调用 新增一行
       addrowsByScanCode(row){
 
       },
       // 计算总数量和总价格
-      getTotalNumAndPrice(){
-
+      getTotalNumAndPrice(rows){
+        this.$nextTick(() => {
+          if (rows.length <= 0) {
+            let {values} = this.$refs.pdStockRecordDetail.getValuesSync({validate: false});
+            rows = values;
+          }
+          let totalSum = 0;
+          let totalPrice = 0;
+          rows.forEach((item, idx) => {
+            totalSum = totalSum + Number(item.productNum);
+            totalPrice = totalPrice + Number(item.outTotalPrice);
+          })
+          this.totalSum = totalSum;
+          this.totalPrice = totalPrice.toFixed(4);
+        })
       },
       //清空扫码框
       clearQueryParam(){
@@ -616,11 +661,13 @@
           }else if(type === FormTypes.input){
             if(column.key === "productNum"){
               // 产品数量变更 计算每条产品的价格
+              let outTotalPrice = (Number(row.sellingPrice) * Number(value)).toFixed(4);
+              target.setValues([{rowKey: row.id, values: { outTotalPrice: outTotalPrice }}])
             }
           }
         }
         // 计算总数量和总价格
-        this.getTotalNumAndPrice();
+        this.getTotalNumAndPrice([]);
       },
       // 扫码查询
       searchQuery(num) {

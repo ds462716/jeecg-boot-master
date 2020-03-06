@@ -9,6 +9,7 @@ import lombok.Data;
 import org.jeecgframework.poi.excel.annotation.Excel;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 /**
@@ -76,9 +77,13 @@ public class PdProductStock extends BaseEntity {
 	/**是否永存*/
 	@Excel(name = "是否永存", width = 15)
 	private String isLong;
-	/**是否永存*/
+	/**货位编号*/
 	@Excel(name = "货位编号", width = 15)
 	private String huoweiCode;
+	/**货位名称**/
+	@Excel(name = "货位名称", width = 15)
+	@TableField(exist = false)
+	private String huoweiName;
 
 	/**单位名称*/
 	@Excel(name = "单位名称", width = 15)
@@ -116,4 +121,18 @@ public class PdProductStock extends BaseEntity {
 	@Excel(name = "科室名称", width = 15)
 	@TableField(exist = false)
 	private String deptName;
+	/**进价*/
+	@TableField(exist = false)
+	private BigDecimal purchasePrice;
+	/**出价*/
+	@TableField(exist = false)
+	private BigDecimal sellingPrice;
+
+	/** 查询日期起始 **/
+	@TableField(exist = false)
+	private String queryDateStart;
+
+	/** 查询日期结束 **/
+	@TableField(exist = false)
+	private String queryDateEnd;
 }

@@ -712,7 +712,7 @@
           this.addrows(item);
         })
 
-          // 计算总数量和总价格
+        // 计算总数量和总价格
         this.getTotalNumAndPrice(values);
       },
       // 点“选择产品”按钮后 调用 新增一行
