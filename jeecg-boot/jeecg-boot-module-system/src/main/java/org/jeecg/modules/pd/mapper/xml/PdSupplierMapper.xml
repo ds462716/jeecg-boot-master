@@ -90,6 +90,7 @@
 		a.update_time,
 		a.sys_org_code,
 		a.validity_flag,
+		a.msg_send_state,
 		a.remarks,
 		a.del_flag
 	</sql>
@@ -107,6 +108,7 @@
 		a.update_time,
 		a.sys_org_code,
 		a.validity_flag,
+		a.msg_send_state,
 		a.remarks,
 		a.del_flag
 	</sql>

@@ -265,6 +265,10 @@ public class PdVender  extends BaseEntity {
 	@Excel(name = "是否过期标识，0未过期，1已过期，2近效期", width = 15)
     private java.lang.String validityFlag;
 	/**
+	 * 消息发送状态，近效期1，已过期2，初始值为0
+	 */
+	private java.lang.String msgSendState;
+	/**
 	 * 所属部门
 	 */
 	@TableField(strategy = FieldStrategy.NOT_EMPTY)
