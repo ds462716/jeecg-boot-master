@@ -274,7 +274,7 @@ public class SysUserController {
     /**
      * 修改密码
      */
-    @RequiresRoles({"admin"})
+    //@RequiresRoles({"admin"})
     @RequestMapping(value = "/changePassword", method = RequestMethod.PUT)
     public Result<?> changePassword(@RequestBody SysUser sysUser) {
         SysUser u = this.sysUserService.getOne(new LambdaQueryWrapper<SysUser>().eq(SysUser::getUsername, sysUser.getUsername()));
