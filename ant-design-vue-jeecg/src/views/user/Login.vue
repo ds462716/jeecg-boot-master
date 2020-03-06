@@ -405,7 +405,7 @@
             //this.loginSuccess()
             this.$notification.error({
               message: '提示',
-              description: `您的账号没有访问权限，请联系管理员!`,
+              description: `您尚未归属部门,没有访问权限，请联系管理员!`,
               //description: `您尚未归属部门,请确认账号信息`,
               duration:3
             });
