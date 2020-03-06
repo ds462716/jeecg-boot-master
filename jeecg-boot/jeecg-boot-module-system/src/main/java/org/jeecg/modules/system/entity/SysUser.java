@@ -182,4 +182,10 @@ public class SysUser implements Serializable {
      *最顶级部门id（医院id）
      */
     private String departParentId;
+
+    /**
+     * 部门名称集合
+     */
+    @TableField(exist = false)
+    private String departListName;
 }

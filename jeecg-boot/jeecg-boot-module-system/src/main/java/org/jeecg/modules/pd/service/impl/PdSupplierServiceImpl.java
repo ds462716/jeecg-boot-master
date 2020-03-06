@@ -21,7 +21,7 @@ public class PdSupplierServiceImpl extends ServiceImpl<PdSupplierMapper, PdSuppl
     @Autowired
     private PdSupplierMapper pdSupplierMapper;
     @Override
-    public PdSupplier verify(PdSupplier pdSupplier) {
+    public List<PdSupplier> verify(PdSupplier pdSupplier) {
         return pdSupplierMapper.verify(pdSupplier);
     }
 

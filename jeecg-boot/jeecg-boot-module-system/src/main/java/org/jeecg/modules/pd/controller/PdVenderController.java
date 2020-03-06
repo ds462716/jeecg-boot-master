@@ -125,8 +125,10 @@ public class PdVenderController extends JeecgController<PdVender, IPdVenderServi
          //如果此参数为false则程序发生异常
          result.setResult(true);
          result.setMessage("添加成功");
-         PdVender obj = pdVenderService.verify(pdVender);
-         if (obj != null) {
+		 LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		 pdVender.setDepartParentId(sysUser.getDepartParentId());
+		 List<PdVender> obj = pdVenderService.verify(pdVender);
+         if (obj != null && obj.size()>0) {
              result.setSuccess(false);
              result.setMessage("生产厂家已存在");
              return result;
@@ -203,8 +205,10 @@ public class PdVenderController extends JeecgController<PdVender, IPdVenderServi
          //如果此参数为false则程序发生异常
          result.setResult(true);
          result.setMessage("编辑成功");
-         PdVender obj = pdVenderService.verify(pdVender);
-         if (obj != null) {
+		 LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		 pdVender.setDepartParentId(sysUser.getDepartParentId());
+         List<PdVender> obj = pdVenderService.verify(pdVender);
+         if (obj != null && obj.size()>0) {
              result.setSuccess(false);
              result.setMessage("生产厂家已存在");
              return result;

@@ -22,7 +22,7 @@ public class PdVenderServiceImpl extends ServiceImpl<PdVenderMapper, PdVender> i
     @Autowired
     private PdVenderMapper pdVenderMapper;
     @Override
-    public PdVender verify(PdVender pdVender) {
+    public  List<PdVender> verify(PdVender pdVender) {
         return pdVenderMapper.verify(pdVender);
     }
 

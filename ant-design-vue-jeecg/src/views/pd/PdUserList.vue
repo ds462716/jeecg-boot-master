@@ -155,9 +155,6 @@
                 </a-popconfirm>
               </a-menu-item>
 
-              <a-menu-item>
-                <a href="javascript:;" @click="handleAgentSettings(record.username)">代理人</a>
-              </a-menu-item>
 
             </a-menu>
           </a-dropdown>
@@ -172,8 +169,6 @@
 
     <password-modal ref="passwordmodal" @ok="passwordModalOk"></password-modal>
 
-    <sys-user-agent-modal ref="sysUserAgentModal"></sys-user-agent-modal>
-
     <!-- 用户回收站 -->
     <user-recycle-bin-modal :visible.sync="recycleBinVisible" @ok="modalFormOk"/>
 
@@ -186,7 +181,6 @@
   import {putAction,getFileAccessHttpUrl} from '@/api/manage';
   import {frozenBatch} from '@/api/api'
   import {JeecgListMixin} from '@/mixins/JeecgListMixin'
-  import SysUserAgentModal from "./modules/SysUserAgentModal";
   import JInput from '@/components/jeecg/JInput'
   import UserRecycleBinModal from './modules/UserRecycleBinModal'
 
@@ -194,7 +188,6 @@
     name: "UserList",
     mixins: [JeecgListMixin],
     components: {
-      SysUserAgentModal,
       UserModal,
       PasswordModal,
       JInput,
@@ -279,7 +272,7 @@
         url: {
           imgerver: window._CONFIG['staticDomainURL'],
           syncUser: "/process/extActProcess/doSyncUser",
-          list: "/sys/user/list",
+          list: "/pd/pdDepart/userList",
           delete: "/sys/user/delete",
           deleteBatch: "/sys/user/deleteBatch",
           exportXlsUrl: "/sys/user/exportXls",
@@ -362,10 +355,7 @@
       handleChangePassword(username) {
         this.$refs.passwordmodal.show(username);
       },
-      handleAgentSettings(username){
-        this.$refs.sysUserAgentModal.agentSettings(username);
-        this.$refs.sysUserAgentModal.title = "用户代理人设置";
-      },
+
       handleSyncUser() {
       },
       passwordModalOk() {

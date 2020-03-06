@@ -153,11 +153,11 @@
             align: "center",
             dataIndex: 'phone'
           },
-          {
+          /*{
             title: '部门',
             align: "center",
             dataIndex: 'orgCode'
-          },
+          },*/
           {
             title: '操作',
             dataIndex: 'action',
@@ -296,15 +296,18 @@
       },
       handleEdit: function (record) {
         this.$refs.modalForm.title = "编辑";
-        this.$refs.modalForm.departDisabled = true;
         this.$refs.modalForm.disableSubmit = false;
+        this.$refs.modalForm.edit(record);
+      },
+      handleDetail: function (record) {
+        this.$refs.modalForm.title = "详情";
+        this.$refs.modalForm.disableSubmit = true;
         this.$refs.modalForm.edit(record);
       },
       handleAdd: function () {
         if (this.currentDeptId == '') {
           this.$message.error("请选择一个部门!")
         } else {
-          this.$refs.modalForm.departDisabled = true;
           this.$refs.modalForm.userDepartModel.departIdList = [this.currentDeptId];  //传入一个部门id
           this.$refs.modalForm.add();
           this.$refs.modalForm.title = "新增";
