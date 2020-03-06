@@ -63,7 +63,7 @@
         ref="table"
         size="middle"
         bordered
-        rowKey="productId"
+        rowKey="id"
         :columns="columns"
         :dataSource="dataSource"
         :pagination="ipagination"

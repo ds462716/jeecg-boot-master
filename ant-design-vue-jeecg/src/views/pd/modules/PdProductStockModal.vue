@@ -48,7 +48,7 @@
         ref="table"
         size="middle"
         bordered
-        rowKey="productId"
+        rowKey="id"
         :columns="columns"
         :dataSource="dataSource"
         :pagination="ipagination"
@@ -65,6 +65,7 @@
   import { httpAction,getAction } from '@/api/manage'
   import { JeecgListMixin } from '@/mixins/JeecgListMixin'
   import {initDictOptions, filterMultiDictText} from '@/components/dict/JDictSelectUtil'
+  import { FormTypes } from '@/utils/JEditableTableUtil'
 
   export default {
     name: "PdProductStockModel",
@@ -77,6 +78,7 @@
         title:"库存产品",
         width:1200,
         visible: false,
+        model:{},
         validatorRules: {
           pCount:{},//总数量
           gCount:{},//过期数量
@@ -85,6 +87,11 @@
         confirmLoading: false,
         // 表头
         columns: [
+          {
+            title:'产品ID',
+            dataIndex: 'productId',
+            type: FormTypes.hidden
+          },
           {
             title:'产品名称',
             align:"center",
