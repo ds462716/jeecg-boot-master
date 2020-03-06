@@ -122,6 +122,8 @@ const queryPdDepaTreeList = (params)=>getAction("/pd/pdDepart/queryTreeList",par
 const queryPdDepartTreeList = (params)=>getAction("/pd/pdDepart/queryPdDepartTreeList",params);
 const queryPermissionTreeList = (params)=>getAction("/pd/pdDepart/queryPermissionTreeList",params);
 const saveNDeptRolePermission = (params)=>postAction("/pd/pdDepart/saveDeptRolePermission",params);
+const queryUserDepart = (params)=>getAction("/pd/pdDepart/queryUserDepart",params);
+const queryAllDepart = (params)=>getAction("/pd/pdDepart/queryAllDepart",params);
 
 
 export {
@@ -189,7 +191,9 @@ export {
   queryPdDepaTreeList,
   queryPdDepartTreeList,
   queryPermissionTreeList,
-  saveNDeptRolePermission
+  saveNDeptRolePermission,
+  queryUserDepart,
+  queryAllDepart
 }
 
 

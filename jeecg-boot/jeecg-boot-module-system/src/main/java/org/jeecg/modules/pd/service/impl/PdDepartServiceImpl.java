@@ -11,11 +11,13 @@ import org.jeecg.modules.pd.service.IPdDepartService;
 import org.jeecg.modules.system.entity.SysDepart;
 import org.jeecg.modules.system.entity.SysDepartRolePermission;
 import org.jeecg.modules.system.entity.SysUser;
+import org.jeecg.modules.system.entity.SysUserDepart;
 import org.jeecg.modules.system.mapper.SysDepartMapper;
 import org.jeecg.modules.system.mapper.SysDepartRolePermissionMapper;
 import org.jeecg.modules.system.mapper.SysUserMapper;
 import org.jeecg.modules.system.model.SysDepartTreeModel;
 import org.jeecg.modules.system.service.ISysDepartRolePermissionService;
+import org.jeecg.modules.system.service.ISysUserDepartService;
 import org.jeecg.modules.system.util.FindsDepartsChildrenUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
@@ -37,6 +39,9 @@ public class PdDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart>
 
     @Autowired
     private SysDepartMapper sysDepartMapper;
+
+    @Autowired
+    private ISysUserDepartService sysUserDepartService;
 
     @Cacheable(value = CacheConstant.SYS_DEPARTS_CACHE)
     @Override
@@ -125,6 +130,16 @@ public class PdDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart>
     @Override
     public List<SysDepart> selectList(SysDepart sysDepart) {
         return sysDepartMapper.selectDepartList(sysDepart);
+    }
+
+    /**
+     * 查询用户的所有部门
+     * @param eq
+     * @return
+     */
+    @Override
+    public List<SysUserDepart> queryUserDepart(LambdaQueryWrapper<SysUserDepart> eq) {
+        return sysUserDepartService.list(eq);
     }
 
     /**

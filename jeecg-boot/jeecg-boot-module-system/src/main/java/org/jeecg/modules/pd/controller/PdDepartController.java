@@ -2,6 +2,7 @@ package org.jeecg.modules.pd.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.annotations.ApiOperation;
@@ -17,16 +18,10 @@ import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.pd.entity.PdDepartConfig;
 import org.jeecg.modules.pd.service.IPdDepartConfigService;
 import org.jeecg.modules.pd.service.IPdDepartService;
-import org.jeecg.modules.system.entity.SysDepart;
-import org.jeecg.modules.system.entity.SysDepartRole;
-import org.jeecg.modules.system.entity.SysPermission;
-import org.jeecg.modules.system.entity.SysUser;
+import org.jeecg.modules.system.entity.*;
 import org.jeecg.modules.system.model.SysDepartTreeModel;
 import org.jeecg.modules.system.model.TreeModel;
-import org.jeecg.modules.system.service.ISysDepartRolePermissionService;
-import org.jeecg.modules.system.service.ISysDepartRoleService;
-import org.jeecg.modules.system.service.ISysPermissionService;
-import org.jeecg.modules.system.service.ISysUserService;
+import org.jeecg.modules.system.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -61,7 +56,7 @@ public class PdDepartController extends JeecgController<PdDepartConfig, IPdDepar
     private ISysUserService sysUserService;
 
     @Autowired
-    private ISysDepartRolePermissionService sysDepartRolePermissionService;
+    private ISysDepartService sysDepartService;
 
     /**
      * 查询数据 查出所有部门,并以树结构数据格式响应给前端
@@ -269,7 +264,7 @@ public class PdDepartController extends JeecgController<PdDepartConfig, IPdDepar
             Map<String,String>  useDepNames = sysUserService.getDepNamesByUserIds(userIds);
             pageList.getRecords().forEach(item->{
                 //TODO 临时借用这个字段用于页面展示
-                item.setOrgCode(useDepNames.get(item.getId()));
+                item.setDepartListName(useDepNames.get(item.getId()));
             });
         }
         result.setSuccess(true);
@@ -304,4 +299,42 @@ public class PdDepartController extends JeecgController<PdDepartConfig, IPdDepar
 		 log.info("======获取产品数据=====耗时:" + (System.currentTimeMillis() - start) + "毫秒");
 		 return result;
 	 }
+
+	 @RequestMapping(value = "/queryUserDepart", method = RequestMethod.GET)
+    public Result<List<String>> queryUserDepart(@RequestParam(name = "userid", required = true) String userid) {
+        Result<List<String>> result = new Result<>();
+        List<String> list = new ArrayList<String>();
+        List<SysUserDepart> sysUserDeparts = pdDepartService.queryUserDepart(new QueryWrapper<SysUserDepart>().lambda().eq(SysUserDepart::getUserId, userid));
+        if (sysUserDeparts == null || sysUserDeparts.size() <= 0) {
+            result.error500("未找到用户相关部门信息");
+        } else {
+            for (SysUserDepart sysUserDepart : sysUserDeparts) {
+                list.add(sysUserDepart.getDepId());
+            }
+            result.setSuccess(true);
+            result.setResult(list);
+        }
+        return result;
+    }
+
+    /**
+     * 查询医院内所有部门
+     * @return
+     */
+    @RequestMapping(value = "/queryAllDepart", method = RequestMethod.GET)
+    public Result<List<SysDepart>> queryAllDepart() {
+        Result<List<SysDepart>> result = new Result<>();
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        LambdaQueryWrapper<SysDepart> query = new LambdaQueryWrapper<>();
+        query.eq(SysDepart::getDepartParentId, sysUser.getDepartParentId());
+        query.ne(SysDepart::getId, sysUser.getDepartParentId());
+        List<SysDepart> list = sysDepartService.list(query);
+        if(list==null||list.size()<=0) {
+            result.error500("未找到角色信息");
+        }else {
+            result.setResult(list);
+            result.setSuccess(true);
+        }
+        return result;
+    }
 }

@@ -102,7 +102,7 @@ public class SysUserController {
             Map<String,String>  useDepNames = sysUserService.getDepNamesByUserIds(userIds);
             pageList.getRecords().forEach(item->{
                 //TODO 临时借用这个字段用于页面展示
-                item.setOrgCode(useDepNames.get(item.getId()));
+                item.setDepartListName(useDepNames.get(item.getId()));
             });
         }
 		result.setSuccess(true);
@@ -350,7 +350,7 @@ public class SysUserController {
             Map<String,String>  useDepNames = sysUserService.getDepNamesByUserIds(userIds);
             userList.forEach(item->{
                 //TODO 临时借用这个字段用于页面展示
-                item.setOrgCode(useDepNames.get(item.getId()));
+                item.setDepartListName(useDepNames.get(item.getId()));
             });
         }
 
@@ -603,7 +603,7 @@ public class SysUserController {
                 Map<String, String> useDepNames = sysUserService.getDepNamesByUserIds(userIds);
                 pageList.getRecords().forEach(item -> {
                     //批量查询用户的所属部门
-                    item.setOrgCode(useDepNames.get(item.getId()));
+                    item.setDepartListName(useDepNames.get(item.getId()));
                 });
             }
             result.setSuccess(true);
@@ -1025,7 +1025,7 @@ public class SysUserController {
             List<String> userIds = logicDeletedUserList.stream().map(SysUser::getId).collect(Collectors.toList());
             // step.2 通过 userIds，一次性查询用户的所属部门名字
             Map<String, String> useDepNames = sysUserService.getDepNamesByUserIds(userIds);
-            logicDeletedUserList.forEach(item -> item.setOrgCode(useDepNames.get(item.getId())));
+            logicDeletedUserList.forEach(item -> item.setDepartListName(useDepNames.get(item.getId())));
         }
         return Result.ok(logicDeletedUserList);
     }

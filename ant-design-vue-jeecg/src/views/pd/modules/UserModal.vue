@@ -28,20 +28,33 @@
 
         <template v-if="!model.id">
           <a-form-item label="登陆密码" :labelCol="labelCol" :wrapperCol="wrapperCol" >
-            <a-input type="password" placeholder="请输入登陆密码" autocomplete="off" v-decorator="[ 'password', {}]" />
+            <a-input type="password" placeholder="请输入登陆密码" autocomplete="off" v-decorator="[ 'password', validatorRules.password]" />
           </a-form-item>
 
           <a-form-item label="确认密码" :labelCol="labelCol" :wrapperCol="wrapperCol" >
-            <a-input type="password" @blur="handleConfirmBlur" placeholder="请重新输入登陆密码" v-decorator="[ 'confirmpassword', validatorRules.confirmpassword]"/>
+            <a-input type="password" @blur="handleConfirmBlur" autocomplete="off" placeholder="请重新输入登陆密码" v-decorator="[ 'confirmpassword', validatorRules.confirmpassword]"/>
           </a-form-item>
         </template>
 
         <a-form-item label="用户姓名" :labelCol="labelCol" :wrapperCol="wrapperCol" >
-          <a-input placeholder="请输入用户姓名" v-decorator="[ 'realname', validatorRules.realname]" />
+          <a-input placeholder="请输入用户姓名" autocomplete="off" v-decorator="[ 'realname', validatorRules.realname]" />
         </a-form-item>
 
         <a-form-item label="工号" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input placeholder="请输入工号" v-decorator="[ 'workNo',validatorRules.workNo]" />
+          <a-input placeholder="请输入工号" autocomplete="off" v-decorator="[ 'workNo',validatorRules.workNo]" />
+        </a-form-item>
+
+        <a-form-item label="选择部门" :labelCol="labelCol" :wrapperCol="wrapperCol" >
+          <a-select
+            mode="multiple"
+            style="width: 100%"
+            placeholder="请选择部门"
+            optionFilterProp = "children"
+            v-model="selectedDepart">
+            <a-select-option v-for="(depart,departindex) in departList" :key="departindex.toString()" :value="depart.id">
+              {{ depart.departName }}
+            </A-SELECT-OPTION>
+          </a-select>
         </a-form-item>
 
         <a-form-item label="职务" :labelCol="labelCol" :wrapperCol="wrapperCol">
@@ -67,15 +80,15 @@
         </a-form-item>
 
         <a-form-item label="邮箱" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input placeholder="请输入邮箱" v-decorator="[ 'email', validatorRules.email]" />
+          <a-input placeholder="请输入邮箱" autocomplete="off"  v-decorator="[ 'email', validatorRules.email]" />
         </a-form-item>
 
         <a-form-item label="手机号码" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input placeholder="请输入手机号码" :disabled="isDisabledAuth('user:form:phone')" v-decorator="[ 'phone', validatorRules.phone]" />
+          <a-input placeholder="请输入手机号码" autocomplete="off" :disabled="isDisabledAuth('user:form:phone')" v-decorator="[ 'phone', validatorRules.phone]" />
         </a-form-item>
 
         <a-form-item label="座机" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input placeholder="请输入座机" v-decorator="[ 'telephone', validatorRules.telephone]"/>
+          <a-input placeholder="请输入座机" autocomplete="off" v-decorator="[ 'telephone', validatorRules.telephone]"/>
         </a-form-item>
 
 
@@ -101,7 +114,7 @@
   import JSelectPosition from '@/components/jeecgbiz/JSelectPosition'
   import { ACCESS_TOKEN } from "@/store/mutation-types"
   import { getAction } from '@/api/manage'
-  import {addUser,editUser,queryUserRole,queryall } from '@/api/api'
+  import {addUser,editUser,queryUserRole,queryall,queryUserDepart,queryAllDepart } from '@/api/api'
   import { disabledAuthFilter } from "@/utils/authFilter"
   import {duplicateCheck } from '@/api/api'
   import JImageUpload from '../../../components/jeecg/JImageUpload'
@@ -114,20 +127,14 @@
     },
     data () {
       return {
-        departDisabled: false, //是否是我的部门调用该页面
         roleDisabled: false, //是否是角色维护调用该页面
+        departList:[],
         modalWidth:800,
         drawerWidth:700,
         modaltoggleFlag:true,
         confirmDirty: false,
-        selectedDepartKeys:[], //保存用户选择部门id
-        checkedDepartKeys:[],
-        checkedDepartNames:[], // 保存部门的名称 =>title
-        checkedDepartNameString:"", // 保存部门的名称 =>title
-        resultDepartOptions:[],
         userId:"", //保存用户id
         disableSubmit:false,
-        userDepartModel:{userId:'',departIdList:[]}, // 保存SysUserDepart的用户部门中间表数据需要的对象
         dateFormat:"YYYY-MM-DD",
         validatorRules:{
           username:{
@@ -174,12 +181,11 @@
             ]
           }
         },
-        departIdShow:false,
-        departIds:[], //负责部门id
         title:"操作",
         visible: false,
         model: {},
         selectedRole:[],
+        selectedDepart:[],
         labelCol: {
           xs: { span: 24 },
           sm: { span: 5 },
@@ -227,6 +233,25 @@
         }
         this.modaltoggleFlag = !this.modaltoggleFlag;
       },
+
+      initialDepartList(){
+        queryAllDepart().then((res)=>{
+          if(res.success){
+            this.departList = res.result;
+          }else{
+            console.log(res.message);
+          }
+        });
+      },
+      loadUserDepart(userid){
+        queryUserDepart({userid:userid}).then((res)=>{
+          if(res.success){
+            this.selectedDepart = res.result;
+          }else{
+            console.log(res.message);
+          }
+        });
+      },
       loadUserRoles(userid){
         queryUserRole({userid:userid}).then((res)=>{
           if(res.success){
@@ -237,14 +262,8 @@
         });
       },
       refresh () {
-          this.selectedDepartKeys=[];
-          this.checkedDepartKeys=[];
-          this.checkedDepartNames=[];
-          this.checkedDepartNameString = "";
           this.userId=""
-          this.resultDepartOptions=[];
           this.departId=[];
-          this.departIdShow=false;
       },
       add () {
         this.picUrl = "";
@@ -254,10 +273,10 @@
       edit (record) {
         this.resetScreenSize(); // 调用此方法,根据屏幕宽度自适应调整抽屉的宽度
         let that = this;
-        that.checkedDepartNameString = "";
+        that.initialDepartList();
         that.form.resetFields();
         if(record.hasOwnProperty("id")){
-          that.loadUserRoles(record.id);
+          that.loadUserDepart(record.id);
           setTimeout(() => {
             this.fileList = record.avatar;
           }, 5)
@@ -268,56 +287,14 @@
         that.$nextTick(() => {
           that.form.setFieldsValue(pick(this.model,'username','sex','realname','email','phone','workNo','telephone','post'))
         });
-        // 调用查询用户对应的部门信息的方法
-        that.checkedDepartKeys = [];
-        that.loadCheckedDeparts();
       },
-      //
-      loadCheckedDeparts(){
-        let that = this;
-        if(!that.userId){return}
-        getAction(that.url.userWithDepart,{userId:that.userId}).then((res)=>{
-          that.checkedDepartNames = [];
-          if(res.success){
-            var depart=[];
-            var departId=[];
-            for (let i = 0; i < res.result.length; i++) {
-              that.checkedDepartNames.push(res.result[i].title);
-              this.checkedDepartNameString = this.checkedDepartNames.join(",");
-              that.checkedDepartKeys.push(res.result[i].key);
-              //新增负责部门选择下拉框
-              depart.push({
-                  key:res.result[i].key,
-                  title:res.result[i].title
-              })
-              departId.push(res.result[i].key)
-            }
-            that.resultDepartOptions=depart;
-            //判断部门id是否存在，不存在择直接默认当前所在部门
-            if(this.model.departIds){
-                this.departIds=this.model.departIds.split(",");
-            }else{
-                this.departIds=departId;
-            }
-            that.userDepartModel.departIdList = that.checkedDepartKeys
-          }else{
-            console.log(res.message);
-          }
-        })
-      },
+
       close () {
         this.$emit('close');
         this.visible = false;
         this.disableSubmit = false;
         this.selectedRole = [];
-        this.userDepartModel = {userId:'',departIdList:[]};
-        this.checkedDepartNames = [];
-        this.checkedDepartNameString='';
-        this.checkedDepartKeys = [];
-        this.selectedDepartKeys = [];
-        this.resultDepartOptions=[];
-        this.departIds=[];
-        this.departIdShow=false;
+        this.selectedDepart = [];
         this.identity="1";
         this.fileList=[];
       },
@@ -337,14 +314,8 @@
             let formData = Object.assign(this.model, values);
             formData.avatar = that.fileList;
             formData.selectedroles = this.selectedRole.length>0?this.selectedRole.join(","):'';
-            formData.selecteddeparts = this.userDepartModel.departIdList.length>0?this.userDepartModel.departIdList.join(","):'';
+            formData.selecteddeparts = this.selectedDepart.length>0?this.selectedDepart.join(","):'';
             formData.identity=this.identity;
-            //如果是上级择传入departIds,否则为空
-            if(this.identity==="2"){
-              formData.departIds=this.departIds.join(",");
-            }else{
-              formData.departIds="";
-            }
             // that.addDepartsToUser(that,formData); // 调用根据当前用户添加部门信息的方法
             let obj;
             if(!this.model.id){
@@ -362,8 +333,6 @@
               }
             }).finally(() => {
               that.confirmLoading = false;
-              that.checkedDepartNames = [];
-              that.userDepartModel.departIdList = {userId:'',departIdList:[]};
               that.close();
             })
 
@@ -512,32 +481,6 @@
         }
       },
 
-
-      // 获取用户对应部门弹出框提交给返回的数据
-      modalFormOk (formData) {
-        this.checkedDepartNames = [];
-        this.selectedDepartKeys = [];
-        this.checkedDepartNameString = '';
-        this.userId = formData.userId;
-        this.userDepartModel.userId = formData.userId;
-        this.departIds=[];
-        this.resultDepartOptions=[];
-        var depart=[];
-        for (let i = 0; i < formData.departIdList.length; i++) {
-          this.selectedDepartKeys.push(formData.departIdList[i].key);
-          this.checkedDepartNames.push(formData.departIdList[i].title);
-          this.checkedDepartNameString = this.checkedDepartNames.join(",");
-          //新增部门选择，如果上面部门选择后不为空直接付给负责部门
-          depart.push({
-              key:formData.departIdList[i].key,
-              title:formData.departIdList[i].title
-          })
-          this.departIds.push(formData.departIdList[i].key)
-        }
-        this.resultDepartOptions=depart;
-        this.userDepartModel.departIdList = this.selectedDepartKeys;
-        this.checkedDepartKeys = this.selectedDepartKeys  //更新当前的选择keys
-       },
       // 根据屏幕变化,设置抽屉尺寸
       resetScreenSize(){
         let screenWidth = document.body.clientWidth;
