@@ -135,6 +135,9 @@
             <if test="queryDateEnd != null and queryDateEnd != ''">
                 AND a.apply_date &lt;= #{queryDateEnd}
             </if>
+            <if test="departId != null and departId != ''">
+                AND a.depart_id = #{departId}
+            </if>
         </where>
         order  by a.apply_date desc
     </select>
