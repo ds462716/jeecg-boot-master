@@ -74,8 +74,8 @@
                 AND a.in_dept_id = #{inDeptId}
             </if>
             <if test="outDeptId != null and outDeptId != ''">
-            AND a.out_dept_id = #{outDeptId}
-           </if>
+                AND a.out_dept_id = #{outDeptId}
+            </if>
             <if test="departParentId != null and departParentId != ''">
                 AND a.depart_parent_id = #{departParentId}
             </if>

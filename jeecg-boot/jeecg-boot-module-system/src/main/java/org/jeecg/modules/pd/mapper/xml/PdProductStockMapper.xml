@@ -21,6 +21,7 @@
 		a.is_long,
 		a.remarks,
 		a.huowei_code,
+		a.smg_send_state,
 		a.del_flag
 	</sql>
 

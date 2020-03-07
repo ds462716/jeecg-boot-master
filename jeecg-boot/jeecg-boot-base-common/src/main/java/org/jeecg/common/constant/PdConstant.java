@@ -92,6 +92,8 @@ public interface PdConstant {
 	//系统消息提醒模板CODE
 	public final static String PURCHASE_SUBMIT_MSG = "purchase_submitMsg";		//采购提交提醒
 	public final static String APPLY_SUBMIT_MSG = "apply_submitMsg";		    //领用提交审核提醒
+	public final static String ALLOCATION_MSG = "allocation_msg";		    //调拨提交审核提醒
+
 	//扫码近效期提醒时间
 	public final static int REMINDER_TIME = 90;
 
@@ -118,4 +120,10 @@ public interface PdConstant {
 	public final static String STOCK_LOG_TYPE_5 = "5";//耗材退货
 	public final static String STOCK_LOG_TYPE_6 = "6";//执行收费
 	public final static String STOCK_LOG_TYPE_7 = "7";//耗材院外退货
+
+
+	//生产厂家及供应商证照到期消息提醒发送状态
+ 	public final static String MSG_SEND_STATUS_0="0";//初始值，未发送
+	public final static String MSG_SEND_STATUS_1="1";//已发送近效期消息提醒
+	public final static String MSG_SEND_STATUS_2="2";//已发送过期消息提醒
 }

@@ -180,12 +180,19 @@ public class AvailableDateTaskJob implements Job {
                 }
                 if (flag.indexOf("2")!=-1){
                     pdVender.setValidityFlag(PdConstant.PD_STATE_2);
-                    verderName2.append(pdVender.getName()).append(",");
+                   if(!PdConstant.MSG_SEND_STATUS_2.equals(pdVender.getMsgSendState())){
+                       verderName2.append(pdVender.getName()).append(",");
+                       pdVender.setMsgSendState(PdConstant.MSG_SEND_STATUS_2);
+                   }
                 }else if(flag.indexOf("1")!=-1){
                     pdVender.setValidityFlag(PdConstant.PD_STATE_1);
-                    verderName1.append(pdVender.getName()).append(",");
+                    if(!PdConstant.MSG_SEND_STATUS_1.equals(pdVender.getMsgSendState())){
+                        verderName1.append(pdVender.getName()).append(",");
+                        pdVender.setMsgSendState(PdConstant.MSG_SEND_STATUS_1);
+                    }
                 }else{
                     pdVender.setValidityFlag(PdConstant.PD_STATE_0);
+                    pdVender.setMsgSendState(PdConstant.MSG_SEND_STATUS_0);
                 }
                 pdVenderService.updateValidityFlag(pdVender);
             }
@@ -322,12 +329,19 @@ public class AvailableDateTaskJob implements Job {
                 }
                 if (flag.indexOf("2")!=-1){
                     pdSupplier.setValidityFlag(PdConstant.PD_STATE_2);
-                    supplierName1.append(pdSupplier.getName()).append(",");
+                    if(!PdConstant.MSG_SEND_STATUS_2.equals(pdSupplier.getMsgSendState())){
+                        supplierName2.append(pdSupplier.getName()).append(",");
+                        pdSupplier.setMsgSendState(PdConstant.MSG_SEND_STATUS_2);
+                    }
                 }else if(flag.indexOf("1")!=-1){
                     pdSupplier.setValidityFlag(PdConstant.PD_STATE_1);
-                    supplierName2.append(pdSupplier.getName()).append(",");
+                    if(!PdConstant.MSG_SEND_STATUS_1.equals(pdSupplier.getMsgSendState())){
+                        supplierName1.append(pdSupplier.getName()).append(",");
+                        pdSupplier.setMsgSendState(PdConstant.MSG_SEND_STATUS_1);
+                    }
                 }else{
                     pdSupplier.setValidityFlag(PdConstant.PD_STATE_0);
+                    pdSupplier.setMsgSendState(PdConstant.MSG_SEND_STATUS_0);
                 }
                 pdSupplierService.updateValidityFlag(pdSupplier);
             }
