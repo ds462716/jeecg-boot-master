@@ -1,26 +1,18 @@
 package org.jeecg.modules.pd.controller;
 
-import java.io.IOException;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.util.*;
-import java.util.stream.Collectors;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.StringUtils;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.shiro.SecurityUtils;
+import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.PdConstant;
-import org.jeecg.common.system.vo.DictModel;
-import org.jeecg.common.util.DateUtils;
-import org.jeecg.modules.pd.entity.*;
+import org.jeecg.common.system.query.QueryGenerator;
+import org.jeecg.common.system.vo.LoginUser;
+import org.jeecg.common.util.oConvertUtils;
+import org.jeecg.modules.pd.entity.PdStockRecord;
+import org.jeecg.modules.pd.entity.PdStockRecordDetail;
 import org.jeecg.modules.pd.service.*;
-import org.jeecg.modules.pd.util.UUIDUtil;
-import org.jeecg.modules.pd.vo.PdGoodsAllocationPage;
-import org.jeecg.modules.pd.vo.PdProductStockTotalPage;
-import org.jeecg.modules.system.entity.SysDepart;
-import org.jeecg.modules.system.entity.SysDict;
 import org.jeecg.modules.system.service.ISysDepartService;
 import org.jeecg.modules.system.service.ISysDictService;
 import org.jeecgframework.poi.excel.ExcelImportUtil;
@@ -28,21 +20,21 @@ import org.jeecgframework.poi.excel.def.NormalExcelConstants;
 import org.jeecgframework.poi.excel.entity.ExportParams;
 import org.jeecgframework.poi.excel.entity.ImportParams;
 import org.jeecgframework.poi.excel.view.JeecgEntityExcelView;
-import org.jeecg.common.system.vo.LoginUser;
-import org.apache.shiro.SecurityUtils;
-import org.jeecg.common.api.vo.Result;
-import org.jeecg.common.system.query.QueryGenerator;
-import org.jeecg.common.util.oConvertUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.servlet.ModelAndView;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
  /**
  * @Description: 出入库记录表
@@ -361,6 +353,25 @@ public class PdStockRecordInController {
 		 Page<PdStockRecordDetail> page = new Page<PdStockRecordDetail>(pageNo, pageSize);
 		 pdStockRecordDetail.setRecordType(PdConstant.RECODE_TYPE_2);
  		 page = pdStockRecordDetailService.selectList(page,pdStockRecordDetail);
+		 return Result.ok(page);
+	 }
+
+
+	 /**
+	  * 调入明细查询  mcb  --20200308 用于统计查询
+	  * */
+	 @GetMapping(value="stockRecordCallInQuery")
+	 public Result<?>  stockRecordCallInQuery(PdStockRecord  stockRecord,
+											  @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
+											  @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize){
+		 stockRecord.setRecordType(PdConstant.RECODE_TYPE_1);
+		 stockRecord.setAuditStatus(PdConstant.AUDIT_STATE_2);//只查已通过的明细
+		 stockRecord.setInType(PdConstant.IN_TYPE_3);//只查调拨入库的明细
+		 LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		 stockRecord.setInDepartId(sysUser.getCurrentDepartId());
+		 stockRecord.setDepartParentId(sysUser.getDepartParentId());
+		 Page<PdStockRecordDetail> page = new Page<PdStockRecordDetail>(pageNo, pageSize);
+ 		// page = pdStockRecordDetailService.selectList(page,stockRecordDetail);
 		 return Result.ok(page);
 	 }
  }

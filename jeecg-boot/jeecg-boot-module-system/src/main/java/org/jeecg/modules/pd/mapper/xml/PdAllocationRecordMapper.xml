@@ -71,10 +71,13 @@
                 AND a.submit_status = #{submitStatus}
             </if>
             <if test="inDeptId != null and inDeptId != ''">
-                AND a.in_dept_id = #{inDeptId}
+                AND a.in_dept_id LIKE concat('%',#{inDeptId},'%')
+            </if>
+            <if test="inDeptName != null and inDeptName != ''">
+                AND d.depart_name LIKE concat('%',#{inDeptName},'%')
             </if>
             <if test="outDeptId != null and outDeptId != ''">
-                AND a.out_dept_id = #{outDeptId}
+                AND a.out_dept_id LIKE concat('%',#{outDeptId},'%')
             </if>
             <if test="departParentId != null and departParentId != ''">
                 AND a.depart_parent_id = #{departParentId}

@@ -1,6 +1,7 @@
 package org.jeecg.modules.quartz.job;
 
 import cn.hutool.core.util.ObjectUtil;
+import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.core.toolkit.ObjectUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
@@ -10,9 +11,11 @@ import org.jeecg.common.util.DateUtils;
 import org.jeecg.modules.message.util.PushMsgUtil;
 import org.jeecg.modules.pd.entity.PdProductStock;
 import org.jeecg.modules.pd.entity.PdProductStockTotal;
+import org.jeecg.modules.pd.service.IPdDepartService;
 import org.jeecg.modules.pd.service.IPdProductStockService;
 import org.jeecg.modules.pd.service.IPdProductStockTotalService;
 import org.jeecg.modules.system.entity.SysAnnouncementSend;
+import org.jeecg.modules.system.entity.SysDepart;
 import org.jeecg.modules.system.service.ISysAnnouncementSendService;
 import org.jeecg.modules.system.service.ISysUserService;
 import org.quartz.Job;
@@ -37,6 +40,9 @@ public class QuartPdExpireJob implements Job {
     private ISysUserService sysUserService;
     @Autowired
     private ISysAnnouncementSendService announcementSendService;
+    @Autowired
+    private IPdDepartService pdDepartService;
+
 
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
@@ -46,22 +52,26 @@ public class QuartPdExpireJob implements Job {
          */
         log.info("-------------------更新过期状态开始-------------------");
         List<PdProductStock> list = pdProductStockService.selectList(new PdProductStock());
-        Map<String, Set<String>> m=new HashMap<String, Set<String>>();
+        Map<String, Set<String>> m=new HashMap<String, Set<String>>();//存产品ID
+        Map<String, Set<String>> p=new HashMap<String, Set<String>>();//存产品名称
         for (PdProductStock pdProductStock : list) {
             PdProductStock pd = new PdProductStock();
             String deptId = pdProductStock.getDepartId();
             Integer remind = 7;//有效期提醒
             Date validDate = pdProductStock.getExpDate();
             Date date = new Date();
+            pd.setMsgSendState(PdConstant.MSG_SEND_STATUS_0);
             if (ObjectUtil.isNotEmpty(validDate)){
                 if ((!DateUtils.isSameDay(date, validDate)) && date.after(validDate)) { //过期
                     pd.setExpStatus(PdConstant.PD_STATE_2);
+                    pd.setMsgSendState(PdConstant.MSG_SEND_STATUS_2);
                 }
                 Date afterMonthDate = DateUtils.getDateToAddDate(validDate, remind);
                 if ((date.before(validDate) && date.after(afterMonthDate))
                         || (DateUtils.isSameDay(date, validDate)
                         || DateUtils.isSameDay(date, afterMonthDate))) { //近效期
                     pd.setExpStatus(PdConstant.PD_STATE_1);
+                    pd.setMsgSendState(PdConstant.MSG_SEND_STATUS_1);
                 }
 
                 String pdState = pd.getExpStatus();
@@ -83,6 +93,27 @@ public class QuartPdExpireJob implements Job {
                         String pid = pdProductStock.getProductId();
                         pids.add(pid);
                         m.put(deptId, pids);
+                    }
+
+                     //判断是否有发送过期消息提醒
+                    String msgSendState = pdProductStock.getMsgSendState();
+                    if(!pd.getMsgSendState().equals(msgSendState)) {
+                        if (p.containsKey(deptId)) {
+                            Set<String> names = (Set<String>) m.get(deptId);
+                            String pdName = pdProductStock.getProductName();
+                            if (names.contains(pdName)) {
+                                continue;
+                            } else {
+                                names.add(pdName);
+                                p.put(deptId, names);
+                            }
+
+                        } else {
+                            Set<String> names = new HashSet<String>();
+                            String pdName = pdProductStock.getProductName();
+                            names.add(pdName);
+                            p.put(deptId, names);
+                        }
                     }
                 }
             }
@@ -110,10 +141,32 @@ public class QuartPdExpireJob implements Job {
                 prodNames.add(pk.getProductName());
                 deptName=pk.getDeptName();
             }
+        }
+
+        log.info("-------------------发送过期产品消息提醒-------------------");
+        log.info(p.toString());
+        Iterator<String> iterator = p.keySet().iterator();
+        while(iterator.hasNext()){
+            String deptName="";
+            List<String> prodNames=new ArrayList<>();
+            String deptId = iterator.next();
+            //根据科室ID获取科室名称
+            SysDepart sysDepart=new SysDepart();
+            sysDepart.setDepartId(deptId);
+            List<SysDepart> departList = pdDepartService.selectList(sysDepart);
+            if(CollectionUtils.isNotEmpty(departList)){
+                deptName= departList.get(0).getDepartName();
+            }
+            Set<String> set = m.get(deptId);
+            for (String name : set) {
+                prodNames.add(name);
+                 }
             //给库存对应科室管理员发送消息提醒
             //提醒模板：xxx科室用户，您好，你科室下xxx产品有效期已过期或即将过期，请及时处理；
-            this.sendMsg(deptName,"stockProd_msg",prodNames);
+            this.sendMsg(deptId,deptName,"stockProd_msg",prodNames);
         }
+
+
         log.info("-------------------更新过期状态结束-------------------");
     }
 
@@ -126,7 +179,7 @@ public class QuartPdExpireJob implements Job {
      * @param prodNames  产品集合
      * @return
      */
-    public boolean sendMsg(String deptName,String templateCode,List<String> prodNames) {
+    public boolean sendMsg(String deptId,String deptName,String templateCode,List<String> prodNames) {
         Map<String, Object> map = new HashMap<>();
         //获取具有器械科管理员的角色用户Id;
         List<String> ids =new ArrayList<>();

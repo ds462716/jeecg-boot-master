@@ -159,4 +159,39 @@
 			ORDER BY create_time desc
 		</where>
 	</select>
+
+
+
+
+
+	<!-- 入库明细列表查询 -->
+	<select id="selectList" resultType="org.jeecg.modules.pd.entity.PdStockRecordDetail">
+		SELECT
+		  *
+		FROM pd_stock_record_detail a
+		<include refid="PdStockRecordDetailJoins"/>
+
+		<where>
+			a.del_flag =#{DEL_FLAG_NORMAL}
+			<if test="id != null and id != ''">
+				AND a.id = #{id}
+			</if>
+			<if test="auditStatus != null and auditStatus != ''">
+				AND g.audit_status = #{auditStatus}
+			</if>
+
+			<if test="productId != null and productId != ''">
+				AND a.product_id = #{productId}
+			</if>
+			<if test="recordType != null and recordType != ''">
+				AND g.record_type = #{recordType}
+			</if>
+
+
+			<if test="departParentId != null and departParentId != ''">
+				AND a.depart_parent_id = #{departParentId}
+			</if>
+			ORDER BY create_time desc
+		</where>
+	</select>
 </mapper>
