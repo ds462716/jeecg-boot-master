@@ -1,21 +1,20 @@
 package org.jeecg.modules.pd.entity;
 
-import java.io.Serializable;
-import java.math.BigDecimal;
-import java.util.Date;
-import java.util.List;
-
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import lombok.Data;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.Data;
 import org.jeecg.modules.pd.vo.PdGoodsAllocationPage;
 import org.jeecg.modules.system.entity.SysDepart;
 import org.jeecgframework.poi.excel.annotation.Excel;
 import org.jeecgframework.poi.excel.annotation.ExcelCollection;
 import org.springframework.format.annotation.DateTimeFormat;
+
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.List;
 
 /**
  * @Description: 出入库记录表
@@ -196,4 +195,21 @@ public class PdStockRecord extends BaseEntity {
     @TableField(exist = false)
     private Double totalSum;//总数量
 
+
+    @TableField(exist = false)
+    private String productName;//产品名称
+    @TableField(exist = false)
+    private String number;//产品编号
+    @TableField(exist = false)
+    private String spec;//产品规格
+    @TableField(exist = false)
+    private String version;//产品型号
+    @TableField(exist = false)
+    private String batchNo;//产品批号
+    @TableField(exist = false)
+    @JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd")
+    @DateTimeFormat(pattern="yyyy-MM-dd")
+    private Date expDate;//有效期
+    @TableField(exist = false)
+    private String productNum;//产品数量
 }

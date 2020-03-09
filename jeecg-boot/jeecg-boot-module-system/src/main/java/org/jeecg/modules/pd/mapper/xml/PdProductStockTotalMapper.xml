@@ -55,18 +55,38 @@
         LEFT JOIN sys_depart f ON a.depart_id = f.id
     </sql>
 
+    <!-- 供应商 -->
+    <sql id="pdSupplierColumns">
+      e.name AS "supplierName"
+    </sql>
+    <sql id="pdSupplierJoins">
+      left join pd_supplier e on c.supplier_id = e.id
+    </sql>
+
+    <!-- 生产厂家 -->
+    <sql id="pdVenderColumns">
+      d.name AS "venderName"
+    </sql>
+    <sql id="pdVenderJoins">
+      left join pd_vender d on c.vender_id = d.id
+    </sql>
+
     <!-- 列表查询 -->
     <select id="selectList" resultType="org.jeecg.modules.pd.vo.PdProductStockTotalPage">
         SELECT
         <include refid="pdProductStockTotalColumns"/>,
         <include refid="pdProductColumns"/>,
         <include refid="pdUnitColumns"/>,
-        <include refid="sysDepartColumns"/>
+        <include refid="sysDepartColumns"/>,
+        <include refid="pdSupplierColumns"/>,
+        <include refid="pdVenderColumns"/>
         FROM pd_product_stock_total a
         <include refid="pdProductStockTotalJoins"/>
         <include refid="pdProductJoins"/>
         <include refid="pdUnitJoins"/>
         <include refid="sysDepartJoins"/>
+        <include refid="pdSupplierJoins"/>
+        <include refid="pdVenderJoins"/>
         <where>
             a.del_flag =#{DEL_FLAG_NORMAL} AND a.stock_num > 0
             <if test="id != null and id != ''">
@@ -83,6 +103,15 @@
             </if>
             <if test="departParentId != null and departParentId != ''">
                 AND a.depart_parent_id = #{departParentId}
+            </if>
+            <if test="supplierName != null and supplierName != ''">
+                AND e.name  LIKE concat('%',#{supplierName},'%')
+            </if>
+            <if test="supplierId != null and supplierId != ''">
+                AND e.id =#{supplierId}
+            </if>
+            <if test="venderName != null and venderName != ''">
+                AND d.name  LIKE concat('%',#{venderName},'%')
             </if>
             order by  exp_status  desc,create_time desc
         </where>

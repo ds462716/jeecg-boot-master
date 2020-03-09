@@ -141,7 +141,7 @@
   import { JEditableTableMixin } from '@/mixins/JEditableTableMixin'
   import JDate from '@/components/jeecg/JDate'
   import { httpAction,getAction,downFile,inArray} from '@/api/manage'
-  import PdAllocationDetailAddModal from './PdChooseProductListModel'
+  import PdAllocationDetailAddModal from './PdProductStockListModel'
   import PdAllocationPackageAddModal from './PdChoosePackageListModel'
 
   const VALIDATE_NO_PASSED = Symbol()
@@ -261,7 +261,7 @@
           this.$message.warning("请先选择出库科室")
           return
         }
-        this.$refs.PdAllocationDetailAddModal.show({departId:outDeptId});
+        this.$refs.PdAllocationDetailAddModal.show({departId:outDeptId,code:"1"});
       },
 
       //选择定数包产品

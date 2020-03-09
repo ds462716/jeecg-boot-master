@@ -103,7 +103,7 @@
 
         // 表头
         columns: [
-          {
+          /*{
             title: '#',
             dataIndex: 'productId',
             key:'rowIndex',
@@ -112,7 +112,7 @@
             customRender:function (t,r,index) {
               return parseInt(index)+1;
             }
-          },
+          },*/
           {
             title:'所属科室',
             align:"center",
@@ -184,7 +184,7 @@
           },
         ],
         url: {
-          list: "/pd/pdProduct/chooseProductList",
+          list: "/pd/pdProductStockTotal/queryProductStockList",
           querySupplier:"/pd/pdSupplier/getSupplierList",
         }
       }
@@ -199,14 +199,17 @@
         this.visible = false;
       },
       show(params) {
+        this.code=params.code;
         if(params && params.supplierId){
           this.supplierId = params.supplierId;
-          this.orderNo = params.orderNo;
           this.$nextTick(() => {
             this.supplierHandleSearch(); //初始化供应商
             this.queryParam.supplierId = this.supplierId; //默认选择父页面传来的供应商
             this.supplierSelecDisabled = true;
           })
+        }
+        if(params && params.departId){
+          this.departId = params.departId;
         }
         this.loadData(1);
         this.visible = true;
@@ -235,9 +238,10 @@
         if(this.supplierId){
           params.supplierId = this.supplierId;
         }
-        if(this.orderNo){
-          params.orderNo = this.orderNo;
+        if(this.departId){
+          params.departId = this.departId;
         }
+        params.code=this.code;
         this.loading = true;
         getAction(this.url.list, params).then((res) => {
           if (res.success) {

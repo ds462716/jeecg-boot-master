@@ -262,9 +262,8 @@
       },
       //选择产品
       choice() {
-        this.$refs.PdApplyDetailAddModal.show();
-        this.$refs.PdApplyDetailAddModal.title = "选择产品";
-      },
+        this.$refs.PdApplyDetailAddModal.show({departId:this.model.departId,code:"2"});
+       },
 
       //选择定数包产品
       choicePackage() {

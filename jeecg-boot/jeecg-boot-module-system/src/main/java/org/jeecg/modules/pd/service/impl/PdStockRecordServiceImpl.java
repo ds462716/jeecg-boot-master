@@ -357,4 +357,9 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
 		}
 		pdStockLogService.saveBatch(logList);
 	}
+
+	@Override
+	public Page<PdStockRecord> selectTransferList(Page<PdStockRecord> pageList, PdStockRecord pdStockRecord) {
+ 		return pageList.setRecords(pdStockRecordMapper.selectTransferList(pdStockRecord));
+	}
 }
