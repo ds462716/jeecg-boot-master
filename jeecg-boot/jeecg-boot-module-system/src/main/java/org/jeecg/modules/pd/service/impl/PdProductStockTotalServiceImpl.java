@@ -398,4 +398,14 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
 			return result;
 		}
 	}
+
+	/**
+	 * 获取待盘点产品总数量
+	 * @param stockTotal
+	 * @return
+	 */
+	@Override
+	public Double queryCheckTotalNum(PdProductStockTotal stockTotal) {
+		return pdProductStockTotalMapper.queryCheckTotalNum(stockTotal);
+	}
 }

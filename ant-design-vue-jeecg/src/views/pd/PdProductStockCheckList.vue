@@ -10,21 +10,16 @@
             </a-form-item>
           </a-col>
           <a-col :md="6" :sm="8">
-            <a-form-item label="盘点日期">
-              <a-input placeholder="请选择盘点日期" v-model="queryParam.productName"></a-input>
+            <a-form-item label="盘点完成状态">
+              <a-select v-model="queryParam.checkStatus" placeholder="请选择盘点完成状态">
+                <a-select-option value="0">临时保存</a-select-option>
+                <a-select-option value="1">盘点完成</a-select-option>
+              </a-select>
             </a-form-item>
           </a-col>
-          <template :md="6" v-if="toggleSearchStatus">
-            <a-col :md="6" :sm="8">
-              <a-form-item label="盘点人">
-                <a-select v-model="queryParam.auditStatus" placeholder="请选择盘点人">
-                  <a-select-option value="1">待审核</a-select-option>
-                  <a-select-option value="2">审核通过</a-select-option>
-                  <a-select-option value="3">审核不通过</a-select-option>
-                </a-select>
-              </a-form-item>
-            </a-col>
-          </template>
+         <!-- <template :md="6" v-if="toggleSearchStatus">
+              &lt;!&ndash;待扩展查询条件&ndash;&gt;
+          </template>-->
           <a-col :md="6" :sm="8">
             <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
               <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
@@ -73,22 +68,23 @@
         :loading="loading"
         :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
         @change="handleTableChange">
-        <span slot="action" slot-scope="text, record">
-          <a @click="handleEdit(record)">编辑</a>
-
+         <span slot="action" slot-scope="text, record">
+          <a  @click="handleEdit(record)">编辑</a>
           <a-divider type="vertical" />
           <a-dropdown>
             <a class="ant-dropdown-link">更多 <a-icon type="down" /></a>
             <a-menu slot="overlay">
               <a-menu-item>
-                <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.id)">
+                <a href="javascript:;" @click="handleDetail(record)">详情</a>
+              </a-menu-item>
+              <a-menu-item>
+                <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record)">
                   <a>删除</a>
                 </a-popconfirm>
               </a-menu-item>
             </a-menu>
           </a-dropdown>
         </span>
-
       </a-table>
     </div>
 
@@ -98,7 +94,9 @@
 
 <script>
 
-  import { JeecgListMixin } from '@/mixins/JeecgListMixin'
+  import { JeecgListMixin ,handleEdit,batchDel} from '@/mixins/JeecgListMixin'
+  import { deleteAction } from '@/api/manage'
+  import {initDictOptions, filterMultiDictText} from '@/components/dict/JDictSelectUtil'
   import PdProductStockCheckModal from './modules/PdProductStockCheckModal'
 
   export default {
@@ -130,7 +128,7 @@
           {
             title:'科室',
             align:"center",
-            dataIndex: 'departId'
+            dataIndex: 'deptName'
           },
           {
             title:'盘点日期',
@@ -143,7 +141,7 @@
           {
             title:'盘点人',
             align:"center",
-            dataIndex: 'checkBy'
+            dataIndex: 'checkName'
           },
           {
             title:'盘点总数量',
@@ -163,7 +161,14 @@
           {
             title:'盘点状态',
             align:"center",
-            dataIndex: 'checkStatus'
+            dataIndex: 'checkStatus',
+            customRender:(text)=>{
+              if(!text){
+                return ''
+              }else{
+                return filterMultiDictText(this.dictOptions['checkStatus'], text+"")
+              }
+            }
           },
           {
             title: '操作',
@@ -176,10 +181,12 @@
           list: "/pd/pdProductStockCheck/list",
           delete: "/pd/pdProductStockCheck/delete",
           deleteBatch: "/pd/pdProductStockCheck/deleteBatch",
-          exportXlsUrl: "/pd/pdProductStockCheck/exportXls",
-          importExcelUrl: "pd/pdProductStockCheck/importExcel",
+          exportXlsUrl: "/pd/pdProductStockCheck/exportXls"
         },
-        dictOptions:{},
+        dictOptions:{
+          checkStatus:[],
+
+        },
       }
     },
     computed: {
@@ -188,7 +195,78 @@
       }
     },
     methods: {
+      batchDel: function () { //批量删除
+        if (this.selectionRows.length <= 0) {
+          this.$message.warning('请选择一条记录！');
+          return;
+        } else {
+          var ids = "";
+          var checkNos="";
+          for (let a = 0; a < this.selectionRows.length; a++) {
+            let checkStatus= this.selectionRows[a].checkStatus;
+            if(checkStatus=='1'){
+              checkNos+=this.selectionRows[a].checkNo + ",";
+            }else{
+              ids += this.selectionRows[a].id + ",";
+            }
+          }
+          if(checkNos != ""){
+            this.$message.warning("盘点编号["+checkNos.substring(0,checkNos.length-1)+"]已盘点完成，不允许删除！")
+            return
+          }
+          var that = this;
+          this.$confirm({
+            title: "确认删除",
+            content: "是否删除选中数据?",
+            onOk: function () {
+              that.loading = true;
+              deleteAction(that.url.deleteBatch, {ids: ids}).then((res) => {
+                if (res.success) {
+                  that.$message.success(res.message);
+                  that.loadData();
+                  that.onClearSelected();
+                } else {
+                  that.$message.warning(res.message);
+                }
+              }).finally(() => {
+                that.loading = false;
+              });
+            }
+          });
+        }
+      },
+      handleEdit: function (record) { //修改
+        if(record.checkStatus=='1'){
+          this.$message.warning("已完成盘点，不允许修改！")
+          return
+        }
+        this.$refs.modalForm.edit(record);
+        this.$refs.modalForm.title = "编辑";
+        this.$refs.modalForm.disableSubmit = false;
+      },
+      handleDelete: function (record) { //删除
+        if(record.checkStatus=='1'){
+          this.$message.warning("已盘点完成，不允许删除！")
+          return
+        }
+        var that = this;
+        var id=record.id;
+        deleteAction(that.url.delete, {id: id}).then((res) => {
+          if (res.success) {
+            that.$message.success(res.message);
+            that.loadData();
+          } else {
+            that.$message.warning(res.message);
+          }
+        });
+      },
       initDictConfig(){
+        initDictOptions('check_status').then((res) => {
+          if (res.success) {
+            this.$set(this.dictOptions, 'checkStatus', res.result)
+          }
+        })
+
       }
        
     }

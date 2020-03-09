@@ -4,12 +4,14 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.PdConstant;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.oConvertUtils;
+import org.jeecg.modules.message.util.PushMsgUtil;
 import org.jeecg.modules.pd.entity.PdAllocationDetail;
 import org.jeecg.modules.pd.entity.PdAllocationRecord;
 import org.jeecg.modules.pd.service.IPdAllocationDetailService;
@@ -17,6 +19,7 @@ import org.jeecg.modules.pd.service.IPdAllocationRecordService;
 import org.jeecg.modules.pd.util.UUIDUtil;
 import org.jeecg.modules.system.entity.SysDepart;
 import org.jeecg.modules.system.service.ISysDepartService;
+import org.jeecg.modules.system.service.ISysUserService;
 import org.jeecgframework.poi.excel.ExcelImportUtil;
 import org.jeecgframework.poi.excel.def.NormalExcelConstants;
 import org.jeecgframework.poi.excel.entity.ExportParams;
@@ -51,6 +54,10 @@ public class PdAllocationRecordController {
 	private IPdAllocationDetailService pdAllocationDetailService;
 	 @Autowired
 	 private ISysDepartService sysDepartService;
+	 @Autowired
+	 private PushMsgUtil pushMsgUtil;
+	 @Autowired
+	 private ISysUserService sysUserService;
 	/**
 	 * 分页列表查询
 	 *
@@ -94,6 +101,7 @@ public class PdAllocationRecordController {
 		 list.add(PdConstant.SUBMIT_STATE_3);//已撤回
 		 allocationRecord.setSubmitStatusList(list);
 		 LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		 allocationRecord.setOutDeptId(sysUser.getCurrentDepartId());
 		 allocationRecord.setDepartParentId(sysUser.getDepartParentId());
 		 IPage<PdAllocationRecord> pageList = pdAllocationRecordService.selectList(page, allocationRecord);
 		 return Result.ok(pageList);
@@ -135,6 +143,9 @@ public class PdAllocationRecordController {
 	@PostMapping(value = "/add")
 	public Result<?> add(@RequestBody PdAllocationRecord pdAllocationRecord) {
 		pdAllocationRecordService.saveMain(pdAllocationRecord, pdAllocationRecord.getPdAllocationDetailList());
+		if (pdAllocationRecord.getSubmitStatus().equals(PdConstant.SUBMIT_STATE_2)) {//如果是已提交
+			this.sendMsg(pdAllocationRecord);//消息推送
+		}
 		return Result.ok("添加成功！");
 	}
 	
@@ -155,6 +166,9 @@ public class PdAllocationRecordController {
 			LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
 			pdAllocationRecord.setAuditBy(sysUser.getId());
 			pdAllocationRecord.setAuditDate(new Date());
+		}
+		if (PdConstant.AUDIT_STATE_1.equals(auditStatus) && pdAllocationRecord.getSubmitStatus().equals(PdConstant.SUBMIT_STATE_2)) {//如果是已提交
+			this.sendMsg(pdAllocationRecord);//消息推送
 		}
 		pdAllocationRecordService.updateMain(pdAllocationRecord, pdAllocationRecord.getPdAllocationDetailList());
 		return Result.ok("编辑成功!");
@@ -314,6 +328,33 @@ public class PdAllocationRecordController {
 		 allocationRecord.setDepartParentId(sysUser.getDepartParentId());
 		 IPage<PdAllocationRecord> pageList = pdAllocationRecordService.chooseAllocationList(page, allocationRecord);
 		 return Result.ok(pageList);
+	 }
+
+
+	 /**
+	  * 消息推送
+	  * @param allocationRecord
+	  * @return
+	  */
+	 public boolean sendMsg(PdAllocationRecord allocationRecord) {
+		 Map<String, Object> map = new HashMap<>();
+		 //获取具有器械科管理员的角色用户Id;
+		 List<String> userIdList = sysUserService.getUserIdByRoleCode("qxk_admin");
+		 if (CollectionUtils.isNotEmpty(userIdList)) {
+			 String userIds = String.join(",", userIdList);
+			 Map<String, String> strMap = new HashMap<>();
+			 LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+			 //模板注入参数
+			 strMap.put("userName", sysUser.getRealname());
+			 strMap.put("allocationNo", allocationRecord.getAllocationNo());
+			 map.put("map", strMap);
+			 //需要发送消息的用户id
+			 map.put("userIds", userIds + ",");
+			 //短信模板标识
+			 map.put("templateCode", PdConstant.ALLOCATION_MSG);
+			 return pushMsgUtil.newSendMessage(map);
+		 }
+		 return false;
 	 }
 
  }

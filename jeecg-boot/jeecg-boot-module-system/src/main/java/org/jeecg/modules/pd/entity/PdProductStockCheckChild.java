@@ -1,16 +1,17 @@
 package org.jeecg.modules.pd.entity;
 
-import java.io.Serializable;
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import lombok.Data;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import org.springframework.format.annotation.DateTimeFormat;
-import org.jeecgframework.poi.excel.annotation.Excel;
-import java.util.Date;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
+import org.jeecgframework.poi.excel.annotation.Excel;
+import org.springframework.format.annotation.DateTimeFormat;
+
+import java.util.Date;
 
 /**
  * @Description: 盘点明细表
@@ -38,7 +39,7 @@ public class PdProductStockCheckChild extends BaseEntity {
 	/**实际盘点数量*/
 	@Excel(name = "实际盘点数量", width = 15)
 	@ApiModelProperty(value = "实际盘点数量")
-	private Double actualNum;
+	private Double checkNum;
 	/**盈亏数量*/
 	@Excel(name = "盈亏数量", width = 15)
 	@ApiModelProperty(value = "盈亏数量")
@@ -67,4 +68,32 @@ public class PdProductStockCheckChild extends BaseEntity {
 	@Excel(name = "备注", width = 15)
 	@ApiModelProperty(value = "备注")
 	private String remarks;
+
+
+
+    /*不是该表字段**/
+	@TableField(exist = false)
+	@Excel(name = "产品名称", width = 15)
+	private String productName;//产品名称
+	@TableField(exist = false)
+	@Excel(name = "产品编号", width = 15)
+	private String number;//产品编号
+	@TableField(exist = false)
+	@Excel(name = "产品规格", width = 15)
+	private String spec;//产品规格
+	@TableField(exist = false)
+	@Excel(name = "单位名称", width = 15)
+	private String unitName;//单位名称
+
+	@TableField(exist = false)
+	@Excel(name = "理论产品数量", width = 15)
+	private Double stockNum;//理论产品数量
+	@TableField(exist = false)
+	@Excel(name = "批次号", width = 15)
+	private String batchNo;//批次号
+	@TableField(exist = false)
+	@Excel(name = "产品有效期", width = 15)
+	@JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd")
+	@DateTimeFormat(pattern="yyyy-MM-dd")
+	private Date expDate;//产品有效期
 }

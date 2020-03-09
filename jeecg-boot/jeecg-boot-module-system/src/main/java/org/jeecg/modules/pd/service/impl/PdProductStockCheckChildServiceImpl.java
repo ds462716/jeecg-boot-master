@@ -1,12 +1,13 @@
 package org.jeecg.modules.pd.service.impl;
 
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.jeecg.modules.pd.entity.PdProductStockCheckChild;
 import org.jeecg.modules.pd.mapper.PdProductStockCheckChildMapper;
 import org.jeecg.modules.pd.service.IPdProductStockCheckChildService;
-import org.springframework.stereotype.Service;
-import java.util.List;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 /**
  * @Description: 盘点明细表
@@ -23,5 +24,10 @@ public class PdProductStockCheckChildServiceImpl extends ServiceImpl<PdProductSt
 	@Override
 	public List<PdProductStockCheckChild> selectByMainId(String mainId) {
 		return pdProductStockCheckChildMapper.selectByMainId(mainId);
+	}
+
+	@Override
+	public List<PdProductStockCheckChild> selectByCheckNo(String checkNo) {
+		return pdProductStockCheckChildMapper.selectByCheckNo(checkNo);
 	}
 }

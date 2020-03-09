@@ -1,5 +1,70 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.jeecg.modules.pd.mapper.PdProductStockCheckMapper">
+    <sql id="PdProductStockCheckColumns">
+       a.id,
+       a.check_no,
+       a.depart_id,
+       a.check_date,
+       a.check_by,
+       a.should_count,
+       a.check_count,
+       a.profit_loss_count,
+       a.check_status,
+       a.create_time,
+       a.create_by,
+       a.update_time,
+       a.update_by,
+      a.remarks,
+      a.del_flag
+	</sql>
 
+    <sql id="PdProductStockCheckJoins">
+    </sql>
+
+
+    <!-- 科室 -->
+    <sql id="sysDepartColumns">
+        f.depart_name AS "deptName"
+    </sql>
+
+    <sql id="sysDepartJoins">
+        LEFT JOIN sys_depart f ON a.depart_id = f.id
+    </sql>
+
+    <!--用户-->
+    <sql id="pdSysUserColumns">
+        b.realname as "checkName"
+	</sql>
+    <sql id="pdSysUserJoins">
+        LEFT JOIN sys_user b ON b.id = a.check_by
+    </sql>
+
+    <!-- 列表查询 -->
+    <select id="selectList" resultType="org.jeecg.modules.pd.entity.PdProductStockCheck">
+        SELECT
+        <include refid="PdProductStockCheckColumns"/>,
+        <include refid="pdSysUserColumns"/>,
+        <include refid="sysDepartColumns"/>
+        FROM pd_product_stock_check a
+        <include refid="PdProductStockCheckJoins"/>
+        <include refid="pdSysUserJoins"/>
+        <include refid="sysDepartJoins"/>
+        <where>
+            a.del_flag =#{DEL_FLAG_NORMAL}
+            <if test="id != null and id != ''">
+                AND a.id = #{id}
+            </if>
+            <if test="checkNo != null and checkNo != ''">
+                AND a.check_no = #{checkNo}
+            </if>
+            <if test="departId != null and departId != ''">
+                AND a.depart_id = #{departId}
+            </if>
+            <if test="departParentId != null and departParentId != ''">
+                AND a.depart_parent_id = #{departParentId}
+            </if>
+            order by create_time desc
+        </where>
+    </select>
 </mapper>

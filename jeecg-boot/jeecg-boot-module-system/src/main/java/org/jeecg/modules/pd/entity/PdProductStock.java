@@ -72,8 +72,8 @@ public class PdProductStock extends BaseEntity {
 	private String supplierId;
 	/**备注*/
 	private String remarks;
-	/**删除标识*/
-	private String delFlag;
+	/** 消息发送状态，近效期1，已过期2，初始值为0 */
+	private String msgSendState;
 	/**是否永存*/
 	@Excel(name = "是否永存", width = 15)
 	private String isLong;

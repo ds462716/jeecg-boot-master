@@ -64,8 +64,6 @@ public class PdProductStockTotal extends BaseEntity {
     private String supplierId;
 	/**备注*/
     private String remarks;
-	/**删除标识 */
-    private String delFlag;
 	/**是否永存*/
     @Excel(name = "是否永存", width = 15)
     private String isLong;

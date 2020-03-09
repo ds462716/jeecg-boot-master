@@ -49,7 +49,7 @@
         ref="table"
         size="middle"
         bordered
-        rowKey="productId"
+        rowKey="id"
         :columns="columns"
         :dataSource="dataSource"
         :pagination="ipagination"
@@ -74,6 +74,7 @@
         title:"出入库明细",
         width:1200,
         visible: false,
+        model:{},
         validatorRules: {
           productTotNum:{},//入库总数量
           productOutTotNum:{},//出库总数量

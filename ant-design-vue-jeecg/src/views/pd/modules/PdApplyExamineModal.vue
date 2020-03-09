@@ -108,7 +108,7 @@
   import { JEditableTableMixin } from '@/mixins/JEditableTableMixin'
   import JDate from '@/components/jeecg/JDate'
   import JDictSelectTag from "@/components/dict/JDictSelectTag"
-  import PdApplyStockRecordOutModal from './PdApplyStockRecordOutModal'
+  import PdApplyStockRecordOutModal from './PdStockRecordOutModal'
 
 
   export default {
@@ -225,7 +225,11 @@
             httpAction(this.url.edit, formData, 'put').then((res) => {
               if (res.success) {
                  if(type=="yes"){
-                   this.$refs.stockForm.edit(pdPurchaseDetailList);
+                   let args = {};
+                   args.outType = "1";  //  1-申领出库; 2-科室出库; 3-调拨出库
+                   args.data = pdPurchaseDetailList;  // 申领单或调拨单明细 按选择器传值就行
+                   args.inDepartId = this.model.departId; // 入库部门ID
+                   this.$refs.stockForm.add(args);
                    this.$refs.stockForm.title = "新增出库";
                    this.$refs.stockForm.disableSubmit = false;
                 }

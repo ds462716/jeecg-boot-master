@@ -38,7 +38,7 @@
           </a-col>
           <a-col :span="12">
             <a-form-item label="出库科室" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input disabled="disabled" v-decorator="[ 'outDeptId', validatorRules.outDeptId]"></a-input>
+              <a-input disabled="disabled" v-decorator="[ 'outDeptName', validatorRules.outDeptName]"></a-input>
             </a-form-item>
           </a-col>
           <a-col :span="12">
@@ -115,7 +115,7 @@
   import { JEditableTableMixin } from '@/mixins/JEditableTableMixin'
   import JDate from '@/components/jeecg/JDate'
   import { httpAction,getAction,downFile,inArray} from '@/api/manage'
-  import PdApplyStockRecordOutModal from './PdApplyStockRecordOutModal'
+  import PdApplyStockRecordOutModal from './PdStockRecordOutModal'
   import JDictSelectTag from "@/components/dict/JDictSelectTag"
 
 
@@ -151,6 +151,7 @@
           allocationBy:{},
           realName:{},
           outDeptId:{},
+          outDeptName:{},
           inDeptId:{},
           inDeptName:{},
           totalNum: { rules: [{ required: true, message: '请输入调拨总数量!' }] },
@@ -250,9 +251,16 @@
             httpAction(this.url.edit, formData, 'put').then((res) => {
               if (res.success) {
                 if(type=="yes"){
-                  this.$refs.stockForm.edit(pdAllocationDetailList);
+                  let args = {};
+                  args.outType = "3";  //  1-申领出库; 2-科室出库; 3-调拨出库
+                  args.data = pdAllocationDetailList;  // 申领单或调拨单明细 按选择器传值就行
+                  args.inDepartId = this.model.inDeptId; // 入库部门ID
+                  this.$refs.stockForm.add(args);
                   this.$refs.stockForm.title = "新增出库";
                   this.$refs.stockForm.disableSubmit = false;
+                 // this.$refs.stockForm.edit(pdAllocationDetailList);
+                 // this.$refs.stockForm.title = "新增出库";
+                 // this.$refs.stockForm.disableSubmit = false;
                 }
                 // that.$message.success("操作成功");
                 that.$emit('ok');
@@ -274,7 +282,7 @@
       },
       /** 调用完edit()方法之后会自动调用此方法 */
       editAfter() {
-        let fieldval = pick(this.model,'allocationNo','allocationDate','totalNum','inDeptName','realName','remarks','rejectReason')
+        let fieldval = pick(this.model,'allocationNo','allocationDate','totalNum','outDeptName','inDeptName','realName','remarks','rejectReason')
         this.$nextTick(() => {
           this.form.setFieldsValue(fieldval)
         })
@@ -297,7 +305,7 @@
         this.$message.error(msg)
       },
      popupCallback(row){
-       this.form.setFieldsValue(pick(row,'allocationNo','allocationDate','totalNum','inDeptName','realName','remarks','rejectReason'))
+       this.form.setFieldsValue(pick(row,'allocationNo','allocationDate','totalNum','outDeptName','inDeptName','realName','remarks','rejectReason'))
      },
       /** 切换全屏显示 */
       handleClickToggleFullScreen() {
