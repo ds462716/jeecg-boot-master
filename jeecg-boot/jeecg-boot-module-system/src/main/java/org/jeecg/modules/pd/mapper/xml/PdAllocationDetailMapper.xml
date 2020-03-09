@@ -17,6 +17,7 @@
 		a.product_attr,
 		a.package_id,
 		a.package_num,
+		a.arrival_num,
 		a.del_flag
 	</sql>
 

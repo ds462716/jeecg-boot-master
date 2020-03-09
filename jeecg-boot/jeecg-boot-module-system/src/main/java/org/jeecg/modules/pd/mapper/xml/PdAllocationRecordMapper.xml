@@ -14,15 +14,16 @@
 		a.allocation_date,
         a.allocation_by,
         a.out_dept_id,
-         a.in_dept_id,
-         a.total_num,
-         a.audit_status,
-         a.audit_by,
-         a.audit_date,
-          a.reject_reason,
-          a.remarks,
-          a.submit_status,
-           a.del_flag
+        a.in_dept_id,
+        a.total_num,
+        a.audit_status,
+        a.audit_by,
+        a.audit_date,
+        a.reject_reason,
+        a.remarks,
+        a.submit_status,
+        a.arrival_count,
+        a.del_flag
 	</sql>
 
     <sql id="PdAllocationRecordJoins">

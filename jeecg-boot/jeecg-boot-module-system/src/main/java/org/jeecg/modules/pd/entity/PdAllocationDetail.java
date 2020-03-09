@@ -68,7 +68,9 @@ public class PdAllocationDetail extends BaseEntity {
 	private String packageId;
 	/**'调拨时定数包产品数量'*/
 	private Double packageNum;
-
+	/**实际发货数量*/
+	@Excel(name = "实际发货数量", width = 15)
+	private Double arrivalNum;
 
 	/*不是明细表字段*/
 	@TableField(exist = false)

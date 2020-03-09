@@ -62,7 +62,7 @@ public class PdApplyDetail extends BaseEntity {
 	private Double stockNum;
 	/**实际发货数量*/
 	@Excel(name = "实际发货数量", width = 15)
-	private Double refundNum;
+	private Double arrivalNum;
 	/**备注*/
 	private String remarks;
 

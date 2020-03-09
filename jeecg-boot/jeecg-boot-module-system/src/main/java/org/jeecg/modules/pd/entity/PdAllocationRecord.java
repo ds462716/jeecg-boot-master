@@ -72,7 +72,9 @@ public class PdAllocationRecord extends BaseEntity {
     private String remarks;
 	/**提交状态*/
     private String submitStatus;
-
+    /**实际发货总数量*/
+    @Excel(name = "实际发货总数量", width = 15)
+    private Double arrivalCount;
     @TableField(exist = false)
     @ExcelCollection(name="调拨明细表")
     private List<PdAllocationDetail> pdAllocationDetailList;

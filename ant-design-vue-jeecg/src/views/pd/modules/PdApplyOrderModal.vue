@@ -121,7 +121,7 @@
   import {JEditableTableMixin } from '@/mixins/JEditableTableMixin'
   import JDate from '@/components/jeecg/JDate'
   import JDictSelectTag from "@/components/dict/JDictSelectTag"
-  import PdApplyDetailAddModal from './PdChooseProductListModel'
+  import PdApplyDetailAddModal from './PdProductStockListModel'
   import PdApplyPackageAddModal from './PdChoosePackageListModel'
 
   const VALIDATE_NO_PASSED = Symbol()
@@ -170,7 +170,7 @@
             { title: '规格',width:"240px", align:"center", key: 'spec' },
             { title: '型号', width:"240px",align:"center", key: 'version' },
             { title: '单位',width:"50px", align:"center", key: 'unitName' },
-            { title: '发货数量', width:"100px",align:"center", key: 'refundNum' },
+            { title: '发货数量', width:"100px",align:"center", key: 'arrivalNum' },
             { title: '申领数量', key: 'applyNum', type: FormTypes.input, width:"80px",
               placeholder: '${title}', defaultValue: '1',
               validateRules: [{ required: true, message: '${title}不能为空' },

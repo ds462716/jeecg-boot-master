@@ -206,12 +206,13 @@
             { title: '规格',width:"240px", align:"center", key: 'spec' },
             { title: '型号', width:"240px",align:"center", key: 'version' },
             { title: '单位',width:"50px", align:"center", key: 'unitName' },
+            { title: '发货数量', width:"100px",align:"center", key: 'arrivalNum' },
             {title: '调拨数量', key: 'allocationNum', type: FormTypes.input, width:"100px",
               placeholder: '${title}', defaultValue: '1',
               validateRules: [{ required: true, message: '${title}不能为空' },
                 { pattern: '^(?:[1-9][0-9]*(?:\\.[0-9]+)?|0\\.(?!0+$)[0-9]+)$',message: '${title}的格式不正确' }]
             },
-            { title: '本科室库存数量', align:"center", key: 'stockNum' },
+            { title: '库存数量', align:"center", key: 'stockNum' },
           ]
         },
         url: {
