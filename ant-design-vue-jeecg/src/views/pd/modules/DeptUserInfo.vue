@@ -308,7 +308,7 @@
         if (this.currentDeptId == '') {
           this.$message.error("请选择一个部门!")
         } else {
-          this.$refs.modalForm.userDepartModel.departIdList = [this.currentDeptId];  //传入一个部门id
+          this.$refs.modalForm.selectedDepart = [this.currentDeptId];  //传入一个部门id
           this.$refs.modalForm.add();
           this.$refs.modalForm.title = "新增";
         }
