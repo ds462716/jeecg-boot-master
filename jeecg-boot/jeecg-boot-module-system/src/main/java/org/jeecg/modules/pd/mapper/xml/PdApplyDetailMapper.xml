@@ -16,7 +16,7 @@
 		a.exp_date,
 		a.apply_num,
 		a.stock_num,
-		a.arrival_num,
+		IFNULL(a.arrival_num,0) as arrival_num,
 		a.remarks,
 		a.del_flag
 	</sql>
@@ -73,4 +73,29 @@
 		 WHERE a.apply_no = #{applyNo}
 		  ORDER BY a.create_time DESC
     </select>
+
+	<!-- 增加发货数量 用于出库保存/提交 add by jiangxz 20200309 -->
+	<select id="additionArrivalNum" parameterType="org.jeecg.modules.pd.entity.PdApplyDetail">
+		UPDATE
+			pd_apply_detail
+		SET
+			arrival_num = IFNULL(arrival_num,0) + #{arrivalNum}
+		WHERE
+			del_flag =#{DEL_FLAG_NORMAL}
+			and apply_no = #{applyNo}
+			and product_id = #{productId}
+	</select>
+
+	<!-- 扣减发货数量 用于出库拒绝 add by jiangxz 20200309 -->
+	<select id="subtractArrivalNum" parameterType="org.jeecg.modules.pd.entity.PdApplyDetail">
+		UPDATE
+			pd_apply_detail
+		SET
+			arrival_num = IFNULL(arrival_num,0) - #{arrivalNum}
+		WHERE
+			del_flag =#{DEL_FLAG_NORMAL}
+			and apply_no = #{applyNo}
+			and product_id = #{productId}
+	</select>
+
 </mapper>

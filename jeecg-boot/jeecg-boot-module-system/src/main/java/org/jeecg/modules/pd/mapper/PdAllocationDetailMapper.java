@@ -16,5 +16,19 @@ public interface PdAllocationDetailMapper extends BaseMapper<PdAllocationDetail>
 	public boolean deleteByMainId(@Param("mainId") String mainId);
     
 
-	public List<PdAllocationDetail> selectByAllocationNo(@Param("allocationNo") String allocationNo);
+	public List<PdAllocationDetail> selectByAllocationNo(@Param("allocationNo") String allocationNo);    /**
+	 * 增加发货数量 用于出库保存/提交 add by jiangxz 20200309
+	 *
+	 * @param detail
+	 * @return
+	 */
+	void additionArrivalNum(PdAllocationDetail detail);
+
+	/**
+	 * 扣减发货数量 用于出库拒绝 add by jiangxz 20200309
+	 *
+	 * @param detail
+	 * @return
+	 */
+	void subtractArrivalNum(PdAllocationDetail detail);
 }

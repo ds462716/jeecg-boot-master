@@ -342,7 +342,7 @@
             //   placeholder: '${title}', validateRules: [{ required: true, message: '${title}不能为空' }]
             // },
             {
-              title: '货位', key: 'huoweiCode', type: FormTypes.select, width:"150px", options: [],allowSearch:true,
+              title: '货位', key: 'inHuoweiCode', type: FormTypes.select, width:"150px", options: [],allowSearch:true,
               placeholder: '${title}', validateRules: [{ required: true, message: '${title}不能为空' }]
             },
             { title: '申购单号', key: 'orderNo', width:"180px" }
@@ -410,7 +410,7 @@
 
               this.goodsAllocationList = res.result.goodsAllocationList;
               this.pdStockRecordDetailTable.columns.forEach((item, idx) => {
-                if(item.key === "huoweiCode"){
+                if(item.key === "inHuoweiCode"){
                   item.options = this.goodsAllocationList;
                 }
               })

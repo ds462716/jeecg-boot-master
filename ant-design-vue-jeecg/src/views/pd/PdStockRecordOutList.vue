@@ -85,7 +85,6 @@
 <script>
 
   import { JeecgListMixin } from '@/mixins/JeecgListMixin'
-  import PdStockRecordInModal from './modules/PdStockRecordInModal'
   import {initDictOptions, filterMultiDictText} from '@/components/dict/JDictSelectUtil'
   import PdStockRecordOutModal from "./modules/PdStockRecordOutModal";
 
@@ -125,11 +124,11 @@
             align:"center",
             dataIndex: 'inDepartName'
           },
-          {
-            title:'供应商',
-            align:"center",
-            dataIndex: 'supplierName'
-          },
+          // {
+          //   title:'供应商',
+          //   align:"center",
+          //   dataIndex: 'supplierName'
+          // },
           {
             title:'提交时间',
             align:"center",
@@ -141,7 +140,7 @@
           {
             title:'出库类型',
             align:"center",
-            dataIndex: 'inType',
+            dataIndex: 'outType',
             customRender:(text)=>{
               if(!text){
                 return ''

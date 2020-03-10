@@ -135,7 +135,7 @@ public class PdStockRecordOutController {
     public Result<?> add(@RequestBody PdStockRecord PdStockRecord) {
         PdStockRecord pdStockRecord = new PdStockRecord();
         BeanUtils.copyProperties(PdStockRecord, pdStockRecord);
-        pdStockRecordService.saveMain(pdStockRecord, PdStockRecord.getPdStockRecordDetailList());
+        pdStockRecordService.saveMain(pdStockRecord, PdStockRecord.getPdStockRecordDetailList(), PdConstant.RECODE_TYPE_2);
         return Result.ok("添加成功！");
     }
 
@@ -149,7 +149,7 @@ public class PdStockRecordOutController {
     public Result<?> submit(@RequestBody PdStockRecord PdStockRecord) {
         PdStockRecord pdStockRecord = new PdStockRecord();
         BeanUtils.copyProperties(PdStockRecord, pdStockRecord);
-        pdStockRecordService.saveMain(pdStockRecord, PdStockRecord.getPdStockRecordDetailList());
+        pdStockRecordService.saveMain(pdStockRecord, PdStockRecord.getPdStockRecordDetailList(), PdConstant.RECODE_TYPE_2);
         return Result.ok("添加成功！");
     }
 
@@ -311,7 +311,7 @@ public class PdStockRecordOutController {
                 for (PdStockRecord page : list) {
                     PdStockRecord po = new PdStockRecord();
                     BeanUtils.copyProperties(page, po);
-                    pdStockRecordService.saveMain(po, page.getPdStockRecordDetailList());
+                    pdStockRecordService.saveMain(po, page.getPdStockRecordDetailList(), PdConstant.RECODE_TYPE_2);
                 }
                 return Result.ok("文件导入成功！数据行数:" + list.size());
             } catch (Exception e) {
