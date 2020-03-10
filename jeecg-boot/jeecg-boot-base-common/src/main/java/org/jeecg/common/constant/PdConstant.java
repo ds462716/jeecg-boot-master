@@ -130,4 +130,13 @@ public interface PdConstant {
 	//部门个性化配置是否默认
 	public final static String IS_DEFAULT_0 ="0";//是默认的
 	public final static String IS_DEFAULT_1 ="1";//不是默认的
+	public final static String REMINDER_TYPE_1 = "venderNEP";//生产厂家近效期提醒时间
+	public final static String REMINDER_TYPE_2 = "supplierNEP";//供应商近效期提醒时间
+	public final static String REMINDER_TYPE_3 = "stockNEP";//库存近效期提醒时间
+	public final static String REMINDER_TYPE_4 = "existRemind";//久存提醒时间
+
+	public final static String REMINDER_DETE_1 = "60";//生产厂家近效期提醒时间默认值
+	public final static String REMINDER_DETE_2 = "60";//供应商近效期提醒时间默认值
+	public final static String REMINDER_DETE_3 = "60";//库存近效期提醒时间默认值
+	public final static String REMINDER_DETE_4 = "60";//久存提醒时间默认值
 }
