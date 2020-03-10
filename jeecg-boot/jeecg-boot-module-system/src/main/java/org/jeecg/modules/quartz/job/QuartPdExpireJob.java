@@ -11,6 +11,7 @@ import org.jeecg.common.util.DateUtils;
 import org.jeecg.modules.message.util.PushMsgUtil;
 import org.jeecg.modules.pd.entity.PdProductStock;
 import org.jeecg.modules.pd.entity.PdProductStockTotal;
+import org.jeecg.modules.pd.service.IPdDepartConfigService;
 import org.jeecg.modules.pd.service.IPdDepartService;
 import org.jeecg.modules.pd.service.IPdProductStockService;
 import org.jeecg.modules.pd.service.IPdProductStockTotalService;
@@ -42,7 +43,8 @@ public class QuartPdExpireJob implements Job {
     private ISysAnnouncementSendService announcementSendService;
     @Autowired
     private IPdDepartService pdDepartService;
-
+    @Autowired
+    private IPdDepartConfigService PdDepartConfigService;
 
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
@@ -51,13 +53,17 @@ public class QuartPdExpireJob implements Job {
          *
          */
         log.info("-------------------更新过期状态开始-------------------");
+        Integer stockRemind = Integer.valueOf(PdConstant.REMINDER_DETE_3);//设定的常量值（默认的有效期限）
+        String stockDay = PdDepartConfigService.findPdDepartConfig(PdConstant.REMINDER_TYPE_3);
+        if (!StringUtils.isEmpty(stockDay)) {
+            stockRemind = Integer.valueOf(stockDay);
+        }
         List<PdProductStock> list = pdProductStockService.selectList(new PdProductStock());
         Map<String, Set<String>> m=new HashMap<String, Set<String>>();//存产品ID
         Map<String, Set<String>> p=new HashMap<String, Set<String>>();//存产品名称
         for (PdProductStock pdProductStock : list) {
             PdProductStock pd = new PdProductStock();
             String deptId = pdProductStock.getDepartId();
-            Integer remind = 7;//有效期提醒
             Date validDate = pdProductStock.getExpDate();
             Date date = new Date();
             pd.setMsgSendState(PdConstant.MSG_SEND_STATUS_0);
@@ -66,7 +72,7 @@ public class QuartPdExpireJob implements Job {
                     pd.setExpStatus(PdConstant.PD_STATE_2);
                     pd.setMsgSendState(PdConstant.MSG_SEND_STATUS_2);
                 }
-                Date afterMonthDate = DateUtils.getDateToAddDate(validDate, remind);
+                Date afterMonthDate = DateUtils.getDateToAddDate(validDate, stockRemind);
                 if ((date.before(validDate) && date.after(afterMonthDate))
                         || (DateUtils.isSameDay(date, validDate)
                         || DateUtils.isSameDay(date, afterMonthDate))) { //近效期
