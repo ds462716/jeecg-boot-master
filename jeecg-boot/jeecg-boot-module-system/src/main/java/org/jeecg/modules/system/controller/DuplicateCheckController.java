@@ -3,7 +3,9 @@ package org.jeecg.modules.system.controller;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
+import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.modules.system.mapper.SysDictMapper;
 import org.jeecg.modules.system.model.DuplicateCheckVo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,7 +71,8 @@ public class DuplicateCheckController {
 	@ApiOperation("重复校验接口")
 	public Result<Object> doDuplicateCheckHasDelFlag(DuplicateCheckVo duplicateCheckVo, HttpServletRequest request) {
 		Long num = null;
-
+		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		duplicateCheckVo.setDepartParentId(sysUser.getDepartParentId());
 		log.info("----duplicate check------："+ duplicateCheckVo.toString());
 		if (StringUtils.isNotBlank(duplicateCheckVo.getDataId())) {
 			// [2].编辑页面校验

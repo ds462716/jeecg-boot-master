@@ -55,12 +55,12 @@
 
     <!-- 重复校验 sql语句 -->
     <select id="duplicateCheckCountSqlHasDelFlag" resultType="Long" parameterType="org.jeecg.modules.system.model.DuplicateCheckVo">
-		SELECT COUNT(*) FROM ${tableName} WHERE ${fieldName} = #{fieldVal} and id &lt;&gt; #{dataId} and del_flag = '0'
+		SELECT COUNT(*) FROM ${tableName} WHERE ${fieldName} = #{fieldVal} and id &lt;&gt; #{dataId} and del_flag = '0' and depart_parent_id = #{departParentId}
 	</select>
 
     <!-- 重复校验 sql语句 -->
     <select id="duplicateCheckCountSqlNoDataIdHasDelFlag" resultType="Long" parameterType="org.jeecg.modules.system.model.DuplicateCheckVo">
-		SELECT COUNT(*) FROM ${tableName} WHERE ${fieldName} = #{fieldVal} and del_flag = '0'
+		SELECT COUNT(*) FROM ${tableName} WHERE ${fieldName} = #{fieldVal} and del_flag = '0' and depart_parent_id = #{departParentId}
 	</select>
 
     <!-- 查询部门信息 作为字典数据 -->
