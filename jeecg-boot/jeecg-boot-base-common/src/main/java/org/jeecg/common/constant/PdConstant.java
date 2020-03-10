@@ -126,4 +126,8 @@ public interface PdConstant {
  	public final static String MSG_SEND_STATUS_0="0";//初始值，未发送
 	public final static String MSG_SEND_STATUS_1="1";//已发送近效期消息提醒
 	public final static String MSG_SEND_STATUS_2="2";//已发送过期消息提醒
+
+	//部门个性化配置是否默认
+	public final static String IS_DEFAULT_0 ="0";//是默认的
+	public final static String IS_DEFAULT_1 ="1";//不是默认的
 }

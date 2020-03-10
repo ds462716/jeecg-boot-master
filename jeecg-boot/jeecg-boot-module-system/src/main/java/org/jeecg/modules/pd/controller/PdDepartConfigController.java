@@ -9,8 +9,12 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
+import org.jeecg.common.constant.PdConstant;
 import org.jeecg.common.system.query.QueryGenerator;
+import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.pd.entity.PdDepartConfig;
 import org.jeecg.modules.pd.service.IPdDepartConfigService;
@@ -20,6 +24,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
 
+import org.jeecg.modules.pd.util.UUIDUtil;
 import org.jeecgframework.poi.excel.ExcelImportUtil;
 import org.jeecgframework.poi.excel.def.NormalExcelConstants;
 import org.jeecgframework.poi.excel.entity.ExportParams;
@@ -60,10 +65,33 @@ public class PdDepartConfigController extends JeecgController<PdDepartConfig, IP
 								   @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
 								   @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
 								   HttpServletRequest req) {
-		QueryWrapper<PdDepartConfig> queryWrapper = QueryGenerator.initQueryWrapper(pdDepartConfig, req.getParameterMap());
-		Page<PdDepartConfig> page = new Page<PdDepartConfig>(pageNo, pageSize);
-		IPage<PdDepartConfig> pageList = pdDepartConfigService.page(page, queryWrapper);
-		return Result.ok(pageList);
+		try{
+			LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+			pdDepartConfig.setDepartParentId(sysUser.getDepartParentId());
+			QueryWrapper<PdDepartConfig> queryWrapper = QueryGenerator.initQueryWrapper(pdDepartConfig, req.getParameterMap());
+			Page<PdDepartConfig> page = new Page<>(pageNo, pageSize);
+			IPage<PdDepartConfig> pageList = pdDepartConfigService.page(page, queryWrapper);
+			if(pageList.getRecords()==null || pageList.getRecords().size()==0){
+				//如果没有就查询默认的
+				pdDepartConfig.setDepartParentId("");
+				pdDepartConfig.setIsDefault(PdConstant.IS_DEFAULT_0);
+				queryWrapper = QueryGenerator.initQueryWrapper(pdDepartConfig, req.getParameterMap());
+				List<PdDepartConfig> pdDepartConfigs = pdDepartConfigService.list(queryWrapper);
+				for(PdDepartConfig pc :pdDepartConfigs){
+					pc.setDepartParentId(sysUser.getDepartParentId());
+					pc.setDepartId(sysUser.getCurrentDepartId());
+					pc.setId(UUIDUtil.getUuid());
+					pc.setIsDefault(PdConstant.IS_DEFAULT_1);
+				}
+				pdDepartConfigService.saveBatch(pdDepartConfigs);
+				page.setRecords(pdDepartConfigs);
+				return Result.ok(page);
+			}
+			return Result.ok(pageList);
+		}catch (Exception e){
+			e.printStackTrace();
+			return Result.error("系统异常");
+		}
 	}
 	
 	/**
