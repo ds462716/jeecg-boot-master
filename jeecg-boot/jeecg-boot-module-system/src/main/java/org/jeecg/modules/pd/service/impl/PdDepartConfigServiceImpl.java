@@ -1,7 +1,9 @@
 package org.jeecg.modules.pd.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.constant.PdConstant;
+import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.modules.pd.entity.PdDepartConfig;
 import org.jeecg.modules.pd.mapper.PdDepartConfigMapper;
 import org.jeecg.modules.pd.service.IPdDepartConfigService;
@@ -22,13 +24,17 @@ import java.util.List;
 public class PdDepartConfigServiceImpl extends ServiceImpl<PdDepartConfigMapper, PdDepartConfig> implements IPdDepartConfigService {
 
     @Override
-    public PdDepartConfig findPdDepartConfig(PdDepartConfig pdDepartConfig){
+    public String findPdDepartConfig(String reminderType){
         LambdaQueryWrapper<PdDepartConfig> query = new LambdaQueryWrapper<>();
-        query.eq(PdDepartConfig::getDepartParentId,pdDepartConfig.getDepartParentId());
-        query.eq(PdDepartConfig::getDepartId,pdDepartConfig.getDepartId());
-        query.eq(PdDepartConfig::getType,pdDepartConfig.getType());
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        query.eq(PdDepartConfig::getDepartParentId,sysUser.getDepartParentId());
+        query.eq(PdDepartConfig::getType,reminderType);
         query.eq(PdDepartConfig::getIsDefault, PdConstant.IS_DEFAULT_1);
-        pdDepartConfig = this.getOne(query);
-        return pdDepartConfig;
+        PdDepartConfig pdDepartConfig = this.getOne(query);
+        if(pdDepartConfig!=null){
+            return pdDepartConfig.getValue();
+        }else{
+            return "";
+        }
     }
 }
