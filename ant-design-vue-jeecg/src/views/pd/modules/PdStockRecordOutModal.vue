@@ -429,6 +429,7 @@
             this.$nextTick(() => {
               // this.departList = res.result.sysDepartList; // 初始化部门列表 用于数据回显
               if(this.model.id){ //详情页
+                this.disableSubmit2 = true;
                 this.showApplyBtn = false;
                 this.showAllocationBtn = false;
                 this.showOrderTable = true;
@@ -463,8 +464,8 @@
 
                 this.totalSum = res.result.totalSum;
                 this.totalPrice = res.result.totalPrice.toString();
-                this.disableSubmit2 = true;
               }else{  // 新增页
+                this.disableSubmit2 = false;
                 this.initData = res.result;
                 this.submitDateStr = res.result.submitDateStr;
                 let fieldval = pick(this.initData,'recordNo','outType','submitBy','submitByName','submitDate','applyNo','allocationNo',
