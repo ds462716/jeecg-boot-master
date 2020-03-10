@@ -78,4 +78,13 @@ public interface IPdStockRecordService extends IService<PdStockRecord> {
 	 * @return
 	 */
 	PdStockRecord initOutModal(String id);
+
+	/**
+	 * 调入明细分页查询列表
+	 * @param pageList
+	 * @param pdStockRecord
+	 * @return
+	 */
+	Page<PdStockRecord> selectTransferList(Page<PdStockRecord> pageList, PdStockRecord pdStockRecord);
+
 }

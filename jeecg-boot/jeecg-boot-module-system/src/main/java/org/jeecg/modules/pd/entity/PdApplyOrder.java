@@ -57,9 +57,9 @@ public class PdApplyOrder extends BaseEntity {
 	/**申领总数*/
     @Excel(name = "申领总数量", width = 15)
     private Double totalNum;
-	/**实际领用个数*/
+	/**实际发货总数量*/
     @Excel(name = "实际发货总数量", width = 15)
-    private Double factNum;
+    private Double arrivalCount;
 	/**申领单状态*/
     @Excel(name = "申领单状态", width = 15)
     private String auditStatus;

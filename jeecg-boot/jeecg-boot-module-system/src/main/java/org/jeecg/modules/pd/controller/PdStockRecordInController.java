@@ -370,8 +370,8 @@ public class PdStockRecordInController {
 		 LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
 		 stockRecord.setInDepartId(sysUser.getCurrentDepartId());
 		 stockRecord.setDepartParentId(sysUser.getDepartParentId());
-		 Page<PdStockRecordDetail> page = new Page<PdStockRecordDetail>(pageNo, pageSize);
- 		// page = pdStockRecordDetailService.selectList(page,stockRecordDetail);
+		 Page<PdStockRecord> page = new Page<PdStockRecord>(pageNo, pageSize);
+ 		  page = pdStockRecordService.selectTransferList(page,stockRecord);
 		 return Result.ok(page);
 	 }
  }

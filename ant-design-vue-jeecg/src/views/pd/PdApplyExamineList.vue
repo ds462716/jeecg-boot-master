@@ -138,7 +138,7 @@
           {
             title:'实际领用数量',
             align:"center",
-            dataIndex: 'factNum'
+            dataIndex: 'arrivalCount'
           },
           {
             title: '操作',

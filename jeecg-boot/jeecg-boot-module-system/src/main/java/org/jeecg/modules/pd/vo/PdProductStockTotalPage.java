@@ -1,13 +1,13 @@
 package org.jeecg.modules.pd.vo;
 
-import java.util.List;
-
 import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
 import org.jeecg.modules.pd.entity.PdProductStock;
 import org.jeecg.modules.pd.entity.PdProductStockTotal;
 import org.jeecgframework.poi.excel.annotation.Excel;
 import org.jeecgframework.poi.excel.annotation.ExcelCollection;
+
+import java.util.List;
 
 /**
  * @Description: 库存总表
@@ -41,5 +41,9 @@ public class PdProductStockTotalPage extends PdProductStockTotal {
 	private String deptName;
 	@ExcelCollection(name="库存明细表")
 	private List<PdProductStock> pdProductStockList;
+
+    /*区分是申领单还是调拨单产品选择器**/
+	@TableField(exist = false)
+	private String code;  //1:调拨单   2:申领单
 	
 }

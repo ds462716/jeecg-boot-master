@@ -1,10 +1,9 @@
 package org.jeecg.modules.pd.mapper;
 
-import java.util.List;
-
-import org.apache.ibatis.annotations.Param;
-import org.jeecg.modules.pd.entity.PdStockRecord;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.jeecg.modules.pd.entity.PdStockRecord;
+
+import java.util.List;
 
 /**
  * @Description: 出入库记录表
@@ -23,4 +22,12 @@ public interface PdStockRecordMapper extends BaseMapper<PdStockRecord> {
      * @return
      */
     PdStockRecord getOne(PdStockRecord pdStockRecord);
+
+    /**
+     * 调入明细查询
+     * @param pdStockRecord
+     * @return
+     */
+    List<PdStockRecord> selectTransferList(PdStockRecord pdStockRecord);
+
 }

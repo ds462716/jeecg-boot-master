@@ -137,4 +137,48 @@
         </where>
     </select>
 
+
+
+     <!--统计查询   调入明细查询-->
+    <select id="selectTransferList" resultType="org.jeecg.modules.pd.entity.PdStockRecord">
+        SELECT
+        a.record_no as "recordNo",
+        a.submit_date as "submitDate",
+        c.depart_name as "outDepartName",
+        d.depart_name as "inDepartName",
+        pp.name as "productName",
+        pp.number as "number",
+        pp.spec as "spec",
+        pp.version as "version",
+        srp.product_bar_code as "productBarCode",
+        srp.batch_no as "batchNo",
+        srp.exp_date as "expDate",
+        srp.product_num as "productNum",
+        srp.remarks as "remarks",
+        e.realname as "submitByName"
+       FROM pd_stock_record a
+       LEFT JOIN pd_stock_record_detail srp ON a.id = srp.record_id
+       LEFT JOIN pd_product pp ON srp.product_id = pp.id
+       LEFT JOIN pd_stock_record sr ON a.allocation_no = sr.allocation_no
+       LEFT JOIN sys_depart c ON a.out_depart_id = c.id
+       LEFT JOIN sys_depart d ON a.in_depart_id = d.id
+       LEFT JOIN sys_user e on a.submit_by = e.id
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL} AND a.id != sr.id
+            <if test="recordType != null and recordType != ''">
+                AND a.record_type = #{recordType}
+            </if>
+            <if test="inDepartId != null and inDepartId != ''">
+                AND a.in_depart_id = #{inDepartId}
+            </if>
+            <if test="auditStatus != null and auditStatus != ''">
+                AND a.audit_status = #{auditStatus}
+            </if>
+            <if test="inType != null and inType != ''">
+                AND a.in_type = #{inType}
+            </if>
+            ORDER BY a.update_time DESC, a.submit_date DESC
+        </where>
+    </select>
+
 </mapper>

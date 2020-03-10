@@ -16,7 +16,7 @@
 		a.exp_date,
 		a.apply_num,
 		a.stock_num,
-		a.refund_num,
+		a.arrival_num,
 		a.remarks,
 		a.del_flag
 	</sql>

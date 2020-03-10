@@ -13,7 +13,7 @@
         a.apply_by,
         a.apply_date,
         a.depart_id,
-        a.fact_num,
+        a.arrival_count,
         a.audit_status,
         a.audit_by,
         a.audit_date,

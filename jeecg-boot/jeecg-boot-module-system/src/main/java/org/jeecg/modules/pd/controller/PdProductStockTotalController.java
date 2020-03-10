@@ -290,6 +290,8 @@ public class PdProductStockTotalController {
 											 @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
 											 HttpServletRequest req) {
 		 Page<PdProductStock> page = new Page<PdProductStock>(pageNo, pageSize);
+		 LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		 productStock.setDepartId(sysUser.getCurrentDepartId());
 		 page = pdProductStockService.selectList(page,productStock);
 		 return Result.ok(page);
 	 }
@@ -334,6 +336,34 @@ public class PdProductStockTotalController {
 								HttpServletRequest req) {
 		 Page<PdProductStock> page = new Page<PdProductStock>(pageNo, pageSize);
 		 page = pdProductStockService.selectList(page,productStock);
+		 return Result.ok(page);
+	 }
+
+
+
+	 /**
+	  * 申领单/调拨单库存产品选择器用（分页列表查询）
+	  *
+	  * @param stockTotalPage
+	  * @param pageNo
+	  * @param pageSize
+	  * @param req
+	  * @return
+	  */
+	 @GetMapping(value = "/queryProductStockList")
+	 public Result<?> queryProductStockList(PdProductStockTotalPage stockTotalPage,
+									@RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
+									@RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
+									HttpServletRequest req) {
+		 Page<PdProductStockTotalPage> page = new Page<PdProductStockTotalPage>(pageNo, pageSize);
+		 LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		 stockTotalPage.setDepartParentId(sysUser.getDepartParentId());
+		 if(stockTotalPage.getCode().equals("2")){//如果是申领单过来的话
+			String deptId= sysUser.getCurrentDepartId();//当前登录科室
+			 //获取父级部门ID//暂时给器械科ID
+			 stockTotalPage.setDepartId("226bedba2af745e097d4ac8873b9178e");
+		  }
+		 page = pdProductStockTotalService.selectList(page,stockTotalPage);
 		 return Result.ok(page);
 	 }
 
