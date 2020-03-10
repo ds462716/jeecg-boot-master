@@ -370,7 +370,7 @@
             },
             { title: '入库单价', key: 'purchasePrice', width:"80px" },
             { title: '金额', key: 'inTotalPrice', type: FormTypes.input, disabled:true, width:"100px" },
-            { title: '货位', key: 'huoweiCode', type: FormTypes.select, width:"150px", options: [],allowSearch:true, placeholder: '${title}' },
+            { title: '货位', key: 'inHuoweiCode', type: FormTypes.select, width:"150px", options: [],allowSearch:true, placeholder: '${title}' },
             { title: '申购单号', key: 'orderNo', type: FormTypes.input, disabled:true, width:"180px" }
           ]
         },
@@ -463,7 +463,7 @@
 
               this.goodsAllocationList = res.result.goodsAllocationList;
               this.pdStockRecordDetailTable.columns.forEach((item, idx) => {
-                if(item.key === "huoweiCode"){
+                if(item.key === "inHuoweiCode"){
                   item.options = this.goodsAllocationList;
                 }
               })
@@ -723,7 +723,7 @@
           batchNo:"",
           productNum: 1,
           orderNo:"",
-          huoweiCode:""
+          inHuoweiCode:""
         }
         let purchaseOrderDetail = this.pdPurchaseOrderDetailTable.dataSource;
         for (let detail of purchaseOrderDetail) {
@@ -753,7 +753,7 @@
           batchNo:row.batchNo,
           productNum: 1,
           orderNo:"",
-          huoweiCode:""
+          inHuoweiCode:""
         }
         let purchaseOrderDetail = this.pdPurchaseOrderDetailTable.dataSource;
         purchaseOrderDetail.forEach((detail, idx) => {

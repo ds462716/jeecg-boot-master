@@ -135,4 +135,12 @@ public class PdProductStock extends BaseEntity {
 	/** 查询日期结束 **/
 	@TableField(exist = false)
 	private String queryDateEnd;
+
+	/** 申领单号 **/
+	@TableField(exist = false)
+	private String applyNo;
+
+	/** 调拨单号 **/
+	@TableField(exist = false)
+	private String allocationNo;
 }

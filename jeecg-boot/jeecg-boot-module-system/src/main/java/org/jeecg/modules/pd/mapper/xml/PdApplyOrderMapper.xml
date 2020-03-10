@@ -98,6 +98,7 @@
         a.apply_no as applyNo,
         a.apply_date as applyDate,
         a.total_num as totalNum,
+        IFNULL(a.arrival_count,0) as arrivalCount,
         f.depart_name AS deptName,
         a.audit_status as auditStatus,
         c.realname as auditByName
@@ -141,4 +142,26 @@
         </where>
         order  by a.apply_date desc
     </select>
+
+    <!-- 增加发货数量 用于出库保存/提交 add by jiangxz 20200309 -->
+    <select id="additionArrivalCount" parameterType="org.jeecg.modules.pd.entity.PdApplyOrder">
+		UPDATE
+			pd_apply_order
+		SET
+			arrival_count = IFNULL(arrival_count,0) + #{arrivalCount}
+		WHERE
+			del_flag =#{DEL_FLAG_NORMAL}
+			and apply_no = #{applyNo}
+	</select>
+
+    <!-- 扣减发货数量 用于出库拒绝 add by jiangxz 20200309 -->
+    <select id="subtractArrivalCount" parameterType="org.jeecg.modules.pd.entity.PdApplyOrder">
+		UPDATE
+			pd_apply_order
+		SET
+			arrival_count = IFNULL(arrival_count,0) + #{arrivalCount}
+		WHERE
+			del_flag =#{DEL_FLAG_NORMAL}
+			and apply_no = #{applyNo}
+	</select>
 </mapper>

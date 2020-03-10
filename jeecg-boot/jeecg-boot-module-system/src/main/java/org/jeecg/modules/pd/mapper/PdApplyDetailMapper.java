@@ -16,6 +16,22 @@ public interface PdApplyDetailMapper extends BaseMapper<PdApplyDetail> {
 	public boolean deleteByMainId(@Param("mainId") String mainId);
 
 	public boolean deleteByApplyNo(@Param("applyNo") String applyNo);
-    
+
 	public List<PdApplyDetail> selectByApplyNo(@Param("applyNo") String applyNo);
+
+	/**
+	 * 增加发货数量 用于出库保存/提交 add by jiangxz 20200309
+	 *
+	 * @param detail
+	 * @return
+	 */
+	void additionArrivalNum(PdApplyDetail detail);
+
+	/**
+	 * 扣减发货数量 用于出库拒绝 add by jiangxz 20200309
+	 *
+	 * @param detail
+	 * @return
+	 */
+	void subtractArrivalNum(PdApplyDetail detail);
 }

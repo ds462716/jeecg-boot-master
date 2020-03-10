@@ -16,4 +16,17 @@ public interface PdAllocationRecordMapper extends BaseMapper<PdAllocationRecord>
     List<PdAllocationRecord> selectList(PdAllocationRecord allocationRecord);
 
     List<PdAllocationRecord> chooseAllocationList(PdAllocationRecord allocationRecord);
+    /**
+     * 增加发货数量 用于出库保存/提交 add by jiangxz 20200309
+     *
+     * @return
+     */
+    void additionArrivalCount(PdAllocationRecord record);
+
+    /**
+     * 扣减发货数量 用于出库拒绝 add by jiangxz 20200309
+     *
+     * @return
+     */
+    void subtractArrivalCount(PdAllocationRecord record);
 }

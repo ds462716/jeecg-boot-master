@@ -18,4 +18,17 @@ public interface PdApplyOrderMapper extends BaseMapper<PdApplyOrder> {
 
     List<PdApplyOrderPage> chooseApplyOrderList(PdApplyOrderPage applyOrderPage);
 
+    /**
+     * 增加发货数量 用于出库保存/提交 add by jiangxz 20200309
+     *
+     * @return
+     */
+    void additionArrivalCount(PdApplyOrder pdApplyOrder);
+
+    /**
+     * 扣减发货数量 用于出库拒绝 add by jiangxz 20200309
+     *
+     * @return
+     */
+    void subtractArrivalCount(PdApplyOrder pdApplyOrder);
 }

@@ -316,12 +316,13 @@
                 return obj;
               },
             },
-            { title: '单号', align:"center", dataIndex: 'orderNo' },  // TODO  申领单 调拨单
+            { title: '单号', align:"center", dataIndex: 'orderNo' },
             { title: '产品编码', align:"center", dataIndex: 'number' },
             { title: '产品名称', align:"center", dataIndex: 'productName' },
             { title: '规格', align:"center", dataIndex: 'spec' },
             { title: '型号', align:"center", dataIndex: 'version' },
             { title: '申请数量', align:"center", dataIndex: 'productNum' },
+            { title: '已发货数量', align:"center", dataIndex: 'arrivalNum' },
             { title: '单位', align:"center", dataIndex: 'unitName' },
             { title: '定数包名称', align:"center", dataIndex: 'packageName' },
             { title: '定数包编号', align:"center", dataIndex: 'packageCode' },
@@ -350,7 +351,8 @@
             },
             { title: '出库金额', key: 'outTotalPrice', type: FormTypes.input, disabled:true, width:"100px" },
             { title: '库存数量', key: 'stockNum', width:"80px" },
-            { title: '出库货位', key: 'outhuoweiName', width:"100px" },
+            { title: '出库货位', key: 'outHuoweiName', width:"100px" },
+            { title: '出库货位编号', key: 'outHuoweiCode', type: FormTypes.hidden },
             { title: '入库货位', key: 'inHuoweiCode', type: FormTypes.select, width:"150px", options: [],allowSearch:true, placeholder: '${title}' },
           ]
         },
@@ -410,11 +412,11 @@
       },
       loadData() {
         this.loading = true;
-
+        this.departHandleSearch();  // 初始化部门列表 用于数据回显
         let params = {};
         if(this.model.id){
-          let fieldval = pick(this.model,'recordNo','outType','submitBy','submitByName','submitDate','remarks',
-            'inDepartId','outDepartId','outDepartName','testResult','storageResult','temperature','humidity','remarks')
+          let fieldval = pick(this.model,'recordNo','outType','submitBy','submitByName','submitDate','applyNo','allocationNo',
+            'inDepartId','outDepartId','outDepartName','remarks')
           this.$nextTick(() => {
             this.form.setFieldsValue(fieldval);
           })
@@ -425,22 +427,49 @@
         getAction(this.url.init, params).then((res) => {
           if (res.success) {
             this.$nextTick(() => {
-
-              if(this.model.id){
+              // this.departList = res.result.sysDepartList; // 初始化部门列表 用于数据回显
+              if(this.model.id){ //详情页
+                this.disableSubmit2 = true;
                 this.showApplyBtn = false;
                 this.showAllocationBtn = false;
                 this.showOrderTable = true;
-                // this.pdOrderDetailTable.dataSource = res.result.pdPurchaseDetailList || []; TODO
                 this.pdStockRecordDetailTable.dataSource = res.result.pdStockRecordDetailList || [];
+
+                if(res.result.outType == "1"){
+                  this.orderTableTitle = "申领单明细";
+                  let pdApplyDetailList = res.result.pdApplyDetailList || [];
+                  pdApplyDetailList.forEach((item, idx) => {
+                    item.orderNo = item.applyNo;
+                    item.productNum = item.applyNum;
+                  })
+                  this.pdOrderDetailTable.dataSource = pdApplyDetailList;
+                }else if(res.result.outType == "2"){
+                  this.orderTableTitle = "";
+                }else if(res.result.outType == "3"){
+                  this.orderTableTitle = "调拨单明细";
+                  let pdApplyDetailList = res.result.pdAllocationDetailList || [];
+                  pdApplyDetailList.forEach((item, idx) => {
+                    item.orderNo = item.allocationNo;
+                    item.productNum = item.allocationNum;
+                  })
+                  this.pdOrderDetailTable.dataSource = pdApplyDetailList;
+                }
+
+                this.goodsAllocationList = res.result.goodsAllocationList;
+                this.pdStockRecordDetailTable.columns.forEach((item, idx) => {
+                  if(item.key === "inHuoweiCode"){
+                    item.options = this.goodsAllocationList;
+                  }
+                })
+
                 this.totalSum = res.result.totalSum;
                 this.totalPrice = res.result.totalPrice.toString();
-                this.disableSubmit2 = true;
-              }else{
+              }else{  // 新增页
+                this.disableSubmit2 = false;
                 this.initData = res.result;
-                this.departList = res.result.sysDepartList; // 初始化部门列表 用于数据回显
                 this.submitDateStr = res.result.submitDateStr;
-                let fieldval = pick(this.initData,'recordNo','outType','submitBy','submitByName','submitDate','remarks',
-                  'inDepartId','outDepartId','outDepartName','testResult','storageResult','temperature','humidity','remarks');
+                let fieldval = pick(this.initData,'recordNo','outType','submitBy','submitByName','submitDate','applyNo','allocationNo',
+                  'inDepartId','outDepartId','outDepartName','remarks');
                 this.form.setFieldsValue(fieldval);
                 //获取光标
                 this.$refs['productNumberInput'].focus();
@@ -476,7 +505,13 @@
       outTypeChange(val){
         this.applyNo = "";
         this.allocationNo = "";
+        this.form.setFieldsValue({applyNo:""});
+        this.form.setFieldsValue({allocationNo:""});
         this.pdOrderDetailTable.dataSource = [];
+        this.eachAllTable((item) => {
+          item.initialize()
+        })
+
         if(val == "1"){
           this.orderTableTitle = "申领单明细";
           this.showApplyBtn = true;
@@ -520,8 +555,7 @@
             this.$message.warning("出库产品数据为空，请扫码出库或选择产品");
             return;
           }
-
-          // return this.request(formData);
+          return this.request(formData);
         }).catch(e => {
           if (e.error === VALIDATE_NO_PASSED) {
             // 如果有未通过表单验证的子表，就自动跳转到它所在的tab
@@ -564,8 +598,8 @@
         this.$message.error(msg)
       },
       popupCallback(row){
-        this.form.setFieldsValue(pick(row,'recordNo','outType','submitBy','submitByName','submitDate','remarks',
-          'inDepartId','outDepartId','outDepartName','testResult','storageResult','temperature','humidity','remarks'))
+        this.form.setFieldsValue(pick(row,'recordNo','outType','submitBy','submitByName','submitDate','applyNo','allocationNo',
+          'inDepartId','outDepartId','outDepartName','remarks'))
       },
       /** 切换全屏显示 */
       handleClickToggleFullScreen() {
@@ -592,7 +626,13 @@
       departHandleChange(value){
         this.applyNo = "";
         this.allocationNo = "";
+        this.form.setFieldsValue({applyNo:""});
+        this.form.setFieldsValue({allocationNo:""});
         this.pdOrderDetailTable.dataSource = [];
+        this.eachAllTable((item) => {
+          item.initialize()
+        })
+
         let { values } = this.$refs.pdStockRecordDetail.getValuesSync({ validate: false });
         values.forEach((item, idx) => {
           // 清空货位
@@ -637,7 +677,9 @@
       returnApplyOrderData(data){
         if(data && data.length > 0){
           this.allocationNo = "";
+          this.form.setFieldsValue({allocationNo:""});
           this.applyNo = data[0].applyNo;
+          this.form.setFieldsValue({applyNo:data[0].applyNo});
           data.forEach((item, idx) => {
             item.orderNo = item.applyNo;
             item.productNum = item.applyNum;
@@ -648,7 +690,9 @@
       returnAllocationData(data){
         if(data && data.length > 0) {
           this.applyNo = "";
+          this.form.setFieldsValue({applyNo:""});
           this.allocationNo = data[0].allocationNo;
+          this.form.setFieldsValue({allocationNo:data[0].allocationNo});
           data.forEach((item, idx) => {
             item.orderNo = item.allocationNo;
             item.productNum = item.allocationNum;
@@ -667,14 +711,14 @@
 
         if(outType == "1"){        //申领单
           if(!this.applyNo){
-            this.$message.error("请先导入申领订单！");
+            this.$message.error("请先导入申领单！");
             return;
           }
           this.$refs.pdChooseProductStockListModel.show({applyNo:this.applyNo});
         }else if(outType == "2"){
           this.$refs.pdChooseProductStockListModel.show({});
         }else if(outType == "3"){  //调拨单
-          if(!this.applyNo){
+          if(!this.allocationNo){
             this.$message.error("请先导入调拨单！");
             return;
           }
@@ -734,7 +778,8 @@
           purchasePrice:row.purchasePrice,
           outTotalPrice:Number(!row.sellingPrice ? 0 : row.sellingPrice).toFixed(4),
           stockNum:row.stockNum,
-          outhuoweiName:row.huoweiName,
+          outHuoweiName:row.huoweiName,
+          outHuoweiCode:row.huoweiCode,
           inHuoweiCode:""
         }
         this.pdStockRecordDetailTable.dataSource.push(data);
@@ -757,7 +802,8 @@
           purchasePrice:row.purchasePrice,
           outTotalPrice:Number(!row.sellingPrice ? 0 : row.sellingPrice).toFixed(4),
           stockNum:row.stockNum,
-          outhuoweiName:row.huoweiName,
+          outHuoweiName:row.huoweiName,
+          outHuoweiCode:row.huoweiCode,
           inHuoweiCode:""
         }
         this.pdStockRecordDetailTable.dataSource.push(data);
@@ -827,6 +873,10 @@
           stockScanCode(productNumber,productBarCode).then((res) => {
             if(res.code == "200" || res.code == "203"){
               let pdProductStock = res.result[0];
+              if(!pdProductStock){
+                this.$message.error("条码解析失败，请校验条码是否正确！");
+                return;
+              }
               let isAddRow = true;// 是否增加一行
               // 循环表格数据
               let { values } = this.$refs.pdStockRecordDetail.getValuesSync({ validate: false });

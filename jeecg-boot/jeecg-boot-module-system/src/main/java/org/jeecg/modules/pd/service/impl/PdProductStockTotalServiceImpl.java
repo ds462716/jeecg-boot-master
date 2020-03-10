@@ -87,7 +87,7 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
 			String number=stockRecordDetail.getNumber();
 			Double productNum = stockRecordDetail.getProductNum();  //数量
 			BigDecimal inPrice = stockRecordDetail.getPurchasePrice();//入库单价
-			String huoweiCode = stockRecordDetail.getHuoweiCode(); //货位编号
+			String huoweiCode = stockRecordDetail.getInHuoweiCode(); //货位编号
 			//2、增加入库库存
 			PdProductStockTotal stockTotalqi = new PdProductStockTotal();
 			stockTotalqi.setDepartId(inDeptId);

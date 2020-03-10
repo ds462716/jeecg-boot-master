@@ -84,6 +84,20 @@
         LEFT JOIN pd_goods_allocation g ON a.huowei_code = g.code
     </sql>
 
+	<sql id="pdApplyDetailColumns">
+		h.apply_no
+    </sql>
+	<sql id="pdApplyDetail">
+        LEFT JOIN pd_apply_detail h on a.product_id = h.product_id
+    </sql>
+
+	<sql id="pdAllocationDetailColumns">
+		j.allocation_no
+    </sql>
+	<sql id="pdAllocationDetail">
+		LEFT JOIN pd_allocation_detail j ON a.product_id = j.product_id
+    </sql>
+
 	<!-- 列表查询 -->
 	<select id="selectList" resultType="org.jeecg.modules.pd.entity.PdProductStock">
 		SELECT
@@ -94,6 +108,12 @@
 		<include refid="pdSupplierColumns"/>,
 		<include refid="sysDepartColumns"/>,
 		<include refid="pdGoodsAllocationColumns"/>
+		<if test="applyNo != null and applyNo != ''">
+			,<include refid="pdApplyDetailColumns"/>
+		</if>
+		<if test="allocationNo != null and allocationNo != ''">
+			,<include refid="pdAllocationDetailColumns"/>
+		</if>
 		FROM pd_product_stock a
 		<include refid="pdProductStockJoins"/>
 		<include refid="pdProductJoins"/>
@@ -102,6 +122,12 @@
 		<include refid="pdSupplierJoins"/>
 		<include refid="sysDepartJoins"/>
 		<include refid="pdGoodsAllocation"/>
+		<if test="applyNo != null and applyNo != ''">
+			<include refid="pdApplyDetail"/>
+		</if>
+		<if test="allocationNo != null and allocationNo != ''">
+			<include refid="pdAllocationDetail"/>
+		</if>
 		<where>
 			a.del_flag =#{DEL_FLAG_NORMAL} AND a.stock_num > 0
 			<if test="id != null and id != ''">
@@ -140,7 +166,12 @@
 			<if test="queryDateEnd != null and queryDateEnd != ''">
 				AND a.exp_date &lt;= #{queryDateEnd}
 			</if>
-
+			<if test="applyNo != null and applyNo != ''">
+				AND h.apply_no = #{applyNo}
+			</if>
+			<if test="allocationNo != null and allocationNo != ''">
+				AND j.allocation_no = #{allocationNo}
+			</if>
 			order by  exp_status  desc,create_time desc
 		</where>
 	</select>

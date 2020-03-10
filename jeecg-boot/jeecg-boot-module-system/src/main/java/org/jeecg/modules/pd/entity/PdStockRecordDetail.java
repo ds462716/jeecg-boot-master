@@ -42,8 +42,10 @@ public class PdStockRecordDetail extends BaseEntity {
 //	@Excel(name = "货区ID", width = 15)
 //	private String huoquId;
 	/**货位ID*/
-	@Excel(name = "货位Code", width = 15)
-	private String huoweiCode;
+	@Excel(name = "入库货位Code", width = 15)
+	private String inHuoweiCode;
+	@Excel(name = "出库货位Code", width = 15)
+	private String outHuoweiCode;
 	/**产品批号*/
 	@Excel(name = "产品批号", width = 15)
 	private String batchNo;
@@ -107,7 +109,8 @@ public class PdStockRecordDetail extends BaseEntity {
 	/**所属部门*/
 	private String departId;
 	private String departParentId;
-
+	/**产品库存ID*/
+	private String productStockId;
 
     /*不是明细表字段*/
 	@TableField(exist = false)
@@ -156,5 +159,11 @@ public class PdStockRecordDetail extends BaseEntity {
 	private String outType;//出库类型
 	@TableField(exist = false)
 	private String inType;//入库类型
+	@TableField(exist = false)
+	private Double stockNum;// 库存数量
+	@TableField(exist = false)
+	private String inHuoweiName;// 入库货位
+	@TableField(exist = false)
+	private String outHuoweiName;//出库货位
 
 }

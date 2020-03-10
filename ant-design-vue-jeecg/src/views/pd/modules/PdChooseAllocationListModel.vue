@@ -146,6 +146,11 @@
             dataIndex: 'totalNum'
           },
           {
+            title:'实际发货数量',
+            align:"center",
+            dataIndex: 'arrivalCount'
+          },
+          {
             title:'审核状态',
             align:"center",
             dataIndex: 'auditStatus',
@@ -173,6 +178,7 @@
           {title:'型号', align:"center", dataIndex: 'version'},
           {title:'单位', align:"center", dataIndex: 'unitName'},
           {title:'调拨数量', align:"center", dataIndex: 'allocationNum'},
+          {title:'实际发货数量', align:"center", dataIndex: 'arrivalNum' },
           {title:'库存数量', align:"center", dataIndex: 'stockNum'},
         ],
         url: {

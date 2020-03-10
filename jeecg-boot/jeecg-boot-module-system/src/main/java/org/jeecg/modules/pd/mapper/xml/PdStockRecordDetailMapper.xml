@@ -5,8 +5,10 @@
         a.id,
         a.record_id,
         a.product_id,
+        a.product_stock_id,
         a.product_bar_code,
-        a.huowei_code,
+        a.in_huowei_code,
+		a.out_huowei_code,
         a.batch_no,
         a.order_no,
         a.product_num,
@@ -73,7 +75,9 @@
       g.record_type AS "recordType",
       g.record_no AS "recordNo",
       g.in_type AS "inType",
-      g.out_type AS "outType"
+      g.out_type AS "outType",
+	(select r.depart_name from sys_depart r where r.id=g.in_depart_id) AS "inDepartName",
+	(select r.depart_name from sys_depart r where r.id=g.out_depart_id) AS "outDepartName"
     </sql>
 	<sql id="PdStockRecordJoins">
       LEFT JOIN pd_stock_record g ON g.id = a.record_id
@@ -87,6 +91,21 @@
         LEFT JOIN sys_user h ON h.id = g.submit_by
     </sql>
 
+	<!-- 库存 -->
+	<sql id="pdProductStockColumns">
+        j.stock_num as stockNum
+	</sql>
+	<sql id="pdProductStockJoins">
+        LEFT JOIN pd_product_stock j ON j.id = a.product_stock_id
+    </sql>
+
+	<!-- 货位 -->
+	<sql id="pdGoodsAllocationColumns">
+        k.name as outHuoweiName
+	</sql>
+	<sql id="pdGoodsAllocationJoins">
+        LEFT JOIN pd_goods_allocation k ON k.code = a.out_huowei_code
+    </sql>
 
 	<delete id="deleteByMainId" parameterType="java.lang.String">
 		DELETE
@@ -97,11 +116,17 @@
 	<select id="selectByMainId" parameterType="org.jeecg.modules.pd.entity.PdStockRecordDetail" resultType="org.jeecg.modules.pd.entity.PdStockRecordDetail">
 		SELECT
 		<include refid="PdStockRecordDetailColumns"/>,
+		<include refid="PdStockRecordColumns"/>,
 		<include refid="pdUnitColumns"/>,
-		<include refid="pdProductColumns"/>
+		<include refid="pdProductColumns"/>,
+		<include refid="pdProductStockColumns"/>,
+		<include refid="pdGoodsAllocationColumns"/>
 		FROM  pd_stock_record_detail a
+		<include refid="PdStockRecordJoins"/>
 		<include refid="pdProductJoins"/>
 		<include refid="pdUnitJoins"/>
+		<include refid="pdProductStockJoins"/>
+		<include refid="pdGoodsAllocationJoins"/>
 		WHERE
 		        a.del_flag =#{DEL_FLAG_NORMAL}
 			and record_id = #{recordId}
@@ -118,9 +143,7 @@
 		<include refid="pdVenderColumns"/>,
 		<include refid="PdStockRecordColumns"/>,
 		<include refid="pdSupplierColumns"/>,
-		<include refid="pdSysUserColumns"/>,
- 		(select r.depart_name from sys_depart r where r.id=g.in_depart_id) AS "inDepartName",
-		(select r.depart_name from sys_depart r where r.id=g.out_depart_id) AS "outDepartName"
+		<include refid="pdSysUserColumns"/>
 		FROM pd_stock_record_detail a
 		<include refid="PdStockRecordDetailJoins"/>
 		<include refid="PdStockRecordJoins"/>

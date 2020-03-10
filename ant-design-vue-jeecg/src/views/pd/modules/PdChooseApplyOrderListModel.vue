@@ -140,6 +140,11 @@
             dataIndex: 'totalNum'
           },
           {
+            title:'实际发货数量',
+            align:"center",
+            dataIndex: 'arrivalCount'
+          },
+          {
             title:'审核状态',
             align:"center",
             dataIndex: 'auditStatus',
@@ -205,6 +210,11 @@
             title:'申领数量',
             align:"center",
             dataIndex: 'applyNum'
+          },
+          {
+            title:'实际发货数量',
+            align:"center",
+            dataIndex: 'arrivalNum'
           },
           {
             title:'库存数量',

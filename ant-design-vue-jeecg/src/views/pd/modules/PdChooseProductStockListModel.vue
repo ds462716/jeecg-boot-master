@@ -115,6 +115,9 @@
         notFoundContent:"未找到内容",
         supplierData: [],
 
+        applyNo:"",
+        allocationNo:"",
+
         // 表头
         columns: [
           {
@@ -140,6 +143,18 @@
           { title: '进价', align:"center",width:80, dataIndex: 'purchasePrice' },
           { title: '出价', align:"center",width:80, dataIndex: 'sellingPrice' },
           { title: '货位', align:"center", width:80,dataIndex: 'huoweiName' },
+          {
+            title: '货位编号',
+            align:"center",
+            dataIndex: 'huoweiCode',
+            colSpan: 0,
+            customRender: (value, row, index) => {
+              const obj = {
+                attrs: {colSpan:0},
+              };
+              return obj;
+            },
+          },
           {
             title: '产品条码',
             align:"center",
@@ -183,16 +198,14 @@
         this.visible = false;
       },
       show(params) {
-        // if(params && params.supplierId){
-          // this.supplierId = params.supplierId;
-          // this.orderNo = params.orderNo;
-          // this.$nextTick(() => {
-            // this.$refs.supplierSelect.disabled="disabled";
-            // this.supplierHandleSearch(); //初始化供应商
-            // this.queryParam.supplierId = this.supplierId; //默认选择父页面传来的供应商
-            // this.supplierSelecDisabled = true;
-          // })
-        // }
+        if(params && params.applyNo){
+          this.applyNo = params.applyNo;
+          this.allocationNo = "";
+        }
+        if(params && params.allocationNo){
+          this.applyNo = "";
+          this.allocationNo = params.allocationNo;
+        }
         this.loadData(1);
         this.visible = true;
       },
@@ -217,12 +230,12 @@
           this.ipagination.current = 1;
         }
         var params = this.getQueryParams();//查询条件
-        // if(this.supplierId){
-        //   params.supplierId = this.supplierId;
-        // }
-        // if(this.orderNo){
-        //   params.orderNo = this.orderNo;
-        // }
+        if(this.applyNo){
+          params.applyNo = this.applyNo;
+        }
+        if(this.allocationNo){
+          params.allocationNo = this.allocationNo;
+        }
         this.loading = true;
         getAction(this.url.list, params).then((res) => {
           if (res.success) {

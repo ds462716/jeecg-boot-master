@@ -20,7 +20,7 @@ public interface IPdStockRecordService extends IService<PdStockRecord> {
 	 * 添加一对多
 	 * 
 	 */
-	public void saveMain(PdStockRecord pdStockRecord, List<PdStockRecordDetail> pdStockRecordDetailList) ;
+	public void saveMain(PdStockRecord pdStockRecord, List<PdStockRecordDetail> pdStockRecordDetailList, String recordType) ;
 	
 	/**
 	 * 修改一对多

@@ -149,6 +149,12 @@ public class PdStockRecord extends BaseEntity {
     // 采购订单明细
     @TableField(exist = false)
     private List<PdPurchaseDetail> pdPurchaseDetailList;
+    // 申领单明细
+    @TableField(exist = false)
+    private List<PdApplyDetail> pdApplyDetailList;
+    // 调拨单明细
+    @TableField(exist = false)
+    private List<PdAllocationDetail> pdAllocationDetailList;
 
     /**出入库日期 字符串格式*/
     @TableField(exist = false)

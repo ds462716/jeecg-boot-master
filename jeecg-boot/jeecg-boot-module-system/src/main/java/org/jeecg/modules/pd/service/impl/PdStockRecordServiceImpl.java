@@ -10,10 +10,7 @@ import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.DateUtils;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.pd.entity.*;
-import org.jeecg.modules.pd.mapper.PdPurchaseDetailMapper;
-import org.jeecg.modules.pd.mapper.PdStockLogMapper;
-import org.jeecg.modules.pd.mapper.PdStockRecordDetailMapper;
-import org.jeecg.modules.pd.mapper.PdStockRecordMapper;
+import org.jeecg.modules.pd.mapper.*;
 import org.jeecg.modules.pd.service.*;
 import org.jeecg.modules.pd.util.UUIDUtil;
 import org.jeecg.modules.pd.vo.PdGoodsAllocationPage;
@@ -47,6 +44,14 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
 	@Autowired
 	private PdPurchaseDetailMapper pdPurchaseDetailMapper;
 	@Autowired
+	private PdApplyOrderMapper pdApplyOrderMapper;
+	@Autowired
+	private PdApplyDetailMapper pdApplyDetailMapper;
+	@Autowired
+	private PdAllocationRecordMapper pdAllocationRecordMapper;
+	@Autowired
+	private PdAllocationDetailMapper pdAllocationDetailMapper;
+	@Autowired
 	private IPdProductStockTotalService pdProductStockTotalService;
 	@Autowired
 	private IPdStockLogService pdStockLogService;
@@ -62,21 +67,31 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
 	private IPdPurchaseDetailService pdPurchaseDetailService;
 	@Autowired
 	private IPdDepartService pdDepartService;
-
+	@Autowired
+	private IPdApplyDetailService pdApplyDetailService;
+	@Autowired
+	private IPdAllocationDetailService pdAllocationDetailService;
 
 	@Override
 	@Transactional
-	public void saveMain(PdStockRecord pdStockRecord, List<PdStockRecordDetail> pdStockRecordDetailList) {
+	public void saveMain(PdStockRecord pdStockRecord, List<PdStockRecordDetail> pdStockRecordDetailList, String recordType) {
+		if(PdConstant.RECODE_TYPE_1.equals(recordType)){
+			this.saveInStockRecord(pdStockRecord, pdStockRecordDetailList);
+		}else if(PdConstant.RECODE_TYPE_2.equals(recordType)){
+			this.saveOutStockRecord(pdStockRecord, pdStockRecordDetailList);
+		}
+	}
+
+	private void saveInStockRecord(PdStockRecord pdStockRecord, List<PdStockRecordDetail> pdStockRecordDetailList){
 		pdStockRecord.setRecordType(PdConstant.RECODE_TYPE_1); // 入库
 		pdStockRecord.setSubmitStatus(PdConstant.SUBMIT_STATE_2); // 待提交
 		pdStockRecord.setAuditStatus(PdConstant.AUDIT_STATE_1);   // 待审核
 		pdStockRecordMapper.insert(pdStockRecord);
-		List<PdStockRecordDetail> newList = new ArrayList<>();
 
 		if(CollectionUtils.isNotEmpty(pdStockRecordDetailList)) {
 			for(PdStockRecordDetail entity : pdStockRecordDetailList) {
 				entity.setProductBarCode("01" + entity.getProductNumber() + "17" + DateUtils.date2Str(entity.getExpDate(),DateUtils.yyMMdd.get()) + "10" + entity.getBatchNo());
-				if(StringUtils.isNotEmpty(entity.getOrderNo())){
+				if(oConvertUtils.isNotEmpty(entity.getOrderNo())){
 					PdPurchaseDetail pdPurchaseDetail = new PdPurchaseDetail();
 					pdPurchaseDetail.setOrderNo(entity.getOrderNo());
 					pdPurchaseDetail.setProductId(entity.getProductId());
@@ -89,6 +104,61 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
 				entity.setDelFlag(PdConstant.DEL_FLAG_0);
 				pdStockRecordDetailMapper.insert(entity);
 			}
+		}
+	}
+
+	private void saveOutStockRecord(PdStockRecord pdStockRecord, List<PdStockRecordDetail> pdStockRecordDetailList){
+		pdStockRecord.setRecordType(PdConstant.RECODE_TYPE_2); // 出库
+		pdStockRecord.setSubmitStatus(PdConstant.SUBMIT_STATE_2); // 待提交
+		pdStockRecord.setAuditStatus(PdConstant.AUDIT_STATE_1);   // 待审核
+		pdStockRecordMapper.insert(pdStockRecord);
+
+		if(CollectionUtils.isNotEmpty(pdStockRecordDetailList)) {
+			Double arrivalApplyCount = 0D;
+			Double arrivalAllocationCount = 0D;
+			for(PdStockRecordDetail entity : pdStockRecordDetailList) {
+				//更新申领单发货数量
+				if(oConvertUtils.isNotEmpty(pdStockRecord.getApplyNo())){
+					PdApplyDetail pdApplyDetail = new PdApplyDetail();
+					pdApplyDetail.setProductId(entity.getProductId());
+					pdApplyDetail.setApplyNo(pdStockRecord.getApplyNo());
+					pdApplyDetail.setArrivalNum(entity.getProductNum());
+					pdApplyDetailMapper.additionArrivalNum(pdApplyDetail);
+					arrivalApplyCount = arrivalApplyCount + entity.getProductNum();
+				}
+
+				//更新调拨单发货数量
+				if(oConvertUtils.isNotEmpty(pdStockRecord.getAllocationNo())){
+					PdAllocationDetail pdAllocationDetail = new PdAllocationDetail();
+					pdAllocationDetail.setProductId(entity.getProductId());
+					pdAllocationDetail.setAllocationNo(pdStockRecord.getAllocationNo());
+					pdAllocationDetail.setArrivalNum(entity.getProductNum());
+					pdAllocationDetailMapper.additionArrivalNum(pdAllocationDetail);
+					arrivalAllocationCount = arrivalAllocationCount + entity.getProductNum();
+				}
+
+				entity.setId(null);//初始化ID (从前端传过来会自带页面列表行的ID)
+				entity.setRecordId(pdStockRecord.getId());//外键设置
+				entity.setDelFlag(PdConstant.DEL_FLAG_0);
+				pdStockRecordDetailMapper.insert(entity);
+			}
+
+			//更新申领单发货总数量
+			if(oConvertUtils.isNotEmpty(pdStockRecord.getApplyNo())){
+				PdApplyOrder pdApplyOrder = new PdApplyOrder();
+				pdApplyOrder.setApplyNo(pdStockRecord.getApplyNo());
+				pdApplyOrder.setArrivalCount(arrivalApplyCount);
+				pdApplyOrderMapper.additionArrivalCount(pdApplyOrder);
+			}
+
+			//更新调拨单发货总数量
+			if(oConvertUtils.isNotEmpty(pdStockRecord.getAllocationNo())){
+				PdAllocationRecord pdAllocationRecord = new PdAllocationRecord();
+				pdAllocationRecord.setAllocationNo(pdStockRecord.getAllocationNo());
+				pdAllocationRecord.setArrivalCount(arrivalAllocationCount);
+				pdAllocationRecordMapper.additionArrivalCount(pdAllocationRecord);
+			}
+
 		}
 	}
 
@@ -264,17 +334,11 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
 		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
 		SysDepart sysDepart = pdDepartService.getById(sysUser.getCurrentDepartId());
 
-		//货位
-		PdGoodsAllocation pdGoodsAllocation = new PdGoodsAllocation();
-		pdGoodsAllocation.setDepartId(sysUser.getCurrentDepartId());
-		pdGoodsAllocation.setAreaType(PdConstant.GOODS_ALLCATION_AREA_TYPE_2);
-		List<PdGoodsAllocationPage> goodsAllocationList = pdGoodsAllocationService.getOptionsForSelect(pdGoodsAllocation);
-
 		//部门列表
 		SysDepart query = new SysDepart();
 		query.setDepartParentId(sysUser.getDepartParentId());
 		query.setDepartId(sysUser.getCurrentDepartId());
-		List<SysDepart> sysDepartList = pdDepartService.selectList(query);
+//		List<SysDepart> sysDepartList = pdDepartService.selectList(query);
 
 		if (oConvertUtils.isNotEmpty(id)) { // 查看页面
 			pdStockRecord = this.getById(id);
@@ -287,18 +351,30 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
 			Double totalSum = new Double(0);//总数量
 			for (PdStockRecordDetail item : pdStockRecordDetailList) {
 				totalSum = totalSum + item.getProductNum();
-				BigDecimal purchasePrice = item.getPurchasePrice() == null ? new BigDecimal(0) : item.getPurchasePrice();
-				totalPrice = totalPrice.add(purchasePrice.multiply(BigDecimal.valueOf(item.getProductNum())).setScale(4, BigDecimal.ROUND_HALF_UP));
+				BigDecimal sellingPrice = item.getSellingPrice() == null ? new BigDecimal(0) : item.getSellingPrice();
+				totalPrice = totalPrice.add(sellingPrice.multiply(BigDecimal.valueOf(item.getProductNum())).setScale(4, BigDecimal.ROUND_HALF_UP));
 			}
 			pdStockRecord.setTotalSum(totalSum);
 			pdStockRecord.setTotalPrice(totalPrice);
 			pdStockRecord.setPdStockRecordDetailList(pdStockRecordDetailList);
 
-//			if (oConvertUtils.isNotEmpty(pdStockRecord.getOrderNo())) {
-//				//查订单列表
-//				List<PdPurchaseDetail> pdPurchaseDetailList = pdPurchaseDetailService.selectByOrderNo(pdStockRecord.getOrderNo());
-//				pdStockRecord.setPdPurchaseDetailList(pdPurchaseDetailList);
-//			}
+			//查申领单列表
+			if (oConvertUtils.isNotEmpty(pdStockRecord.getApplyNo())) {
+				List<PdApplyDetail> pdApplyDetailList = pdApplyDetailService.selectByApplyNo(pdStockRecord.getApplyNo());
+				pdStockRecord.setPdApplyDetailList(pdApplyDetailList);
+			}
+			//查调拨单列表
+			if (oConvertUtils.isNotEmpty(pdStockRecord.getAllocationNo())) {
+				List<PdAllocationDetail> pdAllocationDetailList = pdAllocationDetailService.selectByAllocationNo(pdStockRecord.getAllocationNo());
+				pdStockRecord.setPdAllocationDetailList(pdAllocationDetailList);
+			}
+
+			//库区库位下拉框
+			PdGoodsAllocation pdGoodsAllocation = new PdGoodsAllocation();
+			pdGoodsAllocation.setDepartId(pdStockRecord.getInDepartId());
+			pdGoodsAllocation.setAreaType(PdConstant.GOODS_ALLCATION_AREA_TYPE_2);
+			List<PdGoodsAllocationPage> goodsAllocationList = pdGoodsAllocationService.getOptionsForSelect(pdGoodsAllocation);
+			pdStockRecord.setGoodsAllocationList(goodsAllocationList);
 		} else {  // 新增页面
 
 
@@ -317,9 +393,9 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
 		}
 
 		//库区库位下拉框
-		pdStockRecord.setGoodsAllocationList(goodsAllocationList);
+//		pdStockRecord.setGoodsAllocationList(goodsAllocationList);
 		//部门下拉框
-		pdStockRecord.setSysDepartList(sysDepartList);
+//		pdStockRecord.setSysDepartList(sysDepartList);
 
 		return pdStockRecord;
 	}
