@@ -351,6 +351,7 @@ public class PdStockRecordInController {
 											   HttpServletRequest req) {
 
 		 Page<PdStockRecordDetail> page = new Page<PdStockRecordDetail>(pageNo, pageSize);
+		 pdStockRecordDetail.setAuditStatus(PdConstant.AUDIT_STATE_2);
 		 pdStockRecordDetail.setRecordType(PdConstant.RECODE_TYPE_2);
  		 page = pdStockRecordDetailService.selectList(page,pdStockRecordDetail);
 		 return Result.ok(page);
