@@ -90,22 +90,21 @@
       </a-table>
     </div>
 
-    <pd-stock-record-in-examine-modal ref="modalForm" @ok="modalFormOk"></pd-stock-record-in-examine-modal>
+    <pd-stock-record-out-examine-modal ref="modalForm" @ok="modalFormOk"></pd-stock-record-out-examine-modal>
   </a-card>
 </template>
 
 <script>
 
   import { JeecgListMixin } from '@/mixins/JeecgListMixin'
-  import PdStockRecordInModal from './modules/PdStockRecordInModal'
   import {initDictOptions, filterMultiDictText} from '@/components/dict/JDictSelectUtil'
-  import PdStockRecordInExamineModal from "./modules/PdStockRecordInExamineModal";
+  import PdStockRecordOutExamineModal from "./modules/PdStockRecordOutExamineModal";
 
   export default {
     name: "PdStockRecordOutExamineList",
     mixins:[JeecgListMixin],
     components: {
-      PdStockRecordInExamineModal
+      PdStockRecordOutExamineModal
     },
     data () {
       return {
@@ -136,11 +135,6 @@
             title:'入库库房',
             align:"center",
             dataIndex: 'inDepartName'
-          },
-          {
-            title:'供应商',
-            align:"center",
-            dataIndex: 'supplierName'
           },
           {
             title:'提交时间',
@@ -187,10 +181,10 @@
           }
         ],
         url: {
-          list: "/pd/pdStockRecordIn/examineList",
+          list: "/pd/pdStockRecordOut/examineList",
           // delete: "/pd/pdStockRecordIn/delete",
           // deleteBatch: "/pd/pdStockRecordIn/deleteBatch",
-          exportXlsUrl: "/pd/pdStockRecordIn/exportXls",
+          exportXlsUrl: "/pd/pdStockRecordOut/exportXls",
           // importExcelUrl: "pd/pdStockRecordIn/importExcel",
         },
         dictOptions:{
@@ -198,9 +192,6 @@
       }
     },
     computed: {
-      // importExcelUrl: function(){
-      //   return `${window._CONFIG['domianURL']}/${this.url.importExcelUrl}`;
-      // }
     },
     methods: {
       initDictConfig(){ //静态字典值加载

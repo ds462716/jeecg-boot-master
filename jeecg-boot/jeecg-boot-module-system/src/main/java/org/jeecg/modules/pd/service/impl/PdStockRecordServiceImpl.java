@@ -23,10 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Collection;
+import java.util.*;
 
 /**
  * @Description: 出入库记录表
@@ -76,21 +73,47 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
 	@Transactional
 	public void saveMain(PdStockRecord pdStockRecord, List<PdStockRecordDetail> pdStockRecordDetailList, String recordType) {
 		if(PdConstant.RECODE_TYPE_1.equals(recordType)){
-			this.saveInStockRecord(pdStockRecord, pdStockRecordDetailList);
+			this.saveInStockRecord(pdStockRecord, pdStockRecordDetailList, "");
 		}else if(PdConstant.RECODE_TYPE_2.equals(recordType)){
 			this.saveOutStockRecord(pdStockRecord, pdStockRecordDetailList);
 		}
 	}
 
-	private void saveInStockRecord(PdStockRecord pdStockRecord, List<PdStockRecordDetail> pdStockRecordDetailList){
+	private void saveInStockRecord(PdStockRecord pdStockRecord, List<PdStockRecordDetail> pdStockRecordDetailList, String outType){
+		if(oConvertUtils.isNotEmpty(outType)){
+			if(PdConstant.OUT_TYPE_3.equals(outType)){
+				pdStockRecord.setInType(PdConstant.IN_TYPE_3);
+			}else{
+				pdStockRecord.setInType(PdConstant.IN_TYPE_1);
+			}
+			pdStockRecord.setAuditStatus(PdConstant.AUDIT_STATE_2);   // 审核通过
+		}else{
+			pdStockRecord.setAuditStatus(PdConstant.AUDIT_STATE_1);   // 待审核
+		}
 		pdStockRecord.setRecordType(PdConstant.RECODE_TYPE_1); // 入库
-		pdStockRecord.setSubmitStatus(PdConstant.SUBMIT_STATE_2); // 待提交
-		pdStockRecord.setAuditStatus(PdConstant.AUDIT_STATE_1);   // 待审核
+		pdStockRecord.setSubmitStatus(PdConstant.SUBMIT_STATE_2); // 已提交
 		pdStockRecordMapper.insert(pdStockRecord);
 
 		if(CollectionUtils.isNotEmpty(pdStockRecordDetailList)) {
 			for(PdStockRecordDetail entity : pdStockRecordDetailList) {
-				entity.setProductBarCode("01" + entity.getProductNumber() + "17" + DateUtils.date2Str(entity.getExpDate(),DateUtils.yyMMdd.get()) + "10" + entity.getBatchNo());
+				String expDate = DateUtils.date2Str(entity.getExpDate(),DateUtils.yyMMdd.get());
+				if(oConvertUtils.isEmpty(entity.getProductBarCode())){
+					boolean bool = true;
+					for(PdStockRecordDetail item : pdStockRecordDetailList) {
+						String itemExpDate = DateUtils.date2Str(item.getExpDate(),DateUtils.yyMMdd.get());
+						if(oConvertUtils.isNotEmpty(item.getProductBarCode())
+								&& entity.getProductId().equals(item.getProductId())
+								&& entity.getBatchNo().equals(item.getBatchNo()) && expDate.equals(itemExpDate)){
+							entity.setProductBarCode(item.getProductBarCode());
+							bool = false;
+							break;
+						}
+					}
+					if(bool){
+						entity.setProductBarCode("01" + entity.getProductNumber() + "17" + expDate + "10" + entity.getBatchNo());
+					}
+				}
+
 				if(oConvertUtils.isNotEmpty(entity.getOrderNo())){
 					PdPurchaseDetail pdPurchaseDetail = new PdPurchaseDetail();
 					pdPurchaseDetail.setOrderNo(entity.getOrderNo());
@@ -102,6 +125,11 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
 				entity.setId(null);//初始化ID (从前端传过来会自带页面列表行的ID)
 				entity.setRecordId(pdStockRecord.getId());//外键设置
 				entity.setDelFlag(PdConstant.DEL_FLAG_0);
+				if(PdConstant.OUT_TYPE_1.equals(outType)){
+					entity.setImportNo(pdStockRecord.getApplyNo());
+				}else if(PdConstant.OUT_TYPE_3.equals(outType)){
+					entity.setImportNo(pdStockRecord.getAllocationNo());
+				}
 				pdStockRecordDetailMapper.insert(entity);
 			}
 		}
@@ -217,11 +245,24 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
 
 	@Override
 	@Transactional(rollbackFor = Exception.class)
-	public String audit(PdStockRecord auditEntity,PdStockRecord pdStockRecord) {
-		String message = "";
-		// 变更审批意见 以及 审批状态
-		auditEntity.setAuditDate(DateUtils.getDate());
-		pdStockRecordMapper.updateById(auditEntity);
+	public Map<String,String> audit(PdStockRecord auditEntity,PdStockRecord pdStockRecord, String recordType) {
+		Map<String,String> result = new HashMap<>();
+		if(PdConstant.RECODE_TYPE_1.equals(recordType)){
+			result = this.auditIn(auditEntity, pdStockRecord);
+		}else if(PdConstant.RECODE_TYPE_2.equals(recordType)){
+			result = this.auditOut(auditEntity, pdStockRecord);
+		}
+		return result;
+	}
+
+	/**
+	 * 入库审核
+	 * @param auditEntity
+	 * @param pdStockRecord
+	 * @return
+	 */
+	private Map<String,String> auditIn(PdStockRecord auditEntity, PdStockRecord pdStockRecord) {
+		Map<String,String> result = new HashMap<>();
 
 		if(PdConstant.AUDIT_STATE_2.equals(auditEntity.getAuditStatus())){
 			//审核通过
@@ -246,18 +287,77 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
 
 			if(PdConstant.TRUE.equals(inStr)){
 				//保存出入库记录日志
-				this.saveStockLog(pdStockRecord);
+				this.saveStockLog(pdStockRecord,inType,"");
+				result.put("code",PdConstant.SUCCESS_200);
+				result.put("message","审核成功！");
 			}else{
+				result.put("code",PdConstant.FAIL_500);
+				result.put("message",inStr);
 				throw new RuntimeException(inStr);
 			}
-
-			message = "审核成功！";
 		}else if(PdConstant.AUDIT_STATE_3.equals(auditEntity.getAuditStatus())){
 			//驳回
-			message = "驳回成功！";
+			result.put("code",PdConstant.SUCCESS_200);
+			result.put("message","驳回成功！");
 		}
 
-		return message;
+		// 变更审批意见 以及 审批状态
+		auditEntity.setAuditDate(DateUtils.getDate());
+		pdStockRecordMapper.updateById(auditEntity);
+
+		return result;
+	}
+
+	/**
+	 * 出库审核
+	 * @param auditEntity
+	 * @param pdStockRecord
+	 * @return
+	 */
+	private Map<String,String> auditOut(PdStockRecord auditEntity,PdStockRecord pdStockRecord) {
+		Map<String,String> result = new HashMap<>();
+
+		if(PdConstant.AUDIT_STATE_2.equals(auditEntity.getAuditStatus())){      //审核通过
+
+			String outType = pdStockRecord.getOutType(); //出库类型
+
+			PdStockRecordDetail pdStockRecordDetail = new PdStockRecordDetail();
+			pdStockRecordDetail.setRecordId(pdStockRecord.getId());
+			List<PdStockRecordDetail> pdStockRecordDetailList = pdStockRecordDetailMapper.selectByMainId(pdStockRecordDetail);
+			pdStockRecord.setPdStockRecordDetailList(pdStockRecordDetailList);
+			//1.处理出库库存
+			String inStr = pdProductStockTotalService.updateOutStock(pdStockRecord);
+			//2.保存出库日志记录
+			this.saveStockLog(pdStockRecord,"",outType);
+
+			//3.更新申领单 调拨单出库状态  这步暂时没有
+
+			//4.生成入库单
+			this.saveInStockRecord(pdStockRecord, pdStockRecordDetailList, outType);
+			//5.处理入库库存
+			String inStr2 = pdProductStockTotalService.updateInStock(pdStockRecord);
+			//6.保存入库日志记录
+			this.saveStockLog(pdStockRecord,PdConstant.IN_TYPE_1,"");
+
+			if(PdConstant.TRUE.equals(inStr) && PdConstant.TRUE.equals(inStr2)){
+				result.put("code",PdConstant.SUCCESS_200);
+				result.put("message","审核成功！");
+			}else{
+				result.put("code",PdConstant.FAIL_500);
+				result.put("message",inStr);
+				throw new RuntimeException(inStr);
+			}
+		}else if(PdConstant.AUDIT_STATE_3.equals(auditEntity.getAuditStatus())){   //驳回
+
+			result.put("code",PdConstant.SUCCESS_200);
+			result.put("message","驳回成功！");
+		}
+
+		//6.变更审批意见 以及 审批状态
+		auditEntity.setAuditDate(DateUtils.getDate());
+		pdStockRecordMapper.updateById(auditEntity);
+
+		return result;
 	}
 
 	@Override
@@ -404,7 +504,7 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
 	 * 保存出入库记录日志
 	 * @param pdStockRecord
 	 */
-	private void saveStockLog(PdStockRecord pdStockRecord){
+	private void saveStockLog(PdStockRecord pdStockRecord, String inType, String outType){
 		//日志
 		List<PdStockRecordDetail> detail = pdStockRecord.getPdStockRecordDetailList();
 		List<PdStockLog> logList = new ArrayList<PdStockLog>();
@@ -423,10 +523,14 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
 				stockLog.setInFrom(pdStockRecord.getOutDepartName());
 			}
 			stockLog.setOutTo(pdStockRecord.getInDepartName());
-			if(PdConstant.IN_TYPE_2.equals(pdStockRecord.getInType())){
-				stockLog.setLogType(PdConstant.STOCK_LOG_TYPE_5);
-			}else{
-				stockLog.setLogType(PdConstant.STOCK_LOG_TYPE_1);
+			if(oConvertUtils.isNotEmpty(inType)){ // 入库
+				if(PdConstant.IN_TYPE_2.equals(inType)){
+					stockLog.setLogType(PdConstant.STOCK_LOG_TYPE_5);
+				}else{
+					stockLog.setLogType(PdConstant.STOCK_LOG_TYPE_1);
+				}
+			}else if(oConvertUtils.isNotEmpty(outType)){ //出库
+				stockLog.setLogType(PdConstant.STOCK_LOG_TYPE_2);
 			}
 			stockLog.setRecordTime(DateUtils.getDate());
 			logList.add(stockLog);

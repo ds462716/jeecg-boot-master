@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Description: 出入库记录表
@@ -63,7 +64,7 @@ public interface IPdStockRecordService extends IService<PdStockRecord> {
 	/**
 	 * 审批
 	 */
-	String audit(PdStockRecord auditEntity,PdStockRecord entity);
+	Map<String,String> audit(PdStockRecord auditEntity, PdStockRecord entity, String recordType);
 
 	/**
 	 * 初始化入库页面

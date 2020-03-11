@@ -9,6 +9,11 @@ public interface PdConstant {
 
 	public static final String ADMIN_DEPART_CODE = "admin";
 
+	/** 失败标志 add by jiangxz 20200310 */
+	public static final String FAIL_500 = "500";
+	/** 成功标志 add by jiangxz 20200310 */
+	public static final String SUCCESS_200 = "200";
+
 	/** 编码规则  start */
 	//应用标识符类型 固定长度
 	public static final String  IDENTIFIER_TYPE_1= "1";

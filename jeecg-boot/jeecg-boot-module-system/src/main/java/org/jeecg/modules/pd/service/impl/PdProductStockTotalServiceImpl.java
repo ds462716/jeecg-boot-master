@@ -3,6 +3,7 @@ package org.jeecg.modules.pd.service.impl;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
+import org.jeecg.common.constant.PdConstant;
 import org.jeecg.modules.pd.entity.PdProductStock;
 import org.jeecg.modules.pd.entity.PdProductStockTotal;
 import org.jeecg.modules.pd.entity.PdStockRecord;
@@ -84,10 +85,8 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
 			String productBarCode = stockRecordDetail.getProductBarCode();  //产品条码
 			String productName = stockRecordDetail.getProductName();  //产品名称
 			String batchNo = stockRecordDetail.getBatchNo();
-			String number=stockRecordDetail.getNumber();
 			Double productNum = stockRecordDetail.getProductNum();  //数量
-			BigDecimal inPrice = stockRecordDetail.getPurchasePrice();//入库单价
-			String huoweiCode = stockRecordDetail.getInHuoweiCode(); //货位编号
+			String inHuoweiCode = stockRecordDetail.getInHuoweiCode(); //货位编号
 			//2、增加入库库存
 			PdProductStockTotal stockTotalqi = new PdProductStockTotal();
 			stockTotalqi.setDepartId(inDeptId);
@@ -115,7 +114,7 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
 			i_productStockq.setProductId(productId);
 			i_productStockq.setProductBarCode(productBarCode);//2019年7月24日16:53:43 放开
 			i_productStockq.setBatchNo(batchNo);
-			i_productStockq.setHuoweiCode(huoweiCode);
+			i_productStockq.setHuoweiCode(inHuoweiCode);
 			List<PdProductStock> i_productStocks = pdProductStockMapper.findForUpdate(i_productStockq);
 			//如果库存明细表不存在，则新增
 			if(CollectionUtils.isEmpty(i_productStocks) || i_productStocks.size() == 0){
@@ -126,8 +125,7 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
 				productStock.setStockNum(productNum);
 				productStock.setProductName(productName);
 				productStock.setBatchNo(batchNo);
-				productStock.setNumber(number);
-				productStock.setHuoweiCode(huoweiCode);
+				productStock.setHuoweiCode(inHuoweiCode);
 				productStock.setExpDate(stockRecordDetail.getExpDate());
 				if(StringUtils.isNotEmpty(supplierId)){
 					productStock.setSupplierId(supplierId);
@@ -139,63 +137,64 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
 				pdProductStockMapper.updateStockNum(productStock);
 			}
 		}
-		return "true";
+		return PdConstant.TRUE;
 	}
 
 
 	/***
 	 * 	库存出库更新库存信息
 	 *
-	 * @param  outDeptId       出库科室ID
-	 * @param stockRecordDetails   出库明细列表
+	 * @param pdStockRecord   出库明细列表
 	 * @return  String   更新库存结果  入库成功，返回字符串“true”，否则返回错误信息
 	 */
 	@Transactional
-	public Map updateOutStock(String outDeptId,List<PdStockRecordDetail> stockRecordDetails){
-		Map rtMap = new HashMap<String, String>();
-		if(StringUtils.isEmpty(outDeptId) || CollectionUtils.isEmpty(stockRecordDetails)
-				|| stockRecordDetails.size() == 0){
-			rtMap.put("code", "201");
-			rtMap.put("msg", "传入参数有误");
-			return rtMap;
+	public String updateOutStock(PdStockRecord pdStockRecord){
+		if(pdStockRecord == null || CollectionUtils.isEmpty(pdStockRecord.getPdStockRecordDetailList())){
+			return "参数有误";
 		}
+
+		String outDeptId = pdStockRecord.getOutDepartId();
+		List<PdStockRecordDetail> stockRecordDetails = pdStockRecord.getPdStockRecordDetailList();
 
 		for(PdStockRecordDetail stockRecordDetail:stockRecordDetails){
 			String productId = stockRecordDetail.getProductId();     //产品ID
-			String number=stockRecordDetail.getNumber();          //产品编号
-			String productBarCode = stockRecordDetail.getProductBarCode();  //产品条码
-			String batchNo = stockRecordDetail.getBatchNo();          //批次号
 			Double productNum = stockRecordDetail.getProductNum();  //数量
+
 			PdProductStockTotal stockTotalq = new PdProductStockTotal();
 			stockTotalq.setDepartId(outDeptId);
 			stockTotalq.setProductId(productId);
 			List<PdProductStockTotalPage> productStockTotals = pdProductStockTotalMapper.selectList(stockTotalq);
-
-			if(CollectionUtils.isNotEmpty(productStockTotals)
-					&& productStockTotals.size() == 1){
+			// 扣减总库存
+			if(CollectionUtils.isNotEmpty(productStockTotals) && productStockTotals.size() == 1){
 				PdProductStockTotal productStockTotal = productStockTotals.get(0);
-				Double stockNum = productStockTotal.getStockNum();
-				Double num = stockNum - productNum;
+				Double num = productStockTotal.getStockNum() - productNum;
+				if(num < 0){
+					throw new RuntimeException("扣减总库存失败，["+stockRecordDetail.getProductName()+"]总库存数量不足");
+				}
 				productStockTotal.setStockNum(num);
 				pdProductStockTotalMapper.updateStockNum(productStockTotal);
+			}else{
+				throw new RuntimeException("库存没有产品["+stockRecordDetail.getProductName()+"]！");
 			}
 
 			PdProductStock o_productStockq = new PdProductStock();
-			o_productStockq.setDepartId(outDeptId);
-			o_productStockq.setProductId(productId);
-			o_productStockq.setProductBarCode(productBarCode);
-			o_productStockq.setBatchNo(batchNo);
+			o_productStockq.setId(stockRecordDetail.getProductStockId());
 			List<PdProductStock> productStocks = pdProductStockMapper.selectList(o_productStockq);
+			// 扣减库存
 			if(CollectionUtils.isNotEmpty(productStocks) && productStocks.size() >= 1){
 				PdProductStock productStock = productStocks.get(0);
-				Double stockNum = productStock.getStockNum();
-				Double num = stockNum - productNum;
+				Double num = productStock.getStockNum() - productNum;
+				if(num < 0){
+					throw new RuntimeException("扣减库存失败，["+stockRecordDetail.getProductName()+"]库存数量不足");
+				}
 				productStock.setStockNum(num);
 				pdProductStockMapper.updateStockNum(productStock);
+			}else{
+				throw new RuntimeException("库存没有产品["+stockRecordDetail.getProductName()+"]！");
 			}
 		}
-		rtMap.put("code", "200");
-		return rtMap;
+
+		return PdConstant.TRUE;
 	}
 
 	/***
