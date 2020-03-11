@@ -328,12 +328,12 @@
             { title: '定数包编号', align:"center", dataIndex: 'packageCode' },
           ],
         },
-        // 出入库明细表(产品明细)
+        // 出入库明细表(产品明细)  , type: FormTypes.hidden
         pdStockRecordDetailTable: {
           loading: false,
           dataSource: [],
           columns: [
-            { title: '库存明细ID', key: 'productStockId', type: FormTypes.hidden },
+            { title: '库存明细ID', key: 'productStockId' },
             { title: '产品ID', key: 'productId', type: FormTypes.hidden },
             { title: '产品名称', key: 'productName', type: FormTypes.normal,width:"220px" },
             { title: '产品编号', key: 'productNumber', width:"160px" },
@@ -554,6 +554,18 @@
           if(formData.pdStockRecordDetailList.length <= 0){
             this.$message.warning("出库产品数据为空，请扫码出库或选择产品");
             return;
+          }
+
+          let list = formData.pdStockRecordDetailList;
+          for (let item of list){
+            if(Number(item.productNum) > Number(item.stockNum)){
+              this.$message.error("["+item.productName+"]出库数量不能大于库存数量！");
+              return;
+            }
+            if(Number(item.productNum) <= 0){
+              this.$message.error("["+item.productName+"]出库数量必须大于0！");
+              return;
+            }
           }
           return this.request(formData);
         }).catch(e => {
@@ -840,20 +852,42 @@
 
           }else if(type === FormTypes.input){
             if(column.key === "productNum"){
+              // if(value != "" && Number(value) <= 0){
+              //   this.$message.error("["+row.productName+"]出库数量必须大于0！");
+              //   // 产品数量变更 计算每条产品的价格
+              //   target.setValues([{rowKey: row.id, values: { outTotalPrice: row.sellingPrice, productNum: "1" }}])
+              //   // 计算总数量和总价格
+              //   this.getTotalNumAndPrice([]);
+              //   return;
+              // }
+              let { values } = target.getValuesSync({ validate: false });
+              for(let item of values){
+                if(item.id == row.id && Number(value) > Number(item.stockNum)){
+                  this.$message.error("["+row.productName+"]出库数量不能大于库存数量！");
+                  // 产品数量变更 计算每条产品的价格
+                  let outTotalPrice = (Number(row.sellingPrice) * Number(item.stockNum)).toFixed(4);
+                  target.setValues([{rowKey: row.id, values: { outTotalPrice: outTotalPrice, productNum: item.stockNum }}])
+                  // 计算总数量和总价格
+                  this.getTotalNumAndPrice([]);
+                  return;
+                }
+              }
               // 产品数量变更 计算每条产品的价格
               let outTotalPrice = (Number(row.sellingPrice) * Number(value)).toFixed(4);
               target.setValues([{rowKey: row.id, values: { outTotalPrice: outTotalPrice }}])
+              // 计算总数量和总价格
+              this.getTotalNumAndPrice([]);
             }
           }
         }
-        // 计算总数量和总价格
-        this.getTotalNumAndPrice([]);
       },
       // 扫码查询
       searchQuery(num) {
         let that = this;
         let productNumber = this.queryParam.productNumber;
         if(!productNumber){
+          //清空扫码框
+          this.clearQueryParam();
           this.$message.error("请输入产品编号！");
           this.$refs.productNumberInput.focus();
           return;
@@ -874,6 +908,8 @@
             if(res.code == "200" || res.code == "203"){
               let pdProductStock = res.result[0];
               if(!pdProductStock){
+                //清空扫码框
+                this.clearQueryParam();
                 this.$message.error("条码解析失败，请校验条码是否正确！");
                 return;
               }
@@ -884,6 +920,13 @@
                 for(let item of values){
                   if(pdProductStock.id == item.productStockId){// 库存明细ID一致，就+1
                     isAddRow = false;
+                    if(Number(item.productNum) + 1 > Number(item.stockNum)){
+                      //清空扫码框
+                      this.clearQueryParam();
+                      this.$message.error("["+item.productName+"]出库数量不能大于库存数量！");
+                      return;
+                    }
+
                     let productNum = Number(item.productNum) + 1;
                     let outTotalPrice = (Number(item.sellingPrice) * Number(productNum)).toFixed(4);
 

@@ -402,7 +402,7 @@
         this.request(params);
       },
       // 保存 提交 修改 请求函数
-      request(formData) {
+      request(params) {
         this.confirmLoading = true
         httpAction(this.url.audit, params, "post").then((res) => {
           if (res.success) {
