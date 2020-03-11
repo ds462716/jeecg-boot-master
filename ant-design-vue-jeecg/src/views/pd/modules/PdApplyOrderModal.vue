@@ -252,8 +252,8 @@
          if(type === FormTypes.input){
             if(column.key === "applyNum"){
               // 申领数量变更
-              let stockNum=row.stockNum;
-              let applyNum=row.applyNum;
+              var stockNum=parseFloat(row.stockNum);
+              var applyNum=parseFloat(row.applyNum);
               if(applyNum>stockNum){
                 this.$message.error("申领产品数量不能大于出库科室库存数量！");
                  return;
