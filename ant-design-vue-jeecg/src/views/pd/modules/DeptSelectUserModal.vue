@@ -5,31 +5,33 @@
       :title="title"
       :width="1000"
       :visible="visible"
+      :confirmLoading="confirmLoading"
       @ok="handleOk"
       @cancel="handleCancel"
       cancelText="关闭">
 
 
       <!-- 查询区域 -->
-      <div class="table-page-search-wrapper">
-        <a-form layout="inline"  @keyup.enter.native="searchQuery">
-          <a-row :gutter="24">
+      <a-spin :spinning="confirmLoading">
+        <div class="table-page-search-wrapper">
+          <a-form layout="inline"  @keyup.enter.native="searchQuery">
+            <a-row :gutter="24">
 
-            <a-col :span="10">
-              <a-form-item label="用户账号">
-                <a-input placeholder="请输入用户账号" v-model="queryParam.username"></a-input>
-              </a-form-item>
-            </a-col>
-            <a-col :span="8">
-                    <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
-                      <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
-                      <a-button type="primary" @click="searchReset" icon="reload" style="margin-left: 8px">重置</a-button>
-                    </span>
-            </a-col>
+              <a-col :span="10">
+                <a-form-item label="用户账号">
+                  <a-input placeholder="请输入用户账号" v-model="queryParam.username"></a-input>
+                </a-form-item>
+              </a-col>
+              <a-col :span="8">
+                      <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
+                        <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
+                        <a-button type="primary" @click="searchReset" icon="reload" style="margin-left: 8px">重置</a-button>
+                      </span>
+              </a-col>
 
-          </a-row>
-        </a-form>
-      </div>
+            </a-row>
+          </a-form>
+        </div>
       <!-- table区域-begin -->
       <div>
         <a-table
@@ -49,7 +51,7 @@
       </div>
       <!-- table区域-end -->
 
-
+      </a-spin>
     </a-modal>
   </div>
 </template>
@@ -65,6 +67,7 @@
         title: "添加已有用户",
         names: [],
         visible: false,
+        confirmLoading: false,
         placement: 'right',
         description: '',
         // 查询条件
@@ -183,15 +186,17 @@
         this.visible = true;
       },
       loadData(arg) {
+        this.confirmLoading = true;
         //加载数据 若传入参数1则加载第一页的内容
         if (arg === 1) {
           this.ipagination.current = 1;
         }
-        var params = this.getQueryParams();//查询条件
+        let params = this.getQueryParams();//查询条件
         getAction(this.url.list, params).then((res) => {
           if (res.success) {
             this.dataSource1 = res.result.records;
             this.ipagination.total = res.result.total;
+            this.confirmLoading = false;
           }
         })
       },
