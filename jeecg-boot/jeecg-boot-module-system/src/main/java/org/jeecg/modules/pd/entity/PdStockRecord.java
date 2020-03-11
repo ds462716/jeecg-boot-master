@@ -213,6 +213,8 @@ public class PdStockRecord extends BaseEntity {
     @TableField(exist = false)
     private String batchNo;//产品批号
     @TableField(exist = false)
+    private String productBarCode;//产品条码
+    @TableField(exist = false)
     @JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd")
     @DateTimeFormat(pattern="yyyy-MM-dd")
     private Date expDate;//有效期

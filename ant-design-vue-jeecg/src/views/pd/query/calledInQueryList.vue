@@ -80,7 +80,7 @@
             }
           },*/
           {
-            title:'出库单号',
+            title:'单号',
             align:"center",
             dataIndex: 'recordNo'
           },

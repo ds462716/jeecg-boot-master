@@ -141,7 +141,7 @@
 
      <!--统计查询   调入明细查询-->
     <select id="selectTransferList" resultType="org.jeecg.modules.pd.entity.PdStockRecord">
-        SELECT
+        SELECT DISTINCT
         a.record_no as "recordNo",
         a.submit_date as "submitDate",
         c.depart_name as "outDepartName",
