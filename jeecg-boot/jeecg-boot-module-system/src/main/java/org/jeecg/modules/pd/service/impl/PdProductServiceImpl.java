@@ -228,6 +228,7 @@ public class PdProductServiceImpl extends ServiceImpl<PdProductMapper, PdProduct
             PdProduct pdProduct = new PdProduct();
             pdProduct.setNumber(productNumber);
             LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+            pdProduct.setDepartId(sysUser.getCurrentDepartId());
             pdProduct.setDepartParentId(sysUser.getDepartParentId());
             //查询产品是否存在
            List<PdProduct> pdProducts = pdProductMapper.selectList(pdProduct);
