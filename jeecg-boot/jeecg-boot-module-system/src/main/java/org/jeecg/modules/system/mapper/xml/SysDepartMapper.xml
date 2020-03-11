@@ -3,7 +3,7 @@
 <mapper namespace="org.jeecg.modules.system.mapper.SysDepartMapper">
 
 	<select id="queryUserDeparts" parameterType="String" resultType="org.jeecg.modules.system.entity.SysDepart">
-	   select * from sys_depart where id IN ( select dep_id from sys_user_depart where user_id = #{userId} )
+	   select * from sys_depart where del_flag = '0' and id IN ( select dep_id from sys_user_depart where user_id = #{userId} )
 	</select>
 
     <!-- 根据username查询所拥有的部门 -->
