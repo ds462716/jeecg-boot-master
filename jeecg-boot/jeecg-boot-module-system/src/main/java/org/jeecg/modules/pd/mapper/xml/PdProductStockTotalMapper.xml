@@ -95,11 +95,11 @@
             <if test="productName != null and productName != ''">
                 AND c.name = #{productName}
             </if>
-            <if test="deptName != null and deptName != ''">
-                AND  f.depart_name=#{deptName}
-            </if>
             <if test="departId != null and departId != ''">
-                AND  a.depart_id=#{departId}
+                AND  a.depart_id = #{departId}
+            </if>
+            <if test="productId != null and productId != ''">
+                AND  a.product_id = #{productId}
             </if>
             <if test="departParentId != null and departParentId != ''">
                 AND a.depart_parent_id = #{departParentId}

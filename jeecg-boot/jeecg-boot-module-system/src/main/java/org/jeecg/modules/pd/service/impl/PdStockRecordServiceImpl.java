@@ -86,6 +86,8 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
 			}else{
 				pdStockRecord.setInType(PdConstant.IN_TYPE_1);
 			}
+			pdStockRecord.setId(null); // 清空ID
+			pdStockRecord.setRecordNo(UUIDUtil.generateOrderNoByType(PdConstant.ORDER_NO_FIRST_LETTER_RK)); //生成入库单号
 			pdStockRecord.setAuditStatus(PdConstant.AUDIT_STATE_2);   // 审核通过
 		}else{
 			pdStockRecord.setAuditStatus(PdConstant.AUDIT_STATE_1);   // 待审核
@@ -125,6 +127,7 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
 				entity.setId(null);//初始化ID (从前端传过来会自带页面列表行的ID)
 				entity.setRecordId(pdStockRecord.getId());//外键设置
 				entity.setDelFlag(PdConstant.DEL_FLAG_0);
+				entity.setProductStockId(null); //清空库存ID
 				if(PdConstant.OUT_TYPE_1.equals(outType)){
 					entity.setImportNo(pdStockRecord.getApplyNo());
 				}else if(PdConstant.OUT_TYPE_3.equals(outType)){
