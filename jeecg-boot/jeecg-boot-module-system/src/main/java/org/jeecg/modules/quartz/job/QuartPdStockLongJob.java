@@ -7,6 +7,7 @@ import org.jeecg.common.constant.PdConstant;
 import org.jeecg.common.util.DateUtils;
 import org.jeecg.modules.pd.entity.PdProductStock;
 import org.jeecg.modules.pd.entity.PdProductStockTotal;
+import org.jeecg.modules.pd.service.IPdDepartConfigService;
 import org.jeecg.modules.pd.service.IPdProductStockService;
 import org.jeecg.modules.pd.service.IPdProductStockTotalService;
 import org.quartz.Job;
@@ -25,6 +26,10 @@ public class QuartPdStockLongJob implements Job {
     private IPdProductStockTotalService pdProductStockTotalService;
     @Autowired
     private IPdProductStockService pdProductStockService;
+    @Autowired
+    private IPdDepartConfigService PdDepartConfigService;
+
+
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
         /**
@@ -32,17 +37,22 @@ public class QuartPdStockLongJob implements Job {
          *
          */
         log.info("-------------------更新久存状态开始-------------------");
+        Integer stockRemind = Integer.valueOf(PdConstant.REMINDER_DETE_4);//设定的常量值（默认的有效期限）
+        String stockDay = PdDepartConfigService.findPdDepartConfig(PdConstant.REMINDER_TYPE_4);
+        if (!StringUtils.isEmpty(stockDay)) {
+            stockRemind = Integer.valueOf(stockDay);
+        }
         List<PdProductStock> list = pdProductStockService.selectList(new PdProductStock());
         Map<String, Set<String>> m=new HashMap<String, Set<String>>();
         for (PdProductStock pdProductStock : list) {
             PdProductStock pd = new PdProductStock();
             String deptId = pdProductStock.getDepartId();
-            Integer remind = 7;//久存期提醒
-            Date validDate = pdProductStock.getExpDate();
+             Date createTime = pdProductStock.getCreateTime();
             Date date = new Date();
-            if (ObjectUtil.isNotEmpty(validDate)){
-                if ((!DateUtils.isSameDay(date, validDate)) && date.after(validDate)) {//否
-                    pd.setIsLong(PdConstant.IS_LONG_0);
+            if (ObjectUtil.isNotEmpty(createTime)){
+                Date afterMonth = DateUtils.getDateToAddDate(createTime, stockRemind);
+                if((DateUtils.isSameDay(date,afterMonth)) && date.after(afterMonth)){
+                    pd.setIsLong(PdConstant.IS_LONG_1);
                 }
                 String isLong = pd.getIsLong();
                 if (StringUtils.isNotEmpty(isLong) && !PdConstant.IS_LONG_0.equals(isLong)) {

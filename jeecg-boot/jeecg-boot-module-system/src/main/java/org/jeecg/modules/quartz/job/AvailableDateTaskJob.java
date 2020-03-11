@@ -9,6 +9,7 @@ import org.jeecg.common.util.DateUtils;
 import org.jeecg.modules.message.util.PushMsgUtil;
 import org.jeecg.modules.pd.entity.PdSupplier;
 import org.jeecg.modules.pd.entity.PdVender;
+import org.jeecg.modules.pd.service.IPdDepartConfigService;
 import org.jeecg.modules.pd.service.IPdSupplierService;
 import org.jeecg.modules.pd.service.IPdVenderService;
 import org.jeecg.modules.system.entity.SysAnnouncementSend;
@@ -40,6 +41,8 @@ public class AvailableDateTaskJob implements Job {
     private ISysUserService sysUserService;
     @Autowired
     private ISysAnnouncementSendService announcementSendService;
+    @Autowired
+    private IPdDepartConfigService PdDepartConfigService;
 
 
     @Override
@@ -54,10 +57,10 @@ public class AvailableDateTaskJob implements Job {
          */
         log.info("生产厂家及供应商证照有效期到期定时任务进来了，时间:" + DateUtils.getTimestamp());
         Date date = DateUtils.getDate();//当前日期
-        Integer remind = 0;//设定的有效期限   默认 0；
-        String day = "7";
-        if (!StringUtils.isEmpty(day)) {
-            remind = Integer.valueOf(day);
+        Integer venderRemind = Integer.valueOf(PdConstant.REMINDER_DETE_1);//设定的常量值（默认的有效期限）
+        String venderDay = PdDepartConfigService.findPdDepartConfig(PdConstant.REMINDER_TYPE_1);
+        if (!StringUtils.isEmpty(venderDay)) {
+            venderRemind = Integer.valueOf(venderDay);
         }
         //获取生产厂家信息数据
         PdVender vender = new PdVender();
@@ -71,7 +74,7 @@ public class AvailableDateTaskJob implements Job {
                 String valType = "0";// 0：未过期  1：即将过期    2：已过期
                 Date licenceDate = pdVender.getLicenceDate0();//获取第一组证件有效期
                 if (licenceDate != null) {
-                    afterMonthDate = DateUtils.getDateToAddDate(date, remind);
+                    afterMonthDate = DateUtils.getDateToAddDate(date, venderRemind);
                     //如果有效期不等于当前日期，并且当前日期比证件有效期小，则过期了
                     valType = this.testDate(date, licenceDate, afterMonthDate);
                     if (!PdConstant.PD_STATE_0.equals(valType)) {
@@ -81,7 +84,7 @@ public class AvailableDateTaskJob implements Job {
                 }
                 licenceDate = pdVender.getLicenceDate1();//获取第二组证件有效期
                 if (licenceDate != null) {
-                    afterMonthDate = DateUtils.getDateToAddDate(date, remind);
+                    afterMonthDate = DateUtils.getDateToAddDate(date, venderRemind);
                     valType = this.testDate(date, licenceDate, afterMonthDate);
                     if (!PdConstant.PD_STATE_0.equals(valType)) {
                         pdVender.setLicenceValidity1(valType);
@@ -90,7 +93,7 @@ public class AvailableDateTaskJob implements Job {
                 }
                 licenceDate = pdVender.getLicenceDate2();//获取第三组证件有效期
                 if (licenceDate != null) {
-                    afterMonthDate = DateUtils.getDateToAddDate(date, remind);
+                    afterMonthDate = DateUtils.getDateToAddDate(date, venderRemind);
                     valType = this.testDate(date, licenceDate, afterMonthDate);
                     if (!PdConstant.PD_STATE_0.equals(valType)) {
                         pdVender.setLicenceValidity2(valType);
@@ -99,7 +102,7 @@ public class AvailableDateTaskJob implements Job {
                 }
                 licenceDate = pdVender.getLicenceDate3();//获取第四组证件有效期
                 if (licenceDate != null) {
-                    afterMonthDate = DateUtils.getDateToAddDate(date, remind);
+                    afterMonthDate = DateUtils.getDateToAddDate(date, venderRemind);
                     valType = this.testDate(date, licenceDate, afterMonthDate);
                     if (!PdConstant.PD_STATE_0.equals(valType)) {
                         pdVender.setLicenceValidity3(valType);
@@ -108,7 +111,7 @@ public class AvailableDateTaskJob implements Job {
                 }
                 licenceDate = pdVender.getLicenceDate4();//获取第五组证件有效期
                 if (licenceDate != null) {
-                    afterMonthDate = DateUtils.getDateToAddDate(date, remind);
+                    afterMonthDate = DateUtils.getDateToAddDate(date, venderRemind);
                     valType = this.testDate(date, licenceDate, afterMonthDate);
                     if (!PdConstant.PD_STATE_0.equals(valType)) {
                         pdVender.setLicenceValidity4(valType);
@@ -117,7 +120,7 @@ public class AvailableDateTaskJob implements Job {
                 }
                 licenceDate = pdVender.getLicenceDate5();//获取第六组证件有效期
                 if (licenceDate != null) {
-                    afterMonthDate = DateUtils.getDateToAddDate(date, remind);
+                    afterMonthDate = DateUtils.getDateToAddDate(date, venderRemind);
                     valType = this.testDate(date, licenceDate, afterMonthDate);
                     if (!PdConstant.PD_STATE_0.equals(valType)) {
                         pdVender.setLicenceValidity5(valType);
@@ -126,7 +129,7 @@ public class AvailableDateTaskJob implements Job {
                 }
                 licenceDate = pdVender.getLicenceDate6();//获取第七组证件有效期
                 if (licenceDate != null) {
-                    afterMonthDate = DateUtils.getDateToAddDate(date, remind);
+                    afterMonthDate = DateUtils.getDateToAddDate(date, venderRemind);
                     valType = this.testDate(date, licenceDate, afterMonthDate);
                     if (!PdConstant.PD_STATE_0.equals(valType)) {
                         pdVender.setLicenceValidity6(valType);
@@ -135,7 +138,7 @@ public class AvailableDateTaskJob implements Job {
                 }
                 licenceDate = pdVender.getLicenceDate7();//获取第八组证件有效期
                 if (licenceDate != null) {
-                    afterMonthDate = DateUtils.getDateToAddDate(date, remind);
+                    afterMonthDate = DateUtils.getDateToAddDate(date, venderRemind);
                     valType = this.testDate(date, licenceDate, afterMonthDate);
                     if (!PdConstant.PD_STATE_0.equals(valType)) {
                         pdVender.setLicenceValidity7(valType);
@@ -144,7 +147,7 @@ public class AvailableDateTaskJob implements Job {
                 }
                 licenceDate = pdVender.getLicenceDate8();//获取第九组证件有效期
                 if (licenceDate != null) {
-                    afterMonthDate = DateUtils.getDateToAddDate(date, remind);
+                    afterMonthDate = DateUtils.getDateToAddDate(date, venderRemind);
                     valType = this.testDate(date, licenceDate, afterMonthDate);
                     if (!PdConstant.PD_STATE_0.equals(valType)) {
                         pdVender.setLicenceValidity8(valType);
@@ -153,7 +156,7 @@ public class AvailableDateTaskJob implements Job {
                 }
                 licenceDate = pdVender.getLicenceDate9();//获取第十组证件有效期
                 if (licenceDate != null) {
-                    afterMonthDate = DateUtils.getDateToAddDate(date, remind);
+                    afterMonthDate = DateUtils.getDateToAddDate(date, venderRemind);
                     valType = this.testDate(date, licenceDate, afterMonthDate);
                     if (!PdConstant.PD_STATE_0.equals(valType)) {
                         pdVender.setLicenceValidity9(valType);
@@ -162,7 +165,7 @@ public class AvailableDateTaskJob implements Job {
                 }
                 licenceDate = pdVender.getLicenceDate10();//获取第十一组证件有效期
                 if (licenceDate != null) {
-                    afterMonthDate = DateUtils.getDateToAddDate(date, remind);
+                    afterMonthDate = DateUtils.getDateToAddDate(date, venderRemind);
                     valType = this.testDate(date, licenceDate, afterMonthDate);
                     if (!PdConstant.PD_STATE_0.equals(valType)) {
                         pdVender.setLicenceValidity10(valType);
@@ -171,7 +174,7 @@ public class AvailableDateTaskJob implements Job {
                 }
                 licenceDate = pdVender.getLicenceDate11();//获取第十二组证件有效期
                 if (licenceDate != null) {
-                    afterMonthDate = DateUtils.getDateToAddDate(date, remind);
+                    afterMonthDate = DateUtils.getDateToAddDate(date, venderRemind);
                     valType = this.testDate(date, licenceDate, afterMonthDate);
                     if (!PdConstant.PD_STATE_0.equals(valType)) {
                         pdVender.setLicenceValidity11(valType);
@@ -209,6 +212,11 @@ public class AvailableDateTaskJob implements Job {
 //-----------------------
         //获取供应商信息数据
         PdSupplier supplier = new PdSupplier();
+        Integer supplierRemind = Integer.valueOf(PdConstant.REMINDER_DETE_2);//设定的常量值（默认的有效期限）
+        String supplierDay = PdDepartConfigService.findPdDepartConfig(PdConstant.REMINDER_TYPE_2);
+        if (!StringUtils.isEmpty(supplierDay)) {
+            supplierRemind = Integer.valueOf(supplierDay);
+        }
         List<PdSupplier> list = pdSupplierService.selectAllList(supplier);
         if (list != null && list.size() > 0) {
             StringBuffer supplierName1=new StringBuffer();
@@ -220,7 +228,7 @@ public class AvailableDateTaskJob implements Job {
                 String valType = "0";// 0：未过期  1：即将过期    2：已过期
                 validityTerm = pdSupplier.getLicenceDate0();//获取第一组证件有效期
                 if (validityTerm != null) {
-                    afterMonthDate = DateUtils.getDateToAddDate(date, remind);
+                    afterMonthDate = DateUtils.getDateToAddDate(date, supplierRemind);
                     //如果有效期不等于当前日期，并且当前日期比证件有效期小，则过期了
                     valType = this.testDate(date, validityTerm, afterMonthDate);
                     if (!PdConstant.PD_STATE_0.equals(valType)) {
@@ -230,7 +238,7 @@ public class AvailableDateTaskJob implements Job {
                 }
                 validityTerm = pdSupplier.getLicenceDate1();//获取第二组证件有效期
                 if (validityTerm != null) {
-                    afterMonthDate = DateUtils.getDateToAddDate(date, remind);
+                    afterMonthDate = DateUtils.getDateToAddDate(date, supplierRemind);
                     valType = this.testDate(date, validityTerm, afterMonthDate);
                     if (!PdConstant.PD_STATE_0.equals(valType)) {
                         pdSupplier.setLicenceValidity1(valType);
@@ -239,7 +247,7 @@ public class AvailableDateTaskJob implements Job {
                 }
                 validityTerm = pdSupplier.getLicenceDate2();//获取第三组证件有效期
                 if (validityTerm != null) {
-                    afterMonthDate = DateUtils.getDateToAddDate(date, remind);
+                    afterMonthDate = DateUtils.getDateToAddDate(date, supplierRemind);
                     valType = this.testDate(date, validityTerm, afterMonthDate);
                     if (!PdConstant.PD_STATE_0.equals(valType)) {
                         pdSupplier.setLicenceValidity2(valType);
@@ -248,7 +256,7 @@ public class AvailableDateTaskJob implements Job {
                 }
                 validityTerm = pdSupplier.getLicenceDate3();//获取第四组证件有效期
                 if (validityTerm != null) {
-                    afterMonthDate = DateUtils.getDateToAddDate(date, remind);
+                    afterMonthDate = DateUtils.getDateToAddDate(date, supplierRemind);
                     valType = this.testDate(date, validityTerm, afterMonthDate);
                     if (!PdConstant.PD_STATE_0.equals(valType)) {
                         pdSupplier.setLicenceValidity3(valType);
@@ -257,7 +265,7 @@ public class AvailableDateTaskJob implements Job {
                 }
                 validityTerm = pdSupplier.getLicenceDate4();//获取第五组证件有效期
                 if (validityTerm != null) {
-                    afterMonthDate = DateUtils.getDateToAddDate(date, remind);
+                    afterMonthDate = DateUtils.getDateToAddDate(date, supplierRemind);
                     valType = this.testDate(date, validityTerm, afterMonthDate);
                     if (!PdConstant.PD_STATE_0.equals(valType)) {
                         pdSupplier.setLicenceValidity4(valType);
@@ -266,7 +274,7 @@ public class AvailableDateTaskJob implements Job {
                 }
                 validityTerm = pdSupplier.getLicenceDate5();//获取第六组证件有效期
                 if (validityTerm != null) {
-                    afterMonthDate = DateUtils.getDateToAddDate(date, remind);
+                    afterMonthDate = DateUtils.getDateToAddDate(date, supplierRemind);
                     valType = this.testDate(date, validityTerm, afterMonthDate);
                     if (!PdConstant.PD_STATE_0.equals(valType)) {
                         pdSupplier.setLicenceValidity5(valType);
@@ -275,7 +283,7 @@ public class AvailableDateTaskJob implements Job {
                 }
                 validityTerm = pdSupplier.getLicenceDate6();//获取第七组证件有效期
                 if (validityTerm != null) {
-                    afterMonthDate = DateUtils.getDateToAddDate(date, remind);
+                    afterMonthDate = DateUtils.getDateToAddDate(date, supplierRemind);
                     valType = this.testDate(date, validityTerm, afterMonthDate);
                     if (!PdConstant.PD_STATE_0.equals(valType)) {
                         pdSupplier.setLicenceValidity6(valType);
@@ -284,7 +292,7 @@ public class AvailableDateTaskJob implements Job {
                 }
                 validityTerm = pdSupplier.getLicenceDate7();//获取第八组证件有效期
                 if (validityTerm != null) {
-                    afterMonthDate = DateUtils.getDateToAddDate(date, remind);
+                    afterMonthDate = DateUtils.getDateToAddDate(date, supplierRemind);
                     valType = this.testDate(date, validityTerm, afterMonthDate);
                     if (!PdConstant.PD_STATE_0.equals(valType)) {
                         pdSupplier.setLicenceValidity7(valType);
@@ -293,7 +301,7 @@ public class AvailableDateTaskJob implements Job {
                 }
                 validityTerm = pdSupplier.getLicenceDate8();//获取第九组证件有效期
                 if (validityTerm != null) {
-                    afterMonthDate = DateUtils.getDateToAddDate(date, remind);
+                    afterMonthDate = DateUtils.getDateToAddDate(date, supplierRemind);
                     valType = this.testDate(date, validityTerm, afterMonthDate);
                     if (!PdConstant.PD_STATE_0.equals(valType)) {
                         pdSupplier.setLicenceValidity8(valType);
@@ -302,7 +310,7 @@ public class AvailableDateTaskJob implements Job {
                 }
                 validityTerm = pdSupplier.getLicenceDate9();//获取第十组证件有效期
                 if (validityTerm != null) {
-                    afterMonthDate = DateUtils.getDateToAddDate(date, remind);
+                    afterMonthDate = DateUtils.getDateToAddDate(date, supplierRemind);
                     valType = this.testDate(date, validityTerm, afterMonthDate);
                     if (!PdConstant.PD_STATE_0.equals(valType)) {
                         pdSupplier.setLicenceValidity9(valType);
@@ -311,7 +319,7 @@ public class AvailableDateTaskJob implements Job {
                 }
                 validityTerm = pdSupplier.getLicenceDate10();//获取第十一组证件有效期
                 if (validityTerm != null) {
-                    afterMonthDate = DateUtils.getDateToAddDate(date, remind);
+                    afterMonthDate = DateUtils.getDateToAddDate(date, supplierRemind);
                     valType = this.testDate(date, validityTerm, afterMonthDate);
                     if (!PdConstant.PD_STATE_0.equals(valType)) {
                         pdSupplier.setLicenceValidity10(valType);
@@ -320,7 +328,7 @@ public class AvailableDateTaskJob implements Job {
                 }
                 validityTerm = pdSupplier.getLicenceDate11();//获取第十二组证件有效期
                 if (validityTerm != null) {
-                    afterMonthDate = DateUtils.getDateToAddDate(date, remind);
+                    afterMonthDate = DateUtils.getDateToAddDate(date, supplierRemind);
                     valType = this.testDate(date, validityTerm, afterMonthDate);
                     if (!PdConstant.PD_STATE_0.equals(valType)) {
                         pdSupplier.setLicenceValidity11(valType);
