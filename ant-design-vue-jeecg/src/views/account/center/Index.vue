@@ -227,7 +227,7 @@
         width: 14px;
         left: 0;
         top: 4px;
-        background: url(https://gw.alipayobjects.com/zos/rmsportal/pBjWzVAHnOOtAUvZmZfy.svg)
+        background: url(../../../assets/pBjWzVAHnOOtAUvZmZfy.svg)
       }
 
       .title {
