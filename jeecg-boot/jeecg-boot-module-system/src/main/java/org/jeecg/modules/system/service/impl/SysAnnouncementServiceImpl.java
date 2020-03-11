@@ -1,19 +1,22 @@
 package org.jeecg.modules.system.service.impl;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 import javax.annotation.Resource;
 
+import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.constant.CommonConstant;
+import org.jeecg.common.constant.PdConstant;
+import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.system.entity.SysAnnouncement;
 import org.jeecg.modules.system.entity.SysAnnouncementSend;
+import org.jeecg.modules.system.entity.SysUser;
 import org.jeecg.modules.system.mapper.SysAnnouncementMapper;
 import org.jeecg.modules.system.mapper.SysAnnouncementSendMapper;
+import org.jeecg.modules.system.mapper.SysUserMapper;
 import org.jeecg.modules.system.service.ISysAnnouncementService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,12 +38,34 @@ public class SysAnnouncementServiceImpl extends ServiceImpl<SysAnnouncementMappe
 	
 	@Resource
 	private SysAnnouncementSendMapper sysAnnouncementSendMapper;
+
+	@Autowired
+	private SysUserMapper sysUserMapper;
+
 	
 	@Transactional
 	@Override
 	public void saveAnnouncement(SysAnnouncement sysAnnouncement) {
 		if(sysAnnouncement.getMsgType().equals(CommonConstant.MSG_TYPE_ALL)) {
-			sysAnnouncementMapper.insert(sysAnnouncement);
+			Map<String,Object> parMap = new HashMap<>();
+			LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+			parMap.put("DEL_FLAG_NORMAL", PdConstant.DEL_FLAG_0);
+			parMap.put("deptParentId",sysUser.getDepartParentId());
+			parMap.put("admin",PdConstant.ADMIN_DEPART_CODE);
+			List<SysUser> sysUsers = sysUserMapper.findAllUserList(parMap);
+			if(sysUsers!=null && sysUsers.size()>0){
+				sysAnnouncementMapper.insert(sysAnnouncement);
+				Date refDate = new Date();
+				String anntId = sysAnnouncement.getId();
+				for(int i=0;i<sysUsers.size();i++) {
+					SysAnnouncementSend announcementSend = new SysAnnouncementSend();
+					announcementSend.setAnntId(anntId);
+					announcementSend.setUserId(sysUsers.get(i).getId());
+					announcementSend.setReadFlag(CommonConstant.NO_READ_FLAG);
+					announcementSend.setReadTime(refDate);
+					sysAnnouncementSendMapper.insert(announcementSend);
+				}
+			}
 		}else {
 			// 1.插入通告表记录
 			sysAnnouncementMapper.insert(sysAnnouncement);

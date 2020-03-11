@@ -209,7 +209,7 @@
           });
         }
         this.$nextTick(() => {
-          this.form.setFieldsValue(pick(this.model,'endTime','startTime','titile','msgContent','sender','priority','msgCategory','msgType','sendStatus','delFlag'))
+          this.form.setFieldsValue(pick(this.model,'endTime','startTime','titile','msgContent','priority','msgCategory','msgType'))
         });
       },
       close () {

@@ -68,6 +68,7 @@
       return {
         description: '系统通告表管理页面',
         queryParam: {},
+        formData:[],
         columns: [{
           title: '标题',
           align:"center",
