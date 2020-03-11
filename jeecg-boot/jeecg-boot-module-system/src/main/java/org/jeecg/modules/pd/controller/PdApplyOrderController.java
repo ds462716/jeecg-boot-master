@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.PdConstant;
@@ -13,8 +14,10 @@ import org.jeecg.modules.pd.entity.PdApplyDetail;
 import org.jeecg.modules.pd.entity.PdApplyOrder;
 import org.jeecg.modules.pd.service.IPdApplyDetailService;
 import org.jeecg.modules.pd.service.IPdApplyOrderService;
+import org.jeecg.modules.pd.service.IPdProductStockTotalService;
 import org.jeecg.modules.pd.util.UUIDUtil;
 import org.jeecg.modules.pd.vo.PdApplyOrderPage;
+import org.jeecg.modules.pd.vo.PdProductStockTotalPage;
 import org.jeecg.modules.system.entity.SysDepart;
 import org.jeecg.modules.system.service.ISysDepartService;
 import org.jeecg.modules.system.service.ISysUserService;
@@ -55,6 +58,8 @@ public class PdApplyOrderController {
 	 private PushMsgUtil pushMsgUtil;
 	 @Autowired
 	 private ISysUserService sysUserService;
+	 @Autowired
+	 private IPdProductStockTotalService pdProductStockTotalService;
 	/**
 	 * 分页列表查询
 	 *
@@ -126,7 +131,7 @@ public class PdApplyOrderController {
 		 result.setSuccess(true);
 		 return result;
 	 }
-	
+
 	/**
 	 *   添加
 	 *
@@ -144,7 +149,7 @@ public class PdApplyOrderController {
 		}
 		return Result.ok("添加成功！");
 	}
-	
+
 	/**
 	 *  编辑
 	 *
@@ -159,11 +164,25 @@ public class PdApplyOrderController {
 		if(pdApplyOrderEntity==null) {
 			return Result.error("未找到对应数据");
 		}
-
 		String applyStatus=pdApplyOrder.getAuditStatus();//审核状态
 		if((PdConstant.AUDIT_STATE_2).equals(applyStatus) || (PdConstant.AUDIT_STATE_3).equals(applyStatus)){
 			LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
-			pdApplyOrder.setAuditBy(sysUser.getId());
+			//判断申领数量不能大于出库科室的当前库存数量；
+			Integer code=200;
+			Result result=null;
+			if((PdConstant.AUDIT_STATE_2).equals(applyStatus)) { //如果是审核通过，就查询当前科室下的
+				 String departId=sysUser.getCurrentDepartId();
+				   result= this.queryStock(departId,pdApplyOrderPage.getPdApplyDetailList());
+				  code=result.getCode();
+			  }else if((PdConstant.AUDIT_STATE_1).equals(applyStatus)){//如果是申领科室，就查询上级科室下的库存
+				 SysDepart sysDepart =  sysDepartService.queryDepartByOrgCode(sysUser.getOrgCode());
+				   result= this.queryStock(sysDepart.getParentId(),pdApplyOrderPage.getPdApplyDetailList());
+				   code=result.getCode();
+			 }
+			if(code!=200){
+				return Result.error(result.getMessage()+"库存数量不足");
+			}
+ 			pdApplyOrder.setAuditBy(sysUser.getId());
 			pdApplyOrder.setAuditDate(new Date());
 		}
 		if (PdConstant.AUDIT_STATE_1.equals(applyStatus) && pdApplyOrderPage.getSubmitStatus().equals(PdConstant.SUBMIT_STATE_2)) {//如果是已提交
@@ -172,6 +191,35 @@ public class PdApplyOrderController {
 		pdApplyOrderService.updateMain(pdApplyOrder, pdApplyOrderPage.getPdApplyDetailList());
 		return Result.ok("编辑成功!");
 	}
+
+
+	/*判断出库科室库存*/
+	public Result<?> queryStock(String departId,List<PdApplyDetail> pdApplyDetailList){
+		String prodNames="";
+		if(pdApplyDetailList!=null && pdApplyDetailList.size()>0) {
+			for(PdApplyDetail entity:pdApplyDetailList) {
+				Double applyNum=entity.getApplyNum();
+				PdProductStockTotalPage stockTotalPage=new PdProductStockTotalPage();
+				stockTotalPage.setDepartId(departId);//上级科室ID;
+				stockTotalPage.setProductId(entity.getProductId());
+				List<PdProductStockTotalPage> aList = pdProductStockTotalService.findListForQuery(stockTotalPage);
+				if(CollectionUtils.isNotEmpty(aList)){
+					Double stockNum= aList.get(0).getStockNum();
+					if(applyNum>stockNum){
+						prodNames+=aList.get(0).getProductName();
+ 					}
+				}
+			}
+		}
+		 if(StringUtils.isNotEmpty(prodNames)){
+			return	Result.error(prodNames);
+
+		}
+		return Result.ok(null);
+
+	}
+
+
 	
 	/**
 	 *   通过id删除

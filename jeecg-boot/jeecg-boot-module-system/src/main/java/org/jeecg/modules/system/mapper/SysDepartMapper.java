@@ -30,13 +30,13 @@ public interface SysDepartMapper extends BaseMapper<SysDepart> {
 	 */
 	public List<SysDepart> queryDepartsByUsername(@Param("username") String username);
 
-	@Select("select id from sys_depart where org_code=#{orgCode}")
+	@Select("select id from sys_depart where org_code=#{orgCode} and del_flag='0'")
 	public String queryDepartIdByOrgCode(@Param("orgCode") String orgCode);
 
-	@Select("select id,parent_id from sys_depart where id=#{departId}")
+	@Select("select id,parent_id from sys_depart where id=#{departId} and del_flag='0'")
 	public SysDepart getParentDepartId(@Param("departId") String departId);
 
-	@Select("select id,depart_name,org_code  from sys_depart where org_code=#{orgCode}")
+	@Select("select id,depart_name,org_code  from sys_depart where org_code=#{orgCode} and del_flag='0'")
 	public SysDepart getDepartByOrgCode(@Param("orgCode") String orgCode);
 	/**
 	 *  根据部门Id查询,当前和下级所有部门IDS
@@ -52,7 +52,7 @@ public interface SysDepartMapper extends BaseMapper<SysDepart> {
 	 */
 	List<String> getSubDepIdsByOrgCodes(@org.apache.ibatis.annotations.Param("orgCodes") String[] orgCodes);
 
-	@Select("select * from sys_depart where org_code=#{orgCode}")
+	@Select("select * from sys_depart where org_code=#{orgCode} and del_flag='0'")
 	SysDepart queryDepartByOrgCode(@Param("orgCode") String orgCode);
 
     List<SysDepart> selectDepartList(SysDepart sysDepart);
