@@ -79,6 +79,8 @@ public class SysAnnouncementController {
 									  @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
 									  HttpServletRequest req) {
 		Result<IPage<SysAnnouncement>> result = new Result<IPage<SysAnnouncement>>();
+		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		sysAnnouncement.setDepartParentId(sysUser.getDepartParentId());
 		sysAnnouncement.setDelFlag(CommonConstant.DEL_FLAG_0.toString());
 		QueryWrapper<SysAnnouncement> queryWrapper = new QueryWrapper<SysAnnouncement>(sysAnnouncement);
 		Page<SysAnnouncement> page = new Page<SysAnnouncement>(pageNo,pageSize);

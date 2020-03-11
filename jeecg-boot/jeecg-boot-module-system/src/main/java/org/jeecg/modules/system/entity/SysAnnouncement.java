@@ -1,8 +1,6 @@
 package org.jeecg.modules.system.entity;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.*;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import org.jeecg.common.aspect.annotation.Dict;
@@ -98,6 +96,7 @@ public class SysAnnouncement implements Serializable {
     /**
      * 删除状态（0，正常，1已删除）
      */
+    @TableLogic
     private java.lang.String delFlag;
     /**
      * 创建人
@@ -143,4 +142,16 @@ public class SysAnnouncement implements Serializable {
      * 消息提醒模板code
      */
     private java.lang.String templateCode;
+
+    /**
+     * 所属部门
+     */
+    @TableField(strategy = FieldStrategy.NOT_EMPTY)
+    private String departId;
+
+    /**
+     * 所属顶级部门（医院id）
+     */
+    @TableField(strategy = FieldStrategy.NOT_EMPTY)
+    private String departParentId;
 }
