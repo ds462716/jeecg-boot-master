@@ -45,11 +45,10 @@ public interface IPdProductStockTotalService extends IService<PdProductStockTota
 
     /**
      * 库存出库更新库存信息
-     * @param outDeptId
-     * @param stockRecordDetails
+     * @param pdStockRecord
      * @return
      */
-    public Map updateOutStock(String outDeptId, List<PdStockRecordDetail> stockRecordDetails);
+    public String updateOutStock(PdStockRecord pdStockRecord);
 
     /**
      * 院外退货更新库存信息

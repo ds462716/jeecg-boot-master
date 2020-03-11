@@ -63,9 +63,6 @@
                     :defaultActiveFirstOption="false"
                     :showArrow="true"
                     :filterOption="false"
-                    @search="supplierHandleSearch"
-                    @change="supplierHandleChange"
-                    @focus="supplierHandleSearch"
                     :notFoundContent="notFoundContent"
                     v-decorator="[ 'supplierId', validatorRules.supplierId]"
                   >
@@ -246,8 +243,6 @@
 
         initData:{},
         queryParam:{},
-        allowInMoreOrder:"",		//开关-是否允许入库量大于订单量   1-允许入库量大于订单量；0-不允许入库量大于订单量
-        allowNotOrderProduct:"",		//开关-是否允许入库非订单产品     1-允许非订单产品；0-不允许非订单产品
         //供应商下拉列表 start
         supplierValue: undefined,
         notFoundContent:"未找到内容",
@@ -350,16 +345,8 @@
         },
         url: {
           init:"/pd/pdStockRecordIn/initModal",
-          // submit: "/pd/pdStockRecordIn/submit",
           audit: "/pd/pdStockRecordIn/audit",
-          // edit: "/pd/pdStockRecordIn/edit",
           querySupplier:"/pd/pdSupplier/getSupplierList",
-          pdStockRecordDetail: {
-            list: "/pd/pdStockRecordIn/queryPdStockRecordDetailByMainId"
-          },
-          pdPurchaseDetail: {
-            list: "/pd/pdPurchaseOrder/queryPdPurchaseDetail"
-          },
         },
         popModal: {
           title: '这里是标题',
@@ -392,14 +379,14 @@
 
         let fieldval = pick(this.model,'recordNo','inType','submitBy','submitByName','submitDate','remarks','inDepartId','supplierId',
           'testResult','storageResult','temperature','humidity','remarks','refuseReason')
-        this.$nextTick(() => {
-          this.form.setFieldsValue(fieldval);
-        })
+
         let params = { id: this.model.id }
 
         getAction(this.url.init, params).then((res) => {
           if (res.success) {
             this.$nextTick(() => {
+              this.form.setFieldsValue(fieldval);
+
               if(this.model.id){
                 this.showOrderTable = true;
                 this.pdPurchaseOrderDetailTable.dataSource = res.result.pdPurchaseDetailList || [];
@@ -492,15 +479,6 @@
 
       //-----------------供应商查询start
       supplierHandleSearch(value) {
-        fetch(value, data => (this.supplierData = data),this.url.querySupplier);
-      },
-      supplierHandleChange(value) {
-        this.totalSum = '0';
-        this.totalPrice = '0.0000';
-        this.eachAllTable((item) => {
-          item.initialize()
-        })
-        this.supplierValue = value;
         fetch(value, data => (this.supplierData = data),this.url.querySupplier);
       },
       //----------------供应商查询end

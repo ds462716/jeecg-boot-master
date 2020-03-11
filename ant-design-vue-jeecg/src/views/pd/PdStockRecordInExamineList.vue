@@ -193,9 +193,6 @@
       }
     },
     computed: {
-      // importExcelUrl: function(){
-      //   return `${window._CONFIG['domianURL']}/${this.url.importExcelUrl}`;
-      // }
     },
     methods: {
       initDictConfig(){ //静态字典值加载

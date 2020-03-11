@@ -155,9 +155,12 @@ public class PdStockRecordInController {
 		 if(pdStockRecordEntity==null) {
 			 return Result.error("未找到对应数据");
 		 }
-		 String message = pdStockRecordService.audit(pdStockRecord,pdStockRecordEntity);
-
-		 return Result.ok(message);
+		 Map<String,String> result = pdStockRecordService.audit(pdStockRecord,pdStockRecordEntity, PdConstant.RECODE_TYPE_1);
+		 if(PdConstant.SUCCESS_200.equals(result.get("code"))) {
+			 return Result.ok(result.get("message"));
+		 }else{
+			 return Result.error(result.get("message"));
+		 }
 	 }
 	/**
 	 *  编辑
