@@ -16,7 +16,9 @@ import org.jeecg.modules.pd.entity.PdAllocationDetail;
 import org.jeecg.modules.pd.entity.PdAllocationRecord;
 import org.jeecg.modules.pd.service.IPdAllocationDetailService;
 import org.jeecg.modules.pd.service.IPdAllocationRecordService;
+import org.jeecg.modules.pd.service.IPdProductStockTotalService;
 import org.jeecg.modules.pd.util.UUIDUtil;
+import org.jeecg.modules.pd.vo.PdProductStockTotalPage;
 import org.jeecg.modules.system.entity.SysDepart;
 import org.jeecg.modules.system.service.ISysDepartService;
 import org.jeecg.modules.system.service.ISysUserService;
@@ -58,6 +60,8 @@ public class PdAllocationRecordController {
 	 private PushMsgUtil pushMsgUtil;
 	 @Autowired
 	 private ISysUserService sysUserService;
+	 @Autowired
+	 private IPdProductStockTotalService pdProductStockTotalService;
 	/**
 	 * 分页列表查询
 	 *
@@ -133,7 +137,7 @@ public class PdAllocationRecordController {
 		 result.setSuccess(true);
 		 return result;
 	 }
-	
+
 	/**
 	 *   添加
 	 *
@@ -148,7 +152,7 @@ public class PdAllocationRecordController {
 		}
 		return Result.ok("添加成功！");
 	}
-	
+
 	/**
 	 *  编辑
 	 *
@@ -164,6 +168,31 @@ public class PdAllocationRecordController {
 		String auditStatus=pdAllocationRecord.getAuditStatus();//审核状态
 		if((PdConstant.AUDIT_STATE_2).equals(auditStatus) || (PdConstant.AUDIT_STATE_3).equals(auditStatus)){
 			LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+			if((PdConstant.AUDIT_STATE_2).equals(auditStatus)) {
+				//判断调拨数量不能大于出库科室的当前库存数量；
+ 				boolean bool=true;
+				String prodNames="";
+				List<PdAllocationDetail> list= pdAllocationRecord.getPdAllocationDetailList();
+				if(list!=null && list.size()>0) {
+					for(PdAllocationDetail entity:list) {
+						Double allocationNum=entity.getAllocationNum();
+						PdProductStockTotalPage stockTotalPage=new PdProductStockTotalPage();
+						stockTotalPage.setDepartId(pdAllocationRecord.getOutDeptId());//出库科室ID;
+						stockTotalPage.setProductId(entity.getProductId());
+						List<PdProductStockTotalPage> aList = pdProductStockTotalService.findListForQuery(stockTotalPage);
+						if(CollectionUtils.isNotEmpty(aList)){
+							Double stockNum= aList.get(0).getStockNum();
+							if(allocationNum>stockNum){
+								prodNames+=aList.get(0).getProductName();
+								bool=false;
+							}
+						}
+					}
+				}
+				if(!bool){
+					return Result.error(prodNames+"库存数量不足");
+				}
+			}
 			pdAllocationRecord.setAuditBy(sysUser.getId());
 			pdAllocationRecord.setAuditDate(new Date());
 		}

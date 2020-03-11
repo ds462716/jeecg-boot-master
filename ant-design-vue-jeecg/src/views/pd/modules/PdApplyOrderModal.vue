@@ -252,10 +252,15 @@
          if(type === FormTypes.input){
             if(column.key === "applyNum"){
               // 申领数量变更
-              let rows = target.getValuesSync({ validate: false });
-                    target.setValues([{rowKey: row.id, values: {applyNum :row.applyNum }}]);
-                    // 计算总数量
-                    this.getTotalNumAndPrice([]);
+              let stockNum=row.stockNum;
+              let applyNum=row.applyNum;
+              if(applyNum>stockNum){
+                this.$message.error("申领产品数量不能大于出库科室库存数量！");
+                 return;
+              }
+              target.setValues([{rowKey: row.id, values: {applyNum :row.applyNum }}]);
+                // 计算总数量
+             this.getTotalNumAndPrice([]);
             }
           }
         }
