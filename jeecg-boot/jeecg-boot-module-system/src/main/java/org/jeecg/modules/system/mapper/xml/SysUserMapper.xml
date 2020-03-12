@@ -201,4 +201,44 @@
 	</select>
 
 
+	<!-- 查询同一部门下拥有菜单权限的用户 -->
+	<select id="findMenuUser" resultType="String">
+		SELECT
+			id
+		FROM
+			sys_user h
+		WHERE
+			h.id IN (
+				SELECT
+					a.user_id
+				FROM
+					sys_depart_role_user a
+				WHERE
+					a.drole_id IN (
+						SELECT
+							a.id
+						FROM
+							sys_depart_role a
+						LEFT JOIN sys_depart_role_permission b ON a.id = b.role_id
+						LEFT JOIN sys_permission c ON b.permission_id = c.id
+						WHERE
+							a.depart_id = #{departId}
+						AND c.`name` = #{menuName}
+					)
+			)
+		AND h.del_flag = '0'
+	</select>
+
+	<!-- 查询部门下所有的用户 -->
+	<select id="findDepartUserIds" resultType="String">
+		SELECT
+			a.id
+		FROM
+			sys_user a
+		LEFT JOIN sys_user_depart b ON a.id = b.user_id
+		WHERE
+			b.dep_id = #{departId}
+		AND a.del_flag = '0'
+	</select>
+
 </mapper>

@@ -144,4 +144,11 @@ public interface PdConstant {
 	public final static String REMINDER_DETE_2 = "60";//供应商近效期提醒时间默认值
 	public final static String REMINDER_DETE_3 = "60";//库存近效期提醒时间默认值
 	public final static String REMINDER_DETE_4 = "60";//久存提醒时间默认值
+
+	/**
+	 * 菜单名称变了需要改名字
+	 */
+	public final static String AUDIT_MENU_1="入库审核";
+	public final static String AUDIT_MENU_2="出库审核";
+	public final static String AUDIT_MENU_3="采购审核";
 }

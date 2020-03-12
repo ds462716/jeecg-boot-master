@@ -136,4 +136,8 @@ public interface SysUserMapper extends BaseMapper<SysUser> {
 	IPage<SysUser> findUserList(Page<SysUser> page, @Param("parMap")Map<String, Object> parMap);
 
 	List<SysUser> findAllUserList(@Param("parMap")Map<String, Object> parMap);
+
+    List<String> findMenuUser(@Param("departId")String departId, @Param("menuName")String menuName);
+
+	List<String> findDepartUserIds(@Param("departId") String departId);
 }

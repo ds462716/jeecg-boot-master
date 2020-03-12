@@ -170,4 +170,27 @@ public class PdDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart>
         }
         return res;
     }
+
+
+    /**
+     * 查询同一部门下拥有菜单权限的用户
+     * @param departId
+     * @param menuName
+     */
+    @Override
+    public List<String> findMenuUser(String departId , String menuName){
+        List<String> sysUsers = userMapper.findMenuUser(departId,menuName);
+        return sysUsers;
+    }
+
+    /**
+     * 查询部门下所有的用户
+     * @param departId
+     * @return
+     */
+    @Override
+    public List<String> findDepartUserIds(String departId){
+        List<String> sysUsers = userMapper.findDepartUserIds(departId);
+        return sysUsers;
+    }
 }

@@ -31,4 +31,8 @@ public interface IPdDepartService extends IService<SysDepart> {
     List<SysDepart> selectList(SysDepart sysDepart);
 
     List<SysUserDepart> queryUserDepart(LambdaQueryWrapper<SysUserDepart> eq);
+
+    List<String> findMenuUser(String departId , String menuName);
+
+    List<String> findDepartUserIds(String departId);
 }
