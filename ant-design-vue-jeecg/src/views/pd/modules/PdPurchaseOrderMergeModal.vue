@@ -1,184 +1,280 @@
 <template>
   <a-modal
     :title="title"
-    :width="width"
+    :width="1500"
     :visible="visible"
     :confirmLoading="confirmLoading"
-    @ok="handleOk"
     @cancel="handleCancel"
     cancelText="关闭">
+    <template slot="footer">
+      <a-button type="primary" @click="handleCancel">返回</a-button>
+    </template>
+
     <a-spin :spinning="confirmLoading">
-      <a-form :form="form">
+    <!-- 查询区域 -->
+    <div class="table-page-search-wrapper">
+      <a-form layout="inline" @keyup.enter.native="searchQuery">
+        <a-row :gutter="24">
+          <a-col :md="6" :sm="8">
+            <a-form-item label="申购编号">
+              <a-input placeholder="请输入申购编号" v-model="queryParam.orderNo"></a-input>
+            </a-form-item>
+          </a-col>
+          <a-col :md="6" :sm="8">
+            <a-form-item label="申购科室">
+              <a-input placeholder="请输入申购科室名称" v-model="queryParam.deptName"></a-input>
+            </a-form-item>
+          </a-col>
+          <template :md="6" v-if="toggleSearchStatus">
+          </template>
+          <a-col :md="6" :sm="8">
+            <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
+              <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
+              <a-button type="primary" @click="searchReset" icon="reload" style="margin-left: 8px">重置</a-button>
+              <a @click="handleToggleSearch" style="margin-left: 8px">
+                {{ toggleSearchStatus ? '收起' : '展开' }}
+                <a-icon :type="toggleSearchStatus ? 'up' : 'down'"/>
+              </a>
+            </span>
+          </a-col>
 
-        <a-form-item label="合并申购单号" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input v-decorator="[ 'mergeOrderNo', validatorRules.mergeOrderNo]" placeholder="请输入合并申购单号"></a-input>
-        </a-form-item>
-        <a-form-item label="合并申购日期" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <j-date placeholder="请选择合并申购日期" v-decorator="[ 'purchaseDate', validatorRules.purchaseDate]" :trigger-change="true" style="width: 100%"/>
-        </a-form-item>
-        <a-form-item label="合并科室ID" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input v-decorator="[ 'departId', validatorRules.departId]" placeholder="请输入合并科室ID"></a-input>
-        </a-form-item>
-        <a-form-item label="操作人" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input v-decorator="[ 'mergeBy', validatorRules.mergeBy]" placeholder="请输入操作人"></a-input>
-        </a-form-item>
-        <a-form-item label="合并状态" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input v-decorator="[ 'auditStatus', validatorRules.auditStatus]" placeholder="请输入合并状态"></a-input>
-        </a-form-item>
-        <a-form-item label="供应商商受理状态.0待上传,1待接收,2已接收,3已拒绝,4已收货" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input v-decorator="[ 'supplierStatus', validatorRules.supplierStatus]" placeholder="请输入供应商商受理状态.0待上传,1待接收,2已接收,3已拒绝,4已收货"></a-input>
-        </a-form-item>
-        <a-form-item label="备注" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input v-decorator="[ 'remarks', validatorRules.remarks]" placeholder="请输入备注"></a-input>
-        </a-form-item>
-        <a-form-item label="创建人" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input v-decorator="[ 'createBy', validatorRules.createBy]" placeholder="请输入创建人"></a-input>
-        </a-form-item>
-        <a-form-item label="创建时间" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <j-date placeholder="请选择创建时间" v-decorator="[ 'createTime', validatorRules.createTime]" :trigger-change="true" style="width: 100%"/>
-        </a-form-item>
-        <a-form-item label="更新人" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input v-decorator="[ 'updateBy', validatorRules.updateBy]" placeholder="请输入更新人"></a-input>
-        </a-form-item>
-        <a-form-item label="更新时间" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <j-date placeholder="请选择更新时间" v-decorator="[ 'updateTime', validatorRules.updateTime]" :trigger-change="true" style="width: 100%"/>
-        </a-form-item>
-        <a-form-item label="删除标识" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input v-decorator="[ 'delFlag', validatorRules.delFlag]" placeholder="请输入删除标识"></a-input>
-        </a-form-item>
-        <a-form-item label="所属父部门ID" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input v-decorator="[ 'departParentId', validatorRules.departParentId]" placeholder="请输入所属父部门ID"></a-input>
-        </a-form-item>
-
+        </a-row>
       </a-form>
+    </div>
+    <!-- 查询区域-END -->
+
+    <!-- 操作按钮区域 -->
+    <!--<div class="table-operator">
+      <a-button @click="handleAdd" type="primary" icon="plus">新增</a-button>
+      <a-dropdown v-if="selectedRowKeys.length > 0">
+        <a-menu slot="overlay">
+          <a-menu-item key="1" @click="batchDel"><a-icon type="delete"/>删除</a-menu-item>
+        </a-menu>
+        <a-button style="margin-left: 8px"> 批量操作 <a-icon type="down" /></a-button>
+      </a-dropdown>
+    </div>-->
+
+    <!-- table区域-begin -->
+    <div>
+      <div class="ant-alert ant-alert-info" style="margin-bottom: 16px;">
+        <i class="anticon anticon-info-circle ant-alert-icon"></i> 已选择 <a style="font-weight: 600">{{ selectedRowKeys.length }}</a>项
+        <a style="margin-left: 24px" @click="onClearSelected">清空</a>
+      </div>
+
+      <a-table
+        ref="table"
+        size="middle"
+        bordered
+        rowKey="id"
+        :columns="columns"
+        :dataSource="dataSource"
+        :pagination="ipagination"
+        :loading="loading"
+        :customRow="onClickRow"
+        :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
+        @change="handleTableChange">
+        <span slot="action" slot-scope="text, record">
+          <a  @click="handleDetail(record)">查看</a>
+        </span>
+
+      </a-table>
+    </div>
+      <pd-purchase-order-modal ref="modalForm" @ok="modalFormOk"></pd-purchase-order-modal>
     </a-spin>
   </a-modal>
 </template>
-
 <script>
 
-  import { httpAction } from '@/api/manage'
-  import pick from 'lodash.pick'
-  import { validateDuplicateValue } from '@/utils/util'
-  import JDate from '@/components/jeecg/JDate'  
+  import {getAction } from '@/api/manage'
+  import { JeecgListMixin} from '@/mixins/JeecgListMixin'
+  import PdPurchaseOrderModal from './PdPurchaseOrderModal'
+  import {initDictOptions, filterMultiDictText} from '@/components/dict/JDictSelectUtil'
 
   export default {
     name: "PdPurchaseOrderMergeModal",
-    components: { 
-      JDate,
+    mixins:[JeecgListMixin],
+    components: {
+      PdPurchaseOrderModal
     },
     data () {
       return {
         form: this.$form.createForm(this),
-        title:"操作",
-        width:800,
         visible: false,
-        model: {},
-        labelCol: {
-          xs: { span: 24 },
-          sm: { span: 5 },
-        },
-        wrapperCol: {
-          xs: { span: 24 },
-          sm: { span: 16 },
-        },
+        model:{},
         confirmLoading: false,
-        validatorRules: {
-          mergeOrderNo: {rules: [
-          ]},
-          purchaseDate: {rules: [
-          ]},
-          departId: {rules: [
-          ]},
-          mergeBy: {rules: [
-          ]},
-          auditStatus: {rules: [
-          ]},
-          supplierStatus: {rules: [
-          ]},
-          remarks: {rules: [
-          ]},
-          createBy: {rules: [
-          ]},
-          createTime: {rules: [
-            {required: true, message: '请输入创建时间!'},
-          ]},
-          updateBy: {rules: [
-          ]},
-          updateTime: {rules: [
-            {required: true, message: '请输入更新时间!'},
-          ]},
-          delFlag: {rules: [
-            {required: true, message: '请输入删除标识!'},
-          ]},
-          departParentId: {rules: [
-            {required: true, message: '请输入所属父部门ID!'},
-          ]},
-        },
+        description: '申购订单主表管理页面',
+        // 表头
+        columns: [
+          {
+            title: '序号',
+            dataIndex: '',
+            key:'rowIndex',
+            width:60,
+            align:"center",
+            customRender:function (t,r,index) {
+              return parseInt(index)+1;
+            }
+          },
+          {
+            title:'申购编号',
+            align:"center",
+            dataIndex: 'orderNo'
+          },
+          {
+            title:'申购人',
+            align:"center",
+            dataIndex: 'purchaseName'
+          },
+          {
+            title:'申购日期',
+            align:"center",
+            dataIndex: 'orderDate',
+            customRender:function (text) {
+              return !text?"":(text.length>10?text.substr(0,10):text)
+            }
+          },
+          {
+            title:'申购科室',
+            align:"center",
+            dataIndex: 'deptName'
+
+          },
+          {
+            title:'审核状态',
+            align:"center",
+            dataIndex: 'auditStatus',
+            customRender:(text)=>{
+              if(!text){
+                return ''
+              }else{
+                return filterMultiDictText(this.dictOptions['auditStatus'], text+"")
+              }
+            }
+          },
+          {
+            title:'申购总数量',
+            align:"center",
+            dataIndex: 'totalNum'
+          },
+          {
+            title:'申购总金额',
+            align:"center",
+            dataIndex: 'totalPrice'
+          },
+          {
+            title:'提交状态',
+            align:"center",
+            dataIndex: 'submitStatus',
+            customRender:(text)=>{
+              if(!text){
+                return ''
+              }else{
+                return filterMultiDictText(this.dictOptions['submitStatus'], text+"")
+              }
+            }
+          },
+          {
+            title: '操作',
+            dataIndex: 'action',
+            align:"center",
+            scopedSlots: { customRender: 'action' },
+          }
+        ],
         url: {
-          add: "/pd/pdPurchaseOrderMerge/add",
-          edit: "/pd/pdPurchaseOrderMerge/edit",
-        }
+          list: "/pd/pdPurchaseOrder/mergeList",
+        },
+        dictOptions:{
+          auditStatus:[],
+          submitStatus:[],
+        },
+
       }
     },
-    created () {
+    computed: {
+      /*importExcelUrl: function(){
+        return `${window._CONFIG['domianURL']}/${this.url.importExcelUrl}`;
+      }*/
     },
     methods: {
-      add () {
-        this.edit({});
-      },
       edit (record) {
         this.form.resetFields();
         this.model = Object.assign({}, record);
         this.visible = true;
-        this.$nextTick(() => {
-          this.form.setFieldsValue(pick(this.model,'mergeOrderNo','purchaseDate','departId','mergeBy','auditStatus','supplierStatus','remarks','createBy','createTime','updateBy','updateTime','delFlag','departParentId'))
-        })
+        this.loadData(1);
       },
       close () {
+        this.selectedRowKeys = [];
+        this.selectionRows = [];
         this.$emit('close');
         this.visible = false;
       },
-      handleOk () {
-        const that = this;
-        // 触发表单验证
-        this.form.validateFields((err, values) => {
-          if (!err) {
-            that.confirmLoading = true;
-            let httpurl = '';
-            let method = '';
-            if(!this.model.id){
-              httpurl+=this.url.add;
-              method = 'post';
-            }else{
-              httpurl+=this.url.edit;
-               method = 'put';
-            }
-            let formData = Object.assign(this.model, values);
-            console.log("表单提交数据",formData)
-            httpAction(httpurl,formData,method).then((res)=>{
-              if(res.success){
-                that.$message.success(res.message);
-                that.$emit('ok');
-              }else{
-                that.$message.warning(res.message);
-              }
-            }).finally(() => {
-              that.confirmLoading = false;
-              that.close();
-            })
+      handleCancel () {
+        this.close();
+      },
+      //查看
+      /*handleDetail(record) {
+        this.$refs.PdPurchaseOrderModal.show({record});
+       },*/
+      loadData(arg){
+        //加载数据 若传入参数1则加载第一页的内容
+        if (arg === 1) {
+          this.ipagination.current = 1;
+        }
+        var params = this.getQueryParams();//查询条件
+        params.mergeOrderNo=this.model.mergeOrderNo;
+        this.loading = true;
+        getAction(this.url.list, params).then((res) => {
+          if (res.success) {
+            this.dataSource = res.result.records
           }
-         
+          this.loading = false;
         })
       },
-      handleCancel () {
-        this.close()
-      },
-      popupCallback(row){
-        this.form.setFieldsValue(pick(row,'mergeOrderNo','purchaseDate','departId','mergeBy','auditStatus','supplierStatus','remarks','createBy','createTime','updateBy','updateTime','delFlag','departParentId'))
-      },
 
-      
+      initDictConfig(){ //静态字典值加载
+        initDictOptions('audit_status').then((res) => {
+          if (res.success) {
+            this.$set(this.dictOptions, 'auditStatus', res.result)
+          }
+        })
+        initDictOptions('submit_status').then((res) => {
+          if (res.success) {
+            this.$set(this.dictOptions, 'submitStatus', res.result)
+          }
+        })
+      },
+      onClickRow(record) {
+        return {
+          on: {
+            click: (e) => {
+              //点击操作那一行不选中表格的checkbox
+              let pathArray = e.path;
+              //获取当前点击的是第几列
+              let td = pathArray[0];
+              let cellIndex = td.cellIndex;
+              //获取tr
+              let tr = pathArray[1];
+              //获取一共多少列
+              let lie = tr.childElementCount;
+              if(lie && cellIndex){
+                if(parseInt(lie)-parseInt(cellIndex)!=1){
+                  //操作那一行
+                  let recordId = record.id;
+                  let index = this.selectedRowKeys.indexOf(recordId);
+                  if(index>=0){
+                    this.selectedRowKeys.splice(index, 1);
+                  }else{
+                    this.selectedRowKeys.push(recordId);
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+
     }
   }
 </script>
+<style scoped>
+</style>

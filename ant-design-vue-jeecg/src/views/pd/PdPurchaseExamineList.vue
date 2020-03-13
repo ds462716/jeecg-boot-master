@@ -43,7 +43,9 @@
     <!-- 操作按钮区域 -->
     <div class="table-operator">
       <a-button @click="batchAduit('1')" type="primary" icon="plus">批量审核</a-button>
+      <a-divider type="vertical" />
       <a-button @click="batchAduit('2')" type="primary" icon="plus">合并并提交</a-button>
+      <a-divider type="vertical" />
       <a-button @click="batchAduit('3')" type="primary" icon="plus">批量拒绝</a-button>
 
       <!--<a-dropdown v-if="selectedRowKeys.length > 0">

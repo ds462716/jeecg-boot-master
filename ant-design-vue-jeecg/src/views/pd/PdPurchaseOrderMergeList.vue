@@ -59,13 +59,12 @@
         </span>
       </a-table>
     </div>
-    <pdPurchaseOrderMerge-modal ref="modalForm" @ok="modalFormOk"></pdPurchaseOrderMerge-modal>
+    <pd-purchase-order-merge-modal ref="modalForm" @ok="modalFormOk"></pd-purchase-order-merge-modal>
   </a-card>
 </template>
 
 <script>
-
-  import { JeecgListMixin } from '@/mixins/JeecgListMixin'
+  import { JeecgListMixin ,handleEdit} from '@/mixins/JeecgListMixin'
   import PdPurchaseOrderMergeModal from './modules/PdPurchaseOrderMergeModal'
   import JDate from '@/components/jeecg/JDate.vue'
   import {initDictOptions, filterMultiDictText} from '@/components/dict/JDictSelectUtil'
@@ -156,6 +155,11 @@
       }
     },
     methods: {
+      handleEdit: function (record) { //查看
+        this.$refs.modalForm.edit(record);
+       // this.$refs.modalForm.title = "合并订单列表";
+        this.$refs.modalForm.disableSubmit = false;
+      },
       initDictConfig(){
         initDictOptions('audit_status').then((res) => {
           if (res.success) {

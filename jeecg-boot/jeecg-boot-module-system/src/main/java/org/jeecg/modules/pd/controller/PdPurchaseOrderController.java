@@ -319,6 +319,28 @@ public class PdPurchaseOrderController {
 		 return Result.ok(list);
 	 }
 
+
+	 /**
+	  * 根据合并订单编号分页查询采购订单
+	  *
+	  * @param pdPurchaseOrderPage
+	  * @param pageNo
+	  * @param pageSize
+	  * @param req
+	  * @return
+	  */
+	 @GetMapping(value = "/mergeList")
+	 public Result<?> queryMergeList(PdPurchaseOrderPage pdPurchaseOrderPage,
+									@RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
+									@RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
+									HttpServletRequest req) {
+		 Page<PdPurchaseOrder> page = new Page<PdPurchaseOrder>(pageNo, pageSize);
+		 LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+ 		 pdPurchaseOrderPage.setDepartParentId(sysUser.getDepartParentId());
+		 page = pdPurchaseOrderService.selectList(page, pdPurchaseOrderPage);
+		 return Result.ok(page);
+	 }
+
 	 /**
 	  * 消息推送
 	  * @param purchaseOrderPage
