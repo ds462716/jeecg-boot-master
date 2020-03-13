@@ -1,9 +1,6 @@
 package org.jeecg.modules.pd.entity;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.*;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import org.jeecgframework.poi.excel.annotation.Excel;
@@ -43,6 +40,9 @@ public class PdProductStock extends BaseEntity {
 	private String sysOrgCode;
 	/**科室ID*/
 	private String departId;
+	/** 所属医院Id*/
+	@TableField(strategy = FieldStrategy.NOT_EMPTY)
+	private String departParentId;
 	/**产品id*/
 	@Excel(name = "产品id", width = 15)
 	private String productId;

@@ -11,6 +11,7 @@ import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.modules.message.util.PushMsgUtil;
 import org.jeecg.modules.pd.entity.PdPurchaseDetail;
 import org.jeecg.modules.pd.entity.PdPurchaseOrder;
+import org.jeecg.modules.pd.service.IPdDepartService;
 import org.jeecg.modules.pd.service.IPdPurchaseDetailService;
 import org.jeecg.modules.pd.service.IPdPurchaseOrderService;
 import org.jeecg.modules.pd.util.UUIDUtil;
@@ -18,7 +19,6 @@ import org.jeecg.modules.pd.vo.PdProductPage;
 import org.jeecg.modules.pd.vo.PdPurchaseOrderPage;
 import org.jeecg.modules.system.entity.SysDepart;
 import org.jeecg.modules.system.service.ISysDepartService;
-import org.jeecg.modules.system.service.ISysUserService;
 import org.jeecgframework.poi.excel.ExcelImportUtil;
 import org.jeecgframework.poi.excel.def.NormalExcelConstants;
 import org.jeecgframework.poi.excel.entity.ExportParams;
@@ -56,7 +56,7 @@ public class PdPurchaseOrderController {
 	 @Autowired
 	 private PushMsgUtil pushMsgUtil;
 	 @Autowired
-	 private ISysUserService sysUserService;
+	 private IPdDepartService pdDepartService;
 
 
 
@@ -326,12 +326,11 @@ public class PdPurchaseOrderController {
 	  */
 	 public boolean sendMsg(PdPurchaseOrderPage purchaseOrderPage) {
 		 Map<String, Object> map = new HashMap<>();
-		 //获取具有器械科管理员的角色用户Id;
-		 List<String> userIdList = sysUserService.getUserIdByRoleCode("qxk_admin");
+		 LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		 List<String> userIdList =pdDepartService.findMenuUser(sysUser.getId(),PdConstant.AUDIT_MENU_3);
 		 if (CollectionUtils.isNotEmpty(userIdList)) {
 			 String userIds = String.join(",", userIdList);
 			 Map<String, String> strMap = new HashMap<>();
-			 LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
 			 //模板注入参数
 			 strMap.put("userName", sysUser.getRealname());
 			 strMap.put("orderNo", purchaseOrderPage.getOrderNo());
