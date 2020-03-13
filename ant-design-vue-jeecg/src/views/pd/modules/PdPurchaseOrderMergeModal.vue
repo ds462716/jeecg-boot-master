@@ -161,7 +161,7 @@
             align:"center",
             dataIndex: 'totalPrice'
           },
-          {
+          /*{
             title:'提交状态',
             align:"center",
             dataIndex: 'submitStatus',
@@ -172,7 +172,7 @@
                 return filterMultiDictText(this.dictOptions['submitStatus'], text+"")
               }
             }
-          },
+          },*/
           {
             title: '操作',
             dataIndex: 'action',
@@ -185,7 +185,7 @@
         },
         dictOptions:{
           auditStatus:[],
-          submitStatus:[],
+          //submitStatus:[],
         },
 
       }
@@ -211,10 +211,6 @@
       handleCancel () {
         this.close();
       },
-      //查看
-      /*handleDetail(record) {
-        this.$refs.PdPurchaseOrderModal.show({record});
-       },*/
       loadData(arg){
         //加载数据 若传入参数1则加载第一页的内容
         if (arg === 1) {
@@ -235,11 +231,6 @@
         initDictOptions('audit_status').then((res) => {
           if (res.success) {
             this.$set(this.dictOptions, 'auditStatus', res.result)
-          }
-        })
-        initDictOptions('submit_status').then((res) => {
-          if (res.success) {
-            this.$set(this.dictOptions, 'submitStatus', res.result)
           }
         })
       },
