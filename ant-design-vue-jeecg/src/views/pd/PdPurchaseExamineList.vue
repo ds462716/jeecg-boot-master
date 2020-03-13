@@ -40,6 +40,21 @@
       </a-form>
     </div>
     <!-- 查询区域-END -->
+    <!-- 操作按钮区域 -->
+    <div class="table-operator">
+      <a-button @click="batchAduit('2')" type="primary" icon="plus">批量审核</a-button>
+      <a-button @click="onClearSelected" type="primary" icon="plus">合并并提交</a-button>
+      <a-button @click="batchAduit('3')" type="primary" icon="plus">批量拒绝</a-button>
+
+      <!--<a-dropdown v-if="selectedRowKeys.length > 0">
+        <a-menu slot="overlay">
+          <a-menu-item key="1" @click="onClearSelected"><a-icon type="delete"/>删除</a-menu-item>
+        </a-menu>
+        <a-button style="margin-left: 8px"> 批量操作 <a-icon type="down" /></a-button>
+      </a-dropdown>-->
+    </div>
+
+
     <!-- table区域-begin -->
     <div>
       <div class="ant-alert ant-alert-info" style="margin-bottom: 16px;">
@@ -56,6 +71,7 @@
         :dataSource="dataSource"
         :pagination="ipagination"
         :loading="loading"
+        :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
         @change="handleTableChange">
         <span slot="action" slot-scope="text, record">
           <a v-if="record.auditStatus=='1'" @click="handleEdit(record)">审核</a>&nbsp;&nbsp;&nbsp;
@@ -164,6 +180,99 @@
 
     },
     methods: {
+
+         //批量审核
+      batchAduit() {
+        if (this.selectionRows.length <= 0) {
+          this.$message.warning('请先选择申购单！');
+          return;
+        }else{
+          var ids = "";
+          var orderNos="";
+          for (let a = 0; a < this.selectionRows.length; a++) {
+            let auditStatus= this.selectionRows[a].auditStatus;
+            alert("sss:"+auditStatus);
+            if(auditStatus!='1'){
+              orderNos+=this.selectionRows[a].orderNo + ",";
+            }else{
+              ids += this.selectionRows[a].id + ",";
+            }
+          }
+          if(orderNos != ""){
+            this.$message.warning("采购编号["+orderNos.substring(0,orderNos.length-1)+"]已提交过审核！")
+            return
+          }
+          var that = this;
+          this.$confirm({
+            title: "审批提醒",
+            content: "确认是否审批通过选择的订单吗?",
+            onOk: function () {
+              that.loading = true;
+            /*  deleteAction(that.url.deleteBatch, {ids: ids}).then((res) => {
+                if (res.success) {
+                  that.$message.success(res.message);
+                  that.loadData();
+                  that.onClearSelected();
+                } else {
+                  that.$message.warning(res.message);
+                }
+              }).finally(() => {
+                that.loading = false;
+              });*/
+            }
+          });
+        }
+
+
+
+        /*if (len > 0) {
+          $("#submitNum").text(len);
+          var orderNos = [];
+          $.each(rowsObj, function (i, v) {
+            orderNos.push($(this).data('orderno'));
+          })
+          layer.open({
+            type: 1,
+            title: "提示",
+            content: $(".submitBox"),
+            area: ["300px", "200px"],
+            shade: [0.8, '#393D49'],
+            btn: ["确定", "取消"],
+            yes: function (index, layero) {
+              //批量通过
+              loading('正在提交，请稍等...');
+              batchDeal(orderNos.join(','), '1', null, '1');//最后一个一代表批量保存
+              //layer.closeAll();
+            },
+            btn2: function () {
+              layer.closeAll();
+            }
+          })
+        }*/
+      },
+
+
+
+
+    /* batchDeal(orderNos,orderStatus,refuseReason,oprtSource){
+    $.post('${ctx}/pd/pdPurchaseOrder/audit',{"orderNos":orderNos,"orderStatus":orderStatus,"refuseReason":refuseReason,"oprtSource":oprtSource},function(data){
+      if("200" == data.code){
+        layer.alert("操作成功",{icon:1},function(index){
+          layer.closeAll();
+          location.href = '${ctx}'+data.uri;
+        });
+      }else{
+        layer.alert("操作失败",{icon:2},function(index){
+          layer.close(index);
+        });
+      }
+    });
+  },*/
+
+
+
+
+
       initDictConfig(){//静态字典值加载
         initDictOptions('audit_status').then((res) => {
           if (res.success) {

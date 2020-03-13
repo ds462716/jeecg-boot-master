@@ -16,12 +16,12 @@ import org.jeecg.modules.pd.entity.PdAllocationDetail;
 import org.jeecg.modules.pd.entity.PdAllocationRecord;
 import org.jeecg.modules.pd.service.IPdAllocationDetailService;
 import org.jeecg.modules.pd.service.IPdAllocationRecordService;
+import org.jeecg.modules.pd.service.IPdDepartService;
 import org.jeecg.modules.pd.service.IPdProductStockTotalService;
 import org.jeecg.modules.pd.util.UUIDUtil;
 import org.jeecg.modules.pd.vo.PdProductStockTotalPage;
 import org.jeecg.modules.system.entity.SysDepart;
 import org.jeecg.modules.system.service.ISysDepartService;
-import org.jeecg.modules.system.service.ISysUserService;
 import org.jeecgframework.poi.excel.ExcelImportUtil;
 import org.jeecgframework.poi.excel.def.NormalExcelConstants;
 import org.jeecgframework.poi.excel.entity.ExportParams;
@@ -59,7 +59,7 @@ public class PdAllocationRecordController {
 	 @Autowired
 	 private PushMsgUtil pushMsgUtil;
 	 @Autowired
-	 private ISysUserService sysUserService;
+	 private IPdDepartService pdDepartService;
 	 @Autowired
 	 private IPdProductStockTotalService pdProductStockTotalService;
 	/**
@@ -367,8 +367,9 @@ public class PdAllocationRecordController {
 	  */
 	 public boolean sendMsg(PdAllocationRecord allocationRecord) {
 		 Map<String, Object> map = new HashMap<>();
-		 //获取具有器械科管理员的角色用户Id;
-		 List<String> userIdList = sysUserService.getUserIdByRoleCode("qxk_admin");
+		 //获取出库科室下的人员Id;
+		 String departId=allocationRecord.getOutDeptId();
+		 List<String> userIdList = pdDepartService.findDepartUserIds(departId);
 		 if (CollectionUtils.isNotEmpty(userIdList)) {
 			 String userIds = String.join(",", userIdList);
 			 Map<String, String> strMap = new HashMap<>();

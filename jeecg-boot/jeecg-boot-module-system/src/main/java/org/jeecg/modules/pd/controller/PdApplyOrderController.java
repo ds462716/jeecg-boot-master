@@ -14,13 +14,13 @@ import org.jeecg.modules.pd.entity.PdApplyDetail;
 import org.jeecg.modules.pd.entity.PdApplyOrder;
 import org.jeecg.modules.pd.service.IPdApplyDetailService;
 import org.jeecg.modules.pd.service.IPdApplyOrderService;
+import org.jeecg.modules.pd.service.IPdDepartService;
 import org.jeecg.modules.pd.service.IPdProductStockTotalService;
 import org.jeecg.modules.pd.util.UUIDUtil;
 import org.jeecg.modules.pd.vo.PdApplyOrderPage;
 import org.jeecg.modules.pd.vo.PdProductStockTotalPage;
 import org.jeecg.modules.system.entity.SysDepart;
 import org.jeecg.modules.system.service.ISysDepartService;
-import org.jeecg.modules.system.service.ISysUserService;
 import org.jeecgframework.poi.excel.ExcelImportUtil;
 import org.jeecgframework.poi.excel.def.NormalExcelConstants;
 import org.jeecgframework.poi.excel.entity.ExportParams;
@@ -57,7 +57,7 @@ public class PdApplyOrderController {
 	 @Autowired
 	 private PushMsgUtil pushMsgUtil;
 	 @Autowired
-	 private ISysUserService sysUserService;
+	 private IPdDepartService pdDepartService;
 	 @Autowired
 	 private IPdProductStockTotalService pdProductStockTotalService;
 	/**
@@ -358,12 +358,14 @@ public class PdApplyOrderController {
 	  */
 	 public boolean sendMsg(PdApplyOrderPage pdApplyOrderPage) {
 		 Map<String, Object> map = new HashMap<>();
-		 //获取具有器械科管理员的角色用户Id;
-		 List<String> userIdList = sysUserService.getUserIdByRoleCode("qxk_admin");
+		 //获取上级科室下的人员Id;
+		 LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		 SysDepart sysDepart =  sysDepartService.queryDepartByOrgCode(sysUser.getOrgCode());
+		 String departId=sysDepart.getParentId();
+		 List<String> userIdList = pdDepartService.findDepartUserIds(departId);
 		 if (CollectionUtils.isNotEmpty(userIdList)) {
 			 String userIds = String.join(",", userIdList);
 			 Map<String, String> strMap = new HashMap<>();
-			 LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
 			 //模板注入参数
 			 strMap.put("userName", sysUser.getRealname());
 			 strMap.put("applyNo", pdApplyOrderPage.getApplyNo());
