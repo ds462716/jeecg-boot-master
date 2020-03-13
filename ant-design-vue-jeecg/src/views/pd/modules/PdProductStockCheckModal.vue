@@ -331,7 +331,7 @@
             if(column.key === "checkNum"){
               // 盘点数量变更
              let profitCount= parseFloat(row.checkNum)-parseFloat(row.stockNum);
-               target.setValues([{rowKey: row.id, values: {checkNum :row.checkNum,profitLossCount :profitCount}}]);
+               target.setValues([{rowKey: row.id, values: {checkNum :row.checkNum,profitLossCount :profitCount.toFixed(2)}}]);
               // 计算盘盈盘亏数量
               this.getTotalNumAndPrice();
             }
@@ -350,8 +350,8 @@
               profitLossCount+=parseFloat(item.profitLossCount);
             }
           })
-           this.model.profitLossCount = profitLossCount;
-          this.model.checkCount = checkCount;
+           this.model.profitLossCount = profitLossCount.toFixed(2);
+          this.model.checkCount = checkCount.toFixed(2);
          this.form.setFieldsValue(pick(this.model, 'profitLossCount', 'checkCount'))
         })
       },
