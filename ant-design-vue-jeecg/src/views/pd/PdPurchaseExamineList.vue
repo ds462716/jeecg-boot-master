@@ -42,8 +42,8 @@
     <!-- 查询区域-END -->
     <!-- 操作按钮区域 -->
     <div class="table-operator">
-      <a-button @click="batchAduit('2')" type="primary" icon="plus">批量审核</a-button>
-      <a-button @click="onClearSelected" type="primary" icon="plus">合并并提交</a-button>
+      <a-button @click="batchAduit('1')" type="primary" icon="plus">批量审核</a-button>
+      <a-button @click="batchAduit('2')" type="primary" icon="plus">合并并提交</a-button>
       <a-button @click="batchAduit('3')" type="primary" icon="plus">批量拒绝</a-button>
 
       <!--<a-dropdown v-if="selectedRowKeys.length > 0">
@@ -84,9 +84,8 @@
 </template>
 
 <script>
-
   import { JeecgListMixin,handleEdit} from '@/mixins/JeecgListMixin'
-  import { deleteAction } from '@/api/manage'
+  import { deleteAction,httpAction } from '@/api/manage'
   import PdPurchaseExamineModal from './modules/PdPurchaseExamineModal'
   import JDictSelectTag from '@/components/dict/JDictSelectTag.vue'
   import {initDictOptions, filterMultiDictText} from '@/components/dict/JDictSelectUtil'
@@ -168,6 +167,7 @@
         ],
         url: {
           list: "/pd/pdPurchaseOrder/auditList",
+          edit:"/pd/pdPurchaseOrderMerge/edit",
           delete: "/pd/pdPurchaseOrder/delete",
           deleteBatch: "/pd/pdPurchaseOrder/deleteBatch"
         },
@@ -182,97 +182,63 @@
     methods: {
 
          //批量审核
-      batchAduit() {
+      batchAduit(oprtSource) {
         if (this.selectionRows.length <= 0) {
           this.$message.warning('请先选择申购单！');
           return;
         }else{
-          var ids = "";
+          var newOrderNos = "";
+          var formData={};
           var orderNos="";
           for (let a = 0; a < this.selectionRows.length; a++) {
             let auditStatus= this.selectionRows[a].auditStatus;
-            alert("sss:"+auditStatus);
             if(auditStatus!='1'){
               orderNos+=this.selectionRows[a].orderNo + ",";
             }else{
-              ids += this.selectionRows[a].id + ",";
+              newOrderNos += this.selectionRows[a].orderNo + ",";
             }
           }
           if(orderNos != ""){
             this.$message.warning("采购编号["+orderNos.substring(0,orderNos.length-1)+"]已提交过审核！")
             return
           }
+          var msgName="合并并提交";
+          formData.auditStatus="2";
+          formData.submitStatus="2";
+          formData.orderNos=newOrderNos;
+          if(oprtSource=='1'){
+            formData.auditStatus="2";//2:批量审核通过操作
+            msgName="审核通过";
+          }else if(oprtSource=='3'){
+            formData.auditStatus="3";//3:批量审核拒绝操作
+            msgName="拒绝";
+            formData.submitStatus="3";
+          }
+
+          formData.oprtSource=oprtSource;
           var that = this;
           this.$confirm({
             title: "审批提醒",
-            content: "确认是否审批通过选择的订单吗?",
+            content: "确认是否"+msgName+"选择的订单吗?",
             onOk: function () {
               that.loading = true;
-            /*  deleteAction(that.url.deleteBatch, {ids: ids}).then((res) => {
+              httpAction(that.url.edit, formData, "put").then((res) => {
                 if (res.success) {
                   that.$message.success(res.message);
                   that.loadData();
                   that.onClearSelected();
+                  that.$emit('ok');
                 } else {
                   that.$message.warning(res.message);
                 }
               }).finally(() => {
-                that.loading = false;
-              });*/
+                that.confirmLoading = false;
+                that.close();
+              })
             }
           });
         }
-
-
-
-        /*if (len > 0) {
-          $("#submitNum").text(len);
-          var orderNos = [];
-          $.each(rowsObj, function (i, v) {
-            orderNos.push($(this).data('orderno'));
-          })
-          layer.open({
-            type: 1,
-            title: "提示",
-            content: $(".submitBox"),
-            area: ["300px", "200px"],
-            shade: [0.8, '#393D49'],
-            btn: ["确定", "取消"],
-            yes: function (index, layero) {
-              //批量通过
-              loading('正在提交，请稍等...');
-              batchDeal(orderNos.join(','), '1', null, '1');//最后一个一代表批量保存
-              //layer.closeAll();
-            },
-            btn2: function () {
-              layer.closeAll();
-            }
-          })
-        }*/
       },
-
-
-
-
-    /* batchDeal(orderNos,orderStatus,refuseReason,oprtSource){
-    $.post('${ctx}/pd/pdPurchaseOrder/audit',{"orderNos":orderNos,"orderStatus":orderStatus,"refuseReason":refuseReason,"oprtSource":oprtSource},function(data){
-      if("200" == data.code){
-        layer.alert("操作成功",{icon:1},function(index){
-          layer.closeAll();
-          location.href = '${ctx}'+data.uri;
-        });
-      }else{
-        layer.alert("操作失败",{icon:2},function(index){
-          layer.close(index);
-        });
-      }
-    });
-  },*/
-
-
-
-
-
       initDictConfig(){//静态字典值加载
         initDictOptions('audit_status').then((res) => {
           if (res.success) {

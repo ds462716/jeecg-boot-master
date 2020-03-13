@@ -185,10 +185,10 @@ public class PdApplyOrderController {
  			pdApplyOrder.setAuditBy(sysUser.getId());
 			pdApplyOrder.setAuditDate(new Date());
 		}
+		pdApplyOrderService.updateMain(pdApplyOrder, pdApplyOrderPage.getPdApplyDetailList());
 		if (PdConstant.AUDIT_STATE_1.equals(applyStatus) && pdApplyOrderPage.getSubmitStatus().equals(PdConstant.SUBMIT_STATE_2)) {//如果是已提交
 			this.sendMsg(pdApplyOrderPage);//消息推送
 		}
-		pdApplyOrderService.updateMain(pdApplyOrder, pdApplyOrderPage.getPdApplyDetailList());
 		return Result.ok("编辑成功!");
 	}
 

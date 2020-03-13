@@ -1,20 +1,25 @@
 package org.jeecg.modules.pd.service.impl;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.apache.commons.collections.CollectionUtils;
-import org.jeecg.modules.pd.entity.PdPurchaseOrder;
+import org.apache.commons.lang.StringUtils;
+import org.apache.shiro.SecurityUtils;
+import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.modules.pd.entity.PdPurchaseDetail;
+import org.jeecg.modules.pd.entity.PdPurchaseOrder;
 import org.jeecg.modules.pd.mapper.PdPurchaseDetailMapper;
 import org.jeecg.modules.pd.mapper.PdPurchaseOrderMapper;
 import org.jeecg.modules.pd.service.IPdPurchaseOrderService;
 import org.jeecg.modules.pd.vo.PdProductPage;
 import org.jeecg.modules.pd.vo.PdPurchaseOrderPage;
-import org.springframework.stereotype.Service;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -103,5 +108,22 @@ public class PdPurchaseOrderServiceImpl extends ServiceImpl<PdPurchaseOrderMappe
 		}
 
 		return list;
+	}
+
+	@Override
+	@Transactional(readOnly = false)
+	public int audit(String orderNos, String auditStatus, String refuseReason,String submitStatus){
+		if(StringUtils.isEmpty(orderNos) || StringUtils.isEmpty(auditStatus)){
+			return 0;
+		}
+		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		HashMap<String,Object> map = new HashMap<String,Object>();
+		map.put("auditStatus",auditStatus);
+		map.put("orderNos",PdPurchaseOrder.dealStrData(orderNos));
+		map.put("refuseReason",refuseReason);
+		map.put("auditBy", sysUser.getId());
+		map.put("auditDate", new Date());
+		map.put("submitStatus",submitStatus);
+		return pdPurchaseOrderMapper.batchUpdateOrderStatus(map);
 	}
 }

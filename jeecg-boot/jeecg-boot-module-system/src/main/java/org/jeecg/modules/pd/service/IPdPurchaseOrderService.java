@@ -1,14 +1,12 @@
 package org.jeecg.modules.pd.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.IService;
 import org.jeecg.modules.pd.entity.PdPurchaseDetail;
 import org.jeecg.modules.pd.entity.PdPurchaseOrder;
-import com.baomidou.mybatisplus.extension.service.IService;
 import org.jeecg.modules.pd.vo.PdProductPage;
 import org.jeecg.modules.pd.vo.PdPurchaseOrderPage;
 
-import java.io.Serializable;
-import java.util.Collection;
 import java.util.List;
 
 /**
@@ -57,4 +55,9 @@ public interface IPdPurchaseOrderService extends IService<PdPurchaseOrder> {
 	 * @return
 	 */
 	List<PdProductPage> choosePurchaseOrderDetailList(PdPurchaseOrderPage pdPurchaseOrderPage);
+
+	/**
+	 * 批量修改订单状态
+	 */
+	public int audit(String orderNos, String auditStatus, String refuseReason,String submitStatus) ;
 }

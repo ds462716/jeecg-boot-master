@@ -196,10 +196,10 @@ public class PdAllocationRecordController {
 			pdAllocationRecord.setAuditBy(sysUser.getId());
 			pdAllocationRecord.setAuditDate(new Date());
 		}
+		pdAllocationRecordService.updateMain(pdAllocationRecord, pdAllocationRecord.getPdAllocationDetailList());
 		if (PdConstant.AUDIT_STATE_1.equals(auditStatus) && pdAllocationRecord.getSubmitStatus().equals(PdConstant.SUBMIT_STATE_2)) {//如果是已提交
 			this.sendMsg(pdAllocationRecord);//消息推送
 		}
-		pdAllocationRecordService.updateMain(pdAllocationRecord, pdAllocationRecord.getPdAllocationDetailList());
 		return Result.ok("编辑成功!");
 	}
 	

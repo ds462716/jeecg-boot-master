@@ -85,6 +85,12 @@ public class PdPurchaseOrder extends BaseEntity {
     /** 所属父部门*/
     @TableField(strategy = FieldStrategy.NOT_EMPTY)
     private String departParentId;
+
+
+    public static String dealStrData(String data){
+        String newStr = data.replaceAll(",", "','");
+        return "('"+newStr+"')";
+    }
 }
 
 

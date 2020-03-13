@@ -167,4 +167,28 @@
             AND a.order_no = #{orderNo}
 
     </select>
+
+
+
+    <!-- 审核采购单状态 -->
+    <update id="batchUpdateOrderStatus" parameterType="java.util.HashMap">
+		UPDATE pd_purchase_order
+		SET audit_status = #{auditStatus},
+		    refuse_reason = #{refuseReason},
+		    audit_by = #{auditBy},
+		    audit_date = #{auditDate},
+		    submit_status=#{submitStatus}
+		WHERE order_no IN ${orderNos}
+	</update>
+
+
+
+    <!-- 更新合并单号 -->
+    <update id="batchUpdateMergeOrderNo" parameterType="java.util.HashMap">
+		UPDATE pd_purchase_order
+		SET merge_order_no = #{mergeOrderNo},
+		    update_by = #{updateBy},
+		    update_time = #{updateTime}
+		WHERE order_no IN ${orderNos}
+	</update>
 </mapper>

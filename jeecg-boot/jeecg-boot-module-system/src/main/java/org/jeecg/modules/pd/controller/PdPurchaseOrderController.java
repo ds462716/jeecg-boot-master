@@ -173,10 +173,10 @@ public class PdPurchaseOrderController {
 			 pdPurchaseOrder.setAuditBy(sysUser.getId());
 			 pdPurchaseOrder.setAuditDate(new Date());
 		 }
+		 pdPurchaseOrderService.updateMain(pdPurchaseOrder, pdPurchaseOrderPage.getPdPurchaseDetailList());
 		 if (PdConstant.AUDIT_STATE_1.equals(orderStatus) && pdPurchaseOrderPage.getSubmitStatus().equals(PdConstant.SUBMIT_STATE_2)) {//如果是已提交
 			 this.sendMsg(pdPurchaseOrderPage);//消息推送
 		 }
-		 pdPurchaseOrderService.updateMain(pdPurchaseOrder, pdPurchaseOrderPage.getPdPurchaseDetailList());
 		 return Result.ok("编辑成功!");
 	 }
 
