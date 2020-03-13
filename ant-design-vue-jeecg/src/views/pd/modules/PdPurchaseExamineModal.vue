@@ -141,7 +141,7 @@
           dataSource: []
         },
         url: {
-          edit: "/pd/pdPurchaseOrder/edit",
+          edit: "/pd/pdPurchaseOrderMerge/edit",
           exportXlsUrl: "/pd/pdPurchaseOrder/exportXls",
           pdPurchaseDetail: {
             list: '/pd/pdPurchaseOrder/queryPdPurchaseDetail'
@@ -191,6 +191,7 @@
       },
       handleOk (type) { //审核提交
         this.model.auditStatus='2';//审核通过
+        this.model.submitStatus='2';//已提交
         if(type=="no"){
           this.model.auditStatus='3';//拒绝
           this.model.submitStatus='3';//已撤回
@@ -205,9 +206,8 @@
           this.model.refuseReason= values.refuseReason;
           if (!err) {
             const that = this;
-            let pdPurchaseDetailList = this.pdPurchaseDetailTable.dataSource;
-            let values = [];
-            values.pdPurchaseDetailList = pdPurchaseDetailList;
+            this.model.orderNos=this.model.orderNo;
+            this.model.oprtSource="1";
             let formData = Object.assign(this.model, values);
             httpAction(this.url.edit, formData, 'put').then((res) => {
               if (res.success) {
