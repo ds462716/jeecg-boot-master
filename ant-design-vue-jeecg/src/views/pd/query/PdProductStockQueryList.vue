@@ -50,6 +50,7 @@
         :dataSource="dataSource"
         :pagination="ipagination"
         :loading="loading"
+        :scroll="tableScroll"
         @change="handleTableChange"
         >
       </a-table>
@@ -142,7 +143,7 @@
         },
         dictOptions:{
         },
-
+        tableScroll:{x :13*147+50},
       }
     },
     computed: {

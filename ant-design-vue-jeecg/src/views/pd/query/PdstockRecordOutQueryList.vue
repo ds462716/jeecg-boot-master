@@ -50,6 +50,7 @@
         :dataSource="dataSource"
         :pagination="ipagination"
         :loading="loading"
+        :scroll="tableScroll"
         @change="handleTableChange">
       </a-table>
     </div>
@@ -161,6 +162,7 @@
           list: "/pd/pdStockRecordIn/queryPdStockRecordOutList",
           exportXlsUrl: "",
         },
+        tableScroll:{x :13*147+50},
       }
     },
     computed: {

@@ -61,6 +61,7 @@
         :loading="loading"
         :rowClassName="setdataCss"
         :customRow="onClickRow"
+        :scroll="tableScroll"
         :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
         @change="handleTableChange">
 
@@ -68,6 +69,7 @@
           <a @click="handleEdit(record)">库存明细</a>&nbsp;&nbsp;&nbsp;
          <a  @click="handleRecordEdit(record)">出入库明细</a>
         </span>
+
       </a-table>
     </div>
 <!--设置库存上下限弹出框-->
@@ -191,8 +193,11 @@
             title: '操作',
             dataIndex: 'action',
             align:"center",
-            scopedSlots: { customRender: 'action' },
+            fixed:"right",
+            width:140,
+            scopedSlots: { customRender: 'action' }
           }
+
         ],
         url: {
           list: "/pd/pdProductStockTotal/list",
@@ -202,7 +207,7 @@
           expStatus:[],
           isLong:[]
         },
-
+        tableScroll:{x :10*140+30},
       }
     },
     computed: {

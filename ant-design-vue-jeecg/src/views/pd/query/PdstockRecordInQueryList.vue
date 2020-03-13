@@ -50,6 +50,7 @@
         :dataSource="dataSource"
         :pagination="ipagination"
         :loading="loading"
+        :scroll="tableScroll"
         @change="handleTableChange">
       </a-table>
     </div>
@@ -196,6 +197,7 @@
         dictOptions:{
           inType:[],
         },
+        tableScroll:{x :13*147+50},
       }
     },
     computed: {
