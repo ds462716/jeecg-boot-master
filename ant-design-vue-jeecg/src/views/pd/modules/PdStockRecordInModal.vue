@@ -733,7 +733,7 @@
           }
         }
         this.pdStockRecordDetailTable.dataSource.push(data);
-        this.$refs.pdStockRecordDetail.add();
+        // this.$refs.pdStockRecordDetail.add();
       },
       // 扫码 调用 新增一行
       addrowsByScanCode(row){
