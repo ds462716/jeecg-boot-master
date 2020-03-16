@@ -201,6 +201,9 @@
             this.supplierSelecDisabled = true;
           })
         }
+        if(params && params.stockDepartId){
+          this.stockDepartId = params.stockDepartId;
+        }
         this.loadData(1);
         this.visible = true;
       },
@@ -230,6 +233,9 @@
         }
         if(this.orderNo){
           params.orderNo = this.orderNo;
+        }
+        if(this.stockDepartId){
+          params.stockDepartId = this.stockDepartId;
         }
         this.loading = true;
         getAction(this.url.list, params).then((res) => {
