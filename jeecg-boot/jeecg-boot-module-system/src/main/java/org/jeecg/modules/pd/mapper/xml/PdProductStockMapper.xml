@@ -45,7 +45,9 @@
         c.version as "version",
         c.registration as "registration",
         c.purchase_price as "purchasePrice",
-        c.selling_price as "sellingPrice"
+        c.selling_price as "sellingPrice",
+        c.charge_code  as "chargeCode",
+        c.is_charge  as "isCharge"
 	</sql>
 	<sql id="pdProductJoins">
         LEFT JOIN pd_product c ON c.id = a.product_id

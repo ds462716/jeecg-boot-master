@@ -146,4 +146,12 @@ public class PdProductStock extends BaseEntity {
 
 	@TableField(exist = false)
 	private String oldHuoweiCode;
+
+	/** 产品收费代码 **/
+	@TableField(exist = false)
+	private String chargeCode;
+
+	/** 是否计费 **/
+	@TableField(exist = false)
+	private String isCharge;
 }
