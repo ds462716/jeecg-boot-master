@@ -333,7 +333,7 @@
           loading: false,
           dataSource: [],
           columns: [
-            { title: '库存明细ID', key: 'productStockId' },
+            { title: '库存明细ID', key: 'productStockId', type: FormTypes.hidden },
             { title: '产品ID', key: 'productId', type: FormTypes.hidden },
             { title: '产品名称', key: 'productName', type: FormTypes.normal,width:"220px" },
             { title: '产品编号', key: 'productNumber', width:"160px" },
