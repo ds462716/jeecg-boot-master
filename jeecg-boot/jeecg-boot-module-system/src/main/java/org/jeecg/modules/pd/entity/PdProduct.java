@@ -1,17 +1,12 @@
 package org.jeecg.modules.pd.entity;
 
-import java.io.Serializable;
-import java.io.UnsupportedEncodingException;
-import java.util.Date;
-import java.math.BigDecimal;
-import java.util.List;
-
 import com.baomidou.mybatisplus.annotation.*;
-import lombok.Data;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import org.springframework.format.annotation.DateTimeFormat;
+import lombok.Data;
 import org.jeecgframework.poi.excel.annotation.Excel;
-import org.jeecg.common.aspect.annotation.Dict;
+import org.springframework.format.annotation.DateTimeFormat;
+
+import java.util.List;
 
 /**
  * @Description: pd_product
@@ -372,4 +367,10 @@ public class PdProduct  extends BaseEntity {
 	 */
 	@TableField(exist = false)
 	private List<String> pdProductRules;
+
+	/**
+	 * 库存科室Id
+	 */
+	@TableField(exist = false)
+	private  String  stockDepartId;
 }

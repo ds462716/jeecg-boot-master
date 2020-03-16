@@ -143,4 +143,7 @@ public class PdProductStock extends BaseEntity {
 	/** 调拨单号 **/
 	@TableField(exist = false)
 	private String allocationNo;
+
+	@TableField(exist = false)
+	private String oldHuoweiCode;
 }

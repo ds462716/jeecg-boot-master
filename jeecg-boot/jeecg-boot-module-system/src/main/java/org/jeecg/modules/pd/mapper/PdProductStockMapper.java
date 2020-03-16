@@ -38,4 +38,6 @@ public interface PdProductStockMapper extends BaseMapper<PdProductStock> {
 	 * @param pdProductStock
 	 */
 	public void updateStockNum(PdProductStock pdProductStock);
+
+	void updateHuoweiCode(PdProductStock detail);
 }

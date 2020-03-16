@@ -239,10 +239,15 @@
 		FOR UPDATE
 	</select>
 
-
 	<update id="updateStockNum">
 		UPDATE pd_product_stock SET
 			stock_num = #{stockNum}
 		WHERE id= #{id}
+	</update>
+
+	<update id="updateHuoweiCode" parameterType="org.jeecg.modules.pd.entity.PdProductStock">
+		UPDATE pd_product_stock SET
+			huowei_code = #{huoweiCode}
+		WHERE huowei_code= #{oldHuoweiCode}
 	</update>
 </mapper>

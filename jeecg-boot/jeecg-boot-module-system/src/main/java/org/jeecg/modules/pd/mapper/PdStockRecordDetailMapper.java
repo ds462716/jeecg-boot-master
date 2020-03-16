@@ -19,4 +19,7 @@ public interface PdStockRecordDetailMapper extends BaseMapper<PdStockRecordDetai
 
 	public List<PdStockRecordDetail> selectList(PdStockRecordDetail pdStockRecordDetail);
 
+	void updateInHuoweiCode(PdStockRecordDetail detail);
+
+	void updateOutHuoweiCode(PdStockRecordDetail detail);
 }

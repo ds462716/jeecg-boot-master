@@ -16,11 +16,12 @@ import org.jeecg.modules.system.model.SysDepartTreeModel;
  */
 public interface PdGoodsAllocationMapper extends BaseMapper<PdGoodsAllocation> {
 
-    List<SysDepartTreeModel> selectParentList(PdGoodsAllocation pdGoodsAllocation);
+    List<PdGoodsAllocationPage> selectHuoquList(PdGoodsAllocation pdGoodsAllocation);
 
-    List<SysDepartTreeModel> selectChildList(PdGoodsAllocation pdGoodsAllocation);
+    List<PdGoodsAllocationPage> selectHuoweiList(PdGoodsAllocation pdGoodsAllocation);
 
     List<PdGoodsAllocationPage> selectAllList(PdGoodsAllocation pdGoodsAllocation);
 
     List<PdGoodsAllocationPage> getOptionsForSelect(PdGoodsAllocation pdGoodsAllocation);
+
 }

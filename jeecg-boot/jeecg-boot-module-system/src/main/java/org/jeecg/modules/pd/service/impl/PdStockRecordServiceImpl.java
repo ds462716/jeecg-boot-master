@@ -443,7 +443,6 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
 		SysDepart query = new SysDepart();
 		query.setDepartParentId(sysUser.getDepartParentId());
 		query.setDepartId(sysUser.getCurrentDepartId());
-//		List<SysDepart> sysDepartList = pdDepartService.selectList(query);
 
 		if (oConvertUtils.isNotEmpty(id)) { // 查看页面
 			pdStockRecord = this.getById(id);
@@ -493,14 +492,7 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
 			//登录人姓名
 			pdStockRecord.setSubmitBy(sysUser.getId());
 			pdStockRecord.setSubmitByName(sysUser.getRealname());
-			//默认入库类型
-//			pdStockRecord.setInType(PdConstant.IN_TYPE_1);
 		}
-
-		//库区库位下拉框
-//		pdStockRecord.setGoodsAllocationList(goodsAllocationList);
-		//部门下拉框
-//		pdStockRecord.setSysDepartList(sysDepartList);
 
 		return pdStockRecord;
 	}
