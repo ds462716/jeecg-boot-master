@@ -62,11 +62,13 @@
 
 <script>
 
+  import { FormTypes } from '@/utils/JEditableTableUtil'
   import { httpAction,getAction } from '@/api/manage'
   import { JeecgListMixin } from '@/mixins/JeecgListMixin'
   import {initDictOptions, filterMultiDictText} from '@/components/dict/JDictSelectUtil'
-  import { FormTypes } from '@/utils/JEditableTableUtil'
 
+  const VALIDATE_NO_PASSED = Symbol()
+  export { FormTypes, VALIDATE_NO_PASSED }
   export default {
     name: "PdProductStockModel",
     mixins:[JeecgListMixin],
@@ -87,11 +89,6 @@
         confirmLoading: false,
         // 表头
         columns: [
-          {
-            title:'产品ID',
-            dataIndex: 'productId',
-            type: FormTypes.hidden
-          },
           {
             title:'产品名称',
             align:"center",
