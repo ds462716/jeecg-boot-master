@@ -51,7 +51,7 @@ const err = (error) => {
         }
         break
       case 404:
-          notification.error({ message: '系统提示', description:'很抱歉，资源未找到!',duration: 4})
+        notification.error({ message: '系统提示', description:'很抱歉，资源未找到!',duration: 4})
         break
       case 504:
         notification.error({ message: '系统提示', description: '网络超时'})
@@ -99,8 +99,8 @@ service.interceptors.request.use(config => {
 
 // response interceptor
 service.interceptors.response.use((response) => {
-    return response.data
-  }, err)
+  return response.data
+}, err)
 
 const installer = {
   vm: {},
