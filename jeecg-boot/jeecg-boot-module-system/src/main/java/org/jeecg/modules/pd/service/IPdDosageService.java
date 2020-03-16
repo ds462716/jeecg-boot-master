@@ -11,4 +11,5 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface IPdDosageService extends IService<PdDosage> {
 
+    PdDosage initModal(String id);
 }

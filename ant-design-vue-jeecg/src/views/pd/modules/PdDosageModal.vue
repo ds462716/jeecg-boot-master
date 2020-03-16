@@ -7,7 +7,7 @@
     :fullscreen="fullscreen"
     :switchFullscreen="switchFullscreen"
     @cancel="handleCancel"
-    footer="null"
+
   >
 
     <a-spin :spinning="confirmLoading">
@@ -17,34 +17,35 @@
             <a-row>
               <a-col :span="6">
                 <a-form-item label="用量单号" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                  <a-input v-decorator="[ 'dosageNo']" placeholder="请输入用量单号"></a-input>
+                  <a-input disabled v-decorator="[ 'dosageNo']" placeholder="请输入用量单号"></a-input>
                 </a-form-item>
               </a-col>
               <a-col :span="6">
                 <a-form-item label="用量日期" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                  <a-input v-decorator="[ 'dosageDate']" placeholder="请输入用量日期"></a-input>
+                  <a-input disabled v-decorator="[ 'dosageDate']" placeholder="请输入用量日期"></a-input>
                 </a-form-item>
               </a-col>
               <a-col :span="6">
                 <a-form-item label="操作人" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                  <a-input v-decorator="[ 'dosageBy']" placeholder="请输入操作人"></a-input>
+                  <a-input disabled v-decorator="[ 'dosageByName']" placeholder="请输入操作人"></a-input>
                 </a-form-item>
               </a-col>
-            </a-row>
-            <a-row>
               <a-col :span="6">
                 <a-form-item label="所属部门" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                  <a-input v-decorator="[ 'departId']" placeholder="请输入所属部门"></a-input>
+                  <a-input disabled v-decorator="[ 'departName']" placeholder="请输入所属部门"></a-input>
                 </a-form-item>
               </a-col>
             </a-row>
+           <!-- <a-row>
+
+            </a-row>-->
           </a-form>
         </a-card>
 
         <!-- 产品列表区域 -->
         <a-card style="margin-bottom: 10px;">
           <a-tabs v-model="activeKey" @change="handleChangeTabs">
-            <a-tab-pane tab="产品明细"  :forceRender="true">
+            <a-tab-pane tab="产品明细" :key="refKeys[0]"  :forceRender="true">
               <a-form v-show="!disableSubmit">
                 <a-row>
                   <a-col :md="6" :sm="8">
@@ -100,72 +101,113 @@
           </a-tabs>
         </a-card>
 
+        <a-card style="margin-bottom: 10px;">
+          <a-tabs v-model="activeKey" @change="handleChangeTabs">
+            <a-tab-pane tab="收费信息" :key="refKeys[0]"  :forceRender="true">
+              <a-form :form="form">
+                <a-row>
+                  <a-col :md="6" :sm="8">
+                    <a-form-item label="住院号" :labelCol="labelCol" :wrapperCol="wrapperCol">
+                      <a-input v-decorator="[ 'inHospitalNo', validatorRules.inHospitalNo]" placeholder="请输入住院号"></a-input>
+                    </a-form-item>
+                  </a-col>
+                  <a-col :md="6" :sm="8">
+                    <a-form-item label="病人信息" :labelCol="labelCol" :wrapperCol="wrapperCol">
+                      <a-input v-decorator="[ 'patientInfo', validatorRules.patientInfo]" placeholder="请输入病人信息"></a-input>
+                    </a-form-item>
+                  </a-col>
+                  <a-col :md="6" :sm="8">
+                    <a-form-item label="门诊号" :labelCol="labelCol" :wrapperCol="wrapperCol">
+                      <a-input v-decorator="[ 'outpatientNumber', validatorRules.outpatientNumber]" placeholder="请输入门诊号"></a-input>
+                    </a-form-item>
+                 </a-col>
+                  <a-col :md="6" :sm="8">
+                    <a-form-item label="手术编号" :labelCol="labelCol" :wrapperCol="wrapperCol">
+                      <a-input v-decorator="[ 'operativeNumber', validatorRules.operativeNumber]" placeholder="请输入手术编号"></a-input>
+                    </a-form-item>
+                  </a-col>
+                </a-row>
 
-       <!-- <a-card style="margin-bottom: 10px;">
-          <a-form :form="form">
-            <a-form-item label="用量总数" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input-number v-decorator="[ 'amountCount', validatorRules.amountCount]" placeholder="请输入用量总数" style="width: 100%"/>
-            </a-form-item>
-            <a-form-item label="用量总金额" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input-number v-decorator="[ 'amountMoney', validatorRules.amountMoney]" placeholder="请输入用量总金额" style="width: 100%"/>
-            </a-form-item>
-            <a-form-item label="病人信息" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input v-decorator="[ 'patientInfo', validatorRules.patientInfo]" placeholder="请输入病人信息"></a-input>
-            </a-form-item>
-            <a-form-item label="病人详细信息" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input v-decorator="[ 'patientDetailInfo', validatorRules.patientDetailInfo]" placeholder="请输入病人详细信息"></a-input>
-            </a-form-item>
-            <a-form-item label="执行科室id" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input v-decorator="[ 'exeDeptId', validatorRules.exeDeptId]" placeholder="请输入执行科室id"></a-input>
-            </a-form-item>
-            <a-form-item label="执行科室名称" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input v-decorator="[ 'exeDeptName', validatorRules.exeDeptName]" placeholder="请输入执行科室名称"></a-input>
-            </a-form-item>
-            <a-form-item label="手术科室id" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input v-decorator="[ 'oprDeptId', validatorRules.oprDeptId]" placeholder="请输入手术科室id"></a-input>
-            </a-form-item>
-            <a-form-item label="手术科室名称" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input v-decorator="[ 'oprDeptName', validatorRules.oprDeptName]" placeholder="请输入手术科室名称"></a-input>
-            </a-form-item>
-            <a-form-item label="手术医生id" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input v-decorator="[ 'surgeonId', validatorRules.surgeonId]" placeholder="请输入手术医生id"></a-input>
-            </a-form-item>
-            <a-form-item label="手术医生名称" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input v-decorator="[ 'surgeonName', validatorRules.surgeonName]" placeholder="请输入手术医生名称"></a-input>
-            </a-form-item>
-            <a-form-item label="开方医生id" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input v-decorator="[ 'sqrtDoctorId', validatorRules.sqrtDoctorId]" placeholder="请输入开方医生id"></a-input>
-            </a-form-item>
-            <a-form-item label="开方医生名称" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input v-decorator="[ 'sqrtDoctorName', validatorRules.sqrtDoctorName]" placeholder="请输入开方医生名称"></a-input>
-            </a-form-item>
-            <a-form-item label="住院号" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input v-decorator="[ 'inHospitalNo', validatorRules.inHospitalNo]" placeholder="请输入住院号"></a-input>
-            </a-form-item>
+                <a-row>
+                  <a-col :md="6" :sm="8">
+                    <a-form-item label="执行科室" :labelCol="labelCol" :wrapperCol="wrapperCol">
+                      <a-input v-decorator="[ 'exeDeptName', validatorRules.exeDeptName]" placeholder="请输入执行科室名称"></a-input>
+                    </a-form-item>
+                    <!-- 执行科室id -->
+                    <a-form-item >
+                      <a-input type="hidden" v-decorator="[ 'exeDeptId']"></a-input>
+                    </a-form-item>
+                  </a-col>
+                  <a-col :md="6" :sm="8">
+                    <a-form-item label="手术科室" :labelCol="labelCol" :wrapperCol="wrapperCol">
+                      <a-input v-decorator="[ 'oprDeptName', validatorRules.oprDeptName]" placeholder="请输入手术科室名称"></a-input>
+                    </a-form-item>
+                    <!-- 手术科室id -->
+                    <a-form-item>
+                      <a-input type="hidden" v-decorator="[ 'oprDeptId']"></a-input>
+                    </a-form-item>
+                  </a-col>
+                  <a-col :md="6" :sm="8">
+                    <a-form-item label="手术医生" :labelCol="labelCol" :wrapperCol="wrapperCol">
+                      <a-input v-decorator="[ 'surgeonName', validatorRules.surgeonName]" placeholder="请输入手术医生名称"></a-input>
+                    </a-form-item>
+                    <!-- 手术医生id -->
+                    <a-form-item>
+                      <a-input type="hidden" v-decorator="[ 'surgeonId']"></a-input>
+                    </a-form-item>
+                  </a-col>
+                  <a-col :md="6" :sm="8">
+                    <a-form-item label="开方医生" :labelCol="labelCol" :wrapperCol="wrapperCol">
+                      <a-input v-decorator="[ 'sqrtDoctorName', validatorRules.sqrtDoctorName]" placeholder="请输入开方医生名称"></a-input>
+                    </a-form-item>
+                    <!-- 开方医生id -->
+                    <a-form-item>
+                      <a-input type="hidden" v-decorator="[ 'sqrtDoctorId']"></a-input>
+                    </a-form-item>
+                  </a-col>
+                </a-row>
+                <a-row>
+                  <a-col :md="6" :sm="8">
+                    <a-form-item label="所属病区" :labelCol="labelCol" :wrapperCol="wrapperCol">
+                      <a-input v-decorator="[ 'subordinateWardName', validatorRules.subordinateWardName]" placeholder="请输入所属病区名称"></a-input>
+                    </a-form-item>
+                    <!-- 所属病区id -->
+                    <a-form-item>
+                      <a-input type="hidden" v-decorator="[ 'subordinateWardId']"></a-input>
+                    </a-form-item>
+                  </a-col>
+                </a-row>
 
-            <a-form-item label="所属病区id" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input v-decorator="[ 'subordinateWardId', validatorRules.subordinateWardId]" placeholder="请输入所属病区id"></a-input>
-            </a-form-item>
-            <a-form-item label="所属病区名称" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input v-decorator="[ 'subordinateWardName', validatorRules.subordinateWardName]" placeholder="请输入所属病区名称"></a-input>
-            </a-form-item>
-            <a-form-item label="门诊号" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input v-decorator="[ 'outpatientNumber', validatorRules.outpatientNumber]" placeholder="请输入门诊号"></a-input>
-            </a-form-item>
-            <a-form-item label="手术编号" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input v-decorator="[ 'operativeNumber', validatorRules.operativeNumber]" placeholder="请输入手术编号"></a-input>
-            </a-form-item>
-            <a-form-item label="是否有his接口标识符0没有，1有" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input v-decorator="[ 'displayFlag', validatorRules.displayFlag]" placeholder="请输入是否有his接口标识符0没有，1有"></a-input>
-            </a-form-item>
-            <a-form-item label="备注" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input v-decorator="[ 'remarks', validatorRules.remarks]" placeholder="请输入备注"></a-input>
-            </a-form-item>
+                <a-form-item label="病人详细信息" :labelCol="labelCol2" :wrapperCol="wrapperCol2">
+                  <a-textarea v-decorator="[ 'patientDetailInfo', validatorRules.patientDetailInfo]" placeholder="请输入病人详细信息"></a-textarea>
+                </a-form-item>
+                <a-form-item label="备注" :labelCol="labelCol2" :wrapperCol="wrapperCol2">
+                  <a-textarea v-decorator="[ 'remarks', validatorRules.remarks]" placeholder="请输入备注"></a-textarea>
+                </a-form-item>
 
-          </a-form>
-        </a-card>-->
+              </a-form>
+            </a-tab-pane>
+          </a-tabs>
+        </a-card>
       </div>
     </a-spin>
+
+    <!--<div class="drawer-bootom-button">
+      <a-button @click="closeBtn" style="margin-right: 15px;" v-show="disableSubmit">关  闭</a-button>
+      <a-popconfirm title="确定放弃编辑？" @confirm="handleCancel" v-show="!disableSubmit" okText="确定" cancelText="取消">
+        <a-button style="margin-right: 15px;">取  消</a-button>
+      </a-popconfirm>
+      <a-button @click="saveBtn" v-show="!disableSubmit" type="primary" :loading="confirmLoading" style="margin-right: 15px;">保存草稿</a-button>
+      <a-button @click="submitBtn" v-show="!disableSubmit" type="primary" :loading="confirmLoading" style="margin-right: 15px;">提  交</a-button>
+    </div>-->
+    <template slot="footer">
+        <a-button @click="closeBtn" style="margin-right: 15px;" v-show="disableSubmit">关  闭</a-button>
+        <a-popconfirm title="确定放弃编辑？" @confirm="handleCancel" v-show="!disableSubmit" okText="确定" cancelText="取消">
+          <a-button style="margin-right: 15px;">取  消</a-button>
+        </a-popconfirm>
+        <a-button @click="saveBtn" v-show="!disableSubmit" type="primary" :loading="confirmLoading" style="margin-right: 15px;">保存草稿</a-button>
+        <a-button @click="submitBtn" v-show="!disableSubmit" type="primary" :loading="confirmLoading" style="margin-right: 15px;">提  交</a-button>
+    </template>
   </j-modal>
 </template>
 
@@ -215,12 +257,15 @@
         totalPrice:'0.0000',
         activeKey: 'pdDosageDetail',
         refKeys: ['pdDosageDetail',],
+        //货区货位二级联动下拉框
+        goodsAllocationList:[],
         queryParam:{},
+        initData:{},
         pdDosageDetailTable: {
           loading: false,
           dataSource: [],
-          columns: [/*
-            { title: '库存明细ID', key: 'productStockId' },
+          columns: [
+            { title: '库存明细ID', key: 'productStockId', type: FormTypes.hidden },
             { title: '产品ID', key: 'productId', type: FormTypes.hidden },
             { title: '产品名称', key: 'productName', type: FormTypes.normal,width:"220px" },
             { title: '产品编号', key: 'productNumber', width:"160px" },
@@ -232,16 +277,16 @@
             { title: '入库单价', key: 'purchasePrice', width:"80px" },
             { title: '出库单价', key: 'sellingPrice', width:"80px" },
             {
-              title: '出库数量', key: 'productNum', type: FormTypes.input, width:"80px",
+              title: '用量数量', key: 'dosageCount', type: FormTypes.input, width:"80px",
               placeholder: '${title}', defaultValue: '1',
               validateRules: [{ required: true, message: '${title}不能为空' },{ pattern: '^-?\\d+\\.?\\d*$',message: '${title}的格式不正确' }]
             },
-            { title: '出库金额', key: 'outTotalPrice', type: FormTypes.input, disabled:true, width:"100px" },
+            { title: '用量金额', key: 'amountMoney', type: FormTypes.input, disabled:true, width:"100px" },
             { title: '库存数量', key: 'stockNum', width:"80px" },
-            { title: '出库货位', key: 'outHuoweiName', width:"100px" },
-            { title: '出库货位编号', key: 'outHuoweiCode', type: FormTypes.hidden },
-            { title: '入库货位', key: 'inHuoweiCode', type: FormTypes.select, width:"150px", options: [],allowSearch:true, placeholder: '${title}' },
-          */]
+            { title: '收费项目代码', key: 'chargeCode', width:"80px" },
+            { title: '是否计费', key: 'isCharge', width:"80px" },
+            { title: '出库货位编号', key: 'outHuoweiCode', type: FormTypes.select, width:"150px", options: [],allowSearch:true, placeholder: '${title}' },
+          ]
         },
         disableSubmit:false,
         labelCol: {
@@ -249,6 +294,14 @@
           sm: { span: 8 },
         },
         wrapperCol: {
+          xs: { span: 24 },
+          sm: { span: 16 },
+        },
+        labelCol2: {
+          xs: { span: 16 },
+          sm: { span: 4 },
+        },
+        wrapperCol2: {
           xs: { span: 24 },
           sm: { span: 16 },
         },
@@ -309,7 +362,7 @@
           ]},
         },
         url: {
-          init:"/pd/pdStockRecordOut/initModal",
+          init:"/pd/pdDosage/initModal",
           add: "/pd/pdDosage/add",
           edit: "/pd/pdDosage/edit",
           departList:"/pd/pdDepart/getSysDepartList",
@@ -331,8 +384,7 @@
         this.departHandleSearch();  // 初始化部门列表 用于数据回显
         let params = {};
         if(this.model.id){
-          let fieldval = pick(this.model,'recordNo','outType','submitBy','submitByName','submitDate','applyNo','allocationNo',
-            'inDepartId','outDepartId','outDepartName','remarks')
+          let fieldval = pick(this.model,'dosageNo','dosageDate','departName','dosageByName')
           this.$nextTick(() => {
             this.form.setFieldsValue(fieldval);
           })
@@ -344,12 +396,11 @@
           if (res.success) {
             this.$nextTick(() => {
               // this.departList = res.result.sysDepartList; // 初始化部门列表 用于数据回显
-              if(this.model.id){ //详情页
-                this.disableSubmit2 = true;
+              if(this.model.id){/* //详情页
                 this.showApplyBtn = false;
                 this.showAllocationBtn = false;
                 this.showOrderTable = true;
-                this.pdStockRecordDetailTable.dataSource = res.result.pdStockRecordDetailList || [];
+                this.pdDosageDetailTable.dataSource = res.result.pdDosageDetails || [];
 
                 if(res.result.outType == "1"){
                   this.orderTableTitle = "申领单明细";
@@ -372,7 +423,7 @@
                 }
 
                 this.goodsAllocationList = res.result.goodsAllocationList;
-                this.pdStockRecordDetailTable.columns.forEach((item, idx) => {
+                this.pdDosageDetailTable.columns.forEach((item, idx) => {
                   if(item.key === "inHuoweiCode"){
                     item.options = this.goodsAllocationList;
                   }
@@ -380,35 +431,18 @@
 
                 this.totalSum = res.result.totalSum;
                 this.totalPrice = res.result.totalPrice.toString();
-              }else{  // 新增页
-                this.disableSubmit2 = false;
+              */}else{  // 新增页
                 this.initData = res.result;
-                this.submitDateStr = res.result.submitDateStr;
-                let fieldval = pick(this.initData,'recordNo','outType','submitBy','submitByName','submitDate','applyNo','allocationNo',
-                  'inDepartId','outDepartId','outDepartName','remarks');
+                let fieldval = pick(this.initData,'dosageNo','dosageDate','departName','dosageByName');
                 this.form.setFieldsValue(fieldval);
+                this.goodsAllocationList = res.result.goodsAllocationList;
+                this.pdDosageDetailTable.columns.forEach((item, idx) => {
+                  if(item.key === "outHuoweiCode"){
+                    item.options = this.goodsAllocationList;
+                  }
+                })
                 //获取光标
                 this.$refs['productNumberInput'].focus();
-
-                // 从申领单或调拨单直接打开
-                if(this.args && this.args.outType){
-                  let outType = this.args.outType;//	1-申领出库; 2-科室出库; 3-调拨出库
-                  let data = this.args.data;
-                  let inDepartId = this.args.inDepartId;
-                  this.form.setFieldsValue({outType:outType});
-                  this.form.setFieldsValue({inDepartId:inDepartId});
-                  this.showApplyBtn = false;
-                  this.showAllocationBtn = false;
-                  this.showOrderTable = true;
-                  this.disableSubmit2 = true;
-                  if(outType == "1"){
-                    this.orderTableTitle = "申领单明细";
-                    this.returnApplyOrderData(data);
-                  }else if(outType == "3"){
-                    this.orderTableTitle = "调拨单明细";
-                    this.returnAllocationData(data);
-                  }
-                }
               }
             })
           }
@@ -466,9 +500,6 @@
       handleCancel () {
         this.close()
       },
-      popupCallback(row){
-        this.form.setFieldsValue(pick(row,'dosageNo','dosageDate','amountCount','amountMoney','patientInfo','patientDetailInfo','exeDeptId','exeDeptName','oprDeptId','oprDeptName','surgeonId','surgeonName','sqrtDoctorId','sqrtDoctorName','inHospitalNo','dosageBy','subordinateWardId','subordinateWardName','outpatientNumber','operativeNumber','displayFlag','remarks','departId','departParentId'))
-      },
       // 扫码查询
       searchQuery(num) {
         let that = this;
@@ -508,18 +539,18 @@
                 for(let item of values){
                   if(pdProductStock.id == item.productStockId){// 库存明细ID一致，就+1
                     isAddRow = false;
-                    if(Number(item.productNum) + 1 > Number(item.stockNum)){
+                    if(Number(item.dosageCount) + 1 > Number(item.stockNum)){
                       //清空扫码框
                       this.clearQueryParam();
                       this.$message.error("["+item.productName+"]出库数量不能大于库存数量！");
                       return;
                     }
 
-                    let productNum = Number(item.productNum) + 1;
-                    let outTotalPrice = (Number(item.sellingPrice) * Number(productNum)).toFixed(4);
+                    let dosageCount = Number(item.dosageCount) + 1;
+                    let amountMoney = (Number(item.sellingPrice) * Number(dosageCount)).toFixed(4);
 
                     this.$refs.pdDosageDetail.setValues([{rowKey: item.id, values: {
-                        productNum: productNum,outTotalPrice: outTotalPrice }}]);
+                        dosageCount: dosageCount,amountMoney: amountMoney }}]);
                     // 计算总数量和总价格
                     this.getTotalNumAndPrice([]);
                     break;
@@ -598,8 +629,8 @@
           let totalSum = 0;
           let totalPrice = 0;
           rows.forEach((item, idx) => {
-            totalSum = totalSum + Number(item.productNum);
-            totalPrice = totalPrice + Number(item.outTotalPrice);
+            totalSum = totalSum + Number(item.dosageCount);
+            totalPrice = totalPrice + Number(item.amountMoney);
           })
           this.totalSum = totalSum;
           this.totalPrice = totalPrice.toFixed(4);
@@ -612,28 +643,116 @@
           if (type === FormTypes.select) {
 
           }else if(type === FormTypes.input){
-            if(column.key === "productNum"){
+            if(column.key === "dosageCount"){
               let { values } = target.getValuesSync({ validate: false });
               for(let item of values){
                 if(item.id == row.id && Number(value) > Number(item.stockNum)){
-                  this.$message.error("["+row.productName+"]出库数量不能大于库存数量！");
+                  this.$message.error("["+row.productName+"]使用数量不能大于库存数量！");
                   // 产品数量变更 计算每条产品的价格
-                  let outTotalPrice = (Number(row.sellingPrice) * Number(item.stockNum)).toFixed(4);
-                  target.setValues([{rowKey: row.id, values: { outTotalPrice: outTotalPrice, productNum: item.stockNum }}])
+                  let amountMoney = (Number(row.sellingPrice) * Number(item.stockNum)).toFixed(4);
+                  target.setValues([{rowKey: row.id, values: { amountMoney: amountMoney, dosageCount: item.stockNum }}])
                   // 计算总数量和总价格
                   this.getTotalNumAndPrice([]);
                   return;
                 }
               }
               // 产品数量变更 计算每条产品的价格
-              let outTotalPrice = (Number(row.sellingPrice) * Number(value)).toFixed(4);
-              target.setValues([{rowKey: row.id, values: { outTotalPrice: outTotalPrice }}])
+              let amountMoney = (Number(row.sellingPrice) * Number(value)).toFixed(4);
+              target.setValues([{rowKey: row.id, values: { amountMoney: amountMoney }}])
               // 计算总数量和总价格
               this.getTotalNumAndPrice([]);
             }
           }
         }
       },
+      //清空扫码框
+      clearQueryParam(){
+        this.queryParam.productNumber = "";
+        this.queryParam.productBarCode = "";
+        this.$refs.productNumberInput.focus();
+      },
+      // 扫码 调用 新增一行
+      addrowsByScanCode(row){
+        let data = {
+          productStockId:row.id,
+          productId: row.productId,
+          productName: row.productName,
+          productNumber:row.number,
+          productBarCode:row.productBarCode,
+          spec: row.spec,
+          batchNo:row.batchNo,
+          unitName:row.unitName,
+          expDate:row.expDate,
+          sellingPrice:row.sellingPrice,
+          dosageCount: 1,
+          purchasePrice:row.purchasePrice,
+          amountMoney:Number(!row.sellingPrice ? 0 : row.sellingPrice).toFixed(4),
+          stockNum:row.stockNum,
+          chargeCode:row.chargeCode,
+          isCharge:row.isCharge=="0"?"是":"否",
+          outHuoweiCode:row.huoweiCode,
+        }
+        this.pdDosageDetailTable.dataSource.push(data);
+      },
+      /** 保存草稿 **/
+      saveBtn() {
+
+      },
+      /** 确定按钮点击事件 */
+      submitBtn() {
+        /** 触发表单验证 */
+        this.getAllTable().then(tables => {
+          /** 一次性验证主表和所有的次表 */
+          return validateFormAndTables(this.form, tables)
+        }).then(allValues => {
+          if (typeof this.classifyIntoFormData !== 'function') {
+            throw this.throwNotFunction('classifyIntoFormData')
+          }
+
+          let formData = this.classifyIntoFormData(allValues);
+
+          if(formData.pdDosageDetails.length <= 0){
+            this.$message.warning("用量产品数据为空，请扫码出库或选择产品");
+            return;
+          }
+
+          let list = formData.pdDosageDetails;
+          for (let item of list){
+            if(Number(item.productNum) > Number(item.stockNum)){
+              this.$message.error("["+item.productName+"]用量数量不能大于库存数量！");
+              return;
+            }
+            if(Number(item.productNum) <= 0){
+              this.$message.error("["+item.productName+"]用量数量必须大于0！");
+              return;
+            }
+          }
+          return this.request(formData);
+        }).catch(e => {
+          if (e.error === VALIDATE_NO_PASSED) {
+            // 如果有未通过表单验证的子表，就自动跳转到它所在的tab
+            this.activeKey = e.index == null ? this.activeKey : this.refKeys[e.index]
+          } else {
+            console.error(e)
+          }
+        })
+      },
+      /** 整理成formData */
+      classifyIntoFormData(allValues) {
+        let main = Object.assign(this.model, allValues.formValue)
+
+        return {
+          ...main, // 展开
+          pdDosageDetails: allValues.tablesValue[0].values,
+        }
+      },
+      /** 关闭按钮 **/
+      closeBtn(){
+        this.visible = false;
+        this.$emit('close');
+      },
     }
   }
 </script>
+<style scoped>
+</style>

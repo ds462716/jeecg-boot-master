@@ -38,7 +38,7 @@ import org.jeecg.common.aspect.annotation.AutoLog;
 
  /**
  * @Description: 用量表
- * @Author: jiangxz
+ * @Author: zxh
  * @Date:   2020-03-13
  * @Version: V1.0
  */
@@ -99,7 +99,19 @@ public class PdDosageController extends JeecgController<PdDosage, IPdDosageServi
 		pdDosageService.updateById(pdDosage);
 		return Result.ok("编辑成功!");
 	}
-	
+
+	 /**
+	  * 初始化Modal页面
+	  *
+	  * @param req
+	  * @return
+	  */
+	 @GetMapping(value = "/initModal")
+	 public Result<?> initModal(@RequestParam(name = "id") String id, HttpServletRequest req) {
+		 PdDosage pdDosage = pdDosageService.initModal(id);
+		 return Result.ok(pdDosage);
+	 }
+
 	/**
 	 *   通过id删除
 	 *

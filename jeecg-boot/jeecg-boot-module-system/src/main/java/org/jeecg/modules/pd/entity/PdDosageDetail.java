@@ -5,6 +5,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.Date;
 import java.math.BigDecimal;
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
@@ -56,7 +57,7 @@ public class PdDosageDetail extends BaseEntity {
 	@JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd")
     @DateTimeFormat(pattern="yyyy-MM-dd")
     @ApiModelProperty(value = "产品有效期")
-    private Date expireDate;
+    private Date expDate;
 	/**用量数量*/
 	@Excel(name = "用量数量", width = 15)
     @ApiModelProperty(value = "用量数量")
@@ -72,11 +73,11 @@ public class PdDosageDetail extends BaseEntity {
 	/**用量金额*/
 	@Excel(name = "用量金额", width = 15)
     @ApiModelProperty(value = "用量金额")
-    private Double amountMoney;
-	/**是否执行收费*/
-	@Excel(name = "是否执行收费", width = 15)
-    @ApiModelProperty(value = "是否执行收费")
-    private String isCharge;
+    private java.math.BigDecimal amountMoney;
+    /**是否执行收费*/
+    @Excel(name = "是否已经执行收费0是1否", width = 15)
+    @ApiModelProperty(value = "是否已经执行收费0是1否")
+    private String hyCharged;
 	/**收费项目代码*/
 	@Excel(name = "收费项目代码", width = 15)
     @ApiModelProperty(value = "收费项目代码")
@@ -117,4 +118,32 @@ public class PdDosageDetail extends BaseEntity {
 	@Excel(name = "所属医院", width = 15)
     @ApiModelProperty(value = "所属医院")
     private String departParentId;
+
+
+    /**产品库存ID*/
+    private String productStockId;
+
+    //冗余
+    @TableField(exist = false)
+    private String outHuoweiName;//出库货位
+    @TableField(exist = false)
+    private String oldOutHuoweiCode;
+
+    @TableField(exist = false)
+    private String productName;//产品名称
+    @TableField(exist = false)
+    private String number;//产品编号
+    @TableField(exist = false)
+    private String spec;//产品规格
+    @TableField(exist = false)
+    private String version;//产品型号
+    @TableField(exist = false)
+    private String isCharge;
+    @TableField(exist = false)
+    @Excel(name = "出库单价", width = 15)
+    private java.math.BigDecimal sellingPrice;//出价
+    @TableField(exist = false)
+    /**入库单价*/
+    @Excel(name = "入库单价", width = 15)
+    private java.math.BigDecimal purchasePrice;//进价
 }

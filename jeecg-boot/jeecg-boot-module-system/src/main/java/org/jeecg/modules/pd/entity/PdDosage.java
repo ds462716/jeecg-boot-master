@@ -1,17 +1,16 @@
 package org.jeecg.modules.pd.entity;
 
-import java.io.Serializable;
-import java.io.UnsupportedEncodingException;
 import java.util.Date;
-import java.math.BigDecimal;
+import java.util.List;
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import org.jeecg.modules.pd.vo.PdGoodsAllocationPage;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.jeecgframework.poi.excel.annotation.Excel;
-import org.jeecg.common.aspect.annotation.Dict;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.EqualsAndHashCode;
@@ -48,11 +47,11 @@ public class PdDosage extends BaseEntity {
 	/**用量总数*/
 	@Excel(name = "用量总数", width = 15)
     @ApiModelProperty(value = "用量总数")
-    private Double amountCount;
+    private Double totalSum;
 	/**用量总金额*/
 	@Excel(name = "用量总金额", width = 15)
     @ApiModelProperty(value = "用量总金额")
-    private Double amountMoney;
+    private java.math.BigDecimal totalPrice;
 	/**病人信息*/
 	@Excel(name = "病人信息", width = 15)
     @ApiModelProperty(value = "病人信息")
@@ -101,6 +100,8 @@ public class PdDosage extends BaseEntity {
 	@Excel(name = "操作人", width = 15)
     @ApiModelProperty(value = "操作人")
     private String dosageBy;
+    @TableField(exist = false)
+	private String dosageByName;
 	/**所属病区id*/
 	@Excel(name = "所属病区id", width = 15)
     @ApiModelProperty(value = "所属病区id")
@@ -153,8 +154,23 @@ public class PdDosage extends BaseEntity {
 	@Excel(name = "所属部门", width = 15)
     @ApiModelProperty(value = "所属部门")
     private String departId;
+    @TableField(exist = false)
+    private String departName;
 	/**所属医院*/
 	@Excel(name = "所属医院", width = 15)
     @ApiModelProperty(value = "所属医院")
     private String departParentId;
+
+    /**
+     * 用量明细
+     */
+    @TableField(exist = false)
+	private List<PdDosageDetail> pdDosageDetails;
+
+    /**
+     * 货区货位下拉
+     */
+    @TableField(exist = false)
+    private List<PdGoodsAllocationPage> goodsAllocationList;
+
 }
