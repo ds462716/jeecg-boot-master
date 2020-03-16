@@ -394,7 +394,9 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
 
 			if(StringUtils.isNotEmpty(pdStockRecord.getOrderNo())){
 				//查订单列表
-				List<PdPurchaseDetail> pdPurchaseDetailList = pdPurchaseDetailService.selectByOrderNo(pdStockRecord.getOrderNo());
+				PdPurchaseOrder purchaseOrder=new PdPurchaseOrder();
+				purchaseOrder.setOrderNo(pdStockRecord.getOrderNo());
+				List<PdPurchaseDetail> pdPurchaseDetailList = pdPurchaseDetailService.queryPdPurchaseDetail(purchaseOrder);
 				pdStockRecord.setPdPurchaseDetailList(pdPurchaseDetailList);
 			}
 		}else{  // 新增页面

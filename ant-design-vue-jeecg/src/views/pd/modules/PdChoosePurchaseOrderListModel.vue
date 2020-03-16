@@ -14,7 +14,7 @@
           <a-row :gutter="24">
             <a-col :md="6" :sm="8">
               <a-form-item label="申购单号">
-                <a-input placeholder="请输入采购单号" v-model="queryParam.orderNo"></a-input>
+                <a-input placeholder="请输入采购单号" v-model="queryParam.mergeOrderNo"></a-input>
               </a-form-item>
             </a-col>
             <a-col :md="6" :sm="8">
@@ -141,12 +141,12 @@
             }
           },
           {
-            title:'申购单号',
+            title:'合并申购单号',
             align:"center",
             dataIndex: 'orderNo'
           },
           {
-            title:'申购日期',
+            title:'审核日期',
             align:"center",
             dataIndex: 'orderDate',
             customRender:function (text) {
@@ -154,7 +154,7 @@
             }
           },
           {
-            title:'申购科室',
+            title:'审核科室',
             align:"center",
             dataIndex: 'deptName'
           },
@@ -177,6 +177,12 @@
           }
         ],
         innerColumns:[
+          {
+            title:'申购编号',
+            align:"center",
+            width: 100,
+            dataIndex: 'orderNo'
+          },
           {
             title:'产品编号',
             align:"center",
@@ -235,7 +241,7 @@
           },
         ],
         url: {
-          list: "/pd/pdPurchaseOrder/choosePurchaseOrderList",
+          list: "/pd/pdPurchaseOrderMerge/choosePurchaseOrderList",
           chooseDetailList:"/pd/pdPurchaseOrder/choosePurchaseOrderDetailList",
           querySupplier:"/pd/pdSupplier/getSupplierList",
           detailList:"/pd/pdPurchaseOrder/queryPdPurchaseDetail",
@@ -254,7 +260,7 @@
         if(expanded===true){
           this.subloading = true;
           this.expandedRowKeys.push(record.purchaseId);
-          getAction(this.url.chooseDetailList, {orderNo: record.orderNo}).then((res) => {
+          getAction(this.url.chooseDetailList, {mergeOrderNo: record.orderNo}).then((res) => {
             if (res.success) {
               this.subloading = false;
               this.innerData = res.result;
@@ -273,7 +279,7 @@
       },
       handleOk () {
         if(this.selectionRows.length > 0){
-          let params = { orderNo: this.selectionRows[0].orderNo }
+          let params = { mergeOrderNo: this.selectionRows[0].orderNo }
           getAction(this.url.detailList, params).then((res) => {
             if (res.success) {
               let data = res.result;

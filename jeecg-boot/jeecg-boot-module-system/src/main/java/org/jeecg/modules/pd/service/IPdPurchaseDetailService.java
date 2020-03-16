@@ -1,7 +1,9 @@
 package org.jeecg.modules.pd.service;
 
-import org.jeecg.modules.pd.entity.PdPurchaseDetail;
 import com.baomidou.mybatisplus.extension.service.IService;
+import org.jeecg.modules.pd.entity.PdPurchaseDetail;
+import org.jeecg.modules.pd.entity.PdPurchaseOrder;
+
 import java.util.List;
 
 /**
@@ -12,5 +14,5 @@ import java.util.List;
  */
 public interface IPdPurchaseDetailService extends IService<PdPurchaseDetail> {
 
-	public List<PdPurchaseDetail> selectByOrderNo(String orderNo);
+	public List<PdPurchaseDetail> queryPdPurchaseDetail(PdPurchaseOrder purchaseOrder);
 }

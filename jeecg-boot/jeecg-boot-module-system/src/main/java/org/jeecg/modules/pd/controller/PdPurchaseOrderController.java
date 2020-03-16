@@ -1,6 +1,5 @@
 package org.jeecg.modules.pd.controller;
 
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
@@ -221,14 +220,14 @@ public class PdPurchaseOrderController {
 	 }
 
 	 /**
-	  * 通过申购单号查询明细表
+	  * 查询明细表
 	  *
-	  * @param orderNo
+	  * @param purchaseOrder
 	  * @return
 	  */
 	 @GetMapping(value = "/queryPdPurchaseDetail")
-	 public Result<?> queryPdPurchaseDetail(@RequestParam(name = "orderNo", required = true) String orderNo) {
-		 List<PdPurchaseDetail> pdPurchaseDetailList = pdPurchaseDetailService.selectByOrderNo(orderNo);
+	 public Result<?> queryPdPurchaseDetail(PdPurchaseOrder purchaseOrder) {
+		 List<PdPurchaseDetail> pdPurchaseDetailList = pdPurchaseDetailService.queryPdPurchaseDetail(purchaseOrder);
 		 return Result.ok(pdPurchaseDetailList);
 	 }
 
@@ -243,7 +242,7 @@ public class PdPurchaseOrderController {
 		 // Step.1 组装查询条件查询数据
 		 LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
 		 //Step.2 获取导出数据
-		 List<PdPurchaseDetail> pdPurchaseDetailList = pdPurchaseDetailService.selectByOrderNo(pdPurchaseOrder.getOrderNo());
+		 List<PdPurchaseDetail> pdPurchaseDetailList = pdPurchaseDetailService.queryPdPurchaseDetail(pdPurchaseOrder);
 		 // Step.3 AutoPoi 导出Excel
 		 ModelAndView mv = new ModelAndView(new JeecgEntityExcelView());
 		 mv.addObject(NormalExcelConstants.FILE_NAME, "申购产品列表");
@@ -292,34 +291,11 @@ public class PdPurchaseOrderController {
 		 return Result.ok("文件导入失败！");
 	 }
 
-	 /**
-	  * 采购订单选择框
-	  *
-	  * @param pdPurchaseOrderPage
-	  * @param pageNo
-	  * @param pageSize
-	  * @param req
-	  * @return
-	  */
-	 @GetMapping(value = "/choosePurchaseOrderList")
-	 public Result<?> choosePurchaseOrderList(PdPurchaseOrderPage pdPurchaseOrderPage,
-											  @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
-											  @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
-											  HttpServletRequest req) {
-		 Page<PdPurchaseOrderPage> page = new Page<PdPurchaseOrderPage>(pageNo, pageSize);
-		 LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
-		 pdPurchaseOrderPage.setDepartParentId(sysUser.getDepartParentId());
-		 IPage<PdPurchaseOrderPage> pageList = pdPurchaseOrderService.choosePurchaseOrderList(page, pdPurchaseOrderPage);
-		 return Result.ok(pageList);
-	 }
-
 	 @GetMapping(value = "/choosePurchaseOrderDetailList")
 	 public Result<?> choosePurchaseOrderDetailList(PdPurchaseOrderPage pdPurchaseOrderPage, HttpServletRequest req) {
 		 List<PdProductPage> list = pdPurchaseOrderService.choosePurchaseOrderDetailList(pdPurchaseOrderPage);
 		 return Result.ok(list);
 	 }
-
-
 	 /**
 	  * 根据合并订单编号分页查询采购订单
 	  *

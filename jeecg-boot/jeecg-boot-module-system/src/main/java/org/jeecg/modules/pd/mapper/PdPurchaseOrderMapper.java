@@ -2,6 +2,7 @@ package org.jeecg.modules.pd.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.jeecg.modules.pd.entity.PdPurchaseOrder;
+import org.jeecg.modules.pd.entity.PdPurchaseOrderMerge;
 import org.jeecg.modules.pd.vo.PdProductPage;
 import org.jeecg.modules.pd.vo.PdPurchaseOrderPage;
 
@@ -18,7 +19,7 @@ public interface PdPurchaseOrderMapper extends BaseMapper<PdPurchaseOrder> {
 
     List<PdPurchaseOrder> selectList(PdPurchaseOrder pdPurchaseOrder);
 
-    List<PdPurchaseOrderPage> choosePurchaseOrderList(PdPurchaseOrderPage pdPurchaseOrderPage);
+    List<PdPurchaseOrderMerge> choosePurchaseOrderList(PdPurchaseOrderPage pdPurchaseOrderPage);
 
     List<PdProductPage> choosePurchaseOrderDetailList(PdPurchaseOrderPage pdPurchaseOrderPage);
 

@@ -1,5 +1,6 @@
 package org.jeecg.modules.pd.controller;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
@@ -8,6 +9,8 @@ import org.jeecg.common.system.base.controller.JeecgController;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.modules.pd.entity.PdPurchaseOrderMerge;
 import org.jeecg.modules.pd.service.IPdPurchaseOrderMergeService;
+import org.jeecg.modules.pd.service.IPdPurchaseOrderService;
+import org.jeecg.modules.pd.vo.PdPurchaseOrderPage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
@@ -28,7 +31,8 @@ import java.util.Arrays;
 public class PdPurchaseOrderMergeController extends JeecgController<PdPurchaseOrderMerge, IPdPurchaseOrderMergeService> {
 	@Autowired
 	private IPdPurchaseOrderMergeService pdPurchaseOrderMergeService;
-
+	@Autowired
+	private IPdPurchaseOrderService pdPurchaseOrderService;
 	
 	/**
 	 * 分页列表查询
@@ -140,4 +144,26 @@ public class PdPurchaseOrderMergeController extends JeecgController<PdPurchaseOr
         return super.importExcel(request, response, PdPurchaseOrderMerge.class);
     }
 
+
+
+	/**
+	 * 采购订单选择框
+	 *
+	 * @param pdPurchaseOrderPage
+	 * @param pageNo
+	 * @param pageSize
+	 * @param req
+	 * @return
+	 */
+	@GetMapping(value = "/choosePurchaseOrderList")
+	public Result<?> choosePurchaseOrderList(PdPurchaseOrderPage pdPurchaseOrderPage,
+											 @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
+											 @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
+											 HttpServletRequest req) {
+		Page<PdPurchaseOrderMerge> page = new Page<PdPurchaseOrderMerge>(pageNo, pageSize);
+		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		pdPurchaseOrderPage.setDepartParentId(sysUser.getDepartParentId());
+		IPage<PdPurchaseOrderMerge> pageList = pdPurchaseOrderService.choosePurchaseOrderList(page, pdPurchaseOrderPage);
+		return Result.ok(pageList);
+	}
 }

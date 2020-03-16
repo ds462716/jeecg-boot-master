@@ -8,6 +8,7 @@ import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.modules.pd.entity.PdPurchaseDetail;
 import org.jeecg.modules.pd.entity.PdPurchaseOrder;
+import org.jeecg.modules.pd.entity.PdPurchaseOrderMerge;
 import org.jeecg.modules.pd.mapper.PdPurchaseDetailMapper;
 import org.jeecg.modules.pd.mapper.PdPurchaseOrderMapper;
 import org.jeecg.modules.pd.service.IPdPurchaseOrderService;
@@ -87,7 +88,7 @@ public class PdPurchaseOrderServiceImpl extends ServiceImpl<PdPurchaseOrderMappe
 	}
 
 	@Override
-	public Page<PdPurchaseOrderPage> choosePurchaseOrderList(Page<PdPurchaseOrderPage> pageList, PdPurchaseOrderPage pdPurchaseOrderPage) {
+	public Page<PdPurchaseOrderMerge> choosePurchaseOrderList(Page<PdPurchaseOrderMerge> pageList, PdPurchaseOrderPage pdPurchaseOrderPage) {
 		List queryDate = pdPurchaseOrderPage.getQueryDate();
 		if(CollectionUtils.isNotEmpty(queryDate)){
 			pdPurchaseOrderPage.setQueryDateStart((String) queryDate.get(0));

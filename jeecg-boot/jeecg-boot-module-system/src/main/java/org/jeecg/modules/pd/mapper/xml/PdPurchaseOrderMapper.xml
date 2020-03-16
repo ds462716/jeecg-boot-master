@@ -95,25 +95,26 @@
     <select id="choosePurchaseOrderList" resultType="org.jeecg.modules.pd.vo.PdPurchaseOrderPage"  parameterType="org.jeecg.modules.pd.vo.PdPurchaseOrderPage">
         SELECT DISTINCT
         a.id as purchaseId,
-        a.order_no as orderNo,
-        a.order_date as orderDate,
+        a.merge_order_no as orderNo,
+        a.purchase_date as orderDate,
         f.depart_name AS deptName,
         a.audit_status as auditStatus,
         c.realname as auditByName
         FROM
-        pd_purchase_order a
-        LEFT JOIN pd_purchase_detail b on a.order_no = b.order_no
-        LEFT JOIN sys_user c ON c.id = a.audit_by
+        pd_purchase_order_merge a
+        LEFT JOIN pd_purchase_order g on g.merge_order_no = a.merge_order_no
+        LEFT JOIN pd_purchase_detail b on b.order_no = g.order_no
+        LEFT JOIN sys_user c ON c.id = a.merge_by
         LEFT JOIN pd_product d on b.product_id = d.id
         LEFT JOIN sys_depart f ON a.depart_id = f.id
         <where>
             a.del_flag = #{DEL_FLAG_NORMAL}
-            AND a.audit_status = '2'
+            AND a.audit_status = '2'  AND g.audit_status='2'
             <if test="id != null and id != ''">
                 AND a.id = #{id}
             </if>
-            <if test="orderNo != null and orderNo != ''">
-                AND a.order_no LIKE concat('%',#{orderNo},'%')
+            <if test="mergeOrderNo != null and mergeOrderNo != ''">
+                AND a.merge_order_no LIKE concat('%',#{mergeOrderNo},'%')
             </if>
             <if test="productName != null and productName != ''">
                 AND (
@@ -133,22 +134,21 @@
                 AND d.number LIKE concat('%',#{number},'%')
             </if>
             <if test="queryDateStart != null and queryDateStart != ''">
-                AND a.order_date &gt;= #{queryDateStart}
+                AND a.purchase_date &gt;= #{queryDateStart}
             </if>
             <if test="queryDateEnd != null and queryDateEnd != ''">
-                AND a.order_date &lt;= #{queryDateEnd}
+                AND a.purchase_date &lt;= #{queryDateEnd}
             </if>
             <if test="departParentId != null and departParentId != ''">
                 AND a.depart_parent_id = #{departParentId}
             </if>
-
-
         </where>
-        order  by a.order_date desc
+        order  by a.purchase_date desc
     </select>
 
     <select id="choosePurchaseOrderDetailList" resultType="org.jeecg.modules.pd.vo.PdProductPage"  parameterType="org.jeecg.modules.pd.vo.PdPurchaseOrderPage">
         SELECT
+            a.order_no as orderNo,
             a.id as purchaseDetailId,
             a.order_num AS orderNum,
             a.arrival_num AS arrivalNum,
@@ -162,14 +162,14 @@
             e.NAME AS venderName
         FROM
             pd_purchase_detail a
+            LEFT JOIN pd_purchase_order f ON f.order_no = a.order_no
             LEFT JOIN pd_product b ON a.product_id = b.id
             LEFT JOIN pd_unit c ON b.unit_id = c.id
             LEFT JOIN pd_supplier d ON b.supplier_id = d.id
             LEFT JOIN pd_vender e ON b.vender_id = e.id
         WHERE
             a.del_flag = #{DEL_FLAG_NORMAL}
-            AND a.order_no = #{orderNo}
-
+            AND f.merge_order_no = #{mergeOrderNo}
     </select>
 
 

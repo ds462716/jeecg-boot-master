@@ -51,6 +51,11 @@
       left join pd_supplier d on a.supplier_id = d.id
     </sql>
 
+	<!-- 关联采购订单主表 -->
+	<sql id="pdPurchaseOrderJoins">
+      LEFT JOIN pd_purchase_order f  ON f.order_no=a.order_no
+    </sql>
+
 	<!-- 生产厂家 -->
 	<sql id="pdVenderColumns">
       e.name AS "venderName"
@@ -67,8 +72,8 @@
 		DELETE FROM  pd_purchase_detail 	WHERE order_no = #{orderNo}
    </delete>
 
-	<!--根据申购编号查询明细信息-->
-	<select id="selectByOrderNo" parameterType="java.lang.String" resultType="org.jeecg.modules.pd.entity.PdPurchaseDetail">
+	<!--查询明细信息-->
+	<select id="queryPdPurchaseDetail"   resultType="org.jeecg.modules.pd.entity.PdPurchaseDetail">
 		SELECT
         <include refid="pdPurchaseDetailColumns"/>,
 		<include refid="pdProductColumns"/>,
@@ -76,11 +81,18 @@
 		<include refid="pdSupplierColumns"/>,
 		<include refid="pdVenderColumns"/>
 		FROM  pd_purchase_detail a
+		<include refid="pdPurchaseOrderJoins"/>
 		<include refid="pdProductJoins"/>
 		<include refid="pdUnitJoins"/>
 		<include refid="pdSupplierJoins"/>
 		<include refid="pdVenderJoins"/>
-		WHERE a.order_no = #{orderNo}
+		WHERE   f.del_flag =#{DEL_FLAG_NORMAL}
+		<if test="mergeOrderNo != null and mergeOrderNo != ''">
+			AND f.merge_order_no LIKE concat('%',#{mergeOrderNo},'%')
+		</if>
+		<if test="orderNo != null and orderNo != ''">
+			AND a.order_no LIKE concat('%',#{orderNo},'%')
+		</if>
 		ORDER BY a.create_time DESC
     </select>
 
