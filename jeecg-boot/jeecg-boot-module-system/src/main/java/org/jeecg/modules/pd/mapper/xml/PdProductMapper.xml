@@ -407,7 +407,7 @@
                 AND a.number LIKE concat('%',#{number},'%')
             </if>
             <if test="supplierId != null and supplierId != ''">
-                AND (a.supplier_id = #{supplierId} or a.supplier_id is null or a.supplier_id = '')
+                AND a.supplier_id = #{supplierId}
             </if>
             <if test="venderId != null and venderId != ''">
                 AND a.vender_id = #{venderId}
