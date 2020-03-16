@@ -26,18 +26,14 @@ public class PdAllocationDetail extends BaseEntity {
 	@TableId(type = IdType.ID_WORKER_STR)
 	private String id;
 	/**创建人*/
-	@Excel(name = "创建人", width = 15)
 	private String createBy;
 	/**创建日期*/
-	@Excel(name = "创建日期", width = 20, format = "yyyy-MM-dd HH:mm:ss")
 	@JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd HH:mm:ss")
     @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
 	private Date createTime;
 	/**更新人*/
-	@Excel(name = "更新人", width = 15)
 	private String updateBy;
 	/**更新日期*/
-	@Excel(name = "更新日期", width = 20, format = "yyyy-MM-dd HH:mm:ss")
 	@JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd HH:mm:ss")
     @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
 	private Date updateTime;
@@ -45,9 +41,9 @@ public class PdAllocationDetail extends BaseEntity {
 	@Excel(name = "所属部门", width = 15)
 	private String sysOrgCode;
 	/**调拨单编号*/
+	@Excel(name = "调拨单编号", width = 15)
 	private String allocationNo;
 	/**产品ID*/
-	@Excel(name = "产品ID", width = 15)
 	private String productId;
 	/**产品批次号*/
 	@Excel(name = "产品批次号", width = 15)
@@ -89,7 +85,9 @@ public class PdAllocationDetail extends BaseEntity {
 	@Excel(name = "单位名称", width = 15)
 	private String unitName;//单位名称
 	@TableField(exist = false)
+	@Excel(name = "定数包名称", width = 15)
 	private String packageName;//定数包名称
 	@TableField(exist = false)
+	@Excel(name = "定数包编号", width = 15)
 	private String packageCode;//定数包编号
 }

@@ -1,6 +1,5 @@
 package org.jeecg.modules.pd.controller;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
@@ -8,9 +7,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.PdConstant;
-import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.system.vo.LoginUser;
-import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.message.util.PushMsgUtil;
 import org.jeecg.modules.pd.entity.PdAllocationDetail;
 import org.jeecg.modules.pd.entity.PdAllocationRecord;
@@ -38,9 +35,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.*;
-import java.util.stream.Collectors;
 
- /**
+/**
  * @Description: 调拨记录表
  * @Author: jeecg-boot
  * @Date:   2020-02-25
@@ -264,39 +260,16 @@ public class PdAllocationRecordController {
     */
     @RequestMapping(value = "/exportXls")
     public ModelAndView exportXls(HttpServletRequest request, PdAllocationRecord pdAllocationRecord) {
-      // Step.1 组装查询条件查询数据
-      QueryWrapper<PdAllocationRecord> queryWrapper = QueryGenerator.initQueryWrapper(pdAllocationRecord, request.getParameterMap());
-      LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
-
-      //Step.2 获取导出数据
-      List<PdAllocationRecord> queryList = pdAllocationRecordService.list(queryWrapper);
-      // 过滤选中数据
-      String selections = request.getParameter("selections");
-      List<PdAllocationRecord> pdAllocationRecordList = new ArrayList<PdAllocationRecord>();
-      if(oConvertUtils.isEmpty(selections)) {
-          pdAllocationRecordList = queryList;
-      }else {
-          List<String> selectionList = Arrays.asList(selections.split(","));
-          pdAllocationRecordList = queryList.stream().filter(item -> selectionList.contains(item.getId())).collect(Collectors.toList());
-      }
-
-      // Step.3 组装pageList
-      List<PdAllocationRecord> pageList = new ArrayList<PdAllocationRecord>();
-      for (PdAllocationRecord main : pdAllocationRecordList) {
-          PdAllocationRecord vo = new PdAllocationRecord();
-          BeanUtils.copyProperties(main, vo);
-          List<PdAllocationDetail> pdAllocationDetailList = pdAllocationDetailService.selectByAllocationNo(main.getAllocationNo());
-          vo.setPdAllocationDetailList(pdAllocationDetailList);
-          pageList.add(vo);
-      }
-
-      // Step.4 AutoPoi 导出Excel
-      ModelAndView mv = new ModelAndView(new JeecgEntityExcelView());
-      mv.addObject(NormalExcelConstants.FILE_NAME, "调拨记录表列表");
-      mv.addObject(NormalExcelConstants.CLASS, PdAllocationRecord.class);
-      mv.addObject(NormalExcelConstants.PARAMS, new ExportParams("调拨记录表数据", "导出人:"+sysUser.getRealname(), "调拨记录表"));
-      mv.addObject(NormalExcelConstants.DATA_LIST, pageList);
-      return mv;
+		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		//Step.1 获取导出数据
+		List<PdAllocationDetail> pdAllocationDetailList = pdAllocationDetailService.selectByAllocationNo(pdAllocationRecord.getAllocationNo());
+		// Step.2 AutoPoi 导出Excel
+		ModelAndView mv = new ModelAndView(new JeecgEntityExcelView());
+		mv.addObject(NormalExcelConstants.FILE_NAME, "调拨产品列表");
+		mv.addObject(NormalExcelConstants.CLASS, PdAllocationDetail.class);
+		mv.addObject(NormalExcelConstants.PARAMS, new ExportParams("调拨产品列表数据", "导出人:" + sysUser.getRealname(), "调拨产品数据"));
+		mv.addObject(NormalExcelConstants.DATA_LIST, pdAllocationDetailList);
+		return mv;
     }
 
     /**
