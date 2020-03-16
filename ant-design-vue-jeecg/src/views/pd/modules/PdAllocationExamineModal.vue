@@ -1,20 +1,14 @@
 <template>
-  <a-modal
+  <j-modal
     :visible="visible"
-    :width="popModal.width"
-    :style="popModal.style"
-    :maskClosable="disableSubmit"
-    :confirmLoading="confirmLoading"
+    :width="1200"
+    :title="title"
+    :lockScroll="lockScroll"
+    :fullscreen="fullscreen"
+    :switchFullscreen="switchFullscreen"
     @cancel="handleCancel"
-    :footer="null">
-    <template slot="title">
-      <div style="width: 100%;height:20px;padding-right:32px;">
-        <div style="float: left;">{{ title }}</div>
-        <div style="float: right;">
-          <a-button icon="fullscreen" style="width:56px;height:100%;border:0" @click="handleClickToggleFullScreen"/>
-        </div>
-      </div>
-    </template>
+  >
+
     <a-spin :spinning="confirmLoading">
       <div style="background:#ECECEC; padding:20px">
         <a-card style="margin-bottom: 10px;">
@@ -96,16 +90,16 @@
       </div>
       <pd-apply-stock-record-out-modal ref="stockForm"></pd-apply-stock-record-out-modal>
     </a-spin>
-    <div class="drawer-bootom-button" v-show="!disableSubmit">
-      <a-button @click="handleOk('yes')" type="primary" :loading="confirmLoading">审核通过</a-button>
-      <span style="padding-left: 8px;"></span>
-      <a-button @click="handleOk('no')" type="primary" :loading="confirmLoading">拒绝</a-button>
-      <span style="padding-left: 8px;"></span>
-      <a-popconfirm title="确定放弃审核？" @confirm="handleCancel" okText="确定" cancelText="取消">
-        <a-button style="margin-right: .8rem">取消</a-button>
+    <template slot="footer">
+      <a-button @click="closeBtn" style="margin-right: 15px;" v-show="disableSubmit">关  闭</a-button>
+      <a-popconfirm title="确定放弃审核？" @confirm="handleCancel" v-show="!disableSubmit" okText="确定" cancelText="取消">
+        <a-button style="margin-right: 15px;">取  消</a-button>
       </a-popconfirm>
-    </div>
-  </a-modal>
+      <a-button @click="handleOk('yes')" v-show="!disableSubmit" type="primary" :loading="confirmLoading" style="margin-right: 15px;">审核通过</a-button>
+      <a-button @click="handleOk('no')" v-show="!disableSubmit" type="primary" :loading="confirmLoading" style="margin-right: 15px;">拒 绝</a-button>
+    </template>
+
+  </j-modal>
 </template>
 
 <script>
@@ -142,6 +136,10 @@
           span: 20
         },
         model:{},
+        title: '这里是标题',
+        lockScroll: true,
+        fullscreen: true,
+        switchFullscreen: true,
         disableSubmit:false,
         // 新增时子表默认添加几行空数据
         addDefaultRowNum: 1,
@@ -185,13 +183,6 @@
           pdAllocationDetail: {
             list: '/pd/pdAllocationRecord/queryPdAllocationDetailList'
           },
-        },
-        popModal: {
-          title: '这里是标题',
-          visible: false,
-          width: '100%',
-          style: { top: '10px' },
-          fullScreen: true
         },
       }
     },
@@ -258,11 +249,7 @@
                   this.$refs.stockForm.add(args);
                   this.$refs.stockForm.title = "新增出库";
                   this.$refs.stockForm.disableSubmit = false;
-                 // this.$refs.stockForm.edit(pdAllocationDetailList);
-                 // this.$refs.stockForm.title = "新增出库";
-                 // this.$refs.stockForm.disableSubmit = false;
                 }
-                // that.$message.success("操作成功");
                 that.$emit('ok');
               } else {
                 that.$message.warning(res.message);
@@ -307,17 +294,10 @@
      popupCallback(row){
        this.form.setFieldsValue(pick(row,'allocationNo','allocationDate','totalNum','outDeptName','inDeptName','realName','remarks','rejectReason'))
      },
-      /** 切换全屏显示 */
-      handleClickToggleFullScreen() {
-        let mode = !this.popModal.fullScreen
-        if (mode) {
-          this.popModal.width = '100%'
-          this.popModal.style.top = '20px'
-        } else {
-          this.popModal.width = '1200px'
-          this.popModal.style.top = '50px'
-        }
-        this.popModal.fullScreen = mode
+      /** 关闭按钮 **/
+      closeBtn(){
+        this.visible = false;
+        this.$emit('close');
       },
     }
   }

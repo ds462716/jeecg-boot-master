@@ -1,21 +1,13 @@
 <template>
-  <a-modal
+  <j-modal
     :visible="visible"
-    :width="popModal.width"
-    :style="popModal.style"
-    :maskClosable="disableSubmit"
-    :confirmLoading="confirmLoading"
+    :width="1200"
+    :title="title"
+    :lockScroll="lockScroll"
+    :fullscreen="fullscreen"
+    :switchFullscreen="switchFullscreen"
     @cancel="handleCancel"
-    :footer="null">
-    <template slot="title">
-      <div style="width: 100%;height:20px;padding-right:32px;">
-        <div style="float: left;">{{ title }}</div>
-        <div style="float: right;">
-          <a-button icon="fullscreen" style="width:56px;height:100%;border:0" @click="handleClickToggleFullScreen"/>
-        </div>
-      </div>
-    </template>
-
+  >
     <a-spin :spinning="confirmLoading">
       <div style="background:#ECECEC; padding:20px">
       <!-- 主表单区域 -->
@@ -114,15 +106,26 @@
         </a-card>
       </div>
     </a-spin>
-    <div class="drawer-bootom-button" v-show="!disableSubmit">
+   <!-- <div class="drawer-bootom-button" v-show="!disableSubmit">
       <a-button @click="handleOk('submit')" type="primary" :loading="confirmLoading" style="margin-right: 15px;">盘点完成</a-button>
       <a-button @click="handleOk('save')" type="primary" :loading="confirmLoading" style="margin-right: 15px;">临时保存</a-button>
       <a-popconfirm title="确定放弃盘点吗？" @confirm="handleCancel" okText="确定" cancelText="取消">
         <a-button style="margin-right: 15px;">取消</a-button>
       </a-popconfirm>
-    </div>
+    </div>-->
+    <template slot="footer">
+      <a-button @click="closeBtn" style="margin-right: 15px;" v-show="disableSubmit">关  闭</a-button>
+      <a-popconfirm title="确定放弃盘点吗？" @confirm="handleCancel" v-show="!disableSubmit" okText="确定" cancelText="取消">
+        <a-button style="margin-right: 15px;">取  消</a-button>
+      </a-popconfirm>
+      <a-button @click="handleOk('submit')" v-show="!disableSubmit" type="primary" :loading="confirmLoading" style="margin-right: 15px;">盘点完成</a-button>
+      <a-button @click="handleOk('save')" v-show="!disableSubmit" type="primary" :loading="confirmLoading" style="margin-right: 15px;">临时保存</a-button>
+    </template>
+
+
+
     <pd-product-stock-check-add-modal  ref="PdProductStockCheckAddModal" @ok="modalFormOk"></pd-product-stock-check-add-modal>
-  </a-modal>
+  </j-modal>
 </template>
 
 <script>
@@ -146,6 +149,10 @@
     data() {
       return {
         model:{},
+        title: '这里是标题',
+        lockScroll: true,
+        fullscreen: true,
+        switchFullscreen: true,
         disableSubmit:false,
         labelCol: {span: 6},
         wrapperCol: {span: 16},
@@ -204,13 +211,6 @@
             list: '/pd/pdProductStockCheck/queryPdProductStockCheckChild'
           },
         },
-      popModal: {
-        title: '这里是标题',
-          visible: false,
-          width: '100%',
-          style: { top: '10px' },
-        fullScreen: true
-      },
       }
     },
     methods: {
@@ -441,17 +441,11 @@
      popupCallback(row){
        this.form.setFieldsValue(pick(row,'checkNo','deptName','checkDate','checkName','shouldCount','checkCount','profitLossCount','remarks'))
      },
-      /** 切换全屏显示 */
-      handleClickToggleFullScreen() {
-        let mode = !this.popModal.fullScreen
-        if (mode) {
-          this.popModal.width = '100%'
-          this.popModal.style.top = '20px'
-        } else {
-          this.popModal.width = '1200px'
-          this.popModal.style.top = '50px'
-        }
-        this.popModal.fullScreen = mode
+      /** 关闭按钮 **/
+      closeBtn(){
+        this.visible = false;
+        this.$emit('close');
+        this.disableSubmit = false;
       },
     }
   }

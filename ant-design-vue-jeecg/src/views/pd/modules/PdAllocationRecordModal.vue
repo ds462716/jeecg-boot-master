@@ -1,20 +1,14 @@
 <template>
-  <a-modal
+  <j-modal
     :visible="visible"
-    :width="popModal.width"
-    :style="popModal.style"
-    :maskClosable="disableSubmit"
-    :confirmLoading="confirmLoading"
+    :width="1200"
+    :title="title"
+    :lockScroll="lockScroll"
+    :fullscreen="fullscreen"
+    :switchFullscreen="switchFullscreen"
     @cancel="handleCancel"
-    :footer="null">
-    <template slot="title">
-      <div style="width: 100%;height:20px;padding-right:32px;">
-        <div style="float: left;">{{ title }}</div>
-        <div style="float: right;">
-          <a-button icon="fullscreen" style="width:56px;height:100%;border:0" @click="handleClickToggleFullScreen"/>
-        </div>
-      </div>
-    </template>
+  >
+
     <a-spin :spinning="confirmLoading">
       <div style="background:#ECECEC; padding:20px">
       <a-card style="margin-bottom: 10px;">
@@ -122,16 +116,17 @@
         </a-card>
       </div>
     </a-spin>
-    <div class="drawer-bootom-button" v-show="!disableSubmit">
-      <a-button @click="handleOk('submit')" type="primary" :loading="confirmLoading" style="margin-right: 15px;">提交</a-button>
-      <a-button @click="handleOk('save')" type="primary" :loading="confirmLoading" style="margin-right: 15px;">保存草稿</a-button>
-      <a-popconfirm title="确定放弃编辑？" @confirm="handleCancel" okText="确定" cancelText="取消">
-        <a-button style="margin-right: 15px;">取消</a-button>
+    <template slot="footer">
+      <a-button @click="closeBtn" style="margin-right: 15px;" v-show="disableSubmit">关  闭</a-button>
+      <a-popconfirm title="确定放弃编辑？" @confirm="handleCancel" v-show="!disableSubmit" okText="确定" cancelText="取消">
+        <a-button style="margin-right: 15px;">取  消</a-button>
       </a-popconfirm>
-    </div>
+      <a-button @click="handleOk('save')" v-show="!disableSubmit" type="primary" :loading="confirmLoading" style="margin-right: 15px;">保存草稿</a-button>
+      <a-button @click="handleOk('submit')" v-show="!disableSubmit" type="primary" :loading="confirmLoading" style="margin-right: 15px;">提  交</a-button>
+    </template>
     <pd-allocation-detail-add-modal ref="PdAllocationDetailAddModal"   @ok="modalFormOk"></pd-allocation-detail-add-modal>
     <pd-allocation-package-add-modal ref="PdAllocationPackageAddModal"  @ok="modalFormInfoOk"></pd-allocation-package-add-modal>
-  </a-modal>
+  </j-modal>
 </template>
 
 <script>
@@ -167,6 +162,10 @@
           span: 20
         },
         model:{},
+        title: '这里是标题',
+        lockScroll: true,
+        fullscreen: true,
+        switchFullscreen: true,
         disableSubmit:false,
         //出库科室下拉列表 start
         outDeptValue: undefined,
@@ -223,13 +222,6 @@
           pdAllocationDetail: {
             list: '/pd/pdAllocationRecord/queryPdAllocationDetailList'
           },
-        },
-        popModal: {
-          title: '这里是标题',
-          visible: false,
-          width: '100%',
-          style: { top: '10px' },
-          fullScreen: true
         },
       }
     },
@@ -509,19 +501,6 @@
      popupCallback(row){
        this.form.setFieldsValue(pick(row,'allocationNo','allocationDate','totalNum','inDeptName','outDeptName','realName','remarks','rejectReason'))
      },
-      /** 切换全屏显示 */
-      handleClickToggleFullScreen() {
-        let mode = !this.popModal.fullScreen
-        if (mode) {
-          this.popModal.width = '100%'
-          this.popModal.style.top = '20px'
-        } else {
-          this.popModal.width = '1200px'
-          this.popModal.style.top = '50px'
-        }
-        this.popModal.fullScreen = mode
-      },
-
 
       //-----------------出库科室查询start
       sysDeptHandleSearch(value) {
@@ -534,6 +513,12 @@
         })
         this.outDeptValue = value;
         fetch(value, data => (this.outDeptData = data),this.url.querySysDepartList);
+      },
+
+      /** 关闭按钮 **/
+      closeBtn(){
+        this.visible = false;
+        this.$emit('close');
       },
     }
   }
