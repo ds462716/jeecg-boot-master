@@ -18,7 +18,6 @@ import org.jeecg.modules.pd.service.IPdProductStockTotalService;
 import org.jeecg.modules.system.entity.SysAnnouncementSend;
 import org.jeecg.modules.system.entity.SysDepart;
 import org.jeecg.modules.system.service.ISysAnnouncementSendService;
-import org.jeecg.modules.system.service.ISysUserService;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -37,8 +36,6 @@ public class QuartPdExpireJob implements Job {
     private IPdProductStockService pdProductStockService;
     @Autowired
     private PushMsgUtil pushMsgUtil;
-    @Autowired
-    private ISysUserService sysUserService;
     @Autowired
     private ISysAnnouncementSendService announcementSendService;
     @Autowired
@@ -190,7 +187,7 @@ public class QuartPdExpireJob implements Job {
         //获取具有器械科管理员的角色用户Id;
         List<String> ids =new ArrayList<>();
         //根据科室id获取该科室管理员userId
-        List<String> userIdList =null; //sysUserService.getUserIdByRoleCode("qxk_admin");
+        List<String> userIdList =pdDepartService.findMenuUser(deptId,PdConstant.AUDIT_MENU_4);
         if (userIdList != null) {
             for(String userId:userIdList) {
                 List<SysAnnouncementSend> list = this.announcementSendService.selectMyAnnouncementSendList(templateCode, userId);

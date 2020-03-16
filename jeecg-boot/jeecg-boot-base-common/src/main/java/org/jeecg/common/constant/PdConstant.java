@@ -151,4 +151,7 @@ public interface PdConstant {
 	public final static String AUDIT_MENU_1="入库审核";
 	public final static String AUDIT_MENU_2="出库审核";
 	public final static String AUDIT_MENU_3="采购审核";
+	public final static String AUDIT_MENU_4="库存管理";
+	public final static String AUDIT_MENU_5="供应商管理";
+	public final static String AUDIT_MENU_6="生产厂家管理";
 }

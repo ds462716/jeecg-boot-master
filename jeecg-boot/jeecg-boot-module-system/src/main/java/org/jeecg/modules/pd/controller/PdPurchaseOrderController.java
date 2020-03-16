@@ -325,7 +325,7 @@ public class PdPurchaseOrderController {
 	 public boolean sendMsg(PdPurchaseOrderPage purchaseOrderPage) {
 		 Map<String, Object> map = new HashMap<>();
 		 LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
-		 List<String> userIdList =pdDepartService.findMenuUser(sysUser.getId(),PdConstant.AUDIT_MENU_3);
+		 List<String> userIdList =pdDepartService.findMenuUser(sysUser.getCurrentDepartId(),PdConstant.AUDIT_MENU_3);
 		 if (CollectionUtils.isNotEmpty(userIdList)) {
 			 String userIds = String.join(",", userIdList);
 			 Map<String, String> strMap = new HashMap<>();
