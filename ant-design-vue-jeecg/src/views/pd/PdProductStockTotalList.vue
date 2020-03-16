@@ -178,7 +178,7 @@
             }
           },
           {
-            title:'是否永存',
+            title:'是否久存',
             align:"center",
             dataIndex: 'isLong',
             customRender:(text)=>{
