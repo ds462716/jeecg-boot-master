@@ -59,14 +59,10 @@
     </select>
 
 
-    <select id="selectParentList" resultType="org.jeecg.modules.system.model.SysDepartTreeModel" parameterType="org.jeecg.modules.pd.entity.PdGoodsAllocation">
+    <select id="selectHuoquList" resultType="org.jeecg.modules.pd.vo.PdGoodsAllocationPage" parameterType="org.jeecg.modules.pd.entity.PdGoodsAllocation">
         SELECT
-        a.id as id,
-        a.id as 'value',
-        a.id as 'key',
-        a.parent_id as parentId,
-        b.depart_name as departName,
-        a.name as title
+        a.*,
+        b.depart_name as departName
         FROM pd_goods_allocation a
         left join sys_depart b on a.depart_id = b.id
         <where>
@@ -88,14 +84,10 @@
         ORDER BY a.name
     </select>
 
-    <select id="selectChildList" resultType="org.jeecg.modules.system.model.SysDepartTreeModel" parameterType="org.jeecg.modules.pd.entity.PdGoodsAllocation">
+    <select id="selectHuoweiList" resultType="org.jeecg.modules.pd.vo.PdGoodsAllocationPage" parameterType="org.jeecg.modules.pd.entity.PdGoodsAllocation">
         SELECT
-        a.id as id,
-        a.id as 'value',
-        a.id as 'key',
-        a.parent_id as parentId,
-        b.depart_name as departName,
-        a.name as title
+        a.*,
+        b.depart_name as departName
         FROM pd_goods_allocation a
         left join sys_depart b on a.depart_id = b.id
         <where>

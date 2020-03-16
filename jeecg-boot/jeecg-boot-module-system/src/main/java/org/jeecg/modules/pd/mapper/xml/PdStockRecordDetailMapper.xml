@@ -111,7 +111,8 @@
 		DELETE
 		FROM  pd_stock_record_detail
 		WHERE
-			 record_id = #{mainId} 	</delete>
+			 record_id = #{mainId}
+	</delete>
 
 	<select id="selectByMainId" parameterType="org.jeecg.modules.pd.entity.PdStockRecordDetail" resultType="org.jeecg.modules.pd.entity.PdStockRecordDetail">
 		SELECT
@@ -130,9 +131,7 @@
 		WHERE
 		        a.del_flag =#{DEL_FLAG_NORMAL}
 			and record_id = #{recordId}
-
 	</select>
-
 
 	<!-- 入库明细列表查询 -->
 	<select id="selectList" resultType="org.jeecg.modules.pd.entity.PdStockRecordDetail">
@@ -183,38 +182,43 @@
 		</where>
 	</select>
 
-
-
-
-
 	<!-- 入库明细列表查询 -->
-	<select id="selectList" resultType="org.jeecg.modules.pd.entity.PdStockRecordDetail">
-		SELECT
-		  *
-		FROM pd_stock_record_detail a
-		<include refid="PdStockRecordDetailJoins"/>
+	<!--<select id="selectList" resultType="org.jeecg.modules.pd.entity.PdStockRecordDetail">-->
+		<!--SELECT-->
+		  <!--*-->
+		<!--FROM pd_stock_record_detail a-->
+		<!--<include refid="PdStockRecordDetailJoins"/>-->
+		<!--<where>-->
+			<!--a.del_flag =#{DEL_FLAG_NORMAL}-->
+			<!--<if test="id != null and id != ''">-->
+				<!--AND a.id = #{id}-->
+			<!--</if>-->
+			<!--<if test="auditStatus != null and auditStatus != ''">-->
+				<!--AND g.audit_status = #{auditStatus}-->
+			<!--</if>-->
+			<!--<if test="productId != null and productId != ''">-->
+				<!--AND a.product_id = #{productId}-->
+			<!--</if>-->
+			<!--<if test="recordType != null and recordType != ''">-->
+				<!--AND g.record_type = #{recordType}-->
+			<!--</if>-->
+			<!--<if test="departParentId != null and departParentId != ''">-->
+				<!--AND a.depart_parent_id = #{departParentId}-->
+			<!--</if>-->
+			<!--ORDER BY create_time desc-->
+		<!--</where>-->
+	<!--</select>-->
 
-		<where>
-			a.del_flag =#{DEL_FLAG_NORMAL}
-			<if test="id != null and id != ''">
-				AND a.id = #{id}
-			</if>
-			<if test="auditStatus != null and auditStatus != ''">
-				AND g.audit_status = #{auditStatus}
-			</if>
+	<update id="updateInHuoweiCode" parameterType="org.jeecg.modules.pd.entity.PdStockRecordDetail">
+		UPDATE pd_stock_record_detail SET
+			in_huowei_code = #{inHuoweiCode}
+		WHERE in_huowei_code= #{oldInHuoweiCode}
+	</update>
 
-			<if test="productId != null and productId != ''">
-				AND a.product_id = #{productId}
-			</if>
-			<if test="recordType != null and recordType != ''">
-				AND g.record_type = #{recordType}
-			</if>
+	<update id="updateOutHuoweiCode" parameterType="org.jeecg.modules.pd.entity.PdStockRecordDetail">
+		UPDATE pd_stock_record_detail SET
+			out_huowei_code = #{outHuoweiCode}
+		WHERE out_huowei_code= #{oldOutHuoweiCode}
+	</update>
 
-
-			<if test="departParentId != null and departParentId != ''">
-				AND a.depart_parent_id = #{departParentId}
-			</if>
-			ORDER BY create_time desc
-		</where>
-	</select>
 </mapper>

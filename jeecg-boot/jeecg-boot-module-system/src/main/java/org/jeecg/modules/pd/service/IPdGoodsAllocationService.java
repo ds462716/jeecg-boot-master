@@ -19,7 +19,7 @@ public interface IPdGoodsAllocationService extends IService<PdGoodsAllocation> {
      * 查询所有货区货位,并分节点进行显示
      * @return
      */
-    List<SysDepartTreeModel> queryTreeList(List<SysDepartTreeModel> departTreeList);
+    List<PdGoodsAllocationPage> queryTreeList(String departId);
 
     List<PdGoodsAllocationPage> selectAllList(PdGoodsAllocation pdGoodsAllocation);
 
@@ -28,4 +28,6 @@ public interface IPdGoodsAllocationService extends IService<PdGoodsAllocation> {
     boolean savePdGoodsAllocation(PdGoodsAllocation pdGoodsAllocation);
 
     List<PdGoodsAllocationPage> getOptionsForSelect(PdGoodsAllocation pdGoodsAllocation);
+
+    String deleteBatch(List<String> ids);
 }

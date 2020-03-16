@@ -1,5 +1,6 @@
 package org.jeecg.modules.pd.vo;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
 import org.jeecg.modules.pd.entity.PdGoodsAllocation;
 
@@ -34,6 +35,7 @@ public class PdGoodsAllocationPage extends PdGoodsAllocation {
 	 */
 	private String parent;
 
+	private Boolean isLeaf;
 
-	private List<PdGoodsAllocationPage> children = new ArrayList<PdGoodsAllocationPage>();
+	private List<PdGoodsAllocationPage> children = null;
 }

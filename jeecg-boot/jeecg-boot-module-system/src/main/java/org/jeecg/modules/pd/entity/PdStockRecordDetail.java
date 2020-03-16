@@ -165,5 +165,9 @@ public class PdStockRecordDetail extends BaseEntity {
 	private String inHuoweiName;// 入库货位
 	@TableField(exist = false)
 	private String outHuoweiName;//出库货位
+	@TableField(exist = false)
+	private String oldInHuoweiCode;
+	@TableField(exist = false)
+	private String oldOutHuoweiCode;
 
 }
