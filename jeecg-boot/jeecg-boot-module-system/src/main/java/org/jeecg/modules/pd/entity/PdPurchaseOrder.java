@@ -8,6 +8,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @Description: 申购订单主表
@@ -88,7 +89,8 @@ public class PdPurchaseOrder extends BaseEntity {
     /** 所属父部门*/
     @TableField(strategy = FieldStrategy.NOT_EMPTY)
     private String departParentId;
-
+    @TableField(exist = false)
+    private List<String> orderNos;		// 申购单号组
 
     public static String dealStrData(String data){
         String newStr = data.replaceAll(",", "','");

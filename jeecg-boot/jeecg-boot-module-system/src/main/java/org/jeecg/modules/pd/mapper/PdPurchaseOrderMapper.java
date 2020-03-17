@@ -1,6 +1,7 @@
 package org.jeecg.modules.pd.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Param;
 import org.jeecg.modules.pd.entity.PdPurchaseOrder;
 import org.jeecg.modules.pd.entity.PdPurchaseOrderMerge;
 import org.jeecg.modules.pd.vo.PdProductPage;
@@ -32,6 +33,10 @@ public interface PdPurchaseOrderMapper extends BaseMapper<PdPurchaseOrder> {
      * 批量更新合并订单号
      */
     public int batchUpdateMergeOrderNo(HashMap<String, Object> map);
+
+
+    //根据申购单号查询数量和金额
+    public PdPurchaseOrder getCountAndMoney(@Param("orderNos") List<String> orderNos);
 
 
  }

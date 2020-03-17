@@ -154,4 +154,18 @@ public interface PdConstant {
 	public final static String AUDIT_MENU_4="库存管理";
 	public final static String AUDIT_MENU_5="供应商管理";
 	public final static String AUDIT_MENU_6="生产厂家管理";
+
+
+
+	//同步状态码
+	public final static String SYNC_STATE_ERROR = "500";//同步失败
+	public final static String SYNC_STATE_SUCCESS = "200";//同步成功
+
+
+	//供应商受理状态
+	public final static String PURCHASE_ORDER_SUPPLIER_STATUS_0 = "4";//待上传
+	public final static String PURCHASE_ORDER_SUPPLIER_STATUS_1 = "0";//待接收
+	public final static String PURCHASE_ORDER_SUPPLIER_STATUS_2 = "1";//已接收
+	public final static String PURCHASE_ORDER_SUPPLIER_STATUS_3 = "2";//已拒绝
+	public final static String PURCHASE_ORDER_SUPPLIER_STATUS_4 = "3";//已收货
 }
