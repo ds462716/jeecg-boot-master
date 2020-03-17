@@ -124,12 +124,12 @@
           {
             title:'用量总数',
             align:"center",
-            dataIndex: 'amountCount'
+            dataIndex: 'totalSum'
           },
           {
             title:'用量总金额',
             align:"center",
-            dataIndex: 'amountMoney'
+            dataIndex: 'totalPrice'
           },
           {
             title:'病人信息',
@@ -144,7 +144,7 @@
           {
             title:'操作人',
             align:"center",
-            dataIndex: 'dosageBy'
+            dataIndex: 'dosageByName'
           },
           {
             title:'操作时间',

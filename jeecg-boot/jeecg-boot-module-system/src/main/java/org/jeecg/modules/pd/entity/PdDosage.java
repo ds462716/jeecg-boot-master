@@ -163,7 +163,7 @@ public class PdDosage extends BaseEntity {
     /**
      * 是否收费标识
      */
-	private String chargeFlag;
+	private String hyCharged;
 
     /**
      * 用量明细

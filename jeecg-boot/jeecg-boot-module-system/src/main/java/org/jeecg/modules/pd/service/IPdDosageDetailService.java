@@ -3,6 +3,8 @@ package org.jeecg.modules.pd.service;
 import org.jeecg.modules.pd.entity.PdDosageDetail;
 import com.baomidou.mybatisplus.extension.service.IService;
 
+import java.util.List;
+
 /**
  * @Description: 用量详情表
  * @Author: jiangxz
@@ -11,4 +13,5 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface IPdDosageDetailService extends IService<PdDosageDetail> {
 
+    List<PdDosageDetail> selectList(PdDosageDetail pdDosageDetail);
 }

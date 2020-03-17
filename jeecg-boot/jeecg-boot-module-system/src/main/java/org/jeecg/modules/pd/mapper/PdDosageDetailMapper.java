@@ -14,4 +14,5 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  */
 public interface PdDosageDetailMapper extends BaseMapper<PdDosageDetail> {
 
+    List<PdDosageDetail> selectList(PdDosageDetail pdDosageDetail);
 }

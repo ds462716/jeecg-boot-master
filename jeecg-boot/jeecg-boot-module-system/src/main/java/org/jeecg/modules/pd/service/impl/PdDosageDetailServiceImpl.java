@@ -7,6 +7,8 @@ import org.springframework.stereotype.Service;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
+import java.util.List;
+
 /**
  * @Description: 用量详情表
  * @Author: jiangxz
@@ -16,4 +18,8 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 @Service
 public class PdDosageDetailServiceImpl extends ServiceImpl<PdDosageDetailMapper, PdDosageDetail> implements IPdDosageDetailService {
 
+    @Override
+    public List<PdDosageDetail> selectList(PdDosageDetail pdDosageDetail) {
+        return baseMapper.selectList(pdDosageDetail);
+    }
 }

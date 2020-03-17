@@ -172,4 +172,6 @@ public interface PdConstant {
 	//器械使用收费状态
 	public final static String  CHARGE_FLAG_0 ="0";//收费
 	public final static String  CHARGE_FLAG_1 ="1";//不收费
+	public final static String  IS_CHARGE_FLAG_0 ="0";//有接口
+	public final static String  IS_CHARGE_FLAG_1 ="1";//没有接口
 }

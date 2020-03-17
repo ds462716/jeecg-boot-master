@@ -2,4 +2,35 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.jeecg.modules.pd.mapper.PdDosageDetailMapper">
 
+    <sql id="PdProductColumns">
+        b.number as productNumber,
+        b. NAME as productName,
+        b.spec,
+        b.version,
+        b.unit_id,
+        b.purchase_price,
+        b.selling_price,
+        b.is_charge,
+        b.charge_code,
+        IF(b.is_charge=0,'是','否') isChargeText
+    </sql>
+
+
+    <select id="selectList" resultType="org.jeecg.modules.pd.entity.PdDosageDetail" parameterType="org.jeecg.modules.pd.entity.PdDosageDetail">
+        SELECT
+        a.*,
+        <include refid="PdProductColumns"/>,
+        u.name as unitName
+        FROM
+        `pd_dosage_detail` a
+        LEFT JOIN pd_product b ON a.product_id = b.id
+        LEFT JOIN pd_unit u ON b.unit_id = u.id
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+            <if test="dosageId != null and dosageId != ''">
+                AND a.dosage_id = #{dosageId}
+            </if>
+        </where>
+        order by a.create_time desc
+    </select>
 </mapper>

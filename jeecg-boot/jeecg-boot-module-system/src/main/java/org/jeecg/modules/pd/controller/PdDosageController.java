@@ -9,8 +9,12 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
+import org.jeecg.common.constant.PdConstant;
 import org.jeecg.common.system.query.QueryGenerator;
+import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.pd.entity.PdDosage;
 import org.jeecg.modules.pd.service.IPdDosageService;
@@ -67,9 +71,11 @@ public class PdDosageController extends JeecgController<PdDosage, IPdDosageServi
 								   @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
 								   @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
 								   HttpServletRequest req) {
-		QueryWrapper<PdDosage> queryWrapper = QueryGenerator.initQueryWrapper(pdDosage, req.getParameterMap());
 		Page<PdDosage> page = new Page<PdDosage>(pageNo, pageSize);
-		IPage<PdDosage> pageList = pdDosageService.page(page, queryWrapper);
+		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		pdDosage.setDepartParentId(sysUser.getDepartParentId());
+		pdDosage.setDepartId(sysUser.getCurrentDepartId());
+		IPage<PdDosage> pageList = pdDosageService.queryList(page, pdDosage);
 		return Result.ok(pageList);
 	}
 	
@@ -121,7 +127,8 @@ public class PdDosageController extends JeecgController<PdDosage, IPdDosageServi
 	  */
 	 @PostMapping(value = "/submit")
 	 public Result<?> submit(@RequestBody PdDosage pdDosage) {
-		 pdDosageService.saveMain(pdDosage);
+	 	//不收费
+		 pdDosageService.saveMain(pdDosage, PdConstant.IS_CHARGE_FLAG_1);
 		 return Result.ok("添加成功！");
 	 }
 

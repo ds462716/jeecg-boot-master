@@ -1,6 +1,8 @@
 package org.jeecg.modules.pd.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.commons.lang3.StringUtils;
 import org.jeecg.common.constant.PdConstant;
 import org.jeecg.common.system.vo.LoginUser;
@@ -42,6 +44,8 @@ public class PdDosageServiceImpl extends ServiceImpl<PdDosageMapper, PdDosage> i
     private IPdStockLogService pdStockLogService;
     @Autowired
     private IPdProductStockTotalService pdProductStockTotalService;
+    @Autowired
+    private PdDosageMapper pdDosageMapper;
 
 
 
@@ -51,13 +55,21 @@ public class PdDosageServiceImpl extends ServiceImpl<PdDosageMapper, PdDosage> i
         LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
         SysDepart sysDepart = pdDepartService.getById(sysUser.getCurrentDepartId());
         PdDosage pdDosage = new PdDosage();
-        //部门列表
-        SysDepart query = new SysDepart();
-        query.setDepartParentId(sysUser.getDepartParentId());
-        query.setDepartId(sysUser.getCurrentDepartId());
-
         if (oConvertUtils.isNotEmpty(id)) { // 查看页面
             pdDosage = this.getById(id);
+            // 新增页面
+            pdDosage.setDepartName(sysDepart.getDepartName());
+            pdDosage.setDosageByName(sysUser.getRealname());
+            PdGoodsAllocation pdGoodsAllocation = new PdGoodsAllocation();
+            pdGoodsAllocation.setDepartId(sysUser.getCurrentDepartId());
+            pdGoodsAllocation.setAreaType(PdConstant.GOODS_ALLCATION_AREA_TYPE_2);
+            List<PdGoodsAllocationPage> goodsAllocationList = pdGoodsAllocationService.getOptionsForSelect(pdGoodsAllocation);
+            //库区库位下拉框
+            pdDosage.setGoodsAllocationList(goodsAllocationList);
+            PdDosageDetail pdDosageDetail = new PdDosageDetail();
+            pdDosageDetail.setDosageId(id);
+            List<PdDosageDetail> pdDosageDetails = pdDosageDetailService.selectList(pdDosageDetail);
+            pdDosage.setPdDosageDetails(pdDosageDetails);
 
         } else {  // 新增页面
             pdDosage.setDepartId(sysDepart.getId());
@@ -86,8 +98,9 @@ public class PdDosageServiceImpl extends ServiceImpl<PdDosageMapper, PdDosage> i
      */
     @Transactional
     @Override
-    public void saveMain(PdDosage pdDosage) {
+    public void saveMain(PdDosage pdDosage,String displayFlag) {
         List<PdDosageDetail> detailList = pdDosage.getPdDosageDetails();
+        pdDosage.setId(UUIDUtil.getUuid());
         //校验数据的合法性
         Iterator<PdDosageDetail> it = detailList.iterator();
         while(it.hasNext()){
@@ -131,7 +144,12 @@ public class PdDosageServiceImpl extends ServiceImpl<PdDosageMapper, PdDosage> i
                 dosageTotal = dosageCount.add(dosageTotal);
                 moneyTotal = pdMoney.add(moneyTotal);
                 pdd.setDosageId(pdDosage.getId());
-                pdd.setIsCharge(pdDosage.getChargeFlag());
+                //如果没有接口
+                if(displayFlag.equals(PdConstant.IS_CHARGE_FLAG_1)){
+                    pdd.setHyCharged(displayFlag);
+                }else{
+                    pdd.setHyCharged(pdDosage.getHyCharged());
+                }
                 pdd.setAmountMoney(pdMoney);
                 pdd.setLeftRefundNum(pdd.getDosageCount());
                 tempArray.add(pdd);
@@ -153,22 +171,38 @@ public class PdDosageServiceImpl extends ServiceImpl<PdDosageMapper, PdDosage> i
 
             } else {
                 //收费调用接口
-                if (PdConstant.CHARGE_FLAG_0.equals(pdDosage.getChargeFlag())) {
+                if (PdConstant.CHARGE_FLAG_0.equals(pdDosage.getHyCharged()) && PdConstant.IS_CHARGE_FLAG_0.equals(displayFlag)){
 
                 }
                 if(!tempArray.isEmpty())
                     pdDosageDetailService.saveBatch(tempArray);
                 if(!logList.isEmpty())
                     pdStockLogService.saveBatch(logList);
+                LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
                 //保存用量
+                pdDosage.setDisplayFlag(displayFlag);//是否有收费接口标识，0有1没有
                 pdDosage.setTotalSum(dosageTotal.doubleValue());
+                pdDosage.setUpdateTime(DateUtils.getDate());
                 pdDosage.setTotalPrice(moneyTotal);
+                pdDosage.setDosageBy(sysUser.getId());
                 pdDosage.setDosageDate(DateUtils.getDate());
                 this.save(pdDosage);
                 //扣减当前库房的库存
-                //pdProductStockTotalService.updateUseStock(afterDealList);
+
+                pdProductStockTotalService.updateUseStock(sysUser.getCurrentDepartId(),afterDealList);
             }
         }
+    }
+
+    /**
+     * 分页查询使用列表
+     * @param page
+     * @param pdDosage
+     * @return
+     */
+    @Override
+    public IPage<PdDosage> queryList(Page<PdDosage> page, PdDosage pdDosage) {
+        return page.setRecords(pdDosageMapper.selectList(pdDosage));
     }
 
     //合并相同的用量

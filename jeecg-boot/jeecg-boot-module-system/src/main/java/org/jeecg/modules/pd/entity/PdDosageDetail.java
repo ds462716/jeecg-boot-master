@@ -126,10 +126,14 @@ public class PdDosageDetail extends BaseEntity {
     //冗余
     @TableField(exist = false)
     private String outHuoweiName;//出库货位
-    private String oldOutHuoweiCode;
+    private String outHuoweiCode;
 
     @TableField(exist = false)
     private String productName;//产品名称
+    @TableField(exist = false)
+    private String productNumber;//产品编号
+    @TableField(exist = false)
+    private String unitName;//单位
     @TableField(exist = false)
     private String number;//产品编号
     @TableField(exist = false)
@@ -138,6 +142,8 @@ public class PdDosageDetail extends BaseEntity {
     private String version;//产品型号
     @TableField(exist = false)
     private String isCharge;
+    @TableField(exist = false)
+    private String isChargeText;
     @TableField(exist = false)
     @Excel(name = "出库单价", width = 15)
     private java.math.BigDecimal sellingPrice;//出价

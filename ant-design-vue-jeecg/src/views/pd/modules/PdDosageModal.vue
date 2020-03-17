@@ -106,21 +106,32 @@
             <a-tab-pane tab="收费信息" :key="refKeys[0]"  :forceRender="true">
               <a-form :form="form">
                 <a-row>
-                  <a-col :md="6" :sm="8">
-                    <a-form-item label="计费" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                      <a-switch v-model="chargeFlag"/>
+                  <a-col :md="16" :sm="8">
+                    <a-form-item label="执行收费" :labelCol="{span: 3}" :wrapperCol="{span: 20}">
+                      <a-switch v-model="hyCharged"/>
+                      <span style="color: red">  不选中的情况下，只在当前系统保存病人信息，医院系统中并不记账，此功能只作产品追溯用。</span>
                     </a-form-item>
                   </a-col>
                 </a-row>
                 <a-row>
-                  <a-col :md="6" :sm="8">
+                  <a-col :md="6" :sm="8" v-if="hyCharged">
                     <a-form-item label="住院号" :labelCol="labelCol" :wrapperCol="wrapperCol">
                       <a-input v-decorator="[ 'inHospitalNo', validatorRules.inHospitalNo]" placeholder="请输入住院号"></a-input>
                     </a-form-item>
                   </a-col>
-                  <a-col :md="6" :sm="8">
+                  <a-col :md="6" :sm="8" v-else="!hyCharged">
+                    <a-form-item label="住院号" :labelCol="labelCol" :wrapperCol="wrapperCol">
+                      <a-input v-decorator="[ 'inHospitalNo']" placeholder="请输入住院号"></a-input>
+                    </a-form-item>
+                  </a-col>
+                  <a-col :md="6" :sm="8" v-if="hyCharged">
                     <a-form-item label="病人信息" :labelCol="labelCol" :wrapperCol="wrapperCol">
                       <a-input v-decorator="[ 'patientInfo', validatorRules.patientInfo]" placeholder="请输入病人信息"></a-input>
+                    </a-form-item>
+                  </a-col>
+                  <a-col :md="6" :sm="8" v-else="!hyCharged">
+                    <a-form-item label="病人信息" :labelCol="labelCol" :wrapperCol="wrapperCol">
+                      <a-input v-decorator="[ 'patientInfo']" placeholder="请输入病人信息"></a-input>
                     </a-form-item>
                   </a-col>
                   <a-col :md="6" :sm="8">
@@ -204,7 +215,6 @@
         <a-popconfirm title="确定放弃编辑？" @confirm="handleCancel" v-show="!disableSubmit" okText="确定" cancelText="取消">
           <a-button style="margin-right: 15px;">取  消</a-button>
         </a-popconfirm>
-        <a-button @click="saveBtn" v-show="!disableSubmit" type="primary" :loading="confirmLoading" style="margin-right: 15px;">保存草稿</a-button>
         <a-button @click="submitBtn" v-show="!disableSubmit" type="primary" :loading="confirmLoading" style="margin-right: 15px;">提  交</a-button>
     </template>
 
@@ -256,7 +266,7 @@
         lockScroll: true,
         fullscreen: true,
         switchFullscreen: true,
-        chargeFlag: true,
+        hyCharged: true,
         totalSum:'0',
         totalPrice:'0.0000',
         activeKey: 'pdDosageDetail',
@@ -272,7 +282,7 @@
             { title: '库存明细ID', key: 'productStockId', type: FormTypes.hidden },
             { title: '产品ID', key: 'productId', type: FormTypes.hidden },
             { title: '产品名称', key: 'productName', type: FormTypes.normal,width:"220px" },
-            { title: '产品编号', key: 'productNumber', width:"160px" },
+            { title: '产品编号', key: 'productNumber', width:"200px" },
             { title: '产品条码', key: 'productBarCode', type: FormTypes.input, disabled:true, width:"200px" },
             { title: '规格', key: 'spec', width:"200px" },
             { title: '批号', key: 'batchNo', width:"100px" },
@@ -403,42 +413,21 @@
           if (res.success) {
             this.$nextTick(() => {
               // this.departList = res.result.sysDepartList; // 初始化部门列表 用于数据回显
-              if(this.model.id){/* //详情页
-                this.showApplyBtn = false;
-                this.showAllocationBtn = false;
-                this.showOrderTable = true;
-                this.pdDosageDetailTable.dataSource = res.result.pdDosageDetails || [];
-
-                if(res.result.outType == "1"){
-                  this.orderTableTitle = "申领单明细";
-                  let pdApplyDetailList = res.result.pdApplyDetailList || [];
-                  pdApplyDetailList.forEach((item, idx) => {
-                    item.orderNo = item.applyNo;
-                    item.productNum = item.applyNum;
-                  })
-                  this.pdOrderDetailTable.dataSource = pdApplyDetailList;
-                }else if(res.result.outType == "2"){
-                  this.orderTableTitle = "";
-                }else if(res.result.outType == "3"){
-                  this.orderTableTitle = "调拨单明细";
-                  let pdApplyDetailList = res.result.pdAllocationDetailList || [];
-                  pdApplyDetailList.forEach((item, idx) => {
-                    item.orderNo = item.allocationNo;
-                    item.productNum = item.allocationNum;
-                  })
-                  this.pdOrderDetailTable.dataSource = pdApplyDetailList;
+              if(this.model.id){
+                // 新增页
+                this.initData = res.result;
+                if(res.result.hyCharged==0){
+                  this.hyCharged = true;
+                }else{
+                  this.hyCharged = false;
                 }
-
+                this.pdDosageDetailTable.dataSource = res.result.pdDosageDetails || [];
+                let fieldval = pick(this.initData,'dosageNo','dosageDate','departName','dosageByName','inHospitalNo','patientInfo','patientDetailInfo','outpatientNumber','operativeNumber','exeDeptName','exeDeptId','oprDeptName','oprDeptId','surgeonName','surgeonId','sqrtDoctorName','sqrtDoctorId','subordinateWardName','subordinateWardId','remarks');
+                this.form.setFieldsValue(fieldval);
                 this.goodsAllocationList = res.result.goodsAllocationList;
-                this.pdDosageDetailTable.columns.forEach((item, idx) => {
-                  if(item.key === "inHuoweiCode"){
-                    item.options = this.goodsAllocationList;
-                  }
-                })
-
-                this.totalSum = res.result.totalSum;
-                this.totalPrice = res.result.totalPrice.toString();
-              */}else{  // 新增页
+                //获取光标
+                this.$refs['productNumberInput'].focus();
+              }else{  // 新增页
                 this.initData = res.result;
                 let fieldval = pick(this.initData,'dosageNo','dosageDate','departName','dosageByName');
                 this.form.setFieldsValue(fieldval);
@@ -644,10 +633,6 @@
         }
         this.pdDosageDetailTable.dataSource.push(data);
       },
-      /** 保存草稿 **/
-      saveBtn() {
-
-      },
       /** 确定按钮点击事件 */
       submitBtn() {
         /** 触发表单验证 */
@@ -697,7 +682,7 @@
         }
         this.confirmLoading = true
         //是否收费标识
-        formData.chargeFlag=this.chargeFlag=="true"?"0":"1";
+        formData.hyCharged=this.hyCharged=="true"?"0":"1";
         httpAction(url, formData, method).then((res) => {
           if (res.success) {
             this.$message.success(res.message)
