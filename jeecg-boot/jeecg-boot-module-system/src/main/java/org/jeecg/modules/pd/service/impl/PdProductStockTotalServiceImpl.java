@@ -208,7 +208,7 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
 			String productId = dosageDetail.getProductId();    //产品ID
 			String prodBarcode = dosageDetail.getProductBarCode();  //条码
 			String batchNo = dosageDetail.getBatchNo();
-			String huoweiCode=dosageDetail.getOldOutHuoweiCode();
+			String huoweiCode=dosageDetail.getOutHuoweiCode();
 			Double productNum = dosageDetail.getDosageCount();  //数量
 			//1、扣减出库库存，扣减出库库存明细
 			PdProductStockTotal stockTotalq = new PdProductStockTotal();
