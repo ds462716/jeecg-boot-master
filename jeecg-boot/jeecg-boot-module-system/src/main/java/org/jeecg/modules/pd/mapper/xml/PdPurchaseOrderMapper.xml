@@ -200,10 +200,10 @@
 
 
     <!-- 统计一个订单下的产品数量和金额 -->
-    <select id="getCountAndMoney" resultType="PdPurchaseOrder" parameterType="java.util.List">
+    <select id="getCountAndMoney" resultType="org.jeecg.modules.pd.entity.PdPurchaseOrder" parameterType="java.util.List">
         SELECT
-        sum(amount_count) as amountCount,
-        sum(amount_money) as amountMoney
+        sum(total_num) as totalNum,
+        sum(total_price) as totalPrice
         FROM pd_purchase_order
         WHERE order_no IN
         <foreach collection="orderNos" item="item" separator="," open="(" close=")">
