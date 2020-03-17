@@ -160,6 +160,10 @@ public class PdDosage extends BaseEntity {
 	@Excel(name = "所属医院", width = 15)
     @ApiModelProperty(value = "所属医院")
     private String departParentId;
+    /**
+     * 是否收费标识
+     */
+	private String chargeFlag;
 
     /**
      * 用量明细

@@ -26,6 +26,7 @@ import org.jeecgframework.poi.excel.entity.ExportParams;
 import org.jeecgframework.poi.excel.entity.ImportParams;
 import org.jeecgframework.poi.excel.view.JeecgEntityExcelView;
 import org.jeecg.common.system.base.controller.JeecgController;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -110,6 +111,18 @@ public class PdDosageController extends JeecgController<PdDosage, IPdDosageServi
 	 public Result<?> initModal(@RequestParam(name = "id") String id, HttpServletRequest req) {
 		 PdDosage pdDosage = pdDosageService.initModal(id);
 		 return Result.ok(pdDosage);
+	 }
+
+	 /**
+	  * 提交
+	  *
+	  * @param pdDosage
+	  * @return
+	  */
+	 @PostMapping(value = "/submit")
+	 public Result<?> submit(@RequestBody PdDosage pdDosage) {
+		 pdDosageService.saveMain(pdDosage);
+		 return Result.ok("添加成功！");
 	 }
 
 	/**

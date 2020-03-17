@@ -107,6 +107,13 @@
               <a-form :form="form">
                 <a-row>
                   <a-col :md="6" :sm="8">
+                    <a-form-item label="计费" :labelCol="labelCol" :wrapperCol="wrapperCol">
+                      <a-switch v-model="chargeFlag"/>
+                    </a-form-item>
+                  </a-col>
+                </a-row>
+                <a-row>
+                  <a-col :md="6" :sm="8">
                     <a-form-item label="住院号" :labelCol="labelCol" :wrapperCol="wrapperCol">
                       <a-input v-decorator="[ 'inHospitalNo', validatorRules.inHospitalNo]" placeholder="请输入住院号"></a-input>
                     </a-form-item>
@@ -192,14 +199,6 @@
       </div>
     </a-spin>
 
-    <!--<div class="drawer-bootom-button">
-      <a-button @click="closeBtn" style="margin-right: 15px;" v-show="disableSubmit">关  闭</a-button>
-      <a-popconfirm title="确定放弃编辑？" @confirm="handleCancel" v-show="!disableSubmit" okText="确定" cancelText="取消">
-        <a-button style="margin-right: 15px;">取  消</a-button>
-      </a-popconfirm>
-      <a-button @click="saveBtn" v-show="!disableSubmit" type="primary" :loading="confirmLoading" style="margin-right: 15px;">保存草稿</a-button>
-      <a-button @click="submitBtn" v-show="!disableSubmit" type="primary" :loading="confirmLoading" style="margin-right: 15px;">提  交</a-button>
-    </div>-->
     <template slot="footer">
         <a-button @click="closeBtn" style="margin-right: 15px;" v-show="disableSubmit">关  闭</a-button>
         <a-popconfirm title="确定放弃编辑？" @confirm="handleCancel" v-show="!disableSubmit" okText="确定" cancelText="取消">
@@ -208,6 +207,8 @@
         <a-button @click="saveBtn" v-show="!disableSubmit" type="primary" :loading="confirmLoading" style="margin-right: 15px;">保存草稿</a-button>
         <a-button @click="submitBtn" v-show="!disableSubmit" type="primary" :loading="confirmLoading" style="margin-right: 15px;">提  交</a-button>
     </template>
+
+    <pd-choose-product-stock-list-model ref="pdChooseProductStockListModel" @ok="returnProductStockData" ></pd-choose-product-stock-list-model>
   </j-modal>
 </template>
 
@@ -221,6 +222,7 @@
   import {stockScanCode} from '@/utils/barcode'
   import {httpAction, deleteAction, getAction} from '@/api/manage'
   import { JEditableTableMixin } from '@/mixins/JEditableTableMixin'
+  import PdChooseProductStockListModel from "./PdChooseProductStockListModel";
 
   const VALIDATE_NO_PASSED = Symbol()
   export { FormTypes, VALIDATE_NO_PASSED }
@@ -242,7 +244,8 @@
   export default {
     name: "PdDosageModal",
     mixins: [JEditableTableMixin],
-    components: { 
+    components: {
+      PdChooseProductStockListModel,
     },
     data () {
       return {
@@ -253,6 +256,7 @@
         lockScroll: true,
         fullscreen: true,
         switchFullscreen: true,
+        chargeFlag: true,
         totalSum:'0',
         totalPrice:'0.0000',
         activeKey: 'pdDosageDetail',
@@ -270,7 +274,7 @@
             { title: '产品名称', key: 'productName', type: FormTypes.normal,width:"220px" },
             { title: '产品编号', key: 'productNumber', width:"160px" },
             { title: '产品条码', key: 'productBarCode', type: FormTypes.input, disabled:true, width:"200px" },
-            { title: '规格', key: 'spec', width:"150px" },
+            { title: '规格', key: 'spec', width:"200px" },
             { title: '批号', key: 'batchNo', width:"100px" },
             { title: '单位', key: 'unitName', width:"50px" },
             { title: '有效期', key: 'expDate', width:"100px" },
@@ -284,8 +288,10 @@
             { title: '用量金额', key: 'amountMoney', type: FormTypes.input, disabled:true, width:"100px" },
             { title: '库存数量', key: 'stockNum', width:"80px" },
             { title: '收费项目代码', key: 'chargeCode', width:"80px" },
-            { title: '是否计费', key: 'isCharge', width:"80px" },
-            { title: '出库货位编号', key: 'outHuoweiCode', type: FormTypes.select, width:"150px", options: [],allowSearch:true, placeholder: '${title}' },
+            { title: '是否计费', key: 'isCharge',type: FormTypes.hidden},
+            { title: '是否计费', key: 'isChargeText', width:"80px"},
+            { title: '出库货位', key: 'outHuoweiName', width:"100px" },
+            { title: '出库货位编号', key: 'outHuoweiCode', type: FormTypes.hidden },
           ]
         },
         disableSubmit:false,
@@ -363,6 +369,7 @@
         },
         url: {
           init:"/pd/pdDosage/initModal",
+          submit: "/pd/pdDosage/submit",
           add: "/pd/pdDosage/add",
           edit: "/pd/pdDosage/edit",
           departList:"/pd/pdDepart/getSysDepartList",
@@ -436,11 +443,6 @@
                 let fieldval = pick(this.initData,'dosageNo','dosageDate','departName','dosageByName');
                 this.form.setFieldsValue(fieldval);
                 this.goodsAllocationList = res.result.goodsAllocationList;
-                this.pdDosageDetailTable.columns.forEach((item, idx) => {
-                  if(item.key === "outHuoweiCode"){
-                    item.options = this.goodsAllocationList;
-                  }
-                })
                 //获取光标
                 this.$refs['productNumberInput'].focus();
               }
@@ -464,38 +466,6 @@
       close () {
         this.$emit('close');
         this.visible = false;
-      },
-      handleOk () {
-        const that = this;
-        // 触发表单验证
-        this.form.validateFields((err, values) => {
-          if (!err) {
-            that.confirmLoading = true;
-            let httpurl = '';
-            let method = '';
-            if(!this.model.id){
-              httpurl+=this.url.add;
-              method = 'post';
-            }else{
-              httpurl+=this.url.edit;
-               method = 'put';
-            }
-            let formData = Object.assign(this.model, values);
-            console.log("表单提交数据",formData)
-            httpAction(httpurl,formData,method).then((res)=>{
-              if(res.success){
-                that.$message.success(res.message);
-                that.$emit('ok');
-              }else{
-                that.$message.warning(res.message);
-              }
-            }).finally(() => {
-              that.confirmLoading = false;
-              that.close();
-            })
-          }
-         
-        })
       },
       handleCancel () {
         this.close()
@@ -580,31 +550,9 @@
       },
       // 选择产品 新增行
       chooseProductList() {
-        let outType = this.form.getFieldValue("outType");
-        // 校验是否选择入库科室
-        if(!this.checkInDepart()){
-          this.$message.error("请选择入库科室！");
-          return;
-        }
 
-        if(outType == "1"){        //申领单
-          if(!this.applyNo){
-            this.$message.error("请先导入申领单！");
-            return;
-          }
-          this.$refs.pdChooseProductStockListModel.show({applyNo:this.applyNo});
-        }else if(outType == "2"){
-          this.$refs.pdChooseProductStockListModel.show({});
-        }else if(outType == "3"){  //调拨单
-          if(!this.allocationNo){
-            this.$message.error("请先导入调拨单！");
-            return;
-          }
-          this.$refs.pdChooseProductStockListModel.show({allocationNo:this.allocationNo});
-        }else{
-          this.$message.error("请选择出库类型！");
-          return;
-        }
+        this.$refs.pdChooseProductStockListModel.width = 1550;
+        this.$refs.pdChooseProductStockListModel.show({});
       },
       // 选择定数包
       choosePackageList() {
@@ -689,7 +637,9 @@
           amountMoney:Number(!row.sellingPrice ? 0 : row.sellingPrice).toFixed(4),
           stockNum:row.stockNum,
           chargeCode:row.chargeCode,
-          isCharge:row.isCharge=="0"?"是":"否",
+          isChargeText:row.isCharge=="0"?"是":"否",
+          isCharge:row.isCharg,
+          outHuoweiName:row.huoweiName,
           outHuoweiCode:row.huoweiCode,
         }
         this.pdDosageDetailTable.dataSource.push(data);
@@ -718,11 +668,11 @@
 
           let list = formData.pdDosageDetails;
           for (let item of list){
-            if(Number(item.productNum) > Number(item.stockNum)){
+            if(Number(item.dosageCount) > Number(item.stockNum)){
               this.$message.error("["+item.productName+"]用量数量不能大于库存数量！");
               return;
             }
-            if(Number(item.productNum) <= 0){
+            if(Number(item.dosageCount) <= 0){
               this.$message.error("["+item.productName+"]用量数量必须大于0！");
               return;
             }
@@ -735,6 +685,29 @@
           } else {
             console.error(e)
           }
+        })
+      },
+
+      // 保存 提交 修改 请求函数
+      request(formData) {
+        let url = this.url.submit, method = 'post'
+        if (this.model.id) {
+          url = this.url.edit
+          method = 'put'
+        }
+        this.confirmLoading = true
+        //是否收费标识
+        formData.chargeFlag=this.chargeFlag=="true"?"0":"1";
+        httpAction(url, formData, method).then((res) => {
+          if (res.success) {
+            this.$message.success(res.message)
+            this.$emit('ok')
+            this.close()
+          } else {
+            this.$message.warning(res.message)
+          }
+        }).finally(() => {
+          this.confirmLoading = false
         })
       },
       /** 整理成formData */
@@ -750,6 +723,35 @@
       closeBtn(){
         this.visible = false;
         this.$emit('close');
+      },
+      // 选择产品后返回
+      returnProductStockData(data) {
+        let rows = [];
+        let { values } = this.$refs.pdDosageDetail.getValuesSync({ validate: false });
+        if(values.length > 0){
+          // 如果列表中有相同产品则不加行
+          data.forEach((item, idx) => {
+            let bool = true;
+            values.forEach((value, idx) => {
+              if(item.id == value.productStockId){
+                bool = false;
+              }
+            })
+            if(bool){
+              rows.push(item)
+            }
+          })
+        }else{
+          rows = data;
+        }
+
+        rows.forEach((item, idx) => {
+          // j-editable-table表格（可能是BUG）：values变更 不会同步变更到dataSource，新增行时需要手动赋值到dataSource
+          this.pdDosageDetailTable.dataSource = values;
+          this.addrowsByScanCode(item);
+        })
+        // 计算总数量和总价格
+        this.getTotalNumAndPrice(values);
       },
     }
   }

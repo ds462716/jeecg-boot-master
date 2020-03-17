@@ -126,7 +126,6 @@ public class PdDosageDetail extends BaseEntity {
     //冗余
     @TableField(exist = false)
     private String outHuoweiName;//出库货位
-    @TableField(exist = false)
     private String oldOutHuoweiCode;
 
     @TableField(exist = false)

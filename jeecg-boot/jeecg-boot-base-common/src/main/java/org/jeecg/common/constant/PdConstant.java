@@ -168,4 +168,8 @@ public interface PdConstant {
 	public final static String PURCHASE_ORDER_SUPPLIER_STATUS_2 = "1";//已接收
 	public final static String PURCHASE_ORDER_SUPPLIER_STATUS_3 = "2";//已拒绝
 	public final static String PURCHASE_ORDER_SUPPLIER_STATUS_4 = "3";//已收货
+
+	//器械使用收费状态
+	public final static String  CHARGE_FLAG_0 ="0";//收费
+	public final static String  CHARGE_FLAG_1 ="1";//不收费
 }
