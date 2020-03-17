@@ -328,11 +328,11 @@ public class PdProductServiceImpl extends ServiceImpl<PdProductMapper, PdProduct
                     }
 
                     //判断库存的有效期
-                    if(MessageConstant.CODE_STATE_201.equals((String)resultMap.get("code"))){
+                    if(MessageConstant.CODE_STATE_201.equals(String.valueOf(resultMap.get("code")))){
                         //库存已过期
                         result.setCode(MessageConstant.ICODE_STATE_201);
                         result.setMessage((String)resultMap.get("msg"));
-                    }else if(MessageConstant.CODE_STATE_203.equals((String)resultMap.get("code"))){
+                    }else if(MessageConstant.CODE_STATE_203.equals(String.valueOf(resultMap.get("code")))){
                         //库存接近有效期  请注意
                         result.setCode(MessageConstant.ICODE_STATE_203);
                         result.setMessage((String)resultMap.get("msg"));
