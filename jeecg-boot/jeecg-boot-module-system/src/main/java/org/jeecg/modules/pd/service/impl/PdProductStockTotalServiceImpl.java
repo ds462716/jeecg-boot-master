@@ -201,6 +201,7 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
 	 * @return  String   更新库存结果
 	 */
 	@Transactional
+	@Override
 	public String updateUseStock(String departId, List<PdDosageDetail> dosageDetails){
 		//1、扣减出库库存，扣减出库库存明细
 		for(PdDosageDetail dosageDetail:dosageDetails){

@@ -2,6 +2,7 @@ package org.jeecg.modules.pd.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
+import org.jeecg.modules.pd.entity.PdDosageDetail;
 import org.jeecg.modules.pd.entity.PdProductStockTotal;
 import org.jeecg.modules.pd.entity.PdStockRecord;
 import org.jeecg.modules.pd.entity.PdStockRecordDetail;
@@ -64,4 +65,6 @@ public interface IPdProductStockTotalService extends IService<PdProductStockTota
      * @return
      */
     public Double queryCheckTotalNum(PdProductStockTotal stockTotal);
+
+    String updateUseStock(String currentDepartId, List<PdDosageDetail> afterDealList);
 }
