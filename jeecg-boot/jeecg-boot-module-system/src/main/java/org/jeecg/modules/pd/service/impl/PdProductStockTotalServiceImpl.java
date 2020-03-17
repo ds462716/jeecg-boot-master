@@ -1,23 +1,20 @@
 package org.jeecg.modules.pd.service.impl;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.jeecg.common.constant.PdConstant;
-import org.jeecg.modules.pd.entity.PdProductStock;
-import org.jeecg.modules.pd.entity.PdProductStockTotal;
-import org.jeecg.modules.pd.entity.PdStockRecord;
-import org.jeecg.modules.pd.entity.PdStockRecordDetail;
+import org.jeecg.modules.pd.entity.*;
 import org.jeecg.modules.pd.mapper.PdProductStockMapper;
 import org.jeecg.modules.pd.mapper.PdProductStockTotalMapper;
 import org.jeecg.modules.pd.service.IPdProductStockService;
 import org.jeecg.modules.pd.service.IPdProductStockTotalService;
 import org.jeecg.modules.pd.vo.PdProductStockTotalPage;
-import org.springframework.stereotype.Service;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import java.math.BigDecimal;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -199,53 +196,49 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
 
 	/***
 	 * 	器械使用更新库存信息
-	 * @param deptId     科室ID
+	 * @param departId     科室ID
 	 * @param dosageDetails   使用明细
 	 * @return  String   更新库存结果
 	 */
-	/*@Transactional
-	public String updateUseStock(String deptId, List<PdDosageDetail> dosageDetails){
+	@Transactional
+	public String updateUseStock(String departId, List<PdDosageDetail> dosageDetails){
 		//1、扣减出库库存，扣减出库库存明细
 		for(PdDosageDetail dosageDetail:dosageDetails){
-			String productId = dosageDetail.getProdId();    //产品ID
-			String prodBarcode = dosageDetail.getProdBarcode();                  //条码
+			String productId = dosageDetail.getProductId();    //产品ID
+			String prodBarcode = dosageDetail.getProductBarCode();  //条码
 			String batchNo = dosageDetail.getBatchNo();
-			Integer productNum_i = dosageDetail.getDosageCount();  //数量
-			int productNum = productNum_i.intValue();
-
+			String huoweiCode=dosageDetail.getOldOutHuoweiCode();
+			Double productNum = dosageDetail.getDosageCount();  //数量
 			//1、扣减出库库存，扣减出库库存明细
 			PdProductStockTotal stockTotalq = new PdProductStockTotal();
-			stockTotalq.setStoreroomId(storeroomId);
+			stockTotalq.setDepartId(departId);
 			stockTotalq.setProductId(productId);
-			List<PdProductStockTotal> productStockTotals = pdProductStockTotalDao.findList(stockTotalq);
+			List<PdProductStockTotalPage> productStockTotals = pdProductStockTotalMapper.selectList(stockTotalq);
 			if(productStockTotals != null && productStockTotals.size() == 1){
 				PdProductStockTotal productStockTotal = productStockTotals.get(0);
-				Integer stockNum = productStockTotal.getStockNum();
-				Integer num = stockNum.intValue() - productNum;
+				Double stockNum = productStockTotal.getStockNum();
+				Double num = stockNum - productNum;
 				productStockTotal.setStockNum(num);
-				pdProductStockTotalDao.updateStockNum(productStockTotal);
+				pdProductStockTotalMapper.updateStockNum(productStockTotal);
 			}
 
 			PdProductStock o_productStockq = new PdProductStock();
-			o_productStockq.setStoreroomId(storeroomId);
+			o_productStockq.setDepartId(departId);
 			o_productStockq.setProductId(productId);
 			o_productStockq.setProductBarCode(prodBarcode);
 			o_productStockq.setBatchNo(batchNo);
-			List<PdProductStock> productStocks = pdProductStockDao.findList(o_productStockq);
+			o_productStockq.setHuoweiCode(huoweiCode);
+			List<PdProductStock> productStocks = pdProductStockMapper.selectList(o_productStockq);
 			if(productStocks != null && productStocks.size() >= 0){
 				PdProductStock productStock = productStocks.get(0);
-				Integer stockNum = productStock.getStockNum();
-				Integer num = stockNum.intValue() - productNum;
+				Double stockNum = productStock.getStockNum();
+				Double num = stockNum - productNum;
 				productStock.setStockNum(num);
-				pdProductStockDao.updateStockNum(productStock);
+				pdProductStockMapper.updateStockNum(productStock);
 			}
 		}
-
-		//2、登记日志
-
-
 		return "true";
-	}*/
+	}
 
 
 	/***
@@ -254,7 +247,7 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
 	 * @param  detailList    退回用量明细
 	 * @return  String        更新库存结果
 	 */
-	/*@Transactional
+	/* @Transactional
 	public String updateRetunuseStock(String storeroomId, List<PdDosagertDetail> detailList){
 
 		//1、增加库存，增加库存明细
@@ -301,10 +294,6 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
 				pdProductStockDao.addStock(productStock);
 			}
 		}
-
-		//2、登记日志
-
-
 		return "";
 	}*/
 
