@@ -15,6 +15,8 @@ import org.jeecg.modules.pd.service.IPdProductStockService;
 import org.jeecg.modules.pd.service.IPdProductStockTotalService;
 import org.jeecg.modules.pd.service.IPdStockRecordDetailService;
 import org.jeecg.modules.pd.vo.PdProductStockTotalPage;
+import org.jeecg.modules.system.entity.SysDepart;
+import org.jeecg.modules.system.service.ISysDepartService;
 import org.jeecgframework.poi.excel.def.NormalExcelConstants;
 import org.jeecgframework.poi.excel.entity.ExportParams;
 import org.jeecgframework.poi.excel.view.JeecgEntityExcelView;
@@ -43,6 +45,8 @@ public class PdProductStockTotalController {
 	 private IPdProductStockTotalService pdProductStockTotalService;
 	 @Autowired
 	 private IPdProductStockService pdProductStockService;
+	 @Autowired
+	 private ISysDepartService sysDepartService;
 	 @Autowired
 	 private IPdStockRecordDetailService pdStockRecordDetailService;
 	 /**
@@ -359,10 +363,10 @@ public class PdProductStockTotalController {
 		 Page<PdProductStockTotalPage> page = new Page<PdProductStockTotalPage>(pageNo, pageSize);
 		 LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
 		 stockTotalPage.setDepartParentId(sysUser.getDepartParentId());
-		 if(stockTotalPage.getCode().equals("2")){//如果是申领单过来的话
-			String deptId= sysUser.getCurrentDepartId();//当前登录科室
-			 //获取父级部门ID//暂时给器械科ID
-			 stockTotalPage.setDepartId("226bedba2af745e097d4ac8873b9178e");
+		 if(stockTotalPage.getCode().equals("2")){ //如果是申领单过来的话
+			 //获取父级部门ID
+			 SysDepart sysDepart=sysDepartService.queryDepartByOrgCode(sysUser.getOrgCode());
+			 stockTotalPage.setDepartId(sysDepart.getParentId());
 		  }
 		 page = pdProductStockTotalService.selectList(page,stockTotalPage);
 		 return Result.ok(page);
