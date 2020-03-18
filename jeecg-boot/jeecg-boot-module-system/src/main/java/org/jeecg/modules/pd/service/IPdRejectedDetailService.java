@@ -3,6 +3,8 @@ package org.jeecg.modules.pd.service;
 import org.jeecg.modules.pd.entity.PdRejectedDetail;
 import com.baomidou.mybatisplus.extension.service.IService;
 
+import java.util.List;
+
 /**
  * @Description: pd_rejected_detail
  * @Author: jiangxz
@@ -11,4 +13,5 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface IPdRejectedDetailService extends IService<PdRejectedDetail> {
 
+    List<PdRejectedDetail> selectByMainId(PdRejectedDetail pdRejectedDetail);
 }

@@ -1,6 +1,7 @@
 package org.jeecg.modules.pd.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
@@ -11,6 +12,8 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
+import java.util.Date;
+import java.util.List;
 
 /**
  * @Description: pd_rejected
@@ -42,18 +45,10 @@ public class PdRejected extends BaseEntity {
 	@Excel(name = "departId", width = 15)
     @ApiModelProperty(value = "departId")
     private String departId;
-	/**departName*/
-//	@Excel(name = "departName", width = 15)
-//    @ApiModelProperty(value = "departName")
-//    private String departName;
 	/**supplierId*/
 	@Excel(name = "supplierId", width = 15)
     @ApiModelProperty(value = "supplierId")
     private String supplierId;
-	/**supplierName*/
-//	@Excel(name = "supplierName", width = 15)
-//    @ApiModelProperty(value = "supplierName")
-//    private String supplierName;
 	/**备注*/
 	@Excel(name = "备注", width = 15)
     @ApiModelProperty(value = "备注")
@@ -67,7 +62,7 @@ public class PdRejected extends BaseEntity {
 	@JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd")
     @DateTimeFormat(pattern="yyyy-MM-dd")
     @ApiModelProperty(value = "创建日期")
-    private java.util.Date createTime;
+    private Date createTime;
 	/**更新人*/
 	@Excel(name = "更新人", width = 15)
     @ApiModelProperty(value = "更新人")
@@ -77,7 +72,7 @@ public class PdRejected extends BaseEntity {
 	@JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd")
     @DateTimeFormat(pattern="yyyy-MM-dd")
     @ApiModelProperty(value = "更新日期")
-    private java.util.Date updateTime;
+    private Date updateTime;
 	/**所属部门*/
 	@Excel(name = "所属部门", width = 15)
     @ApiModelProperty(value = "所属部门")
@@ -86,4 +81,17 @@ public class PdRejected extends BaseEntity {
 	@Excel(name = "所属父部门", width = 15)
     @ApiModelProperty(value = "所属父部门")
     private String departParentId;
+
+    @TableField(exist = false)
+	private List<PdRejectedDetail> pdRejectedDetailList;
+    @TableField(exist = false)
+    private String supplierName;
+    @TableField(exist = false)
+    private String departName;
+    /** 查询日期起始 **/
+    @TableField(exist = false)
+    private String queryDateStart;
+    /** 查询日期结束 **/
+    @TableField(exist = false)
+    private String queryDateEnd;
 }

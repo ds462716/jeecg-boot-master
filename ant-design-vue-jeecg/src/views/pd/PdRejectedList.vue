@@ -4,6 +4,47 @@
     <div class="table-page-search-wrapper">
       <a-form layout="inline" @keyup.enter.native="searchQuery">
         <a-row :gutter="24">
+          <a-col :md="6" :sm="8">
+            <a-form-item label="退货单号">
+              <a-input placeholder="请输入退货单号" v-model="queryParam.rejectedNo"></a-input>
+            </a-form-item>
+          </a-col>
+          <a-col :md="6" :sm="8">
+            <a-form-item label="退货日期">
+              <a-range-picker @change="rejectedDateChange" v-model="queryParam.queryDate"/>
+            </a-form-item>
+          </a-col>
+          <a-col :md="6" :sm="8">
+            <a-form-item label="供应商">
+              <a-select
+                showSearch
+                :supplierId="supplierValue"
+                placeholder="请选择供应商"
+                :defaultActiveFirstOption="false"
+                :showArrow="true"
+                :filterOption="false"
+                @search="supplierHandleSearch"
+                @change="supplierHandleChange"
+                @focus="supplierHandleSearch"
+                :notFoundContent="notFoundContent"
+                v-model="queryParam.supplierId"
+              >
+                <a-select-option v-for="d in supplierData" :key="d.value">{{d.text}}</a-select-option>
+              </a-select>
+            </a-form-item>
+          </a-col>
+          <template v-if="toggleSearchStatus">
+          </template>
+          <a-col :md="6" :sm="8">
+            <span style="float: right;overflow: hidden;" class="table-page-search-submitButtons">
+              <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
+              <a-button type="primary" @click="searchReset" icon="reload" style="margin-left: 8px">重置</a-button>
+              <a @click="handleToggleSearch" style="margin-left: 8px">
+                {{ toggleSearchStatus ? '收起' : '展开' }}
+                <a-icon :type="toggleSearchStatus ? 'up' : 'down'"/>
+              </a>
+            </span>
+          </a-col>
 
         </a-row>
       </a-form>
@@ -13,24 +54,11 @@
     <!-- 操作按钮区域 -->
     <div class="table-operator">
       <a-button @click="handleAdd" type="primary" icon="plus">新增</a-button>
-      <!--<a-button type="primary" icon="download" @click="handleExportXls('pd_rejected')">导出</a-button>-->
-      <!--<a-upload name="file" :showUploadList="false" :multiple="false" :headers="tokenHeader" :action="importExcelUrl" @change="handleImportExcel">-->
-        <!--<a-button type="primary" icon="import">导入</a-button>-->
-      <!--</a-upload>-->
-      <!--<a-dropdown v-if="selectedRowKeys.length > 0">-->
-        <!--<a-menu slot="overlay">-->
-          <!--<a-menu-item key="1" @click="batchDel"><a-icon type="delete"/>删除</a-menu-item>-->
-        <!--</a-menu>-->
-        <!--<a-button style="margin-left: 8px"> 批量操作 <a-icon type="down" /></a-button>-->
-      <!--</a-dropdown>-->
+      <a-button type="primary" icon="download" @click="handleExportXls('pd_rejected')">导出</a-button>
     </div>
 
     <!-- table区域-begin -->
     <div>
-      <!--<div class="ant-alert ant-alert-info" style="margin-bottom: 16px;">-->
-        <!--<i class="anticon anticon-info-circle ant-alert-icon"></i> 已选择 <a style="font-weight: 600">{{ selectedRowKeys.length }}</a>项-->
-        <!--<a style="margin-left: 24px" @click="onClearSelected">清空</a>-->
-      <!--</div>-->
 
       <a-table
         ref="table"
@@ -45,40 +73,8 @@
         
         @change="handleTableChange">
 
-        <!--<template slot="htmlSlot" slot-scope="text">-->
-          <!--<div v-html="text"></div>-->
-        <!--</template>-->
-        <!--<template slot="imgSlot" slot-scope="text">-->
-          <!--<span v-if="!text" style="font-size: 12px;font-style: italic;">无此图片</span>-->
-          <!--<img v-else :src="getImgView(text)" height="25px" alt="图片不存在" style="max-width:80px;font-size: 12px;font-style: italic;"/>-->
-        <!--</template>-->
-        <!--<template slot="fileSlot" slot-scope="text">-->
-          <!--<span v-if="!text" style="font-size: 12px;font-style: italic;">无此文件</span>-->
-          <!--<a-button-->
-            <!--v-else-->
-            <!--:ghost="true"-->
-            <!--type="primary"-->
-            <!--icon="download"-->
-            <!--size="small"-->
-            <!--@click="uploadFile(text)">-->
-            <!--下载-->
-          <!--</a-button>-->
-        <!--</template>-->
-
         <span slot="action" slot-scope="text, record">
-          <a @click="handleEdit(record)">编辑</a>
-
-          <!--<a-divider type="vertical" />-->
-          <!--<a-dropdown>-->
-            <!--<a class="ant-dropdown-link">更多 <a-icon type="down" /></a>-->
-            <!--<a-menu slot="overlay">-->
-              <!--<a-menu-item>-->
-                <!--<a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.id)">-->
-                  <!--<a>删除</a>-->
-                <!--</a-popconfirm>-->
-              <!--</a-menu-item>-->
-            <!--</a-menu>-->
-          <!--</a-dropdown>-->
+          <a @click="handleDetail(record)">详情</a>
         </span>
 
       </a-table>
@@ -91,6 +87,8 @@
 
   import { JeecgListMixin } from '@/mixins/JeecgListMixin'
   import PdRejectedModal from './modules/PdRejectedModal'
+  import { filterObj } from '@/utils/util';
+  import { httpAction,getAction } from '@/api/manage'
 
   export default {
     name: "PdRejectedList",
@@ -101,12 +99,19 @@
     data () {
       return {
         description: 'pd_rejected管理页面',
+
+        //供应商下拉列表 start
+        supplierValue: undefined,
+        notFoundContent:"未找到内容",
+        supplierData: [],
+        //供应商下拉列表 end
+
         // 表头
         columns: [
           {
             title: '#',
             dataIndex: '',
-            key:'rowIndex',
+            key:'id',
             width:60,
             align:"center",
             customRender:function (t,r,index) {
@@ -129,7 +134,7 @@
             dataIndex: 'departName'
           },
           {
-            title:'供货商',
+            title:'供应商',
             align:"center",
             dataIndex: 'supplierName'
           },
@@ -147,10 +152,11 @@
         ],
         url: {
           list: "/pd/pdRejected/list",
-          delete: "/pd/pdRejected/delete",
-          deleteBatch: "/pd/pdRejected/deleteBatch",
+          // delete: "/pd/pdRejected/delete",
+          // deleteBatch: "/pd/pdRejected/deleteBatch",
           exportXlsUrl: "/pd/pdRejected/exportXls",
-          importExcelUrl: "pd/pdRejected/importExcel",
+          // importExcelUrl: "pd/pdRejected/importExcel",
+          querySupplier:"/pd/pdSupplier/getSupplierList",
         },
         dictOptions:{},
       }
@@ -162,7 +168,53 @@
     },
     methods: {
       initDictConfig(){
-      }
+      },
+      rejectedDateChange (value, dateString) {
+        this.queryParam.queryDateStart=dateString[0];
+        this.queryParam.queryDateEnd=dateString[1];
+      },
+      getQueryParams() {
+        //获取查询条件
+        let sqp = {}
+        if(this.superQueryParams){
+          sqp['superQueryParams']=encodeURI(this.superQueryParams)
+        }
+        var param = Object.assign(sqp, this.queryParam, this.isorter ,this.filters);
+        param.field = this.getQueryField();
+        param.pageNo = this.ipagination.current;
+        param.pageSize = this.ipagination.pageSize;
+        delete param.queryDate; //范围参数不传递后台，传后台会报错
+        return filterObj(param);
+      },
+      //-----------------供应商查询start
+      supplierHandleSearch(value) {
+        this.getSupplierList(value);
+      },
+      supplierHandleChange(value) {
+        this.totalSum = '0';
+        this.eachAllTable((item) => {
+          item.initialize()
+        })
+        this.supplierValue = value;
+        this.getSupplierList(value);
+      },
+      getSupplierList(value){
+        getAction(this.url.querySupplier,{name:value}).then((res)=>{
+          if (!res.success) {
+            this.cmsFailed(res.message);
+          }
+          const result = res.result;
+          const data = [];
+          result.forEach(r => {
+            data.push({
+              value: r.id,
+              text: r.name,
+            });
+          });
+          this.supplierData = data;
+        })
+      },
+      //----------------供应商查询end
     }
   }
 </script>

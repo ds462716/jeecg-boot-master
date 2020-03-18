@@ -14,4 +14,6 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  */
 public interface PdRejectedDetailMapper extends BaseMapper<PdRejectedDetail> {
 
+    List<PdRejectedDetail> selectByMainId(PdRejectedDetail pdRejectedDetail);
+
 }

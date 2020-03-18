@@ -1,5 +1,6 @@
 package org.jeecg.modules.pd.service;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.jeecg.modules.pd.entity.PdRejected;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.jeecg.modules.pd.entity.PdRejectedDetail;
@@ -18,5 +19,21 @@ public interface IPdRejectedService extends IService<PdRejected> {
      *
      */
     public void saveMain(PdRejected pdRejected, List<PdRejectedDetail> pdRejectedDetailList) ;
+
+    /**
+     * 查询列表
+     * @param pdRejected
+     * @return
+     */
+    List<PdRejected> queryList(PdRejected pdRejected);
+
+    /**
+     * 分页查询列表
+     * @param pageList
+     * @param pdRejected
+     * @return
+     */
+    Page<PdRejected> queryList(Page<PdRejected> pageList, PdRejected pdRejected);
+
 
 }

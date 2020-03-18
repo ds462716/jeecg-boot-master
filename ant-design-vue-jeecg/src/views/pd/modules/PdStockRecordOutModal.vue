@@ -797,30 +797,6 @@
         this.pdStockRecordDetailTable.dataSource.push(data);
         // this.$refs.pdStockRecordDetail.add();
       },
-      // 扫码 调用 新增一行
-      // addrowsByScanCode(row){
-      //   let data = {
-      //     productStockId:row.id,
-      //     productId: row.productId,
-      //     productName: row.productName,
-      //     productNumber:row.number,
-      //     productBarCode:row.productBarCode,
-      //     spec: row.spec,
-      //     batchNo:row.batchNo,
-      //     unitName:row.unitName,
-      //     expDate:row.expDate,
-      //     sellingPrice:row.sellingPrice,
-      //     productNum: 1,
-      //     purchasePrice:row.purchasePrice,
-      //     outTotalPrice:Number(!row.sellingPrice ? 0 : row.sellingPrice).toFixed(4),
-      //     stockNum:row.stockNum,
-      //     outHuoweiName:row.huoweiName,
-      //     outHuoweiCode:row.huoweiCode,
-      //     inHuoweiCode:""
-      //   }
-      //   this.pdStockRecordDetailTable.dataSource.push(data);
-      //   this.$refs.pdStockRecordDetail.add();
-      // },
       // 计算总数量和总价格
       getTotalNumAndPrice(rows){
         this.$nextTick(() => {

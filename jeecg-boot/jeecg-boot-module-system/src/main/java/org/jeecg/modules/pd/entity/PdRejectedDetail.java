@@ -1,6 +1,7 @@
 package org.jeecg.modules.pd.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
@@ -11,6 +12,8 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
+
+import java.util.Date;
 
 /**
  * @Description: pd_rejected_detail
@@ -31,7 +34,7 @@ public class PdRejectedDetail extends BaseEntity {
     @ApiModelProperty(value = "id")
     private String id;
 	/**退货编号*/
-	@Excel(name = "退货编号", width = 15)
+	@Excel(name = "退货ID", width = 15)
     @ApiModelProperty(value = "退货ID")
     private String rejectedId;
 	/**产品库存id*/
@@ -42,10 +45,19 @@ public class PdRejectedDetail extends BaseEntity {
 	@Excel(name = "产品id", width = 15)
     @ApiModelProperty(value = "产品id")
     private String productId;
+    @Excel(name = "产品条码", width = 15)
+    @ApiModelProperty(value = "产品条码")
+	private String productBarCode;
+    @Excel(name = "批号", width = 15)
+    @ApiModelProperty(value = "批号")
+    private String batchNo;
 	/**退货数量*/
 	@Excel(name = "退货数量", width = 15)
     @ApiModelProperty(value = "退货数量")
-    private Integer rejectedCount;
+    private Double rejectedCount;
+    @Excel(name = "退货是库存数量", width = 15)
+    @ApiModelProperty(value = "退货是库存数量")
+    private Double stockNum;
 	/**备注*/
 	@Excel(name = "备注", width = 15)
     @ApiModelProperty(value = "备注")
@@ -84,4 +96,19 @@ public class PdRejectedDetail extends BaseEntity {
     private String departParentId;
     @Excel(name = "货位Code", width = 15)
     private String huoweiCode;
+
+    @TableField(exist = false)
+    private String spec;
+    @TableField(exist = false)
+    private String unitName;
+    @TableField(exist = false)
+    private String huoweiName;
+    @TableField(exist = false)
+    private String productName;
+    @TableField(exist = false)
+    private String productNumber;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
+    @DateTimeFormat(pattern="yyyy-MM-dd")
+    @TableField(exist = false)
+    private Date expDate;
 }

@@ -10,15 +10,6 @@
     @cancel="handleCancel"
   >
 
-    <!--<template slot="title">-->
-      <!--<div style="width: 100%;height:20px;padding-right:32px;">-->
-        <!--<div style="float: left;">{{ title }}</div>-->
-        <!--<div style="float: right;">-->
-          <!--<a-button icon="fullscreen" style="width:56px;height:100%;border:0" @click="handleClickToggleFullScreen"/>-->
-        <!--</div>-->
-      <!--</div>-->
-    <!--</template>-->
-
     <a-spin :spinning="confirmLoading">
       <!-- 主表单区域 -->
       <div style="background:#ECECEC; padding:20px">
@@ -222,24 +213,25 @@
         pdRejectedDetailTable: {
           loading: false,
           dataSource: [],
-          columns: [ //, type: FormTypes.hidden
-            { title: '库存明细ID', key: 'productStockId' },
-            { title: '产品ID', key: 'productId' },
-            { title: '产品名称', key: 'productName', type: FormTypes.normal,width:"220px" },
-            { title: '产品编号', key: 'productNumber', width:"160px" },
-            { title: '产品条码', key: 'productBarCode', type: FormTypes.input, disabled:true, width:"200px" },
-            { title: '规格', key: 'spec', width:"150px" },
-            { title: '批号', key: 'batchNo', width:"100px" },
-            { title: '单位', key: 'unitName', width:"50px" },
-            { title: '有效期', key: 'expDate', width:"100px" },
+          columns: [
+            { title: '库存明细ID', key: 'productStockId', type: FormTypes.hidden },
+            { title: '产品ID', key: 'productId', type: FormTypes.hidden },
+            { title: '产品名称', key: 'productName', type: FormTypes.normal, width:"250px" },
+            { title: '产品编号', key: 'productNumber', width:"200px" },
+            { title: '产品条码', key: 'productBarCode', type: FormTypes.input, width:"250px", disabled:true },
+            { title: '规格', key: 'spec', width:"180px" },
+            { title: '批号', key: 'batchNo' },
+            { title: '单位', key: 'unitName', width:"80px" },
+            { title: '有效期', key: 'expDate' },
             {
-              title: '退货数量', key: 'rejectedCount', type: FormTypes.input, width:"80px",
+              title: '退货数量', key: 'rejectedCount', type: FormTypes.input, width:"100px",
               placeholder: '${title}', defaultValue: '1',
-              validateRules: [{ required: true, message: '${title}不能为空' },{ pattern: '^-?\\d+\\.?\\d*$',message: '${title}的格式不正确' }]
+              validateRules: [{ required: true, message: '${title}不能为空' },
+                              { pattern: '^-?\\d+\\.?\\d*$',message: '${title}的格式不正确' }]
             },
-            { title: '库存数量', key: 'stockNum', width:"80px" },
-            { title: '货位', key: 'huoweiName', width:"100px" },
-            { title: '货位编号', key: 'huoweiCode'},
+            { title: '库存数量', key: 'stockNum' },
+            { title: '货位', key: 'huoweiName'},
+            { title: '货位编号', key: 'huoweiCode', type: FormTypes.hidden },
           ]
         },
         url: {
@@ -257,7 +249,7 @@
           // width: '100%',
           width: '1200',
           style: { top: '20px' },
-          switchFullscreen: true,
+          switchFullscreen: true,  //缩放按钮
           lockScroll: true,
           fullscreen: true,
         },
@@ -289,12 +281,17 @@
         this.loading = true;
         let params = {};
         if(this.model.id){
-          let fieldval = pick(this.model,'rejectedNo','remarks')
+          this.popModal.title="退货明细";
+          //初始化供应商，用于回显供应商
+          this.supplierHandleSearch();
+
+          let fieldval = pick(this.model,'rejectedNo','supplierId','remarks')
           this.$nextTick(() => {
             this.form.setFieldsValue(fieldval);
           })
           params = { id: this.model.id }
         }else{
+          this.popModal.title="新增退货";
           params = { id: "" }
         }
         getAction(this.url.init, params).then((res) => {
@@ -302,6 +299,7 @@
             this.$nextTick(() => {
               if(this.model.id){ //详情页
 
+                this.pdRejectedDetailTable.dataSource = res.result.pdRejectedDetailList || [];
               }else{  // 新增页
                 this.form.setFieldsValue({rejectedNo:res.result.rejectedNo}); // 退货单号
               }
@@ -394,7 +392,7 @@
         this.$message.error(msg)
       },
       popupCallback(row){
-        this.form.setFieldsValue(pick(row,'rejectedNo','remarks'))
+        this.form.setFieldsValue(pick(row,'rejectedNo','supplierId','remarks'))
       },
       //删除行
       handleConfirmDelete() {

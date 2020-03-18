@@ -6,6 +6,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.jeecg.common.constant.PdConstant;
 import org.jeecg.modules.pd.entity.*;
+import org.jeecg.modules.pd.mapper.PdProductMapper;
 import org.jeecg.modules.pd.mapper.PdProductStockMapper;
 import org.jeecg.modules.pd.mapper.PdProductStockTotalMapper;
 import org.jeecg.modules.pd.service.IPdProductStockService;
@@ -33,7 +34,8 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
 	private PdProductStockTotalMapper pdProductStockTotalMapper;
 	@Autowired
 	private PdProductStockMapper pdProductStockMapper;
-
+	@Autowired
+	private PdProductMapper pdProductMapper;
 
 	/**
 	 * 查询列表
@@ -53,7 +55,7 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
 
 
 	@Override
-	@Transactional
+	@Transactional(rollbackFor = Exception.class)
 	public void updateProductStockTotal(PdProductStockTotal stockTotal) {
 		pdProductStockTotalMapper.updateProductStockTotal(stockTotal);
 	}
@@ -66,7 +68,7 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
 	 * @param   pdStockRecord    入库记录
 	 * @return  String   更新库存结果  入库成功，返回字符串“true”，否则返回错误信息
 	 */
-	@Transactional
+	@Transactional(rollbackFor = Exception.class)
 	public String updateInStock(PdStockRecord pdStockRecord){
 
 		if(pdStockRecord == null || CollectionUtils.isEmpty(pdStockRecord.getPdStockRecordDetailList())){
@@ -144,7 +146,7 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
 	 * @param pdStockRecord   出库明细列表
 	 * @return  String   更新库存结果  入库成功，返回字符串“true”，否则返回错误信息
 	 */
-	@Transactional
+	@Transactional(rollbackFor = Exception.class)
 	public String updateOutStock(PdStockRecord pdStockRecord){
 		if(pdStockRecord == null || CollectionUtils.isEmpty(pdStockRecord.getPdStockRecordDetailList())){
 			return "参数有误";
@@ -200,7 +202,7 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
 	 * @param dosageDetails   使用明细
 	 * @return  String   更新库存结果
 	 */
-	@Transactional
+	@Transactional(rollbackFor = Exception.class)
 	@Override
 	public String updateUseStock(String departId, List<PdDosageDetail> dosageDetails){
 		//1、扣减出库库存，扣减出库库存明细
@@ -238,9 +240,8 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
 				pdProductStockMapper.updateStockNum(productStock);
 			}
 		}
-		return "true";
+		return PdConstant.TRUE;
 	}
-
 
 	/***
 	 * 	用量退回更新库存信息
@@ -248,7 +249,7 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
 	 * @param  detailList    退回用量明细
 	 * @return  String        更新库存结果
 	 */
-	/* @Transactional
+	/* @Transactional(rollbackFor = Exception.class)
 	public String updateRetunuseStock(String storeroomId, List<PdDosagertDetail> detailList){
 
 		//1、增加库存，增加库存明细
@@ -301,68 +302,61 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
 	/***
 	 * 	退货更新库存信息
 	 *
-	 * @param  outStoreroomId       出库库房ID，允许为空
-	 * @param  pdRejectedListHead    退货明细列表，不允许为空
+	 * @param  pdRejected    退货明细列表，不允许为空
 	 * @return Map      更新库存结果  入库成功，返回字符串“true”，否则返回错误信息
 	 */
-	/*@Transactional(readOnly = false)
-	public Map updateRejectionStock(String outStoreroomId, PdRejectedListHead pdRejectedListHead){
-		List<PdRejectedListChild> rejectedDetails = pdRejectedListHead.getChild();
-		Map rtMap = new HashMap<String, String>();
-		if(StringUtils.isEmpty(outStoreroomId) || rejectedDetails == null
-				|| rejectedDetails.size() == 0){
-			rtMap.put("code", "201");
-			rtMap.put("msg", "传入参数有误");
-			return rtMap;
+	@Transactional(rollbackFor = Exception.class)
+	@Override
+	public String updateRejectedStock(PdRejected pdRejected){
+		if(pdRejected == null || CollectionUtils.isEmpty(pdRejected.getPdRejectedDetailList())){
+			return "参数有误";
 		}
 
-		for(PdRejectedListChild rejectedDetail:rejectedDetails){
-			String productId = rejectedDetail.getProdId();     //产品ID
-			String productNo = rejectedDetail.getProdNo();          //产品编号
-			String productBarCode = rejectedDetail.getBarcode();  //产品条码
-			String batchNo = rejectedDetail.getBatchNo();          //批次号
-			int rejectedNum = rejectedDetail.getRejectedCount();  //退货数量
+		String drpartId = pdRejected.getDepartId();
+		List<PdRejectedDetail> pdRejectedDetailList = pdRejected.getPdRejectedDetailList();
 
-			//1、
+		for(PdRejectedDetail detail:pdRejectedDetailList){
+			String productId = detail.getProductId();     //产品ID
+			Double productNum = detail.getRejectedCount();  //退货数量
+
+			PdProduct pdProduct = pdProductMapper.selectById(productId);
+
 			PdProductStockTotal stockTotalq = new PdProductStockTotal();
-			stockTotalq.setStoreroomId(outStoreroomId);
+			stockTotalq.setDepartId(drpartId);
 			stockTotalq.setProductId(productId);
-			List<PdProductStockTotal> productStockTotals = pdProductStockTotalDao.findForUpdate(stockTotalq);
+			List<PdProductStockTotal> productStockTotals = pdProductStockTotalMapper.findForUpdate(stockTotalq);
+			// 扣减总库存
 			if(productStockTotals != null && productStockTotals.size() == 1){
 				PdProductStockTotal productStockTotal = productStockTotals.get(0);
-				Integer stockNum = productStockTotal.getStockNum();
-				Integer num = stockNum.intValue() - rejectedNum;
+				Double num = productStockTotal.getStockNum() - productNum;
 				if(num < 0){
-
+					throw new RuntimeException("扣减总库存失败，["+pdProduct.getName()+"]总库存数量不足");
 				}
 				productStockTotal.setStockNum(num);
-				pdProductStockTotalDao.updateStockNum(productStockTotal);
+				pdProductStockTotalMapper.updateStockNum(productStockTotal);
+			}else{
+				throw new RuntimeException("库存没有产品["+pdProduct.getName()+"]！");
 			}
 
 			PdProductStock o_productStockq = new PdProductStock();
-			o_productStockq.setStoreroomId(outStoreroomId);
-			o_productStockq.setProductId(productId);
-			o_productStockq.setProductNo(productNo);
-			o_productStockq.setProductBarCode(productBarCode);
-			o_productStockq.setBatchNo(batchNo);
-			List<PdProductStock> productStocks = pdProductStockDao.findForUpdate(o_productStockq);
-			if(productStocks != null && productStocks.size() >= 1){
+			o_productStockq.setId(detail.getProductStockId());
+			List<PdProductStock> productStocks = pdProductStockMapper.selectList(o_productStockq);
+			// 扣减库存
+			if(CollectionUtils.isNotEmpty(productStocks) && productStocks.size() >= 1){
 				PdProductStock productStock = productStocks.get(0);
-				Integer stockNum = productStock.getStockNum();
-				Integer num = stockNum.intValue() - rejectedNum;
+				Double num = productStock.getStockNum() - productNum;
 				if(num < 0){
-
+					throw new RuntimeException("扣减库存失败，["+pdProduct.getName()+"]库存数量不足");
 				}
 				productStock.setStockNum(num);
-				pdProductStockDao.updateStockNum(productStock);
+				pdProductStockMapper.updateStockNum(productStock);
+			}else{
+				throw new RuntimeException("库存没有产品["+pdProduct.getName()+"]！");
 			}
 		}
 
-		//3、登记日志
-
-		rtMap.put("code", "200");
-		return rtMap;
-	}*/
+		return PdConstant.TRUE;
+	}
 
 
 	/**
@@ -370,7 +364,7 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
 	 * @param stockTotal
 	 * @return
 	 * */
-	@Transactional
+	@Transactional(rollbackFor = Exception.class)
 	public Map<String,String> updateStockNumByProdIdAndDeptId(PdProductStockTotal stockTotal){
 		List<PdProductStockTotal> totalList = pdProductStockTotalMapper.findForUpdate(stockTotal);
 		PdProductStockTotal total = totalList.get(0);

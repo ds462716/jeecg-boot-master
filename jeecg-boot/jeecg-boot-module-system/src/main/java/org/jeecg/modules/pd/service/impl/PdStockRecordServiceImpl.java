@@ -55,8 +55,6 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
 	@Autowired
 	private IPdStockRecordDetailService pdStockRecordDetailService;
 	@Autowired
-	private ISysDepartService sysDepartService;
-	@Autowired
 	private IPdGoodsAllocationService pdGoodsAllocationService;
 	@Autowired
 	private ISysDictService sysDictService;
@@ -70,7 +68,7 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
 	private IPdAllocationDetailService pdAllocationDetailService;
 
 	@Override
-	@Transactional
+	@Transactional(rollbackFor = Exception.class)
 	public void saveMain(PdStockRecord pdStockRecord, List<PdStockRecordDetail> pdStockRecordDetailList, String recordType) {
 		if(PdConstant.RECODE_TYPE_1.equals(recordType)){
 			this.saveInStockRecord(pdStockRecord, pdStockRecordDetailList, "");
@@ -194,7 +192,7 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
 	}
 
 	@Override
-	@Transactional
+	@Transactional(rollbackFor = Exception.class)
 	public void updateMain(PdStockRecord pdStockRecord,List<PdStockRecordDetail> pdStockRecordDetailList) {
 		pdStockRecordMapper.updateById(pdStockRecord);
 		
@@ -212,14 +210,14 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
 	}
 
 	@Override
-	@Transactional
+	@Transactional(rollbackFor = Exception.class)
 	public void delMain(String id) {
 		pdStockRecordDetailMapper.deleteByMainId(id);
 		pdStockRecordMapper.deleteById(id);
 	}
 
 	@Override
-	@Transactional
+	@Transactional(rollbackFor = Exception.class)
 	public void delBatchMain(Collection<? extends Serializable> idList) {
 		for(Serializable id:idList) {
 			pdStockRecordDetailMapper.deleteByMainId(id.toString());
