@@ -26,7 +26,7 @@
             :customRow="departOnClickRow"
             :expandedRowKeys= "departExpandedRowKeys"
             @expand="departHandleExpand"
-            :rowSelection="{selectedRowKeys: departSelectedRowKeys, onChange: departOnSelectChange}">
+            :rowSelection="{fixed:false,selectedRowKeys: departSelectedRowKeys, onChange: departOnSelectChange}">
             <span slot="action" slot-scope="text, record">
               <a @click="showHuoweiList(record)" v-if="record.orgType!='1'">查看</a>
               <a-divider type="vertical" v-if="record.orgType!='1'" />
