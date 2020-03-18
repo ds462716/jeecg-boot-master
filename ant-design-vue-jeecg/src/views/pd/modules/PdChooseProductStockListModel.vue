@@ -48,6 +48,7 @@
                     @change="supplierHandleChange"
                     @focus="supplierHandleSearch"
                     :notFoundContent="notFoundContent"
+                    :disabled="supplierSelecDisabled"
                     v-model="queryParam.supplierId"
                   >
                     <a-select-option v-for="d in supplierData" :key="d.value">{{d.text}}</a-select-option>
@@ -106,10 +107,10 @@
         title:"选择产品",
         width:1600,
         visible: false,
-        supplierId:"", //供应商ID 用于入库时查询产品
         // model: {},
         confirmLoading: false,
 
+        supplierSelecDisabled:false,
         // supplierSelecDisabled:false,
         supplierValue: undefined,
         notFoundContent:"未找到内容",
@@ -117,6 +118,7 @@
 
         applyNo:"",
         allocationNo:"",
+        supplierId:"", //供应商ID
 
         // 表头
         columns: [
@@ -190,10 +192,8 @@
       close () {
         this.selectedRowKeys = [];
         this.selectionRows = [];
-        // this.queryParam.supplierId="";
         this.queryParam = {};
         this.loadData(1);
-        // this.supplierData = [];
         this.$emit('close');
         this.visible = false;
       },
@@ -205,6 +205,15 @@
         if(params && params.allocationNo){
           this.applyNo = "";
           this.allocationNo = params.allocationNo;
+        }
+        if(params && params.supplierId){
+          this.supplierId = params.supplierId;
+          this.$nextTick(() => {
+            // 初始化供应商
+            this.supplierHandleSearch();
+            this.queryParam.supplierId = this.supplierId; //默认选择父页面传来的供应商
+            this.supplierSelecDisabled = true;
+          })
         }
         this.loadData(1);
         this.visible = true;
@@ -236,6 +245,9 @@
         if(this.allocationNo){
           params.allocationNo = this.allocationNo;
         }
+        if(this.supplierId){
+          params.supplierId = this.supplierId;
+        }
         this.loading = true;
         getAction(this.url.list, params).then((res) => {
           if (res.success) {
@@ -251,13 +263,30 @@
 
       //供应商查询start
       supplierHandleSearch(value) {
-        fetch(value, data => (this.supplierData = data),this.url.querySupplier);
+        this.getSupplierList(value);
       },
       supplierHandleChange(value) {
         this.supplierValue = value;
-        fetch(value, data => (this.supplierData = data),this.url.querySupplier);
+        this.getSupplierList(value);
+      },
+      getSupplierList(value){
+        getAction(this.url.querySupplier,{name:value}).then((res)=>{
+          if (!res.success) {
+            this.cmsFailed(res.message);
+          }
+          const result = res.result;
+          const data = [];
+          result.forEach(r => {
+            data.push({
+              value: r.id,
+              text: r.name,
+            });
+          });
+          this.supplierData = data;
+        })
       },
       //供应商查询end
+
       expDateChange: function (value, dateString) {
         this.queryParam.queryDateStart=dateString[0];
         this.queryParam.queryDateEnd=dateString[1];
@@ -276,36 +305,5 @@
         return filterObj(param);
       },
     }
-  }
-
-  let timeout;
-  let currentValue;
-
-  function fetch(value, callback,url) {
-    if (timeout) {
-      clearTimeout(timeout);
-      timeout = null;
-    }
-    currentValue = value;
-
-    function fake() {
-      getAction(url, {name: value}).then((res) => {
-        if (!res.success) {
-          this.cmsFailed(res.message);
-        }
-        if (currentValue === value) {
-          const result = res.result;
-          const data = [];
-          result.forEach(r => {
-            data.push({
-              value: r.id,
-              text: r.name,
-            });
-          });
-          callback(data);
-        }
-      })
-    }
-    timeout = setTimeout(fake, 0); //这边不延迟
   }
 </script>

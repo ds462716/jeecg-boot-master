@@ -795,32 +795,32 @@
           inHuoweiCode:""
         }
         this.pdStockRecordDetailTable.dataSource.push(data);
-        this.$refs.pdStockRecordDetail.add();
+        // this.$refs.pdStockRecordDetail.add();
       },
       // 扫码 调用 新增一行
-      addrowsByScanCode(row){
-        let data = {
-          productStockId:row.id,
-          productId: row.productId,
-          productName: row.productName,
-          productNumber:row.number,
-          productBarCode:row.productBarCode,
-          spec: row.spec,
-          batchNo:row.batchNo,
-          unitName:row.unitName,
-          expDate:row.expDate,
-          sellingPrice:row.sellingPrice,
-          productNum: 1,
-          purchasePrice:row.purchasePrice,
-          outTotalPrice:Number(!row.sellingPrice ? 0 : row.sellingPrice).toFixed(4),
-          stockNum:row.stockNum,
-          outHuoweiName:row.huoweiName,
-          outHuoweiCode:row.huoweiCode,
-          inHuoweiCode:""
-        }
-        this.pdStockRecordDetailTable.dataSource.push(data);
-        this.$refs.pdStockRecordDetail.add();
-      },
+      // addrowsByScanCode(row){
+      //   let data = {
+      //     productStockId:row.id,
+      //     productId: row.productId,
+      //     productName: row.productName,
+      //     productNumber:row.number,
+      //     productBarCode:row.productBarCode,
+      //     spec: row.spec,
+      //     batchNo:row.batchNo,
+      //     unitName:row.unitName,
+      //     expDate:row.expDate,
+      //     sellingPrice:row.sellingPrice,
+      //     productNum: 1,
+      //     purchasePrice:row.purchasePrice,
+      //     outTotalPrice:Number(!row.sellingPrice ? 0 : row.sellingPrice).toFixed(4),
+      //     stockNum:row.stockNum,
+      //     outHuoweiName:row.huoweiName,
+      //     outHuoweiCode:row.huoweiCode,
+      //     inHuoweiCode:""
+      //   }
+      //   this.pdStockRecordDetailTable.dataSource.push(data);
+      //   this.$refs.pdStockRecordDetail.add();
+      // },
       // 计算总数量和总价格
       getTotalNumAndPrice(rows){
         this.$nextTick(() => {
@@ -848,18 +848,8 @@
       valueChange(event) {
         if(event){
           const { type, row, column, value, target } = event;
-          if (type === FormTypes.select) {
-
-          }else if(type === FormTypes.input){
+          if(type === FormTypes.input){
             if(column.key === "productNum"){
-              // if(value != "" && Number(value) <= 0){
-              //   this.$message.error("["+row.productName+"]出库数量必须大于0！");
-              //   // 产品数量变更 计算每条产品的价格
-              //   target.setValues([{rowKey: row.id, values: { outTotalPrice: row.sellingPrice, productNum: "1" }}])
-              //   // 计算总数量和总价格
-              //   this.getTotalNumAndPrice([]);
-              //   return;
-              // }
               let { values } = target.getValuesSync({ validate: false });
               for(let item of values){
                 if(item.id == row.id && Number(value) > Number(item.stockNum)){
@@ -883,7 +873,6 @@
       },
       // 扫码查询
       searchQuery(num) {
-        let that = this;
         let productNumber = this.queryParam.productNumber;
         if(!productNumber){
           //清空扫码框
@@ -906,45 +895,48 @@
           //解析条码
           stockScanCode(productNumber,productBarCode).then((res) => {
             if(res.code == "200" || res.code == "203"){
-              let pdProductStock = res.result[0];
-              if(!pdProductStock){
+              let pdProductStockList = res.result;
+              if(!pdProductStockList){
                 //清空扫码框
                 this.clearQueryParam();
                 this.$message.error("条码解析失败，请校验条码是否正确！");
                 return;
               }
-              let isAddRow = true;// 是否增加一行
-              // 循环表格数据
+
               let { values } = this.$refs.pdStockRecordDetail.getValuesSync({ validate: false });
-              if(values.length > 0) { //表格有数据
-                for(let item of values){
-                  if(pdProductStock.id == item.productStockId){// 库存明细ID一致，就+1
-                    isAddRow = false;
-                    if(Number(item.productNum) + 1 > Number(item.stockNum)){
-                      //清空扫码框
-                      this.clearQueryParam();
-                      this.$message.error("["+item.productName+"]出库数量不能大于库存数量！");
-                      return;
+              for(let pdProductStock of pdProductStockList){
+                let isAddRow = true;// 是否增加一行
+                // 循环表格数据
+                if(values.length > 0) { //表格有数据
+                  for(let item of values){
+                    if(pdProductStock.id == item.productStockId){// 库存明细ID一致，就+1
+                      isAddRow = false;
+                      if(Number(item.productNum) + 1 > Number(item.stockNum)){
+                        //清空扫码框
+                        this.clearQueryParam();
+                        this.$message.error("["+item.productName+"]出库数量不能大于库存数量！");
+                        return;
+                      }
+
+                      let productNum = Number(item.productNum) + 1;
+                      let outTotalPrice = (Number(item.sellingPrice) * Number(productNum)).toFixed(4);
+
+                      this.$refs.pdStockRecordDetail.setValues([{rowKey: item.id, values: {
+                          productNum: productNum,outTotalPrice: outTotalPrice }}]);
+                      // 计算总数量和总价格
+                      this.getTotalNumAndPrice([]);
+                      break;
                     }
-
-                    let productNum = Number(item.productNum) + 1;
-                    let outTotalPrice = (Number(item.sellingPrice) * Number(productNum)).toFixed(4);
-
-                    this.$refs.pdStockRecordDetail.setValues([{rowKey: item.id, values: {
-                        productNum: productNum,outTotalPrice: outTotalPrice }}]);
-                    // 计算总数量和总价格
-                    this.getTotalNumAndPrice([]);
-                    break;
                   }
                 }
-              }
 
-              if(isAddRow){
-                this.pdStockRecordDetailTable.dataSource = values;
-                //条码新增一行
-                this.addrowsByScanCode(pdProductStock);
-                // 计算总数量和总价格
-                this.getTotalNumAndPrice(values);
+                if(isAddRow){
+                  this.pdStockRecordDetailTable.dataSource = values;
+                  //条码新增一行
+                  this.addrows(pdProductStock);
+                  // 计算总数量和总价格
+                  this.getTotalNumAndPrice(values);
+                }
               }
               if(res.code == "203"){ // 近效期提醒
                 this.$message.error(result.message);

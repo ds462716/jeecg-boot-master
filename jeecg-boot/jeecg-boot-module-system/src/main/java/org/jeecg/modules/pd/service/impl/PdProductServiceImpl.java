@@ -245,6 +245,7 @@ public class PdProductServiceImpl extends ServiceImpl<PdProductMapper, PdProduct
                 PdProductStock pdProductStock = new PdProductStock();
                 pdProductStock.setProductId(pdProduct.getId());
                 pdProductStock.setProductBarCode(productBarCode);
+                pdProductStock.setDepartId(sysUser.getCurrentDepartId());
                 pdProductStocks = pdProductStockService.selectList(pdProductStock);
                 //有库存直接返回
                 if (pdProductStocks != null && pdProductStocks.size() > 0) {
@@ -348,6 +349,7 @@ public class PdProductServiceImpl extends ServiceImpl<PdProductMapper, PdProduct
                     //查询条件为  产品id 产品批号  产品有效期
                     pdProductStock.setExpDate(DateUtils.str2Date((String)resultMap.get("expDate"),DateUtils.date_sdf.get()));
                     pdProductStock.setBatchNo((String) resultMap.get("batchNo"));
+                    pdProductStock.setDepartId(sysUser.getCurrentDepartId());
                     //根据条件查询库存
                     pdProductStocks = pdProductStockService.selectList(pdProductStock);
                 }
