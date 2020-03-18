@@ -321,7 +321,7 @@
               <div class="controls">
                 <div class='pictureUploadDiv'>
                   <div class='tR_upPic_icon'>
-                    <input type="file" ref="file" class="upPic" style="width: 100%; height: 100%;" v-on:change="handleFileUpload($event,index)">
+                    <input type="file" :disabled="disableSubmit" ref="file" class="upPic" style="width: 100%; height: 100%;" v-on:change="handleFileUpload($event,index)">
                     <div class="smallImg"  style='display:block;width:256px;height:160px;' >
                       <img :src="getAvatarView(index)" v-show="imgIsShow[index].show" ref="upImg" :key="index" class="card-box_img" />
                       <div   v-show="imgIsShow[index].show" class="smallImg_cloBtn" @click="closeImg(index)" ref="close"></div>
@@ -648,6 +648,8 @@
         })
       },
       close () {
+        //解决滚动条缓存bug
+        this.focusDisable = false;
         this.$emit('close');
         this.visible = false;
       },
@@ -803,8 +805,8 @@
         if(!this.disableSubmit){
           let that = this;
           //that.$refs.upImg[index].src = "";
-          this.form.setFieldsValue({["licenceSite"+index]:""});
-          this.imgIsShow[index].show = false;
+          that.form.setFieldsValue({["licenceSite"+index]:""});
+          that.imgIsShow[index].show = false;
         }
       },
       getAvatarView(index){
