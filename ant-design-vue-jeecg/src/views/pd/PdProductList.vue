@@ -4,7 +4,83 @@
     <div class="table-page-search-wrapper">
       <a-form layout="inline" @keyup.enter.native="searchQuery">
         <a-row :gutter="24">
-
+          <a-col :md="6" :sm="8">
+            <a-form-item label="产品名称">
+              <a-input placeholder="请输入产品名称" v-model="queryParam.name"></a-input>
+            </a-form-item>
+          </a-col>
+          <a-col :md="6" :sm="8">
+            <a-form-item label="产品编号">
+              <a-input placeholder="请输入产品编号" v-model="queryParam.number"></a-input>
+            </a-form-item>
+          </a-col>
+          <a-col :md="6" :sm="8">
+            <a-form-item label="注册证">
+              <a-input placeholder="请输入注册证" v-model="queryParam.registration"></a-input>
+            </a-form-item>
+          </a-col>
+          <template v-if="toggleSearchStatus">
+            <a-col :md="6" :sm="8">
+              <a-form-item label="收费代码">
+                <a-input placeholder="请输入收费代码" v-model="queryParam.chargeCode"></a-input>
+              </a-form-item>
+            </a-col>
+            <a-col :md="6" :sm="8">
+              <a-form-item label="生产厂家">
+                <a-select
+                  showSearch
+                  :venderId="venderValue"
+                  placeholder="请选择生产厂家"
+                  :defaultActiveFirstOption="false"
+                  :allowClear="true"
+                  :showArrow="true"
+                  :filterOption="false"
+                  @search="venderHandleSearch"
+                  @change="venderHandleChange"
+                  @focus="venderHandleSearch"
+                  :notFoundContent="notFoundContent"
+                  v-model="queryParam.venderId"
+                >
+                  <a-select-option v-for="d in venderData" :key="d.value">{{d.text}}</a-select-option>
+                </a-select>
+              </a-form-item>
+            </a-col>
+            <a-col :md="6" :sm="8">
+              <a-form-item label="供应商">
+                <a-select
+                  showSearch
+                  :supplierId="supplierValue"
+                  placeholder="请选择供应商"
+                  :defaultActiveFirstOption="false"
+                  :allowClear="true"
+                  :showArrow="true"
+                  :filterOption="false"
+                  @search="supplierHandleSearch"
+                  @change="supplierHandleChange"
+                  @focus="supplierHandleSearch"
+                  :notFoundContent="notFoundContent"
+                  v-model="queryParam.supplierId"
+                >
+                  <a-select-option v-for="d in supplierData" :key="d.value">{{d.text}}</a-select-option>
+                </a-select>
+              </a-form-item>
+            </a-col>
+            <a-col :md="6" :sm="8">
+              <a-form-item label="规格">
+                <a-input placeholder="请输入规格" v-model="queryParam.spec"></a-input>
+              </a-form-item>
+            </a-col>
+          </template>
+          <a-col :md="6" :sm="8" >
+            <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
+              <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
+              <a-button type="primary" @click="searchReset" icon="reload" style="margin-left: 8px">重置</a-button>
+              <a @click="handleToggleSearch" style="margin-left: 8px">
+                {{ toggleSearchStatus ? '收起' : '展开' }}
+                <a-icon :type="toggleSearchStatus ? 'up' : 'down'"/>
+              </a>
+            </span>
+          </a-col>
         </a-row>
       </a-form>
     </div>
@@ -97,6 +173,38 @@
   import { JeecgListMixin } from '@/mixins/JeecgListMixin'
   import PdProductModal from './modules/PdProductModal'
   import {initDictOptions, filterMultiDictText} from '@/components/dict/JDictSelectUtil'
+  import { getAction } from  '@/api/manage'
+
+  let timeout;
+  let currentValue;
+
+  function fetch(value, callback,url) {
+    if (timeout) {
+      clearTimeout(timeout);
+      timeout = null;
+    }
+    currentValue = value;
+
+    function fake() {
+      getAction(url,{name:value}).then((res)=>{
+        if (!res.success) {
+          this.cmsFailed(res.message);
+        }
+        if (currentValue === value) {
+          const result = res.result;
+          const data = [];
+          result.forEach(r => {
+            data.push({
+              value: r.id,
+              text: r.name,
+            });
+          });
+          callback(data);
+        }
+      })
+    }
+    timeout = setTimeout(fake, 300);
+  }
 
   export default {
     name: "PdProductList",
@@ -107,6 +215,11 @@
     data () {
       return {
         description: '产品管理页面',
+        notFoundContent:"未找到内容",
+        venderData: [],
+        venderValue: undefined,
+        supplierData: [],
+        supplierValue: undefined,
         // 表头
         columns: [
           {
@@ -168,6 +281,16 @@
             dataIndex: 'supplierName'
           },
           {
+            title:'产品收费代码',
+            align:"center",
+            dataIndex: 'chargeCode'
+          },
+          {
+            title:'注册证',
+            align:"center",
+            dataIndex: 'registration'
+          },
+          {
             title: '操作',
             dataIndex: 'action',
             align:"center",
@@ -181,6 +304,8 @@
           deleteBatch: "/pd/pdProduct/deleteBatch",
           exportXlsUrl: "/pd/pdProduct/exportXls",
           importExcelUrl: "pd/pdProduct/importExcel",
+          queryVender:"/pd/pdVender/getVenderList",
+          querySupplier:"/pd/pdSupplier/getSupplierList",
         },
         dictOptions:{
           isCharge:[],
@@ -200,7 +325,24 @@
           }
         })
       },
-
+      //生产厂家查询start
+      venderHandleSearch(value) {
+        fetch(value, data => (this.venderData = data),this.url.queryVender);
+      },
+      venderHandleChange(value) {
+        this.venderValue = value;
+        fetch(value, data => (this.venderData = data),this.url.queryVender);
+      },
+      //生产厂家查询end
+      //供应商查询start
+      supplierHandleSearch(value) {
+        fetch(value, data => (this.supplierData = data),this.url.querySupplier);
+      },
+      supplierHandleChange(value) {
+        this.supplierValue = value;
+        fetch(value, data => (this.supplierData = data),this.url.querySupplier);
+      },
+      //供应商查询end
       /**
        * 点击行选中checkbox
        * @param record
