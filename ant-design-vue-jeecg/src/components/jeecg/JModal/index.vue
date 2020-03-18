@@ -100,6 +100,7 @@
       },
       // 是否锁定body滚动
       lockBodyScroll() {
+        //解决弹窗后列表滚动条锁死bug 2020年3月18日16:12:13
         if(this.lockScroll==false){
           return false;
         }else{

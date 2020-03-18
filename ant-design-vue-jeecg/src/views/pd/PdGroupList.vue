@@ -57,7 +57,7 @@
         :pagination="ipagination"
         :loading="loading"
         :customRow="onClickRow"
-        :rowSelection="{fixed:true,selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
+        :rowSelection="{fixed:false,selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
         
         @change="handleTableChange">
 
