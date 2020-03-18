@@ -1,25 +1,14 @@
 <template>
-  <a-modal
+  <j-modal
     :visible="visible"
     :width="popModal.width"
-    :style="popModal.style"
     :maskClosable="disableSubmit"
-    :confirmLoading="confirmLoading"
+    :title="popModal.title"
+    :lockScroll="popModal.lockScroll"
+    :fullscreen="popModal.fullscreen"
+    :switchFullscreen="popModal.switchFullscreen"
     @cancel="handleCancel"
-    :footer="null"
   >
-    <!--:footer="null" 隐藏自带的保存、取消按钮，用自定义按钮-->
-    <!--@ok="handleOk" 保存按钮方法-->
-    <!--@cancel="handleCancel" 取消按钮方法-->
-
-    <template slot="title">
-      <div style="width: 100%;height:20px;padding-right:32px;">
-        <div style="float: left;">{{ title }}</div>
-        <div style="float: right;">
-          <a-button icon="fullscreen" style="width:56px;height:100%;border:0" @click="handleClickToggleFullScreen"/>
-        </div>
-      </div>
-    </template>
 
     <a-spin :spinning="confirmLoading">
       <!-- 主表单区域 -->
@@ -200,21 +189,21 @@
           </a-form>
         </a-card>
       </div>
-
-      <div class="drawer-bootom-button">
-        <a-button @click="closeBtn" style="margin-right: 15px;" v-show="disableSubmit">关  闭</a-button>
-        <a-popconfirm title="确定放弃编辑？" @confirm="handleCancel" v-show="!disableSubmit" okText="确定" cancelText="取消">
-          <a-button style="margin-right: 15px;">取  消</a-button>
-        </a-popconfirm>
-        <a-button @click="saveBtn" v-show="!disableSubmit" type="primary" :loading="confirmLoading" style="margin-right: 15px;">保存草稿</a-button>
-        <a-button @click="submitBtn" v-show="!disableSubmit" type="primary" :loading="confirmLoading" style="margin-right: 15px;">提  交</a-button>
-      </div>
-
     </a-spin>
+
+
+    <template slot="footer">
+      <a-button @click="closeBtn" style="margin-right: 15px;" v-show="disableSubmit">关  闭</a-button>
+      <a-popconfirm title="确定放弃编辑？" @confirm="handleCancel" v-show="!disableSubmit" okText="确定" cancelText="取消">
+        <a-button style="margin-right: 15px;">取  消</a-button>
+      </a-popconfirm>
+      <a-button @click="saveBtn" v-show="!disableSubmit" type="primary" :loading="confirmLoading" style="margin-right: 15px;">保存草稿</a-button>
+      <a-button @click="submitBtn" v-show="!disableSubmit" type="primary" :loading="confirmLoading" style="margin-right: 15px;">提  交</a-button>
+    </template>
 
     <pd-choose-purchase-order-list-model  ref="pdChoosePurchaseOrderListModel" @ok="returnPurchaseOrderData" ></pd-choose-purchase-order-list-model>
     <pd-choose-product-list-model  ref="pdChooseProductListModel" @ok="returnProductData" ></pd-choose-product-list-model>
-  </a-modal>
+  </j-modal>
 </template>
 
 <script>
@@ -390,8 +379,11 @@
           title: '这里是标题',
           visible: false,
           width: '100%',
+          // width: '1200',
           style: { top: '20px' },
-          fullScreen: true
+          switchFullscreen: true,  //缩放按钮
+          lockScroll: false,
+          fullscreen: true,
         },
       }
     },
@@ -424,7 +416,8 @@
         this.supplierHandleSearch();
 
         let params = {};
-        if(this.model.id){
+          if(this.model.id){
+            this.popModal.title="入库明细";
           let fieldval = pick(this.model,'recordNo','inType','submitBy','submitByName','submitDate','remarks','inDepartId','supplierId',
             'testResult','storageResult','temperature','humidity','remarks')
           this.$nextTick(() => {
@@ -432,6 +425,7 @@
           })
           params = { id: this.model.id }
         }else{
+          this.popModal.title="新增入库";
           params = { id: "" }
         }
         getAction(this.url.init, params).then((res) => {
@@ -598,18 +592,6 @@
       popupCallback(row){
         this.form.setFieldsValue(pick(row,'recordNo','inType','submitBy','submitByName','submitDate','remarks','inDepartId','supplierId',
           'testResult','storageResult','temperature','humidity','remarks'))
-      },
-      /** 切换全屏显示 */
-      handleClickToggleFullScreen() {
-        let mode = !this.popModal.fullScreen
-        if (mode) {
-          this.popModal.width = '100%'
-          this.popModal.style.top = '20px'
-        } else {
-          this.popModal.width = '1200px'
-          this.popModal.style.top = '50px'
-        }
-        this.popModal.fullScreen = mode
       },
 
       //-----------------供应商查询start

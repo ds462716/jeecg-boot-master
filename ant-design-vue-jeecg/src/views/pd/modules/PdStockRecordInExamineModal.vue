@@ -1,22 +1,14 @@
 <template>
-  <a-modal
+  <j-modal
     :visible="visible"
     :width="popModal.width"
-    :style="popModal.style"
     :maskClosable="disableSubmit"
-    :confirmLoading="confirmLoading"
+    :title="popModal.title"
+    :lockScroll="popModal.lockScroll"
+    :fullscreen="popModal.fullscreen"
+    :switchFullscreen="popModal.switchFullscreen"
     @cancel="handleCancel"
-    :footer="null"
   >
-
-    <template slot="title">
-      <div style="width: 100%;height:20px;padding-right:32px;">
-        <div style="float: left;">{{ title }}</div>
-        <div style="float: right;">
-          <a-button icon="fullscreen" style="width:56px;height:100%;border:0" @click="handleClickToggleFullScreen"/>
-        </div>
-      </div>
-    </template>
 
     <a-spin :spinning="confirmLoading">
       <!-- 主表单区域 -->
@@ -184,7 +176,7 @@
 
     </a-spin>
 
-  </a-modal>
+  </j-modal>
 </template>
 
 <script>
@@ -352,8 +344,11 @@
           title: '这里是标题',
           visible: false,
           width: '100%',
+          // width: '1200',
           style: { top: '20px' },
-          fullScreen: true
+          switchFullscreen: true,  //缩放按钮
+          lockScroll: true,
+          fullscreen: true,
         },
       }
     },
@@ -373,7 +368,7 @@
       },
       loadData() {
         this.loading = true;
-
+        this.popModal.title="入库审核";
         //初始化供应商，用于回显供应商
         this.supplierHandleSearch();
 
@@ -463,18 +458,6 @@
       popupCallback(row){
         this.form.setFieldsValue(pick(row,'recordNo','inType','submitBy','submitByName','submitDate','remarks','inDepartId','supplierId',
           'testResult','storageResult','temperature','humidity','remarks','refuseReason'))
-      },
-      /** 切换全屏显示 */
-      handleClickToggleFullScreen() {
-        let mode = !this.popModal.fullScreen
-        if (mode) {
-          this.popModal.width = '100%'
-          this.popModal.style.top = '20px'
-        } else {
-          this.popModal.width = '1200px'
-          this.popModal.style.top = '50px'
-        }
-        this.popModal.fullScreen = mode
       },
 
       //-----------------供应商查询start
