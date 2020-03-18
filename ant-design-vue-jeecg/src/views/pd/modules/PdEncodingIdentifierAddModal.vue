@@ -48,7 +48,7 @@
         :pagination="false"
         :loading="loading"
         :customRow="onClickRow"
-        :rowSelection="{fixed:true,selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
+        :rowSelection="{fixed:false,selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
         :scroll="{ y: 280 }"
         @change="handleTableChange">
 
