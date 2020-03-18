@@ -14,6 +14,8 @@ import org.jeecg.common.constant.PdConstant;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.pd.entity.PdRejected;
+import org.jeecg.modules.pd.entity.PdRejectedDetail;
+import org.jeecg.modules.pd.service.IPdRejectedDetailService;
 import org.jeecg.modules.pd.service.IPdRejectedService;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -52,7 +54,8 @@ import org.jeecg.common.aspect.annotation.AutoLog;
 public class PdRejectedController extends JeecgController<PdRejected, IPdRejectedService> {
 	@Autowired
 	private IPdRejectedService pdRejectedService;
-
+	@Autowired
+	private IPdRejectedDetailService pdRejectedDetailService;
 
 	 /**
 	  * 初始化Modal页面
@@ -62,8 +65,16 @@ public class PdRejectedController extends JeecgController<PdRejected, IPdRejecte
 	 @GetMapping(value = "/initModal")
 	 public Result<?> initModal(@RequestParam(name="id") String id, HttpServletRequest req) {
 		 PdRejected pdRejected = new PdRejected();
+
 		 //获取退货单号
 		 pdRejected.setRejectedNo(UUIDUtil.generateOrderNoByType(PdConstant.ORDER_NO_FIRST_LETTER_TH));
+		 if (oConvertUtils.isNotEmpty(id)) {
+			 PdRejectedDetail pdRejectedDetail = new PdRejectedDetail();
+			 pdRejectedDetail.setRejectedId(id);
+			 List<PdRejectedDetail> pdRejectedDetailList = pdRejectedDetailService.selectByMainId(pdRejectedDetail);
+			 pdRejected.setPdRejectedDetailList(pdRejectedDetailList);
+		 }
+
 		 return Result.ok(pdRejected);
 	 }
 
@@ -83,9 +94,8 @@ public class PdRejectedController extends JeecgController<PdRejected, IPdRejecte
 								   @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
 								   @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
 								   HttpServletRequest req) {
-		QueryWrapper<PdRejected> queryWrapper = QueryGenerator.initQueryWrapper(pdRejected, req.getParameterMap());
 		Page<PdRejected> page = new Page<PdRejected>(pageNo, pageSize);
-		IPage<PdRejected> pageList = pdRejectedService.page(page, queryWrapper);
+		IPage<PdRejected> pageList = pdRejectedService.queryList(page, pdRejected);
 		return Result.ok(pageList);
 	}
 	
@@ -105,9 +115,7 @@ public class PdRejectedController extends JeecgController<PdRejected, IPdRejecte
 
 	 @PostMapping(value = "/submit")
 	public Result<?> submit(@RequestBody PdRejected pdRejected) {
-//		 PdStockRecord pdStockRecord = new PdStockRecord();
-//		 BeanUtils.copyProperties(PdStockRecord, pdStockRecord);
-//		 pdStockRecordService.saveMain(pdStockRecord, PdStockRecord.getPdStockRecordDetailList(), PdConstant.RECODE_TYPE_2);
+		pdRejectedService.saveMain(pdRejected, pdRejected.getPdRejectedDetailList());
 		return Result.ok("添加成功！");
 	}
 

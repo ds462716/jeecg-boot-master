@@ -14,4 +14,5 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  */
 public interface PdRejectedMapper extends BaseMapper<PdRejected> {
 
+    List<PdRejected> selectList(PdRejected pdRejected);
 }

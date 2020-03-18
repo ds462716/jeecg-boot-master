@@ -2,4 +2,23 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.jeecg.modules.pd.mapper.PdRejectedDetailMapper">
 
+    <select id="selectByMainId" parameterType="org.jeecg.modules.pd.entity.PdRejectedDetail" resultType="org.jeecg.modules.pd.entity.PdRejectedDetail">
+        SELECT
+            a.*,
+            b.spec,
+            b.name as productName,
+            b.number as productNumber,
+            c.NAME AS unitName,
+            d.NAME AS huoweiName,
+	        e.exp_date as expDate
+        FROM
+            pd_rejected_detail a
+            LEFT JOIN pd_product b ON a.product_id = b.id
+            LEFT JOIN pd_unit c ON b.unit_id = c.id
+            LEFT JOIN pd_goods_allocation d ON a.huowei_code = d.CODE
+	        LEFT JOIN pd_product_stock e ON e.id = a.product_stock_id
+        WHERE
+            a.rejected_id = #{rejectedId}
+    </select>
+
 </mapper>
