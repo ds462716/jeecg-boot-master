@@ -62,7 +62,7 @@
                   <span class="gap"></span>
                 </a-popconfirm>
                 <span style="padding-left: 8px;"></span>
-                  <a-button type="primary" icon="download" @click="exportXls('申购产品列表')">导出</a-button>
+                  <!--<a-button type="primary" icon="download" @click="exportXls('申购产品列表')">导出</a-button>-->
               </div>
               <j-editable-table
                 bordered

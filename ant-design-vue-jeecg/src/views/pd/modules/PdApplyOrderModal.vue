@@ -54,8 +54,8 @@
               <div style="margin-bottom: 8px;">
                 <a-button v-show="!disableSubmit" type="primary" icon="plus" @click="choice">选择产品</a-button>
                 <span style="padding-left: 8px;"></span>
-                <a-button v-show="!disableSubmit" type="primary" icon="plus" @click="choicePackage">选择定数包</a-button>
-                <span style="padding-left: 8px;"></span>
+                <!--<a-button v-show="!disableSubmit" type="primary" icon="plus" @click="choicePackage">选择定数包</a-button>
+                <span style="padding-left: 8px;"></span>-->
                 <a-popconfirm
                   :title="`确定要删除吗?`"
                   @confirm="handleConfirmDelete">
@@ -63,7 +63,7 @@
                   <span class="gap"></span>
                 </a-popconfirm>
                 <span style="padding-left: 8px;"></span>
-                <a-button type="primary" icon="download" @click="exportXls('申领产品列表')">导出</a-button>
+                <!--<a-button type="primary" icon="download" @click="exportXls('申领产品列表')">导出</a-button>-->
               </div>
               <j-editable-table
                 bordered
@@ -165,16 +165,16 @@
             { title: '定数包名称',  width:"130px", key: 'packageName' },
             { title: '定数包产品数量',  width:"130px",type: FormTypes.normal, key: 'packageNum' },
             { title: '产品名称', width:"250px",  key: 'productName' },
-            { title: '产品编号',width:"150px", align:"center", key: 'number' },
-            { title: '规格',width:"240px", align:"center", key: 'spec' },
-            { title: '型号', width:"240px",align:"center", key: 'version' },
-            { title: '单位',width:"50px", align:"center", key: 'unitName' },
-            { title: '发货数量', width:"100px",align:"center", key: 'arrivalNum' },
             { title: '申领数量', key: 'applyNum', type: FormTypes.input, width:"80px",
               placeholder: '${title}', defaultValue: '1',
               validateRules: [{ required: true, message: '${title}不能为空' },
                 { pattern: '^(?:[1-9][0-9]*(?:\\.[0-9]+)?|0\\.(?!0+$)[0-9]+)$',message: '${title}的格式不正确' }]
             },
+            { title: '产品编号',width:"150px", align:"center", key: 'number' },
+            { title: '规格',width:"240px", align:"center", key: 'spec' },
+            { title: '型号', width:"240px",align:"center", key: 'version' },
+            { title: '单位',width:"50px", align:"center", key: 'unitName' },
+            { title: '发货数量', width:"100px",align:"center", key: 'arrivalNum' },
             { title: '库存数量', align:"center", key: 'stockNum' },
           ]
         },

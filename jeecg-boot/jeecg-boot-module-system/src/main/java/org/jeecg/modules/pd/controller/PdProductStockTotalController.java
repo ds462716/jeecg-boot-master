@@ -138,13 +138,30 @@ public class PdProductStockTotalController {
 		 List arr = Arrays.asList(ids.split(","));
 		 for (int i = 0; i < arr.size(); i++) {
 			 String id=(String)arr.get(i);
-			 PdProductStockTotal stockTotal = new PdProductStockTotal();
+			 PdProductStockTotal stockTotal =new PdProductStockTotal();
 			 stockTotal.setId(id);
-			 if (ObjectUtils.isNotEmpty(downNum)) {
-				 stockTotal.setLimitDown(downNum);
+			 //先查询库存上限或下限数量，比较设置的上限值不能小于当前下限值；
+			 PdProductStockTotal stock_total = pdProductStockTotalService.getById(id);
+			 if (ObjectUtils.isNotEmpty(downNum) ) {//下限
+				Double  limitUp= stock_total.getLimitUp();
+			 	if(ObjectUtils.isNotEmpty(limitUp)){
+			 		      if(limitUp > downNum){
+							  stockTotal.setLimitDown(downNum);
+						  }else{
+							  return Result.error("库存下限不能大于库存上限");
+						  }
+				  }
+
 			 }
-			 if (ObjectUtils.isNotEmpty(upNum)) {
-				 stockTotal.setLimitUp(upNum);
+			 if (ObjectUtils.isNotEmpty(upNum)) {//上限
+				 Double  limitDown= stock_total.getLimitDown();
+                            if(ObjectUtils.isNotEmpty(limitDown)){
+								if(upNum > limitDown){
+									stockTotal.setLimitUp(upNum);
+								}else{
+									return Result.error("库存上限必须大于库存下限");
+								}
+							}
 			 }
 			 pdProductStockTotalService.updateProductStockTotal(stockTotal);
 		 }

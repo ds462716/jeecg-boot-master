@@ -58,7 +58,7 @@
       <a-tabs v-model="activeKey" @change="handleChangeTabs">
         <a-tab-pane tab="调拨明细表" :key="refKeys[0]" :forceRender="true">
           <div style="margin-bottom: 8px;">
-            <a-button type="primary" icon="download" @click="exportXls('调拨产品列表')">导出</a-button>
+            <!--<a-button type="primary" icon="download" @click="exportXls('调拨产品列表')">导出</a-button>-->
           </div>
           <j-editable-table
             bordered
@@ -95,13 +95,11 @@
       <a-popconfirm title="确定放弃审核？" @confirm="handleCancel" v-show="!disableSubmit" okText="确定" cancelText="取消">
         <a-button style="margin-right: 15px;">取  消</a-button>
       </a-popconfirm>
+      <a-button @click="handleOk('no')" v-show="!disableSubmit" type="primary" :loading="confirmLoading" style="margin-right: 15px;">驳 回</a-button>
       <a-button @click="handleOk('yes')" v-show="!disableSubmit" type="primary" :loading="confirmLoading" style="margin-right: 15px;">审核通过</a-button>
-      <a-button @click="handleOk('no')" v-show="!disableSubmit" type="primary" :loading="confirmLoading" style="margin-right: 15px;">拒 绝</a-button>
     </template>
-
   </j-modal>
 </template>
-
 <script>
 
   import pick from 'lodash.pick'

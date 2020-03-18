@@ -43,7 +43,7 @@
             </a-form-item>
           </a-col>
           <!-- 子表单区域 -->
-          <a-button style="float: left;" type="primary" icon="download" @click="exportXls('申购产品列表')">导出</a-button>
+          <!--<a-button style="float: left;" type="primary" icon="download" @click="exportXls('申购产品列表')">导出</a-button>-->
           <div style="float: left;width:100%;margin-bottom: 70px;white-space:nowrap;overflow-x:auto;overflow-y:hidden;">
             <table id="contentTable" class="tableStyle" style="width:100%">
               <tr>
@@ -88,11 +88,11 @@
     </a-spin>
     <template slot="footer">
       <a-button @click="closeBtn" style="margin-right: 15px;" v-show="disableSubmit">关  闭</a-button>
+      <a-button @click="handleOk('yes')" v-show="!disableSubmit" type="primary" :loading="confirmLoading" style="margin-right: 15px;">审核通过</a-button>
+      <a-button @click="handleOk('no')" v-show="!disableSubmit" type="primary" :loading="confirmLoading" style="margin-right: 15px;">驳 回</a-button>
       <a-popconfirm title="确定放弃审核？" @confirm="handleCancel" v-show="!disableSubmit" okText="确定" cancelText="取消">
         <a-button style="margin-right: 15px;">取  消</a-button>
       </a-popconfirm>
-      <a-button @click="handleOk('yes')" v-show="!disableSubmit" type="primary" :loading="confirmLoading" style="margin-right: 15px;">审核通过</a-button>
-      <a-button @click="handleOk('no')" v-show="!disableSubmit" type="primary" :loading="confirmLoading" style="margin-right: 15px;">拒 绝</a-button>
     </template>
   </j-modal>
 </template>

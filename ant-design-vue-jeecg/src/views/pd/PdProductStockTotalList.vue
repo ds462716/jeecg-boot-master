@@ -38,8 +38,8 @@
     </div>
     <!-- 操作按钮区域 -->
      <div class="table-operator">
-      <a-button @click="handleUpdate('Up')" type="primary" icon="plus">批量设置库存上限</a-button>
-      <a-button @click="handleUpdate('Down')" type="primary" icon="plus">批量设置库存下限</a-button>
+      <a-button @click="handleUpdate('Up')" type="primary" icon="plus">设置库存上限</a-button>
+      <a-button @click="handleUpdate('Down')" type="primary" icon="plus">设置库存下限</a-button>
       <a-button type="primary" icon="download" @click="handleExportXls('库存明细')">导出</a-button>
     </div>
     <!-- table区域-begin -->
@@ -62,7 +62,7 @@
         :rowClassName="setdataCss"
         :customRow="onClickRow"
         :scroll="tableScroll"
-        :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
+        :rowSelection="{fixed:false,selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
         @change="handleTableChange">
 
         <span slot="action" slot-scope="text, record">

@@ -138,11 +138,11 @@
             align:"center",
             dataIndex: 'version'
           },
-          {
+          /*{
             title:'库存数量',
             align:"center",
             dataIndex: 'stockNum'
-          },
+          },*/
           {
             title:'单位',
             align:"center",

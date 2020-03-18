@@ -75,8 +75,8 @@
           <div style="margin-bottom: 8px;">
             <a-button v-show="!disableSubmit" type="primary" icon="plus" @click="choice">选择产品</a-button>
             <span style="padding-left: 8px;"></span>
-            <a-button v-show="!disableSubmit" type="primary" icon="plus" @click="choicePackage">选择定数包</a-button>
-            <span style="padding-left: 8px;"></span>
+            <!--<a-button v-show="!disableSubmit" type="primary" icon="plus" @click="choicePackage">选择定数包</a-button>
+            <span style="padding-left: 8px;"></span>-->
             <a-popconfirm
               :title="`确定要删除吗?`"
               @confirm="handleConfirmDelete">
@@ -84,7 +84,7 @@
               <span class="gap"></span>
             </a-popconfirm>
             <span style="padding-left: 8px;"></span>
-            <a-button type="primary" icon="download" @click="exportXls('调拨产品列表')">导出</a-button>
+            <!--<a-button type="primary" icon="download" @click="exportXls('调拨产品列表')">导出</a-button>-->
           </div>
           <j-editable-table
             bordered

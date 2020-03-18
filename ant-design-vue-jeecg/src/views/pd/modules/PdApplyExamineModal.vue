@@ -52,7 +52,7 @@
           <a-tabs v-model="activeKey" @change="handleChangeTabs">
             <a-tab-pane tab="申领明细表" :key="refKeys[0]" :forceRender="true">
               <div style="margin-bottom: 8px;">
-                <a-button type="primary" icon="download" @click="exportXls('申领产品列表')">导出</a-button>
+                <!--  <a-button type="primary" icon="download" @click="exportXls('申领产品列表')">导出</a-button>-->
               </div>
               <j-editable-table
                 bordered
@@ -88,8 +88,8 @@
       <a-popconfirm title="确定放弃审核？" @confirm="handleCancel" v-show="!disableSubmit" okText="确定" cancelText="取消">
         <a-button style="margin-right: 15px;">取  消</a-button>
       </a-popconfirm>
+      <a-button @click="handleOk('no')" v-show="!disableSubmit" type="primary" :loading="confirmLoading" style="margin-right: 15px;">驳 回</a-button>
       <a-button @click="handleOk('yes')" v-show="!disableSubmit" type="primary" :loading="confirmLoading" style="margin-right: 15px;">审核通过</a-button>
-      <a-button @click="handleOk('no')" v-show="!disableSubmit" type="primary" :loading="confirmLoading" style="margin-right: 15px;">拒 绝</a-button>
     </template>
   </j-modal>
 </template>
@@ -141,12 +141,12 @@
             { title: '定数包名称',  width:"130px", key: 'packageName' },
             { title: '产品ID', key: 'productId', type: FormTypes.hidden },
             { title: '产品名称', width:"250px",  key: 'productName' },
+            { title: '申领数量',  width:"100px",align:"center",key: 'applyNum'},
             { title: '产品编号',width:"200px", align:"center", key: 'number' },
             { title: '规格',width:"240px", align:"center", key: 'spec' },
             { title: '型号', width:"240px",align:"center", key: 'version' },
             { title: '单位',width:"50px", align:"center", key: 'unitName' },
             { title: '发货数量', width:"100px",align:"center", key: 'arrivalNum' },
-            { title: '申领数量',  width:"100px",align:"center",key: 'applyNum'},
             { title: '库存数量', align:"center", key: 'stockNum' },
           ]
         },
