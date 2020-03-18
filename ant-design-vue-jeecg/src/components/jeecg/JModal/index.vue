@@ -100,7 +100,11 @@
       },
       // 是否锁定body滚动
       lockBodyScroll() {
-        return this.lockScroll || this.innerFullscreen
+        if(this.lockScroll==false){
+          return false;
+        }else{
+          return this.lockScroll || this.innerFullscreen
+        }
       }
     },
     watch: {
