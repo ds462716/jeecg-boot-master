@@ -14,13 +14,14 @@
               <a-input placeholder="请输入含义" v-model="queryParam.meaning"></a-input>
             </a-form-item>
           </a-col>
-          <template v-if="toggleSearchStatus">
-            <a-col :md="6" :sm="8">
-              <a-form-item label="类型">
-                <j-dict-select-tag placeholder="请选择类型" v-model="queryParam.type" dictCode="identifier_type"/>
-              </a-form-item>
-            </a-col>
-          </template>
+          <a-col :md="6" :sm="8">
+            <a-form-item label="类型">
+              <j-dict-select-tag placeholder="请选择类型" v-model="queryParam.type" dictCode="identifier_type"/>
+            </a-form-item>
+          </a-col>
+          <!--<template v-if="toggleSearchStatus">
+
+          </template>-->
           <a-col :md="6" :sm="8" >
             <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
               <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
@@ -40,10 +41,10 @@
     <!-- 操作按钮区域 -->
     <div class="table-operator">
       <a-button @click="handleAdd" type="primary" icon="plus">新增</a-button>
-      <a-button type="primary" icon="download" @click="handleExportXls('应用标识符表')">导出</a-button>
+      <!--<a-button type="primary" icon="download" @click="handleExportXls('应用标识符表')">导出</a-button>
       <a-upload name="file" :showUploadList="false" :multiple="false" :headers="tokenHeader" :action="importExcelUrl" @change="handleImportExcel">
         <a-button type="primary" icon="import">导入</a-button>
-      </a-upload>
+      </a-upload>-->
       <a-dropdown v-if="selectedRowKeys.length > 0">
         <a-menu slot="overlay">
           <a-menu-item key="1" @click="batchDel"><a-icon type="delete"/>删除</a-menu-item>
