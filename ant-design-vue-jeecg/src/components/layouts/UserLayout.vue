@@ -4,7 +4,7 @@
       <div class="top">
         <div class="header">
           <a href="/">
-            <!--<img src="~@/assets/logo.svg" class="logo" alt="logo">-->
+             <img src="~@/assets/gyqx-logo.png" class="logo" alt="logo">
             <span class="title">SPD院内医疗耗材信息管理系统</span>
           </a>
         </div>
