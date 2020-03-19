@@ -367,6 +367,7 @@
   import { photoCheck } from '@/utils/fileUpload'
   import JSelectEncodingRule from '@/components/jeecgbiz/JSelectEncodingRule'
   import { generateNumber,getPrdNumber,scanCode } from '@/utils/barcode'
+  import {duplicateCheck } from '@/api/api'
 
   let timeout;
   let currentValue;
@@ -426,6 +427,7 @@
         lockScroll: false,
         fullscreen: true,
         switchFullscreen: false,
+        productId:"",
         form: this.$form.createForm(this),
         title:"操作",
         width:1200,
@@ -457,6 +459,9 @@
         validatorRules: {
           number: {rules: [
             {required: true, message: '请输入产品编号!'},
+            {
+              validator: this.validateNumber,
+            }
           ]},
           name: {rules: [
             {required: true, message: '请输入产品名称!'},
@@ -546,6 +551,7 @@
       edit (record) {
         //编辑时显示图片
         if(record.hasOwnProperty("id")){
+          this.productId = record.id;
           for(let index = 0;index<12;index++){
             if(record["licenceSite"+index]){
               this.imgIsShow[index].show=true;
@@ -854,7 +860,23 @@
         }else{
           this.isUrgentBl = true;
         }
-      }
+      },
+      validateNumber(rule, value, callback){
+        var params = {
+          tableName: 'pd_product',
+          fieldName: 'number',
+          fieldVal: value,
+          dataId: this.productId
+        };
+        duplicateCheck(params).then((res) => {
+          console.log(res)
+          if (res.success) {
+            callback()
+          } else {
+            callback("产品编号已存在!")
+          }
+        })
+      },
     }
   }
 </script>

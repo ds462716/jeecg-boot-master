@@ -14,6 +14,9 @@ import org.jeecg.modules.pd.entity.PdProductStock;
 import org.jeecg.modules.pd.service.IPdProductService;
 import org.jeecg.modules.pd.util.FileUploadUtil;
 import org.jeecg.modules.pd.vo.PdProductPage;
+import org.jeecgframework.poi.excel.def.NormalExcelConstants;
+import org.jeecgframework.poi.excel.entity.ExportParams;
+import org.jeecgframework.poi.excel.view.JeecgEntityExcelView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -92,6 +95,15 @@ public class PdProductController extends JeecgController<PdProduct, IPdProductSe
 		 //如果此参数为false则程序发生异常
 		 result.setResult(true);
 		 result.setMessage("添加成功");
+         LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+         pdProduct.setDepartParentId(sysUser.getDepartParentId());
+         //校验产品编号是否唯
+         List<PdProduct> obj = pdProductService.verify(pdProduct);
+         if (obj != null && obj.size()>0) {
+             result.setSuccess(false);
+             result.setMessage("产品编号已存在");
+             return result;
+         }
 		 //存入图片
 		 if(!FileUploadUtil.isImgEmpty(licenceSiteUp0)){
 			 String filePath = FileUploadUtil.upload(licenceSiteUp0);
@@ -163,6 +175,15 @@ public class PdProductController extends JeecgController<PdProduct, IPdProductSe
         //如果此参数为false则程序发生异常
         result.setResult(true);
         result.setMessage("编辑成功");
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        pdProduct.setDepartParentId(sysUser.getDepartParentId());
+        //校验产品编号是否唯
+        List<PdProduct> obj = pdProductService.verify(pdProduct);
+        if (obj != null && obj.size()>0) {
+            result.setSuccess(false);
+            result.setMessage("产品编号已存在");
+            return result;
+        }
         //存入图片
         if(!FileUploadUtil.isImgEmpty(licenceSiteUp0)){
             String filePath = FileUploadUtil.upload(licenceSiteUp0);
@@ -405,8 +426,18 @@ public class PdProductController extends JeecgController<PdProduct, IPdProductSe
     * @param pdProduct
     */
     @RequestMapping(value = "/exportXls")
-    public ModelAndView exportXls(HttpServletRequest request, PdProduct pdProduct) {
-        return super.exportXls(request, pdProduct, PdProduct.class, "pd_product");
+    public ModelAndView exportXls(HttpServletRequest request, PdProduct pdProduct ) {
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        pdProduct.setDepartParentId(sysUser.getDepartParentId());
+        //Step.1 获取导出数据
+        List<PdProduct> pdProducts = pdProductService.selectList(pdProduct);
+        // Step.2 AutoPoi 导出Excel
+        ModelAndView mv = new ModelAndView(new JeecgEntityExcelView());
+        mv.addObject(NormalExcelConstants.FILE_NAME, "产品列表");
+        mv.addObject(NormalExcelConstants.CLASS, PdProduct.class);
+        mv.addObject(NormalExcelConstants.PARAMS, new ExportParams("产品列表数据", "导出人:" + sysUser.getRealname(), "产品数据"));
+        mv.addObject(NormalExcelConstants.DATA_LIST, pdProducts);
+        return mv;
     }
 
     /**

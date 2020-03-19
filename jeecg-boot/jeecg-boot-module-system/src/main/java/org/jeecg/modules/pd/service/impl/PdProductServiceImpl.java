@@ -384,6 +384,17 @@ public class PdProductServiceImpl extends ServiceImpl<PdProductMapper, PdProduct
         }
     }
 
+    //校验产品编号是否唯
+    @Override
+    public List<PdProduct> selectList(PdProduct pdProduct) {
+        return pdProductMapper.selectList(pdProduct);
+    }
+
+    @Override
+    public List<PdProduct> verify(PdProduct pdProduct) {
+        return pdProductMapper.verify(pdProduct);
+    }
+
     /**
      * 包含事务的更新方法，编码规则
      * @param pdProduct

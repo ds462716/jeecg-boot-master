@@ -31,4 +31,8 @@ public interface IPdProductService extends IService<PdProduct> {
     Result<List<PdProductStock>> getStocks(String productBarCode, String Barcode2, Result<List<PdProductStock>> result);
 
     void editChargeCodeBatch(String ids, String chargeCode);
+
+    List<PdProduct> selectList(PdProduct pdProduct);
+
+    List<PdProduct> verify(PdProduct pdProduct);
 }

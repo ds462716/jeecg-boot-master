@@ -444,4 +444,21 @@
 		WHERE id = #{id}
 	</update>
 
+    <!-- 校验产品编号是否唯一 -->
+    <select id="verify" resultType="org.jeecg.modules.pd.entity.PdProduct">
+        SELECT
+        <include refid="pdProductPartColumns"/>
+        FROM pd_product a
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+            and a.number = #{number}
+            <if test="id != null and id != ''">
+                AND a.id != #{id}
+            </if>
+            <if test="departParentId != null and departParentId != ''">
+                AND a.depart_parent_id = #{departParentId}
+            </if>
+        </where>
+    </select>
+
 </mapper>
