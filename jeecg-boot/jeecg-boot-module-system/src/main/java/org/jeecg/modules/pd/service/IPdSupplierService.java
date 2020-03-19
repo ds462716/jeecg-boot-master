@@ -1,5 +1,6 @@
 package org.jeecg.modules.pd.service;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.jeecg.modules.pd.entity.PdSupplier;
 
@@ -22,4 +23,6 @@ public interface IPdSupplierService extends IService<PdSupplier> {
      * 修改证照有效期标识
      */
     void updateValidityFlag(PdSupplier pdSupplier);
+
+    Page<PdSupplier> selectList(Page<PdSupplier> pageList, PdSupplier pdSupplier);
 }

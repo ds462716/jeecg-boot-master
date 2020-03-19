@@ -1,5 +1,6 @@
 package org.jeecg.modules.pd.service.impl;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.jeecg.modules.pd.entity.PdSupplier;
 import org.jeecg.modules.pd.mapper.PdSupplierMapper;
@@ -38,5 +39,10 @@ public class PdSupplierServiceImpl extends ServiceImpl<PdSupplierMapper, PdSuppl
     @Override
     public void updateValidityFlag(PdSupplier pdSupplier){
         pdSupplierMapper.updateValidityFlag(pdSupplier);
+    }
+
+    @Override
+    public Page<PdSupplier> selectList(Page<PdSupplier> page, PdSupplier pdSupplier) {
+        return page.setRecords(pdSupplierMapper.selectList(pdSupplier));
     }
 }

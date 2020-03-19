@@ -1,5 +1,6 @@
 package org.jeecg.modules.pd.service.impl;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.jeecg.modules.pd.entity.PdVender;
 import org.jeecg.modules.pd.mapper.PdVenderMapper;
 import org.jeecg.modules.pd.service.IPdVenderService;
@@ -44,5 +45,12 @@ public class PdVenderServiceImpl extends ServiceImpl<PdVenderMapper, PdVender> i
     @Override
     public void updateValidityFlag(PdVender pdVender){
         pdVenderMapper.updateValidityFlag(pdVender);
-    };
+    }
+
+    @Override
+    public Page<PdVender> selectList(Page<PdVender> page, PdVender pdVender) {
+        return page.setRecords(pdVenderMapper.selectList(pdVender));
+    }
+
+    ;
 }

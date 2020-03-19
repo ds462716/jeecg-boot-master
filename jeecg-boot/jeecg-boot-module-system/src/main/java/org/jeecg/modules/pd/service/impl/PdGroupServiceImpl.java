@@ -1,5 +1,6 @@
 package org.jeecg.modules.pd.service.impl;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.jeecg.modules.pd.entity.PdGroup;
 import org.jeecg.modules.pd.mapper.PdGroupMapper;
 import org.jeecg.modules.pd.service.IPdGroupService;
@@ -25,5 +26,10 @@ public class PdGroupServiceImpl extends ServiceImpl<PdGroupMapper, PdGroup> impl
     @Override
     public List<PdGroup> selectList(PdGroup pdGroup) {
         return pdGroupMapper.selectList(pdGroup);
+    }
+
+    @Override
+    public Page<PdGroup> selectList(Page<PdGroup> page, PdGroup pdGroup) {
+        return page.setRecords(pdGroupMapper.selectList(pdGroup));
     }
 }

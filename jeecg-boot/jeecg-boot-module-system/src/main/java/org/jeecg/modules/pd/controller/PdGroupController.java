@@ -63,11 +63,13 @@ public class PdGroupController extends JeecgController<PdGroup, IPdGroupService>
 								   @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
 								   @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
 								   HttpServletRequest req) {
+		Result<Page<PdGroup>> result = new Result<>();
+		Page<PdGroup> pageList = new Page<>(pageNo,pageSize);
 		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
 		pdGroup.setDepartParentId(sysUser.getDepartParentId());
-		QueryWrapper<PdGroup> queryWrapper = QueryGenerator.initQueryWrapper(pdGroup, req.getParameterMap());
-		Page<PdGroup> page = new Page<PdGroup>(pageNo, pageSize);
-		IPage<PdGroup> pageList = pdGroupService.page(page, queryWrapper);
+		pageList =pdGroupService.selectList(pageList,pdGroup);
+		result.setSuccess(true);
+		result.setResult(pageList);
 		return Result.ok(pageList);
 	}
 

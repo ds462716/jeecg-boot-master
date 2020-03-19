@@ -64,11 +64,13 @@ public class PdVenderController extends JeecgController<PdVender, IPdVenderServi
 								   @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
 								   @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
 								   HttpServletRequest req) {
+		Result<Page<PdVender>> result = new Result<>();
+		Page<PdVender> pageList = new Page<>(pageNo,pageSize);
 		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
 		pdVender.setDepartParentId(sysUser.getDepartParentId());
-		QueryWrapper<PdVender> queryWrapper = QueryGenerator.initQueryWrapper(pdVender, req.getParameterMap());
-		Page<PdVender> page = new Page<PdVender>(pageNo, pageSize);
-		IPage<PdVender> pageList = pdVenderService.page(page, queryWrapper);
+		pageList =pdVenderService.selectList(pageList,pdVender);
+		result.setSuccess(true);
+		result.setResult(pageList);
 		return Result.ok(pageList);
 	}
 

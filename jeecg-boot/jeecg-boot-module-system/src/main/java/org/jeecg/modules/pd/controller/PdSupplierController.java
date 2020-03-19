@@ -49,11 +49,13 @@ public class PdSupplierController extends JeecgController<PdSupplier, IPdSupplie
                                   @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
                                   @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
                                   HttpServletRequest req) {
+       Result<Page<PdSupplier>> result = new Result<>();
+       Page<PdSupplier> pageList = new Page<>(pageNo,pageSize);
        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
        pdSupplier.setDepartParentId(sysUser.getDepartParentId());
-       QueryWrapper<PdSupplier> queryWrapper = QueryGenerator.initQueryWrapper(pdSupplier, req.getParameterMap());
-       Page<PdSupplier> page = new Page<PdSupplier>(pageNo, pageSize);
-       IPage<PdSupplier> pageList = pdSupplierService.page(page, queryWrapper);
+       pageList =pdSupplierService.selectList(pageList,pdSupplier);
+       result.setSuccess(true);
+       result.setResult(pageList);
        return Result.ok(pageList);
    }
 
