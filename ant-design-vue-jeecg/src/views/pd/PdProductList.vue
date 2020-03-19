@@ -96,6 +96,7 @@
       <a-dropdown v-if="selectedRowKeys.length > 0">
         <a-menu slot="overlay">
           <a-menu-item key="1" @click="batchDel"><a-icon type="delete"/>删除</a-menu-item>
+          <a-menu-item key="2" @click="handleChargeCode"><a-icon type="edit"/>批量修改产品收费代码</a-menu-item>
         </a-menu>
         <a-button style="margin-left: 8px"> 批量操作 <a-icon type="down" /></a-button>
       </a-dropdown>
@@ -165,6 +166,18 @@
     </div>
 
     <pdProduct-modal ref="modalForm" @ok="modalFormOk"></pdProduct-modal>
+    <a-modal :visible="chargeCodeVisible"  :maskClosable="false"  :confirmLoading="confirmLoading"
+             @ok="handleOk" :width="900" @cancel="handleCancel">
+      <a-form :form="form">
+        <a-row class="form-row" :gutter="{ xs: 8, sm: 16, md: 24, lg: 32 }">
+          <a-col :lg="24" >
+            <a-form-item label="产品收费代码" :labelCol="labelCol" :wrapperCol="wrapperCol">
+              <a-input autocomplete="off" placeholder="请输入产品收费代码" v-decorator="[ 'chargeCode', validatorRules.chargeCodeT]"  style="width: 100%"/>
+            </a-form-item>
+          </a-col>
+        </a-row>
+      </a-form>
+    </a-modal>
   </a-card>
 </template>
 
@@ -206,6 +219,10 @@
     timeout = setTimeout(fake, 300);
   }
 
+  import { httpAction } from '@/api/manage'
+  import { validateDuplicateValue } from '@/utils/util'
+  import pick from 'lodash.pick'
+
   export default {
     name: "PdProductList",
     mixins:[JeecgListMixin],
@@ -220,6 +237,23 @@
         venderValue: undefined,
         supplierData: [],
         supplierValue: undefined,
+        chargeCodeVisible:false,
+        confirmLoading: false,
+        form: this.$form.createForm(this),
+        model: {},
+        labelCol: {
+          xs: { span: 24 },
+          sm: { span: 5 },
+        },
+        wrapperCol: {
+          xs: { span: 24 },
+          sm: { span: 16 },
+        },
+        validatorRules: {
+          chargeCodeT: {rules: [
+              {required: true, message: '请输入产品收费代码!'},
+            ]},
+        },
         // 表头
         columns: [
           {
@@ -306,6 +340,7 @@
           importExcelUrl: "pd/pdProduct/importExcel",
           queryVender:"/pd/pdVender/getVenderList",
           querySupplier:"/pd/pdSupplier/getSupplierList",
+          editChargeCodeBatch:"/pd/pdProduct/editChargeCodeBatch",
         },
         dictOptions:{
           isCharge:[],
@@ -318,6 +353,20 @@
       }
     },
     methods: {
+      loadData(arg) {
+        //加载数据 若传入参数1则加载第一页的内容
+        if (arg === 1) {
+          this.ipagination.current = 1;
+        }
+        let params = this.getQueryParams();//查询条件
+        this.loading = true;
+        getAction(this.url.list, params).then((res) => {
+          if (res.success) {
+            this.dataSource = res.result.records;
+          }
+          this.loading = false;
+        })
+      },
       initDictConfig(){
         initDictOptions('is_charge').then((res) => {
           if (res.success) {
@@ -341,6 +390,63 @@
       supplierHandleChange(value) {
         this.supplierValue = value;
         fetch(value, data => (this.supplierData = data),this.url.querySupplier);
+      },
+      //批量修改收费代码点击事件
+      handleChargeCode(){
+        this.form.resetFields();
+        this.model = Object.assign({}, "");
+        this.$nextTick(() => {
+          this.form.setFieldsValue(pick(this.model,'chargeCode'))
+        });
+        this.chargeCodeVisible = true;//当前窗口打开
+      },
+      //产品收费代码窗口关闭事件
+      handleCancel(){
+        this.close()
+      },
+      close () {
+        this.$emit('close');
+        this.chargeCodeVisible = false;
+      },
+      //产品收费代码提交
+      handleOk(){
+        const that = this;
+        // 触发表单验证
+        that.form.validateFields((err, values) => {
+          if (!err) {
+            that.confirmLoading = true;
+            let httpurl = that.url.editChargeCodeBatch;
+            let method = 'post';
+            let formData = Object.assign(that.model, values);
+            if (that.selectedRowKeys.length <= 0) {
+              that.$message.warning('请选择一条记录！');
+              return;
+            } else {
+              let ids = "";
+              for (let a = 0; a < that.selectedRowKeys.length; a++) {
+                ids += that.selectedRowKeys[a] + ",";
+              }
+              let formDataAll = new FormData();
+              formDataAll.append("ids",ids);
+              for (let obj in formData) {
+                formDataAll.append(obj, formData[obj]?formData[obj]:"");
+              }
+              //console.log("表单提交数据",formData)
+              httpAction(httpurl,formDataAll,method).then((res)=>{
+                if(res.success){
+                  that.$message.success(res.message);
+                  that.$emit('ok');
+                  this.loadData();
+                }else{
+                  that.$message.warning(res.message);
+                }
+              }).finally(() => {
+                that.confirmLoading = false;
+                that.close();
+              })
+            }
+          }
+        })
       },
       //供应商查询end
       /**

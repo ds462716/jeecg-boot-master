@@ -18,4 +18,5 @@ public interface PdProductMapper extends BaseMapper<PdProduct> {
 
     List<PdProduct> selectList(PdProduct pdProduct);
 
+    void updateChargeCode(PdProduct pdProduct);
 }

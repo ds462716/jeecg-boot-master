@@ -3,10 +3,12 @@ package org.jeecg.modules.pd.controller;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.system.base.controller.JeecgController;
 import org.jeecg.common.system.vo.LoginUser;
+import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.pd.entity.PdProduct;
 import org.jeecg.modules.pd.entity.PdProductStock;
 import org.jeecg.modules.pd.service.IPdProductService;
@@ -340,6 +342,22 @@ public class PdProductController extends JeecgController<PdProduct, IPdProductSe
 		 return result;
 	 }
 
+	 /**
+	  *  批量修改产品收费代码
+	  *
+	  * @param ids
+	  * @return
+	  */
+	 @PostMapping(value = "/editChargeCodeBatch")
+	 public Result<?> editChargeCodeBatch(@RequestParam String ids,@RequestParam String chargeCode) {
+		 if(!oConvertUtils.isEmpty(ids) && !oConvertUtils.isEmpty(chargeCode)){
+			 this.pdProductService.editChargeCodeBatch(ids,chargeCode);
+			 return Result.ok("批量修改成功!");
+		 }else{
+			 return Result.error("参数不正确!");
+		 }
+
+	 }
 
 	/**
 	 *   通过id删除

@@ -437,4 +437,11 @@
         ORDER BY a.update_time desc
     </select>
 
+    <!-- 批量更新产品收费代码 -->
+    <update id="updateChargeCode">
+		UPDATE pd_product SET
+			charge_code = #{chargeCode}
+		WHERE id = #{id}
+	</update>
+
 </mapper>

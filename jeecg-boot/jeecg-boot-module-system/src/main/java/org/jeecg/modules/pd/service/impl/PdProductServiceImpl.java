@@ -2,6 +2,7 @@ package org.jeecg.modules.pd.service.impl;
 
 import com.aliyuncs.regions.ProductDomain;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import org.apache.ibatis.session.SqlSession;
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.MessageConstant;
@@ -52,6 +53,9 @@ public class PdProductServiceImpl extends ServiceImpl<PdProductMapper, PdProduct
 
     @Autowired
     private IPdProductStockService pdProductStockService;
+
+    @Autowired
+    private SqlSession sqlsession;
 
     @Override
     public Page<PdProductPage> chooseProductList(Page<PdProductPage> pageList, PdProduct pdProduct) {
@@ -365,6 +369,19 @@ public class PdProductServiceImpl extends ServiceImpl<PdProductMapper, PdProduct
         result.setResult(pdProductStocks);
         return  result;
 
+    }
+
+    //批量更新产品收费代码
+    @Override
+    public void editChargeCodeBatch(String ids, String chargeCode) {
+        PdProductMapper dao = sqlsession.getMapper(PdProductMapper.class);
+        PdProduct pdProduct = new PdProduct();
+        String[] idList = ids.split(",");
+        for(int i = 0 ; i < idList.length ; i ++){
+            pdProduct.setId(idList[i]);
+            pdProduct.setChargeCode(chargeCode);
+            dao.updateChargeCode(pdProduct);
+        }
     }
 
     /**
