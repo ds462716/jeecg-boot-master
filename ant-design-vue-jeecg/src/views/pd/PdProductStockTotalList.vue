@@ -151,6 +151,11 @@
             dataIndex: 'unitName'
           },
           {
+            title:'库存数量',
+            align:"center",
+            dataIndex: 'stockNum'
+          },
+          {
             title:'库存上限',
             align:"center",
             dataIndex: 'limitUp'
@@ -159,11 +164,6 @@
             title:'库存下限',
             align:"center",
             dataIndex: 'limitDown'
-          },
-          {
-            title:'数量',
-            align:"center",
-            dataIndex: 'stockNum'
           },
           {
             title:'是否过期',
