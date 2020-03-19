@@ -88,6 +88,8 @@
   import { ACCESS_TOKEN } from "@/store/mutation-types"
   import { makeWb } from '@/utils/wubi'
   import { photoCheck } from '@/utils/fileUpload'
+  import {duplicateCheck } from '@/api/api'
+
   export default {
     name: "PdVenderModal",
     components: { 
@@ -106,6 +108,7 @@
         lockScroll: false,
         fullscreen: true,
         switchFullscreen: false,
+        validateVenderId:"",
         previewImage: '',
         model: {},
         imgIsShow:[{show:false},{show:false},{show:false},{show:false},{show:false},{show:false},{show:false},{show:false},{show:false},{show:false},{show:false},{show:false}],
@@ -133,6 +136,9 @@
         validatorRules: {
           name: {rules: [
             {required: true, message: '请输入名称!'},
+              {
+                validator: this.validateName,
+              }
           ]},
           py: {rules: [
           ]},
@@ -157,6 +163,7 @@
       edit (record) {
         //编辑时显示图片
         if(record.hasOwnProperty("id")){
+          this.validateVenderId = record.id;
           for(let index = 0;index<12;index++){
             if(record["licenceSite"+index]){
               this.imgIsShow[index].show=true;
@@ -294,6 +301,21 @@
        }else{
          this.$message.error("请先上传图片!")
        }
+      },
+      validateName(rule, value, callback){
+        var params = {
+          tableName: 'pd_vender',
+          fieldName: 'name',
+          fieldVal: value,
+          dataId: this.validateVenderId
+        };
+        duplicateCheck(params).then((res) => {
+          if (res.success) {
+            callback()
+          } else {
+            callback("生产厂家已存在!")
+          }
+        })
       },
     }
   }

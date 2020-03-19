@@ -427,7 +427,7 @@
         lockScroll: false,
         fullscreen: true,
         switchFullscreen: false,
-        productId:"",
+        validateProductId:"",
         form: this.$form.createForm(this),
         title:"操作",
         width:1200,
@@ -551,7 +551,7 @@
       edit (record) {
         //编辑时显示图片
         if(record.hasOwnProperty("id")){
-          this.productId = record.id;
+          this.validateProductId = record.id;
           for(let index = 0;index<12;index++){
             if(record["licenceSite"+index]){
               this.imgIsShow[index].show=true;
@@ -866,10 +866,9 @@
           tableName: 'pd_product',
           fieldName: 'number',
           fieldVal: value,
-          dataId: this.productId
+          dataId: this.validateProductId
         };
         duplicateCheck(params).then((res) => {
-          console.log(res)
           if (res.success) {
             callback()
           } else {
