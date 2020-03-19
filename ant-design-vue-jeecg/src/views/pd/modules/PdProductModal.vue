@@ -367,7 +367,7 @@
   import { photoCheck } from '@/utils/fileUpload'
   import JSelectEncodingRule from '@/components/jeecgbiz/JSelectEncodingRule'
   import { generateNumber,getPrdNumber,scanCode } from '@/utils/barcode'
-  import {duplicateCheck } from '@/api/api'
+  import {duplicateCheckHasDelFlag } from '@/api/api'
 
   let timeout;
   let currentValue;
@@ -862,13 +862,14 @@
         }
       },
       validateNumber(rule, value, callback){
+        value = value.replace(/\s/g, "");
         var params = {
           tableName: 'pd_product',
           fieldName: 'number',
           fieldVal: value,
           dataId: this.validateProductId
         };
-        duplicateCheck(params).then((res) => {
+        duplicateCheckHasDelFlag(params).then((res) => {
           if (res.success) {
             callback()
           } else {

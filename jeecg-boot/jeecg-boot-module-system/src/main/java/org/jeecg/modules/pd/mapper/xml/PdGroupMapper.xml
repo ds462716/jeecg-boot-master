@@ -26,4 +26,21 @@
         ORDER BY a.update_time desc
     </select>
 
+    <!-- 校验组别是否唯一 -->
+    <select id="verify" resultType="org.jeecg.modules.pd.entity.PdGroup">
+        SELECT
+        *
+        FROM pd_group a
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+            and a.name = #{name}
+            <if test="id != null and id != ''">
+                AND a.id != #{id}
+            </if>
+            <if test="departParentId != null and departParentId != ''">
+                AND a.depart_parent_id = #{departParentId}
+            </if>
+        </where>
+    </select>
+
 </mapper>

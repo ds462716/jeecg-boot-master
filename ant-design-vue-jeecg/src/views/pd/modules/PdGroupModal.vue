@@ -38,6 +38,7 @@
   import pick from 'lodash.pick'
   import { validateDuplicateValue } from '@/utils/util'
   import { makeWb } from '@/utils/wubi'
+  import {duplicateCheckHasDelFlag } from '@/api/api'
 
   export default {
     name: "PdGroupModal",
@@ -60,9 +61,13 @@
           sm: { span: 16 },
         },
         confirmLoading: false,
+        validateGroupId:"",
         validatorRules: {
           name: {rules: [
             {required: true, message: '请输入名称!'},
+              {
+                validator: this.validateName,
+              }
           ]},
           py: {rules: [
           ]},
@@ -86,6 +91,10 @@
         this.edit({});
       },
       edit (record) {
+        //编辑时显示图片
+        if(record.hasOwnProperty("id")){
+          this.validateGroupId = record.id;
+        }
         this.form.resetFields();
         this.model = Object.assign({}, record);
         this.visible = true;
@@ -148,7 +157,21 @@
         let wb = makeWb(val);
         this.form.setFieldsValue({wb:wb});//获取五笔简码
       },
-      
+      validateName(rule, value, callback){
+        var params = {
+          tableName: 'pd_group',
+          fieldName: 'name',
+          fieldVal: value,
+          dataId: this.validateGroupId
+        };
+        duplicateCheckHasDelFlag(params).then((res) => {
+          if (res.success) {
+            callback()
+          } else {
+            callback("组别已存在!")
+          }
+        })
+      },
     }
   }
 </script>

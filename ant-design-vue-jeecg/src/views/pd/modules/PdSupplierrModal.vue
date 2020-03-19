@@ -88,7 +88,7 @@
   import { ACCESS_TOKEN } from "@/store/mutation-types"
   import { makeWb } from '@/utils/wubi'
   import { photoCheck } from '@/utils/fileUpload'
-  import {duplicateCheck } from '@/api/api'
+  import {duplicateCheckHasDelFlag } from '@/api/api'
 
   export default {
     name: "PdSupplierModal",
@@ -309,7 +309,7 @@
           fieldVal: value,
           dataId: this.validateSupplierId
         };
-        duplicateCheck(params).then((res) => {
+        duplicateCheckHasDelFlag(params).then((res) => {
           if (res.success) {
             callback()
           } else {

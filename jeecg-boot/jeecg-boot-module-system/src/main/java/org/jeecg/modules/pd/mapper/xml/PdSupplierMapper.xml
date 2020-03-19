@@ -138,7 +138,7 @@
 	<!-- 供应商条件查询 -->
 	<select id="selectList"  resultMap="resultMap" resultType="org.jeecg.modules.pd.entity.PdSupplier">
 		SELECT
-		<include refid="pdSupplierPartColumns"/>
+		<include refid="pdSupplierColumns"/>
 		FROM pd_supplier a
 		<include refid="pdSupplierJoins"/>
 		<where>

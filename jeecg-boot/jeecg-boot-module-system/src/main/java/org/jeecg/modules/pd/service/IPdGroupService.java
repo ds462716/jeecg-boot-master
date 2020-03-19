@@ -17,4 +17,6 @@ public interface IPdGroupService extends IService<PdGroup> {
     List<PdGroup> selectList(PdGroup pdGroup);
 
     Page<PdGroup> selectList(Page<PdGroup> pageList, PdGroup pdGroup);
+
+    List<PdGroup> verify(PdGroup pdGroup);
 }

@@ -137,7 +137,7 @@
 	<!-- 生产厂家条件查询 -->
 	<select id="selectList" resultMap="resultMap" resultType="org.jeecg.modules.pd.entity.PdVender">
 		SELECT
-		<include refid="pdVenderPartColumns"/>
+		<include refid="pdVenderColumns"/>
 		FROM pd_vender a
 		<include refid="pdVenderJoins"/>
 		<where>

@@ -12,6 +12,7 @@ import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.pd.entity.PdProduct;
 import org.jeecg.modules.pd.entity.PdProductStock;
 import org.jeecg.modules.pd.service.IPdProductService;
+import org.jeecg.modules.pd.util.BarCodeUtil;
 import org.jeecg.modules.pd.util.FileUploadUtil;
 import org.jeecg.modules.pd.vo.PdProductPage;
 import org.jeecgframework.poi.excel.def.NormalExcelConstants;
@@ -97,6 +98,7 @@ public class PdProductController extends JeecgController<PdProduct, IPdProductSe
 		 result.setMessage("添加成功");
          LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
          pdProduct.setDepartParentId(sysUser.getDepartParentId());
+         pdProduct.setNumber(BarCodeUtil.trimStr(pdProduct.getNumber()));
          //校验产品编号是否唯
          List<PdProduct> obj = pdProductService.verify(pdProduct);
          if (obj != null && obj.size()>0) {
@@ -178,6 +180,7 @@ public class PdProductController extends JeecgController<PdProduct, IPdProductSe
         LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
         pdProduct.setDepartParentId(sysUser.getDepartParentId());
         //校验产品编号是否唯
+        pdProduct.setNumber(BarCodeUtil.trimStr(pdProduct.getNumber()));
         List<PdProduct> obj = pdProductService.verify(pdProduct);
         if (obj != null && obj.size()>0) {
             result.setSuccess(false);

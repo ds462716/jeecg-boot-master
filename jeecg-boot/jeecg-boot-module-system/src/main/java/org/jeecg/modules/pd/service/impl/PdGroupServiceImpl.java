@@ -32,4 +32,9 @@ public class PdGroupServiceImpl extends ServiceImpl<PdGroupMapper, PdGroup> impl
     public Page<PdGroup> selectList(Page<PdGroup> page, PdGroup pdGroup) {
         return page.setRecords(pdGroupMapper.selectList(pdGroup));
     }
+
+    @Override
+    public List<PdGroup> verify(PdGroup pdGroup) {
+        return pdGroupMapper.verify(pdGroup);
+    }
 }
