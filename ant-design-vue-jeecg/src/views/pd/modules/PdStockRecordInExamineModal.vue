@@ -347,7 +347,7 @@
           // width: '1200',
           style: { top: '20px' },
           switchFullscreen: true,  //缩放按钮
-          lockScroll: true,
+          lockScroll: false,
           fullscreen: true,
         },
       }

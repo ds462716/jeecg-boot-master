@@ -27,12 +27,6 @@ public interface IPdStockRecordService extends IService<PdStockRecord> {
 	 * 审核
 	 */
 	public void submit(PdStockRecord pdStockRecord, List<PdStockRecordDetail> pdStockRecordDetailList, String recordType) ;
-	
-	/**
-	 * 修改一对多
-	 * 
-	 */
-	public void updateMain(PdStockRecord pdStockRecord, List<PdStockRecordDetail> pdStockRecordDetailList);
 
 	/**
 	 * 修改审核、提交状态

@@ -28,15 +28,15 @@
     <!-- 操作按钮区域 -->
     <div class="table-operator">
       <a-button @click="handleAdd" type="primary" icon="plus">新增</a-button>
-      <a-button type="primary" icon="download" @click="handleExportXls('出库记录表')">导出</a-button>
+      <!--<a-button type="primary" icon="download" @click="handleExportXls('出库记录表')">导出</a-button>-->
     </div>
 
     <!-- table区域-begin -->
     <div>
-      <div class="ant-alert ant-alert-info" style="margin-bottom: 16px;">
-        <i class="anticon anticon-info-circle ant-alert-icon"></i> 已选择 <a style="font-weight: 600">{{ selectedRowKeys.length }}</a>项
-        <a style="margin-left: 24px" @click="onClearSelected">清空</a>
-      </div>
+      <!--<div class="ant-alert ant-alert-info" style="margin-bottom: 16px;">-->
+        <!--<i class="anticon anticon-info-circle ant-alert-icon"></i> 已选择 <a style="font-weight: 600">{{ selectedRowKeys.length }}</a>项-->
+        <!--<a style="margin-left: 24px" @click="onClearSelected">清空</a>-->
+      <!--</div>-->
 
       <a-table
         ref="table"
@@ -50,29 +50,22 @@
         :rowSelection="{fixed:false,selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
         @change="handleTableChange">
 
-        <template slot="htmlSlot" slot-scope="text">
-          <div v-html="text"></div>
-        </template>
-        <template slot="imgSlot" slot-scope="text">
-          <span v-if="!text" style="font-size: 12px;font-style: italic;">无此图片</span>
-          <img v-else :src="getImgView(text)" height="25px" alt="图片不存在" style="max-width:80px;font-size: 12px;font-style: italic;"/>
-        </template>
-        <template slot="fileSlot" slot-scope="text">
-          <span v-if="!text" style="font-size: 12px;font-style: italic;">无此文件</span>
-          <a-button
-            v-else
-            :ghost="true"
-            type="primary"
-            icon="download"
-            size="small"
-            @click="uploadFile(text)">
-            下载
-          </a-button>
-        </template>
-
         <span slot="action" slot-scope="text, record">
-          <!--<a @click="handleEdit(record)">修改</a>-->
+          <a @click="handleEdit(record)" v-bind:disabled="record.submitStatus=='2'">修改</a>
+          <a-divider type="vertical"/>
           <a @click="handleDetail(record)">详情</a>
+
+          <a-divider type="vertical" />
+          <a-dropdown>
+            <a class="ant-dropdown-link">更多 <a-icon type="down" /></a>
+            <a-menu slot="overlay">
+              <a-menu-item v-show="record.submitStatus=='1' || record.submitStatus=='3'"> <!--待提交、已撤回-->
+                <a-popconfirm title="确定删除吗?"  @confirm="() => handleDelete(record.id)"  >
+                  <a>删除</a>
+                </a-popconfirm>
+              </a-menu-item>
+            </a-menu>
+          </a-dropdown>
         </span>
 
       </a-table>
@@ -187,7 +180,7 @@
         ],
         url: {
           list: "/pd/pdStockRecordOut/list",
-          // delete: "/pd/pdStockRecordOut/delete",
+          delete: "/pd/pdStockRecordOut/delete",
           // deleteBatch: "/pd/pdStockRecordOut/deleteBatch",
           exportXlsUrl: "/pd/pdStockRecordOut/exportXls",
           // importExcelUrl: "pd/pdStockRecordOut/importExcel",
@@ -211,6 +204,31 @@
       //   this.$refs.modalForm.title = "出库";
       //   this.$refs.modalForm.disableSubmit = false;
       // },
+
+      handleEdit: function (record) {
+        this.$refs.modalForm.edit(record);
+        this.$refs.modalForm.title = "编辑";
+        this.$refs.modalForm.disableSubmit = false;
+        this.$refs.modalForm.disableSubmit2 = false;
+        if(record.applyNo){
+          this.$refs.modalForm.showApplyBtn = true;
+          this.$refs.modalForm.showAllocationBtn = false;
+        }
+        if(record.allocationNo){
+          this.$refs.modalForm.showApplyBtn = false;
+          this.$refs.modalForm.showAllocationBtn = true;
+        }
+      },
+
+      handleDetail:function(record){
+        this.$refs.modalForm.edit(record);
+        this.$refs.modalForm.title="详情";
+        this.$refs.modalForm.disableSubmit = true;
+        this.$refs.modalForm.disableSubmit2 = true;
+        this.$refs.modalForm.showApplyBtn = false;
+        this.$refs.modalForm.showAllocationBtn = false;
+      },
+
       initDictConfig(){ //静态字典值加载
         initDictOptions('audit_status').then((res) => {
           if (res.success) {

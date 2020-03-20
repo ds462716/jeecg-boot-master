@@ -520,7 +520,7 @@
         this.request(this.url.submit,"post");
       },
       /** 请求 */
-      request(url,method) {
+      request(url, method) {
         /** 触发表单验证 */
         this.getAllTable().then(tables => {
           /** 一次性验证主表和所有的次表 */

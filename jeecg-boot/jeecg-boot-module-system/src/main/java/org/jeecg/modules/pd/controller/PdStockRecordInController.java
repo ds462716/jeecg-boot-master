@@ -123,8 +123,6 @@ public class PdStockRecordInController {
      */
     @PostMapping(value = "/add")
     public Result<?> add(@RequestBody PdStockRecord pdStockRecord) {
-//        PdStockRecord pdStockRecord = new PdStockRecord();
-//        BeanUtils.copyProperties(PdStockRecord, pdStockRecord);
         pdStockRecordService.saveMain(pdStockRecord, pdStockRecord.getPdStockRecordDetailList(), PdConstant.RECODE_TYPE_1);
         return Result.ok("保存成功！");
     }
@@ -165,7 +163,11 @@ public class PdStockRecordInController {
         }
     }
 
-
+    /**
+     * 撤回
+     * @param pdStockRecord
+     * @return
+     */
     @PutMapping(value = "/cancel")
     public Result<?> cancel(@RequestBody PdStockRecord pdStockRecord) {
         PdStockRecord entity = pdStockRecordService.getById(pdStockRecord.getId());
@@ -206,8 +208,16 @@ public class PdStockRecordInController {
      */
     @DeleteMapping(value = "/delete")
     public Result<?> delete(@RequestParam(name = "id", required = true) String id) {
-		pdStockRecordService.delMainByDelFlag(id);
-        return Result.ok("删除成功!");
+        PdStockRecord entity = pdStockRecordService.getById(id);
+        if (entity == null) {
+            return Result.error("未找到对应数据");
+        }
+        if (PdConstant.SUBMIT_STATE_1.equals(entity.getSubmitStatus()) || PdConstant.SUBMIT_STATE_3.equals(entity.getSubmitStatus())) {
+            pdStockRecordService.delMainByDelFlag(id);
+            return Result.ok("删除成功!");
+        }else{
+            return Result.error("当前入库单状态非待提交或已撤回状态，不能删除！");
+        }
     }
 
     /**
