@@ -122,7 +122,7 @@ public class PdPurchaseOrderMergeServiceImpl extends ServiceImpl<PdPurchaseOrder
 
    public void insertMergeDetail(String orderNostr,String mergeOrderNo){
        //查询订单下产品信息
-       PdPurchaseOrder ppd = new PdPurchaseOrder();
+       PdPurchaseDetail ppd = new PdPurchaseDetail();
        List<String> orderNos = Arrays.asList(orderNostr.split(","));
        ppd.setOrderNos(orderNos);
        List<PdPurchaseDetail> ppdList = pdPurchaseDetailMapper.queryPdPurchaseDetail(ppd);
@@ -191,7 +191,7 @@ public class PdPurchaseOrderMergeServiceImpl extends ServiceImpl<PdPurchaseOrder
             pdConsumablesOrder.setOrderDate(wgMap.get("orderDate"));
 
             //查询订单下产品信息
-            PdPurchaseOrder ppd = new PdPurchaseOrder();
+            PdPurchaseDetail ppd = new PdPurchaseDetail();
             ppd.setOrderNos(qOrderNos);
             List<PdPurchaseDetail> ppdList = pdPurchaseDetailMapper.queryPdPurchaseDetail(ppd);
             //处理订单下产品
