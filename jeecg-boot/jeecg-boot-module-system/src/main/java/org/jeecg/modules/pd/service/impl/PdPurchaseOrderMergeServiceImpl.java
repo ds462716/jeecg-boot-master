@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.NullArgumentException;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.ibatis.session.SqlSession;
 import org.jeecg.common.constant.PdConstant;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.DateUtils;
@@ -44,7 +45,8 @@ public class PdPurchaseOrderMergeServiceImpl extends ServiceImpl<PdPurchaseOrder
     private PdPurchaseOrderMergeDetailMapper pdPurchaseOrderMergeDetailMapper;
     @Autowired
     private IPdPurchaseOrderService pdPurchaseOrderService;
-
+    @Autowired
+    private SqlSession sqlSession;
     /**
      * 查询列表
      * @param page
@@ -129,6 +131,8 @@ public class PdPurchaseOrderMergeServiceImpl extends ServiceImpl<PdPurchaseOrder
          if(CollectionUtils.isNotEmpty(ppdList)){
              //处理订单下产品
              List<PdPurchaseDetail> finalProdList = dealRepeatProdInfo(ppdList);
+             PdPurchaseOrderMergeDetailMapper dao= sqlSession.getMapper(PdPurchaseOrderMergeDetailMapper.class);
+
              for(PdPurchaseDetail entity:finalProdList) {
                  PdPurchaseOrderMergeDetail  orderMergeDetail =new  PdPurchaseOrderMergeDetail();
                  orderMergeDetail.setProductId(entity.getProductId());
@@ -138,7 +142,8 @@ public class PdPurchaseOrderMergeServiceImpl extends ServiceImpl<PdPurchaseOrder
                  String str= StringUtils.join(list.toArray(), ",");
                  orderMergeDetail.setOrderNo(str);
                  orderMergeDetail.setSupplierId(entity.getSupplierId());
-                   pdPurchaseOrderMergeDetailMapper.insert(orderMergeDetail);
+                 dao.insert(orderMergeDetail);
+               //pdPurchaseOrderMergeDetailMapper.insert(orderMergeDetail);
              }
          }
    }
