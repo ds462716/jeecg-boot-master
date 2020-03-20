@@ -211,7 +211,9 @@
               validateRules: [{ required: true, message: '${title}不能为空' },
                 { pattern: '^(?:[1-9][0-9]*(?:\\.[0-9]+)?|0\\.(?!0+$)[0-9]+)$',message: '${title}的格式不正确' }]
             },
-            { title: '库存数量', align:"center", key: 'stockNum' },
+            { title: '库存数量', align:"center", key: 'currentStockNum'},
+            { title: '出库科室库存数量', align:"center", key: 'stockNum',type: FormTypes.hidden},
+
           ]
         },
         url: {
@@ -412,7 +414,8 @@
           version: row.version,
           unitName: row.unitName,
           allocationNum: "1",//默认 1
-          stockNum: row.stockNum
+          stockNum: row.stockNum,
+          currentStockNum:row.currentStockNum
         }
         this.pdAllocationDetailTable.dataSource.push(data)
       },
