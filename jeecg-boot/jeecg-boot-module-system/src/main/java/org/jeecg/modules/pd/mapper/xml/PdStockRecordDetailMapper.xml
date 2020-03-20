@@ -10,6 +10,7 @@
         a.in_huowei_code,
 		a.out_huowei_code,
         a.batch_no,
+        a.merge_order_no,
         a.order_no,
         a.product_num,
         IFNULL(a.selling_price,0) as sellingPrice,
@@ -113,6 +114,16 @@
 		WHERE
 			 record_id = #{mainId}
 	</delete>
+
+	<update id="deleteByDelFlag">
+		UPDATE pd_stock_record_detail
+		SET
+			del_flag = #{DEL_FLAG_DELETE},
+			update_time =#{updateTime},
+			update_by =#{updateBy}
+		where
+			 record_id = #{recordId}
+	</update>
 
 	<select id="selectByMainId" parameterType="org.jeecg.modules.pd.entity.PdStockRecordDetail" resultType="org.jeecg.modules.pd.entity.PdStockRecordDetail">
 		SELECT

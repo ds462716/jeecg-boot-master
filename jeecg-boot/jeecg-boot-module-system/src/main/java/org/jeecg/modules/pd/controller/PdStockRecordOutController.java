@@ -149,7 +149,7 @@ public class PdStockRecordOutController {
     public Result<?> submit(@RequestBody PdStockRecord PdStockRecord) {
         PdStockRecord pdStockRecord = new PdStockRecord();
         BeanUtils.copyProperties(PdStockRecord, pdStockRecord);
-        pdStockRecordService.saveMain(pdStockRecord, PdStockRecord.getPdStockRecordDetailList(), PdConstant.RECODE_TYPE_2);
+        pdStockRecordService.submit(pdStockRecord, PdStockRecord.getPdStockRecordDetailList(), PdConstant.RECODE_TYPE_2);
         return Result.ok("添加成功！");
     }
 
@@ -183,13 +183,13 @@ public class PdStockRecordOutController {
      */
     @PutMapping(value = "/edit")
     public Result<?> edit(@RequestBody PdStockRecord PdStockRecord) {
-        PdStockRecord pdStockRecord = new PdStockRecord();
-        BeanUtils.copyProperties(PdStockRecord, pdStockRecord);
-        PdStockRecord pdStockRecordEntity = pdStockRecordService.getById(pdStockRecord.getId());
-        if (pdStockRecordEntity == null) {
-            return Result.error("未找到对应数据");
-        }
-        pdStockRecordService.updateMain(pdStockRecord, PdStockRecord.getPdStockRecordDetailList());
+//        PdStockRecord pdStockRecord = new PdStockRecord();
+//        BeanUtils.copyProperties(PdStockRecord, pdStockRecord);
+//        PdStockRecord pdStockRecordEntity = pdStockRecordService.getById(pdStockRecord.getId());
+//        if (pdStockRecordEntity == null) {
+//            return Result.error("未找到对应数据");
+//        }
+//        pdStockRecordService.updateMain(pdStockRecord, PdStockRecord.getPdStockRecordDetailList());
         return Result.ok("编辑成功!");
     }
 
@@ -201,7 +201,7 @@ public class PdStockRecordOutController {
      */
     @DeleteMapping(value = "/delete")
     public Result<?> delete(@RequestParam(name = "id", required = true) String id) {
-        pdStockRecordService.delMain(id);
+//        pdStockRecordService.delMain(id);
         return Result.ok("删除成功!");
     }
 

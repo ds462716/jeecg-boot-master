@@ -1,6 +1,7 @@
 package org.jeecg.modules.pd.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Param;
 import org.jeecg.modules.pd.entity.PdStockRecord;
 
 import java.util.List;
@@ -30,4 +31,12 @@ public interface PdStockRecordMapper extends BaseMapper<PdStockRecord> {
      */
     List<PdStockRecord> selectTransferList(PdStockRecord pdStockRecord);
 
+    boolean deleteById(@Param("id") String id);
+
+    /**
+     * 假删除
+     * @param pdStockRecord
+     * @return
+     */
+    boolean deleteByDelFlag(PdStockRecord pdStockRecord);
 }

@@ -81,4 +81,29 @@
 	
 	<select id="selectByMainId" parameterType="java.lang.String" resultType="org.jeecg.modules.pd.entity.PdPurchaseOrderMergeDetail">
 		SELECT * 	FROM  pd_purchase_order_merge_detail	WHERE	 merge_order_no = #{mainId} 	</select>
+
+	<!-- 增加到货数量 用于入库保存/提交 add by jiangxz 20200227 -->
+	<select id="additionArrivalNum" parameterType="org.jeecg.modules.pd.entity.PdPurchaseOrderMergeDetail">
+		UPDATE
+			pd_purchase_order_merge_detail
+		SET
+			arrival_num = IFNULL(arrival_num,0) + #{arrivalNum}
+		WHERE
+			del_flag =#{DEL_FLAG_NORMAL}
+			and merge_order_no = #{mergeOrderNo}
+			and product_id = #{productId}
+	</select>
+
+	<!-- 扣减到货数量 用于入库拒绝 add by jiangxz 20200227 -->
+	<select id="subtractArrivalNum" parameterType="org.jeecg.modules.pd.entity.PdPurchaseOrderMergeDetail">
+		UPDATE
+			pd_purchase_order_merge_detail
+		SET
+			arrival_num = IFNULL(arrival_num,0) - #{arrivalNum}
+		WHERE
+			del_flag =#{DEL_FLAG_NORMAL}
+			and merge_order_no = #{mergeOrderNo}
+			and product_id = #{productId}
+
+	</select>
 </mapper>

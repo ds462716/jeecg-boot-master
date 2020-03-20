@@ -14,7 +14,14 @@ import org.apache.ibatis.annotations.Param;
 public interface PdStockRecordDetailMapper extends BaseMapper<PdStockRecordDetail> {
 
 	public boolean deleteByMainId(@Param("mainId") String mainId);
-    
+
+	/**
+	 * 假删除
+	 * @param pdStockRecordDetail
+	 * @return
+	 */
+	public boolean deleteByDelFlag(PdStockRecordDetail pdStockRecordDetail);
+
 	public List<PdStockRecordDetail> selectByMainId(PdStockRecordDetail pdStockRecordDetail);
 
 	public List<PdStockRecordDetail> selectList(PdStockRecordDetail pdStockRecordDetail);

@@ -8,6 +8,7 @@
         a.record_type,
         a.out_type,
         a.in_type,
+        a.merge_order_no,
         a.order_no,
         a.allocation_no,
         a.apply_no,
@@ -74,6 +75,9 @@
             </if>
             <if test="orderNo != null and orderNo != ''">
                 AND a.order_no = #{orderNo}
+            </if>
+            <if test="mergeOrderNo != null and mergeOrderNo != ''">
+                AND a.merge_order_no = #{mergeOrderNo}
             </if>
             <if test="allocationNo != null and allocationNo != ''">
                 AND a.allocation_no = #{allocationNo}
@@ -181,4 +185,20 @@
         </where>
     </select>
 
+    <delete id="deleteById" parameterType="java.lang.String">
+        DELETE
+		FROM  pd_stock_record
+		WHERE
+			 id = #{id}
+	</delete>
+
+    <update id="deleteByDelFlag">
+		UPDATE pd_stock_record
+		SET
+			del_flag = #{DEL_FLAG_DELETE},
+			update_time =#{updateTime},
+			update_by =#{updateBy}
+		where
+			 id = #{id}
+	</update>
 </mapper>

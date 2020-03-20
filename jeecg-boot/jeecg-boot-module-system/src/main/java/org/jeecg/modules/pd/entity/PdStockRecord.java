@@ -45,6 +45,9 @@ public class PdStockRecord extends BaseEntity {
     /**采购订单号*/
     @Excel(name = "采购订单号", width = 15)
     private String orderNo;
+    /**合并采购订单号*/
+    @Excel(name = "合并采购订单号", width = 15)
+    private String mergeOrderNo;
     /**调拨单号*/
     @Excel(name = "调拨单号", width = 15)
     private String allocationNo;
@@ -54,17 +57,6 @@ public class PdStockRecord extends BaseEntity {
     /**退货单号*/
     @Excel(name = "退货单号", width = 15)
     private String dosagertNo;
-    /**操作人*/
-    @Excel(name = "操作人", width = 15)
-    private String submitBy;
-    /**出入库时间*/
-    @Excel(name = "出入库时间", width = 15, format = "yyyy-MM-dd")
-    @JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd")
-    @DateTimeFormat(pattern="yyyy-MM-dd")
-    private Date submitDate;
-    /**记录状态 : 1-待审核；2-已通过；3-已拒绝*/
-    @Excel(name = "记录状态 : 1-待审核；2-已通过；3-已拒绝", width = 15)
-    private String submitStatus;
     /**驳回原因*/
     @Excel(name = "驳回原因", width = 15)
     private String refuseReason;
@@ -92,6 +84,17 @@ public class PdStockRecord extends BaseEntity {
     /**供应商ID*/
     @Excel(name = "供应商ID", width = 15)
     private String supplierId;
+    /**操作人*/
+    @Excel(name = "操作人", width = 15)
+    private String submitBy;
+    /**出入库时间*/
+    @Excel(name = "出入库时间", width = 15, format = "yyyy-MM-dd")
+    @JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd")
+    @DateTimeFormat(pattern="yyyy-MM-dd")
+    private Date submitDate;
+    /**记录状态 : 1-待提交； 2-已提交； 3-已撤回*/
+    @Excel(name = "状态", width = 15)
+    private String submitStatus;
     /**审核人*/
     @Excel(name = "审核人", width = 15)
     private String auditBy;
@@ -100,7 +103,7 @@ public class PdStockRecord extends BaseEntity {
     @JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd")
     @DateTimeFormat(pattern="yyyy-MM-dd")
     private Date auditDate;
-    /**审核状态**/
+    /**审核状态  审核状态 1-待审核； 2-审核通过； 3-已拒绝**/
     @Excel(name = "审核状态", width = 15)
     private String auditStatus;
     /**退货单状态*/
@@ -148,7 +151,7 @@ public class PdStockRecord extends BaseEntity {
 
     // 采购订单明细
     @TableField(exist = false)
-    private List<PdPurchaseDetail> pdPurchaseDetailList;
+    private List<PdPurchaseOrderMergeDetail> pdPurchaseOrderMergeDetail;
     // 申领单明细
     @TableField(exist = false)
     private List<PdApplyDetail> pdApplyDetailList;

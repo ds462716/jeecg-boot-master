@@ -28,7 +28,7 @@
     <!-- 操作按钮区域 -->
     <div class="table-operator">
       <a-button @click="handleAdd" type="primary" icon="plus">新增</a-button>
-      <a-button type="primary" icon="download" @click="handleExportXls('入库记录表')">导出</a-button>
+      <!--<a-button type="primary" icon="download" @click="handleExportXls('入库记录表')">导出</a-button>-->
     </div>
 
     <!-- table区域-begin -->
@@ -71,21 +71,21 @@
         </template>
 
         <span slot="action" slot-scope="text, record">
-          <!--<a @click="handleEdit(record)">修改</a>-->
+          <a @click="handleEdit(record)" v-bind:disabled="record.submitStatus=='2'">修改</a>
+          <a-divider type="vertical"/>
           <a @click="handleDetail(record)">详情</a>
 
-
-          <!--<a-divider type="vertical" />-->
-          <!--<a-dropdown>-->
-            <!--<a class="ant-dropdown-link">更多 <a-icon type="down" /></a>-->
-            <!--<a-menu slot="overlay">-->
-              <!--<a-menu-item>-->
-                <!--<a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.id)">-->
-                  <!--<a>删除</a>-->
-                <!--</a-popconfirm>-->
-              <!--</a-menu-item>-->
-            <!--</a-menu>-->
-          <!--</a-dropdown>-->
+          <a-divider type="vertical" />
+          <a-dropdown>
+            <a class="ant-dropdown-link">更多 <a-icon type="down" /></a>
+            <a-menu slot="overlay">
+              <a-menu-item v-show="record.submitStatus=='1' || record.submitStatus=='3'"> <!--待提交、已撤回-->
+                <a-popconfirm title="确定删除吗?"  @confirm="() => handleDelete(record.id)"  >
+                  <a>删除</a>
+                </a-popconfirm>
+              </a-menu-item>
+            </a-menu>
+          </a-dropdown>
         </span>
 
       </a-table>
@@ -195,7 +195,7 @@
         ],
         url: {
           list: "/pd/pdStockRecordIn/list",
-          // delete: "/pd/pdStockRecordIn/delete",
+          delete: "/pd/pdStockRecordIn/delete",
           // deleteBatch: "/pd/pdStockRecordIn/deleteBatch",
           exportXlsUrl: "/pd/pdStockRecordIn/exportXls",
           // importExcelUrl: "pd/pdStockRecordIn/importExcel",

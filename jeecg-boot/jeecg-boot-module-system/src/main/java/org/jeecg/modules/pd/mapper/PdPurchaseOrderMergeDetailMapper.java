@@ -20,4 +20,18 @@ public interface PdPurchaseOrderMergeDetailMapper extends BaseMapper<PdPurchaseO
 
 	public List<PdPurchaseOrderMergeDetail> queryPdPurchaseMergeDetail(PdPurchaseOrderMergeDetail orderMergeDetail);
 
+	/**
+	 * 增加到货数量 用于入库保存/提交 add by jiangxz 20200227
+	 * @param detail
+	 * @return
+	 */
+	public void additionArrivalNum(PdPurchaseOrderMergeDetail detail);
+
+	/**
+	 * 扣减到货数量 用于入库拒绝 add by jiangxz 20200227
+	 * @param detail
+	 * @return
+	 */
+	public void subtractArrivalNum(PdPurchaseOrderMergeDetail detail);
+
 }

@@ -89,7 +89,7 @@
           :dataSource="innerData"
           size="middle"
           bordered
-          rowKey="purchaseDetailId"
+          rowKey="id"
           :pagination="false"
           :loading="subloading"
           :scroll="tableScroll"
@@ -180,10 +180,10 @@
         ],
         innerColumns:[
           {
-            title:'申购编号',
+            title:'合并申购编号',
             align:"center",
             width: 100,
-            dataIndex: 'orderNo'
+            dataIndex: 'mergeOrderNo'
           },
           {
             title:'产品编号',
@@ -240,6 +240,12 @@
             title:'厂家',
             align:"center",
             dataIndex: 'venderName'
+          },
+          {
+            title:'申购编号',
+            align:"center",
+            width: 100,
+            dataIndex: 'orderNo'
           },
         ],
         url: {

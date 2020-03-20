@@ -110,7 +110,7 @@
 		UPDATE
 			pd_purchase_detail
 		SET
-			arrival_num = arrival_num + #{arrivalNum}
+			arrival_num = IFNULL(arrival_num,0) + #{arrivalNum}
 		WHERE
 			del_flag =#{DEL_FLAG_NORMAL}
 			and order_no = #{orderNo}
@@ -122,7 +122,7 @@
 		UPDATE
 			pd_purchase_detail
 		SET
-			arrival_num = arrival_num - #{arrivalNum}
+			arrival_num = IFNULL(arrival_num,0) - #{arrivalNum}
 		WHERE
 			del_flag =#{DEL_FLAG_NORMAL}
 			and order_no = #{orderNo}

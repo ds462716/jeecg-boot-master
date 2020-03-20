@@ -41,6 +41,12 @@ public class PdStockRecordDetailServiceImpl extends ServiceImpl<PdStockRecordDet
 	public Page<PdStockRecordDetail> selectList(Page<PdStockRecordDetail> page, PdStockRecordDetail pdStockRecordDetail) {
 		return page.setRecords(pdStockRecordDetailMapper.selectList(pdStockRecordDetail));
 	}
+
+	/**
+	 * 查询明细
+	 * @param pdStockRecordDetail
+	 * @return
+	 */
 	@Override
 	public List<PdStockRecordDetail> queryPdStockRecordDetail(PdStockRecordDetail pdStockRecordDetail) {
 		return pdStockRecordDetailMapper.selectList(pdStockRecordDetail);

@@ -164,18 +164,18 @@
           </a-form>
         </a-card>
       </div>
-
-      <div class="drawer-bootom-button">
-        <a-button @click="closeBtn" style="margin-right: 15px;" v-show="disableSubmit">关  闭</a-button>
-        <a-popconfirm title="确定放弃编辑？" @confirm="handleCancel" v-show="!disableSubmit" okText="确定" cancelText="取消">
-          <a-button style="margin-right: 15px;">取  消</a-button>
-        </a-popconfirm>
-        <a-button @click="refuseBtn" v-show="!disableSubmit" type="danger" :loading="confirmLoading" style="margin-right: 15px;">驳回</a-button>
-        <a-button @click="submitBtn" v-show="!disableSubmit" type="primary" :loading="confirmLoading" style="margin-right: 15px;">审核通过</a-button>
-      </div>
-
     </a-spin>
 
+    <template slot="footer">
+      <a-button @click="closeBtn" style="margin-right: 15px;" v-show="disableSubmit">关  闭</a-button>
+      <a-popconfirm title="确定放弃编辑？" @confirm="handleCancel" v-show="!disableSubmit" okText="确定" cancelText="取消">
+        <a-button style="margin-right: 15px;">取  消</a-button>
+      </a-popconfirm>
+      <a-popconfirm title="确定驳回？" @confirm="refuseBtn" v-show="!disableSubmit" okText="确定" cancelText="取消">
+        <a-button type="danger" :loading="confirmLoading" style="margin-right: 15px;">驳回</a-button>
+      </a-popconfirm>
+      <a-button @click="submitBtn" v-show="!disableSubmit" type="primary" :loading="confirmLoading" style="margin-right: 15px;">审核通过</a-button>
+    </template>
   </j-modal>
 </template>
 
@@ -283,7 +283,7 @@
                 return obj;
               },
             },
-            { title: '申购单号', align:"center", dataIndex: 'orderNo' },
+            { title: '合并申购单号', align:"center", dataIndex: 'mergeOrderNo' },
             { title: '产品编码', align:"center", dataIndex: 'number' },
             { title: '产品名称', align:"center", dataIndex: 'productName' },
             { title: '规格', align:"center", dataIndex: 'spec' },
@@ -332,7 +332,7 @@
               title: '货位', key: 'inHuoweiCode', type: FormTypes.select, width:"150px", options: [],allowSearch:true,
               placeholder: '${title}', validateRules: [{ required: true, message: '${title}不能为空' }]
             },
-            { title: '申购单号', key: 'orderNo', width:"180px" }
+            { title: '合并申购单号', key: 'mergeOrderNo', width:"180px" }
           ]
         },
         url: {
@@ -384,7 +384,7 @@
 
               if(this.model.id){
                 this.showOrderTable = true;
-                this.pdPurchaseOrderDetailTable.dataSource = res.result.pdPurchaseDetailList || [];
+                this.pdPurchaseOrderDetailTable.dataSource = res.result.pdPurchaseOrderMergeDetail || [];
                 this.pdStockRecordDetailTable.dataSource = res.result.pdStockRecordDetailList || [];
                 this.totalSum = res.result.totalSum;
                 this.totalPrice = res.result.totalPrice.toString();
