@@ -11,14 +11,19 @@ import org.jeecg.modules.pd.entity.PdVender;
 import org.jeecg.modules.pd.mapper.PdVenderMapper;
 import org.jeecg.modules.pd.service.IPdProductService;
 import org.jeecg.modules.pd.service.IPdVenderService;
+import org.jeecgframework.poi.excel.ExcelImportUtil;
+import org.jeecgframework.poi.excel.entity.ImportParams;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Description: 生产厂家
@@ -124,5 +129,46 @@ public class PdVenderServiceImpl extends ServiceImpl<PdVenderMapper, PdVender> i
         }
 
 
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public Result<Object> importExcel(Map<String, MultipartFile> fileMap) {
+        PdVenderMapper dao = sqlsession.getMapper(PdVenderMapper.class);
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        boolean bl = true;
+        for (Map.Entry<String, MultipartFile> entity : fileMap.entrySet()) {
+            MultipartFile file = entity.getValue();// 获取上传文件对象
+            ImportParams params = new ImportParams();
+            params.setTitleRows(2);
+            params.setHeadRows(1);
+            params.setNeedSave(true);
+            try {
+                List<PdVender> list = ExcelImportUtil.importExcel(file.getInputStream(), PdVender.class, params);
+                for(PdVender ps :list){
+                    ps.setDepartParentId(sysUser.getDepartParentId());
+                    List<PdVender> obj = dao.verify(ps);
+                    if (obj != null && obj.size()>0) {
+                        bl = false;
+                        continue;
+                    }
+                    save(ps);
+                }
+            } catch (Exception e) {
+                log.error(e.getMessage(),e);
+                return Result.error("文件导入失败:"+e.getMessage());
+            } finally {
+                try {
+                    file.getInputStream().close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        if(bl){
+            return Result.ok("文件导入成功！");
+        }else{
+            return Result.ok("生产厂家名称存在重复，文件内容部分导入成功！");
+        }
     }
 }
