@@ -4,7 +4,10 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.modules.pd.entity.PdVender;
 import com.baomidou.mybatisplus.extension.service.IService;
+import org.springframework.web.multipart.MultipartFile;
+
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Description: 生产厂家
@@ -32,4 +35,5 @@ public interface IPdVenderService extends IService<PdVender> {
     Result<Object> deleteBatchV(String ids);
 
 
+    Result<Object> importExcel(Map<String, MultipartFile> fileMap);
 }

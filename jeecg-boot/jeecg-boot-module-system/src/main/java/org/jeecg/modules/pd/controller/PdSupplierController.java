@@ -12,15 +12,24 @@ import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.modules.pd.entity.PdSupplier;
 import org.jeecg.modules.pd.service.IPdSupplierService;
 import org.jeecg.modules.pd.util.FileUploadUtil;
+import org.jeecgframework.poi.excel.ExcelImportUtil;
+import org.jeecgframework.poi.excel.def.NormalExcelConstants;
+import org.jeecgframework.poi.excel.entity.ExportParams;
+import org.jeecgframework.poi.excel.entity.ImportParams;
+import org.jeecgframework.poi.excel.view.JeecgEntityExcelView;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 /**
 * @Description: 供应商
@@ -383,7 +392,17 @@ public class PdSupplierController extends JeecgController<PdSupplier, IPdSupplie
    */
    @RequestMapping(value = "/exportXls")
    public ModelAndView exportXls(HttpServletRequest request, PdSupplier pdSupplier) {
-       return super.exportXls(request, pdSupplier, PdSupplier.class, "供应商");
+       LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+       pdSupplier.setDepartParentId(sysUser.getDepartParentId());
+       //Step.1 获取导出数据
+       List<PdSupplier> pdProducts = pdSupplierService.selectList(pdSupplier);
+       // Step.2 AutoPoi 导出Excel
+       ModelAndView mv = new ModelAndView(new JeecgEntityExcelView());
+       mv.addObject(NormalExcelConstants.FILE_NAME, "供应商列表");
+       mv.addObject(NormalExcelConstants.CLASS, PdSupplier.class);
+       mv.addObject(NormalExcelConstants.PARAMS, new ExportParams("供应商列表数据", "导出人:" + sysUser.getRealname(), "产品数据"));
+       mv.addObject(NormalExcelConstants.DATA_LIST, pdProducts);
+       return mv;
    }
 
    /**
@@ -395,7 +414,10 @@ public class PdSupplierController extends JeecgController<PdSupplier, IPdSupplie
    */
    @RequestMapping(value = "/importExcel", method = RequestMethod.POST)
    public Result<?> importExcel(HttpServletRequest request, HttpServletResponse response) {
-       return super.importExcel(request, response, PdSupplier.class);
+       MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
+       Map<String, MultipartFile> fileMap = multipartRequest.getFileMap();
+       Result<Object> resul = pdSupplierService.importExcel(fileMap);
+       return resul;
    }
 
 }
