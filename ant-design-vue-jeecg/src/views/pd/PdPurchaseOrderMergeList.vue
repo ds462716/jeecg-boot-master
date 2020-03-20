@@ -124,7 +124,7 @@
           {
             title:'订单总数量',
             align:"center",
-            dataIndex: 'orderTotalNum'
+            dataIndex: 'orderCount'
           },
           {
             title:'操作人',
