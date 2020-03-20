@@ -136,7 +136,7 @@ public class PdPurchaseOrderMergeServiceImpl extends ServiceImpl<PdPurchaseOrder
                  orderMergeDetail.setMergeOrderNo(mergeOrderNo);
                  List<String> list=entity.getOrderNos();
                  String str= StringUtils.join(list.toArray(), ",");
-                 orderMergeDetail.setOrderNos(str);
+                 orderMergeDetail.setOrderNo(str);
                  orderMergeDetail.setSupplierId(entity.getSupplierId());
                    pdPurchaseOrderMergeDetailMapper.insert(orderMergeDetail);
              }

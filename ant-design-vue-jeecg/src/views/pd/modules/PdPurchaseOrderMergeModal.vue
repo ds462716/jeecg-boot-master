@@ -59,6 +59,7 @@
         :pagination="ipagination"
         :loading="loading"
         :customRow="onClickRow"
+        :scroll="tableScroll"
         :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
         @change="handleTableChange">
       </a-table>
@@ -98,7 +99,8 @@
           {
             title:'申购编号',
             align:"center",
-            dataIndex: 'orderNos'
+            dataIndex: 'orderNo',
+            width:"80px"
           },
           {
             title:'产品名称',
@@ -149,6 +151,7 @@
         url: {
           list: "/pd/pdPurchaseOrderMerge/queryPdPurchaseMergeDetail",
         },
+         tableScroll:{x :13*147+50},
         dictOptions:{
           auditStatus:[],
         },

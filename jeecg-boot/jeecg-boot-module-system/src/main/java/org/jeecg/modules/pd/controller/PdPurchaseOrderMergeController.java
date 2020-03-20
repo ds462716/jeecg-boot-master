@@ -184,4 +184,17 @@ public class PdPurchaseOrderMergeController extends JeecgController<PdPurchaseOr
 		IPage<PdPurchaseOrderMerge> pageList = pdPurchaseOrderService.choosePurchaseOrderList(page, pdPurchaseOrderPage);
 		return Result.ok(pageList);
 	}
+
+	/**
+	 * 查询合并订单明细（选择器用）
+	 * @param pdPurchaseOrderPage
+	 * @param req
+	 * @return
+	 */
+	/*@GetMapping(value = "/choosePurchaseOrderMergeDetailList")
+	public Result<?> choosePurchaseOrderMergeDetailList(PdPurchaseOrderPage pdPurchaseOrderPage, HttpServletRequest req) {
+		List<PdPurchaseOrderMergeDetail> list = pdPurchaseOrderMergeDetailService.queryPdPurchaseMergeDetail(orderMergeDetail);
+		//List<PdProductPage> list = pdPurchaseOrderService.choosePurchaseOrderDetailList(pdPurchaseOrderPage);
+		return Result.ok(list);
+	}*/
 }

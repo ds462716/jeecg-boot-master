@@ -291,6 +291,7 @@ public class PdPurchaseOrderController {
 		 return Result.ok("文件导入失败！");
 	 }
 
+	 /**此方法作废*/
 	 @GetMapping(value = "/choosePurchaseOrderDetailList")
 	 public Result<?> choosePurchaseOrderDetailList(PdPurchaseOrderPage pdPurchaseOrderPage, HttpServletRequest req) {
 		 List<PdProductPage> list = pdPurchaseOrderService.choosePurchaseOrderDetailList(pdPurchaseOrderPage);

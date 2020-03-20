@@ -51,7 +51,7 @@ public class PdPurchaseOrderMergeDetail extends BaseEntity {
 	private Double orderNum;
 	/**申购编号（会有多个）*/
 	@Excel(name = "申购编号", width = 15)
-	private String orderNos;
+	private String orderNo;
 	/**到货数量*/
 	@Excel(name = "到货数量", width = 15)
 	private Double arrivalNum;
