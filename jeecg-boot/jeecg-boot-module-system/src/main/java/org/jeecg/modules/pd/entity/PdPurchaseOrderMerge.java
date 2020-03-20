@@ -69,6 +69,9 @@ public class PdPurchaseOrderMerge extends BaseEntity {
     private Date updateTime;
 	/**所属父部门ID*/
     private String departParentId;
+    /*订单总数量**/
+	@Excel(name = "订单总数量", width = 15, format = "yyyy-MM-dd")
+	private Double orderCount;
     /*合并申购订单orderNos*/
     @TableField(exist = false)
     private String orderNos;

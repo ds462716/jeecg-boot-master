@@ -193,7 +193,7 @@
       show(params) {
         if(params && params.supplierId){
           this.supplierId = params.supplierId;
-          this.orderNo = params.orderNo;
+          this.mergeOrderNo = params.mergeOrderNo;
           this.$nextTick(() => {
             // this.$refs.supplierSelect.disabled="disabled";
             this.supplierHandleSearch(); //初始化供应商
@@ -231,8 +231,8 @@
         if(this.supplierId){
           params.supplierId = this.supplierId;
         }
-        if(this.orderNo){
-          params.orderNo = this.orderNo;
+        if(this.mergeOrderNo){
+          params.mergeOrderNo = this.mergeOrderNo;
         }
         if(this.stockDepartId){
           params.stockDepartId = this.stockDepartId;

@@ -38,6 +38,9 @@ public class PdStockRecordDetail extends BaseEntity {
 	/**采购订单号*/
 	@Excel(name = "采购订单号", width = 15)
 	private String orderNo;
+	/**合并采购订单号*/
+	@Excel(name = "合并采购订单号", width = 15)
+	private String mergeOrderNo;
 	/**货位ID*/
 //	@Excel(name = "货区ID", width = 15)
 //	private String huoquId;

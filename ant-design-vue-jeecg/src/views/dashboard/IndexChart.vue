@@ -2,7 +2,7 @@
   <div class="page-header-index-wide">
     <a-row :gutter="24">
       <a-col :sm="24" :md="12" :xl="6" :style="{ marginBottom: '24px' }">
-        <chart-card :loading="loading" title="总销售额" total="￥126,560">
+        <chart-card :loading="loading" title="总采购量" total="126,560">
           <a-tooltip title="指标说明" slot="action">
             <a-icon type="info-circle-o" />
           </a-tooltip>
@@ -16,29 +16,29 @@
               11%
             </trend>
           </div>
-          <template slot="footer">日均销售额<span>￥ 234.56</span></template>
+          <template slot="footer">日均采购量<span>23</span></template>
         </chart-card>
       </a-col>
       <a-col :sm="24" :md="12" :xl="6" :style="{ marginBottom: '24px' }">
-        <chart-card :loading="loading" title="订单量" :total="8846 | NumberFormat">
+        <chart-card :loading="loading" title="总申领量" :total="8846 | NumberFormat">
           <a-tooltip title="指标说明" slot="action">
             <a-icon type="info-circle-o" />
           </a-tooltip>
           <div>
             <mini-area />
           </div>
-          <template slot="footer">日订单量<span> {{ '1234' | NumberFormat }}</span></template>
+          <template slot="footer">日均领用量<span> {{ '1234' | NumberFormat }}</span></template>
         </chart-card>
       </a-col>
       <a-col :sm="24" :md="12" :xl="6" :style="{ marginBottom: '24px' }">
-        <chart-card :loading="loading" title="支付笔数" :total="6560 | NumberFormat">
+        <chart-card :loading="loading" title="总使用量" :total="6560 | NumberFormat">
           <a-tooltip title="指标说明" slot="action">
             <a-icon type="info-circle-o" />
           </a-tooltip>
           <div>
             <mini-bar :height="40" />
           </div>
-          <template slot="footer">转化率 <span>60%</span></template>
+          <template slot="footer">日均用量 <span>12</span></template>
         </chart-card>
       </a-col>
       <a-col :sm="24" :md="12" :xl="6" :style="{ marginBottom: '24px' }">
@@ -75,23 +75,23 @@
             </div>
             <a-range-picker :style="{width: '256px'}" />
           </div>
-          <a-tab-pane loading="true" tab="销售额" key="1">
+          <a-tab-pane loading="true" tab="金额" key="1">
             <a-row>
               <a-col :xl="16" :lg="12" :md="12" :sm="24" :xs="24">
-                <bar title="销售额排行" :dataSource="barData"/>
+                <bar title="金额消耗趋势" :dataSource="barData"/>
               </a-col>
               <a-col :xl="8" :lg="12" :md="12" :sm="24" :xs="24">
-                <rank-list title="门店销售排行榜" :list="rankList"/>
+                <rank-list title="耗材类别" :list="rankList"/>
               </a-col>
             </a-row>
           </a-tab-pane>
-          <a-tab-pane tab="销售趋势" key="2">
+          <a-tab-pane tab="数量" key="2">
             <a-row>
               <a-col :xl="16" :lg="12" :md="12" :sm="24" :xs="24">
-                <bar title="销售额趋势" :dataSource="barData"/>
+                <bar title="数量使用趋势" :dataSource="barData"/>
               </a-col>
               <a-col :xl="8" :lg="12" :md="12" :sm="24" :xs="24">
-                <rank-list title="门店销售排行榜" :list="rankList"/>
+                <rank-list title="耗材类别" :list="rankList"/>
               </a-col>
             </a-row>
           </a-tab-pane>
@@ -153,7 +153,7 @@
   const rankList = []
   for (let i = 0; i < 7; i++) {
     rankList.push({
-      name: '白鹭岛 ' + (i+1) + ' 号店',
+      name: '类别 ' + (i+1) + ' ',
       total: 1234.56 - i * 100
     })
   }

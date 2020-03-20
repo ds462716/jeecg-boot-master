@@ -388,8 +388,8 @@
         <if test="stockDepartId != null and stockDepartId != ''">
            , IFNULL(f.stock_num,0) as stockNum
         </if>
-        <if test="orderNo != null and orderNo != ''">
-            ,e.order_no as orderNo
+        <if test="mergeOrderNo != null and mergeOrderNo != ''">
+            ,e.merge_order_no as mergeOrderNo
         </if>
         from pd_product a
         left join pd_unit b on a.unit_id = b.id
@@ -398,8 +398,8 @@
         <if test="stockDepartId != null and stockDepartId != ''">
         left join pd_product_stock_total f on f.product_id = a.id and f.depart_id=#{stockDepartId}
         </if>
-        <if test="orderNo != null and orderNo != ''">
-        left join pd_purchase_detail e on e.product_id = a.id
+        <if test="mergeOrderNo != null and mergeOrderNo != ''">
+        left join pd_purchase_order_merge_detail e on e.product_id = a.id
         </if>
         <where>
             a.del_flag = #{DEL_FLAG_NORMAL}
@@ -427,8 +427,8 @@
             <if test="venderId != null and venderId != ''">
                 AND a.vender_id = #{venderId}
             </if>
-            <if test="orderNo != null and orderNo != ''">
-                AND e.order_no = #{orderNo}
+            <if test="mergeOrderNo != null and mergeOrderNo != ''">
+                AND e.merge_order_no = #{mergeOrderNo}
             </if>
             <if test="departParentId != null and departParentId != ''">
                 AND a.depart_parent_id = #{departParentId}

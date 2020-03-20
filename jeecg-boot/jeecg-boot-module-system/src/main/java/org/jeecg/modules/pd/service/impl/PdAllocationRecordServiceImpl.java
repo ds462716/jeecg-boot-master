@@ -3,12 +3,12 @@ package org.jeecg.modules.pd.service.impl;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.ibatis.session.SqlSession;
 import org.jeecg.modules.pd.entity.PdAllocationDetail;
 import org.jeecg.modules.pd.entity.PdAllocationRecord;
 import org.jeecg.modules.pd.mapper.PdAllocationDetailMapper;
 import org.jeecg.modules.pd.mapper.PdAllocationRecordMapper;
 import org.jeecg.modules.pd.service.IPdAllocationRecordService;
-import org.jeecg.modules.pd.vo.PdApplyOrderPage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,7 +30,8 @@ public class PdAllocationRecordServiceImpl extends ServiceImpl<PdAllocationRecor
 	private PdAllocationRecordMapper pdAllocationRecordMapper;
 	@Autowired
 	private PdAllocationDetailMapper pdAllocationDetailMapper;
-
+	@Autowired
+	private SqlSession sqlSession;
 
 
 	/**
@@ -47,11 +48,13 @@ public class PdAllocationRecordServiceImpl extends ServiceImpl<PdAllocationRecor
 	@Transactional
 	public void saveMain(PdAllocationRecord pdAllocationRecord, List<PdAllocationDetail> pdAllocationDetailList) {
 		pdAllocationRecordMapper.insert(pdAllocationRecord);
+		PdAllocationDetailMapper dao=sqlSession.getMapper(PdAllocationDetailMapper.class);
 		if(pdAllocationDetailList!=null && pdAllocationDetailList.size()>0) {
 			for(PdAllocationDetail entity:pdAllocationDetailList) {
 				//外键设置
 				entity.setAllocationNo(pdAllocationRecord.getAllocationNo());
-				pdAllocationDetailMapper.insert(entity);
+				dao.insert(entity);
+				//pdAllocationDetailMapper.insert(entity);
 			}
 		}
 	}
@@ -63,11 +66,13 @@ public class PdAllocationRecordServiceImpl extends ServiceImpl<PdAllocationRecor
 		//1.先删除子表数据
 		pdAllocationDetailMapper.deleteByMainId(pdAllocationRecord.getAllocationNo());
 		//2.子表数据重新插入
+		PdAllocationDetailMapper dao=sqlSession.getMapper(PdAllocationDetailMapper.class);
 		if(pdAllocationDetailList!=null && pdAllocationDetailList.size()>0) {
 			for(PdAllocationDetail entity:pdAllocationDetailList) {
 				//外键设置
 				entity.setAllocationNo(pdAllocationRecord.getAllocationNo());
-				pdAllocationDetailMapper.insert(entity);
+				dao.insert(entity);
+				//pdAllocationDetailMapper.insert(entity);
 			}
 		}
 	}
@@ -82,9 +87,13 @@ public class PdAllocationRecordServiceImpl extends ServiceImpl<PdAllocationRecor
 	@Override
 	@Transactional
 	public void delBatchMain(Collection<? extends Serializable> idList) {
+		PdAllocationDetailMapper dao=sqlSession.getMapper(PdAllocationDetailMapper.class);
+		PdAllocationRecordMapper recordDao=sqlSession.getMapper(PdAllocationRecordMapper.class);
 		for(Serializable id:idList) {
-			pdAllocationDetailMapper.deleteByMainId(id.toString());
-			pdAllocationRecordMapper.deleteById(id);
+			dao.deleteByMainId(id.toString());
+			recordDao.deleteById(id);
+			//pdAllocationDetailMapper.deleteByMainId(id.toString());
+			//pdAllocationRecordMapper.deleteById(id);
 		}
 	}
 	@Override

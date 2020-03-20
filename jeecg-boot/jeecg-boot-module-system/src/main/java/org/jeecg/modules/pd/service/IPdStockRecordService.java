@@ -19,20 +19,31 @@ public interface IPdStockRecordService extends IService<PdStockRecord> {
 
 	/**
 	 * 添加一对多
-	 * 
+	 *
 	 */
 	public void saveMain(PdStockRecord pdStockRecord, List<PdStockRecordDetail> pdStockRecordDetailList, String recordType) ;
-	
+
 	/**
-	 * 修改一对多
-	 * 
+	 * 审核
 	 */
-	public void updateMain(PdStockRecord pdStockRecord, List<PdStockRecordDetail> pdStockRecordDetailList);
+	public void submit(PdStockRecord pdStockRecord, List<PdStockRecordDetail> pdStockRecordDetailList, String recordType) ;
+
+	/**
+	 * 修改审核、提交状态
+	 * @param pdStockRecord
+	 */
+	public void updateStatus(PdStockRecord pdStockRecord);
 	
 	/**
 	 * 删除一对多
 	 */
 	public void delMain(String id);
+
+	/**
+	 * 假删除
+	 * @param id
+	 */
+	public void delMainByDelFlag(String id);
 	
 	/**
 	 * 批量删除一对多

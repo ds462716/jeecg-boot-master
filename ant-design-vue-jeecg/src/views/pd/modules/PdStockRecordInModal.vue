@@ -42,8 +42,11 @@
                 <a-form-item v-show="false" label="入库部门ID">
                   <a-input v-show="false" v-decorator="[ 'inDepartId', {}]" ></a-input>
                 </a-form-item>
-                <a-form-item v-show="false" label="采购订单号">
-                  <a-input v-show="false" v-decorator="[ 'orderNo', {}]" ></a-input>
+                <!--<a-form-item v-show="false" label="采购订单号">-->
+                  <!--<a-input v-show="false" v-decorator="[ 'orderNo', {}]" ></a-input>-->
+                <!--</a-form-item>-->
+                <a-form-item v-show="false" label="合并采购订单号">
+                  <a-input v-show="false" v-decorator="[ 'mergeOrderNo', {}]" ></a-input>
                 </a-form-item>
               </a-col>
               <a-col :span="6">
@@ -197,6 +200,9 @@
       <a-popconfirm title="确定放弃编辑？" @confirm="handleCancel" v-show="!disableSubmit" okText="确定" cancelText="取消">
         <a-button style="margin-right: 15px;">取  消</a-button>
       </a-popconfirm>
+      <a-popconfirm title="确定撤回？" @confirm="cancelBtn" v-show="showCancelBtn" okText="确定" cancelText="取消">
+        <a-button style="margin-right: 15px;" :loading="confirmLoading" type="danger">撤  回</a-button>
+      </a-popconfirm>
       <a-button @click="saveBtn" v-show="!disableSubmit" type="primary" :loading="confirmLoading" style="margin-right: 15px;">保存草稿</a-button>
       <a-button @click="submitBtn" v-show="!disableSubmit" type="primary" :loading="confirmLoading" style="margin-right: 15px;">提  交</a-button>
     </template>
@@ -261,6 +267,7 @@
         labelCol4: {span: 13},
         wrapperCol4: {span: 5},
         disableSubmit:false,
+        showCancelBtn:false,
 
         initData:{},
         queryParam:{},
@@ -272,7 +279,8 @@
         supplierData: [],
         //供应商下拉列表 end
         showOrderTable:false,
-        orderNo:"",
+        // orderNo:"",
+        mergeOrderNo:"",
         totalSum:'0',
         totalPrice:'0.0000',
         submitDateStr:"",
@@ -288,7 +296,8 @@
           recordNo:{},
           recordType:{},
           inType:{rules: [{required: true, message: '请选择入库类型!'}]},
-          orderNo:{},
+          // orderNo:{},
+          mergeOrderNo:{},
           remarks:{},
           isAllowProduct:{rules: [{required: true, message: '请选择!'}]},
           isAllowNum:{rules: [{required: true, message: '请选择!'}]},
@@ -318,7 +327,8 @@
                 return obj;
               },
             },
-            { title: '申购单号', align:"center", dataIndex: 'orderNo' },
+            // { title: '申购单号', align:"center", dataIndex: 'orderNo' },
+            { title: '合并申购单号', align:"center", dataIndex: 'mergeOrderNo' },
             { title: '产品编码', align:"center", dataIndex: 'number' },
             { title: '产品名称', align:"center", dataIndex: 'productName' },
             { title: '规格', align:"center", dataIndex: 'spec' },
@@ -360,13 +370,16 @@
             { title: '入库单价', key: 'purchasePrice', width:"80px" },
             { title: '金额', key: 'inTotalPrice', type: FormTypes.input, disabled:true, width:"100px" },
             { title: '货位', key: 'inHuoweiCode', type: FormTypes.select, width:"150px", options: [],allowSearch:true, placeholder: '${title}' },
-            { title: '申购单号', key: 'orderNo', type: FormTypes.input, disabled:true, width:"180px" }
+            // { title: '申购单号', key: 'orderNo', },
+            { title: '合并申购单号', key: 'mergeOrderNo', type: FormTypes.input, disabled:true, width:"180px" }
           ]
         },
         url: {
           init:"/pd/pdStockRecordIn/initModal",
           submit: "/pd/pdStockRecordIn/submit",
-          edit: "/pd/pdStockRecordIn/edit",
+          add: "/pd/pdStockRecordIn/add",
+          // edit: "/pd/pdStockRecordIn/edit",
+          cancel: "/pd/pdStockRecordIn/cancel",
           querySupplier:"/pd/pdSupplier/getSupplierList",
           pdStockRecordDetail: {
             list: "/pd/pdStockRecordIn/queryPdStockRecordDetailByMainId"
@@ -394,8 +407,10 @@
         this.showOrderTable = false;
         this.pdPurchaseOrderDetailTable.dataSource = [];
         this.queryParam = {};
-        this.orderNo = "";
-        this.form.setFieldsValue({orderNo:""});
+        // this.orderNo = "";
+        // this.form.setFieldsValue({orderNo:""});
+        this.mergeOrderNo = "";
+        this.form.setFieldsValue({mergeOrderNo:""});
         this.eachAllTable((item) => {
           item.initialize()
         })
@@ -411,14 +426,17 @@
       },
       loadData() {
         this.loading = true;
-
+        this.showCancelBtn = false;
         //初始化供应商，用于回显供应商
         this.supplierHandleSearch();
 
         let params = {};
           if(this.model.id){
+            if(this.model.auditStatus == "1" && this.model.submitStatus == "2"){
+              this.showCancelBtn = true;
+            }
             this.popModal.title="入库明细";
-          let fieldval = pick(this.model,'recordNo','inType','submitBy','submitByName','submitDate','remarks','inDepartId','supplierId',
+          let fieldval = pick(this.model,'recordNo','mergeOrderNo','inType','submitBy','submitByName','submitDate','remarks','inDepartId','supplierId',
             'testResult','storageResult','temperature','humidity','remarks')
           this.$nextTick(() => {
             this.form.setFieldsValue(fieldval);
@@ -433,7 +451,7 @@
             this.$nextTick(() => {
               if(this.model.id){
                 this.showOrderTable = true;
-                this.pdPurchaseOrderDetailTable.dataSource = res.result.pdPurchaseDetailList || [];
+                this.pdPurchaseOrderDetailTable.dataSource = res.result.pdPurchaseOrderMergeDetail || [];
                 this.pdStockRecordDetailTable.dataSource = res.result.pdStockRecordDetailList || [];
                 this.totalSum = res.result.totalSum;
                 this.totalPrice = res.result.totalPrice.toString();
@@ -448,7 +466,7 @@
                 this.allowInMoreOrder = res.result.allowInMoreOrder;
                 this.allowNotOrderProduct = res.result.allowNotOrderProduct;
                 this.submitDateStr = res.result.submitDateStr;
-                let fieldval = pick(this.initData,'recordNo','inType','submitBy','submitByName','submitDate','remarks','inDepartId','supplierId',
+                let fieldval = pick(this.initData,'recordNo','mergeOrderNo','inType','submitBy','submitByName','submitDate','remarks','inDepartId','supplierId',
                   'testResult','storageResult','temperature','humidity','remarks');
                 this.form.setFieldsValue(fieldval);
                 //获取光标
@@ -474,12 +492,35 @@
         this.visible = false;
         this.$emit('close');
       },
+      /**撤回**/
+      cancelBtn(){
+        if(this.model.auditStatus == "1" && this.model.submitStatus == "2"){
+          this.confirmLoading = true
+          httpAction(this.url.cancel, {id:this.model.id}, 'put').then((res) => {
+            if (res.success) {
+              this.$message.success(res.message)
+              this.$emit('ok')
+              this.close()
+            } else {
+              this.$message.warning(res.message)
+            }
+          }).finally(() => {
+            this.confirmLoading = false
+          })
+        }else{
+          this.$message.warning("当前入库单状态非已提交、待审核状态，不能撤回！")
+        }
+      },
       /** 保存草稿 **/
       saveBtn() {
-
+        this.request(this.url.add,"post");
       },
-      /** 确定按钮点击事件 */
+      /** 提交 **/
       submitBtn() {
+        this.request(this.url.submit,"post");
+      },
+      /** 请求 */
+      request(url, method) {
         /** 触发表单验证 */
         this.getAllTable().then(tables => {
           /** 一次性验证主表和所有的次表 */
@@ -546,8 +587,20 @@
           }
 
           // 发起请求
-          let a =1;
-          return this.request(formData);
+          // return this.request(formData);
+          this.confirmLoading = true
+          httpAction(url, formData, method).then((res) => {
+            if (res.success) {
+              this.$message.success(res.message)
+              this.$emit('ok')
+              this.close()
+            } else {
+              this.$message.warning(res.message)
+            }
+          }).finally(() => {
+            this.confirmLoading = false
+          })
+
         }).catch(e => {
           if (e.error === VALIDATE_NO_PASSED) {
             // 如果有未通过表单验证的子表，就自动跳转到它所在的tab
@@ -558,25 +611,25 @@
         })
       },
       // 保存 提交 修改 请求函数
-      request(formData) {
-        let url = this.url.submit, method = 'post'
-        if (this.model.id) {
-          url = this.url.edit
-          method = 'put'
-        }
-        this.confirmLoading = true
-        httpAction(url, formData, method).then((res) => {
-          if (res.success) {
-            this.$message.success(res.message)
-            this.$emit('ok')
-            this.close()
-          } else {
-            this.$message.warning(res.message)
-          }
-        }).finally(() => {
-          this.confirmLoading = false
-        })
-      },
+      // request(formData) {
+      //   let url = this.url.submit, method = 'post'
+      //   // if (this.model.id) {
+      //   //   url = this.url.edit
+      //   //   method = 'put'
+      //   // }
+      //   this.confirmLoading = true
+      //   httpAction(url, formData, method).then((res) => {
+      //     if (res.success) {
+      //       this.$message.success(res.message)
+      //       this.$emit('ok')
+      //       this.close()
+      //     } else {
+      //       this.$message.warning(res.message)
+      //     }
+      //   }).finally(() => {
+      //     this.confirmLoading = false
+      //   })
+      // },
       /** 整理成formData */
       classifyIntoFormData(allValues) {
         let main = Object.assign(this.model, allValues.formValue)
@@ -590,7 +643,7 @@
         this.$message.error(msg)
       },
       popupCallback(row){
-        this.form.setFieldsValue(pick(row,'recordNo','inType','submitBy','submitByName','submitDate','remarks','inDepartId','supplierId',
+        this.form.setFieldsValue(pick(row,'recordNo','mergeOrderNo','inType','submitBy','submitByName','submitDate','remarks','inDepartId','supplierId',
           'testResult','storageResult','temperature','humidity','remarks'))
       },
 
@@ -617,8 +670,8 @@
       returnPurchaseOrderData(data) {
         this.showOrderTable = true;
         this.pdPurchaseOrderDetailTable.dataSource = data;
-        this.orderNo = data[0].orderNo;
-        this.form.setFieldsValue({orderNo:data[0].orderNo});
+        this.mergeOrderNo = data[0].mergeOrderNo;
+        this.form.setFieldsValue({mergeOrderNo:data[0].mergeOrderNo});
         //校验产品列表是否有订单中的产品
         this.checkProductInOrder();
       },
@@ -636,20 +689,20 @@
       chooseProductList() {
         let supplierId = this.form.getFieldValue("supplierId");
         let isAllowProduct = this.form.getFieldValue("isAllowProduct");
-        let orderNo = "";
+        let mergeOrderNo = "";
         if(!supplierId) {
           this.$message.error("请先选择供应商！");
           return;
         }
         //开关-是否允许入库非订单产品     1-允许非订单产品；0-不允许非订单产品
         if(this.allowNotOrderProduct === "0") {
-          if(!this.orderNo){
+          if(!this.mergeOrderNo){
             this.$message.error("请先导入订单！");
             return;
           }
-          orderNo = this.orderNo;
+          mergeOrderNo = this.mergeOrderNo;
         }
-        this.$refs.pdChooseProductListModel.show({supplierId:supplierId,supplierName:"",orderNo:orderNo});
+        this.$refs.pdChooseProductListModel.show({supplierId:supplierId,supplierName:"",mergeOrderNo:mergeOrderNo});
       },
       // 选择产品弹出框回调函数
       returnProductData(data) {
@@ -704,14 +757,14 @@
           expDate:"",
           batchNo:"",
           productNum: 1,
-          orderNo:"",
+          mergeOrderNo:"",
           inHuoweiCode:""
         }
         let purchaseOrderDetail = this.pdPurchaseOrderDetailTable.dataSource;
         for (let detail of purchaseOrderDetail) {
           // 产品如果在订单列表中 则添加订单编号
-          if(detail.number == data.productNumber){
-            data.orderNo = detail.orderNo;
+          if(detail.productId == data.productId){
+            data.mergeOrderNo = detail.mergeOrderNo;
           }
         }
         this.pdStockRecordDetailTable.dataSource.push(data);
@@ -734,14 +787,14 @@
           expDate:row.expDate,
           batchNo:row.batchNo,
           productNum: 1,
-          orderNo:"",
+          mergeOrderNo:"",
           inHuoweiCode:""
         }
         let purchaseOrderDetail = this.pdPurchaseOrderDetailTable.dataSource;
         purchaseOrderDetail.forEach((detail, idx) => {
           // 产品如果在订单列表中 则添加订单编号
-          if(detail.number == data.productNumber){
-            data.orderNo = detail.orderNo;
+          if(detail.productId == data.productId){
+            data.mergeOrderNo = detail.mergeOrderNo;
           }
         })
         this.pdStockRecordDetailTable.dataSource.push(data);
@@ -899,10 +952,10 @@
         let { values } = this.$refs.pdStockRecordDetail.getValuesSync({ validate: false });
         if(values.length > 0 && purchaseOrderDetail.length > 0){
           for(let row of values){
-            this.$refs.pdStockRecordDetail.setValues([{rowKey: row.id, values: { orderNo: "" }}]);
+            this.$refs.pdStockRecordDetail.setValues([{rowKey: row.id, values: { mergeOrderNo: "" }}]);
             for (let detail of purchaseOrderDetail) {
-              if(detail.number == row.productNumber){
-                  this.$refs.pdStockRecordDetail.setValues([{rowKey: row.id, values: {orderNo: detail.orderNo,productNum:row.productNum}}]);
+              if(detail.productId == row.productId){
+                  this.$refs.pdStockRecordDetail.setValues([{rowKey: row.id, values: {mergeOrderNo: detail.mergeOrderNo,productNum:row.productNum}}]);
               }
             }
           }
@@ -911,6 +964,12 @@
       //校验供应商 是否一致
       checkSupplier(product){
         let supplierId = this.form.getFieldValue("supplierId")
+
+        if(!product.supplierId){
+          this.$message.error("产品("+product.name+")没有维护供应商，请先维护供应商！");
+          return false;
+        }
+
         if(supplierId){
           if(supplierId != product.supplierId){
             this.$message.error("产品("+product.name+")的供应商与选中的供应商不一致！");
@@ -927,7 +986,7 @@
       //校验是否允许订单外产品入库
       checkAllowNotOrderProduct(product){
         if(this.allowNotOrderProduct === "0"){ //1-允许非订单产品；0-不允许非订单产品
-          if(!this.orderNo){
+          if(!this.mergeOrderNo){
             this.$message.error("请先导入订单！");
             //清空扫码框
             this.clearQueryParam();

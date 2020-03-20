@@ -38,6 +38,9 @@ public class PdProductPage extends PdProduct {
     /**订单编号**/
     private String orderNo;
 
+    /**合并订单编号**/
+    private String mergeOrderNo;
+
     /** 产品采购数量 **/
     private Double orderNum;
 

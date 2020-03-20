@@ -37,6 +37,9 @@ public class PdStockRecordPage {
 	/**采购订单号*/
 	@Excel(name = "采购订单号", width = 15)
 	private String orderNo;
+	/**合并采购订单号*/
+	@Excel(name = "合并采购订单号", width = 15)
+	private String mergeOrderNo;
 	/**调拨单号*/
 	@Excel(name = "调拨单号", width = 15)
 	private String allocationNo;

@@ -176,16 +176,20 @@
         </a-card>
       </div>
 
-      <div class="drawer-bootom-button">
-        <a-button @click="closeBtn" style="margin-right: 15px;" v-show="disableSubmit">关  闭</a-button>
-        <a-popconfirm title="确定放弃编辑？" @confirm="handleCancel" v-show="!disableSubmit" okText="确定" cancelText="取消">
-          <a-button style="margin-right: 15px;">取  消</a-button>
-        </a-popconfirm>
-        <a-button @click="saveBtn" v-show="!disableSubmit" type="primary" :loading="confirmLoading" style="margin-right: 15px;">保存草稿</a-button>
-        <a-button @click="submitBtn" v-show="!disableSubmit" type="primary" :loading="confirmLoading" style="margin-right: 15px;">提  交</a-button>
-      </div>
-
     </a-spin>
+
+    <template slot="footer">
+      <a-button @click="closeBtn" style="margin-right: 15px;" v-show="disableSubmit">关  闭</a-button>
+      <a-popconfirm title="确定放弃编辑？" @confirm="handleCancel" v-show="!disableSubmit" okText="确定" cancelText="取消">
+        <a-button style="margin-right: 15px;">取  消</a-button>
+      </a-popconfirm>
+      <a-popconfirm title="确定撤回？" @confirm="cancelBtn" v-show="showCancelBtn" okText="确定" cancelText="取消">
+        <a-button style="margin-right: 15px;" :loading="confirmLoading" type="danger">撤  回</a-button>
+      </a-popconfirm>
+      <a-button @click="saveBtn" v-show="!disableSubmit" type="primary" :loading="confirmLoading" style="margin-right: 15px;">保存草稿</a-button>
+      <a-button @click="submitBtn" v-show="!disableSubmit" type="primary" :loading="confirmLoading" style="margin-right: 15px;">提  交</a-button>
+    </template>
+
     <pd-choose-apply-order-list-model ref="pdChooseApplyOrderListModel" @ok="returnApplyOrderData" ></pd-choose-apply-order-list-model>
     <pd-choose-allocation-list-model ref="pdChooseAllocationListModel" @ok="returnAllocationData" ></pd-choose-allocation-list-model>
     <pd-choose-product-stock-list-model ref="pdChooseProductStockListModel" @ok="returnProductStockData" ></pd-choose-product-stock-list-model>
@@ -250,6 +254,7 @@
         wrapperCol4: {span: 5},
         disableSubmit:false,
         disableSubmit2:false,
+        showCancelBtn:false,
 
         initData:{},
         queryParam:{},
@@ -351,16 +356,18 @@
         url: {
           init:"/pd/pdStockRecordOut/initModal",
           submit: "/pd/pdStockRecordOut/submit",
-          edit: "/pd/pdStockRecordOut/edit",
-          querySupplier:"/pd/pdSupplier/getSupplierList",
+          add: "/pd/pdStockRecordOut/add",
+          cancel: "/pd/pdStockRecordIn/cancel",
+          // edit: "/pd/pdStockRecordOut/edit",
+          // querySupplier:"/pd/pdSupplier/getSupplierList",
           departList:"/pd/pdDepart/getSysDepartList",
           huoweiList:"/pd/pdGoodsAllocation/getOptions",
           pdStockRecordDetail: {
             list: "/pd/pdStockRecordOut/queryPdStockRecordDetailByMainId"
           },
-          pdPurchaseDetail: {
-            list: "/pd/pdPurchaseOrder/queryPdPurchaseDetail"
-          },
+          // pdPurchaseDetail: {
+          //   list: "/pd/pdPurchaseOrder/queryPdPurchaseDetail"
+          // },
         },
         popModal: {
           title: '这里是标题',
@@ -369,7 +376,7 @@
           // width: '1200',
           style: { top: '20px' },
           switchFullscreen: true,  //缩放按钮
-          lockScroll: true,
+          lockScroll: false,
           fullscreen: true,
         },
       }
@@ -406,14 +413,20 @@
         this.loadData();
       },
       loadData() {
-        this.loading = true;
+        this.loading = true;;
+        this.showCancelBtn = false;
         this.departHandleSearch();  // 初始化部门列表 用于数据回显
         let params = {};
         if(this.model.id){
+          if(this.model.auditStatus == "1" && this.model.submitStatus == "2"){
+            this.showCancelBtn = true;
+          }
           this.popModal.title="出库明细";
           let fieldval = pick(this.model,'recordNo','outType','submitBy','submitByName','submitDate','applyNo','allocationNo',
             'inDepartId','outDepartId','outDepartName','remarks')
           this.$nextTick(() => {
+            this.applyNo = this.model.applyNo;
+            this.allocationNo = this.model.allocationNo;
             this.form.setFieldsValue(fieldval);
           })
           params = { id: this.model.id }
@@ -426,12 +439,8 @@
             this.$nextTick(() => {
               // this.departList = res.result.sysDepartList; // 初始化部门列表 用于数据回显
               if(this.model.id){ //详情页
-                this.disableSubmit2 = true;
-                this.showApplyBtn = false;
-                this.showAllocationBtn = false;
                 this.showOrderTable = true;
                 this.pdStockRecordDetailTable.dataSource = res.result.pdStockRecordDetailList || [];
-
                 if(res.result.outType == "1"){
                   this.orderTableTitle = "申领单明细";
                   let pdApplyDetailList = res.result.pdApplyDetailList || [];
@@ -531,12 +540,35 @@
         this.visible = false;
         this.$emit('close');
       },
+      /**撤回**/
+      cancelBtn(){
+        if(this.model.auditStatus == "1" && this.model.submitStatus == "2"){
+          this.confirmLoading = true
+          httpAction(this.url.cancel, {id:this.model.id}, 'put').then((res) => {
+            if (res.success) {
+              this.$message.success(res.message)
+              this.$emit('ok')
+              this.close()
+            } else {
+              this.$message.warning(res.message)
+            }
+          }).finally(() => {
+            this.confirmLoading = false
+          })
+        }else{
+          this.$message.warning("当前出库单状态非已提交、待审核状态，不能撤回！")
+        }
+      },
       /** 保存草稿 **/
       saveBtn() {
-
+        this.request(this.url.add,"post");
+      },
+      /** 提交 **/
+      submitBtn() {
+        this.request(this.url.submit,"post");
       },
       /** 确定按钮点击事件 */
-      submitBtn() {
+      request(url, method) {
         /** 触发表单验证 */
         this.getAllTable().then(tables => {
           /** 一次性验证主表和所有的次表 */
@@ -564,7 +596,21 @@
               return;
             }
           }
-          return this.request(formData);
+
+          // 发起请求
+          // return this.request(formData);
+          this.confirmLoading = true
+          httpAction(url, formData, method).then((res) => {
+            if (res.success) {
+              this.$message.success(res.message)
+              this.$emit('ok')
+              this.close()
+            } else {
+              this.$message.warning(res.message)
+            }
+          }).finally(() => {
+            this.confirmLoading = false
+          })
         }).catch(e => {
           if (e.error === VALIDATE_NO_PASSED) {
             // 如果有未通过表单验证的子表，就自动跳转到它所在的tab
@@ -574,26 +620,26 @@
           }
         })
       },
-      // 保存 提交 修改 请求函数
-      request(formData) {
-        let url = this.url.submit, method = 'post'
-        if (this.model.id) {
-          url = this.url.edit
-          method = 'put'
-        }
-        this.confirmLoading = true
-        httpAction(url, formData, method).then((res) => {
-          if (res.success) {
-            this.$message.success(res.message)
-            this.$emit('ok')
-            this.close()
-          } else {
-            this.$message.warning(res.message)
-          }
-        }).finally(() => {
-          this.confirmLoading = false
-        })
-      },
+      // // 保存 提交 修改 请求函数
+      // request(formData) {
+      //   let url = this.url.submit, method = 'post'
+      //   if (this.model.id) {
+      //     url = this.url.edit
+      //     method = 'put'
+      //   }
+      //   this.confirmLoading = true
+      //   httpAction(url, formData, method).then((res) => {
+      //     if (res.success) {
+      //       this.$message.success(res.message)
+      //       this.$emit('ok')
+      //       this.close()
+      //     } else {
+      //       this.$message.warning(res.message)
+      //     }
+      //   }).finally(() => {
+      //     this.confirmLoading = false
+      //   })
+      // },
       /** 整理成formData */
       classifyIntoFormData(allValues) {
         let main = Object.assign(this.model, allValues.formValue)

@@ -3,6 +3,7 @@ package org.jeecg.modules.pd.service.impl;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.ibatis.session.SqlSession;
 import org.jeecg.modules.pd.entity.PdApplyDetail;
 import org.jeecg.modules.pd.entity.PdApplyOrder;
 import org.jeecg.modules.pd.mapper.PdApplyDetailMapper;
@@ -28,7 +29,8 @@ public class PdApplyOrderServiceImpl extends ServiceImpl<PdApplyOrderMapper, PdA
 	private PdApplyOrderMapper pdApplyOrderMapper;
 	@Autowired
 	private PdApplyDetailMapper pdApplyDetailMapper;
-
+	@Autowired
+	private SqlSession sqlSession;
 
 
 	/**
@@ -50,6 +52,7 @@ public class PdApplyOrderServiceImpl extends ServiceImpl<PdApplyOrderMapper, PdA
 	@Transactional
 	public void saveMain(PdApplyOrder pdApplyOrder, List<PdApplyDetail> pdApplyDetailList) {
 		pdApplyOrderMapper.insert(pdApplyOrder);
+		PdApplyDetailMapper dao=sqlSession.getMapper(PdApplyDetailMapper.class);
 		if(pdApplyDetailList!=null && pdApplyDetailList.size()>0) {
 			for(PdApplyDetail entity:pdApplyDetailList) {
 //------------------------
@@ -79,7 +82,8 @@ public class PdApplyOrderServiceImpl extends ServiceImpl<PdApplyOrderMapper, PdA
 //--------------------------
 				//外键设置
 				entity.setApplyNo(pdApplyOrder.getApplyNo());
-				pdApplyDetailMapper.insert(entity);
+				dao.insert(entity);
+				//pdApplyDetailMapper.insert(entity);
 			}
 		}
 	}
@@ -91,11 +95,13 @@ public class PdApplyOrderServiceImpl extends ServiceImpl<PdApplyOrderMapper, PdA
 		//1.先删除子表数据
 		pdApplyDetailMapper.deleteByApplyNo(pdApplyOrder.getApplyNo());
 		//2.子表数据重新插入
+		PdApplyDetailMapper dao=sqlSession.getMapper(PdApplyDetailMapper.class);
 		if(pdApplyDetailList!=null && pdApplyDetailList.size()>0) {
 			for(PdApplyDetail entity:pdApplyDetailList) {
 				//外键设置
 				entity.setApplyNo(pdApplyOrder.getApplyNo());
-				pdApplyDetailMapper.insert(entity);
+				dao.insert(entity);
+				//pdApplyDetailMapper.insert(entity);
 			}
 		}
 	}

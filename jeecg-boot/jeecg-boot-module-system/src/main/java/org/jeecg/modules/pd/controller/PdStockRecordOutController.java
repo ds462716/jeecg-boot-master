@@ -132,10 +132,8 @@ public class PdStockRecordOutController {
      * @return
      */
     @PostMapping(value = "/add")
-    public Result<?> add(@RequestBody PdStockRecord PdStockRecord) {
-        PdStockRecord pdStockRecord = new PdStockRecord();
-        BeanUtils.copyProperties(PdStockRecord, pdStockRecord);
-        pdStockRecordService.saveMain(pdStockRecord, PdStockRecord.getPdStockRecordDetailList(), PdConstant.RECODE_TYPE_2);
+    public Result<?> add(@RequestBody PdStockRecord pdStockRecord) {
+        pdStockRecordService.saveMain(pdStockRecord, pdStockRecord.getPdStockRecordDetailList(), PdConstant.RECODE_TYPE_2);
         return Result.ok("添加成功！");
     }
 
@@ -146,10 +144,8 @@ public class PdStockRecordOutController {
      * @return
      */
     @PostMapping(value = "/submit")
-    public Result<?> submit(@RequestBody PdStockRecord PdStockRecord) {
-        PdStockRecord pdStockRecord = new PdStockRecord();
-        BeanUtils.copyProperties(PdStockRecord, pdStockRecord);
-        pdStockRecordService.saveMain(pdStockRecord, PdStockRecord.getPdStockRecordDetailList(), PdConstant.RECODE_TYPE_2);
+    public Result<?> submit(@RequestBody PdStockRecord pdStockRecord) {
+        pdStockRecordService.submit(pdStockRecord, pdStockRecord.getPdStockRecordDetailList(), PdConstant.RECODE_TYPE_2);
         return Result.ok("添加成功！");
     }
 
@@ -160,10 +156,8 @@ public class PdStockRecordOutController {
      * @return
      */
     @PostMapping(value = "/audit")
-    public Result<?> audit(@RequestBody PdStockRecord PdStockRecord) {
-        PdStockRecord pdStockRecord = new PdStockRecord();
-        BeanUtils.copyProperties(PdStockRecord, pdStockRecord);
-        PdStockRecord pdStockRecordEntity = pdStockRecordService.getOne(PdStockRecord);
+    public Result<?> audit(@RequestBody PdStockRecord pdStockRecord) {
+        PdStockRecord pdStockRecordEntity = pdStockRecordService.getOne(pdStockRecord);
         if (pdStockRecordEntity == null) {
             return Result.error("未找到对应数据");
         }
@@ -176,22 +170,41 @@ public class PdStockRecordOutController {
     }
 
     /**
-     * 编辑
-     *
-     * @param PdStockRecord
+     * 撤回
+     * @param pdStockRecord
      * @return
      */
-    @PutMapping(value = "/edit")
-    public Result<?> edit(@RequestBody PdStockRecord PdStockRecord) {
-        PdStockRecord pdStockRecord = new PdStockRecord();
-        BeanUtils.copyProperties(PdStockRecord, pdStockRecord);
-        PdStockRecord pdStockRecordEntity = pdStockRecordService.getById(pdStockRecord.getId());
-        if (pdStockRecordEntity == null) {
+    @PutMapping(value = "/cancel")
+    public Result<?> cancel(@RequestBody PdStockRecord pdStockRecord) {
+        PdStockRecord entity = pdStockRecordService.getById(pdStockRecord.getId());
+        if (entity == null) {
             return Result.error("未找到对应数据");
         }
-        pdStockRecordService.updateMain(pdStockRecord, PdStockRecord.getPdStockRecordDetailList());
-        return Result.ok("编辑成功!");
+        if (PdConstant.SUBMIT_STATE_2.equals(entity.getSubmitStatus()) && PdConstant.AUDIT_STATE_1.equals(entity.getAuditStatus())) {
+            pdStockRecordService.updateStatus(pdStockRecord);
+            return Result.ok("撤回成功!");
+        }else{
+            return Result.error("当前出库单状态非已提交、待审核状态，不能撤回！");
+        }
     }
+
+//    /**
+//     * 编辑
+//     *
+//     * @param PdStockRecord
+//     * @return
+//     */
+//    @PutMapping(value = "/edit")
+//    public Result<?> edit(@RequestBody PdStockRecord PdStockRecord) {
+////        PdStockRecord pdStockRecord = new PdStockRecord();
+////        BeanUtils.copyProperties(PdStockRecord, pdStockRecord);
+////        PdStockRecord pdStockRecordEntity = pdStockRecordService.getById(pdStockRecord.getId());
+////        if (pdStockRecordEntity == null) {
+////            return Result.error("未找到对应数据");
+////        }
+////        pdStockRecordService.updateMain(pdStockRecord, PdStockRecord.getPdStockRecordDetailList());
+//        return Result.ok("编辑成功!");
+//    }
 
     /**
      * 通过id删除
@@ -201,8 +214,17 @@ public class PdStockRecordOutController {
      */
     @DeleteMapping(value = "/delete")
     public Result<?> delete(@RequestParam(name = "id", required = true) String id) {
-        pdStockRecordService.delMain(id);
-        return Result.ok("删除成功!");
+
+        PdStockRecord entity = pdStockRecordService.getById(id);
+        if (entity == null) {
+            return Result.error("未找到对应数据");
+        }
+        if (PdConstant.SUBMIT_STATE_1.equals(entity.getSubmitStatus()) || PdConstant.SUBMIT_STATE_3.equals(entity.getSubmitStatus())) {
+            pdStockRecordService.delMainByDelFlag(id);
+            return Result.ok("删除成功!");
+        }else{
+            return Result.error("当前出库单状态非待提交或已撤回状态，不能删除！");
+        }
     }
 
     /**
@@ -213,7 +235,7 @@ public class PdStockRecordOutController {
      */
     @DeleteMapping(value = "/deleteBatch")
     public Result<?> deleteBatch(@RequestParam(name = "ids", required = true) String ids) {
-        this.pdStockRecordService.delBatchMain(Arrays.asList(ids.split(",")));
+//        this.pdStockRecordService.delBatchMain(Arrays.asList(ids.split(",")));
         return Result.ok("批量删除成功！");
     }
 
