@@ -344,8 +344,8 @@ public class PdSupplierController extends JeecgController<PdSupplier, IPdSupplie
     */
    @DeleteMapping(value = "/delete")
    public Result<?> delete(@RequestParam(name="id",required=true) String id) {
-       pdSupplierService.removeById(id);
-       return Result.ok("删除成功!");
+       Result<Object> resul = pdSupplierService.deleteV(id);
+       return resul;
    }
 
    /**
@@ -356,8 +356,8 @@ public class PdSupplierController extends JeecgController<PdSupplier, IPdSupplie
     */
    @DeleteMapping(value = "/deleteBatch")
    public Result<?> deleteBatch(@RequestParam(name="ids",required=true) String ids) {
-       this.pdSupplierService.removeByIds(Arrays.asList(ids.split(",")));
-       return Result.ok("批量删除成功!");
+       Result<Object> resul = pdSupplierService.deleteBatchV(ids);
+       return resul;
    }
 
    /**

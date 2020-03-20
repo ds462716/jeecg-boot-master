@@ -479,6 +479,12 @@
         <if test="groupId != null and groupId != ''">
            and a.group_id = #{groupId}
         </if>
+        <if test="supplierId != null and supplierId != ''">
+            and a.supplier_id = #{supplierId}
+        </if>
+        <if test="venderId != null and venderId != ''">
+            and a.vender_id = #{venderId}
+        </if>
         <if test="departId != null and departId != ''">
             AND a.depart_id = #{departId}
         </if>

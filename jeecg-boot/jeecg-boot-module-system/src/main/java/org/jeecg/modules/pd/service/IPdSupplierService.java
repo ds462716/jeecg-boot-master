@@ -2,6 +2,7 @@ package org.jeecg.modules.pd.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
+import org.jeecg.common.api.vo.Result;
 import org.jeecg.modules.pd.entity.PdSupplier;
 
 import java.util.List;
@@ -25,4 +26,8 @@ public interface IPdSupplierService extends IService<PdSupplier> {
     void updateValidityFlag(PdSupplier pdSupplier);
 
     Page<PdSupplier> selectList(Page<PdSupplier> pageList, PdSupplier pdSupplier);
+
+    Result<Object> deleteV(String id);
+
+    Result<Object> deleteBatchV(String ids);
 }
