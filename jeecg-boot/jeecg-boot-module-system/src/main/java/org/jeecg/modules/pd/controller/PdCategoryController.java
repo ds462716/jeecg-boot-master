@@ -2,10 +2,14 @@ package org.jeecg.modules.pd.controller;
 
 import java.util.*;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.shiro.SecurityUtils;
+import org.jeecg.common.constant.PdConstant;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.pd.entity.PdCategoryTree;
+import org.jeecg.modules.pd.entity.PdProduct;
+import org.jeecg.modules.pd.service.IPdProductService;
 import org.jeecg.modules.system.model.TreeModel;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -36,6 +40,8 @@ import org.springframework.web.servlet.ModelAndView;
 public class PdCategoryController extends JeecgController<PdCategory, IPdCategoryService> {
 	@Autowired
 	private IPdCategoryService pdCategoryService;
+	 @Autowired
+	 private IPdProductService pdProductService;
 	
 	/**
 	 * 分页列表查询
@@ -206,8 +212,8 @@ public class PdCategoryController extends JeecgController<PdCategory, IPdCategor
 	 */
 	@DeleteMapping(value = "/delete")
 	public Result<?> delete(@RequestParam(name="id",required=true) String id) {
-		pdCategoryService.removePdCategory(id);
-		return Result.ok("删除成功!");
+		Result<Object> result = pdCategoryService.deleteV(id);
+		return result;
 	}
 	
 	/**
@@ -218,8 +224,9 @@ public class PdCategoryController extends JeecgController<PdCategory, IPdCategor
 	 */
 	@DeleteMapping(value = "/deleteBatch")
 	public Result<?> deleteBatch(@RequestParam(name="ids",required=true) String ids) {
-		this.pdCategoryService.removeByIds(Arrays.asList(ids.split(",")));
-		return Result.ok("批量删除成功!");
+		Result<Object> result = pdCategoryService.deleteBatchV(ids);
+		return result;
+		//this.pdCategoryService.removeByIds(Arrays.asList(ids.split(",")));
 	}
 	
 	/**

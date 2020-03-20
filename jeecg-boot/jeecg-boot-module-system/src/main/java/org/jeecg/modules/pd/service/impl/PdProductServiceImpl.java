@@ -395,6 +395,18 @@ public class PdProductServiceImpl extends ServiceImpl<PdProductMapper, PdProduct
         return pdProductMapper.verify(pdProduct);
     }
 
+    //产品分类删除校验
+    @Override
+    public List<PdProduct> selectListByCT(PdProduct pdProduct) {
+        return pdProductMapper.selectListByCT(pdProduct);
+    }
+
+    //产品分类删除校验
+    @Override
+    public List<PdProduct> selectListByCTs(Map<String,Object> map) {
+        return pdProductMapper.selectListByCTs(map);
+    }
+
     /**
      * 包含事务的更新方法，编码规则
      * @param pdProduct

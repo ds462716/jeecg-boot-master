@@ -1,7 +1,9 @@
 package org.jeecg.modules.pd.mapper;
 
 import java.util.List;
+import java.util.Map;
 
+import org.apache.ibatis.annotations.Param;
 import org.jeecg.modules.pd.entity.PdProduct;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.jeecg.modules.pd.vo.PdProductPage;
@@ -21,4 +23,8 @@ public interface PdProductMapper extends BaseMapper<PdProduct> {
     void updateChargeCode(PdProduct pdProduct);
 
     List<PdProduct> verify(PdProduct pdProduct);
+
+    List<PdProduct> selectListByCT(PdProduct pdProduct);
+
+    List<PdProduct> selectListByCTs(@Param("parMap")Map<String,Object> map);
 }

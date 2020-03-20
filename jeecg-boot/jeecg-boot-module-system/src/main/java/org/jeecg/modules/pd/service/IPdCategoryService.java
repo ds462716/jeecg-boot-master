@@ -1,5 +1,6 @@
 package org.jeecg.modules.pd.service;
 
+import org.jeecg.common.api.vo.Result;
 import org.jeecg.modules.pd.entity.PdCategory;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -17,7 +18,9 @@ public interface IPdCategoryService extends IService<PdCategory> {
 
     void editPdCategory(PdCategory pdCategory);
 
-    void removePdCategory(String id);
-
     List<PdCategory> selectCategoryOneList(PdCategory pdCategory);
+
+    Result<Object> deleteV(String id);
+
+    Result<Object> deleteBatchV(String ids);
 }

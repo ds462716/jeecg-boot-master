@@ -44,7 +44,7 @@
                 <a href="javascript:;" @click="handleDetail(record)">详情</a>
               </a-menu-item>
               <a-menu-item>
-                <a href="javascript:;" @click="handleAddSub(record)">添加二级分类</a>
+                <a href="javascript:;" v-if="record.type=='0'" @click="handleAddSub(record)">添加二级分类</a>
               </a-menu-item>
               <a-menu-item>
                 <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.id)">

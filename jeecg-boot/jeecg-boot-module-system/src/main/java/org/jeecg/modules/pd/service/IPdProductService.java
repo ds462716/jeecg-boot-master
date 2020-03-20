@@ -2,6 +2,7 @@ package org.jeecg.modules.pd.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.jeecg.common.api.vo.Result;
+import org.jeecg.modules.pd.entity.PdCategory;
 import org.jeecg.modules.pd.entity.PdProduct;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.jeecg.modules.pd.entity.PdProductStock;
@@ -35,4 +36,8 @@ public interface IPdProductService extends IService<PdProduct> {
     List<PdProduct> selectList(PdProduct pdProduct);
 
     List<PdProduct> verify(PdProduct pdProduct);
+
+    List<PdProduct> selectListByCT(PdProduct pdProduct);
+
+    List<PdProduct> selectListByCTs(Map<String,Object> map);
 }

@@ -461,4 +461,47 @@
         </where>
     </select>
 
+
+    <!-- 产品分类删除校验 -->
+    <select id="selectListByCT" resultType="org.jeecg.modules.pd.entity.PdProduct" parameterType="org.jeecg.modules.pd.entity.PdProduct">
+        SELECT
+        <include refid="pdProductColumns"/>
+        FROM pd_product a
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+        </where>
+        <if test="categoryTwo != null and categoryTwo != ''">
+            and (
+            a.category_one = #{categoryTwo}
+            OR a.category_two = #{categoryTwo}
+            )
+        </if>
+        <if test="departId != null and departId != ''">
+            AND a.depart_id = #{departId}
+        </if>
+        <if test="departParentId != null and departParentId != ''">
+            AND a.depart_parent_id = #{departParentId}
+        </if>
+        order by a.create_time desc, a.update_time desc
+    </select>
+
+    <!-- 产品分类删除校验 -->
+    <select id="selectListByCTs" resultType="org.jeecg.modules.pd.entity.PdCategory">
+        select
+        *
+        from pd_product a
+        <where>
+            a.del_flag = #{parMap.DEL_FLAG_NORMAL}
+        </where>
+        <if test="parMap.ids != null and parMap.ids != ''">
+           and (
+            a.category_one in  ( ${parMap.ids} )
+            OR a.category_two in  ( ${parMap.ids} )
+            )
+        </if>
+        <if test="parMap.departParentId != null and parMap.departParentId != ''">
+            and a.depart_parent_id = #{parMap.departParentId}
+        </if>
+    </select>
+
 </mapper>
