@@ -44,6 +44,9 @@
 			<if test="productId != null and productId != ''">
 				AND a.product_id = #{productId}
 			</if>
+			<if test="ruleId != null and ruleId != ''">
+				AND a.rule_id = #{ruleId}
+			</if>
 		</where>
 	</select>
 </mapper>

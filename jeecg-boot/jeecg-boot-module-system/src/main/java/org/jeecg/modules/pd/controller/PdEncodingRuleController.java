@@ -155,8 +155,8 @@ public class PdEncodingRuleController extends JeecgController<PdEncodingRule, IP
 	 */
 	@DeleteMapping(value = "/delete")
 	public Result<?> delete(@RequestParam(name="id",required=true) String id) {
-		pdEncodingRuleService.removeById(id);
-		return Result.ok("删除成功!");
+		Result<Object> resul = pdEncodingRuleService.deleteV(id);
+		return resul;
 	}
 	
 	/**
@@ -167,8 +167,8 @@ public class PdEncodingRuleController extends JeecgController<PdEncodingRule, IP
 	 */
 	@DeleteMapping(value = "/deleteBatch")
 	public Result<?> deleteBatch(@RequestParam(name="ids",required=true) String ids) {
-		this.pdEncodingRuleService.removeByIds(Arrays.asList(ids.split(",")));
-		return Result.ok("批量删除成功!");
+		Result<Object> resul = pdEncodingRuleService.deleteBatchV(ids);
+		return resul;
 	}
 	
 	/**

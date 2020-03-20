@@ -48,7 +48,7 @@
                 <td>
                   <a-form-item>
                     <a-input :style="{width: 'calc(100% - 120px)'}" v-if="item.type=='1'" disabled="disabled" v-decorator="['pdEncodingRuleDetails['+index+'].length',{'initialValue':item.length}]"/>
-                    <a-input :style="{width: 'calc(100% - 120px)'}" v-else="item.type!='1'" :disabled="disableSubmit"  v-decorator="['pdEncodingRuleDetails['+index+'].length', {'initialValue':item.length,rules:validatorRules.length}]"/>
+                    <a-input :style="{width: 'calc(100% - 120px)'}" autocomplete="off" v-else="item.type!='1'" :disabled="disableSubmit"  v-decorator="['pdEncodingRuleDetails['+index+'].length', {'initialValue':item.length,rules:validatorRules.length}]"/>
                   </a-form-item>
                 </td>
                 <td>{{item.typeText}}
@@ -58,7 +58,7 @@
                 </td>
                 <td>
                   <a-form-item>
-                    <a-input :style="{width: 'calc(100% - 120px)'}" :disabled="disableSubmit" v-decorator="['pdEncodingRuleDetails['+index+'].codeOrder',{'initialValue':item.codeOrder,rules:validatorRules.order}]"/>
+                    <a-input :style="{width: 'calc(100% - 120px)'}" autocomplete="off" :disabled="disableSubmit" v-decorator="['pdEncodingRuleDetails['+index+'].codeOrder',{'initialValue':item.codeOrder,rules:validatorRules.order}]"/>
                   </a-form-item>
                 </td>
                 <a-form-item>

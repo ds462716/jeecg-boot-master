@@ -13,12 +13,12 @@
         <a-row :gutter="24">
           <a-col :md="6" :sm="8">
             <a-form-item label="值">
-              <a-input placeholder="请输入值" v-model="queryParam.value"></a-input>
+              <a-input placeholder="请输入值" autocomplete="off" v-model="queryParam.value"></a-input>
             </a-form-item>
           </a-col>
           <a-col :md="6" :sm="8">
             <a-form-item label="含义">
-              <a-input placeholder="请输入含义" v-model="queryParam.meaning"></a-input>
+              <a-input placeholder="请输入含义" autocomplete="off" v-model="queryParam.meaning"></a-input>
             </a-form-item>
           </a-col>
           <a-col :md="6" :sm="8" >
