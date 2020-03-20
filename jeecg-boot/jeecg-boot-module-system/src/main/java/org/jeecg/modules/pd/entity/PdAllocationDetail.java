@@ -55,8 +55,11 @@ public class PdAllocationDetail extends BaseEntity {
 	@Excel(name = "调拨数量", width = 15)
 	private Double allocationNum;
 	/**调拨时库存数量*/
-	@Excel(name = "调拨时库存数量", width = 15)
+	@Excel(name = "出库科室库存数量", width = 15)
 	private Double stockNum;
+	/**本科室库存数量*/
+	@Excel(name = "调拨科室库存数量", width = 15)
+	private Double currentStockNum;
 	/**产品属性：1、产品 2、定数包*/
 	@Excel(name = "产品属性：1、产品 2、定数包", width = 15)
 	private String productAttr;

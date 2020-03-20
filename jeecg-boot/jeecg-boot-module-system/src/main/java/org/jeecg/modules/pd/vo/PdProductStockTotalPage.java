@@ -45,5 +45,11 @@ public class PdProductStockTotalPage extends PdProductStockTotal {
     /*区分是申领单还是调拨单产品选择器**/
 	@TableField(exist = false)
 	private String code;  //1:调拨单   2:申领单
+	/*当前部门ID**/
+	@TableField(exist = false)
+	private String currentDepartId;
+	/*当前部门库存数量**/
+	@TableField(exist = false)
+	private Double currentStockNum;
 	
 }

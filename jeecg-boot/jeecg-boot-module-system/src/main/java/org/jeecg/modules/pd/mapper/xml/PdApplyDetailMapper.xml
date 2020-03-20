@@ -16,6 +16,7 @@
 		a.exp_date,
 		a.apply_num,
 		a.stock_num,
+		a.current_stock_num,
 		IFNULL(a.arrival_num,0) as arrival_num,
 		a.remarks,
 		a.del_flag

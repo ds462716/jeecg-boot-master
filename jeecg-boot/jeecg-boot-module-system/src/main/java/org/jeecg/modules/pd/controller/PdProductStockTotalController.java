@@ -380,6 +380,7 @@ public class PdProductStockTotalController {
 		 Page<PdProductStockTotalPage> page = new Page<PdProductStockTotalPage>(pageNo, pageSize);
 		 LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
 		 stockTotalPage.setDepartParentId(sysUser.getDepartParentId());
+		 stockTotalPage.setCurrentDepartId(sysUser.getCurrentDepartId());
 		 if(stockTotalPage.getCode().equals("2")){ //如果是申领单过来的话
 			 //获取父级部门ID
 			 SysDepart sysDepart=sysDepartService.queryDepartByOrgCode(sysUser.getOrgCode());

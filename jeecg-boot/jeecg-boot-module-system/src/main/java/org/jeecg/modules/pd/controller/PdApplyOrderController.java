@@ -101,6 +101,8 @@ public class PdApplyOrderController {
 		 list.add(PdConstant.SUBMIT_STATE_3);//已撤回
 		 pdApplyOrderPage.setSubmitStatusList(list);
 		 LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		 SysDepart sysDepart=sysDepartService.queryDepartByOrgCode(sysUser.getOrgCode());
+		 pdApplyOrderPage.setOutDepartId(sysDepart.getId());
 		 pdApplyOrderPage.setDepartParentId(sysUser.getDepartParentId());
 		 IPage<PdApplyOrder> pageList = pdApplyOrderService.selectList(page, pdApplyOrderPage);
 		 return Result.ok(pageList);
@@ -120,7 +122,8 @@ public class PdApplyOrderController {
 		 pdApplyOrder.setApplyDate(new Date());
 		 pdApplyOrder.setTotalNum(0.00);
 		 LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
-		 SysDepart sysDepart=sysDepartService.getDepartByOrgCode(sysUser.getOrgCode());
+		 SysDepart sysDepart=sysDepartService.queryDepartByOrgCode(sysUser.getOrgCode());
+		 pdApplyOrder.setOutDepartId(sysDepart.getParentId());
 		 pdApplyOrder.setApplyBy(sysUser.getId());
 		 pdApplyOrder.setRealName(sysUser.getRealname());
 		 pdApplyOrder.setDepartId(sysDepart.getId());
