@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.NullArgumentException;
 import org.apache.commons.lang3.StringUtils;
 import org.jeecg.common.constant.PdConstant;
@@ -12,6 +13,7 @@ import org.jeecg.common.util.DateUtils;
 import org.jeecg.modules.pd.entity.*;
 import org.jeecg.modules.pd.mapper.PdPurchaseDetailMapper;
 import org.jeecg.modules.pd.mapper.PdPurchaseOrderMapper;
+import org.jeecg.modules.pd.mapper.PdPurchaseOrderMergeDetailMapper;
 import org.jeecg.modules.pd.mapper.PdPurchaseOrderMergeMapper;
 import org.jeecg.modules.pd.service.IPdPurchaseOrderMergeService;
 import org.jeecg.modules.pd.service.IPdPurchaseOrderService;
@@ -38,6 +40,8 @@ public class PdPurchaseOrderMergeServiceImpl extends ServiceImpl<PdPurchaseOrder
     private PdPurchaseDetailMapper pdPurchaseDetailMapper;
     @Autowired
     private PdPurchaseOrderMergeMapper pdPurchaseOrderMergeMapper;
+    @Autowired
+    private PdPurchaseOrderMergeDetailMapper pdPurchaseOrderMergeDetailMapper;
     @Autowired
     private IPdPurchaseOrderService pdPurchaseOrderService;
 
@@ -73,6 +77,10 @@ public class PdPurchaseOrderMergeServiceImpl extends ServiceImpl<PdPurchaseOrder
             throw new NullArgumentException("申购单号为空！！！");
         }
         pdPurchaseOrderMapper.batchUpdateMergeOrderNo(map);
+        //insert合并明细表
+        this.insertMergeDetail(orderNos,mergeOrderNo);
+
+
         final String ifPlatform ="1"; //是否有中心平台标识1=没有，0=有
         if("0".equals(ifPlatform)){
             //同步到中心平台2020年3月17日
@@ -112,7 +120,28 @@ public class PdPurchaseOrderMergeServiceImpl extends ServiceImpl<PdPurchaseOrder
 
     }
 
-
+   public void insertMergeDetail(String orderNostr,String mergeOrderNo){
+       //查询订单下产品信息
+       PdPurchaseOrder ppd = new PdPurchaseOrder();
+       List<String> orderNos = Arrays.asList(orderNostr.split(","));
+       ppd.setOrderNos(orderNos);
+       List<PdPurchaseDetail> ppdList = pdPurchaseDetailMapper.queryPdPurchaseDetail(ppd);
+         if(CollectionUtils.isNotEmpty(ppdList)){
+             //处理订单下产品
+             List<PdPurchaseDetail> finalProdList = dealRepeatProdInfo(ppdList);
+             for(PdPurchaseDetail entity:finalProdList) {
+                 PdPurchaseOrderMergeDetail  orderMergeDetail =new  PdPurchaseOrderMergeDetail();
+                 orderMergeDetail.setProductId(entity.getProductId());
+                 orderMergeDetail.setOrderNum(entity.getOrderNum());
+                 orderMergeDetail.setMergeOrderNo(mergeOrderNo);
+                 List<String> list=entity.getOrderNos();
+                 String str= StringUtils.join(list.toArray(), ",");
+                 orderMergeDetail.setOrderNos(str);
+                 orderMergeDetail.setSupplierId(entity.getSupplierId());
+                   pdPurchaseOrderMergeDetailMapper.insert(orderMergeDetail);
+             }
+         }
+   }
 
 
 
@@ -195,6 +224,7 @@ public class PdPurchaseOrderMergeServiceImpl extends ServiceImpl<PdPurchaseOrder
         HashSet<String> tempSet = new HashSet<String>();
         for(PdPurchaseDetail detail : ppdList){
             Double total_count = 0.00;
+            List<String> orderNos=new ArrayList<String>();
             if(tempSet.contains(detail.getNumber())){
                 continue;
             }
@@ -202,9 +232,15 @@ public class PdPurchaseOrderMergeServiceImpl extends ServiceImpl<PdPurchaseOrder
                 if (detail.getNumber().equals(det.getNumber())) {
                     tempSet.add(det.getNumber());
                     total_count += det.getOrderNum();
+
+                    if(!orderNos.contains(det.getOrderNo())){
+                        orderNos.add(det.getOrderNo());
+                    }
+
                 }
             }
             detail.setOrderNum(total_count);
+            detail.setOrderNos(orderNos);
             newArray.add(detail);
         }
         return newArray;

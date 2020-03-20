@@ -8,6 +8,8 @@ import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.system.base.controller.JeecgController;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.modules.pd.entity.PdPurchaseOrderMerge;
+import org.jeecg.modules.pd.entity.PdPurchaseOrderMergeDetail;
+import org.jeecg.modules.pd.service.IPdPurchaseOrderMergeDetailService;
 import org.jeecg.modules.pd.service.IPdPurchaseOrderMergeService;
 import org.jeecg.modules.pd.service.IPdPurchaseOrderService;
 import org.jeecg.modules.pd.vo.PdPurchaseOrderPage;
@@ -18,6 +20,7 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * @Description: 合并申购单表
@@ -31,6 +34,8 @@ import java.util.Arrays;
 public class PdPurchaseOrderMergeController extends JeecgController<PdPurchaseOrderMerge, IPdPurchaseOrderMergeService> {
 	@Autowired
 	private IPdPurchaseOrderMergeService pdPurchaseOrderMergeService;
+	@Autowired
+	private IPdPurchaseOrderMergeDetailService pdPurchaseOrderMergeDetailService;
 	@Autowired
 	private IPdPurchaseOrderService pdPurchaseOrderService;
 	
@@ -119,6 +124,19 @@ public class PdPurchaseOrderMergeController extends JeecgController<PdPurchaseOr
 			return Result.error("未找到对应数据");
 		}
 		return Result.ok(pdPurchaseOrderMerge);
+	}
+
+
+	/**
+	 * 查询明细表
+	 *
+	 * @param orderMergeDetail
+	 * @return
+	 */
+	@GetMapping(value = "/queryPdPurchaseMergeDetail")
+	public Result<?> queryPdPurchaseDetail(PdPurchaseOrderMergeDetail orderMergeDetail) {
+		List<PdPurchaseOrderMergeDetail> pdPurchaseMergeDetailList = pdPurchaseOrderMergeDetailService.queryPdPurchaseMergeDetail(orderMergeDetail);
+		return Result.ok(pdPurchaseMergeDetailList);
 	}
 
     /**
