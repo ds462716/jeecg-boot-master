@@ -12,12 +12,17 @@ import org.jeecg.modules.pd.entity.PdSupplier;
 import org.jeecg.modules.pd.mapper.PdSupplierMapper;
 import org.jeecg.modules.pd.service.IPdProductService;
 import org.jeecg.modules.pd.service.IPdSupplierService;
+import org.jeecgframework.poi.excel.ExcelImportUtil;
+import org.jeecgframework.poi.excel.entity.ImportParams;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Description: 供应商
@@ -120,5 +125,45 @@ public class PdSupplierServiceImpl extends ServiceImpl<PdSupplierMapper, PdSuppl
         }
 
 
+    }
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public Result<Object> importExcel(Map<String, MultipartFile> fileMap) {
+        PdSupplierMapper dao = sqlsession.getMapper(PdSupplierMapper.class);
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        boolean bl = true;
+        for (Map.Entry<String, MultipartFile> entity : fileMap.entrySet()) {
+            MultipartFile file = entity.getValue();// 获取上传文件对象
+            ImportParams params = new ImportParams();
+            params.setTitleRows(2);
+            params.setHeadRows(1);
+            params.setNeedSave(true);
+            try {
+                List<PdSupplier> list = ExcelImportUtil.importExcel(file.getInputStream(), PdSupplier.class, params);
+                for(PdSupplier ps :list){
+                    ps.setDepartParentId(sysUser.getDepartParentId());
+                    List<PdSupplier> obj = dao.verify(ps);
+                    if (obj != null && obj.size()>0) {
+                        bl = false;
+                        continue;
+                    }
+                    save(ps);
+                }
+            } catch (Exception e) {
+                log.error(e.getMessage(),e);
+                return Result.error("文件导入失败:"+e.getMessage());
+            } finally {
+                try {
+                    file.getInputStream().close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        if(bl){
+            return Result.ok("文件导入成功！");
+        }else{
+            return Result.ok("供应商名称存在重复，文件内容部分导入成功！");
+        }
     }
 }

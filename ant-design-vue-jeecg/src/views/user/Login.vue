@@ -11,7 +11,7 @@
               size="large"
               v-decorator="['username',{initialValue:'admin', rules: validatorRules.username.rules}]"
               type="text"
-              placeholder="请输入帐户名 / jeecg">
+              placeholder="请输入用户名">
               <a-icon slot="prefix" type="user" :style="{ color: 'rgba(0,0,0,.25)' }"/>
             </a-input>
           </a-form-item>
@@ -22,7 +22,7 @@
               size="large"
               type="password"
               autocomplete="false"
-              placeholder="密码 / 123456">
+              placeholder="请输入密码">
               <a-icon slot="prefix" type="lock" :style="{ color: 'rgba(0,0,0,.25)' }"/>
             </a-input>
           </a-form-item>

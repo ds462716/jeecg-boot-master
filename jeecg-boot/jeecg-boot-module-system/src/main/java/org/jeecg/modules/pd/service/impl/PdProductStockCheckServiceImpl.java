@@ -2,6 +2,7 @@ package org.jeecg.modules.pd.service.impl;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.apache.ibatis.session.SqlSession;
 import org.jeecg.modules.pd.entity.PdProductStockCheck;
 import org.jeecg.modules.pd.entity.PdProductStockCheckChild;
 import org.jeecg.modules.pd.mapper.PdProductStockCheckChildMapper;
@@ -28,7 +29,8 @@ public class PdProductStockCheckServiceImpl extends ServiceImpl<PdProductStockCh
 	private PdProductStockCheckMapper pdProductStockCheckMapper;
 	@Autowired
 	private PdProductStockCheckChildMapper pdProductStockCheckChildMapper;
-
+	@Autowired
+	private SqlSession sqlSession;
 	/**
 	 * 查询列表
 	 * @param page
@@ -44,11 +46,13 @@ public class PdProductStockCheckServiceImpl extends ServiceImpl<PdProductStockCh
 	@Transactional
 	public void saveMain(PdProductStockCheck pdProductStockCheck, List<PdProductStockCheckChild> pdProductStockCheckChildList) {
 		pdProductStockCheckMapper.insert(pdProductStockCheck);
+		PdProductStockCheckChildMapper dao=sqlSession.getMapper(PdProductStockCheckChildMapper.class);
 		if(pdProductStockCheckChildList!=null && pdProductStockCheckChildList.size()>0) {
 			for(PdProductStockCheckChild entity:pdProductStockCheckChildList) {
 				//外键设置
 				entity.setCheckNo(pdProductStockCheck.getCheckNo());
-				pdProductStockCheckChildMapper.insert(entity);
+				dao.insert(entity);
+				//pdProductStockCheckChildMapper.insert(entity);
 			}
 		}
 	}
@@ -60,13 +64,14 @@ public class PdProductStockCheckServiceImpl extends ServiceImpl<PdProductStockCh
 		
 		//1.先删除子表数据
 		pdProductStockCheckChildMapper.deleteByCheckNo(pdProductStockCheck.getCheckNo());
-
 		//2.子表数据重新插入
+		PdProductStockCheckChildMapper dao=sqlSession.getMapper(PdProductStockCheckChildMapper.class);
 		if(pdProductStockCheckChildList!=null && pdProductStockCheckChildList.size()>0) {
 			for(PdProductStockCheckChild entity:pdProductStockCheckChildList) {
 				//外键设置
 				entity.setCheckNo(pdProductStockCheck.getCheckNo());
-				pdProductStockCheckChildMapper.insert(entity);
+				dao.insert(entity);
+				//pdProductStockCheckChildMapper.insert(entity);
 			}
 		}
 	}
@@ -81,9 +86,13 @@ public class PdProductStockCheckServiceImpl extends ServiceImpl<PdProductStockCh
 	@Override
 	@Transactional
 	public void delBatchMain(Collection<? extends Serializable> idList) {
+		PdProductStockCheckChildMapper childDao=sqlSession.getMapper(PdProductStockCheckChildMapper.class);
+		PdProductStockCheckMapper dao=sqlSession.getMapper(PdProductStockCheckMapper.class);
 		for(Serializable id:idList) {
-			pdProductStockCheckChildMapper.deleteByMainId(id.toString());
-			pdProductStockCheckMapper.deleteById(id);
+			childDao.deleteByMainId(id.toString());
+			dao.deleteById(id);
+			//pdProductStockCheckChildMapper.deleteByMainId(id.toString());
+			//pdProductStockCheckMapper.deleteById(id);
 		}
 	}
 	

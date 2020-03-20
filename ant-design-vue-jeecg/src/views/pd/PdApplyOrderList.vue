@@ -193,7 +193,7 @@
           list: "/pd/pdApplyOrder/list",
           delete: "/pd/pdApplyOrder/delete",
           deleteBatch: "/pd/pdApplyOrder/deleteBatch",
-         /* exportXlsUrl: "/pd/pdApplyOrder/exportXls",
+          /*exportXlsUrl: "/pd/pdApplyOrder/exportXls",
           importExcelUrl: "pd/pdApplyOrder/importExcel",*/
         },
         dictOptions:{
@@ -205,7 +205,7 @@
     },
     computed: {
       importExcelUrl: function(){
-        return `${window._CONFIG['domianURL']}/${this.url.importExcelUrl}`;
+        //return `${window._CONFIG['domianURL']}/${this.url.importExcelUrl}`;
       }
     },
     methods: {

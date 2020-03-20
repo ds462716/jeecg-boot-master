@@ -16,6 +16,7 @@
 		a.remarks,
 		a.update_time,
 		a.depart_parent_id,
+		a.order_count,
 		a.del_flag
 	</sql>
 

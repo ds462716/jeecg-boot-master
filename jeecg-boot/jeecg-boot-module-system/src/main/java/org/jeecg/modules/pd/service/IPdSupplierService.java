@@ -4,8 +4,10 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.modules.pd.entity.PdSupplier;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Description: 供应商
@@ -30,4 +32,6 @@ public interface IPdSupplierService extends IService<PdSupplier> {
     Result<Object> deleteV(String id);
 
     Result<Object> deleteBatchV(String ids);
+
+    Result<Object> importExcel(Map<String, MultipartFile> fileMap);
 }

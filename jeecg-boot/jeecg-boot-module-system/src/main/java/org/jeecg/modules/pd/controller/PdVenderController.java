@@ -399,8 +399,18 @@ public class PdVenderController extends JeecgController<PdVender, IPdVenderServi
     */
     @RequestMapping(value = "/exportXls")
     public ModelAndView exportXls(HttpServletRequest request, PdVender pdVender) {
-        return super.exportXls(request, pdVender, PdVender.class, "生产厂家");
-    }
+		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		pdVender.setDepartParentId(sysUser.getDepartParentId());
+		//Step.1 获取导出数据
+		List<PdVender> pdProducts = pdVenderService.selectList(pdVender);
+		// Step.2 AutoPoi 导出Excel
+		ModelAndView mv = new ModelAndView(new JeecgEntityExcelView());
+		mv.addObject(NormalExcelConstants.FILE_NAME, "生产厂家列表");
+		mv.addObject(NormalExcelConstants.CLASS, PdVender.class);
+		mv.addObject(NormalExcelConstants.PARAMS, new ExportParams("生产厂家列表数据", "导出人:" + sysUser.getRealname(), "产品数据"));
+		mv.addObject(NormalExcelConstants.DATA_LIST, pdProducts);
+		return mv;
+	}
 
     /**
       * 通过excel导入数据
@@ -411,7 +421,10 @@ public class PdVenderController extends JeecgController<PdVender, IPdVenderServi
     */
     @RequestMapping(value = "/importExcel", method = RequestMethod.POST)
     public Result<?> importExcel(HttpServletRequest request, HttpServletResponse response) {
-        return super.importExcel(request, response, PdVender.class);
-    }
+		MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
+		Map<String, MultipartFile> fileMap = multipartRequest.getFileMap();
+		Result<Object> resul = pdVenderService.importExcel(fileMap);
+		return resul;
+	}
 
 }

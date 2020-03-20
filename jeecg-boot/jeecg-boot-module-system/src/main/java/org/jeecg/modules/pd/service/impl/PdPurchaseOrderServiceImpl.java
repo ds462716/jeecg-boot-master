@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.ibatis.session.SqlSession;
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.modules.pd.entity.PdPurchaseDetail;
@@ -36,7 +37,8 @@ public class PdPurchaseOrderServiceImpl extends ServiceImpl<PdPurchaseOrderMappe
 	private PdPurchaseOrderMapper pdPurchaseOrderMapper;
 	@Autowired
 	private PdPurchaseDetailMapper pdPurchaseDetailMapper;
-
+	@Autowired
+	private SqlSession sqlSession;
 
 
 	/**
@@ -60,11 +62,13 @@ public class PdPurchaseOrderServiceImpl extends ServiceImpl<PdPurchaseOrderMappe
 	@Transactional
 	public void saveMain(PdPurchaseOrder pdPurchaseOrder, List<PdPurchaseDetail> pdPurchaseDetailList) {
 		pdPurchaseOrderMapper.insert(pdPurchaseOrder);
+		PdPurchaseDetailMapper dao= sqlSession.getMapper(PdPurchaseDetailMapper.class);
 		if(pdPurchaseDetailList!=null && pdPurchaseDetailList.size()>0) {
 			for(PdPurchaseDetail entity:pdPurchaseDetailList) {
 				//外键设置
 				entity.setOrderNo(pdPurchaseOrder.getOrderNo());
-				pdPurchaseDetailMapper.insert(entity);
+				dao.insert(entity);
+				//pdPurchaseDetailMapper.insert(entity);
 			}
 		}
 	}
@@ -76,13 +80,14 @@ public class PdPurchaseOrderServiceImpl extends ServiceImpl<PdPurchaseOrderMappe
 		
 		//1.先删除子表数据
 		pdPurchaseDetailMapper.deleteByOrderNo(pdPurchaseOrder.getOrderNo());
-		
 		//2.子表数据重新插入
+		PdPurchaseDetailMapper dao= sqlSession.getMapper(PdPurchaseDetailMapper.class);
 		if(pdPurchaseDetailList!=null && pdPurchaseDetailList.size()>0) {
 			for(PdPurchaseDetail entity:pdPurchaseDetailList) {
 				//外键设置
 				entity.setOrderNo(pdPurchaseOrder.getOrderNo());
-				pdPurchaseDetailMapper.insert(entity);
+				dao.insert(entity);
+				//pdPurchaseDetailMapper.insert(entity);
 			}
 		}
 	}
