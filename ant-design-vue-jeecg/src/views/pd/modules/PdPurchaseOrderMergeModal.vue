@@ -81,6 +81,7 @@
       return {
         form: this.$form.createForm(this),
         visible: false,
+        title:"操作",
         model:{},
         confirmLoading: false,
         description: '申购订单主表管理页面',
