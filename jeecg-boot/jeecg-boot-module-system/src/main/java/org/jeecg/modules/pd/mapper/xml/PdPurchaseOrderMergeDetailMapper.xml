@@ -12,7 +12,7 @@
         a.product_id,
         a.merge_order_no,
         a.order_num,
-        a.order_nos,
+        a.order_no,
         a.del_flag,
         a.arrival_num,
         a.supplier_id,

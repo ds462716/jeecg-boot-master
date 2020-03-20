@@ -222,12 +222,12 @@ public class PdPurchaseOrderController {
 	 /**
 	  * 查询明细表
 	  *
-	  * @param purchaseOrder
+	  * @param purchaseDetail
 	  * @return
 	  */
 	 @GetMapping(value = "/queryPdPurchaseDetail")
-	 public Result<?> queryPdPurchaseDetail(PdPurchaseOrder purchaseOrder) {
-		 List<PdPurchaseDetail> pdPurchaseDetailList = pdPurchaseDetailService.queryPdPurchaseDetail(purchaseOrder);
+	 public Result<?> queryPdPurchaseDetail(PdPurchaseDetail purchaseDetail) {
+		 List<PdPurchaseDetail> pdPurchaseDetailList = pdPurchaseDetailService.queryPdPurchaseDetail(purchaseDetail);
 		 return Result.ok(pdPurchaseDetailList);
 	 }
 
@@ -235,14 +235,14 @@ public class PdPurchaseOrderController {
 	  * 导出excel
 	  *
 	  * @param request
-	  * @param pdPurchaseOrder
+	  * @param purchaseDetail
 	  */
 	 @RequestMapping(value = "/exportXls")
-	 public ModelAndView exportXls(HttpServletRequest request, PdPurchaseOrder pdPurchaseOrder) {
+	 public ModelAndView exportXls(HttpServletRequest request, PdPurchaseDetail purchaseDetail) {
 		 // Step.1 组装查询条件查询数据
 		 LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
 		 //Step.2 获取导出数据
-		 List<PdPurchaseDetail> pdPurchaseDetailList = pdPurchaseDetailService.queryPdPurchaseDetail(pdPurchaseOrder);
+		 List<PdPurchaseDetail> pdPurchaseDetailList = pdPurchaseDetailService.queryPdPurchaseDetail(purchaseDetail);
 		 // Step.3 AutoPoi 导出Excel
 		 ModelAndView mv = new ModelAndView(new JeecgEntityExcelView());
 		 mv.addObject(NormalExcelConstants.FILE_NAME, "申购产品列表");
@@ -291,6 +291,7 @@ public class PdPurchaseOrderController {
 		 return Result.ok("文件导入失败！");
 	 }
 
+	 /**此方法作废*/
 	 @GetMapping(value = "/choosePurchaseOrderDetailList")
 	 public Result<?> choosePurchaseOrderDetailList(PdPurchaseOrderPage pdPurchaseOrderPage, HttpServletRequest req) {
 		 List<PdProductPage> list = pdPurchaseOrderService.choosePurchaseOrderDetailList(pdPurchaseOrderPage);

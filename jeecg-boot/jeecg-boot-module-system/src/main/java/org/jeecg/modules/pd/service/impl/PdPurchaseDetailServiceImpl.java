@@ -23,7 +23,7 @@ public class PdPurchaseDetailServiceImpl extends ServiceImpl<PdPurchaseDetailMap
 	private PdPurchaseDetailMapper pdPurchaseDetailMapper;
 	
 	@Override
-	public List<PdPurchaseDetail> queryPdPurchaseDetail(PdPurchaseOrder purchaseOrder) {
-		return pdPurchaseDetailMapper.queryPdPurchaseDetail(purchaseOrder);
+	public List<PdPurchaseDetail> queryPdPurchaseDetail(PdPurchaseDetail purchaseDetail) {
+		return pdPurchaseDetailMapper.queryPdPurchaseDetail(purchaseDetail);
 	}
 }

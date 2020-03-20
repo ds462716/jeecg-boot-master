@@ -76,6 +76,7 @@
         :dataSource="dataSource"
         :pagination="ipagination"
         :loading="loading"
+        :scroll="tableScroll1"
         :expandedRowKeys= "expandedRowKeys"
         :rowSelection="{type:'radio',selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
         @expand="handleExpand"
@@ -91,6 +92,7 @@
           rowKey="purchaseDetailId"
           :pagination="false"
           :loading="subloading"
+          :scroll="tableScroll"
         >
         </a-table>
       </a-table>
@@ -242,10 +244,12 @@
         ],
         url: {
           list: "/pd/pdPurchaseOrderMerge/choosePurchaseOrderList",
-          chooseDetailList:"/pd/pdPurchaseOrder/choosePurchaseOrderDetailList",
+          chooseDetailList:"/pd/pdPurchaseOrderMerge/queryPdPurchaseMergeDetail",
           querySupplier:"/pd/pdSupplier/getSupplierList",
-          detailList:"/pd/pdPurchaseOrder/queryPdPurchaseDetail",
+          detailList:"/pd/pdPurchaseOrderMerge/queryPdPurchaseMergeDetail",
         },
+        tableScroll1:{x :13*47+50},
+        tableScroll:{x :13*147+50},
         dictOptions:{
           // deptName:[],
           orderStatus:[],

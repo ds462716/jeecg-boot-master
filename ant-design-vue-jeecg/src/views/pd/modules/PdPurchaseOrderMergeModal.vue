@@ -59,6 +59,7 @@
         :pagination="ipagination"
         :loading="loading"
         :customRow="onClickRow"
+        :scroll="tableScroll"
         :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
         @change="handleTableChange">
       </a-table>
@@ -80,6 +81,7 @@
       return {
         form: this.$form.createForm(this),
         visible: false,
+        title:"操作",
         model:{},
         confirmLoading: false,
         description: '申购订单主表管理页面',
@@ -98,7 +100,8 @@
           {
             title:'申购编号',
             align:"center",
-            dataIndex: 'orderNos'
+            dataIndex: 'orderNo',
+            width:"80px"
           },
           {
             title:'产品名称',
@@ -149,6 +152,7 @@
         url: {
           list: "/pd/pdPurchaseOrderMerge/queryPdPurchaseMergeDetail",
         },
+         tableScroll:{x :13*147+50},
         dictOptions:{
           auditStatus:[],
         },

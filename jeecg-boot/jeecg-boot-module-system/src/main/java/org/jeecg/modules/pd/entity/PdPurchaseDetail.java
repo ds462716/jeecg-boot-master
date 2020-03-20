@@ -89,6 +89,10 @@ public class PdPurchaseDetail extends BaseEntity {
 	@TableField(exist = false)
 	@Excel(name = "申购编号", width = 15)
 	private List<String> orderNos;
+	/**合并申购编号*/
+	@TableField(exist = false)
+	@Excel(name = "合并申购编号", width = 15)
+	private String mergeOrderNo;
 }
 
 

@@ -1,6 +1,7 @@
 package org.jeecg.modules.pd.service.impl;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.SecurityUtils;
@@ -15,12 +16,11 @@ import org.jeecg.modules.pd.service.*;
 import org.jeecg.modules.pd.util.UUIDUtil;
 import org.jeecg.modules.pd.vo.PdGoodsAllocationPage;
 import org.jeecg.modules.system.entity.SysDepart;
-import org.jeecg.modules.system.service.ISysDepartService;
 import org.jeecg.modules.system.service.ISysDictService;
-import org.springframework.stereotype.Service;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.*;
@@ -392,9 +392,9 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
 
 			if(StringUtils.isNotEmpty(pdStockRecord.getOrderNo())){
 				//查订单列表
-				PdPurchaseOrder purchaseOrder=new PdPurchaseOrder();
-				purchaseOrder.setOrderNo(pdStockRecord.getOrderNo());
-				List<PdPurchaseDetail> pdPurchaseDetailList = pdPurchaseDetailService.queryPdPurchaseDetail(purchaseOrder);
+				PdPurchaseDetail purchaseDetail=new PdPurchaseDetail();
+				purchaseDetail.setOrderNo(pdStockRecord.getOrderNo());
+				List<PdPurchaseDetail> pdPurchaseDetailList = pdPurchaseDetailService.queryPdPurchaseDetail(purchaseDetail);
 				pdStockRecord.setPdPurchaseDetailList(pdPurchaseDetailList);
 			}
 		}else{  // 新增页面
