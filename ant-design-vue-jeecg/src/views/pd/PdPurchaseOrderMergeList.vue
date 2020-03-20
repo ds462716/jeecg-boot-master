@@ -122,6 +122,11 @@
             }
           },
           {
+            title:'订单总数量',
+            align:"center",
+            dataIndex: 'orderTotalNum'
+          },
+          {
             title:'操作人',
             align:"center",
             dataIndex: 'mergeName'

@@ -93,6 +93,12 @@
 		<if test="orderNo != null and orderNo != ''">
 			AND a.order_no LIKE concat('%',#{orderNo},'%')
 		</if>
+		<if test="orderNos != null and orderNos.size() > 0">
+			and a.order_no IN
+			<foreach collection="orderNos" item="item" separator="," open="(" close=")">
+				#{item}
+			</foreach>
+		</if>
 		ORDER BY a.create_time DESC
     </select>
 

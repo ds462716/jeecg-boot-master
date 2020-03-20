@@ -297,7 +297,7 @@ public class PdPurchaseOrderController {
 		 return Result.ok(list);
 	 }
 	 /**
-	  * 根据合并订单编号分页查询采购订单
+	  * 根据合并订单编号分页查询采购订单(此方法作废)
 	  *
 	  * @param pdPurchaseOrderPage
 	  * @param pageNo

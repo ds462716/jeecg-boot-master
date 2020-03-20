@@ -42,18 +42,6 @@
       </a-form>
     </div>
     <!-- 查询区域-END -->
-
-    <!-- 操作按钮区域 -->
-    <!--<div class="table-operator">
-      <a-button @click="handleAdd" type="primary" icon="plus">新增</a-button>
-      <a-dropdown v-if="selectedRowKeys.length > 0">
-        <a-menu slot="overlay">
-          <a-menu-item key="1" @click="batchDel"><a-icon type="delete"/>删除</a-menu-item>
-        </a-menu>
-        <a-button style="margin-left: 8px"> 批量操作 <a-icon type="down" /></a-button>
-      </a-dropdown>
-    </div>-->
-
     <!-- table区域-begin -->
     <div>
       <div class="ant-alert ant-alert-info" style="margin-bottom: 16px;">
@@ -73,29 +61,21 @@
         :customRow="onClickRow"
         :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
         @change="handleTableChange">
-        <span slot="action" slot-scope="text, record">
-          <a  @click="handleDetail(record)">查看</a>
-        </span>
-
       </a-table>
     </div>
-      <pd-purchase-order-modal ref="modalForm" @ok="modalFormOk"></pd-purchase-order-modal>
-    </a-spin>
+     </a-spin>
   </a-modal>
 </template>
 <script>
 
   import {getAction } from '@/api/manage'
   import { JeecgListMixin} from '@/mixins/JeecgListMixin'
-  import PdPurchaseOrderModal from './PdPurchaseOrderModal'
   import {initDictOptions, filterMultiDictText} from '@/components/dict/JDictSelectUtil'
 
   export default {
     name: "PdPurchaseOrderMergeModal",
     mixins:[JeecgListMixin],
-    components: {
-      PdPurchaseOrderModal
-    },
+    components: {},
     data () {
       return {
         form: this.$form.createForm(this),
@@ -118,74 +98,59 @@
           {
             title:'申购编号',
             align:"center",
-            dataIndex: 'orderNo'
+            dataIndex: 'orderNos'
           },
           {
-            title:'申购人',
+            title:'产品名称',
             align:"center",
-            dataIndex: 'purchaseName'
+            dataIndex: 'productName'
           },
           {
-            title:'申购日期',
+            title:'产品编号',
             align:"center",
-            dataIndex: 'orderDate',
-            customRender:function (text) {
-              return !text?"":(text.length>10?text.substr(0,10):text)
-            }
+            dataIndex: 'number'
           },
           {
-            title:'申购科室',
+            title:'规格',
             align:"center",
-            dataIndex: 'deptName'
-
+            dataIndex: 'spec'
           },
           {
-            title:'审核状态',
+            title:'型号',
             align:"center",
-            dataIndex: 'auditStatus',
-            customRender:(text)=>{
-              if(!text){
-                return ''
-              }else{
-                return filterMultiDictText(this.dictOptions['auditStatus'], text+"")
-              }
-            }
+            dataIndex: 'version'
           },
           {
-            title:'申购总数量',
+            title:'单位',
             align:"center",
-            dataIndex: 'totalNum'
+            dataIndex: 'unitName'
           },
           {
-            title:'申购总金额',
+            title:'订单数量',
             align:"center",
-            dataIndex: 'totalPrice'
+            dataIndex: 'orderNum'
           },
-          /*{
-            title:'提交状态',
-            align:"center",
-            dataIndex: 'submitStatus',
-            customRender:(text)=>{
-              if(!text){
-                return ''
-              }else{
-                return filterMultiDictText(this.dictOptions['submitStatus'], text+"")
-              }
-            }
-          },*/
           {
-            title: '操作',
-            dataIndex: 'action',
+            title:'到货数量',
             align:"center",
-            scopedSlots: { customRender: 'action' },
-          }
+            dataIndex: 'arrivalNum'
+          },
+          {
+            title:'生产厂家',
+            align:"center",
+            dataIndex: 'venderName'
+          },
+          {
+            title:'供应商',
+            align:"center",
+            dataIndex: 'supplierName'
+          },
         ],
         url: {
-          list: "/pd/pdPurchaseOrder/mergeList",
+          list: "/pd/pdPurchaseOrderMerge/queryPdPurchaseMergeDetail",
         },
         dictOptions:{
           auditStatus:[],
-          //submitStatus:[],
         },
 
       }
@@ -221,18 +186,14 @@
         this.loading = true;
         getAction(this.url.list, params).then((res) => {
           if (res.success) {
-            this.dataSource = res.result.records
+            this.dataSource = res.result;
           }
           this.loading = false;
         })
       },
 
       initDictConfig(){ //静态字典值加载
-        initDictOptions('audit_status').then((res) => {
-          if (res.success) {
-            this.$set(this.dictOptions, 'auditStatus', res.result)
-          }
-        })
+
       },
       onClickRow(record) {
         return {
