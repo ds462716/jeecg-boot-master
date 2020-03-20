@@ -462,7 +462,7 @@
     </select>
 
 
-    <!-- 产品分类删除校验 -->
+    <!-- 产品删除校验 -->
     <select id="selectListByCT" resultType="org.jeecg.modules.pd.entity.PdProduct" parameterType="org.jeecg.modules.pd.entity.PdProduct">
         SELECT
         <include refid="pdProductColumns"/>
@@ -475,6 +475,9 @@
             a.category_one = #{categoryTwo}
             OR a.category_two = #{categoryTwo}
             )
+        </if>
+        <if test="groupId != null and groupId != ''">
+           and a.group_id = #{groupId}
         </if>
         <if test="departId != null and departId != ''">
             AND a.depart_id = #{departId}

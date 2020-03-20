@@ -3,6 +3,7 @@ package org.jeecg.modules.pd.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.ibatis.session.SqlSession;
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.CommonConstant;
@@ -37,6 +38,9 @@ public class PdCategoryServiceImpl extends ServiceImpl<PdCategoryMapper, PdCateg
 
     @Autowired
     private IPdProductService pdProductService;
+
+    @Autowired
+    private SqlSession sqlsession;
 
     /**
      * 添加一级或二级分类
@@ -167,7 +171,7 @@ public class PdCategoryServiceImpl extends ServiceImpl<PdCategoryMapper, PdCateg
                 if(bl){
                     return Result.ok("批量删除成功!");
                 }else{
-                    return Result.ok("部分删除，被使用的不能删除!");
+                    return Result.ok("部分删除成功，被使用的不能删除!");
                 }
 
             }else{
@@ -246,6 +250,7 @@ public class PdCategoryServiceImpl extends ServiceImpl<PdCategoryMapper, PdCateg
      * @param id
      */
     public void removePdCategoryOrder(String id) {
+        PdCategoryMapper dao = sqlsession.getMapper(PdCategoryMapper.class);
         PdCategory pdCategory = this.getById(id);
         if(pdCategory==null) {
             return;
@@ -254,9 +259,9 @@ public class PdCategoryServiceImpl extends ServiceImpl<PdCategoryMapper, PdCateg
         int count = this.count(new QueryWrapper<PdCategory>().lambda().eq(PdCategory::getParentId, pid));
         if(count==1) {
             //若父节点无其他子节点，则该父节点是叶子节点
-            this.pdCategoryMapper.setMenuLeaf(pid, 1);
+            dao.setMenuLeaf(pid, 1);
         }
-        this.pdCategoryMapper.removeByCodeId(pdCategory);
+        dao.removeByCodeId(pdCategory);
         // 该节点可能是子节点但也可能是其它节点的父节点,所以需要级联删除
         this.removeChildrenBy(pdCategory.getId());
     }

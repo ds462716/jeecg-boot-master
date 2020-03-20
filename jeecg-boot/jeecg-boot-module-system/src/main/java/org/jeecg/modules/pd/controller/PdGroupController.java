@@ -138,8 +138,8 @@ public class PdGroupController extends JeecgController<PdGroup, IPdGroupService>
 	 */
 	@DeleteMapping(value = "/delete")
 	public Result<?> delete(@RequestParam(name="id",required=true) String id) {
-		pdGroupService.removeById(id);
-		return Result.ok("删除成功!");
+		Result<Object> resul = pdGroupService.deleteV(id);
+		return resul;
 	}
 	
 	/**
@@ -150,8 +150,8 @@ public class PdGroupController extends JeecgController<PdGroup, IPdGroupService>
 	 */
 	@DeleteMapping(value = "/deleteBatch")
 	public Result<?> deleteBatch(@RequestParam(name="ids",required=true) String ids) {
-		this.pdGroupService.removeByIds(Arrays.asList(ids.split(",")));
-		return Result.ok("批量删除成功!");
+		Result<Object> resul = pdGroupService.deleteBatchV(ids);
+		return resul;
 	}
 	
 	/**
