@@ -485,6 +485,9 @@
         <if test="venderId != null and venderId != ''">
             and a.vender_id = #{venderId}
         </if>
+        <if test="unitId != null and unitId != ''">
+            and a.unit_id = #{unitId}
+        </if>
         <if test="departId != null and departId != ''">
             AND a.depart_id = #{departId}
         </if>
