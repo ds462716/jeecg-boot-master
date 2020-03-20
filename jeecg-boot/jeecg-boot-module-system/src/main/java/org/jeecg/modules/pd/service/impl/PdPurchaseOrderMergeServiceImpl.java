@@ -79,10 +79,9 @@ public class PdPurchaseOrderMergeServiceImpl extends ServiceImpl<PdPurchaseOrder
             throw new NullArgumentException("申购单号为空！！！");
         }
         pdPurchaseOrderMapper.batchUpdateMergeOrderNo(map);
-        //insert合并明细表
-        this.insertMergeDetail(orderNos,mergeOrderNo);
-
-
+        //insert合并明细表并计算出订单总数量
+      Double orderCount=  this.insertMergeDetail(orderNos,mergeOrderNo);
+        pdPurchaseOrderMerge.setOrderCount(orderCount);
         final String ifPlatform ="1"; //是否有中心平台标识1=没有，0=有
         if("0".equals(ifPlatform)){
             //同步到中心平台2020年3月17日
@@ -122,8 +121,9 @@ public class PdPurchaseOrderMergeServiceImpl extends ServiceImpl<PdPurchaseOrder
 
     }
 
-   public void insertMergeDetail(String orderNostr,String mergeOrderNo){
+   public Double insertMergeDetail(String orderNostr,String mergeOrderNo){
        //查询订单下产品信息
+       Double orderCount=0.00;//订单总数量
        PdPurchaseDetail ppd = new PdPurchaseDetail();
        List<String> orderNos = Arrays.asList(orderNostr.split(","));
        ppd.setOrderNos(orderNos);
@@ -132,7 +132,6 @@ public class PdPurchaseOrderMergeServiceImpl extends ServiceImpl<PdPurchaseOrder
              //处理订单下产品
              List<PdPurchaseDetail> finalProdList = dealRepeatProdInfo(ppdList);
              PdPurchaseOrderMergeDetailMapper dao= sqlSession.getMapper(PdPurchaseOrderMergeDetailMapper.class);
-
              for(PdPurchaseDetail entity:finalProdList) {
                  PdPurchaseOrderMergeDetail  orderMergeDetail =new  PdPurchaseOrderMergeDetail();
                  orderMergeDetail.setProductId(entity.getProductId());
@@ -142,10 +141,12 @@ public class PdPurchaseOrderMergeServiceImpl extends ServiceImpl<PdPurchaseOrder
                  String str= StringUtils.join(list.toArray(), ",");
                  orderMergeDetail.setOrderNo(str);
                  orderMergeDetail.setSupplierId(entity.getSupplierId());
+                 orderCount+=entity.getOrderNum();
                  dao.insert(orderMergeDetail);
                //pdPurchaseOrderMergeDetailMapper.insert(orderMergeDetail);
              }
          }
+         return orderCount;
    }
 
 
