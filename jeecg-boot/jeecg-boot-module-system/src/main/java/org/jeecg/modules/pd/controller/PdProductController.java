@@ -21,6 +21,7 @@ import org.jeecgframework.poi.excel.view.JeecgEntityExcelView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
@@ -92,19 +93,13 @@ public class PdProductController extends JeecgController<PdProduct, IPdProductSe
 						   @RequestParam MultipartFile[] licenceSiteUp8,@RequestParam MultipartFile[] licenceSiteUp9,
 						   @RequestParam MultipartFile[] licenceSiteUp10,@RequestParam MultipartFile[] licenceSiteUp11
 	 ) {
-		 Result<Boolean> result = new Result<>();
-		 //如果此参数为false则程序发生异常
-		 result.setResult(true);
-		 result.setMessage("添加成功");
          LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
          pdProduct.setDepartParentId(sysUser.getDepartParentId());
          pdProduct.setNumber(BarCodeUtil.trimStr(pdProduct.getNumber()));
          //校验产品编号是否唯
          List<PdProduct> obj = pdProductService.verify(pdProduct);
          if (obj != null && obj.size()>0) {
-             result.setSuccess(false);
-             result.setMessage("产品编号已存在");
-             return result;
+			 return Result.error("产品编号已存在");
          }
 		 //存入图片
 		 if(!FileUploadUtil.isImgEmpty(licenceSiteUp0)){
@@ -173,19 +168,13 @@ public class PdProductController extends JeecgController<PdProduct, IPdProductSe
                           @RequestParam MultipartFile[] licenceSiteUp8,@RequestParam MultipartFile[] licenceSiteUp9,
                           @RequestParam MultipartFile[] licenceSiteUp10,@RequestParam MultipartFile[] licenceSiteUp11
     ) {
-        Result<Boolean> result = new Result<>();
-        //如果此参数为false则程序发生异常
-        result.setResult(true);
-        result.setMessage("编辑成功");
         LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
         pdProduct.setDepartParentId(sysUser.getDepartParentId());
         //校验产品编号是否唯
         pdProduct.setNumber(BarCodeUtil.trimStr(pdProduct.getNumber()));
         List<PdProduct> obj = pdProductService.verify(pdProduct);
         if (obj != null && obj.size()>0) {
-            result.setSuccess(false);
-            result.setMessage("产品编号已存在");
-            return result;
+            return Result.error("产品编号已存在");
         }
         //存入图片
         if(!FileUploadUtil.isImgEmpty(licenceSiteUp0)){
@@ -452,8 +441,11 @@ public class PdProductController extends JeecgController<PdProduct, IPdProductSe
     */
     @RequestMapping(value = "/importExcel", method = RequestMethod.POST)
     public Result<?> importExcel(HttpServletRequest request, HttpServletResponse response) {
-        return super.importExcel(request, response, PdProduct.class);
-    }
+		MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
+		Map<String, MultipartFile> fileMap = multipartRequest.getFileMap();
+		Result<Object> resul = pdProductService.importExcel(fileMap);
+		return resul;
+	}
 
 	 /**
 	  * 查询产品列表，用于选择产品弹出框

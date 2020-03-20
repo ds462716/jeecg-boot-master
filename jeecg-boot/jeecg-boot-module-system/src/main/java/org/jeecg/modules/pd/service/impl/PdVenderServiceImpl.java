@@ -6,6 +6,7 @@ import org.apache.ibatis.session.SqlSession;
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.system.vo.LoginUser;
+import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.pd.entity.PdProduct;
 import org.jeecg.modules.pd.entity.PdVender;
 import org.jeecg.modules.pd.mapper.PdVenderMapper;
@@ -21,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -133,10 +135,13 @@ public class PdVenderServiceImpl extends ServiceImpl<PdVenderMapper, PdVender> i
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public Result<Object> importExcel(Map<String, MultipartFile> fileMap) {
+    public Result<Object> importExcel(Map<String, MultipartFile> fileMap)
+    {
         PdVenderMapper dao = sqlsession.getMapper(PdVenderMapper.class);
         LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        List<PdVender> list = new ArrayList<>();
         boolean bl = true;
+        String message = "表格内没有内容";
         for (Map.Entry<String, MultipartFile> entity : fileMap.entrySet()) {
             MultipartFile file = entity.getValue();// 获取上传文件对象
             ImportParams params = new ImportParams();
@@ -144,15 +149,27 @@ public class PdVenderServiceImpl extends ServiceImpl<PdVenderMapper, PdVender> i
             params.setHeadRows(1);
             params.setNeedSave(true);
             try {
-                List<PdVender> list = ExcelImportUtil.importExcel(file.getInputStream(), PdVender.class, params);
+                list = ExcelImportUtil.importExcel(file.getInputStream(), PdVender.class, params);
+                int i = 0;
+                //查询所有的产品
+                PdVender pdVender = new PdVender();
+                pdVender.setDepartParentId(sysUser.getDepartParentId());
+                List<PdVender> pdVenders = this.selectList(pdVender);
                 for(PdVender ps :list){
-                    ps.setDepartParentId(sysUser.getDepartParentId());
-                    List<PdVender> obj = dao.verify(ps);
-                    if (obj != null && obj.size()>0) {
+                    if(oConvertUtils.isNotEmpty(ps.getName())){
+                        if(checkName(pdVenders,ps)){
+                            pdVenders.add(ps);
+                        }else{
+                            message = "导入失败,第"+(i+1)+"行名称不能重复";
+                            bl = false;
+                            break;
+                        }
+                    }else{
+                        message = "导入失败,第"+(i+1)+"行名称不存在";
                         bl = false;
-                        continue;
+                        break;
                     }
-                    save(ps);
+                    i ++;
                 }
             } catch (Exception e) {
                 log.error(e.getMessage(),e);
@@ -165,10 +182,27 @@ public class PdVenderServiceImpl extends ServiceImpl<PdVenderMapper, PdVender> i
                 }
             }
         }
-        if(bl){
-            return Result.ok("文件导入成功！");
+        //全部正确才能导入
+        if(bl && list.size()>0){
+            this.saveBatch(list);
+            return Result.ok("文件导入成功");
         }else{
-            return Result.ok("生产厂家名称存在重复，文件内容部分导入成功！");
+            return Result.error("文件导入失败:"+message);
         }
+    }
+
+    /**
+     * 校验名称是否重复
+     * @param pdVenders
+     * @param pdVender
+     * @return
+     */
+    private boolean checkName(List<PdVender> pdVenders, PdVender pdVender) {
+        for (PdVender p : pdVenders) {
+            if(p.getName().equals(pdVender.getName().trim())){
+                return false;
+            }
+        }
+        return true;
     }
 }

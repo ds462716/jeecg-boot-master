@@ -79,6 +79,12 @@ public class PdUnitController extends JeecgController<PdUnit, IPdUnitService> {
 	 */
 	@PostMapping(value = "/add")
 	public Result<?> add(@RequestBody PdUnit pdUnit,HttpServletRequest req) {
+		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		pdUnit.setDepartParentId(sysUser.getDepartParentId());
+		List<PdUnit> obj = pdUnitService.verify(pdUnit);
+		if (obj != null && obj.size()>0) {
+			return Result.error("单位已存在");
+		}
 		pdUnitService.save(pdUnit);
 		return Result.ok("添加成功！");
 	}
@@ -91,6 +97,12 @@ public class PdUnitController extends JeecgController<PdUnit, IPdUnitService> {
 	 */
 	@PutMapping(value = "/edit")
 	public Result<?> edit(@RequestBody PdUnit pdUnit) {
+		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		pdUnit.setDepartParentId(sysUser.getDepartParentId());
+		List<PdUnit> obj = pdUnitService.verify(pdUnit);
+		if (obj != null && obj.size()>0) {
+			return Result.error("单位已存在");
+		}
 		pdUnitService.updateById(pdUnit);
 		return Result.ok("编辑成功!");
 	}
@@ -103,8 +115,8 @@ public class PdUnitController extends JeecgController<PdUnit, IPdUnitService> {
 	 */
 	@DeleteMapping(value = "/delete")
 	public Result<?> delete(@RequestParam(name="id",required=true) String id) {
-		pdUnitService.removeById(id);
-		return Result.ok("删除成功!");
+		Result<Object> resul = pdUnitService.deleteV(id);
+		return resul;
 	}
 	
 	/**
@@ -115,8 +127,8 @@ public class PdUnitController extends JeecgController<PdUnit, IPdUnitService> {
 	 */
 	@DeleteMapping(value = "/deleteBatch")
 	public Result<?> deleteBatch(@RequestParam(name="ids",required=true) String ids) {
-		this.pdUnitService.removeByIds(Arrays.asList(ids.split(",")));
-		return Result.ok("批量删除成功!");
+		Result<Object> resul = pdUnitService.deleteBatchV(ids);
+		return resul;
 	}
 	
 	/**

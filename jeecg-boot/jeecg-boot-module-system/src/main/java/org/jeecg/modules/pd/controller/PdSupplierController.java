@@ -116,17 +116,11 @@ public class PdSupplierController extends JeecgController<PdSupplier, IPdSupplie
                           @RequestParam MultipartFile[] licenceSiteUp8,@RequestParam MultipartFile[] licenceSiteUp9,
                           @RequestParam MultipartFile[] licenceSiteUp10,@RequestParam MultipartFile[] licenceSiteUp11
                           ) {
-        Result<Boolean> result = new Result<>();
-        //如果此参数为false则程序发生异常
-        result.setResult(true);
-        result.setMessage("添加成功");
         LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
         pdSupplier.setDepartParentId(sysUser.getDepartParentId());
         List<PdSupplier> obj = pdSupplierService.verify(pdSupplier);
         if (obj != null && obj.size()>0) {
-            result.setSuccess(false);
-            result.setMessage("供应商已存在");
-            return result;
+            return Result.error("供应商已存在");
         }
         //存入图片
         if(!FileUploadUtil.isImgEmpty(licenceSiteUp0)){
@@ -196,17 +190,11 @@ public class PdSupplierController extends JeecgController<PdSupplier, IPdSupplie
                           @RequestParam MultipartFile[] licenceSiteUp8,@RequestParam MultipartFile[] licenceSiteUp9,
                           @RequestParam MultipartFile[] licenceSiteUp10,@RequestParam MultipartFile[] licenceSiteUp11
     ) {
-        Result<Boolean> result = new Result<>();
-        //如果此参数为false则程序发生异常
-        result.setResult(true);
-        result.setMessage("编辑成功");
         LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
         pdSupplier.setDepartParentId(sysUser.getDepartParentId());
         List<PdSupplier> obj = pdSupplierService.verify(pdSupplier);
         if (obj != null && obj.size()>0) {
-            result.setSuccess(false);
-            result.setMessage("供应商已存在");
-            return result;
+            return Result.error("供应商已存在");
         }
         //存入图片
         if(!FileUploadUtil.isImgEmpty(licenceSiteUp0)){

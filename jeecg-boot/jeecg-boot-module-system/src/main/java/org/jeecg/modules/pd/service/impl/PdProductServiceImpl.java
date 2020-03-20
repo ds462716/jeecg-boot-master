@@ -9,23 +9,30 @@ import org.jeecg.common.constant.MessageConstant;
 import org.jeecg.common.constant.PdConstant;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.DateUtils;
+import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.pd.entity.*;
-import org.jeecg.modules.pd.mapper.PdEncodingRuleDetailMapper;
-import org.jeecg.modules.pd.mapper.PdProductMapper;
-import org.jeecg.modules.pd.mapper.PdProductRuleMapper;
+import org.jeecg.modules.pd.mapper.*;
 import org.jeecg.modules.pd.service.IPdEncodingRuleService;
 import org.jeecg.modules.pd.service.IPdProductRuleService;
 import org.jeecg.modules.pd.service.IPdProductService;
 import org.jeecg.modules.pd.service.IPdProductStockService;
 import org.jeecg.modules.pd.util.BarCodeUtil;
+import org.jeecg.modules.pd.util.UUIDUtil;
 import org.jeecg.modules.pd.vo.PdProductPage;
+import org.jeecgframework.poi.excel.ExcelImportUtil;
+import org.jeecgframework.poi.excel.entity.ImportParams;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @Description: pd_product
@@ -405,6 +412,209 @@ public class PdProductServiceImpl extends ServiceImpl<PdProductMapper, PdProduct
     @Override
     public List<PdProduct> selectListByCTs(Map<String,Object> map) {
         return pdProductMapper.selectListByCTs(map);
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public Result<Object> importExcel(Map<String, MultipartFile> fileMap) {
+        PdProductMapper dao = sqlsession.getMapper(PdProductMapper.class);
+        PdVenderMapper venderDao = sqlsession.getMapper(PdVenderMapper.class);
+        PdUnitMapper unitDao = sqlsession.getMapper(PdUnitMapper.class);
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        List<PdProduct> list = new ArrayList<>();
+        boolean bl = true;
+        String message = "表格内没有内容";
+        for (Map.Entry<String, MultipartFile> entity : fileMap.entrySet()) {
+            MultipartFile file = entity.getValue();// 获取上传文件对象
+            ImportParams params = new ImportParams();
+            params.setTitleRows(2);
+            params.setHeadRows(1);
+            params.setNeedSave(true);
+            try {
+                list = ExcelImportUtil.importExcel(file.getInputStream(), PdProduct.class, params);
+                int i = 0;
+                //查询所有的产品
+                PdProduct pdProduct = new PdProduct();
+                pdProduct.setDepartParentId(sysUser.getDepartParentId());
+                List<PdProduct> pdProducts = this.selectList(pdProduct);
+                for(PdProduct ps :list){ //校验产品编号是否唯
+                    //校验产品编号
+                    if(oConvertUtils.isEmpty(ps.getNumber())){
+                        ps.setNumber(UUIDUtil.generateNumber("93"));//生成编码
+                    }else{
+                        if(checkNumber(pdProducts,ps)){
+                            pdProducts.add(ps);
+                        }else{
+                            message = "导入失败,第"+(i+1)+"行产品编号不能重复";
+                            bl = false;
+                            break;
+                        }
+                    }
+                    //校验产品名称
+                    if(oConvertUtils.isEmpty(ps.getName())){
+                        message = "导入失败,第"+(i+1)+"行产品名称不能为空";
+                        bl = false;
+                        break;
+                    }
+                    //产品单位转换成id
+                    if(oConvertUtils.isNotEmpty(ps.getUnitName())){
+                        PdUnit pdUnit = new PdUnit();
+                        pdUnit.setDepartParentId(sysUser.getDepartParentId());
+                        pdUnit.setName(ps.getUnitName());
+                        List<PdUnit> units = unitDao.verify(pdUnit);
+                        if(units.size()==1){
+                            ps.setUnitId(units.get(0).getId());
+                        }else{
+                            message = "导入失败,第"+(i+1)+"行产品单位填写错误";
+                            bl = false;
+                            break;
+                        }
+                    }else{
+                        message = "导入失败,第"+(i+1)+"行产品单位不存在";
+                        bl = false;
+                        break;
+                    }
+                    //校验规格
+                    if(oConvertUtils.isEmpty(ps.getSpec())){
+                        message = "导入失败,第"+(i+1)+"行规格不能为空";
+                        bl = false;
+                        break;
+                    }
+                    //产品生产厂家转换成id
+                    if(oConvertUtils.isNotEmpty(ps.getVenderName())){
+                        PdVender pdVender = new PdVender();
+                        pdVender.setDepartParentId(sysUser.getDepartParentId());
+                        pdVender.setName(ps.getVenderName());
+                        List<PdVender> venders = venderDao.verify(pdVender);
+                        if(venders.size()==1){
+                            ps.setVenderId(venders.get(0).getId());
+                        }else{
+                            message = "导入失败,第"+(i+1)+"行生产厂家填写错误";
+                            bl = false;
+                            break;
+                        }
+                    }else{
+                        message = "导入失败,第"+(i+1)+"行生产厂家不存在";
+                        bl = false;
+                        break;
+                    }
+                    //校验注册证
+                    if(oConvertUtils.isEmpty(ps.getRegistration())){
+                        message = "导入失败,第"+(i+1)+"行注册证不能为空";
+                        bl = false;
+                        break;
+                    }
+                    //校验是否计费
+                    if(!checksStr(ps.getIsCharge())){
+                        message = "导入失败,第"+(i+1)+"行是否计费不能为空或填写错误";
+                        bl = false;
+                        break;
+                    }
+                    //校验产品收费代码是否填写
+                    if("0".equals(ps.getIsCharge()) && oConvertUtils.isEmpty(ps.getChargeCode())){
+                        message = "导入失败,第"+(i+1)+"行没有填写产品收费代码";
+                        bl = false;
+                        break;
+                    }
+                    //校验是否紧急产品
+                    if(!checksStr(ps.getIsUrgent())){
+                        message = "导入失败,第"+(i+1)+"行是否紧急产品不能为空或填写错误";
+                        bl = false;
+                        break;
+                    }
+                    //校验产品进价
+                    if(!isMoney(ps.getPurchasePrice())){
+                        message = "导入失败,第"+(i+1)+"行产品进价格式不正确";
+                        bl = false;
+                        break;
+                    }
+                    //校验产品出价
+                    if(!isMoney(ps.getSellingPrice())){
+                        message = "导入失败,第"+(i+1)+"行产品出价格式不正确";
+                        bl = false;
+                        break;
+                    }
+                    //校验产品权限
+                    if(!checksStr(ps.getPower())){
+                        message = "导入失败,第"+(i+1)+"行产品权限不能为空或填写错误";
+                        bl = false;
+                        break;
+                    }
+                    i ++;
+                }
+
+            } catch (Exception e) {
+                log.error(e.getMessage(),e);
+                return Result.error("文件导入失败:"+e.getMessage());
+            } finally {
+                try {
+                    file.getInputStream().close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        //全部正确才能导入
+        if(bl && list.size()>0){
+            this.saveBatch(list);
+            return Result.ok("文件导入成功");
+        }else{
+            return Result.error("文件导入失败:"+message);
+        }
+    }
+
+    /**
+     * 校验是否计费和是否紧急产品
+     * @param pdProduct
+     * @return
+     */
+    private boolean checksStr(String str){
+        if(oConvertUtils.isEmpty(str)){
+            return false;
+        }
+        String isCharge = str.trim();
+        if("0".equals(isCharge)){
+            return true;
+        }else if("1".equals(isCharge)){
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+    /**
+     * 校验金额是否正确
+     * @param purPrice
+     * @return
+     */
+    public static boolean isMoney(BigDecimal purPrice) {
+        if(purPrice!=null){
+            Pattern pattern=Pattern.compile("^(([1-9]{1}\\d*)|([0]{1}))(\\.(\\d){1,4})?$"); // 判断小数点后4位的数字的正则表达式
+            Matcher match=pattern.matcher(purPrice.toString());
+            if(match.matches()==false) {
+                return false;
+            }else{
+                return true;
+            }
+        }else{
+            return true;
+        }
+
+    }
+
+    /**
+     * 校验编号是否重复
+     * @param pdProducts
+     * @param pdProduct
+     * @return
+     */
+    private boolean checkNumber(List<PdProduct> pdProducts, PdProduct pdProduct) {
+        for (PdProduct p : pdProducts) {
+            if(p.getNumber().equals(pdProduct.getNumber().trim())){
+                return false;
+            }
+        }
+        return true;
     }
 
     /**

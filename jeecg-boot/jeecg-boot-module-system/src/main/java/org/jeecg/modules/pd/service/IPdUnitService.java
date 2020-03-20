@@ -1,6 +1,7 @@
 package org.jeecg.modules.pd.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import org.jeecg.common.api.vo.Result;
 import org.jeecg.modules.pd.entity.PdUnit;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -17,4 +18,10 @@ public interface IPdUnitService extends IService<PdUnit> {
     List<PdUnit> queryList(PdUnit pdUnit);
 
     Page<PdUnit> queryList(Page<PdUnit> pageList, PdUnit pdUnit);
+
+    List<PdUnit> verify(PdUnit pdUnit);
+
+    Result<Object> deleteV(String id);
+
+    Result<Object> deleteBatchV(String ids);
 }

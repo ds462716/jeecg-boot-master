@@ -53,38 +53,34 @@ public class PdProduct  extends BaseEntity {
 	@Excel(name = "型号", width = 15)
     private java.lang.String version;
 	/**单位*/
-	@Excel(name = "单位", width = 15)
     private java.lang.String unitId;
 	@TableField(exist = false)
+	@Excel(name = "单位", width = 15)
 	private java.lang.String unitName;
 	/**产品权限*/
 	@Excel(name = "产品权限", width = 15)
 	private java.lang.String power;
 	/**一级分类*/
-	@Excel(name = "一级分类", width = 15)
     private java.lang.String categoryOne;
 	@TableField(exist = false)
 	private java.lang.String categoryOneName;
 	/**二级分类*/
-	@Excel(name = "二级分类", width = 15)
     private java.lang.String categoryTwo;
 	@TableField(exist = false)
 	private java.lang.String categoryTwoName;
 	/**产品组别*/
-	@Excel(name = "产品组别", width = 15)
     private java.lang.String groupId;
 	@TableField(exist = false)
 	private java.lang.String groupName;
 	/**生产厂家*/
-	@Excel(name = "生产厂家", width = 15)
     private java.lang.String venderId;
 	@TableField(exist = false)
+	@Excel(name = "生产厂家", width = 15)
 	private java.lang.String venderName;
 	/**是否计费*/
 	@Excel(name = "是否计费", width = 15)
     private java.lang.String isCharge;
 	/**供应商*/
-	@Excel(name = "供应商", width = 15)
     private java.lang.String supplierId;
 	@TableField(exist = false)
 	private java.lang.String supplierName;
@@ -274,13 +270,11 @@ public class PdProduct  extends BaseEntity {
 	/**
 	 * 紧急产品需要采购数量
 	 */
-	@Excel(name = "紧急产品需要采购数量", width = 15)
 	private Double upQuantity;
 
 	/**
 	 * 紧急产品已采购数量
 	 */
-	@Excel(name = "紧急产品已采购数量", width = 15)
 	private Double purchasedQuantity;
 
 	/**

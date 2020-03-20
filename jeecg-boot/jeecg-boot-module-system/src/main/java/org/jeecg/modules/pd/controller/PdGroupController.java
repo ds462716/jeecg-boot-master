@@ -102,17 +102,11 @@ public class PdGroupController extends JeecgController<PdGroup, IPdGroupService>
 	 */
 	@PostMapping(value = "/add")
 	public Result<?> add(@RequestBody PdGroup pdGroup) {
-		Result<Boolean> result = new Result<>();
-		//如果此参数为false则程序发生异常
-		result.setResult(true);
-		result.setMessage("添加成功");
 		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
 		pdGroup.setDepartParentId(sysUser.getDepartParentId());
 		List<PdGroup> obj = pdGroupService.verify(pdGroup);
 		if (obj != null && obj.size()>0) {
-			result.setSuccess(false);
-			result.setMessage("组别已存在");
-			return result;
+			return Result.error("组别已存在");
 		}
 		pdGroupService.save(pdGroup);
 		return Result.ok("添加成功！");
@@ -126,6 +120,12 @@ public class PdGroupController extends JeecgController<PdGroup, IPdGroupService>
 	 */
 	@PutMapping(value = "/edit")
 	public Result<?> edit(@RequestBody PdGroup pdGroup) {
+		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		pdGroup.setDepartParentId(sysUser.getDepartParentId());
+		List<PdGroup> obj = pdGroupService.verify(pdGroup);
+		if (obj != null && obj.size()>0) {
+			return Result.error("组别已存在");
+		}
 		pdGroupService.updateById(pdGroup);
 		return Result.ok("编辑成功!");
 	}

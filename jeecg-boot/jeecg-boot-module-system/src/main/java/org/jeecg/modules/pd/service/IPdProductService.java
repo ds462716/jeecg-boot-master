@@ -7,6 +7,7 @@ import org.jeecg.modules.pd.entity.PdProduct;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.jeecg.modules.pd.entity.PdProductStock;
 import org.jeecg.modules.pd.vo.PdProductPage;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Map;
@@ -40,4 +41,6 @@ public interface IPdProductService extends IService<PdProduct> {
     List<PdProduct> selectListByCT(PdProduct pdProduct);
 
     List<PdProduct> selectListByCTs(Map<String,Object> map);
+
+    Result<Object> importExcel(Map<String, MultipartFile> fileMap);
 }

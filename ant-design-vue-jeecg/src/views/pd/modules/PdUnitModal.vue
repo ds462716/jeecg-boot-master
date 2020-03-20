@@ -11,19 +11,19 @@
       <a-form :form="form">
 
         <a-form-item label="名称" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input ref="inputFocus" @change="pinyinTran" v-decorator="[ 'name', validatorRules.name]" placeholder="请输入单位名称"></a-input>
+          <a-input ref="inputFocus" autocomplete="off" @change="pinyinTran" v-decorator="[ 'name', validatorRules.name]" placeholder="请输入单位名称"></a-input>
         </a-form-item>
         <a-form-item label="拼音简码" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input v-decorator="[ 'py', validatorRules.py]" placeholder="请输入拼音简码"></a-input>
+          <a-input autocomplete="off" v-decorator="[ 'py', validatorRules.py]" placeholder="请输入拼音简码"></a-input>
         </a-form-item>
         <a-form-item label="五笔码" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input v-decorator="[ 'wb', validatorRules.wb]" placeholder="请输入五笔码"></a-input>
+          <a-input autocomplete="off" v-decorator="[ 'wb', validatorRules.wb]" placeholder="请输入五笔码"></a-input>
         </a-form-item>
         <a-form-item label="自定义码" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input v-decorator="[ 'zdy', validatorRules.zdy]" placeholder="请输入自定义码"></a-input>
+          <a-input autocomplete="off" v-decorator="[ 'zdy', validatorRules.zdy]" placeholder="请输入自定义码"></a-input>
         </a-form-item>
         <a-form-item label="备注" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input v-decorator="[ 'remarks', validatorRules.remarks]" placeholder="请输入备注"></a-input>
+          <a-input autocomplete="off" v-decorator="[ 'remarks', validatorRules.remarks]" placeholder="请输入备注"></a-input>
         </a-form-item>
 
       </a-form>

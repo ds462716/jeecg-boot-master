@@ -7,6 +7,7 @@ import org.apache.ibatis.session.SqlSession;
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.system.vo.LoginUser;
+import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.pd.entity.PdProduct;
 import org.jeecg.modules.pd.entity.PdSupplier;
 import org.jeecg.modules.pd.mapper.PdSupplierMapper;
@@ -20,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -131,7 +133,9 @@ public class PdSupplierServiceImpl extends ServiceImpl<PdSupplierMapper, PdSuppl
     public Result<Object> importExcel(Map<String, MultipartFile> fileMap) {
         PdSupplierMapper dao = sqlsession.getMapper(PdSupplierMapper.class);
         LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        List<PdSupplier> list = new ArrayList<>();
         boolean bl = true;
+        String message = "表格内没有内容";
         for (Map.Entry<String, MultipartFile> entity : fileMap.entrySet()) {
             MultipartFile file = entity.getValue();// 获取上传文件对象
             ImportParams params = new ImportParams();
@@ -139,15 +143,27 @@ public class PdSupplierServiceImpl extends ServiceImpl<PdSupplierMapper, PdSuppl
             params.setHeadRows(1);
             params.setNeedSave(true);
             try {
-                List<PdSupplier> list = ExcelImportUtil.importExcel(file.getInputStream(), PdSupplier.class, params);
+                list = ExcelImportUtil.importExcel(file.getInputStream(), PdSupplier.class, params);
+                int i = 0;
+                //查询所有的产品
+                PdSupplier pdSupplier = new PdSupplier();
+                pdSupplier.setDepartParentId(sysUser.getDepartParentId());
+                List<PdSupplier> pdSuppliers = this.selectList(pdSupplier);
                 for(PdSupplier ps :list){
-                    ps.setDepartParentId(sysUser.getDepartParentId());
-                    List<PdSupplier> obj = dao.verify(ps);
-                    if (obj != null && obj.size()>0) {
+                    if(oConvertUtils.isNotEmpty(ps.getName())){
+                        if(checkName(pdSuppliers,ps)){
+                            pdSuppliers.add(ps);
+                        }else{
+                            message = "导入失败,第"+(i+1)+"行名称不能重复";
+                            bl = false;
+                            break;
+                        }
+                    }else{
+                        message = "导入失败,第"+(i+1)+"行名称不存在";
                         bl = false;
-                        continue;
+                        break;
                     }
-                    save(ps);
+                    i ++;
                 }
             } catch (Exception e) {
                 log.error(e.getMessage(),e);
@@ -160,10 +176,27 @@ public class PdSupplierServiceImpl extends ServiceImpl<PdSupplierMapper, PdSuppl
                 }
             }
         }
-        if(bl){
-            return Result.ok("文件导入成功！");
+        //全部正确才能导入
+        if(bl && list.size()>0){
+            this.saveBatch(list);
+            return Result.ok("文件导入成功");
         }else{
-            return Result.ok("供应商名称存在重复，文件内容部分导入成功！");
+            return Result.error("文件导入失败:"+message);
         }
+    }
+
+    /**
+     * 校验名称是否重复
+     * @param pdSuppliers
+     * @param pdSupplier
+     * @return
+     */
+    private boolean checkName(List<PdSupplier> pdSuppliers, PdSupplier pdSupplier) {
+        for (PdSupplier p : pdSuppliers) {
+            if(p.getName().equals(pdSupplier.getName().trim())){
+                return false;
+            }
+        }
+        return true;
     }
 }

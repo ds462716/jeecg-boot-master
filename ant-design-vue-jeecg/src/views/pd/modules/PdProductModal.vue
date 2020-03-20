@@ -290,7 +290,7 @@
         <a-row class="form-row" :gutter="{ xs: 8, sm: 16, md: 24, lg: 32 }">
           <a-col :lg="12">
             <a-form-item label="产品权限" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-select :disabled="disableSubmit"  v-decorator="[ 'power',{'initialValue':'0'}]" placeholder="请选择产品权限">
+              <a-select :disabled="disableSubmit"  v-decorator="[ 'power',{'initialValue':'0',rules:powerRules}]" placeholder="请选择产品权限">
                 <a-select-option value="0">公有</a-select-option>
                 <a-select-option value="1">自有</a-select-option>
               </a-select>
@@ -515,7 +515,7 @@
               {required: true, message: '请输入紧急产品数量!'},
             ]},
           description: {rules: [
-          ]}
+          ]},
         },
         isChargeRules:[
           {
@@ -527,6 +527,12 @@
           {
             required: true, // 必填
             message: '请选择是否是紧急产品' // 显示的文本
+          }
+        ],
+        powerRules:[
+          {
+            required: true, // 必填
+            message: '请选择产品权限' // 显示的文本
           }
         ],
         url: {
