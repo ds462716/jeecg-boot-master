@@ -83,7 +83,8 @@ public class PdApplyOrder extends BaseEntity {
 	/**是否完结，1是，0否*/
     @Excel(name = "是否完结", width = 15)
     private String isEnd;
-
+    /**申领出库科室ID*/
+    private String outDepartId;
     /**申领科室ID*/
     @TableField(strategy = FieldStrategy.NOT_EMPTY)
     private String departId;

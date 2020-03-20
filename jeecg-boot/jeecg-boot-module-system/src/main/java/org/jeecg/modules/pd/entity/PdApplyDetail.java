@@ -57,16 +57,17 @@ public class PdApplyDetail extends BaseEntity {
 	/**申领产品个数*/
 	@Excel(name = "申领产品数量", width = 15)
 	private Double applyNum;
-	/**申领时库存数量*/
-	@Excel(name = "申领时库存数量", width = 15)
+	/**出库科室库存数量*/
+	@Excel(name = "出库科室库存数量", width = 15)
 	private Double stockNum;
 	/**实际发货数量*/
 	@Excel(name = "实际发货数量", width = 15)
 	private Double arrivalNum;
 	/**备注*/
 	private String remarks;
-
-
+	/**本科室库存数量*/
+	@Excel(name = "本科室库存数量", width = 15)
+	private Double currentStockNum;
 
 	/*字段不在PdApplyDetail中**/
 	@TableField(exist = false)

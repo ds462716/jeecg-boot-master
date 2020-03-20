@@ -22,6 +22,7 @@
         a.is_end,
         a.total_num,
         a.submit_status,
+        a.out_depart_id,
 		a.remarks,
 		a.del_flag
 	</sql>
@@ -73,6 +74,9 @@
             </if>
             <if test="deptName != null and deptName != ''">
                 AND f.depart_name = #{deptName}
+            </if>
+            <if test="outDepartId != null and outDepartId != ''">
+                AND a.out_depart_id = #{outDepartId}
             </if>
             <if test="departId != null and departId != ''">
                 AND a.depart_id = #{departId}

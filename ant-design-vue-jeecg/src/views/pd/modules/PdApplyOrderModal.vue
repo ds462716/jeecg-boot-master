@@ -175,7 +175,8 @@
             { title: '型号', width:"240px",align:"center", key: 'version' },
             { title: '单位',width:"50px", align:"center", key: 'unitName' },
             { title: '发货数量', width:"100px",align:"center", key: 'arrivalNum' },
-            { title: '库存数量', align:"center", key: 'stockNum' },
+            { title: '库存数量', align:"center", key: 'currentStockNum'},
+            { title: '出库科室库存数量', align:"center", key: 'stockNum',type: FormTypes.hidden},
           ]
         },
         url: {
@@ -244,12 +245,6 @@
          if(type === FormTypes.input){
             if(column.key === "applyNum"){
               // 申领数量变更
-              var stockNum=parseFloat(row.stockNum);
-              var applyNum=parseFloat(row.applyNum);
-              if(applyNum>stockNum){
-                this.$message.error("申领产品数量不能大于出库科室库存数量！");
-                 return;
-              }
               target.setValues([{rowKey: row.id, values: {applyNum :row.applyNum }}]);
                 // 计算总数量
              this.getTotalNumAndPrice([]);
@@ -338,7 +333,8 @@
           version:row.version,
           unitName:row.unitName,
           applyNum: "1",//默认 1
-          stockNum:row.stockNum
+          stockNum:row.stockNum,
+        currentStockNum:row.currentStockNum
         }
         this.pdApplyDetailTable.dataSource.push(data)
       },

@@ -80,6 +80,9 @@
         <include refid="sysDepartColumns"/>,
         <include refid="pdSupplierColumns"/>,
         <include refid="pdVenderColumns"/>
+        <if test="currentDepartId != null and currentDepartId != ''">
+          ,g.stock_num as "currentStockNum"
+        </if>
         FROM pd_product_stock_total a
         <include refid="pdProductStockTotalJoins"/>
         <include refid="pdProductJoins"/>
@@ -87,6 +90,9 @@
         <include refid="sysDepartJoins"/>
         <include refid="pdSupplierJoins"/>
         <include refid="pdVenderJoins"/>
+        <if test="currentDepartId != null and currentDepartId != ''">
+         LEFT JOIN pd_product_stock_total g ON g.product_id=c.id  and g.depart_id=#{currentDepartId}
+        </if>
         <where>
             a.del_flag =#{DEL_FLAG_NORMAL} AND a.stock_num > 0
             <if test="id != null and id != ''">
