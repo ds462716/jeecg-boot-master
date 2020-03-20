@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.toolkit.ObjectUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.PdConstant;
@@ -381,7 +382,8 @@ public class PdProductStockTotalController {
 		 LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
 		 stockTotalPage.setDepartParentId(sysUser.getDepartParentId());
 		 stockTotalPage.setCurrentDepartId(sysUser.getCurrentDepartId());
-		 if(stockTotalPage.getCode().equals("2")){ //如果是申领单过来的话
+		String code= stockTotalPage.getCode();
+		 if(StringUtils.isNotEmpty(code) && stockTotalPage.getCode().equals("2")){ //如果是申领单过来的话
 			 //获取父级部门ID
 			 SysDepart sysDepart=sysDepartService.queryDepartByOrgCode(sysUser.getOrgCode());
 			 stockTotalPage.setDepartId(sysDepart.getParentId());
