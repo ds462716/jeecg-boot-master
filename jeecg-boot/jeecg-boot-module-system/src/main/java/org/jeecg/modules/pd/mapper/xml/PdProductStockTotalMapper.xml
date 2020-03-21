@@ -99,7 +99,13 @@
                 AND a.id = #{id}
             </if>
             <if test="productName != null and productName != ''">
-                AND c.name = #{productName}
+                AND c.name  LIKE concat('%',#{productName},'%')
+            </if>
+            <if test="number != null and number != ''">
+                AND c.number = #{number}
+            </if>
+            <if test="spec != null and spec != ''">
+                AND c.spec   LIKE concat('%',#{spec},'%')
             </if>
             <if test="departId != null and departId != ''">
                 AND  a.depart_id = #{departId}
@@ -115,6 +121,9 @@
             </if>
             <if test="supplierId != null and supplierId != ''">
                 AND e.id =#{supplierId}
+            </if>
+            <if test="venderId != null and venderId != ''">
+                AND c.vender_id =#{venderId}
             </if>
             <if test="venderName != null and venderName != ''">
                 AND d.name  LIKE concat('%',#{venderName},'%')

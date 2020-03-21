@@ -100,6 +100,9 @@ public class PdProductStockTotal extends BaseEntity {
     @Excel(name = "生产厂家", width = 15)
     @TableField(exist = false)
     private String venderName;
+    /**生产厂家Id*/
+    @TableField(exist = false)
+    private String venderId;
     /**供应商名称*/
     @Excel(name = "供应商名称", width = 15)
     @TableField(exist = false)
