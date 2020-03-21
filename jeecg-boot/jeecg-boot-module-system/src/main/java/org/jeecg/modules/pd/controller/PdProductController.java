@@ -380,8 +380,8 @@ public class PdProductController extends JeecgController<PdProduct, IPdProductSe
 	 */
 	@DeleteMapping(value = "/delete")
 	public Result<?> delete(@RequestParam(name="id",required=true) String id) {
-		pdProductService.removeById(id);
-		return Result.ok("删除成功!");
+		Result<Object> resul = pdProductService.deleteV(id);
+		return resul;
 	}
 	
 	/**
@@ -392,8 +392,8 @@ public class PdProductController extends JeecgController<PdProduct, IPdProductSe
 	 */
 	@DeleteMapping(value = "/deleteBatch")
 	public Result<?> deleteBatch(@RequestParam(name="ids",required=true) String ids) {
-		this.pdProductService.removeByIds(Arrays.asList(ids.split(",")));
-		return Result.ok("批量删除成功!");
+		Result<Object> resul = pdProductService.deleteBatchV(ids);
+		return resul;
 	}
 	
 	/**
