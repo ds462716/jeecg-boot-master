@@ -147,6 +147,9 @@
 			<if test="productName != null and productName != ''">
 				AND c.name LIKE concat('%',#{productName},'%')
 			</if>
+			<if test="spec != null and spec != ''">
+				AND c.spec = #{spec}
+			</if>
 			<if test="productBarCode != null and productBarCode != ''">
 				AND a.product_bar_code = #{productBarCode}
 			</if>
@@ -155,6 +158,9 @@
 			</if>
 			<if test="supplierId != null and supplierId != ''">
 				AND a.supplier_id = #{supplierId}
+			</if>
+			<if test="venderId != null and venderId != ''">
+				AND c.vender_id = #{venderId}
 			</if>
 			<if test="huoweiCode != null and huoweiCode != ''">
 				AND a.huowei_code = #{huoweiCode}
