@@ -163,9 +163,9 @@
         },
         model:{},
         title: '这里是标题',
-        lockScroll: true,
+        lockScroll: false,
         fullscreen: true,
-        switchFullscreen: true,
+        switchFullscreen: false,
         disableSubmit:false,
         //出库科室下拉列表 start
         outDeptValue: undefined,
