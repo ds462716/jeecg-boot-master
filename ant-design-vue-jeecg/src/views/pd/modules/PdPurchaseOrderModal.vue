@@ -16,7 +16,7 @@
         <a-row>
           <a-col :span="12">
             <a-form-item label="申购编号" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input  ref="inputFocus" :disabled="focusDisable"   v-decorator="[ 'orderNo', validatorRules.orderNo]"></a-input>
+              <a-input     disabled="disabled"   v-decorator="[ 'orderNo', validatorRules.orderNo]"></a-input>
             </a-form-item>
           </a-col>
           <a-col :span="12">

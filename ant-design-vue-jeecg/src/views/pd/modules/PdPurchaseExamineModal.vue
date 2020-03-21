@@ -110,9 +110,9 @@
     data() {
       return {
         title: '这里是标题',
-        lockScroll: true,
+        lockScroll: false,
         fullscreen: true,
-        switchFullscreen: true,
+        switchFullscreen: false,
         disableSubmit: false,
         confirmLoading: false,
         labelCol: {span: 6},
