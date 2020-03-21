@@ -16,7 +16,7 @@
         <a-row>
           <a-col :span="12">
             <a-form-item label="申购编号" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input disabled="disabled" v-decorator="[ 'orderNo', validatorRules.orderNo]"></a-input>
+              <a-input     disabled="disabled"   v-decorator="[ 'orderNo', validatorRules.orderNo]"></a-input>
             </a-form-item>
           </a-col>
           <a-col :span="12">
@@ -127,9 +127,9 @@
       return {
         model:{},
         title: '这里是标题',
-        lockScroll: true,
+        lockScroll: false,
         fullscreen: true,
-        switchFullscreen: true,
+        switchFullscreen: false,
         disableSubmit:false,
         confirmLoading: false,
         labelCol: {span: 6},

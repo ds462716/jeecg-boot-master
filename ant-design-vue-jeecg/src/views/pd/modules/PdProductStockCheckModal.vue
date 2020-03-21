@@ -150,9 +150,9 @@
       return {
         model:{},
         title: '这里是标题',
-        lockScroll: true,
+        lockScroll: false,
         fullscreen: true,
-        switchFullscreen: true,
+        switchFullscreen: false,
         disableSubmit:false,
         labelCol: {span: 6},
         wrapperCol: {span: 16},
