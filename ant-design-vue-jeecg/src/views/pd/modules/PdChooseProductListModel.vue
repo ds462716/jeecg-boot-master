@@ -23,26 +23,53 @@
               </a-form-item>
             </a-col>
             <a-col :md="6" :sm="8">
-              <a-form-item label="供应商">
-                <a-select
-                  ref="supplierSelect"
-                  showSearch
-                  :supplierId="supplierValue"
-                  placeholder="请选择供应商"
-                  :defaultActiveFirstOption="false"
-                  :showArrow="true"
-                  :filterOption="false"
-                  @search="supplierHandleSearch"
-                  @change="supplierHandleChange"
-                  @focus="supplierHandleSearch"
-                  :notFoundContent="notFoundContent"
-                  v-model="queryParam.supplierId"
-                  :disabled="supplierSelecDisabled"
-                >
-                  <a-select-option v-for="d in supplierData" :key="d.value">{{d.text}}</a-select-option>
-                </a-select>
+              <a-form-item label="规格">
+                <a-input placeholder="请输入规格" v-model="queryParam.spec"></a-input>
               </a-form-item>
             </a-col>
+            <template v-if="toggleSearchStatus">
+              <a-col :md="8" :sm="8">
+                <a-form-item label="供应商">
+                  <a-select
+                    ref="supplierSelect"
+                    showSearch
+                    :supplierId="supplierValue"
+                    placeholder="请选择供应商"
+                    :defaultActiveFirstOption="false"
+                    :showArrow="true"
+                    :filterOption="false"
+                    @search="supplierHandleSearch"
+                    @change="supplierHandleChange"
+                    @focus="supplierHandleSearch"
+                    :notFoundContent="notFoundContent"
+                    v-model="queryParam.supplierId"
+                    :disabled="supplierSelecDisabled"
+                  >
+                    <a-select-option v-for="d in supplierData" :key="d.value">{{d.text}}</a-select-option>
+                  </a-select>
+                </a-form-item>
+              </a-col>
+              <a-col :md="8" :sm="8">
+                <a-form-item label="生产厂家">
+                  <a-select
+                    showSearch
+                    :venderId="venderValue"
+                    placeholder="请选择生产厂家"
+                    :defaultActiveFirstOption="false"
+                    :allowClear="true"
+                    :showArrow="true"
+                    :filterOption="false"
+                    @search="venderHandleSearch"
+                    @change="venderHandleChange"
+                    @focus="venderHandleSearch"
+                    :notFoundContent="notFoundContent"
+                    v-model="queryParam.venderId"
+                  >
+                    <a-select-option v-for="d in venderData" :key="d.value">{{d.text}}</a-select-option>
+                  </a-select>
+                </a-form-item>
+              </a-col>
+            </template>
             <a-col :md="6" :sm="8">
             <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
               <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
@@ -95,7 +122,8 @@
         supplierId:"", //供应商ID 用于入库时查询产品
         // model: {},
         confirmLoading: false,
-
+        venderData: [],
+        venderValue: undefined,
         supplierSelecDisabled:false,
         supplierValue: undefined,
         notFoundContent:"未找到内容",
@@ -176,6 +204,7 @@
         url: {
           list: "/pd/pdProduct/chooseProductList",
           querySupplier:"/pd/pdSupplier/getSupplierList",
+          queryVender:"/pd/pdVender/getVenderList",
         }
       }
     },
@@ -197,6 +226,7 @@
           this.$nextTick(() => {
             // this.$refs.supplierSelect.disabled="disabled";
             this.supplierHandleSearch(); //初始化供应商
+            this.venderHandleSearch(); //初始化生产厂家
             this.queryParam.supplierId = this.supplierId; //默认选择父页面传来的供应商
             this.supplierSelecDisabled = true;
           })
@@ -250,6 +280,15 @@
         })
       },
 
+      //生产厂家查询start
+      venderHandleSearch(value) {
+        fetch(value, data => (this.venderData = data),this.url.queryVender);
+      },
+      venderHandleChange(value) {
+        this.venderValue = value;
+        fetch(value, data => (this.venderData = data),this.url.queryVender);
+      },
+      //生产厂家查询end
       //供应商查询start
       supplierHandleSearch(value) {
         fetch(value, data => (this.supplierData = data),this.url.querySupplier);
