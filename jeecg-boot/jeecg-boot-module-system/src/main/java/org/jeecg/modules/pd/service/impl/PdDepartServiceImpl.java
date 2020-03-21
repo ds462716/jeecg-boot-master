@@ -5,7 +5,11 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.constant.CacheConstant;
+import org.jeecg.common.constant.PdConstant;
+import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.pd.service.IPdDepartService;
 import org.jeecg.modules.system.entity.SysDepart;
@@ -192,5 +196,75 @@ public class PdDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart>
     public List<String> findDepartUserIds(String departId){
         List<String> sysUsers = userMapper.findDepartUserIds(departId);
         return sysUsers;
+    }
+
+
+    //查询当前登录下的所有部门
+    @Override
+    public List<SysDepart> selectListTree(SysDepart sysDepart) {
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        LambdaQueryWrapper<SysDepart> query = new LambdaQueryWrapper<>();
+        // 封装查询条件parentId为主键,
+        query.eq(SysDepart::getDepartParentId, sysUser.getDepartParentId());
+        query.eq(SysDepart::getParentId, sysUser.getCurrentDepartId());
+        // 查出该主键下的所有子级
+        List<SysDepart> sysDepartList = this.list(query);
+        List<String> strs = new ArrayList<>();
+        //当前登录人的部门
+        strs.add(sysUser.getCurrentDepartId());
+        if(CollectionUtils.isNotEmpty(sysDepartList)){
+            String id = ""; // id
+            int num = 0; // 查出的子级数量
+            // 如果查出的集合不为空, 则先删除所有
+            // 再遍历刚才查出的集合, 根据每个对象,查找其是否仍有子级
+            for (int i = 0, len = sysDepartList.size(); i < len; i++) {
+                id = sysDepartList.get(i).getId();
+                strs.add(id);
+                num = this.count(new LambdaQueryWrapper<SysDepart>().eq(SysDepart::getParentId, id));
+                // 如果有, 则递归
+                if (num > 0) {
+                    findChildrenBy(id,strs);
+                }
+            }
+        }
+        //查询
+        String sb ="";
+        for(String pc:strs){
+            sb+="'"+pc+("',");
+        }
+        //封装查询参数
+        sb = sb.substring(0,sb.length()-1);
+        Map<String,Object> map = new HashMap<>();
+        map.put("ids",sb);
+        map.put("departName",sysDepart.getDepartName()!=null?sysDepart.getDepartName():"");
+        map.put("departParentId",sysUser.getDepartParentId());
+        map.put("DEL_FLAG_NORMAL", PdConstant.DEL_FLAG_0);
+        return sysDepartMapper.selectListByCTs(map);
+    }
+
+    /**
+     * 递归查询
+     * @param parentId
+     */
+    public void findChildrenBy(String parentId, List<String> strs) {
+        LambdaQueryWrapper<SysDepart> query = new LambdaQueryWrapper<>();
+        // 封装查询条件parentId为主键,
+        query.eq(SysDepart::getParentId, parentId);
+        // 查出该主键下的所有子级
+        List<SysDepart> permissionList = this.list(query);
+        if (permissionList != null && permissionList.size() > 0) {
+            String id = ""; // id
+            int num = 0; // 查出的子级数量
+            // 再遍历刚才查出的集合, 根据每个对象,查找其是否仍有子级
+            for (int i = 0, len = permissionList.size(); i < len; i++) {
+                id = permissionList.get(i).getId();
+                strs.add(id);
+                num = this.count(new LambdaQueryWrapper<SysDepart>().eq(SysDepart::getParentId, id));
+                // 如果有, 则递归
+                if (num > 0) {
+                    this.findChildrenBy(id,strs);
+                }
+            }
+        }
     }
 }

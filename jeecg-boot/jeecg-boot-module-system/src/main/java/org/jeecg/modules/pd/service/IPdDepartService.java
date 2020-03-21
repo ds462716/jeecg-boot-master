@@ -35,4 +35,6 @@ public interface IPdDepartService extends IService<SysDepart> {
     List<String> findMenuUser(String departId , String menuName);
 
     List<String> findDepartUserIds(String departId);
+
+    List<SysDepart> selectListTree(SysDepart sysDepart);
 }

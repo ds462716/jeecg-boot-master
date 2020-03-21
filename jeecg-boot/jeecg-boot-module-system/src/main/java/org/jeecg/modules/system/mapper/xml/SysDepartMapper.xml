@@ -61,7 +61,29 @@
         <if test="departId != null and departId != ''">
             AND a.id != #{departId}
         </if>
+    </select>
 
-</select>
+    <select id="selectListByCTs" resultType="org.jeecg.modules.system.entity.SysDepart">
+        select
+        *
+        from sys_depart a
+        <where>
+            a.del_flag = #{parMap.DEL_FLAG_NORMAL}
+        </where>
+        <if test="parMap.ids != null and parMap.ids != ''">
+            and (
+            a.id in  ( ${parMap.ids} )
+            )
+        </if>
+        <if test="parMap.departName != null and parMap.departName != ''">
+            AND (a.depart_name LIKE concat('%',#{parMap.departName},'%')
+            or a.py LIKE concat('%',#{parMap.departName},'%')
+            or a.wb LIKE concat('%',#{parMap.departName},'%')
+            or a.zdy LIKE concat('%',#{parMap.departName},'%'))
+        </if>
+        <if test="parMap.departParentId != null and parMap.departParentId != ''">
+            and a.depart_parent_id = #{parMap.departParentId}
+        </if>
+    </select>
 
 </mapper>

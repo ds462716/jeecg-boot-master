@@ -79,6 +79,25 @@ public class PdDepartController extends JeecgController<PdDepartConfig, IPdDepar
         return result;
     }
 
+    /**
+     * 部门下拉选择
+     * @param sysDepart
+     * @return
+     */
+    @GetMapping(value = "/queryListTree")
+    public Result<List<SysDepart>> queryListTree(SysDepart sysDepart) {
+        long start = System.currentTimeMillis();
+        Result<List<SysDepart>> result = new Result<>();
+        try {
+            List<SysDepart> list = pdDepartService.selectListTree(sysDepart);
+            result.setResult(list);
+            result.setSuccess(true);
+        }catch(Exception e){
+            log.error(e.getMessage(), e);
+        }
+        log.info("======获取产品数据=====耗时:" + (System.currentTimeMillis() - start) + "毫秒");
+        return result;
+    }
 
     /**
      * 查询数据 查出所有部门,并以树结构数据格式响应给前端

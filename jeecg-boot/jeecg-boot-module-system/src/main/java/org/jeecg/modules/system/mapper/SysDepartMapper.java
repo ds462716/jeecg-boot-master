@@ -6,6 +6,7 @@ import org.jeecg.modules.system.entity.SysDepart;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -56,4 +57,6 @@ public interface SysDepartMapper extends BaseMapper<SysDepart> {
 	SysDepart queryDepartByOrgCode(@Param("orgCode") String orgCode);
 
     List<SysDepart> selectDepartList(SysDepart sysDepart);
+
+	List<SysDepart> selectListByCTs(@org.apache.ibatis.annotations.Param("parMap")Map<String,Object> map);
 }
