@@ -6,4 +6,13 @@
 		FROM sys_user_depart
 		WHERE user_id = #{userId, jdbcType=VARCHAR}
     </select>
+
+	<select id="findSysUserDepartList" resultType="org.jeecg.modules.system.entity.SysUserDepart" parameterType="java.util.List">
+		select *
+		from sys_user_depart
+		where dep_id in
+		<foreach collection="list" item="item" open="(" close=")" separator=",">
+			#{item}
+		</foreach>
+	</select>
 </mapper>

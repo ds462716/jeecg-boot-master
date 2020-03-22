@@ -6,6 +6,7 @@
     <!-- 操作按钮区域 -->
     <div class="table-operator">
       <a-button @click="handleAdd" type="primary" icon="plus">新增</a-button>
+      <!-- 不放开批量删除  zxh-->
       <!--<a-button
         @click="batchDel"
         v-if="selectedRowKeys.length > 0"
@@ -156,7 +157,7 @@
         ],
         url: {
           list: "/pd/pdDepart/queryTreeList",
-          delete: '/sys/sysDepart/delete',
+          delete: '/pd/pdDepart/delete',
           edit: '/sys/sysDepart/edit',
           deleteBatch: '/sys/sysDepart/deleteBatch',
           exportXlsUrl: "sys/sysDepart/exportXls",

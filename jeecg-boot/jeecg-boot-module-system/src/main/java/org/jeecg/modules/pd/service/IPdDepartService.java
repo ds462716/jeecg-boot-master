@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
+import org.jeecg.common.api.vo.Result;
 import org.jeecg.modules.system.entity.SysDepart;
 import org.jeecg.modules.system.entity.SysUser;
 import org.jeecg.modules.system.entity.SysUserDepart;
@@ -37,4 +38,6 @@ public interface IPdDepartService extends IService<SysDepart> {
     List<String> findDepartUserIds(String departId);
 
     List<SysDepart> selectListTree(SysDepart sysDepart);
+
+    Result<Object> deleteV(String id);
 }

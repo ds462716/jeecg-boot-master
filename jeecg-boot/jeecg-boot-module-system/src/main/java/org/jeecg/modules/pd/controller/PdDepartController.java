@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.aspect.annotation.AutoLog;
+import org.jeecg.common.constant.CacheConstant;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.constant.PdConstant;
 import org.jeecg.common.system.base.controller.JeecgController;
@@ -23,6 +24,7 @@ import org.jeecg.modules.system.model.SysDepartTreeModel;
 import org.jeecg.modules.system.model.TreeModel;
 import org.jeecg.modules.system.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -359,5 +361,11 @@ public class PdDepartController extends JeecgController<PdDepartConfig, IPdDepar
             result.setSuccess(true);
         }
         return result;
+    }
+    @RequestMapping(value = "/delete", method = RequestMethod.DELETE)
+    @CacheEvict(value= {CacheConstant.SYS_DEPARTS_CACHE,CacheConstant.SYS_DEPART_IDS_CACHE}, allEntries=true)
+    public Result<?> delete(@RequestParam(name="id",required=true) String id) {
+        Result<Object> resul = pdDepartService.deleteV(id);
+        return resul;
     }
 }

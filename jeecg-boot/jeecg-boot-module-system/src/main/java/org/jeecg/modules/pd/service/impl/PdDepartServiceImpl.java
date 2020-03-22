@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.shiro.SecurityUtils;
+import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.CacheConstant;
 import org.jeecg.common.constant.PdConstant;
 import org.jeecg.common.system.vo.LoginUser;
@@ -18,14 +19,17 @@ import org.jeecg.modules.system.entity.SysUser;
 import org.jeecg.modules.system.entity.SysUserDepart;
 import org.jeecg.modules.system.mapper.SysDepartMapper;
 import org.jeecg.modules.system.mapper.SysDepartRolePermissionMapper;
+import org.jeecg.modules.system.mapper.SysUserDepartMapper;
 import org.jeecg.modules.system.mapper.SysUserMapper;
 import org.jeecg.modules.system.model.SysDepartTreeModel;
 import org.jeecg.modules.system.service.ISysDepartRolePermissionService;
+import org.jeecg.modules.system.service.ISysDepartService;
 import org.jeecg.modules.system.service.ISysUserDepartService;
 import org.jeecg.modules.system.util.FindsDepartsChildrenUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
@@ -46,6 +50,14 @@ public class PdDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart>
 
     @Autowired
     private ISysUserDepartService sysUserDepartService;
+
+    @Autowired
+    private ISysDepartService sysDepasrtService;
+
+    @Autowired
+    private SysUserDepartMapper sysUserDepartMapper;
+
+
 
     @Cacheable(value = CacheConstant.SYS_DEPARTS_CACHE)
     @Override
@@ -264,6 +276,48 @@ public class PdDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart>
                 if (num > 0) {
                     this.findChildrenBy(id,strs);
                 }
+            }
+        }
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public Result<Object> deleteV(String id) {
+        try{
+            List<String> idList = new ArrayList<>();
+            List<SysUserDepart> sysUserDeparts = sysUserDepartService.list(new QueryWrapper<SysUserDepart>().eq("dep_id",id));
+            if(CollectionUtils.isNotEmpty(sysUserDeparts)){
+                return Result.error("删除失败!，当前部门下还有用户不能删除");
+            }else{
+                idList.add(id);
+                this.checkChildrenExists(id, idList);
+                List<SysUserDepart> sysUserDepartList = sysUserDepartMapper.findSysUserDepartList(idList);
+                if(CollectionUtils.isNotEmpty(sysUserDepartList)){
+                    return Result.error("删除失败!，当前部门下的子部门还有用户不能删除");
+                }else{
+                    boolean ok = sysDepasrtService.removeByIds(idList);
+                    if(ok) {
+                        return Result.ok("删除成功!");
+                    }else{
+                        return Result.error("删除失败!，系统异常");
+                    }
+                }
+            }
+        }catch(Exception e){
+            e.printStackTrace();
+            return Result.error("删除失败!，系统异常");
+        }
+
+    }
+
+    private void checkChildrenExists(String id, List<String> idList) {
+        LambdaQueryWrapper<SysDepart> query = new LambdaQueryWrapper<SysDepart>();
+        query.eq(SysDepart::getParentId,id);
+        List<SysDepart> departList = sysDepasrtService.list(query);
+        if(departList != null && departList.size() > 0) {
+            for(SysDepart depart : departList) {
+                idList.add(depart.getId());
+                this.checkChildrenExists(depart.getId(), idList);
             }
         }
     }

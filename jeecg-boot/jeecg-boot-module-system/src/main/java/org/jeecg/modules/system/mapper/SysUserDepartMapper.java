@@ -11,4 +11,6 @@ import io.lettuce.core.dynamic.annotation.Param;
 public interface SysUserDepartMapper extends BaseMapper<SysUserDepart>{
 	
 	List<SysUserDepart> getUserDepartByUid(@Param("userId") String userId);
+
+    List<SysUserDepart> findSysUserDepartList(List<String> idList);
 }
