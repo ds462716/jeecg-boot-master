@@ -5,6 +5,7 @@
             :width="drawerWidth"
             @close="close"
             :title="title"
+            :maskClosable=disableSubmit
             :wrapStyle="{height: 'calc(100% - 108px)',overflow: 'auto',paddingBottom: '108px'}"
   >
     <!-- 查询区域 -->
@@ -101,6 +102,7 @@
         currentDeptId: '',
         drawerWidth:800,
         visible: false,
+        disableSubmit:false,
         title:"",
         // 表头
         columns: [{

@@ -4,6 +4,7 @@
             :closable="true"
             :width="drawerWidth"
             :title="title"
+            :maskClosable=disableSubmit
             @close="close"
 
             :wrapStyle="{height: 'calc(100% - 108px)',overflow: 'auto',paddingBottom: '108px'}">
@@ -120,6 +121,7 @@
   export default {
     name: "DeptUserInfo",
     mixins: [JeecgListMixin],
+    disableSubmit:false,
     components: {
       DeptRoleUserModal,
       DeptSelectUserModal,
