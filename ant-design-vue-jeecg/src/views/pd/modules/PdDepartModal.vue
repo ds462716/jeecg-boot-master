@@ -34,16 +34,16 @@
           :wrapperCol="wrapperCol"
           :label="menuLabel"
            >
-          <a-input placeholder="请输入名称" ref="inputFocus" @change="pinyinTran"  v-decorator="[ 'departName', validatorRules.departName]"/>
+          <a-input placeholder="请输入名称" :disabled="disableSubmit" autocomplete="off" ref="inputFocus" @change="pinyinTran"  v-decorator="[ 'departName', validatorRules.departName]"/>
         </a-form-item>
         <a-form-item label="拼音简码" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input v-decorator="[ 'py', validatorRules.py]" placeholder="请输入拼音简码"></a-input>
+          <a-input :disabled="disableSubmit" autocomplete="off" v-decorator="[ 'py', validatorRules.py]" placeholder="请输入拼音简码"></a-input>
         </a-form-item>
         <a-form-item label="五笔简码" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input v-decorator="[ 'wb', validatorRules.wb]" placeholder="请输入五笔简码"></a-input>
+          <a-input :disabled="disableSubmit" autocomplete="off" v-decorator="[ 'wb', validatorRules.wb]" placeholder="请输入五笔简码"></a-input>
         </a-form-item>
         <a-form-item label="自定义码" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input v-decorator="[ 'zdy', validatorRules.zdy]" placeholder="请输入自定义码"></a-input>
+          <a-input :disabled="disableSubmit" autocomplete="off" v-decorator="[ 'zdy', validatorRules.zdy]" placeholder="请输入自定义码"></a-input>
         </a-form-item>
         <a-form-item
           :labelCol="labelCol"
@@ -58,6 +58,7 @@
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
           :validate-status="validateStatus"
+          :disabled="disableSubmit"
           :hasFeedback="true"
           :required="true">
           <span slot="help">{{ validateStatus=='error'?'请选择上级部门':'&nbsp;&nbsp;' }}</span>
@@ -75,38 +76,46 @@
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
           label="电话">
-          <a-input placeholder="请输入电话" v-decorator="['mobile',validatorRules.mobile]" />
+          <a-input :disabled="disableSubmit" autocomplete="off" placeholder="请输入电话" v-decorator="['mobile',validatorRules.mobile]" />
         </a-form-item>
         <a-form-item
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
           label="传真">
-          <a-input placeholder="请输入传真" v-decorator="['fax', {}]"  />
+          <a-input :disabled="disableSubmit" autocomplete="off" placeholder="请输入传真" v-decorator="['fax', {}]"  />
         </a-form-item>
         <a-form-item
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
           label="地址">
-          <a-input placeholder="请输入地址" v-decorator="['address', {}]"  />
+          <a-input :disabled="disableSubmit" autocomplete="off" placeholder="请输入地址" v-decorator="['address', {}]"  />
         </a-form-item>
         <a-form-item
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
           label="排序">
-          <a-input-number v-decorator="[ 'departOrder',{'initialValue':0}]" />
+          <a-input-number :disabled="disableSubmit" autocomplete="off" v-decorator="[ 'departOrder',{'initialValue':0}]" />
         </a-form-item>
         <a-form-item
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
           label="备注">
-          <a-textarea placeholder="请输入备注" v-decorator="['memo', {}]"  />
+          <a-textarea :disabled="disableSubmit" autocomplete="off" placeholder="请输入备注" v-decorator="['memo', {}]"  />
+        </a-form-item>
+
+        <a-form-item>
+
         </a-form-item>
 
       </a-form>
     </a-spin>
-    <div class="drawer-bootom-button" v-show="!disableSubmit">
-      <a-button type="primary" :loading="confirmLoading" @click="handleOk">确定</a-button>
-      <a-button type="primary" @click="handleCancel">取消</a-button>
+
+    <div class="drawer-bootom-button">
+      <a-button @click="close" style="margin-right: 15px;" v-show="disableSubmit">关  闭</a-button>
+      <a-button @click="handleOk"  v-show="!disableSubmit" type="primary" style="margin-right: 15px;" :loading="confirmLoading">提  交</a-button>
+      <a-popconfirm title="确定放弃编辑？" v-show="!disableSubmit" @confirm="handleCancel" okText="确定" cancelText="取消">
+        <a-button style="margin-right: 15px;">取  消</a-button>
+      </a-popconfirm>
     </div>
 
   </a-drawer>
