@@ -9,7 +9,7 @@
           <a-col :md="6" :sm="12">
             <a-form-item label="账号">
               <!--<a-input placeholder="请输入账号查询" v-model="queryParam.username"></a-input>-->
-              <j-input placeholder="输入账号模糊查询" v-model="queryParam.username"></j-input>
+              <a-input placeholder="输入账号模糊查询" v-model="queryParam.username"></a-input>
             </a-form-item>
           </a-col>
 
