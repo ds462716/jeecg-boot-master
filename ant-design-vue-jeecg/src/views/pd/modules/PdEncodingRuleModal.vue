@@ -72,9 +72,10 @@
         <pdEncodingIdentifierAdd-modal ref="pdEncodingIdentifierAddModal" @ok="modalFormOk"></pdEncodingIdentifierAdd-modal>
       </a-form>
     </a-spin>
-    <div class="drawer-bootom-button" v-show="!disableSubmit">
-      <a-button @click="handleOk" type="primary" :loading="confirmLoading">提交</a-button>
-      <a-popconfirm title="确定放弃编辑？" @confirm="handleCancel" okText="确定" cancelText="取消">
+    <div class="drawer-bootom-button" >
+      <a-button @click="close"  style="margin-right: 15px;" v-show="disableSubmit">关  闭</a-button>
+      <a-button @click="handleOk" v-show="!disableSubmit" type="primary" :loading="confirmLoading">提交</a-button>
+      <a-popconfirm title="确定放弃编辑？" v-show="!disableSubmit" @confirm="handleCancel" okText="确定" cancelText="取消">
         <a-button style="margin-right: .8rem">取消</a-button>
       </a-popconfirm>
     </div>

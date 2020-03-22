@@ -1,12 +1,12 @@
 <template>
   <a-drawer
     :title="title"
-    :maskClosable="true"
     :width="drawerWidth"
     placement="right"
     :closable="true"
     @close="handleCancel"
     :visible="visible"
+    :maskClosable=disableSubmit
     style="height: calc(100% - 55px);overflow: auto;padding-bottom: 53px;">
 
     <template slot="title">
@@ -23,25 +23,25 @@
       <a-form :form="form">
 
         <a-form-item label="用户账号" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input placeholder="请输入用户账号" autocomplete="off" v-decorator="[ 'username', validatorRules.username]" :readOnly="!!model.id"/>
+          <a-input :disabled="disableSubmit" placeholder="请输入用户账号" autocomplete="off" v-decorator="[ 'username', validatorRules.username]" :readOnly="!!model.id"/>
         </a-form-item>
 
         <template v-if="!model.id">
           <a-form-item label="登陆密码" :labelCol="labelCol" :wrapperCol="wrapperCol" >
-            <a-input type="password" placeholder="请输入登陆密码" autocomplete="off" v-decorator="[ 'password', validatorRules.password]" />
+            <a-input :disabled="disableSubmit" type="password" placeholder="请输入登陆密码" autocomplete="off" v-decorator="[ 'password', validatorRules.password]" />
           </a-form-item>
 
           <a-form-item label="确认密码" :labelCol="labelCol" :wrapperCol="wrapperCol" >
-            <a-input type="password" @blur="handleConfirmBlur" autocomplete="off" placeholder="请重新输入登陆密码" v-decorator="[ 'confirmpassword', validatorRules.confirmpassword]"/>
+            <a-input :disabled="disableSubmit" type="password" @blur="handleConfirmBlur" autocomplete="off" placeholder="请重新输入登陆密码" v-decorator="[ 'confirmpassword', validatorRules.confirmpassword]"/>
           </a-form-item>
         </template>
 
         <a-form-item label="用户姓名" :labelCol="labelCol" :wrapperCol="wrapperCol" >
-          <a-input placeholder="请输入用户姓名" autocomplete="off" v-decorator="[ 'realname', validatorRules.realname]" />
+          <a-input :disabled="disableSubmit" placeholder="请输入用户姓名" autocomplete="off" v-decorator="[ 'realname', validatorRules.realname]" />
         </a-form-item>
 
         <a-form-item label="工号" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input placeholder="请输入工号" autocomplete="off" v-decorator="[ 'workNo',validatorRules.workNo]" />
+          <a-input :disabled="disableSubmit" placeholder="请输入工号" autocomplete="off" v-decorator="[ 'workNo',validatorRules.workNo]" />
         </a-form-item>
 
         <a-form-item label="选择部门" :labelCol="labelCol" :wrapperCol="wrapperCol" >
@@ -50,6 +50,7 @@
             style="width: 100%"
             placeholder="请选择部门"
             optionFilterProp = "children"
+            :disabled="disableSubmit"
             v-model="selectedDepart">
             <a-select-option v-for="(depart,departindex) in departList" :key="departindex.toString()" :value="depart.id">
               {{ depart.departName }}
@@ -62,25 +63,26 @@
         </a-form-item>
 
         <a-form-item label="头像" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <j-image-upload class="avatar-uploader" text="上传" v-model="fileList" ></j-image-upload>
+          <j-image-upload :disabled="disableSubmit" class="avatar-uploader" text="上传" v-model="fileList" ></j-image-upload>
         </a-form-item>
 
         <a-form-item label="生日" :labelCol="labelCol" :wrapperCol="wrapperCol">
           <a-date-picker
             style="width: 100%"
             placeholder="请选择生日"
+            :disabled="disableSubmit"
             v-decorator="['birthday', {initialValue:!model.birthday?null:moment(model.birthday,dateFormat)}]"/>
         </a-form-item>
 
         <a-form-item label="性别" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-select v-decorator="[ 'sex', {}]" placeholder="请选择性别">
+          <a-select :disabled="disableSubmit" v-decorator="[ 'sex', {}]" placeholder="请选择性别">
             <a-select-option :value="1">男</a-select-option>
             <a-select-option :value="2">女</a-select-option>
           </a-select>
         </a-form-item>
 
         <a-form-item label="邮箱" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input placeholder="请输入邮箱" autocomplete="off"  v-decorator="[ 'email', validatorRules.email]" />
+          <a-input :disabled="disableSubmit" placeholder="请输入邮箱" autocomplete="off"  v-decorator="[ 'email', validatorRules.email]" />
         </a-form-item>
 
         <a-form-item label="手机号码" :labelCol="labelCol" :wrapperCol="wrapperCol">
@@ -88,7 +90,7 @@
         </a-form-item>
 
         <a-form-item label="座机" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input placeholder="请输入座机" autocomplete="off" v-decorator="[ 'telephone', validatorRules.telephone]"/>
+          <a-input :disabled="disableSubmit" placeholder="请输入座机" autocomplete="off" v-decorator="[ 'telephone', validatorRules.telephone]"/>
         </a-form-item>
 
 
@@ -98,11 +100,16 @@
       </a-form>
     </a-spin>
 
-    <div class="drawer-bootom-button" v-show="!disableSubmit">
-      <a-popconfirm title="确定放弃编辑？" @confirm="handleCancel" okText="确定" cancelText="取消">
-        <a-button style="margin-right: .8rem">取消</a-button>
+
+
+
+    <div class="drawer-bootom-button">
+      <a-button @click="close" style="margin-right: 15px;" v-show="disableSubmit">关  闭</a-button>
+      <a-popconfirm title="确定放弃编辑？" v-show="!disableSubmit" @confirm="handleCancel" okText="确定" cancelText="取消">
+        <a-button style="margin-right: 15px;">取  消</a-button>
       </a-popconfirm>
-      <a-button @click="handleSubmit" type="primary" :loading="confirmLoading">提交</a-button>
+      <a-button @click="handleSubmit"  v-show="!disableSubmit" type="primary" style="margin-right: 15px;" :loading="confirmLoading">提  交</a-button>
+
     </div>
   </a-drawer>
 </template>

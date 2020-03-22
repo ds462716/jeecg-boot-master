@@ -61,9 +61,10 @@
         
       </a-form>
     </a-spin>
-    <div class="drawer-bootom-button" v-show="!disableSubmit">
-      <a-button type="primary" :loading="confirmLoading" @click="handleOk">确定</a-button>
-      <a-button  @click="handleCancel">取消</a-button>
+    <div class="drawer-bootom-button" >
+      <a-button @click="close"  style="margin-right: 15px;" v-show="disableSubmit">关  闭</a-button>
+      <a-button v-show="!disableSubmit" type="primary" :loading="confirmLoading" @click="handleOk">确定</a-button>
+      <a-button v-show="!disableSubmit" @click="handleCancel">取消</a-button>
     </div>
 
   </a-drawer>
