@@ -379,6 +379,11 @@
       closeBtn(){
         this.close();
       },
+      /** 关闭按钮点击事件 */
+      handleCancel() {
+        this.$emit('ok');
+        this.close();
+      },
       /** 拒绝 **/
       refuseBtn() {
         let params =
