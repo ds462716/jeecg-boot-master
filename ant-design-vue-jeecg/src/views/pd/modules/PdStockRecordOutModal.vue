@@ -130,7 +130,7 @@
 
               <div style="margin-bottom: 8px;" v-show="!disableSubmit">
                 <a-button type="primary" icon="plus" @click="chooseProductList">选择产品</a-button>
-                <a-button type="primary" icon="plus" @click="choosePackageList" style="margin-left: 8px">选择定数包</a-button>
+                <!--<a-button type="primary" icon="plus" @click="choosePackageList" style="margin-left: 8px">选择定数包</a-button>-->
                 <a-popconfirm style="margin-left: 8px"
                   :title="`确定要删除吗?`"
                   @confirm="handleConfirmDelete">
@@ -451,6 +451,7 @@
                   this.pdOrderDetailTable.dataSource = pdApplyDetailList;
                 }else if(res.result.outType == "2"){
                   this.orderTableTitle = "";
+                  this.showOrderTable = false;
                 }else if(res.result.outType == "3"){
                   this.orderTableTitle = "调拨单明细";
                   let pdApplyDetailList = res.result.pdAllocationDetailList || [];
@@ -517,7 +518,9 @@
         this.eachAllTable((item) => {
           item.initialize()
         })
-
+        this.showOrderTableFuntionc(val);
+      },
+      showOrderTableFuntionc(val){
         if(val == "1"){
           this.orderTableTitle = "申领单明细";
           this.showApplyBtn = true;
