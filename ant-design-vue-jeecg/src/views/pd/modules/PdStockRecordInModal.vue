@@ -490,7 +490,13 @@
       /** 关闭按钮 **/
       closeBtn(){
         this.visible = false;
+        this.$emit('ok');
         this.$emit('close');
+      },
+      /** 关闭按钮点击事件 */
+      handleCancel() {
+        this.$emit('ok');
+        this.close();
       },
       /**撤回**/
       cancelBtn(){

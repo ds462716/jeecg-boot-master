@@ -123,6 +123,12 @@ public class PdStockRecordInController {
      */
     @PostMapping(value = "/add")
     public Result<?> add(@RequestBody PdStockRecord pdStockRecord) {
+        if (oConvertUtils.isNotEmpty(pdStockRecord.getId())) {
+            PdStockRecord entity = pdStockRecordService.getById(pdStockRecord.getId());
+            if(entity != null && PdConstant.SUBMIT_STATE_2.equals(entity.getSubmitStatus())){
+                return Result.error("出库单已被提交，不能保存草稿！");
+            }
+        }
         pdStockRecordService.saveMain(pdStockRecord, pdStockRecord.getPdStockRecordDetailList(), PdConstant.RECODE_TYPE_1);
         return Result.ok("保存成功！");
     }
@@ -134,10 +140,14 @@ public class PdStockRecordInController {
      * @return
      */
     @PostMapping(value = "/submit")
-    public Result<?> submit(@RequestBody PdStockRecord PdStockRecord) {
-        PdStockRecord pdStockRecord = new PdStockRecord();
-        BeanUtils.copyProperties(PdStockRecord, pdStockRecord);
-        pdStockRecordService.submit(pdStockRecord, PdStockRecord.getPdStockRecordDetailList(), PdConstant.RECODE_TYPE_1);
+    public Result<?> submit(@RequestBody PdStockRecord pdStockRecord) {
+        if (oConvertUtils.isNotEmpty(pdStockRecord.getId())) {
+            PdStockRecord entity = pdStockRecordService.getById(pdStockRecord.getId());
+            if(entity != null && PdConstant.SUBMIT_STATE_2.equals(entity.getSubmitStatus())){
+                return Result.error("出库单已被提交，不能再次提交！");
+            }
+        }
+        pdStockRecordService.submit(pdStockRecord, pdStockRecord.getPdStockRecordDetailList(), PdConstant.RECODE_TYPE_1);
         return Result.ok("提交成功！");
     }
 
@@ -148,14 +158,15 @@ public class PdStockRecordInController {
      * @return
      */
     @PostMapping(value = "/audit")
-    public Result<?> audit(@RequestBody PdStockRecord PdStockRecord) {
-        PdStockRecord pdStockRecord = new PdStockRecord();
-        BeanUtils.copyProperties(PdStockRecord, pdStockRecord);
-        PdStockRecord pdStockRecordEntity = pdStockRecordService.getOne(PdStockRecord);
-        if (pdStockRecordEntity == null) {
+    public Result<?> audit(@RequestBody PdStockRecord pdStockRecord) {
+        PdStockRecord entity = pdStockRecordService.getOne(pdStockRecord);
+        if (entity == null) {
             return Result.error("未找到对应数据");
         }
-        Map<String, String> result = pdStockRecordService.audit(pdStockRecord, pdStockRecordEntity, PdConstant.RECODE_TYPE_1);
+        if(PdConstant.AUDIT_STATE_2.equals(entity.getAuditStatus()) || PdConstant.AUDIT_STATE_3.equals(entity.getAuditStatus())){
+            return Result.error("出库单已被审批，不能再次审批！");
+        }
+        Map<String, String> result = pdStockRecordService.audit(pdStockRecord, entity, PdConstant.RECODE_TYPE_1);
         if (PdConstant.SUCCESS_200.equals(result.get("code"))) {
             return Result.ok(result.get("message"));
         } else {
@@ -178,7 +189,7 @@ public class PdStockRecordInController {
             pdStockRecordService.updateStatus(pdStockRecord);
             return Result.ok("撤回成功!");
         }else{
-            return Result.error("当前入库单状态非已提交、待审核状态，不能撤回！");
+            return Result.error("当前入库单状态已被审批或已撤回，不能撤回！");
         }
     }
 

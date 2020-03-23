@@ -179,7 +179,7 @@
     </a-spin>
 
     <template slot="footer">
-      <a-button @click="closeBtn" style="margin-right: 15px;" v-show="disableSubmit">关  闭</a-button>
+      <a-button @click="handleCancel" style="margin-right: 15px;" v-show="disableSubmit">关  闭</a-button>
       <a-popconfirm title="确定放弃编辑？" @confirm="handleCancel" v-show="!disableSubmit" okText="确定" cancelText="取消">
         <a-button style="margin-right: 15px;">取  消</a-button>
       </a-popconfirm>
@@ -357,7 +357,7 @@
           init:"/pd/pdStockRecordOut/initModal",
           submit: "/pd/pdStockRecordOut/submit",
           add: "/pd/pdStockRecordOut/add",
-          cancel: "/pd/pdStockRecordIn/cancel",
+          cancel: "/pd/pdStockRecordOut/cancel",
           // edit: "/pd/pdStockRecordOut/edit",
           // querySupplier:"/pd/pdSupplier/getSupplierList",
           departList:"/pd/pdDepart/getSysDepartList",
@@ -538,7 +538,13 @@
       /** 关闭按钮 **/
       closeBtn(){
         this.visible = false;
+        this.$emit('ok');
         this.$emit('close');
+      },
+      /** 关闭按钮点击事件 */
+      handleCancel() {
+        this.$emit('ok');
+        this.close();
       },
       /**撤回**/
       cancelBtn(){
@@ -556,7 +562,7 @@
             this.confirmLoading = false
           })
         }else{
-          this.$message.warning("当前出库单状态非已提交、待审核状态，不能撤回！")
+          this.$message.warning("当前出库单状态已被审批或已撤回，不能撤回！"); //当前出库单状态非已提交、待审核状态，不能撤回！
         }
       },
       /** 保存草稿 **/

@@ -133,6 +133,12 @@ public class PdStockRecordOutController {
      */
     @PostMapping(value = "/add")
     public Result<?> add(@RequestBody PdStockRecord pdStockRecord) {
+        if (oConvertUtils.isNotEmpty(pdStockRecord.getId())) {
+            PdStockRecord entity = pdStockRecordService.getById(pdStockRecord.getId());
+            if(entity != null && PdConstant.SUBMIT_STATE_2.equals(entity.getSubmitStatus())){
+                return Result.error("出库单已被提交，不能保存草稿！");
+            }
+        }
         pdStockRecordService.saveMain(pdStockRecord, pdStockRecord.getPdStockRecordDetailList(), PdConstant.RECODE_TYPE_2);
         return Result.ok("添加成功！");
     }
@@ -145,6 +151,12 @@ public class PdStockRecordOutController {
      */
     @PostMapping(value = "/submit")
     public Result<?> submit(@RequestBody PdStockRecord pdStockRecord) {
+        if (oConvertUtils.isNotEmpty(pdStockRecord.getId())) {
+            PdStockRecord entity = pdStockRecordService.getById(pdStockRecord.getId());
+            if(entity != null && PdConstant.SUBMIT_STATE_2.equals(entity.getSubmitStatus())){
+                return Result.error("出库单已被提交，不能再次提交！");
+            }
+        }
         pdStockRecordService.submit(pdStockRecord, pdStockRecord.getPdStockRecordDetailList(), PdConstant.RECODE_TYPE_2);
         return Result.ok("添加成功！");
     }
@@ -157,11 +169,14 @@ public class PdStockRecordOutController {
      */
     @PostMapping(value = "/audit")
     public Result<?> audit(@RequestBody PdStockRecord pdStockRecord) {
-        PdStockRecord pdStockRecordEntity = pdStockRecordService.getOne(pdStockRecord);
-        if (pdStockRecordEntity == null) {
+        PdStockRecord entity = pdStockRecordService.getOne(pdStockRecord);
+        if (entity == null) {
             return Result.error("未找到对应数据");
         }
-        Map<String,String> result = pdStockRecordService.audit(pdStockRecord,pdStockRecordEntity, PdConstant.RECODE_TYPE_2);
+        if(PdConstant.AUDIT_STATE_2.equals(entity.getAuditStatus()) || PdConstant.AUDIT_STATE_3.equals(entity.getAuditStatus())){
+            return Result.error("出库单已被审批，不能再次审批！");
+        }
+        Map<String,String> result = pdStockRecordService.audit(pdStockRecord,entity, PdConstant.RECODE_TYPE_2);
         if(PdConstant.SUCCESS_200.equals(result.get("code"))) {
             return Result.ok(result.get("message"));
         }else{
@@ -184,7 +199,7 @@ public class PdStockRecordOutController {
             pdStockRecordService.updateStatus(pdStockRecord);
             return Result.ok("撤回成功!");
         }else{
-            return Result.error("当前出库单状态非已提交、待审核状态，不能撤回！");
+            return Result.error("当前出库单状态已被审批或已撤回，不能撤回！");
         }
     }
 
