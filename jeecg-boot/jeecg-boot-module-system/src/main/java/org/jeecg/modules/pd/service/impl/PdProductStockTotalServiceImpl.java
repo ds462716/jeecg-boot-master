@@ -159,7 +159,7 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
 			String productId = stockRecordDetail.getProductId();     //产品ID
 			Double productNum = stockRecordDetail.getProductNum();  //数量
 
-			PdProductStockTotal stockTotalq = new PdProductStockTotal();
+			PdProductStockTotalPage stockTotalq = new PdProductStockTotalPage();
 			stockTotalq.setDepartId(outDeptId);
 			stockTotalq.setProductId(productId);
 			List<PdProductStockTotalPage> productStockTotals = pdProductStockTotalMapper.selectList(stockTotalq);
@@ -213,7 +213,7 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
 			String huoweiCode=dosageDetail.getOutHuoweiCode();
 			Double productNum = dosageDetail.getDosageCount();  //数量
 			//1、扣减出库库存，扣减出库库存明细
-			PdProductStockTotal stockTotalq = new PdProductStockTotal();
+			PdProductStockTotalPage stockTotalq = new PdProductStockTotalPage();
 			stockTotalq.setDepartId(departId);
 			stockTotalq.setProductId(productId);
 			List<PdProductStockTotalPage> productStockTotals = pdProductStockTotalMapper.selectList(stockTotalq);
