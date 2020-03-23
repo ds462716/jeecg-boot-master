@@ -13,6 +13,7 @@ import org.jeecg.common.system.vo.DictModel;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.DateUtils;
 import org.jeecg.common.util.oConvertUtils;
+import org.jeecg.modules.message.util.PushMsgUtil;
 import org.jeecg.modules.pd.entity.PdGoodsAllocation;
 import org.jeecg.modules.pd.entity.PdPurchaseDetail;
 import org.jeecg.modules.pd.entity.PdStockRecord;
@@ -21,8 +22,10 @@ import org.jeecg.modules.pd.service.*;
 import org.jeecg.modules.pd.util.UUIDUtil;
 import org.jeecg.modules.pd.vo.PdGoodsAllocationPage;
 import org.jeecg.modules.system.entity.SysDepart;
+import org.jeecg.modules.system.entity.SysPermission;
 import org.jeecg.modules.system.service.ISysDepartService;
 import org.jeecg.modules.system.service.ISysDictService;
+import org.jeecg.modules.system.service.ISysPermissionService;
 import org.jeecgframework.poi.excel.ExcelImportUtil;
 import org.jeecgframework.poi.excel.def.NormalExcelConstants;
 import org.jeecgframework.poi.excel.entity.ExportParams;
@@ -39,10 +42,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -71,6 +71,10 @@ public class PdStockRecordOutController {
     private IPdPurchaseDetailService pdPurchaseDetailService;
     @Autowired
     private IPdDepartService pdDepartService;
+    @Autowired
+    private ISysPermissionService sysPermissionService;
+    @Autowired
+    private PushMsgUtil pushMsgUtil;
 
     /**
      * 初始化Modal页面
@@ -158,6 +162,8 @@ public class PdStockRecordOutController {
             }
         }
         pdStockRecordService.submit(pdStockRecord, pdStockRecord.getPdStockRecordDetailList(), PdConstant.RECODE_TYPE_2);
+        //消息推送
+        this.sendMsg(pdStockRecord);
         return Result.ok("添加成功！");
     }
 
@@ -387,5 +393,40 @@ public class PdStockRecordOutController {
         pdStockRecordDetail.setRecordType(PdConstant.RECODE_TYPE_2);
         page = pdStockRecordDetailService.selectList(page, pdStockRecordDetail);
         return Result.ok(page);
+    }
+
+    /**
+     * 消息推送
+     * @param purchaseOrderPage
+     * @return
+     */
+    public boolean sendMsg(PdStockRecord stockRecord) {
+        Map<String, Object> map = new HashMap<>();
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        List<String> userIdList =pdDepartService.findMenuUser(sysUser.getCurrentDepartId(),PdConstant.AUDIT_MENU_2);
+
+        String url = "";
+        QueryWrapper<SysPermission> queryWrapper = new QueryWrapper<SysPermission>();
+        queryWrapper.eq("name",PdConstant.AUDIT_MENU_2);
+        List<SysPermission> permissionList = sysPermissionService.list(queryWrapper);
+        if(CollectionUtils.isNotEmpty(permissionList)){
+            url = permissionList.get(0).getUrl();
+        }
+
+        if (CollectionUtils.isNotEmpty(userIdList)) {
+            String userIds = String.join(",", userIdList);
+            Map<String, String> strMap = new HashMap<>();
+            //模板注入参数
+            strMap.put("userName", sysUser.getRealname());
+            strMap.put("recordNo", stockRecord.getRecordNo());
+            strMap.put("url", url);
+            map.put("map", strMap);
+            //需要发送消息的用户id
+            map.put("userIds", userIds + ",");
+            //短信模板标识
+            map.put("templateCode", PdConstant.STOCK_RECORD_OUT_SUBMIT_MSG);
+            return pushMsgUtil.newSendMessage(map);
+        }
+        return false;
     }
 }
