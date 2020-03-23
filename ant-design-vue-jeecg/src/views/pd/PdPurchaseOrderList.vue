@@ -72,7 +72,7 @@
         :rowSelection="{fixed:false,selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
         @change="handleTableChange">
         <span slot="action" slot-scope="text, record">
-          <a  @click="handleEdit(record)">修改</a>
+          <a  @click="handleEdit(record)"  v-bind:disabled="record.submitStatus=='2'">修改</a>
 
           <a-divider type="vertical" />
           <a-dropdown>

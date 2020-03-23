@@ -73,7 +73,7 @@
         @change="handleTableChange">
 
         <span slot="action" slot-scope="text, record">
-          <a @click="handleEdit(record)">编辑</a>
+          <a @click="handleEdit(record)" v-bind:disabled="record.submitStatus=='2'">编辑</a>
 
           <a-divider type="vertical" />
           <a-dropdown>
