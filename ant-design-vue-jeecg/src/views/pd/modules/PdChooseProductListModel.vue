@@ -324,7 +324,7 @@
               //获取一共多少列
               let lie = tr.childElementCount;
               if(lie && cellIndex){
-                if(parseInt(lie)-parseInt(cellIndex)!=1){
+                if(parseInt(lie)-parseInt(cellIndex) > 0){
                   //操作那一行
                   let productId = record.productId;
                   let index = this.selectedRowKeys.indexOf(productId);
