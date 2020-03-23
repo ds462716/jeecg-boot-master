@@ -175,8 +175,12 @@
         <a-button type="danger" :loading="confirmLoading" style="margin-right: 15px;">驳回</a-button>
       </a-popconfirm>
       <a-button @click="submitBtn" v-show="!disableSubmit" type="primary" :loading="confirmLoading" style="margin-right: 15px;">审核通过</a-button>
+      <a-button @click="choice" v-show="!disableSubmit" type="primary" :loading="confirmLoading" style="margin-right: 15px;">审核通过并打印</a-button>
+      <PdStockRecordInExaminePrint-modal ref="pdStockRecordInExaminePrintModal"></PdStockRecordInExaminePrint-modal>
     </template>
   </j-modal>
+
+
 </template>
 
 <script>
@@ -187,11 +191,10 @@
   import { JEditableTableMixin } from '@/mixins/JEditableTableMixin'
   import JDate from '@/components/jeecg/JDate'
   import {httpAction, deleteAction, getAction} from '@/api/manage'
-  import PdChoosePurchaseOrderListModel from "./PdChoosePurchaseOrderListModel";
-  import PdChooseProductListModel from "./PdChooseProductListModel";
   import JDictSelectTagExpand from "@/components/dict/JDictSelectTagExpand"
   import ATextarea from "ant-design-vue/es/input/TextArea";
   import {scanCode} from '@/utils/barcode'
+  import PdStockRecordInExaminePrintModal from './PdStockRecordInExaminePrintModal'
 
   const VALIDATE_NO_PASSED = Symbol()
   export { FormTypes, VALIDATE_NO_PASSED }
@@ -216,7 +219,8 @@
     components: {
       ATextarea,
       JDate,
-      JDictSelectTagExpand
+      JDictSelectTagExpand,
+      PdStockRecordInExaminePrintModal
     },
     data() {
       return {
@@ -465,6 +469,46 @@
         fetch(value, data => (this.supplierData = data),this.url.querySupplier);
       },
       //----------------供应商查询end
+      //选择标识符
+      choice() {
+        let record = {};
+        record.recordNo = "RK200316163034979";
+        record.auditDate = "2020-03-16";
+        record.supplierName = "美康生物科技股份有限公司";
+        record.inDepartName = "器械科";
+        record.remarks = "备注";
+        let productArray = new Array();
+        let product = {};
+        product.id = "01";
+        product.productName = "肌酸激酶测定试剂盒";
+        product.registration = "苏宁械备20140009";
+        product.spec = "1L*4瓶/箱";
+        product.version = "1L*4瓶/箱";
+        product.unitName = "箱";
+        product.purchasePrice = "20.00";
+        product.productNum = "110";
+        product.amountMoney = "2200.00";
+        product.batchNo = "8888";
+        product.expDate = "2020-08-08";
+
+        let product1 = {};
+        product1.id = "02";
+        product1.productName = "注射器";
+        product1.registration = "苏宁械备20140009";
+        product1.spec = "1L*4瓶/箱";
+        product1.version = "1L*4瓶/箱";
+        product1.unitName = "箱";
+        product1.purchasePrice = "20.00";
+        product1.productNum = "110";
+        product1.amountMoney = "2200.00";
+        product1.batchNo = "8888";
+        product1.expDate = "2020-08-08";
+        productArray.push(product);
+        productArray.push(product1);
+        record.productArray = productArray;
+        this.$refs.pdStockRecordInExaminePrintModal.show(record);
+        this.$refs.pdStockRecordInExaminePrintModal.title = "入库单";
+      },
     },
   }
 
