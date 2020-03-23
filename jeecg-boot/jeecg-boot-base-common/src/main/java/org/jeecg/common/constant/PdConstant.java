@@ -98,6 +98,9 @@ public interface PdConstant {
 	public final static String PURCHASE_SUBMIT_MSG = "purchase_submitMsg";		//采购提交提醒
 	public final static String APPLY_SUBMIT_MSG = "apply_submitMsg";		    //领用提交审核提醒
 	public final static String ALLOCATION_MSG = "allocation_msg";		    //调拨提交审核提醒
+	public final static String STOCK_RECORD_IN_SUBMIT_MSG = "stock_record_in_submit_msg"; // 入库单审核提醒
+	public final static String STOCK_RECORD_OUT_SUBMIT_MSG = "stock_record_out_submit_msg"; // 出库单审核提醒
+
 
 	//扫码近效期提醒时间
 	public final static int REMINDER_TIME = 90;

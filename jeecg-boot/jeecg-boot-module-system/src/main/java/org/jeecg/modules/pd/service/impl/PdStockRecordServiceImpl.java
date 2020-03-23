@@ -162,6 +162,7 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
     }
 
     private void saveOutStockRecord(PdStockRecord pdStockRecord, List<PdStockRecordDetail> pdStockRecordDetailList) {
+        pdStockRecordMapper.insert(pdStockRecord);
 
         if (CollectionUtils.isNotEmpty(pdStockRecordDetailList)) {
             for (PdStockRecordDetail entity : pdStockRecordDetailList) {
@@ -171,7 +172,6 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
                 pdStockRecordDetailMapper.insert(entity);
             }
         }
-        pdStockRecordMapper.insert(pdStockRecord);
     }
 
     @Override

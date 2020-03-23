@@ -4,17 +4,21 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.PdConstant;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.oConvertUtils;
+import org.jeecg.modules.message.util.PushMsgUtil;
 import org.jeecg.modules.pd.entity.PdStockRecord;
 import org.jeecg.modules.pd.entity.PdStockRecordDetail;
 import org.jeecg.modules.pd.service.*;
+import org.jeecg.modules.system.entity.SysPermission;
 import org.jeecg.modules.system.service.ISysDepartService;
 import org.jeecg.modules.system.service.ISysDictService;
+import org.jeecg.modules.system.service.ISysPermissionService;
 import org.jeecgframework.poi.excel.ExcelImportUtil;
 import org.jeecgframework.poi.excel.def.NormalExcelConstants;
 import org.jeecgframework.poi.excel.entity.ExportParams;
@@ -30,10 +34,7 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -60,6 +61,12 @@ public class PdStockRecordInController {
     private IPdSupplierService pdSupplierService;
     @Autowired
     private IPdPurchaseDetailService pdPurchaseDetailService;
+    @Autowired
+    private IPdDepartService pdDepartService;
+    @Autowired
+    private ISysPermissionService sysPermissionService;
+    @Autowired
+    private PushMsgUtil pushMsgUtil;
 
 
     /**
@@ -148,6 +155,8 @@ public class PdStockRecordInController {
             }
         }
         pdStockRecordService.submit(pdStockRecord, pdStockRecord.getPdStockRecordDetailList(), PdConstant.RECODE_TYPE_1);
+        //消息推送
+        this.sendMsg(pdStockRecord);
         return Result.ok("提交成功！");
     }
 
@@ -418,5 +427,40 @@ public class PdStockRecordInController {
         Page<PdStockRecord> page = new Page<PdStockRecord>(pageNo, pageSize);
         page = pdStockRecordService.selectTransferList(page, stockRecord);
         return Result.ok(page);
+    }
+
+    /**
+     * 消息推送
+     * @param purchaseOrderPage
+     * @return
+     */
+    public boolean sendMsg(PdStockRecord stockRecord) {
+        Map<String, Object> map = new HashMap<>();
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        List<String> userIdList =pdDepartService.findMenuUser(sysUser.getCurrentDepartId(),PdConstant.AUDIT_MENU_1);
+
+        String url = "";
+        QueryWrapper<SysPermission> queryWrapper = new QueryWrapper<SysPermission>();
+        queryWrapper.eq("name",PdConstant.AUDIT_MENU_1);
+        List<SysPermission> permissionList = sysPermissionService.list(queryWrapper);
+        if(CollectionUtils.isNotEmpty(permissionList)){
+            url = permissionList.get(0).getUrl();
+        }
+
+        if (CollectionUtils.isNotEmpty(userIdList)) {
+            String userIds = String.join(",", userIdList);
+            Map<String, String> strMap = new HashMap<>();
+            //模板注入参数
+            strMap.put("userName", sysUser.getRealname());
+            strMap.put("recordNo", stockRecord.getRecordNo());
+            strMap.put("url", url);
+            map.put("map", strMap);
+            //需要发送消息的用户id
+            map.put("userIds", userIds + ",");
+            //短信模板标识
+            map.put("templateCode", PdConstant.STOCK_RECORD_IN_SUBMIT_MSG);
+            return pushMsgUtil.newSendMessage(map);
+        }
+        return false;
     }
 }
