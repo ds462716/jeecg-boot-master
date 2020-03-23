@@ -1,13 +1,13 @@
 <template>
-  <j-modal
-    :visible="visible"
-    :width="popModal.width"
-    :title="popModal.title"
-    :lockScroll="popModal.lockScroll"
-    :fullscreen="popModal.fullscreen"
-    :switchFullscreen="popModal.switchFullscreen"
-    @cancel="handleCancel"
-  >
+    <j-modal
+      :visible="visible"
+      :width="popModal.width"
+      :title="popModal.title"
+      :lockScroll="popModal.lockScroll"
+      :fullscreen="popModal.fullscreen"
+      :switchFullscreen="popModal.switchFullscreen"
+      @cancel="handleCancel"
+    >
     <a-spin :spinning="confirmLoading">
       <!-- 查询区域 -->
       <div class="table-page-search-wrapper">
@@ -304,7 +304,6 @@
           this.loading = false;
         })
       },
-
       /**
        * 点击行选中checkbox
        * @param record
@@ -326,14 +325,13 @@
               if(lie && cellIndex){
                 if(parseInt(lie)-parseInt(cellIndex) > 0){
                   //操作那一行
-                  let productId = record.productId;
-                  let index = this.selectedRowKeys.indexOf(productId);
-                  // this.onSelectChange();
+                  let recordId = record.productId;
+                  let index = this.selectedRowKeys.indexOf(recordId);
                   if(index>=0){
                     this.selectedRowKeys.splice(index, 1);
                     this.selectionRows.splice(index, 1);
                   }else{
-                    this.selectedRowKeys.push(productId);
+                    this.selectedRowKeys.push(recordId);
                     this.selectionRows.push(record);
                   }
                 }

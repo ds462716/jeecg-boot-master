@@ -1,25 +1,26 @@
 <template>
-  <a-modal
-    :title="title"
-    :width="width"
+  <j-modal
     :visible="visible"
-    :confirmLoading="confirmLoading"
-    @ok="handleOk"
+    :width="popModal.width"
+    :title="popModal.title"
+    :lockScroll="popModal.lockScroll"
+    :fullscreen="popModal.fullscreen"
+    :switchFullscreen="popModal.switchFullscreen"
     @cancel="handleCancel"
-    cancelText="关闭">
+  >
     <a-spin :spinning="confirmLoading">
       <!-- 查询区域 -->
       <div class="table-page-search-wrapper">
         <a-form layout="inline" @keyup.enter.native="searchQuery">
           <a-row :gutter="24">
             <a-col :md="6" :sm="8">
-              <a-form-item label="产品编号">
-                <a-input placeholder="请输入产品编号" v-model="queryParam.number"></a-input>
+              <a-form-item label="产品名称">
+                <a-input placeholder="请输入产品名称" v-model="queryParam.productName"></a-input>
               </a-form-item>
             </a-col>
             <a-col :md="6" :sm="8">
-              <a-form-item label="产品名称">
-                <a-input placeholder="请输入产品名称" v-model="queryParam.productName"></a-input>
+              <a-form-item label="产品编号">
+                <a-input placeholder="请输入产品编号" v-model="queryParam.number"></a-input>
               </a-form-item>
             </a-col>
             <a-col :md="6" :sm="8">
@@ -29,9 +30,24 @@
             </a-col>
             <template v-if="toggleSearchStatus">
               <a-col :md="6" :sm="8">
+                <a-form-item label="规格">
+                  <a-input placeholder="请输入规格" v-model="queryParam.spec"></a-input>
+                </a-form-item>
+              </a-col>
+              <a-col :md="6" :sm="8">
                 <a-form-item label="有效期">
                   <!--<a-input placeholder="请输入有效期" v-model="queryParam.expDate"></a-input>-->
                   <a-range-picker @change="expDateChange" v-model="queryParam.queryDate"/>
+                </a-form-item>
+              </a-col>
+              <a-col :md="6" :sm="8">
+                <a-form-item label="注册证">
+                  <a-input placeholder="请输入注册证" v-model="queryParam.registration"></a-input>
+                </a-form-item>
+              </a-col>
+              <a-col :md="6" :sm="8">
+                <a-form-item label="收费代码">
+                  <a-input placeholder="请输入收费代码" v-model="queryParam.chargeCode"></a-input>
                 </a-form-item>
               </a-col>
               <a-col :md="6" :sm="8">
@@ -52,6 +68,26 @@
                     v-model="queryParam.supplierId"
                   >
                     <a-select-option v-for="d in supplierData" :key="d.value">{{d.text}}</a-select-option>
+                  </a-select>
+                </a-form-item>
+              </a-col>
+              <a-col :md="6" :sm="8">
+                <a-form-item label="生产厂家">
+                  <a-select
+                    showSearch
+                    :venderId="venderValue"
+                    placeholder="请选择生产厂家"
+                    :defaultActiveFirstOption="false"
+                    :allowClear="true"
+                    :showArrow="true"
+                    :filterOption="false"
+                    @search="venderHandleSearch"
+                    @change="venderHandleChange"
+                    @focus="venderHandleSearch"
+                    :notFoundContent="notFoundContent"
+                    v-model="queryParam.venderId"
+                  >
+                    <a-select-option v-for="d in venderData" :key="d.value">{{d.text}}</a-select-option>
                   </a-select>
                 </a-form-item>
               </a-col>
@@ -80,11 +116,18 @@
         :dataSource="dataSource"
         :pagination="ipagination"
         :loading="loading"
-        :rowSelection="{fixed:true,selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
+        :customRow="onClickRow"
+        :rowSelection="{fixed:false,selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
         @change="handleTableChange">
       </a-table>
     </a-spin>
-  </a-modal>
+
+    <template slot="footer">
+      <a-button @click="handleCancel" style="margin-right: 15px;">取  消</a-button>
+      <a-button @click="handleOk" type="primary" style="margin-right: 15px;">确定</a-button>
+    </template>
+
+  </j-modal>
 </template>
 
 <script>
@@ -116,6 +159,8 @@
         notFoundContent:"未找到内容",
         supplierData: [],
 
+        venderData: [],
+        venderValue: undefined,
         applyNo:"",
         allocationNo:"",
         supplierId:"", //供应商ID
@@ -126,25 +171,25 @@
             title: '#',
             dataIndex: 'productId',
             key:'rowIndex',
-            width:50,
+            width:60,
             align:"center",
             customRender:function (t,r,index) {
               return parseInt(index)+1;
             }
           },
-          { title:'产品编号', align:"center", width:180, dataIndex: 'number' },
-          { title:'产品名称', align:"center", width:200,dataIndex: 'productName' },
-          { title:'规格', align:"center", width:150,dataIndex: 'spec' },
-          // { title:'型号', align:"center", width:150,dataIndex: 'version' },
-          { title:'批号', align:"center", width:100,dataIndex: 'batchNo' },
-          { title:'单位', align:"center", width:50,dataIndex: 'unitName' },
-          { title:'有效期', align:"center", width:100,dataIndex: 'expDate' },
-          { title:'供应商', align:"center", width:150,dataIndex: 'supplierName' },
-          { title: '生产厂家', align:"center", width:150,dataIndex: 'venderName' },
-          { title: '库存数量', align:"center", width:80,dataIndex: 'stockNum' },
-          { title: '进价', align:"center",width:80, dataIndex: 'purchasePrice' },
-          { title: '出价', align:"center",width:80, dataIndex: 'sellingPrice' },
-          { title: '货位', align:"center", width:80,dataIndex: 'huoweiName' },
+          { title:'产品编号', align:"center", dataIndex: 'number' },
+          { title:'产品名称', align:"center", dataIndex: 'productName' },
+          { title:'规格', align:"center", dataIndex: 'spec' },
+          { title:'型号', align:"center", dataIndex: 'version' },
+          { title:'批号', align:"center", dataIndex: 'batchNo' },
+          { title:'单位', align:"center", dataIndex: 'unitName' },
+          { title:'有效期', align:"center", dataIndex: 'expDate' },
+          { title:'供应商', align:"center", dataIndex: 'supplierName' },
+          { title: '生产厂家', align:"center", dataIndex: 'venderName' },
+          { title: '库存数量', align:"center", dataIndex: 'stockNum' },
+          { title: '进价', align:"center",dataIndex: 'purchasePrice' },
+          { title: '出价', align:"center",dataIndex: 'sellingPrice' },
+          { title: '货位', align:"center", dataIndex: 'huoweiName' },
           {
             title: '货位编号',
             align:"center",
@@ -185,7 +230,18 @@
         url: {
           list: "/pd/pdProductStockTotal/chooseProductStockList",
           querySupplier:"/pd/pdSupplier/getSupplierList",
-        }
+          queryVender:"/pd/pdVender/getVenderList",
+        },
+        popModal: {
+          title: '选择库存产品',
+          visible: false,
+          width: '100%',
+          // width: '1200',
+          style: { top: '20px' },
+          switchFullscreen: true,  //缩放按钮
+          lockScroll: false,
+          fullscreen: true,
+        },
       }
     },
     methods: {
@@ -261,16 +317,62 @@
         })
       },
 
+      /**
+       * 点击行选中checkbox
+       * @param record
+       * @returns {{on: {click: on.click}}}
+       */
+      onClickRow(record) {
+        return {
+          on: {
+            click: (e) => {
+              //点击操作那一行不选中表格的checkbox
+              let pathArray = e.path;
+              //获取当前点击的是第几列
+              let td = pathArray[0];
+              let cellIndex = td.cellIndex;
+              //获取tr
+              let tr = pathArray[1];
+              //获取一共多少列
+              let lie = tr.childElementCount;
+              if(lie && cellIndex){
+                if(parseInt(lie)-parseInt(cellIndex) > 0){
+                  //操作那一行
+                  let recordId = record.id;
+                  let index = this.selectedRowKeys.indexOf(recordId);
+                  if(index>=0){
+                    this.selectedRowKeys.splice(index, 1);
+                    this.selectionRows.splice(index, 1);
+                  }else{
+                    this.selectedRowKeys.push(recordId);
+                    this.selectionRows.push(record);
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
       //供应商查询start
       supplierHandleSearch(value) {
-        this.getSupplierList(value);
+        this.getList(value,this.url.querySupplier,"1");
       },
       supplierHandleChange(value) {
         this.supplierValue = value;
-        this.getSupplierList(value);
+        this.getList(value,this.url.querySupplier,"1");
       },
-      getSupplierList(value){
-        getAction(this.url.querySupplier,{name:value}).then((res)=>{
+      //供应商查询end
+      //生产厂家查询start
+      venderHandleSearch(value) {
+        this.getList(value,this.url.queryVender,"2");
+      },
+      venderHandleChange(value) {
+        this.venderValue = value;
+        this.getList(value,this.url.queryVender,"2");
+      },
+      //生产厂家查询end
+      getList(value,url,flag){
+        getAction(url,{name:value}).then((res)=>{
           if (!res.success) {
             this.cmsFailed(res.message);
           }
@@ -282,10 +384,13 @@
               text: r.name,
             });
           });
-          this.supplierData = data;
+          if(flag == "1"){
+            this.supplierData = data;
+          }else if(flag == "2"){
+            this.venderData = data;
+          }
         })
       },
-      //供应商查询end
 
       expDateChange: function (value, dateString) {
         this.queryParam.queryDateStart=dateString[0];

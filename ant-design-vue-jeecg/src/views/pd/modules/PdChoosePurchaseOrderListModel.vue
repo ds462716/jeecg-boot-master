@@ -1,12 +1,13 @@
 <template>
-  <a-modal
-    :title="title"
-    :width="width"
+  <j-modal
     :visible="visible"
-    :confirmLoading="confirmLoading"
-    @ok="handleOk"
+    :width="popModal.width"
+    :title="popModal.title"
+    :lockScroll="popModal.lockScroll"
+    :fullscreen="popModal.fullscreen"
+    :switchFullscreen="popModal.switchFullscreen"
     @cancel="handleCancel"
-    cancelText="关闭">
+  >
     <a-spin :spinning="confirmLoading">
       <!-- 查询区域 -->
       <div class="table-page-search-wrapper">
@@ -76,9 +77,9 @@
         :dataSource="dataSource"
         :pagination="ipagination"
         :loading="loading"
-        :scroll="tableScroll1"
         :expandedRowKeys= "expandedRowKeys"
-        :rowSelection="{type:'radio',selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
+        :customRow="onClickRow"
+        :rowSelection="{fixed:false,type:'radio',selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
         @expand="handleExpand"
         @change="handleTableChange">
 
@@ -92,12 +93,17 @@
           rowKey="id"
           :pagination="false"
           :loading="subloading"
-          :scroll="tableScroll"
         >
         </a-table>
       </a-table>
     </a-spin>
-  </a-modal>
+
+    <template slot="footer">
+      <a-button @click="handleCancel" style="margin-right: 15px;">取  消</a-button>
+      <a-button @click="handleOk" type="primary" style="margin-right: 15px;">确定</a-button>
+    </template>
+
+  </j-modal>
 </template>
 
 <script>
@@ -194,51 +200,61 @@
           {
             title:'产品名称',
             align:"center",
+            width: 180,
             dataIndex: 'productName'
           },
           {
             title:'规格',
             align:"center",
+            width: 180,
             dataIndex: 'spec'
           },
           {
             title:'型号',
             align:"center",
+            width: 180,
             dataIndex: 'version'
           },
           {
             title:'申购数量',
             align:"center",
+            width: 75,
             dataIndex: 'orderNum'
           },
           {
             title:'到货数量',
             align:"center",
+            width: 75,
             dataIndex: 'arrivalNum'
           },
           {
             title:'申购单价',
             align:"center",
+            width: 75,
             dataIndex: 'purchasePrice'
           },
           {
             title:'价格',
             align:"center",
+            width: 70,
             dataIndex: 'price'
           },
           {
             title:'单位',
             align:"center",
+            width: 70,
             dataIndex: 'unitName'
           },
           {
             title:'供应商',
             align:"center",
+            width: 150,
             dataIndex: 'supplierName'
           },
           {
             title:'厂家',
             align:"center",
+            width: 150,
             dataIndex: 'venderName'
           },
           {
@@ -260,6 +276,16 @@
           // deptName:[],
           orderStatus:[],
           // submitStart:[],
+        },
+        popModal: {
+          title: '选择采购订单',
+          visible: false,
+          width: '100%',
+          // width: '1200',
+          style: { top: '20px' },
+          switchFullscreen: true,  //缩放按钮
+          lockScroll: false,
+          fullscreen: true,
         },
       }
     },
@@ -347,7 +373,44 @@
         delete param.queryDate; //范围参数不传递后台，传后台会报错
         return filterObj(param);
       },
-
+      /**
+       * 点击行选中checkbox
+       * @param record
+       * @returns {{on: {click: on.click}}}
+       */
+      onClickRow(record) {
+        return {
+          on: {
+            click: (e) => {
+              //点击操作那一行不选中表格的checkbox
+              let pathArray = e.path;
+              //获取当前点击的是第几列
+              let td = pathArray[0];
+              let cellIndex = td.cellIndex;
+              //获取tr
+              let tr = pathArray[1];
+              //获取一共多少列
+              let lie = tr.childElementCount;
+              if(lie && cellIndex){
+                if(parseInt(lie)-parseInt(cellIndex) > 0){
+                  //操作那一行
+                  let recordId = record.purchaseId;
+                  let index = this.selectedRowKeys.indexOf(recordId);
+                  this.selectedRowKeys = [];
+                  this.selectionRows = [];
+                  if(index>=0){
+                    this.selectedRowKeys.splice(index, 1);
+                    this.selectionRows.splice(index, 1);
+                  }else{
+                    this.selectedRowKeys.push(recordId);
+                    this.selectionRows.push(record);
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
     }
   }
 

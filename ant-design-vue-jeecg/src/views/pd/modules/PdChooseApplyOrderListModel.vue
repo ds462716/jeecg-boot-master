@@ -1,48 +1,49 @@
 <template>
-  <a-modal
-    :title="title"
-    :width="width"
+  <j-modal
     :visible="visible"
-    :confirmLoading="confirmLoading"
-    @ok="handleOk"
+    :width="popModal.width"
+    :title="popModal.title"
+    :lockScroll="popModal.lockScroll"
+    :fullscreen="popModal.fullscreen"
+    :switchFullscreen="popModal.switchFullscreen"
     @cancel="handleCancel"
-    cancelText="关闭">
+  >
     <a-spin :spinning="confirmLoading">
       <!-- 查询区域 -->
       <div class="table-page-search-wrapper">
         <a-form layout="inline" @keyup.enter.native="searchQuery">
           <a-row :gutter="24">
-            <a-col :md="6" :sm="8">
+            <a-col :md="5" :sm="8">
               <a-form-item label="申领单号">
                 <a-input placeholder="请输入申领单号" v-model="queryParam.applyNo"></a-input>
               </a-form-item>
             </a-col>
-            <a-col :md="6" :sm="8">
+            <a-col :md="5" :sm="8">
               <a-form-item label="申领日期">
                 <a-range-picker @change="orderDateChange" v-model="queryParam.queryDate"/>
               </a-form-item>
             </a-col>
             <template v-if="toggleSearchStatus">
-              <a-col :md="6" :sm="8">
+              <a-col :md="5" :sm="8">
                 <a-form-item label="产品编号">
                   <a-input placeholder="请输入产品编号" v-model="queryParam.number"></a-input>
                 </a-form-item>
               </a-col>
-              <a-col :md="6" :sm="8">
+              <a-col :md="5" :sm="8">
                 <a-form-item label="产品名称">
                   <a-input placeholder="请输入产品名称" v-model="queryParam.productName"></a-input>
                 </a-form-item>
               </a-col>
             </template>
-            <a-col :md="6" :sm="8">
-            <span style="float: right;overflow: hidden;" class="table-page-search-submitButtons">
-              <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
-              <a-button type="primary" @click="searchReset" icon="reload" style="margin-left: 8px">重置</a-button>
-              <a @click="handleToggleSearch" style="margin-left: 8px">
-                {{ toggleSearchStatus ? '收起' : '展开' }}
-                <a-icon :type="toggleSearchStatus ? 'up' : 'down'"/>
-              </a>
-            </span>
+            <a-col :md="4" :sm="8">
+              <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
+                <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
+                <a-button type="primary" @click="searchReset" icon="reload" style="margin-left: 8px">重置</a-button>
+                <a @click="handleToggleSearch" style="margin-left: 8px">
+                  {{ toggleSearchStatus ? '收起' : '展开' }}
+                  <a-icon :type="toggleSearchStatus ? 'up' : 'down'"/>
+                </a>
+              </span>
             </a-col>
 
           </a-row>
@@ -58,7 +59,8 @@
         :pagination="ipagination"
         :loading="loading"
         :expandedRowKeys= "expandedRowKeys"
-        :rowSelection="{type:'radio',selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
+        :customRow="onClickRow"
+        :rowSelection="{fixed:false,type:'radio',selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
         @expand="handleExpand"
         @change="handleTableChange">
 
@@ -76,7 +78,13 @@
         </a-table>
       </a-table>
     </a-spin>
-  </a-modal>
+
+    <template slot="footer">
+      <a-button @click="handleCancel" style="margin-right: 15px;">取  消</a-button>
+      <a-button @click="handleOk" type="primary" style="margin-right: 15px;">确定</a-button>
+    </template>
+
+  </j-modal>
 </template>
 
 <script>
@@ -226,6 +234,16 @@
           list: "/pd/pdApplyOrder/chooseApplyOrderList",
           chooseDetailList:"/pd/pdApplyOrder/queryApplyDetail",
         },
+        popModal: {
+          title: '选择申领单',
+          visible: false,
+          width: '100%',
+          // width: '1200',
+          style: { top: '20px' },
+          switchFullscreen: true,  //缩放按钮
+          lockScroll: false,
+          fullscreen: true,
+        },
         dictOptions:{
           auditStatus:[],
         },
@@ -249,6 +267,7 @@
       close () {
         this.selectedRowKeys = [];
         this.selectionRows = [];
+        this.queryParam = {};
         this.visible = false;
         this.departId = "";
         this.$emit('close');
@@ -324,6 +343,44 @@
         param.departId = this.departId;
         delete param.queryDate; //范围参数不传递后台，传后台会报错
         return filterObj(param);
+      },
+      /**
+       * 点击行选中checkbox
+       * @param record
+       * @returns {{on: {click: on.click}}}
+       */
+      onClickRow(record) {
+        return {
+          on: {
+            click: (e) => {
+              //点击操作那一行不选中表格的checkbox
+              let pathArray = e.path;
+              //获取当前点击的是第几列
+              let td = pathArray[0];
+              let cellIndex = td.cellIndex;
+              //获取tr
+              let tr = pathArray[1];
+              //获取一共多少列
+              let lie = tr.childElementCount;
+              if(lie && cellIndex){
+                if(parseInt(lie)-parseInt(cellIndex) > 0){
+                  //操作那一行
+                  let recordId = record.id;
+                  let index = this.selectedRowKeys.indexOf(recordId);
+                  this.selectedRowKeys = [];
+                  this.selectionRows = [];
+                  if(index>=0){
+                    this.selectedRowKeys.splice(index, 1);
+                    this.selectionRows.splice(index, 1);
+                  }else{
+                    this.selectedRowKeys.push(recordId);
+                    this.selectionRows.push(record);
+                  }
+                }
+              }
+            }
+          }
+        }
       },
     }
   }

@@ -142,19 +142,25 @@
 				AND a.depart_id = #{departId}
 			</if>
 			<if test="number != null and number != ''">
-				AND c.number = #{number}
+				AND c.number LIKE concat('%',#{number},'%')
 			</if>
 			<if test="productName != null and productName != ''">
 				AND c.name LIKE concat('%',#{productName},'%')
 			</if>
 			<if test="spec != null and spec != ''">
-				AND c.spec = #{spec}
+				AND c.spec LIKE concat('%',#{spec},'%')
+			</if>
+			<if test="registration != null and registration != ''">
+				AND c.registration LIKE concat('%',#{registration},'%')
+			</if>
+			<if test="chargeCode != null and chargeCode != ''">
+				AND c.charge_code LIKE concat('%',#{chargeCode},'%')
 			</if>
 			<if test="productBarCode != null and productBarCode != ''">
 				AND a.product_bar_code = #{productBarCode}
 			</if>
 			<if test="batchNo != null and batchNo != ''">
-				AND a.batch_no = #{batchNo}
+				AND a.batch_no LIKE concat('%',#{batchNo},'%')
 			</if>
 			<if test="supplierId != null and supplierId != ''">
 				AND a.supplier_id = #{supplierId}

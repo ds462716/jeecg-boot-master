@@ -131,7 +131,7 @@
                 AND d.supplier_id = #{supplierId}
             </if>
             <if test="productNumber != null and productNumber != ''">
-                AND d.number LIKE concat('%',#{number},'%')
+                AND d.number LIKE concat('%',#{productNumber},'%')
             </if>
             <if test="queryDateStart != null and queryDateStart != ''">
                 AND a.purchase_date &gt;= #{queryDateStart}
