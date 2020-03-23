@@ -1,12 +1,22 @@
 <template>
-  <a-modal
-    :title="title"
-    :width="1200"
+  <!--<a-modal-->
+    <!--:title="title"-->
+    <!--:width="1600"-->
+    <!--:visible="visible"-->
+    <!--:maskClosable="false"-->
+    <!--:confirmLoading="confirmLoading"-->
+    <!--@ok="handleOk"-->
+    <!--@cancel="handleCancel">-->
+  <j-modal
     :visible="visible"
+    :width="popModal.width"
     :maskClosable="false"
-    :confirmLoading="confirmLoading"
-    @ok="handleOk"
-    @cancel="handleCancel">
+    :title="popModal.title"
+    :lockScroll="popModal.lockScroll"
+    :fullscreen="popModal.fullscreen"
+    :switchFullscreen="popModal.switchFullscreen"
+    @cancel="handleCancel"
+  >
     <a-spin :spinning="confirmLoading">
       <!-- 主表单区域 -->
       <a-form :form="form">
@@ -75,7 +85,7 @@
             :loading="pdPackageDetailTable.loading"
             :columns="pdPackageDetailTable.columns"
             :dataSource="pdPackageDetailTable.dataSource"
-            :maxHeight="300"
+            :maxHeight="380"
             :rowNumber="true"
             :rowSelection="true"
             :actionButton="false"
@@ -92,9 +102,15 @@
 
     </a-spin>
 
-    <pd-choose-product-list-model  ref="pdChooseProductListModel" @ok="returnData" ></pd-choose-product-list-model>
+    <template slot="footer">
+      <a-popconfirm title="确定放弃编辑？" @confirm="handleCancel" okText="确定" cancelText="取消">
+        <a-button style="margin-right: 15px;">取  消</a-button>
+      </a-popconfirm>
+      <a-button @click="handleOk" type="primary" :loading="confirmLoading" style="margin-right: 15px;">保  存</a-button>
+    </template>
 
-  </a-modal>
+    <pd-choose-product-list-model  ref="pdChooseProductListModel" @ok="returnData" ></pd-choose-product-list-model>
+  </j-modal>
 </template>
 
 <script>
@@ -203,7 +219,17 @@
           pdPackageDetail: {
             list: '/pd/pdPackage/queryPdPackageDetailByMainId'
           },
-        }
+        },
+        popModal: {
+          title: '定数包管理',
+          visible: false,
+          width: '100%',
+          // width: '1200',
+          style: { top: '20px' },
+          switchFullscreen: true,  //缩放按钮
+          lockScroll: false,
+          fullscreen: true,
+        },
       }
     },
     mounted() {

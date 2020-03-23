@@ -421,6 +421,15 @@
             <if test="number != null and number != ''">
                 AND a.number LIKE concat('%',#{number},'%')
             </if>
+            <if test="registration != null and registration != ''">
+                AND a.registration LIKE concat('%',#{registration},'%')
+            </if>
+            <if test="chargeCode != null and chargeCode != ''">
+                AND a.charge_code LIKE concat('%',#{chargeCode},'%')
+            </if>
+            <if test="spec != null and spec != ''">
+                AND a.spec LIKE concat('%',#{spec},'%')
+            </if>
             <if test="supplierId != null and supplierId != ''">
                 AND a.supplier_id = #{supplierId}
             </if>

@@ -1,25 +1,26 @@
 <template>
-  <a-modal
-    :title="title"
-    :width="width"
+  <j-modal
     :visible="visible"
-    :confirmLoading="confirmLoading"
-    @ok="handleOk"
+    :width="popModal.width"
+    :title="popModal.title"
+    :lockScroll="popModal.lockScroll"
+    :fullscreen="popModal.fullscreen"
+    :switchFullscreen="popModal.switchFullscreen"
     @cancel="handleCancel"
-    cancelText="关闭">
+  >
     <a-spin :spinning="confirmLoading">
       <!-- 查询区域 -->
       <div class="table-page-search-wrapper">
         <a-form layout="inline" @keyup.enter.native="searchQuery">
           <a-row :gutter="24">
             <a-col :md="6" :sm="8">
-              <a-form-item label="产品编号">
-                <a-input placeholder="请输入产品编号" v-model="queryParam.number"></a-input>
+              <a-form-item label="产品名称">
+                <a-input placeholder="请输入产品名称" v-model="queryParam.name"></a-input>
               </a-form-item>
             </a-col>
             <a-col :md="6" :sm="8">
-              <a-form-item label="产品名称">
-                <a-input placeholder="请输入产品名称" v-model="queryParam.name"></a-input>
+              <a-form-item label="产品编号">
+                <a-input placeholder="请输入产品编号" v-model="queryParam.number"></a-input>
               </a-form-item>
             </a-col>
             <a-col :md="6" :sm="8">
@@ -28,7 +29,17 @@
               </a-form-item>
             </a-col>
             <template v-if="toggleSearchStatus">
-              <a-col :md="8" :sm="8">
+              <a-col :md="6" :sm="8">
+                <a-form-item label="注册证">
+                  <a-input placeholder="请输入注册证" v-model="queryParam.registration"></a-input>
+                </a-form-item>
+              </a-col>
+              <a-col :md="6" :sm="8">
+                <a-form-item label="收费代码">
+                  <a-input placeholder="请输入收费代码" v-model="queryParam.chargeCode"></a-input>
+                </a-form-item>
+              </a-col>
+              <a-col :md="6" :sm="8">
                 <a-form-item label="供应商">
                   <a-select
                     ref="supplierSelect"
@@ -49,7 +60,7 @@
                   </a-select>
                 </a-form-item>
               </a-col>
-              <a-col :md="8" :sm="8">
+              <a-col :md="6" :sm="8">
                 <a-form-item label="生产厂家">
                   <a-select
                     showSearch
@@ -94,11 +105,16 @@
         :dataSource="dataSource"
         :pagination="ipagination"
         :loading="loading"
-        :rowSelection="{fixed:true,selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
+        :customRow="onClickRow"
+        :rowSelection="{fixed:false,selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
         @change="handleTableChange">
       </a-table>
     </a-spin>
-  </a-modal>
+    <template slot="footer">
+      <a-button @click="handleCancel" style="margin-right: 15px;">取  消</a-button>
+      <a-button @click="handleOk" type="primary" style="margin-right: 15px;">确定</a-button>
+    </template>
+  </j-modal>
 </template>
 
 <script>
@@ -205,7 +221,17 @@
           list: "/pd/pdProduct/chooseProductList",
           querySupplier:"/pd/pdSupplier/getSupplierList",
           queryVender:"/pd/pdVender/getVenderList",
-        }
+        },
+        popModal: {
+          title: '选择产品',
+          visible: false,
+          width: '100%',
+          // width: '1200',
+          style: { top: '20px' },
+          switchFullscreen: true,  //缩放按钮
+          lockScroll: false,
+          fullscreen: true,
+        },
       }
     },
     methods: {
@@ -226,7 +252,6 @@
           this.$nextTick(() => {
             // this.$refs.supplierSelect.disabled="disabled";
             this.supplierHandleSearch(); //初始化供应商
-            this.venderHandleSearch(); //初始化生产厂家
             this.queryParam.supplierId = this.supplierId; //默认选择父页面传来的供应商
             this.supplierSelecDisabled = true;
           })
@@ -280,6 +305,43 @@
         })
       },
 
+      /**
+       * 点击行选中checkbox
+       * @param record
+       * @returns {{on: {click: on.click}}}
+       */
+      onClickRow(record) {
+        return {
+          on: {
+            click: (e) => {
+              //点击操作那一行不选中表格的checkbox
+              let pathArray = e.path;
+              //获取当前点击的是第几列
+              let td = pathArray[0];
+              let cellIndex = td.cellIndex;
+              //获取tr
+              let tr = pathArray[1];
+              //获取一共多少列
+              let lie = tr.childElementCount;
+              if(lie && cellIndex){
+                if(parseInt(lie)-parseInt(cellIndex)!=1){
+                  //操作那一行
+                  let productId = record.productId;
+                  let index = this.selectedRowKeys.indexOf(productId);
+                  // this.onSelectChange();
+                  if(index>=0){
+                    this.selectedRowKeys.splice(index, 1);
+                    this.selectionRows.splice(index, 1);
+                  }else{
+                    this.selectedRowKeys.push(productId);
+                    this.selectionRows.push(record);
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
       //生产厂家查询start
       venderHandleSearch(value) {
         fetch(value, data => (this.venderData = data),this.url.queryVender);
