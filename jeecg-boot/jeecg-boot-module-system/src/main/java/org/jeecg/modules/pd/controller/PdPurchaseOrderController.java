@@ -1,5 +1,6 @@
 package org.jeecg.modules.pd.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
@@ -17,7 +18,9 @@ import org.jeecg.modules.pd.util.UUIDUtil;
 import org.jeecg.modules.pd.vo.PdProductPage;
 import org.jeecg.modules.pd.vo.PdPurchaseOrderPage;
 import org.jeecg.modules.system.entity.SysDepart;
+import org.jeecg.modules.system.entity.SysPermission;
 import org.jeecg.modules.system.service.ISysDepartService;
+import org.jeecg.modules.system.service.ISysPermissionService;
 import org.jeecgframework.poi.excel.ExcelImportUtil;
 import org.jeecgframework.poi.excel.def.NormalExcelConstants;
 import org.jeecgframework.poi.excel.entity.ExportParams;
@@ -56,7 +59,8 @@ public class PdPurchaseOrderController {
 	 private PushMsgUtil pushMsgUtil;
 	 @Autowired
 	 private IPdDepartService pdDepartService;
-
+	 @Autowired
+	 private ISysPermissionService sysPermissionService;
 
 
 	 /**
@@ -327,12 +331,21 @@ public class PdPurchaseOrderController {
 		 Map<String, Object> map = new HashMap<>();
 		 LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
 		 List<String> userIdList =pdDepartService.findMenuUser(sysUser.getCurrentDepartId(),PdConstant.AUDIT_MENU_3);
+
+		 String url = "";
+		 QueryWrapper<SysPermission> queryWrapper = new QueryWrapper<SysPermission>();
+		 queryWrapper.eq("name",PdConstant.AUDIT_MENU_3);
+		 List<SysPermission> permissionList = sysPermissionService.list(queryWrapper);
+		 if(CollectionUtils.isNotEmpty(permissionList)){
+			 url = permissionList.get(0).getUrl();
+		 }
 		 if (CollectionUtils.isNotEmpty(userIdList)) {
 			 String userIds = String.join(",", userIdList);
 			 Map<String, String> strMap = new HashMap<>();
 			 //模板注入参数
 			 strMap.put("userName", sysUser.getRealname());
 			 strMap.put("orderNo", purchaseOrderPage.getOrderNo());
+			 strMap.put("url", url);
 			 map.put("map", strMap);
 			 //需要发送消息的用户id
 			 map.put("userIds", userIds + ",");

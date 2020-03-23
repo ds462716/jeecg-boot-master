@@ -157,7 +157,8 @@ public interface PdConstant {
 	public final static String AUDIT_MENU_4="库存管理";
 	public final static String AUDIT_MENU_5="供应商管理";
 	public final static String AUDIT_MENU_6="生产厂家管理";
-
+	public final static String AUDIT_MENU_7="领用审核";
+	public final static String AUDIT_MENU_8="调拨审核";
 
 
 	//同步状态码
