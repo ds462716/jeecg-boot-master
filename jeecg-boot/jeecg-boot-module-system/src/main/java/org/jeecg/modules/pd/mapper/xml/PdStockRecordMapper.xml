@@ -181,6 +181,9 @@
             <if test="inType != null and inType != ''">
                 AND a.in_type = #{inType}
             </if>
+            <if test="departParentId != null and departParentId != ''">
+                AND a.depart_parent_id = #{departParentId}
+            </if>
             ORDER BY a.update_time DESC, a.submit_date DESC
         </where>
     </select>
