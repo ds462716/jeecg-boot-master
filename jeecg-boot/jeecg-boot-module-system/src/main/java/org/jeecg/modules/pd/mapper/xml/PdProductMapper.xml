@@ -101,6 +101,7 @@
         <result column="update_by" property="updateBy" jdbcType="VARCHAR"/>
         <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
         <result column="remarks" property="remarks" jdbcType="VARCHAR"/>
+        <result column="jde_code" property="jdeCode" jdbcType="VARCHAR"/>
         <result column="validity_flag" property="validityFlag" jdbcType="VARCHAR"/>
         <result column="del_flag" property="delFlag" jdbcType="VARCHAR"/>
         <collection property="pdProductRules" ofType="String">
@@ -211,6 +212,7 @@
         a.update_time,
         a.sys_org_code,
         a.remarks,
+        a.jde_code,
         a.validity_flag,
         a.del_flag
 	</sql>
@@ -250,6 +252,7 @@
         a.update_time,
         a.sys_org_code,
         a.remarks,
+        a.jde_code,
         a.validity_flag,
         a.del_flag
     </sql>
