@@ -58,9 +58,9 @@
           </a-select>
         </a-form-item>
 
-        <a-form-item label="职务" :labelCol="labelCol" :wrapperCol="wrapperCol">
+        <!--<a-form-item label="职务" :labelCol="labelCol" :wrapperCol="wrapperCol">
           <j-select-position placeholder="请选择职务" :multiple="false" v-decorator="['post', {}]"/>
-        </a-form-item>
+        </a-form-item>-->
 
         <a-form-item label="头像" :labelCol="labelCol" :wrapperCol="wrapperCol">
           <j-image-upload :disabled="disableSubmit" class="avatar-uploader" text="上传" v-model="fileList" ></j-image-upload>
