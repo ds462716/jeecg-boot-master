@@ -18,43 +18,66 @@
       </div>
       <!--签字-->
       <a-col :md="24" :sm="24">
-      <div class="sign" style="text-align: left;height: inherit">
+        <div class="sign" style="text-align: left;height: inherit">
 
-        <a-col :span="24">
-          <span>
-            入库单号:
-          </span>
-          <a-input style="width: 30%" v-model="record.recordNo"/>
-          <span style="margin-left: 12.5%">入库日期:</span>
-          <a-input style="width: 30%" v-model="record.auditDate"/>
-        </a-col>
-        <a-col :span="24">
-        </a-col>
-        <a-col :span="24">
-          <span>
-            入库库房:
-          </span>
-          <a-input style="width: 30%" v-model="record.inDepartName"/>
-          <span style="margin-left: 12.5%">
-            供应商 :
-          </span>
-          <a-input style="width: 30%" v-model="record.supplierName"/>
-        </a-col>
-        <a-col :span="24">
-        </a-col>
-        <a-col :span="24" style="margin-top: 20px">
-          <span>产品明细:</span>
-          <a-table
-            ref="table"
-            size="middle"
-            rowKey="id"
-            :pagination="false"
-            :columns="columns"
-            :dataSource="dataSource"
-            >
-          </a-table>
-        </a-col>
-      </div>
+          <a-col :span="24">
+            <span style="margin-left: 3%">
+              入库单号：
+            </span>
+            <a-input style="width: 30%;text-align: left" disabled v-model="record.recordNo"/>
+            <span style="margin-left: 12.5%">
+              入库日期：
+            </span>
+            <a-input style="width: 30%;text-align: left" disabled v-model="record.auditDate"/>
+          </a-col>
+          <a-col :span="24" style="margin-top: 10px">
+            <span style="margin-left: 3%">
+              入库库房：
+            </span>
+            <a-input style="width: 30%;text-align: left" disabled v-model="record.inDepartName"/>
+            <span style="margin-left: 12.5%">
+              供应商：&nbsp;&nbsp;&nbsp;
+            </span>
+            <a-input style="width: 30%;text-align: left" disabled v-model="record.supplierName"/>
+          </a-col>
+          <a-col :span="24" style="margin-top: 10px">
+            <!--<span>入库明细：</span>-->
+            <a-table
+              ref="table"
+              size="small"
+              bordered
+              rowKey="id"
+              :pagination="false"
+              :columns="columns"
+              :dataSource="dataSource"
+              >
+            </a-table>
+          </a-col>
+
+          <a-col :span="24" style="margin-top: 10px;">
+            <span style="margin-left: 70%;font-size: medium;font-weight: bold">
+              合计数量：{{ record.totalSum }}
+            </span>
+            <span style="margin-left: 5%;font-size: medium;font-weight: bold">
+              合计金额：{{ record.totalPrice }}
+            </span>
+          </a-col>
+
+          <a-col :span="24" style="margin-top: 10px">
+            <span style="margin-left: 3%">
+              仓库管理员签字：
+            </span>
+            <a-input style="width: 10%;text-align: left" />
+            <span style="margin-left: 3%">
+              采购人员签字：
+            </span>
+            <a-input style="width: 10%;text-align: left" />
+            <span style="margin-left: 3%">
+              记账人员签字：
+            </span>
+            <a-input style="width: 10%;text-align: left" />
+          </a-col>
+        </div>
       </a-col>
     </section>
     </j-modal>
@@ -78,16 +101,16 @@
         fullscreen: true,
         switchFullscreen: false,
         columns: [
-          { title: '产品名称', dataIndex: 'productName', align:"center", width:"220px" },
-          { title: '注册证', dataIndex: 'registration',align:"center", width:"150px" },
-          { title: '规格', dataIndex: 'spec',align:"center", width:"150px" },
-          { title: '型号', dataIndex: 'version',align:"center", width:"150px" },
-          { title: '单位', dataIndex: 'unitName',align:"center", width:"50px" },
-          { title: '单价', dataIndex: 'purchasePrice',align:"center", width:"120px" },
-          { title: '数量', dataIndex: 'productNum',align:"center", width:"80px" },
-          { title: '金额', dataIndex: 'amountMoney',align:"center", width:"90px" },
-          {title: '批号', dataIndex: 'batchNo',align:"center", width:"120px"},
-          {title: '有效期', dataIndex: 'expDate',align:"center", width:"130px", },
+          { title: '产品名称', dataIndex: 'productName', align:"center", width:"19%" },
+          { title: '注册证号', dataIndex: 'registration',align:"center", width:"15%" },
+          { title: '规格', dataIndex: 'spec',align:"center", width:"12%" },
+          { title: '型号', dataIndex: 'version',align:"center", width:"12%" },
+          // { title: '单位', dataIndex: 'unitName',align:"center", width:"50px" },
+          { title: '入库单价', dataIndex: 'purchasePrice',align:"center", width:"10%" },
+          { title: '数量', dataIndex: 'productNum',align:"center", width:"5%" },
+          { title: '金额', dataIndex: 'inTotalPrice',align:"center", width:"8%" },
+          {title: '批号', dataIndex: 'batchNo',align:"center", width:"10%"},
+          {title: '有效期', dataIndex: 'expDate',align:"center", width:"9%", },
         ],
         dataSource: [],
         labelCol: {
@@ -100,7 +123,7 @@
         },
         title:"操作",
         visible: false,
-        record:'',
+        record:{},
       }
     },
     created() {
@@ -118,9 +141,8 @@
       show(record){
         this.visible = true;
         this.record = record;
-        this.dataSource = record.productArray;
+        this.dataSource = record.pdStockRecordDetailList;
         console.log(this.dataSource)
-
       },
     }
   }

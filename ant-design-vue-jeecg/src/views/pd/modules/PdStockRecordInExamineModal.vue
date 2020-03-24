@@ -168,6 +168,7 @@
 
     <template slot="footer">
       <a-button @click="closeBtn" style="margin-right: 15px;" v-show="disableSubmit">关  闭</a-button>
+      <a-button @click="printBtn" style="margin-right: 15px;" type="primary" v-show="disableSubmit">打  印</a-button>
       <a-popconfirm title="确定放弃编辑？" @confirm="handleCancel" v-show="!disableSubmit" okText="确定" cancelText="取消">
         <a-button style="margin-right: 15px;">取  消</a-button>
       </a-popconfirm>
@@ -409,6 +410,14 @@
           this.loading = false;
         })
       },
+      /**打印按钮**/
+      printBtn(){
+        this.model.totalSum = this.totalSum;
+        this.model.totalPrice = this.totalPrice;
+        this.model.pdStockRecordDetailList = this.pdStockRecordDetailTable.dataSource;
+        this.$refs.pdStockRecordInPrintModal.show(this.model);
+        this.$refs.pdStockRecordInPrintModal.title = "入库单";
+      },
       /** 关闭按钮 **/
       closeBtn(){
         this.close();
@@ -478,40 +487,6 @@
       //选择标识符
       choice() {
         let record = {};
-        record.recordNo = "RK200316163034979";
-        record.auditDate = "2020-03-16";
-        record.supplierName = "美康生物科技股份有限公司";
-        record.inDepartName = "器械科";
-        record.remarks = "备注";
-        let productArray = new Array();
-        let product = {};
-        product.id = "01";
-        product.productName = "肌酸激酶测定试剂盒";
-        product.registration = "苏宁械备20140009";
-        product.spec = "1L*4瓶/箱";
-        product.version = "1L*4瓶/箱";
-        product.unitName = "箱";
-        product.purchasePrice = "20.00";
-        product.productNum = "110";
-        product.amountMoney = "2200.00";
-        product.batchNo = "8888";
-        product.expDate = "2020-08-08";
-
-        let product1 = {};
-        product1.id = "02";
-        product1.productName = "注射器";
-        product1.registration = "苏宁械备20140009";
-        product1.spec = "1L*4瓶/箱";
-        product1.version = "1L*4瓶/箱";
-        product1.unitName = "箱";
-        product1.purchasePrice = "20.00";
-        product1.productNum = "110";
-        product1.amountMoney = "2200.00";
-        product1.batchNo = "8888";
-        product1.expDate = "2020-08-08";
-        productArray.push(product);
-        productArray.push(product1);
-        record.productArray = productArray;
         this.$refs.pdStockRecordInPrintModal.show(record);
         this.$refs.pdStockRecordInPrintModal.title = "入库单";
       },
