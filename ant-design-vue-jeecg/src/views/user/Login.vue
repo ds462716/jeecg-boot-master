@@ -1,13 +1,16 @@
 <template>
   <div class="main">
     <a-form :form="form" class="user-layout-login" ref="formLogin" id="formLogin">
-      <a-tabs
+      <!--<a-tabs
         :activeKey="customActiveKey"
         :tabBarStyle="{ textAlign: 'center', borderBottom: 'unset' }"
-        @change="handleTabClick">
-        <a-tab-pane key="tab1" tab="账号密码登陆">
+        @change="handleTabClick">-->
+        <!--<a-tab-pane key="tab1" tab="账号密码登陆">-->
+      <a-card title="">
+        <span class="title">SPD院内医疗耗材信息管理系统</span>
           <a-form-item>
             <a-input
+              :style="{ marginTop: '24px' }"
               size="large"
               v-decorator="['username',{initialValue:'admin', rules: validatorRules.username.rules}]"
               type="text"
@@ -46,9 +49,9 @@
             </a-col>
           </a-row>
 
-
-        </a-tab-pane>
-        <a-tab-pane key="tab2" tab="手机号登陆">
+      </a-card>
+        <!--</a-tab-pane>-->
+        <!--<a-tab-pane key="tab2" tab="手机号登陆">
           <a-form-item>
             <a-input
               v-decorator="['mobile',validatorRules.mobile]"
@@ -80,17 +83,17 @@
                 v-text="!state.smsSendBtn && '获取验证码' || (state.time+' s')"></a-button>
             </a-col>
           </a-row>
-        </a-tab-pane>
-      </a-tabs>
+        </a-tab-pane>-->
+     <!-- </a-tabs>-->
 
       <a-form-item>
         <a-checkbox v-decorator="['rememberMe', {initialValue: true, valuePropName: 'checked'}]" >自动登陆</a-checkbox>
-        <router-link :to="{ name: 'alteration'}" class="forge-password" style="float: right;">
+        <!--<router-link :to="{ name: 'alteration'}" class="forge-password" style="float: right;">
           忘记密码
         </router-link>
        <router-link :to="{ name: 'register'}" class="forge-password" style="float: right;margin-right: 10px" >
           注册账户
-        </router-link>
+        </router-link>-->
       </a-form-item>
 
       <a-form-item style="margin-top:24px">
@@ -534,5 +537,14 @@
 <style>
   .valid-error .ant-select-selection__placeholder{
     color: #f5222d;
+  }
+  .title {
+    font-size: 14px;
+    color: rgba(0, 0, 0, .85);
+    font-family: "Chinese Quote", -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Helvetica Neue", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+    /*font-weight: 600;*/
+    position: relative;
+    top: 2px;
+    margin-left: 50px;
   }
 </style>

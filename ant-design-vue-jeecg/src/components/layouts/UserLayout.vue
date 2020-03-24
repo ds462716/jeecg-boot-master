@@ -3,10 +3,10 @@
     <div class="container">
       <div class="top">
         <div class="header">
-          <a href="/">
-             <img src="~@/assets/gyqx-logo.png" class="logo" alt="logo">
+          <!--<a href="/">
+            <img src="~@/assets/gyqx-logo.png" class="logo" alt="logo">
             <span class="title">SPD院内医疗耗材信息管理系统</span>
-          </a>
+          </a>-->
         </div>
         <div class="desc">
 
@@ -65,9 +65,9 @@
     .container {
       width: 100%;
       min-height: 100%;
-      background: #f0f2f5 url(~@/assets/background.svg) no-repeat 50%;
+      background: #f0f2f5 url(~@/assets/bjt.jpg) no-repeat 50%;
       background-size: 100%;
-      padding: 110px 0 144px;
+      padding: -110px 0 144px;
       position: relative;
 
       a {
@@ -78,7 +78,7 @@
         text-align: center;
 
         .header {
-          height: 44px;
+          height: 244px;
           line-height: 44px;
 
           .badge {
