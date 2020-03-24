@@ -153,7 +153,7 @@ public class PdPurchaseOrderController {
 		 if (pdPurchaseOrderPage.getSubmitStatus().equals(PdConstant.SUBMIT_STATE_2)) {//如果是已提交
 			 this.sendMsg(pdPurchaseOrderPage);//消息推送
 		 }
-		 return Result.ok("添加成功！");
+		 return Result.ok("操作成功！");
 	 }
 
 	 /**
@@ -177,12 +177,14 @@ public class PdPurchaseOrderController {
 				pdPurchaseOrder.setAuditBy(sysUser.getId());
 				pdPurchaseOrder.setAuditDate(new Date());
 			}
-			pdPurchaseOrderService.updateMain(pdPurchaseOrder, pdPurchaseOrderPage.getPdPurchaseDetailList());
-			if (PdConstant.AUDIT_STATE_1.equals(orderStatus) && pdPurchaseOrderPage.getSubmitStatus().equals(PdConstant.SUBMIT_STATE_2)) {//如果是已提交
-				this.sendMsg(pdPurchaseOrderPage);//消息推送
-			}
 		}
-		 return Result.ok("编辑成功!");
+			pdPurchaseOrderService.updateMain(pdPurchaseOrder, pdPurchaseOrderPage.getPdPurchaseDetailList());
+		 if(StringUtils.isNotEmpty(orderStatus)) {
+			 if (PdConstant.AUDIT_STATE_1.equals(orderStatus) && pdPurchaseOrderPage.getSubmitStatus().equals(PdConstant.SUBMIT_STATE_2)) {//如果是已提交
+				 this.sendMsg(pdPurchaseOrderPage);//消息推送
+			 }
+		 }
+		 return Result.ok("操作成功!");
 	 }
 
 	 /**

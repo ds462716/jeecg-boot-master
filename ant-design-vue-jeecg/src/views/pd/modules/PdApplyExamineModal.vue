@@ -73,8 +73,8 @@
         <a-form :form="form">
           <a-row>
             <a-col :span="12">
-              <a-form-item label="审核意见" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                <a-input :disabled="disableSubmit" v-decorator="[ 'refuseReason', validatorRules.refuseReason]" placeholder="请输入审核意见" style="width: 100%;height: 80px"/>
+              <a-form-item label="审核意见" :labelCol="labelCol" :wrapperCol="wrapperCol" style="text-align: left">
+                <a-textarea :disabled="disableSubmit" v-decorator="[ 'refuseReason', validatorRules.refuseReason]" placeholder="请输入审核意见"></a-textarea>
               </a-form-item>
             </a-col>
           </a-row>
@@ -195,9 +195,10 @@
       },
       handleOk (type) { //审核提交
         this.model.auditStatus='2';//审核通过
+        this.model.submitStatus='2';//已提交
         if(type=="no"){
           this.model.auditStatus='3';//拒绝
-          this.model.submitStatus='3';//已撤回
+          this.model.submitStatus='1';//待提交
         }
         this.form.validateFields((err, values) => {
           if(type=="no"){

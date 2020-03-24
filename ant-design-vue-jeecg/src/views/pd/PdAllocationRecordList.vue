@@ -28,7 +28,7 @@
                 <a-select v-model="queryParam.auditStatus" placeholder="请选择审核状态">
                   <a-select-option value="1">待审核</a-select-option>
                   <a-select-option value="2">审核通过</a-select-option>
-                  <a-select-option value="3">审核不通过</a-select-option>
+                  <a-select-option value="3">已驳回</a-select-option>
                 </a-select>
               </a-form-item>
             </a-col>
@@ -81,7 +81,7 @@
         :rowSelection="{fixed:false,selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
         @change="handleTableChange">
         <span slot="action" slot-scope="text, record">
-          <a @click="handleEdit(record)" v-bind:disabled="record.submitStatus=='2'">编辑</a>
+          <a @click="handleEdit(record)" v-bind:disabled="record.submitStatus=='2'">修改</a>
 
           <a-divider type="vertical" />
           <a-dropdown>

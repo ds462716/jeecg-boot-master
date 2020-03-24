@@ -102,9 +102,10 @@ public class PdApplyOrderController {
 									HttpServletRequest req) {
 		 Page<PdApplyOrder> page = new Page<PdApplyOrder>(pageNo, pageSize);
 		 List<String> list=new ArrayList<>();
-		 list.add(PdConstant.SUBMIT_STATE_2);//已提交
-		 list.add(PdConstant.SUBMIT_STATE_3);//已撤回
-		 pdApplyOrderPage.setSubmitStatusList(list);
+		 list.add(PdConstant.AUDIT_STATE_1);//待审核
+		 list.add(PdConstant.AUDIT_STATE_2);//审核通过
+		 list.add(PdConstant.AUDIT_STATE_3);//已驳回
+		 pdApplyOrderPage.setAuditStatusList(list);
 		 LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
 		 SysDepart sysDepart=sysDepartService.queryDepartByOrgCode(sysUser.getOrgCode());
 		 pdApplyOrderPage.setOutDepartId(sysDepart.getId());
@@ -134,7 +135,7 @@ public class PdApplyOrderController {
 		 pdApplyOrder.setDepartId(sysDepart.getId());
 		 pdApplyOrder.setDeptName(sysDepart.getDepartName());
 		 pdApplyOrder.setSubmitStatus(PdConstant.SUBMIT_STATE_1);
-		 pdApplyOrder.setAuditStatus(PdConstant.AUDIT_STATE_1);
+		 //pdApplyOrder.setAuditStatus(PdConstant.AUDIT_STATE_1);
 		 result.setResult(pdApplyOrder);
 		 result.setSuccess(true);
 		 return result;
@@ -150,12 +151,12 @@ public class PdApplyOrderController {
 	public Result<?> add(@RequestBody PdApplyOrderPage pdApplyOrderPage) {
 		PdApplyOrder pdApplyOrder = new PdApplyOrder();
 		BeanUtils.copyProperties(pdApplyOrderPage, pdApplyOrder);
-		pdApplyOrder.setAuditStatus(PdConstant.AUDIT_STATE_1);//审核状态  1：待审核
+		//pdApplyOrder.setAuditStatus(PdConstant.AUDIT_STATE_1);//审核状态  1：待审核
 		pdApplyOrderService.saveMain(pdApplyOrder, pdApplyOrderPage.getPdApplyDetailList());
 		if (pdApplyOrderPage.getSubmitStatus().equals(PdConstant.SUBMIT_STATE_2)) {//如果是已提交
 			this.sendMsg(pdApplyOrderPage);//消息推送
 		}
-		return Result.ok("添加成功！");
+		return Result.ok("操作成功！");
 	}
 
 	/**
@@ -173,31 +174,35 @@ public class PdApplyOrderController {
 			return Result.error("未找到对应数据");
 		}
 		String applyStatus=pdApplyOrder.getAuditStatus();//审核状态
-		if((PdConstant.AUDIT_STATE_2).equals(applyStatus) || (PdConstant.AUDIT_STATE_3).equals(applyStatus)){
-			LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
-			//判断申领数量不能大于出库科室的当前库存数量；
-			Integer code=200;
-			Result result=null;
-			if((PdConstant.AUDIT_STATE_2).equals(applyStatus)) { //如果是审核通过，就查询当前科室下的
-				 String departId=sysUser.getCurrentDepartId();
-				   result= this.queryStock(departId,pdApplyOrderPage.getPdApplyDetailList());
-				  code=result.getCode();
-			  }else if((PdConstant.AUDIT_STATE_1).equals(applyStatus)){//如果是申领科室，就查询上级科室下的库存
-				 SysDepart sysDepart =  sysDepartService.queryDepartByOrgCode(sysUser.getOrgCode());
-				   result= this.queryStock(sysDepart.getParentId(),pdApplyOrderPage.getPdApplyDetailList());
-				   code=result.getCode();
-			 }
-			if(code!=200){
-				return Result.error(result.getMessage()+"库存数量不足");
+		if(StringUtils.isNotEmpty(applyStatus)) {
+			if ((PdConstant.AUDIT_STATE_2).equals(applyStatus) || (PdConstant.AUDIT_STATE_3).equals(applyStatus)) {
+				LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+				//判断申领数量不能大于出库科室的当前库存数量；
+				Integer code = 200;
+				Result result = null;
+				if ((PdConstant.AUDIT_STATE_2).equals(applyStatus)) { //如果是审核通过，就查询当前科室下的
+					String departId = sysUser.getCurrentDepartId();
+					result = this.queryStock(departId, pdApplyOrderPage.getPdApplyDetailList());
+					code = result.getCode();
+				} else if ((PdConstant.AUDIT_STATE_1).equals(applyStatus)) {//如果是申领科室，就查询上级科室下的库存
+					SysDepart sysDepart = sysDepartService.queryDepartByOrgCode(sysUser.getOrgCode());
+					result = this.queryStock(sysDepart.getParentId(), pdApplyOrderPage.getPdApplyDetailList());
+					code = result.getCode();
+				}
+				if (code != 200) {
+					return Result.error(result.getMessage() + "库存数量不足");
+				}
+				pdApplyOrder.setAuditBy(sysUser.getId());
+				pdApplyOrder.setAuditDate(new Date());
 			}
- 			pdApplyOrder.setAuditBy(sysUser.getId());
-			pdApplyOrder.setAuditDate(new Date());
 		}
 		pdApplyOrderService.updateMain(pdApplyOrder, pdApplyOrderPage.getPdApplyDetailList());
+		if(StringUtils.isNotEmpty(applyStatus)) {
 		if (PdConstant.AUDIT_STATE_1.equals(applyStatus) && pdApplyOrderPage.getSubmitStatus().equals(PdConstant.SUBMIT_STATE_2)) {//如果是已提交
 			this.sendMsg(pdApplyOrderPage);//消息推送
 		}
-		return Result.ok("编辑成功!");
+		}
+		return Result.ok("操作成功!");
 	}
 
 
