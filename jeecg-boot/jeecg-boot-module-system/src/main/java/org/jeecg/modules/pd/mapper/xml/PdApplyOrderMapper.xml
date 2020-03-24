@@ -90,7 +90,7 @@
                     #{item}
                 </foreach>
             </if>
-            ORDER BY   audit_status , update_time DESC
+            ORDER BY  field(a.audit_status, 1, 3, 2),a.update_time ASC
         </where>
     </select>
 
