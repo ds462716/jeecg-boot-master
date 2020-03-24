@@ -51,7 +51,7 @@
         c.depart_name as outDepartName,
         d.name as supplierName,
         e.realname as submitByName,
-        e.realname as auditByName
+        f.realname as auditByName
       from
         pd_stock_record a
         left join sys_depart b on a.in_depart_id = b.id
@@ -122,7 +122,7 @@
         c.depart_name as outDepartName,
         d.name as supplierName,
         e.realname as submitByName,
-        e.realname as auditByName
+        f.realname as auditByName
         from
         pd_stock_record a
         left join sys_depart b on a.in_depart_id = b.id

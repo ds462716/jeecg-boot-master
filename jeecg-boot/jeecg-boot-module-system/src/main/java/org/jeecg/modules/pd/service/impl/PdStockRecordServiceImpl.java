@@ -121,6 +121,8 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
             } else {
                 pdStockRecord.setInType(PdConstant.IN_TYPE_1);
             }
+            pdStockRecord.setRecordType(PdConstant.RECODE_TYPE_1);
+            pdStockRecord.setOutType(null);
             pdStockRecord.setId(null); // 清空ID
             pdStockRecord.setRecordNo(UUIDUtil.generateOrderNoByType(PdConstant.ORDER_NO_FIRST_LETTER_RK)); //生成入库单号
             pdStockRecord.setAuditStatus(PdConstant.AUDIT_STATE_2);   // 审核通过
@@ -256,6 +258,7 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
      */
     private Map<String, String> auditIn(PdStockRecord auditEntity, PdStockRecord pdStockRecord) {
         Map<String, String> result = new HashMap<>();
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
 
         if (PdConstant.AUDIT_STATE_2.equals(auditEntity.getAuditStatus())) {
             //审核通过
@@ -308,6 +311,7 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
 
         // 变更审批意见 以及 审批状态
         auditEntity.setAuditDate(DateUtils.getDate());
+        auditEntity.setAuditBy(sysUser.getId());
         pdStockRecordMapper.updateById(auditEntity);
 
         return result;
@@ -322,6 +326,7 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
      */
     private Map<String, String> auditOut(PdStockRecord auditEntity, PdStockRecord pdStockRecord) {
         Map<String, String> result = new HashMap<>();
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
 
         if (PdConstant.AUDIT_STATE_2.equals(auditEntity.getAuditStatus())) {      //审核通过
 
@@ -407,6 +412,7 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
 
         //6.变更审批意见 以及 审批状态
         auditEntity.setAuditDate(DateUtils.getDate());
+        auditEntity.setAuditBy(sysUser.getId());
         pdStockRecordMapper.updateById(auditEntity);
 
         return result;
