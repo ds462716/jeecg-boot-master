@@ -125,7 +125,7 @@ public class PdStockRecordInController {
     /**
      * 保存
      *
-     * @param PdStockRecord
+     * @param pdStockRecord
      * @return
      */
     @PostMapping(value = "/add")
@@ -143,7 +143,7 @@ public class PdStockRecordInController {
     /**
      * 提交
      *
-     * @param PdStockRecord
+     * @param pdStockRecord
      * @return
      */
     @PostMapping(value = "/submit")
@@ -163,7 +163,7 @@ public class PdStockRecordInController {
     /**
      * 审批
      *
-     * @param PdStockRecord
+     * @param pdStockRecord
      * @return
      */
     @PostMapping(value = "/audit")
@@ -384,6 +384,8 @@ public class PdStockRecordInController {
 
         Page<PdStockRecordDetail> page = new Page<PdStockRecordDetail>(pageNo, pageSize);
         pdStockRecordDetail.setRecordType(PdConstant.RECODE_TYPE_1);
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        pdStockRecordDetail.setDepartParentId(sysUser.getDepartParentId());
         page = pdStockRecordDetailService.selectList(page, pdStockRecordDetail);
         return Result.ok(page);
     }
@@ -406,6 +408,8 @@ public class PdStockRecordInController {
         Page<PdStockRecordDetail> page = new Page<PdStockRecordDetail>(pageNo, pageSize);
         pdStockRecordDetail.setAuditStatus(PdConstant.AUDIT_STATE_2);
         pdStockRecordDetail.setRecordType(PdConstant.RECODE_TYPE_2);
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        pdStockRecordDetail.setDepartParentId(sysUser.getDepartParentId());
         page = pdStockRecordDetailService.selectList(page, pdStockRecordDetail);
         return Result.ok(page);
     }
@@ -422,7 +426,6 @@ public class PdStockRecordInController {
         stockRecord.setAuditStatus(PdConstant.AUDIT_STATE_2);//只查已通过的明细
         stockRecord.setInType(PdConstant.IN_TYPE_3);//只查调拨入库的明细
         LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
-        stockRecord.setInDepartId(sysUser.getCurrentDepartId());
         stockRecord.setDepartParentId(sysUser.getDepartParentId());
         Page<PdStockRecord> page = new Page<PdStockRecord>(pageNo, pageSize);
         page = pdStockRecordService.selectTransferList(page, stockRecord);
@@ -431,7 +434,7 @@ public class PdStockRecordInController {
 
     /**
      * 消息推送
-     * @param purchaseOrderPage
+     * @param stockRecord
      * @return
      */
     public boolean sendMsg(PdStockRecord stockRecord) {

@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.PdConstant;
@@ -101,9 +102,10 @@ public class PdPurchaseOrderController {
 										 HttpServletRequest req) {
 		 Page<PdPurchaseOrder> page = new Page<PdPurchaseOrder>(pageNo, pageSize);
 		 List<String> list = new ArrayList<>();
-		 list.add(PdConstant.SUBMIT_STATE_2);//已提交
-		 list.add(PdConstant.SUBMIT_STATE_3);//已撤回
-		 pdPurchaseOrderPage.setSubmitStatusList(list);
+		 list.add(PdConstant.AUDIT_STATE_1);//待审核
+		 list.add(PdConstant.AUDIT_STATE_2);//审核通过
+		 list.add(PdConstant.AUDIT_STATE_3);//已驳回
+		 pdPurchaseOrderPage.setAuditStatusList(list);
 		 LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
 		 pdPurchaseOrderPage.setDepartParentId(sysUser.getDepartParentId());
 		 page = pdPurchaseOrderService.selectList(page, pdPurchaseOrderPage);
@@ -131,7 +133,6 @@ public class PdPurchaseOrderController {
 		 pdPurchaseOrder.setPurchaseBy(sysUser.getId());
 		 pdPurchaseOrder.setPurchaseName(sysUser.getRealname());
 		 pdPurchaseOrder.setSubmitStatus(PdConstant.SUBMIT_STATE_1);
-		 pdPurchaseOrder.setAuditStatus(PdConstant.AUDIT_STATE_1);
 		 result.setResult(pdPurchaseOrder);
 		 result.setSuccess(true);
 		 return result;
@@ -147,13 +148,12 @@ public class PdPurchaseOrderController {
 	 public Result<?> add(@RequestBody PdPurchaseOrderPage pdPurchaseOrderPage) {
 		 PdPurchaseOrder pdPurchaseOrder = new PdPurchaseOrder();
 		 BeanUtils.copyProperties(pdPurchaseOrderPage, pdPurchaseOrder);
-		 pdPurchaseOrder.setAuditStatus(PdConstant.AUDIT_STATE_1);//审核状态  1：待审核
 		 pdPurchaseOrder.setDelFlag(PdConstant.DEL_FLAG_0);
 		 pdPurchaseOrderService.saveMain(pdPurchaseOrder, pdPurchaseOrderPage.getPdPurchaseDetailList());
 		 if (pdPurchaseOrderPage.getSubmitStatus().equals(PdConstant.SUBMIT_STATE_2)) {//如果是已提交
 			 this.sendMsg(pdPurchaseOrderPage);//消息推送
 		 }
-		 return Result.ok("添加成功！");
+		 return Result.ok("操作成功！");
 	 }
 
 	 /**
@@ -171,16 +171,20 @@ public class PdPurchaseOrderController {
 			 return Result.error("未找到对应数据");
 		 }
 		 String orderStatus = pdPurchaseOrder.getAuditStatus();//审核状态
-		 if ((PdConstant.AUDIT_STATE_2).equals(orderStatus) || (PdConstant.AUDIT_STATE_3).equals(orderStatus)) {
-			 LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
-			 pdPurchaseOrder.setAuditBy(sysUser.getId());
-			 pdPurchaseOrder.setAuditDate(new Date());
+		if(StringUtils.isNotEmpty(orderStatus)) {
+			if ((PdConstant.AUDIT_STATE_2).equals(orderStatus) || (PdConstant.AUDIT_STATE_3).equals(orderStatus)) {
+				LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+				pdPurchaseOrder.setAuditBy(sysUser.getId());
+				pdPurchaseOrder.setAuditDate(new Date());
+			}
+		}
+			pdPurchaseOrderService.updateMain(pdPurchaseOrder, pdPurchaseOrderPage.getPdPurchaseDetailList());
+		 if(StringUtils.isNotEmpty(orderStatus)) {
+			 if (PdConstant.AUDIT_STATE_1.equals(orderStatus) && pdPurchaseOrderPage.getSubmitStatus().equals(PdConstant.SUBMIT_STATE_2)) {//如果是已提交
+				 this.sendMsg(pdPurchaseOrderPage);//消息推送
+			 }
 		 }
-		 pdPurchaseOrderService.updateMain(pdPurchaseOrder, pdPurchaseOrderPage.getPdPurchaseDetailList());
-		 if (PdConstant.AUDIT_STATE_1.equals(orderStatus) && pdPurchaseOrderPage.getSubmitStatus().equals(PdConstant.SUBMIT_STATE_2)) {//如果是已提交
-			 this.sendMsg(pdPurchaseOrderPage);//消息推送
-		 }
-		 return Result.ok("编辑成功!");
+		 return Result.ok("操作成功!");
 	 }
 
 	 /**

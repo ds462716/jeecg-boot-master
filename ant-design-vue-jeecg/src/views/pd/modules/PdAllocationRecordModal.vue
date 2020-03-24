@@ -107,8 +107,8 @@
           <a-form :form="form">
             <a-row>
               <a-col :span="12">
-                <a-form-item label="审核意见" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                  <a-input :disabled="true" v-decorator="[ 'rejectReason', validatorRules.rejectReason]" placeholder="请输入审核意见" style="width: 100%;height: 80px"/>
+                <a-form-item label="审核意见" :labelCol="labelCol" :wrapperCol="wrapperCol" style="text-align: left">
+                  <a-textarea :disabled="true" v-decorator="[ 'rejectReason', validatorRules.rejectReason]" placeholder="请输入审核意见"></a-textarea>
                 </a-form-item>
               </a-col>
             </a-row>
@@ -201,18 +201,18 @@
             { title: '定数包Id', key: 'packageId', type: FormTypes.hidden },
             { title: '产品ID', key: 'productId', type: FormTypes.hidden },
             { title: '产品名称', width:"250px",  key: 'productName' },
-            { title: '产品编号',width:"150px", align:"center", key: 'number' },
-            { title: '规格',width:"240px", align:"center", key: 'spec' },
-            { title: '型号', width:"240px",align:"center", key: 'version' },
-            { title: '单位',width:"50px", align:"center", key: 'unitName' },
-            { title: '发货数量', width:"100px",align:"center", key: 'arrivalNum' },
+            { title: '产品编号',width:"200px",  key: 'number' },
+            { title: '规格',width:"240px", key: 'spec' },
+            { title: '型号', width:"240px", key: 'version' },
+            { title: '单位',width:"50px",  key: 'unitName' },
+            { title: '发货数量', width:"100px", key: 'arrivalNum' },
             {title: '调拨数量', key: 'allocationNum', type: FormTypes.input, width:"100px",
               placeholder: '${title}', defaultValue: '1',
               validateRules: [{ required: true, message: '${title}不能为空' },
                 { pattern: '^(?:[1-9][0-9]*(?:\\.[0-9]+)?|0\\.(?!0+$)[0-9]+)$',message: '${title}的格式不正确' }]
             },
-            { title: '库存数量', align:"center", key: 'currentStockNum'},
-            { title: '出库科室库存数量', align:"center", key: 'stockNum',type: FormTypes.hidden},
+            { title: '库存数量', key: 'currentStockNum'},
+            { title: '出库科室库存数量',  key: 'stockNum',type: FormTypes.hidden},
 
           ]
         },
@@ -421,6 +421,7 @@
       },
 
       handleOk (submitType) { //提交
+        this.model.submitStatus = '1';
         if(submitType=="submit"){
           this.model.submitStatus='2';
           this.model.auditStatus='1';

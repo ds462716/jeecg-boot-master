@@ -28,7 +28,7 @@
                 <a-select v-model="queryParam.auditStatus" placeholder="请选择审核状态">
                   <a-select-option value="1">待审核</a-select-option>
                   <a-select-option value="2">审核通过</a-select-option>
-                  <a-select-option value="3">审核不通过</a-select-option>
+                  <a-select-option value="3">已驳回</a-select-option>
                 </a-select>
               </a-form-item>
             </a-col>
@@ -78,10 +78,11 @@
         :dataSource="dataSource"
         :pagination="ipagination"
         :loading="loading"
+        :customRow="onClickRow"
         :rowSelection="{fixed:false,selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
         @change="handleTableChange">
         <span slot="action" slot-scope="text, record">
-          <a @click="handleEdit(record)" v-bind:disabled="record.submitStatus=='2'">编辑</a>
+          <a @click="handleEdit(record)" v-bind:disabled="record.submitStatus=='2'">修改</a>
 
           <a-divider type="vertical" />
           <a-dropdown>
@@ -305,7 +306,35 @@
             }
           })
       },
-       
+      onClickRow(record) {
+        return {
+          on: {
+            click: (e) => {
+              //点击操作那一行不选中表格的checkbox
+              let pathArray = e.path;
+              //获取当前点击的是第几列
+              let td = pathArray[0];
+              let cellIndex = td.cellIndex;
+              //获取tr
+              let tr = pathArray[1];
+              //获取一共多少列
+              let lie = tr.childElementCount;
+              if(lie && cellIndex){
+                if(parseInt(lie)-parseInt(cellIndex)!=1){
+                  //操作那一行
+                  let recordId = record.id;
+                  let index = this.selectedRowKeys.indexOf(recordId);
+                  if(index>=0){
+                    this.selectedRowKeys.splice(index, 1);
+                  }else{
+                    this.selectedRowKeys.push(recordId);
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     }
   }
 </script>

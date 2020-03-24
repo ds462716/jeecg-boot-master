@@ -38,6 +38,7 @@
                   size="large"
                   type="text"
                   @change="inputCodeChange"
+                  autocomplete="off"
                   placeholder="请输入验证码">
                   <a-icon slot="prefix" type="smile" :style="{ color: 'rgba(0,0,0,.25)' }"/>
                 </a-input>

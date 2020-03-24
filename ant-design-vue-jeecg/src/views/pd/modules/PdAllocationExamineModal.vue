@@ -80,8 +80,8 @@
           <a-form :form="form">
             <a-row>
               <a-col :span="12">
-                <a-form-item label="审核意见" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                  <a-input :disabled="disableSubmit" v-decorator="[ 'rejectReason', validatorRules.rejectReason]" placeholder="请输入审核意见" style="width: 100%;height: 80px"/>
+                <a-form-item label="审核意见" :labelCol="labelCol" :wrapperCol="wrapperCol" style="text-align: left">
+                  <a-textarea :disabled="disableSubmit" v-decorator="[ 'rejectReason', validatorRules.rejectReason]" placeholder="请输入审核意见"></a-textarea>
                 </a-form-item>
               </a-col>
             </a-row>
@@ -166,13 +166,13 @@
             { title: '定数包编号', width:"130px",   key: 'packageId' },
             { title: '产品ID', key: 'productId', type: FormTypes.hidden },
             { title: '产品名称', width:"250px",  key: 'productName' },
-            { title: '产品编号',width:"150px", align:"center", key: 'number' },
-            { title: '规格',width:"240px", align:"center", key: 'spec' },
-            { title: '型号', width:"240px",align:"center", key: 'version' },
-            { title: '单位',width:"50px", align:"center", key: 'unitName' },
-            { title: '发货数量', width:"100px",align:"center", key: 'arrivalNum' },
-            {title: '调拨数量',  width:"100px",align:"center",key: 'allocationNum'},
-            { title: '库存数量', align:"center", key: 'stockNum' },
+            { title: '产品编号',width:"200px",  key: 'number' },
+            { title: '规格',width:"240px", key: 'spec' },
+            { title: '型号', width:"240px", key: 'version' },
+            { title: '单位',width:"50px",  key: 'unitName' },
+            { title: '发货数量', width:"100px", key: 'arrivalNum' },
+            {title: '调拨数量',  width:"100px",key: 'allocationNum'},
+            { title: '库存数量', key: 'stockNum' },
           ]
         },
         url: {
@@ -221,7 +221,7 @@
         this.model.auditStatus='2';//审核通过
         if(type=="no"){
           this.model.auditStatus='3';//拒绝
-          this.model.submitStatus='3';//已撤回
+          this.model.submitStatus='1';//待提交
         }
         this.form.validateFields((err, values) => {
           if(type=="no"){

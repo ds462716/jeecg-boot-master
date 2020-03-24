@@ -300,4 +300,9 @@ public class PdProduct  extends BaseEntity {
 	 */
 	@TableField(exist = false)
 	private  String  stockDepartId;
+
+	/**
+	 * jde编码
+	 */
+	private String jdeCode;
 }
