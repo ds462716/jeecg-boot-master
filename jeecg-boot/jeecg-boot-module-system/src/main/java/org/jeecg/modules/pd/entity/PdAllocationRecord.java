@@ -113,4 +113,7 @@ public class PdAllocationRecord extends BaseEntity {
     /** 所属父部门*/
     @TableField(strategy = FieldStrategy.NOT_EMPTY)
     private String departParentId;
+    /** 审核状态集合 **/
+    @TableField(exist = false)
+    private List<String> auditStatusList;
 }

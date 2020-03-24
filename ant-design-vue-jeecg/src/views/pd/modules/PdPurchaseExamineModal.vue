@@ -72,8 +72,8 @@
           <a-form :form="form">
             <a-row>
               <a-col :span="12">
-                <a-form-item label="审核意见" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                  <a-input :disabled="disableSubmit" v-decorator="[ 'refuseReason', validatorRules.refuseReason]" placeholder="请输入审核意见" style="width: 100%;height: 80px"/>
+                <a-form-item label="审核意见" :labelCol="labelCol" :wrapperCol="wrapperCol" style="text-align: left">
+                  <a-textarea :disabled="disableSubmit" v-decorator="[ 'refuseReason', validatorRules.refuseReason]" placeholder="请输入审核意见"></a-textarea>
                 </a-form-item>
               </a-col>
             </a-row>

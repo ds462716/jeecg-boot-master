@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.PdConstant;
@@ -102,9 +103,10 @@ public class PdAllocationRecordController {
 										 HttpServletRequest req) {
 		 Page<PdAllocationRecord> page = new Page<PdAllocationRecord>(pageNo, pageSize);
 		 List<String> list=new ArrayList<>();
-		 list.add(PdConstant.SUBMIT_STATE_2);//已提交
-		 list.add(PdConstant.SUBMIT_STATE_3);//已撤回
-		 allocationRecord.setSubmitStatusList(list);
+		 list.add(PdConstant.AUDIT_STATE_1);//待审核
+		 list.add(PdConstant.AUDIT_STATE_2);//审核通过
+		 list.add(PdConstant.AUDIT_STATE_3);//已驳回
+		 allocationRecord.setAuditStatusList(list);
 		 LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
 		 allocationRecord.setOutDeptId(sysUser.getCurrentDepartId());
 		 allocationRecord.setDepartParentId(sysUser.getDepartParentId());
@@ -133,7 +135,6 @@ public class PdAllocationRecordController {
 		 allocationRecord.setInDeptId(sysDepart.getId());//入库科室
 		 allocationRecord.setInDeptName(sysDepart.getDepartName());
 		 allocationRecord.setSubmitStatus(PdConstant.SUBMIT_STATE_1);
-		 allocationRecord.setAuditStatus(PdConstant.AUDIT_STATE_1);
 		 result.setResult(allocationRecord);
 		 result.setSuccess(true);
 		 return result;
@@ -151,7 +152,7 @@ public class PdAllocationRecordController {
 		if (pdAllocationRecord.getSubmitStatus().equals(PdConstant.SUBMIT_STATE_2)) {//如果是已提交
 			this.sendMsg(pdAllocationRecord);//消息推送
 		}
-		return Result.ok("添加成功！");
+		return Result.ok("操作成功！");
 	}
 
 	/**
@@ -167,41 +168,45 @@ public class PdAllocationRecordController {
 			return Result.error("未找到对应数据");
 		}
 		String auditStatus=pdAllocationRecord.getAuditStatus();//审核状态
-		if((PdConstant.AUDIT_STATE_2).equals(auditStatus) || (PdConstant.AUDIT_STATE_3).equals(auditStatus)){
-			LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
-			if((PdConstant.AUDIT_STATE_2).equals(auditStatus)) {
-				//判断调拨数量不能大于出库科室的当前库存数量；
- 				boolean bool=true;
-				String prodNames="";
-				List<PdAllocationDetail> list= pdAllocationRecord.getPdAllocationDetailList();
-				if(list!=null && list.size()>0) {
-					for(PdAllocationDetail entity:list) {
-						Double allocationNum=entity.getAllocationNum();
-						PdProductStockTotalPage stockTotalPage=new PdProductStockTotalPage();
-						stockTotalPage.setDepartId(pdAllocationRecord.getOutDeptId());//出库科室ID;
-						stockTotalPage.setProductId(entity.getProductId());
-						List<PdProductStockTotalPage> aList = pdProductStockTotalService.findListForQuery(stockTotalPage);
-						if(CollectionUtils.isNotEmpty(aList)){
-							Double stockNum= aList.get(0).getStockNum();
-							if(allocationNum>stockNum){
-								prodNames+=aList.get(0).getProductName();
-								bool=false;
+		if(StringUtils.isNotEmpty(auditStatus)) {
+			if ((PdConstant.AUDIT_STATE_2).equals(auditStatus) || (PdConstant.AUDIT_STATE_3).equals(auditStatus)) {
+				LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+				if ((PdConstant.AUDIT_STATE_2).equals(auditStatus)) {
+					//判断调拨数量不能大于出库科室的当前库存数量；
+					boolean bool = true;
+					String prodNames = "";
+					List<PdAllocationDetail> list = pdAllocationRecord.getPdAllocationDetailList();
+					if (list != null && list.size() > 0) {
+						for (PdAllocationDetail entity : list) {
+							Double allocationNum = entity.getAllocationNum();
+							PdProductStockTotalPage stockTotalPage = new PdProductStockTotalPage();
+							stockTotalPage.setDepartId(pdAllocationRecord.getOutDeptId());//出库科室ID;
+							stockTotalPage.setProductId(entity.getProductId());
+							List<PdProductStockTotalPage> aList = pdProductStockTotalService.findListForQuery(stockTotalPage);
+							if (CollectionUtils.isNotEmpty(aList)) {
+								Double stockNum = aList.get(0).getStockNum();
+								if (allocationNum > stockNum) {
+									prodNames += aList.get(0).getProductName();
+									bool = false;
+								}
 							}
 						}
 					}
+					if (!bool) {
+						return Result.error(prodNames + "库存数量不足");
+					}
 				}
-				if(!bool){
-					return Result.error(prodNames+"库存数量不足");
-				}
+				pdAllocationRecord.setAuditBy(sysUser.getId());
+				pdAllocationRecord.setAuditDate(new Date());
 			}
-			pdAllocationRecord.setAuditBy(sysUser.getId());
-			pdAllocationRecord.setAuditDate(new Date());
 		}
 		pdAllocationRecordService.updateMain(pdAllocationRecord, pdAllocationRecord.getPdAllocationDetailList());
-		if (PdConstant.AUDIT_STATE_1.equals(auditStatus) && pdAllocationRecord.getSubmitStatus().equals(PdConstant.SUBMIT_STATE_2)) {//如果是已提交
-			this.sendMsg(pdAllocationRecord);//消息推送
+		if(StringUtils.isNotEmpty(auditStatus)) {
+			if (PdConstant.AUDIT_STATE_1.equals(auditStatus) && pdAllocationRecord.getSubmitStatus().equals(PdConstant.SUBMIT_STATE_2)) {//如果是已提交
+				this.sendMsg(pdAllocationRecord);//消息推送
+			}
 		}
-		return Result.ok("编辑成功!");
+		return Result.ok("操作成功!");
 	}
 	
 	 /**

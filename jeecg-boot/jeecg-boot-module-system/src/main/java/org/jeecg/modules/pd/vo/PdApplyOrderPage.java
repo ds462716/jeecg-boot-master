@@ -29,6 +29,8 @@ public class PdApplyOrderPage extends PdApplyOrder {
 	private String deptName;
 	/** 提交状态集合 **/
 	private List<String> submitStatusList;
+	/** 审核状态集合 **/
+	private List<String> auditStatusList;
 	/** 查询日期范围 **/
 	private List<Object> queryDate;
 

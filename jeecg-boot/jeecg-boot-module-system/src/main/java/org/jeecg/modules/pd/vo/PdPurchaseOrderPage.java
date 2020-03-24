@@ -48,7 +48,7 @@ public class PdPurchaseOrderPage extends PdPurchaseOrder{
 	private String deptName;
 	/** 提交状态集合 **/
 	private List<String> submitStatusList;
-	/** 提交状态集合 **/
+	/** 审核状态集合 **/
 	private List<String> auditStatusList;
 
 	@ExcelCollection(name="申购单详细表")
