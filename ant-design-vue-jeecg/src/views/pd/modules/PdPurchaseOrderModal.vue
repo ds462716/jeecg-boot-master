@@ -94,13 +94,6 @@
         </a-card>
       </div>
     </a-spin>
-      <!--<div class="drawer-bootom-button" v-show="!disableSubmit">
-        <a-button @click="handleOk('submit')" type="primary" :loading="confirmLoading" style="margin-right: 15px;">提交</a-button>
-        <a-button @click="handleOk('save')" type="primary" :loading="confirmLoading" style="margin-right: 15px;">保存草稿</a-button>
-        <a-popconfirm title="确定放弃编辑？" @confirm="handleCancel" okText="确定" cancelText="取消">
-          <a-button style="margin-right: 15px;">取消</a-button>
-        </a-popconfirm>
-      </div>-->
     <template slot="footer">
       <a-button @click="closeBtn" style="margin-right: 15px;" v-show="disableSubmit">关  闭</a-button>
       <a-popconfirm title="确定放弃编辑？" @confirm="handleCancel" v-show="!disableSubmit" okText="确定" cancelText="取消">
@@ -335,6 +328,7 @@
       },
 
       handleOk (submitType) { //提交
+        this.model.submitStatus = '1';
         if (submitType == "submit") {
           this.model.submitStatus = '2';
           this.model.auditStatus = '1';

@@ -196,7 +196,7 @@
         this.model.submitStatus='2';//已提交
         if(type=="no"){
           this.model.auditStatus='3';//拒绝
-          this.model.submitStatus='3';//已撤回
+          this.model.submitStatus='1';//待提交
         }
         this.form.validateFields((err, values) => {
           if(type=="no"){
