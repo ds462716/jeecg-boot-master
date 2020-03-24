@@ -384,6 +384,8 @@ public class PdStockRecordInController {
 
         Page<PdStockRecordDetail> page = new Page<PdStockRecordDetail>(pageNo, pageSize);
         pdStockRecordDetail.setRecordType(PdConstant.RECODE_TYPE_1);
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        pdStockRecordDetail.setDepartParentId(sysUser.getDepartParentId());
         page = pdStockRecordDetailService.selectList(page, pdStockRecordDetail);
         return Result.ok(page);
     }
