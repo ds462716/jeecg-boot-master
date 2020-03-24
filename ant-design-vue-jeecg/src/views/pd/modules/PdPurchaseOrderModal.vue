@@ -94,13 +94,6 @@
         </a-card>
       </div>
     </a-spin>
-      <!--<div class="drawer-bootom-button" v-show="!disableSubmit">
-        <a-button @click="handleOk('submit')" type="primary" :loading="confirmLoading" style="margin-right: 15px;">提交</a-button>
-        <a-button @click="handleOk('save')" type="primary" :loading="confirmLoading" style="margin-right: 15px;">保存草稿</a-button>
-        <a-popconfirm title="确定放弃编辑？" @confirm="handleCancel" okText="确定" cancelText="取消">
-          <a-button style="margin-right: 15px;">取消</a-button>
-        </a-popconfirm>
-      </div>-->
     <template slot="footer">
       <a-button @click="closeBtn" style="margin-right: 15px;" v-show="disableSubmit">关  闭</a-button>
       <a-popconfirm title="确定放弃编辑？" @confirm="handleCancel" v-show="!disableSubmit" okText="确定" cancelText="取消">
@@ -155,21 +148,21 @@
           dataSource: [],
           columns: [
             { title: '产品ID', key: 'productId', type: FormTypes.hidden },
-            { title: '产品编号',width:"150px", align:"center", key: 'number' },
+            { title: '产品编号',width:"200px",   key: 'number' },
             { title: '产品名称', width:"250px",  key: 'productName' },
-            { title: '规格',width:"240px", align:"center", key: 'spec' },
-            { title: '单位',width:"50px", align:"center", key: 'unitName' },
-            { title: '库存数量', width:"100px",align:"center", key: 'stockNum' },
-            {title: '申购数量', key: 'orderNum', type: FormTypes.input, width:"80px",
+            { title: '规格',width:"240px",   key: 'spec' },
+            { title: '单位',width:"50px",  key: 'unitName' },
+            { title: '库存数量', width:"100px",  key: 'stockNum' },
+            {title: '申购数量', key: 'orderNum', type: FormTypes.input, width:"100px",
               placeholder: '${title}', defaultValue: '1',
               validateRules: [{ required: true, message: '${title}不能为空' },
                 { pattern: '^(?:[1-9][0-9]*(?:\\.[0-9]+)?|0\\.(?!0+$)[0-9]+)$',message: '${title}的格式不正确' }]
             },
-            { title: '产品单价', align:"center", key: 'purchasePrice' },
-            { title: '申购金额', align:"center", key: 'orderMoney' },
-            { title: '供应商', width:"250px",align:"center", key: 'supplierName' },
+            { title: '产品单价',   key: 'purchasePrice' },
+            { title: '申购金额',  key: 'orderMoney' },
+            { title: '供应商', width:"250px",  key: 'supplierName' },
             { title: '供应商Id',   key: 'supplierId',type: FormTypes.hidden  },
-            { title: '生产厂家', width:"250px",align:"center", key: 'venderName' },
+            { title: '生产厂家', width:"250px",  key: 'venderName' },
           ]
         },
         url: {
@@ -335,6 +328,7 @@
       },
 
       handleOk (submitType) { //提交
+        this.model.submitStatus = '1';
         if (submitType == "submit") {
           this.model.submitStatus = '2';
           this.model.auditStatus = '1';

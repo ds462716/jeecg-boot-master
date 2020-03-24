@@ -85,7 +85,7 @@ public class PdPurchaseOrderMergeController extends JeecgController<PdPurchaseOr
 	public Result<?> edit(@RequestBody PdPurchaseOrderMerge pdPurchaseOrderMerge) {
 		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
 		 pdPurchaseOrderMergeService.submitOrderInfo(pdPurchaseOrderMerge,sysUser);
-		return Result.ok("编辑成功!");
+		return Result.ok("操作成功!");
 	}
 	/**
 	 *   通过id删除

@@ -1,11 +1,12 @@
 package org.jeecg.modules.pd.vo;
 
-import java.util.List;
-import org.jeecg.modules.pd.entity.PdPurchaseOrder;
-import org.jeecg.modules.pd.entity.PdPurchaseDetail;
 import lombok.Data;
+import org.jeecg.modules.pd.entity.PdPurchaseDetail;
+import org.jeecg.modules.pd.entity.PdPurchaseOrder;
 import org.jeecgframework.poi.excel.annotation.Excel;
 import org.jeecgframework.poi.excel.annotation.ExcelCollection;
+
+import java.util.List;
 
 /**
  * @Description: 申购订单主表
@@ -47,6 +48,8 @@ public class PdPurchaseOrderPage extends PdPurchaseOrder{
 	private String deptName;
 	/** 提交状态集合 **/
 	private List<String> submitStatusList;
+	/** 提交状态集合 **/
+	private List<String> auditStatusList;
 
 	@ExcelCollection(name="申购单详细表")
 	private List<PdPurchaseDetail> pdPurchaseDetailList;	

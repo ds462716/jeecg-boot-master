@@ -214,7 +214,7 @@
           }else if(oprtSource=='3'){
             formData.auditStatus="3";//3:批量审核拒绝操作
             msgName="拒绝";
-            formData.submitStatus="3";
+            formData.submitStatus="1";
           }
 
           formData.oprtSource=oprtSource;

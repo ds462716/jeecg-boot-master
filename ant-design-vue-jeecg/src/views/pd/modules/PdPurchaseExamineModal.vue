@@ -136,17 +136,17 @@
           loading: false,
           dataSource: [],
           columns: [
-             {title: '产品编号', width: "200px", align: "center", key: 'number'},
+             {title: '产品编号', width: "200px",  key: 'number'},
              {title: '产品名称', width: "240px", key: 'productName'},
-             {title: '规格', width: "200px", align: "center", key: 'spec'},
-             {title: '型号', width: "200px", align: "center", key: 'version'},
-             {title: '单位', width: "50px", align: "center", key: 'unitName'},
-             {title: '库存数量', align: "center", key: 'stockNum'},
-             {title: '申购数量',  align: "center", key: 'orderNum'},
-             {title: '产品单价',  align: "center", key: 'purchasePrice'},
-             {title: '申购金额',  align: "center", key: 'orderMoney'},
-             {title: '供应商', width: "300px", align: "center", key: 'supplierName'},
-             {title: '生产厂家', width: "300px", align: "center", key: 'venderName'}
+             {title: '规格', width: "200px",  key: 'spec'},
+             {title: '型号', width: "200px",  key: 'version'},
+             {title: '单位', width: "50px",  key: 'unitName'},
+             {title: '库存数量',  key: 'stockNum'},
+             {title: '申购数量',  key: 'orderNum'},
+             {title: '产品单价',   key: 'purchasePrice'},
+             {title: '申购金额',  key: 'orderMoney'},
+             {title: '供应商', width: "300px", key: 'supplierName'},
+             {title: '生产厂家', width: "300px", key: 'venderName'}
                   ]
         },
         url: {
@@ -196,7 +196,7 @@
         this.model.submitStatus='2';//已提交
         if(type=="no"){
           this.model.auditStatus='3';//拒绝
-          this.model.submitStatus='3';//已撤回
+          this.model.submitStatus='1';//待提交
         }
         this.form.validateFields((err, values) => {
           if(type=="no"){
