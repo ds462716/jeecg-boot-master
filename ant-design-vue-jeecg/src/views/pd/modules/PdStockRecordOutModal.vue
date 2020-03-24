@@ -157,7 +157,7 @@
               </j-editable-table>
               <a-row style="margin-top:10px;text-align: right;padding-right: 5%">
                   <span style="font-weight: bold;font-size: large;padding-right: 5%">总数量：{{ totalSum }}</span>
-                  <span style="font-weight: bold;font-size: large">总金额：{{ totalPrice }}</span>
+                  <span style="font-weight: bold;font-size: large">总金额：{{ outTotalPrice }}</span>
               </a-row>
             </a-tab-pane>
           </a-tabs>
@@ -180,6 +180,7 @@
 
     <template slot="footer">
       <a-button @click="handleCancel" style="margin-right: 15px;" v-show="disableSubmit">关  闭</a-button>
+      <a-button @click="printBtn" style="margin-right: 15px;" type="primary" v-show="showPrintBtn">打  印</a-button>
       <a-popconfirm title="确定放弃编辑？" @confirm="handleCancel" v-show="!disableSubmit" okText="确定" cancelText="取消">
         <a-button style="margin-right: 15px;">取  消</a-button>
       </a-popconfirm>
@@ -193,6 +194,8 @@
     <pd-choose-apply-order-list-model ref="pdChooseApplyOrderListModel" @ok="returnApplyOrderData" ></pd-choose-apply-order-list-model>
     <pd-choose-allocation-list-model ref="pdChooseAllocationListModel" @ok="returnAllocationData" ></pd-choose-allocation-list-model>
     <pd-choose-product-stock-list-model ref="pdChooseProductStockListModel" @ok="returnProductStockData" ></pd-choose-product-stock-list-model>
+    <pd-stock-record-out-print-modal ref="pdStockRecordOutPrintModal"></pd-stock-record-out-print-modal>
+
   </j-modal>
 </template>
 
@@ -210,6 +213,7 @@
   import PdChooseProductStockListModel from "./PdChooseProductStockListModel";
   import PdChooseApplyOrderListModel from "./PdChooseApplyOrderListModel";
   import PdChooseAllocationListModel from "./PdChooseAllocationListModel";
+  import PdStockRecordOutPrintModal from "../print/PdStockRecordOutPrintModal";
 
   const VALIDATE_NO_PASSED = Symbol()
   export { FormTypes, VALIDATE_NO_PASSED }
@@ -232,6 +236,7 @@
     name: 'PdStockRecordOutModal',
     mixins: [JEditableTableMixin],
     components: {
+      PdStockRecordOutPrintModal,
       PdChooseAllocationListModel,
       PdChooseApplyOrderListModel,
       PdChooseProductStockListModel,
@@ -255,6 +260,7 @@
         disableSubmit:false,
         disableSubmit2:false,
         showCancelBtn:false,
+        showPrintBtn:false,
 
         initData:{},
         queryParam:{},
@@ -273,7 +279,8 @@
         applyNo:"",
         allocationNo:"",
         totalSum:'0',
-        totalPrice:'0.0000',
+        outTotalPrice:'0.0000',
+        inTotalPrice:'0.0000',
         submitDateStr:"",
         args:{},
         //货区货位二级联动下拉框
@@ -415,11 +422,15 @@
       loadData() {
         this.loading = true;;
         this.showCancelBtn = false;
+        this.showPrintBtn = false;
         this.departHandleSearch();  // 初始化部门列表 用于数据回显
         let params = {};
         if(this.model.id){
           if(this.model.auditStatus == "1" && this.model.submitStatus == "2"){
             this.showCancelBtn = true;
+          }
+          if(this.model.auditStatus == "2"){
+            this.showPrintBtn = true;
           }
           this.popModal.title="出库明细";
           let fieldval = pick(this.model,'recordNo','outType','submitBy','submitByName','submitDate','applyNo','allocationNo',
@@ -470,7 +481,8 @@
                 })
 
                 this.totalSum = res.result.totalSum;
-                this.totalPrice = res.result.totalPrice.toString();
+                this.outTotalPrice = res.result.outTotalPrice.toString();
+                this.inTotalPrice = res.result.inTotalPrice.toString();
               }else{  // 新增页
                 this.disableSubmit2 = false;
                 this.initData = res.result;
@@ -548,6 +560,15 @@
       handleCancel() {
         this.$emit('ok');
         this.close();
+      },
+      /**打印按钮**/
+      printBtn(){
+        this.model.totalSum = this.totalSum;
+        this.model.outTotalPrice = this.outTotalPrice;
+        this.model.inTotalPrice = this.inTotalPrice;
+        this.model.pdStockRecordDetailList = this.pdStockRecordDetailTable.dataSource;
+        this.$refs.pdStockRecordOutPrintModal.show(this.model);
+        this.$refs.pdStockRecordOutPrintModal.title = "出库单";
       },
       /**撤回**/
       cancelBtn(){
@@ -845,13 +866,13 @@
             rows = values;
           }
           let totalSum = 0;
-          let totalPrice = 0;
+          let outTotalPrice = 0;
           rows.forEach((item, idx) => {
             totalSum = totalSum + Number(item.productNum);
-            totalPrice = totalPrice + Number(item.outTotalPrice);
+            outTotalPrice = outTotalPrice + Number(item.outTotalPrice);
           })
           this.totalSum = totalSum;
-          this.totalPrice = totalPrice.toFixed(4);
+          this.outTotalPrice = outTotalPrice.toFixed(4);
         })
       },
       //清空扫码框

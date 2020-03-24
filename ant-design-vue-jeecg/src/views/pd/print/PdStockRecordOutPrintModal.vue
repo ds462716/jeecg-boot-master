@@ -22,23 +22,41 @@
 
           <a-col :span="24">
             <span style="margin-left: 3%">
-              入库单号：
+              出库单号：
             </span>
-            <a-input style="width: 30%;text-align: left" disabled v-model="record.recordNo"/>
-            <span style="margin-left: 12.5%">
-              入库日期：
+            <a-input style="width: 20%;text-align: left" disabled v-model="record.recordNo"/>
+            <span style="margin-left: 3%">
+              出库日期：
             </span>
-            <a-input style="width: 30%;text-align: left" disabled v-model="record.auditDate"/>
+            <a-input style="width: 20%;text-align: left" disabled v-model="record.auditDate"/>
+            <span style="margin-left: 3%">
+              出库类型：
+            </span>
+            <a-input style="width: 20%;text-align: left" disabled v-model="record.outType" dictCode="out_type"/>
           </a-col>
           <a-col :span="24" style="margin-top: 10px">
             <span style="margin-left: 3%">
+              操作人员：
+            </span>
+            <a-input style="width: 20%;text-align: left" disabled v-model="record.submitByName"/>
+            <span style="margin-left: 3%">
+              审核人员：
+            </span>
+            <a-input style="width: 20%;text-align: left" disabled v-model="record.auditByName"/>
+            <span style="margin-left: 3%">
+              审核时间：
+            </span>
+            <a-input style="width: 20%;text-align: left" disabled v-model="record.auditDate"/>
+          </a-col>
+          <a-col :span="24" style="margin-top: 10px">
+            <span style="margin-left: 3%">
+              出库库房：
+            </span>
+            <a-input style="width: 20%;text-align: left" disabled v-model="record.outDepartName"/>
+            <span style="margin-left: 3%">
               入库库房：
             </span>
-            <a-input style="width: 30%;text-align: left" disabled v-model="record.inDepartName"/>
-            <span style="margin-left: 12.5%">
-              供应商：&nbsp;&nbsp;&nbsp;
-            </span>
-            <a-input style="width: 30%;text-align: left" disabled v-model="record.supplierName"/>
+            <a-input style="width: 20%;text-align: left" disabled v-model="record.inDepartName"/>
           </a-col>
           <a-col :span="24" style="margin-top: 10px">
             <!--<span>入库明细：</span>-->
@@ -55,25 +73,24 @@
           </a-col>
 
           <a-col :span="24" style="margin-top: 10px;">
-            <span style="margin-left: 70%;font-size: medium;font-weight: bold">
+            <span style="margin-left: 60%;font-size: medium;font-weight: bold">
               合计数量：{{ record.totalSum }}
             </span>
-            <span style="margin-left: 5%;font-size: medium;font-weight: bold">
-              合计金额：{{ record.inTotalPrice }}
+            <span style="margin-left: 2%;font-size: medium;font-weight: bold">
+              合计入库金额：{{ record.inTotalPrice }}
+            </span>
+            <span style="margin-left: 2%;font-size: medium;font-weight: bold">
+              合计出库金额：{{ record.outTotalPrice }}
             </span>
           </a-col>
 
           <a-col :span="24" style="margin-top: 10px">
             <span style="margin-left: 3%">
-              仓库管理员签字：
+              仓库人员签字：
             </span>
             <a-input style="width: 10%;text-align: left" />
             <span style="margin-left: 3%">
-              采购人员签字：
-            </span>
-            <a-input style="width: 10%;text-align: left" />
-            <span style="margin-left: 3%">
-              记账人员签字：
+              销售人员签字：
             </span>
             <a-input style="width: 10%;text-align: left" />
           </a-col>
@@ -84,11 +101,14 @@
   <!--</page-layout>-->
 </template>
 <script>
+
+  import {initDictOptions, filterMultiDictText} from '@/components/dict/JDictSelectUtil'
+
   export default {
     components: {
 
     },
-    name: 'PdStockRecordInPrintModal',
+    name: 'PdStockRecordOutPrintModal',
     props:{
       reBizCode:{
         type: String,
@@ -105,11 +125,11 @@
           { title: '注册证号', dataIndex: 'registration',align:"center", width:"15%" },
           { title: '规格', dataIndex: 'spec',align:"center", width:"12%" },
           { title: '型号', dataIndex: 'version',align:"center", width:"12%" },
-          // { title: '单位', dataIndex: 'unitName',align:"center", width:"50px" },
-          { title: '入库单价', dataIndex: 'purchasePrice',align:"center", width:"10%" },
+          { title: '批号', dataIndex: 'batchNo',align:"center", width:"10%"},
           { title: '数量', dataIndex: 'productNum',align:"center", width:"5%" },
-          { title: '金额', dataIndex: 'inTotalPrice',align:"center", width:"8%" },
-          {title: '批号', dataIndex: 'batchNo',align:"center", width:"10%"},
+          { title: '入库单价', dataIndex: 'purchasePrice',align:"center", width:"10%" },
+          { title: '出库单价', dataIndex: 'sellingPrice',align:"center", width:"10%" },
+          { title: '出库金额', dataIndex: 'outTotalPrice',align:"center", width:"8%" },
           {title: '有效期', dataIndex: 'expDate',align:"center", width:"9%", },
         ],
         dataSource: [],
@@ -124,9 +144,11 @@
         title:"操作",
         visible: false,
         record:{},
+        outTypeList:{},
       }
     },
     created() {
+      this.initDictConfig();
     },
     methods: {
       // 重写close方法
@@ -139,10 +161,25 @@
         this.close()
       },
       show(record){
+        for(let item of this.outTypeList){
+          if(item.value == record.outType){
+            record.outType = item.text;
+            break;
+          }
+        }
+
         this.visible = true;
-        this.record = record;
         this.dataSource = record.pdStockRecordDetailList;
+        this.record = record;
         console.log(this.dataSource)
+      },
+      initDictConfig(){ //静态字典值加载
+        initDictOptions('out_type').then((res) => {
+          if (res.success) {
+            this.outTypeList=res.result;
+            // this.$set(this.dictOptions, 'outType', res.result)
+          }
+        })
       },
     }
   }

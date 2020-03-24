@@ -444,7 +444,7 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
                 totalPrice = totalPrice.add(purchasePrice.multiply(BigDecimal.valueOf(item.getProductNum())).setScale(4, BigDecimal.ROUND_HALF_UP));
             }
             pdStockRecord.setTotalSum(totalSum);
-            pdStockRecord.setTotalPrice(totalPrice);
+            pdStockRecord.setInTotalPrice(totalPrice);
             pdStockRecord.setPdStockRecordDetailList(pdStockRecordDetailList);
 
             if (StringUtils.isNotEmpty(pdStockRecord.getMergeOrderNo())) {
@@ -502,19 +502,27 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
         if (oConvertUtils.isNotEmpty(id)) { // 查看页面
             pdStockRecord = this.getById(id);
 
+            if(oConvertUtils.isEmpty(pdStockRecord.getAuditBy())){
+                pdStockRecord.setAuditByName(sysUser.getRealname());
+            }
+
             //查入库单明细
             PdStockRecordDetail pdStockRecordDetail = new PdStockRecordDetail();
             pdStockRecordDetail.setRecordId(id);
             List<PdStockRecordDetail> pdStockRecordDetailList = pdStockRecordDetailService.selectByMainId(pdStockRecordDetail);
-            BigDecimal totalPrice = new BigDecimal(0);//总金额
+            BigDecimal inTotalPrice = new BigDecimal(0);//总金额
+            BigDecimal outTotalPrice = new BigDecimal(0);//总金额
             Double totalSum = new Double(0);//总数量
             for (PdStockRecordDetail item : pdStockRecordDetailList) {
                 totalSum = totalSum + item.getProductNum();
                 BigDecimal sellingPrice = item.getSellingPrice() == null ? new BigDecimal(0) : item.getSellingPrice();
-                totalPrice = totalPrice.add(sellingPrice.multiply(BigDecimal.valueOf(item.getProductNum())).setScale(4, BigDecimal.ROUND_HALF_UP));
+                BigDecimal purchasePrice = item.getPurchasePrice() == null ? new BigDecimal(0) : item.getPurchasePrice();
+                outTotalPrice = outTotalPrice.add(sellingPrice.multiply(BigDecimal.valueOf(item.getProductNum())).setScale(4, BigDecimal.ROUND_HALF_UP));
+                inTotalPrice = inTotalPrice.add(purchasePrice.multiply(BigDecimal.valueOf(item.getProductNum())).setScale(4, BigDecimal.ROUND_HALF_UP));
             }
             pdStockRecord.setTotalSum(totalSum);
-            pdStockRecord.setTotalPrice(totalPrice);
+            pdStockRecord.setInTotalPrice(inTotalPrice);
+            pdStockRecord.setOutTotalPrice(outTotalPrice);
             pdStockRecord.setPdStockRecordDetailList(pdStockRecordDetailList);
 
             //查申领单列表

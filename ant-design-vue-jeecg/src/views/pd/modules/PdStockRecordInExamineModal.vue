@@ -110,7 +110,7 @@
               </j-editable-table>
               <a-row style="margin-top:10px;text-align: right;padding-right: 5%">
                   <span style="font-weight: bold;font-size: large;padding-right: 5%">总数量：{{ totalSum }}</span>
-                  <span style="font-weight: bold;font-size: large">总金额：{{ totalPrice }}</span>
+                  <span style="font-weight: bold;font-size: large">总金额：{{ inTotalPrice }}</span>
               </a-row>
             </a-tab-pane>
           </a-tabs>
@@ -168,18 +168,19 @@
 
     <template slot="footer">
       <a-button @click="closeBtn" style="margin-right: 15px;" v-show="disableSubmit">关  闭</a-button>
-      <a-button @click="printBtn" style="margin-right: 15px;" type="primary" v-show="disableSubmit">打  印</a-button>
-      <a-popconfirm title="确定放弃编辑？" @confirm="handleCancel" v-show="!disableSubmit" okText="确定" cancelText="取消">
+      <a-button @click="printBtn('1')" style="margin-right: 15px;" type="primary" v-show="disableSubmit">打  印</a-button>
+      <a-popconfirm title="确定放弃审核？" @confirm="handleCancel" v-show="!disableSubmit" okText="确定" cancelText="取消">
         <a-button style="margin-right: 15px;">取  消</a-button>
       </a-popconfirm>
       <a-popconfirm title="确定驳回？" @confirm="refuseBtn" v-show="!disableSubmit" okText="确定" cancelText="取消">
         <a-button type="danger" :loading="confirmLoading" style="margin-right: 15px;">驳回</a-button>
       </a-popconfirm>
       <a-button @click="submitBtn" v-show="!disableSubmit" type="primary" :loading="confirmLoading" style="margin-right: 15px;">审核通过</a-button>
-      <!--<a-button @click="choice" v-show="!disableSubmit" type="primary" :loading="confirmLoading" style="margin-right: 15px;">审核通过并打印</a-button>-->
+      <a-button @click="submitPrintBtn" v-show="!disableSubmit" type="primary" :loading="confirmLoading" style="margin-right: 15px;">审核通过并打印</a-button>
     </template>
 
     <pd-stock-record-in-print-modal ref="pdStockRecordInPrintModal"></pd-stock-record-in-print-modal>
+
   </j-modal>
 
 
@@ -249,7 +250,7 @@
         showOrderTable:false,
         orderNo:"",
         totalSum:'0',
-        totalPrice:'0.0000',
+        inTotalPrice:'0.0000',
         submitDateStr:"",
 
         //货区货位二级联动下拉框
@@ -393,7 +394,7 @@
                 this.pdPurchaseOrderDetailTable.dataSource = res.result.pdPurchaseOrderMergeDetail || [];
                 this.pdStockRecordDetailTable.dataSource = res.result.pdStockRecordDetailList || [];
                 this.totalSum = res.result.totalSum;
-                this.totalPrice = res.result.totalPrice.toString();
+                this.inTotalPrice = res.result.inTotalPrice.toString();
               }
 
               this.goodsAllocationList = res.result.goodsAllocationList;
@@ -411,9 +412,12 @@
         })
       },
       /**打印按钮**/
-      printBtn(){
+      printBtn(flag){
+        if(flag == "2"){
+          this.model.auditDate = this.form.getFieldValue("submitDate");
+        }
         this.model.totalSum = this.totalSum;
-        this.model.totalPrice = this.totalPrice;
+        this.model.inTotalPrice = this.inTotalPrice;
         this.model.pdStockRecordDetailList = this.pdStockRecordDetailTable.dataSource;
         this.$refs.pdStockRecordInPrintModal.show(this.model);
         this.$refs.pdStockRecordInPrintModal.title = "入库单";
@@ -436,6 +440,10 @@
             auditStatus: "3"  // 拒绝
           }
         this.request(params);
+      },
+      submitPrintBtn() {
+        // this.submitBtn();
+        this.printBtn("2");
       },
       /** 确定按钮点击事件 */
       submitBtn() {
@@ -484,12 +492,6 @@
         fetch(value, data => (this.supplierData = data),this.url.querySupplier);
       },
       //----------------供应商查询end
-      //选择标识符
-      choice() {
-        let record = {};
-        this.$refs.pdStockRecordInPrintModal.show(record);
-        this.$refs.pdStockRecordInPrintModal.title = "入库单";
-      },
     },
   }
 

@@ -28,8 +28,8 @@
               </a-col>
               <a-col :span="6">
                 <a-form-item label="入库类型" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                  <!--<j-dict-select-tag :triggerChange="true" v-decorator="['inType', validatorRules.inType]" title="入库类型" dictCode="in_type"/>-->
-                  <j-dict-select-tag-expand :disabled="disableSubmit" type="list" v-decorator="['inType', validatorRules.inType]" :trigger-change="true" dictCode="in_type" placeholder="请选择入库类型"/>
+                  <!--<j-dict-select-tag-expand :disabled="disableSubmit" type="list" v-decorator="['inType', validatorRules.inType]" :trigger-change="true" dictCode="in_type" placeholder="请选择入库类型"/>-->
+                  <j-dict-select-tag-expand disabled type="list" v-decorator="['inType', validatorRules.inType]" :trigger-change="true" dictCode="in_type" placeholder="请选择入库类型"/>
                 </a-form-item>
               </a-col>
               <a-col :span="6">
@@ -149,7 +149,7 @@
               </j-editable-table>
               <a-row style="margin-top:10px;text-align: right;padding-right: 5%">
                   <span style="font-weight: bold;font-size: large;padding-right: 5%">总数量：{{ totalSum }}</span>
-                  <span style="font-weight: bold;font-size: large">总金额：{{ totalPrice }}</span>
+                  <span style="font-weight: bold;font-size: large">总金额：{{ inTotalPrice }}</span>
               </a-row>
             </a-tab-pane>
           </a-tabs>
@@ -197,6 +197,7 @@
 
     <template slot="footer">
       <a-button @click="closeBtn" style="margin-right: 15px;" v-show="disableSubmit">关  闭</a-button>
+      <a-button @click="printBtn" style="margin-right: 15px;" type="primary" v-show="showPrintBtn">打  印</a-button>
       <a-popconfirm title="确定放弃编辑？" @confirm="handleCancel" v-show="!disableSubmit" okText="确定" cancelText="取消">
         <a-button style="margin-right: 15px;">取  消</a-button>
       </a-popconfirm>
@@ -209,6 +210,8 @@
 
     <pd-choose-purchase-order-list-model  ref="pdChoosePurchaseOrderListModel" @ok="returnPurchaseOrderData" ></pd-choose-purchase-order-list-model>
     <pd-choose-product-list-model  ref="pdChooseProductListModel" @ok="returnProductData" ></pd-choose-product-list-model>
+    <pd-stock-record-in-print-modal ref="pdStockRecordInPrintModal" ></pd-stock-record-in-print-modal>
+
   </j-modal>
 </template>
 
@@ -225,6 +228,7 @@
   import JDictSelectTagExpand from "@/components/dict/JDictSelectTagExpand"
   import ATextarea from "ant-design-vue/es/input/TextArea";
   import {scanCode} from '@/utils/barcode'
+  import PdStockRecordInPrintModal from "../print/PdStockRecordInPrintModal";
 
   const VALIDATE_NO_PASSED = Symbol()
   export { FormTypes, VALIDATE_NO_PASSED }
@@ -247,6 +251,7 @@
     name: 'PdStockRecordInModal',
     mixins: [JEditableTableMixin],
     components: {
+      PdStockRecordInPrintModal,
       ATextarea,
       PdChooseProductListModel,
       PdChoosePurchaseOrderListModel,
@@ -268,6 +273,7 @@
         wrapperCol4: {span: 5},
         disableSubmit:false,
         showCancelBtn:false,
+        showPrintBtn:false,
 
         initData:{},
         queryParam:{},
@@ -282,7 +288,7 @@
         // orderNo:"",
         mergeOrderNo:"",
         totalSum:'0',
-        totalPrice:'0.0000',
+        inTotalPrice:'0.0000',
         submitDateStr:"",
 
         //货区货位二级联动下拉框
@@ -427,6 +433,7 @@
       loadData() {
         this.loading = true;
         this.showCancelBtn = false;
+        this.showPrintBtn = false;
         //初始化供应商，用于回显供应商
         this.supplierHandleSearch();
 
@@ -435,6 +442,10 @@
             if(this.model.auditStatus == "1" && this.model.submitStatus == "2"){
               this.showCancelBtn = true;
             }
+            if(this.model.auditStatus == "2"){
+              this.showPrintBtn = true;
+            }
+
             this.popModal.title="入库明细";
           let fieldval = pick(this.model,'recordNo','mergeOrderNo','inType','submitBy','submitByName','submitDate','remarks','inDepartId','supplierId',
             'testResult','storageResult','temperature','humidity','remarks')
@@ -454,7 +465,7 @@
                 this.pdPurchaseOrderDetailTable.dataSource = res.result.pdPurchaseOrderMergeDetail || [];
                 this.pdStockRecordDetailTable.dataSource = res.result.pdStockRecordDetailList || [];
                 this.totalSum = res.result.totalSum;
-                this.totalPrice = res.result.totalPrice.toString();
+                this.inTotalPrice = res.result.inTotalPrice.toString();
               }else{
                 this.initData = res.result;
                 this.initData.isAllowProduct = "0";
@@ -492,6 +503,14 @@
         this.visible = false;
         this.$emit('ok');
         this.$emit('close');
+      },
+      /**打印按钮**/
+      printBtn(){
+        this.model.totalSum = this.totalSum;
+        this.model.inTotalPrice = this.inTotalPrice;
+        this.model.pdStockRecordDetailList = this.pdStockRecordDetailTable.dataSource;
+        this.$refs.pdStockRecordInPrintModal.show(this.model);
+        this.$refs.pdStockRecordInPrintModal.title = "入库单";
       },
       /** 关闭按钮点击事件 */
       handleCancel() {
@@ -659,7 +678,7 @@
       },
       supplierHandleChange(value) {
         this.totalSum = '0';
-        this.totalPrice = '0.0000';
+        this.inTotalPrice = '0.0000';
         this.eachAllTable((item) => {
           item.initialize()
         })
@@ -814,13 +833,13 @@
             rows = values;
           }
           let totalSum = 0;
-          let totalPrice = 0;
+          let inTotalPrice = 0;
           rows.forEach((item, idx) => {
             totalSum = totalSum + Number(item.productNum);
-            totalPrice = totalPrice + Number(item.inTotalPrice);
+            inTotalPrice = inTotalPrice + Number(item.inTotalPrice);
           })
           this.totalSum = totalSum;
-          this.totalPrice = totalPrice.toFixed(4);
+          this.inTotalPrice = inTotalPrice.toFixed(4);
         })
       },
       //清空扫码框

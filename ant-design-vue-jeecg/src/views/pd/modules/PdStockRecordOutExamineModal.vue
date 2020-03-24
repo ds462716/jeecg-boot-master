@@ -110,7 +110,7 @@
               </j-editable-table>
               <a-row style="margin-top:10px;text-align: right;padding-right: 5%">
                 <span style="font-weight: bold;font-size: large;padding-right: 5%">总数量：{{ totalSum }}</span>
-                <span style="font-weight: bold;font-size: large">总金额：{{ totalPrice }}</span>
+                <span style="font-weight: bold;font-size: large">总金额：{{ outTotalPrice }}</span>
               </a-row>
             </a-tab-pane>
           </a-tabs>
@@ -142,7 +142,8 @@
 
     <template slot="footer">
       <a-button @click="closeBtn" style="margin-right: 15px;" v-show="disableSubmit">关  闭</a-button>
-      <a-popconfirm title="确定放弃编辑？" @confirm="handleCancel" v-show="!disableSubmit" okText="确定" cancelText="取消">
+      <a-button @click="printBtn('1')" style="margin-right: 15px;" type="primary" v-show="disableSubmit">打  印</a-button>
+      <a-popconfirm title="确定放弃审核？" @confirm="handleCancel" v-show="!disableSubmit" okText="确定" cancelText="取消">
         <a-button style="margin-right: 15px;">取  消</a-button>
       </a-popconfirm>
       <a-popconfirm title="确定驳回？" @confirm="refuseBtn" v-show="!disableSubmit" okText="确定" cancelText="取消">
@@ -150,7 +151,11 @@
       </a-popconfirm>
       <!--<a-button @click="refuseBtn" v-show="!disableSubmit" type="danger" :loading="confirmLoading" style="margin-right: 15px;">驳回</a-button>-->
       <a-button @click="submitBtn" v-show="!disableSubmit" type="primary" :loading="confirmLoading" style="margin-right: 15px;">审核通过</a-button>
+      <a-button @click="submitPrintBtn" v-show="!disableSubmit" type="primary" :loading="confirmLoading" style="margin-right: 15px;">审核通过并打印</a-button>
     </template>
+
+    <pd-stock-record-out-print-modal ref="pdStockRecordOutPrintModal"></pd-stock-record-out-print-modal>
+
   </j-modal>
 </template>
 
@@ -164,6 +169,7 @@
   import JDictSelectTagExpand from "@/components/dict/JDictSelectTagExpand"
   import ATextarea from "ant-design-vue/es/input/TextArea";
   import {stockScanCode} from '@/utils/barcode'
+  import PdStockRecordOutPrintModal from "../print/PdStockRecordOutPrintModal";
 
   const VALIDATE_NO_PASSED = Symbol()
   export { FormTypes, VALIDATE_NO_PASSED }
@@ -172,6 +178,7 @@
     name: 'PdStockRecordOutModal',
     mixins: [JEditableTableMixin],
     components: {
+      PdStockRecordOutPrintModal,
       ATextarea,
       JDate,
       JDictSelectTagExpand
@@ -205,8 +212,10 @@
         applyNo:"",
         allocationNo:"",
         totalSum:'0',
-        totalPrice:'0.0000',
+        outTotalPrice:'0.0000',
+        inTotalPrice:'0.0000',
         submitDateStr:"",
+        auditByName:"",
         args:{},
         //货区货位二级联动下拉框
         goodsAllocationList:[],
@@ -338,7 +347,11 @@
                 this.showOrderTable = true;
                 this.pdStockRecordDetailTable.dataSource = res.result.pdStockRecordDetailList || [];
                 this.totalSum = res.result.totalSum;
-                this.totalPrice = res.result.totalPrice.toString();
+                this.outTotalPrice = res.result.outTotalPrice.toString();
+                this.inTotalPrice = res.result.inTotalPrice.toString();
+                if(!this.model.auditByName){
+                  this.model.auditByName = res.result.auditByName;
+                }
                 if(res.result.outType == "1"){
                   this.orderTableTitle = "申领单明细";
                   let pdApplyDetailList = res.result.pdApplyDetailList || [];
@@ -379,6 +392,18 @@
       closeBtn(){
         this.close();
       },
+      /**打印按钮**/
+      printBtn(flag){
+        if(flag == "2"){
+          this.model.auditDate = this.form.getFieldValue("submitDate");
+        }
+        this.model.totalSum = this.totalSum;
+        this.model.outTotalPrice = this.outTotalPrice;
+        this.model.inTotalPrice = this.inTotalPrice;
+        this.model.pdStockRecordDetailList = this.pdStockRecordDetailTable.dataSource;
+        this.$refs.pdStockRecordOutPrintModal.show(this.model);
+        this.$refs.pdStockRecordOutPrintModal.title = "出库单";
+      },
       /** 关闭按钮点击事件 */
       handleCancel() {
         this.$emit('ok');
@@ -393,6 +418,10 @@
             auditStatus: "3"  // 拒绝
           }
         this.request(params);
+      },
+      submitPrintBtn(){
+        this.submitBtn();
+        this.printBtn("2");
       },
       /** 确定按钮点击事件 */
       submitBtn() {
@@ -451,13 +480,13 @@
             rows = values;
           }
           let totalSum = 0;
-          let totalPrice = 0;
+          let outTotalPrice = 0;
           rows.forEach((item, idx) => {
             totalSum = totalSum + Number(item.productNum);
-            totalPrice = totalPrice + Number(item.outTotalPrice);
+            outTotalPrice = outTotalPrice + Number(item.outTotalPrice);
           })
           this.totalSum = totalSum;
-          this.totalPrice = totalPrice.toFixed(4);
+          this.outTotalPrice = outTotalPrice.toFixed(4);
         })
       },
     },

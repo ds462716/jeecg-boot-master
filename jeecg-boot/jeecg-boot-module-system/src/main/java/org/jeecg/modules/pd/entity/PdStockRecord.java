@@ -200,7 +200,9 @@ public class PdStockRecord extends BaseEntity {
     private String auditByName;
 
     @TableField(exist = false)
-    private BigDecimal totalPrice;//总金额	@TableField(exist = false)
+    private BigDecimal inTotalPrice;//总金额	@TableField(exist = false)
+    @TableField(exist = false)
+    private BigDecimal outTotalPrice;// 出库总金额	@TableField(exist = false)
     @TableField(exist = false)
     private Double totalSum;//总数量
 

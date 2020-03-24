@@ -57,7 +57,7 @@
 
           <a-divider type="vertical" />
           <a-dropdown>
-            <a class="ant-dropdown-link">更多 <a-icon type="down" /></a>
+            <a class="ant-dropdown-link" v-bind:disabled="record.submitStatus=='2'" >更多 <a-icon type="down" /></a>
             <a-menu slot="overlay">
               <a-menu-item v-show="record.submitStatus=='1' || record.submitStatus=='3'"> <!--待提交、已撤回-->
                 <a-popconfirm title="确定删除吗?"  @confirm="() => handleDelete(record.id)"  >
