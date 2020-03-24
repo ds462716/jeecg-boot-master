@@ -19,7 +19,7 @@
             </a-form-item>
           </a-col>
           <a-col :lg="1" >
-            <a-button @click="getNumber"  v-show="!disableSubmit" type="primary">生成</a-button>
+            <a-button @click="getNumber"  v-show="!focusDisable" type="primary">生成</a-button>
           </a-col>
         </a-row>
         <a-row class="form-row" :gutter="{ xs: 8, sm: 16, md: 24, lg: 32 }">
@@ -368,6 +368,7 @@
   import JSelectEncodingRule from '@/components/jeecgbiz/JSelectEncodingRule'
   import { generateNumber,getPrdNumber,scanCode } from '@/utils/barcode'
   import {duplicateCheckHasDelFlag } from '@/api/api'
+  import {isDisabledNumber } from '@/api/api'
 
   let timeout;
   let currentValue;
@@ -433,7 +434,7 @@
         width:1200,
         visible: false,
         disableSubmit:false,
-        focusDisable:false,
+        focusDisable:false,//用于产品编号是否禁用
         previewVisible: false,
         previewImage: '',
         model: {},
@@ -655,7 +656,12 @@
           if(this.disableSubmit){
             this.focusDisable = true;
           }else{
-            this.focusDisable = false;
+            //校验产品编号是否禁用
+            if(record.id){
+              this.isDisabledNumber(record.id);
+            }else{
+              this.focusDisable = false;
+            }
           }
         })
       },
@@ -882,6 +888,19 @@
             callback("产品编号已存在!")
           }
         })
+      },
+      //是否禁用产品编号
+      isDisabledNumber(productId){
+        if(productId == ""){
+          return;
+        }
+        isDisabledNumber({id:productId}).then((res)=>{
+          if(res.success){
+            this.focusDisable = false;
+          }else{
+            this.focusDisable = true;
+          }
+        });
       },
     }
   }

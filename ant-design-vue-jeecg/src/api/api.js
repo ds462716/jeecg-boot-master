@@ -125,6 +125,10 @@ const saveNDeptRolePermission = (params)=>postAction("/pd/pdDepart/saveDeptRoleP
 const queryUserDepart = (params)=>getAction("/pd/pdDepart/queryUserDepart",params);
 const queryAllDepart = (params)=>getAction("/pd/pdDepart/queryAllDepart",params);
 
+//产品校验编号是否禁用
+const isDisabledNumber = (params)=>getAction("/pd/pdProduct/isDisabledNumber",params);
+
+
 
 export {
   // imgView,
@@ -193,7 +197,8 @@ export {
   queryPermissionTreeList,
   saveNDeptRolePermission,
   queryUserDepart,
-  queryAllDepart
+  queryAllDepart,
+  isDisabledNumber
 }
 
 
