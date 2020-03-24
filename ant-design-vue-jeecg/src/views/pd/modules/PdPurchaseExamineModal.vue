@@ -80,16 +80,20 @@
           </a-form>
         </a-card>
       </div>
-      <pd-apply-stock-record-out-modal ref="stockForm"></pd-apply-stock-record-out-modal>
     </a-spin>
     <template slot="footer">
       <a-button @click="closeBtn" style="margin-right: 15px;" v-show="disableSubmit">关  闭</a-button>
+      <a-button @click="submitPrintBtn" style="margin-right: 15px;" type="primary" v-show="disableSubmit">打  印</a-button>
       <a-popconfirm title="确定放弃审核？" @confirm="handleCancel" v-show="!disableSubmit" okText="确定" cancelText="取消">
         <a-button style="margin-right: 15px;">取  消</a-button>
       </a-popconfirm>
       <a-button @click="handleOk('no')" v-show="!disableSubmit" type="danger" :loading="confirmLoading" style="margin-right: 15px;">驳 回</a-button>
       <a-button @click="handleOk('yes')" v-show="!disableSubmit" type="primary" :loading="confirmLoading" style="margin-right: 15px;">审核通过</a-button>
+      <a-button @click="handleOk('yesToPrint')" v-show="!disableSubmit" type="primary" :loading="confirmLoading" style="margin-right: 15px;">审核通过并打印</a-button>
+
     </template>
+    <pd-apply-stock-record-out-modal ref="stockForm"></pd-apply-stock-record-out-modal>
+    <pd-purchase-order-print-modal ref="PdPurchaseOrderPrintModal" ></pd-purchase-order-print-modal>
   </j-modal>
 </template>
 <script>
@@ -101,12 +105,17 @@
   import JDate from '@/components/jeecg/JDate'
   import JDictSelectTag from "@/components/dict/JDictSelectTag"
   import PdApplyStockRecordOutModal from './PdStockRecordOutModal'
-
+  import PdPurchaseOrderPrintModal from '../print/PdPurchaseOrderPrintModal'
 
   export default {
     name: 'PdApplyOrderModal',
     mixins: [JEditableTableMixin],
-    components: {JDate, JDictSelectTag,PdApplyStockRecordOutModal},
+    components: {
+      JDate,
+      JDictSelectTag,
+      PdApplyStockRecordOutModal,
+      PdPurchaseOrderPrintModal
+       },
     data() {
       return {
         title: '这里是标题',
@@ -191,6 +200,13 @@
           return
         }
       },
+
+      submitPrintBtn() {  //通过并打印
+        this.model.pdPurchaseDetailList = this.pdPurchaseDetailTable.dataSource;
+        this.$refs.PdPurchaseOrderPrintModal.show(this.model);
+        this.$refs.PdPurchaseOrderPrintModal.title = "采购单";
+      },
+
       handleOk (type) { //审核提交
         this.model.auditStatus='2';//审核通过
         this.model.submitStatus='2';//已提交
@@ -215,6 +231,9 @@
               if (res.success) {
                 that.$message.success("操作成功");
                 that.$emit('ok');
+                if(type=="yesToPrint"){//通过并打印
+                  this.submitPrintBtn();
+                }
               } else {
                 that.$message.warning(res.message);
               }
