@@ -300,6 +300,19 @@ public class PdProductController extends JeecgController<PdProduct, IPdProductSe
         pdProductService.updateProduct(pdProduct);
         return Result.ok("编辑成功！");
     }
+
+	 /**
+	  * 判断产品编号是否禁用
+	  * @param pdProduct
+	  * @param request
+	  * @return
+	  */
+	 @RequestMapping(value = "/isDisabledNumber", method = RequestMethod.GET)
+	 public Result<Object> isDisabledNumber(PdProduct pdProduct, HttpServletRequest request) {
+		 Result<Object>   bl = pdProductService.isDisabledNumber(pdProduct);
+		 return bl;
+	 }
+
 	
 	/**
 	 *  编辑

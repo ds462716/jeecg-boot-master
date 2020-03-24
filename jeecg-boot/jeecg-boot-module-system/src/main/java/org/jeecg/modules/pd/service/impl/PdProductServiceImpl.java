@@ -498,6 +498,29 @@ public class PdProductServiceImpl extends ServiceImpl<PdProductMapper, PdProduct
 
     }
 
+    /**
+     * 判断产品编号是否禁用
+     * @param pdProduct
+     * @return
+     */
+    @Override
+    public Result<Object> isDisabledNumber(PdProduct pdProduct) {
+        if(oConvertUtils.isEmpty(pdProduct.getId())){
+            return Result.ok();
+        }
+        //查询入库记录
+        PdStockRecordDetail pdStockRecordDetail = new PdStockRecordDetail();
+        pdStockRecordDetail.setProductId(pdProduct.getId());
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        pdStockRecordDetail.setDepartParentId(sysUser.getDepartParentId());
+        List<PdStockRecordDetail> pdStockRecordDetails = pdStockRecordDetailService.queryPdStockRecordDetail(pdStockRecordDetail);
+        if(CollectionUtils.isNotEmpty(pdStockRecordDetails)){
+            return Result.error("");
+        }else{
+            return Result.ok();
+        }
+    }
+
     @Transactional(rollbackFor = Exception.class)
     @Override
     public Result<Object> importExcel(Map<String, MultipartFile> fileMap) {
