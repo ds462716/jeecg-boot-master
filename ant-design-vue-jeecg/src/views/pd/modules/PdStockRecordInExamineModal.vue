@@ -176,8 +176,9 @@
       </a-popconfirm>
       <a-button @click="submitBtn" v-show="!disableSubmit" type="primary" :loading="confirmLoading" style="margin-right: 15px;">审核通过</a-button>
       <!--<a-button @click="choice" v-show="!disableSubmit" type="primary" :loading="confirmLoading" style="margin-right: 15px;">审核通过并打印</a-button>-->
-      <PdStockRecordInExaminePrint-modal ref="pdStockRecordInExaminePrintModal"></PdStockRecordInExaminePrint-modal>
     </template>
+
+    <pd-stock-record-in-print-modal ref="pdStockRecordInPrintModal"></pd-stock-record-in-print-modal>
   </j-modal>
 
 
@@ -194,7 +195,7 @@
   import JDictSelectTagExpand from "@/components/dict/JDictSelectTagExpand"
   import ATextarea from "ant-design-vue/es/input/TextArea";
   import {scanCode} from '@/utils/barcode'
-  import PdStockRecordInExaminePrintModal from './PdStockRecordInExaminePrintModal'
+  import PdStockRecordInPrintModal from '../print/PdStockRecordInPrintModal'
 
   const VALIDATE_NO_PASSED = Symbol()
   export { FormTypes, VALIDATE_NO_PASSED }
@@ -217,10 +218,10 @@
     name: 'PdStockRecordInExamineModal',
     mixins: [JEditableTableMixin],
     components: {
+      PdStockRecordInPrintModal,
       ATextarea,
       JDate,
       JDictSelectTagExpand,
-      PdStockRecordInExaminePrintModal
     },
     data() {
       return {
@@ -511,8 +512,8 @@
         productArray.push(product);
         productArray.push(product1);
         record.productArray = productArray;
-        this.$refs.pdStockRecordInExaminePrintModal.show(record);
-        this.$refs.pdStockRecordInExaminePrintModal.title = "入库单";
+        this.$refs.pdStockRecordInPrintModal.show(record);
+        this.$refs.pdStockRecordInPrintModal.title = "入库单";
       },
     },
   }
