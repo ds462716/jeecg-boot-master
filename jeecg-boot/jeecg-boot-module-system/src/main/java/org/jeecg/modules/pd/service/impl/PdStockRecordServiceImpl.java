@@ -220,18 +220,28 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
     }
 
     @Override
-    public List<PdStockRecord> queryList(PdStockRecord pdStockRecord) {
+    public List<PdStockRecord> queryList(PdStockRecord pdStockRecord,String recodeType) {
         LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
         pdStockRecord.setDepartParentId(sysUser.getDepartParentId());
-        pdStockRecord.setDepartId(sysUser.getCurrentDepartId());
+//        pdStockRecord.setDepartId(sysUser.getCurrentDepartId());
+        if(PdConstant.RECODE_TYPE_1.equals(recodeType)){
+            pdStockRecord.setInDepartId(sysUser.getCurrentDepartId());
+        }else if(PdConstant.RECODE_TYPE_2.equals(recodeType)){
+            pdStockRecord.setOutDepartId(sysUser.getCurrentDepartId());
+        }
         return pdStockRecordMapper.selectList(pdStockRecord);
     }
 
     @Override
-    public Page<PdStockRecord> queryList(Page<PdStockRecord> pageList, PdStockRecord pdStockRecord) {
+    public Page<PdStockRecord> queryList(Page<PdStockRecord> pageList, PdStockRecord pdStockRecord,String recodeType) {
         LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
         pdStockRecord.setDepartParentId(sysUser.getDepartParentId());
-        pdStockRecord.setDepartId(sysUser.getCurrentDepartId());
+//        pdStockRecord.setDepartId(sysUser.getCurrentDepartId());
+        if(PdConstant.RECODE_TYPE_1.equals(recodeType)){
+            pdStockRecord.setInDepartId(sysUser.getCurrentDepartId());
+        }else if(PdConstant.RECODE_TYPE_2.equals(recodeType)){
+            pdStockRecord.setOutDepartId(sysUser.getCurrentDepartId());
+        }
         return pageList.setRecords(pdStockRecordMapper.selectList(pdStockRecord));
     }
 

@@ -48,6 +48,7 @@
                     placeholder="请选择供应商"
                     :defaultActiveFirstOption="false"
                     :showArrow="true"
+                    :allowClear="true"
                     :filterOption="false"
                     @search="supplierHandleSearch"
                     @change="supplierHandleChange"
@@ -94,6 +95,11 @@
 
           </a-row>
         </a-form>
+      </div>
+
+      <div class="ant-alert ant-alert-info" style="margin-bottom: 16px;">
+        <i class="anticon anticon-info-circle ant-alert-icon"></i> 已选择 <a style="font-weight: 600">{{ selectedRowKeys.length }}</a>项
+        <a style="margin-left: 24px" @click="onClearSelected">清空</a>
       </div>
       <!-- 查询区域-END -->
       <a-table
@@ -191,6 +197,16 @@
             title: '生产厂家',
             align:"center",
             dataIndex: 'venderName'
+          },
+          {
+            title: '收费代码',
+            align:"center",
+            dataIndex: 'chargeCode'
+          },
+          {
+            title: '注册证',
+            align:"center",
+            dataIndex: 'registration'
           },
           {
             title: '进价',
