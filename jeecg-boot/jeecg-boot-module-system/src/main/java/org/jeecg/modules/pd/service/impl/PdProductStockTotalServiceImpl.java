@@ -383,6 +383,61 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
 	}
 
 	/**
+	 * 库存移库位更新库存信息
+	 * @param productStock
+	 * @return
+	 * */
+	@Transactional(rollbackFor = Exception.class)
+	@Override
+	public String updateStockHuowei(PdProductStock productStock) {
+		String huoWeiCode=productStock.getHuoweiCode();
+		Double stockNum=productStock.getStockNum();
+		Double ykStockNum=productStock.getYkStockNum();
+		//先判断修改后的货位下是否存在当前批次的产品
+		PdProductStock i_productStockq = new PdProductStock();
+		i_productStockq.setDepartId(productStock.getDepartId());
+		i_productStockq.setProductId(productStock.getProductId());
+		i_productStockq.setProductBarCode(productStock.getProductBarCode());//2019年7月24日16:53:43 放开
+		i_productStockq.setBatchNo(productStock.getBatchNo());
+		i_productStockq.setHuoweiCode(huoWeiCode);
+		List<PdProductStock> i_productStocks = pdProductStockMapper.selectList(i_productStockq);
+		//如果库存明细表不存在，直接修改货位就行
+		if(CollectionUtils.isEmpty(i_productStocks) || i_productStocks.size() == 0){
+			PdProductStock pdproductStock = new PdProductStock();
+			pdproductStock.setDepartId(productStock.getDepartId());
+			pdproductStock.setProductId(productStock.getProductId());
+			pdproductStock.setProductBarCode(productStock.getProductBarCode());
+			pdproductStock.setStockNum(ykStockNum);
+			pdproductStock.setProductName(productStock.getProductName());
+			pdproductStock.setBatchNo(productStock.getBatchNo());
+			pdproductStock.setHuoweiCode(huoWeiCode);
+			pdproductStock.setExpDate(productStock.getExpDate());
+			pdproductStock.setSupplierId(productStock.getSupplierId());
+			pdproductStock.setProduceDate(productStock.getProduceDate());
+			productStockService.save(pdproductStock);
+			//更新老货位上的库存数量
+			PdProductStock pdproductStock_1 = new PdProductStock();
+			pdproductStock_1.setStockNum(stockNum-ykStockNum);
+			pdproductStock_1.setId(productStock.getId());
+			productStockService.updateProductStock(pdproductStock_1);
+		}else{ //如果修改后的货位已经有耗材存在，则在新货位上增加数量,之前货位的数量减去移库的数量
+			PdProductStock stock = i_productStocks.get(0);
+			if(!stock.getId().equals(productStock.getId())){
+				//更新新货位上的库存数量
+				stock.setStockNum(ykStockNum + stock.getStockNum());
+				pdProductStockMapper.updateById(stock);
+				//更新老货位上的库存数量
+				productStock.setStockNum(stockNum-ykStockNum);
+				PdProductStock pdproductStock_2 = new PdProductStock();
+				pdproductStock_2.setStockNum(stockNum-ykStockNum);
+				pdproductStock_2.setId(productStock.getId());
+				pdProductStockMapper.updateProductStock(pdproductStock_2);
+			}
+		}
+		return PdConstant.TRUE;
+	}
+
+	/**
 	 * 获取待盘点产品总数量
 	 * @param stockTotal
 	 * @return

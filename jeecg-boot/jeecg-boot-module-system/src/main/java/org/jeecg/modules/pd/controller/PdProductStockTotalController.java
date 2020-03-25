@@ -9,12 +9,15 @@ import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.PdConstant;
 import org.jeecg.common.system.vo.LoginUser;
+import org.jeecg.modules.pd.entity.PdGoodsAllocation;
 import org.jeecg.modules.pd.entity.PdProductStock;
 import org.jeecg.modules.pd.entity.PdProductStockTotal;
 import org.jeecg.modules.pd.entity.PdStockRecordDetail;
+import org.jeecg.modules.pd.service.IPdGoodsAllocationService;
 import org.jeecg.modules.pd.service.IPdProductStockService;
 import org.jeecg.modules.pd.service.IPdProductStockTotalService;
 import org.jeecg.modules.pd.service.IPdStockRecordDetailService;
+import org.jeecg.modules.pd.vo.PdGoodsAllocationPage;
 import org.jeecg.modules.pd.vo.PdProductStockTotalPage;
 import org.jeecg.modules.system.entity.SysDepart;
 import org.jeecg.modules.system.service.ISysDepartService;
@@ -32,7 +35,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
- /**
+/**
  * @Description: 库存总表
  * @Author: jeecg-boot
  * @Date:   2020-02-11
@@ -50,6 +53,8 @@ public class PdProductStockTotalController {
 	 private ISysDepartService sysDepartService;
 	 @Autowired
 	 private IPdStockRecordDetailService pdStockRecordDetailService;
+	@Autowired
+	private IPdGoodsAllocationService pdGoodsAllocationService;
 	 /**
 	  * 分页列表查询
 	  *
@@ -390,6 +395,48 @@ public class PdProductStockTotalController {
 		  }
 		 page = pdProductStockTotalService.selectList(page,stockTotalPage);
 		 return Result.ok(page);
+	 }
+
+
+
+	 /**
+	  * 修改库存明细信息（暂时修改产品生产日期用）
+	  *
+	  * @param productStock
+	  * @return
+	  */
+	 @PutMapping(value = "/updateStock")
+	 public Result<?> updateStock(@RequestBody PdProductStock productStock) {
+		 pdProductStockService.updateById(productStock);
+		 return Result.ok("编辑成功!");
+	 }
+
+	 /**
+	  * 获取科室下所有货位信息
+	  */
+
+	@GetMapping(value = "/queryHuoWei")
+	public Result<List<PdGoodsAllocationPage>> queryHuoWei() {
+		Result<List<PdGoodsAllocationPage>> result = new Result<>();
+		PdGoodsAllocation pdGoodsAllocation = new PdGoodsAllocation();
+		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		pdGoodsAllocation.setDepartId(sysUser.getCurrentDepartId());
+		pdGoodsAllocation.setAreaType(PdConstant.GOODS_ALLCATION_AREA_TYPE_2);
+		List<PdGoodsAllocationPage> goodsAllocationList = pdGoodsAllocationService.getOptionsForSelect(pdGoodsAllocation);
+		result.setResult(goodsAllocationList);
+		result.setSuccess(true);
+		return result;
+	}
+	 /**
+	  *库存明细移库操作
+	  *
+	  * @param productStock
+	  * @return
+	  */
+	 @PutMapping(value = "/updateStockHuowei")
+	 public Result<?> updateStockHuowei(@RequestBody PdProductStock productStock) {
+		 pdProductStockTotalService.updateStockHuowei(productStock);
+		 return Result.ok("操作成功!");
 	 }
 
 }

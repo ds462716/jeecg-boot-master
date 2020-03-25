@@ -157,4 +157,8 @@ public class PdProductStock extends BaseEntity {
 	/** 是否计费 **/
 	@TableField(exist = false)
 	private String isCharge;
+	/** 移库数量 **/
+	@TableField(exist = false)
+	private Double ykStockNum;
+
 }

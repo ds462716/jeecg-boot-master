@@ -211,6 +211,12 @@
 		<if test="expStatus!=null and expStatus!='' ">
 			exp_status = #{expStatus}
 		</if>
+		<if test="stockNum !=null and stockNum!='' ">
+			stock_num = #{stockNum}
+		</if>
+		<if test="huoweiCode !=null and huoweiCode!='' ">
+			huowei_code = #{huoweiCode}
+		</if>
 		<if test="isLong!=null and isLong!='' ">
 			is_long = #{isLong}
 		</if>

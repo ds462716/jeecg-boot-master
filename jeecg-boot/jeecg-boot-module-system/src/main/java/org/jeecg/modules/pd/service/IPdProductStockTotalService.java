@@ -71,4 +71,13 @@ public interface IPdProductStockTotalService extends IService<PdProductStockTota
      * @return
      */
     String updateRejectedStock(PdRejected pdRejected);
+
+    /**
+     * 库存移库更新库存信息
+     * @param productStock
+     * @return
+     * */
+    public String updateStockHuowei(PdProductStock productStock);
+
+
 }

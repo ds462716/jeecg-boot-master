@@ -54,9 +54,17 @@
         :pagination="ipagination"
         :rowClassName="setdataCss"
         :loading="loading"
+        :scroll="tableScroll"
         @change="handleTableChange">
+         <span slot="action" slot-scope="text, record">
+          <a  @click="yiHuoWei(record)">移库</a>
+         <a-divider type="vertical"/>
+        <a v-bind:disabled="record.produceDate!=null" @click="handleEdit(record)">修改</a>
+         </span>
       </a-table>
     </a-spin>
+     <pd-update-stock-modal ref="PdUpdateStockModal" @ok="modalFormOk"></pd-update-stock-modal>
+     <pd-stock-huo-wei-modal ref="PdStockHuoWeiModal" @ok="modalFormOk"></pd-stock-huo-wei-modal>
   </a-modal>
 </template>
 
@@ -66,6 +74,9 @@
   import { httpAction,getAction } from '@/api/manage'
   import { JeecgListMixin } from '@/mixins/JeecgListMixin'
   import {initDictOptions, filterMultiDictText} from '@/components/dict/JDictSelectUtil'
+  import PdUpdateStockModal from './PdUpdateStockModal'
+  import PdStockHuoWeiModal from './PdStockHuoWeiModal'
+  import JDate from "../../../components/jeecg/JDate";
 
   const VALIDATE_NO_PASSED = Symbol()
   export { FormTypes, VALIDATE_NO_PASSED }
@@ -73,6 +84,9 @@
     name: "PdProductStockModel",
     mixins:[JeecgListMixin],
     components: {
+      JDate,
+      PdUpdateStockModal,
+      PdStockHuoWeiModal
     },
     data () {
       return {
@@ -118,6 +132,11 @@
             title:'批号',
             align:"center",
             dataIndex: 'batchNo'
+          },
+          {
+            title:'生产日期',
+            align:"center",
+            dataIndex: 'produceDate'
           },
           {
             title:'有效期',
@@ -172,6 +191,13 @@
                 return filterMultiDictText(this.dictOptions['isLong'], text+"")
               }
             }
+          },
+          {
+            title: '操作',
+            dataIndex: 'action',
+            width:100,
+            align:"center",
+            scopedSlots: { customRender: 'action' }
           }
         ],
         url: {
@@ -181,6 +207,7 @@
           expStatus:[],
           isLong:[],
         },
+        tableScroll:{x :10*140+30},
       }
     },
     created () {
@@ -213,6 +240,11 @@
           this.loading = false;
         })
       },
+
+      modalFormOk(record){
+        this.loadData(1);
+      },
+
       edit (record) {
         this.form.resetFields();
         this.model = Object.assign({}, record);
@@ -240,6 +272,18 @@
       popupCallback(row){
 
       },
+      handleEdit: function (record) { //修改
+        this.$refs.PdUpdateStockModal.edit(record);
+        this.$refs.PdUpdateStockModal.title = "编辑";
+        this.$refs.PdUpdateStockModal.disableSubmit = false;
+      },
+
+      yiHuoWei: function (record) { //移库
+        this.$refs.PdStockHuoWeiModal.edit(record);
+        this.$refs.PdStockHuoWeiModal.title = "移库";
+        this.$refs.PdStockHuoWeiModal.disableSubmit = false;
+      },
+
 
       initDictConfig(){ //静态字典值加载
         initDictOptions('exp_status').then((res) => { //是否过期字典转换
