@@ -157,7 +157,7 @@
           }
         })
     }
-    timeout = setTimeout(fake, 300);
+    timeout = setTimeout(fake, 0);
   }
   export default {
     name: "PdEncodingRuleList",

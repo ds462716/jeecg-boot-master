@@ -216,7 +216,7 @@
         }
       })
     }
-    timeout = setTimeout(fake, 300);
+    timeout = setTimeout(fake, 0);
   }
 
   import { httpAction } from '@/api/manage'
