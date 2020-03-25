@@ -8,9 +8,11 @@ import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.modules.system.entity.SysDepartRole;
+import org.jeecg.modules.system.entity.SysDepartRolePermission;
 import org.jeecg.modules.system.entity.SysDepartRoleUser;
 import org.jeecg.modules.system.mapper.SysDepartRoleMapper;
 import org.jeecg.modules.system.mapper.SysDepartRoleUserMapper;
+import org.jeecg.modules.system.service.ISysDepartRolePermissionService;
 import org.jeecg.modules.system.service.ISysDepartRoleService;
 import org.jeecg.modules.system.service.ISysDepartRoleUserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +35,13 @@ public class SysDepartRoleServiceImpl extends ServiceImpl<SysDepartRoleMapper, S
 
     @Autowired
     private ISysDepartRoleUserService departRoleUserService;
+
+    @Autowired
+    private ISysDepartRolePermissionService sysDepartRolePermissionService;
+
+    @Autowired
+    private ISysDepartRoleUserService sysDepartRoleUserService;
+
 
     @Autowired
     private SqlSession sqlsession;
@@ -69,6 +78,8 @@ public class SysDepartRoleServiceImpl extends ServiceImpl<SysDepartRoleMapper, S
                         continue;
                     }
                     dao.deleteById(id);
+                    sysDepartRolePermissionService.remove(new QueryWrapper<SysDepartRolePermission>().lambda().eq(SysDepartRolePermission::getRoleId, id));
+                    sysDepartRoleUserService.remove(new QueryWrapper<SysDepartRoleUser>().lambda().eq(SysDepartRoleUser::getDroleId, id));
                 }
                 if(bl){
                     return Result.ok("批量删除成功!");
