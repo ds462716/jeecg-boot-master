@@ -174,6 +174,16 @@
             </a-row>
           </a-form>
         </a-card>
+
+        <a-card style="margin-top: 10px;" v-show="showRefuseReason">
+          <a-form :form="form">
+            <a-col :span="12">
+              <a-form-item label="审批意见" :labelCol="labelCol2" :wrapperCol="wrapperCol2" style="text-align: left">
+                <a-textarea disabled v-decorator="[ 'refuseReason', validatorRules.refuseReason]" placeholder="请输入审批意见"></a-textarea>
+              </a-form-item>
+            </a-col>
+          </a-form>
+        </a-card>
       </div>
 
     </a-spin>
@@ -261,6 +271,7 @@
         disableSubmit2:false,
         showCancelBtn:false,
         showPrintBtn:false,
+        showRefuseReason:false,
 
         initData:{},
         queryParam:{},
@@ -423,6 +434,7 @@
         this.loading = true;;
         this.showCancelBtn = false;
         this.showPrintBtn = false;
+        this.showRefuseReason = false;
         this.departHandleSearch();  // 初始化部门列表 用于数据回显
         let params = {};
         if(this.model.id){
@@ -432,9 +444,12 @@
           if(this.model.auditStatus == "2"){
             this.showPrintBtn = true;
           }
+          if(this.model.auditStatus == "2" || this.model.auditStatus == "3"){
+            this.showRefuseReason = true;
+          }
           this.popModal.title="出库明细";
           let fieldval = pick(this.model,'recordNo','outType','submitBy','submitByName','submitDate','applyNo','allocationNo',
-            'inDepartId','outDepartId','outDepartName','remarks')
+            'inDepartId','outDepartId','outDepartName','remarks','refuseReason')
           this.$nextTick(() => {
             this.applyNo = this.model.applyNo;
             this.allocationNo = this.model.allocationNo;
@@ -488,7 +503,7 @@
                 this.initData = res.result;
                 this.submitDateStr = res.result.submitDateStr;
                 let fieldval = pick(this.initData,'recordNo','outType','submitBy','submitByName','submitDate','applyNo','allocationNo',
-                  'inDepartId','outDepartId','outDepartName','remarks');
+                  'inDepartId','outDepartId','outDepartName','remarks','refuseReason');
                 this.form.setFieldsValue(fieldval);
                 //获取光标
                 this.$refs['productNumberInput'].focus();
@@ -684,7 +699,7 @@
       },
       popupCallback(row){
         this.form.setFieldsValue(pick(row,'recordNo','outType','submitBy','submitByName','submitDate','applyNo','allocationNo',
-          'inDepartId','outDepartId','outDepartName','remarks'))
+          'inDepartId','outDepartId','outDepartName','remarks','refuseReason'))
       },
       // 部门下拉框搜索
       departHandleSearch(value){

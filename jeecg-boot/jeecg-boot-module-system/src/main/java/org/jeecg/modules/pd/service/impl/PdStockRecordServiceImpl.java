@@ -99,6 +99,7 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
         if (oConvertUtils.isNotEmpty(pdStockRecord.getId())) {
             this.delMain(pdStockRecord.getId());
         }
+        pdStockRecord.setRefuseReason("");//清空审批意见
         pdStockRecord.setCreateTime(DateUtils.getDate());
         if (PdConstant.RECODE_TYPE_1.equals(recordType)) {
             pdStockRecord.setRecordType(PdConstant.RECODE_TYPE_1); // 入库

@@ -26,16 +26,16 @@
     <!-- 查询区域-END -->
     
     <!-- 操作按钮区域 -->
-    <div class="table-operator">
-      <a-button type="primary" icon="download" @click="handleExportXls('出库记录表')">导出</a-button>
-    </div>
+    <!--<div class="table-operator">-->
+      <!--<a-button type="primary" icon="download" @click="handleExportXls('出库记录表')">导出</a-button>-->
+    <!--</div>-->
 
     <!-- table区域-begin -->
     <div>
-      <div class="ant-alert ant-alert-info" style="margin-bottom: 16px;">
-        <i class="anticon anticon-info-circle ant-alert-icon"></i> 已选择 <a style="font-weight: 600">{{ selectedRowKeys.length }}</a>项
-        <a style="margin-left: 24px" @click="onClearSelected">清空</a>
-      </div>
+      <!--<div class="ant-alert ant-alert-info" style="margin-bottom: 16px;">-->
+        <!--<i class="anticon anticon-info-circle ant-alert-icon"></i> 已选择 <a style="font-weight: 600">{{ selectedRowKeys.length }}</a>项-->
+        <!--<a style="margin-left: 24px" @click="onClearSelected">清空</a>-->
+      <!--</div>-->
 
       <a-table
         ref="table"

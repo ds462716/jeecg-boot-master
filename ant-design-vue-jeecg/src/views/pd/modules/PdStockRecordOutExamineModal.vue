@@ -411,10 +411,15 @@
       },
       /** 拒绝 **/
       refuseBtn() {
+        let refuseReason = this.form.getFieldValue("refuseReason");
+        if(!refuseReason){
+          this.$message.warning("请填写审批意见！");
+          return;
+        }
         let params =
           {
             id: this.model.id,
-            refuseReason: this.form.getFieldValue("refuseReason"),
+            refuseReason: refuseReason,
             auditStatus: "3"  // 拒绝
           }
         this.request(params);
@@ -425,10 +430,14 @@
       },
       /** 确定按钮点击事件 */
       submitBtn() {
+        let refuseReason = this.form.getFieldValue("refuseReason");
+        if(!refuseReason){
+          refuseReason = "同意";
+        }
         let params =
           {
             id: this.model.id,
-            refuseReason: this.form.getFieldValue("refuseReason"),
+            refuseReason: refuseReason,
             auditStatus: "2" // 通过
           }
         this.request(params);
