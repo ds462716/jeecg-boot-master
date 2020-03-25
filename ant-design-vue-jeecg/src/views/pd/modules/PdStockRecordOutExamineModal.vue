@@ -335,7 +335,7 @@
         this.popModal.title="出库审核";
         this.departHandleSearch();  // 初始化部门列表 用于数据回显
 
-        let fieldval = pick(this.model,'recordNo','outType','submitByName','submitDate','inDepartId','outDepartName','remarks');
+        let fieldval = pick(this.model,'recordNo','outType','submitByName','submitDate','inDepartId','outDepartName','remarks','refuseReason');
 
         let params = { id: this.model.id };
 
@@ -470,7 +470,7 @@
         this.$message.error(msg)
       },
       popupCallback(row){
-        this.form.setFieldsValue(pick(row,'recordNo','outType','submitByName','submitDate','inDepartId','outDepartName','remarks'))
+        this.form.setFieldsValue(pick(row,'recordNo','outType','submitByName','submitDate','inDepartId','outDepartName','remarks','refuseReason'))
       },
       // 部门下拉框搜索
       departHandleSearch(value){

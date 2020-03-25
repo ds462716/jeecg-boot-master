@@ -97,7 +97,7 @@ public class PdStockRecordInController {
                                    HttpServletRequest req) {
         Page<PdStockRecord> page = new Page<PdStockRecord>(pageNo, pageSize);
         pdStockRecord.setRecordType(PdConstant.RECODE_TYPE_1);
-        IPage<PdStockRecord> pageList = pdStockRecordService.queryList(page, pdStockRecord);
+        IPage<PdStockRecord> pageList = pdStockRecordService.queryList(page, pdStockRecord, PdConstant.RECODE_TYPE_1);
         return Result.ok(pageList);
     }
 
@@ -118,7 +118,7 @@ public class PdStockRecordInController {
         Page<PdStockRecord> page = new Page<PdStockRecord>(pageNo, pageSize);
         pdStockRecord.setRecordType(PdConstant.RECODE_TYPE_1);
         pdStockRecord.setSubmitStatus(PdConstant.SUBMIT_STATE_2); //已提交状态
-        IPage<PdStockRecord> pageList = pdStockRecordService.queryList(page, pdStockRecord);
+        IPage<PdStockRecord> pageList = pdStockRecordService.queryList(page, pdStockRecord, PdConstant.RECODE_TYPE_1);
         return Result.ok(pageList);
     }
 

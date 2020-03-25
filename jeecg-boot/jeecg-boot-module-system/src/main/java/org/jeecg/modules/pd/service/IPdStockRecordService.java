@@ -55,7 +55,7 @@ public interface IPdStockRecordService extends IService<PdStockRecord> {
 	 * @param pdStockRecord
 	 * @return
 	 */
-	List<PdStockRecord> queryList(PdStockRecord pdStockRecord);
+	List<PdStockRecord> queryList(PdStockRecord pdStockRecord,String recodeType);
 
 	/**
 	 * 分页查询列表
@@ -63,7 +63,7 @@ public interface IPdStockRecordService extends IService<PdStockRecord> {
 	 * @param pdStockRecord
 	 * @return
 	 */
-	Page<PdStockRecord> queryList(Page<PdStockRecord> pageList, PdStockRecord pdStockRecord);
+	Page<PdStockRecord> queryList(Page<PdStockRecord> pageList, PdStockRecord pdStockRecord,String recodeType);
 
 	/**
 	 * 获取一条记录

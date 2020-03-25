@@ -378,7 +378,7 @@
         //初始化供应商，用于回显供应商
         this.supplierHandleSearch();
 
-        let fieldval = pick(this.model,'recordNo','inType','submitBy','submitByName','submitDate','remarks','inDepartId','supplierId',
+        let fieldval = pick(this.model,'recordNo','inType','submitBy','submitByName','submitDate','inDepartId','supplierId',
           'testResult','storageResult','temperature','humidity','remarks','refuseReason')
 
         let params = { id: this.model.id }
@@ -491,7 +491,7 @@
         this.$message.error(msg)
       },
       popupCallback(row){
-        this.form.setFieldsValue(pick(row,'recordNo','inType','submitBy','submitByName','submitDate','remarks','inDepartId','supplierId',
+        this.form.setFieldsValue(pick(row,'recordNo','inType','submitBy','submitByName','submitDate','inDepartId','supplierId',
           'testResult','storageResult','temperature','humidity','remarks','refuseReason'))
       },
 
