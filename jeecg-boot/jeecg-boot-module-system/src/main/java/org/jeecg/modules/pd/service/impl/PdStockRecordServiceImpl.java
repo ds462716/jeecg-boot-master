@@ -99,6 +99,7 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
         if (oConvertUtils.isNotEmpty(pdStockRecord.getId())) {
             this.delMain(pdStockRecord.getId());
         }
+        pdStockRecord.setRefuseReason("");//清空审批意见
         pdStockRecord.setCreateTime(DateUtils.getDate());
         if (PdConstant.RECODE_TYPE_1.equals(recordType)) {
             pdStockRecord.setRecordType(PdConstant.RECODE_TYPE_1); // 入库
@@ -222,6 +223,7 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
     public List<PdStockRecord> queryList(PdStockRecord pdStockRecord) {
         LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
         pdStockRecord.setDepartParentId(sysUser.getDepartParentId());
+        pdStockRecord.setDepartId(sysUser.getCurrentDepartId());
         return pdStockRecordMapper.selectList(pdStockRecord);
     }
 
@@ -229,6 +231,7 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
     public Page<PdStockRecord> queryList(Page<PdStockRecord> pageList, PdStockRecord pdStockRecord) {
         LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
         pdStockRecord.setDepartParentId(sysUser.getDepartParentId());
+        pdStockRecord.setDepartId(sysUser.getCurrentDepartId());
         return pageList.setRecords(pdStockRecordMapper.selectList(pdStockRecord));
     }
 

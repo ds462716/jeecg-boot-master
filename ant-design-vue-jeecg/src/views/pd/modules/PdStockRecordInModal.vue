@@ -141,6 +141,7 @@
                 :rowNumber="true"
                 :rowSelection="true"
                 :actionButton="false"
+                :customRow="onClickRow"
                 :disabled="disableSubmit"
                 @valueChange="valueChange"
                 style="text-overflow: ellipsis;"
@@ -189,6 +190,16 @@
                 </a-form-item>
               </a-col>
             </a-row>
+          </a-form>
+        </a-card>
+
+        <a-card style="margin-top: 10px;" v-show="showRefuseReason">
+          <a-form :form="form">
+            <a-col :span="12">
+              <a-form-item label="审批意见" :labelCol="labelCol2" :wrapperCol="wrapperCol2" style="text-align: left">
+                <a-textarea disabled v-decorator="[ 'refuseReason', validatorRules.refuseReason]" placeholder="请输入审批意见"></a-textarea>
+              </a-form-item>
+            </a-col>
           </a-form>
         </a-card>
       </div>
@@ -274,6 +285,7 @@
         disableSubmit:false,
         showCancelBtn:false,
         showPrintBtn:false,
+        showRefuseReason:false,
 
         initData:{},
         queryParam:{},
@@ -434,6 +446,7 @@
         this.loading = true;
         this.showCancelBtn = false;
         this.showPrintBtn = false;
+        this.showRefuseReason = false;
         //初始化供应商，用于回显供应商
         this.supplierHandleSearch();
 
@@ -445,10 +458,13 @@
             if(this.model.auditStatus == "2"){
               this.showPrintBtn = true;
             }
+            if(this.model.auditStatus == "2" || this.model.auditStatus == "3"){
+              this.showRefuseReason = true;
+            }
 
             this.popModal.title="入库明细";
           let fieldval = pick(this.model,'recordNo','mergeOrderNo','inType','submitBy','submitByName','submitDate','remarks','inDepartId','supplierId',
-            'testResult','storageResult','temperature','humidity','remarks')
+            'testResult','storageResult','temperature','humidity','remarks','refuseReason')
           this.$nextTick(() => {
             this.form.setFieldsValue(fieldval);
           })
@@ -478,7 +494,7 @@
                 this.allowNotOrderProduct = res.result.allowNotOrderProduct;
                 this.submitDateStr = res.result.submitDateStr;
                 let fieldval = pick(this.initData,'recordNo','mergeOrderNo','inType','submitBy','submitByName','submitDate','remarks','inDepartId','supplierId',
-                  'testResult','storageResult','temperature','humidity','remarks');
+                  'testResult','storageResult','temperature','humidity','remarks','refuseReason');
                 this.form.setFieldsValue(fieldval);
                 //获取光标
                 this.$refs['productNumberInput'].focus();
@@ -571,13 +587,21 @@
             let submitDate = this.form.getFieldValue("submitDate")
             if(submitDate >=  row.expDate){
               isexp = true;
-              name = name + "  " + row.productName;
+              if(name == ""){
+                name = name + row.productName;
+              }else{
+                name = name + "、" + row.productName;
+              }
             }
           }
           for(let row of values){
             if(Number(row.productNum) <= 0){
               iszero = true;
-              name1 = name1 + "  " + row.productName;
+              if(name1 == ""){
+                name1 = name1 + row.productName;
+              }else{
+                name1 = name1 + "、" + row.productName;
+              }
             }
           }
           if(isexp){
@@ -635,26 +659,6 @@
           }
         })
       },
-      // 保存 提交 修改 请求函数
-      // request(formData) {
-      //   let url = this.url.submit, method = 'post'
-      //   // if (this.model.id) {
-      //   //   url = this.url.edit
-      //   //   method = 'put'
-      //   // }
-      //   this.confirmLoading = true
-      //   httpAction(url, formData, method).then((res) => {
-      //     if (res.success) {
-      //       this.$message.success(res.message)
-      //       this.$emit('ok')
-      //       this.close()
-      //     } else {
-      //       this.$message.warning(res.message)
-      //     }
-      //   }).finally(() => {
-      //     this.confirmLoading = false
-      //   })
-      // },
       /** 整理成formData */
       classifyIntoFormData(allValues) {
         let main = Object.assign(this.model, allValues.formValue)
@@ -669,7 +673,7 @@
       },
       popupCallback(row){
         this.form.setFieldsValue(pick(row,'recordNo','mergeOrderNo','inType','submitBy','submitByName','submitDate','remarks','inDepartId','supplierId',
-          'testResult','storageResult','temperature','humidity','remarks'))
+          'testResult','storageResult','temperature','humidity','remarks','refuseReason'))
       },
 
       //-----------------供应商查询start
@@ -847,6 +851,15 @@
         this.queryParam.productNumber = "";
         this.queryParam.productBarCode = "";
         this.$refs.productNumberInput.focus();
+      },
+      onClickRow(record) {
+        return {
+          on: {
+            click: (e) => {
+              this.selectedRowIds.push(record.id)
+            }
+          }
+        }
       },
       // 表格数据变更
       valueChange(event) {
