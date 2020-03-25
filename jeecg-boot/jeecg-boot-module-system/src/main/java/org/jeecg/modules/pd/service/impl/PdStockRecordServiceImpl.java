@@ -229,6 +229,7 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
     public Page<PdStockRecord> queryList(Page<PdStockRecord> pageList, PdStockRecord pdStockRecord) {
         LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
         pdStockRecord.setDepartParentId(sysUser.getDepartParentId());
+        pdStockRecord.setDepartId(sysUser.getCurrentDepartId());
         return pageList.setRecords(pdStockRecordMapper.selectList(pdStockRecord));
     }
 
