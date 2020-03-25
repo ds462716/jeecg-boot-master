@@ -54,12 +54,12 @@
      <a-upload name="file" :showUploadList="false" :multiple="false" :headers="tokenHeader" :action="importExcelUrl" @change="handleImportExcel">
         <a-button type="primary" icon="import">导入</a-button>
       </a-upload>-->
-      <a-dropdown v-if="selectedRowKeys.length > 0">
+     <!-- <a-dropdown v-if="selectedRowKeys.length > 0">
         <a-menu slot="overlay">
           <a-menu-item key="1" @click="batchDel"><a-icon type="delete"/>删除</a-menu-item>
         </a-menu>
         <a-button style="margin-left: 8px"> 批量操作 <a-icon type="down" /></a-button>
-      </a-dropdown>
+      </a-dropdown>-->
     </div>
 
     <!-- table区域-begin -->
@@ -81,17 +81,15 @@
         :customRow="onClickRow"
         :rowSelection="{fixed:false,selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
         @change="handleTableChange">
-        <span slot="action" slot-scope="text, record">
+         <span slot="action" slot-scope="text, record">
           <a @click="handleEdit(record)" v-bind:disabled="record.submitStatus=='2'">修改</a>
-
           <a-divider type="vertical" />
-          <a-dropdown>
-            <a class="ant-dropdown-link">更多 <a-icon type="down" /></a>
+          <a href="javascript:;" @click="handleDetail(record)">详情</a>
+           <a-divider type="vertical" />
+           <a-dropdown>
+            <a class="ant-dropdown-link"  v-bind:disabled="record.submitStatus=='2'" >更多 <a-icon type="down" /></a>
             <a-menu slot="overlay">
-              <a-menu-item>
-                <a href="javascript:;" @click="handleDetail(record)">详情</a>
-              </a-menu-item>
-              <a-menu-item>
+              <a-menu-item v-show="record.submitStatus=='1'">
                 <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record)">
                   <a>删除</a>
                 </a-popconfirm>
@@ -99,7 +97,6 @@
             </a-menu>
           </a-dropdown>
         </span>
-
       </a-table>
     </div>
 
@@ -228,7 +225,7 @@
     },
     methods: {
 
-      batchDel: function () { //批量删除
+      /*batchDel: function () { //批量删除
         if (this.selectionRows.length <= 0) {
           this.$message.warning('请选择一条记录！');
           return;
@@ -267,33 +264,7 @@
             }
           });
         }
-      },
-      handleEdit: function (record) { //编译
-        if(record.submitStatus=='2' && record.auditStatus !='3'){
-          this.$message.warning("此单已提交审核，不允许修改！")
-          return
-        }
-        this.$refs.modalForm.edit(record);
-        this.$refs.modalForm.title = "编辑";
-        this.$refs.modalForm.disableSubmit = false;
-      },
-      handleDelete: function (record) { //删除
-        if(record.submitStatus=='2'){
-          this.$message.warning("此单已提交审核，不允许删除！")
-          return
-        }
-        var that = this;
-        var id=record.id;
-        deleteAction(that.url.delete, {id: id}).then((res) => {
-          if (res.success) {
-            that.$message.success(res.message);
-            that.loadData();
-          } else {
-            that.$message.warning(res.message);
-          }
-        });
-      },
-
+      },*/
       initDictConfig(){ //静态字典值加载
         initDictOptions('audit_status').then((res) => {
           if (res.success) {
