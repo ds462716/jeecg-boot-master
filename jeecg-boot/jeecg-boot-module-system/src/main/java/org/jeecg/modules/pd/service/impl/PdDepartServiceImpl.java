@@ -19,10 +19,7 @@ import org.jeecg.modules.system.mapper.SysDepartRolePermissionMapper;
 import org.jeecg.modules.system.mapper.SysUserDepartMapper;
 import org.jeecg.modules.system.mapper.SysUserMapper;
 import org.jeecg.modules.system.model.SysDepartTreeModel;
-import org.jeecg.modules.system.service.ISysDepartRolePermissionService;
-import org.jeecg.modules.system.service.ISysDepartRoleService;
-import org.jeecg.modules.system.service.ISysDepartService;
-import org.jeecg.modules.system.service.ISysUserDepartService;
+import org.jeecg.modules.system.service.*;
 import org.jeecg.modules.system.util.FindsDepartsChildrenUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
@@ -57,6 +54,10 @@ public class PdDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart>
 
     @Autowired
     private ISysDepartRoleService sysDepartRoleService;
+
+    @Autowired
+    private ISysDepartPermissionService sysDepartPermissionService;
+
 
     @Cacheable(value = CacheConstant.SYS_DEPARTS_CACHE)
     @Override
@@ -311,6 +312,34 @@ public class PdDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart>
             return Result.error("删除失败!，系统异常");
         }
 
+    }
+
+    /**
+     * 保存部门权限
+     * @param departId
+     * @param permissionIds
+     * @param lastPermissionIds
+     */
+    @Override
+    public void saveDepartPermission(String departId, String permissionIds, String lastPermissionIds) {
+        List<String> add = getDiff(lastPermissionIds,permissionIds);
+        if(add!=null && add.size()>0) {
+            List<SysDepartPermission> list = new ArrayList<SysDepartPermission>();
+            for (String p : add) {
+                if(oConvertUtils.isNotEmpty(p)) {
+                    SysDepartPermission rolepms = new SysDepartPermission(departId, p);
+                    list.add(rolepms);
+                }
+            }
+            sysDepartPermissionService.saveBatch(list);
+        }
+        List<String> delete = getDiff(permissionIds,lastPermissionIds);
+        if(delete!=null && delete.size()>0) {
+            for (String permissionId : delete) {
+                sysDepartPermissionService.remove(new QueryWrapper<SysDepartPermission>().lambda().eq(SysDepartPermission::getDepartId, departId).eq(SysDepartPermission::getPermissionId, permissionId));
+                sysDepartRolePermissionService.remove(new QueryWrapper<SysDepartRolePermission>().lambda().eq(SysDepartRolePermission::getDepartId, departId).eq(SysDepartRolePermission::getPermissionId, permissionId));
+            }
+        }
     }
 
     private void checkChildrenExists(String id, List<String> idList) {

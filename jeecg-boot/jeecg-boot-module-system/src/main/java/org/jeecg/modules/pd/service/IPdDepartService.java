@@ -40,4 +40,6 @@ public interface IPdDepartService extends IService<SysDepart> {
     List<SysDepart> selectListTree(SysDepart sysDepart);
 
     Result<Object> deleteV(String id);
+
+    void saveDepartPermission(String departId, String permissionIds, String lastPermissionIds);
 }

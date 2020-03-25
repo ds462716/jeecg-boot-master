@@ -56,7 +56,7 @@
 </template>
 
 <script>
-  import {queryPermissionTreeList,queryDepartPermission,saveDepartPermission} from '@/api/api'
+  import {queryPermissionTreeList,queryDepartPermission,savePdDepartPermission} from '@/api/api'
 
   export default {
     name: 'DepartAuthModal',
@@ -139,7 +139,7 @@
           lastpermissionIds:that.defaultCheckedKeys.join(","),
         };
         that.loading = true;
-        saveDepartPermission(params).then((res)=>{
+        savePdDepartPermission(params).then((res)=>{
           if(res.success){
             that.$message.success(res.message);
             that.loading = false;

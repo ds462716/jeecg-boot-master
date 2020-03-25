@@ -121,7 +121,6 @@
   export default {
     name: "DeptUserInfo",
     mixins: [JeecgListMixin],
-    disableSubmit:false,
     components: {
       DeptRoleUserModal,
       DeptSelectUserModal,
@@ -132,6 +131,7 @@
         description: '用户信息',
         currentDeptId: '',
         visible: false,
+        disableSubmit:false,
         drawerWidth:800,
         title:'',
         // 表头

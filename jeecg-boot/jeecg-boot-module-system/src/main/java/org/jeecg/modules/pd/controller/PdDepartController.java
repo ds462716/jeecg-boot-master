@@ -368,4 +368,28 @@ public class PdDepartController extends JeecgController<PdDepartConfig, IPdDepar
         Result<Object> resul = pdDepartService.deleteV(id);
         return resul;
     }
+
+    /**
+     * 保存部门授权
+     *
+     * @return
+     */
+    @RequestMapping(value = "/savePdDepartPermission", method = RequestMethod.POST)
+    //@RequiresRoles({ "admin" }) 取消必须管理员才能授权
+    public Result<String> saveDepartPermission(@RequestBody JSONObject json) {
+        long start = System.currentTimeMillis();
+        Result<String> result = new Result<>();
+        try {
+            String departId = json.getString("departId");
+            String permissionIds = json.getString("permissionIds");
+            String lastPermissionIds = json.getString("lastpermissionIds");
+            this.pdDepartService.saveDepartPermission(departId, permissionIds, lastPermissionIds);
+            result.success("保存成功！");
+            log.info("======部门授权成功=====耗时:" + (System.currentTimeMillis() - start) + "毫秒");
+        } catch (Exception e) {
+            result.error500("授权失败！");
+            log.error(e.getMessage(), e);
+        }
+        return result;
+    }
 }
