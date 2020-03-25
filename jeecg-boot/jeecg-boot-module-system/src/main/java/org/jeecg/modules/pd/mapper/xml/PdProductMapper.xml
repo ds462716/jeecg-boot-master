@@ -385,6 +385,8 @@
             a.selling_price as sellingPrice,
             a.purchase_price as purchasePrice,
             a.version as version,
+            a.registration as registration,
+            a.charge_code as chargeCode,
             b.name as unitName,
             c.name as venderName,
             d.name as supplierName
