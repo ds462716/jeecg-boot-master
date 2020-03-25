@@ -13,16 +13,14 @@ import org.jeecg.common.constant.PdConstant;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.pd.service.IPdDepartService;
-import org.jeecg.modules.system.entity.SysDepart;
-import org.jeecg.modules.system.entity.SysDepartRolePermission;
-import org.jeecg.modules.system.entity.SysUser;
-import org.jeecg.modules.system.entity.SysUserDepart;
+import org.jeecg.modules.system.entity.*;
 import org.jeecg.modules.system.mapper.SysDepartMapper;
 import org.jeecg.modules.system.mapper.SysDepartRolePermissionMapper;
 import org.jeecg.modules.system.mapper.SysUserDepartMapper;
 import org.jeecg.modules.system.mapper.SysUserMapper;
 import org.jeecg.modules.system.model.SysDepartTreeModel;
 import org.jeecg.modules.system.service.ISysDepartRolePermissionService;
+import org.jeecg.modules.system.service.ISysDepartRoleService;
 import org.jeecg.modules.system.service.ISysDepartService;
 import org.jeecg.modules.system.service.ISysUserDepartService;
 import org.jeecg.modules.system.util.FindsDepartsChildrenUtil;
@@ -57,7 +55,8 @@ public class PdDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart>
     @Autowired
     private SysUserDepartMapper sysUserDepartMapper;
 
-
+    @Autowired
+    private ISysDepartRoleService sysDepartRoleService;
 
     @Cacheable(value = CacheConstant.SYS_DEPARTS_CACHE)
     @Override
@@ -296,6 +295,10 @@ public class PdDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart>
                     return Result.error("删除失败!，当前部门下的子部门还有用户不能删除");
                 }else{
                     boolean ok = sysDepasrtService.removeByIds(idList);
+                    for(String departId:idList){
+                        sysDepartRoleService.remove(new QueryWrapper<SysDepartRole>().lambda().eq(SysDepartRole::getDepartId, departId));
+                        sysDepartRolePermissionService.remove(new QueryWrapper<SysDepartRolePermission>().lambda().eq(SysDepartRolePermission::getDepartId, departId));
+                    }
                     if(ok) {
                         return Result.ok("删除成功!");
                     }else{
