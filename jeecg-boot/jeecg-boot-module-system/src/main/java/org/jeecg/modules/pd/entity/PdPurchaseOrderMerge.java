@@ -91,4 +91,11 @@ public class PdPurchaseOrderMerge extends BaseEntity {
 	@TableField(exist = false)
 	private String departName;
 
+	/** 查询日期起始 **/
+	@TableField(exist = false)
+	private String queryDateStart;
+	/** 查询日期结束 **/
+	@TableField(exist = false)
+	private String queryDateEnd;
+
 }

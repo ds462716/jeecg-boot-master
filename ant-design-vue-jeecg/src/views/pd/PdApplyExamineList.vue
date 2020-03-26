@@ -14,6 +14,11 @@
               <a-input placeholder="请输入申领科室" v-model="queryParam.deptName"></a-input>
             </a-form-item>
           </a-col>
+          <a-col  :md="6" :sm="8">
+            <a-form-item label="申领日期">
+              <a-range-picker @change="rejectedDateChange" v-model="queryParam.queryDate"/>
+            </a-form-item>
+          </a-col>
           <template v-if="toggleSearchStatus">
             <a-col :md="6" :sm="8">
               <a-form-item label="审核状态">
@@ -73,6 +78,7 @@
 
   import { JeecgListMixin,handleEdit} from '@/mixins/JeecgListMixin'
   import { deleteAction } from '@/api/manage'
+  import { filterObj } from '@/utils/util';
   import PdApplyExamineModal from './modules/PdApplyExamineModal'
   import JDictSelectTag from '@/components/dict/JDictSelectTag.vue'
   import {initDictOptions, filterMultiDictText} from '@/components/dict/JDictSelectUtil'
@@ -164,6 +170,24 @@
 
     },
     methods: {
+
+      rejectedDateChange (value, dateString) {
+        this.queryParam.queryDateStart=dateString[0];
+        this.queryParam.queryDateEnd=dateString[1];
+      },
+      getQueryParams() {
+        //获取查询条件
+        let sqp = {}
+        if(this.superQueryParams){
+          sqp['superQueryParams']=encodeURI(this.superQueryParams)
+        }
+        var param = Object.assign(sqp, this.queryParam, this.isorter ,this.filters);
+        param.field = this.getQueryField();
+        param.pageNo = this.ipagination.current;
+        param.pageSize = this.ipagination.pageSize;
+        delete param.queryDate; //范围参数不传递后台，传后台会报错
+        return filterObj(param);
+      },
       initDictConfig(){ //静态字典值加载
         initDictOptions('audit_status').then((res) => {
           if (res.success) {

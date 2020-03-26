@@ -66,6 +66,12 @@
             <if test="departParentId != null and departParentId != ''">
                 AND a.depart_parent_id = #{departParentId}
             </if>
+            <if test="queryDateStart != null and queryDateStart != ''">
+                AND a.purchase_date &gt;= #{queryDateStart}
+            </if>
+            <if test="queryDateEnd != null and queryDateEnd != ''">
+                AND a.purchase_date &lt;= #{queryDateEnd}
+            </if>
             ORDER BY  create_time DESC
         </where>
     </select>

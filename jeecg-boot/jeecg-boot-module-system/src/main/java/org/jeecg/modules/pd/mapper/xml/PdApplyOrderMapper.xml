@@ -96,6 +96,12 @@
                     #{item}
                 </foreach>
             </if>
+            <if test="queryDateStart != null and queryDateStart != ''">
+                AND a.apply_date &gt;= #{queryDateStart}
+            </if>
+            <if test="queryDateEnd != null and queryDateEnd != ''">
+                AND a.apply_date &lt;= #{queryDateEnd}
+            </if>
             ORDER BY  field(a.audit_status, 1, 3, 2),a.update_time ASC
         </where>
     </select>

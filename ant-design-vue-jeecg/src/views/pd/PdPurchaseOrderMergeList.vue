@@ -11,8 +11,8 @@
           </a-col>
           <a-col  :md="6" :sm="8">
             <a-form-item label="合并申购日期">
-              <j-date placeholder="请选择合并申购日期"  v-model="queryParam.purchaseDate"></j-date>
-             </a-form-item>
+                <a-range-picker @change="rejectedDateChange" v-model="queryParam.queryDate"/>
+              </a-form-item>
           </a-col>
           <a-col  :md="6" :sm="8">
             <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
@@ -66,6 +66,7 @@
   import { JeecgListMixin ,handleEdit} from '@/mixins/JeecgListMixin'
   import PdPurchaseOrderMergeModal from './modules/PdPurchaseOrderMergeModal'
   import JDate from '@/components/jeecg/JDate.vue'
+  import { filterObj } from '@/utils/util';
   import {initDictOptions, filterMultiDictText} from '@/components/dict/JDictSelectUtil'
 
   export default {
@@ -159,6 +160,24 @@
       }
     },
     methods: {
+      rejectedDateChange (value, dateString) {
+        this.queryParam.queryDateStart=dateString[0];
+        this.queryParam.queryDateEnd=dateString[1];
+      },
+      getQueryParams() {
+        //获取查询条件
+        let sqp = {}
+        if(this.superQueryParams){
+          sqp['superQueryParams']=encodeURI(this.superQueryParams)
+        }
+        var param = Object.assign(sqp, this.queryParam, this.isorter ,this.filters);
+        param.field = this.getQueryField();
+        param.pageNo = this.ipagination.current;
+        param.pageSize = this.ipagination.pageSize;
+        delete param.queryDate; //范围参数不传递后台，传后台会报错
+        return filterObj(param);
+      },
+
       handleEdit: function (record) { //查看
         this.$refs.modalForm.edit(record);
        // this.$refs.modalForm.title = "合并订单列表";

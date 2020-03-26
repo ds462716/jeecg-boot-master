@@ -14,6 +14,11 @@
               <a-input placeholder="请输入申领科室名称" v-model="queryParam.deptName"></a-input>
             </a-form-item>
           </a-col>-->
+          <a-col  :md="6" :sm="8">
+            <a-form-item label="申领日期">
+              <a-range-picker @change="rejectedDateChange" v-model="queryParam.queryDate"/>
+            </a-form-item>
+          </a-col>
           <template v-if="toggleSearchStatus">
             <a-col :md="6" :sm="8">
               <a-form-item label="审核状态">
@@ -101,6 +106,7 @@
   import PdApplyOrderModal from './modules/PdApplyOrderModal'
   import { JeecgListMixin,batchDel} from '@/mixins/JeecgListMixin'
   import { deleteAction } from '@/api/manage'
+  import { filterObj } from '@/utils/util';
   import {initDictOptions, filterMultiDictText} from '@/components/dict/JDictSelectUtil'
   export default {
     name: "PdApplyOrderList",
@@ -207,7 +213,23 @@
       }
     },
     methods: {
-
+      rejectedDateChange (value, dateString) {
+        this.queryParam.queryDateStart=dateString[0];
+        this.queryParam.queryDateEnd=dateString[1];
+      },
+      getQueryParams() {
+        //获取查询条件
+        let sqp = {}
+        if(this.superQueryParams){
+          sqp['superQueryParams']=encodeURI(this.superQueryParams)
+        }
+        var param = Object.assign(sqp, this.queryParam, this.isorter ,this.filters);
+        param.field = this.getQueryField();
+        param.pageNo = this.ipagination.current;
+        param.pageSize = this.ipagination.pageSize;
+        delete param.queryDate; //范围参数不传递后台，传后台会报错
+        return filterObj(param);
+      },
       /*batchDel: function () { //批量删除
         if (this.selectionRows.length <= 0) {
           this.$message.warning('请选择一条记录！');
