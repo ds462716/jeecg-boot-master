@@ -406,6 +406,11 @@ public class BarCodeUtil {
 
 			//生产日期
 			if ((LotBarcode.length() > 2) && "11".equals(LotBarcode.substring(0, 2))) {
+				String ri = LotBarcode.substring(6, 8);
+				if ("00".equals(ri)) ri = "01";
+				String produceDate = "20" + LotBarcode.substring(2, 4) + "-" + LotBarcode.substring(4, 6) + "-" + ri;
+				result.put("produceDate",produceDate);
+				//17 121100 30 01 10 091222
 				LotBarcode = LotBarcode.substring(8, LotBarcode.length());
 			}
 			//其他日期
@@ -534,6 +539,23 @@ public class BarCodeUtil {
 		}
 		return resultMap;
 	}
+
+	/**
+	 * 解析产品生产日期
+	 * @param resultMap
+	 * @param tempMap
+	 * @return
+	 */
+	public static Map<String,Object> getProductProduceDate(Map<String,Object> resultMap,Map<String,String> tempMap){
+		if(tempMap.containsKey("11")){
+			String produceDate = "";
+			produceDate = tempMap.get("11");
+			produceDate = "20" + produceDate.substring(0, 2) + "-" + produceDate.substring(2, 4) + "-" + produceDate.substring(4, 6);  //   20YY-MM-DD
+			resultMap.put("produceDate",produceDate);
+		}
+		return resultMap;
+	}
+
 
 	/**
 	 * 字符串去空格

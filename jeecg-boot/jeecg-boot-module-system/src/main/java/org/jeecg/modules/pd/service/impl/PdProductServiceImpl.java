@@ -120,6 +120,7 @@ public class PdProductServiceImpl extends ServiceImpl<PdProductMapper, PdProduct
         Barcode1 = BarCodeUtil.trimStr(Barcode1.toUpperCase());
         Barcode2 = BarCodeUtil.trimStr(Barcode2.toUpperCase());
         if(Barcode1 != null && !"".equals(Barcode1) && Barcode2 != null && !"".equals(Barcode2) ){
+            LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
             //判断是否是根据产品编号查询
             if(Barcode1.equals(Barcode2)){
                 if(((Barcode1.startsWith("01") || Barcode1.startsWith("02")) && Barcode1.length()==16)
@@ -129,7 +130,6 @@ public class PdProductServiceImpl extends ServiceImpl<PdProductMapper, PdProduct
                     String productNumber = BarCodeUtil.GetEANUPN(Barcode1);
                     PdProduct pdProduct = new PdProduct();
                     pdProduct.setNumber(productNumber);
-                    LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
                     pdProduct.setDepartParentId(sysUser.getDepartParentId());
                     //查询产品是否存在
                     List<PdProduct> pdProducts = pdProductMapper.selectList(pdProduct);
@@ -145,6 +145,7 @@ public class PdProductServiceImpl extends ServiceImpl<PdProductMapper, PdProduct
                         resultMap.put("expDate","");
                         resultMap.put("batchNo","");
                         resultMap.put("productBarCode","");
+                        resultMap.put("produceDate","");
                         result.setResult(resultMap);
                         return result;
                     }
@@ -152,7 +153,7 @@ public class PdProductServiceImpl extends ServiceImpl<PdProductMapper, PdProduct
                     if(Barcode1.length()<24){
                         PdProduct pdProduct = new PdProduct();
                         pdProduct.setNumber(Barcode1);
-                        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+
                         pdProduct.setDepartParentId(sysUser.getDepartParentId());
                         //查询产品是否存在
                         List<PdProduct> pdProducts = pdProductMapper.selectList(pdProduct);
@@ -168,6 +169,7 @@ public class PdProductServiceImpl extends ServiceImpl<PdProductMapper, PdProduct
                             resultMap.put("expDate","");
                             resultMap.put("batchNo","");
                             resultMap.put("productBarCode","");
+                            resultMap.put("produceDate","");
                             result.setResult(resultMap);
                             return result;
                         }
@@ -178,7 +180,6 @@ public class PdProductServiceImpl extends ServiceImpl<PdProductMapper, PdProduct
             String productNumber = BarCodeUtil.getPrdNumber(Barcode1);
             PdProduct pdProduct = new PdProduct();
             pdProduct.setNumber(productNumber);
-            LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
             pdProduct.setDepartParentId(sysUser.getDepartParentId());
             //查询产品是否存在
             List<PdProduct> pdProducts = pdProductMapper.selectList(pdProduct);
@@ -203,6 +204,7 @@ public class PdProductServiceImpl extends ServiceImpl<PdProductMapper, PdProduct
                 resultMap.put("number","");
                 resultMap.put("expDate","");
                 resultMap.put("batchNo","");
+                resultMap.put("produceDate","");
                 //如果是HIB条码直接使用工具类解析，暂无条码规则
                 if(productBarCode.startsWith("+")){
                     resultMap =  BarCodeUtil.scanCode(Barcode1,Barcode2,resultMap);
@@ -220,136 +222,7 @@ public class PdProductServiceImpl extends ServiceImpl<PdProductMapper, PdProduct
                                 it.remove();
                             }
                         }
-                        //如果绑定多条编码规则且编码规则长度一致 只能取其中一条作为扫码规则
-                        PdEncodingRule encodingRule = pdEncodingRuleService.getById(pdProductRules.get(0).getRuleId());
-                        PdEncodingRuleDetail pdEncodingRuleDetail = new PdEncodingRuleDetail();
-                        pdEncodingRuleDetail.setCodeId(pdProductRules.get(0).getRuleId());
-                        List<PdEncodingRuleDetail> pdEncodingRuleDetails = pdEncodingRuleDetailMapper.selectList(pdEncodingRuleDetail);
-                        //如果编码和条码为同一条
-                        if(productBarCode.length()==encodingRule.getTotalDigit()){
-                            //完整条码根据扫码来
-                            Map<String,String> tempMap = new HashMap<>();
-                            String temp = productBarCode;
-                            for(PdEncodingRuleDetail erd :pdEncodingRuleDetails){
-                                String key = erd.getValue();
-                                if(temp.startsWith(key)){
-                                    int tempLength = temp.length();
-                                    temp = temp.substring(key.length(),tempLength);
-                                    if(PdConstant.IDENTIFIER_TYPE_1.equals(erd.getType())){
-                                        String value = temp.substring(0,Integer.parseInt(erd.getSize()));
-                                        tempMap.put(key,value);
-                                        tempLength = temp.length();
-                                        temp = temp.substring(value.length(),tempLength);
-                                    }else{
-                                        String value = temp.substring(0,erd.getLength());
-                                        tempMap.put(key,value);
-                                        tempLength = temp.length();
-                                        temp = temp.substring(value.length(),tempLength);
-                                    }
-                                }else if ("#".equals(key)){
-                                    int tempLength = temp.length();
-                                    String value = temp.substring(0,Integer.parseInt(erd.getSize()));
-                                    tempMap.put(key,value);
-                                    tempLength = temp.length();
-                                    temp = temp.substring(value.length(),tempLength);
-                                }
-                            }
-                            resultMap.put("code",MessageConstant.ICODE_STATE_200);
-                            resultMap.put("msg",MessageConstant.CODE_MESSAGE_2);
-                            //解析产品编号，批号，有效期
-                            resultMap = BarCodeUtil.getProductNumber(resultMap,tempMap);
-                            resultMap = BarCodeUtil.getProductBatchNo(resultMap,tempMap);
-                            resultMap = BarCodeUtil.getProductExpDate(resultMap,tempMap);
-                        }else{
-                            result.setCode(MessageConstant.ICODE_STATE_500);
-                            result.setMessage(MessageConstant.CODE_MESSAGE_3);
-                        }
-                    }else{
-                        //没有绑定扫码规则 使用条码规则进行扫码
-                        resultMap =  BarCodeUtil.scanCode(Barcode1,Barcode2,resultMap);
-                    }
-                }
-            }else{
-                //没有绑定扫码规则
-                result.setCode(MessageConstant.ICODE_STATE_500);
-                result.setMessage(MessageConstant.CODE_MESSAGE_4);
-            }
-        }else{
-            result.setCode(MessageConstant.ICODE_STATE_500);
-            result.setMessage(MessageConstant.CODE_MESSAGE_5);
-        }
-        result.setResult(resultMap);
-        return  result;
-
-    }
-    /**
-     * 条码规则解析并查询库存
-     * @param Barcode1
-     * @param Barcode2
-     * @return
-     */
-    @Override
-    public Result<List<PdProductStock>> getStocks(String Barcode1,String Barcode2, Result<List<PdProductStock>> result) {
-        List<PdProductStock> pdProductStocks = new ArrayList<>();
-        //去空格转为大写
-        Barcode1 = BarCodeUtil.trimStr(Barcode1.toUpperCase());
-        Barcode2 = BarCodeUtil.trimStr(Barcode2.toUpperCase());
-        if(Barcode1 != null && !"".equals(Barcode1) && Barcode2 != null && !"".equals(Barcode2) ){
-            //获得产品编号
-            String productNumber = BarCodeUtil.getPrdNumber(Barcode1);
-            PdProduct pdProduct = new PdProduct();
-            pdProduct.setNumber(productNumber);
-            LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
-            pdProduct.setDepartId(sysUser.getCurrentDepartId());
-            pdProduct.setDepartParentId(sysUser.getDepartParentId());
-            //查询产品是否存在
-           List<PdProduct> pdProducts = pdProductMapper.selectList(pdProduct);
-            if(pdProducts!=null && pdProducts.size()>0){
-                pdProduct = pdProducts.get(0);
-                String productBarCode;
-                //产品条码修正
-                if(Barcode1.indexOf(Barcode2) != -1){
-                    productBarCode = Barcode1;
-                }else{
-                    productBarCode = Barcode1 + Barcode2;
-                }
-                //先根据条码查询库存
-                PdProductStock pdProductStock = new PdProductStock();
-                pdProductStock.setProductId(pdProduct.getId());
-                pdProductStock.setProductBarCode(productBarCode);
-                pdProductStock.setDepartId(sysUser.getCurrentDepartId());
-                pdProductStocks = pdProductStockService.selectList(pdProductStock);
-                //有库存直接返回
-                if (pdProductStocks != null && pdProductStocks.size() > 0) {
-                    result.setCode(MessageConstant.ICODE_STATE_200);
-                    result.setMessage(MessageConstant.CODE_MESSAGE_2);
-                } else {
-                    Map<String,Object> resultMap = new HashMap<String,Object>();
-                    //产品完整条形码
-                    resultMap.put("productBarCode",productBarCode);
-                    //初始化
-                    resultMap.put("code",MessageConstant.CODE_STATE_500);
-                    resultMap.put("msg", MessageConstant.CODE_MESSAGE_1);
-                    resultMap.put("number","");
-                    resultMap.put("expDate","");
-                    resultMap.put("batchNo","");
-                    //如果是HIB条码直接使用工具类解析，暂无条码规则
-                    if(productBarCode.startsWith("+")){
-                        resultMap =  BarCodeUtil.scanCode(Barcode1,Barcode2,resultMap);
-                    }else{
-                        PdProductRule pdProductRule = new PdProductRule();
-                        pdProductRule.setProductId(pdProduct.getId());
-                        //查询产品对应得编号规则
-                        List<PdProductRule> pdProductRules = pdProductRuleMapper.selectList(pdProductRule);
-                        //如果编码规则存在
                         if(pdProductRules!=null && pdProductRules.size()>0){
-                            Iterator it=pdProductRules.iterator();
-                            while(it.hasNext()) {
-                                PdProductRule pr = (PdProductRule) it.next();
-                                if(productBarCode.length()!=Integer.valueOf(pr.getTotalDigit())){
-                                    it.remove();
-                                }
-                            }
                             //如果绑定多条编码规则且编码规则长度一致 只能取其中一条作为扫码规则
                             PdEncodingRule encodingRule = pdEncodingRuleService.getById(pdProductRules.get(0).getRuleId());
                             PdEncodingRuleDetail pdEncodingRuleDetail = new PdEncodingRuleDetail();
@@ -384,12 +257,13 @@ public class PdProductServiceImpl extends ServiceImpl<PdProductMapper, PdProduct
                                         temp = temp.substring(value.length(),tempLength);
                                     }
                                 }
-                                resultMap.put("code",MessageConstant.CODE_STATE_200);
+                                resultMap.put("code",MessageConstant.ICODE_STATE_200);
                                 resultMap.put("msg",MessageConstant.CODE_MESSAGE_2);
                                 //解析产品编号，批号，有效期
                                 resultMap = BarCodeUtil.getProductNumber(resultMap,tempMap);
                                 resultMap = BarCodeUtil.getProductBatchNo(resultMap,tempMap);
                                 resultMap = BarCodeUtil.getProductExpDate(resultMap,tempMap);
+                                resultMap = BarCodeUtil.getProductProduceDate(resultMap,tempMap);
                             }else{
                                 result.setCode(MessageConstant.ICODE_STATE_500);
                                 result.setMessage(MessageConstant.CODE_MESSAGE_3);
@@ -398,8 +272,202 @@ public class PdProductServiceImpl extends ServiceImpl<PdProductMapper, PdProduct
                             //没有绑定扫码规则 使用条码规则进行扫码
                             resultMap =  BarCodeUtil.scanCode(Barcode1,Barcode2,resultMap);
                         }
-                    }
 
+                    }else{
+                        //没有绑定扫码规则 使用条码规则进行扫码
+                        resultMap =  BarCodeUtil.scanCode(Barcode1,Barcode2,resultMap);
+                    }
+                }
+            }else{
+                //没有绑定扫码规则
+                result.setCode(MessageConstant.ICODE_STATE_500);
+                result.setMessage(MessageConstant.CODE_MESSAGE_4);
+            }
+        }else{
+            result.setCode(MessageConstant.ICODE_STATE_500);
+            result.setMessage(MessageConstant.CODE_MESSAGE_5);
+        }
+        result.setResult(resultMap);
+        return  result;
+
+    }
+    /**
+     * 条码规则解析并查询库存
+     * @param Barcode1
+     * @param Barcode2
+     * @return
+     */
+    @Override
+    public Result<List<PdProductStock>> getStocks(String Barcode1,String Barcode2, Result<List<PdProductStock>> result) {
+        List<PdProductStock> pdProductStocks = new ArrayList<>();
+        //去空格转为大写
+        Barcode1 = BarCodeUtil.trimStr(Barcode1.toUpperCase());
+        Barcode2 = BarCodeUtil.trimStr(Barcode2.toUpperCase());
+        if(Barcode1 != null && !"".equals(Barcode1) && Barcode2 != null && !"".equals(Barcode2) ){
+            LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+            String productBarCode;
+            //产品条码修正
+            if(Barcode1.indexOf(Barcode2) != -1){
+                productBarCode = Barcode1;
+            }else{
+                productBarCode = Barcode1 + Barcode2;
+            }
+            //先根据条码查询库存
+            PdProductStock pdProductStock = new PdProductStock();
+            //pdProductStock.setProductId(pdProduct.getId());
+            pdProductStock.setProductBarCode(productBarCode);
+            pdProductStock.setDepartId(sysUser.getCurrentDepartId());
+            pdProductStocks = pdProductStockService.selectList(pdProductStock);
+            //有库存直接返回
+            if (pdProductStocks != null && pdProductStocks.size() > 0) {
+                result.setCode(MessageConstant.ICODE_STATE_200);
+                result.setMessage(MessageConstant.CODE_MESSAGE_2);
+                result.setResult(pdProductStocks);
+                return  result;
+            }else{
+                //判断是否是根据产品编号查询
+                if(Barcode1.equals(Barcode2)){
+                    if(((Barcode1.startsWith("01") || Barcode1.startsWith("02")) && Barcode1.length()==16)
+                            || (Barcode1.startsWith("00") && Barcode1.length()==20)
+                            || (Barcode1.startsWith("93") && Barcode1.length()==19)
+                            ||(Barcode1.length()==13)){
+                        String productNumber = BarCodeUtil.GetEANUPN(Barcode1);
+                        PdProduct pdProduct = new PdProduct();
+                        pdProduct.setNumber(productNumber);
+                        pdProduct.setDepartId(sysUser.getCurrentDepartId());
+                        pdProduct.setDepartParentId(sysUser.getDepartParentId());
+                        //查询产品是否存在
+                        List<PdProduct> pdProducts = pdProductMapper.selectList(pdProduct);
+                        if(pdProducts!=null && pdProducts.size()>0){
+                            pdProduct = pdProducts.get(0);
+                            //根据产品id直接查询库存
+                            pdProductStock = new PdProductStock();
+                            pdProductStock.setProductId(pdProduct.getId());
+                            pdProductStock.setDepartId(sysUser.getCurrentDepartId());
+                            //根据条件查询库存
+                            pdProductStocks = pdProductStockService.selectList(pdProductStock);
+                            if (pdProductStocks != null && pdProductStocks.size() > 0) {
+                                result.setCode(MessageConstant.ICODE_STATE_200);
+                                result.setMessage(MessageConstant.CODE_MESSAGE_2);
+                                result.setResult(pdProductStocks);
+                                return result;
+                            }
+                        }
+                    }else{
+                        if(Barcode1.length()<24){
+                            PdProduct pdProduct = new PdProduct();
+                            pdProduct.setNumber(Barcode1);
+                            pdProduct.setDepartParentId(sysUser.getDepartParentId());
+                            //查询产品是否存在
+                            List<PdProduct> pdProducts = pdProductMapper.selectList(pdProduct);
+                            if(pdProducts!=null && pdProducts.size()>0){
+                                pdProduct = pdProducts.get(0);
+                                //根据产品id直接查询库存
+                                pdProductStock = new PdProductStock();
+                                pdProductStock.setProductId(pdProduct.getId());
+                                pdProductStock.setDepartId(sysUser.getCurrentDepartId());
+                                //根据条件查询库存
+                                pdProductStocks = pdProductStockService.selectList(pdProductStock);
+                                if (pdProductStocks != null && pdProductStocks.size() > 0) {
+                                    result.setCode(MessageConstant.ICODE_STATE_200);
+                                    result.setMessage(MessageConstant.CODE_MESSAGE_2);
+                                    result.setResult(pdProductStocks);
+                                    return result;
+                                }
+                            }
+                        }
+                    }
+                }
+                //获得产品编号
+                String productNumber = BarCodeUtil.getPrdNumber(Barcode1);
+                PdProduct pdProduct = new PdProduct();
+                pdProduct.setNumber(productNumber);
+                //pdProduct.setDepartId(sysUser.getCurrentDepartId());
+                pdProduct.setDepartParentId(sysUser.getDepartParentId());
+                //查询产品是否存在
+                List<PdProduct> pdProducts = pdProductMapper.selectList(pdProduct);
+                if(pdProducts!=null && pdProducts.size()>0){
+                    pdProduct = pdProducts.get(0);
+                    Map<String,Object> resultMap = new HashMap<String,Object>();
+                    //产品完整条形码
+                    resultMap.put("productBarCode",productBarCode);
+                    //初始化
+                    resultMap.put("code",MessageConstant.CODE_STATE_500);
+                    resultMap.put("msg", MessageConstant.CODE_MESSAGE_1);
+                    resultMap.put("number","");
+                    resultMap.put("expDate","");
+                    resultMap.put("batchNo","");
+                    //如果是HIB条码直接使用工具类解析，暂无条码规则
+                    if(productBarCode.startsWith("+")){
+                        resultMap =  BarCodeUtil.scanCode(Barcode1,Barcode2,resultMap);
+                    }else{
+                        PdProductRule pdProductRule = new PdProductRule();
+                        pdProductRule.setProductId(pdProduct.getId());
+                        //查询产品对应得编号规则
+                        List<PdProductRule> pdProductRules = pdProductRuleMapper.selectList(pdProductRule);
+                        //如果编码规则存在
+                        if(pdProductRules!=null && pdProductRules.size()>0){
+                            Iterator it=pdProductRules.iterator();
+                            while(it.hasNext()) {
+                                PdProductRule pr = (PdProductRule) it.next();
+                                if(productBarCode.length()!=Integer.valueOf(pr.getTotalDigit())){
+                                    it.remove();
+                                }
+                            }
+                            if(pdProductRules!=null && pdProductRules.size()>0){
+                                //如果绑定多条编码规则且编码规则长度一致 只能取其中一条作为扫码规则
+                                PdEncodingRule encodingRule = pdEncodingRuleService.getById(pdProductRules.get(0).getRuleId());
+                                PdEncodingRuleDetail pdEncodingRuleDetail = new PdEncodingRuleDetail();
+                                pdEncodingRuleDetail.setCodeId(pdProductRules.get(0).getRuleId());
+                                List<PdEncodingRuleDetail> pdEncodingRuleDetails = pdEncodingRuleDetailMapper.selectList(pdEncodingRuleDetail);
+                                //如果编码和条码为同一条
+                                if(productBarCode.length()==encodingRule.getTotalDigit()){
+                                    //完整条码根据扫码来
+                                    Map<String,String> tempMap = new HashMap<>();
+                                    String temp = productBarCode;
+                                    for(PdEncodingRuleDetail erd :pdEncodingRuleDetails){
+                                        String key = erd.getValue();
+                                        if(temp.startsWith(key)){
+                                            int tempLength = temp.length();
+                                            temp = temp.substring(key.length(),tempLength);
+                                            if(PdConstant.IDENTIFIER_TYPE_1.equals(erd.getType())){
+                                                String value = temp.substring(0,Integer.parseInt(erd.getSize()));
+                                                tempMap.put(key,value);
+                                                tempLength = temp.length();
+                                                temp = temp.substring(value.length(),tempLength);
+                                            }else{
+                                                String value = temp.substring(0,erd.getLength());
+                                                tempMap.put(key,value);
+                                                tempLength = temp.length();
+                                                temp = temp.substring(value.length(),tempLength);
+                                            }
+                                        }else if ("#".equals(key)){
+                                            int tempLength = temp.length();
+                                            String value = temp.substring(0,Integer.parseInt(erd.getSize()));
+                                            tempMap.put(key,value);
+                                            tempLength = temp.length();
+                                            temp = temp.substring(value.length(),tempLength);
+                                        }
+                                    }
+                                    resultMap.put("code",MessageConstant.CODE_STATE_200);
+                                    resultMap.put("msg",MessageConstant.CODE_MESSAGE_2);
+                                    //解析产品编号，批号，有效期
+                                    resultMap = BarCodeUtil.getProductNumber(resultMap,tempMap);
+                                    resultMap = BarCodeUtil.getProductBatchNo(resultMap,tempMap);
+                                    resultMap = BarCodeUtil.getProductExpDate(resultMap,tempMap);
+                                }else{
+                                    result.setCode(MessageConstant.ICODE_STATE_500);
+                                    result.setMessage(MessageConstant.CODE_MESSAGE_3);
+                                }
+                            }else{
+                                //没有绑定扫码规则 使用条码规则进行扫码
+                                resultMap =  BarCodeUtil.scanCode(Barcode1,Barcode2,resultMap);
+                            }
+                        }else{
+                            //没有绑定扫码规则 使用条码规则进行扫码
+                            resultMap =  BarCodeUtil.scanCode(Barcode1,Barcode2,resultMap);
+                        }
+                    }
                     //判断库存的有效期
                     if(MessageConstant.CODE_STATE_201.equals(String.valueOf(resultMap.get("code")))){
                         //库存已过期
@@ -414,6 +482,8 @@ public class PdProductServiceImpl extends ServiceImpl<PdProductMapper, PdProduct
                         result.setMessage(MessageConstant.CODE_MESSAGE_2);
                     }
                     //如果扫码时客户修改入库时直接修改批号有效期，不能修改实际条码，所以不能用条码
+                    pdProductStock = new PdProductStock();
+                    pdProductStock.setProductId(pdProduct.getId());
                     pdProductStock.setProductBarCode("");
                     //pdProductStock.setProductBarCode((String) resultMap.get("productBarCode"));
                     //不根据number查询
@@ -424,11 +494,11 @@ public class PdProductServiceImpl extends ServiceImpl<PdProductMapper, PdProduct
                     pdProductStock.setDepartId(sysUser.getCurrentDepartId());
                     //根据条件查询库存
                     pdProductStocks = pdProductStockService.selectList(pdProductStock);
-                }
-            }else{
-                //没有绑定扫码规则
-                result.setCode(MessageConstant.ICODE_STATE_500);
-                result.setMessage(MessageConstant.CODE_MESSAGE_4);
+            }else {
+                    //没有绑定扫码规则
+                    result.setCode(MessageConstant.ICODE_STATE_500);
+                    result.setMessage(MessageConstant.CODE_MESSAGE_4);
+                 }
             }
         }else{
             result.setCode(MessageConstant.ICODE_STATE_500);
