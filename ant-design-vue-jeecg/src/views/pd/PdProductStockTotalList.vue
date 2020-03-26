@@ -18,7 +18,7 @@
                 @change="departHandleChange"
                 @focus="departHandleSearch"
                 :notFoundContent="notFoundContent"
-                v-decorator="[ 'departId']"
+                v-model="queryParam.departId"
               >
                 <a-select-option v-for="d in departData" :key="d.value">{{d.text}}</a-select-option>
               </a-select>
@@ -272,6 +272,7 @@
           this.ipagination.current = 1;
         }
         var params = this.getQueryParams();//查询条件
+        alert("s"+params.departId);
         this.loading = true;
         getAction(this.url.list, params).then((res) => {
           if (res.success) {
