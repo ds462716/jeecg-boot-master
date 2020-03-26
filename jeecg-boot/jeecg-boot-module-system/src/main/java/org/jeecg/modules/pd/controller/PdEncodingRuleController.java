@@ -132,7 +132,7 @@ public class PdEncodingRuleController extends JeecgController<PdEncodingRule, IP
 	 @PutMapping(value = "/updatePdEncodingRule")
 	 public Result<?> updatePdEncodingRule(@RequestBody PdEncodingRule pdEncodingRule) {
 		 pdEncodingRuleService.updatePdEncodingRule(pdEncodingRule);
-		 return Result.ok("添加成功！");
+		 return Result.ok("编辑成功！");
 	 }
 	
 	/**

@@ -167,6 +167,8 @@
           for(let index = 0;index<12;index++){
             if(record["licenceSite"+index]){
               this.imgIsShow[index].show=true;
+            }else{
+              this.imgIsShow[index].show=false;
             }
             if(record["licenceValidity"+index]){
               this.imgIsValidity[index]="validity"+record["licenceValidity"+index];
