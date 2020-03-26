@@ -220,7 +220,7 @@
           add: "/pd/pdAllocationRecord/add",
           edit: "/pd/pdAllocationRecord/edit",
           exportXlsUrl: "/pd/pdAllocationRecord/exportXls",
-          querySysDepartList:"/pd/pdDepart/getSysDepartList",
+          querySysDepartList:"/pd/pdDepart/getSysTwoDepartList",
           pdAllocationDetail: {
             list: '/pd/pdAllocationRecord/queryPdAllocationDetailList'
           },
