@@ -148,6 +148,30 @@ public class PdProductServiceImpl extends ServiceImpl<PdProductMapper, PdProduct
                         result.setResult(resultMap);
                         return result;
                     }
+                }else{
+                    if(Barcode1.length()<24){
+                        PdProduct pdProduct = new PdProduct();
+                        pdProduct.setNumber(Barcode1);
+                        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+                        pdProduct.setDepartParentId(sysUser.getDepartParentId());
+                        //查询产品是否存在
+                        List<PdProduct> pdProducts = pdProductMapper.selectList(pdProduct);
+                        if(pdProducts!=null && pdProducts.size()>0){
+                            pdProduct = pdProducts.get(0);
+                            result.setCode(MessageConstant.ICODE_STATE_200);
+                            result.setMessage(MessageConstant.CODE_MESSAGE_2);
+                            resultMap.put("code",MessageConstant.ICODE_STATE_200);
+                            resultMap.put("msg",MessageConstant.CODE_MESSAGE_2);
+                            //产品对象
+                            resultMap.put("pdProduct",pdProduct);
+                            resultMap.put("number",Barcode1);
+                            resultMap.put("expDate","");
+                            resultMap.put("batchNo","");
+                            resultMap.put("productBarCode","");
+                            result.setResult(resultMap);
+                            return result;
+                        }
+                    }
                 }
             }
             //获得产品编号
