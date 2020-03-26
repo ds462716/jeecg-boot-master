@@ -77,7 +77,7 @@ public class PdProductStockCheckController {
 								   HttpServletRequest req) {
 		Page<PdProductStockCheck> page = new Page<PdProductStockCheck>(pageNo, pageSize);
 		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
-		pdProductStockCheck.setDepartId(sysUser.getCurrentDepartId());
+		//pdProductStockCheck.setDepartId(sysUser.getCurrentDepartId());
 		pdProductStockCheck.setDepartParentId(sysUser.getDepartParentId());
 		page = pdProductStockCheckService.selectList(page,pdProductStockCheck);
 		return Result.ok(page);

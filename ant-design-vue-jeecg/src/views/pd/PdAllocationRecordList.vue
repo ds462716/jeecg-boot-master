@@ -18,8 +18,8 @@
             </a-form-item>
           </a-col>
           <a-col :md="6" :sm="8">
-            <a-form-item label="入库科室名称">
-              <a-input placeholder="请输入科室名称" v-model="queryParam.inDeptName"></a-input>
+            <a-form-item label="出库科室">
+              <a-input placeholder="请选择科室" v-model="queryParam.inDeptName"></a-input>
             </a-form-item>
           </a-col>
           <template v-if="toggleSearchStatus">

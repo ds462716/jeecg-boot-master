@@ -72,7 +72,9 @@ public class PdProductStockTotalController {
 
          Page<PdProductStockTotalPage> page = new Page<PdProductStockTotalPage>(pageNo, pageSize);
 		 LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
-		 stockTotalPage.setDepartId(sysUser.getCurrentDepartId());
+		 if(StringUtils.isEmpty(stockTotalPage.getDepartId())){
+			 stockTotalPage.setDepartId(sysUser.getCurrentDepartId());
+		 }
 		 stockTotalPage.setDepartParentId(sysUser.getDepartParentId());
          page = pdProductStockTotalService.selectList(page,stockTotalPage);
 		//计算总库存数量，近效期数量，过期数量等值；
