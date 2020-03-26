@@ -120,6 +120,60 @@ public class PdProductServiceImpl extends ServiceImpl<PdProductMapper, PdProduct
         Barcode1 = BarCodeUtil.trimStr(Barcode1.toUpperCase());
         Barcode2 = BarCodeUtil.trimStr(Barcode2.toUpperCase());
         if(Barcode1 != null && !"".equals(Barcode1) && Barcode2 != null && !"".equals(Barcode2) ){
+            //判断是否是根据产品编号查询
+            if(Barcode1.equals(Barcode2)){
+                if(((Barcode1.startsWith("01") || Barcode1.startsWith("02")) && Barcode1.length()==16)
+                        || (Barcode1.startsWith("00") && Barcode1.length()==20)
+                        || (Barcode1.startsWith("93") && Barcode1.length()==19)
+                        ||(Barcode1.length()==13)){
+                    String productNumber = BarCodeUtil.GetEANUPN(Barcode1);
+                    PdProduct pdProduct = new PdProduct();
+                    pdProduct.setNumber(productNumber);
+                    LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+                    pdProduct.setDepartParentId(sysUser.getDepartParentId());
+                    //查询产品是否存在
+                    List<PdProduct> pdProducts = pdProductMapper.selectList(pdProduct);
+                    if(pdProducts!=null && pdProducts.size()>0){
+                        pdProduct = pdProducts.get(0);
+                        result.setCode(MessageConstant.ICODE_STATE_200);
+                        result.setMessage(MessageConstant.CODE_MESSAGE_2);
+                        resultMap.put("code",MessageConstant.ICODE_STATE_200);
+                        resultMap.put("msg",MessageConstant.CODE_MESSAGE_2);
+                        //产品对象
+                        resultMap.put("pdProduct",pdProduct);
+                        resultMap.put("number",productNumber);
+                        resultMap.put("expDate","");
+                        resultMap.put("batchNo","");
+                        resultMap.put("productBarCode","");
+                        result.setResult(resultMap);
+                        return result;
+                    }
+                }else{
+                    if(Barcode1.length()<24){
+                        PdProduct pdProduct = new PdProduct();
+                        pdProduct.setNumber(Barcode1);
+                        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+                        pdProduct.setDepartParentId(sysUser.getDepartParentId());
+                        //查询产品是否存在
+                        List<PdProduct> pdProducts = pdProductMapper.selectList(pdProduct);
+                        if(pdProducts!=null && pdProducts.size()>0){
+                            pdProduct = pdProducts.get(0);
+                            result.setCode(MessageConstant.ICODE_STATE_200);
+                            result.setMessage(MessageConstant.CODE_MESSAGE_2);
+                            resultMap.put("code",MessageConstant.ICODE_STATE_200);
+                            resultMap.put("msg",MessageConstant.CODE_MESSAGE_2);
+                            //产品对象
+                            resultMap.put("pdProduct",pdProduct);
+                            resultMap.put("number",Barcode1);
+                            resultMap.put("expDate","");
+                            resultMap.put("batchNo","");
+                            resultMap.put("productBarCode","");
+                            result.setResult(resultMap);
+                            return result;
+                        }
+                    }
+                }
+            }
             //获得产品编号
             String productNumber = BarCodeUtil.getPrdNumber(Barcode1);
             PdProduct pdProduct = new PdProduct();

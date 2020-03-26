@@ -150,7 +150,7 @@
         <a-row class="form-row" :gutter="{ xs: 8, sm: 16, md: 24, lg: 32 }">
           <a-col :lg="12">
             <a-form-item label="注册证" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input :disabled="disableSubmit" autocomplete="off" v-decorator="[ 'registration', validatorRules.registration]" placeholder="请输入注册证，多个注册证以“；”分开"></a-input>
+              <a-input :disabled="disableSubmit" @change="registrationChange" autocomplete="off" v-decorator="[ 'registration', validatorRules.registration]" placeholder="请输入注册证，多个注册证以“；”分开"></a-input>
             </a-form-item>
           </a-col>
           <a-col :lg="12">
@@ -569,6 +569,8 @@
           for(let index = 0;index<12;index++){
             if(record["licenceSite"+index]){
               this.imgIsShow[index].show=true;
+            }else{
+              this.imgIsShow[index].show=false;
             }
             if(record["licenceValidity"+index]){
               this.imgIsValidity[index]="validity"+record["licenceValidity"+index];
@@ -909,6 +911,10 @@
           }
         });
       },
+      //注册证替换;
+      registrationChange(e){
+
+      }
     }
   }
 </script>

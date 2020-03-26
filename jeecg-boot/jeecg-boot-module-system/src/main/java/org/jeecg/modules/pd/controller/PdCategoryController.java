@@ -135,6 +135,9 @@ public class PdCategoryController extends JeecgController<PdCategory, IPdCategor
 		 List<String> ids = new ArrayList<>();
 		 try {
 			 LambdaQueryWrapper<PdCategory> query = new LambdaQueryWrapper<PdCategory>();
+			 LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+			 query.eq(PdCategory::getDepartParentId, sysUser.getDepartParentId());
+			 query.eq(PdCategory::getType, PdConstant.CATEGORY_TYPE_0);
 			 //query.eq(PdCategory::getDelFlag, CommonConstant.DEL_FLAG_0);
 			 List<PdCategory> list = pdCategoryService.list(query);
 			 for (PdCategory pc : list) {

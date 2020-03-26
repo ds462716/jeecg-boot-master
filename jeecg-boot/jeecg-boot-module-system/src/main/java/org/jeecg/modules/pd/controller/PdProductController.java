@@ -342,7 +342,7 @@ public class PdProductController extends JeecgController<PdProduct, IPdProductSe
 		}catch(Exception e){
 			log.error(e.getMessage(), e);
 			result.setCode(500);
-			result.setMessage("系统异常");
+			result.setMessage("条码格式不正确");
 		}
 		return result;
 	}
