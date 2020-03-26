@@ -8,6 +8,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @Description: 库存明细表
@@ -163,5 +164,9 @@ public class PdProductStock extends BaseEntity {
 	/** 移库数量 **/
 	@TableField(exist = false)
 	private Double ykStockNum;
+
+	/*多个部门集合*/
+	@TableField(exist = false)
+	private List<String> departIdList;
 
 }

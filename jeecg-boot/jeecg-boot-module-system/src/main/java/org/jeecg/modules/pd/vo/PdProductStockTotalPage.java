@@ -51,5 +51,8 @@ public class PdProductStockTotalPage extends PdProductStockTotal {
 	/*当前部门库存数量**/
 	@TableField(exist = false)
 	private Double currentStockNum;
+	/*多个部门集合*/
+	@TableField(exist = false)
+	private List<String> departIdList;
 	
 }

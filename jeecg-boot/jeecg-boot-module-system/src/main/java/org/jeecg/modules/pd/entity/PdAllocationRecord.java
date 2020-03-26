@@ -116,4 +116,11 @@ public class PdAllocationRecord extends BaseEntity {
     /** 审核状态集合 **/
     @TableField(exist = false)
     private List<String> auditStatusList;
+
+    /*入库科室ID集合*/
+    @TableField(exist = false)
+    private List<String> inDeptIdList;
+    /*出库科室ID集合*/
+    @TableField(exist = false)
+    private List<String> outDeptIdList;
 }

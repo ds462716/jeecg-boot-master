@@ -39,6 +39,8 @@ public class PdApplyOrderPage extends PdApplyOrder {
 
 	/** 查询日期结束 **/
 	private String queryDateEnd;
+	/*多个部门集合*/
+	private List<String> departIdList;
 	@ExcelCollection(name="申领单明细表")
 	private List<PdApplyDetail> pdApplyDetailList;
 	

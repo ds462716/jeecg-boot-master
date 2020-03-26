@@ -108,6 +108,13 @@ public class PdApplyOrderController {
 		 pdApplyOrderPage.setAuditStatusList(list);
 		 LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
 		 SysDepart sysDepart=sysDepartService.queryDepartByOrgCode(sysUser.getOrgCode());
+
+		 if(StringUtils.isEmpty(pdApplyOrderPage.getDepartId())){
+			 //查询科室下所有下级科室的ID
+			 SysDepart depart=new SysDepart();
+			 List<String> departList=pdDepartService.selectListDepart(depart);
+			 pdApplyOrderPage.setDepartIdList(departList);
+		 }
 		 pdApplyOrderPage.setOutDepartId(sysDepart.getId());
 		 pdApplyOrderPage.setDepartParentId(sysUser.getDepartParentId());
 		 IPage<PdApplyOrder> pageList = pdApplyOrderService.selectList(page, pdApplyOrderPage);

@@ -13,10 +13,7 @@ import org.jeecg.modules.pd.entity.PdGoodsAllocation;
 import org.jeecg.modules.pd.entity.PdProductStock;
 import org.jeecg.modules.pd.entity.PdProductStockTotal;
 import org.jeecg.modules.pd.entity.PdStockRecordDetail;
-import org.jeecg.modules.pd.service.IPdGoodsAllocationService;
-import org.jeecg.modules.pd.service.IPdProductStockService;
-import org.jeecg.modules.pd.service.IPdProductStockTotalService;
-import org.jeecg.modules.pd.service.IPdStockRecordDetailService;
+import org.jeecg.modules.pd.service.*;
 import org.jeecg.modules.pd.vo.PdGoodsAllocationPage;
 import org.jeecg.modules.pd.vo.PdProductStockTotalPage;
 import org.jeecg.modules.system.entity.SysDepart;
@@ -30,10 +27,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @Description: 库存总表
@@ -51,6 +45,8 @@ public class PdProductStockTotalController {
 	 private IPdProductStockService pdProductStockService;
 	 @Autowired
 	 private ISysDepartService sysDepartService;
+	@Autowired
+	private IPdDepartService pdDepartService;
 	 @Autowired
 	 private IPdStockRecordDetailService pdStockRecordDetailService;
 	@Autowired
@@ -73,7 +69,10 @@ public class PdProductStockTotalController {
          Page<PdProductStockTotalPage> page = new Page<PdProductStockTotalPage>(pageNo, pageSize);
 		 LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
 		 if(StringUtils.isEmpty(stockTotalPage.getDepartId())){
-			 stockTotalPage.setDepartId(sysUser.getCurrentDepartId());
+			 //查询科室下所有下级科室的ID
+			 SysDepart sysDepart=new SysDepart();
+			 List<String> departList=pdDepartService.selectListDepart(sysDepart);
+			 stockTotalPage.setDepartIdList(departList);
 		 }
 		 stockTotalPage.setDepartParentId(sysUser.getDepartParentId());
          page = pdProductStockTotalService.selectList(page,stockTotalPage);
@@ -321,7 +320,12 @@ public class PdProductStockTotalController {
 											 HttpServletRequest req) {
 		 Page<PdProductStock> page = new Page<PdProductStock>(pageNo, pageSize);
 		 LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
-		 productStock.setDepartId(sysUser.getCurrentDepartId());
+		 if(StringUtils.isEmpty(productStock.getDepartId())){
+			 //查询科室下所有下级科室的ID
+			 SysDepart sysDepart=new SysDepart();
+			 List<String> departList=pdDepartService.selectListDepart(sysDepart);
+			 productStock.setDepartIdList(departList);
+		 }
 		 page = pdProductStockService.selectList(page,productStock);
 		 return Result.ok(page);
 	 }

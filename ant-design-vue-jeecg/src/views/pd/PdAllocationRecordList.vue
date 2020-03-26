@@ -21,7 +21,7 @@
             <a-form-item label="出库科室">
               <a-select
                 showSearch
-                :outDepartId="departValue"
+                :outDeptId="departValue"
                 :defaultActiveFirstOption="false"
                 :allowClear="true"
                 :showArrow="true"
@@ -30,7 +30,7 @@
                 @change="departHandleChange"
                 @focus="departHandleSearch"
                 :notFoundContent="notFoundContent"
-                v-model="queryParam.outDepartId"
+                v-model="queryParam.outDeptId"
                 placeholder="请选择科室"
               >
                 <a-select-option v-for="d in departData" :key="d.value">{{d.text}}</a-select-option>

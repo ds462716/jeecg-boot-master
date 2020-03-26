@@ -94,6 +94,12 @@
                     #{item}
                 </foreach>
             </if>
+            <if test="departIdList != null and departIdList.size() > 0">
+                and a.depart_id IN
+                <foreach collection="departIdList" item="item" separator="," open="(" close=")">
+                    #{item}
+                </foreach>
+            </if>
             <if test="queryDateStart != null and queryDateStart != ''">
                 AND a.order_date &gt;= #{queryDateStart}
             </if>

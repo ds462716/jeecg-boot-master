@@ -102,6 +102,12 @@
             <if test="queryDateEnd != null and queryDateEnd != ''">
                 AND a.apply_date &lt;= #{queryDateEnd}
             </if>
+            <if test="departIdList != null and departIdList.size() > 0">
+                and a.depart_id IN
+                <foreach collection="departIdList" item="item" separator="," open="(" close=")">
+                    #{item}
+                </foreach>
+            </if>
             ORDER BY  field(a.audit_status, 1, 3, 2),a.update_time ASC
         </where>
     </select>

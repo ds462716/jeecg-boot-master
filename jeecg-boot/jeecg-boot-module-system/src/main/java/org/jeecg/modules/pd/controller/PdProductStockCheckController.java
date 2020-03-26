@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.aspect.annotation.AutoLog;
@@ -21,6 +22,7 @@ import org.jeecg.modules.pd.service.IPdProductStockCheckChildService;
 import org.jeecg.modules.pd.service.IPdProductStockCheckService;
 import org.jeecg.modules.pd.service.IPdProductStockTotalService;
 import org.jeecg.modules.pd.util.UUIDUtil;
+import org.jeecg.modules.system.entity.SysDepart;
 import org.jeecg.modules.system.service.ISysDepartService;
 import org.jeecgframework.poi.excel.ExcelImportUtil;
 import org.jeecgframework.poi.excel.def.NormalExcelConstants;
@@ -77,8 +79,13 @@ public class PdProductStockCheckController {
 								   HttpServletRequest req) {
 		Page<PdProductStockCheck> page = new Page<PdProductStockCheck>(pageNo, pageSize);
 		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
-		//pdProductStockCheck.setDepartId(sysUser.getCurrentDepartId());
-		pdProductStockCheck.setDepartParentId(sysUser.getDepartParentId());
+		if(StringUtils.isEmpty(pdProductStockCheck.getDepartId())){
+			//查询科室下所有下级科室的ID
+			SysDepart sysDepart=new SysDepart();
+			List<String> departList=pdDepartService.selectListDepart(sysDepart);
+			pdProductStockCheck.setDepartIdList(departList);
+		}
+ 		pdProductStockCheck.setDepartParentId(sysUser.getDepartParentId());
 		page = pdProductStockCheckService.selectList(page,pdProductStockCheck);
 		return Result.ok(page);
 	}

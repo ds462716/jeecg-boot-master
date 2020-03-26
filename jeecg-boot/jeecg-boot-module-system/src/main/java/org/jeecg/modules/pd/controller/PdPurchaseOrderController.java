@@ -106,6 +106,12 @@ public class PdPurchaseOrderController {
 		 list.add(PdConstant.AUDIT_STATE_2);//审核通过
 		 list.add(PdConstant.AUDIT_STATE_3);//已驳回
 		 pdPurchaseOrderPage.setAuditStatusList(list);
+		 if(StringUtils.isEmpty(pdPurchaseOrderPage.getDepartId())){
+			 //查询科室下所有下级科室的ID
+			 SysDepart sysDepart=new SysDepart();
+			 List<String> departList=pdDepartService.selectListDepart(sysDepart);
+			 pdPurchaseOrderPage.setDepartIdList(departList);
+		 }
 		 LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
 		 pdPurchaseOrderPage.setDepartParentId(sysUser.getDepartParentId());
 		 page = pdPurchaseOrderService.selectList(page, pdPurchaseOrderPage);

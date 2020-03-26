@@ -187,7 +187,13 @@
 			<if test="allocationNo != null and allocationNo != ''">
 				AND j.allocation_no = #{allocationNo}
 			</if>
-			order by  exp_status  desc,create_time desc
+			<if test="departIdList != null and departIdList.size() > 0">
+				AND a.depart_id IN
+				<foreach collection="departIdList" item="item" separator="," open="(" close=")">
+					#{item}
+				</foreach>
+			</if>
+ 			order by  exp_status  desc,create_time desc
 		</where>
 	</select>
 

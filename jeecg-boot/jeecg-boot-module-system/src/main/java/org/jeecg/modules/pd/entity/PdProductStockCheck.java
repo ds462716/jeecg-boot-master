@@ -83,4 +83,7 @@ public class PdProductStockCheck extends BaseEntity {
 	/**盘点人名称 */
 	@TableField(exist = false)
 	private String checkName;
+	/*多个部门集合*/
+	@TableField(exist = false)
+	private List<String> departIdList;
 }

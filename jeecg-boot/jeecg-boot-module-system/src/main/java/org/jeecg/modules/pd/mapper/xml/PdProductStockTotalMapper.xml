@@ -128,6 +128,12 @@
             <if test="venderName != null and venderName != ''">
                 AND d.name  LIKE concat('%',#{venderName},'%')
             </if>
+            <if test="departIdList != null and departIdList.size() > 0">
+                and a.depart_id IN
+                <foreach collection="departIdList" item="item" separator="," open="(" close=")">
+                    #{item}
+                </foreach>
+            </if>
             order by  exp_status  desc,create_time desc
         </where>
     </select>
