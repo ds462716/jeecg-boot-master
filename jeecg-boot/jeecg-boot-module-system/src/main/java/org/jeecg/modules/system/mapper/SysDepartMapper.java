@@ -59,4 +59,6 @@ public interface SysDepartMapper extends BaseMapper<SysDepart> {
     List<SysDepart> selectDepartList(SysDepart sysDepart);
 
 	List<SysDepart> selectListByCTs(@org.apache.ibatis.annotations.Param("parMap")Map<String,Object> map);
+
+	List<SysDepart> getSysTwoDepartList(SysDepart sysDepart);
 }

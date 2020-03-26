@@ -342,6 +342,11 @@ public class PdDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart>
         }
     }
 
+    @Override
+    public List<SysDepart> getSysTwoDepartList(SysDepart sysDepart) {
+        return sysDepartMapper.getSysTwoDepartList(sysDepart);
+    }
+
     private void checkChildrenExists(String id, List<String> idList) {
         LambdaQueryWrapper<SysDepart> query = new LambdaQueryWrapper<SysDepart>();
         query.eq(SysDepart::getParentId,id);

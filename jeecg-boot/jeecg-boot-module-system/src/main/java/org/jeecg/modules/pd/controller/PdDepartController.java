@@ -325,6 +325,35 @@ public class PdDepartController extends JeecgController<PdDepartConfig, IPdDepar
 		 return result;
 	 }
 
+    /**
+     * 查询所有二级科室 不包括本科室传0
+     * @param sysDepart
+     * @return
+     */
+    @GetMapping(value = "/getSysTwoDepartList")
+    public Result<List<SysDepart>> getSysTwoDepartList(SysDepart sysDepart) {
+        long start = System.currentTimeMillis();
+        Result<List<SysDepart>> result = new Result<>();
+        try {
+            LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+            if("0".equals(sysDepart.getParentFlag())){
+                sysDepart.setDepartParentId(sysUser.getDepartParentId());
+                sysDepart.setOrgType("1");
+            }else{
+                sysDepart.setDepartParentId(sysUser.getDepartParentId());
+                sysDepart.setDepartId(sysUser.getCurrentDepartId());
+                sysDepart.setOrgType("1");
+            }
+            List<SysDepart> list = pdDepartService.getSysTwoDepartList(sysDepart);
+            result.setResult(list);
+            result.setSuccess(true);
+        }catch(Exception e){
+            log.error(e.getMessage(), e);
+        }
+        log.info("======获取产品数据=====耗时:" + (System.currentTimeMillis() - start) + "毫秒");
+        return result;
+    }
+
 	 @RequestMapping(value = "/queryUserDepart", method = RequestMethod.GET)
     public Result<List<String>> queryUserDepart(@RequestParam(name = "userid", required = true) String userid) {
         Result<List<String>> result = new Result<>();

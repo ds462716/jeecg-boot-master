@@ -42,4 +42,6 @@ public interface IPdDepartService extends IService<SysDepart> {
     Result<Object> deleteV(String id);
 
     void saveDepartPermission(String departId, String permissionIds, String lastPermissionIds);
+
+    List<SysDepart> getSysTwoDepartList(SysDepart sysDepart);
 }
