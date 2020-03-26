@@ -22,6 +22,7 @@
 		a.remarks,
 		a.huowei_code,
 		a.msg_send_state,
+		a.record_detail_id,
 		a.del_flag
 	</sql>
 
