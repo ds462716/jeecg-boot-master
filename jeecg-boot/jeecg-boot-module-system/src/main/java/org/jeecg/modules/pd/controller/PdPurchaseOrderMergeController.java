@@ -13,6 +13,9 @@ import org.jeecg.modules.pd.service.IPdPurchaseOrderMergeDetailService;
 import org.jeecg.modules.pd.service.IPdPurchaseOrderMergeService;
 import org.jeecg.modules.pd.service.IPdPurchaseOrderService;
 import org.jeecg.modules.pd.vo.PdPurchaseOrderPage;
+import org.jeecgframework.poi.excel.def.NormalExcelConstants;
+import org.jeecgframework.poi.excel.entity.ExportParams;
+import org.jeecgframework.poi.excel.view.JeecgEntityExcelView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
@@ -147,7 +150,19 @@ public class PdPurchaseOrderMergeController extends JeecgController<PdPurchaseOr
     */
     @RequestMapping(value = "/exportXls")
     public ModelAndView exportXls(HttpServletRequest request, PdPurchaseOrderMerge pdPurchaseOrderMerge) {
-        return super.exportXls(request, pdPurchaseOrderMerge, PdPurchaseOrderMerge.class, "合并申购单表");
+			// Step.1 组装查询条件查询数据
+			LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+			//Step.2 获取导出数据
+		PdPurchaseOrderMergeDetail orderMergeDetail=new PdPurchaseOrderMergeDetail();
+		orderMergeDetail.setMergeOrderNo(pdPurchaseOrderMerge.getMergeOrderNo());
+		List<PdPurchaseOrderMergeDetail> i_orderMergeDetail = pdPurchaseOrderMergeDetailService.queryPdPurchaseMergeDetail(orderMergeDetail);
+			// Step.3 AutoPoi 导出Excel
+			ModelAndView mv = new ModelAndView(new JeecgEntityExcelView());
+			mv.addObject(NormalExcelConstants.FILE_NAME, "申购订单明细列表");
+			mv.addObject(NormalExcelConstants.CLASS, PdPurchaseOrderMergeDetail.class);
+			mv.addObject(NormalExcelConstants.PARAMS, new ExportParams("申购订单产品列表数据", "导出人:" + sysUser.getRealname(), "申购订单产品数据"));
+			mv.addObject(NormalExcelConstants.DATA_LIST, i_orderMergeDetail);
+			return mv;
     }
 
     /**

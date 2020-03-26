@@ -43,6 +43,7 @@ public class PdPurchaseOrderMergeDetail extends BaseEntity {
 	@Excel(name = "所属部门", width = 15)
 	private String sysOrgCode;
 	/**合并申购编号*/
+	@Excel(name = "所属部门", width = 15)
 	private String mergeOrderNo;
 	/**产品id*/
 	private String productId;
