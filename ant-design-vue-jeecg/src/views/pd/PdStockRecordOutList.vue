@@ -9,15 +9,52 @@
               <a-input placeholder="请输入出库单号" v-model="queryParam.recordNo"></a-input>
             </a-form-item>
           </a-col>
-
+          <a-col :span="6">
+            <a-form-item label="入库库房">
+              <a-select
+                showSearch
+                placeholder="请选择入库库房"
+                :supplierId="departValue"
+                :defaultActiveFirstOption="false"
+                :showArrow="true"
+                :filterOption="false"
+                @search="departHandleSearch"
+                @focus="departHandleSearch"
+                :notFoundContent="notFoundContent"
+                v-model="queryParam.inDepartId"
+              >
+                <a-select-option v-for="d in departList" :key="d.id">{{d.departName}}</a-select-option>
+              </a-select>
+            </a-form-item>
+          </a-col>
+          <a-col :md="6" :sm="8">
+            <a-form-item label="出库类型">
+              <j-dict-select-tag v-model="queryParam.outType" dictCode="out_type"/>
+            </a-form-item>
+          </a-col>
+          <a-col :md="6" :sm="8">
+            <a-form-item label="提交状态">
+              <j-dict-select-tag v-model="queryParam.submitStatus" dictCode="submit_status"/>
+            </a-form-item>
+          </a-col>
+          <a-col :md="6" :sm="8">
+            <a-form-item label="审核状态">
+              <j-dict-select-tag v-model="queryParam.auditStatus" dictCode="audit_status"/>
+            </a-form-item>
+          </a-col>
+          <a-col :md="6" :sm="8">
+            <a-form-item label="提交日期">
+              <a-range-picker @change="dateChange" v-model="queryParam.queryDate"/>
+            </a-form-item>
+          </a-col>
           <a-col :md="6" :sm="8">
             <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
               <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
               <a-button type="primary" @click="searchReset" icon="reload" style="margin-left: 8px">重置</a-button>
-              <a @click="handleToggleSearch" style="margin-left: 8px">
-                {{ toggleSearchStatus ? '收起' : '展开' }}
-                <a-icon :type="toggleSearchStatus ? 'up' : 'down'"/>
-              </a>
+              <!--<a @click="handleToggleSearch" style="margin-left: 8px">-->
+              <!--{{ toggleSearchStatus ? '收起' : '展开' }}-->
+              <!--<a-icon :type="toggleSearchStatus ? 'up' : 'down'"/>-->
+              <!--</a>-->
             </span>
           </a-col>
         </a-row>
@@ -77,7 +114,9 @@
 
 <script>
 
+  import { filterObj } from '@/utils/util';
   import { JeecgListMixin } from '@/mixins/JeecgListMixin'
+  import {getAction} from '@/api/manage'
   import {initDictOptions, filterMultiDictText} from '@/components/dict/JDictSelectUtil'
   import PdStockRecordOutModal from "./modules/PdStockRecordOutModal";
 
@@ -90,6 +129,10 @@
     data () {
       return {
         description: '出库记录表管理页面',
+
+        notFoundContent:"未找到内容",
+        departValue: undefined,
+        departList:[],
         // 表头
         columns: [
           {
@@ -183,6 +226,7 @@
           delete: "/pd/pdStockRecordOut/delete",
           // deleteBatch: "/pd/pdStockRecordOut/deleteBatch",
           exportXlsUrl: "/pd/pdStockRecordOut/exportXls",
+          departList:"/pd/pdDepart/getSysDepartList",
           // importExcelUrl: "pd/pdStockRecordOut/importExcel",
         },
         dictOptions:{
@@ -245,6 +289,32 @@
             this.$set(this.dictOptions, 'outType', res.result)
           }
         })
+      },
+      dateChange: function (value, dateString) {
+        this.queryParam.queryDateStart=dateString[0];
+        this.queryParam.queryDateEnd=dateString[1];
+      },
+      // 部门下拉框搜索
+      departHandleSearch(value){
+        getAction(this.url.departList,{departName:value}).then((res)=>{
+          if (!res.success) {
+            this.cmsFailed(res.message);
+          }
+          this.departList = res.result;
+        })
+      },
+      getQueryParams() {
+        //获取查询条件
+        let sqp = {}
+        if(this.superQueryParams){
+          sqp['superQueryParams']=encodeURI(this.superQueryParams)
+        }
+        var param = Object.assign(sqp, this.queryParam, this.isorter ,this.filters);
+        param.field = this.getQueryField();
+        param.pageNo = this.ipagination.current;
+        param.pageSize = this.ipagination.pageSize;
+        delete param.queryDate; //范围参数不传递后台，传后台会报错
+        return filterObj(param);
       },
        
     }

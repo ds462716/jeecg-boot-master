@@ -62,7 +62,7 @@
         <where>
             a.del_flag = #{DEL_FLAG_NORMAL}
             <if test="recordNo != null and recordNo != ''">
-                AND a.record_no = #{recordNo}
+                AND a.record_no LIKE concat('%',#{recordNo},'%')
             </if>
             <if test="recordType != null and recordType != ''">
                 AND a.record_type = #{recordType}
@@ -72,6 +72,9 @@
             </if>
             <if test="inType != null and inType != ''">
                 AND a.in_type = #{inType}
+            </if>
+            <if test="auditStatus != null and auditStatus != ''">
+                AND a.audit_status = #{auditStatus}
             </if>
             <if test="orderNo != null and orderNo != ''">
                 AND a.order_no = #{orderNo}
@@ -88,11 +91,9 @@
             <if test="dosagertNo != null and dosagertNo != ''">
                 AND a.dosagert_no = #{dosagertNo}
             </if>
-
             <if test="submitBy != null and submitBy != ''">
                 AND a.submit_by = #{submitBy}
             </if>
-
             <if test="submitStatus != null and submitStatus != ''">
                 AND a.submit_status = #{submitStatus}
             </if>
@@ -110,6 +111,12 @@
             </if>
             <if test="departParentId != null and departParentId != ''">
                 AND a.depart_parent_id = #{departParentId}
+            </if>
+            <if test="queryDateStart != null and queryDateStart != ''">
+                AND a.submit_date &gt;= #{queryDateStart}
+            </if>
+            <if test="queryDateEnd != null and queryDateEnd != ''">
+                AND a.submit_date &lt;= #{queryDateEnd}
             </if>
         </where>
         order by a.create_time desc

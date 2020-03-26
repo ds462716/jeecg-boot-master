@@ -225,4 +225,10 @@ public class PdStockRecord extends BaseEntity {
     private Date expDate;//有效期
     @TableField(exist = false)
     private String productNum;//产品数量
+    /** 查询日期起始 **/
+    @TableField(exist = false)
+    private String queryDateStart;
+    /** 查询日期结束 **/
+    @TableField(exist = false)
+    private String queryDateEnd;
 }
