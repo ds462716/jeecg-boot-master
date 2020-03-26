@@ -11,7 +11,22 @@
           </a-col>
           <a-col :md="6" :sm="8">
             <a-form-item label="申购科室名称">
-              <a-input placeholder="请输入申购科室名称" v-model="queryParam.deptName"></a-input>
+               <a-select
+                showSearch
+                :departId="departValue"
+                :defaultActiveFirstOption="false"
+                :allowClear="true"
+                :showArrow="true"
+                :filterOption="false"
+                @search="departHandleSearch"
+                @change="departHandleChange"
+                @focus="departHandleSearch"
+                :notFoundContent="notFoundContent"
+                v-model="queryParam.departId"
+                placeholder="请选择科室"
+              >
+                <a-select-option v-for="d in departData" :key="d.value">{{d.text}}</a-select-option>
+              </a-select>
             </a-form-item>
           </a-col>
           <a-col  :md="6" :sm="8">
@@ -93,12 +108,42 @@
 
 <script>
   import { JeecgListMixin,handleEdit} from '@/mixins/JeecgListMixin'
-  import { deleteAction,httpAction } from '@/api/manage'
+  import { deleteAction,httpAction,getAction } from '@/api/manage'
   import { filterObj } from '@/utils/util';
   import PdPurchaseExamineModal from './modules/PdPurchaseExamineModal'
   import JDictSelectTag from '@/components/dict/JDictSelectTag.vue'
   import {initDictOptions, filterMultiDictText} from '@/components/dict/JDictSelectUtil'
 
+  let timeout;
+  let currentValue;
+
+  function fetch(value, callback,url) {
+    if (timeout) {
+      clearTimeout(timeout);
+      timeout = null;
+    }
+    currentValue = value;
+
+    function fake() {
+      getAction(url,{departName:value}).then((res)=>{
+        if (!res.success) {
+          this.cmsFailed(res.message);
+        }
+        if (currentValue === value) {
+          const result = res.result;
+          const data = [];
+          result.forEach(r => {
+            data.push({
+              value: r.id,
+              text: r.departName,
+            });
+          });
+          callback(data);
+        }
+      })
+    }
+    timeout = setTimeout(fake, 0);
+  }
   export default {
     name: "PdPurchaseExamineList",
     mixins:[JeecgListMixin],
@@ -109,6 +154,9 @@
     data () {
       return {
         description: '申购订单主表管理页面',
+        departData: [],
+        departValue: undefined,
+        notFoundContent:"未找到内容",
         // 表头
         columns: [
           {
@@ -178,7 +226,8 @@
           list: "/pd/pdPurchaseOrder/auditList",
           edit:"/pd/pdPurchaseOrderMerge/edit",
           delete: "/pd/pdPurchaseOrder/delete",
-          deleteBatch: "/pd/pdPurchaseOrder/deleteBatch"
+          deleteBatch: "/pd/pdPurchaseOrder/deleteBatch",
+          queryDepart: "/pd/pdDepart/queryListTree",
         },
         dictOptions:{
           auditStatus:[],
@@ -189,6 +238,18 @@
 
     },
     methods: {
+
+      //科室查询start
+      departHandleSearch(value) {
+        fetch(value, data => (this.departData = data),this.url.queryDepart);
+      },
+      departHandleChange(value) {
+        this.departValue = value;
+        fetch(value, data => (this.departData = data),this.url.queryDepart);
+      },
+      //科室查询end
+
+
       rejectedDateChange (value, dateString) {
         this.queryParam.queryDateStart=dateString[0];
         this.queryParam.queryDateEnd=dateString[1];

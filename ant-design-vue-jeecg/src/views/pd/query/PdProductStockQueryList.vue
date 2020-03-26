@@ -6,12 +6,28 @@
         <a-row :gutter="24">
           <a-col :md="6" :sm="8">
             <a-form-item label="科室">
-              <a-input placeholder="请选择科室" v-model="queryParam.deptName"></a-input>
+               <a-select
+                showSearch
+                :departId="departValue"
+                :defaultActiveFirstOption="false"
+                :allowClear="true"
+                :showArrow="true"
+                :filterOption="false"
+                @search="departHandleSearch"
+                @change="departHandleChange"
+                @focus="departHandleSearch"
+                :notFoundContent="notFoundContent"
+                v-model="queryParam.departId"
+                placeholder="请选择科室"
+              >
+                <a-select-option v-for="d in departData" :key="d.value">{{d.text}}</a-select-option>
+              </a-select>
+
             </a-form-item>
           </a-col>
           <a-col :md="6" :sm="8">
             <a-form-item label="产品名称">
-              <a-input placeholder="请选择产品名称" v-model="queryParam.productName"></a-input>
+              <a-input placeholder="请输入产品名称" v-model="queryParam.productName"></a-input>
             </a-form-item>
           </a-col>
           <a-col :md="6" :sm="8">
@@ -60,7 +76,38 @@
 <script>
 
   import { JeecgListMixin ,handleEdit} from '@/mixins/JeecgListMixin'
+  import { getAction } from '@/api/manage'
 
+  let timeout;
+  let currentValue;
+
+  function fetch(value, callback,url) {
+    if (timeout) {
+      clearTimeout(timeout);
+      timeout = null;
+    }
+    currentValue = value;
+
+    function fake() {
+      getAction(url,{departName:value}).then((res)=>{
+        if (!res.success) {
+          this.cmsFailed(res.message);
+        }
+        if (currentValue === value) {
+          const result = res.result;
+          const data = [];
+          result.forEach(r => {
+            data.push({
+              value: r.id,
+              text: r.departName,
+            });
+          });
+          callback(data);
+        }
+      })
+    }
+    timeout = setTimeout(fake, 0);
+  }
   export default {
     name: "PdProductStockQueryList",
     mixins:[JeecgListMixin],
@@ -69,6 +116,9 @@
     data () {
       return {
         description: '库存明细查询',
+        departData: [],
+        departValue: undefined,
+        notFoundContent:"未找到内容",
         // 表头
         columns: [
           /*{
@@ -140,6 +190,7 @@
         url: {
           list: "/pd/pdProductStockTotal/queryList",
           exportXlsUrl: "/pd/pdProductStockTotal/exportXls",
+          queryDepart: "/pd/pdDepart/queryListTree",
         },
         dictOptions:{
         },
@@ -152,7 +203,15 @@
       }
     },
     methods: {
-
+     //科室查询start
+      departHandleSearch(value) {
+        fetch(value, data => (this.departData = data),this.url.queryDepart);
+      },
+      departHandleChange(value) {
+        this.departValue = value;
+        fetch(value, data => (this.departData = data),this.url.queryDepart);
+      },
+      //科室查询end
     }
   }
 </script>

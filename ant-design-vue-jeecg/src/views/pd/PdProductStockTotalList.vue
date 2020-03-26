@@ -19,6 +19,7 @@
                 @focus="departHandleSearch"
                 :notFoundContent="notFoundContent"
                 v-model="queryParam.departId"
+                placeholder="请选择科室"
               >
                 <a-select-option v-for="d in departData" :key="d.value">{{d.text}}</a-select-option>
               </a-select>
@@ -101,7 +102,6 @@
   import PdProductStockTotalModal from './modules/PdProductStockTotalModal'
   import PdProductStockModal from './modules/PdProductStockModal'
   import PdStockRecordDetailInfoModal from './modules/PdStockRecordDetailInfoModal'
-
   import { getAction } from '@/api/manage'
   import {initDictOptions, filterMultiDictText} from '@/components/dict/JDictSelectUtil'
 
@@ -272,7 +272,6 @@
           this.ipagination.current = 1;
         }
         var params = this.getQueryParams();//查询条件
-        alert("s"+params.departId);
         this.loading = true;
         getAction(this.url.list, params).then((res) => {
           if (res.success) {
@@ -364,7 +363,7 @@
         }
       },
 
-      //组别查询start
+      //科室查询start
       departHandleSearch(value) {
         fetch(value, data => (this.departData = data),this.url.queryDepart);
       },
@@ -372,7 +371,7 @@
         this.departValue = value;
         fetch(value, data => (this.departData = data),this.url.queryDepart);
       },
-      //组别查询end
+      //科室查询end
     }
   }
 </script>
