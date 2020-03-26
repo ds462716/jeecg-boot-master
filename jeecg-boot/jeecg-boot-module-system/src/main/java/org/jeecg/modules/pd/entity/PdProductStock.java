@@ -80,6 +80,9 @@ public class PdProductStock extends BaseEntity {
 	/**货位编号*/
 	@Excel(name = "货位编号", width = 15)
 	private String huoweiCode;
+	/**产品id*/
+	@Excel(name = "入库明细Id", width = 15)
+	private String recordDetailId;
 	/**货位名称**/
 	@Excel(name = "货位名称", width = 15)
 	@TableField(exist = false)
