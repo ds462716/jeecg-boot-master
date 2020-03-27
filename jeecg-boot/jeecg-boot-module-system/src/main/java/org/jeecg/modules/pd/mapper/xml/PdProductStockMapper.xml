@@ -184,6 +184,9 @@
 			<if test="applyNo != null and applyNo != ''">
 				AND h.apply_no = #{applyNo}
 			</if>
+			<if test="departParentId != null and departParentId != ''">
+				AND a.depart_parent_id = #{departParentId}
+			</if>
 			<if test="allocationNo != null and allocationNo != ''">
 				AND j.allocation_no = #{allocationNo}
 			</if>
@@ -277,4 +280,46 @@
 			huowei_code = #{huoweiCode}
 		WHERE huowei_code= #{oldHuoweiCode}
 	</update>
+
+
+    <!-- 物流产品 -->
+    <select id="getByOriginalProduct" resultType="org.jeecg.modules.pd.entity.PdProductStock">
+        SELECT DISTINCT
+        <include refid="pdProductStockColumns"/>,
+        <include refid="pdProductColumns"/>,
+        <include refid="sysDepartColumns"/>
+        FROM pd_product_stock a
+        <include refid="pdProductStockJoins"/>
+        <include refid="pdProductJoins"/>
+        <include refid="sysDepartJoins"/>
+        LEFT JOIN pd_dosage_detail p ON a.product_id = p.product_id   AND a.product_bar_code = p.product_bar_code AND a.batch_no = p.batch_no
+        LEFT JOIN pd_dosage s ON p.dosage_id = s.dosage_id
+        <where>
+            1 = 1
+            <if test="departId != null and departId != ''">
+                AND a.depart_id = #{departId}
+            </if>
+            <if test="departParentId != null and departParentId != ''">
+                AND s.depart_parent_id = #{departParentId}
+            </if>
+            <if test="number != null and number != ''">
+                AND c.number LIKE concat('%',#{number},'%')
+            </if>
+            <if test="batchNo != null and batchNo != ''">
+                AND a.batch_no = #{batchNo}
+            </if>
+            <if test="version != null and version != ''">
+                AND c.version = #{version}
+            </if>
+            <if test="spec != null and spec != ''">
+                AND c.spec = #{spec}
+            </if>
+            <if test="productName != null and productName != ''">
+                AND c.name LIKE CONCAT('%', #{productName}, '%')
+            </if>
+            <if test="inHospitalNo != null and inHospitalNo != ''">
+                AND s.in_hospital_no LIKE CONCAT('%', #{inHospitalNo}, '%')
+            </if>
+        </where>
+    </select>
 </mapper>

@@ -226,7 +226,7 @@ public class PdProductStockTotalController {
 
 		 Page<PdProductStock> page = new Page<PdProductStock>(pageNo, pageSize);
 		 LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
-		 productStock.setDepartId(sysUser.getCurrentDepartId());
+		 productStock.setDepartParentId(sysUser.getDepartParentId());
 		 page = pdProductStockService.selectList(page,productStock);
 		 //计算总库存数量，近效期数量，过期数量等值；
 		 //**************************
@@ -276,6 +276,8 @@ public class PdProductStockTotalController {
 		 pdStockRecordDetail.setProductId(stockTotalPage.getProductId());
 		 pdStockRecordDetail.setAuditStatus(PdConstant.AUDIT_STATE_2);
 		 pdStockRecordDetail.setDeptId(stockTotalPage.getDepartId());
+		 LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		 pdStockRecordDetail.setDepartParentId(sysUser.getDepartParentId());
 		 page = pdStockRecordDetailService.selectList(page,pdStockRecordDetail);
 		 Double productTotNum = 0.00;//入库总数量
 		 Double productOutTotNum = 0.00;//出库总数量
@@ -444,5 +446,29 @@ public class PdProductStockTotalController {
 		 pdProductStockTotalService.updateStockHuowei(productStock);
 		 return Result.ok("操作成功!");
 	 }
+
+
+
+	/**
+	 * 出库产品选择器用查询库存明细信息
+	 *
+	 * @param productStock
+	 * @param pageNo
+	 * @param pageSize
+	 * @param req
+	 * @return
+	 */
+	@GetMapping(value = "/selectProductStockList")
+	public Result<?> selectProductStockList(PdProductStock productStock,
+											@RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
+											@RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
+											HttpServletRequest req) {
+		Page<PdProductStock> page = new Page<PdProductStock>(pageNo, pageSize);
+		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		productStock.setDepartId(sysUser.getCurrentDepartId());
+		productStock.setDepartParentId(sysUser.getDepartParentId());
+		page = pdProductStockService.selectList(page,productStock);
+		return Result.ok(page);
+	}
 
 }
