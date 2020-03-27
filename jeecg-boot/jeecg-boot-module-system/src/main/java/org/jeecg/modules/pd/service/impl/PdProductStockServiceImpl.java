@@ -1,17 +1,15 @@
 package org.jeecg.modules.pd.service.impl;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.jeecg.modules.pd.entity.PdProductStock;
-import org.jeecg.modules.pd.entity.PdProductStockTotal;
 import org.jeecg.modules.pd.mapper.PdProductStockMapper;
 import org.jeecg.modules.pd.service.IPdProductStockService;
-import org.jeecg.modules.pd.vo.PdProductStockTotalPage;
-import org.springframework.stereotype.Service;
-import java.util.List;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.List;
 
 /**
  * @Description: 库存明细表
@@ -58,4 +56,15 @@ public class PdProductStockServiceImpl extends ServiceImpl<PdProductStockMapper,
 	public void updateProductStock(PdProductStock productStock) {
 		pdProductStockMapper.updateProductStock(productStock);
 	}
+
+	/**
+	 * 物流追溯产品列表
+	 * @param pdProductStock
+	 * @return
+	 */
+	@Override
+	public List<PdProductStock> getByOriginalProduct(PdProductStock pdProductStock){
+		return pdProductStockMapper.getByOriginalProduct(pdProductStock);
+	}
+
 }

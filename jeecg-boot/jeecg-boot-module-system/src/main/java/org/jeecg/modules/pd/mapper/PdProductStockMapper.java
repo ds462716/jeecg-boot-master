@@ -1,11 +1,11 @@
 package org.jeecg.modules.pd.mapper;
 
-import java.util.List;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Param;
 import org.jeecg.modules.pd.entity.PdProductStock;
-import org.jeecg.modules.pd.entity.PdProductStockTotal;
 import org.jeecg.modules.pd.vo.PdProductStockTotalPage;
+
+import java.util.List;
 
 /**
  * @Description: 库存明细表
@@ -40,4 +40,11 @@ public interface PdProductStockMapper extends BaseMapper<PdProductStock> {
 	public void updateStockNum(PdProductStock pdProductStock);
 
 	void updateHuoweiCode(PdProductStock detail);
+
+	/**
+	 * 物流追溯产品列表
+	 * @param pdProductStock
+	 * @return
+	 */
+	public List<PdProductStock> getByOriginalProduct(PdProductStock pdProductStock);
 }
