@@ -76,7 +76,7 @@
     </select>
 
 	<!-- 增加发货数量 用于出库保存/提交 add by jiangxz 20200309 -->
-	<select id="additionArrivalNum" parameterType="org.jeecg.modules.pd.entity.PdApplyDetail">
+	<update id="additionArrivalNum" parameterType="org.jeecg.modules.pd.entity.PdApplyDetail">
 		UPDATE
 			pd_apply_detail
 		SET
@@ -85,10 +85,10 @@
 			del_flag =#{DEL_FLAG_NORMAL}
 			and apply_no = #{applyNo}
 			and product_id = #{productId}
-	</select>
+	</update>
 
 	<!-- 扣减发货数量 用于出库拒绝 add by jiangxz 20200309 -->
-	<select id="subtractArrivalNum" parameterType="org.jeecg.modules.pd.entity.PdApplyDetail">
+	<update id="subtractArrivalNum" parameterType="org.jeecg.modules.pd.entity.PdApplyDetail">
 		UPDATE
 			pd_apply_detail
 		SET
@@ -97,6 +97,6 @@
 			del_flag =#{DEL_FLAG_NORMAL}
 			and apply_no = #{applyNo}
 			and product_id = #{productId}
-	</select>
+	</update>
 
 </mapper>

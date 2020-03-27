@@ -130,36 +130,62 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
         }
         pdStockRecordMapper.insert(pdStockRecord);
 
+        List<PdStockRecordDetail> newDetailList = new ArrayList<>();
+        Set<String> setIds = new HashSet<>();
+
         if (CollectionUtils.isNotEmpty(pdStockRecordDetailList)) {
-            for (PdStockRecordDetail entity : pdStockRecordDetailList) {
-                String expDate = DateUtils.date2Str(entity.getExpDate(), DateUtils.yyMMdd.get());
-                if (oConvertUtils.isEmpty(entity.getProductBarCode())) {
-                    boolean bool = true;
-                    for (PdStockRecordDetail item : pdStockRecordDetailList) {
-                        String itemExpDate = DateUtils.date2Str(item.getExpDate(), DateUtils.yyMMdd.get());
-                        if (oConvertUtils.isNotEmpty(item.getProductBarCode())
-                                && entity.getProductId().equals(item.getProductId())
-                                && entity.getBatchNo().equals(item.getBatchNo()) && expDate.equals(itemExpDate)) {
-                            entity.setProductBarCode(item.getProductBarCode());
-                            bool = false;
+            //相同产品合并
+            for (PdStockRecordDetail main : pdStockRecordDetailList) {
+                String expDate = DateUtils.date2Str(main.getExpDate(), DateUtils.yyMMdd.get());
+
+                // 1. 如果产品ID、批号、效期一样，则赋值条码
+                if(oConvertUtils.isEmpty(main.getProductBarCode())){
+                    for (PdStockRecordDetail entity : pdStockRecordDetailList) {
+                        if(main.getProductId().equals(entity.getProductId()) && main.getBatchNo().equals(entity.getBatchNo()) && main.getExpDate().equals(entity.getExpDate())
+                                && oConvertUtils.isNotEmpty(entity.getProductBarCode())){
+                            main.setProductBarCode(entity.getProductBarCode());
                             break;
                         }
                     }
-                    if (bool) {
-                        entity.setProductBarCode("01" + entity.getProductNumber() + "17" + expDate + "10" + entity.getBatchNo());
-                    }
                 }
 
-                entity.setId(null);//初始化ID (从前端传过来会自带页面列表行的ID)
-                entity.setRecordId(pdStockRecord.getId());//外键设置
-                entity.setDelFlag(PdConstant.DEL_FLAG_0);
-                entity.setProductStockId(null); //清空库存ID
-                if (PdConstant.OUT_TYPE_1.equals(outType)) {
-                    entity.setImportNo(pdStockRecord.getApplyNo());
-                } else if (PdConstant.OUT_TYPE_3.equals(outType)) {
-                    entity.setImportNo(pdStockRecord.getAllocationNo());
+                // 2. 如果第1步没有赋值到条码，则自动拼条码
+                if(oConvertUtils.isEmpty(main.getProductBarCode())){
+                    main.setProductBarCode("01" + main.getProductNumber() + "17" + expDate + "10" + main.getBatchNo());
                 }
-                pdStockRecordDetailMapper.insert(entity);
+
+                StringBuilder setId = new StringBuilder();
+                setId.append(main.getProductId()).append(main.getBatchNo()).append(main.getExpDate()).append(main.getInHuoweiCode());
+                Double productNum = 0D;
+                String mainHuoweCode = main.getInHuoweiCode() == null ? "" : main.getInHuoweiCode();
+                // 3.合并数量
+                if(setIds.add(setId.toString())){
+                    for (PdStockRecordDetail entity : pdStockRecordDetailList) {
+                        String entityHuoweCode = entity.getInHuoweiCode() == null ? "" : entity.getInHuoweiCode();
+                        if(main.getProductId().equals(entity.getProductId()) && main.getBatchNo().equals(entity.getBatchNo())
+                                && main.getExpDate().equals(entity.getExpDate()) && mainHuoweCode.equals(entityHuoweCode)){
+                            productNum = productNum + entity.getProductNum();
+                        }
+                    }
+                    main.setProductNum(productNum);
+                    newDetailList.add(main);
+                }
+            }
+        }
+
+        if(CollectionUtils.isNotEmpty(newDetailList)){
+            for (PdStockRecordDetail detail : newDetailList) {
+                detail.setId(null);//初始化ID (从前端传过来会自带页面列表行的ID)
+                detail.setRecordId(pdStockRecord.getId());//外键设置
+                detail.setDelFlag(PdConstant.DEL_FLAG_0);
+                detail.setProductStockId(null); //清空库存ID
+                // 如果是申领或调拨入库
+                if (PdConstant.OUT_TYPE_1.equals(outType)) {
+                    detail.setImportNo(pdStockRecord.getApplyNo());
+                } else if (PdConstant.OUT_TYPE_3.equals(outType)) {
+                    detail.setImportNo(pdStockRecord.getAllocationNo());
+                }
+                pdStockRecordDetailMapper.insert(detail);
             }
         }
     }
@@ -291,9 +317,10 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
 
             // 更新采购单到货数量
             if (CollectionUtils.isNotEmpty(pdStockRecordDetailList)) {
+                PdPurchaseOrderMergeDetail pdPurchaseDetail = null;
                 for (PdStockRecordDetail entity : pdStockRecordDetailList) {
                     if (oConvertUtils.isNotEmpty(entity.getMergeOrderNo())) {
-                        PdPurchaseOrderMergeDetail pdPurchaseDetail = new PdPurchaseOrderMergeDetail();
+                        pdPurchaseDetail = new PdPurchaseOrderMergeDetail();
                         pdPurchaseDetail.setMergeOrderNo(entity.getMergeOrderNo());
                         pdPurchaseDetail.setProductId(entity.getProductId());
                         pdPurchaseDetail.setArrivalNum(entity.getProductNum());

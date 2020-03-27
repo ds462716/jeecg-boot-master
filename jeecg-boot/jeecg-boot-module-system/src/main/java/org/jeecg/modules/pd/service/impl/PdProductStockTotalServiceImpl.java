@@ -108,15 +108,17 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
 				pdProductStockTotalMapper.updateStockNum(productStockTotal);
 			}
 			//增加入库库存明细
-			PdProductStock i_productStockq = new PdProductStock();
-			i_productStockq.setDepartId(inDeptId);
-			i_productStockq.setProductId(productId);
-			i_productStockq.setProductBarCode(productBarCode);//2019年7月24日16:53:43 放开
-			i_productStockq.setBatchNo(batchNo);
-			i_productStockq.setHuoweiCode(inHuoweiCode);
-			List<PdProductStock> i_productStocks = pdProductStockMapper.findForUpdate(i_productStockq);
-			//如果库存明细表不存在，则新增
-			if(CollectionUtils.isEmpty(i_productStocks) || i_productStocks.size() == 0){
+//			PdProductStock i_productStockq = new PdProductStock();
+//			i_productStockq.setDepartId(inDeptId);
+//			i_productStockq.setProductId(productId);
+//			i_productStockq.setProductBarCode(productBarCode);//2019年7月24日16:53:43 放开
+//			i_productStockq.setBatchNo(batchNo);
+//			i_productStockq.setHuoweiCode(inHuoweiCode);
+//			List<PdProductStock> i_productStocks = pdProductStockMapper.findForUpdate(i_productStockq);
+//			//如果库存明细表不存在，则新增
+//			if(CollectionUtils.isEmpty(i_productStocks) || i_productStocks.size() == 0){
+
+			// modified by jiangxz 20200327 库存明细关联入库明细
 				PdProductStock productStock = new PdProductStock();
 				productStock.setDepartId(inDeptId);
 				productStock.setProductId(productId);
@@ -126,15 +128,17 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
 				productStock.setBatchNo(batchNo);
 				productStock.setHuoweiCode(inHuoweiCode);
 				productStock.setExpDate(stockRecordDetail.getExpDate());
+				productStock.setProduceDate(stockRecordDetail.getProduceDate()); // 生产日期
+				productStock.setRecordDetailId(stockRecordDetail.getId()); //入库明细ID
 				if(StringUtils.isNotEmpty(supplierId)){
 					productStock.setSupplierId(supplierId);
 				}
 				productStockService.save(productStock);
-			}else{//存在，则增加库存数量
-				PdProductStock productStock = i_productStocks.get(0);
-				productStock.setStockNum(productNum + productStock.getStockNum());
-				pdProductStockMapper.updateStockNum(productStock);
-			}
+//			}else{//存在，则增加库存数量
+//				PdProductStock productStock = i_productStocks.get(0);
+//				productStock.setStockNum(productNum + productStock.getStockNum());
+//				pdProductStockMapper.updateStockNum(productStock);
+//			}
 		}
 		return PdConstant.TRUE;
 	}

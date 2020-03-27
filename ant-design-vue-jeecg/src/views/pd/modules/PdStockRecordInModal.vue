@@ -371,6 +371,10 @@
             // { title: '型号', key: 'version', width:"150px"  disabled },
             { title: '单位', key: 'unitName', width:"50px" },
             {
+              title: '生产日期', key: 'produceDate', type: FormTypes.date, width:"130px",
+              placeholder: '${title}', defaultValue: '',
+            },
+            {
               title: '有效期', key: 'expDate', type: FormTypes.date, width:"130px",
               placeholder: '${title}', defaultValue: '',
               validateRules: [{ required: true, message: '${title}不能为空' }]
@@ -576,11 +580,9 @@
             return;
           }
 
-          let isexp = false;
-          let iszero = false;
-          let bool = false;
-          let name = "";
-          let name1 = "";
+          let isexp = false, iszero = false, isproduce = false, bool = false;
+          let name = "", name1 = "", name2 = "";
+
 
           let { values } = this.$refs.pdStockRecordDetail.getValuesSync({ validate: false });
           for(let row of values){
@@ -593,8 +595,7 @@
                 name = name + "、" + row.productName;
               }
             }
-          }
-          for(let row of values){
+
             if(Number(row.productNum) <= 0){
               iszero = true;
               if(name1 == ""){
@@ -603,13 +604,27 @@
                 name1 = name1 + "、" + row.productName;
               }
             }
+
+            if(row.produceDate && row.produceDate >= row.expDate){
+              isproduce = true;
+              if(name2 == ""){
+                name2 = name2 + row.productName;
+              }else{
+                name2 = name2 + "、" + row.productName;
+              }
+            }
           }
+
           if(isexp){
             this.$message.error("入库产品["+name+"]已到期，不能入库！");
             return;
           }
           if(iszero){
             this.$message.error("入库产品["+name1+"]数量必须大于0！");
+            return;
+          }
+          if(isproduce){
+            this.$message.error("入库产品["+name2+"]有效期必须大于生产日期！");
             return;
           }
 
@@ -636,7 +651,6 @@
           }
 
           // 发起请求
-          // return this.request(formData);
           this.confirmLoading = true
           httpAction(url, formData, method).then((res) => {
             if (res.success) {
@@ -940,7 +954,7 @@
                       let productNum = Number(item.productNum) + 1;
                       let inTotalPrice = (Number(item.purchasePrice) * Number(productNum)).toFixed(4);
                       this.$refs.pdStockRecordDetail.setValues([{rowKey: item.id, values: {
-                          productNum: productNum,inTotalPrice: inTotalPrice,productBarCode:productBarCode }}]);
+                          productNum: productNum,inTotalPrice: inTotalPrice,productBarCode:result.productBarCode }}]);
 
                       this.getTotalNumAndPrice([]);
                       break;

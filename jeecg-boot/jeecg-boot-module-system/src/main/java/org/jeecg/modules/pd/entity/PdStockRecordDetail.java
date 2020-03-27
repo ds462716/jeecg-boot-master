@@ -61,6 +61,11 @@ public class PdStockRecordDetail extends BaseEntity {
 	/**入库单价*/
 	@Excel(name = "入库单价", width = 15)
 	private java.math.BigDecimal purchasePrice;
+	/**生产日期*/
+	@Excel(name = "生产日期", width = 15, format = "yyyy-MM-dd")
+	@JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd")
+	@DateTimeFormat(pattern="yyyy-MM-dd")
+	private Date produceDate;
 	/**有效期*/
 	@Excel(name = "有效期", width = 15, format = "yyyy-MM-dd")
 	@JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd")
