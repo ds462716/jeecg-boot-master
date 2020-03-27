@@ -114,7 +114,7 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
         }
     }
 
-    private void saveInStockRecord(PdStockRecord pdStockRecord, List<PdStockRecordDetail> pdStockRecordDetailList, String outType) {
+    private String saveInStockRecord(PdStockRecord pdStockRecord, List<PdStockRecordDetail> pdStockRecordDetailList, String outType) {
         if (oConvertUtils.isNotEmpty(outType)) {
             // 调拨出库 或 申领出库 自动生成入库单
             if (PdConstant.OUT_TYPE_3.equals(outType)) {
@@ -122,11 +122,16 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
             } else {
                 pdStockRecord.setInType(PdConstant.IN_TYPE_1);
             }
+            Date date = DateUtils.getDate();
             pdStockRecord.setRecordType(PdConstant.RECODE_TYPE_1);
             pdStockRecord.setOutType(null);
             pdStockRecord.setId(null); // 清空ID
             pdStockRecord.setRecordNo(UUIDUtil.generateOrderNoByType(PdConstant.ORDER_NO_FIRST_LETTER_RK)); //生成入库单号
             pdStockRecord.setAuditStatus(PdConstant.AUDIT_STATE_2);   // 审核通过
+            pdStockRecord.setSubmitDate(date);
+            pdStockRecord.setAuditDate(date);
+            pdStockRecord.setUpdateTime(date);
+            pdStockRecord.setCreateTime(date);
         }
         pdStockRecordMapper.insert(pdStockRecord);
 
@@ -179,6 +184,7 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
                 detail.setRecordId(pdStockRecord.getId());//外键设置
                 detail.setDelFlag(PdConstant.DEL_FLAG_0);
                 detail.setProductStockId(null); //清空库存ID
+                detail.setCreateTime(DateUtils.getDate());
                 // 如果是申领或调拨入库
                 if (PdConstant.OUT_TYPE_1.equals(outType)) {
                     detail.setImportNo(pdStockRecord.getApplyNo());
@@ -188,6 +194,8 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
                 pdStockRecordDetailMapper.insert(detail);
             }
         }
+
+        return pdStockRecord.getId();
     }
 
     private void saveOutStockRecord(PdStockRecord pdStockRecord, List<PdStockRecordDetail> pdStockRecordDetailList) {
@@ -429,11 +437,21 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
             //3.更新申领单 调拨单出库状态  这步暂时没有
 
             //4.生成入库单
-            this.saveInStockRecord(pdStockRecord, pdStockRecordDetailList, outType);
+            String recordId = this.saveInStockRecord(pdStockRecord, pdStockRecordDetailList, outType);
+
+            // 查询入库单
+            PdStockRecord query = new PdStockRecord();
+            query.setId(recordId);
+            PdStockRecord inRecord = this.getOne(query);
+            PdStockRecordDetail queryDetail = new PdStockRecordDetail();
+            queryDetail.setRecordId(pdStockRecord.getId());
+            List<PdStockRecordDetail> inRecordDetailList = pdStockRecordDetailMapper.selectByMainId(queryDetail);
+            inRecord.setPdStockRecordDetailList(inRecordDetailList);
+
             //5.处理入库库存
-            String inStr2 = pdProductStockTotalService.updateInStock(pdStockRecord);
+            String inStr2 = pdProductStockTotalService.updateInStock(inRecord);
             //6.保存入库日志记录
-            this.saveStockLog(pdStockRecord, PdConstant.IN_TYPE_1, "");
+            this.saveStockLog(inRecord, PdConstant.IN_TYPE_1, "");
 
             if (PdConstant.TRUE.equals(inStr) && PdConstant.TRUE.equals(inStr2)) {
                 result.put("code", PdConstant.SUCCESS_200);

@@ -567,9 +567,8 @@
       },
       /** 关闭按钮 **/
       closeBtn(){
-        this.visible = false;
         this.$emit('ok');
-        this.$emit('close');
+        this.close();
       },
       /** 关闭按钮点击事件 */
       handleCancel() {

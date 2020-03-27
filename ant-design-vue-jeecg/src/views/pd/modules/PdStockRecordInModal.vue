@@ -520,9 +520,8 @@
       },
       /** 关闭按钮 **/
       closeBtn(){
-        this.visible = false;
         this.$emit('ok');
-        this.$emit('close');
+        this.close();
       },
       /**打印按钮**/
       printBtn(){
@@ -797,6 +796,7 @@
           venderName: row.venderName,
           supplierName: row.supplierName,
           productBarCode:"",
+          produceDate:"",
           expDate:"",
           batchNo:"",
           productNum: 1,
@@ -827,6 +827,7 @@
           venderName: row.pdProduct.venderName,
           supplierName: row.pdProduct.supplierName,
           productBarCode:row.productBarCode,
+          produceDate:row.produceDate,
           expDate:row.expDate,
           batchNo:row.batchNo,
           productNum: 1,
