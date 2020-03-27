@@ -108,6 +108,10 @@ public interface PdConstant {
 	//当前登录的部门属性
 	public final static String  CURRENT_DEPARTID = "departId";
 	public final static String  DEPART_PARENT_ID = "departParentId";
+	//部门类型 0医院1一级库房2二级库房
+	public final static String DEPART_TYPE_0 = "0";
+	public final static String DEPART_TYPE_1 = "1";
+	public final static String DEPART_TYPE_2 = "2";
 
 	//菜单是否是业务菜单 0是1否
 	public final static String PERMISSION_BUSINESS_TYPE_0 = "0";
@@ -182,4 +186,6 @@ public interface PdConstant {
 	//产品分类类型
 	public final static String CATEGORY_TYPE_0 = "0";
 	public final static String CATEGORY_TYPE_1 = "1";
+
+
 }

@@ -107,4 +107,9 @@ public class LoginUser {
 	 *最顶级部门id（医院id）
 	 */
 	private String departParentId;
+
+	/**
+	 * 当前登录的部门类型
+	 */
+	private String departType;
 }

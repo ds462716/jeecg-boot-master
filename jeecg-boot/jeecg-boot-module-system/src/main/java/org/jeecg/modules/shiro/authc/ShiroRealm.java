@@ -138,8 +138,11 @@ public class ShiroRealm extends AuthorizingRealm {
 			//查询用户的当前部门 2020年2月27日10:25:26   zxh
 			SysDepart sysDepart =  sysDepartService.queryDepartByOrgCode(loginUser.getOrgCode());
 			loginUser.setCurrentDepartId(sysDepart.getId());
+			//赋值当前部门类型
+			loginUser.setDepartType(sysDepart.getDepartType());
 			//赋值最顶级部门id（医院id）
 			loginUser.setDepartParentId(sysDepart.getDepartParentId());
+
 		}
 		return loginUser;
 	}
