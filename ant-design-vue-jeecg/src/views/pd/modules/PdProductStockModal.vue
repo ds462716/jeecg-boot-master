@@ -224,7 +224,7 @@
         }
         var params = this.getQueryParams();//查询条件
         params.productId=this.model.productId;
-        params.deptarId=this.model.deptarId;
+        params.departId=this.model.departId;
         this.loading = true;
         getAction(this.url.list, params).then((res) => {
           if (res.success) {
