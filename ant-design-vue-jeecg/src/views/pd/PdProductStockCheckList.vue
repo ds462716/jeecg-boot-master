@@ -87,14 +87,15 @@
          <span slot="action" slot-scope="text, record">
           <a  @click="handleEdit(record)">编辑</a>
           <a-divider type="vertical" />
-          <a-dropdown>
-            <a class="ant-dropdown-link">更多 <a-icon type="down" /></a>
-            <a-menu slot="overlay">
-              <a-menu-item>
+            <a-menu-item>
                 <a href="javascript:;" @click="handleDetail(record)">详情</a>
               </a-menu-item>
+           <a-divider type="vertical" />
+          <a-dropdown>
+            <a class="ant-dropdown-link" v-bind:disabled="record.checkStatus=='1'">更多 <a-icon type="down" /></a>
+            <a-menu slot="overlay">
               <a-menu-item>
-                <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record)">
+                <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.id)">
                   <a>删除</a>
                 </a-popconfirm>
               </a-menu-item>
@@ -293,31 +294,6 @@
             }
           });
         }
-      },
-      handleEdit: function (record) { //修改
-        if(record.checkStatus=='1'){
-          this.$message.warning("已完成盘点，不允许修改！")
-          return
-        }
-        this.$refs.modalForm.edit(record);
-        this.$refs.modalForm.title = "编辑";
-        this.$refs.modalForm.disableSubmit = false;
-      },
-      handleDelete: function (record) { //删除
-        if(record.checkStatus=='1'){
-          this.$message.warning("已盘点完成，不允许删除！")
-          return
-        }
-        var that = this;
-        var id=record.id;
-        deleteAction(that.url.delete, {id: id}).then((res) => {
-          if (res.success) {
-            that.$message.success(res.message);
-            that.loadData();
-          } else {
-            that.$message.warning(res.message);
-          }
-        });
       },
       initDictConfig(){
         initDictOptions('check_status').then((res) => {

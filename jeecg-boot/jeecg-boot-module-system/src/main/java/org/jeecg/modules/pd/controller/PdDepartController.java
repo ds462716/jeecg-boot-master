@@ -326,7 +326,7 @@ public class PdDepartController extends JeecgController<PdDepartConfig, IPdDepar
 	 }
 
     /**
-     * 查询所有二级科室 不包括本科室传0
+     * 查询所有二级科室 包括本科室传0
      * @param sysDepart
      * @return
      */
@@ -338,11 +338,11 @@ public class PdDepartController extends JeecgController<PdDepartConfig, IPdDepar
             LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
             if("0".equals(sysDepart.getParentFlag())){
                 sysDepart.setDepartParentId(sysUser.getDepartParentId());
-                sysDepart.setOrgType("1");
+                sysDepart.setOrgType("2");
             }else{
                 sysDepart.setDepartParentId(sysUser.getDepartParentId());
                 sysDepart.setDepartId(sysUser.getCurrentDepartId());
-                sysDepart.setOrgType("1");
+                sysDepart.setOrgType("2");
             }
             List<SysDepart> list = pdDepartService.getSysTwoDepartList(sysDepart);
             result.setResult(list);
