@@ -80,12 +80,7 @@ public class PdAllocationRecordController {
 								   HttpServletRequest req) {
  		Page<PdAllocationRecord> page = new Page<PdAllocationRecord>(pageNo, pageSize);
         LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
-		if(StringUtils.isEmpty(pdAllocationRecord.getOutDeptId())){
-			//查询科室下所有下级科室的ID
-			SysDepart sysDepart=new SysDepart();
-			List<String> departList=pdDepartService.selectListDepart(sysDepart);
-			pdAllocationRecord.setOutDeptIdList(departList);
-		}
+		pdAllocationRecord.setInDeptId(sysUser.getCurrentDepartId());
  		pdAllocationRecord.setDepartParentId(sysUser.getDepartParentId());
 		IPage<PdAllocationRecord> pageList =pdAllocationRecordService.selectList(page, pdAllocationRecord);
 		return Result.ok(pageList);
@@ -113,12 +108,7 @@ public class PdAllocationRecordController {
 		 list.add(PdConstant.AUDIT_STATE_3);//已驳回
 		 allocationRecord.setAuditStatusList(list);
 		 LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
-		 if(StringUtils.isEmpty(allocationRecord.getInDeptId())){
-			 //查询科室下所有下级科室的ID
-			 SysDepart sysDepart=new SysDepart();
-			 List<String> departList=pdDepartService.selectListDepart(sysDepart);
-			 allocationRecord.setInDeptIdList(departList);
-		 }
+		 allocationRecord.setOutDeptId(sysUser.getCurrentDepartId());
 		 allocationRecord.setDepartParentId(sysUser.getDepartParentId());
 		 IPage<PdAllocationRecord> pageList = pdAllocationRecordService.selectList(page, allocationRecord);
 		 return Result.ok(pageList);
