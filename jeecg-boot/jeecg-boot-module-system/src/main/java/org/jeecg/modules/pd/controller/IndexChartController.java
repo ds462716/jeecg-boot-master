@@ -52,7 +52,7 @@ public class IndexChartController {
         purchaseOrder.setOrderDate(new Date());
         purchaseOrder.setDepartId(sysUser.getCurrentDepartId());
         purchaseOrder.setDepartParentId(sysUser.getDepartParentId());
-        Map<String,Object> objectMap=pdPurchaseOrderService.queryPurchaseOrderCount(purchaseOrder);
+        //Map<String,Object> objectMap=pdPurchaseOrderService.queryPurchaseOrderCount(purchaseOrder);
         //orderCount=orderList.size();
         return Result.ok(map);
     }
