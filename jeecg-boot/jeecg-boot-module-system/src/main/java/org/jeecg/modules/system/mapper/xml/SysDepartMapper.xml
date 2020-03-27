@@ -64,7 +64,7 @@
     </select>
 
     <!--根据条件获取二级部门信息-->
-    <select id="selectDepartList" resultType="org.jeecg.modules.system.entity.SysDepart">
+    <select id="getSysTwoDepartList" resultType="org.jeecg.modules.system.entity.SysDepart">
         select * from sys_depart a
         <where>
             a.del_flag = '0'
