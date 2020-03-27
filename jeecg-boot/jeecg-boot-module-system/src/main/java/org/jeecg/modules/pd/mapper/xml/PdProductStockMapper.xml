@@ -184,6 +184,9 @@
 			<if test="applyNo != null and applyNo != ''">
 				AND h.apply_no = #{applyNo}
 			</if>
+			<if test="departParentId != null and departParentId != ''">
+				AND a.depart_parent_id = #{departParentId}
+			</if>
 			<if test="allocationNo != null and allocationNo != ''">
 				AND j.allocation_no = #{allocationNo}
 			</if>

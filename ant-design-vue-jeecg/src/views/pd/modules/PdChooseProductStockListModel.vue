@@ -236,7 +236,7 @@
           },
         ],
         url: {
-          list: "/pd/pdProductStockTotal/chooseProductStockList",
+          list: "/pd/pdProductStockTotal/selectProductStockList",
           querySupplier:"/pd/pdSupplier/getSupplierList",
           queryVender:"/pd/pdVender/getVenderList",
         },
@@ -315,8 +315,7 @@
         this.loading = true;
         getAction(this.url.list, params).then((res) => {
           if (res.success) {
-            this.dataSource = res.result.records.records;
-            this.ipagination.total = res.result.records.total;
+            this.dataSource = res.result.records;
           }
           if(res.code===510){
             this.$message.warning(res.message)
