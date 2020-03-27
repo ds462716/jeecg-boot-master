@@ -222,7 +222,7 @@
         url: {
           list: "/pd/pdAllocationRecord/auditList",
           exportXlsUrl: "/pd/pdAllocationRecord/exportXls",
-          queryDepart: "/pd/pdDepart/queryListTree",
+          queryDepart: "/pd/pdDepart/getSysTwoDepartList",
         },
         dictOptions:{
           auditStatus:[],

@@ -264,7 +264,7 @@
           list: "/pd/pdAllocationRecord/list",
           delete: "/pd/pdAllocationRecord/delete",
           deleteBatch: "/pd/pdAllocationRecord/deleteBatch",
-          queryDepart: "/pd/pdDepart/queryListTree",
+          queryDepart: "/pd/pdDepart/getSysTwoDepartList",
         },
         dictOptions:{
           auditStatus:[],
