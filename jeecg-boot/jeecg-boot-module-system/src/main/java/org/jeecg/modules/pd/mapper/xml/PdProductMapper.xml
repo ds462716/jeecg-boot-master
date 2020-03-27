@@ -362,6 +362,9 @@
         <if test="spec != null and spec != ''">
             AND a.spec LIKE concat('%',#{spec},'%')
         </if>
+        <if test="version != null and version != ''">
+            AND a.version LIKE concat('%',#{version},'%')
+        </if>
         <if test="departId != null and departId != ''">
             AND a.depart_id = #{departId}
         </if>

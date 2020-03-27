@@ -128,10 +128,22 @@
               }
             }
           },*/
-          {
+          /*{
             title:'机构编码',
             align:"center",
             dataIndex: 'orgCode'
+          },*/
+          {
+            title:'部门类型',
+            align:"center",
+            dataIndex: 'departType',
+            customRender:(text)=>{
+              if(!text){
+                return ''
+              }else{
+                return filterMultiDictText(this.dictOptions['departType'], text+"")
+              }
+            }
           },
           {
             title:'手机号',
@@ -165,6 +177,7 @@
         },
         dictOptions:{
           orgType:[],
+          departType:[],
         },
       }
     },
@@ -189,11 +202,16 @@
         })
       },
       initDictConfig(){
-        initDictOptions('org_type').then((res) => {
+        /*initDictOptions('org_type').then((res) => {
           if (res.success) {
             this.$set(this.dictOptions, 'orgType', res.result)
           }
-        })
+        });*/
+        initDictOptions('depart_type').then((res) => {
+          if (res.success) {
+            this.$set(this.dictOptions, 'departType', res.result)
+          }
+        });
       },
       handleAddSub(record) {
         this.$refs.modalForm.title = "添加部门";

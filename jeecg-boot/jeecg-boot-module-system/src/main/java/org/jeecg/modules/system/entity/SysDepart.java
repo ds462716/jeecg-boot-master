@@ -104,6 +104,8 @@ public class SysDepart implements Serializable {
 	 */
 	private String departParentId;
 
+	private String departType;
+
 	/**过滤本部门标识*/
 	@TableField(exist = false)
 	private String parentFlag;

@@ -169,4 +169,6 @@ public class PdProductStock extends BaseEntity {
 	@TableField(exist = false)
 	private List<String> departIdList;
 
+	@TableField(exist = false)
+	private String inHospitalNo;
 }

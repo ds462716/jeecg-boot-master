@@ -286,14 +286,20 @@
     <select id="getByOriginalProduct" resultType="org.jeecg.modules.pd.entity.PdProductStock">
         SELECT DISTINCT
         <include refid="pdProductStockColumns"/>,
-        <include refid="pdProductColumns"/>,
+		<include refid="pdUnitColumns"/>,
+		<include refid="pdProductColumns"/>,
+		<include refid="pdVenderColumns"/>,
+		<include refid="pdSupplierColumns"/>,
         <include refid="sysDepartColumns"/>
         FROM pd_product_stock a
         <include refid="pdProductStockJoins"/>
         <include refid="pdProductJoins"/>
+		<include refid="pdUnitJoins"/>
+		<include refid="pdVenderJoins"/>
+		<include refid="pdSupplierJoins"/>
         <include refid="sysDepartJoins"/>
         LEFT JOIN pd_dosage_detail p ON a.product_id = p.product_id   AND a.product_bar_code = p.product_bar_code AND a.batch_no = p.batch_no
-        LEFT JOIN pd_dosage s ON p.dosage_id = s.dosage_id
+        LEFT JOIN pd_dosage s ON p.dosage_id = s.id
         <where>
             1 = 1
             <if test="departId != null and departId != ''">
@@ -317,6 +323,9 @@
             <if test="productName != null and productName != ''">
                 AND c.name LIKE CONCAT('%', #{productName}, '%')
             </if>
+			<if test="registration != null and registration != ''">
+				AND c.registration LIKE concat('%',#{registration},'%')
+			</if>
             <if test="inHospitalNo != null and inHospitalNo != ''">
                 AND s.in_hospital_no LIKE CONCAT('%', #{inHospitalNo}, '%')
             </if>

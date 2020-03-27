@@ -129,6 +129,9 @@ const savePdDepartPermission = (params)=>postAction("/pd/pdDepart/savePdDepartPe
 //产品校验编号是否禁用
 const isDisabledNumber = (params)=>getAction("/pd/pdProduct/isDisabledNumber",params);
 
+//院内物流追述
+const getByOriginalProduct = (params)=>getAction("/pd/pdStockLog/getByOriginalProduct",params);
+
 
 
 export {
@@ -200,7 +203,8 @@ export {
   queryUserDepart,
   queryAllDepart,
   isDisabledNumber,
-  savePdDepartPermission
+  savePdDepartPermission,
+  getByOriginalProduct
 }
 
 

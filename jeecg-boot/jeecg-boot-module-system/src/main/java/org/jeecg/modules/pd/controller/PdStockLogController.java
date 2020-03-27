@@ -9,10 +9,15 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.system.query.QueryGenerator;
+import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.oConvertUtils;
+import org.jeecg.modules.pd.entity.PdProductStock;
 import org.jeecg.modules.pd.entity.PdStockLog;
+import org.jeecg.modules.pd.service.IPdProductStockService;
 import org.jeecg.modules.pd.service.IPdStockLogService;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -49,7 +54,9 @@ import org.jeecg.common.aspect.annotation.AutoLog;
 public class PdStockLogController extends JeecgController<PdStockLog, IPdStockLogService> {
 	@Autowired
 	private IPdStockLogService pdStockLogService;
-	
+	 @Autowired
+	 private IPdProductStockService pdProductStockService;
+
 	/**
 	 * 分页列表查询
 	 *
@@ -71,7 +78,27 @@ public class PdStockLogController extends JeecgController<PdStockLog, IPdStockLo
 		IPage<PdStockLog> pageList = pdStockLogService.page(page, queryWrapper);
 		return Result.ok(pageList);
 	}
-	
+
+	 /**
+	  * 院内物流追溯
+	  * @param pdProductStock
+	  * @param pageNo
+	  * @param pageSize
+	  * @param req
+	  * @return
+	  */
+	 @GetMapping(value = "/getByOriginalProduct")
+	 public Result<?> getByOriginalProduct(PdProductStock pdProductStock,
+									@RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
+									@RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
+									HttpServletRequest req) {
+		 LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		 pdProductStock.setDepartParentId(sysUser.getDepartParentId());
+		 pdProductStock.setDepartId(sysUser.getCurrentDepartId());
+		 List<PdProductStock> pdProductStocks  = pdProductStockService.getByOriginalProduct(pdProductStock);
+		 return Result.ok(pdProductStocks);
+	 }
+
 	/**
 	 *   添加
 	 *

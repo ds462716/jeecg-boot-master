@@ -45,6 +45,12 @@
         <a-form-item label="自定义码" :labelCol="labelCol" :wrapperCol="wrapperCol">
           <a-input :disabled="disableSubmit" autocomplete="off" v-decorator="[ 'zdy', validatorRules.zdy]" placeholder="请输入自定义码"></a-input>
         </a-form-item>
+        <a-form-item label="部门类型" :labelCol="labelCol" :wrapperCol="wrapperCol">
+          <a-select :disabled="disableSubmit"  v-decorator="[ 'departType',{'initialValue':'2',rules:departType}]" placeholder="请选择部门类型">
+            <a-select-option value="1">一级库房</a-select-option>
+            <a-select-option value="2">二级库房</a-select-option>
+          </a-select>
+        </a-form-item>
         <a-form-item
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
@@ -163,6 +169,12 @@
           orgType: {rules: [{required: true, message: '请输入机构类型!'}]},
           mobile: {rules: [{validator: this.validateMobile}]}
         },
+        departType:[
+          {
+            required: true, // 必填
+            message: '请选择部门类型' // 显示的文本
+          }
+        ],
         url: {
           add: "/sys/sysDepart/add",
           edit: '/sys/sysDepart/edit',
@@ -187,7 +199,7 @@
         this.visible = true;
         this.loadTree();
         this.$nextTick(() => {
-          this.form.setFieldsValue(pick(this.model,'departName','py','wb','zdy','departOrder','orgType','orgCode','mobile','fax','address','memo'));
+          this.form.setFieldsValue(pick(this.model,'departName','py','wb','zdy','departOrder','orgType','orgCode','mobile','fax','address','memo','departType'));
           //获取光标
           let input = this.$refs['inputFocus'];
           input.focus()
