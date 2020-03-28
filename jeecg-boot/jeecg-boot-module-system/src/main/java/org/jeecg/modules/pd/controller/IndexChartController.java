@@ -1,19 +1,24 @@
 package org.jeecg.modules.pd.controller;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections.MapUtils;
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.system.vo.LoginUser;
-import org.jeecg.modules.pd.entity.PdPurchaseOrder;
+import org.jeecg.modules.pd.entity.PdProductStock;
+import org.jeecg.modules.pd.service.IPdApplyOrderService;
+import org.jeecg.modules.pd.service.IPdDepartService;
+import org.jeecg.modules.pd.service.IPdProductStockService;
 import org.jeecg.modules.pd.service.IPdPurchaseOrderService;
+import org.jeecg.modules.pd.vo.PdApplyOrderPage;
+import org.jeecg.modules.pd.vo.PdPurchaseOrderPage;
+import org.jeecg.modules.system.entity.SysDepart;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @Description: 首页
@@ -25,14 +30,37 @@ import java.util.Map;
 @RequestMapping("/pd/IndexChart")
 @Slf4j
 public class IndexChartController {
-
+    @Autowired
+    private IPdDepartService pdDepartService;
     @Autowired
     private IPdPurchaseOrderService pdPurchaseOrderService;
+    @Autowired
+    private IPdApplyOrderService pdApplyOrderService;
+    @Autowired
+    private IPdProductStockService pdProductStockService;
+
+
     /*
-    * 需要统计的数据
-    * 1.总采购量
-    * 1.1  今日采购量
-    * */
+     * 需要统计的数据
+     * 1.总采购量
+     * 1.1  今日采购量
+     *
+     * 采购金额消耗统计
+     *根据类别和月份统计
+     *
+     * 采购数量消耗统计
+     * 根据类别统计和月份
+     *
+     * 2.总申领数量
+     * 2.1 今日领用数量
+     *
+     * 3.总使用量
+     * 3.1 今日使用量
+     *
+     * 4.总库存数量
+     *4.1 今日入库数量
+     */
+
     @GetMapping(value = "/list")
     public Result<?> queryPageAuditList(Map<String,Object> params){
         Map map=new HashMap();
@@ -43,52 +71,104 @@ public class IndexChartController {
         Double dayOrderNum=0.00; //今日采购量
         Double dayApplyNum=0.00;//今日申领量
         Double dayDosageNum=0.00;//今日使用量
-        Double dayStockNum=0.00;//今日入库量
+        Double dayRecordNum=0.00;//今日入库量
+        List<Map> orderDate=new  ArrayList<Map>();//根据天数统计的采购数量
+        List<Map> applyDate=new  ArrayList<Map>();//根据天数统计的申领数量
+        List<Map> dosageDate=new  ArrayList<Map>();//根据天数统计的使用数量
+        List<Map> recordDate=new  ArrayList<Map>();//根据天数统计的入库数量
+
         LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        //查询科室下所有下级科室的ID
+        SysDepart depart=new SysDepart();
+        List<String> departList=pdDepartService.selectListDepart(depart);
+        //采购量统计
+        PdPurchaseOrderPage purchaseOrderPage=new  PdPurchaseOrderPage();
+        purchaseOrderPage.setOrderDate(new Date());
+        purchaseOrderPage.setDepartIdList(departList);
+        purchaseOrderPage.setDepartParentId(sysUser.getDepartParentId());
+        Map<String,Object> orderMap=pdPurchaseOrderService.queryPurchaseOrderCount(purchaseOrderPage);
+        orderCount=MapUtils.getDouble(orderMap,"orderCount");
+        dayOrderNum=MapUtils.getDouble(orderMap,"dayOrderNum");
+        //根据日期统计每日的采购量
+        //orderDate=pdPurchaseOrderService.queryPurchaseOrderDateList(pdApplyOrderPage);
+        //申领量统计
+        PdApplyOrderPage applyOrderPage=new  PdApplyOrderPage();
+        applyOrderPage.setApplyDate(new Date());
+        applyOrderPage.setDepartIdList(departList);
+        applyOrderPage.setDepartParentId(sysUser.getDepartParentId());
+        Map<String,Object> applyMap=pdApplyOrderService.queryApplyOrderCount(applyOrderPage);
+        applyCount=MapUtils.getDouble(applyMap,"applyCount");
+        dayApplyNum=MapUtils.getDouble(applyMap,"dayApplyNum");
+        //库存量统计
+        PdProductStock stock=new  PdProductStock();
+        stock.setDepartIdList(departList);
+        stock.setDepartParentId(sysUser.getDepartParentId());
+        Map<String,Object> stockMap=pdProductStockService.queryProductStockCount(stock);
+        stockCount=MapUtils.getDouble(stockMap,"stockCount");
 
 
+        //dayRecordNum=MapUtils.getDouble(stockMap,"dayRecordNum");
 
-        PdPurchaseOrder purchaseOrder=new  PdPurchaseOrder();
-        purchaseOrder.setOrderDate(new Date());
-        purchaseOrder.setDepartId(sysUser.getCurrentDepartId());
-        purchaseOrder.setDepartParentId(sysUser.getDepartParentId());
-        //Map<String,Object> objectMap=pdPurchaseOrderService.queryPurchaseOrderCount(purchaseOrder);
-        //orderCount=orderList.size();
+
+        map.put("orderCount",orderCount);
+        map.put("dayOrderNum",dayOrderNum);
+        map.put("applyCount",applyCount);
+        map.put("stockCount",stockCount);
+        map.put("dayApplyNum",dayApplyNum);
+        map.put("dosageCount","30");
+        map.put("dayDosageNum","38");
+        map.put("dayRecordNum","88");
+       // map.put("orderDate",orderDate);
         return Result.ok(map);
     }
 
-    /*
-    *
-    * 采购金额消耗统计
-     *根据类别和月份统计
-     *
-     * 采购数量消耗统计
-     * 根据类别统计和月份
-     *
-     * 2.总申领数量
-    * 2.1 今日领用数量
-    *
-    *
-    * 3.总使用量
-    * 3.1 今日使用量
-    *
-    *
-    * 4.总库存数量
-    *4.1 今日入库数量
-    *
-    *
-    *
-    *
-    * */
-
-  /*  @GetMapping(value = "/list")
-    public Result<?> queryPageList() {
+    /**
+     * 获取采购七天内的日采购数量
+     * @param params
+     * @return
+     */
+    @GetMapping(value = "/orderDateList")
+    public Result<?> orderDateList(Map<String,Object> params){
         Map map=new HashMap();
-        map.put("orderCount","50001");//总采购量
-        map.put("applyCount","20001");//总申领数量
-        map.put("dosageCount","30001");//总使用量
-        map.put("stockCount","66001");//总库存数量
+        List<HashMap> orderDate=new  ArrayList<HashMap>();//根据天数统计的采购数量
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        //查询科室下所有下级科室的ID
+        SysDepart depart=new SysDepart();
+        List<String> departList=pdDepartService.selectListDepart(depart);
+        PdPurchaseOrderPage purchaseOrderPage=new  PdPurchaseOrderPage();
+        //purchaseOrderPage.setDepartIdList(departList);
+        //purchaseOrderPage.setDepartParentId(sysUser.getDepartParentId());
+        //根据日期统计每日的采购量
+        orderDate=pdPurchaseOrderService.queryPurchaseOrderDateList(purchaseOrderPage);
+        map.put("orderDate",orderDate);
         return Result.ok(map);
-    }*/
+    }
+
+
+    /**
+     * 获取七天内的日申领数量
+     * @param params
+     * @return
+     */
+    @GetMapping(value = "/applyDateList")
+    public Result<?> applyDateList(Map<String,Object> params){
+        Map map=new HashMap();
+        List<HashMap> applyDate=new  ArrayList<HashMap>();//根据天数统计的申领数量
+       // List<Map> dosageDate=new  ArrayList<Map>();//根据天数统计的使用数量
+        // List<Map> recordDate=new  ArrayList<Map>();//根据天数统计的入库数量
+
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        //查询科室下所有下级科室的ID
+        SysDepart depart=new SysDepart();
+        List<String> departList=pdDepartService.selectListDepart(depart);
+        PdApplyOrderPage applyOrderPage=new  PdApplyOrderPage();
+        //pdApplyOrderPage.setDepartIdList(departList);
+        //pdApplyOrderPage.setDepartParentId(sysUser.getDepartParentId());
+        //根据日期统计每日的申领量
+        applyDate=pdApplyOrderService.queryApplyOrderDateList(applyOrderPage);
+        map.put("applyDate",applyDate);
+        return Result.ok(map);
+    }
+
 }
 

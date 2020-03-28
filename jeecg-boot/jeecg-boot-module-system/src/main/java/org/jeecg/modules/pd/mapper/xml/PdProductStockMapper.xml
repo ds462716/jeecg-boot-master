@@ -331,4 +331,25 @@
             </if>
         </where>
     </select>
+
+
+    <!-- 统计库存总数量——首页展示用 -->
+    <select id="queryProductStockCount" resultType="java.util.Map" >
+        SELECT
+        sum(a.stock_num) AS "stockCount"
+        from pd_product_stock a
+        WHERE  a.del_flag=#{DEL_FLAG_NORMAL}
+        <if test="departId != null and departId != ''">
+            AND a.depart_id = #{departId}
+        </if>
+        <if test="departParentId != null and departParentId != ''">
+            AND a.depart_parent_id = #{departParentId}
+        </if>
+		<if test="departIdList != null and departIdList.size() > 0">
+			AND a.depart_id IN
+			<foreach collection="departIdList" item="item" separator="," open="(" close=")">
+				#{item}
+			</foreach>
+		</if>
+    </select>
 </mapper>

@@ -4,7 +4,9 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.jeecg.modules.pd.entity.PdApplyOrder;
 import org.jeecg.modules.pd.vo.PdApplyOrderPage;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Description: 申领单主表
@@ -31,4 +33,10 @@ public interface PdApplyOrderMapper extends BaseMapper<PdApplyOrder> {
      * @return
      */
     void subtractArrivalCount(PdApplyOrder pdApplyOrder);
+
+    /*获取总申领数量及当日申领数量*/
+    Map<String,Object> queryApplyOrderCount(PdApplyOrder pdApplyOrder);
+
+    /*首页查询  根据范围统计每日的申领量*/
+    List<HashMap> queryApplyOrderDateList(PdApplyOrderPage pdApplyOrderPage);
 }

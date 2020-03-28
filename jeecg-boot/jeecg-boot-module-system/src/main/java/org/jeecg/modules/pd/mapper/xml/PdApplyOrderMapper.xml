@@ -186,4 +186,52 @@
 			del_flag =#{DEL_FLAG_NORMAL}
 			and apply_no = #{applyNo}
 	</select>
+
+
+    <!-- 统计申领数量及当日申领数量——首页展示用 -->
+    <select id="queryApplyOrderCount" resultType="java.util.Map" >
+        SELECT
+        sum(a.total_num) AS "applyCount",
+        sum(b.total_num)  AS "dayApplyNum"
+        from pd_apply_order a
+        LEFT JOIN  pd_apply_order b ON  a.id=b.id AND b.apply_date=#{applyDate}
+        WHERE  a.del_flag=#{DEL_FLAG_NORMAL}
+        AND  a.audit_status='2'
+        <if test="departId != null and departId != ''">
+            AND a.depart_id = #{departId}
+        </if>
+        <if test="departParentId != null and departParentId != ''">
+            AND a.depart_parent_id = #{departParentId}
+        </if>
+        <if test="departIdList != null and departIdList.size() > 0">
+            and a.depart_id IN
+            <foreach collection="departIdList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+    </select>
+
+
+    <!-- 统计当日申领数量——首页展示用 -->
+    <select id="queryApplyOrderDateList" resultType="java.util.Map" >
+        SELECT
+        MAX(DATE_FORMAT( a.apply_date, '%Y-%m-%d' )) AS "x",
+        SUM(a.total_num) AS "y"
+        from pd_apply_order a
+        WHERE  a.del_flag=#{DEL_FLAG_NORMAL}
+        AND  a.audit_status='2'
+        <if test="departId != null and departId != ''">
+            AND a.depart_id = #{departId}
+        </if>
+        <if test="departParentId != null and departParentId != ''">
+            AND a.depart_parent_id = #{departParentId}
+        </if>
+        <if test="departIdList != null and departIdList.size() > 0">
+            and a.depart_id IN
+            <foreach collection="departIdList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        group by a.apply_date
+    </select>
 </mapper>

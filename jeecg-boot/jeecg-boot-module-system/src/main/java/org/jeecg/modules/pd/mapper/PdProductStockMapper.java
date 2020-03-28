@@ -6,6 +6,7 @@ import org.jeecg.modules.pd.entity.PdProductStock;
 import org.jeecg.modules.pd.vo.PdProductStockTotalPage;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Description: 库存明细表
@@ -47,4 +48,7 @@ public interface PdProductStockMapper extends BaseMapper<PdProductStock> {
 	 * @return
 	 */
 	public List<PdProductStock> getByOriginalProduct(PdProductStock pdProductStock);
+
+	/*获取总库存数量及当日入库存数量*/
+	Map<String,Object> queryProductStockCount(PdProductStock pdProductStock);
 }

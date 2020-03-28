@@ -10,11 +10,14 @@ import org.jeecg.modules.pd.mapper.PdApplyDetailMapper;
 import org.jeecg.modules.pd.mapper.PdApplyOrderMapper;
 import org.jeecg.modules.pd.service.IPdApplyOrderService;
 import org.jeecg.modules.pd.vo.PdApplyOrderPage;
+import org.jeecg.modules.pd.vo.PdPurchaseOrderPage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Description: 申领单主表
@@ -114,5 +117,17 @@ public class PdApplyOrderServiceImpl extends ServiceImpl<PdApplyOrderMapper, PdA
 			applyOrderPage.setQueryDateStart((String) queryDate.get(1));
 		}
 		return pageList.setRecords(pdApplyOrderMapper.chooseApplyOrderList(applyOrderPage));
+	}
+
+
+	@Override
+	public Map<String,Object> queryApplyOrderCount(PdApplyOrder pdApplyOrder) {
+		Map<String,Object> params = pdApplyOrderMapper.queryApplyOrderCount(pdApplyOrder);
+		return params;
+	}
+
+	@Override
+	public List<HashMap> queryApplyOrderDateList(PdApplyOrderPage applyOrderPage) {
+		return pdApplyOrderMapper.queryApplyOrderDateList(applyOrderPage);
 	}
 }

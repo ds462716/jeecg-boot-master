@@ -6,7 +6,7 @@ import org.jeecg.modules.pd.entity.PdPurchaseOrder;
 import org.jeecg.modules.pd.entity.PdPurchaseOrderMerge;
 import org.jeecg.modules.pd.vo.PdProductPage;
 import org.jeecg.modules.pd.vo.PdPurchaseOrderPage;
-
+import java.util.Map;
 import java.util.HashMap;
 import java.util.List;
 
@@ -38,5 +38,10 @@ public interface PdPurchaseOrderMapper extends BaseMapper<PdPurchaseOrder> {
     //根据申购单号查询数量和金额
     public PdPurchaseOrder getCountAndMoney(@Param("orderNos") List<String> orderNos);
 
+     /*获取总采购数量及当日采购数量*/
+    Map<String,Object> queryPurchaseOrderCount(PdPurchaseOrder pdPurchaseOrder);
 
- }
+     /*首页查询  根据范围统计每日的采购量*/
+    List<HashMap> queryPurchaseOrderDateList(PdPurchaseOrderPage purchaseOrderPage);
+
+}

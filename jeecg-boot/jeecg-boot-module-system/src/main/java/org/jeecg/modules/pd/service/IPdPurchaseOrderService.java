@@ -8,7 +8,9 @@ import org.jeecg.modules.pd.entity.PdPurchaseOrderMerge;
 import org.jeecg.modules.pd.vo.PdProductPage;
 import org.jeecg.modules.pd.vo.PdPurchaseOrderPage;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Description: 申购订单主表
@@ -61,4 +63,15 @@ public interface IPdPurchaseOrderService extends IService<PdPurchaseOrder> {
 	 * 批量修改订单状态
 	 */
 	public int audit(String orderNos, String auditStatus, String refuseReason,String submitStatus) ;
+
+	/**
+	 * 首页查询采购总数量
+	 */
+	Map<String,Object> queryPurchaseOrderCount(PdPurchaseOrder pdPurchaseOrder);
+
+	/**
+	 * 首页查询  根据范围统计每日的采购量
+	 */
+	List<HashMap> queryPurchaseOrderDateList(PdPurchaseOrderPage purchaseOrderPage);
+
 }

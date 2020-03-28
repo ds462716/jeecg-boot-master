@@ -18,12 +18,11 @@ import org.jeecg.modules.pd.vo.PdPurchaseOrderPage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-
+import java.util.Map;
 /**
  * @Description: 申购订单主表
  * @Author: jeecg-boot
@@ -131,5 +130,17 @@ public class PdPurchaseOrderServiceImpl extends ServiceImpl<PdPurchaseOrderMappe
 		map.put("auditDate", new Date());
 		map.put("submitStatus",submitStatus);
 		return pdPurchaseOrderMapper.batchUpdateOrderStatus(map);
+	}
+
+
+	@Override
+	public Map<String,Object> queryPurchaseOrderCount(PdPurchaseOrder pdPurchaseOrder) {
+		Map<String,Object> params = pdPurchaseOrderMapper.queryPurchaseOrderCount(pdPurchaseOrder);
+		return params;
+	}
+
+	@Override
+	public List<HashMap> queryPurchaseOrderDateList(PdPurchaseOrderPage purchaseOrderPage) {
+		return pdPurchaseOrderMapper.queryPurchaseOrderDateList(purchaseOrderPage);
 	}
 }

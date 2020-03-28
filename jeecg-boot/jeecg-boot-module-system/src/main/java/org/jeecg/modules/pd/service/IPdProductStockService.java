@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import org.jeecg.modules.pd.entity.PdProductStock;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Description: 库存明细表
@@ -33,5 +34,10 @@ public interface IPdProductStockService extends IService<PdProductStock> {
 	public void updateProductStock(PdProductStock productStock);
 
 	List<PdProductStock> getByOriginalProduct(PdProductStock pdProductStock);
+
+    /**
+     * 首页查询库存总数量
+     */
+    Map<String,Object> queryProductStockCount(PdProductStock pdProductStock);
 
 }

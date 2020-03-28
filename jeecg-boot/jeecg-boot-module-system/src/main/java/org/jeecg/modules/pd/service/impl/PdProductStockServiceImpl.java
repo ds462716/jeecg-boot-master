@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Description: 库存明细表
@@ -65,6 +66,12 @@ public class PdProductStockServiceImpl extends ServiceImpl<PdProductStockMapper,
 	@Override
 	public List<PdProductStock> getByOriginalProduct(PdProductStock pdProductStock){
 		return pdProductStockMapper.getByOriginalProduct(pdProductStock);
+	}
+
+	@Override
+	public Map<String,Object> queryProductStockCount(PdProductStock pdProductStock) {
+		Map<String,Object> params = pdProductStockMapper.queryProductStockCount(pdProductStock);
+		return params;
 	}
 
 }

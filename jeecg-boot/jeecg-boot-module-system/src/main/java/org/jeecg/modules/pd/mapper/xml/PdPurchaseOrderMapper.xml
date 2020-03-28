@@ -229,4 +229,51 @@
             #{item}
         </foreach>
     </select>
+
+
+    <!-- 统计采购数量及当日采购数量——首页展示用 -->
+    <select id="queryPurchaseOrderCount" resultType="java.util.Map" >
+       SELECT
+       sum(a.total_num) AS "orderCount",
+       sum(b.total_num)  AS "dayOrderNum"
+       from pd_purchase_order a
+      LEFT JOIN  pd_purchase_order b ON  a.id=b.id  AND b.order_date=#{orderDate}
+      WHERE  a.del_flag=#{DEL_FLAG_NORMAL}
+      AND  a.audit_status='2'
+        <if test="departId != null and departId != ''">
+            AND a.depart_id = #{departId}
+        </if>
+        <if test="departParentId != null and departParentId != ''">
+            AND a.depart_parent_id = #{departParentId}
+        </if>
+        <if test="departIdList != null and departIdList.size() > 0">
+            and a.depart_id IN
+            <foreach collection="departIdList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+    </select>
+
+    <!-- 统计采购数量及当日采购数量——首页展示用 -->
+    <select id="queryPurchaseOrderDateList" resultType="java.util.Map" >
+        SELECT
+        MAX(DATE_FORMAT( a.order_date, '%Y-%m-%d' )) AS "x",
+        SUM(a.total_num) AS "y"
+        from pd_purchase_order a
+        WHERE  a.del_flag=#{DEL_FLAG_NORMAL}
+        AND  a.audit_status='2'
+        <if test="departId != null and departId != ''">
+            AND a.depart_id = #{departId}
+        </if>
+        <if test="departParentId != null and departParentId != ''">
+            AND a.depart_parent_id = #{departParentId}
+        </if>
+        <if test="departIdList != null and departIdList.size() > 0">
+            and a.depart_id IN
+            <foreach collection="departIdList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        group by a.order_date
+    </select>
 </mapper>

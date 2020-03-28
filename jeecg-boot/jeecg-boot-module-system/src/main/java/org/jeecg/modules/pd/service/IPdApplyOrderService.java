@@ -6,7 +6,9 @@ import org.jeecg.modules.pd.entity.PdApplyDetail;
 import org.jeecg.modules.pd.entity.PdApplyOrder;
 import org.jeecg.modules.pd.vo.PdApplyOrderPage;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Description: 申领单主表
@@ -42,4 +44,13 @@ public interface IPdApplyOrderService extends IService<PdApplyOrder> {
 	 */
 	Page<PdApplyOrderPage> chooseApplyOrderList(Page<PdApplyOrderPage> pageList, PdApplyOrderPage applyOrderPage);
 
+	/**
+	 * 首页查询申领总数量
+	 */
+	Map<String,Object> queryApplyOrderCount(PdApplyOrder pdApplyOrder);
+
+	/**
+	 * 首页查询  根据范围统计每日的申领量
+	 */
+	List<HashMap> queryApplyOrderDateList(PdApplyOrderPage applyOrderPage);
 }
