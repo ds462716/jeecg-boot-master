@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -72,6 +73,15 @@ public class PdProductStockServiceImpl extends ServiceImpl<PdProductStockMapper,
 	public Map<String,Object> queryProductStockCount(PdProductStock pdProductStock) {
 		Map<String,Object> params = pdProductStockMapper.queryProductStockCount(pdProductStock);
 		return params;
+	}
+
+	@Override
+	public List<HashMap> queryStockDateList(PdProductStock pdProductStock) {
+		return pdProductStockMapper.queryStockDateList(pdProductStock);
+	}
+	@Override
+	public List<HashMap> queryStockTotalList(PdProductStock pdProductStock) {
+		return pdProductStockMapper.queryStockTotalList(pdProductStock);
 	}
 
 }

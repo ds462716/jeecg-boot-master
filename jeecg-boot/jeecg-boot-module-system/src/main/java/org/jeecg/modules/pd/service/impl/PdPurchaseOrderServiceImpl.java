@@ -143,4 +143,9 @@ public class PdPurchaseOrderServiceImpl extends ServiceImpl<PdPurchaseOrderMappe
 	public List<HashMap> queryPurchaseOrderDateList(PdPurchaseOrderPage purchaseOrderPage) {
 		return pdPurchaseOrderMapper.queryPurchaseOrderDateList(purchaseOrderPage);
 	}
+
+	@Override
+	public List<HashMap> queryPurchaseOrderTotalList(PdPurchaseOrderPage purchaseOrderPage) {
+		return pdPurchaseOrderMapper.queryPurchaseOrderTotalList(purchaseOrderPage);
+	}
 }

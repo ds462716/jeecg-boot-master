@@ -335,7 +335,7 @@
 
     <!-- 统计库存总数量——首页展示用 -->
     <select id="queryProductStockCount" resultType="java.util.Map" >
-        SELECT
+		SELECT
         sum(a.stock_num) AS "stockCount"
         from pd_product_stock a
         WHERE  a.del_flag=#{DEL_FLAG_NORMAL}
@@ -351,5 +351,53 @@
 				#{item}
 			</foreach>
 		</if>
+    </select>
+
+
+	<!-- 统计前一周入库的库存数量 -->
+	<select id="queryStockDateList" resultType="java.util.Map" >
+		SELECT
+		date(c.dday) as x,
+		sum(c.y) as y
+		FROM
+		(
+		SELECT   datelist as dday ,"0" as y FROM   calendar
+		where  DATE_SUB(CURDATE(), INTERVAL 6 DAY) &lt;= date(datelist)
+		and date(datelist)  &lt;=CURDATE()
+		UNION ALL
+		SELECT   a.create_time as dday,  a.stock_num as y
+		FROM  pd_product_stock a
+		where	1=1
+		<if test="departId != null and departId != ''">
+			AND a.depart_id = #{departId}
+		</if>
+		<if test="departParentId != null and departParentId != ''">
+			AND a.depart_parent_id = #{departParentId}
+		</if>
+		<if test="departIdList != null and departIdList.size() > 0">
+			AND a.depart_id IN
+			<foreach collection="departIdList" item="item" separator="," open="(" close=")">
+				#{item}
+			</foreach>
+		</if>
+		AND  DATE_SUB(CURDATE(), INTERVAL 6 DAY)  &lt;= date(a.create_time)
+		and date(a.create_time)  &lt;=CURDATE()
+		) c
+		GROUP BY x
+	</select>
+
+	<!--  首页查询  根据库存产品类区分统计库存金额及数量 -->
+	<select id="queryStockTotalList" resultType="java.util.Map" >
+		select
+		IFNULL(d.name,'其他') as x,
+		sum(a.stock_num)  as y ,
+		sum(c.selling_price *  a.stock_num) as z
+		from pd_product_stock a
+		left join pd_product c on a.product_id=c.id
+		left join pd_category d on d.id=c.category_two
+		where
+		DATE_SUB(CURDATE(), INTERVAL 30 DAY) &lt;= date(a.create_time)
+		and date(a.create_time) &lt;=CURDATE()
+		group by x  order by y desc
     </select>
 </mapper>

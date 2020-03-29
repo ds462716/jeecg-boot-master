@@ -59,9 +59,9 @@
     },
     methods: {
       initLogInfo (){
-        getAction("/pd/IndexChart/orderDateList", {}).then((res) => {
+        getAction("/pd/IndexChart/dosageDateList", {}).then((res) => {
           if (res.success) {
-            this.data= res.result.orderDate;
+            this.data= res.result.dosageDate;
           } else {
             this.$message.warning(res.message)
           }

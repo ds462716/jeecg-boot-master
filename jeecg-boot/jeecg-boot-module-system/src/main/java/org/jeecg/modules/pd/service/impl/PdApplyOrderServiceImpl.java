@@ -10,7 +10,6 @@ import org.jeecg.modules.pd.mapper.PdApplyDetailMapper;
 import org.jeecg.modules.pd.mapper.PdApplyOrderMapper;
 import org.jeecg.modules.pd.service.IPdApplyOrderService;
 import org.jeecg.modules.pd.vo.PdApplyOrderPage;
-import org.jeecg.modules.pd.vo.PdPurchaseOrderPage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -129,5 +128,11 @@ public class PdApplyOrderServiceImpl extends ServiceImpl<PdApplyOrderMapper, PdA
 	@Override
 	public List<HashMap> queryApplyOrderDateList(PdApplyOrderPage applyOrderPage) {
 		return pdApplyOrderMapper.queryApplyOrderDateList(applyOrderPage);
+	}
+
+
+	@Override
+	public List<HashMap> queryApplyOrderTotalList(PdApplyOrderPage applyOrderPage) {
+		return pdApplyOrderMapper.queryApplyOrderTotalList(applyOrderPage);
 	}
 }

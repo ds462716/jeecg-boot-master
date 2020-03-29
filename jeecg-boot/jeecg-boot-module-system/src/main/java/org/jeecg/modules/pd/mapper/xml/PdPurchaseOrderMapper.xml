@@ -231,7 +231,7 @@
     </select>
 
 
-    <!-- 统计采购数量及当日采购数量——首页展示用 -->
+    <!-- 根据时间范围统计采购数量及当日采购数量——首页展示用 -->
     <select id="queryPurchaseOrderCount" resultType="java.util.Map" >
        SELECT
        sum(a.total_num) AS "orderCount",
@@ -254,13 +254,19 @@
         </if>
     </select>
 
-    <!-- 统计采购数量及当日采购数量——首页展示用 -->
+    <!-- 统计前一周的采购数量 -->
     <select id="queryPurchaseOrderDateList" resultType="java.util.Map" >
         SELECT
-        MAX(DATE_FORMAT( a.order_date, '%Y-%m-%d' )) AS "x",
-        SUM(a.total_num) AS "y"
-        from pd_purchase_order a
-        WHERE  a.del_flag=#{DEL_FLAG_NORMAL}
+        date(c.dday) as x,
+        sum(c.y) as y   FROM
+        (
+        SELECT   datelist as dday ,"0" as y FROM   calendar
+        where  DATE_SUB(CURDATE(), INTERVAL 6 DAY) &lt;= date(datelist)
+        and date(datelist)&lt;=CURDATE()
+        UNION ALL
+        SELECT   a.order_date as dday,  a.total_num as y
+        FROM  pd_purchase_order a
+        where  a.del_flag=#{DEL_FLAG_NORMAL}
         AND  a.audit_status='2'
         <if test="departId != null and departId != ''">
             AND a.depart_id = #{departId}
@@ -274,6 +280,28 @@
                 #{item}
             </foreach>
         </if>
-        group by a.order_date
+
+      AND  DATE_SUB(CURDATE(), INTERVAL 6 DAY) &lt;= date(a.order_date)
+        and date(a.order_date) &lt;=CURDATE()
+        ) c
+        GROUP BY x
+    </select>
+
+
+
+    <!--  首页查询  根据采购产品类区分统计采购金额 -->
+    <select id="queryPurchaseOrderTotalList" resultType="java.util.Map" >
+        select
+        IFNULL(d.name,'其他') as x,
+        sum(a.total_price) as y,
+        sum(a.total_num) as z
+        from pd_purchase_order a
+        left join pd_purchase_detail b on a.order_no=b.order_no
+        left join pd_product c on b.product_id=c.id
+        left join pd_category d on d.id=c.category_two
+        where a.del_flag='0'
+        AND  DATE_SUB(CURDATE(), INTERVAL 30 DAY) &lt;= date(a.order_date)
+        and date(a.order_date) &lt;=CURDATE()
+        group by x  order by y desc
     </select>
 </mapper>

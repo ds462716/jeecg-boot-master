@@ -44,4 +44,7 @@ public interface PdPurchaseOrderMapper extends BaseMapper<PdPurchaseOrder> {
      /*首页查询  根据范围统计每日的采购量*/
     List<HashMap> queryPurchaseOrderDateList(PdPurchaseOrderPage purchaseOrderPage);
 
+    /*  首页查询  根据采购产品类区分统计采购金额*/
+    List<HashMap> queryPurchaseOrderTotalList(PdPurchaseOrderPage purchaseOrderPage);
+
 }

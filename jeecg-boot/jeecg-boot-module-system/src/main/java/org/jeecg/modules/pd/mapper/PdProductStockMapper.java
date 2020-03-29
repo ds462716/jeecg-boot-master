@@ -5,6 +5,7 @@ import org.apache.ibatis.annotations.Param;
 import org.jeecg.modules.pd.entity.PdProductStock;
 import org.jeecg.modules.pd.vo.PdProductStockTotalPage;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -51,4 +52,11 @@ public interface PdProductStockMapper extends BaseMapper<PdProductStock> {
 
 	/*获取总库存数量及当日入库存数量*/
 	Map<String,Object> queryProductStockCount(PdProductStock pdProductStock);
+
+	/*首页查询  根据范围统计每日入库的库存数量*/
+	List<HashMap> queryStockDateList(PdProductStock pdProductStock);
+
+	/*  首页查询  根据采购产品类区分统计采购金额*/
+	List<HashMap> queryStockTotalList(PdProductStock pdProductStock);
+
 }

@@ -59,9 +59,9 @@
     },
     methods: {
       initLogInfo() {
-        getAction("/pd/IndexChart/orderDateList", {}).then((res) => {
+        getAction("/pd/IndexChart/recordDateList", {}).then((res) => {
           if (res.success) {
-            this.data = res.result.orderDate;
+            this.data = res.result.stockDate;
           } else {
             this.$message.warning(res.message)
           }

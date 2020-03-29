@@ -53,4 +53,9 @@ public interface IPdApplyOrderService extends IService<PdApplyOrder> {
 	 * 首页查询  根据范围统计每日的申领量
 	 */
 	List<HashMap> queryApplyOrderDateList(PdApplyOrderPage applyOrderPage);
+
+	/**
+	 * 首页查询  根据申领产品类区分统计申领金额及数量
+	 */
+	List<HashMap> queryApplyOrderTotalList(PdApplyOrderPage applyOrderPage);
 }
