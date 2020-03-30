@@ -67,7 +67,7 @@
         expandedKeysss:[],
         allTreeKeys:[],
         autoExpandParent: true,
-        checkStrictly: false,
+        checkStrictly: true,
         title:"部门角色权限配置",
         visible: false,
         loading: false,
@@ -76,9 +76,13 @@
     },
     methods: {
       onCheck (checkedKeys, { halfCheckedKeys }) {
+        if(this.checkStrictly){
+          this.checkedKeys = checkedKeys.checked;
+        }else{
+          this.checkedKeys = checkedKeys
+        }
         // 保存选中的和半选中的，后面保存的时候合并提交
-        this.checkedKeys = checkedKeys
-        this.halfCheckedKeys = halfCheckedKeys
+        //this.halfCheckedKeys = halfCheckedKeys
       },
       show(roleId,departId){
         this.departId = departId
@@ -163,17 +167,18 @@
             // 过滤出 leaf node 即可，即选中的
             // Tree组件中checkStrictly默认为false的时候，选中子节点，父节点会自动设置选中或半选中
             // 保存 checkedKeys 以及 halfCheckedKeys 以便于未做任何操作时提交表单数据
-            const checkedKeys = [...res.result].filter(key => {
+            /*const checkedKeys = [...res.result].filter(key => {
               const keyLeafPair = keyLeafPairs.filter(item => item.key === key)[0]
               return keyLeafPair && keyLeafPair.isLeaf
-            })
+            })*/
             const halfCheckedKeys = [...res.result].filter(key => {
               const keyLeafPair = keyLeafPairs.filter(item => item.key === key)[0]
               return keyLeafPair && !keyLeafPair.isLeaf
             })
-            this.checkedKeys = [...checkedKeys];
+            //this.checkedKeys = [...checkedKeys];
+            this.checkedKeys = [...res.result];
             this.halfCheckedKeys = [...halfCheckedKeys]
-            this.defaultCheckedKeys = [...halfCheckedKeys, ...checkedKeys];
+            this.defaultCheckedKeys = [...halfCheckedKeys, ...res.result];
             this.expandedKeysss = this.allTreeKeys;
             this.loading = false;
           })
