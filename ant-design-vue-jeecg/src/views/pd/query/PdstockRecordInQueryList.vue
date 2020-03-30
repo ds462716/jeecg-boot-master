@@ -348,7 +348,7 @@
           queryVender:"/pd/pdVender/getVenderList",
           // departList:"/pd/pdDepart/getSysDepartList",
           departList: "/pd/pdDepart/queryListTree",
-          exportXlsUrl: "",
+          exportXlsUrl: "/pd/pdStockRecordIn/exportXls",
         },
         dictOptions:{
           inType:[],

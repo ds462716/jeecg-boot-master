@@ -174,8 +174,8 @@
       <a-popconfirm title="确定驳回？" @confirm="refuseBtn" v-show="!disableSubmit" okText="确定" cancelText="取消">
         <a-button type="danger" :loading="confirmLoading" style="margin-right: 15px;">驳回</a-button>
       </a-popconfirm>
-      <a-button @click="submitBtn" v-show="!disableSubmit" type="primary" :loading="confirmLoading" style="margin-right: 15px;">审核通过</a-button>
-      <a-button @click="submitPrintBtn" v-show="!disableSubmit" type="primary" :loading="confirmLoading" style="margin-right: 15px;">审核通过并打印</a-button>
+      <a-button @click="submitBtn('1')" v-show="!disableSubmit" type="primary" :loading="confirmLoading" style="margin-right: 15px;">审核通过</a-button>
+      <a-button @click="submitBtn('2')" v-show="!disableSubmit" type="primary" :loading="confirmLoading" style="margin-right: 15px;">审核通过并打印</a-button>
     </template>
 
     <pd-stock-record-in-print-modal ref="pdStockRecordInPrintModal"></pd-stock-record-in-print-modal>
@@ -445,12 +445,8 @@
           }
         this.request(params);
       },
-      submitPrintBtn() {
-        this.submitBtn();
-        this.printBtn("2");
-      },
       /** 确定按钮点击事件 */
-      submitBtn() {
+      submitBtn(flag) {
         let refuseReason = this.form.getFieldValue("refuseReason");
         if(!refuseReason){
           refuseReason = "同意";
@@ -461,16 +457,19 @@
             refuseReason: refuseReason,
             auditStatus: "2" // 通过
           }
-        this.request(params);
+        this.request(params,flag);
       },
       // 保存 提交 修改 请求函数
-      request(params) {
+      request(params,flag) {
         this.confirmLoading = true
         httpAction(this.url.audit, params, "post").then((res) => {
           if (res.success) {
             this.$message.success(res.message)
-            this.$emit('ok')
+            this.$emit('ok');
             this.close();
+            if(flag == "2"){
+              this.printBtn("2"); //通过并打印
+            }
           } else {
             this.$message.warning(res.message)
           }

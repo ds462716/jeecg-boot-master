@@ -199,6 +199,30 @@
           { title: '收费代码', align:"center", dataIndex: 'chargeCode' },
           { title: '注册证', align:"center", dataIndex: 'registration' },
           {
+            title: '生产日期',
+            align:"center",
+            dataIndex: 'produceDate',
+            colSpan: 0,
+            customRender: (value, row, index) => {
+              const obj = {
+                attrs: {colSpan:0},
+              };
+              return obj;
+            },
+          },
+          {
+            title: '供应商ID',
+            align:"center",
+            dataIndex: 'supplierId',
+            colSpan: 0,
+            customRender: (value, row, index) => {
+              const obj = {
+                attrs: {colSpan:0},
+              };
+              return obj;
+            },
+          },
+          {
             title: '货位编号',
             align:"center",
             dataIndex: 'huoweiCode',

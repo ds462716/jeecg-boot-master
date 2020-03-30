@@ -34,7 +34,7 @@ public class PdStockRecordDetailServiceImpl extends ServiceImpl<PdStockRecordDet
 	}
 
 	/**
-	 * 查询列表
+	 * 分页查询列表
 	 * @param page
 	 * @param pdStockRecordDetail
 	 * @return
@@ -42,6 +42,16 @@ public class PdStockRecordDetailServiceImpl extends ServiceImpl<PdStockRecordDet
 	@Override
 	public Page<PdStockRecordDetail> selectList(Page<PdStockRecordDetail> page, PdStockRecordDetail pdStockRecordDetail) {
 		return page.setRecords(pdStockRecordDetailMapper.selectList(pdStockRecordDetail));
+	}
+
+	/**
+	 * 查询列表
+	 * @param pdStockRecordDetail
+	 * @return
+	 */
+	@Override
+	public List<PdStockRecordDetail> selectList(PdStockRecordDetail pdStockRecordDetail) {
+		return pdStockRecordDetailMapper.selectList(pdStockRecordDetail);
 	}
 
 	/**

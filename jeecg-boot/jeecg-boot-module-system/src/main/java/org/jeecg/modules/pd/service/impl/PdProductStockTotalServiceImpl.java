@@ -76,7 +76,7 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
 		}
 
 		String inDeptId = pdStockRecord.getInDepartId();
-		String supplierId = pdStockRecord.getSupplierId();
+//		String supplierId = pdStockRecord.getSupplierId();
 		List<PdStockRecordDetail> stockRecordDetails = pdStockRecord.getPdStockRecordDetailList();
 
 		for(PdStockRecordDetail stockRecordDetail :stockRecordDetails){
@@ -98,9 +98,7 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
 				productStockTotal.setDepartId(inDeptId);  //库房
 				productStockTotal.setProductId(productId);    //产品ID
 				productStockTotal.setStockNum(productNum);    //入库数量
-				if(StringUtils.isNotEmpty(supplierId)){
-					productStockTotal.setSupplierId(supplierId);   //供应商
-				}
+				productStockTotal.setSupplierId(stockRecordDetail.getSupplierId());   //供应商
 				super.save(productStockTotal);
 			}else{ //如果库存总表存在，则增加库存数量
 				PdProductStockTotal productStockTotal = i_productStockTotals.get(0);
@@ -130,9 +128,7 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
 				productStock.setExpDate(stockRecordDetail.getExpDate());
 				productStock.setProduceDate(stockRecordDetail.getProduceDate()); // 生产日期
 				productStock.setRecordDetailId(stockRecordDetail.getId()); //入库明细ID
-				if(StringUtils.isNotEmpty(supplierId)){
-					productStock.setSupplierId(supplierId);
-				}
+				productStock.setSupplierId(stockRecordDetail.getSupplierId());
 				productStockService.save(productStock);
 //			}else{//存在，则增加库存数量
 //				PdProductStock productStock = i_productStocks.get(0);

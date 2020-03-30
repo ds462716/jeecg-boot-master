@@ -368,6 +368,8 @@
             { title: '库存数量', key: 'stockNum', width:"80px" },
             { title: '出库货位', key: 'outHuoweiName', width:"100px" },
             { title: '出库货位编号', key: 'outHuoweiCode', type: FormTypes.hidden },
+            { title: '供应商id', key: 'supplierId', type: FormTypes.hidden },
+            { title: '生产日期', key: 'produceDate',  },
             { title: '入库货位', key: 'inHuoweiCode', type: FormTypes.select, width:"150px", options: [],allowSearch:true, placeholder: '${title}' },
           ]
         },
@@ -867,7 +869,9 @@
           stockNum:row.stockNum,
           outHuoweiName:row.huoweiName,
           outHuoweiCode:row.huoweiCode,
-          inHuoweiCode:""
+          inHuoweiCode:"",
+          supplierId:row.supplierId,
+          produceDate:row.produceDate
         }
         this.pdStockRecordDetailTable.dataSource.push(data);
         // this.$refs.pdStockRecordDetail.add();

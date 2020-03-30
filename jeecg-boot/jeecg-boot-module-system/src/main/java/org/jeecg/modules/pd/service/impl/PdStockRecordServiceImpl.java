@@ -168,6 +168,9 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
                             productNum = productNum + entity.getProductNum();
                         }
                     }
+                    if(oConvertUtils.isNotEmpty(pdStockRecord.getSupplierId()) && oConvertUtils.isEmpty(main.getSupplierId())){
+                        main.setSupplierId(pdStockRecord.getSupplierId());
+                    }
                     main.setProductNum(productNum);
                     newDetailList.add(main);
                 }
