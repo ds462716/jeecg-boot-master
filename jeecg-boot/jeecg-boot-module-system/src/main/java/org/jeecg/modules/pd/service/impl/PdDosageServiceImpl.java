@@ -241,4 +241,35 @@ public class PdDosageServiceImpl extends ServiceImpl<PdDosageMapper, PdDosage> i
         }
         return tempArray;
     }
+
+    /**
+     * 首页查询当日使用量
+     * @param pdDosage
+     * @return
+     */
+    @Override
+	public Map<String,Object> queryPdDosageCount(PdDosage pdDosage) {
+		Map<String,Object> params = pdDosageMapper.queryPdDosageCount(pdDosage);
+		return params;
+	}
+
+    /**
+     * 首页查询每周使用量
+     * @param pdDosage
+     * @return
+     */
+	@Override
+	public List<HashMap> queryPdDosageDateList(PdDosage pdDosage) {
+		return pdDosageMapper.queryPdDosageDateList(pdDosage);
+	}
+
+    /**
+     * 首页查询  根据采购产品类区分统计使用金额
+     * @param pdDosage
+     * @return
+     */
+    @Override
+    public List<HashMap> queryPurchaseOrderTotalList(PdDosage pdDosage) {
+        return pdDosageMapper.queryPdDosageTotalList(pdDosage);
+    }
 }

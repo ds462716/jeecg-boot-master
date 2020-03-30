@@ -176,5 +176,8 @@ public class PdDosage extends BaseEntity {
      */
     @TableField(exist = false)
     private List<PdGoodsAllocationPage> goodsAllocationList;
+    /*多个部门集合*/
+    @TableField(exist = false)
+    private List<String> departIdList;
 
 }

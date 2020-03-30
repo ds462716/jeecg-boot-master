@@ -5,6 +5,10 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.jeecg.modules.pd.entity.PdDosage;
 import com.baomidou.mybatisplus.extension.service.IService;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 /**
  * @Description: 用量表
  * @Author: jiangxz
@@ -18,4 +22,12 @@ public interface IPdDosageService extends IService<PdDosage> {
     void saveMain(PdDosage pdDosage,String displayFlag);
 
     IPage<PdDosage> queryList(Page<PdDosage> page, PdDosage pdDosage);
+
+
+    Map<String,Object> queryPdDosageCount(PdDosage pdDosage);
+
+
+    List<HashMap> queryPdDosageDateList(PdDosage pdDosage);
+
+    List<HashMap> queryPurchaseOrderTotalList(PdDosage pdDosage);
 }
