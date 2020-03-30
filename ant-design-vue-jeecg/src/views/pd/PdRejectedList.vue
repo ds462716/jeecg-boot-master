@@ -22,6 +22,7 @@
                 placeholder="请选择供应商"
                 :defaultActiveFirstOption="false"
                 :showArrow="true"
+                :allowClear="true"
                 :filterOption="false"
                 @search="supplierHandleSearch"
                 @change="supplierHandleChange"
@@ -53,7 +54,7 @@
     
     <!-- 操作按钮区域 -->
     <div class="table-operator">
-      <a-button @click="handleAdd" type="primary" icon="plus">新增</a-button>
+      <a-button @click="handleAdd" type="primary" v-show="isDisabledAuth('stock:form:addRejected')" icon="plus">新增</a-button>
       <!--<a-button type="primary" icon="download" @click="handleExportXls('pd_rejected')">导出</a-button>-->
     </div>
 
@@ -89,6 +90,7 @@
   import PdRejectedModal from './modules/PdRejectedModal'
   import { filterObj } from '@/utils/util';
   import { httpAction,getAction } from '@/api/manage'
+  import { disabledAuthFilter } from "@/utils/authFilter"
 
   export default {
     name: "PdRejectedList",
@@ -168,6 +170,14 @@
     },
     methods: {
       initDictConfig(){
+      },
+      /**
+       * 校验权限
+       * @param code
+       * @returns {boolean|*}
+       */
+      isDisabledAuth(code){
+        return !disabledAuthFilter(code);
       },
       rejectedDateChange (value, dateString) {
         this.queryParam.queryDateStart=dateString[0];

@@ -891,8 +891,7 @@
       },
       //清空扫码框
       clearQueryParam(){
-        this.queryParam.productNumber = "";
-        this.queryParam.productBarCode = "";
+        this.queryParam = {};
         this.$refs.productNumberInput.focus();
       },
       // 表格数据变更
@@ -929,7 +928,6 @@
           //清空扫码框
           this.clearQueryParam();
           this.$message.error("请输入产品编号！");
-          this.$refs.productNumberInput.focus();
           return;
         }
 
@@ -951,6 +949,12 @@
                 //清空扫码框
                 this.clearQueryParam();
                 this.$message.error("条码解析失败，请校验条码是否正确！");
+                return;
+              }
+              if(pdProductStockList.length <= 0){
+                //清空扫码框
+                this.clearQueryParam();
+                this.$message.error("库存中没有该产品！");
                 return;
               }
 

@@ -30,6 +30,7 @@
                     :supplierId="supplierValue"
                     :defaultActiveFirstOption="false"
                     :showArrow="true"
+                    :allowClear="true"
                     :filterOption="false"
                     @search="supplierHandleSearch"
                     @change="supplierHandleChange"
@@ -479,8 +480,7 @@
       },
       //清空扫码框
       clearQueryParam(){
-        this.queryParam.productNumber = "";
-        this.queryParam.productBarCode = "";
+        this.queryParam = {};
         this.$refs.productNumberInput.focus();
       },
       // 表格数据变更
@@ -517,7 +517,6 @@
           //清空扫码框
           this.clearQueryParam();
           this.$message.error("请输入产品编号！");
-          this.$refs.productNumberInput.focus();
           return;
         }
         if(num == 0){       //产品编号扫码
@@ -537,6 +536,12 @@
                 //清空扫码框
                 this.clearQueryParam();
                 this.$message.error("条码解析失败，请校验条码是否正确！");
+                return;
+              }
+              if(pdProductStockList.length <= 0){
+                //清空扫码框
+                this.clearQueryParam();
+                this.$message.error("库存中没有该产品！");
                 return;
               }
               let { values } = this.$refs.pdRejectedDetail.getValuesSync({ validate: false });
