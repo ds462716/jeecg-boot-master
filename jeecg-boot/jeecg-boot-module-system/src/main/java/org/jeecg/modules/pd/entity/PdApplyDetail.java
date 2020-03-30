@@ -50,6 +50,8 @@ public class PdApplyDetail extends BaseEntity {
 	private String packageId;
 	/**'申领时定数包产品数量'*/
 	private Double packageNum;
+	/**产品属性：1、产品 2、定数包*/
+	private String productAttr;
 	/**有效期*/
 	@JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd")
     @DateTimeFormat(pattern="yyyy-MM-dd")
