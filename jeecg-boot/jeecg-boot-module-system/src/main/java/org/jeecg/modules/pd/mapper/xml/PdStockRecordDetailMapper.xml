@@ -75,6 +75,7 @@
 	<!-- 出入库主表 -->
 	<sql id="PdStockRecordColumns">
       g.submit_date AS "submitDate",
+      g.audit_date AS "auditDate",
       g.record_type AS "recordType",
       g.record_no AS "recordNo",
       g.in_type AS "inType",
@@ -181,11 +182,11 @@
 			<if test="recordNo != null and recordNo != ''">
 				AND g.record_no LIKE concat('%',#{recordNo},'%')
 			</if>
-			<if test="queryInDateStart != null and queryInDateStart != ''">
-				AND g.submit_date &gt;= #{queryInDateStart}
+			<if test="queryDateStart != null and queryDateStart != ''">
+				AND g.audit_date &gt;= #{queryDateStart}
 			</if>
-			<if test="queryInDateEnd != null and queryInDateEnd != ''">
-				AND g.submit_date &lt;= #{queryInDateEnd}
+			<if test="queryDateEnd != null and queryDateEnd != ''">
+				AND g.audit_date &lt;= #{queryDateEnd}
 			</if>
 			<if test="auditStatus != null and auditStatus != ''">
 				AND g.audit_status = #{auditStatus}
@@ -205,26 +206,50 @@
 			<if test="inType != null and inType != ''">
 				AND g.in_type = #{inType}
 			</if>
+			<if test="outType != null and outType != ''">
+				AND g.out_type = #{outType}
+			</if>
 			<if test="deptId != null and deptId != ''">
 				AND ((g.record_type = '2' AND g.out_depart_id = #{deptId})
 				OR (g.record_type = '1' AND g.in_depart_id =#{deptId}))
 			</if>
-			<if test="departIdList != null and departIdList.size() > 0">
-				AND (
-						(g.record_type = '2'
-							AND g.out_depart_id in
-							<foreach item="id" collection="departIdList" open="(" separator="," close=")">
-								#{id}
-							</foreach>
-						)
-					OR (g.record_type = '1'
-							AND g.in_depart_id in
-							<foreach item="id" collection="departIdList" open="(" separator="," close=")">
-								#{id}
-							</foreach>
-						)
-					)
+			<if test='recordType == "1" and inDepartIdList != null and inDepartIdList.size() > 0'>
+				AND g.record_type = '1'
+				AND g.in_depart_id in
+				<foreach item="id" collection="inDepartIdList" open="(" separator="," close=")">
+					#{id}
+				</foreach>
 			</if>
+			<if test='recordType == "2" and outDepartIdList != null and outDepartIdList.size() > 0'>
+				AND g.record_type = '2'
+				AND g.out_depart_id in
+				<foreach item="id" collection="outDepartIdList" open="(" separator="," close=")">
+					#{id}
+				</foreach>
+			</if>
+			<if test='recordType == "2" and inDepartIdList != null and inDepartIdList.size() > 0'>
+				AND g.record_type = '2'
+				AND g.in_depart_id in
+				<foreach item="id" collection="inDepartIdList" open="(" separator="," close=")">
+					#{id}
+				</foreach>
+			</if>
+			<!--<if test="departIdList != null and departIdList.size() > 0">-->
+				<!--AND (-->
+				<!--(g.record_type = '2'-->
+				<!--AND g.out_depart_id in-->
+				<!--<foreach item="id" collection="departIdList" open="(" separator="," close=")">-->
+					<!--#{id}-->
+				<!--</foreach>-->
+				<!--)-->
+				<!--OR (g.record_type = '1'-->
+				<!--AND g.in_depart_id in-->
+				<!--<foreach item="id" collection="departIdList" open="(" separator="," close=")">-->
+					<!--#{id}-->
+				<!--</foreach>-->
+				<!--)-->
+				<!--)-->
+			<!--</if>-->
 			<if test="departId != null and departId != ''">
 				AND a.depart_id = #{departId}
 			</if>
