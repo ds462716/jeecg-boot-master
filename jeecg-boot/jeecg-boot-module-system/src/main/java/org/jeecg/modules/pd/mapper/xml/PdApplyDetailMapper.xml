@@ -71,7 +71,13 @@
 		<include refid="pdProductJoins"/>
 		<include refid="pdUnitJoins"/>
 		<include refid="pdPackageJoins"/>
-		 WHERE a.apply_no = #{applyNo}
+		 WHERE 1=1
+		<if test="applyNo != null and applyNo != ''">
+			AND a.apply_no = #{applyNo}
+		</if>
+		<if test="productAttr != null and productAttr != ''">
+			AND a.product_attr = #{productAttr}
+		</if>
 		  ORDER BY a.create_time DESC
     </select>
 
