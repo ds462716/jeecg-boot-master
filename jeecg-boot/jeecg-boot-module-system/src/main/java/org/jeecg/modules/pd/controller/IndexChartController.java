@@ -4,12 +4,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.MapUtils;
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
+import org.jeecg.common.constant.PdConstant;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.modules.pd.entity.PdProductStock;
-import org.jeecg.modules.pd.service.IPdApplyOrderService;
-import org.jeecg.modules.pd.service.IPdDepartService;
-import org.jeecg.modules.pd.service.IPdProductStockService;
-import org.jeecg.modules.pd.service.IPdPurchaseOrderService;
+import org.jeecg.modules.pd.entity.PdStockRecordDetail;
+import org.jeecg.modules.pd.service.*;
 import org.jeecg.modules.pd.vo.IndexChartPage;
 import org.jeecg.modules.pd.vo.PdApplyOrderPage;
 import org.jeecg.modules.pd.vo.PdPurchaseOrderPage;
@@ -40,6 +39,8 @@ public class IndexChartController {
     private IPdApplyOrderService pdApplyOrderService;
     @Autowired
     private IPdProductStockService pdProductStockService;
+    @Autowired
+    private IPdStockRecordDetailService pdStockRecordDetailService;
 
 
     /*
@@ -70,6 +71,7 @@ public class IndexChartController {
         Double applyCount=0.00;//总申领数量
         Double dosageCount=0.00;//总使用量
         Double stockCount=0.00;//总库存数量
+        Double recordCount=0.00;//总入库数量
         Double dayOrderNum=0.00; //今日采购量
         Double dayApplyNum=0.00;//今日申领量
         Double dayDosageNum=0.00;//今日使用量
@@ -109,6 +111,17 @@ public class IndexChartController {
 
           //统计入库单数量
         //dayRecordNum=MapUtils.getDouble(stockMap,"dayRecordNum");
+        PdStockRecordDetail recordDetail = new PdStockRecordDetail();
+        recordDetail.setRecordType(PdConstant.RECODE_TYPE_1); //入库
+        recordDetail.setDepartId(null);//当前部门
+        recordDetail.setDepartIdList(departList); //部门范围
+        recordDetail.setDepartParentId(sysUser.getDepartParentId());
+        recordDetail.setAuditStatus(PdConstant.AUDIT_STATE_2); // 审核通过
+        recordDetail.setAuditDate(null);// 查询当前日期
+        recordDetail.setQueryInDateStart(null);// 查询日期范围
+        recordDetail.setQueryInDateEnd(null);// 查询日期范围
+        Map<String,Object> recordMap = pdStockRecordDetailService.queryStockRecordCount(recordDetail);
+        recordCount=MapUtils.getDouble(recordMap,"recordCount");
 
          //使用量统计
 

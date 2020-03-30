@@ -10,6 +10,8 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
+
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -50,5 +52,10 @@ public class PdStockRecordDetailServiceImpl extends ServiceImpl<PdStockRecordDet
 	@Override
 	public List<PdStockRecordDetail> queryPdStockRecordDetail(PdStockRecordDetail pdStockRecordDetail) {
 		return pdStockRecordDetailMapper.selectList(pdStockRecordDetail);
+	}
+
+	@Override
+	public Map<String, Object> queryStockRecordCount(PdStockRecordDetail detail) {
+		return pdStockRecordDetailMapper.queryStockRecordCount(detail);
 	}
 }

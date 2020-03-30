@@ -262,32 +262,43 @@
 		</where>
 	</select>
 
-	<!-- 入库明细列表查询 -->
-	<!--<select id="selectList" resultType="org.jeecg.modules.pd.entity.PdStockRecordDetail">-->
-		<!--SELECT-->
-		  <!--*-->
-		<!--FROM pd_stock_record_detail a-->
-		<!--<include refid="PdStockRecordDetailJoins"/>-->
-		<!--<where>-->
-			<!--a.del_flag =#{DEL_FLAG_NORMAL}-->
-			<!--<if test="id != null and id != ''">-->
-				<!--AND a.id = #{id}-->
-			<!--</if>-->
-			<!--<if test="auditStatus != null and auditStatus != ''">-->
-				<!--AND g.audit_status = #{auditStatus}-->
-			<!--</if>-->
-			<!--<if test="productId != null and productId != ''">-->
-				<!--AND a.product_id = #{productId}-->
-			<!--</if>-->
-			<!--<if test="recordType != null and recordType != ''">-->
-				<!--AND g.record_type = #{recordType}-->
-			<!--</if>-->
-			<!--<if test="departParentId != null and departParentId != ''">-->
-				<!--AND a.depart_parent_id = #{departParentId}-->
-			<!--</if>-->
-			<!--ORDER BY create_time desc-->
-		<!--</where>-->
-	<!--</select>-->
+    <!-- 统计入库数量——首页展示用 -->
+    <select id="queryStockRecordCount" resultType="java.util.Map"  parameterType="org.jeecg.modules.pd.entity.PdStockRecordDetail">
+        SELECT
+            sum(a.product_num) AS "recordCount"
+        FROM
+            pd_stock_record_detail a
+            LEFT JOIN pd_stock_record b ON a.record_id = b.id
+        where
+            a.del_flag=#{DEL_FLAG_NORMAL}
+        <if test="departId != null and departId != ''">
+            AND b.depart_id = #{departId}
+        </if>
+        <if test="departParentId != null and departParentId != ''">
+            AND b.depart_parent_id = #{departParentId}
+        </if>
+        <if test="departIdList != null and departIdList.size() > 0">
+            AND b.depart_id IN
+            <foreach collection="departIdList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="queryInDateStart != null and queryInDateStart != ''">
+            AND b.audit_date &gt;= #{queryInDateStart}
+        </if>
+        <if test="queryInDateEnd != null and queryInDateEnd != ''">
+            AND b.audit_date &lt;= #{queryInDateEnd}
+        </if>
+        <if test="auditDate != null and auditDate != ''">
+            AND b.audit_date = #{auditDate}
+        </if>
+        <if test="auditStatus != null and auditStatus != ''">
+            AND b.audit_status = #{auditStatus}
+        </if>
+        <if test="recordType != null and recordType != ''">
+            AND b.record_type = #{recordType}
+        </if>
+    </select>
 
 	<update id="updateInHuoweiCode" parameterType="org.jeecg.modules.pd.entity.PdStockRecordDetail">
 		UPDATE pd_stock_record_detail SET
