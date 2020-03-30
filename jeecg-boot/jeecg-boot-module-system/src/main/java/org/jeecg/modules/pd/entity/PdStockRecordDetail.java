@@ -12,6 +12,7 @@ import org.jeecgframework.poi.excel.annotation.Excel;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @Description: 出入库明细表
@@ -134,7 +135,11 @@ public class PdStockRecordDetail extends BaseEntity {
 	@TableField(exist = false)
 	private String unitName;//单位名称
 	@TableField(exist = false)
+	private String venderId;//生产厂家ID
+	@TableField(exist = false)
 	private String venderName;//生产厂家名称
+	@TableField(exist = false)
+	private String supplierId;//供应商ID
 	@TableField(exist = false)
 	private String supplierName;//供应商名称
 	@TableField(exist = false)
@@ -177,5 +182,23 @@ public class PdStockRecordDetail extends BaseEntity {
 	private String oldInHuoweiCode;
 	@TableField(exist = false)
 	private String oldOutHuoweiCode;
+	@TableField(exist = false)
+	private String queryExpDateStart;
+	@TableField(exist = false)
+	private String queryExpDateEnd;
+	@TableField(exist = false)
+	private String queryInDateStart;
+	@TableField(exist = false)
+	private String queryInDateEnd;
+	@TableField(exist = false)
+	private String queryOutDateStart;
+	@TableField(exist = false)
+	private String queryOutDateEnd;
+	@TableField(exist = false)
+	private String departIds; //批量查询用
+	@TableField(exist = false)
+	private List<String> departIdList;
+
+
 
 }

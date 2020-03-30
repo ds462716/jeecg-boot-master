@@ -49,6 +49,7 @@
         c.name as "productName",
         c.spec as "spec",
         c.version as "version",
+        c.jde_code as "jdeCode",
         c.registration as "registration"
 	</sql>
 	<sql id="pdProductJoins">
@@ -168,6 +169,24 @@
 			<if test="id != null and id != ''">
 				AND a.id = #{id}
 			</if>
+			<if test="queryExpDateStart != null and queryExpDateStart != ''">
+				AND a.exp_date &gt;= #{queryExpDateStart}
+			</if>
+			<if test="queryExpDateEnd != null and queryExpDateEnd != ''">
+				AND a.exp_date &lt;= #{queryExpDateEnd}
+			</if>
+			<if test="batchNo != null and batchNo != ''">
+				AND a.batch_no LIKE concat('%',#{batchNo},'%')
+			</if>
+			<if test="recordNo != null and recordNo != ''">
+				AND g.record_no LIKE concat('%',#{recordNo},'%')
+			</if>
+			<if test="queryInDateStart != null and queryInDateStart != ''">
+				AND g.submit_date &gt;= #{queryInDateStart}
+			</if>
+			<if test="queryInDateEnd != null and queryInDateEnd != ''">
+				AND g.submit_date &lt;= #{queryInDateEnd}
+			</if>
 			<if test="auditStatus != null and auditStatus != ''">
 				AND g.audit_status = #{auditStatus}
 			</if>
@@ -180,15 +199,64 @@
 			<if test="recordType != null and recordType != ''">
 				AND g.record_type = #{recordType}
 			</if>
+			<if test="supplierId != null and supplierId != ''">
+				AND g.supplier_id = #{supplierId}
+			</if>
+			<if test="inType != null and inType != ''">
+				AND g.in_type = #{inType}
+			</if>
 			<if test="deptId != null and deptId != ''">
 				AND ((g.record_type = '2' AND g.out_depart_id = #{deptId})
 				OR (g.record_type = '1' AND g.in_depart_id =#{deptId}))
+			</if>
+			<if test="departIdList != null and departIdList.size() > 0">
+				AND (
+						(g.record_type = '2'
+							AND g.out_depart_id in
+							<foreach item="id" collection="departIdList" open="(" separator="," close=")">
+								#{id}
+							</foreach>
+						)
+					OR (g.record_type = '1'
+							AND g.in_depart_id in
+							<foreach item="id" collection="departIdList" open="(" separator="," close=")">
+								#{id}
+							</foreach>
+						)
+					)
 			</if>
 			<if test="departId != null and departId != ''">
 				AND a.depart_id = #{departId}
 			</if>
 			<if test="departParentId != null and departParentId != ''">
 				AND a.depart_parent_id = #{departParentId}
+			</if>
+			<if test="productNumber != null and productNumber != ''">
+				AND c.number LIKE concat('%',#{productNumber},'%')
+			</if>
+			<if test="venderId != null and venderId != ''">
+				AND c.vender_id = #{venderId}
+			</if>
+			<if test="spec != null and spec != ''">
+				AND c.spec LIKE concat('%',#{spec},'%')
+			</if>
+			<if test="version != null and version != ''">
+				AND c.version LIKE concat('%',#{version},'%')
+			</if>
+			<if test="registration != null and registration != ''">
+				AND c.registration LIKE concat('%',#{registration},'%')
+			</if>
+			<if test="productName != null and productName != ''">
+				AND (
+				c.number LIKE concat('%',#{productName},'%')
+				or c.name LIKE concat('%',#{productName},'%')
+				or c.py LIKE concat('%',#{productName},'%')
+				or c.wb LIKE concat('%',#{productName},'%')
+				or c.bname LIKE concat('%',#{productName},'%')
+				or c.bpy LIKE concat('%',#{productName},'%')
+				or c.bwb LIKE concat('%',#{productName},'%')
+				or c.zdy LIKE concat('%',#{productName},'%')
+				)
 			</if>
 			ORDER BY create_time desc
 		</where>
