@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.PdConstant;
 import org.jeecg.common.system.query.QueryGenerator;
@@ -131,11 +132,12 @@ public class PdStockRecordInController {
      * @return
      */
     @PostMapping(value = "/add")
+    @RequiresPermissions("user:add")
     public Result<?> add(@RequestBody PdStockRecord pdStockRecord) {
         if (oConvertUtils.isNotEmpty(pdStockRecord.getId())) {
             PdStockRecord entity = pdStockRecordService.getById(pdStockRecord.getId());
             if(entity != null && PdConstant.SUBMIT_STATE_2.equals(entity.getSubmitStatus())){
-                return Result.error("出库单已被提交，不能保存草稿！");
+                return Result.error("入库单已被提交，不能保存草稿！");
             }
         }
         pdStockRecordService.saveMain(pdStockRecord, pdStockRecord.getPdStockRecordDetailList(), PdConstant.RECODE_TYPE_1);
@@ -149,11 +151,12 @@ public class PdStockRecordInController {
      * @return
      */
     @PostMapping(value = "/submit")
+    @RequiresPermissions("user:add")
     public Result<?> submit(@RequestBody PdStockRecord pdStockRecord) {
         if (oConvertUtils.isNotEmpty(pdStockRecord.getId())) {
             PdStockRecord entity = pdStockRecordService.getById(pdStockRecord.getId());
             if(entity != null && PdConstant.SUBMIT_STATE_2.equals(entity.getSubmitStatus())){
-                return Result.error("出库单已被提交，不能再次提交！");
+                return Result.error("入库单已被提交，不能再次提交！");
             }
         }
         pdStockRecordService.submit(pdStockRecord, pdStockRecord.getPdStockRecordDetailList(), PdConstant.RECODE_TYPE_1);
@@ -175,7 +178,7 @@ public class PdStockRecordInController {
             return Result.error("未找到对应数据");
         }
         if(PdConstant.AUDIT_STATE_2.equals(entity.getAuditStatus()) || PdConstant.AUDIT_STATE_3.equals(entity.getAuditStatus())){
-            return Result.error("出库单已被审批，不能再次审批！");
+            return Result.error("入库单已被审批，不能再次审批！");
         }
         Map<String, String> result = pdStockRecordService.audit(pdStockRecord, entity, PdConstant.RECODE_TYPE_1);
         if (PdConstant.SUCCESS_200.equals(result.get("code"))) {
@@ -386,46 +389,22 @@ public class PdStockRecordInController {
 
         Page<PdStockRecordDetail> page = new Page<PdStockRecordDetail>(pageNo, pageSize);
         pdStockRecordDetail.setRecordType(PdConstant.RECODE_TYPE_1);
+        pdStockRecordDetail.setAuditStatus(PdConstant.AUDIT_STATE_2);
         LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
         pdStockRecordDetail.setDepartParentId(sysUser.getDepartParentId());
 
-        if(oConvertUtils.isNotEmpty(pdStockRecordDetail.getDepartIds()) && !"undefined".equals(pdStockRecordDetail.getDepartIds())){
-            pdStockRecordDetail.setDepartIdList(Arrays.asList(pdStockRecordDetail.getDepartIds().split(",")));
+        if(oConvertUtils.isNotEmpty(pdStockRecordDetail.getInDepartIds()) && !"undefined".equals(pdStockRecordDetail.getInDepartIds())){
+            pdStockRecordDetail.setInDepartIdList(Arrays.asList(pdStockRecordDetail.getInDepartIds().split(",")));
         }else{
             //查询科室下所有下级科室的ID
             SysDepart sysDepart=new SysDepart();
             List<String> departList=pdDepartService.selectListDepart(sysDepart);
-            pdStockRecordDetail.setDepartIdList(departList);
+            pdStockRecordDetail.setInDepartIdList(departList);
         }
 
         page = pdStockRecordDetailService.selectList(page, pdStockRecordDetail);
         return Result.ok(page);
     }
-
-    /**
-     * 查询出库明细  mcb  --20200224 用于统计查询
-     *
-     * @param pdStockRecordDetail
-     * @param pageNo
-     * @param pageSize
-     * @param req
-     * @return
-     */
-    @GetMapping(value = "/queryPdStockRecordOutList")
-    public Result<?> queryPdStockRecordOutList(PdStockRecordDetail pdStockRecordDetail,
-                                               @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
-                                               @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
-                                               HttpServletRequest req) {
-
-        Page<PdStockRecordDetail> page = new Page<PdStockRecordDetail>(pageNo, pageSize);
-        pdStockRecordDetail.setAuditStatus(PdConstant.AUDIT_STATE_2);
-        pdStockRecordDetail.setRecordType(PdConstant.RECODE_TYPE_2);
-        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
-        pdStockRecordDetail.setDepartParentId(sysUser.getDepartParentId());
-        page = pdStockRecordDetailService.selectList(page, pdStockRecordDetail);
-        return Result.ok(page);
-    }
-
 
     /**
      * 调入明细查询  mcb  --20200308 用于统计查询

@@ -22,7 +22,7 @@
                 @search="departHandleSearch"
                 @focus="departHandleSearch"
                 :notFoundContent="notFoundContent"
-                v-model="queryParam.departIds"
+                v-model="queryParam.inDepartIds"
               >
                 <a-select-option v-for="d in departList" :key="d.id">{{d.departName}}</a-select-option>
               </a-select>
@@ -203,7 +203,7 @@
           {
             title:'入库日期',
             align:"center",
-            dataIndex: 'submitDate',
+            dataIndex: 'auditDate',
             width:'90px',
             customRender:function (text) {
               return !text?"":(text.length>10?text.substr(0,10):text)
@@ -371,7 +371,7 @@
       },
       // 部门下拉框搜索
       departHandleSearch(value){
-        getAction(this.url.departList,{departName:value,parentFlag:"0"}).then((res)=>{
+        getAction(this.url.departList,{departName:value}).then((res)=>{
           if (!res.success) {
             this.cmsFailed(res.message);
           }
@@ -421,8 +421,8 @@
         this.queryParam.queryExpDateEnd=dateString[1];
       },
       inDateChange: function (value, dateString) {
-        this.queryParam.queryInDateStart=dateString[0];
-        this.queryParam.queryInDateEnd=dateString[1];
+        this.queryParam.queryDateStart=dateString[0];
+        this.queryParam.queryDateEnd=dateString[1];
       },
       getQueryParams() {
         //获取查询条件
@@ -434,7 +434,7 @@
         param.field = this.getQueryField();
         param.pageNo = this.ipagination.current;
         param.pageSize = this.ipagination.pageSize;
-        param.departIds = this.queryParam.departIds+"";
+        param.inDepartIds = this.queryParam.inDepartIds+"";
         delete param.queryExpDate; //范围参数不传递后台，传后台会报错
         delete param.queryInDate;
         return filterObj(param);

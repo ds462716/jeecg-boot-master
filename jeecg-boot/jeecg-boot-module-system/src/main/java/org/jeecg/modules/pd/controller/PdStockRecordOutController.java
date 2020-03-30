@@ -391,6 +391,29 @@ public class PdStockRecordOutController {
 
         Page<PdStockRecordDetail> page = new Page<PdStockRecordDetail>(pageNo, pageSize);
         pdStockRecordDetail.setRecordType(PdConstant.RECODE_TYPE_2);
+        pdStockRecordDetail.setAuditStatus(PdConstant.AUDIT_STATE_2);
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        pdStockRecordDetail.setDepartParentId(sysUser.getDepartParentId());
+
+        if(oConvertUtils.isNotEmpty(pdStockRecordDetail.getOutDepartIds()) && !"undefined".equals(pdStockRecordDetail.getOutDepartIds())){
+            pdStockRecordDetail.setOutDepartIdList(Arrays.asList(pdStockRecordDetail.getOutDepartIds().split(",")));
+        }else{
+            //查询科室下所有下级科室的ID
+            SysDepart sysDepart=new SysDepart();
+            List<String> departList=pdDepartService.selectListDepart(sysDepart);
+            pdStockRecordDetail.setOutDepartIdList(departList);
+        }
+
+        if(oConvertUtils.isNotEmpty(pdStockRecordDetail.getInDepartIds()) && !"undefined".equals(pdStockRecordDetail.getInDepartIds())){
+            pdStockRecordDetail.setInDepartIdList(Arrays.asList(pdStockRecordDetail.getInDepartIds().split(",")));
+        }else{
+            //查询科室下所有下级科室的ID
+//            SysDepart sysDepart=new SysDepart();
+//            sysDepart.setDepartParentId(sysUser.getDepartParentId());
+//            List<SysDepart> list = pdDepartService.selectList(sysDepart);
+//            List<String> departList=pdDepartService.selectListDepart(sysDepart);
+//            pdStockRecordDetail.setInDepartIdList(departList);
+        }
         page = pdStockRecordDetailService.selectList(page, pdStockRecordDetail);
         return Result.ok(page);
     }

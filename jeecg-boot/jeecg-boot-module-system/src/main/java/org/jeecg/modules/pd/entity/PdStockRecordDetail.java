@@ -174,6 +174,7 @@ public class PdStockRecordDetail extends BaseEntity {
 	private String inType;//入库类型
 	@TableField(exist = false)
 	private Double stockNum;// 库存数量
+
 	@TableField(exist = false)
 	private String inHuoweiName;// 入库货位
 	@TableField(exist = false)
@@ -182,22 +183,38 @@ public class PdStockRecordDetail extends BaseEntity {
 	private String oldInHuoweiCode;
 	@TableField(exist = false)
 	private String oldOutHuoweiCode;
+
 	@TableField(exist = false)
 	private String queryExpDateStart;
 	@TableField(exist = false)
 	private String queryExpDateEnd;
+
 	@TableField(exist = false)
 	private String queryInDateStart;
 	@TableField(exist = false)
 	private String queryInDateEnd;
+
 	@TableField(exist = false)
 	private String queryOutDateStart;
 	@TableField(exist = false)
 	private String queryOutDateEnd;
+
 	@TableField(exist = false)
-	private String departIds; //批量查询用
+	private String queryDateStart;
+	@TableField(exist = false)
+	private String queryDateEnd;
+
 	@TableField(exist = false)
 	private List<String> departIdList;
+	@TableField(exist = false)
+	private String inDepartIds; //批量查询用
+	@TableField(exist = false)
+	private List<String> inDepartIdList;
+	@TableField(exist = false)
+	private String outDepartIds; //批量查询用
+	@TableField(exist = false)
+	private List<String> outDepartIdList;
+
 	@TableField(exist = false)
 	@JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd")
 	@DateTimeFormat(pattern="yyyy-MM-dd")

@@ -38,8 +38,6 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
     private PdStockRecordMapper pdStockRecordMapper;
     @Autowired
     private PdStockRecordDetailMapper pdStockRecordDetailMapper;
-//    @Autowired
-//    private PdPurchaseDetailMapper pdPurchaseDetailMapper;
     @Autowired
     private PdPurchaseOrderMergeDetailMapper pdPurchaseOrderMergeDetailMapper;
     @Autowired
@@ -60,8 +58,6 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
     private IPdGoodsAllocationService pdGoodsAllocationService;
     @Autowired
     private ISysDictService sysDictService;
-//    @Autowired
-//    private IPdPurchaseDetailService pdPurchaseDetailService;
     @Autowired
     private IPdPurchaseOrderMergeDetailService pdPurchaseOrderMergeDetailService;
     @Autowired
