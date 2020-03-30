@@ -67,7 +67,7 @@
     
     <!-- 操作按钮区域 -->
     <div class="table-operator">
-      <a-button @click="handleAdd" type="primary" icon="plus">新增</a-button>
+      <a-button @click="handleAdd" type="primary" v-show="isDisabledAuth('stock:form:inRecord')" icon="plus">新增</a-button>
       <!--<a-button type="primary" icon="download" @click="handleExportXls('入库记录表')">导出</a-button>-->
     </div>
 
@@ -123,6 +123,7 @@
   import { JeecgListMixin } from '@/mixins/JeecgListMixin'
   import PdStockRecordInModal from './modules/PdStockRecordInModal'
   import {initDictOptions, filterMultiDictText} from '@/components/dict/JDictSelectUtil'
+  import { disabledAuthFilter } from "@/utils/authFilter"
 
   export default {
     name: "PdStockRecordInList",
@@ -301,6 +302,14 @@
         param.pageSize = this.ipagination.pageSize;
         delete param.queryDate; //范围参数不传递后台，传后台会报错
         return filterObj(param);
+      },
+      /**
+       * 校验权限
+       * @param code
+       * @returns {boolean|*}
+       */
+      isDisabledAuth(code){
+        return !disabledAuthFilter(code);
       },
     }
   }
