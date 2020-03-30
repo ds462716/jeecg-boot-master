@@ -13,5 +13,5 @@ import java.util.List;
  */
 public interface IPdApplyDetailService extends IService<PdApplyDetail> {
 
-	public List<PdApplyDetail> selectByApplyNo(String applyNo);
+	public List<PdApplyDetail> selectByApplyNo(PdApplyDetail applyDetail);
 }

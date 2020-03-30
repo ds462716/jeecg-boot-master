@@ -284,12 +284,12 @@ public class PdApplyOrderController {
 	 /**
 	  * 通过申领单号查询明细表
 	  *
-	  * @param applyNo
+	  * @param applyDetail
 	  * @return
 	  */
 	 @GetMapping(value = "/queryApplyDetail")
-	 public Result<?> queryApplyDetail(@RequestParam(name="applyNo",required=true) String applyNo) {
-		 List<PdApplyDetail> pdApplyDetailList = pdApplyDetailService.selectByApplyNo(applyNo);
+	 public Result<?> queryApplyDetail(PdApplyDetail   applyDetail) {
+		 List<PdApplyDetail> pdApplyDetailList = pdApplyDetailService.selectByApplyNo(applyDetail);
 		 return Result.ok(pdApplyDetailList);
 	 }
 
@@ -304,7 +304,9 @@ public class PdApplyOrderController {
 		// Step.1 组装查询条件查询数据
 		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
 		//Step.2 获取导出数据
-		List<PdApplyDetail> pdApplyDetailList = pdApplyDetailService.selectByApplyNo(pdApplyOrder.getApplyNo());
+		PdApplyDetail applyDetail=new PdApplyDetail();
+		applyDetail.setApplyNo(pdApplyOrder.getApplyNo());
+		List<PdApplyDetail> pdApplyDetailList = pdApplyDetailService.selectByApplyNo(applyDetail);
 		// Step.3 AutoPoi 导出Excel
 		ModelAndView mv = new ModelAndView(new JeecgEntityExcelView());
 		mv.addObject(NormalExcelConstants.FILE_NAME, "申领明细产品列表");

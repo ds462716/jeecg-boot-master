@@ -584,7 +584,9 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
 
             //查申领单列表
             if (oConvertUtils.isNotEmpty(pdStockRecord.getApplyNo())) {
-                List<PdApplyDetail> pdApplyDetailList = pdApplyDetailService.selectByApplyNo(pdStockRecord.getApplyNo());
+                PdApplyDetail applyDetail=new PdApplyDetail();
+                applyDetail.setApplyNo(pdStockRecord.getApplyNo());
+                List<PdApplyDetail> pdApplyDetailList = pdApplyDetailService.selectByApplyNo(applyDetail);
                 pdStockRecord.setPdApplyDetailList(pdApplyDetailList);
             }
             //查调拨单列表

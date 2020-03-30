@@ -1,9 +1,10 @@
 package org.jeecg.modules.pd.mapper;
 
-import java.util.List;
-import org.jeecg.modules.pd.entity.PdApplyDetail;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Param;
+import org.jeecg.modules.pd.entity.PdApplyDetail;
+
+import java.util.List;
 
 /**
  * @Description: 申领单明细表
@@ -17,7 +18,7 @@ public interface PdApplyDetailMapper extends BaseMapper<PdApplyDetail> {
 
 	public boolean deleteByApplyNo(@Param("applyNo") String applyNo);
 
-	public List<PdApplyDetail> selectByApplyNo(@Param("applyNo") String applyNo);
+	public List<PdApplyDetail> selectByApplyNo(PdApplyDetail applyDetail);
 
 	/**
 	 * 增加发货数量 用于出库保存/提交 add by jiangxz 20200309

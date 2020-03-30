@@ -61,7 +61,7 @@
 		DELETE FROM  pd_apply_detail 	WHERE apply_no = #{applyNo}
    </delete>
 
-	<select id="selectByApplyNo" parameterType="java.lang.String" resultType="org.jeecg.modules.pd.entity.PdApplyDetail">
+	<select id="selectByApplyNo"   resultType="org.jeecg.modules.pd.entity.PdApplyDetail">
 		SELECT
 		<include refid="pdApplyDetailColumns"/>,
 		<include refid="pdProductColumns"/>,
