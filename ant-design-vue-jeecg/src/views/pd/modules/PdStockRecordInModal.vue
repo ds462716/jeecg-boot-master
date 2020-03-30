@@ -863,8 +863,7 @@
       },
       //清空扫码框
       clearQueryParam(){
-        this.queryParam.productNumber = "";
-        this.queryParam.productBarCode = "";
+        this.queryParam = {};
         this.$refs.productNumberInput.focus();
       },
       onClickRow(record) {

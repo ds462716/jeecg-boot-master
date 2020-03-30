@@ -132,7 +132,7 @@ public class PdStockRecordInController {
      * @return
      */
     @PostMapping(value = "/add")
-    @RequiresPermissions("user:add")
+    @RequiresPermissions("stock:form:inRecord")
     public Result<?> add(@RequestBody PdStockRecord pdStockRecord) {
         if (oConvertUtils.isNotEmpty(pdStockRecord.getId())) {
             PdStockRecord entity = pdStockRecordService.getById(pdStockRecord.getId());
@@ -151,7 +151,7 @@ public class PdStockRecordInController {
      * @return
      */
     @PostMapping(value = "/submit")
-    @RequiresPermissions("user:add")
+    @RequiresPermissions("stock:form:inRecord")
     public Result<?> submit(@RequestBody PdStockRecord pdStockRecord) {
         if (oConvertUtils.isNotEmpty(pdStockRecord.getId())) {
             PdStockRecord entity = pdStockRecordService.getById(pdStockRecord.getId());
