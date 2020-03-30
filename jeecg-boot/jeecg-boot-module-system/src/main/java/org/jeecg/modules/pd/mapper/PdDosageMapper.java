@@ -1,8 +1,9 @@
 package org.jeecg.modules.pd.mapper;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-import org.apache.ibatis.annotations.Param;
 import org.jeecg.modules.pd.entity.PdDosage;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
@@ -15,4 +16,10 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 public interface PdDosageMapper extends BaseMapper<PdDosage> {
 
     List<PdDosage> selectList(PdDosage pdDosage);
+
+    Map<String,Object> queryPdDosageCount(PdDosage PdDosage);
+
+    List<HashMap> queryPdDosageDateList(PdDosage PdDosage);
+
+    List<HashMap> queryPdDosageTotalList(PdDosage PdDosage);
 }

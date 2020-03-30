@@ -31,9 +31,9 @@
     <!-- 查询区域-END -->
     
     <!-- 操作按钮区域 -->
-    <div class="table-operator">
+    <!--<div class="table-operator">
        <a-button type="primary" icon="download" @click="handleExportXls('合并申购单表')">导出</a-button>
-    </div>
+    </div>-->
 
     <!-- table区域-begin -->
     <div>

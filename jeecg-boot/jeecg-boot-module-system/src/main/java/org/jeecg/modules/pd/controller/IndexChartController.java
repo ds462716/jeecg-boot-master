@@ -6,6 +6,7 @@ import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.PdConstant;
 import org.jeecg.common.system.vo.LoginUser;
+import org.jeecg.modules.pd.entity.PdDosage;
 import org.jeecg.modules.pd.entity.PdProductStock;
 import org.jeecg.modules.pd.entity.PdStockRecordDetail;
 import org.jeecg.modules.pd.service.*;
@@ -41,6 +42,8 @@ public class IndexChartController {
     private IPdProductStockService pdProductStockService;
     @Autowired
     private IPdStockRecordDetailService pdStockRecordDetailService;
+    @Autowired
+    private IPdDosageService dosageService;
 
 
     /*
@@ -71,15 +74,10 @@ public class IndexChartController {
         Double applyCount=0.00;//总申领数量
         Double dosageCount=0.00;//总使用量
         Double stockCount=0.00;//总库存数量
-        Double recordCount=0.00;//总入库数量
         Double dayOrderNum=0.00; //今日采购量
         Double dayApplyNum=0.00;//今日申领量
         Double dayDosageNum=0.00;//今日使用量
         Double dayRecordNum=0.00;//今日入库量
-        List<Map> orderDate=new  ArrayList<Map>();//根据天数统计的采购数量
-        List<Map> applyDate=new  ArrayList<Map>();//根据天数统计的申领数量
-        List<Map> dosageDate=new  ArrayList<Map>();//根据天数统计的使用数量
-        List<Map> recordDate=new  ArrayList<Map>();//根据天数统计的入库数量
 
         LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
         //查询科室下所有下级科室的ID
@@ -110,7 +108,6 @@ public class IndexChartController {
         stockCount=MapUtils.getDouble(stockMap,"stockCount");
 
           //统计入库单数量
-        //dayRecordNum=MapUtils.getDouble(stockMap,"dayRecordNum");
         PdStockRecordDetail recordDetail = new PdStockRecordDetail();
         recordDetail.setRecordType(PdConstant.RECODE_TYPE_1); //入库
         recordDetail.setDepartId(null);//当前部门
@@ -121,20 +118,26 @@ public class IndexChartController {
         recordDetail.setQueryInDateStart(null);// 查询日期范围
         recordDetail.setQueryInDateEnd(null);// 查询日期范围
         Map<String,Object> recordMap = pdStockRecordDetailService.queryStockRecordCount(recordDetail);
-        recordCount=MapUtils.getDouble(recordMap,"recordCount");
+        dayRecordNum=MapUtils.getDouble(recordMap,"recordCount");
 
          //使用量统计
-
-
+        //统计入库单数量
+        PdDosage dosage = new PdDosage();
+         dosage.setDepartId(null);//当前部门
+        dosage.setDepartIdList(departList); //部门范围
+        dosage.setDepartParentId(sysUser.getDepartParentId());
+        dosage.setDosageDate(null);// 查询当前日期
+        Map<String,Object> dosageMap = dosageService.queryPdDosageCount(dosage);
+        dosageCount=MapUtils.getDouble(dosageMap,"orderCount");//总使用量
+        dayDosageNum=MapUtils.getDouble(dosageMap,"dayOrderNum");//当日使用量
         map.put("orderCount",orderCount);
         map.put("dayOrderNum",dayOrderNum);
         map.put("applyCount",applyCount);
         map.put("stockCount",stockCount);
         map.put("dayApplyNum",dayApplyNum);
-        map.put("dosageCount","30");
-        map.put("dayDosageNum","38");
-        map.put("dayRecordNum","88");
-       // map.put("orderDate",orderDate);
+        map.put("dosageCount",dosageCount);
+        map.put("dayDosageNum",dayDosageNum);
+        map.put("dayRecordNum",dayRecordNum);
         return Result.ok(map);
     }
 
@@ -170,9 +173,6 @@ public class IndexChartController {
     public Result<?> applyDateList(Map<String,Object> params){
         Map map=new HashMap();
         List<HashMap> applyDate=new  ArrayList<HashMap>();//根据天数统计的申领数量
-       // List<Map> dosageDate=new  ArrayList<Map>();//根据天数统计的使用数量
-        // List<Map> recordDate=new  ArrayList<Map>();//根据天数统计的入库数量
-
         LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
         //查询科室下所有下级科室的ID
         SysDepart depart=new SysDepart();
@@ -196,16 +196,15 @@ public class IndexChartController {
     public Result<?> dosageDateList(Map<String,Object> params){
         Map map=new HashMap();
         List<HashMap> dosageDate=new  ArrayList<HashMap>();//根据天数统计的使用数量
-
         LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
         //查询科室下所有下级科室的ID
         SysDepart depart=new SysDepart();
         List<String> departList=pdDepartService.selectListDepart(depart);
-        PdApplyOrderPage applyOrderPage=new  PdApplyOrderPage();
-        //pdApplyOrderPage.setDepartIdList(departList);
-        //pdApplyOrderPage.setDepartParentId(sysUser.getDepartParentId());
-        //根据日期统计每日的申领量
-        dosageDate=pdApplyOrderService.queryApplyOrderDateList(applyOrderPage);
+        PdDosage dosage=new  PdDosage();
+        //dosage.setDepartIdList(departList);
+        //dosage.setDepartParentId(sysUser.getDepartParentId());
+        //根据日期统计每日的使用数量
+        dosageDate=dosageService.queryPdDosageDateList(dosage);
         map.put("dosageDate",dosageDate);
         return Result.ok(map);
     }
@@ -219,7 +218,6 @@ public class IndexChartController {
     public Result<?> stockDateList(Map<String,Object> params){
         Map map=new HashMap();
          List<HashMap> stockDate=new  ArrayList<HashMap>();//根据天数统计的入库数量
-
         LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
         //查询科室下所有下级科室的ID
         SysDepart depart=new SysDepart();
@@ -227,12 +225,11 @@ public class IndexChartController {
         PdProductStock productStock=new  PdProductStock();
         //productStock.setDepartIdList(departList);
         //productStock.setDepartParentId(sysUser.getDepartParentId());
-        //根据日期统计每日的申领量
+        //根据日期统计每日的入库数量
         stockDate=pdProductStockService.queryStockDateList(productStock);
         map.put("stockDate",stockDate);
         return Result.ok(map);
     }
-
 
 
     /**
@@ -260,16 +257,16 @@ public class IndexChartController {
             //applyOrderPage.setDepartParentId(sysUser.getDepartParentId());
             orderCountDate=pdApplyOrderService.queryApplyOrderTotalList(applyOrderPage);
         }else if("dosage".equals(type)){//耗材使用量分类统计
-
-
+            PdDosage dosage=new  PdDosage();
+             //dosage.setDepartIdList(departList);
+             //dosage.setDepartParentId(sysUser.getDepartParentId());
+            orderCountDate=dosageService.queryPurchaseOrderTotalList(dosage);
         }else {//库存耗材分类统计
             PdProductStock  stock =new  PdProductStock();
             //stock.setDepartIdList(departList);
             //stock.setDepartParentId(sysUser.getDepartParentId());
             orderCountDate=pdProductStockService.queryStockTotalList(stock);
-
         }
-
         map.put("orderCountDate",orderCountDate);
         return Result.ok(map);
     }
