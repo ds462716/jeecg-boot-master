@@ -176,7 +176,7 @@
 </template>
 <script>
 
-  import { httpAction,getAction } from '@/api/manage'
+  import { httpAction,getAction,downFile } from '@/api/manage'
   import { filterObj } from '@/utils/util';
   import { JeecgListMixin} from '@/mixins/JeecgListMixin'
   import {initDictOptions, filterMultiDictText} from '@/components/dict/JDictSelectUtil'
@@ -337,12 +337,12 @@
             width:'250px',
             dataIndex: 'venderName'
           },
-          // {
-          //   title:'供应商',
-          //   align:"center",
-          //   width:'250px',
-          //   dataIndex: 'supplierName'
-          // },
+          {
+            title:'供应商',
+            align:"center",
+            width:'250px',
+            dataIndex: 'supplierName'
+          },
           {
             title:'注册证号',
             align:"center",
@@ -386,7 +386,7 @@
           queryVender:"/pd/pdVender/getVenderList",
           allDepartList:"/pd/pdDepart/getSysDepartList",
           departList: "/pd/pdDepart/queryListTree",
-          exportXlsUrl: "",
+          exportXlsUrl: "/pd/pdStockRecordOut/exportXls",
         },
         dictOptions:{
           outType:[],
@@ -487,7 +487,37 @@
         delete param.queryOutDate;
         return filterObj(param);
       },
-
+      /**重写导出方法**/
+      handleExportXls(fileName){
+        if(!fileName || typeof fileName != "string"){
+          fileName = "导出文件"
+        }
+        fileName = fileName + "_" + new Date().toLocaleString();
+        let param = this.getQueryParams();//查询条件
+        if(this.selectedRowKeys && this.selectedRowKeys.length>0){
+          param['selections'] = this.selectedRowKeys.join(",")
+        }
+        console.log("导出参数",param)
+        downFile(this.url.exportXlsUrl,param).then((data)=>{
+          if (!data) {
+            this.$message.warning("文件下载失败")
+            return
+          }
+          if (typeof window.navigator.msSaveBlob !== 'undefined') {
+            window.navigator.msSaveBlob(new Blob([data],{type: 'application/vnd.ms-excel'}), fileName+'.xls')
+          }else{
+            let url = window.URL.createObjectURL(new Blob([data],{type: 'application/vnd.ms-excel'}))
+            let link = document.createElement('a')
+            link.style.display = 'none'
+            link.href = url
+            link.setAttribute('download', fileName+'.xls')
+            document.body.appendChild(link)
+            link.click()
+            document.body.removeChild(link); //下载完成移除元素
+            window.URL.revokeObjectURL(url); //释放掉blob对象
+          }
+        })
+      },
     }
   }
 </script>

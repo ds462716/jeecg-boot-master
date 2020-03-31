@@ -1,5 +1,6 @@
 package org.jeecg.modules.pd.controller;
 
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -21,6 +22,7 @@ import org.jeecg.modules.pd.entity.PdStockRecordDetail;
 import org.jeecg.modules.pd.service.*;
 import org.jeecg.modules.pd.util.UUIDUtil;
 import org.jeecg.modules.pd.vo.PdGoodsAllocationPage;
+import org.jeecg.modules.pd.vo.PdStockRecordOutPage;
 import org.jeecg.modules.system.entity.SysDepart;
 import org.jeecg.modules.system.entity.SysPermission;
 import org.jeecg.modules.system.service.ISysDepartService;
@@ -297,41 +299,32 @@ public class PdStockRecordOutController {
      * @param pdStockRecord
      */
     @RequestMapping(value = "/exportXls")
-    public ModelAndView exportXls(HttpServletRequest request, PdStockRecord pdStockRecord) {
-        // Step.1 组装查询条件查询数据
-        QueryWrapper<PdStockRecord> queryWrapper = QueryGenerator.initQueryWrapper(pdStockRecord, request.getParameterMap());
+    public ModelAndView exportXls(HttpServletRequest request, PdStockRecordDetail pdStockRecordDetail) {
+        pdStockRecordDetail.setRecordType(PdConstant.RECODE_TYPE_2);
+        pdStockRecordDetail.setAuditStatus(PdConstant.AUDIT_STATE_2);
         LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        pdStockRecordDetail.setDepartParentId(sysUser.getDepartParentId());
 
-        //Step.2 获取导出数据
-        List<PdStockRecord> queryList = pdStockRecordService.list(queryWrapper);
-        // 过滤选中数据
-        String selections = request.getParameter("selections");
-        List<PdStockRecord> pdStockRecordList = new ArrayList<PdStockRecord>();
-        if (oConvertUtils.isEmpty(selections)) {
-            pdStockRecordList = queryList;
-        } else {
-            List<String> selectionList = Arrays.asList(selections.split(","));
-            pdStockRecordList = queryList.stream().filter(item -> selectionList.contains(item.getId())).collect(Collectors.toList());
+        if(oConvertUtils.isNotEmpty(pdStockRecordDetail.getInDepartIds()) && !"undefined".equals(pdStockRecordDetail.getInDepartIds())){
+            pdStockRecordDetail.setInDepartIdList(Arrays.asList(pdStockRecordDetail.getInDepartIds().split(",")));
+        }else{
+            //查询科室下所有下级科室的ID
+            SysDepart sysDepart=new SysDepart();
+            List<String> departList=pdDepartService.selectListDepart(sysDepart);
+            pdStockRecordDetail.setInDepartIdList(departList);
         }
 
-        // Step.3 组装pageList
-        List<PdStockRecord> pageList = new ArrayList<PdStockRecord>();
-        for (PdStockRecord main : pdStockRecordList) {
-            PdStockRecord vo = new PdStockRecord();
-            PdStockRecordDetail pdStockRecordDetail = new PdStockRecordDetail();
-            pdStockRecordDetail.setRecordId(main.getId());
-            BeanUtils.copyProperties(main, vo);
-            List<PdStockRecordDetail> pdStockRecordDetailList = pdStockRecordDetailService.selectByMainId(pdStockRecordDetail);
-            vo.setPdStockRecordDetailList(pdStockRecordDetailList);
-            pageList.add(vo);
-        }
+        List<PdStockRecordDetail> detailList =  pdStockRecordDetailService.selectList(pdStockRecordDetail);
+
+
+        List<PdStockRecordOutPage> exportList = JSON.parseArray(JSON.toJSONString(detailList), PdStockRecordOutPage.class);
 
         // Step.4 AutoPoi 导出Excel
         ModelAndView mv = new ModelAndView(new JeecgEntityExcelView());
-        mv.addObject(NormalExcelConstants.FILE_NAME, "出入库记录表列表");
-        mv.addObject(NormalExcelConstants.CLASS, PdStockRecord.class);
-        mv.addObject(NormalExcelConstants.PARAMS, new ExportParams("出入库记录表数据", "导出人:" + sysUser.getRealname(), "出入库记录表"));
-        mv.addObject(NormalExcelConstants.DATA_LIST, pageList);
+        mv.addObject(NormalExcelConstants.FILE_NAME, "出库记录表列表");
+        mv.addObject(NormalExcelConstants.CLASS, PdStockRecordOutPage.class);
+        mv.addObject(NormalExcelConstants.PARAMS, new ExportParams("出库记录表数据", "导出人:" + sysUser.getRealname(), "出库记录表"));
+        mv.addObject(NormalExcelConstants.DATA_LIST, exportList);
         return mv;
     }
 
