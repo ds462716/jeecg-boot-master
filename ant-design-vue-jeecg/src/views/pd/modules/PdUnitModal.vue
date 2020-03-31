@@ -6,6 +6,7 @@
     :confirmLoading="confirmLoading"
     @ok="handleOk"
     @cancel="handleCancel"
+    :maskClosable=disableSubmit
     cancelText="关闭">
     <a-spin :spinning="confirmLoading">
       <a-form :form="form">
@@ -49,6 +50,7 @@
         title:"操作",
         width:800,
         visible: false,
+        disableSubmit:false,
         model: {},
         unitId:"", // 单位ID
         labelCol: {
