@@ -16,4 +16,5 @@ public interface PdRejectedDetailMapper extends BaseMapper<PdRejectedDetail> {
 
     List<PdRejectedDetail> selectByMainId(PdRejectedDetail pdRejectedDetail);
 
+    List<PdRejectedDetail> selectList(PdRejectedDetail pdRejectedDetail);
 }

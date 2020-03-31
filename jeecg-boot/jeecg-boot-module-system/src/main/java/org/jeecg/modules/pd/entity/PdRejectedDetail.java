@@ -7,7 +7,6 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.jeecgframework.poi.excel.annotation.Excel;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.EqualsAndHashCode;
@@ -34,69 +33,55 @@ public class PdRejectedDetail extends BaseEntity {
     @ApiModelProperty(value = "id")
     private String id;
 	/**退货编号*/
-	@Excel(name = "退货ID", width = 15)
     @ApiModelProperty(value = "退货ID")
     private String rejectedId;
 	/**产品库存id*/
-	@Excel(name = "产品库存id", width = 15)
     @ApiModelProperty(value = "产品库存id")
     private String productStockId;
 	/**产品id*/
-	@Excel(name = "产品id", width = 15)
     @ApiModelProperty(value = "产品id")
     private String productId;
-    @Excel(name = "产品条码", width = 15)
     @ApiModelProperty(value = "产品条码")
 	private String productBarCode;
-    @Excel(name = "批号", width = 15)
     @ApiModelProperty(value = "批号")
     private String batchNo;
 	/**退货数量*/
-	@Excel(name = "退货数量", width = 15)
     @ApiModelProperty(value = "退货数量")
     private Double rejectedCount;
-    @Excel(name = "退货是库存数量", width = 15)
-    @ApiModelProperty(value = "退货是库存数量")
+    @ApiModelProperty(value = "退货时库存数量")
     private Double stockNum;
 	/**备注*/
-	@Excel(name = "备注", width = 15)
     @ApiModelProperty(value = "备注")
     private String remarks;
 	/**创建人*/
-	@Excel(name = "创建人", width = 15)
     @ApiModelProperty(value = "创建人")
     private String createBy;
 	/**创建日期*/
-	@Excel(name = "创建日期", width = 15, format = "yyyy-MM-dd")
 	@JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd")
     @DateTimeFormat(pattern="yyyy-MM-dd")
     @ApiModelProperty(value = "创建日期")
     private java.util.Date createTime;
 	/**更新人*/
-	@Excel(name = "更新人", width = 15)
     @ApiModelProperty(value = "更新人")
     private String updateBy;
 	/**更新日期*/
-	@Excel(name = "更新日期", width = 15, format = "yyyy-MM-dd")
 	@JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd")
     @DateTimeFormat(pattern="yyyy-MM-dd")
     @ApiModelProperty(value = "更新日期")
     private java.util.Date updateTime;
 	/**所属部门*/
-	@Excel(name = "所属部门", width = 15)
     @ApiModelProperty(value = "所属部门")
     private String sysOrgCode;
 	/**所属部门*/
-	@Excel(name = "所属部门", width = 15)
     @ApiModelProperty(value = "所属部门")
     private String departId;
 	/**所属父部门*/
-	@Excel(name = "所属父部门", width = 15)
     @ApiModelProperty(value = "所属父部门")
     private String departParentId;
-    @Excel(name = "货位Code", width = 15)
     private String huoweiCode;
 
+    @TableField(exist = false)
+    private String rejectedNo;
     @TableField(exist = false)
     private String spec;
     @TableField(exist = false)
@@ -104,11 +89,39 @@ public class PdRejectedDetail extends BaseEntity {
     @TableField(exist = false)
     private String huoweiName;
     @TableField(exist = false)
+    private String version;//产品型号
+    @TableField(exist = false)
     private String productName;
     @TableField(exist = false)
     private String productNumber;
+    @TableField(exist = false)
+    private String registration;//注册证号
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
     @DateTimeFormat(pattern="yyyy-MM-dd")
     @TableField(exist = false)
     private Date expDate;
+    @TableField(exist = false)
+    private String rejectedDate;
+    @TableField(exist = false)
+    @JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd")
+    @DateTimeFormat(pattern="yyyy-MM-dd")
+    private Date produceDate;
+    @TableField(exist = false)
+    private String venderId;//生产厂家ID
+    @TableField(exist = false)
+	private String supplierId;//供应商ID
+    @TableField(exist = false)
+    private String supplierName;
+    @TableField(exist = false)
+    private String venderName;//生产厂家名称
+    @TableField(exist = false)
+    private String departName;
+    @TableField(exist = false)
+    private String queryDateStart;
+    @TableField(exist = false)
+    private String queryDateEnd;
+    @TableField(exist = false)
+    private String queryExpDateStart;
+    @TableField(exist = false)
+    private String queryExpDateEnd;
 }

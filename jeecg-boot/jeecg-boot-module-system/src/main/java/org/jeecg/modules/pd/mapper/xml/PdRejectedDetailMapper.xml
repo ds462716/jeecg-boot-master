@@ -21,4 +21,88 @@
             a.rejected_id = #{rejectedId}
     </select>
 
+    <select id="selectList" parameterType="org.jeecg.modules.pd.entity.PdRejectedDetail" resultType="org.jeecg.modules.pd.entity.PdRejectedDetail">
+        SELECT
+            a.*,
+            b.rejected_no,
+            b.supplier_id,
+            b.rejected_date,
+            c.registration,
+            c.spec,
+            c.version,
+            c.NAME AS productName,
+            c.number AS productNumber,
+            d.exp_date,
+            d.produce_date,
+            e.NAME AS unitName,
+            f.NAME AS supplierName,
+            g.depart_name,
+            h.name as venderName
+        FROM
+            pd_rejected_detail a
+            LEFT JOIN pd_rejected b ON a.rejected_id = b.id
+            LEFT JOIN pd_product c ON a.product_id = c.id
+            LEFT JOIN pd_product_stock d ON a.product_stock_id = d.id
+            LEFT JOIN pd_unit e ON c.unit_id = e.id
+            LEFT JOIN pd_supplier f ON b.supplier_id = f.id
+            LEFT JOIN pd_vender h ON c.vender_id = h.id
+            LEFT JOIN sys_depart g ON b.depart_id = g.id
+        <where>
+            <if test="batchNo != null and batchNo != ''">
+                AND a.batch_no LIKE concat('%',#{batchNo},'%')
+            </if>
+            <if test="departId != null and departId != ''">
+                AND b.depart_id = #{departId}
+            </if>
+            <if test="departParentId != null and departParentId != ''">
+                AND b.depart_parent_id = #{departParentId}
+            </if>
+            <if test="supplierId != null and supplierId != ''">
+                AND b.supplier_id = #{supplierId}
+            </if>
+            <if test="queryDateStart != null and queryDateStart != ''">
+                AND b.rejected_date &gt;= #{queryDateStart}
+            </if>
+            <if test="queryDateEnd != null and queryDateEnd != ''">
+                AND b.rejected_date &lt;= #{queryDateEnd}
+            </if>
+            <if test="rejectedNo != null and rejectedNo != ''">
+                AND b.rejected_no LIKE concat('%',#{rejectedNo},'%')
+            </if>
+            <if test="productNumber != null and productNumber != ''">
+                AND c.number LIKE concat('%',#{productNumber},'%')
+            </if>
+            <if test="productName != null and productName != ''">
+                AND (
+                c.number LIKE concat('%',#{productName},'%')
+                or c.name LIKE concat('%',#{productName},'%')
+                or c.py LIKE concat('%',#{productName},'%')
+                or c.wb LIKE concat('%',#{productName},'%')
+                or c.bname LIKE concat('%',#{productName},'%')
+                or c.bpy LIKE concat('%',#{productName},'%')
+                or c.bwb LIKE concat('%',#{productName},'%')
+                or c.zdy LIKE concat('%',#{productName},'%')
+                )
+            </if>
+            <if test="spec != null and spec != ''">
+                AND c.spec LIKE concat('%',#{spec},'%')
+            </if>
+            <if test="version != null and version != ''">
+                AND c.version LIKE concat('%',#{version},'%')
+            </if>
+            <if test="registration != null and registration != ''">
+                AND c.registration LIKE concat('%',#{registration},'%')
+            </if>
+            <if test="venderId != null and venderId != ''">
+                AND c.vender_id = #{venderId}
+            </if>
+            <if test="queryExpDateStart != null and queryExpDateStart != ''">
+                AND d.exp_date &gt;= #{queryExpDateStart}
+            </if>
+            <if test="queryExpDateEnd != null and queryExpDateEnd != ''">
+                AND d.exp_date &lt;= #{queryExpDateEnd}
+            </if>
+        </where>
+        order by b.rejected_date desc
+    </select>
 </mapper>

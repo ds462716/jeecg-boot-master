@@ -10,10 +10,12 @@ import java.net.URLDecoder;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.PdConstant;
 import org.jeecg.common.system.query.QueryGenerator;
+import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.pd.entity.PdRejected;
 import org.jeecg.modules.pd.entity.PdRejectedDetail;
@@ -26,6 +28,8 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
 
 import org.jeecg.modules.pd.util.UUIDUtil;
+import org.jeecg.modules.pd.vo.PdRejectedPage;
+import org.jeecg.modules.system.entity.SysDepart;
 import org.jeecgframework.poi.excel.ExcelImportUtil;
 import org.jeecgframework.poi.excel.def.NormalExcelConstants;
 import org.jeecgframework.poi.excel.entity.ExportParams;
@@ -184,15 +188,48 @@ public class PdRejectedController extends JeecgController<PdRejected, IPdRejecte
     }
 
     /**
+     * 报表：院外退货明细查询
+     * @return
+     */
+    @GetMapping(value = "/queryPdRejectedOutList")
+    public Result<?> queryPdRejectedOutList(PdRejectedDetail pdRejectedDetail,
+                                            @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
+                                            @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
+                                            HttpServletRequest req) {
+
+        Page<PdRejectedDetail> page = new Page<PdRejectedDetail>(pageNo, pageSize);
+
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        pdRejectedDetail.setDepartParentId(sysUser.getDepartParentId());
+
+        Page<PdRejectedDetail> list = pdRejectedDetailService.selectList(page,pdRejectedDetail);
+
+        return Result.ok(list);
+    }
+
+    /**
      * 导出excel
      *
      * @param request
-     * @param pdRejected
+     * @param pdRejectedDetail
      */
     @RequestMapping(value = "/exportXls")
-    public ModelAndView exportXls(HttpServletRequest request, PdRejected pdRejected) {
-        return super.exportXls(request, pdRejected, PdRejected.class, "pd_rejected");
+    public ModelAndView exportXls(HttpServletRequest request, PdRejectedDetail pdRejectedDetail) {
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        pdRejectedDetail.setDepartParentId(sysUser.getDepartParentId());
+
+        List<PdRejectedDetail> detailList =  pdRejectedDetailService.selectList(pdRejectedDetail);
+        List<PdRejectedPage> exportList = JSON.parseArray(JSON.toJSONString(detailList), PdRejectedPage.class);
+
+        // Step.4 AutoPoi 导出Excel
+        ModelAndView mv = new ModelAndView(new JeecgEntityExcelView());
+        mv.addObject(NormalExcelConstants.FILE_NAME, "院外退货明细表");
+        mv.addObject(NormalExcelConstants.CLASS, PdRejectedPage.class);
+        mv.addObject(NormalExcelConstants.PARAMS, new ExportParams("院外退货明细表数据", "导出人:" + sysUser.getRealname(), "院外退货明细表"));
+        mv.addObject(NormalExcelConstants.DATA_LIST, exportList);
+        return mv;
     }
+
 
     /**
      * 通过excel导入数据

@@ -209,24 +209,6 @@ public class PdStockRecordInController {
         }
     }
 
-//    /**
-//     * 编辑
-//     *
-//     * @param PdStockRecord
-//     * @return
-//     */
-//    @PutMapping(value = "/edit")
-//    public Result<?> edit(@RequestBody PdStockRecord PdStockRecord) {
-////		PdStockRecord pdStockRecord = new PdStockRecord();
-////		BeanUtils.copyProperties(PdStockRecord, pdStockRecord);
-////		PdStockRecord pdStockRecordEntity = pdStockRecordService.getById(pdStockRecord.getId());
-////		if(pdStockRecordEntity==null) {
-////			return Result.error("未找到对应数据");
-////		}
-////		pdStockRecordService.updateMain(pdStockRecord, PdStockRecord.getPdStockRecordDetailList());
-//        return Result.ok("编辑成功!");
-//    }
-
     /**
      * 通过id删除
      *
@@ -318,52 +300,12 @@ public class PdStockRecordInController {
 
         // Step.4 AutoPoi 导出Excel
         ModelAndView mv = new ModelAndView(new JeecgEntityExcelView());
-        mv.addObject(NormalExcelConstants.FILE_NAME, "入库记录表列表");
+        mv.addObject(NormalExcelConstants.FILE_NAME, "入库记录表");
         mv.addObject(NormalExcelConstants.CLASS, PdStockRecordInPage.class);
         mv.addObject(NormalExcelConstants.PARAMS, new ExportParams("入库记录表数据", "导出人:" + sysUser.getRealname(), "入库记录表"));
         mv.addObject(NormalExcelConstants.DATA_LIST, exportList);
         return mv;
     }
-
-    /**
-     * 通过excel导入数据
-     *
-     * @param request
-     * @param response
-     * @return
-     */
-    @RequestMapping(value = "/importExcel", method = RequestMethod.POST)
-    public Result<?> importExcel(HttpServletRequest request, HttpServletResponse response) {
-        MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
-        Map<String, MultipartFile> fileMap = multipartRequest.getFileMap();
-        for (Map.Entry<String, MultipartFile> entity : fileMap.entrySet()) {
-            MultipartFile file = entity.getValue();// 获取上传文件对象
-            ImportParams params = new ImportParams();
-            params.setTitleRows(2);
-            params.setHeadRows(1);
-            params.setNeedSave(true);
-            try {
-                List<PdStockRecord> list = ExcelImportUtil.importExcel(file.getInputStream(), PdStockRecord.class, params);
-                for (PdStockRecord page : list) {
-                    PdStockRecord po = new PdStockRecord();
-                    BeanUtils.copyProperties(page, po);
-                    pdStockRecordService.saveMain(po, page.getPdStockRecordDetailList(), PdConstant.RECODE_TYPE_1);
-                }
-                return Result.ok("文件导入成功！数据行数:" + list.size());
-            } catch (Exception e) {
-                log.error(e.getMessage(), e);
-                return Result.error("文件导入失败:" + e.getMessage());
-            } finally {
-                try {
-                    file.getInputStream().close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-        return Result.ok("文件导入失败！");
-    }
-
 
     /**
      * 查询入库明细  mcb  --20200224 用于统计查询

@@ -88,10 +88,12 @@ public class PdRejected extends BaseEntity {
     private String supplierName;
     @TableField(exist = false)
     private String departName;
-    /** 查询日期起始 **/
     @TableField(exist = false)
     private String queryDateStart;
-    /** 查询日期结束 **/
     @TableField(exist = false)
     private String queryDateEnd;
+    @TableField(exist = false)
+    private String queryExpDateStart;
+    @TableField(exist = false)
+    private String queryExpDateEnd;
 }
