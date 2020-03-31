@@ -1,17 +1,11 @@
 package org.jeecg.modules.pd.vo;
 
-import java.math.BigDecimal;
-import java.util.List;
-
-import com.baomidou.mybatisplus.annotation.TableField;
-import org.jeecg.modules.pd.entity.PdStockRecord;
-import org.jeecg.modules.pd.entity.PdStockRecordDetail;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import org.jeecgframework.poi.excel.annotation.Excel;
-import org.jeecgframework.poi.excel.annotation.ExcelEntity;
-import org.jeecgframework.poi.excel.annotation.ExcelCollection;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import org.springframework.format.annotation.DateTimeFormat;
+
+import java.math.BigDecimal;
 import java.util.Date;
 
 /**
@@ -21,17 +15,19 @@ import java.util.Date;
  * @Version: V1.0
  */
 @Data
-public class PdStockRecordInPage {
+public class PdStockRecordOutPage {
 
 	/**主键*/
 	private String id;
 	/**出入库单号*/
-	@Excel(name = "入库单号", width = 15)
+	@Excel(name = "出库单号", width = 15)
 	private String recordNo;
 	@JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd")
 	@DateTimeFormat(pattern="yyyy-MM-dd")
-	@Excel(name = "入库日期", width = 15, format = "yyyy-MM-dd")
+	@Excel(name = "出库日期", width = 15, format = "yyyy-MM-dd")
 	private Date auditDate;
+	@Excel(name = "出库科室", width = 15)
+	private String outDepartName;//出库科室名称
 	@Excel(name = "入库科室", width = 15)
 	private String inDepartName;//入库科室名称
 	@Excel(name = "产品编号", width = 15)
@@ -54,7 +50,7 @@ public class PdStockRecordInPage {
 	@DateTimeFormat(pattern="yyyy-MM-dd")
 	@Excel(name = "有效期", width = 15, format = "yyyy-MM-dd")
 	private Date expDate;
-	@Excel(name = "入库数量", width = 15)
+	@Excel(name = "出库数量", width = 15)
 	private Double productNum;
 	@Excel(name = "单位", width = 15)
 	private String unitName;//单位名称
@@ -62,6 +58,10 @@ public class PdStockRecordInPage {
 	private BigDecimal purchasePrice;
 	@Excel(name = "入库金额", width = 15)
 	private BigDecimal inTotalPrice;
+	@Excel(name = "出库单价", width = 15)
+	private BigDecimal sellingPrice;
+	@Excel(name = "出库金额", width = 15)
+	private BigDecimal outTotalPrice;
 	@Excel(name = "生产厂家", width = 15)
 	private String venderName;//生产厂家名称
 	@Excel(name = "供应商", width = 15)
@@ -70,8 +70,8 @@ public class PdStockRecordInPage {
 	private String registration;//注册证号
 	@Excel(name = "备注", width = 15)
 	private String remarks;
-	@Excel(name = "入库类型", width = 15,dicCode = "in_type")
-	private String inType;
+	@Excel(name = "出库类型", width = 15,dicCode = "out_type")
+	private String outType;
 	@Excel(name = "JDE编号", width = 15)
 	private String jdeCode;
 	@Excel(name = "操作人", width = 15)

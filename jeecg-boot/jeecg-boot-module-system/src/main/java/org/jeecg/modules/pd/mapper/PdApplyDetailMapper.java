@@ -20,6 +20,8 @@ public interface PdApplyDetailMapper extends BaseMapper<PdApplyDetail> {
 
 	public List<PdApplyDetail> selectByApplyNo(PdApplyDetail applyDetail);
 
+	public List<PdApplyDetail> queryApplyDetailPack(PdApplyDetail applyDetail);
+
 	/**
 	 * 增加发货数量 用于出库保存/提交 add by jiangxz 20200309
 	 *
