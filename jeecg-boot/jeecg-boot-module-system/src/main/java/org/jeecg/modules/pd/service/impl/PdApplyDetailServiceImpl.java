@@ -25,4 +25,9 @@ public class PdApplyDetailServiceImpl extends ServiceImpl<PdApplyDetailMapper, P
 	public List<PdApplyDetail> selectByApplyNo(PdApplyDetail applyDetail) {
 		return pdApplyDetailMapper.selectByApplyNo(applyDetail);
 	}
+
+	@Override
+	public List<PdApplyDetail> queryApplyDetailPack(PdApplyDetail applyDetail) {
+		return pdApplyDetailMapper.queryApplyDetailPack(applyDetail);
+	}
 }

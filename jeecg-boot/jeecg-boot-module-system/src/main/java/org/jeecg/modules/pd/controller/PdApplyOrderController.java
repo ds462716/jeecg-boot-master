@@ -293,6 +293,18 @@ public class PdApplyOrderController {
 		 return Result.ok(pdApplyDetailList);
 	 }
 
+	 /**
+	  * 通过申领单号查询定数包明细
+	  *
+	  * @param applyDetail
+	  * @return
+	  */
+	 @GetMapping(value = "/queryApplyDetailPack")
+	 public Result<?> queryApplyDetailPack(PdApplyDetail   applyDetail) {
+		 List<PdApplyDetail> pdApplyDetailList = pdApplyDetailService.queryApplyDetailPack(applyDetail);
+		 return Result.ok(pdApplyDetailList);
+	 }
+
     /**
 	 * 导出excel
 	 *
