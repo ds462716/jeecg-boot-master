@@ -13,13 +13,13 @@
           <a-col :span="6">
             <a-form-item label="出库库房">
               <a-select
-
+                mode="multiple"
                 showSearch
                 placeholder="请选择出库库房"
                 :supplierId="departValue"
                 :defaultActiveFirstOption="false"
                 :showArrow="true"
-                :filterOption="false"mode="multiple"
+                :filterOption="false"
                 @search="departHandleSearch"
                 @focus="departHandleSearch"
                 :notFoundContent="notFoundContent"
