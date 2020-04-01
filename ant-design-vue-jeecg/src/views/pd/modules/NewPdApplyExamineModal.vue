@@ -62,10 +62,35 @@
                 :dataSource="pdApplyDetailTable.dataSource"
                 :maxHeight="500"
                 :rowNumber="true"
-                :rowSelection="true"
+                :rowSelection="false"
                 :actionButton="false"
                 style="text-overflow: ellipsis;"
               />
+
+
+              <span style="padding-left: 8px;"></span>
+              <a-table
+                ref="table"
+                bordered
+                rowKey="packageId"
+                :columns="table2.columns"
+                :dataSource="table2.dataSource"
+                :loading="pdApplyDetailTable.loading"
+                :expandedRowKeys= "expandedRowKeys"
+                 @expand="handleExpand">
+
+                <a-table
+                  slot="expandedRowRender"
+                  slot-scope="text"
+                  :columns="innerColumns"
+                  :dataSource="innerData"
+                  size="middle"
+                  bordered
+                  rowKey="purchaseDetailId"
+                  :pagination="false"
+                  :loading="subloading">
+                </a-table>
+              </a-table>
             </a-tab-pane>
           </a-tabs>
         </a-card>
@@ -105,9 +130,14 @@
   import JDictSelectTag from "@/components/dict/JDictSelectTag"
   import PdApplyStockRecordOutModal from './PdStockRecordOutModal'
   import PdApplyOrderPrintModal from '../print/PdApplyOrderPrintModal'
+
+
+ import { JeecgListMixin } from '@/mixins/JeecgListMixin'
+
+
   export default {
-    name: 'PdApplyOrderModal',
-    mixins: [JEditableTableMixin],
+    name: 'NewPdApplyOrderModal',
+    mixins: [JEditableTableMixin,JeecgListMixin],
     components: {
       JDate,
       JDictSelectTag,
@@ -125,6 +155,9 @@
         wrapperCol: {span: 16},
         labelCol2: {span: 3},
         wrapperCol2: {span: 20},
+        innerData:[],
+        expandedRowKeys:[],
+        subloading:false,
         validatorRules: {
           applyNo:{},
           deptName:{},
@@ -155,17 +188,64 @@
             { title: '库存数量',  key: 'stockNum' },
           ]
         },
+
+        // 表头
+        table2:{
+          dataSource:[],
+          columns: [
+            {title: '#', dataIndex: 'packageId', key:'rowIndex', width:60, align:"center",
+              customRender:function (t,r,index) {
+                return parseInt(index)+1;
+              }
+            },
+            {title:'定数包编号', align:"center",key:"packageCode", dataIndex: 'packageCode'},
+            {title:'定数包名称', align:"center", key:"packageName",dataIndex: 'packageName'},
+            {title:'产品总数', align:"center", key:"packageNum",dataIndex: 'packageNum'},
+            {title:'申领数量', align:"center",key:"applyNum",width: 100, dataIndex: 'applyNum',},
+            {title:'备注', align:"center", key:"remarks",dataIndex: 'remarks'}
+          ]
+        },
+        innerColumns:[
+          {title:'定数包编号', align:"center", width: 100, dataIndex: 'code'},
+          {title:'定数包名称', align:"center", width: 100, dataIndex: 'name'},
+          {title:'定数包产品数量', align:"center", width: 100, dataIndex: 'count'},
+          {title:'产品编号', align:"center", width: 100, dataIndex: 'number'},
+          {title:'产品名称', align:"center", dataIndex: 'productName'},
+          {title:'规格', align:"center", dataIndex: 'spec'},
+          {title:'型号', align:"center", dataIndex: 'version'},
+          {title:'单位', align:"center", dataIndex: 'unitName'},
+          /*{title:'库存数量', align:"center", dataIndex: 'stockNum'},*/
+        ],
         url: {
           edit: "/pd/pdApplyOrder/editApplyInf",
           exportXlsUrl: "/pd/pdApplyOrder/exportXls",
+          chooseDetailList:"/pd/pdPackage/queryPdPackageDetailList",
           pdApplyDetail: {
-            list: '/pd/pdApplyOrder/queryApplyDetail'
+            list: '/pd/pdApplyOrder/queryApplyDetail',
+            packList: '/pd/pdApplyOrder/queryApplyDetailPack'
           },
         },
 
       }
     },
     methods: {
+      loadData(arg) {
+      },
+
+      handleExpand(expanded, record){
+        this.expandedRowKeys=[];
+        this.innerData=[];
+        if(expanded===true){
+          this.subloading = true;
+          this.expandedRowKeys.push(record.packageId);
+          getAction(this.url.chooseDetailList, {packageId: record.packageId}).then((res) => {
+            if (res.success) {
+              this.subloading = false;
+              this.innerData = res.result;
+            }
+          });
+        }
+      },
       /* 导出 */
       exportXls(fileName){
         if(!fileName || typeof fileName != "string"){
@@ -222,6 +302,7 @@
           if (!err) {
             const that = this;
             let pdPurchaseDetailList = this.pdApplyDetailTable.dataSource;
+          return;
             let values = [];
             values.pdApplyDetailList = pdPurchaseDetailList;
             let formData = Object.assign(this.model, values);
@@ -249,6 +330,19 @@
           })
 
       },
+
+
+
+ //--------------
+      editLound(){
+          let params = {applyNo: this.model.applyNo}
+           this.requestSubTableData(this.url.pdApplyDetail.list, params, this.pdApplyDetailTable)//加载产品及定数包明细
+      },
+ //---------------
+
+
+
+
       /** 调用完edit()方法之后会自动调用此方法 */
       editAfter() {
         let fieldval = pick(this.model,'applyNo','deptName','totalNum','applyDate','realName','remarks','refuseReason')
@@ -257,8 +351,12 @@
         })
         // 加载子表数据
         if (this.model.id) {
-          let params = { applyNo: this.model.applyNo }
-          this.requestSubTableData(this.url.pdApplyDetail.list, params, this.pdApplyDetailTable)
+          let params = {applyNo: this.model.applyNo,productAttr:"1"}
+          this.requestSubTableData(this.url.pdApplyDetail.list, params, this.pdApplyDetailTable)//加载产品
+          params =  {applyNo: this.model.applyNo,productAttr:"2" }
+          this.requestSubTableData(this.url.pdApplyDetail.packList, params, this.table2)//加载定数包
+
+
         }
       },
       /** 整理成formData */

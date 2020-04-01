@@ -155,8 +155,8 @@ public class IndexChartController {
         SysDepart depart=new SysDepart();
         List<String> departList=pdDepartService.selectListDepart(depart);
         PdPurchaseOrderPage purchaseOrderPage=new  PdPurchaseOrderPage();
-        //purchaseOrderPage.setDepartIdList(departList);
-        //purchaseOrderPage.setDepartParentId(sysUser.getDepartParentId());
+        purchaseOrderPage.setDepartIdList(departList);
+        purchaseOrderPage.setDepartParentId(sysUser.getDepartParentId());
         //根据日期统计每日的采购量
         orderDate=pdPurchaseOrderService.queryPurchaseOrderDateList(purchaseOrderPage);
         map.put("orderDate",orderDate);
@@ -178,8 +178,8 @@ public class IndexChartController {
         SysDepart depart=new SysDepart();
         List<String> departList=pdDepartService.selectListDepart(depart);
         PdApplyOrderPage applyOrderPage=new  PdApplyOrderPage();
-        //pdApplyOrderPage.setDepartIdList(departList);
-        //pdApplyOrderPage.setDepartParentId(sysUser.getDepartParentId());
+        applyOrderPage.setDepartIdList(departList);
+        applyOrderPage.setDepartParentId(sysUser.getDepartParentId());
         //根据日期统计每日的申领量
         applyDate=pdApplyOrderService.queryApplyOrderDateList(applyOrderPage);
         map.put("applyDate",applyDate);
@@ -201,8 +201,8 @@ public class IndexChartController {
         SysDepart depart=new SysDepart();
         List<String> departList=pdDepartService.selectListDepart(depart);
         PdDosage dosage=new  PdDosage();
-        //dosage.setDepartIdList(departList);
-        //dosage.setDepartParentId(sysUser.getDepartParentId());
+        dosage.setDepartIdList(departList);
+        dosage.setDepartParentId(sysUser.getDepartParentId());
         //根据日期统计每日的使用数量
         dosageDate=dosageService.queryPdDosageDateList(dosage);
         map.put("dosageDate",dosageDate);
@@ -223,8 +223,8 @@ public class IndexChartController {
         SysDepart depart=new SysDepart();
         List<String> departList=pdDepartService.selectListDepart(depart);
         PdProductStock productStock=new  PdProductStock();
-        //productStock.setDepartIdList(departList);
-        //productStock.setDepartParentId(sysUser.getDepartParentId());
+        productStock.setDepartIdList(departList);
+        productStock.setDepartParentId(sysUser.getDepartParentId());
         //根据日期统计每日的入库数量
         stockDate=pdProductStockService.queryStockDateList(productStock);
         map.put("stockDate",stockDate);
@@ -248,23 +248,23 @@ public class IndexChartController {
         List<String> departList=pdDepartService.selectListDepart(depart);
         if("purchase".equals(type)){//采购耗材分类统计
             PdPurchaseOrderPage purchaseOrderPage=new  PdPurchaseOrderPage();
-            //purchaseOrderPage.setDepartIdList(departList);
-            //purchaseOrderPage.setDepartParentId(sysUser.getDepartParentId());
+            purchaseOrderPage.setDepartIdList(departList);
+            purchaseOrderPage.setDepartParentId(sysUser.getDepartParentId());
             orderCountDate=pdPurchaseOrderService.queryPurchaseOrderTotalList(purchaseOrderPage);
         }else if("apply".equals(type)){//申领耗材分类统计
             PdApplyOrderPage applyOrderPage=new  PdApplyOrderPage();
-            //applyOrderPage.setDepartIdList(departList);
-            //applyOrderPage.setDepartParentId(sysUser.getDepartParentId());
+            applyOrderPage.setDepartIdList(departList);
+            applyOrderPage.setDepartParentId(sysUser.getDepartParentId());
             orderCountDate=pdApplyOrderService.queryApplyOrderTotalList(applyOrderPage);
         }else if("dosage".equals(type)){//耗材使用量分类统计
             PdDosage dosage=new  PdDosage();
-             //dosage.setDepartIdList(departList);
-             //dosage.setDepartParentId(sysUser.getDepartParentId());
+             dosage.setDepartIdList(departList);
+             dosage.setDepartParentId(sysUser.getDepartParentId());
             orderCountDate=dosageService.queryPurchaseOrderTotalList(dosage);
         }else {//库存耗材分类统计
             PdProductStock  stock =new  PdProductStock();
-            //stock.setDepartIdList(departList);
-            //stock.setDepartParentId(sysUser.getDepartParentId());
+            stock.setDepartIdList(departList);
+            stock.setDepartParentId(sysUser.getDepartParentId());
             orderCountDate=pdProductStockService.queryStockTotalList(stock);
         }
         map.put("orderCountDate",orderCountDate);

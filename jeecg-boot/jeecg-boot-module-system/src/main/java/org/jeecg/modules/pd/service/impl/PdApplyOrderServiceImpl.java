@@ -3,12 +3,15 @@ package org.jeecg.modules.pd.service.impl;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.ibatis.session.SqlSession;
 import org.jeecg.modules.pd.entity.PdApplyDetail;
 import org.jeecg.modules.pd.entity.PdApplyOrder;
+import org.jeecg.modules.pd.entity.PdPackageDetail;
 import org.jeecg.modules.pd.mapper.PdApplyDetailMapper;
 import org.jeecg.modules.pd.mapper.PdApplyOrderMapper;
 import org.jeecg.modules.pd.service.IPdApplyOrderService;
+import org.jeecg.modules.pd.service.IPdPackageDetailService;
 import org.jeecg.modules.pd.vo.PdApplyOrderPage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -33,6 +36,9 @@ public class PdApplyOrderServiceImpl extends ServiceImpl<PdApplyOrderMapper, PdA
 	private PdApplyDetailMapper pdApplyDetailMapper;
 	@Autowired
 	private SqlSession sqlSession;
+	@Autowired
+	private IPdPackageDetailService packageDetailService;
+
 
 
 	/**
@@ -57,35 +63,28 @@ public class PdApplyOrderServiceImpl extends ServiceImpl<PdApplyOrderMapper, PdA
 		PdApplyDetailMapper dao=sqlSession.getMapper(PdApplyDetailMapper.class);
 		if(pdApplyDetailList!=null && pdApplyDetailList.size()>0) {
 			for(PdApplyDetail entity:pdApplyDetailList) {
-//------------------------
-				/*if(StringUtils.isEmpty(entity.getPackageId())){
-					entity.setApplyNo(pdApplyOrder.getApplyNo());
-					entity.setProductId(pad.getProdId());
-					entity.setNumber(pad.getProdNo());
-					entity.setApplyCount(pad.getApplyCount());
-					prodNum = prodNum + Integer.valueOf(pad.getApplyCount());
-					tempArray.add(pad);
-				}else{
-					List<PdProductMPackage> pmpList = pdProductMPackageDao.getProdListByPackageId(UserUtils.getUser().getStoreroomId(),null, pad.getPackageId());
-					for(PdProductMPackage ppmp : pmpList){
+				if(StringUtils.isNotEmpty(entity.getPackageId())){
+					List<PdPackageDetail> pmpList = packageDetailService.selectByMainId(entity.getPackageId());
+ 					for(PdPackageDetail ppmp : pmpList){
 						PdApplyDetail pd = new PdApplyDetail();
-						pd.preInsert();
 						pd.setApplyNo(pdApplyOrder.getApplyNo());
-						pd.setPackageId(pad.getPackageId());
-						pd.setProdId(ppmp.getProductId());
-						pd.setProdNo(ppmp.getPdProduct().getNumber());
-						packProdNum = packProdNum + Integer.valueOf(pad.getPackageCount()) * ppmp.getProductCount();
-						pd.setPackageCount(pad.getPackageCount());
-						pd.setApplyCount(pad.getPackageCount() * ppmp.getProductCount());
-						pd.setStockNum(Integer.valueOf(ppmp.getStockNum()));
-						tempArray.add(pd);
-					}
-				}*/
-//--------------------------
-				//外键设置
-				entity.setApplyNo(pdApplyOrder.getApplyNo());
-				dao.insert(entity);
-				//pdApplyDetailMapper.insert(entity);
+						pd.setPackageId(entity.getPackageId());
+						pd.setPackageCode(entity.getPackageCode());
+						pd.setPackageName(entity.getPackageName());
+						pd.setProductId(ppmp.getProductId());
+					    Double packProdNum = entity.getApplyNum() * ppmp.getCount();
+						pd.setApplyNum(packProdNum);
+						pd.setStockNum( ppmp.getStockNum());
+						pd.setProductAttr("2");
+						dao.insert(pd);
+				    }
+				}else{
+					//外键设置
+					entity.setApplyNo(pdApplyOrder.getApplyNo());
+					entity.setProductAttr("1");
+					entity.setId(null);
+					dao.insert(entity);
+				}
 			}
 		}
 	}
@@ -100,10 +99,28 @@ public class PdApplyOrderServiceImpl extends ServiceImpl<PdApplyOrderMapper, PdA
 		PdApplyDetailMapper dao=sqlSession.getMapper(PdApplyDetailMapper.class);
 		if(pdApplyDetailList!=null && pdApplyDetailList.size()>0) {
 			for(PdApplyDetail entity:pdApplyDetailList) {
-				//外键设置
-				entity.setApplyNo(pdApplyOrder.getApplyNo());
-				dao.insert(entity);
-				//pdApplyDetailMapper.insert(entity);
+				if(StringUtils.isNotEmpty(entity.getPackageId())){
+					List<PdPackageDetail> pmpList = packageDetailService.selectByMainId(entity.getPackageId());
+					for(PdPackageDetail ppmp : pmpList){
+						PdApplyDetail pd = new PdApplyDetail();
+						pd.setApplyNo(pdApplyOrder.getApplyNo());
+						pd.setPackageId(entity.getPackageId());
+						pd.setPackageCode(entity.getPackageCode());
+						pd.setPackageName(entity.getPackageName());
+						pd.setProductId(ppmp.getProductId());
+						Double packProdNum = entity.getApplyNum() * ppmp.getCount();
+						pd.setApplyNum(packProdNum);
+						pd.setStockNum( ppmp.getStockNum());
+						pd.setProductAttr("2");
+						dao.insert(pd);
+					}
+				}else{
+					//外键设置
+					entity.setApplyNo(pdApplyOrder.getApplyNo());
+					entity.setProductAttr("1");
+					entity.setId(null);
+					dao.insert(entity);
+				}
 			}
 		}
 	}

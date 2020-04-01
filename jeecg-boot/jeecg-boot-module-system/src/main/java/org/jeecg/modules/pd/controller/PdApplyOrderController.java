@@ -181,28 +181,6 @@ public class PdApplyOrderController {
 			return Result.error("未找到对应数据");
 		}
 		String applyStatus=pdApplyOrder.getAuditStatus();//审核状态
-		if(StringUtils.isNotEmpty(applyStatus)) {
-			if ((PdConstant.AUDIT_STATE_2).equals(applyStatus) || (PdConstant.AUDIT_STATE_3).equals(applyStatus)) {
-				LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
-				//判断申领数量不能大于出库科室的当前库存数量；
-				Integer code = 200;
-				Result result = null;
-				if ((PdConstant.AUDIT_STATE_2).equals(applyStatus)) { //如果是审核通过，就查询当前科室下的
-					String departId = sysUser.getCurrentDepartId();
-					result = this.queryStock(departId, pdApplyOrderPage.getPdApplyDetailList());
-					code = result.getCode();
-				} else if ((PdConstant.AUDIT_STATE_1).equals(applyStatus)) {//如果是申领科室，就查询上级科室下的库存
-					SysDepart sysDepart = sysDepartService.queryDepartByOrgCode(sysUser.getOrgCode());
-					result = this.queryStock(sysDepart.getParentId(), pdApplyOrderPage.getPdApplyDetailList());
-					code = result.getCode();
-				}
-				if (code != 200) {
-					return Result.error(result.getMessage() + "库存数量不足");
-				}
-				pdApplyOrder.setAuditBy(sysUser.getId());
-				pdApplyOrder.setAuditDate(new Date());
-			}
-		}
 		pdApplyOrderService.updateMain(pdApplyOrder, pdApplyOrderPage.getPdApplyDetailList());
 		if(StringUtils.isNotEmpty(applyStatus)) {
 		if (PdConstant.AUDIT_STATE_1.equals(applyStatus) && pdApplyOrderPage.getSubmitStatus().equals(PdConstant.SUBMIT_STATE_2)) {//如果是已提交
@@ -211,6 +189,49 @@ public class PdApplyOrderController {
 		}
 		return Result.ok("操作成功!");
 	}
+
+
+
+	 /**
+	  *  审核
+	  *
+	  * @param pdApplyOrderPage
+	  * @return
+	  */
+	 @PutMapping(value = "/editApplyInf")
+	 public Result<?> editApplyInf(@RequestBody PdApplyOrderPage pdApplyOrderPage) {
+		 PdApplyOrder pdApplyOrder = new PdApplyOrder();
+		 BeanUtils.copyProperties(pdApplyOrderPage, pdApplyOrder);
+		 PdApplyOrder pdApplyOrderEntity = pdApplyOrderService.getById(pdApplyOrder.getId());
+		 if(pdApplyOrderEntity==null) {
+			 return Result.error("未找到对应数据");
+		 }
+		 String applyStatus=pdApplyOrder.getAuditStatus();//审核状态
+		 if(StringUtils.isNotEmpty(applyStatus)) {
+			 if ((PdConstant.AUDIT_STATE_2).equals(applyStatus) || (PdConstant.AUDIT_STATE_3).equals(applyStatus)) {
+				 LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+				 //判断申领数量不能大于出库科室的当前库存数量；
+				 Integer code = 200;
+				 Result result = null;
+				 if ((PdConstant.AUDIT_STATE_2).equals(applyStatus)) { //如果是审核通过，就查询当前科室下的
+					 String departId = sysUser.getCurrentDepartId();
+					 result = this.queryStock(departId, pdApplyOrderPage.getPdApplyDetailList());
+					 code = result.getCode();
+				 } else if ((PdConstant.AUDIT_STATE_1).equals(applyStatus)) {//如果是申领科室，就查询上级科室下的库存
+					 SysDepart sysDepart = sysDepartService.queryDepartByOrgCode(sysUser.getOrgCode());
+					 result = this.queryStock(sysDepart.getParentId(), pdApplyOrderPage.getPdApplyDetailList());
+					 code = result.getCode();
+				 }
+				 if (code != 200) {
+					 return Result.error(result.getMessage() + "库存数量不足");
+				 }
+				 pdApplyOrder.setAuditBy(sysUser.getId());
+				 pdApplyOrder.setAuditDate(new Date());
+			 }
+		 }
+		 pdApplyOrderService.updateById(pdApplyOrder);
+		 return Result.ok("审核成功!");
+	 }
 
 
 	/*判断出库科室库存*/
