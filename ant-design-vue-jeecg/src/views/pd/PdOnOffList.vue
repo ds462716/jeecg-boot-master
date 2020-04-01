@@ -109,6 +109,11 @@
             dataIndex: 'value'
           },
           {
+            title:'备注',
+            align:"center",
+            dataIndex: 'remarks'
+          },
+          {
             title:'描述',
             align:"center",
             dataIndex: 'description'

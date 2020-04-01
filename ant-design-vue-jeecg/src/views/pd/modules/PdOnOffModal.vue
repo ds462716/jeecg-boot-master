@@ -21,6 +21,9 @@
         <a-form-item label="描述" :labelCol="labelCol" :wrapperCol="wrapperCol">
           <a-input v-decorator="[ 'description', validatorRules.description]" placeholder="请输入描述"></a-input>
         </a-form-item>
+        <a-form-item label="备注" :labelCol="labelCol" :wrapperCol="wrapperCol">
+          <a-input v-decorator="[ 'remarks', validatorRules.remarks]" placeholder="请输入备注"></a-input>
+        </a-form-item>
       </a-form>
     </a-spin>
   </a-modal>
@@ -93,7 +96,7 @@
           this.isEdit = true;
         }
         this.$nextTick(() => {
-          this.form.setFieldsValue(pick(this.model,'name','code','description','value'))
+          this.form.setFieldsValue(pick(this.model,'name','code','description','value','remarks'))
         })
       },
       close () {
@@ -136,7 +139,7 @@
         this.close()
       },
       popupCallback(row){
-        this.form.setFieldsValue(pick(row,'name','code','description','value'))
+        this.form.setFieldsValue(pick(row,'name','code','description','value','remarks'))
       },
       validateCode(rule, value, callback){
         let params = {

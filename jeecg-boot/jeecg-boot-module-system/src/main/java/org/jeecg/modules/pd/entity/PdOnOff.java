@@ -43,6 +43,9 @@ public class PdOnOff extends BaseEntity {
 	/**删除状态*/
     @ApiModelProperty(value = "值")
     private Integer value;
+    /**备注*/
+    @ApiModelProperty(value = "备注")
+    private String remarks;
 	/**创建人*/
     @ApiModelProperty(value = "创建人")
     private String createBy;
