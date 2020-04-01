@@ -84,4 +84,9 @@ public class PdProductStockServiceImpl extends ServiceImpl<PdProductStockMapper,
 		return pdProductStockMapper.queryStockTotalList(pdProductStock);
 	}
 
+	@Override
+	public Page<PdProductStock> queryList(Page<PdProductStock> page, PdProductStock productStock) {
+		return page.setRecords(pdProductStockMapper.queryList(productStock));
+	}
+
 }

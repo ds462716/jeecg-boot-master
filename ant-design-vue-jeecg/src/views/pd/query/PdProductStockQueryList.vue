@@ -248,6 +248,16 @@
             dataIndex: 'stockNum'
           },
           {
+            title:'进价',
+            align:"center",
+            dataIndex: 'purchasePrice'
+          },
+          {
+            title:'出价',
+            align:"center",
+            dataIndex: 'sellingPrice'
+          },
+          {
             title:'单位',
             align:"center",
             dataIndex: 'unitName'
@@ -256,6 +266,11 @@
             title:'注册证号',
             align:"center",
             dataIndex: 'registration'
+          },
+          {
+            title:'JDE编号',
+            align:"center",
+            dataIndex: 'jdeCode'
           },
           {
             title:'生产厂家',

@@ -50,4 +50,7 @@ public interface IPdProductStockService extends IService<PdProductStock> {
 	 */
 	List<HashMap> queryStockTotalList(PdProductStock PdProductStock);
 
+	Page<PdProductStock> queryList(Page<PdProductStock> pageList, PdProductStock productStock);
+
+
 }
