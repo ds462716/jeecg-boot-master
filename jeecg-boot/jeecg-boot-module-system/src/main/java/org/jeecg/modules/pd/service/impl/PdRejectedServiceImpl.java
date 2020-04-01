@@ -114,6 +114,7 @@ public class PdRejectedServiceImpl extends ServiceImpl<PdRejectedMapper, PdRejec
             stockLog.setProductBarCode(psd.getProductBarCode());
             stockLog.setBatchNo(psd.getBatchNo());
             stockLog.setProductNum(psd.getRejectedCount());
+            stockLog.setExpDate(psd.getExpDate());
             stockLog.setInFrom(sysDepart.getDepartName());
             stockLog.setOutTo(pdSupplier.getName());
             stockLog.setLogType(PdConstant.STOCK_LOG_TYPE_7);

@@ -645,6 +645,7 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
             stockLog.setProductBarCode(psd.getProductBarCode());
             stockLog.setBatchNo(psd.getBatchNo());
             stockLog.setProductNum(psd.getProductNum());
+            stockLog.setExpDate(psd.getExpDate());
             if (StringUtils.isNotEmpty(pdStockRecord.getSupplierId())) {
                 stockLog.setInFrom(pdStockRecord.getSupplierName());
             } else {
