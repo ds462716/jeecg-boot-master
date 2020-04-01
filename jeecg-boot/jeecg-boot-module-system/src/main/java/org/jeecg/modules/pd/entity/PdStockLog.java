@@ -75,6 +75,10 @@ public class PdStockLog extends BaseEntity {
 	@Excel(name = "收费科室", width = 15)
     @ApiModelProperty(value = "收费科室")
     private String chargeDeptName;
+    /**有效期*/
+    @JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd")
+    @DateTimeFormat(pattern="yyyy-MM-dd")
+    private Date expDate;
 	/**记录时间*/
 	@Excel(name = "记录时间", width = 15, format = "yyyy-MM-dd")
 	@JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd")
