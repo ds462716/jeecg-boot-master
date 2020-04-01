@@ -446,6 +446,12 @@
 			<if test="spec != null and spec != ''">
 				AND c.spec LIKE concat('%',#{spec},'%')
 			</if>
+			<if test="version != null and version != ''">
+				AND c.version   LIKE concat('%',#{version},'%')
+			</if>
+			<if test="batchNo != null and batchNo != ''">
+				AND a.batchNo LIKE concat('%',#{batchNo},'%')
+			</if>
 			<if test="registration != null and registration != ''">
 				AND c.registration LIKE concat('%',#{registration},'%')
 			</if>
@@ -481,6 +487,12 @@
 			</if>
 			<if test="departParentId != null and departParentId != ''">
 				AND a.depart_parent_id = #{departParentId}
+			</if>
+			<if test="expStatus != null and expStatus != ''">
+				AND a.exp_status = #{expStatus}
+			</if>
+			<if test="isLong != null and isLong != ''">
+				AND a.is_long = #{isLong}
 			</if>
 			<if test="allocationNo != null and allocationNo != ''">
 				AND j.allocation_no = #{allocationNo}

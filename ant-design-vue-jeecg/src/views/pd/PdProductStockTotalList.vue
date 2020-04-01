@@ -27,9 +27,36 @@
           </a-col>
           <a-col :md="6" :sm="8">
             <a-form-item label="产品名称">
-              <a-input placeholder="请选择产品名称" v-model="queryParam.productName"></a-input>
+              <a-input placeholder="请输入产品名称" v-model="queryParam.productName"></a-input>
             </a-form-item>
           </a-col>
+          <template :md="6" v-if="toggleSearchStatus">
+            <a-col :md="6" :sm="8">
+              <a-form-item label="产品编号">
+                <a-input placeholder="请输入产品编号" v-model="queryParam.number"></a-input>
+              </a-form-item>
+            </a-col>
+            <a-col :md="6" :sm="8">
+              <a-form-item label="规格">
+                <a-input placeholder="请输入规格" v-model="queryParam.spec"></a-input>
+              </a-form-item>
+            </a-col>
+            <a-col :md="6" :sm="8">
+              <a-form-item label="型号">
+                <a-input placeholder="请输入型号" v-model="queryParam.version"></a-input>
+              </a-form-item>
+            </a-col>
+            <a-col :md="6" :sm="8">
+              <a-form-item label="是否久存">
+                <j-dict-select-tag v-model="queryParam.isLong" dictCode="pd_isLong"/>
+              </a-form-item>
+            </a-col>
+            <a-col :md="6" :sm="8">
+              <a-form-item label="是否过期">
+                <j-dict-select-tag v-model="queryParam.expStatus" dictCode="exp_status"/>
+              </a-form-item>
+            </a-col>
+          </template>
           <a-col :md="6" :sm="8">
             <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
               <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
