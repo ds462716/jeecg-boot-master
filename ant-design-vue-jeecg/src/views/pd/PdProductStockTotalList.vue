@@ -8,6 +8,7 @@
             <a-form-item label="科室">
               <!--<a-input placeholder="请选择科室" v-model="queryParam.deptName"></a-input>-->
               <a-select
+                mode="multiple"
                 showSearch
                 :departId="departValue"
                 :defaultActiveFirstOption="false"
@@ -15,13 +16,12 @@
                 :showArrow="true"
                 :filterOption="false"
                 @search="departHandleSearch"
-                @change="departHandleChange"
                 @focus="departHandleSearch"
                 :notFoundContent="notFoundContent"
-                v-model="queryParam.departId"
+                v-model="queryParam.departIds"
                 placeholder="请选择科室"
               >
-                <a-select-option v-for="d in departData" :key="d.value">{{d.text}}</a-select-option>
+                <a-select-option v-for="d in departData" :key="d.id">{{d.departName}}</a-select-option>
               </a-select>
             </a-form-item>
           </a-col>
@@ -104,37 +104,8 @@
   import PdStockRecordDetailInfoModal from './modules/PdStockRecordDetailInfoModal'
   import { getAction } from '@/api/manage'
   import {initDictOptions, filterMultiDictText} from '@/components/dict/JDictSelectUtil'
+  import { filterObj } from '@/utils/util';
 
-  let timeout;
-  let currentValue;
-
-  function fetch(value, callback,url) {
-    if (timeout) {
-      clearTimeout(timeout);
-      timeout = null;
-    }
-    currentValue = value;
-
-    function fake() {
-      getAction(url,{departName:value}).then((res)=>{
-        if (!res.success) {
-          this.cmsFailed(res.message);
-        }
-        if (currentValue === value) {
-          const result = res.result;
-          const data = [];
-          result.forEach(r => {
-            data.push({
-              value: r.id,
-              text: r.departName,
-            });
-          });
-          callback(data);
-        }
-      })
-    }
-    timeout = setTimeout(fake, 0);
-  }
 
   export default {
     name: "PdProductStockTotalList",
@@ -365,13 +336,28 @@
 
       //科室查询start
       departHandleSearch(value) {
-        fetch(value, data => (this.departData = data),this.url.queryDepart);
-      },
-      departHandleChange(value) {
-        this.departValue = value;
-        fetch(value, data => (this.departData = data),this.url.queryDepart);
+        getAction(this.url.queryDepart,{departName:value}).then((res)=>{
+          if (!res.success) {
+            this.cmsFailed(res.message);
+          }
+          this.departData = res.result;
+        })
       },
       //科室查询end
+
+      getQueryParams() {
+        //获取查询条件
+        let sqp = {}
+        if(this.superQueryParams){
+          sqp['superQueryParams']=encodeURI(this.superQueryParams)
+        }
+        var param = Object.assign(sqp, this.queryParam, this.isorter ,this.filters);
+        param.field = this.getQueryField();
+        param.pageNo = this.ipagination.current;
+        param.pageSize = this.ipagination.pageSize;
+        param.departIds = this.queryParam.departIds+"";
+        return filterObj(param);
+      },
     }
   }
 </script>

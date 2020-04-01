@@ -174,4 +174,7 @@ public class PdProductStock extends BaseEntity {
 
 	@TableField(exist = false)
 	private String inHospitalNo;
+
+	@TableField(exist = false)
+	private String departIds; //批量查询用
 }
