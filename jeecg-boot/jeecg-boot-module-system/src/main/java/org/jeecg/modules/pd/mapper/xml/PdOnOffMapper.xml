@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.pd.mapper.PdOnOffMapper">
+
+    <select id="getOne" resultType="org.jeecg.modules.pd.entity.PdOnOff" parameterType="org.jeecg.modules.pd.entity.PdOnOff">
+        SELECT
+            a.*
+        FROM
+            pd_on_off a
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+            <if test="code != null and code != ''">
+                AND a.code = #{code}
+            </if>
+            <if test="departId != null and departId != ''">
+                AND a.depart_id = #{departId}
+            </if>
+            <if test="departParentId != null and departParentId != ''">
+                AND a.depart_parent_id = #{departParentId}
+            </if>
+        </where>
+    </select>
+</mapper>

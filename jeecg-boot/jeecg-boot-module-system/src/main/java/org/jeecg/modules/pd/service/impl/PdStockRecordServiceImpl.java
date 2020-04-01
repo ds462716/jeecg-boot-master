@@ -1,11 +1,13 @@
 package org.jeecg.modules.pd.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.constant.PdConstant;
+import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.system.vo.DictModel;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.DateUtils;
@@ -66,6 +68,8 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
     private IPdApplyDetailService pdApplyDetailService;
     @Autowired
     private IPdAllocationDetailService pdAllocationDetailService;
+    @Autowired
+    private IPdOnOffService pdOnOffService;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -512,15 +516,20 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
                 pdStockRecord.setPdPurchaseOrderMergeDetail(pdPurchaseDetailList);
             }
         } else {  // 新增页面
+            PdOnOff query = new PdOnOff();
+            query.setDepartParentId(sysUser.getDepartParentId());
             //开关-是否允许入库量大于订单量   1-允许入库量大于订单量；0-不允许入库量大于订单量
-            List<DictModel> allowInMoreOrder = sysDictService.queryDictItemsByCode(PdConstant.ON_OFF_ALLOW_IN_MORE_ORDER);
-            //开关-是否允许入库非订单产品     1-允许非订单产品；0-不允许非订单产品
-            List<DictModel> allowNotOrderProduct = sysDictService.queryDictItemsByCode(PdConstant.ON_OFF_ALLOW_NOT_ORDER_PRODUCT);
-            if (CollectionUtils.isNotEmpty(allowInMoreOrder)) {
-                pdStockRecord.setAllowInMoreOrder(allowInMoreOrder.get(0).getValue());
+            query.setCode(PdConstant.ON_OFF_ALLOW_IN_MORE_ORDER);
+            PdOnOff allowInMoreOrder = pdOnOffService.getOne(query);
+            if (allowInMoreOrder != null && allowInMoreOrder.getValue() != null) {
+                pdStockRecord.setAllowInMoreOrder(allowInMoreOrder.getValue().toString());
             }
-            if (CollectionUtils.isNotEmpty(allowNotOrderProduct)) {
-                pdStockRecord.setAllowNotOrderProduct(allowNotOrderProduct.get(0).getValue());
+
+            //开关-是否允许入库非订单产品     1-允许非订单产品；0-不允许非订单产品
+            query.setCode(PdConstant.ON_OFF_ALLOW_NOT_ORDER_PRODUCT);
+            PdOnOff allowNotOrderProduct = pdOnOffService.getOne(query);
+            if (allowNotOrderProduct != null && allowNotOrderProduct.getValue() != null) {
+                pdStockRecord.setAllowNotOrderProduct(allowNotOrderProduct.getValue().toString());
             }
 
             //部门id

@@ -1019,6 +1019,8 @@
 
         if(!product.supplierId){
           this.$message.error("产品("+product.name+")没有维护供应商，请先维护供应商！");
+          //清空扫码框
+          this.clearQueryParam();
           return false;
         }
 

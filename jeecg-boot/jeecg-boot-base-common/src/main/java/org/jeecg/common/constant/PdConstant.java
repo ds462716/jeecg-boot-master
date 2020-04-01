@@ -87,12 +87,20 @@ public interface PdConstant {
 
 	/**开关-是否允许入库量大于订单量 add by jiangxz 20200222 **/
 	public final static String ON_OFF_ALLOW_IN_MORE_ORDER = "on_off_allow_in_more_order"; //数据字典 code
-	public final static String ON_OFF_ALLOW_IN_MORE_ORDER_0 = "0"; // 0-不允许入库量大于订单量
-	public final static String ON_OFF_ALLOW_IN_MORE_ORDER_1 = "1"; // 1-允许入库量大于订单量
+	public final static Integer ON_OFF_ALLOW_IN_MORE_ORDER_0 = 0; // 0-不允许入库量大于订单量
+	public final static Integer ON_OFF_ALLOW_IN_MORE_ORDER_1 = 1; // 1-允许入库量大于订单量
 	/**开关-是否允许入库非订单产品 add by jiangxz 20200222 **/
 	public final static String ON_OFF_ALLOW_NOT_ORDER_PRODUCT = "on_off_allow_not_order_product"; //数据字典 code
-	public final static String ON_OFF_ALLOW_NOT_ORDER_PRODUCT_0 = "0"; // 0-不允许非订单产品
-	public final static String ON_OFF_ALLOW_NOT_ORDER_PRODUCT_1 = "1"; // 1-允许非订单产品
+	public final static Integer ON_OFF_ALLOW_NOT_ORDER_PRODUCT_0 = 0; // 0-不允许非订单产品
+	public final static Integer ON_OFF_ALLOW_NOT_ORDER_PRODUCT_1 = 1; // 1-允许非订单产品
+	/**开关-是否允许入库非本供应商产品 add by jiangxz 20200222 **/
+	public final static String ON_OFF_ALLOW_SUPPLIER = "on_off_allow_supplier"; //数据字典 code
+	public final static Integer ON_OFF_ALLOW_SUPPLIER_0 = 0; //1-允许；0-不允许
+	public final static Integer ON_OFF_ALLOW_SUPPLIER_1 = 1; //1-允许；0-不允许
+	/**开关-是否允许出入库时可修改进价和出价 add by jiangxz 20200222 **/
+	public final static String ON_OFF_ALLOW_EDIT_PRICE = "on_off_allow_edit_price"; //数据字典 code
+	public final static Integer ON_OFF_ALLOW_EDIT_PRICE_0 = 0; //1-允许；0-不允许
+	public final static Integer ON_OFF_ALLOW_EDIT_PRICE_1 = 1; //1-允许；0-不允许
 
 	//系统消息提醒模板CODE
 	public final static String PURCHASE_SUBMIT_MSG = "purchase_submitMsg";		//采购提交提醒
