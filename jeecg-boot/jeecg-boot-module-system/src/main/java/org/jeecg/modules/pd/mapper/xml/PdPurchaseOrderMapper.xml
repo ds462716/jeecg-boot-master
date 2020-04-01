@@ -237,8 +237,9 @@
        sum(a.total_num) AS "orderCount",
        sum(b.total_num)  AS "dayOrderNum"
        from pd_purchase_order a
-      LEFT JOIN  pd_purchase_order b ON  a.id=b.id  AND b.order_date=#{orderDate}
-      WHERE  a.del_flag=#{DEL_FLAG_NORMAL}
+      LEFT JOIN  pd_purchase_order b ON  a.id=b.id
+        AND DATE_FORMAT(b.order_date,'%Y-%m-%d')=DATE_FORMAT(#{orderDate},'%Y-%m-%d')
+        WHERE  a.del_flag=#{DEL_FLAG_NORMAL}
       AND  a.audit_status='2'
         <if test="departId != null and departId != ''">
             AND a.depart_id = #{departId}

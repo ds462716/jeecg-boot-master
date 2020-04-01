@@ -114,7 +114,7 @@ public class IndexChartController {
         recordDetail.setDepartIdList(departList); //部门范围
         recordDetail.setDepartParentId(sysUser.getDepartParentId());
         recordDetail.setAuditStatus(PdConstant.AUDIT_STATE_2); // 审核通过
-        recordDetail.setAuditDate(null);// 查询当前日期
+        recordDetail.setAuditDate(new Date());// 查询当前日期
         recordDetail.setQueryInDateStart(null);// 查询日期范围
         recordDetail.setQueryInDateEnd(null);// 查询日期范围
         Map<String,Object> recordMap = pdStockRecordDetailService.queryStockRecordCount(recordDetail);
@@ -126,7 +126,7 @@ public class IndexChartController {
          dosage.setDepartId(null);//当前部门
         dosage.setDepartIdList(departList); //部门范围
         dosage.setDepartParentId(sysUser.getDepartParentId());
-        dosage.setDosageDate(null);// 查询当前日期
+        dosage.setDosageDate(new Date());// 查询当前日期
         Map<String,Object> dosageMap = dosageService.queryPdDosageCount(dosage);
         dosageCount=MapUtils.getDouble(dosageMap,"orderCount");//总使用量
         dayDosageNum=MapUtils.getDouble(dosageMap,"dayOrderNum");//当日使用量

@@ -194,7 +194,8 @@
         sum(a.total_num) AS "applyCount",
         sum(b.total_num)  AS "dayApplyNum"
         from pd_apply_order a
-        LEFT JOIN  pd_apply_order b ON  a.id=b.id AND b.apply_date=#{applyDate}
+        LEFT JOIN  pd_apply_order b ON  a.id=b.id
+        AND  DATE_FORMAT(b.apply_date,'%Y-%m-%d')=DATE_FORMAT(#{applyDate},'%Y-%m-%d')
         WHERE  a.del_flag=#{DEL_FLAG_NORMAL}
         AND  a.audit_status='2'
         <if test="departId != null and departId != ''">

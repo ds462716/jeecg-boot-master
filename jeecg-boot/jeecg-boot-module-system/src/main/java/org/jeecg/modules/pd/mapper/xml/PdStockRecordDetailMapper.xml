@@ -316,7 +316,7 @@
             AND b.audit_date &lt;= #{queryInDateEnd}
         </if>
         <if test="auditDate != null and auditDate != ''">
-            AND b.audit_date = #{auditDate}
+			AND DATE_FORMAT(b.audit_date,'%Y-%m-%d')=DATE_FORMAT(#{auditDate},'%Y-%m-%d')
         </if>
         <if test="auditStatus != null and auditStatus != ''">
             AND b.audit_status = #{auditStatus}
