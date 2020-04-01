@@ -152,6 +152,9 @@
 			<if test="spec != null and spec != ''">
 				AND c.spec LIKE concat('%',#{spec},'%')
 			</if>
+			<if test="version != null and version != ''">
+				AND c.version   LIKE concat('%',#{version},'%')
+			</if>
 			<if test="registration != null and registration != ''">
 				AND c.registration LIKE concat('%',#{registration},'%')
 			</if>
@@ -163,6 +166,12 @@
 			</if>
 			<if test="batchNo != null and batchNo != ''">
 				AND a.batch_no LIKE concat('%',#{batchNo},'%')
+			</if>
+			<if test="expStatus != null and expStatus != ''">
+				AND a.exp_status = #{expStatus}
+			</if>
+			<if test="isLong != null and isLong != ''">
+				AND a.is_long = #{isLong}
 			</if>
 			<if test="supplierId != null and supplierId != ''">
 				AND a.supplier_id = #{supplierId}
