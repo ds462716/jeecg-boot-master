@@ -94,9 +94,31 @@ public class PdStockLogController extends JeecgController<PdStockLog, IPdStockLo
 									HttpServletRequest req) {
 		 LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
 		 pdProductStock.setDepartParentId(sysUser.getDepartParentId());
-		 pdProductStock.setDepartId(sysUser.getCurrentDepartId());
 		 List<PdProductStock> pdProductStocks  = pdProductStockService.getByOriginalProduct(pdProductStock);
 		 return Result.ok(pdProductStocks);
+	 }
+
+	 /**
+	  * 获取产品追溯信息
+	  * @param pdStockLog
+	  * @param pageNo
+	  * @param pageSize
+	  * @param req
+	  * @return
+	  */
+	 @PostMapping(value = "/getProdFlowInfo")
+	 public Result<?> getProdFlowInfo(PdStockLog pdStockLog,
+										   @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
+										   @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
+										   HttpServletRequest req) {
+		 LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		 pdStockLog.setDepartParentId(sysUser.getDepartParentId());
+		 pdStockLog.setDepartId(sysUser.getCurrentDepartId());
+		 List<PdStockLog> pdStockLogs  = pdStockLogService.list(new QueryWrapper<PdStockLog>().eq("product_id",pdStockLog.getProductId())
+				 .eq("batch_no",pdStockLog.getBatchNo())
+				 .eq("product_bar_code",pdStockLog.getProductBarCode())
+				 .eq("exp_date",pdStockLog.getExpDate()).orderByAsc("record_time"));
+		 return Result.ok(pdStockLogs);
 	 }
 
 	/**

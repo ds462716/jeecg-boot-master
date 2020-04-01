@@ -316,7 +316,7 @@
                 AND a.depart_id = #{departId}
             </if>
             <if test="departParentId != null and departParentId != ''">
-                AND s.depart_parent_id = #{departParentId}
+                AND a.depart_parent_id = #{departParentId}
             </if>
             <if test="number != null and number != ''">
                 AND c.number LIKE concat('%',#{number},'%')

@@ -1,5 +1,6 @@
 package org.jeecg.common.util;
 
+import org.apache.commons.lang3.time.DateFormatUtils;
 import org.springframework.util.StringUtils;
 
 import java.beans.PropertyEditorSupport;
@@ -359,7 +360,24 @@ public class DateUtils extends PropertyEditorSupport {
     public static String formatDate() {
         return date_sdf.get().format(getCalendar().getTime());
     }
+    public static String formatDate(Date date, Object... pattern) {
+        String formatDate = null;
+        if (pattern != null && pattern.length > 0) {
+            formatDate = DateFormatUtils.format(date, pattern[0].toString());
+        } else {
+            formatDate = DateFormatUtils.format(date, "yyyy-MM-dd");
+        }
+        return formatDate;
+    }
 
+    public static String getDayOfWeek(Date date){
+        if(date == null)
+            return null;
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        int w = cal.get(Calendar.DAY_OF_WEEK);
+        return "周"+"日一二三四五六".charAt(w-1);
+    }
     /**
      * 默认方式表示的系统当前日期，具体格式：yyyy-MM-dd HH:mm:ss
      *

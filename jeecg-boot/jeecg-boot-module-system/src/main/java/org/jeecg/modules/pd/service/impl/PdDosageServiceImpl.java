@@ -157,12 +157,14 @@ public class PdDosageServiceImpl extends ServiceImpl<PdDosageMapper, PdDosage> i
                 PdStockLog prodLog = new PdStockLog();
                 prodLog.setBatchNo(pdd.getBatchNo());
                 prodLog.setProductBarCode(pdd.getProductBarCode());
+                prodLog.setExpDate(pdd.getExpDate());
                 prodLog.setProductId(pdd.getProductId());
                 prodLog.setProductNum(pdd.getDosageCount());
                 prodLog.setLogType(PdConstant.STOCK_LOG_TYPE_3);
                 prodLog.setInFrom(pdDosage.getDepartName());
                 prodLog.setOutTo("病人:"+pdDosage.getPatientInfo());
                 prodLog.setPatientInfo(pdDosage.getPatientDetailInfo());
+                prodLog.setInvoiceNo(pdDosage.getDosageNo());
                 prodLog.setChargeDeptName(pdDosage.getExeDeptName());
                 prodLog.setRecordTime(DateUtils.getDate());
                 logList.add(prodLog);

@@ -5,10 +5,12 @@ import java.io.UnsupportedEncodingException;
 import java.util.Date;
 import java.math.BigDecimal;
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import org.jeecg.common.util.DateUtils;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.jeecgframework.poi.excel.annotation.Excel;
 import org.jeecg.common.aspect.annotation.Dict;
@@ -75,10 +77,6 @@ public class PdStockLog extends BaseEntity {
 	@Excel(name = "收费科室", width = 15)
     @ApiModelProperty(value = "收费科室")
     private String chargeDeptName;
-    /**有效期*/
-    @JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd")
-    @DateTimeFormat(pattern="yyyy-MM-dd")
-    private Date expDate;
 	/**记录时间*/
 	@Excel(name = "记录时间", width = 15, format = "yyyy-MM-dd")
 	@JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd")
@@ -129,4 +127,21 @@ public class PdStockLog extends BaseEntity {
 	@Excel(name = "所属部门", width = 15)
     @ApiModelProperty(value = "所属部门")
     private String departId;
+    /**有效期*/
+    @Excel(name = "有效期", width = 15, format = "yyyy-MM-dd")
+    @JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd")
+    @DateTimeFormat(pattern="yyyy-MM-dd")
+    private Date expDate;
+
+    @TableField(exist = false)
+    private String[] timeStr = new String[]{"","",""};
+    //前台做展示用
+    public String[] getTimeStr() {
+        if(this.recordTime != null){
+            this.timeStr[0] = DateUtils.formatDate(this.recordTime, "yyyy-MM-dd");
+            this.timeStr[1] = DateUtils.getDayOfWeek(this.recordTime);
+            this.timeStr[2] = DateUtils.formatDate(this.recordTime, "HH:mm:ss");
+        }
+        return timeStr;
+    }
 }

@@ -76,7 +76,13 @@
       <br>
       <br>
       <br>
-      <a-textarea :disabled="true" :style="{height:'400px'}" autocomplete="off" ></a-textarea>
+      <div class="logisticsBox">
+        <h3>院内物流追溯</h3>
+        <div class="timeLIistBox" style="white-space: pre-wrap;" >
+          <ul v-html="trackListHtml" class="trackList">
+          </ul>
+        </div>
+      </div>
     </div>
 
 
@@ -87,6 +93,8 @@
 
   import { JeecgListMixin } from '@/mixins/JeecgListMixin'
   import { getByOriginalProduct } from '@/api/api'
+  import { httpAction } from '@/api/manage'
+  import {initDictOptions, filterMultiDictText} from '@/components/dict/JDictSelectUtil'
 
   export default {
     name: "PdStockLogList",
@@ -98,6 +106,7 @@
       return {
         description: '院内物流追溯',
         loading:false,
+        trackListHtml :"",
         // 表头
         columns: [
           {
@@ -161,12 +170,10 @@
         // 表头
         url: {
           list: "/pd/pdStocklog/getByOriginalProduct",
-          delete: "/pd/pdGroup/delete",
-          deleteBatch: "/pd/pdGroup/deleteBatch",
-          exportXlsUrl: "/pd/pdGroup/exportXls",
-          importExcelUrl: "pd/pdGroup/importExcel",
+          getProdFlowInfo: "/pd/pdStockLog/getProdFlowInfo",
         },
         dictOptions:{
+          logType:[],
         },
       }
     },
@@ -187,8 +194,6 @@
         }else{
           this.loading = false;
         }
-      },
-      initDictConfig(){
       },
       /**
        * 点击行选中checkbox
@@ -213,6 +218,7 @@
                   let recordId = record.id;
                   this.selectedRowKeys = [];
                   this.selectedRowKeys.push(recordId);
+                  this.findStockLog(record);
                 }
               }
             }
@@ -223,6 +229,56 @@
       onSelectChange(selectedRowKeys, selectionRows){
         this.selectedRowKeys = selectedRowKeys;
         this.selectionRows = selectionRows;
+        this.findStockLog(selectionRows[0]);
+      },
+      findStockLog(stockLog){
+        let formData = new URLSearchParams();
+        formData.append("productId",stockLog.productId);
+        formData.append("batchNo",stockLog.batchNo);
+        formData.append("productBarCode",stockLog.productBarCode);
+        formData.append("expDate",stockLog.expDate);
+        let httpurl = this.url.getProdFlowInfo;
+        httpAction(httpurl,formData, 'post').then((res)=>{
+          if(res.success){
+            let data = res.result;
+            let len = data.length;
+            let  html = "";
+            for(let i = 0; i < len; i++){
+              html += '<li>'
+                +		'<i class="fa fa-dot-circle-o"></i>'
+                +		'<span class="date">'+data[i].timeStr[0]+'</span>'
+                +		'<span class="week">'+data[i].timeStr[1]+'</span>'
+                +		'<span class="time">'+data[i].timeStr[2]+'</span>\t\t'
+                +		'<span class="txt">'
+                +			'<span class="txtType">'+filterMultiDictText(this.dictOptions['stockLogType'], data[i].logType+"")+'</span>\t\t'
+                +			'<span class="txtNum">数量：'+data[i].productNum+'</span>\t\t'
+                +			'<span class="txtVenderName">'+data[i].inFrom+'</span>'
+                +          '<span class="txtHomeLevel">';
+              if(data[i].outTo){
+                html +=	'→'+data[i].outTo;
+
+              }
+              html +=   '</span><span class="txtHosCode">';
+              if(data[i].patientInfo){
+                html +=	data[i].patientInfo;
+
+              }
+              html +=	'</span>'
+                +     '</span>'
+                +  '</li>';
+            }
+            this.trackListHtml = html;
+          }else{
+            this.$message.warning(res.message);
+          }
+        })
+      },
+      initDictConfig(){
+        initDictOptions('stock_log_type').then((res) => {
+          if (res.success) {
+            this.$set(this.dictOptions, 'stockLogType', res.result)
+          }
+        })
       },
 
     }
@@ -230,4 +286,17 @@
 </script>
 <style scoped>
   @import '~@assets/less/common.less'
+  .logisticsBox{margin-top:30px;}
+  .logisticsBox>h3,.littleTip{float: left;font-weight: 400;color: #666;font-size: 14px;padding-right: 10px;width: 100px;line-height:30px;}
+  .timeLIistBox{height: 180px;overflow: auto;padding:0 15px;border:1px solid #ccc;}
+  .timeLIistBox .trackList{margin:0;}
+  .timeLIistBox .trackList>li{ position: relative;padding: 9px 0 0 15px;line-height: 22px;border-left: 1px solid #ccc;color: #666;}
+  .timeLIistBox .trackList>li.afterdate{padding-top: 0; }
+  .timeLIistBox .trackList>li.afterdate>i.fa{top: -4px;padding-top: 10px;color:#62BC62;}
+  .timeLIistBox .trackList>li.afterdate>.time{margin-left: 2px;}
+  .timeLIistBox .trackList>li>i.fa{position: absolute;left: -6px;top: 15px;width: 11px;height: 11px;color: #ccc;background: #fff;}
+  .timeLIistBox .trackList>li>.time{display: inline-block;width: 50px;margin-right: 20px;vertical-align: top;font-size: 12px;}
+  .timeLIistBox .trackList>li>.txt{display: inline-block;max-width: 520px;color: #666;font-size: 12px;vertical-align: top;}
+  .timeLIistBox .trackList>li>.date{width: 70px;color: #666;border-radius: 14px;font-size: 12px;text-align: left;display: inline-block;vertical-align: top;}
+  .timeLIistBox .trackList>li>.week{padding: 0 10px;}
 </style>
