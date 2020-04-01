@@ -102,10 +102,13 @@
                 AND c.name  LIKE concat('%',#{productName},'%')
             </if>
             <if test="number != null and number != ''">
-                AND c.number = #{number}
+                AND c.number =LIKE concat('%',#{number},'%')
             </if>
             <if test="spec != null and spec != ''">
                 AND c.spec   LIKE concat('%',#{spec},'%')
+            </if>
+            <if test="version != null and version != ''">
+                AND c.version   LIKE concat('%',#{version},'%')
             </if>
             <if test="departId != null and departId != ''">
                 AND  a.depart_id = #{departId}
@@ -121,6 +124,12 @@
             </if>
             <if test="supplierId != null and supplierId != ''">
                 AND e.id =#{supplierId}
+            </if>
+            <if test="expStatus != null and expStatus != ''">
+                AND a.exp_status =#{expStatus}
+            </if>
+            <if test="isLong!=null and isLong!='' ">
+               AND  a.is_long = #{isLong}
             </if>
             <if test="venderId != null and venderId != ''">
                 AND c.vender_id =#{venderId}

@@ -73,6 +73,10 @@
         :rowSelection="{fixed:false,type:'radio',selectedRowKeys:selectedRowKeys, onChange: onSelectChange}"
         @change="handleTableChange">
       </a-table>
+      <br>
+      <br>
+      <br>
+      <a-textarea :disabled="true" :style="{height:'400px'}" autocomplete="off" ></a-textarea>
     </div>
 
 
@@ -215,6 +219,12 @@
           }
         }
       },
+      //按钮点击事件
+      onSelectChange(selectedRowKeys, selectionRows){
+        this.selectedRowKeys = selectedRowKeys;
+        this.selectionRows = selectionRows;
+      },
+
     }
   }
 </script>

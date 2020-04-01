@@ -131,9 +131,15 @@ public class PdProductStock extends BaseEntity {
 	/**进价*/
 	@TableField(exist = false)
 	private BigDecimal purchasePrice;
+	//入库时产品单价
+	@TableField(exist = false)
+	private String inPurchasePrice;
 	/**出价*/
 	@TableField(exist = false)
 	private BigDecimal sellingPrice;
+	/**JDE编码*/
+	@TableField(exist = false)
+	private String jdeCode;
 
 	/** 查询日期起始 **/
 	@TableField(exist = false)
@@ -171,4 +177,9 @@ public class PdProductStock extends BaseEntity {
 
 	@TableField(exist = false)
 	private String inHospitalNo;
+
+	@TableField(exist = false)
+	private String departIds; //批量查询用
+
+
 }

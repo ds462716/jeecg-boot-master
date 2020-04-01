@@ -59,4 +59,8 @@ public interface PdProductStockMapper extends BaseMapper<PdProductStock> {
 	/*  首页查询  根据采购产品类区分统计采购金额*/
 	List<HashMap> queryStockTotalList(PdProductStock pdProductStock);
 
+
+	List<PdProductStock> queryList(PdProductStock pdProductStock);
+
+
 }

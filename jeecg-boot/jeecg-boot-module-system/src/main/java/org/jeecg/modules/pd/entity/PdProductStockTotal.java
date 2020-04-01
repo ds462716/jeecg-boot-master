@@ -107,6 +107,9 @@ public class PdProductStockTotal extends BaseEntity {
     @Excel(name = "供应商名称", width = 15)
     @TableField(exist = false)
     private String supplierName;
+
+    @TableField(exist = false)
+    private String departIds; //批量查询用
 }
 
 

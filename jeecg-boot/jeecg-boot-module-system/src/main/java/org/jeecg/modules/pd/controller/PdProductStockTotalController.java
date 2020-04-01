@@ -9,6 +9,7 @@ import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.PdConstant;
 import org.jeecg.common.system.vo.LoginUser;
+import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.pd.entity.PdGoodsAllocation;
 import org.jeecg.modules.pd.entity.PdProductStock;
 import org.jeecg.modules.pd.entity.PdProductStockTotal;
@@ -27,7 +28,10 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @Description: 库存总表
@@ -68,7 +72,9 @@ public class PdProductStockTotalController {
 
          Page<PdProductStockTotalPage> page = new Page<PdProductStockTotalPage>(pageNo, pageSize);
 		 LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
-		 if(StringUtils.isEmpty(stockTotalPage.getDepartId())){
+		 if(oConvertUtils.isNotEmpty(stockTotalPage.getDepartIds()) && !"undefined".equals(stockTotalPage.getDepartIds())) {
+			 stockTotalPage.setDepartIdList(Arrays.asList(stockTotalPage.getDepartIds().split(",")));
+		 }else{
 			 //查询科室下所有下级科室的ID
 			 SysDepart sysDepart=new SysDepart();
 			 List<String> departList=pdDepartService.selectListDepart(sysDepart);
@@ -322,13 +328,15 @@ public class PdProductStockTotalController {
 											 HttpServletRequest req) {
 		 Page<PdProductStock> page = new Page<PdProductStock>(pageNo, pageSize);
 		 LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
-		 if(StringUtils.isEmpty(productStock.getDepartId())){
-			 //查询科室下所有下级科室的ID
+ 			 if(oConvertUtils.isNotEmpty(productStock.getDepartIds()) && !"undefined".equals(productStock.getDepartIds())) {
+				 productStock.setDepartIdList(Arrays.asList(productStock.getDepartIds().split(",")));
+			 }else{
+				 //查询科室下所有下级科室的ID
 			 SysDepart sysDepart=new SysDepart();
 			 List<String> departList=pdDepartService.selectListDepart(sysDepart);
 			 productStock.setDepartIdList(departList);
 		 }
-		 page = pdProductStockService.selectList(page,productStock);
+		 page = pdProductStockService.queryList(page,productStock);
 		 return Result.ok(page);
 	 }
 
