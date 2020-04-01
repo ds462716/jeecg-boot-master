@@ -221,7 +221,7 @@
           {
             title:'进价',
             align:"center",
-            dataIndex: 'purchasePrice'
+            dataIndex: 'inPurchasePrice'
           },
           {
             title:'出价',

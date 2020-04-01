@@ -415,9 +415,8 @@
 		<include refid="pdVenderColumns"/>,
 		<include refid="pdSupplierColumns"/>,
 		<include refid="sysDepartColumns"/>,
-		<include refid="pdGoodsAllocationColumns"/>
-
-
+		<include refid="pdGoodsAllocationColumns"/>,
+		h.purchase_price as "inPurchasePrice"
 		FROM pd_product_stock a
 		<include refid="pdProductStockJoins"/>
 		<include refid="pdProductJoins"/>
@@ -426,6 +425,7 @@
 		<include refid="pdSupplierJoins"/>
 		<include refid="sysDepartJoins"/>
 		<include refid="pdGoodsAllocation"/>
+		LEFT JOIN pd_stock_record_detail h ON h.id=a.record_detail_id
 		<where>
 			a.del_flag =#{DEL_FLAG_NORMAL} AND a.stock_num > 0
 			<if test="id != null and id != ''">
