@@ -336,7 +336,7 @@ public class PdProductStockTotalController {
 			 List<String> departList=pdDepartService.selectListDepart(sysDepart);
 			 productStock.setDepartIdList(departList);
 		 }
-		 page = pdProductStockService.selectList(page,productStock);
+		 page = pdProductStockService.queryList(page,productStock);
 		 return Result.ok(page);
 	 }
 
