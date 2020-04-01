@@ -69,6 +69,11 @@
           <a-divider type="vertical" />
           <a-dropdown>
             <a class="ant-dropdown-link">更多 <a-icon type="down" /></a>
+              <a-menu slot="overlay">
+                <a-menu-item>
+                 <a @click="inventoryReturned(record)">库存还回</a>
+                </a-menu-item>
+              </a-menu>-->
            <!-- <a-menu slot="overlay">
               <a-menu-item>
                 <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.id)">
@@ -83,6 +88,7 @@
     </div>
 
     <pdDosage-modal ref="modalForm" @ok="modalFormOk"></pdDosage-modal>
+    <pdDosageReturned-modal ref="pdDosageReturnedForm" @ok="modalFormOk"></pdDosageReturned-modal>
   </a-card>
 </template>
 
@@ -173,6 +179,11 @@
     },
     methods: {
       initDictConfig(){
+      },
+      inventoryReturned(record){
+        this.$refs.pdDosageReturnedForm.edit(record);
+        this.$refs.pdDosageReturnedForm.title="库存还回";
+        this.$refs.pdDosageReturnedForm.disableSubmit = true;
       }
     }
   }

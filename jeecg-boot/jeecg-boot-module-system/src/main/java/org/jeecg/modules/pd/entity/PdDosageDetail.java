@@ -145,6 +145,8 @@ public class PdDosageDetail extends BaseEntity {
     @TableField(exist = false)
     private String isChargeText;
     @TableField(exist = false)
+    private String hyChargedText;
+    @TableField(exist = false)
     @Excel(name = "出库单价", width = 15)
     private java.math.BigDecimal sellingPrice;//出价
     @TableField(exist = false)

@@ -330,6 +330,7 @@
                 AND s.in_hospital_no LIKE CONCAT('%', #{inHospitalNo}, '%')
             </if>
         </where>
+		group  by a.product_id,a.product_bar_code,a.batch_no,a.exp_date
     </select>
 
 

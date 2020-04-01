@@ -19,6 +19,7 @@
     <select id="selectList" resultType="org.jeecg.modules.pd.entity.PdDosageDetail" parameterType="org.jeecg.modules.pd.entity.PdDosageDetail">
         SELECT
         a.*,
+        IF(a.hy_charged=0,'已收费','未收费') hyChargedText,
         <include refid="PdProductColumns"/>,
         u.name as unitName
         FROM
