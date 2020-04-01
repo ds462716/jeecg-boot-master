@@ -192,4 +192,9 @@ public interface PdConstant {
 	public final static String CATEGORY_TYPE_1 = "1";
 
 
+	//产品属性类型
+	public final static String PROD_ATTR_1 = "1";//产品
+	public final static String PROD_ATTR_2 = "2";//定数包
+
+
 }

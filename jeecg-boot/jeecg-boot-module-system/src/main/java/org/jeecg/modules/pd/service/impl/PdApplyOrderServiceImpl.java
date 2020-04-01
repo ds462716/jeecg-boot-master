@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.ibatis.session.SqlSession;
+import org.jeecg.common.constant.PdConstant;
 import org.jeecg.modules.pd.entity.PdApplyDetail;
 import org.jeecg.modules.pd.entity.PdApplyOrder;
 import org.jeecg.modules.pd.entity.PdPackageDetail;
@@ -75,13 +76,13 @@ public class PdApplyOrderServiceImpl extends ServiceImpl<PdApplyOrderMapper, PdA
 					    Double packProdNum = entity.getApplyNum() * ppmp.getCount();
 						pd.setApplyNum(packProdNum);
 						pd.setStockNum( ppmp.getStockNum());
-						pd.setProductAttr("2");
+						pd.setProductAttr(PdConstant.PROD_ATTR_2);
 						dao.insert(pd);
 				    }
 				}else{
 					//外键设置
 					entity.setApplyNo(pdApplyOrder.getApplyNo());
-					entity.setProductAttr("1");
+					entity.setProductAttr(PdConstant.PROD_ATTR_1);
 					entity.setId(null);
 					dao.insert(entity);
 				}
@@ -111,13 +112,13 @@ public class PdApplyOrderServiceImpl extends ServiceImpl<PdApplyOrderMapper, PdA
 						Double packProdNum = entity.getApplyNum() * ppmp.getCount();
 						pd.setApplyNum(packProdNum);
 						pd.setStockNum( ppmp.getStockNum());
-						pd.setProductAttr("2");
+						pd.setProductAttr(PdConstant.PROD_ATTR_2);
 						dao.insert(pd);
 					}
 				}else{
 					//外键设置
 					entity.setApplyNo(pdApplyOrder.getApplyNo());
-					entity.setProductAttr("1");
+					entity.setProductAttr(PdConstant.PROD_ATTR_1);
 					entity.setId(null);
 					dao.insert(entity);
 				}
