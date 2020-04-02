@@ -141,14 +141,10 @@ public class PdStockRecord extends BaseEntity {
     private String departId;
     private String departParentId;
 
-
-
-
     // pd_stock_record表外字段 ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
     @ExcelCollection(name="出入库明细表")
     @TableField(exist = false)
     private List<PdStockRecordDetail> pdStockRecordDetailList;
-
     // 采购订单明细
     @TableField(exist = false)
     private List<PdPurchaseOrderMergeDetail> pdPurchaseOrderMergeDetail;
@@ -158,55 +154,60 @@ public class PdStockRecord extends BaseEntity {
     // 调拨单明细
     @TableField(exist = false)
     private List<PdAllocationDetail> pdAllocationDetailList;
-
     /**出入库日期 字符串格式*/
     @TableField(exist = false)
     private String submitDateStr;
-
     /** 货区货位列表 用于二级联动下拉框 */
     @TableField(exist = false)
     List<PdGoodsAllocationPage> goodsAllocationList;
-
     /** 部门列表 用户部门下拉框 **/
     @TableField(exist = false)
     List<SysDepart> sysDepartList;
-
     /** 1-允许入库量大于订单量；0-不允许入库量大于订单量 */
     @TableField(exist = false)
     private String allowInMoreOrder;
-
     /** 1-允许非订单产品；0-不允许非订单产品 */
     @TableField(exist = false)
     private String allowNotOrderProduct;
-
+    /**是否允许入库非本供应商产品**/
+    @TableField(exist = false)
+    private String allowSupplier;
+    /**是否允许出入库时可修改进价和出价**/
+    @TableField(exist = false)
+    private String allowEditPrice;
+    /**开关-是否需要入库审批**/
+    @TableField(exist = false)
+    private String allowStockInAudit;
+    /**开关-是否需要出库审批**/
+    @TableField(exist = false)
+    private String allowStockOutAudit;
+    /**出库单抬头**/
+    @TableField(exist = false)
+    private String stockOutText;
+    /**入库单抬头**/
+    @TableField(exist = false)
+    private String stockInText;
     /** 入库部门名称 **/
     @TableField(exist = false)
     private String inDepartName;
-
     /** 出库部门名称 **/
     @TableField(exist = false)
     private String outDepartName;
-
     /** 供应商名称 **/
     @TableField(exist = false)
     private String supplierName;
-
     /** 申请人姓名 **/
     @TableField(exist = false)
     private String submitByName;
-
     /** 审批人姓名 **/
     @TableField(exist = false)
     private String auditByName;
-
     @TableField(exist = false)
     private BigDecimal inTotalPrice;//总金额	@TableField(exist = false)
     @TableField(exist = false)
     private BigDecimal outTotalPrice;// 出库总金额	@TableField(exist = false)
     @TableField(exist = false)
     private Double totalSum;//总数量
-
-
     @TableField(exist = false)
     private String productName;//产品名称
     @TableField(exist = false)

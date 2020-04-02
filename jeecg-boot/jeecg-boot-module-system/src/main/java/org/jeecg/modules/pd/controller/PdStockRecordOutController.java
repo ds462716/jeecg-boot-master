@@ -297,8 +297,6 @@ public class PdStockRecordOutController {
         }
 
         List<PdStockRecordDetail> detailList =  pdStockRecordDetailService.selectList(pdStockRecordDetail);
-
-
         List<PdStockRecordOutPage> exportList = JSON.parseArray(JSON.toJSONString(detailList), PdStockRecordOutPage.class);
 
         // Step.4 AutoPoi 导出Excel

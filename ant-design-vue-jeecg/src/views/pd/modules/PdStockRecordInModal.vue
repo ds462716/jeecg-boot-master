@@ -208,7 +208,7 @@
 
     <template slot="footer">
       <a-button @click="closeBtn" style="margin-right: 15px;" v-show="disableSubmit">关  闭</a-button>
-      <a-button @click="printBtn" style="margin-right: 15px;" type="primary" v-show="showPrintBtn">打  印</a-button>
+      <a-button @click="printBtn('1')" style="margin-right: 15px;" type="primary" v-show="showPrintBtn">打  印</a-button>
       <a-popconfirm title="确定放弃编辑？" @confirm="handleCancel" v-show="!disableSubmit" okText="确定" cancelText="取消">
         <a-button style="margin-right: 15px;">取  消</a-button>
       </a-popconfirm>
@@ -216,7 +216,8 @@
         <a-button style="margin-right: 15px;" :loading="confirmLoading" type="danger">撤  回</a-button>
       </a-popconfirm>
       <a-button @click="saveBtn" v-show="!disableSubmit" type="primary" :loading="confirmLoading" style="margin-right: 15px;">保存草稿</a-button>
-      <a-button @click="submitBtn" v-show="!disableSubmit" type="primary" :loading="confirmLoading" style="margin-right: 15px;">提  交</a-button>
+      <a-button @click="submitBtn('1')" v-show="!disableSubmit" type="primary" :loading="confirmLoading" style="margin-right: 15px;">提  交</a-button>
+      <a-button @click="submitBtn('2')" v-show="showSubmitAndPrint" type="primary" :loading="confirmLoading" style="margin-right: 15px;">提交并打印</a-button>
     </template>
 
     <pd-choose-purchase-order-list-model  ref="pdChoosePurchaseOrderListModel" @ok="returnPurchaseOrderData" ></pd-choose-purchase-order-list-model>
@@ -286,11 +287,15 @@
         showCancelBtn:false,
         showPrintBtn:false,
         showRefuseReason:false,
+        showSubmitAndPrint:false,
 
         initData:{},
         queryParam:{},
-        allowInMoreOrder:"",		//开关-是否允许入库量大于订单量   1-允许入库量大于订单量；0-不允许入库量大于订单量
-        allowNotOrderProduct:"",		//开关-是否允许入库非订单产品     1-允许非订单产品；0-不允许非订单产品
+        allowInMoreOrder:"",		//开关-是否允许入库量大于订单量    1-允许；0-不允许
+        allowNotOrderProduct:"",		//开关-是否允许入库非订单产品     1-允许；0-不允
+        allowSupplier:"",//开关-是否允许入库非本供应商产品   1-允许；0不允许
+        allowEditPrice:"",//关-是否允许出入库时可修改进价和出价   1-允许；0不允许
+
         //供应商下拉列表 start
         supplierValue: undefined,
         notFoundContent:"未找到内容",
@@ -451,6 +456,7 @@
         this.showCancelBtn = false;
         this.showPrintBtn = false;
         this.showRefuseReason = false;
+        this.showSubmitAndPrint = false;
         //初始化供应商，用于回显供应商
         this.supplierHandleSearch();
 
@@ -481,11 +487,14 @@
           if (res.success) {
             this.$nextTick(() => {
               if(this.model.id){
-                this.showOrderTable = true;
                 this.pdPurchaseOrderDetailTable.dataSource = res.result.pdPurchaseOrderMergeDetail || [];
                 this.pdStockRecordDetailTable.dataSource = res.result.pdStockRecordDetailList || [];
                 this.totalSum = res.result.totalSum;
                 this.inTotalPrice = res.result.inTotalPrice.toString();
+                this.showOrderTable = false;
+                if(this.pdPurchaseOrderDetailTable.dataSource.length > 0){
+                  this.showOrderTable = true;
+                }
               }else{
                 this.initData = res.result;
                 this.initData.isAllowProduct = "0";
@@ -494,8 +503,6 @@
                 this.initData.storageResult = "0";
                 this.initData.temperature = "25";
                 this.initData.humidity = "50";
-                this.allowInMoreOrder = res.result.allowInMoreOrder;
-                this.allowNotOrderProduct = res.result.allowNotOrderProduct;
                 this.submitDateStr = res.result.submitDateStr;
                 let fieldval = pick(this.initData,'recordNo','mergeOrderNo','inType','submitBy','submitByName','submitDate','remarks','inDepartId','supplierId',
                   'testResult','storageResult','temperature','humidity','remarks','refuseReason');
@@ -504,15 +511,24 @@
                 this.$refs['productNumberInput'].focus();
               }
 
+              this.allowInMoreOrder = res.result.allowInMoreOrder;
+              this.allowNotOrderProduct = res.result.allowNotOrderProduct;
+              this.allowSupplier = res.result.allowSupplier;
+              this.allowEditPrice = res.result.allowEditPrice;
               this.goodsAllocationList = res.result.goodsAllocationList;
+              //开关-是否需要入库审批  1-是；0-否
+              if(res.result.allowStockInAudit == "0" && this.disableSubmit == false){
+                this.showSubmitAndPrint = true;
+              }
+
               this.pdStockRecordDetailTable.columns.forEach((item, idx) => {
-                if(item.key === "inHuoweiCode"){
+                if(item.key == "inHuoweiCode"){
                   item.options = this.goodsAllocationList;
                 }
               })
             })
           }
-          if(res.code===510){
+          if(res.code==510){
             this.$message.warning(res.message)
           }
           this.loading = false;
@@ -524,7 +540,10 @@
         this.close();
       },
       /**打印按钮**/
-      printBtn(){
+      printBtn(flag){
+        if(flag == "2"){
+          this.model.auditDate = this.form.getFieldValue("submitDate");
+        }
         this.model.totalSum = this.totalSum;
         this.model.inTotalPrice = this.inTotalPrice;
         this.model.pdStockRecordDetailList = this.pdStockRecordDetailTable.dataSource;
@@ -557,14 +576,14 @@
       },
       /** 保存草稿 **/
       saveBtn() {
-        this.request(this.url.add,"post");
+        this.request(this.url.add,"post","");
       },
       /** 提交 **/
-      submitBtn() {
-        this.request(this.url.submit,"post");
+      submitBtn(flag) {
+        this.request(this.url.submit,"post",flag);
       },
       /** 请求 */
-      request(url, method) {
+      request(url, method,flag) {
         /** 触发表单验证 */
         this.getAllTable().then(tables => {
           /** 一次性验证主表和所有的次表 */
@@ -627,7 +646,7 @@
             return;
           }
 
-          if(this.allowInMoreOrder === "0"){
+          if(this.allowInMoreOrder == "0"){
             let purchaseOrderDetail = this.pdPurchaseOrderDetailTable.dataSource;
             if(purchaseOrderDetail.length > 0){
               for (let detail of purchaseOrderDetail) {
@@ -656,6 +675,11 @@
               this.$message.success(res.message)
               this.$emit('ok')
               this.close()
+
+              if(flag == "2"){
+                this.printBtn("2"); //通过并打印
+              }
+
             } else {
               this.$message.warning(res.message)
             }
@@ -664,7 +688,7 @@
           })
 
         }).catch(e => {
-          if (e.error === VALIDATE_NO_PASSED) {
+          if (e.error == VALIDATE_NO_PASSED) {
             // 如果有未通过表单验证的子表，就自动跳转到它所在的tab
             this.activeKey = e.index == null ? this.activeKey : this.refKeys[e.index]
           } else {
@@ -694,11 +718,13 @@
         fetch(value, data => (this.supplierData = data),this.url.querySupplier);
       },
       supplierHandleChange(value) {
-        this.totalSum = '0';
-        this.inTotalPrice = '0.0000';
-        this.eachAllTable((item) => {
-          item.initialize()
-        })
+        if(this.allowSupplier == "0"){ // 是否允许入库非本供应商产品 1-允许；0-不允许
+          this.totalSum = '0';
+          this.inTotalPrice = '0.0000';
+          this.eachAllTable((item) => {
+            item.initialize()
+          })
+        }
         this.supplierValue = value;
         fetch(value, data => (this.supplierData = data),this.url.querySupplier);
       },
@@ -732,12 +758,16 @@
         let supplierId = this.form.getFieldValue("supplierId");
         let isAllowProduct = this.form.getFieldValue("isAllowProduct");
         let mergeOrderNo = "";
-        if(!supplierId) {
-          this.$message.error("请先选择供应商！");
-          return;
+        if(this.allowSupplier == "0"){ // 是否允许入库非本供应商产品 1-允许；0-不允许
+          if(!supplierId) {
+            this.$message.error("请先选择供应商！");
+            return;
+          }
+        }else{
+          supplierId = "";
         }
         //开关-是否允许入库非订单产品     1-允许非订单产品；0-不允许非订单产品
-        if(this.allowNotOrderProduct === "0") {
+        if(this.allowNotOrderProduct == "0") {
           if(!this.mergeOrderNo){
             this.$message.error("请先导入订单！");
             return;
@@ -879,10 +909,10 @@
       valueChange(event) {
         if(event){
           const { type, row, column, value, target } = event;
-          if (type === FormTypes.select) {
+          if (type == FormTypes.select) {
 
-          }else if(type === FormTypes.input){
-            if(column.key === "productNum"){
+          }else if(type == FormTypes.input){
+            if(column.key == "productNum"){
               // 产品数量变更 计算每条产品的价格
               let rows = target.getValuesSync({ validate: false });
               let result = this.checkAllowInMoreOrder(row,rows.values);
@@ -985,7 +1015,7 @@
                 if(result.code == "203"){ // 近效期提醒
                   this.$message.error(result.msg);
                 }
-              }else if(result.code ==="201"){
+              }else if(result.code =="201"){
                 this.$message.error(result.msg);
               }else{
                 this.$message.error(result.msg);
@@ -1025,7 +1055,7 @@
         }
 
         if(supplierId){
-          if(supplierId != product.supplierId){
+          if(supplierId != product.supplierId && this.allowSupplier == "0"){  // 是否允许入库非本供应商产品 1-允许；0-不允许
             this.$message.error("产品("+product.name+")的供应商与选中的供应商不一致！");
             //清空扫码框
             this.clearQueryParam();
@@ -1039,7 +1069,7 @@
       },
       //校验是否允许订单外产品入库
       checkAllowNotOrderProduct(product){
-        if(this.allowNotOrderProduct === "0"){ //1-允许非订单产品；0-不允许非订单产品
+        if(this.allowNotOrderProduct == "0"){ //1-允许非订单产品；0-不允许非订单产品
           if(!this.mergeOrderNo){
             this.$message.error("请先导入订单！");
             //清空扫码框
@@ -1068,7 +1098,7 @@
        */
       checkAllowInMoreOrder(currentRow,rows){
         let result = {};
-        if(this.allowInMoreOrder === "0"){
+        if(this.allowInMoreOrder == "0"){
           let bool = true;
           let name = "";
           let purchaseOrderDetail = this.pdPurchaseOrderDetailTable.dataSource;
@@ -1111,7 +1141,7 @@
          校验当前扫码产品 入库数量是否大于订单量
        */
       checkAllowInMoreOrderForScanCode(currentProductId,rows){
-        if(this.allowInMoreOrder === "0"){
+        if(this.allowInMoreOrder == "0"){
           let bool = true;
           let name = "";
           let purchaseOrderDetail = this.pdPurchaseOrderDetailTable.dataSource;
@@ -1147,7 +1177,7 @@
          校验当前选择的产品 入库数量是否大于订单量
        */
       checkAllowInMoreOrderForAddProductBtn(currentRows,rows){
-        if(this.allowInMoreOrder === "0"){
+        if(this.allowInMoreOrder == "0"){
           let bool = true;
           let name = "";
           let purchaseOrderDetail = this.pdPurchaseOrderDetailTable.dataSource;
@@ -1199,7 +1229,7 @@
         if (!res.success) {
           this.cmsFailed(res.message);
         }
-        if (currentValue === value) {
+        if (currentValue == value) {
           const result = res.result;
           const data = [];
           result.forEach(r => {

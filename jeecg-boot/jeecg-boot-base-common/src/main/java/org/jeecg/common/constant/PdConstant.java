@@ -95,8 +95,21 @@ public interface PdConstant {
 	public final static String ON_OFF_ALLOW_EDIT_PRICE = "on_off_allow_edit_price";
 	/**开关-是否显示入库单抬头**/
 	public final static String ON_OFF_STOCK_IN_TEXT = "on_off_stock_in_text";
+	public final static Integer ON_OFF_STOCK_IN_TEXT_0 = 0; // 1-显示；0-不显示
+	public final static Integer ON_OFF_STOCK_IN_TEXT_1 = 1; // 1-显示；0-不显示
 	/**开关-是否显示出库单抬头**/
-	public final static String ON_OFF_STOCK_OUT_TEXT = "on_off_stock_in_text";
+	public final static String ON_OFF_STOCK_OUT_TEXT = "on_off_stock_out_text";
+	public final static Integer ON_OFF_STOCK_OUT_TEXT_0 = 0; // 1-显示；0-不显示
+	public final static Integer ON_OFF_STOCK_OUT_TEXT_1 = 1; // 1-显示；0-不显示
+	/**开关-是否需要入库审批**/
+	public final static String ON_OFF_STOCK_IN_AUDIT = "on_off_stock_in_audit";
+	public final static Integer ON_OFF_STOCK_IN_AUDIT_0 = 0; // 1-是；0-否
+	public final static Integer ON_OFF_STOCK_IN_AUDIT_1 = 1; // 1-是；0-否
+	/**开关-是否需要出库审批**/
+	public final static String ON_OFF_STOCK_OUT_AUDIT = "on_off_stock_out_audit";
+	public final static Integer ON_OFF_STOCK_OUT_AUDIT_0 = 0; // 1-是；0-否
+	public final static Integer ON_OFF_STOCK_OUT_AUDIT_1 = 1; // 1-是；0-否
+
 
 	//系统消息提醒模板CODE
 	public final static String PURCHASE_SUBMIT_MSG = "purchase_submitMsg";		//采购提交提醒

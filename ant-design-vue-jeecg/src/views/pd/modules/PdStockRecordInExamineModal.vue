@@ -389,11 +389,14 @@
               this.form.setFieldsValue(fieldval);
 
               if(this.model.id){
-                this.showOrderTable = true;
                 this.pdPurchaseOrderDetailTable.dataSource = res.result.pdPurchaseOrderMergeDetail || [];
                 this.pdStockRecordDetailTable.dataSource = res.result.pdStockRecordDetailList || [];
                 this.totalSum = res.result.totalSum;
                 this.inTotalPrice = res.result.inTotalPrice.toString();
+                this.showOrderTable = false;
+                if(this.pdPurchaseOrderDetailTable.dataSource.length > 0){
+                  this.showOrderTable = true;
+                }
               }
 
               this.goodsAllocationList = res.result.goodsAllocationList;

@@ -56,7 +56,6 @@
                     showSearch
                     placeholder="请选择入库库房"
                     :disabled="disableSubmit2"
-                    :supplierId="departValue"
                     :defaultActiveFirstOption="false"
                     :showArrow="true"
                     :filterOption="false"
@@ -66,7 +65,7 @@
                     :notFoundContent="notFoundContent"
                     v-decorator="[ 'inDepartId', validatorRules.inDepartId]"
                   >
-                    <a-select-option v-for="d in departList" :key="d.id">{{d.departName}}</a-select-option>
+                    <a-select-option v-for="d in departList" :key="d.id" :text="d.departName" >{{d.departName}}</a-select-option>
                   </a-select>
                 </a-form-item>
               </a-col>
@@ -190,7 +189,7 @@
 
     <template slot="footer">
       <a-button @click="handleCancel" style="margin-right: 15px;" v-show="disableSubmit">关  闭</a-button>
-      <a-button @click="printBtn" style="margin-right: 15px;" type="primary" v-show="showPrintBtn">打  印</a-button>
+      <a-button @click="printBtn('1')" style="margin-right: 15px;" type="primary" v-show="showPrintBtn">打  印</a-button>
       <a-popconfirm title="确定放弃编辑？" @confirm="handleCancel" v-show="!disableSubmit" okText="确定" cancelText="取消">
         <a-button style="margin-right: 15px;">取  消</a-button>
       </a-popconfirm>
@@ -198,7 +197,8 @@
         <a-button style="margin-right: 15px;" :loading="confirmLoading" type="danger">撤  回</a-button>
       </a-popconfirm>
       <a-button @click="saveBtn" v-show="!disableSubmit" type="primary" :loading="confirmLoading" style="margin-right: 15px;">保存草稿</a-button>
-      <a-button @click="submitBtn" v-show="!disableSubmit" type="primary" :loading="confirmLoading" style="margin-right: 15px;">提  交</a-button>
+      <a-button @click="submitBtn('1')" v-show="!disableSubmit" type="primary" :loading="confirmLoading" style="margin-right: 15px;">提  交</a-button>
+      <a-button @click="submitBtn('2')" v-show="showSubmitAndPrint" type="primary" :loading="confirmLoading" style="margin-right: 15px;">提交并打印</a-button>
     </template>
 
     <pd-choose-apply-order-list-model ref="pdChooseApplyOrderListModel" @ok="returnApplyOrderData" ></pd-choose-apply-order-list-model>
@@ -272,6 +272,7 @@
         showCancelBtn:false,
         showPrintBtn:false,
         showRefuseReason:false,
+        showSubmitAndPrint:false,
 
         initData:{},
         queryParam:{},
@@ -281,6 +282,7 @@
         departValue: undefined,
         notFoundContent:"未找到内容",
         departList:[],
+        inDepartName:"",
         //部门下拉列表 end
 
         orderTableTitle:"",
@@ -437,6 +439,7 @@
         this.showCancelBtn = false;
         this.showPrintBtn = false;
         this.showRefuseReason = false;
+        this.showSubmitAndPrint = false;
         this.departHandleSearch();  // 初始化部门列表 用于数据回显
         let params = {};
         if(this.model.id){
@@ -530,6 +533,12 @@
                   }
                 }
               }
+
+              //开关-是否需要出库审批  1-是；0-否
+              if(res.result.allowStockOutAudit == "0" && this.disableSubmit == false){
+                this.showSubmitAndPrint = true;
+              }
+
             })
           }
           if(res.code===510){
@@ -578,7 +587,12 @@
         this.close();
       },
       /**打印按钮**/
-      printBtn(){
+      printBtn(flag){
+        if(flag == "2"){
+          this.model.auditDate = this.form.getFieldValue("submitDate");
+          this.model.auditByName = this.model.submitByName;
+          this.model.inDepartName = this.inDepartName;
+        }
         this.model.totalSum = this.totalSum;
         this.model.outTotalPrice = this.outTotalPrice;
         this.model.inTotalPrice = this.inTotalPrice;
@@ -607,14 +621,14 @@
       },
       /** 保存草稿 **/
       saveBtn() {
-        this.request(this.url.add,"post");
+        this.request(this.url.add,"post","");
       },
       /** 提交 **/
-      submitBtn() {
-        this.request(this.url.submit,"post");
+      submitBtn(flag) {
+        this.request(this.url.submit,"post",flag);
       },
       /** 确定按钮点击事件 */
-      request(url, method) {
+      request(url, method,flag) {
         /** 触发表单验证 */
         this.getAllTable().then(tables => {
           /** 一次性验证主表和所有的次表 */
@@ -651,6 +665,10 @@
               this.$message.success(res.message)
               this.$emit('ok')
               this.close()
+
+              if(flag == "2"){
+                this.printBtn("2"); //通过并打印
+              }
             } else {
               this.$message.warning(res.message)
             }
@@ -712,16 +730,16 @@
         })
       },
       // 部门下拉框变更
-      departHandleChange(value){
+      departHandleChange(value,option){
         this.applyNo = "";
         this.allocationNo = "";
         this.form.setFieldsValue({applyNo:""});
         this.form.setFieldsValue({allocationNo:""});
         this.pdOrderDetailTable.dataSource = [];
+        this.inDepartName = option.data.attrs.text;
         this.eachAllTable((item) => {
           item.initialize()
         })
-
         let { values } = this.$refs.pdStockRecordDetail.getValuesSync({ validate: false });
         values.forEach((item, idx) => {
           // 清空货位
