@@ -601,6 +601,16 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
             pdStockRecord.setAllowStockInAudit(stockInAudit.getValue().toString());
         }
 
+        //开关-是否显示入库单抬头   1-是；0-否
+        query.setCode(PdConstant.ON_OFF_STOCK_IN_TEXT);
+        query.setValue(PdConstant.ON_OFF_STOCK_IN_TEXT_1);
+        PdOnOff stockInText = pdOnOffService.getOne(query);
+        if (stockInText != null) {
+            pdStockRecord.setStockInText(stockInText.getDescription());
+        }else{
+            pdStockRecord.setStockInText("");
+        }
+
         //库区库位下拉框
         pdStockRecord.setGoodsAllocationList(goodsAllocationList);
 
@@ -686,6 +696,16 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
         if (stockOutAudit != null && stockOutAudit.getValue() != null) {
             // 自动审批
             pdStockRecord.setAllowStockOutAudit(stockOutAudit.getValue().toString());
+        }
+
+        //开关-是否显示入库单抬头   1-是；0-否
+        query2.setCode(PdConstant.ON_OFF_STOCK_OUT_TEXT);
+        query2.setValue(PdConstant.ON_OFF_STOCK_OUT_TEXT_1);
+        PdOnOff stockOutText = pdOnOffService.getOne(query2);
+        if (stockOutText != null) {
+            pdStockRecord.setStockOutText(stockOutText.getDescription());
+        }else{
+            pdStockRecord.setStockOutText("");
         }
 
         return pdStockRecord;

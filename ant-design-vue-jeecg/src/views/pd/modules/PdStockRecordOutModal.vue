@@ -273,6 +273,7 @@
         showPrintBtn:false,
         showRefuseReason:false,
         showSubmitAndPrint:false,
+        stockOutText:"",
 
         initData:{},
         queryParam:{},
@@ -534,6 +535,7 @@
                 }
               }
 
+              this.stockOutText = res.result.stockOutText;
               //开关-是否需要出库审批  1-是；0-否
               if(res.result.allowStockOutAudit == "0" && this.disableSubmit == false){
                 this.showSubmitAndPrint = true;
@@ -598,7 +600,7 @@
         this.model.inTotalPrice = this.inTotalPrice;
         this.model.pdStockRecordDetailList = this.pdStockRecordDetailTable.dataSource;
         this.$refs.pdStockRecordOutPrintModal.show(this.model);
-        this.$refs.pdStockRecordOutPrintModal.title = "出库单";
+        this.$refs.pdStockRecordOutPrintModal.title = this.stockOutText + "出库单";
       },
       /**撤回**/
       cancelBtn(){

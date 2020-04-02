@@ -30,24 +30,28 @@
             </span>
             <a-input style="width: 20%;text-align: left" disabled v-model="record.auditDate"/>
             <span style="margin-left: 3%">
-              出库类型：
-            </span>
-            <a-input style="width: 20%;text-align: left" disabled v-model="record.outType" dictCode="out_type"/>
-          </a-col>
-          <a-col :span="24" style="margin-top: 10px">
-            <span style="margin-left: 3%">
               操作人员：
             </span>
             <a-input style="width: 20%;text-align: left" disabled v-model="record.submitByName"/>
-            <span style="margin-left: 3%">
-              审核人员：
-            </span>
-            <a-input style="width: 20%;text-align: left" disabled v-model="record.auditByName"/>
-            <span style="margin-left: 3%">
-              审核时间：
-            </span>
-            <a-input style="width: 20%;text-align: left" disabled v-model="record.auditDate"/>
+            <!--<span style="margin-left: 3%">-->
+              <!--出库类型：-->
+            <!--</span>-->
+            <!--<a-input style="width: 20%;text-align: left" disabled v-model="record.outType" dictCode="out_type"/>-->
           </a-col>
+          <!--<a-col :span="24" style="margin-top: 10px">-->
+            <!--<span style="margin-left: 3%">-->
+              <!--操作人员：-->
+            <!--</span>-->
+            <!--<a-input style="width: 20%;text-align: left" disabled v-model="record.submitByName"/>-->
+            <!--<span style="margin-left: 3%">-->
+              <!--审核人员：-->
+            <!--</span>-->
+            <!--<a-input style="width: 20%;text-align: left" disabled v-model="record.auditByName"/>-->
+            <!--<span style="margin-left: 3%">-->
+              <!--审核时间：-->
+            <!--</span>-->
+            <!--<a-input style="width: 20%;text-align: left" disabled v-model="record.auditDate"/>-->
+          <!--</a-col>-->
           <a-col :span="24" style="margin-top: 10px">
             <span style="margin-left: 3%">
               出库库房：
@@ -130,7 +134,7 @@
           { title: '入库单价', dataIndex: 'purchasePrice',align:"center", width:"10%" },
           { title: '出库单价', dataIndex: 'sellingPrice',align:"center", width:"10%" },
           { title: '出库金额', dataIndex: 'outTotalPrice',align:"center", width:"8%" },
-          {title: '有效期', dataIndex: 'expDate',align:"center", width:"9%", },
+          { title: '有效期', dataIndex: 'expDate',align:"center", width:"9%", },
         ],
         dataSource: [],
         labelCol: {

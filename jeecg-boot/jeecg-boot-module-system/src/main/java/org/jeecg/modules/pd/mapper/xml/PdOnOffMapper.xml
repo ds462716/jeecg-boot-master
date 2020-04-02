@@ -18,6 +18,9 @@
             <if test="departParentId != null and departParentId != ''">
                 AND a.depart_parent_id = #{departParentId}
             </if>
+            <if test="value != null">
+                AND a.value = #{value}
+            </if>
         </where>
     </select>
 </mapper>

@@ -216,6 +216,8 @@
         inTotalPrice:'0.0000',
         submitDateStr:"",
         auditByName:"",
+        stockOutText:"",
+
         args:{},
         //货区货位二级联动下拉框
         goodsAllocationList:[],
@@ -372,7 +374,7 @@
                   })
                   this.pdOrderDetailTable.dataSource = pdApplyDetailList;
                 }
-
+                this.stockOutText = res.result.stockOutText;
                 this.goodsAllocationList = res.result.goodsAllocationList;
                 this.pdStockRecordDetailTable.columns.forEach((item, idx) => {
                   if(item.key === "inHuoweiCode"){
@@ -402,7 +404,7 @@
         this.model.inTotalPrice = this.inTotalPrice;
         this.model.pdStockRecordDetailList = this.pdStockRecordDetailTable.dataSource;
         this.$refs.pdStockRecordOutPrintModal.show(this.model);
-        this.$refs.pdStockRecordOutPrintModal.title = "出库单";
+        this.$refs.pdStockRecordOutPrintModal.title = this.stockOutText + "出库单";
       },
       /** 关闭按钮点击事件 */
       handleCancel() {

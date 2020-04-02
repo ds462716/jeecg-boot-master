@@ -307,7 +307,7 @@
         totalSum:'0',
         inTotalPrice:'0.0000',
         submitDateStr:"",
-
+        stockInText:"",
         //货区货位二级联动下拉框
         goodsAllocationList:[],
         huoquOptions:[],
@@ -398,7 +398,8 @@
             { title: '金额', key: 'inTotalPrice', type: FormTypes.input, disabled:true, width:"100px" },
             { title: '货位', key: 'inHuoweiCode', type: FormTypes.select, width:"150px", options: [],allowSearch:true, placeholder: '${title}' },
             // { title: '申购单号', key: 'orderNo', },
-            { title: '合并申购单号', key: 'mergeOrderNo', type: FormTypes.input, disabled:true, width:"180px" }
+            { title: '合并申购单号', key: 'mergeOrderNo', type: FormTypes.input, disabled:true, width:"180px" },
+            { title: '生产厂家', key: 'venderName', type: FormTypes.hidden }
           ]
         },
         url: {
@@ -511,6 +512,7 @@
                 this.$refs['productNumberInput'].focus();
               }
 
+              this.stockInText = res.result.stockInText;
               this.allowInMoreOrder = res.result.allowInMoreOrder;
               this.allowNotOrderProduct = res.result.allowNotOrderProduct;
               this.allowSupplier = res.result.allowSupplier;
@@ -548,7 +550,7 @@
         this.model.inTotalPrice = this.inTotalPrice;
         this.model.pdStockRecordDetailList = this.pdStockRecordDetailTable.dataSource;
         this.$refs.pdStockRecordInPrintModal.show(this.model);
-        this.$refs.pdStockRecordInPrintModal.title = "入库单";
+        this.$refs.pdStockRecordInPrintModal.title = this.stockInText + "入库单";
       },
       /** 关闭按钮点击事件 */
       handleCancel() {

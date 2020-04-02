@@ -135,11 +135,13 @@
 		<include refid="PdStockRecordColumns"/>,
 		<include refid="pdUnitColumns"/>,
 		<include refid="pdProductColumns"/>,
+		<include refid="pdVenderColumns"/>,
 		<include refid="pdProductStockColumns"/>,
 		<include refid="pdGoodsAllocationColumns"/>
 		FROM  pd_stock_record_detail a
 		<include refid="PdStockRecordJoins"/>
 		<include refid="pdProductJoins"/>
+		<include refid="pdVenderJoins"/>
 		<include refid="pdUnitJoins"/>
 		<include refid="pdProductStockJoins"/>
 		<include refid="pdGoodsAllocationJoins"/>
