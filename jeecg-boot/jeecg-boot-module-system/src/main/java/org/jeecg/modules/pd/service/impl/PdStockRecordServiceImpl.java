@@ -12,13 +12,16 @@ import org.jeecg.common.system.vo.DictModel;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.DateUtils;
 import org.jeecg.common.util.oConvertUtils;
+import org.jeecg.modules.message.util.PushMsgUtil;
 import org.jeecg.modules.pd.entity.*;
 import org.jeecg.modules.pd.mapper.*;
 import org.jeecg.modules.pd.service.*;
 import org.jeecg.modules.pd.util.UUIDUtil;
 import org.jeecg.modules.pd.vo.PdGoodsAllocationPage;
 import org.jeecg.modules.system.entity.SysDepart;
+import org.jeecg.modules.system.entity.SysPermission;
 import org.jeecg.modules.system.service.ISysDictService;
+import org.jeecg.modules.system.service.ISysPermissionService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -71,6 +74,10 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
     private IPdAllocationDetailService pdAllocationDetailService;
     @Autowired
     private IPdOnOffService pdOnOffService;
+    @Autowired
+    private ISysPermissionService sysPermissionService;
+    @Autowired
+    private PushMsgUtil pushMsgUtil;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -121,6 +128,9 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
                 auditEntity.setAuditStatus(PdConstant.AUDIT_STATE_2);
                 auditEntity.setRefuseReason("系统自动审批通过");
                 this.auditIn(auditEntity,pdStockRecord);
+            }else{
+                // 推送消息
+                this.sendMsg(pdStockRecord,PdConstant.AUDIT_MENU_1,PdConstant.STOCK_RECORD_IN_SUBMIT_MSG);
             }
         } else if (PdConstant.RECODE_TYPE_2.equals(recordType)) {
             pdStockRecord.setRecordType(PdConstant.RECODE_TYPE_2); // 出库
@@ -140,6 +150,9 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
                 auditEntity.setAuditStatus(PdConstant.AUDIT_STATE_2);
                 auditEntity.setRefuseReason("系统自动审批通过");
                 this.auditOut(auditEntity,pdStockRecord);
+            }else{
+                // 推送消息
+                this.sendMsg(pdStockRecord,PdConstant.AUDIT_MENU_2,PdConstant.STOCK_RECORD_OUT_SUBMIT_MSG);
             }
         }
     }
@@ -754,5 +767,40 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
     @Override
     public Page<PdStockRecord> selectTransferList(Page<PdStockRecord> pageList, PdStockRecord pdStockRecord) {
         return pageList.setRecords(pdStockRecordMapper.selectTransferList(pdStockRecord));
+    }
+
+    /**
+     * 消息推送
+     * @param stockRecord
+     * @return
+     */
+    public boolean sendMsg(PdStockRecord stockRecord, String menuName, String templateCode) {
+        Map<String, Object> map = new HashMap<>();
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        List<String> userIdList =pdDepartService.findMenuUser(sysUser.getCurrentDepartId(),menuName);
+
+        String url = "";
+        QueryWrapper<SysPermission> queryWrapper = new QueryWrapper<SysPermission>();
+        queryWrapper.eq("name",menuName);
+        List<SysPermission> permissionList = sysPermissionService.list(queryWrapper);
+        if(CollectionUtils.isNotEmpty(permissionList)){
+            url = permissionList.get(0).getUrl();
+        }
+
+        if (CollectionUtils.isNotEmpty(userIdList)) {
+            String userIds = String.join(",", userIdList);
+            Map<String, String> strMap = new HashMap<>();
+            //模板注入参数
+            strMap.put("userName", sysUser.getRealname());
+            strMap.put("recordNo", stockRecord.getRecordNo());
+            strMap.put("url", url);
+            map.put("map", strMap);
+            //需要发送消息的用户id
+            map.put("userIds", userIds + ",");
+            //短信模板标识
+            map.put("templateCode", templateCode);
+            return pushMsgUtil.newSendMessage(map);
+        }
+        return false;
     }
 }
