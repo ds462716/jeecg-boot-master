@@ -163,7 +163,9 @@ public class PdProductStockTotalController {
 						  }else{
 							  return Result.error("库存下限不能大于库存上限");
 						  }
-				  }
+				  }else{
+					stockTotal.setLimitDown(downNum);
+				}
 
 			 }
 			 if (ObjectUtils.isNotEmpty(upNum)) {//上限
@@ -174,6 +176,8 @@ public class PdProductStockTotalController {
 								}else{
 									return Result.error("库存上限必须大于库存下限");
 								}
+							}else{
+								stockTotal.setLimitUp(upNum);
 							}
 			 }
 			 pdProductStockTotalService.updateProductStockTotal(stockTotal);
