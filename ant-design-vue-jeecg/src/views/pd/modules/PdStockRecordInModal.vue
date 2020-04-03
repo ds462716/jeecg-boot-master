@@ -144,6 +144,7 @@
                 :customRow="onClickRow"
                 :disabled="disableSubmit"
                 @valueChange="valueChange"
+                @added="setPriceDisabled"
                 style="text-overflow: ellipsis;"
               >
               <!--:maxHeight 大于 600 后就会有BUG 一次性选择9条以上产品，会少显示一条-->
@@ -213,7 +214,7 @@
         <a-button style="margin-right: 15px;">取  消</a-button>
       </a-popconfirm>
       <a-popconfirm title="确定撤回？" @confirm="cancelBtn" v-show="showCancelBtn" okText="确定" cancelText="取消">
-        <a-button style="margin-right: 15px;" :loading="confirmLoading" type="danger">撤  回</a-button>
+        <a-button style="margin-right: 50px;" :loading="confirmLoading" type="danger">撤  回</a-button>
       </a-popconfirm>
       <a-button @click="saveBtn" v-show="!disableSubmit" type="primary" :loading="confirmLoading" style="margin-right: 15px;">保存草稿</a-button>
       <a-button @click="submitBtn('1')" v-show="!disableSubmit" type="primary" :loading="confirmLoading" style="margin-right: 15px;">提  交</a-button>
@@ -394,7 +395,7 @@
               placeholder: '${title}', defaultValue: '1',
               validateRules: [{ required: true, message: '${title}不能为空' },{ pattern: '^-?\\d+\\.?\\d*$',message: '${title}的格式不正确' }]
             },
-            { title: '入库单价', key: 'purchasePrice', width:"80px" },
+            { title: '入库单价', key: 'purchasePrice', type: FormTypes.input, disabled:true, width:"80px" },
             { title: '金额', key: 'inTotalPrice', type: FormTypes.input, disabled:true, width:"100px" },
             { title: '货位', key: 'inHuoweiCode', type: FormTypes.select, width:"150px", options: [],allowSearch:true, placeholder: '${title}' },
             // { title: '申购单号', key: 'orderNo', },
@@ -517,6 +518,9 @@
               this.allowNotOrderProduct = res.result.allowNotOrderProduct;
               this.allowSupplier = res.result.allowSupplier;
               this.allowEditPrice = res.result.allowEditPrice;
+              if(this.disableSubmit){
+                this.allowEditPrice = "0";
+              }
               this.goodsAllocationList = res.result.goodsAllocationList;
               //开关-是否需要入库审批  1-是；0-否
               if(res.result.allowStockInAudit == "0" && this.disableSubmit == false){
@@ -814,6 +818,17 @@
         // 计算总数量和总价格
         this.getTotalNumAndPrice(values);
       },
+      setPriceDisabled(){
+        if(this.allowEditPrice == "1"){
+          this.$nextTick(() => {
+            let caseId = this.$refs.pdStockRecordDetail.caseId;
+            let rows = this.$refs.pdStockRecordDetail.rows;
+            for(let item of rows){
+              document.getElementById("purchasePrice"+item.id).disabled = false;
+            }
+          })
+        }
+      },
       // 点“选择产品”按钮后 调用 新增一行
       addrows(row){
         let data = {
@@ -874,7 +889,7 @@
           }
         })
         this.pdStockRecordDetailTable.dataSource.push(data);
-        this.$refs.pdStockRecordDetail.add();
+        // this.$refs.pdStockRecordDetail.add();
       },
       // 计算总数量和总价格
       getTotalNumAndPrice(rows){
@@ -926,6 +941,9 @@
                 let inTotalPrice = (Number(row.purchasePrice) * Number(value)).toFixed(4);
                 target.setValues([{rowKey: row.id, values: { inTotalPrice: inTotalPrice }}])
               }
+            }else if(column.key == "purchasePrice"){
+              let inTotalPrice = (Number(row.productNum) * Number(value)).toFixed(4);
+              target.setValues([{rowKey: row.id, values: { inTotalPrice: inTotalPrice }}])
             }
           }
         }

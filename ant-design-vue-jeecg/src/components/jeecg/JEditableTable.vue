@@ -954,6 +954,10 @@
             // 更新form表单的值
             this.$nextTick(() => {
               this.updateFormValues()
+              // added by jiangxz 20200403  增加行并且渲染完后 触发added
+              this.$emit('added', {
+                target: this
+              })
             })
           })
         }
@@ -1228,15 +1232,15 @@
         this.$nextTick(() => {
           this.updateFormValues()
         })
-        // 触发add事件
-        this.$emit('added', {
-          row: (() => {
-            let r = Object.assign({}, row)
-            r.id = this.removeCaseId(r.id)
-            return r
-          })(),
-          target: this
-        })
+        // // 触发add事件
+        // this.$emit('added', {
+        //   row: (() => {
+        //     let r = Object.assign({}, row)
+        //     r.id = this.removeCaseId(r.id)
+        //     return r
+        //   })(),
+        //   target: this
+        // })
         // 设置滚动条位置
         let tbody = this.getElement('tbody')
         let offsetHeight = tbody.offsetHeight

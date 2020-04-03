@@ -78,6 +78,8 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
     private ISysPermissionService sysPermissionService;
     @Autowired
     private PushMsgUtil pushMsgUtil;
+    @Autowired
+    private IPdProductService pdProductService;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -225,6 +227,16 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
         }
 
         if(CollectionUtils.isNotEmpty(newDetailList)){
+            //关-是否允许出入库时可修改进价和出价
+            PdOnOff query = new PdOnOff();
+            LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+            query.setDepartParentId(sysUser.getDepartParentId());
+            query.setCode(PdConstant.ON_OFF_ALLOW_EDIT_PRICE);
+            PdOnOff pdOnOff = pdOnOffService.getOne(query);
+            Integer allowEditPrice = null;
+            if (pdOnOff != null && pdOnOff.getValue() != null) {
+                allowEditPrice = pdOnOff.getValue();
+            }
             for (PdStockRecordDetail detail : newDetailList) {
                 detail.setId(null);//初始化ID (从前端传过来会自带页面列表行的ID)
                 detail.setRecordId(pdStockRecord.getId());//外键设置
@@ -238,6 +250,13 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
                     detail.setImportNo(pdStockRecord.getAllocationNo());
                 }
                 pdStockRecordDetailMapper.insert(detail);
+                // 修改产品进价
+                if(allowEditPrice == PdConstant.ON_OFF_ALLOW_EDIT_PRICE_1){
+                    PdProduct pdProduct = new PdProduct();
+                    pdProduct.setId(detail.getProductId());
+                    pdProduct.setPurchasePrice(detail.getPurchasePrice());
+                    pdProductService.updateProduct(pdProduct);
+                }
             }
         }
 
@@ -248,11 +267,30 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
         pdStockRecordMapper.insert(pdStockRecord);
 
         if (CollectionUtils.isNotEmpty(pdStockRecordDetailList)) {
+            //关-是否允许出入库时可修改进价和出价
+            PdOnOff query = new PdOnOff();
+            LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+            query.setDepartParentId(sysUser.getDepartParentId());
+            query.setCode(PdConstant.ON_OFF_ALLOW_EDIT_PRICE);
+            PdOnOff pdOnOff = pdOnOffService.getOne(query);
+            Integer allowEditPrice = null;
+            if (pdOnOff != null && pdOnOff.getValue() != null) {
+                allowEditPrice = pdOnOff.getValue();
+            }
+
             for (PdStockRecordDetail entity : pdStockRecordDetailList) {
                 entity.setId(null);//初始化ID (从前端传过来会自带页面列表行的ID)
                 entity.setRecordId(pdStockRecord.getId());//外键设置
                 entity.setDelFlag(PdConstant.DEL_FLAG_0);
                 pdStockRecordDetailMapper.insert(entity);
+
+                // 修改产品进价
+                if(allowEditPrice == PdConstant.ON_OFF_ALLOW_EDIT_PRICE_1){
+                    PdProduct pdProduct = new PdProduct();
+                    pdProduct.setId(entity.getProductId());
+                    pdProduct.setSellingPrice(entity.getSellingPrice());
+                    pdProductService.updateProduct(pdProduct);
+                }
             }
         }
         return pdStockRecord.getId();
@@ -709,6 +747,13 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
         if (stockOutAudit != null && stockOutAudit.getValue() != null) {
             // 自动审批
             pdStockRecord.setAllowStockOutAudit(stockOutAudit.getValue().toString());
+        }
+
+        //关-是否允许出入库时可修改进价和出价
+        query2.setCode(PdConstant.ON_OFF_ALLOW_EDIT_PRICE);
+        PdOnOff allowEditPrice = pdOnOffService.getOne(query2);
+        if (allowEditPrice != null && allowEditPrice.getValue() != null) {
+            pdStockRecord.setAllowEditPrice(allowEditPrice.getValue().toString());
         }
 
         //开关-是否显示入库单抬头   1-是；0-否

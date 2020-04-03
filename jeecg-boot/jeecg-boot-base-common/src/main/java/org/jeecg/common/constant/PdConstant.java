@@ -93,6 +93,8 @@ public interface PdConstant {
 	public final static String ON_OFF_ALLOW_SUPPLIER = "on_off_allow_supplier";
 	/**开关-是否允许出入库时可修改进价和出价 add by jiangxz 20200222 **/
 	public final static String ON_OFF_ALLOW_EDIT_PRICE = "on_off_allow_edit_price";
+	public final static Integer ON_OFF_ALLOW_EDIT_PRICE_0 = 0; // 1-是；0-否
+	public final static Integer ON_OFF_ALLOW_EDIT_PRICE_1 = 1; // 1-是；0-否
 	/**开关-是否显示入库单抬头**/
 	public final static String ON_OFF_STOCK_IN_TEXT = "on_off_stock_in_text";
 	public final static Integer ON_OFF_STOCK_IN_TEXT_0 = 0; // 1-显示；0-不显示

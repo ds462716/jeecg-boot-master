@@ -150,6 +150,7 @@
                 :actionButton="false"
                 :disabled="disableSubmit"
                 @valueChange="valueChange"
+                @added="setPriceDisabled"
                 style="text-overflow: ellipsis;"
               >
               <!--:maxHeight 大于 600 后就会有BUG 一次性选择9条以上产品，会少显示一条-->
@@ -194,7 +195,7 @@
         <a-button style="margin-right: 15px;">取  消</a-button>
       </a-popconfirm>
       <a-popconfirm title="确定撤回？" @confirm="cancelBtn" v-show="showCancelBtn" okText="确定" cancelText="取消">
-        <a-button style="margin-right: 15px;" :loading="confirmLoading" type="danger">撤  回</a-button>
+        <a-button style="margin-right: 50px;" :loading="confirmLoading" type="danger">撤  回</a-button>
       </a-popconfirm>
       <a-button @click="saveBtn" v-show="!disableSubmit" type="primary" :loading="confirmLoading" style="margin-right: 15px;">保存草稿</a-button>
       <a-button @click="submitBtn('1')" v-show="!disableSubmit" type="primary" :loading="confirmLoading" style="margin-right: 15px;">提  交</a-button>
@@ -278,6 +279,7 @@
         initData:{},
         queryParam:{},
         allowInMoreOrder:"",		//开关-是否允许入库量大于订单量   1-允许入库量大于订单量；0-不允许入库量大于订单量
+        allowEditPrice:"",//关-是否允许出入库时可修改进价和出价   1-允许；0不允许
 
         //部门下拉列表 start
         departValue: undefined,
@@ -361,7 +363,7 @@
             { title: '单位', key: 'unitName', width:"50px" },
             { title: '有效期', key: 'expDate', width:"100px" },
             { title: '入库单价', key: 'purchasePrice', width:"80px" },
-            { title: '出库单价', key: 'sellingPrice', width:"80px" },
+            { title: '出库单价', key: 'sellingPrice', type: FormTypes.input, disabled:true, width:"80px" },
             {
               title: '出库数量', key: 'productNum', type: FormTypes.input, width:"80px",
               placeholder: '${title}', defaultValue: '1',
@@ -535,6 +537,10 @@
                 }
               }
 
+              this.allowEditPrice = res.result.allowEditPrice;
+              if(this.disableSubmit){
+                this.allowEditPrice = "0";
+              }
               this.stockOutText = res.result.stockOutText;
               //开关-是否需要出库审批  1-是；0-否
               if(res.result.allowStockOutAudit == "0" && this.disableSubmit == false){
@@ -918,6 +924,17 @@
         this.queryParam = {};
         this.$refs.productNumberInput.focus();
       },
+      setPriceDisabled(){
+        if(this.allowEditPrice == "1"){
+          this.$nextTick(() => {
+            let caseId = this.$refs.pdStockRecordDetail.caseId;
+            let rows = this.$refs.pdStockRecordDetail.rows;
+            for(let item of rows){
+              document.getElementById("sellingPrice"+item.id).disabled = false;
+            }
+          })
+        }
+      },
       // 表格数据变更
       valueChange(event) {
         if(event){
@@ -938,6 +955,11 @@
               }
               // 产品数量变更 计算每条产品的价格
               let outTotalPrice = (Number(row.sellingPrice) * Number(value)).toFixed(4);
+              target.setValues([{rowKey: row.id, values: { outTotalPrice: outTotalPrice }}])
+              // 计算总数量和总价格
+              this.getTotalNumAndPrice([]);
+            }else if(column.key == "sellingPrice"){
+              let outTotalPrice = (Number(row.productNum) * Number(value)).toFixed(4);
               target.setValues([{rowKey: row.id, values: { outTotalPrice: outTotalPrice }}])
               // 计算总数量和总价格
               this.getTotalNumAndPrice([]);
