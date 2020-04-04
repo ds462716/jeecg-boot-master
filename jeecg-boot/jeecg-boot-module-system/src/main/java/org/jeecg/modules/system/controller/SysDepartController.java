@@ -1,27 +1,19 @@
 package org.jeecg.modules.system.controller;
 
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.CacheConstant;
+import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.system.util.JwtUtil;
 import org.jeecg.common.system.vo.LoginUser;
+import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.system.entity.SysDepart;
 import org.jeecg.modules.system.model.DepartIdModel;
 import org.jeecg.modules.system.model.SysDepartTreeModel;
 import org.jeecg.modules.system.service.ISysDepartService;
-import org.jeecg.modules.system.util.FindsDepartsChildrenUtil;
 import org.jeecgframework.poi.excel.ExcelImportUtil;
 import org.jeecgframework.poi.excel.def.NormalExcelConstants;
 import org.jeecgframework.poi.excel.entity.ExportParams;
@@ -29,19 +21,15 @@ import org.jeecgframework.poi.excel.entity.ImportParams;
 import org.jeecgframework.poi.excel.view.JeecgEntityExcelView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.util.CollectionUtils;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-
-import lombok.extern.slf4j.Slf4j;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.*;
 
 /**
  * <p>
@@ -57,6 +45,31 @@ public class SysDepartController {
 
 	@Autowired
 	private ISysDepartService sysDepartService;
+
+	/**
+	 * 查询数据 查出我的部门,并以树结构数据格式响应给前端
+	 *
+	 * @return
+	 */
+	@RequestMapping(value = "/queryMyDeptTreeList", method = RequestMethod.GET)
+	public Result<List<SysDepartTreeModel>> queryMyDeptTreeList() {
+		Result<List<SysDepartTreeModel>> result = new Result<>();
+		LoginUser user = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		try {
+			if(oConvertUtils.isNotEmpty(user.getIdentity()) && user.getIdentity() == CommonConstant.USER_IDENTITY_2 ){
+				List<SysDepartTreeModel> list = sysDepartService.queryMyDeptTreeList(user.getDepartIds());
+				result.setResult(list);
+				result.setMessage(CommonConstant.USER_IDENTITY_2.toString());
+				result.setSuccess(true);
+			}else{
+				result.setMessage(CommonConstant.USER_IDENTITY_1.toString());
+				result.setSuccess(true);
+			}
+		} catch (Exception e) {
+			log.error(e.getMessage(),e);
+		}
+		return result;
+	}
 
 	/**
 	 * 查询数据 查出所有部门,并以树结构数据格式响应给前端
@@ -228,20 +241,14 @@ public class SysDepartController {
 	@RequestMapping(value = "/searchBy", method = RequestMethod.GET)
 	public Result<List<SysDepartTreeModel>> searchBy(@RequestParam(name = "keyWord", required = true) String keyWord) {
 		Result<List<SysDepartTreeModel>> result = new Result<List<SysDepartTreeModel>>();
-		try {
-			List<SysDepartTreeModel> treeList = this.sysDepartService.searhBy(keyWord);
-			if (treeList.size() == 0 || treeList == null) {
-				throw new Exception();
-			}
-			result.setSuccess(true);
-			result.setResult(treeList);
-			return result;
-		} catch (Exception e) {
-			e.fillInStackTrace();
+		List<SysDepartTreeModel> treeList = this.sysDepartService.searhBy(keyWord);
+		if (treeList == null || treeList.size() == 0) {
 			result.setSuccess(false);
-			result.setMessage("查询失败或没有您想要的任何数据!");
+			result.setMessage("未查询匹配数据！");
 			return result;
 		}
+		result.setResult(treeList);
+		return result;
 	}
 
 

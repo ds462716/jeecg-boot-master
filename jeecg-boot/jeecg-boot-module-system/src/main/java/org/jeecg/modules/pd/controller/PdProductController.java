@@ -1,41 +1,34 @@
 package org.jeecg.modules.pd.controller;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import org.jeecg.common.api.vo.Result;
-import org.jeecg.common.system.query.QueryGenerator;
-import org.jeecg.common.util.oConvertUtils;
-import org.jeecg.modules.pd.entity.PdProduct;
-import org.jeecg.modules.pd.entity.PdProductRule;
-import org.jeecg.modules.pd.service.IPdProductService;
-
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
-
+import org.apache.commons.lang.StringUtils;
+import org.apache.shiro.SecurityUtils;
+import org.jeecg.common.api.vo.Result;
+import org.jeecg.common.system.base.controller.JeecgController;
+import org.jeecg.common.system.vo.LoginUser;
+import org.jeecg.common.util.oConvertUtils;
+import org.jeecg.modules.pd.entity.PdProduct;
+import org.jeecg.modules.pd.entity.PdProductStock;
+import org.jeecg.modules.pd.service.IPdProductService;
+import org.jeecg.modules.pd.util.BarCodeUtil;
 import org.jeecg.modules.pd.util.FileUploadUtil;
 import org.jeecg.modules.pd.vo.PdProductPage;
-import org.jeecgframework.poi.excel.ExcelImportUtil;
 import org.jeecgframework.poi.excel.def.NormalExcelConstants;
 import org.jeecgframework.poi.excel.entity.ExportParams;
-import org.jeecgframework.poi.excel.entity.ImportParams;
 import org.jeecgframework.poi.excel.view.JeecgEntityExcelView;
-import org.jeecg.common.system.base.controller.JeecgController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
-import com.alibaba.fastjson.JSON;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
  /**
  * @Description: pd_product
@@ -66,6 +59,8 @@ public class PdProductController extends JeecgController<PdProduct, IPdProductSe
 								   HttpServletRequest req) {
 		Result<Page<PdProduct>> result = new Result<Page<PdProduct>>();
 		Page<PdProduct> pageList = new Page<PdProduct>(pageNo,pageSize);
+		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		pdProduct.setDepartParentId(sysUser.getDepartParentId());
 		pageList =pdProductService.selectList(pageList,pdProduct);//
 		result.setSuccess(true);
 		result.setResult(pageList);
@@ -98,10 +93,14 @@ public class PdProductController extends JeecgController<PdProduct, IPdProductSe
 						   @RequestParam MultipartFile[] licenceSiteUp8,@RequestParam MultipartFile[] licenceSiteUp9,
 						   @RequestParam MultipartFile[] licenceSiteUp10,@RequestParam MultipartFile[] licenceSiteUp11
 	 ) {
-		 Result<Boolean> result = new Result<>();
-		 //如果此参数为false则程序发生异常
-		 result.setResult(true);
-		 result.setMessage("添加成功");
+         LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+         pdProduct.setDepartParentId(sysUser.getDepartParentId());
+         pdProduct.setNumber(BarCodeUtil.trimStr(pdProduct.getNumber()));
+         //校验产品编号是否唯
+         List<PdProduct> obj = pdProductService.verify(pdProduct);
+         if (obj != null && obj.size()>0) {
+			 return Result.error("产品编号已存在");
+         }
 		 //存入图片
 		 if(!FileUploadUtil.isImgEmpty(licenceSiteUp0)){
 			 String filePath = FileUploadUtil.upload(licenceSiteUp0);
@@ -169,10 +168,14 @@ public class PdProductController extends JeecgController<PdProduct, IPdProductSe
                           @RequestParam MultipartFile[] licenceSiteUp8,@RequestParam MultipartFile[] licenceSiteUp9,
                           @RequestParam MultipartFile[] licenceSiteUp10,@RequestParam MultipartFile[] licenceSiteUp11
     ) {
-        Result<Boolean> result = new Result<>();
-        //如果此参数为false则程序发生异常
-        result.setResult(true);
-        result.setMessage("编辑成功");
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        pdProduct.setDepartParentId(sysUser.getDepartParentId());
+        //校验产品编号是否唯
+        pdProduct.setNumber(BarCodeUtil.trimStr(pdProduct.getNumber()));
+        List<PdProduct> obj = pdProductService.verify(pdProduct);
+        if (obj != null && obj.size()>0) {
+            return Result.error("产品编号已存在");
+        }
         //存入图片
         if(!FileUploadUtil.isImgEmpty(licenceSiteUp0)){
             String filePath = FileUploadUtil.upload(licenceSiteUp0);
@@ -297,6 +300,19 @@ public class PdProductController extends JeecgController<PdProduct, IPdProductSe
         pdProductService.updateProduct(pdProduct);
         return Result.ok("编辑成功！");
     }
+
+	 /**
+	  * 判断产品编号是否禁用
+	  * @param pdProduct
+	  * @param request
+	  * @return
+	  */
+	 @RequestMapping(value = "/isDisabledNumber", method = RequestMethod.GET)
+	 public Result<Object> isDisabledNumber(PdProduct pdProduct, HttpServletRequest request) {
+		 Result<Object>   bl = pdProductService.isDisabledNumber(pdProduct);
+		 return bl;
+	 }
+
 	
 	/**
 	 *  编辑
@@ -311,20 +327,63 @@ public class PdProductController extends JeecgController<PdProduct, IPdProductSe
 	}
 
 	 /**
-	  * 条码规则解析
+	  * 入库条码规则解析
 	  * @param Barcode1
 	  * @param Barcode2
 	  * @param req
 	  * @return
 	  */
 	@PostMapping(value = "scanCode")
-	public Result<?> scanCode(String Barcode1,String Barcode2,
+	public Result<Map> scanCode(String Barcode1,String Barcode2,
 								HttpServletRequest req) {
-		Map<String,Object> resultMap = new HashMap<String,Object>();
-		resultMap = pdProductService.getScanCode(Barcode1,Barcode2);
-
-		return null;
+		Result<Map> result = new Result<Map>();
+		try{
+			result = pdProductService.getScanCode(Barcode1,Barcode2,result);
+		}catch(Exception e){
+			log.error(e.getMessage(), e);
+			result.setCode(500);
+			result.setMessage("条码格式不正确");
+		}
+		return result;
 	}
+
+	 /**
+	  * 条码解析并查询库存
+	  * @param Barcode1
+	  * @param Barcode2
+	  * @param req
+	  * @return
+	  */
+	 @PostMapping(value = "stockScanCode")
+	 public Result<List<PdProductStock>> stockScanCode(String Barcode1,String Barcode2,
+													   HttpServletRequest req) {
+		 Result<List<PdProductStock>> result = new Result<List<PdProductStock>>();
+		 try{
+			 result = pdProductService.getStocks(Barcode1,Barcode2,result);
+		 }catch(Exception e){
+			 log.error(e.getMessage(), e);
+             result.setCode(500);
+			 result.setMessage("系统异常");
+		 }
+		 return result;
+	 }
+
+	 /**
+	  *  批量修改产品收费代码
+	  *
+	  * @param ids
+	  * @return
+	  */
+	 @PostMapping(value = "/editChargeCodeBatch")
+	 public Result<?> editChargeCodeBatch(@RequestParam String ids,@RequestParam String chargeCode) {
+		 if(!oConvertUtils.isEmpty(ids) && !oConvertUtils.isEmpty(chargeCode)){
+			 this.pdProductService.editChargeCodeBatch(ids,chargeCode);
+			 return Result.ok("批量修改成功!");
+		 }else{
+			 return Result.error("参数不正确!");
+		 }
+
+	 }
 
 	/**
 	 *   通过id删除
@@ -334,8 +393,8 @@ public class PdProductController extends JeecgController<PdProduct, IPdProductSe
 	 */
 	@DeleteMapping(value = "/delete")
 	public Result<?> delete(@RequestParam(name="id",required=true) String id) {
-		pdProductService.removeById(id);
-		return Result.ok("删除成功!");
+		Result<Object> resul = pdProductService.deleteV(id);
+		return resul;
 	}
 	
 	/**
@@ -346,8 +405,8 @@ public class PdProductController extends JeecgController<PdProduct, IPdProductSe
 	 */
 	@DeleteMapping(value = "/deleteBatch")
 	public Result<?> deleteBatch(@RequestParam(name="ids",required=true) String ids) {
-		this.pdProductService.removeByIds(Arrays.asList(ids.split(",")));
-		return Result.ok("批量删除成功!");
+		Result<Object> resul = pdProductService.deleteBatchV(ids);
+		return resul;
 	}
 	
 	/**
@@ -372,8 +431,18 @@ public class PdProductController extends JeecgController<PdProduct, IPdProductSe
     * @param pdProduct
     */
     @RequestMapping(value = "/exportXls")
-    public ModelAndView exportXls(HttpServletRequest request, PdProduct pdProduct) {
-        return super.exportXls(request, pdProduct, PdProduct.class, "pd_product");
+    public ModelAndView exportXls(HttpServletRequest request, PdProduct pdProduct ) {
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        pdProduct.setDepartParentId(sysUser.getDepartParentId());
+        //Step.1 获取导出数据
+        List<PdProduct> pdProducts = pdProductService.selectList(pdProduct);
+        // Step.2 AutoPoi 导出Excel
+        ModelAndView mv = new ModelAndView(new JeecgEntityExcelView());
+        mv.addObject(NormalExcelConstants.FILE_NAME, "产品列表");
+        mv.addObject(NormalExcelConstants.CLASS, PdProduct.class);
+        mv.addObject(NormalExcelConstants.PARAMS, new ExportParams("产品列表数据", "导出人:" + sysUser.getRealname(), "产品数据"));
+        mv.addObject(NormalExcelConstants.DATA_LIST, pdProducts);
+        return mv;
     }
 
     /**
@@ -385,8 +454,11 @@ public class PdProductController extends JeecgController<PdProduct, IPdProductSe
     */
     @RequestMapping(value = "/importExcel", method = RequestMethod.POST)
     public Result<?> importExcel(HttpServletRequest request, HttpServletResponse response) {
-        return super.importExcel(request, response, PdProduct.class);
-    }
+		MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
+		Map<String, MultipartFile> fileMap = multipartRequest.getFileMap();
+		Result<Object> resul = pdProductService.importExcel(fileMap);
+		return resul;
+	}
 
 	 /**
 	  * 查询产品列表，用于选择产品弹出框
@@ -398,11 +470,13 @@ public class PdProductController extends JeecgController<PdProduct, IPdProductSe
 	  * @return
 	  */
 	 @GetMapping(value = "/chooseProductList")
-	 public Result<?> chooseProductList(PdProduct pdProduct,
+	 public Result<?> chooseProductList(PdProductPage pdProduct,
 									@RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
 									@RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
 									HttpServletRequest req) {
 		 Page<PdProductPage> page = new Page<PdProductPage>(pageNo, pageSize);
+		 LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		 pdProduct.setDepartParentId(sysUser.getDepartParentId());
 		 IPage<PdProductPage> pageList = pdProductService.chooseProductList(page, pdProduct);
 		 return Result.ok(pageList);
 	 }

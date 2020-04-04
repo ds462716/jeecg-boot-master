@@ -15,6 +15,29 @@
 		</if>
 	</select>
 
+	<!-- 查询用户的所属部门名称信息 -->
+	<select id="getDepNamesByUserIds" resultType="org.jeecg.modules.system.vo.SysUserDepVo">
+		select d.depart_name,ud.user_id from sys_user_depart ud,sys_depart d where d.id = ud.dep_id and ud.user_id in
+		<foreach collection="userIds" index="index" item="id" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</select>
+
+	<!-- 通过多个部门IDS，查询部门下的用户信息 -->
+	<select id="getUserByDepIds" resultType="org.jeecg.modules.system.entity.SysUser">
+		select * from sys_user where del_flag = '0'
+		<if test="departIds!=null  and departIds.size()>0">
+			and id in (select user_id from sys_user_depart where dep_id in
+			<foreach collection="departIds" index="index" item="id" open="(" separator="," close=")">
+				#{id}
+			</foreach>
+			)
+		</if>
+		<if test="username!=null and username!=''">
+			and username = #{username}
+		</if>
+	</select>
+
 	<!-- 根据角色Id查询 -->
 	<select id="getUserByRoleId" resultType="org.jeecg.modules.system.entity.SysUser">
 		select * from sys_user where del_flag = '0' and id in (select user_id from sys_user_role where role_id=#{roleId})
@@ -47,7 +70,7 @@
 		-- 关联查询出该用户的详细信息
 		INNER JOIN sys_user ON sys_user.id = sys_user_depart.user_id
 		WHERE
-		sys_depart.org_code LIKE '${orgCode}%'
+		sys_user.del_flag = "0" AND sys_depart.org_code LIKE '${orgCode}%'
 
 		<if test="userParams != null">
 			<if test="userParams.realname != null and userParams.realname != ''">
@@ -97,4 +120,137 @@
 			#{id}
 		</foreach>
 	</update>
+
+	<!-- 查询被逻辑删除的用户 -->
+	<select id="selectLogicDeleted" resultType="org.jeecg.modules.system.entity.SysUser">
+		SELECT * FROM sys_user ${ew.customSqlSegment}
+	</select>
+
+	<!-- 更新被逻辑删除的用户 -->
+	<update id="revertLogicDeleted">
+		UPDATE
+			sys_user
+		SET
+			del_flag = "0",
+			update_by = #{entity.updateBy},
+			update_time = #{entity.updateTime}
+		WHERE
+			del_flag = "1"
+			AND id IN (${userIds})
+	</update>
+
+	<!-- 彻底删除被逻辑删除的用户 -->
+	<delete id="deleteLogicDeleted">
+		DELETE FROM sys_user WHERE del_flag = "1" AND id IN (${userIds})
+	</delete>
+
+	<select id="departUserList" resultType="org.jeecg.modules.system.entity.SysUser">
+		select * from sys_user a
+		LEFT JOIN sys_user_depart b on a.id = b.user_id
+		<where>
+			a.del_flag = #{parMap.DEL_FLAG_NORMAL}
+		</where>
+		<if test="parMap.name != null and parMap.name != ''">
+			and a.realname like concat('%',#{parMap.name},'%')
+		</if>
+		<if test="parMap.username != null and parMap.username != ''">
+			and a.username like concat('%',#{parMap.username},'%')
+		</if>
+		<if test="parMap.deptId != null and parMap.deptId != ''">
+			and b.dep_id = #{parMap.deptId}
+		</if>
+		<if test="parMap.admin != null and parMap.admin != ''">
+			and a.username != #{parMap.admin}
+		</if>
+		<if test="parMap.deptParentId != null and parMap.deptParentId != ''">
+			and a.depart_parent_id = #{parMap.deptParentId}
+		</if>
+	</select>
+
+
+	<select id="findUserList" resultType="org.jeecg.modules.system.entity.SysUser">
+		select * from sys_user a
+		<where>
+			a.del_flag = #{parMap.DEL_FLAG_NORMAL}
+		</where>
+		<if test="parMap.name != null and parMap.name != ''">
+			and a.realname like concat('%',#{parMap.name},'%')
+		</if>
+		<if test="parMap.username != null and parMap.username != ''">
+			and a.username like concat('%',#{parMap.username},'%')
+		</if>
+		<if test="parMap.sex != null and parMap.sex != ''">
+			and a.sex = #{parMap.sex}
+		</if>
+		<if test="parMap.realname != null and parMap.realname != ''">
+			and a.realname like concat('%',#{parMap.realname},'%')
+		</if>
+		<if test="parMap.phone != null and parMap.phone != ''">
+			and a.phone like concat('%',#{parMap.phone},'%')
+		</if>
+		<if test="parMap.status != null and parMap.status != ''">
+			and a.status = #{parMap.	status}
+		</if>
+		<if test="parMap.admin != null and parMap.admin != ''">
+			and a.username != #{parMap.admin}
+		</if>
+		<if test="parMap.deptParentId != null and parMap.deptParentId != ''">
+			and a.depart_parent_id = #{parMap.deptParentId}
+		</if>
+	</select>
+
+	<select id="findAllUserList" resultType="org.jeecg.modules.system.entity.SysUser">
+		select * from sys_user a
+		<where>
+			a.del_flag = #{parMap.DEL_FLAG_NORMAL}
+		</where>
+		<if test="parMap.admin != null and parMap.admin != ''">
+			and a.username != #{parMap.admin}
+		</if>
+		<if test="parMap.deptParentId != null and parMap.deptParentId != ''">
+			and a.depart_parent_id = #{parMap.deptParentId}
+		</if>
+	</select>
+
+
+	<!-- 查询同一部门下拥有菜单权限的用户 -->
+	<select id="findMenuUser" resultType="String">
+		SELECT
+			id
+		FROM
+			sys_user h
+		WHERE
+			h.id IN (
+				SELECT
+					a.user_id
+				FROM
+					sys_depart_role_user a
+				WHERE
+					a.drole_id IN (
+						SELECT
+							a.id
+						FROM
+							sys_depart_role a
+						LEFT JOIN sys_depart_role_permission b ON a.id = b.role_id
+						LEFT JOIN sys_permission c ON b.permission_id = c.id
+						WHERE
+							a.depart_id = #{departId}
+						AND c.`name` = #{menuName}
+					)
+			)
+		AND h.del_flag = '0'
+	</select>
+
+	<!-- 查询部门下所有的用户 -->
+	<select id="findDepartUserIds" resultType="String">
+		SELECT
+			a.id
+		FROM
+			sys_user a
+		LEFT JOIN sys_user_depart b ON a.id = b.user_id
+		WHERE
+			b.dep_id = #{departId}
+		AND a.del_flag = '0'
+	</select>
+
 </mapper>

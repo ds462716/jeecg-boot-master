@@ -6,24 +6,25 @@
     :confirmLoading="confirmLoading"
     @ok="handleOk"
     @cancel="handleCancel"
+    :maskClosable=disableSubmit
     cancelText="关闭">
     <a-spin :spinning="confirmLoading">
       <a-form :form="form">
 
         <a-form-item label="名称" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input ref="inputFocus" @change="pinyinTran" v-decorator="[ 'name', validatorRules.name]" placeholder="请输入名称"></a-input>
+          <a-input :disabled="disableSubmit" autocomplete="off" ref="inputFocus" @change="pinyinTran" v-decorator="[ 'name', validatorRules.name]" placeholder="请输入名称"></a-input>
         </a-form-item>
         <a-form-item label="拼音简码" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input v-decorator="[ 'py', validatorRules.py]" placeholder="请输入拼音简码"></a-input>
+          <a-input :disabled="disableSubmit" autocomplete="off" v-decorator="[ 'py', validatorRules.py]" ></a-input>
         </a-form-item>
         <a-form-item label="五笔简码" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input v-decorator="[ 'wb', validatorRules.wb]" placeholder="请输入五笔简码"></a-input>
+          <a-input :disabled="disableSubmit" autocomplete="off" v-decorator="[ 'wb', validatorRules.wb]" ></a-input>
         </a-form-item>
         <a-form-item label="自定义码" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input v-decorator="[ 'zdy', validatorRules.zdy]" placeholder="请输入自定义码"></a-input>
+          <a-input :disabled="disableSubmit" autocomplete="off" v-decorator="[ 'zdy', validatorRules.zdy]" ></a-input>
         </a-form-item>
         <a-form-item label="备注" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input v-decorator="[ 'remarks', validatorRules.remarks]" placeholder="请输入备注"></a-input>
+          <a-input :disabled="disableSubmit" autocomplete="off" v-decorator="[ 'remarks', validatorRules.remarks]" ></a-input>
         </a-form-item>
 
       </a-form>
@@ -37,6 +38,7 @@
   import pick from 'lodash.pick'
   import { validateDuplicateValue } from '@/utils/util'
   import { makeWb } from '@/utils/wubi'
+  import {duplicateCheckHasDelFlag } from '@/api/api'
 
   export default {
     name: "PdGroupModal",
@@ -48,6 +50,7 @@
         title:"操作",
         width:800,
         visible: false,
+        disableSubmit:false,
         model: {},
         labelCol: {
           xs: { span: 24 },
@@ -58,9 +61,13 @@
           sm: { span: 16 },
         },
         confirmLoading: false,
+        validateGroupId:"",
         validatorRules: {
           name: {rules: [
             {required: true, message: '请输入名称!'},
+              {
+                validator: this.validateName,
+              }
           ]},
           py: {rules: [
           ]},
@@ -84,11 +91,15 @@
         this.edit({});
       },
       edit (record) {
+        //编辑时显示图片
+        if(record.hasOwnProperty("id")){
+          this.validateGroupId = record.id;
+        }
         this.form.resetFields();
         this.model = Object.assign({}, record);
         this.visible = true;
         this.$nextTick(() => {
-          this.form.setFieldsValue(pick(this.model,'name','py','wb','zdy','createTime','updateTime','remarks'))
+          this.form.setFieldsValue(pick(this.model,'name','py','wb','zdy','remarks'))
           //获取光标
           let input = this.$refs['inputFocus'];
           input.focus()
@@ -146,7 +157,21 @@
         let wb = makeWb(val);
         this.form.setFieldsValue({wb:wb});//获取五笔简码
       },
-      
+      validateName(rule, value, callback){
+        var params = {
+          tableName: 'pd_group',
+          fieldName: 'name',
+          fieldVal: value,
+          dataId: this.validateGroupId
+        };
+        duplicateCheckHasDelFlag(params).then((res) => {
+          if (res.success) {
+            callback()
+          } else {
+            callback("组别已存在!")
+          }
+        })
+      },
     }
   }
 </script>

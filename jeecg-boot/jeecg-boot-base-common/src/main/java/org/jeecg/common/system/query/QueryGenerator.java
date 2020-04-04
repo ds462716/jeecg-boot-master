@@ -1,20 +1,8 @@
 package org.jeecg.common.system.query;
 
-import java.beans.PropertyDescriptor;
-import java.io.UnsupportedEncodingException;
-import java.math.BigDecimal;
-import java.net.URLDecoder;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
+import com.alibaba.fastjson.JSON;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.constant.DataBaseConstant;
@@ -27,10 +15,15 @@ import org.jeecg.common.util.oConvertUtils;
 import org.jeecgframework.core.util.ApplicationContextUtil;
 import org.springframework.util.NumberUtils;
 
-import com.alibaba.fastjson.JSON;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-
-import lombok.extern.slf4j.Slf4j;
+import java.beans.PropertyDescriptor;
+import java.io.UnsupportedEncodingException;
+import java.math.BigDecimal;
+import java.net.URLDecoder;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Slf4j
 public class QueryGenerator {
@@ -96,7 +89,7 @@ public class QueryGenerator {
 		
 		//区间条件组装 模糊查询 高级查询组装 简单排序 权限查询
 		PropertyDescriptor origDescriptors[] = PropertyUtils.getPropertyDescriptors(searchObj);
-		Map<String,SysPermissionDataRuleModel> ruleMap = getRuleMap();
+		Map<String, SysPermissionDataRuleModel> ruleMap = getRuleMap();
 		
 		//权限规则自定义SQL表达式
 		for (String c : ruleMap.keySet()) {
@@ -191,7 +184,7 @@ public class QueryGenerator {
 				column = column.substring(0, column.lastIndexOf(CommonConstant.DICT_TEXT_SUFFIX));
 			}
 			//SQL注入check
-			SqlInjectionUtil.filterContent(column); 
+			SqlInjectionUtil.filterContent(column);
 			
 			if (order.toUpperCase().indexOf(ORDER_TYPE_ASC)>=0) {
 				queryWrapper.orderByAsc(oConvertUtils.camelToUnderline(column));
@@ -316,7 +309,7 @@ public class QueryGenerator {
 		return value;
 	}
 	
-	private static void addQueryByRule(QueryWrapper<?> queryWrapper,String name,String type,String value,QueryRuleEnum rule) throws ParseException {
+	private static void addQueryByRule(QueryWrapper<?> queryWrapper, String name, String type, String value, QueryRuleEnum rule) throws ParseException {
 		if(oConvertUtils.isNotEmpty(value)) {
 			Object temp;
 			switch (type) {
@@ -356,13 +349,13 @@ public class QueryGenerator {
 	 * @return
 	 * @throws ParseException
 	 */
-	private static Date getDateQueryByRule(String value,QueryRuleEnum rule) throws ParseException {
+	private static Date getDateQueryByRule(String value, QueryRuleEnum rule) throws ParseException {
 		Date date = null;
 		if(value.length()==10) {
-			if(rule==QueryRuleEnum.GE) {
+			if(rule== QueryRuleEnum.GE) {
 				//比较大于
 				date = getTime().parse(value + " 00:00:00");
-			}else if(rule==QueryRuleEnum.LE) {
+			}else if(rule== QueryRuleEnum.LE) {
 				//比较小于
 				date = getTime().parse(value + " 23:59:59");
 			}
@@ -443,12 +436,12 @@ public class QueryGenerator {
 	
 
 	/**
-	 * 
+	 * 获取请求对应的数据权限规则
 	 * @return
 	 */
 	public static Map<String, SysPermissionDataRuleModel> getRuleMap() {
 		Map<String, SysPermissionDataRuleModel> ruleMap = new HashMap<String, SysPermissionDataRuleModel>();
-		List<SysPermissionDataRuleModel> list =JeecgDataAutorUtils.loadDataSearchConditon();
+		List<SysPermissionDataRuleModel> list = JeecgDataAutorUtils.loadDataSearchConditon();
 		if(list != null&&list.size()>0){
 			if(list.get(0)==null){
 				return ruleMap;
@@ -534,12 +527,12 @@ public class QueryGenerator {
 		if (value == null) {
 			return "";
 		}
-		field =  alias+oConvertUtils.camelToUnderline(field);
+		field =  alias+ oConvertUtils.camelToUnderline(field);
 		QueryRuleEnum rule = QueryGenerator.convert2Rule(value);
 		return getSingleSqlByRule(rule, field, value, isString);
 	}
 	
-	public static String getSingleSqlByRule(QueryRuleEnum rule,String field,Object value,boolean isString) {
+	public static String getSingleSqlByRule(QueryRuleEnum rule, String field, Object value, boolean isString) {
 		String res = "";
 		switch (rule) {
 		case GT:
@@ -666,7 +659,7 @@ public class QueryGenerator {
 	public static String installAuthJdbc(Class<?> clazz) {
 		StringBuffer sb = new StringBuffer();
 		//权限查询
-		Map<String,SysPermissionDataRuleModel> ruleMap = getRuleMap();
+		Map<String, SysPermissionDataRuleModel> ruleMap = getRuleMap();
 		PropertyDescriptor origDescriptors[] = PropertyUtils.getPropertyDescriptors(clazz);
 		String sql_and = " and ";
 		for (String c : ruleMap.keySet()) {
@@ -707,7 +700,7 @@ public class QueryGenerator {
 	 */
 	public static void installAuthMplus(QueryWrapper<?> queryWrapper,Class<?> clazz) {
 		//权限查询
-		Map<String,SysPermissionDataRuleModel> ruleMap = getRuleMap();
+		Map<String, SysPermissionDataRuleModel> ruleMap = getRuleMap();
 		PropertyDescriptor origDescriptors[] = PropertyUtils.getPropertyDescriptors(clazz);
 		for (String c : ruleMap.keySet()) {
 			if(oConvertUtils.isNotEmpty(c) && c.startsWith(SQL_RULES_COLUMN)){

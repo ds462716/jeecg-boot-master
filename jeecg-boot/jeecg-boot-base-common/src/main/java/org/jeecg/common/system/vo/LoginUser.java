@@ -1,14 +1,12 @@
 package org.jeecg.common.system.vo;
 
-import java.util.Date;
-
-import org.springframework.format.annotation.DateTimeFormat;
-
 import com.fasterxml.jackson.annotation.JsonFormat;
-
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
+import org.springframework.format.annotation.DateTimeFormat;
+
+import java.util.Date;
 
 /**
  * <p>
@@ -90,4 +88,28 @@ public class LoginUser {
 	 */
 	private Date createTime;
 
+	/**
+	 *  身份（1 普通员工 2 上级）
+	 */
+	private Integer identity;
+
+	/**
+	 * 管理部门ids
+	 */
+	private String departIds;
+
+	/**
+	 * 当前登录部门
+	 */
+	private String currentDepartId;
+
+	/**
+	 *最顶级部门id（医院id）
+	 */
+	private String departParentId;
+
+	/**
+	 * 当前登录的部门类型
+	 */
+	private String departType;
 }

@@ -3,7 +3,7 @@
 <mapper namespace="org.jeecg.modules.system.mapper.SysDepartMapper">
 
 	<select id="queryUserDeparts" parameterType="String" resultType="org.jeecg.modules.system.entity.SysDepart">
-	   select * from sys_depart where id IN ( select dep_id from sys_user_depart where user_id = #{userId} )
+	   select * from sys_depart where del_flag = '0' and id IN ( select dep_id from sys_user_depart where user_id = #{userId} )
 	</select>
 
     <!-- 根据username查询所拥有的部门 -->
@@ -19,6 +19,99 @@
                 WHERE username = #{username}
             )
         )
+    </select>
+
+    <!-- 根据部门Id查询,当前和下级所有部门IDS -->
+    <select id="getSubDepIdsByDepId" resultType="java.lang.String">
+		select id from sys_depart where del_flag = '0' and org_code like concat((select org_code from sys_depart where id=#{departId}),'%')
+	</select>
+
+    <!--根据部门编码获取我的部门下所有部门ids -->
+    <select id="getSubDepIdsByOrgCodes" resultType="java.lang.String">
+		select id from sys_depart where del_flag = '0' and
+        <foreach collection="orgCodes" item="item" index="index"  open="(" separator="or" close=")">
+            org_code LIKE CONCAT(#{item},'%')
+        </foreach>
+	</select>
+
+
+    <!--根据条件获取部门信息-->
+    <select id="selectDepartList" resultType="org.jeecg.modules.system.entity.SysDepart">
+        select * from sys_depart a
+        <where>
+            a.del_flag = '0'
+        </where>
+        <if test="departName != null and departName != ''">
+            AND (a.depart_name LIKE concat('%',#{departName},'%')
+            or a.py LIKE concat('%',#{departName},'%')
+            or a.wb LIKE concat('%',#{departName},'%')
+            or a.zdy LIKE concat('%',#{departName},'%'))
+        </if>
+        <if test="parentId != null and parentId != ''">
+            AND a.parent_id = #{parentId}
+        </if>
+        <if test="orgType != null and orgType != ''">
+        AND a.org_type = #{orgType}
+        </if>
+        /*过滤本部门标识：如果不为null,则过滤*/
+        <if test="departParentId != null and departParentId != ''">
+            AND a.depart_parent_id = #{departParentId}
+            AND a.id != #{departParentId}
+        </if>
+        <if test="departId != null and departId != ''">
+            AND a.id != #{departId}
+        </if>
+    </select>
+
+    <!--根据条件获取二级部门信息-->
+    <select id="getSysTwoDepartList" resultType="org.jeecg.modules.system.entity.SysDepart">
+        select * from sys_depart a
+        <where>
+            a.del_flag = '0'
+        </where>
+        <if test="departName != null and departName != ''">
+            AND (a.depart_name LIKE concat('%',#{departName},'%')
+            or a.py LIKE concat('%',#{departName},'%')
+            or a.wb LIKE concat('%',#{departName},'%')
+            or a.zdy LIKE concat('%',#{departName},'%'))
+        </if>
+        <if test="parentId != null and parentId != ''">
+            AND a.parent_id = #{parentId}
+        </if>
+        <if test="orgType != null and orgType != ''">
+            AND a.org_type != #{orgType}
+        </if>
+        /*过滤本部门标识：如果不为null,则过滤*/
+        <if test="departParentId != null and departParentId != ''">
+            AND a.depart_parent_id = #{departParentId}
+            AND a.id != #{departParentId}
+        </if>
+        <if test="departId != null and departId != ''">
+            AND a.id != #{departId}
+        </if>
+    </select>
+
+    <select id="selectListByCTs" resultType="org.jeecg.modules.system.entity.SysDepart">
+        select
+        *
+        from sys_depart a
+        <where>
+            a.del_flag = #{parMap.DEL_FLAG_NORMAL}
+        </where>
+        <if test="parMap.ids != null and parMap.ids != ''">
+            and (
+            a.id in  ( ${parMap.ids} )
+            )
+        </if>
+        <if test="parMap.departName != null and parMap.departName != ''">
+            AND (a.depart_name LIKE concat('%',#{parMap.departName},'%')
+            or a.py LIKE concat('%',#{parMap.departName},'%')
+            or a.wb LIKE concat('%',#{parMap.departName},'%')
+            or a.zdy LIKE concat('%',#{parMap.departName},'%'))
+        </if>
+        <if test="parMap.departParentId != null and parMap.departParentId != ''">
+            and a.depart_parent_id = #{parMap.departParentId}
+        </if>
     </select>
 
 </mapper>

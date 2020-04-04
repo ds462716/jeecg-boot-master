@@ -13,7 +13,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  */
 public interface PdVenderMapper extends BaseMapper<PdVender> {
 
-    PdVender verify(PdVender pdVender);
+    List<PdVender> verify(PdVender pdVender);
 
     List<PdVender> selectList(PdVender pdVender);
 

@@ -2,6 +2,7 @@ package org.jeecg.modules.pd.util;
 
 import org.jeecg.common.util.DateUtils;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Random;
 import java.util.UUID;
@@ -59,5 +60,12 @@ public class UUIDUtil {
 		return sb.toString();
 	}
 
-
+	/**
+	 * 生成编号：前缀+当前时间（精确到毫秒）
+	 * */
+	public static String generateNumber(String prefix){
+		String format = new SimpleDateFormat("yyyyMMddHHmmssSSS") .format(new Date() );
+		String number = prefix+format;
+		return number;
+	}
 }

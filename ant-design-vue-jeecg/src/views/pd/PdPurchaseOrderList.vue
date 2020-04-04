@@ -9,19 +9,23 @@
               <a-input placeholder="请输入申购编号" v-model="queryParam.orderNo"></a-input>
             </a-form-item>
           </a-col>
-          <a-col :md="6" :sm="8">
+          <!--<a-col :md="6" :sm="8">
             <a-form-item label="申购科室">
               <a-input placeholder="请输入申购科室名称" v-model="queryParam.deptName"></a-input>
             </a-form-item>
+          </a-col>-->
+          <a-col  :md="6" :sm="8">
+            <a-form-item label="申购日期">
+              <a-range-picker @change="rejectedDateChange" v-model="queryParam.queryDate"/>
+            </a-form-item>
           </a-col>
-          <template v-if="toggleSearchStatus">
+          <template :md="6" v-if="toggleSearchStatus">
             <a-col :md="6" :sm="8">
               <a-form-item label="审核状态">
-                <a-select v-model="queryParam.orderStatus" placeholder="请选择审核状态">
-                  <a-select-option value="0">待审核</a-select-option>
-              <!--<a-select-option value="1">审核中</a-select-option>-->
+                <a-select v-model="queryParam.auditStatus" placeholder="请选择审核状态">
+                  <a-select-option value="1">待审核</a-select-option>
                   <a-select-option value="2">审核通过</a-select-option>
-                  <a-select-option value="3">审核不通过</a-select-option>
+                  <a-select-option value="3">已驳回</a-select-option>
                 </a-select>
               </a-form-item>
             </a-col>
@@ -45,12 +49,12 @@
     <!-- 操作按钮区域 -->
     <div class="table-operator">
       <a-button @click="handleAdd" type="primary" icon="plus">新增</a-button>
-      <a-dropdown v-if="selectedRowKeys.length > 0">
+       <!--<a-dropdown v-if="selectedRowKeys.length > 0">
         <a-menu slot="overlay">
           <a-menu-item key="1" @click="batchDel"><a-icon type="delete"/>删除</a-menu-item>
         </a-menu>
         <a-button style="margin-left: 8px"> 批量操作 <a-icon type="down" /></a-button>
-      </a-dropdown>
+      </a-dropdown>-->
     </div>
 
     <!-- table区域-begin -->
@@ -69,20 +73,19 @@
         :dataSource="dataSource"
         :pagination="ipagination"
         :loading="loading"
-        :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
+        :customRow="onClickRow"
+        :rowSelection="{fixed:false,selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
         @change="handleTableChange">
         <span slot="action" slot-scope="text, record">
-          <a  @click="handleEdit(record)">编辑</a>
-
+          <a  @click="handleEdit(record)"  v-bind:disabled="record.submitStatus=='2'">修改</a>
+          <a-divider type="vertical" />
+          <a @click="handleDetail(record)">详情</a>
           <a-divider type="vertical" />
           <a-dropdown>
-            <a class="ant-dropdown-link">更多 <a-icon type="down" /></a>
+            <a class="ant-dropdown-link"  v-bind:disabled="record.submitStatus=='2'" >更多 <a-icon type="down" /></a>
             <a-menu slot="overlay">
-              <a-menu-item>
-                <a href="javascript:;" @click="handleDetail(record)">详情</a>
-              </a-menu-item>
-              <a-menu-item>
-                <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record)">
+              <a-menu-item v-show="record.submitStatus=='1'">
+                <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.id)">
                   <a>删除</a>
                 </a-popconfirm>
               </a-menu-item>
@@ -99,8 +102,9 @@
 
 <script>
 
-  import { JeecgListMixin,handleEdit} from '@/mixins/JeecgListMixin'
+  import { JeecgListMixin,batchDel} from '@/mixins/JeecgListMixin'
   import { deleteAction } from '@/api/manage'
+  import { filterObj } from '@/utils/util';
   import PdPurchaseOrderModal from './modules/PdPurchaseOrderModal'
   import {initDictOptions, filterMultiDictText} from '@/components/dict/JDictSelectUtil'
 
@@ -152,34 +156,34 @@
           {
             title:'审核状态',
             align:"center",
-            dataIndex: 'orderStatus',
+            dataIndex: 'auditStatus',
             customRender:(text)=>{
               if(!text){
                 return ''
               }else{
-                return filterMultiDictText(this.dictOptions['orderStatus'], text+"")
+                return filterMultiDictText(this.dictOptions['auditStatus'], text+"")
               }
             }
           },
           {
             title:'申购总数量',
             align:"center",
-            dataIndex: 'amountCount'
+            dataIndex: 'totalNum'
           },
           {
             title:'申购总金额',
             align:"center",
-            dataIndex: 'amountMoney'
+            dataIndex: 'totalPrice'
           },
           {
             title:'提交状态',
             align:"center",
-            dataIndex: 'submitStart',
+            dataIndex: 'submitStatus',
             customRender:(text)=>{
               if(!text){
                 return ''
               }else{
-                return filterMultiDictText(this.dictOptions['submitStart'], text+"")
+                return filterMultiDictText(this.dictOptions['submitStatus'], text+"")
               }
             }
           },
@@ -196,9 +200,8 @@
           deleteBatch: "/pd/pdPurchaseOrder/deleteBatch"
         },
         dictOptions:{
-          deptName:[],
-         orderStatus:[],
-         submitStart:[],
+          auditStatus:[],
+         submitStatus:[],
         },
 
       }
@@ -209,47 +212,107 @@
       }*/
     },
     methods: {
-      handleEdit: function (record) { //编译
-        if(record.submitStart=='2' && record.orderStatus !='3'){
-          this.$message.warning("此订单已提交审核，不允许编译！")
-          return
-        }
-        this.$refs.modalForm.edit(record);
-        this.$refs.modalForm.title = "编辑";
-        this.$refs.modalForm.disableSubmit = false;
-      },
-      handleDelete: function (record) { //删除
-        if(record.submitStart=='2'){
-          this.$message.warning("此订单已提交审核，不允许删除！")
-          return
-        }
-        var that = this;
-        var id=record.id;
-        deleteAction(that.url.delete, {id: id}).then((res) => {
-          if (res.success) {
-            that.$message.success(res.message);
-            that.loadData();
-          } else {
-            that.$message.warning(res.message);
+      /*batchDel: function () { //批量删除
+        if (this.selectionRows.length <= 0) {
+          this.$message.warning('请选择一条记录！');
+          return;
+        } else {
+          var ids = "";
+          var orderNos="";
+          for (let a = 0; a < this.selectionRows.length; a++) {
+                let submitStatus= this.selectionRows[a].submitStatus;
+            if(submitStatus=='2'){
+              orderNos+=this.selectionRows[a].orderNo + ",";
+            }else{
+              ids += this.selectionRows[a].id + ",";
+            }
           }
-        });
+          if(orderNos != ""){
+            this.$message.warning("采购编号["+orderNos.substring(0,orderNos.length-1)+"]已提交审核，不允许删除！")
+            return
+          }
+          var that = this;
+          this.$confirm({
+            title: "确认删除",
+            content: "是否删除选中数据?",
+            onOk: function () {
+              that.loading = true;
+              deleteAction(that.url.deleteBatch, {ids: ids}).then((res) => {
+                if (res.success) {
+                  that.$message.success(res.message);
+                  that.loadData();
+                  that.onClearSelected();
+                } else {
+                  that.$message.warning(res.message);
+                }
+              }).finally(() => {
+                that.loading = false;
+              });
+            }
+          });
+        }
+      },*/
+      rejectedDateChange (value, dateString) {
+        this.queryParam.queryDateStart=dateString[0];
+        this.queryParam.queryDateEnd=dateString[1];
+      },
+      getQueryParams() {
+        //获取查询条件
+        let sqp = {}
+        if(this.superQueryParams){
+          sqp['superQueryParams']=encodeURI(this.superQueryParams)
+        }
+        var param = Object.assign(sqp, this.queryParam, this.isorter ,this.filters);
+        param.field = this.getQueryField();
+        param.pageNo = this.ipagination.current;
+        param.pageSize = this.ipagination.pageSize;
+        delete param.queryDate; //范围参数不传递后台，传后台会报错
+        return filterObj(param);
       },
       initDictConfig(){ //静态字典值加载
-        initDictOptions('order_status').then((res) => {
+        initDictOptions('audit_status').then((res) => {
           if (res.success) {
-            this.$set(this.dictOptions, 'orderStatus', res.result)
+            this.$set(this.dictOptions, 'auditStatus', res.result)
           }
         })
         initDictOptions('submit_status').then((res) => {
           if (res.success) {
-            this.$set(this.dictOptions, 'submitStart', res.result)
+            this.$set(this.dictOptions, 'submitStatus', res.result)
           }
         })
+      },
+      onClickRow(record) {
+        return {
+          on: {
+            click: (e) => {
+              //点击操作那一行不选中表格的checkbox
+              let pathArray = e.path;
+              //获取当前点击的是第几列
+              let td = pathArray[0];
+              let cellIndex = td.cellIndex;
+              //获取tr
+              let tr = pathArray[1];
+              //获取一共多少列
+              let lie = tr.childElementCount;
+              if(lie && cellIndex){
+                if(parseInt(lie)-parseInt(cellIndex)!=1){
+                  //操作那一行
+                  let recordId = record.id;
+                  let index = this.selectedRowKeys.indexOf(recordId);
+                  if(index>=0){
+                    this.selectedRowKeys.splice(index, 1);
+                  }else{
+                    this.selectedRowKeys.push(recordId);
+                  }
+                }
+              }
+            }
+          }
+        }
       }
        
     }
   }
 </script>
 <style scoped>
-  @import '~@assets/less/common.less'
 </style>

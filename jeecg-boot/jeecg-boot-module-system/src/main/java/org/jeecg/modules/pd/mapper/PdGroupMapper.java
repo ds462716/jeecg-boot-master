@@ -15,4 +15,6 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 public interface PdGroupMapper extends BaseMapper<PdGroup> {
 
     List<PdGroup> selectList(PdGroup pdGroup);
+
+    List<PdGroup> verify(PdGroup pdGroup);
 }

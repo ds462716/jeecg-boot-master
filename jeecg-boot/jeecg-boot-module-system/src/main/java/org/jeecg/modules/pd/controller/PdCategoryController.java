@@ -2,8 +2,14 @@ package org.jeecg.modules.pd.controller;
 
 import java.util.*;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.shiro.SecurityUtils;
+import org.jeecg.common.constant.PdConstant;
+import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.pd.entity.PdCategoryTree;
+import org.jeecg.modules.pd.entity.PdProduct;
+import org.jeecg.modules.pd.service.IPdProductService;
 import org.jeecg.modules.system.model.TreeModel;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -34,6 +40,8 @@ import org.springframework.web.servlet.ModelAndView;
 public class PdCategoryController extends JeecgController<PdCategory, IPdCategoryService> {
 	@Autowired
 	private IPdCategoryService pdCategoryService;
+	 @Autowired
+	 private IPdProductService pdProductService;
 	
 	/**
 	 * 分页列表查询
@@ -54,6 +62,8 @@ public class PdCategoryController extends JeecgController<PdCategory, IPdCategor
 		try {
 			LambdaQueryWrapper<PdCategory> query = new LambdaQueryWrapper<PdCategory>();
 			//query.eq(PdCategory::getDelFlag, CommonConstant.DEL_FLAG_0);
+			LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+			query.eq(PdCategory::getDepartParentId, sysUser.getDepartParentId());
 			List<PdCategory> list = pdCategoryService.list(query);
 			List<PdCategoryTree> treeList = new ArrayList<>();
 			getTreeList(treeList, list, null);
@@ -76,6 +86,8 @@ public class PdCategoryController extends JeecgController<PdCategory, IPdCategor
 		 long start = System.currentTimeMillis();
 		 Result<List<PdCategory>> result = new Result<>();
 		 try {
+			 LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+			 pdCategory.setDepartParentId(sysUser.getDepartParentId());
 			 List<PdCategory> list = pdCategoryService.selectCategoryOneList(pdCategory);
 			 result.setResult(list);
 			 result.setSuccess(true);
@@ -123,7 +135,10 @@ public class PdCategoryController extends JeecgController<PdCategory, IPdCategor
 		 List<String> ids = new ArrayList<>();
 		 try {
 			 LambdaQueryWrapper<PdCategory> query = new LambdaQueryWrapper<PdCategory>();
-			 query.eq(PdCategory::getDelFlag, CommonConstant.DEL_FLAG_0);
+			 LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+			 query.eq(PdCategory::getDepartParentId, sysUser.getDepartParentId());
+			 query.eq(PdCategory::getType, PdConstant.CATEGORY_TYPE_0);
+			 //query.eq(PdCategory::getDelFlag, CommonConstant.DEL_FLAG_0);
 			 List<PdCategory> list = pdCategoryService.list(query);
 			 for (PdCategory pc : list) {
 				 ids.add(pc.getId());
@@ -200,8 +215,8 @@ public class PdCategoryController extends JeecgController<PdCategory, IPdCategor
 	 */
 	@DeleteMapping(value = "/delete")
 	public Result<?> delete(@RequestParam(name="id",required=true) String id) {
-		pdCategoryService.removePdCategory(id);
-		return Result.ok("删除成功!");
+		Result<Object> result = pdCategoryService.deleteV(id);
+		return result;
 	}
 	
 	/**
@@ -212,8 +227,9 @@ public class PdCategoryController extends JeecgController<PdCategory, IPdCategor
 	 */
 	@DeleteMapping(value = "/deleteBatch")
 	public Result<?> deleteBatch(@RequestParam(name="ids",required=true) String ids) {
-		this.pdCategoryService.removeByIds(Arrays.asList(ids.split(",")));
-		return Result.ok("批量删除成功!");
+		Result<Object> result = pdCategoryService.deleteBatchV(ids);
+		return result;
+		//this.pdCategoryService.removeByIds(Arrays.asList(ids.split(",")));
 	}
 	
 	/**

@@ -48,22 +48,22 @@
     <a-divider> AvatarList </a-divider>
     <a-card style="margin-bottom: 3rem">
       <avatar-list :max-length="3">
-        <avatar-list-item tips="Jake" src="https://gw.alipayobjects.com/zos/rmsportal/zOsKZmFRdUtvpqCImOVY.png" />
-        <avatar-list-item tips="Andy" src="https://gw.alipayobjects.com/zos/rmsportal/sfjbOqnsXXJgNCjCzDBL.png" />
-        <avatar-list-item tips="Niko" src="https://gw.alipayobjects.com/zos/rmsportal/kZzEzemZyKLKFsojXItE.png" />
-        <avatar-list-item tips="Niko" src="https://gw.alipayobjects.com/zos/rmsportal/kZzEzemZyKLKFsojXItE.png" />
-        <avatar-list-item tips="Niko" src="https://gw.alipayobjects.com/zos/rmsportal/kZzEzemZyKLKFsojXItE.png" />
-        <avatar-list-item tips="Niko" src="https://gw.alipayobjects.com/zos/rmsportal/kZzEzemZyKLKFsojXItE.png" />
-        <avatar-list-item tips="Niko" src="https://gw.alipayobjects.com/zos/rmsportal/kZzEzemZyKLKFsojXItE.png" />
+        <avatar-list-item tips="Jake" src="~@/assets/zOsKZmFRdUtvpqCImOVY.png" />
+        <avatar-list-item tips="Andy" src="~@/assets/sfjbOqnsXXJgNCjCzDBL.png" />
+        <avatar-list-item tips="Niko" src="~@/assets/kZzEzemZyKLKFsojXItE.png" />
+        <avatar-list-item tips="Niko" src="~@/assets/kZzEzemZyKLKFsojXItE.png" />
+        <avatar-list-item tips="Niko" src="~@/assets/kZzEzemZyKLKFsojXItE.png" />
+        <avatar-list-item tips="Niko" src="~@/assets/kZzEzemZyKLKFsojXItE.png" />
+        <avatar-list-item tips="Niko" src="~@/assets/kZzEzemZyKLKFsojXItE.png" />
 
       </avatar-list>
 
       <a-divider type="vertical" style="margin: 0 16px" />
 
       <avatar-list size="mini">
-        <avatar-list-item tips="Jake" src="https://gw.alipayobjects.com/zos/rmsportal/zOsKZmFRdUtvpqCImOVY.png" />
-        <avatar-list-item tips="Andy" src="https://gw.alipayobjects.com/zos/rmsportal/sfjbOqnsXXJgNCjCzDBL.png" />
-        <avatar-list-item tips="Niko" src="https://gw.alipayobjects.com/zos/rmsportal/kZzEzemZyKLKFsojXItE.png" />
+        <avatar-list-item tips="Jake" src="~@/assets/zOsKZmFRdUtvpqCImOVY.png" />
+        <avatar-list-item tips="Andy" src="~@/assets/sfjbOqnsXXJgNCjCzDBL.png" />
+        <avatar-list-item tips="Niko" src="~@/assets/kZzEzemZyKLKFsojXItE.png" />
       </avatar-list>
     </a-card>
 

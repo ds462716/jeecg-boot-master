@@ -5,7 +5,7 @@
 
         <!-- 按钮操作区域 -->
         <a-row style="margin-left: 14px">
-          <a-button @click="handleAdd(2)" type="primary" v-show="showZBMBtn">添加子部门</a-button>
+          <a-button @click="handleAdd(2)" type="primary">添加子部门</a-button>
           <a-button @click="handleAdd(1)" type="primary">添加一级部门</a-button>
           <a-button type="primary" icon="download" @click="handleExportXls('部门信息')">导出</a-button>
           <a-upload name="file" :showUploadList="false" :multiple="false" :headers="tokenHeader" :action="importExcelUrl" @change="handleImportExcel">
@@ -17,8 +17,7 @@
         <div style="background: #fff;padding-left:16px;height: 100%; margin-top: 5px">
           <a-alert type="info" :showIcon="true">
             <div slot="message">
-              当前选择：
-              <a v-if="this.currSelected.title">{{ getCurrSelectedTitle() }}</a>
+              当前选择：<span v-if="this.currSelected.title">{{ getCurrSelectedTitle() }}</span>
               <a v-if="this.currSelected.title" style="margin-left: 10px" @click="onClearSelected">取消选择</a>
             </div>
           </a-alert>
@@ -72,91 +71,90 @@
       <!---- author:os_chengtgen -- date:20190827 --  for:切换父子勾选模式 =======------>
     </a-col>
     <a-col :md="12" :sm="24">
-      <a-card :bordered="false">
-        <a-form :form="form">
-          <a-form-item
-            :labelCol="labelCol"
-            :wrapperCol="wrapperCol"
-            label="机构名称">
-            <a-input placeholder="请输入机构/部门名称" @change="pinyinTran" v-decorator="['departName', validatorRules.departName ]"/>
-          </a-form-item>
-          <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="上级部门">
-            <a-tree-select
-              style="width:100%"
-              :dropdownStyle="{maxHeight:'200px',overflow:'auto'}"
-              :treeData="treeData"
-              :disabled="disable"
-              v-model="model.parentId"
-              placeholder="无">
-            </a-tree-select>
-          </a-form-item>
-          <a-form-item
-            :labelCol="labelCol"
-            :wrapperCol="wrapperCol"
-            label="机构编码">
-            <a-input disabled placeholder="请输入机构编码" v-decorator="['orgCode', validatorRules.orgCode ]"/>
-          </a-form-item>
-          <a-form-item
-            :labelCol="labelCol"
-            :wrapperCol="wrapperCol"
-            label="机构类型">
-            <template v-if="orgCategoryDisabled">
-              <a-radio-group v-decorator="['orgCategory',validatorRules.orgCategory]" placeholder="请选择机构类型">
-                <a-radio value="1">
-                  公司
-                </a-radio>
-              </a-radio-group>
-            </template>
-            <template v-else>
-              <a-radio-group v-decorator="['orgCategory',validatorRules.orgCategory]" placeholder="请选择机构类型">
-                <a-radio value="2">
-                  部门
-                </a-radio>
-                <!--<a-radio value="3">-->
-                  <!--岗位-->
-                <!--</a-radio>-->
-              </a-radio-group>
-            </template>
-          </a-form-item>
-          <a-form-item
-            :labelCol="labelCol"
-            :wrapperCol="wrapperCol"
-            label="排序">
-            <a-input-number v-decorator="[ 'departOrder',{'initialValue':0}]"/>
-          </a-form-item>
-          <a-form-item
-            :labelCol="labelCol"
-            :wrapperCol="wrapperCol"
-            label="手机号">
-            <a-input placeholder="请输入手机号" v-decorator="['mobile', {'initialValue':''}]"/>
-          </a-form-item>
-          <a-form-item
-            :labelCol="labelCol"
-            :wrapperCol="wrapperCol"
-            label="地址">
-            <a-input placeholder="请输入地址" v-decorator="['address', {'initialValue':''}]"/>
-          </a-form-item>
-          <a-form-item label="拼音码" :labelCol="labelCol" :wrapperCol="wrapperCol">
-            <a-input v-decorator="[ 'py', validatorRules.py]" placeholder="请输入拼音码"></a-input>
-          </a-form-item>
-          <a-form-item label="五笔码" :labelCol="labelCol" :wrapperCol="wrapperCol">
-            <a-input v-decorator="[ 'wb', validatorRules.wb]" placeholder="请输入五笔码"></a-input>
-          </a-form-item>
-          <a-form-item label="自定义码" :labelCol="labelCol" :wrapperCol="wrapperCol">
-            <a-input v-decorator="[ 'zdy', validatorRules.zdy]" placeholder="请输入自定义码"></a-input>
-          </a-form-item>
-          <a-form-item
-            :labelCol="labelCol"
-            :wrapperCol="wrapperCol"
-            label="备注">
-            <a-textarea placeholder="请输入备注" v-decorator="['memo', {'initialValue':''}]"/>
-          </a-form-item>
-        </a-form>
-        <div class="anty-form-btn">
-          <a-button @click="emptyCurrForm" type="default" htmlType="button" icon="sync">重置</a-button>
-          <a-button @click="submitCurrForm" type="primary" htmlType="button" icon="form">修改并保存</a-button>
-        </div>
-      </a-card>
+      <a-tabs defaultActiveKey="1">
+        <a-tab-pane tab="基本信息" key="1" >
+          <a-card :bordered="false">
+            <a-form :form="form">
+              <a-form-item
+                :labelCol="labelCol"
+                :wrapperCol="wrapperCol"
+                label="机构名称">
+                <a-input placeholder="请输入机构/部门名称" v-decorator="['departName', validatorRules.departName ]"/>
+              </a-form-item>
+              <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="上级部门">
+                <a-tree-select
+                  style="width:100%"
+                  :dropdownStyle="{maxHeight:'200px',overflow:'auto'}"
+                  :treeData="treeData"
+                  :disabled="disable"
+                  v-model="model.parentId"
+                  placeholder="无">
+                </a-tree-select>
+              </a-form-item>
+              <a-form-item
+                :labelCol="labelCol"
+                :wrapperCol="wrapperCol"
+                label="机构编码">
+                <a-input disabled placeholder="请输入机构编码" v-decorator="['orgCode', validatorRules.orgCode ]"/>
+              </a-form-item>
+              <a-form-item
+                :labelCol="labelCol"
+                :wrapperCol="wrapperCol"
+                label="机构类型">
+                <template v-if="orgCategoryDisabled">
+                  <a-radio-group v-decorator="['orgCategory',validatorRules.orgCategory]" placeholder="请选择机构类型">
+                    <a-radio value="1">
+                      公司
+                    </a-radio>
+                  </a-radio-group>
+                </template>
+                <template v-else>
+                  <a-radio-group v-decorator="['orgCategory',validatorRules.orgCategory]" placeholder="请选择机构类型">
+                    <a-radio value="2">
+                      部门
+                    </a-radio>
+                    <a-radio value="3">
+                      岗位
+                    </a-radio>
+                  </a-radio-group>
+                </template>
+              </a-form-item>
+              <a-form-item
+                :labelCol="labelCol"
+                :wrapperCol="wrapperCol"
+                label="排序">
+                <a-input-number v-decorator="[ 'departOrder',{'initialValue':0}]"/>
+              </a-form-item>
+              <a-form-item
+                :labelCol="labelCol"
+                :wrapperCol="wrapperCol"
+                label="手机号">
+                <a-input placeholder="请输入手机号" v-decorator="['mobile', {'initialValue':''}]"/>
+              </a-form-item>
+              <a-form-item
+                :labelCol="labelCol"
+                :wrapperCol="wrapperCol"
+                label="地址">
+                <a-input placeholder="请输入地址" v-decorator="['address', {'initialValue':''}]"/>
+              </a-form-item>
+              <a-form-item
+                :labelCol="labelCol"
+                :wrapperCol="wrapperCol"
+                label="备注">
+                <a-textarea placeholder="请输入备注" v-decorator="['memo', {'initialValue':''}]"/>
+              </a-form-item>
+            </a-form>
+            <div class="anty-form-btn">
+              <a-button @click="emptyCurrForm" type="default" htmlType="button" icon="sync">重置</a-button>
+              <a-button @click="submitCurrForm" type="primary" htmlType="button" icon="form">修改并保存</a-button>
+            </div>
+          </a-card>
+        </a-tab-pane>
+        <a-tab-pane tab="部门权限" key="2" forceRender>
+          <depart-auth-modal ref="departAuth"/>
+        </a-tab-pane>
+      </a-tabs>
+
     </a-col>
     <depart-modal ref="departModal" @ok="loadTree"></depart-modal>
   </a-row>
@@ -167,7 +165,7 @@
   import {queryDepartTreeList, searchByKeywords, deleteByDepartId} from '@/api/api'
   import {httpAction, deleteAction} from '@/api/manage'
   import {JeecgListMixin} from '@/mixins/JeecgListMixin'
-  import { makeWb } from '@/utils/wubi'
+  import DepartAuthModal from './modules/DepartAuthModal'
   // 表头
   const columns = [
     {
@@ -211,11 +209,11 @@
     name: 'DepartList',
     mixins: [JeecgListMixin],
     components: {
+      DepartAuthModal,
       DepartModal
     },
     data() {
       return {
-        showZBMBtn:false,
         iExpandedKeys: [],
         loading: false,
         autoExpandParent: true,
@@ -257,10 +255,7 @@
           departName: {rules: [{required: true, message: '请输入机构/部门名称!'}]},
           orgCode: {rules: [{required: true, message: '请输入机构编码!'}]},
           orgCategory: {rules: [{required: true, message: '请输入机构类型!'}]},
-          mobile: {rules: [{validator: this.validateMobile}]},
-          py: {rules: []},
-          wb: {rules: []},
-          zdy: {rules: []},
+          mobile: {rules: [{validator: this.validateMobile}]}
         },
         url: {
           delete: '/sys/sysDepart/delete',
@@ -417,11 +412,7 @@
         this.selectedKeys = [record.key]
         this.model.parentId = record.parentId
         this.setValuesToForm(record)
-        if(record.orgType == "1"){
-          this.showZBMBtn = true;
-        }else{
-          this.showZBMBtn = false;
-        }
+        this.$refs.departAuth.show(record.id);
 
       },
       // 触发onSelect事件时,为部门树右侧的form表单赋值
@@ -432,7 +423,7 @@
           this.orgCategoryDisabled = false;
         }
         this.form.getFieldDecorator('fax', {initialValue: ''})
-        this.form.setFieldsValue(pick(record, 'departName','orgCategory', 'orgCode', 'departOrder', 'mobile', 'fax', 'address', 'memo','py','wb','zdy'))
+        this.form.setFieldsValue(pick(record, 'departName','orgCategory', 'orgCode', 'departOrder', 'mobile', 'fax', 'address', 'memo'))
       },
       getCurrSelectedTitle() {
         return !this.currSelected.title ? '' : this.currSelected.title
@@ -443,6 +434,7 @@
         this.currSelected = {}
         this.form.resetFields()
         this.selectedKeys = []
+        this.$refs.departAuth.departId = ''
       },
       handleNodeTypeChange(val) {
         this.currSelected.nodeType = val
@@ -565,18 +557,9 @@
             this.getAllKeys(node.children[a])
           }
         }
-      },
+      }
       // <!---- author:os_chengtgen -- date:20190827 --  for:切换父子勾选模式 =======------>
-
-      pinyinTran(e){
-        let val = e.target.value;
-        let pinyin = require('js-pinyin');
-        pinyin.setOptions({checkPolyphone: false, charCase: 0});
-        let py = pinyin.getCamelChars(val);//获取简码
-        this.form.setFieldsValue({py:py});
-        let wb = makeWb(val);
-        this.form.setFieldsValue({wb:wb});//获取五笔简码
-      },
+      
     },
     created() {
       this.currFlowId = this.$route.params.id

@@ -33,10 +33,10 @@
     <!-- 操作按钮区域 -->
     <div class="table-operator">
       <a-button @click="handleAdd" type="primary" icon="plus">新增</a-button>
-      <a-button type="primary" icon="download" @click="handleExportXls('编码规则表')">导出</a-button>
+      <!--<a-button type="primary" icon="download" @click="handleExportXls('编码规则表')">导出</a-button>
       <a-upload name="file" :showUploadList="false" :multiple="false" :headers="tokenHeader" :action="importExcelUrl" @change="handleImportExcel">
         <a-button type="primary" icon="import">导入</a-button>
-      </a-upload>
+      </a-upload>-->
       <a-dropdown v-if="selectedRowKeys.length > 0">
         <a-menu slot="overlay">
           <a-menu-item key="1" @click="batchDel"><a-icon type="delete"/>删除</a-menu-item>
@@ -61,7 +61,8 @@
         :dataSource="dataSource"
         :pagination="ipagination"
         :loading="loading"
-        :rowSelection="{fixed:true,selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
+        :customRow="onClickRow"
+        :rowSelection="{fixed:false,selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
         
         @change="handleTableChange">
 
@@ -129,21 +130,13 @@
         // 表头
         columns: [
           {
-            title: '#',
-            dataIndex: '',
-            key:'rowIndex',
-            width:60,
+            title:'名称',
             align:"center",
-            customRender:function (t,r,index) {
-              return parseInt(index)+1;
-            }
+            dataIndex: 'name',
+            width:120,
           },
-          {
-            title:'编码名称',
-            align:"center",
-            dataIndex: 'name'
-          },
-          {
+          //内容过多  表格很丑
+          /*{
             title:'拼音简码',
             align:"center",
             dataIndex: 'py'
@@ -157,7 +150,7 @@
             title:'自定义查询码',
             align:"center",
             dataIndex: 'zdy'
-          },
+          },*/
           {
             title:'规则详情',
             align:"center",
@@ -166,7 +159,8 @@
           {
             title:'规则描述',
             align:"center",
-            dataIndex: 'codeDesc'
+            dataIndex: 'codeDesc',
+            width:120,
           },
           {
             title:'规则简码',
@@ -187,6 +181,7 @@
             title: '操作',
             dataIndex: 'action',
             align:"center",
+            width:120,
             scopedSlots: { customRender: 'action' }
           }
         ],
@@ -208,6 +203,40 @@
     },
     methods: {
       initDictConfig(){
+      },
+      /**
+       * 点击行选中checkbox
+       * @param record
+       * @returns {{on: {click: on.click}}}
+       */
+      onClickRow(record) {
+        return {
+          on: {
+            click: (e) => {
+              //点击操作那一行不选中表格的checkbox
+              let pathArray = e.path;
+              //获取当前点击的是第几列
+              let td = pathArray[0];
+              let cellIndex = td.cellIndex;
+              //获取tr
+              let tr = pathArray[1];
+              //获取一共多少列
+              let lie = tr.childElementCount;
+              if(lie && cellIndex){
+                if(parseInt(lie)-parseInt(cellIndex)!=1){
+                  //操作那一行
+                  let recordId = record.id;
+                  let index = this.selectedRowKeys.indexOf(recordId);
+                  if(index>=0){
+                    this.selectedRowKeys.splice(index, 1);
+                  }else{
+                    this.selectedRowKeys.push(recordId);
+                  }
+                }
+              }
+            }
+          }
+        }
       }
     }
   }

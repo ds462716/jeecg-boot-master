@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.pd.mapper.PdAllocationRecordMapper">
+
+
+    <sql id="PdAllocationRecordColumns">
+        a.id,
+        a.create_by,
+		a.create_time,
+		a.update_by,
+		a.update_time,
+		a.sys_org_code,
+        a.allocation_no,
+		a.allocation_date,
+        a.allocation_by,
+        a.out_dept_id,
+        a.in_dept_id,
+        a.total_num,
+        a.audit_status,
+        a.audit_by,
+        a.audit_date,
+        a.reject_reason,
+        a.remarks,
+        a.submit_status,
+        a.arrival_count,
+        a.del_flag
+	</sql>
+
+    <sql id="PdAllocationRecordJoins">
+    </sql>
+    <!--用户-->
+    <sql id="pdSysUserColumns">
+        b.realname as "realname"
+	</sql>
+    <sql id="pdSysUserJoins">
+        LEFT JOIN sys_user b ON b.id = a.allocation_by
+     </sql>
+
+    <!-- 科室 -->
+    <sql id="sysDepartColumns">
+        c.depart_name AS "outDeptName",
+        d.depart_name AS "inDeptName"
+    </sql>
+
+    <sql id="sysDepartJoins">
+        LEFT JOIN sys_depart c ON a.out_dept_id = c.id
+        LEFT JOIN sys_depart d ON a.in_dept_id = d.id
+    </sql>
+
+    <!-- 列表查询 -->
+    <select id="selectList" resultType="org.jeecg.modules.pd.entity.PdAllocationRecord">
+        SELECT
+        <include refid="PdAllocationRecordColumns"/>,
+        <include refid="pdSysUserColumns"/>,
+        <include refid="sysDepartColumns"/>
+        FROM pd_allocation_record a
+        <include refid="PdAllocationRecordJoins"/>
+        <include refid="pdSysUserJoins"/>
+        <include refid="sysDepartJoins"/>
+        <where>
+            a.del_flag =#{DEL_FLAG_NORMAL}
+            <if test="id != null and id != ''">
+                AND a.id = #{id}
+            </if>
+            <if test="allocationNo != null and allocationNo != ''">
+                AND a.allocation_no = #{allocationNo}
+            </if>
+            <if test="auditStatus != null and auditStatus != ''">
+                AND a.audit_status = #{auditStatus}
+            </if>
+            <if test="submitStatus != null and submitStatus != ''">
+                AND a.submit_status = #{submitStatus}
+            </if>
+            <if test="inDeptId != null and inDeptId != ''">
+                AND a.in_dept_id LIKE concat('%',#{inDeptId},'%')
+            </if>
+            <if test="inDeptName != null and inDeptName != ''">
+                AND d.depart_name LIKE concat('%',#{inDeptName},'%')
+            </if>
+            <if test="outDeptId != null and outDeptId != ''">
+                AND a.out_dept_id LIKE concat('%',#{outDeptId},'%')
+            </if>
+            <if test="departParentId != null and departParentId != ''">
+                AND a.depart_parent_id = #{departParentId}
+            </if>
+            <if test="submitStatusList != null and submitStatusList.size() > 0">
+                and a.submit_status IN
+                <foreach collection="submitStatusList" item="item" separator="," open="(" close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="auditStatusList != null and auditStatusList.size() > 0">
+                and a.audit_status IN
+                <foreach collection="auditStatusList" item="item" separator="," open="(" close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="queryDateStart != null and queryDateStart != ''">
+                AND a.allocation_date &gt;= #{queryDateStart}
+            </if>
+            <if test="queryDateEnd != null and queryDateEnd != ''">
+                AND a.allocation_date &lt;= #{queryDateEnd}
+            </if>
+            <if test="inDeptIdList != null and inDeptIdList.size() > 0">
+                and a.in_dept_id IN
+                <foreach collection="inDeptIdList" item="item" separator="," open="(" close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="outDeptIdList != null and outDeptIdList.size() > 0">
+                and a.out_dept_id IN
+                <foreach collection="outDeptIdList" item="item" separator="," open="(" close=")">
+                    #{item}
+                </foreach>
+            </if>
+            ORDER BY  field(a.audit_status, 1, 3, 2),a.update_time ASC
+        </where>
+    </select>
+
+
+
+    <!-- 用于调拨订单选择框 -->
+    <select id="chooseAllocationList" resultType="org.jeecg.modules.pd.entity.PdAllocationRecord">
+        SELECT DISTINCT
+        a.id as id,
+        a.allocation_no as allocationNo,
+        a.allocation_date as allocationDate,
+        IFNULL(a.arrival_count,0) as arrivalCount,
+        a.total_num as totalNum,
+        f.depart_name AS inDeptName,
+        e.depart_name AS outDeptName,
+        a.audit_status as auditStatus,
+        c.realname as auditByName
+        FROM   pd_allocation_record a
+        LEFT JOIN pd_allocation_detail b on a.allocation_no = b.allocation_no
+        LEFT JOIN sys_user c ON c.id = a.audit_by
+        LEFT JOIN pd_product d on b.product_id = d.id
+        LEFT JOIN sys_depart e ON a.out_dept_id = e.id
+        LEFT JOIN sys_depart f ON a.in_dept_id = f.id
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+            AND a.audit_status = '2'
+            <if test="id != null and id != ''">
+                AND a.id = #{id}
+            </if>
+            <if test="allocationNo != null and allocationNo != ''">
+                AND a.allocation_no LIKE concat('%',#{allocationNo},'%')
+            </if>
+            <if test="productName != null and productName != ''">
+                AND (
+                d.name LIKE concat('%',#{productName},'%')
+                or d.py LIKE concat('%',#{productName},'%')
+                or d.wb LIKE concat('%',#{productName},'%')
+                or d.bname LIKE concat('%',#{productName},'%')
+                or d.bpy LIKE concat('%',#{productName},'%')
+                or d.bwb LIKE concat('%',#{productName},'%')
+                or d.zdy LIKE concat('%',#{productName},'%')
+                )
+            </if>
+            <if test="number != null and number != ''">
+                AND d.number LIKE concat('%',#{number},'%')
+            </if>
+            <if test="queryDateStart != null and queryDateStart != ''">
+                AND a.allocation_date &gt;= #{queryDateStart}
+            </if>
+            <if test="queryDateEnd != null and queryDateEnd != ''">
+                AND a.allocation_date &lt;= #{queryDateEnd}
+            </if>
+            <if test="inDeptId != null and inDeptId != ''">
+                AND a.in_dept_id = #{inDeptId}
+            </if>
+            <if test="outDeptId != null and outDeptId != ''">
+                AND a.out_dept_id = #{outDeptId}
+            </if>
+        </where>
+        order  by a.allocation_date desc
+    </select>
+    <!-- 增加发货数量 用于出库保存/提交 add by jiangxz 20200309 -->
+    <select id="additionArrivalCount" parameterType="org.jeecg.modules.pd.entity.PdAllocationRecord">
+		UPDATE
+			pd_allocation_record
+		SET
+			arrival_count = IFNULL(arrival_count,0) + #{arrivalCount}
+		WHERE
+			del_flag =#{DEL_FLAG_NORMAL}
+			and allocation_no = #{allocationNo}
+	</select>
+
+    <!-- 扣减发货数量 用于出库拒绝 add by jiangxz 20200309 -->
+    <select id="subtractArrivalCount" parameterType="org.jeecg.modules.pd.entity.PdAllocationRecord">
+		UPDATE
+			pd_allocation_record
+		SET
+			arrival_count = IFNULL(arrival_count,0) + #{arrivalCount}
+		WHERE
+			del_flag =#{DEL_FLAG_NORMAL}
+			and allocation_no = #{allocationNo}
+	</select>
+</mapper>

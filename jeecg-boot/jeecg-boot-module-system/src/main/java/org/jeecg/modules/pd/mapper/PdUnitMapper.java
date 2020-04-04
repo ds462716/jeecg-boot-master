@@ -15,4 +15,6 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 public interface PdUnitMapper extends BaseMapper<PdUnit> {
 
     List<PdUnit> queryList(PdUnit pdUnit);
+
+    List<PdUnit> verify(PdUnit pdUnit);
 }

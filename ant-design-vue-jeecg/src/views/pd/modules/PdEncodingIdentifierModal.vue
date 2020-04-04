@@ -6,24 +6,25 @@
     :confirmLoading="confirmLoading"
     @ok="handleOk"
     @cancel="handleCancel"
+    :maskClosable=disableSubmit
     cancelText="关闭">
     <a-spin :spinning="confirmLoading">
       <a-form :form="form">
 
         <a-form-item label="值" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input ref="inputFocus" v-decorator="[ 'value', validatorRules.value]" placeholder="请输入值"></a-input>
+          <a-input :disabled="disableSubmit" autocomplete="off" ref="inputFocus" v-decorator="[ 'value', validatorRules.value]" placeholder="请输入值"></a-input>
         </a-form-item>
         <a-form-item label="含义" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input v-decorator="[ 'meaning', validatorRules.meaning]" placeholder="请输入含义"></a-input>
+          <a-input :disabled="disableSubmit" autocomplete="off" v-decorator="[ 'meaning', validatorRules.meaning]" ></a-input>
         </a-form-item>
         <a-form-item label="类型" :labelCol="labelCol" :wrapperCol="wrapperCol">
           <j-dict-select-tag-expand type="list" @change="handleChange" v-decorator="['type',validatorRules.type]" :trigger-change="true" dictCode="identifier_type" placeholder="请选择类型"/>
         </a-form-item>
         <a-form-item label="长度"  v-if="typeValue" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input-number  v-decorator="[ 'length', validatorRules.length]" placeholder="请输入长度" style="width: 100%"/>
+          <a-input-number :disabled="disableSubmit" autocomplete="off" v-decorator="[ 'length', validatorRules.length]" placeholder="请输入长度" style="width: 100%"/>
         </a-form-item>
         <a-form-item label="备注" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input v-decorator="[ 'remarks', validatorRules.remarks]" placeholder="请输入备注"></a-input>
+          <a-input :disabled="disableSubmit" autocomplete="off" v-decorator="[ 'remarks', validatorRules.remarks]" ></a-input>
         </a-form-item>
 
       </a-form>
@@ -47,6 +48,7 @@
         form: this.$form.createForm(this),
         title:"操作",
         width:800,
+        disableSubmit:false,
         visible: false,
         model: {},
         labelCol: {

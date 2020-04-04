@@ -11,8 +11,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.alibaba.fastjson.JSONObject;
+import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
+import org.jeecg.common.constant.PdConstant;
 import org.jeecg.common.system.query.QueryGenerator;
+import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.FillRuleUtil;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.pd.entity.PdGoodsAllocation;
@@ -23,6 +26,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
 
+import org.jeecg.modules.pd.vo.PdGoodsAllocationPage;
 import org.jeecg.modules.system.model.SysDepartTreeModel;
 import org.jeecg.modules.system.service.ISysDepartService;
 import org.jeecgframework.poi.excel.ExcelImportUtil;
@@ -55,12 +59,12 @@ public class PdGoodsAllocationController extends JeecgController<PdGoodsAllocati
 	private ISysDepartService sysDepartService;
 
 	@RequestMapping(value = "/queryTreeList", method = RequestMethod.GET)
-	public Result<List<SysDepartTreeModel>> queryTreeList() {
-		Result<List<SysDepartTreeModel>> result = new Result<>();
+	public Result<List<PdGoodsAllocationPage>> queryTreeList(@RequestParam(name="departId") String departId) {
+		Result<List<PdGoodsAllocationPage>> result = new Result<>();
 		try {
-			List<SysDepartTreeModel> departTreeList = sysDepartService.queryTreeList();
+//			List<PdGoodsAllocation> departTreeList = sysDepartService.queryTreeList();
 			//查询货区货位
-			List<SysDepartTreeModel> list = pdGoodsAllocationService.queryTreeList(departTreeList);
+			List<PdGoodsAllocationPage> list = pdGoodsAllocationService.queryTreeList(departId);
 			result.setResult(list);
 			result.setSuccess(true);
 		} catch (Exception e) {
@@ -83,6 +87,9 @@ public class PdGoodsAllocationController extends JeecgController<PdGoodsAllocati
 								   @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
 								   @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
 								   HttpServletRequest req) {
+		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		pdGoodsAllocation.setDepartId(sysUser.getCurrentDepartId());
+		pdGoodsAllocation.setDepartParentId(sysUser.getDepartParentId());
 		QueryWrapper<PdGoodsAllocation> queryWrapper = QueryGenerator.initQueryWrapper(pdGoodsAllocation, req.getParameterMap());
 		Page<PdGoodsAllocation> page = new Page<PdGoodsAllocation>(pageNo, pageSize);
 		IPage<PdGoodsAllocation> pageList = pdGoodsAllocationService.page(page, queryWrapper);
@@ -128,13 +135,16 @@ public class PdGoodsAllocationController extends JeecgController<PdGoodsAllocati
 	/**
 	 *  批量删除
 	 *
-	 * @param ids
+	 * @param
 	 * @return
 	 */
 	@DeleteMapping(value = "/deleteBatch")
 	public Result<?> deleteBatch(@RequestParam(name="ids",required=true) String ids) {
-		this.pdGoodsAllocationService.removeByIds(Arrays.asList(ids.split(",")));
-		return Result.ok("批量删除成功!");
+		String message = this.pdGoodsAllocationService.deleteBatch(Arrays.asList(ids.split(",")));
+		if(PdConstant.TRUE.equals(message)){
+			return Result.ok("批量删除成功!");
+		}
+		return Result.error(message);
 	}
 	
 	/**
@@ -160,6 +170,9 @@ public class PdGoodsAllocationController extends JeecgController<PdGoodsAllocati
     */
     @RequestMapping(value = "/exportXls")
     public ModelAndView exportXls(HttpServletRequest request, PdGoodsAllocation pdGoodsAllocation) {
+		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		pdGoodsAllocation.setDepartId(sysUser.getCurrentDepartId());
+		pdGoodsAllocation.setDepartParentId(sysUser.getDepartParentId());
         return super.exportXls(request, pdGoodsAllocation, PdGoodsAllocation.class, "货区货位表");
     }
 
@@ -175,4 +188,23 @@ public class PdGoodsAllocationController extends JeecgController<PdGoodsAllocati
         return super.importExcel(request, response, PdGoodsAllocation.class);
     }
 
+	 /**
+	  * 获取 货区货位二级联动下拉框数据
+	  * @return
+	  */
+	@RequestMapping(value = "/getOptions", method = RequestMethod.GET)
+    public Result<List<PdGoodsAllocationPage>> getOptionsForSelect(PdGoodsAllocation pdGoodsAllocation){
+		Result<List<PdGoodsAllocationPage>> result = new Result<>();
+		try {
+//			LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+//			pdGoodsAllocation.setDepartId(sysUser.getCurrentDepartId());
+//			pdGoodsAllocation.setDepartParentId(sysUser.getDepartParentId());
+			List<PdGoodsAllocationPage> list = pdGoodsAllocationService.getOptionsForSelect(pdGoodsAllocation);
+			result.setResult(list);
+			result.setSuccess(true);
+		} catch (Exception e) {
+			log.error(e.getMessage(),e);
+		}
+		return result;
+	}
 }

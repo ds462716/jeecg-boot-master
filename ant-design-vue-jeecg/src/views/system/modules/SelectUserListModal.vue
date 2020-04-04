@@ -6,45 +6,45 @@
     @ok="handleOk"
     @cancel="handleCancel"
     cancelText="关闭">
-
+    <a-spin :spinning="confirmLoading">
     <div class="table-page-search-wrapper">
       <a-form layout="inline">
         <a-row :gutter="24">
 
           <a-col :span="6">
             <a-form-item label="账号">
-              <a-input placeholder="请输入账号查询" v-model="queryParam.username"></a-input>
+              <a-input placeholder="请输入账号" v-model="queryParam.username"></a-input>
             </a-form-item>
           </a-col>
 
-          <a-col :span="6">
+          <!--<a-col :span="6">
             <a-form-item label="性别">
-              <a-select v-model="queryParam.sex" placeholder="请选择性别查询">
+              <a-select v-model="queryParam.sex" placeholder="请选择性别">
                 <a-select-option value="">请选择性别查询</a-select-option>
                 <a-select-option value="1">男性</a-select-option>
                 <a-select-option value="2">女性</a-select-option>
               </a-select>
             </a-form-item>
-          </a-col>
+          </a-col>-->
 
 
           <template v-if="toggleSearchStatus">
             <a-col :span="6">
               <a-form-item label="邮箱">
-                <a-input placeholder="请输入邮箱查询" v-model="queryParam.email"></a-input>
+                <a-input placeholder="请输入邮箱" v-model="queryParam.email"></a-input>
               </a-form-item>
             </a-col>
 
             <a-col :span="6">
               <a-form-item label="手机号码">
-                <a-input placeholder="请输入手机号码查询" v-model="queryParam.phone"></a-input>
+                <a-input placeholder="请输入手机号码" v-model="queryParam.phone"></a-input>
               </a-form-item>
             </a-col>
 
             <a-col :span="6">
               <a-form-item label="状态">
-                <a-select v-model="queryParam.status" placeholder="请选择用户状态查询">
-                  <a-select-option value="">请选择用户状态</a-select-option>
+                <a-select v-model="queryParam.status" placeholder="请选择状态">
+                  <a-select-option value="">请选择状态</a-select-option>
                   <a-select-option value="1">正常</a-select-option>
                   <a-select-option value="2">解冻</a-select-option>
                 </a-select>
@@ -72,12 +72,14 @@
       rowKey="id"
       :columns="columns"
       :dataSource="dataSource"
+      :customRow="onClickRow"
       :pagination="ipagination"
       :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange,onSelect:onSelect}"
       @change="handleTableChange"
     >
 <!--     update-end   author:kangxiaolin  date:20190921     for:系统发送通知 用户多选失败 #513 -->
     </a-table>
+    </a-spin>
   </a-modal>
 </template>
 
@@ -85,6 +87,7 @@
   import { filterObj } from '@/utils/util';
 
   import { getUserList } from '@/api/api'
+  import {getAction} from '@/api/manage'
 
   export default {
     name: "SelectUserListModal",
@@ -101,7 +104,7 @@
           fixed:'left',
           width:200
         },{
-          title: '真实姓名',
+          title: '用户名称',
           align:"center",
           dataIndex: 'realname',
         },{
@@ -158,7 +161,11 @@
         selectedRowKeys: [],
         selectionRows: [],
         visible:false,
+        confirmLoading: false,
         toggleSearchStatus:false,
+        url: {
+          list: "/pd/pdDepart/userList",
+        }
       }
     },
     created() {
@@ -170,7 +177,7 @@
         this.edit(selectUser,userIds);
       },
       edit(selectUser,userIds){
-        if(!userIds){
+        if(!userIds || userIds.length==0){
           this.selectedRowKeys = []
         }else{
           this.selectedRowKeys = userIds.split(',');
@@ -188,14 +195,16 @@
         }
       },
       loadData (arg){
+        this.confirmLoading = true;
         if(arg===1){
           this.ipagination.current = 1;
         }
         let params = this.getQueryParams();//查询条件
-        getUserList(params).then((res)=>{
-          if(res.success){
+        getAction(this.url.list, params).then((res) => {
+          if (res.success) {
             this.dataSource = res.result.records;
             this.ipagination.total = res.result.total;
+            this.confirmLoading = false;
           }
         })
       },
@@ -265,6 +274,42 @@
       handleToggleSearch(){
         this.toggleSearchStatus = !this.toggleSearchStatus;
       },
+      /**
+       * 点击行选中checkbox
+       * @param record
+       * @returns {{on: {click: on.click}}}
+       */
+      onClickRow(record) {
+        return {
+          on: {
+            click: (e) => {
+              //点击操作那一行不选中表格的checkbox
+              let pathArray = e.path;
+              //获取当前点击的是第几列
+              let td = pathArray[0];
+              let cellIndex = td.cellIndex;
+              //获取tr
+              let tr = pathArray[1];
+              //获取一共多少列
+              let lie = tr.childElementCount;
+              if(lie && cellIndex){
+                if(parseInt(lie)-parseInt(cellIndex)!=1){
+                  //操作那一行
+                  let recordId = record.id;
+                  let index = this.selectedRowKeys.indexOf(recordId);
+                  if(index>=0){
+                    this.selectedRowKeys.splice(index, 1);
+                    this.selectionRows.splice(index, 1);
+                  }else{
+                    this.selectedRowKeys.push(recordId);
+                    this.selectionRows.push(record);
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     }
   }
 </script>

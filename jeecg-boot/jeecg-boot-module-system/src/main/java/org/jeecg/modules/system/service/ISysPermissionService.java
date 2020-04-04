@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
 import org.jeecg.common.exception.JeecgBootException;
+import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.modules.system.entity.SysPermission;
 import org.jeecg.modules.system.model.TreeModel;
 
@@ -45,4 +46,6 @@ public interface ISysPermissionService extends IService<SysPermission> {
 	 * @return
 	 */
 	public List<String> queryPermissionUrlWithStar();
+
+	List<SysPermission> queryByUser(LoginUser sysUser);
 }

@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.pd.mapper.PdAllocationDetailMapper">
+	<sql id="pdApplyDetailColumns">
+		a.id,
+		a.create_by,
+		a.create_time,
+		a.update_by,
+		a.update_time,
+		a.sys_org_code,
+		a.allocation_no,
+		a.product_id,
+ 		a.batch_no,
+		a.product_bar_code,
+		a.allocation_num,
+		a.stock_num,
+		a.current_stock_num,
+		a.product_attr,
+		a.package_id,
+		a.package_num,
+		IFNULL(a.arrival_num,0) as arrival_num,
+		a.del_flag
+	</sql>
+
+	<!-- 单位 -->
+	<sql id="pdUnitColumns">
+        b.name AS "unitName"
+    </sql>
+
+	<sql id="pdUnitJoins">
+        LEFT JOIN pd_unit b ON c.unit_id = b.id
+    </sql>
+
+	<!--产品-->
+	<sql id="pdProductColumns">
+		c.id as "productId",
+        c.number as "number",
+        c.name as "productName",
+        c.spec as "spec",
+        c.version as "version"
+	</sql>
+	<sql id="pdProductJoins">
+        LEFT JOIN pd_product c ON c.id = a.product_id
+    </sql>
+
+	<!--定数包-->
+	<sql id="pdPackageColumns">
+		 d.name AS "packageName",
+         d.code AS "packageCode"
+
+	</sql>
+	<sql id="pdPackageJoins">
+       LEFT JOIN pd_package d ON a.package_id=d.id
+    </sql>
+
+
+
+
+	<delete id="deleteByMainId" parameterType="java.lang.String">
+		DELETE 	FROM  pd_allocation_detail WHERE allocation_no = #{mainId}
+    </delete>
+	
+
+	<select id="selectByAllocationNo" parameterType="java.lang.String" resultType="org.jeecg.modules.pd.entity.PdAllocationDetail">
+		SELECT
+		<include refid="pdApplyDetailColumns"/>,
+		<include refid="pdProductColumns"/>,
+		<include refid="pdUnitColumns"/>,
+		<include refid="pdPackageColumns"/>
+		FROM  pd_allocation_detail a
+		<include refid="pdProductJoins"/>
+		<include refid="pdUnitJoins"/>
+		<include refid="pdPackageJoins"/>
+		WHERE a.allocation_no = #{allocationNo}
+		ORDER BY a.create_time DESC
+	</select>	<!-- 增加发货数量 用于出库保存/提交 add by jiangxz 20200309 -->
+	<update id="additionArrivalNum" parameterType="org.jeecg.modules.pd.entity.PdAllocationDetail" >
+		UPDATE
+			pd_allocation_detail
+		SET
+			arrival_num = IFNULL(arrival_num,0) + #{arrivalNum}
+		WHERE
+			del_flag =#{DEL_FLAG_NORMAL}
+			and allocation_no = #{allocationNo}
+			and product_id = #{productId}
+	</update>
+
+	<!-- 扣减发货数量 用于出库拒绝 add by jiangxz 20200309 -->
+	<update id="subtractArrivalNum" parameterType="org.jeecg.modules.pd.entity.PdAllocationDetail">
+		UPDATE
+			pd_allocation_detail
+		SET
+			arrival_num = IFNULL(arrival_num,0) - #{arrivalNum}
+		WHERE
+			del_flag =#{DEL_FLAG_NORMAL}
+			and allocation_no = #{allocationNo}
+			and product_id = #{productId}
+	</update>
+</mapper>

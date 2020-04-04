@@ -1,10 +1,10 @@
 package org.jeecg.modules.pd.mapper;
 
-import java.util.List;
-
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Param;
 import org.jeecg.modules.pd.entity.PdStockRecord;
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+
+import java.util.List;
 
 /**
  * @Description: 出入库记录表
@@ -14,4 +14,29 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  */
 public interface PdStockRecordMapper extends BaseMapper<PdStockRecord> {
 
+
+    List<PdStockRecord> selectList(PdStockRecord pdStockRecord);
+
+    /**
+     * 获取一条记录
+     * @param pdStockRecord
+     * @return
+     */
+    PdStockRecord getOne(PdStockRecord pdStockRecord);
+
+    /**
+     * 调入明细查询
+     * @param pdStockRecord
+     * @return
+     */
+    List<PdStockRecord> selectTransferList(PdStockRecord pdStockRecord);
+
+    boolean deleteById(@Param("id") String id);
+
+    /**
+     * 假删除
+     * @param pdStockRecord
+     * @return
+     */
+    boolean deleteByDelFlag(PdStockRecord pdStockRecord);
 }

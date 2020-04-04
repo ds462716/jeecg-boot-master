@@ -29,6 +29,7 @@
         :pagination="false"
         :dataSource="dataSource"
         :loading="loading"
+        :customRow="onClickRow"
         :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange}">
         <span slot="action" slot-scope="text, record">
           <a @click="handleEdit(record)">编辑</a>
@@ -43,7 +44,7 @@
                 <a href="javascript:;" @click="handleDetail(record)">详情</a>
               </a-menu-item>
               <a-menu-item>
-                <a href="javascript:;" @click="handleAddSub(record)">添加二级分类</a>
+                <a href="javascript:;" v-if="record.type=='0'" @click="handleAddSub(record)">添加二级分类</a>
               </a-menu-item>
               <a-menu-item>
                 <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.id)">
@@ -176,6 +177,40 @@
         this.$refs.modalForm.localCategoryType = 1;
         this.$refs.modalForm.disableSubmit = false;
         this.$refs.modalForm.edit({route:true,'parentId':record.id});
+      },
+      /**
+       * 点击行选中checkbox
+       * @param record
+       * @returns {{on: {click: on.click}}}
+       */
+      onClickRow(record) {
+        return {
+          on: {
+            click: (e) => {
+              //点击操作那一行不选中表格的checkbox
+              let pathArray = e.path;
+              //获取当前点击的是第几列
+              let td = pathArray[0];
+              let cellIndex = td.cellIndex;
+              //获取tr
+              let tr = pathArray[1];
+              //获取一共多少列
+              let lie = tr.childElementCount;
+              if(lie && cellIndex){
+                if(parseInt(lie)-parseInt(cellIndex)!=1){
+                  //操作那一行
+                  let recordId = record.id;
+                  let index = this.selectedRowKeys.indexOf(recordId);
+                  if(index>=0){
+                    this.selectedRowKeys.splice(index, 1);
+                  }else{
+                    this.selectedRowKeys.push(recordId);
+                  }
+                }
+              }
+            }
+          }
+        }
       }
        
     }

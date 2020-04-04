@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.pd.mapper.PdRejectedMapper">
+
+    <select id="selectList" resultType="org.jeecg.modules.pd.entity.PdRejected" parameterType="org.jeecg.modules.pd.entity.PdRejected">
+
+        SELECT
+            a.*,
+            b.depart_name as departName,
+            c.NAME as supplierName
+        FROM
+            pd_rejected a
+            LEFT JOIN sys_depart b ON a.depart_id = b.id
+            LEFT JOIN pd_supplier c ON a.supplier_id = c.id
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+            <if test="rejectedNo != null and rejectedNo != ''">
+                AND a.rejected_no LIKE concat('%',#{rejectedNo},'%')
+            </if>
+            <if test="supplierId != null and supplierId != ''">
+                AND a.supplier_id = #{supplierId}
+            </if>
+            <if test="departId != null and departId != ''">
+                AND a.depart_id = #{departId}
+            </if>
+            <if test="departParentId != null and departParentId != ''">
+                AND a.depart_parent_id = #{departParentId}
+            </if>
+            <if test="queryDateStart != null and queryDateStart != ''">
+                AND a.rejected_date &gt;= #{queryDateStart}
+            </if>
+            <if test="queryDateEnd != null and queryDateEnd != ''">
+                AND a.rejected_date &lt;= #{queryDateEnd}
+            </if>
+        </where>
+        order by a.create_time desc
+
+    </select>
+
+</mapper>

@@ -61,7 +61,7 @@
         :dataSource="dataSource"
         :pagination="ipagination"
         :loading="loading"
-        :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
+        :rowSelection="{fixed:false,selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
         @change="handleTableChange">
 
         <template slot="htmlSlot" slot-scope="text">
@@ -163,11 +163,11 @@
             align:"center",
             dataIndex: 'zdy'
           },
-          {
-            title:'父机构',
-            align:"center",
-            dataIndex: 'sysOrgParentCode'
-          },
+          // {
+          //   title:'父机构',
+          //   align:"center",
+          //   dataIndex: 'departParentId'
+          // },
           {
             title: '操作',
             dataIndex: 'action',

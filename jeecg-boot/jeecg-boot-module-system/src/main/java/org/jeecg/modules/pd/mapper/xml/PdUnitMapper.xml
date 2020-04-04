@@ -2,22 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.jeecg.modules.pd.mapper.PdUnitMapper">
 
-    <resultMap id="resultMap" type="org.jeecg.modules.pd.entity.PdUnit" >
-        <result column="id" property="id" jdbcType="VARCHAR"/>
-        <result column="name" property="name" jdbcType="VARCHAR"/>
-        <result column="py" property="py" jdbcType="VARCHAR"/>
-        <result column="wb" property="wb" jdbcType="VARCHAR"/>
-        <result column="zdy" property="zdy" jdbcType="VARCHAR"/>
-        <result column="create_by" property="createBy" jdbcType="VARCHAR"/>
-        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
-        <result column="update_by" property="updateBy" jdbcType="VARCHAR"/>
-        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
-        <result column="remarks" property="remarks" jdbcType="VARCHAR"/>
-        <result column="del_flag" property="delFlag" jdbcType="VARCHAR"/>
-        <result column="sys_org_code" property="sysOrgCode" jdbcType="VARCHAR"/>
-    </resultMap>
-
-    <select id="queryList" resultMap="resultMap" parameterType="org.jeecg.modules.pd.entity.PdUnit">
+    <select id="queryList" resultType="org.jeecg.modules.pd.entity.PdUnit" parameterType="org.jeecg.modules.pd.entity.PdUnit">
         SELECT
             a.id,
             a.name,
@@ -40,7 +25,27 @@
                 or a.wb LIKE concat('%',#{name},'%')
                 or a.zdy LIKE concat('%',#{name},'%') )
             </if>
+            <if test="departParentId != null and departParentId != ''">
+                AND a.depart_parent_id = #{departParentId}
+            </if>
         </where>
         ORDER BY a.update_time desc
+    </select>
+
+    <!-- 校验单位是否唯一 -->
+    <select id="verify" resultType="org.jeecg.modules.pd.entity.PdUnit">
+        SELECT
+        *
+        FROM pd_unit a
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+            and a.name = #{name}
+            <if test="id != null and id != ''">
+                AND a.id != #{id}
+            </if>
+            <if test="departParentId != null and departParentId != ''">
+                AND a.depart_parent_id = #{departParentId}
+            </if>
+        </where>
     </select>
 </mapper>

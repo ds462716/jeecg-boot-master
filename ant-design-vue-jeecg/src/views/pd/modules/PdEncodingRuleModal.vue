@@ -3,30 +3,31 @@
     :title="title"
     :width="width"
     placement="right"
-    :closable="false"
+    :closable="true"
+    :maskClosable=disableSubmit
     @close="close"
     :visible="visible">
   
     <a-spin :spinning="confirmLoading">
       <a-form :form="form">
         <a-form-item label="编码名称" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input ref="inputFocus" @change="pinyinTran"  v-decorator="[ 'name', validatorRules.name]" placeholder="请输入编码名称"></a-input>
+          <a-input :disabled="disableSubmit" autocomplete="off" ref="inputFocus" @change="pinyinTran"  v-decorator="[ 'name', validatorRules.name]" placeholder="请输入编码名称"></a-input>
         </a-form-item>
         <a-form-item label="编码名称拼音简码" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input v-decorator="[ 'py', validatorRules.py]" placeholder="请输入编码名称拼音简码"></a-input>
+          <a-input :disabled="disableSubmit" autocomplete="off" v-decorator="[ 'py', validatorRules.py]" ></a-input>
         </a-form-item>
         <a-form-item label="编码名称五笔简码" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input v-decorator="[ 'wb', validatorRules.wb]" placeholder="请输入编码名称五笔简码"></a-input>
+          <a-input :disabled="disableSubmit" autocomplete="off" v-decorator="[ 'wb', validatorRules.wb]" ></a-input>
         </a-form-item>
         <a-form-item label="自定义名称查询码" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input v-decorator="[ 'zdy', validatorRules.zdy]" placeholder="请输入自定义名称查询码"></a-input>
+          <a-input :disabled="disableSubmit" autocomplete="off" v-decorator="[ 'zdy', validatorRules.zdy]" ></a-input>
         </a-form-item>
         <a-form-item label="备注" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input v-decorator="[ 'remarks', validatorRules.remarks]" placeholder="请输入备注"></a-input>
+          <a-input :disabled="disableSubmit" autocomplete="off" v-decorator="[ 'remarks', validatorRules.remarks]" ></a-input>
         </a-form-item>
         <!--<div>-->
           <div style="float: left;">
-            <a-button @click="choice" style="margin-left: 0px;margin-bottom: 20px"  type="primary">选择标识符</a-button>
+            <a-button @click="choice" style="margin-left: 0px;margin-bottom: 20px" v-show="!disableSubmit"  type="primary">选择标识符</a-button>
           </div>
           <div style="float: left;width:100%;margin-bottom: 70px">
             <table id="contentTable" class="tableStyle">
@@ -47,7 +48,7 @@
                 <td>
                   <a-form-item>
                     <a-input :style="{width: 'calc(100% - 120px)'}" v-if="item.type=='1'" disabled="disabled" v-decorator="['pdEncodingRuleDetails['+index+'].length',{'initialValue':item.length}]"/>
-                    <a-input :style="{width: 'calc(100% - 120px)'}" v-else="item.type!='1'" v-decorator="['pdEncodingRuleDetails['+index+'].length', {'initialValue':item.length,rules:validatorRules.length}]"/>
+                    <a-input :style="{width: 'calc(100% - 120px)'}" autocomplete="off" v-else="item.type!='1'" :disabled="disableSubmit"  v-decorator="['pdEncodingRuleDetails['+index+'].length', {'initialValue':item.length,rules:validatorRules.length}]"/>
                   </a-form-item>
                 </td>
                 <td>{{item.typeText}}
@@ -57,7 +58,7 @@
                 </td>
                 <td>
                   <a-form-item>
-                    <a-input :style="{width: 'calc(100% - 120px)'}"v-decorator="['pdEncodingRuleDetails['+index+'].codeOrder',{'initialValue':item.codeOrder,rules:validatorRules.order}]"/>
+                    <a-input :style="{width: 'calc(100% - 120px)'}" autocomplete="off" :disabled="disableSubmit" v-decorator="['pdEncodingRuleDetails['+index+'].codeOrder',{'initialValue':item.codeOrder,rules:validatorRules.order}]"/>
                   </a-form-item>
                 </td>
                 <a-form-item>
@@ -71,9 +72,10 @@
         <pdEncodingIdentifierAdd-modal ref="pdEncodingIdentifierAddModal" @ok="modalFormOk"></pdEncodingIdentifierAdd-modal>
       </a-form>
     </a-spin>
-    <div class="drawer-bootom-button" v-show="!disableSubmit">
-      <a-button @click="handleOk" type="primary" :loading="confirmLoading">提交</a-button>
-      <a-popconfirm title="确定放弃编辑？" @confirm="handleCancel" okText="确定" cancelText="取消">
+    <div class="drawer-bootom-button" >
+      <a-button @click="close"  style="margin-right: 15px;" v-show="disableSubmit">关  闭</a-button>
+      <a-button @click="handleOk" v-show="!disableSubmit" type="primary" :loading="confirmLoading">提交</a-button>
+      <a-popconfirm title="确定放弃编辑？" v-show="!disableSubmit" @confirm="handleCancel" okText="确定" cancelText="取消">
         <a-button style="margin-right: .8rem">取消</a-button>
       </a-popconfirm>
     </div>

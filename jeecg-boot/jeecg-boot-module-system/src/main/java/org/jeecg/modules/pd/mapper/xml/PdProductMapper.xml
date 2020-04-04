@@ -33,6 +33,9 @@
         <result column="description" property="description" jdbcType="VARCHAR"/>
         <result column="is_charge" property="isCharge" jdbcType="VARCHAR"/>
         <result column="charge_code" property="chargeCode" jdbcType="VARCHAR"/>
+        <result column="is_urgent" property="isUrgent" jdbcType="VARCHAR"/>
+        <result column="up_quantity" property="upQuantity" jdbcType="DOUBLE"/>
+        <result column="purchased_quantity" property="purchasedQuantity" jdbcType="DOUBLE"/>
         <result column="licence_name0" property="licenceName0" jdbcType="VARCHAR"/>
         <result column="licence_num0" property="licenceNum0" jdbcType="VARCHAR"/>
         <result column="licence_date0" property="licenceDate0" jdbcType="DATE"/>
@@ -98,6 +101,7 @@
         <result column="update_by" property="updateBy" jdbcType="VARCHAR"/>
         <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
         <result column="remarks" property="remarks" jdbcType="VARCHAR"/>
+        <result column="jde_code" property="jdeCode" jdbcType="VARCHAR"/>
         <result column="validity_flag" property="validityFlag" jdbcType="VARCHAR"/>
         <result column="del_flag" property="delFlag" jdbcType="VARCHAR"/>
         <collection property="pdProductRules" ofType="String">
@@ -139,6 +143,9 @@
         a.description,
         a.is_charge,
         a.charge_code,
+        a.is_urgent,
+        a.up_quantity,
+        a.purchased_quantity,
         a.licence_name0,
         a.licence_num0,
         a.licence_date0,
@@ -205,6 +212,7 @@
         a.update_time,
         a.sys_org_code,
         a.remarks,
+        a.jde_code,
         a.validity_flag,
         a.del_flag
 	</sql>
@@ -235,12 +243,16 @@
         a.description,
         a.is_charge,
         a.charge_code,
+        a.is_urgent,
+        a.up_quantity,
+        a.purchased_quantity,
         a.create_by,
         a.create_time,
         a.update_by,
         a.update_time,
         a.sys_org_code,
         a.remarks,
+        a.jde_code,
         a.validity_flag,
         a.del_flag
     </sql>
@@ -326,30 +338,77 @@
             AND (a.name LIKE concat('%',#{name},'%')
             or a.py LIKE concat('%',#{name},'%')
             or a.wb LIKE concat('%',#{name},'%')
-            or a.zdy LIKE concat('%',#{name},'%'))
+            or a.zdy LIKE concat('%',#{name},'%')
+            or a.bname LIKE concat('%',#{name},'%')
+            or a.bpy LIKE concat('%',#{name},'%')
+            or a.bwb LIKE concat('%',#{name},'%')
+            )
+        </if>
+        <if test="number != null and number != ''">
+            AND a.number LIKE concat('%',#{number},'%')
+        </if>
+        <if test="registration != null and registration != ''">
+            AND a.registration LIKE concat('%',#{registration},'%')
+        </if>
+        <if test="chargeCode != null and chargeCode != ''">
+            AND a.charge_code LIKE concat('%',#{chargeCode},'%')
+        </if>
+        <if test="venderId != null and venderId != ''">
+            AND a.vender_id = #{venderId}
+        </if>
+        <if test="supplierId != null and supplierId != ''">
+            AND a.supplier_id = #{supplierId}
+        </if>
+        <if test="spec != null and spec != ''">
+            AND a.spec LIKE concat('%',#{spec},'%')
+        </if>
+        <if test="version != null and version != ''">
+            AND a.version LIKE concat('%',#{version},'%')
+        </if>
+        <if test="departId != null and departId != ''">
+            AND a.depart_id = #{departId}
+        </if>
+        <if test="departParentId != null and departParentId != ''">
+            AND a.depart_parent_id = #{departParentId}
         </if>
         order by a.create_time desc, a.update_time desc
     </select>
 
     <!-- 用于产品弹出框 -->
-    <select id="chooseProductList" resultType="org.jeecg.modules.pd.vo.PdProductPage" parameterType="org.jeecg.modules.pd.entity.PdProduct">
-        select
+    <select id="chooseProductList" resultType="org.jeecg.modules.pd.vo.PdProductPage" parameterType="org.jeecg.modules.pd.vo.PdProductPage">
+        select DISTINCT
             a.id as productId,
             a.number as number,
+            a.number as productNumber,
             a.name as productName,
             a.unit_id as unitId,
             a.vender_id as venderId,
             a.supplier_id as supplierId,
             a.spec as spec,
             a.selling_price as sellingPrice,
+            a.purchase_price as purchasePrice,
             a.version as version,
+            a.registration as registration,
+            a.charge_code as chargeCode,
             b.name as unitName,
             c.name as venderName,
             d.name as supplierName
+        <if test="stockDepartId != null and stockDepartId != ''">
+           , IFNULL(f.stock_num,0) as stockNum
+        </if>
+        <if test="mergeOrderNo != null and mergeOrderNo != ''">
+            ,e.merge_order_no as mergeOrderNo
+        </if>
         from pd_product a
         left join pd_unit b on a.unit_id = b.id
         left join pd_vender c on a.vender_id = c.id
         left join pd_supplier d on a.supplier_id = d.id
+        <if test="stockDepartId != null and stockDepartId != ''">
+        left join pd_product_stock_total f on f.product_id = a.id and f.depart_id=#{stockDepartId}
+        </if>
+        <if test="mergeOrderNo != null and mergeOrderNo != ''">
+        left join pd_purchase_order_merge_detail e on e.product_id = a.id
+        </if>
         <where>
             a.del_flag = #{DEL_FLAG_NORMAL}
             <if test="name != null and name != ''">
@@ -370,25 +429,108 @@
             <if test="number != null and number != ''">
                 AND a.number LIKE concat('%',#{number},'%')
             </if>
+            <if test="registration != null and registration != ''">
+                AND a.registration LIKE concat('%',#{registration},'%')
+            </if>
+            <if test="chargeCode != null and chargeCode != ''">
+                AND a.charge_code LIKE concat('%',#{chargeCode},'%')
+            </if>
+            <if test="spec != null and spec != ''">
+                AND a.spec LIKE concat('%',#{spec},'%')
+            </if>
             <if test="supplierId != null and supplierId != ''">
                 AND a.supplier_id = #{supplierId}
             </if>
             <if test="venderId != null and venderId != ''">
                 AND a.vender_id = #{venderId}
             </if>
+            <if test="mergeOrderNo != null and mergeOrderNo != ''">
+                AND e.merge_order_no = #{mergeOrderNo}
+            </if>
+            <if test="departParentId != null and departParentId != ''">
+                AND a.depart_parent_id = #{departParentId}
+            </if>
         </where>
         ORDER BY a.update_time desc
     </select>
 
-    <!-- 根据编号查询产品信息 -->
-    <select id="findByNumber" resultType="org.jeecg.modules.pd.entity.PdProduct">
+    <!-- 批量更新产品收费代码 -->
+    <update id="updateChargeCode">
+		UPDATE pd_product SET
+			charge_code = #{chargeCode}
+		WHERE id = #{id}
+	</update>
+
+    <!-- 校验产品编号是否唯一 -->
+    <select id="verify" resultType="org.jeecg.modules.pd.entity.PdProduct">
         SELECT
         <include refid="pdProductPartColumns"/>
         FROM pd_product a
-        <include refid="pdProductJoins"/>
         <where>
-            a.del_flag = "0"
-            AND a.number = #{number}
+            a.del_flag = #{DEL_FLAG_NORMAL}
+            and a.number = #{number}
+            <if test="id != null and id != ''">
+                AND a.id != #{id}
+            </if>
+            <if test="departParentId != null and departParentId != ''">
+                AND a.depart_parent_id = #{departParentId}
+            </if>
         </where>
     </select>
+
+
+    <!-- 产品删除校验 -->
+    <select id="selectListByCT" resultType="org.jeecg.modules.pd.entity.PdProduct" parameterType="org.jeecg.modules.pd.entity.PdProduct">
+        SELECT
+        <include refid="pdProductColumns"/>
+        FROM pd_product a
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+        </where>
+        <if test="categoryTwo != null and categoryTwo != ''">
+            and (
+            a.category_one = #{categoryTwo}
+            OR a.category_two = #{categoryTwo}
+            )
+        </if>
+        <if test="groupId != null and groupId != ''">
+           and a.group_id = #{groupId}
+        </if>
+        <if test="supplierId != null and supplierId != ''">
+            and a.supplier_id = #{supplierId}
+        </if>
+        <if test="venderId != null and venderId != ''">
+            and a.vender_id = #{venderId}
+        </if>
+        <if test="unitId != null and unitId != ''">
+            and a.unit_id = #{unitId}
+        </if>
+        <if test="departId != null and departId != ''">
+            AND a.depart_id = #{departId}
+        </if>
+        <if test="departParentId != null and departParentId != ''">
+            AND a.depart_parent_id = #{departParentId}
+        </if>
+        order by a.create_time desc, a.update_time desc
+    </select>
+
+    <!-- 产品分类删除校验 -->
+    <select id="selectListByCTs" resultType="org.jeecg.modules.pd.entity.PdCategory">
+        select
+        *
+        from pd_product a
+        <where>
+            a.del_flag = #{parMap.DEL_FLAG_NORMAL}
+        </where>
+        <if test="parMap.ids != null and parMap.ids != ''">
+           and (
+            a.category_one in  ( ${parMap.ids} )
+            OR a.category_two in  ( ${parMap.ids} )
+            )
+        </if>
+        <if test="parMap.departParentId != null and parMap.departParentId != ''">
+            and a.depart_parent_id = #{parMap.departParentId}
+        </if>
+    </select>
+
 </mapper>

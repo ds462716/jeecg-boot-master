@@ -1,5 +1,6 @@
 package org.jeecg.modules.pd.entity;
 
+import com.baomidou.mybatisplus.annotation.FieldStrategy;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -71,6 +72,18 @@ public class PdCategory  extends BaseEntity {
 	/**所属部门*/
 	@Excel(name = "所属部门", width = 15)
     private java.lang.String sysOrgCode;
+
+	/**
+	 * 所属部门
+	 */
+	@TableField(strategy = FieldStrategy.NOT_EMPTY)
+	private String departId;
+
+	/**
+	 * 所属顶级部门（医院id）
+	 */
+	@TableField(strategy = FieldStrategy.NOT_EMPTY)
+	private String departParentId;
 	/**备注*/
 	@Excel(name = "备注", width = 15)
     private java.lang.String remarks;

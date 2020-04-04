@@ -2,18 +2,27 @@ package org.jeecg.modules.pd.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.ibatis.session.SqlSession;
+import org.apache.shiro.SecurityUtils;
+import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.CommonConstant;
+import org.jeecg.common.constant.PdConstant;
 import org.jeecg.common.exception.JeecgBootException;
+import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.pd.entity.PdCategory;
+import org.jeecg.modules.pd.entity.PdProduct;
 import org.jeecg.modules.pd.mapper.PdCategoryMapper;
 import org.jeecg.modules.pd.service.IPdCategoryService;
+import org.jeecg.modules.pd.service.IPdProductService;
 import org.jeecg.modules.system.entity.SysPermission;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import java.util.Date;
-import java.util.List;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.*;
 
 /**
  * @Description: 产品分类
@@ -26,6 +35,12 @@ public class PdCategoryServiceImpl extends ServiceImpl<PdCategoryMapper, PdCateg
 
     @Autowired
     private PdCategoryMapper pdCategoryMapper;
+
+    @Autowired
+    private IPdProductService pdProductService;
+
+    @Autowired
+    private SqlSession sqlsession;
 
     /**
      * 添加一级或二级分类
@@ -59,6 +74,113 @@ public class PdCategoryServiceImpl extends ServiceImpl<PdCategoryMapper, PdCateg
     @Override
     public List<PdCategory> selectCategoryOneList(PdCategory pdCategory) {
         return pdCategoryMapper.selectCategoryOneList(pdCategory);
+    }
+
+
+    /**
+     * 删除和校验
+     * @param id
+     * @return
+     */
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public Result<Object> deleteV(String id) {
+        try{
+            PdProduct pdProduct = new PdProduct();
+            LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+            pdProduct.setDepartParentId(sysUser.getDepartParentId());
+            pdProduct.setCategoryTwo(id);
+            List<PdProduct> pdProducts = pdProductService.selectListByCT(pdProduct);
+            if(CollectionUtils.isNotEmpty(pdProducts)){
+                return Result.error("删除失败!，当前分类被使用不能删除");
+            }
+            PdCategory pdCategory = new PdCategory();
+            pdCategory.setParentId(id);
+            pdCategory.setDepartParentId(sysUser.getDepartParentId());
+            List<PdCategory> pdCategorys = this.selectCategoryOneList(pdCategory);
+            if(pdCategorys!=null &&pdCategorys.size()>0){
+                String sb ="";
+                for(PdCategory pc:pdCategorys){
+                    sb+="'"+pc.getId()+("',");
+                }
+                sb = sb.substring(0,sb.length()-1);
+                Map<String,Object> map = new HashMap<>();
+                map.put("ids",sb);
+                map.put("departParentId",sysUser.getDepartParentId());
+                map.put("DEL_FLAG_NORMAL", PdConstant.DEL_FLAG_0);
+                List<PdProduct> pdProductList = pdProductService.selectListByCTs(map);
+                if(CollectionUtils.isNotEmpty(pdProductList)){
+                    return Result.error("删除失败!，当前分类的子类被使用不能删除");
+                }
+            }
+            this.removePdCategory(id);
+            return Result.ok("删除成功!");
+        }catch(Exception e){
+            e.printStackTrace();
+            return Result.error("删除失败!，系统异常");
+        }
+
+    }
+
+    /**
+     * 批量删除和校验
+     * @param ids
+     * @return
+     */
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public Result<Object> deleteBatchV(String ids) {
+        try{
+            List<String> idList = Arrays.asList(ids.split(","));
+            if(idList!=null && idList.size()>0){
+                boolean bl = true;
+                for(String id : idList){
+                    PdProduct pdProduct = new PdProduct();
+                    LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+                    pdProduct.setDepartParentId(sysUser.getDepartParentId());
+                    pdProduct.setCategoryTwo(id);
+                    List<PdProduct> pdProducts = pdProductService.selectListByCT(pdProduct);
+                    if(CollectionUtils.isNotEmpty(pdProducts)){
+                        //return Result.error("删除失败!，当前分类被使用不能删除");
+                        bl = false;
+                        continue;
+                    }
+                    PdCategory pdCategory = new PdCategory();
+                    pdCategory.setParentId(id);
+                    pdCategory.setDepartParentId(sysUser.getDepartParentId());
+                    List<PdCategory> pdCategorys = this.selectCategoryOneList(pdCategory);
+                    if(pdCategorys!=null &&pdCategorys.size()>0){
+                        String sb ="";
+                        for(PdCategory pc:pdCategorys){
+                            sb+="'"+pc.getId()+("',");
+                        }
+                        sb = sb.substring(0,sb.length()-1);
+                        Map<String,Object> map = new HashMap<>();
+                        map.put("ids",sb);
+                        map.put("departParentId",sysUser.getDepartParentId());
+                        map.put("DEL_FLAG_NORMAL", PdConstant.DEL_FLAG_0);
+                        List<PdProduct> pdProductList = pdProductService.selectListByCTs(map);
+                        if(CollectionUtils.isNotEmpty(pdProductList)){
+                            //return Result.error("删除失败!，当前分类的子类被使用不能删除");
+                            bl = false;
+                            continue;
+                        }
+                    }
+                    this.removePdCategoryOrder(id);
+                }
+                if(bl){
+                    return Result.ok("批量删除成功!");
+                }else{
+                    return Result.ok("部分删除成功，被使用的不能删除!");
+                }
+
+            }else{
+                return Result.error("删除失败,参数不正确!");
+            }
+        }catch(Exception e){
+            e.printStackTrace();
+            return Result.error("删除失败,系统异常!");
+        }
     }
 
     /**
@@ -107,7 +229,6 @@ public class PdCategoryServiceImpl extends ServiceImpl<PdCategoryMapper, PdCateg
      * 删除分类及他的所有子类
      * @param id
      */
-    @Override
     public void removePdCategory(String id) {
         PdCategory pdCategory = this.getById(id);
         if(pdCategory==null) {
@@ -124,6 +245,26 @@ public class PdCategoryServiceImpl extends ServiceImpl<PdCategoryMapper, PdCateg
         this.removeChildrenBy(pdCategory.getId());
     }
 
+    /**
+     * 批量删除分类及他的所有子类
+     * @param id
+     */
+    public void removePdCategoryOrder(String id) {
+        PdCategoryMapper dao = sqlsession.getMapper(PdCategoryMapper.class);
+        PdCategory pdCategory = this.getById(id);
+        if(pdCategory==null) {
+            return;
+        }
+        String pid = pdCategory.getParentId();
+        int count = this.count(new QueryWrapper<PdCategory>().lambda().eq(PdCategory::getParentId, pid));
+        if(count==1) {
+            //若父节点无其他子节点，则该父节点是叶子节点
+            dao.setMenuLeaf(pid, 1);
+        }
+        dao.removeByCodeId(pdCategory);
+        // 该节点可能是子节点但也可能是其它节点的父节点,所以需要级联删除
+        this.removeChildrenBy(pdCategory.getId());
+    }
 
     /**
      * 根据父id删除其关联的子节点数据

@@ -2,9 +2,13 @@ package org.jeecg.modules.pd.entity;
 
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.math.BigDecimal;
+import java.util.List;
+
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
@@ -104,6 +108,7 @@ public class PdGoodsAllocation  extends BaseEntity {
 	@Excel(name = "所属部门", width = 15)
     private String sysOrgCode;
 	/**父部门*/
-	@Excel(name = "父部门", width = 15)
-    private String sysOrgParentCode;
+	private String departParentId;
+
+
 }

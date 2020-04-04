@@ -12,17 +12,17 @@
         a.apply_no,
         a.apply_by,
         a.apply_date,
-        a.dept_id,
-        a.dept_name,
-        a.fact_count,
-        a.apply_status,
+        a.depart_id,
+        a.arrival_count,
+        a.audit_status,
         a.audit_by,
         a.audit_date,
         a.refuse_reason,
         a.is_in_refund,
         a.is_end,
-        a.apply_num,
-        a.submit_start,
+        a.total_num,
+        a.submit_status,
+        a.out_depart_id,
 		a.remarks,
 		a.del_flag
 	</sql>
@@ -39,14 +39,25 @@
         LEFT JOIN sys_user b ON b.id = a.apply_by
     </sql>
 
+    <!-- 科室 -->
+    <sql id="sysDepartColumns">
+        f.depart_name AS "deptName"
+    </sql>
+
+    <sql id="sysDepartJoins">
+        LEFT JOIN sys_depart f ON a.depart_id = f.id
+    </sql>
+
     <!-- 列表查询 -->
     <select id="selectList" resultType="org.jeecg.modules.pd.vo.PdApplyOrderPage">
         SELECT
         <include refid="PdApplyOrderColumns"/>,
-        <include refid="pdSysUserColumns"/>
+        <include refid="pdSysUserColumns"/>,
+        <include refid="sysDepartColumns"/>
         FROM pd_apply_order a
         <include refid="PdApplyOrderJoins"/>
         <include refid="pdSysUserJoins"/>
+        <include refid="sysDepartJoins"/>
         <where>
             a.del_flag =#{DEL_FLAG_NORMAL}
             <if test="id != null and id != ''">
@@ -55,15 +66,199 @@
             <if test="applyNo != null and applyNo != ''">
                 AND a.apply_no = #{applyNo}
             </if>
+            <if test="auditStatus != null and auditStatus != ''">
+                AND a.audit_status = #{auditStatus}
+            </if>
+            <if test="submitStatus != null and submitStatus != ''">
+                AND a.submit_status = #{submitStatus}
+            </if>
             <if test="deptName != null and deptName != ''">
-                AND a.dept_name = #{deptName}
+                AND f.depart_name = #{deptName}
             </if>
-            <if test="applyStatus != null and applyStatus != ''">
-                AND a.apply_status = #{applyStatus}
+            <if test="outDepartId != null and outDepartId != ''">
+                AND a.out_depart_id = #{outDepartId}
             </if>
-            <if test="submitStart != null and submitStart != ''">
-                AND a.submit_start = #{submitStart}
+            <if test="departId != null and departId != ''">
+                AND a.depart_id = #{departId}
+            </if>
+            <if test="departParentId != null and departParentId != ''">
+                AND a.depart_parent_id = #{departParentId}
+            </if>
+            <if test="submitStatusList != null and submitStatusList.size() > 0">
+                and a.submit_status IN
+                <foreach collection="submitStatusList" item="item" separator="," open="(" close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="auditStatusList != null and auditStatusList.size() > 0">
+                and a.audit_status IN
+                <foreach collection="auditStatusList" item="item" separator="," open="(" close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="queryDateStart != null and queryDateStart != ''">
+                AND a.apply_date &gt;= #{queryDateStart}
+            </if>
+            <if test="queryDateEnd != null and queryDateEnd != ''">
+                AND a.apply_date &lt;= #{queryDateEnd}
+            </if>
+            <if test="departIdList != null and departIdList.size() > 0">
+                and a.depart_id IN
+                <foreach collection="departIdList" item="item" separator="," open="(" close=")">
+                    #{item}
+                </foreach>
+            </if>
+            ORDER BY  field(a.audit_status, 1, 3, 2),a.update_time ASC
+        </where>
+    </select>
+
+
+    <!-- 用于采购订单选择框 -->
+    <select id="chooseApplyOrderList" resultType="org.jeecg.modules.pd.vo.PdApplyOrderPage"  parameterType="org.jeecg.modules.pd.vo.PdApplyOrderPage">
+        SELECT DISTINCT
+        a.id as id,
+        a.apply_no as applyNo,
+        a.apply_date as applyDate,
+        a.total_num as totalNum,
+        IFNULL(a.arrival_count,0) as arrivalCount,
+        f.depart_name AS deptName,
+        a.audit_status as auditStatus,
+        c.realname as auditByName
+        FROM   pd_apply_order a
+        LEFT JOIN pd_apply_detail b on a.apply_no = b.apply_no
+        LEFT JOIN sys_user c ON c.id = a.audit_by
+        LEFT JOIN pd_product d on b.product_id = d.id
+        LEFT JOIN sys_depart f ON a.depart_id = f.id
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+            AND a.audit_status = '2'
+            <if test="id != null and id != ''">
+                AND a.id = #{id}
+            </if>
+            <if test="applyNo != null and applyNo != ''">
+                AND a.apply_no LIKE concat('%',#{applyNo},'%')
+            </if>
+            <if test="productName != null and productName != ''">
+                AND (
+                d.name LIKE concat('%',#{productName},'%')
+                or d.py LIKE concat('%',#{productName},'%')
+                or d.wb LIKE concat('%',#{productName},'%')
+                or d.bname LIKE concat('%',#{productName},'%')
+                or d.bpy LIKE concat('%',#{productName},'%')
+                or d.bwb LIKE concat('%',#{productName},'%')
+                or d.zdy LIKE concat('%',#{productName},'%')
+                )
+            </if>
+            <if test="number != null and number != ''">
+                AND d.number LIKE concat('%',#{number},'%')
+            </if>
+            <if test="queryDateStart != null and queryDateStart != ''">
+                AND a.apply_date &gt;= #{queryDateStart}
+            </if>
+            <if test="queryDateEnd != null and queryDateEnd != ''">
+                AND a.apply_date &lt;= #{queryDateEnd}
+            </if>
+            <if test="departId != null and departId != ''">
+                AND a.depart_id = #{departId}
             </if>
         </where>
+        order  by a.apply_date desc
+    </select>
+
+    <!-- 增加发货数量 用于出库保存/提交 add by jiangxz 20200309 -->
+    <select id="additionArrivalCount" parameterType="org.jeecg.modules.pd.entity.PdApplyOrder">
+		UPDATE
+			pd_apply_order
+		SET
+			arrival_count = IFNULL(arrival_count,0) + #{arrivalCount}
+		WHERE
+			del_flag =#{DEL_FLAG_NORMAL}
+			and apply_no = #{applyNo}
+	</select>
+
+    <!-- 扣减发货数量 用于出库拒绝 add by jiangxz 20200309 -->
+    <select id="subtractArrivalCount" parameterType="org.jeecg.modules.pd.entity.PdApplyOrder">
+		UPDATE
+			pd_apply_order
+		SET
+			arrival_count = IFNULL(arrival_count,0) + #{arrivalCount}
+		WHERE
+			del_flag =#{DEL_FLAG_NORMAL}
+			and apply_no = #{applyNo}
+	</select>
+
+
+    <!-- 统计申领数量及当日申领数量——首页展示用 -->
+    <select id="queryApplyOrderCount" resultType="java.util.Map" >
+        SELECT
+        sum(a.total_num) AS "applyCount",
+        sum(b.total_num)  AS "dayApplyNum"
+        from pd_apply_order a
+        LEFT JOIN  pd_apply_order b ON  a.id=b.id
+        AND  DATE_FORMAT(b.apply_date,'%Y-%m-%d')=DATE_FORMAT(#{applyDate},'%Y-%m-%d')
+        WHERE  a.del_flag=#{DEL_FLAG_NORMAL}
+        AND  a.audit_status='2'
+        <if test="departId != null and departId != ''">
+            AND a.depart_id = #{departId}
+        </if>
+        <if test="departParentId != null and departParentId != ''">
+            AND a.depart_parent_id = #{departParentId}
+        </if>
+        <if test="departIdList != null and departIdList.size() > 0">
+            and a.depart_id IN
+            <foreach collection="departIdList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+    </select>
+
+
+    <!-- 统计当日申领数量——首页展示用 -->
+    <select id="queryApplyOrderDateList" resultType="java.util.Map" >
+        SELECT
+        date(c.dday) as x,
+        sum(c.y) as y   FROM
+        (
+        SELECT   datelist as dday ,"0" as y FROM   calendar
+        where  DATE_SUB(CURDATE(), INTERVAL 6 DAY)  &lt;= date(datelist)
+        and date(datelist) &lt;=CURDATE()
+        UNION ALL
+        SELECT   a.apply_date as dday,  a.total_num as y
+        FROM  pd_apply_order a where
+        a.del_flag=#{DEL_FLAG_NORMAL}
+        AND  a.audit_status='2'
+        <if test="departId != null and departId != ''">
+            AND a.depart_id = #{departId}
+        </if>
+        <if test="departParentId != null and departParentId != ''">
+            AND a.depart_parent_id = #{departParentId}
+        </if>
+        <if test="departIdList != null and departIdList.size() > 0">
+            and a.depart_id IN
+            <foreach collection="departIdList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        AND   DATE_SUB(CURDATE(), INTERVAL 6 DAY)  &lt;= date(a.apply_date)
+        AND date(a.apply_date) &lt;=CURDATE()
+        ) c
+        GROUP BY x
+    </select>
+
+
+    <!--  首页查询  根据申领产品类区分统计申领金额及数量 -->
+    <select id="queryApplyOrderTotalList" resultType="java.util.Map" >
+        select
+        IFNULL(d.name,'其他') as x,
+        sum(a.arrival_count)  as y ,
+        sum(c.selling_price *  a.arrival_count) as 'z'
+        from pd_apply_order a
+        left join pd_apply_detail b on a.apply_no=b.apply_no
+        left join pd_product c on b.product_id=c.id
+        left join pd_category d on d.id=c.category_two
+        where a.del_flag=#{DEL_FLAG_NORMAL}
+        AND  DATE_SUB(CURDATE(), INTERVAL 30 DAY) &lt;= date(a.apply_date)
+        and date(a.apply_date) &lt;=CURDATE()
+        group by x  order by y desc
     </select>
 </mapper>

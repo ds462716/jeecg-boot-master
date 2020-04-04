@@ -1,50 +1,51 @@
 <template>
-  <a-drawer
+  <j-modal
+    :visible="visible"
+    :width="1200"
     :title="title"
-    :width="width"
-    placement="right"
-    :closable="false"
-    @close="close"
-    :visible="visible">
+    :lockScroll="lockScroll"
+    :fullscreen="fullscreen"
+    :switchFullscreen="switchFullscreen"
+    @cancel="handleCancel"
+  >
   
     <a-spin :spinning="confirmLoading">
-      <!--<a-form :form="form" enctype="multipart/form-data">-->
-      <a-form :form="form" enctype="multipart/form-data">
+      <a-form :form="form" >
         <a-form-item label="名称" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input ref="inputFocus" @change="pinyinTran" v-decorator="[ 'name', validatorRules.name]" :style="{width:'100%',margin:'0'}" placeholder="请输入名称"></a-input>
+          <a-input ref="inputFocus" :disabled="focusDisable"  autocomplete="off" @change="pinyinTran" v-decorator="[ 'name', validatorRules.name]" :style="{width:'100%',margin:'0'}" placeholder="请输入名称"></a-input>
         </a-form-item>
         <a-form-item label="拼音简码" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input v-decorator="[ 'py', validatorRules.py]" :style="{width:'100%',margin:'0'}" placeholder="请输入拼音简码"></a-input>
+          <a-input :disabled="disableSubmit" autocomplete="off" v-decorator="[ 'py', validatorRules.py]" :style="{width:'100%',margin:'0'}" ></a-input>
         </a-form-item>
         <a-form-item label="五笔简码" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input v-decorator="[ 'wb', validatorRules.wb]" :style="{width:'100%',margin:'0'}" placeholder="请输入五笔简码"></a-input>
+          <a-input :disabled="disableSubmit" autocomplete="off" v-decorator="[ 'wb', validatorRules.wb]" :style="{width:'100%',margin:'0'}" ></a-input>
         </a-form-item>
         <a-form-item label="自定义码" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input v-decorator="[ 'zdy', validatorRules.zdy]"  :style="{width:'100%',margin:'0'}" placeholder="请输入自定义码"></a-input>
+          <a-input :disabled="disableSubmit" autocomplete="off" v-decorator="[ 'zdy', validatorRules.zdy]"  :style="{width:'100%',margin:'0'}" ></a-input>
         </a-form-item>
         <a-form-item label="备注" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input v-decorator="[ 'remarks', validatorRules.remarks]" :style="{width:'100%',margin:'0'}" placeholder="请输入备注"></a-input>
+          <a-input :disabled="disableSubmit" autocomplete="off" v-decorator="[ 'remarks', validatorRules.remarks]" :style="{width:'100%',margin:'0'}" ></a-input>
         </a-form-item>
         <label style="float:left;padding-top:15px;">证照扫描件</label>
         <div class="all-card-box" style="padding-left:105px;margin-bottom: 70px">
           <template v-for="(item, index) in 12" >
             <div class="card-box" :class="imgIsValidity[index]">
-              <div class="card-box-code">
-                <a-form-item label="证照名称" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                  <a-input v-decorator="[ 'licenceName'+index, validatorRules['licenceNum'+index]]"  placeholder="请输入证照名称"></a-input>
+              <div class="card-box-code" style="margin-top:10px;margin-left:10px;">
+                <a-form-item label="证照名称" :labelCol="labelCol2" :wrapperCol="wrapperCol2">
+                  <a-input :disabled="disableSubmit" autocomplete="off" v-decorator="[ 'licenceName'+index, validatorRules['licenceNum'+index]]" ></a-input>
                 </a-form-item>
-                <a-form-item label="证照号码" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                  <a-input v-decorator="[ 'licenceNum'+index, validatorRules['licenceNum'+index]]"  placeholder="请输入证照号码"></a-input>
+                <a-form-item label="证照号码" :labelCol="labelCol2" :wrapperCol="wrapperCol2">
+                  <a-input :disabled="disableSubmit" autocomplete="off" v-decorator="[ 'licenceNum'+index, validatorRules['licenceNum'+index]]" ></a-input>
                 </a-form-item>
-                <a-form-item label="证照有效期" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                  <j-date placeholder="请选择证照有效期" v-decorator="[ 'licenceDate'+index, validatorRules['licenceDate'+index]]" :trigger-change="true"  />
+                <a-form-item label="有效期" :labelCol="labelCol2" :wrapperCol="wrapperCol2">
+                  <j-date :disabled="disableSubmit" style="width: 100%" v-decorator="[ 'licenceDate'+index, validatorRules['licenceDate'+index]]" :trigger-change="true"  />
                 </a-form-item>
               </div>
               <div class="showpic" @click="handlePreview(index)">查看大图</div>
               <div class="controls">
                 <div class='pictureUploadDiv'>
                   <div class='tR_upPic_icon'>
-                    <input type="file" ref="file" class="upPic" style="width: 100%; height: 100%;" v-on:change="handleFileUpload($event,index)">
+                    <input type="file" :disabled="disableSubmit" ref="file" class="upPic" style="width: 100%; height: 100%;" v-on:change="handleFileUpload($event,index)">
                     <div class="smallImg"  style='display:block;width:256px;height:160px;' >
                       <img :src="getAvatarView(index)" v-show="imgIsShow[index].show" ref="upImg" :key="index" class="card-box_img" />
                       <div  v-show="imgIsShow[index].show" class="smallImg_cloBtn" @click="closeImg(index)" ref="close"></div>
@@ -61,17 +62,20 @@
         </div>
       </a-form>
     </a-spin>
-    <div class="drawer-bootom-button" v-show="!disableSubmit">
-      <a-button @click="handleOk" type="primary" :loading="confirmLoading">提交</a-button>
-      <a-popconfirm title="确定放弃编辑？" @confirm="handleCancel" okText="确定" cancelText="取消">
-        <a-button style="margin-right: .8rem">取消</a-button>
-      </a-popconfirm>
-    </div>
-    <a-modal :visible="previewVisible" :footer="null" :width="900" @cancel="handleImgCancel">
-      <img alt="example" style="width: 100%" :src="previewImage" />
-    </a-modal>
 
-  </a-drawer>
+    <template slot="footer">
+      <a-button @click="close" style="margin-right: 15px;" v-show="disableSubmit">关  闭</a-button>
+      <a-button @click="handleOk" v-show="!disableSubmit" type="primary" :loading="confirmLoading" style="margin-right: 15px;">提  交</a-button>
+      <a-popconfirm title="确定放弃编辑？" @confirm="handleCancel" v-show="!disableSubmit" okText="确定" cancelText="取消">
+        <a-button style="margin-right: 15px;">取  消</a-button>
+      </a-popconfirm>
+    </template>
+
+    <j-modal :visible="previewVisible" :footer="null" @cancel="handleImgCancel">
+      <img alt="example" style="width: 100%" :src="previewImage" />
+    </j-modal>
+
+  </j-modal>
 </template>
 
 <script>
@@ -84,6 +88,8 @@
   import { ACCESS_TOKEN } from "@/store/mutation-types"
   import { makeWb } from '@/utils/wubi'
   import { photoCheck } from '@/utils/fileUpload'
+  import {duplicateCheckHasDelFlag } from '@/api/api'
+
   export default {
     name: "PdSupplierModal",
     components: { 
@@ -97,7 +103,12 @@
         width:1200,
         visible: false,
         disableSubmit:false,
+        focusDisable:false,
         previewVisible: false,
+        lockScroll: false,
+        fullscreen: true,
+        switchFullscreen: false,
+        validateSupplierId: '',
         previewImage: '',
         model: {},
         imgIsShow:[{show:false},{show:false},{show:false},{show:false},{show:false},{show:false},{show:false},{show:false},{show:false},{show:false},{show:false},{show:false}],
@@ -110,6 +121,14 @@
           xs: { span: 24 },
           sm: { span: 16 },
         },
+        labelCol2: {
+          xs: { span: 24 },
+          sm: { span: 6 },
+        },
+        wrapperCol2: {
+          xs: { span: 24 },
+          sm: { span: 16 },
+        },
         confirmLoading: false,
         uploadLoading:false,
         headers:{},
@@ -117,6 +136,9 @@
         validatorRules: {
           name: {rules: [
             {required: true, message: '请输入名称!'},
+              {
+                validator: this.validateName,
+              }
           ]},
           py: {rules: [
           ]},
@@ -128,7 +150,7 @@
         url: {
           add: "/pd/pdSupplier/save",
           edit: "/pd/pdSupplier/update",
-          imgerver: window._CONFIG['domianURL']+"/sys/common/view",
+          imgerver:window._CONFIG['staticDomainURL'],
         }
       }
     },
@@ -141,9 +163,12 @@
       edit (record) {
         //编辑时显示图片
         if(record.hasOwnProperty("id")){
+          this.validateSupplierId = record.id;
           for(let index = 0;index<12;index++){
             if(record["licenceSite"+index]){
               this.imgIsShow[index].show=true;
+            }else{
+              this.imgIsShow[index].show=false;
             }
             if(record["licenceValidity"+index]){
               this.imgIsValidity[index]="validity"+record["licenceValidity"+index];
@@ -161,15 +186,25 @@
         }
         this.form.resetFields();
         this.model = Object.assign({}, record);
+        //解决滚动条缓存bug
+        this.focusDisable = false;
         this.visible = true;
         this.$nextTick(() => {
           this.form.setFieldsValue(pick(this.model,'name','py','wb','zdy','licenceName0','licenceNum0','licenceDate0','licenceSite0','licenceName1','licenceNum1','licenceDate1','licenceSite1','licenceName2','licenceNum2','licenceDate2','licenceSite2','licenceName3','licenceNum3','licenceDate3','licenceSite3','licenceName4','licenceNum4','licenceDate4','licenceSite4','licenceName5','licenceNum5','licenceDate5','licenceSite5','licenceName6','licenceNum6','licenceDate6','licenceSite6','licenceName7','licenceNum7','licenceDate7','licenceSite7','licenceName8','licenceNum8','licenceDate8','licenceSite8','licenceName9','licenceNum9','licenceDate9','licenceSite9','licenceName10','licenceNum10','licenceDate10','licenceSite10','licenceName11','licenceNum11','licenceDate11','licenceSite11','remarks'))
           //获取光标
           let input = this.$refs['inputFocus'];
-          input.focus()
+          input.focus();
+          //解决滚动条缓存bug
+          if(this.disableSubmit){
+            this.focusDisable = true;
+          }else{
+            this.focusDisable = false;
+          }
         })
       },
       close () {
+        //解决滚动条缓存bug
+        this.focusDisable = false;
         this.$emit('close');
         this.visible = false;
         this.disableSubmit = false;
@@ -246,10 +281,13 @@
         }
       },
       closeImg(index) {
-        let that = this;
-        //that.$refs.upImg[index].src = "";
-        this.form.setFieldsValue({["licenceSite"+index]:""});
-        this.imgIsShow[index].show = false;
+        //查询时不做修改
+        if(!this.disableSubmit) {
+          let that = this;
+          //that.$refs.upImg[index].src = "";
+          that.form.setFieldsValue({["licenceSite"+index]:""});
+          that.imgIsShow[index].show = false;
+        }
       },
       getAvatarView(index){
         return this.url.imgerver +"/"+this.model["licenceSite"+index];
@@ -266,39 +304,35 @@
          this.$message.error("请先上传图片!")
        }
       },
+      validateName(rule, value, callback){
+        var params = {
+          tableName: 'pd_supplier',
+          fieldName: 'name',
+          fieldVal: value,
+          dataId: this.validateSupplierId
+        };
+        duplicateCheckHasDelFlag(params).then((res) => {
+          if (res.success) {
+            callback()
+          } else {
+            callback("供应商已存在!")
+          }
+        })
+      },
     }
   }
 </script>
 
 <style lang="less" scoped>
-  .drawer-bootom-button {
-    position: absolute;
-    bottom: -30px;
-    width: 100%;
-    border-top: 1px solid #e8e8e8;
-    padding: 10px 16px;
-    text-align: right;
-    left: 0;
-    background: #fff;
-    border-radius: 0 0 2px 2px;
-    z-index:199;
-  }
   /** Button按钮间距 */
   .ant-btn {
     margin-left: 30px;
-    margin-bottom: 30px;
+    /*margin-bottom: 30px;*/
     float: right;
-  }
-  .ant-input{
-    margin-left: 20px;
-    width:180px;
-  }
-  .ant-calendar-picker {
-    margin-left: 20px;
   }
   .card-box{
     width: 300px;
-    height: 410px;
+    height: 430px;
     border: 1px solid #ddd;
     padding: 0px;
     display:inline-block;
@@ -355,7 +389,7 @@
     position:absolute;
     right:0;
     top:0;
-    background:url(../../../assets/close.png) no-repeat center center;
+    background:url(../../../assets/close_icon.png) no-repeat center center;
     cursor:pointer;
     background-size:cover;
     z-index:150;

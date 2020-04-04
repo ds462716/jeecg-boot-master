@@ -11,16 +11,36 @@
           </a-col>
           <a-col :md="6" :sm="8">
             <a-form-item label="申领科室">
-              <a-input placeholder="请输入申领科室" v-model="queryParam.deptName"></a-input>
+              <a-select
+                showSearch
+                :departId="departValue"
+                :defaultActiveFirstOption="false"
+                :allowClear="true"
+                :showArrow="true"
+                :filterOption="false"
+                @search="departHandleSearch"
+                @change="departHandleChange"
+                @focus="departHandleSearch"
+                :notFoundContent="notFoundContent"
+                v-model="queryParam.departId"
+                placeholder="请选择科室"
+              >
+                <a-select-option v-for="d in departData" :key="d.value">{{d.text}}</a-select-option>
+              </a-select>
+            </a-form-item>
+          </a-col>
+          <a-col  :md="6" :sm="8">
+            <a-form-item label="申领日期">
+              <a-range-picker @change="rejectedDateChange" v-model="queryParam.queryDate"/>
             </a-form-item>
           </a-col>
           <template v-if="toggleSearchStatus">
             <a-col :md="6" :sm="8">
               <a-form-item label="审核状态">
-                <a-select v-model="queryParam.applyStatus" placeholder="请选择审核状态">
-                  <a-select-option value="0">待审核</a-select-option>
+                <a-select v-model="queryParam.auditStatus" placeholder="请选择审核状态">
+                  <a-select-option value="1">待审核</a-select-option>
                   <a-select-option value="2">审核通过</a-select-option>
-                  <a-select-option value="3">审核不通过</a-select-option>
+                  <a-select-option value="3">已驳回</a-select-option>
                 </a-select>
               </a-form-item>
             </a-col>
@@ -56,10 +76,11 @@
         :dataSource="dataSource"
         :pagination="ipagination"
         :loading="loading"
-        :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
+        :customRow="onClickRow"
+        :rowSelection="{fixed:false,selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
         @change="handleTableChange">
         <span slot="action" slot-scope="text, record">
-          <a v-if="record.applyStatus=='0'" @click="handleEdit(record)">审核</a>&nbsp;&nbsp;&nbsp;
+          <a v-if="record.auditStatus=='1'" @click="handleEdit(record)">审核</a>&nbsp;&nbsp;&nbsp;
           <a href="javascript:;" @click="handleDetail(record)">详情</a>
         </span>
       </a-table>
@@ -71,11 +92,42 @@
 <script>
 
   import { JeecgListMixin,handleEdit} from '@/mixins/JeecgListMixin'
-  import { deleteAction } from '@/api/manage'
+  import { deleteAction,getAction } from '@/api/manage'
+  import { filterObj } from '@/utils/util';
   import PdApplyExamineModal from './modules/PdApplyExamineModal'
   import JDictSelectTag from '@/components/dict/JDictSelectTag.vue'
   import {initDictOptions, filterMultiDictText} from '@/components/dict/JDictSelectUtil'
 
+  let timeout;
+  let currentValue;
+
+  function fetch(value, callback,url) {
+    if (timeout) {
+      clearTimeout(timeout);
+      timeout = null;
+    }
+    currentValue = value;
+
+    function fake() {
+      getAction(url,{departName:value}).then((res)=>{
+        if (!res.success) {
+          this.cmsFailed(res.message);
+        }
+        if (currentValue === value) {
+          const result = res.result;
+          const data = [];
+          result.forEach(r => {
+            data.push({
+              value: r.id,
+              text: r.departName,
+            });
+          });
+          callback(data);
+        }
+      })
+    }
+    timeout = setTimeout(fake, 0);
+  }
   export default {
     name: "PdApplyExamineList",
     mixins:[JeecgListMixin],
@@ -83,6 +135,9 @@
     data () {
       return {
         description: '科室领用管理页面',
+        departData: [],
+        departValue: undefined,
+        notFoundContent:"未找到内容",
         // 表头
         columns: [
           {
@@ -122,24 +177,24 @@
           {
             title:'审核状态',
             align:"center",
-            dataIndex: 'applyStatus',
+            dataIndex: 'auditStatus',
             customRender:(text)=>{
               if(!text){
                 return ''
               }else{
-                return filterMultiDictText(this.dictOptions['applyStatus'], text+"")
+                return filterMultiDictText(this.dictOptions['auditStatus'], text+"")
               }
             }
           },
           {
             title:'申领数量',
             align:"center",
-            dataIndex: 'applyNum'
+            dataIndex: 'totalNum'
           },
           {
             title:'实际领用数量',
             align:"center",
-            dataIndex: 'factCount'
+            dataIndex: 'arrivalCount'
           },
           {
             title: '操作',
@@ -151,10 +206,11 @@
         url: {
           list: "/pd/pdApplyOrder/auditList",
           delete: "/pd/pdApplyOrder/delete",
-          deleteBatch: "/pd/pdApplyOrder/deleteBatch"
+          deleteBatch: "/pd/pdApplyOrder/deleteBatch",
+          queryDepart: "/pd/pdDepart/queryListTree",
         },
         dictOptions:{
-          applyStatus:[],
+          auditStatus:[],
         },
 
       }
@@ -163,17 +219,72 @@
 
     },
     methods: {
-      initDictConfig(){//静态字典值加载
-        initDictOptions('order_status').then((res) => {
+      //科室查询start
+      departHandleSearch(value) {
+        fetch(value, data => (this.departData = data),this.url.queryDepart);
+      },
+      departHandleChange(value) {
+        this.departValue = value;
+        fetch(value, data => (this.departData = data),this.url.queryDepart);
+      },
+      //科室查询end
+
+      rejectedDateChange (value, dateString) {
+        this.queryParam.queryDateStart=dateString[0];
+        this.queryParam.queryDateEnd=dateString[1];
+      },
+      getQueryParams() {
+        //获取查询条件
+        let sqp = {}
+        if(this.superQueryParams){
+          sqp['superQueryParams']=encodeURI(this.superQueryParams)
+        }
+        var param = Object.assign(sqp, this.queryParam, this.isorter ,this.filters);
+        param.field = this.getQueryField();
+        param.pageNo = this.ipagination.current;
+        param.pageSize = this.ipagination.pageSize;
+        delete param.queryDate; //范围参数不传递后台，传后台会报错
+        return filterObj(param);
+      },
+      initDictConfig(){ //静态字典值加载
+        initDictOptions('audit_status').then((res) => {
           if (res.success) {
-            this.$set(this.dictOptions, 'applyStatus', res.result)
+            this.$set(this.dictOptions, 'auditStatus', res.result)
           }
         })
+      },
+      onClickRow(record) {
+        return {
+          on: {
+            click: (e) => {
+              //点击操作那一行不选中表格的checkbox
+              let pathArray = e.path;
+              //获取当前点击的是第几列
+              let td = pathArray[0];
+              let cellIndex = td.cellIndex;
+              //获取tr
+              let tr = pathArray[1];
+              //获取一共多少列
+              let lie = tr.childElementCount;
+              if(lie && cellIndex){
+                if(parseInt(lie)-parseInt(cellIndex)!=1){
+                  //操作那一行
+                  let recordId = record.id;
+                  let index = this.selectedRowKeys.indexOf(recordId);
+                  if(index>=0){
+                    this.selectedRowKeys.splice(index, 1);
+                  }else{
+                    this.selectedRowKeys.push(recordId);
+                  }
+                }
+              }
+            }
+          }
+        }
       }
        
     }
   }
 </script>
 <style scoped>
-  @import '~@assets/less/common.less'
 </style>

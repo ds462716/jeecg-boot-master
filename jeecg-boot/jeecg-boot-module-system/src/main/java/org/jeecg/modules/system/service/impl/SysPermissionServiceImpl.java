@@ -8,6 +8,7 @@ import javax.annotation.Resource;
 import org.jeecg.common.constant.CacheConstant;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.exception.JeecgBootException;
+import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.system.entity.SysPermission;
 import org.jeecg.modules.system.entity.SysPermissionDataRule;
@@ -204,6 +205,11 @@ public class SysPermissionServiceImpl extends ServiceImpl<SysPermissionMapper, S
 	@Cacheable(value = CacheConstant.SYS_DATA_PERMISSIONS_CACHE)
 	public List<String> queryPermissionUrlWithStar() {
 		return this.baseMapper.queryPermissionUrlWithStar();
+	}
+
+	@Override
+	public List<SysPermission> queryByUser(LoginUser sysUser) {
+		return this.sysPermissionMapper.queryByUserInfo(sysUser);
 	}
 
 }

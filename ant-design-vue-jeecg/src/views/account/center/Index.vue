@@ -133,7 +133,7 @@
     methods: {
       ...mapGetters(["nickname", "avatar"]),
       getAvatar(){
-          return window._CONFIG['imgDomainURL']+"/"+this.avatar();
+          return window._CONFIG['staticDomainURL']+"/"+this.avatar();
       },
       getTeams() {
         this.$http.get('/api/workplace/teams')
@@ -227,7 +227,7 @@
         width: 14px;
         left: 0;
         top: 4px;
-        background: url(https://gw.alipayobjects.com/zos/rmsportal/pBjWzVAHnOOtAUvZmZfy.svg)
+        background: url(../../../assets/pBjWzVAHnOOtAUvZmZfy.svg)
       }
 
       .title {

@@ -13,12 +13,12 @@
         <a-row :gutter="24">
           <a-col :md="6" :sm="8">
             <a-form-item label="值">
-              <a-input placeholder="请输入值" v-model="queryParam.value"></a-input>
+              <a-input placeholder="请输入值" autocomplete="off" v-model="queryParam.value"></a-input>
             </a-form-item>
           </a-col>
           <a-col :md="6" :sm="8">
             <a-form-item label="含义">
-              <a-input placeholder="请输入含义" v-model="queryParam.meaning"></a-input>
+              <a-input placeholder="请输入含义" autocomplete="off" v-model="queryParam.meaning"></a-input>
             </a-form-item>
           </a-col>
           <a-col :md="6" :sm="8" >
@@ -47,7 +47,8 @@
         :dataSource="dataSource"
         :pagination="false"
         :loading="loading"
-        :rowSelection="{fixed:true,selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
+        :customRow="onClickRow"
+        :rowSelection="{fixed:false,selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
         :scroll="{ y: 280 }"
         @change="handleTableChange">
 
@@ -165,7 +166,30 @@
         let formData = that.selectionRows;
         that.$emit('ok', formData);
         that.close();
-      }
+      },
+      /**
+       * 点击行选中checkbox
+       * @param record
+       * @returns {{on: {click: on.click}}}
+       */
+      onClickRow(record) {
+        return {
+          on: {
+            click: () => {
+              //操作那一行
+              let recordId = record.id;
+              let index = this.selectedRowKeys.indexOf(recordId);
+              if(index>=0){
+                this.selectedRowKeys.splice(index, 1);
+                this.selectionRows.splice(index, 1);
+              }else{
+                this.selectedRowKeys.push(recordId);
+                this.selectionRows.push(record);
+              }
+             }
+            }
+          }
+        }
     }
   }
 </script>

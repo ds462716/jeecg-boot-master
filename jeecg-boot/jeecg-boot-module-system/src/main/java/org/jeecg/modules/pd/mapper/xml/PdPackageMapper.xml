@@ -18,7 +18,8 @@
         a.remarks,
         a.del_flag,
         a.sys_org_code,
-        a.sys_org_parent_code
+        a.depart_id,
+        a.depart_parent_id
         FROM pd_package a
         <where>
             a.del_flag = #{DEL_FLAG_NORMAL}
@@ -27,6 +28,12 @@
                 or a.py LIKE concat('%',#{name},'%')
                 or a.wb LIKE concat('%',#{name},'%')
                 or a.zdy LIKE concat('%',#{name},'%') )
+            </if>
+            <if test="departParentId != null and departParentId != ''">
+                AND a.depart_parent_id = #{departParentId}
+            </if>
+            <if test="departId != null and departId != ''">
+                AND a.depart_id = #{departId}
             </if>
         </where>
         ORDER BY a.update_time desc

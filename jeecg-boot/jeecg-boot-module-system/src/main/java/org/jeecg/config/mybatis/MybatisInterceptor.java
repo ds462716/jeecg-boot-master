@@ -1,25 +1,20 @@
 package org.jeecg.config.mybatis;
 
-import java.lang.reflect.Field;
-import java.util.Date;
-import java.util.Properties;
-
+import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.binding.MapperMethod.ParamMap;
 import org.apache.ibatis.executor.Executor;
 import org.apache.ibatis.mapping.MappedStatement;
 import org.apache.ibatis.mapping.SqlCommandType;
-import org.apache.ibatis.plugin.Interceptor;
-import org.apache.ibatis.plugin.Intercepts;
-import org.apache.ibatis.plugin.Invocation;
-import org.apache.ibatis.plugin.Plugin;
-import org.apache.ibatis.plugin.Signature;
+import org.apache.ibatis.plugin.*;
 import org.apache.shiro.SecurityUtils;
+import org.jeecg.common.constant.PdConstant;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.oConvertUtils;
-import org.jeecg.modules.system.entity.SysUser;
 import org.springframework.stereotype.Component;
 
-import lombok.extern.slf4j.Slf4j;
+import java.lang.reflect.Field;
+import java.util.Date;
+import java.util.Properties;
 
 /**
  * mybatis拦截器，自动注入创建人、创建时间、修改人、修改时间
@@ -84,6 +79,34 @@ public class MybatisInterceptor implements Interceptor {
 							if (sysUser != null) {
 								field.setAccessible(true);
 								field.set(parameter, sysUser.getOrgCode());
+								field.setAccessible(false);
+							}
+						}
+					}
+					//注入所属部门
+					if (PdConstant.CURRENT_DEPARTID.equals(field.getName())) {
+						field.setAccessible(true);
+						Object currentParentId = field.get(parameter);
+						field.setAccessible(false);
+						if (currentParentId == null || currentParentId.equals("")) {
+							// 获取登录用户信息
+							if (sysUser != null) {
+								field.setAccessible(true);
+								field.set(parameter, sysUser.getCurrentDepartId());
+								field.setAccessible(false);
+							}
+						}
+					}
+					//注入所属顶级部门
+					if (PdConstant.DEPART_PARENT_ID.equals(field.getName())) {
+						field.setAccessible(true);
+						Object departParentId = field.get(parameter);
+						field.setAccessible(false);
+						if (departParentId == null || departParentId.equals("")) {
+							// 获取登录用户信息
+							if (sysUser != null) {
+								field.setAccessible(true);
+								field.set(parameter, sysUser.getDepartParentId());
 								field.setAccessible(false);
 							}
 						}

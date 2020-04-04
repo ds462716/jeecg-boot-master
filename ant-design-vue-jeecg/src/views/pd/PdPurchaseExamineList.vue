@@ -11,17 +11,36 @@
           </a-col>
           <a-col :md="6" :sm="8">
             <a-form-item label="申购科室名称">
-              <a-input placeholder="请输入申购科室名称" v-model="queryParam.deptName"></a-input>
+               <a-select
+                showSearch
+                :departId="departValue"
+                :defaultActiveFirstOption="false"
+                :allowClear="true"
+                :showArrow="true"
+                :filterOption="false"
+                @search="departHandleSearch"
+                @change="departHandleChange"
+                @focus="departHandleSearch"
+                :notFoundContent="notFoundContent"
+                v-model="queryParam.departId"
+                placeholder="请选择科室"
+              >
+                <a-select-option v-for="d in departData" :key="d.value">{{d.text}}</a-select-option>
+              </a-select>
+            </a-form-item>
+          </a-col>
+          <a-col  :md="6" :sm="8">
+            <a-form-item label="申购日期">
+              <a-range-picker @change="rejectedDateChange" v-model="queryParam.queryDate"/>
             </a-form-item>
           </a-col>
           <template v-if="toggleSearchStatus">
             <a-col :md="6" :sm="8">
               <a-form-item label="审核状态">
-                <a-select v-model="queryParam.orderStatus" placeholder="请选择审核状态">
-                  <a-select-option value="0">待审核</a-select-option>
-                  <!--<a-select-option value="1">审核中</a-select-option>-->
+                <a-select v-model="queryParam.auditStatus" placeholder="请选择审核状态">
+                  <a-select-option value="1">待审核</a-select-option>
                   <a-select-option value="2">审核通过</a-select-option>
-                  <a-select-option value="3">审核不通过</a-select-option>
+                  <a-select-option value="3">已驳回</a-select-option>
                 </a-select>
               </a-form-item>
             </a-col>
@@ -41,6 +60,23 @@
       </a-form>
     </div>
     <!-- 查询区域-END -->
+    <!-- 操作按钮区域 -->
+    <div class="table-operator">
+      <a-button @click="batchAduit('1')" type="primary" icon="plus">批量审核</a-button>
+      <a-divider type="vertical" />
+      <a-button @click="batchAduit('2')" type="primary" icon="plus">合并审核</a-button>
+      <a-divider type="vertical" />
+      <a-button @click="batchAduit('3')" type="primary" icon="plus">批量拒绝</a-button>
+
+      <!--<a-dropdown v-if="selectedRowKeys.length > 0">
+        <a-menu slot="overlay">
+          <a-menu-item key="1" @click="onClearSelected"><a-icon type="delete"/>删除</a-menu-item>
+        </a-menu>
+        <a-button style="margin-left: 8px"> 批量操作 <a-icon type="down" /></a-button>
+      </a-dropdown>-->
+    </div>
+
+
     <!-- table区域-begin -->
     <div>
       <div class="ant-alert ant-alert-info" style="margin-bottom: 16px;">
@@ -57,10 +93,11 @@
         :dataSource="dataSource"
         :pagination="ipagination"
         :loading="loading"
-        :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
+        :customRow="onClickRow"
+        :rowSelection="{fixed:false,selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
         @change="handleTableChange">
         <span slot="action" slot-scope="text, record">
-          <a v-if="record.orderStatus=='0'" @click="handleEdit(record)">审核</a>&nbsp;&nbsp;&nbsp;
+          <a v-if="record.auditStatus=='1'" @click="handleEdit(record)">审核</a>&nbsp;&nbsp;&nbsp;
           <a href="javascript:;" @click="handleDetail(record)">详情</a>
         </span>
       </a-table>
@@ -70,13 +107,43 @@
 </template>
 
 <script>
-
   import { JeecgListMixin,handleEdit} from '@/mixins/JeecgListMixin'
-  import { deleteAction } from '@/api/manage'
+  import { deleteAction,httpAction,getAction } from '@/api/manage'
+  import { filterObj } from '@/utils/util';
   import PdPurchaseExamineModal from './modules/PdPurchaseExamineModal'
   import JDictSelectTag from '@/components/dict/JDictSelectTag.vue'
   import {initDictOptions, filterMultiDictText} from '@/components/dict/JDictSelectUtil'
 
+  let timeout;
+  let currentValue;
+
+  function fetch(value, callback,url) {
+    if (timeout) {
+      clearTimeout(timeout);
+      timeout = null;
+    }
+    currentValue = value;
+
+    function fake() {
+      getAction(url,{departName:value}).then((res)=>{
+        if (!res.success) {
+          this.cmsFailed(res.message);
+        }
+        if (currentValue === value) {
+          const result = res.result;
+          const data = [];
+          result.forEach(r => {
+            data.push({
+              value: r.id,
+              text: r.departName,
+            });
+          });
+          callback(data);
+        }
+      })
+    }
+    timeout = setTimeout(fake, 0);
+  }
   export default {
     name: "PdPurchaseExamineList",
     mixins:[JeecgListMixin],
@@ -87,6 +154,9 @@
     data () {
       return {
         description: '申购订单主表管理页面',
+        departData: [],
+        departValue: undefined,
+        notFoundContent:"未找到内容",
         // 表头
         columns: [
           {
@@ -126,24 +196,24 @@
           {
             title:'审核状态',
             align:"center",
-            dataIndex: 'orderStatus',
+            dataIndex: 'auditStatus',
             customRender:(text)=>{
               if(!text){
                 return ''
               }else{
-                return filterMultiDictText(this.dictOptions['orderStatus'], text+"")
+                return filterMultiDictText(this.dictOptions['auditStatus'], text+"")
               }
             }
           },
           {
             title:'申购总数量',
             align:"center",
-            dataIndex: 'amountCount'
+            dataIndex: 'totalNum'
           },
           {
             title:'申购总金额',
             align:"center",
-            dataIndex: 'amountMoney'
+            dataIndex: 'totalPrice'
           },
           {
             title: '操作',
@@ -154,31 +224,147 @@
         ],
         url: {
           list: "/pd/pdPurchaseOrder/auditList",
+          edit:"/pd/pdPurchaseOrderMerge/edit",
           delete: "/pd/pdPurchaseOrder/delete",
-          deleteBatch: "/pd/pdPurchaseOrder/deleteBatch"
+          deleteBatch: "/pd/pdPurchaseOrder/deleteBatch",
+          queryDepart: "/pd/pdDepart/queryListTree",
         },
         dictOptions:{
-          orderStatus:[],
-         submitStart:[],
-        },
-
+          auditStatus:[],
+         },
       }
     },
     computed: {
 
     },
     methods: {
-      initDictConfig(){//静态字典值加载
-        initDictOptions('order_status').then((res) => {
+
+      //科室查询start
+      departHandleSearch(value) {
+        fetch(value, data => (this.departData = data),this.url.queryDepart);
+      },
+      departHandleChange(value) {
+        this.departValue = value;
+        fetch(value, data => (this.departData = data),this.url.queryDepart);
+      },
+      //科室查询end
+
+
+      rejectedDateChange (value, dateString) {
+        this.queryParam.queryDateStart=dateString[0];
+        this.queryParam.queryDateEnd=dateString[1];
+      },
+
+      getQueryParams() {
+        //获取查询条件
+        let sqp = {}
+        if(this.superQueryParams){
+          sqp['superQueryParams']=encodeURI(this.superQueryParams)
+        }
+        var param = Object.assign(sqp, this.queryParam, this.isorter ,this.filters);
+        param.field = this.getQueryField();
+        param.pageNo = this.ipagination.current;
+        param.pageSize = this.ipagination.pageSize;
+        delete param.queryDate; //范围参数不传递后台，传后台会报错
+        return filterObj(param);
+      },
+         //批量审核
+      batchAduit(oprtSource) {
+        if (this.selectionRows.length <= 0) {
+          this.$message.warning('请先选择申购单！');
+          return;
+        }else{
+          var newOrderNos = "";
+          var formData={};
+          var orderNos="";
+          for (let a = 0; a < this.selectionRows.length; a++) {
+            let auditStatus= this.selectionRows[a].auditStatus;
+            if(auditStatus!='1'){
+              orderNos+=this.selectionRows[a].orderNo + ",";
+            }else{
+              newOrderNos += this.selectionRows[a].orderNo + ",";
+            }
+          }
+          if(orderNos != ""){
+            this.$message.warning("采购编号["+orderNos.substring(0,orderNos.length-1)+"]已提交过审核！")
+            return
+          }
+          var msgName="合并并提交";
+          formData.auditStatus="2";
+          formData.submitStatus="2";
+          formData.orderNos=newOrderNos;
+          if(oprtSource=='1'){
+            formData.auditStatus="2";//2:批量审核通过操作
+            msgName="审核通过";
+          }else if(oprtSource=='3'){
+            formData.auditStatus="3";//3:批量审核拒绝操作
+            msgName="拒绝";
+            formData.submitStatus="1";
+          }
+
+          formData.oprtSource=oprtSource;
+          var that = this;
+          this.$confirm({
+            title: "审批提醒",
+            content: "确认是否"+msgName+"选择的订单吗?",
+            onOk: function () {
+              that.loading = true;
+              httpAction(that.url.edit, formData, "put").then((res) => {
+                if (res.success) {
+                  that.$message.success(res.message);
+                  that.loadData();
+                  that.onClearSelected();
+                  that.$emit('ok');
+                } else {
+                  that.$message.warning(res.message);
+                }
+              }).finally(() => {
+                that.confirmLoading = false;
+                that.close();
+              })
+            }
+          });
+        }
+      },
+      initDictConfig(){ //静态字典值加载
+        initDictOptions('audit_status').then((res) => {
           if (res.success) {
-            this.$set(this.dictOptions, 'orderStatus', res.result)
+            this.$set(this.dictOptions, 'auditStatus', res.result)
           }
         })
+      },
+  onClickRow(record) {
+    return {
+      on: {
+        click: (e) => {
+          //点击操作那一行不选中表格的checkbox
+          let pathArray = e.path;
+          //获取当前点击的是第几列
+          let td = pathArray[0];
+          let cellIndex = td.cellIndex;
+          //获取tr
+          let tr = pathArray[1];
+          //获取一共多少列
+          let lie = tr.childElementCount;
+          if(lie && cellIndex){
+            if(parseInt(lie)-parseInt(cellIndex)!=1){
+              //操作那一行
+              let recordId = record.id;
+              let index = this.selectedRowKeys.indexOf(recordId);
+              if(index>=0){
+                this.selectedRowKeys.splice(index, 1);
+              }else{
+                this.selectedRowKeys.push(recordId);
+              }
+            }
+          }
+        }
       }
+    }
+  }
        
     }
   }
 </script>
 <style scoped>
-  @import '~@assets/less/common.less'
 </style>

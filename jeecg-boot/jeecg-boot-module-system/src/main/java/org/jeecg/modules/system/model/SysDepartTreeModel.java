@@ -79,6 +79,10 @@ public class SysDepartTreeModel implements Serializable{
     private String wb;
     /**自定义码*/
     private String zdy;
+    /**
+     * 部门类型
+     */
+    private String departType;
 
     private List<SysDepartTreeModel> children = new ArrayList<>();
 
@@ -94,6 +98,10 @@ public class SysDepartTreeModel implements Serializable{
         this.id = sysDepart.getId();
         this.parentId = sysDepart.getParentId();
         this.departName = sysDepart.getDepartName();
+        this.py = sysDepart.getPy();
+        this.wb = sysDepart.getWb();
+        this.zdy = sysDepart.getZdy();
+        this.departType = sysDepart.getDepartType();
         this.departNameEn = sysDepart.getDepartNameEn();
         this.departNameAbbr = sysDepart.getDepartNameAbbr();
         this.departOrder = sysDepart.getDepartOrder();
@@ -350,6 +358,14 @@ public class SysDepartTreeModel implements Serializable{
 
     public void setZdy(String zdy) {
         this.zdy = zdy;
+    }
+
+    public String getDepartType() {
+        return departType;
+    }
+
+    public void setDepartType(String departType) {
+        this.departType = departType;
     }
 
     /**

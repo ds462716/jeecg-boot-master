@@ -1,223 +1,137 @@
-<template xmlns:background-color="http://www.w3.org/1999/xhtml">
+<template>
   <a-row :gutter="10">
-    <a-col :md="9" :sm="24">
+    <a-col :md="12" :sm="24">
       <a-card :bordered="false">
+        <!-- 操作按钮区域 -->
+        <!--<div class="table-operator">-->
+          <!--<a-button @click="handleAdd" type="primary" icon="plus">新增</a-button>-->
+          <!--<a-button @click="batchDel" v-if="selectedRowKeys.length > 0" ghost type="primary" icon="delete" style="padding-left: 8px;">批量删除 </a-button>-->
+        <!--</div>-->
 
-        <!-- 按钮操作区域 -->
-        <a-row style="margin-left: 14px">
-          <a-button @click="handleAdd(1)" type="primary" v-show="showHuoqu">添加货区</a-button>
-          <a-button @click="handleAdd(2)" type="primary" v-show="showHuowei">添加货位</a-button>
-          <!--<a-button @click="handleAdd(1)" type="primary">添加一级部门</a-button>-->
-          <!--<a-button type="primary" icon="download" @click="handleExportXls('部门信息')">导出</a-button>-->
-          <!--<a-upload name="file" :showUploadList="false" :multiple="false" :headers="tokenHeader" :action="importExcelUrl" @change="handleImportExcel">-->
-            <!--<a-button type="primary" icon="import">导入</a-button>-->
-          <!--</a-upload>-->
-          <a-button title="删除多条数据" @click="batchDel" type="default" v-show="showDelete">删除</a-button>
-          <!--<a-button @click="refresh" type="default" icon="reload" :loading="loading">刷新</a-button>-->
-        </a-row>
-        <div style="background: #fff;padding-left:16px;height: 100%; margin-top: 5px">
-          <a-alert type="info" :showIcon="true">
-            <div slot="message">
-              当前选择：
-              <a v-if="this.currSelected.title">{{ getCurrSelectedTitle() }}</a>
-              <a v-if="this.currSelected.title" style="margin-left: 10px" @click="onClearSelected">取消选择</a>
-            </div>
-          </a-alert>
-          <a-input-search @search="onSearch" style="width:100%;margin-top: 10px" placeholder="请输入部门名称"/>
-          <!-- 树-->
-          <a-col :md="10" :sm="24">
-            <template>
-              <a-dropdown :trigger="[this.dropTrigger]" @visibleChange="dropStatus">
-               <span style="user-select: none">
-            <a-tree
-              checkable
-              multiple
-              @select="onSelect"
-              @check="onCheck"
-              :selectedKeys="selectedKeys"
-              :checkedKeys="checkedKeys"
-              :treeData="departTree"
-              :checkStrictly="checkStrictly"
-              :expandedKeys="iExpandedKeys"
-              :autoExpandParent="autoExpandParent"
-              @expand="onExpand"/>
-                </span>
-                <!--新增右键点击事件,和增加添加和删除功能-->
-                <!--<a-menu slot="overlay">-->
-                  <!--<a-menu-item @click="handleAdd(3)" key="1">添加</a-menu-item>-->
-                  <!--<a-menu-item @click="handleDelete" key="2">删除</a-menu-item>-->
-                  <!--<a-menu-item @click="closeDrop" key="3">取消</a-menu-item>-->
-                <!--</a-menu>-->
-              </a-dropdown>
-            </template>
-          </a-col>
+        <!-- table区域-begin -->
+        <div>
+          <!--<div class="ant-alert ant-alert-info" style="margin-bottom: 16px;">-->
+            <!--<i class="anticon anticon-info-circle ant-alert-icon"></i>已选择&nbsp;<a style="font-weight: 600">{{-->
+            <!--selectedRowKeys.length }}</a>项&nbsp;&nbsp;-->
+            <!--<a style="margin-left: 24px" @click="onClearSelected">清空</a>-->
+          <!--</div>-->
+
+          <a-table
+            :columns="departColumns"
+            size="middle"
+            rowKey="id"
+            :pagination="false"
+            :dataSource="departDataSource"
+            :loading="loading"
+            :customRow="departOnClickRow"
+            :expandedRowKeys= "departExpandedRowKeys"
+            @expand="departHandleExpand"
+            :rowSelection="{fixed:false,selectedRowKeys: departSelectedRowKeys, onChange: departOnSelectChange}">
+            <span slot="action" slot-scope="text, record">
+              <a @click="showHuoweiList(record)" v-if="record.orgType!='1'">查看</a>
+              <a-divider type="vertical" v-if="record.orgType!='1'" />
+              <a @click="addHuoqu(record)" v-if="record.orgType!='1'">添加货区</a>
+              <!--<a-divider type="vertical"/>-->
+              <!--<a @click="addHuowei(record)" v-bind:disabled="record.orgType=='1'">添加货位</a>-->
+            </span>
+          </a-table>
         </div>
       </a-card>
-      <!---- author:os_chengtgen -- date:20190827 --  for:切换父子勾选模式 =======------>
-      <div class="drawer-bootom-button">
-        <a-dropdown :trigger="['click']" placement="topCenter">
-          <a-menu slot="overlay">
-            <!--<a-menu-item key="1" @click="switchCheckStrictly(1)">父子关联</a-menu-item>-->
-            <!--<a-menu-item key="2" @click="switchCheckStrictly(2)">取消关联</a-menu-item>-->
-            <a-menu-item key="3" @click="checkALL">全部勾选</a-menu-item>
-            <a-menu-item key="4" @click="cancelCheckALL">取消全选</a-menu-item>
-            <a-menu-item key="5" @click="expandAll">展开所有</a-menu-item>
-            <a-menu-item key="6" @click="closeAll">合并所有</a-menu-item>
-          </a-menu>
-          <a-button>
-            树操作 <a-icon type="up" />
-          </a-button>
-        </a-dropdown>
-      </div>
-      <!---- author:os_chengtgen -- date:20190827 --  for:切换父子勾选模式 =======------>
     </a-col>
-    <a-col :md="15" :sm="24" v-show="showGoodsCard">
+
+    <a-col :md="12" :sm="24" v-show="showGoodsCard">
       <a-card :bordered="false">
-        <a-alert type="info" :showIcon="false">
-          <div slot="message">
-            <span style="font-weight: bold;color: #2eabff">{{ title1 }} </span> {{ title2 }}
+        <!--<div class="table-operator">-->
+          <!--<a-button-->
+            <!--@click="batchDel"-->
+            <!--v-if="huoweiSelectedRowKeys.length > 0"-->
+            <!--ghost-->
+            <!--type="primary"-->
+            <!--icon="delete">批量删除-->
+          <!--</a-button>-->
+        <!--</div>-->
+
+        <div>
+          <div class="ant-alert ant-alert-info" style="margin-bottom: 16px;">
+            <i class="anticon anticon-info-circle ant-alert-icon"></i>科室：&nbsp;<a style="font-weight: 600;margin-right: 40px">{{ departName }}</a>
+            <i class="anticon anticon-info-circle ant-alert-icon"></i>已选择：&nbsp;<a style="font-weight: 600">{{ huoweiSelectedRowKeys.length }}</a>项&nbsp;&nbsp;
+            <a style="margin-left: 15px" @click="onClearSelected">清空</a>
+            <a-button ghost style="margin-left: 20px" @click="batchDelHuowei" v-if="huoweiSelectedRowKeys.length > 0" type="primary" icon="delete">批量删除 </a-button>
           </div>
-        </a-alert>
 
-        <a-form :form="form" style="margin-top: 10px" >
-          <a-form-item label="部门名称" :labelCol="labelCol" :wrapperCol="wrapperCol">
-            <a-input disabled v-decorator="['departName', validatorRules.departName ]" placeholder="请输入机构/部门名称"/>
-            <a-input v-decorator="['departId', validatorRules.departId ]" v-show="false"/>
-          </a-form-item>
-          <!--<a-form-item label="上级机构" :labelCol="labelCol" :wrapperCol="wrapperCol">-->
-            <!--<a-tree-select style="width:100%" :dropdownStyle="{maxHeight:'200px',overflow:'auto'}"-->
-              <!--:treeData="treeData" :disabled="disable" v-model="model.departParentId" placeholder="无">-->
-            <!--</a-tree-select>-->
-          <!--</a-form-item>-->
-          <a-form-item label="类型" :labelCol="labelCol" :wrapperCol="wrapperCol">
-            <template>
-              <a-radio-group disabled v-decorator="['areaType',validatorRules.areaType]" placeholder="类型">
-                <a-radio value="1">
-                  货区
-                </a-radio>
-                <a-radio value="2" >
-                  货位
-                </a-radio>
-              </a-radio-group>
-            </template>
-          </a-form-item>
-          <a-form-item :label="title2+'名称'" :labelCol="labelCol" :wrapperCol="wrapperCol">
-            <a-input v-decorator="['name', validatorRules.name ]" @change="pinyinTran" placeholder="请输入名称"/>
-          </a-form-item>
-          <a-form-item label="下级存放单位编号标识" :labelCol="labelCol" :wrapperCol="wrapperCol">
-            <a-input disabled v-decorator="['subCode', validatorRules.subCode ]" placeholder="请输入下级存放单位编号标识" />
-          </a-form-item>
-          <a-form-item label="编号后缀" :labelCol="labelCol" :wrapperCol="wrapperCol">
-            <a-input v-decorator="['codeSuffix', validatorRules.codeSuffix ]" @change="getCode" placeholder="请输入编号后缀" />
-          </a-form-item>
-          <a-form-item :label="title2+'编号'" :labelCol="labelCol" :wrapperCol="wrapperCol">
-            <a-input disabled v-decorator="[ 'code', validatorRules.code]" placeholder="请输入编号"></a-input>
-          </a-form-item>
-          <a-form-item label="下级存放单位数量" :labelCol="labelCol" :wrapperCol="wrapperCol" v-show="showSubNum">
-            <a-input-number v-decorator="[ 'subNum', validatorRules.subNum]" placeholder="请输入下级存放单位数量" :min="0" style="width: 100%"/>
-          </a-form-item>
-          <a-form-item label="地址" :labelCol="labelCol" :wrapperCol="wrapperCol">
-            <a-input v-decorator="[ 'address', validatorRules.address]" placeholder="请输入地址"></a-input>
-          </a-form-item>
-
-          <a-form-item label="面积" :labelCol="labelCol" :wrapperCol="wrapperCol">
-            <a-input-number v-decorator="[ 'area', validatorRules.area]" placeholder="请输入面积" style="width: 100%"/>
-          </a-form-item>
-          <a-form-item label="容积" :labelCol="labelCol" :wrapperCol="wrapperCol">
-            <a-input-number v-decorator="[ 'volume', validatorRules.volume]" placeholder="请输入容积" style="width: 100%"/>
-          </a-form-item>
-          <a-form-item label="联系人" :labelCol="labelCol" :wrapperCol="wrapperCol">
-            <a-input v-decorator="[ 'contacts', validatorRules.contacts]" placeholder="请输入联系人"></a-input>
-          </a-form-item>
-          <a-form-item label="联系方式" :labelCol="labelCol" :wrapperCol="wrapperCol">
-            <a-input v-decorator="[ 'contactsPhone', validatorRules.contactsPhone]" placeholder="请输入联系方式"></a-input>
-          </a-form-item>
-          <a-form-item label="状态" :labelCol="labelCol" :wrapperCol="wrapperCol">
-            <template>
-              <a-radio-group v-decorator="['state',validatorRules.state]" placeholder="状态">
-                <a-radio value="0">
-                  未启用
-                </a-radio>
-                <a-radio value="1">
-                  启用
-                </a-radio>
-              </a-radio-group>
-            </template>
-          </a-form-item>
-          <a-form-item label="拼音码" :labelCol="labelCol" :wrapperCol="wrapperCol">
-            <a-input v-decorator="[ 'py', validatorRules.py]" placeholder="请输入拼音码"></a-input>
-          </a-form-item>
-          <a-form-item label="五笔码" :labelCol="labelCol" :wrapperCol="wrapperCol">
-            <a-input v-decorator="[ 'wb', validatorRules.wb]" placeholder="请输入五笔码"></a-input>
-          </a-form-item>
-          <a-form-item label="自定义码" :labelCol="labelCol" :wrapperCol="wrapperCol">
-            <a-input v-decorator="[ 'zdy', validatorRules.zdy]" placeholder="请输入自定义码"></a-input>
-          </a-form-item>
-          <a-form-item label="备注" :labelCol="labelCol" :wrapperCol="wrapperCol">
-            <a-input v-decorator="[ 'remarks', validatorRules.remarks]" placeholder="请输入备注"></a-input>
-          </a-form-item>
-        </a-form>
-        <div class="anty-form-btn">
-          <a-button @click="cancelCurrForm" type="default" htmlType="button" icon="close">取消</a-button>
-          <a-button @click="emptyCurrForm" type="default" htmlType="button" icon="sync">重置</a-button>
-          <a-button @click="editCurrForm" type="primary" htmlType="button" icon="form" v-show="showEdit">修改并保存</a-button>
-          <a-button @click="submitCurrForm" type="primary" htmlType="button" icon="form" v-show="showSubmit">保存</a-button>
+          <a-table
+            :columns="huoweiColumns"
+            size="middle"
+            rowKey="id"
+            :pagination="false"
+            :dataSource="huoweiDataSource"
+            :loading="huoweiLoading"
+            :customRow="huoweiOnClickRow"
+            :expandedRowKeys= "huoweiExpandedRowKeys"
+            @expand="huoweiHandleExpand"
+            :rowSelection="{selectedRowKeys: huoweiSelectedRowKeys, onChange: huoweiOnSelectChange}">
+            <span slot="action" slot-scope="text, record">
+              <a @click="showHuoweiDetail(record)" >查看</a>
+              <a-divider type="vertical"  />
+              <a @click="editHuoweiDetail(record)" >修改</a>
+              <a-divider type="vertical"  />
+              <a @click="addHuowei(record)" v-bind:disabled="record.areaType=='2'">添加货位</a>
+            </span>
+          </a-table>
         </div>
       </a-card>
     </a-col>
+
+    <pd-goods-allocation-modal ref="modalForm" @ok="modalFormOk"></pd-goods-allocation-modal>
   </a-row>
 </template>
+
 <script>
+  import { filterObj } from '@/utils/util';
+  import Vue from 'vue'
+  import { ACCESS_TOKEN } from "@/store/mutation-types"
   import pick from 'lodash.pick'
-  import {queryGoodsAllocationTreeList, searchByKeywords, deleteByDepartId,duplicateCheckHasDelFlag} from '@/api/api'
+  // import { JeecgListMixin } from '@/mixins/JeecgListMixin'
   import {httpAction, deleteAction, getAction} from '@/api/manage'
-  import {JeecgListMixin} from '@/mixins/JeecgListMixin'
+  import {initDictOptions, filterMultiDictText} from '@/components/dict/JDictSelectUtil'
+  import { queryPdDepaTreeList,queryGoodsAllocationTreeList, searchByKeywords, deleteByDepartId,duplicateCheckHasDelFlag } from '@/api/api'
   import { makeWb } from '@/utils/wubi'
+  import PdGoodsAllocationModal from "./modules/PdGoodsAllocationModal";
 
   export default {
-    name: 'PdGoodsAllocationList',
-    mixins: [JeecgListMixin],
+    name: "PdGoodsAllocationList",
+    // mixins:[JeecgListMixin],
     components: {
+      PdGoodsAllocationModal
+      // JDictSelectTag
     },
-    data() {
+    data () {
       return {
-        title1:'',
-        title2:'',
-        showGoodsCard:false,
-        showSubNum:false,
-        showEdit:false,
-        showSubmit:false,
-        showDelete:false,
-        showHuoqu:false,
-        showHuowei:false,
-        iExpandedKeys: [],
-        loading: false,
-        autoExpandParent: true,
-        currFlowId: '',
-        currFlowName: '',
-        disable: true,
-        treeData: [],
-        visible: false,
-        departTree: [],
-        rightClickSelectedKey: '',
-        hiding: true,
-        model: {},
-        dropTrigger: '',
-        depart: {},
-        disableSubmit: false,
-        checkedKeys: [],
-        selectedKeys: [],
-        autoIncr: 1,
-        currSelected: {},
-        allTreeKeys:[],
-        checkStrictly: true, // 父子关联
-
-        goodsParentId:"", //货位父ID
-        goodsCode:"",
-        subCode:'',
-        parentCode:'',
-
+        tokenHeader: {'X-Access-Token': Vue.ls.get(ACCESS_TOKEN)},
         form: this.$form.createForm(this),
+        /* table加载状态 */
+        loading:false,
+        huoweiLoading:false,
+        // title1:'',
+        // title2:'',
+        showGoodsCard:false,
+        // showEdit:false,
+        // showSubmit:false,
+        // showSubNum:false,
+        // goodsCode:"",
+        qParam:{},
+        departName:"",
+        description: '货位管理页面',
+        departExpandedRowKeys :[],
+        departDataSource:[],
+        departSelectedRowKeys:[],
+        departSelectionRows: [],
+
+        huoweiExpandedRowKeys :[],
+        huoweiDataSource:[],
+        huoweiSelectedRowKeys:[],
+        huoweiSelectionRows: [],
+
         labelCol: {
           xs: {span: 24},
           sm: {span: 5}
@@ -226,475 +140,297 @@
           xs: {span: 24},
           sm: {span: 16}
         },
-        graphDatasource: {
-          nodes: [],
-          edges: []
-        },
-        validatorRules: {
-          departName: {rules: [{required: true, message: '请输入机构/部门名称!'}]},
-          departId: {rules: []},
-          subCode: {rules: [{required: true, message: '下级存放单位编号标识!'}]},
-          // orgCategory: {rules: [{required: true, message: '请输入机构类型!'}]},
-          mobile: {rules: [{validator: this.validateMobile}]},
-          name: {rules: [{required: true, message: '请输入名称!'}]},
-          code: {rules: [{required: true, message: '请输入编号!'}]},
-          codeSuffix: {rules: [{required: true, message: '请输入编号后缀!'},{validator: this.validateCode}]},
-          areaType: {rules: []},
-          address: {rules: []},
-          area: {rules: [{pattern:/^-?\d+\.?\d*$/, message: '请输入数字!'},]},
-          volume: {rules: [{pattern:/^-?\d+\.?\d*$/, message: '请输入数字!'},]},
-          contacts: {rules: []},
-          contactsPhone: {rules: [{pattern:/^1[3456789]\d{9}$/, message: '请输入正确的手机号码!'},]},
-          subNum: {rules: [{required: true, message: '请输入整数!'},{pattern:/^-?\d+$/, message: '请输入整数!'},]},
-          state: {rules: []},
-          py: {rules: []},
-          wb: {rules: []},
-          zdy: {rules: []},
-          remarks: {rules: []},
-        },
+        // 表头
+        departColumns: [
+          {
+            title:'机构名称',
+            dataIndex: 'departName'
+          },
+          {
+            title:'编码',
+            align:"center",
+            dataIndex: 'orgCode',
+            width: 200
+          },
+          {
+            title: '操作',
+            align:"center",
+            dataIndex: 'action',
+            scopedSlots: { customRender: 'action' },
+            width: 200
+          }
+        ],
+        huoweiColumns: [
+          {
+            title:'名称',
+            dataIndex: 'name'
+          },
+          {
+            title:'编码',
+            align:"center",
+            dataIndex: 'code',
+            width: 200
+          },
+          {
+            title: '操作',
+            align:"center",
+            dataIndex: 'action',
+            scopedSlots: { customRender: 'action' },
+            width: 200
+          }
+
+        ],
         url: {
+          list: "/pd/pdDepart/queryTreeList",
           add: "/pd/pdGoodsAllocation/add",
           edit: "/pd/pdGoodsAllocation/edit",
           delete: "/pd/pdGoodsAllocation/delete",
           deleteBatch: "/pd/pdGoodsAllocation/deleteBatch",
           queryById: "/pd/pdGoodsAllocation/queryById",
+          huoweiList: "/pd/pdGoodsAllocation/queryTreeList",
         },
-        orgCategoryDisabled:false,
+        dictOptions:{
+          orgType:[],
+        },
       }
     },
     computed: {
-      // importExcelUrl: function () {
+      // importExcelUrl: function(){
       //   return `${window._CONFIG['domianURL']}/${this.url.importExcelUrl}`;
       // }
     },
+    created() {
+      if(!this.disableMixinCreated){
+        console.log(' -- mixin created -- ')
+        this.loadData();
+        //初始化字典配置 在自己页面定义
+        this.initDictConfig();
+      }
+    },
     methods: {
       loadData() {
-        this.refresh();
-      },
-      loadTree() {
-        var that = this
-        that.treeData = []
-        that.departTree = []
-        queryGoodsAllocationTreeList().then((res) => {
+        this.departDataSource = [];
+        this.departExpandedRowKeys = [];
+        this.departSelectedRowKeys = [];
+        queryPdDepaTreeList().then((res) => {
           if (res.success) {
-            for (let i = 0; i < res.result.length; i++) {
-              let temp = res.result[i]
-              that.treeData.push(temp)
-              that.departTree.push(temp)
-              that.setThisExpandedKeys(temp)
-              that.getAllKeys(temp);
-              // console.log(temp.id)
+            this.departDataSource = res.result;
+            let resultData = res.result;
+            if(resultData.length>0){
+              this.departRecursion(resultData);
             }
-            this.loading = false
           }
         })
       },
-      pinyinTran(e){
-        let val = e.target.value;
-        let pinyin = require('js-pinyin');
-        pinyin.setOptions({checkPolyphone: false, charCase: 0});
-        let py = pinyin.getCamelChars(val);//获取简码
-        this.form.setFieldsValue({py:py});
-        let wb = makeWb(val);
-        this.form.setFieldsValue({wb:wb});//获取五笔简码
+      modalFormOk(departId) {
+        // 新增/修改 成功时，重载列表
+        this.showHuoweiList({id:departId,departName:this.departName});
       },
-      getCode(e){
-        let codeSuffix = e.target.value;
-        this.goodsCode = this.form.getFieldValue("subCode")+codeSuffix;
-        this.form.setFieldsValue({code:this.goodsCode});
-      },
-      setThisExpandedKeys(node) {
-        if (node.children && node.children.length > 0) {
-          this.iExpandedKeys.push(node.key)
-          for (let a = 0; a < node.children.length; a++) {
-            this.setThisExpandedKeys(node.children[a])
+      initDictConfig(){
+        initDictOptions('org_type').then((res) => {
+          if (res.success) {
+            this.$set(this.dictOptions, 'orgType', res.result)
           }
+        })
+      },
+      departOnSelectChange(selectedRowKeys, selectionRows){
+        this.departSelectedRowKeys = selectedRowKeys;
+        this.departSelectionRows = selectionRows;
+      },
+      huoweiOnSelectChange(selectedRowKeys, selectionRows){
+        this.huoweiSelectedRowKeys = selectedRowKeys;
+        this.huoweiSelectionRows = selectionRows;
+      },
+      showHuoweiList(record){
+        this.qParam = record;
+        this.huoweiLoading = true;
+        this.huoweiDataSource = [];
+        this.huoweiExpandedRowKeys = [];
+        this.huoweiSelectedRowKeys = [];
+        this.departName = record.departName;
+        getAction(this.url.huoweiList, {departId:record.id}).then(res => {
+          if (res.success) {
+            let resultData = res.result || [];
+            this.huoweiDataSource = resultData;
+            if(resultData.length>0){
+              this.huoweiRecursion(resultData);
+            }
+          }
+          this.huoweiLoading = false;
+          this.showGoodsCard = true;
+        }).finally(() => {
+          this.huoweiLoading = false;
+        })
+      },
+      showHuoweiDetail(record){
+        if(record.areaType == "1"){
+          this.$refs.modalForm.title = "查看货区";
+          this.$refs.modalForm.title2 = "货区";
+        }else{
+          this.$refs.modalForm.title = "查看货位";
+          this.$refs.modalForm.title2 = "货位";
         }
+        this.$refs.modalForm.add(record);
+        this.$refs.modalForm.disableSubmit = true;
       },
-      refresh() {
-        this.loading = true
-        this.loadTree()
-      },
-      // 右键操作方法
-      // rightHandle(node) {
-      //   this.dropTrigger = 'contextmenu'
-      //   console.log(node.node.eventKey)
-      //   this.rightClickSelectedKey = node.node.eventKey
-      // },
-      onExpand(expandedKeys) {
-        console.log('onExpand', expandedKeys)
-        // if not set autoExpandParent to false, if children expanded, parent can not collapse.
-        // or, you can remove all expanded children keys.
-        this.iExpandedKeys = expandedKeys
-        this.autoExpandParent = false
-      },
-      backFlowList() {
-        this.$router.back(-1)
-      },
-      // 右键点击下拉框改变事件
-      dropStatus(visible) {
-        if (visible == false) {
-          this.dropTrigger = ''
+      editHuoweiDetail(record){
+        if(record.areaType == "1"){
+          this.$refs.modalForm.title = "修改货区";
+          this.$refs.modalForm.title2 = "货区";
+        }else{
+          this.$refs.modalForm.title = "修改货位";
+          this.$refs.modalForm.title2 = "货位";
         }
+        this.$refs.modalForm.add(record);
+        this.$refs.modalForm.disableSubmit = false;
       },
-      // 右键店家下拉关闭下拉框
-      closeDrop() {
-        this.dropTrigger = ''
+      addHuoqu(record) {
+        this.showGoodsCard = true;
+        this.departName = record.departName;
+        let param = {};
+        param.areaType = "1";
+        param.departName = record.departName;
+        param.departId = record.id;
+        param.subCode = record.orgCode;
+        this.$refs.modalForm.add(param);
+        this.$refs.modalForm.title = "新增货区";
+        this.$refs.modalForm.title2 = "货区";
+        this.$refs.modalForm.disableSubmit = false;
+        this.showHuoweiList(record);
       },
-      addRootNode() {
-        this.$refs.nodeModal.add(this.currFlowId, '')
+      addHuowei(record) {
+        this.showGoodsCard = true;
+        let param = {};
+        param.areaType = "2";
+        param.departName = record.departName;
+        param.departId = record.departId;
+        param.parentId = record.id;
+        param.subCode = record.code;
+        this.$refs.modalForm.add(param);
+        this.$refs.modalForm.title = "新增货位";
+        this.$refs.modalForm.title2 = "货位";
+        this.$refs.modalForm.disableSubmit = false;
       },
-      batchDel: function () {
-        console.log(this.checkedKeys)
-        if (this.checkedKeys.length <= 0) {
-          this.$message.warning('请勾选一条记录！')
+      batchDelHuowei(){
+        if(!this.url.deleteBatch){
+          this.$message.error("请设置url.deleteBatch属性!")
+          return
+        }
+        if (this.huoweiSelectedRowKeys.length <= 0) {
+          this.$message.warning('请选择一条记录！');
+          return;
         } else {
-          var ids = ''
-          for (var a = 0; a < this.checkedKeys.length; a++) {
-            ids += this.checkedKeys[a] + ','
+          var ids = "";
+          for (var a = 0; a < this.huoweiSelectedRowKeys.length; a++) {
+            ids += this.huoweiSelectedRowKeys[a] + ",";
           }
-          var that = this
+          var that = this;
           this.$confirm({
-            title: '确认删除',
-            content: '确定要删除所选中的 ' + this.checkedKeys.length + ' 条数据，以及子节点数据吗?',
+            title: "确认删除",
+            content: "删除货区会同时删除该货区下的货位，货位有库存则不能删除。是否删除选中数据？",
             onOk: function () {
+              that.loading = true;
               deleteAction(that.url.deleteBatch, {ids: ids}).then((res) => {
                 if (res.success) {
-                  that.$message.success(res.message)
-                  that.loadTree()
-                  that.onClearSelected()
+                  that.$message.success(res.message);
+                  that.showHuoweiList(that.qParam);
+                  that.onClearSelected();
                 } else {
-                  that.$message.warning(res.message)
+                  that.$message.warning(res.message);
+                  that.showHuoweiList(that.qParam);
                 }
-              })
+              }).finally(() => {
+                that.loading = false;
+              });
             }
-          })
+          });
         }
       },
-      onSearch(value) {
-        let that = this
-        if (value) {
-          searchByKeywords({keyWord: value}).then((res) => {
-            if (res.success) {
-              that.departTree = []
-              for (let i = 0; i < res.result.length; i++) {
-                let temp = res.result[i]
-                that.departTree.push(temp)
+      /**
+       * 点击行选中checkbox
+       * @param record
+       * @returns {{on: {click: on.click}}}
+       */
+      departOnClickRow(record) {
+        // this.showHuowei(record);
+      },
+      huoweiOnClickRow(record) {
+        return {
+          on: {
+            click: (e) => {
+              //点击操作那一行不选中表格的checkbox
+              let pathArray = e.path;
+              //获取当前点击的是第几列
+              let td = pathArray[0];
+              let cellIndex = td.cellIndex;
+              //获取tr
+              let tr = pathArray[1];
+              //获取一共多少列
+              let lie = tr.childElementCount;
+              if(lie && cellIndex){
+                if(parseInt(lie)-parseInt(cellIndex)!=1){
+                  //操作那一行
+                  let recordId = record.id;
+                  let index = this.huoweiSelectedRowKeys.indexOf(recordId);
+                  if(index>=0){
+                    this.huoweiSelectedRowKeys.splice(index, 1);
+                  }else{
+                    this.huoweiSelectedRowKeys.push(recordId);
+                  }
+                }
               }
-            } else {
-              that.$message.warning(res.message)
             }
-          })
-        } else {
-          that.loadTree()
-        }
-
-      },
-      nodeModalOk() {
-        this.loadTree()
-      },
-      nodeModalClose() {
-      },
-      hide() {
-        console.log(111)
-        this.visible = false
-      },
-      onCheck(checkedKeys, info) {
-        console.log('onCheck', checkedKeys, info)
-        this.hiding = false;
-        //this.checkedKeys = checkedKeys.checked
-        // <!---- author:os_chengtgen -- date:20190827 --  for:切换父子勾选模式 =======------>
-        if(this.checkStrictly){
-          this.checkedKeys = checkedKeys.checked;
-        }else{
-          this.checkedKeys = checkedKeys;
-        }
-        // <!---- author:os_chengtgen -- date:20190827 --  for:切换父子勾选模式 =======------>
-
-        if(info.checkedNodes.length > 0){
-          let bool = true;
-          info.checkedNodes.forEach((item) => {
-            let orgType = item.data.props.orgType;
-            if(orgType != "huoqu" && orgType != "huowei"){
-              bool = false;
-            }
-          })
-          this.showDelete = bool;
-        }else{
-          this.showDelete = false;
-        }
-      },
-      onSelect(selectedKeys, e) {
-        console.log('selected', selectedKeys, e);
-        this.hiding = false;
-        let record = e.node.dataRef; //获取选中部门信息
-        this.subCode = record.orgCode;
-        record.subCode = this.subCode;
-        record.departId = record.id;
-        console.log('onSelect-record', record);
-        this.currSelected = Object.assign({}, record);
-        // this.model = this.currSelected;
-        this.selectedKeys = [record.key];
-        // this.model.departParentId = record.parentId;
-        if(record.hasOwnProperty("orgType") && (this.currSelected.orgType == "huoqu" || this.currSelected.orgType == "huowei")){
-          this.showGoodsCard = true;
-          this.showEdit = true; //显示修改按钮
-          this.showSubmit = false;//不显示保存按钮
-          this.title1 = "修改";
-
-          let params = { id: record.id }
-          // this.loading = true;
-          getAction(this.url.queryById, params).then(res => {
-            let goodsData = res.result || [];
-            goodsData.departName = record.departName;
-            this.model = Object.assign({}, goodsData);
-            this.subCode = this.model.subCode;
-            this.currSelected.departId = this.model.departId;
-            typeof success === 'function' ? success(res) : ''
-            this.$nextTick(() => {
-              this.setValuesToForm(this.model)
-            })
-
-            if(this.currSelected.orgType == "huoqu"){
-              this.$nextTick(() => {
-                this.goodsParentId = this.model.id;
-                this.parentCode = this.model.code;
-              })
-            }else{
-              this.goodsParentId = "";
-              // this.subCode = this.model.subCode;
-            }
-          }).finally(() => {
-            // this.loading = false
-          })
-
-          if(this.currSelected.orgType == "huoqu"){
-            this.showHuoqu = false;
-            this.showHuowei = true;
-            this.showSubNum = false;
-            this.title2 = "货区";
-          }else{
-            this.showHuoqu = false;
-            this.showHuowei = false;
-            this.showSubNum = true;
-            this.title2 = "货位";
           }
-        }else if(record.hasOwnProperty("orgType") && this.currSelected.orgType == "2"){
-          this.showHuoqu = true;
-          this.showHuowei = false;
-
-          this.showGoodsCard = false;
-          this.showEdit = false; //不显示修改按钮
-          this.showSubmit = false;//不显示保存按钮
-        }else {
-          this.showHuoqu = false;
-          this.showHuowei = false;
-
-          this.showGoodsCard = false;
-          this.showEdit = false; //不显示修改按钮
-          this.showSubmit = false;//不显示保存按钮
         }
       },
-      // 触发onSelect事件时,为部门树右侧的form表单赋值
-      setValuesToForm(record) {
-        this.form.setFieldsValue(pick(record,'departId', 'departName','name','code','areaType','address','area','volume','contacts','contactsPhone','subCode','codeSuffix','subNum','state','py','wb','zdy','remarks'))
+      /**
+       * 递归展开所有节点
+       * @param resultData
+       */
+      departRecursion (resultData) {
+        for(let i = 0;i<resultData.length;i++){
+          let treeData = resultData[i];
+          if(treeData.children && treeData.children.length>0){
+            this.departExpandedRowKeys.push(resultData[i].id);
+            this.departRecursion(treeData.children);
+          }
+        }
       },
-      getCurrSelectedTitle() {
-        return !this.currSelected.title ? '' : this.currSelected.title
+      huoweiRecursion (resultData) {
+        for(let i = 0;i<resultData.length;i++){
+          let treeData = resultData[i];
+          if(treeData.children && treeData.children.length>0){
+            this.huoweiExpandedRowKeys.push(resultData[i].id);
+            this.huoweiRecursion(treeData.children);
+          }
+        }
+      },
+      /**
+       * 收拢元素或展开元素
+       * @param expanded
+       * @param record
+       */
+      departHandleExpand (expanded, record){
+        let index  = this.departExpandedRowKeys.indexOf(record.id);
+        if(index > -1){
+          this.departExpandedRowKeys.splice(index,1);
+        }else{
+          this.departExpandedRowKeys.push(record.id);
+        }
+      },
+      huoweiHandleExpand (expanded, record){
+        let index  = this.huoweiExpandedRowKeys.indexOf(record.id);
+        if(index > -1){
+          this.huoweiExpandedRowKeys.splice(index,1);
+        }else{
+          this.huoweiExpandedRowKeys.push(record.id);
+        }
       },
       onClearSelected() {
-        this.hiding = true
-        this.showGoodsCard = false;
-        this.checkedKeys = []
-        this.currSelected = {}
-        this.form.resetFields()
-        this.selectedKeys = []
+        this.huoweiSelectedRowKeys = [];
+        this.huoweiSelectionRows = [];
       },
-      handleNodeTypeChange(val) {
-        this.currSelected.nodeType = val
-      },
-      notifyTriggerTypeChange(value) {
-        this.currSelected.notifyTriggerType = value
-      },
-      receiptTriggerTypeChange(value) {
-        this.currSelected.receiptTriggerType = value
-      },
-      editCurrForm() {
-        this.form.validateFields((err, values) => {
-          if (!err) {
-            if (!this.currSelected.id) {
-              this.$message.warning('请点击选择要修改部门!')
-              return
-            }
-
-            let formData = Object.assign(this.currSelected, values)
-            console.log('Received values of form: ', formData)
-            httpAction(this.url.edit, formData, 'put').then((res) => {
-              if (res.success) {
-                this.$message.success('保存成功!')
-                this.loadTree()
-              } else {
-                this.$message.error(res.message)
-              }
-            })
-          }
-        })
-      },
-      submitCurrForm() {
-        this.form.validateFields((err, values) => {
-          if (!err) {
-            let formData = Object.assign(this.model, values)
-            formData.id = "";
-            formData.parentId = this.goodsParentId;
-            console.log('Received values of form: ', formData)
-            httpAction(this.url.add, formData, 'post').then((res) => {
-              if (res.success) {
-                this.$message.success('保存成功!');
-                this.showGoodsCard = false;
-                this.loadTree();
-              } else {
-                this.$message.error(res.message)
-              }
-            })
-          }
-        })
-      },
-      emptyCurrForm() {
-        this.form.resetFields()
-      },
-      cancelCurrForm() {
-        this.form.resetFields()
-        this.showGoodsCard = false;
-      },
-      nodeSettingFormSubmit() {
-        this.form.validateFields((err, values) => {
-          if (!err) {
-            console.log('Received values of form: ', values)
-          }
-        })
-      },
-      // openSelect() {
-      //   this.$refs.sysDirectiveModal.show()
-      // },
-      //新增按钮
-      handleAdd(num) {
-        this.title1 = "新增";
-
-        if(this.currSelected.hasOwnProperty("orgType") &&  this.currSelected.orgType == "2"){//选中科室 新增货区
-          this.emptyCurrForm();
-          this.setValuesToForm(this.currSelected);
-          this.showGoodsCard = true;//显示货区货位新增页面
-          this.showEdit = false; //不显示修改按钮
-          this.showSubmit = true;//显示保存按钮
-          this.showSubNum = false;
-          this.form.setFieldsValue({areaType:"1"});
-          this.form.setFieldsValue({state:"1"}); //默认启用
-          this.title2 = "货区";
-        }else if(this.currSelected.hasOwnProperty("orgType") &&  this.currSelected.orgType == "huoqu"){ //选中货区 新增货位
-          this.emptyCurrForm();
-          this.setValuesToForm(this.currSelected);
-          this.showGoodsCard = true;//显示货区货位新增页面
-          this.showEdit = false; //不显示修改按钮
-          this.showSubmit = true;//显示保存按钮
-          this.showSubNum = true;
-          this.form.setFieldsValue({areaType:"2"});
-          this.form.setFieldsValue({state:"1"}); //默认启用
-          this.form.setFieldsValue({subCode:this.parentCode});
-          this.title2 = "货位";
-        }else if(this.currSelected.hasOwnProperty("orgType") && (this.currSelected.orgType == "1" || this.currSelected.orgType == "huowei")){
-          this.$message.warning('请先选中科室或货区!')
-          this.showGoodsCard = false;
-          this.showEdit = false;
-          this.showSubmit = false;
-        }
-      },
-      handleDelete() {
-        // deleteByDepartId({id: this.rightClickSelectedKey}).then((resp) => {
-        //   if (resp.success) {
-        //     this.$message.success('删除成功!')
-        //     this.loadTree()
-        //   } else {
-        //     this.$message.warning('删除失败!')
-        //   }
-        // })
-      },
-      selectDirectiveOk(record) {
-        console.log('选中指令数据', record)
-        this.nodeSettingForm.setFieldsValue({directiveCode: record.directiveCode})
-        this.currSelected.sysCode = record.sysCode
-      },
-      getFlowGraphData(node) {
-        this.graphDatasource.nodes.push({
-          id: node.id,
-          text: node.flowNodeName
-        })
-        if (node.children.length > 0) {
-          for (let a = 0; a < node.children.length; a++) {
-            let temp = node.children[a]
-            this.graphDatasource.edges.push({
-              source: node.id,
-              target: temp.id
-            })
-            this.getFlowGraphData(temp)
-          }
-        }
-      },
-
-      validateCode(rule, value, callback){
-        let params = {
-          tableName: 'pd_goods_allocation',
-          fieldName: 'code',
-          fieldVal: this.goodsCode,
-          dataId: ""
-        };
-        duplicateCheckHasDelFlag(params).then((res) => {
-          if (res.success) {
-            callback();
-          } else {
-            callback("货位编号已存在，请重新输入编号后缀!");
-          }
-        })
-      },
-      // <!---- author:os_chengtgen -- date:20190827 --  for:切换父子勾选模式 =======------>
-      expandAll () {
-        this.iExpandedKeys = this.allTreeKeys
-      },
-      closeAll () {
-        this.iExpandedKeys = []
-      },
-      checkALL () {
-        this.checkStriccheckStrictlytly = false
-        this.checkedKeys = this.allTreeKeys
-      },
-      cancelCheckALL () {
-        //this.checkedKeys = this.defaultCheckedKeys
-        this.checkedKeys = []
-      },
-      // switchCheckStrictly (v) {
-      //   if(v==1){
-      //     this.checkStrictly = false
-      //   }else if(v==2){
-      //     this.checkStrictly = true
-      //   }
-      // },
-      getAllKeys(node) {
-        // console.log('node',node);
-        this.allTreeKeys.push(node.key)
-        if (node.children && node.children.length > 0) {
-          for (let a = 0; a < node.children.length; a++) {
-            this.getAllKeys(node.children[a])
-          }
-        }
-      }
-      // <!---- author:os_chengtgen -- date:20190827 --  for:切换父子勾选模式 =======------>
-
-    },
-    created() {
-      this.currFlowId = this.$route.params.id
-      this.currFlowName = this.$route.params.name
-      // this.loadTree()
-    },
-
+    }
   }
 </script>
 <style scoped>

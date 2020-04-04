@@ -1,22 +1,28 @@
 package org.jeecg.modules.pd.service.impl;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.apache.commons.collections.CollectionUtils;
-import org.jeecg.modules.pd.entity.PdPurchaseOrder;
+import org.apache.commons.lang.StringUtils;
+import org.apache.ibatis.session.SqlSession;
+import org.apache.shiro.SecurityUtils;
+import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.modules.pd.entity.PdPurchaseDetail;
+import org.jeecg.modules.pd.entity.PdPurchaseOrder;
+import org.jeecg.modules.pd.entity.PdPurchaseOrderMerge;
 import org.jeecg.modules.pd.mapper.PdPurchaseDetailMapper;
 import org.jeecg.modules.pd.mapper.PdPurchaseOrderMapper;
 import org.jeecg.modules.pd.service.IPdPurchaseOrderService;
 import org.jeecg.modules.pd.vo.PdProductPage;
 import org.jeecg.modules.pd.vo.PdPurchaseOrderPage;
-import org.springframework.stereotype.Service;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.math.BigDecimal;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
-
+import java.util.Map;
 /**
  * @Description: 申购订单主表
  * @Author: jeecg-boot
@@ -30,7 +36,8 @@ public class PdPurchaseOrderServiceImpl extends ServiceImpl<PdPurchaseOrderMappe
 	private PdPurchaseOrderMapper pdPurchaseOrderMapper;
 	@Autowired
 	private PdPurchaseDetailMapper pdPurchaseDetailMapper;
-
+	@Autowired
+	private SqlSession sqlSession;
 
 
 	/**
@@ -54,11 +61,13 @@ public class PdPurchaseOrderServiceImpl extends ServiceImpl<PdPurchaseOrderMappe
 	@Transactional
 	public void saveMain(PdPurchaseOrder pdPurchaseOrder, List<PdPurchaseDetail> pdPurchaseDetailList) {
 		pdPurchaseOrderMapper.insert(pdPurchaseOrder);
+		PdPurchaseDetailMapper dao= sqlSession.getMapper(PdPurchaseDetailMapper.class);
 		if(pdPurchaseDetailList!=null && pdPurchaseDetailList.size()>0) {
 			for(PdPurchaseDetail entity:pdPurchaseDetailList) {
 				//外键设置
 				entity.setOrderNo(pdPurchaseOrder.getOrderNo());
-				pdPurchaseDetailMapper.insert(entity);
+				dao.insert(entity);
+				//pdPurchaseDetailMapper.insert(entity);
 			}
 		}
 	}
@@ -70,19 +79,20 @@ public class PdPurchaseOrderServiceImpl extends ServiceImpl<PdPurchaseOrderMappe
 		
 		//1.先删除子表数据
 		pdPurchaseDetailMapper.deleteByOrderNo(pdPurchaseOrder.getOrderNo());
-		
 		//2.子表数据重新插入
+		PdPurchaseDetailMapper dao= sqlSession.getMapper(PdPurchaseDetailMapper.class);
 		if(pdPurchaseDetailList!=null && pdPurchaseDetailList.size()>0) {
 			for(PdPurchaseDetail entity:pdPurchaseDetailList) {
 				//外键设置
 				entity.setOrderNo(pdPurchaseOrder.getOrderNo());
-				pdPurchaseDetailMapper.insert(entity);
+				dao.insert(entity);
+				//pdPurchaseDetailMapper.insert(entity);
 			}
 		}
 	}
 
 	@Override
-	public Page<PdPurchaseOrderPage> choosePurchaseOrderList(Page<PdPurchaseOrderPage> pageList, PdPurchaseOrderPage pdPurchaseOrderPage) {
+	public Page<PdPurchaseOrderMerge> choosePurchaseOrderList(Page<PdPurchaseOrderMerge> pageList, PdPurchaseOrderPage pdPurchaseOrderPage) {
 		List queryDate = pdPurchaseOrderPage.getQueryDate();
 		if(CollectionUtils.isNotEmpty(queryDate)){
 			pdPurchaseOrderPage.setQueryDateStart((String) queryDate.get(0));
@@ -97,11 +107,45 @@ public class PdPurchaseOrderServiceImpl extends ServiceImpl<PdPurchaseOrderMappe
 		if(CollectionUtils.isNotEmpty(list)){
 			for (PdProductPage item : list) {
 				item.setPrice(
-						(item.getInPrice() == null ? BigDecimal.ZERO:item.getInPrice())
-								.multiply(BigDecimal.valueOf(item.getApplyCount())));
+						(item.getPurchasePrice() == null ? BigDecimal.ZERO:item.getPurchasePrice())
+								.multiply(BigDecimal.valueOf(item.getOrderNum())));
 			}
 		}
 
 		return list;
+	}
+
+	@Override
+	@Transactional(readOnly = false)
+	public int audit(String orderNos, String auditStatus, String refuseReason,String submitStatus){
+		if(StringUtils.isEmpty(orderNos) || StringUtils.isEmpty(auditStatus)){
+			return 0;
+		}
+		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		HashMap<String,Object> map = new HashMap<String,Object>();
+		map.put("auditStatus",auditStatus);
+		map.put("orderNos",PdPurchaseOrder.dealStrData(orderNos));
+		map.put("refuseReason",refuseReason);
+		map.put("auditBy", sysUser.getId());
+		map.put("auditDate", new Date());
+		map.put("submitStatus",submitStatus);
+		return pdPurchaseOrderMapper.batchUpdateOrderStatus(map);
+	}
+
+
+	@Override
+	public Map<String,Object> queryPurchaseOrderCount(PdPurchaseOrder pdPurchaseOrder) {
+		Map<String,Object> params = pdPurchaseOrderMapper.queryPurchaseOrderCount(pdPurchaseOrder);
+		return params;
+	}
+
+	@Override
+	public List<HashMap> queryPurchaseOrderDateList(PdPurchaseOrderPage purchaseOrderPage) {
+		return pdPurchaseOrderMapper.queryPurchaseOrderDateList(purchaseOrderPage);
+	}
+
+	@Override
+	public List<HashMap> queryPurchaseOrderTotalList(PdPurchaseOrderPage purchaseOrderPage) {
+		return pdPurchaseOrderMapper.queryPurchaseOrderTotalList(purchaseOrderPage);
 	}
 }

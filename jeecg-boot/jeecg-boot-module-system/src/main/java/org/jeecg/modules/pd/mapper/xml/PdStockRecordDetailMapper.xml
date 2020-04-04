@@ -1,16 +1,343 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.jeecg.modules.pd.mapper.PdStockRecordDetailMapper">
+	<sql id="PdStockRecordDetailColumns">
+        a.id,
+        a.record_id,
+        a.product_id,
+        a.product_stock_id,
+        a.product_bar_code,
+        a.in_huowei_code,
+		a.out_huowei_code,
+        a.batch_no,
+        a.merge_order_no,
+        a.order_no,
+        a.product_num,
+        IFNULL(a.selling_price,0) as sellingPrice,
+        IFNULL(a.purchase_price,0) as purchasePrice,
+        a.product_num * IFNULL(a.purchase_price,0) as inTotalPrice,
+        a.product_num * IFNULL(a.selling_price,0) as outTotalPrice,
+        a.produce_date,
+        a.exp_date,
+        a.package_id,
+        a.high_low_supplies,
+        a.import_no,
+        a.supplier_id,
+        a.remarks,
+        a.sys_org_code,
+		a.create_by,
+		a.create_time,
+		a.update_by,
+		a.update_time
+	</sql>
+
+	<sql id="PdStockRecordDetailJoins">
+	</sql>
+
+	<!-- 单位 -->
+	<sql id="pdUnitColumns">
+        b.name AS "unitName"
+    </sql>
+
+	<sql id="pdUnitJoins">
+        LEFT JOIN pd_unit b ON c.unit_id = b.id
+    </sql>
+
+	<!--产品-->
+	<sql id="pdProductColumns">
+        c.number as "number",
+        c.number as "productNumber",
+        c.name as "productName",
+        c.spec as "spec",
+        c.version as "version",
+        c.jde_code as "jdeCode",
+        c.registration as "registration"
+	</sql>
+	<sql id="pdProductJoins">
+        LEFT JOIN pd_product c ON c.id = a.product_id
+    </sql>
+
+	<!-- 生产厂家 -->
+	<sql id="pdVenderColumns">
+      e.name AS "venderName"
+    </sql>
+	<sql id="pdVenderJoins">
+      left join pd_vender e on c.vender_id = e.id
+    </sql>
+
+	<!-- 供应商 -->
+	<sql id="pdSupplierColumns">
+      d.name AS "supplierName"
+    </sql>
+	<sql id="pdSupplierJoins">
+      left join pd_supplier d on a.supplier_id = d.id
+    </sql>
+
+	<!-- 出入库主表 -->
+	<sql id="PdStockRecordColumns">
+      g.submit_date AS "submitDate",
+      g.audit_date AS "auditDate",
+      g.record_type AS "recordType",
+      g.record_no AS "recordNo",
+      g.in_type AS "inType",
+      g.out_type AS "outType",
+	(select r.depart_name from sys_depart r where r.id=g.in_depart_id) AS "inDepartName",
+	(select r.depart_name from sys_depart r where r.id=g.out_depart_id) AS "outDepartName"
+    </sql>
+	<sql id="PdStockRecordJoins">
+      LEFT JOIN pd_stock_record g ON g.id = a.record_id
+    </sql>
+
+	<!--用户-->
+	<sql id="pdSysUserColumns">
+        h.realname as "realname"
+	</sql>
+	<sql id="pdSysUserJoins">
+        LEFT JOIN sys_user h ON h.id = g.submit_by
+    </sql>
+
+	<!-- 库存 -->
+	<sql id="pdProductStockColumns">
+        j.stock_num as stockNum
+	</sql>
+	<sql id="pdProductStockJoins">
+        LEFT JOIN pd_product_stock j ON j.id = a.product_stock_id
+    </sql>
+
+	<!-- 货位 -->
+	<sql id="pdGoodsAllocationColumns">
+        k.name as outHuoweiName
+	</sql>
+	<sql id="pdGoodsAllocationJoins">
+        LEFT JOIN pd_goods_allocation k ON k.code = a.out_huowei_code
+    </sql>
 
 	<delete id="deleteByMainId" parameterType="java.lang.String">
-		DELETE 
-		FROM  pd_stock_record_detail 
-		WHERE
-			 record_id = #{mainId} 	</delete>
-	
-	<select id="selectByMainId" parameterType="java.lang.String" resultType="org.jeecg.modules.pd.entity.PdStockRecordDetail">
-		SELECT * 
+		DELETE
 		FROM  pd_stock_record_detail
 		WHERE
-			 record_id = #{mainId} 	</select>
+			 record_id = #{mainId}
+	</delete>
+
+	<update id="deleteByDelFlag">
+		UPDATE pd_stock_record_detail
+		SET
+			del_flag = #{DEL_FLAG_DELETE},
+			update_time =#{updateTime},
+			update_by =#{updateBy}
+		where
+			 record_id = #{recordId}
+	</update>
+
+	<select id="selectByMainId" parameterType="org.jeecg.modules.pd.entity.PdStockRecordDetail" resultType="org.jeecg.modules.pd.entity.PdStockRecordDetail">
+		SELECT
+		<include refid="PdStockRecordDetailColumns"/>,
+		<include refid="PdStockRecordColumns"/>,
+		<include refid="pdUnitColumns"/>,
+		<include refid="pdProductColumns"/>,
+		<include refid="pdVenderColumns"/>,
+		<include refid="pdProductStockColumns"/>,
+		<include refid="pdGoodsAllocationColumns"/>
+		FROM  pd_stock_record_detail a
+		<include refid="PdStockRecordJoins"/>
+		<include refid="pdProductJoins"/>
+		<include refid="pdVenderJoins"/>
+		<include refid="pdUnitJoins"/>
+		<include refid="pdProductStockJoins"/>
+		<include refid="pdGoodsAllocationJoins"/>
+		WHERE
+		        a.del_flag =#{DEL_FLAG_NORMAL}
+			and record_id = #{recordId}
+	</select>
+
+	<!-- 入库明细列表查询 -->
+	<select id="selectList" resultType="org.jeecg.modules.pd.entity.PdStockRecordDetail">
+		SELECT
+		<include refid="PdStockRecordDetailColumns"/>,
+		<include refid="pdUnitColumns"/>,
+		<include refid="pdProductColumns"/>,
+		<include refid="pdVenderColumns"/>,
+		<include refid="PdStockRecordColumns"/>,
+		<include refid="pdSupplierColumns"/>,
+		<include refid="pdSysUserColumns"/>
+		FROM pd_stock_record_detail a
+		<include refid="PdStockRecordDetailJoins"/>
+		<include refid="PdStockRecordJoins"/>
+		<include refid="pdProductJoins"/>
+		<include refid="pdUnitJoins"/>
+		<include refid="pdVenderJoins"/>
+		<include refid="pdSupplierJoins"/>
+		<include refid="pdSysUserJoins"/>
+ 		<where>
+			a.del_flag =#{DEL_FLAG_NORMAL}
+			<if test="id != null and id != ''">
+				AND a.id = #{id}
+			</if>
+			<if test="queryExpDateStart != null and queryExpDateStart != ''">
+				AND a.exp_date &gt;= #{queryExpDateStart}
+			</if>
+			<if test="queryExpDateEnd != null and queryExpDateEnd != ''">
+				AND a.exp_date &lt;= #{queryExpDateEnd}
+			</if>
+			<if test="batchNo != null and batchNo != ''">
+				AND a.batch_no LIKE concat('%',#{batchNo},'%')
+			</if>
+			<if test="recordNo != null and recordNo != ''">
+				AND g.record_no LIKE concat('%',#{recordNo},'%')
+			</if>
+			<if test="queryDateStart != null and queryDateStart != ''">
+				AND g.audit_date &gt;= #{queryDateStart}
+			</if>
+			<if test="queryDateEnd != null and queryDateEnd != ''">
+				AND g.audit_date &lt;= #{queryDateEnd}
+			</if>
+			<if test="auditStatus != null and auditStatus != ''">
+				AND g.audit_status = #{auditStatus}
+			</if>
+			<if test="submitStatus != null and submitStatus != ''">
+				AND g.submit_status = #{submitStatus}
+			</if>
+			<if test="productId != null and productId != ''">
+				AND a.product_id = #{productId}
+			</if>
+			<if test="recordType != null and recordType != ''">
+				AND g.record_type = #{recordType}
+			</if>
+			<if test="supplierId != null and supplierId != ''">
+				AND a.supplier_id = #{supplierId}
+			</if>
+			<if test="inType != null and inType != ''">
+				AND g.in_type = #{inType}
+			</if>
+			<if test="outType != null and outType != ''">
+				AND g.out_type = #{outType}
+			</if>
+			<if test="deptId != null and deptId != ''">
+				AND ((g.record_type = '2' AND g.out_depart_id = #{deptId})
+				OR (g.record_type = '1' AND g.in_depart_id =#{deptId}))
+			</if>
+			<if test='recordType == "1" and inDepartIdList != null and inDepartIdList.size() > 0'>
+				AND g.record_type = '1'
+				AND g.in_depart_id in
+				<foreach item="id" collection="inDepartIdList" open="(" separator="," close=")">
+					#{id}
+				</foreach>
+			</if>
+			<if test='recordType == "2" and outDepartIdList != null and outDepartIdList.size() > 0'>
+				AND g.record_type = '2'
+				AND g.out_depart_id in
+				<foreach item="id" collection="outDepartIdList" open="(" separator="," close=")">
+					#{id}
+				</foreach>
+			</if>
+			<if test='recordType == "2" and inDepartIdList != null and inDepartIdList.size() > 0'>
+				AND g.record_type = '2'
+				AND g.in_depart_id in
+				<foreach item="id" collection="inDepartIdList" open="(" separator="," close=")">
+					#{id}
+				</foreach>
+			</if>
+			<!--<if test="departIdList != null and departIdList.size() > 0">-->
+				<!--AND (-->
+				<!--(g.record_type = '2'-->
+				<!--AND g.out_depart_id in-->
+				<!--<foreach item="id" collection="departIdList" open="(" separator="," close=")">-->
+					<!--#{id}-->
+				<!--</foreach>-->
+				<!--)-->
+				<!--OR (g.record_type = '1'-->
+				<!--AND g.in_depart_id in-->
+				<!--<foreach item="id" collection="departIdList" open="(" separator="," close=")">-->
+					<!--#{id}-->
+				<!--</foreach>-->
+				<!--)-->
+				<!--)-->
+			<!--</if>-->
+			<if test="departId != null and departId != ''">
+				AND a.depart_id = #{departId}
+			</if>
+			<if test="departParentId != null and departParentId != ''">
+				AND a.depart_parent_id = #{departParentId}
+			</if>
+			<if test="productNumber != null and productNumber != ''">
+				AND c.number LIKE concat('%',#{productNumber},'%')
+			</if>
+			<if test="venderId != null and venderId != ''">
+				AND c.vender_id = #{venderId}
+			</if>
+			<if test="spec != null and spec != ''">
+				AND c.spec LIKE concat('%',#{spec},'%')
+			</if>
+			<if test="version != null and version != ''">
+				AND c.version LIKE concat('%',#{version},'%')
+			</if>
+			<if test="registration != null and registration != ''">
+				AND c.registration LIKE concat('%',#{registration},'%')
+			</if>
+			<if test="productName != null and productName != ''">
+				AND (
+				c.number LIKE concat('%',#{productName},'%')
+				or c.name LIKE concat('%',#{productName},'%')
+				or c.py LIKE concat('%',#{productName},'%')
+				or c.wb LIKE concat('%',#{productName},'%')
+				or c.bname LIKE concat('%',#{productName},'%')
+				or c.bpy LIKE concat('%',#{productName},'%')
+				or c.bwb LIKE concat('%',#{productName},'%')
+				or c.zdy LIKE concat('%',#{productName},'%')
+				)
+			</if>
+			ORDER BY create_time desc
+		</where>
+	</select>
+
+    <!-- 统计入库数量——首页展示用 -->
+    <select id="queryStockRecordCount" resultType="java.util.Map"  parameterType="org.jeecg.modules.pd.entity.PdStockRecordDetail">
+        SELECT
+            sum(a.product_num) AS "recordCount"
+        FROM
+            pd_stock_record_detail a
+            LEFT JOIN pd_stock_record b ON a.record_id = b.id
+        where
+            a.del_flag=#{DEL_FLAG_NORMAL}
+        <if test="departId != null and departId != ''">
+            AND b.depart_id = #{departId}
+        </if>
+        <if test="departParentId != null and departParentId != ''">
+            AND b.depart_parent_id = #{departParentId}
+        </if>
+        <if test="departIdList != null and departIdList.size() > 0">
+            AND b.depart_id IN
+            <foreach collection="departIdList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="queryInDateStart != null and queryInDateStart != ''">
+            AND b.audit_date &gt;= #{queryInDateStart}
+        </if>
+        <if test="queryInDateEnd != null and queryInDateEnd != ''">
+            AND b.audit_date &lt;= #{queryInDateEnd}
+        </if>
+        <if test="auditDate != null">
+ 			AND DATE_FORMAT(b.audit_date,'%Y-%m-%d')=DATE_FORMAT(#{auditDate},'%Y-%m-%d')
+        </if>
+        <if test="auditStatus != null and auditStatus != ''">
+            AND b.audit_status = #{auditStatus}
+        </if>
+        <if test="recordType != null and recordType != ''">
+            AND b.record_type = #{recordType}
+        </if>
+    </select>
+
+	<update id="updateInHuoweiCode" parameterType="org.jeecg.modules.pd.entity.PdStockRecordDetail">
+		UPDATE pd_stock_record_detail SET
+			in_huowei_code = #{inHuoweiCode}
+		WHERE in_huowei_code= #{oldInHuoweiCode}
+	</update>
+
+	<update id="updateOutHuoweiCode" parameterType="org.jeecg.modules.pd.entity.PdStockRecordDetail">
+		UPDATE pd_stock_record_detail SET
+			out_huowei_code = #{outHuoweiCode}
+		WHERE out_huowei_code= #{oldOutHuoweiCode}
+	</update>
+
 </mapper>

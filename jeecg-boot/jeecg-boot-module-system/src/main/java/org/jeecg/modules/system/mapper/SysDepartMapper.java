@@ -3,11 +3,10 @@ package org.jeecg.modules.system.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Select;
 import org.jeecg.modules.system.entity.SysDepart;
-import org.jeecg.modules.system.model.SysDepartTreeModel;
-import org.jeecg.modules.system.model.TreeModel;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -32,12 +31,34 @@ public interface SysDepartMapper extends BaseMapper<SysDepart> {
 	 */
 	public List<SysDepart> queryDepartsByUsername(@Param("username") String username);
 
-	@Select("select id from sys_depart where org_code=#{orgCode}")
+	@Select("select id from sys_depart where org_code=#{orgCode} and del_flag='0'")
 	public String queryDepartIdByOrgCode(@Param("orgCode") String orgCode);
 
-	@Select("select id,parent_id from sys_depart where id=#{departId}")
+	@Select("select id,parent_id from sys_depart where id=#{departId} and del_flag='0'")
 	public SysDepart getParentDepartId(@Param("departId") String departId);
 
-	@Select("select id,depart_name,org_code  from sys_depart where org_code=#{orgCode}")
+	@Select("select id,depart_name,org_code  from sys_depart where org_code=#{orgCode} and del_flag='0'")
 	public SysDepart getDepartByOrgCode(@Param("orgCode") String orgCode);
+	/**
+	 *  根据部门Id查询,当前和下级所有部门IDS
+	 * @param departId
+	 * @return
+	 */
+	List<String> getSubDepIdsByDepId(@Param("departId") String departId);
+
+	/**
+	 * 根据部门编码获取部门下所有IDS
+	 * @param orgCodes
+	 * @return
+	 */
+	List<String> getSubDepIdsByOrgCodes(@org.apache.ibatis.annotations.Param("orgCodes") String[] orgCodes);
+
+	@Select("select * from sys_depart where org_code=#{orgCode} and del_flag='0'")
+	SysDepart queryDepartByOrgCode(@Param("orgCode") String orgCode);
+
+    List<SysDepart> selectDepartList(SysDepart sysDepart);
+
+	List<SysDepart> selectListByCTs(@org.apache.ibatis.annotations.Param("parMap")Map<String,Object> map);
+
+	List<SysDepart> getSysTwoDepartList(SysDepart sysDepart);
 }

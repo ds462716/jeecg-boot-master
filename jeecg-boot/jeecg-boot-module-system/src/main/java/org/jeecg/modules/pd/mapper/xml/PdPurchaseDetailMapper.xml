@@ -6,10 +6,9 @@
 		a.id,
 		a.order_no,
 		a.product_id,
-		a.product_no,
-		a.in_price,
-		a.apply_count,
-		a.amount_money,
+		a.purchase_price,
+		a.order_num,
+		a.order_money,
 		a.stock_num,
 		a.create_by,
 		a.create_time,
@@ -18,6 +17,7 @@
 		a.sys_org_code,
 		a.supplier_id,
 		a.remarks,
+		a.arrival_num,
 		a.del_flag
 	</sql>
 
@@ -33,11 +33,11 @@
 	<!--产品-->
 	<sql id="pdProductColumns">
 		c.id as "productId",
-        c.number as "productNo",
+        c.number as "number",
         c.name as "productName",
         c.spec as "spec",
         c.version as "version",
-        c.selling_price as "sellingPrice"
+        c.purchase_price as "purchasePrice"
 	</sql>
 	<sql id="pdProductJoins">
         LEFT JOIN pd_product c ON c.id = a.product_id
@@ -49,6 +49,11 @@
     </sql>
 	<sql id="pdSupplierJoins">
       left join pd_supplier d on a.supplier_id = d.id
+    </sql>
+
+	<!-- 关联采购订单主表 -->
+	<sql id="pdPurchaseOrderJoins">
+      LEFT JOIN pd_purchase_order f  ON f.order_no=a.order_no
     </sql>
 
 	<!-- 生产厂家 -->
@@ -67,8 +72,8 @@
 		DELETE FROM  pd_purchase_detail 	WHERE order_no = #{orderNo}
    </delete>
 
-	<!--根据申购编号查询明细信息-->
-	<select id="selectByOrderNo" parameterType="java.lang.String" resultType="org.jeecg.modules.pd.entity.PdPurchaseDetail">
+	<!--查询明细信息-->
+	<select id="queryPdPurchaseDetail"   resultType="org.jeecg.modules.pd.entity.PdPurchaseDetail">
 		SELECT
         <include refid="pdPurchaseDetailColumns"/>,
 		<include refid="pdProductColumns"/>,
@@ -76,10 +81,52 @@
 		<include refid="pdSupplierColumns"/>,
 		<include refid="pdVenderColumns"/>
 		FROM  pd_purchase_detail a
+		<include refid="pdPurchaseOrderJoins"/>
 		<include refid="pdProductJoins"/>
 		<include refid="pdUnitJoins"/>
 		<include refid="pdSupplierJoins"/>
 		<include refid="pdVenderJoins"/>
-		WHERE a.order_no = #{orderNo}
+		WHERE   f.del_flag =#{DEL_FLAG_NORMAL}
+		<if test="mergeOrderNo != null and mergeOrderNo != ''">
+			AND f.merge_order_no LIKE concat('%',#{mergeOrderNo},'%')
+		</if>
+		<if test="orderNo != null and orderNo != ''">
+			AND a.order_no LIKE concat('%',#{orderNo},'%')
+		</if>
+		<if test="productId != null and productId != ''">
+			AND a.product_id=#{productId}
+		</if>
+		<if test="orderNos != null and orderNos.size() > 0">
+			and a.order_no IN
+			<foreach collection="orderNos" item="item" separator="," open="(" close=")">
+				#{item}
+			</foreach>
+		</if>
+		ORDER BY a.create_time DESC
     </select>
+
+	<!-- 增加到货数量 用于入库保存/提交 add by jiangxz 20200227 -->
+	<update id="additionArrivalNum" parameterType="org.jeecg.modules.pd.entity.PdPurchaseDetail">
+		UPDATE
+			pd_purchase_detail
+		SET
+			arrival_num = IFNULL(arrival_num,0) + #{arrivalNum}
+		WHERE
+			del_flag =#{DEL_FLAG_NORMAL}
+			and order_no = #{orderNo}
+			and product_id = #{productId}
+	</update>
+
+	<!-- 扣减到货数量 用于入库拒绝 add by jiangxz 20200227 -->
+	<update id="subtractArrivalNum" parameterType="org.jeecg.modules.pd.entity.PdPurchaseDetail">
+		UPDATE
+			pd_purchase_detail
+		SET
+			arrival_num = IFNULL(arrival_num,0) - #{arrivalNum}
+		WHERE
+			del_flag =#{DEL_FLAG_NORMAL}
+			and order_no = #{orderNo}
+			and product_id = #{productId}
+
+	</update>
 </mapper>

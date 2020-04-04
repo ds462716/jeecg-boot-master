@@ -6,20 +6,20 @@
         a.order_no,
         a.purchase_by,
         a.order_date,
-        a.dept_id,
-        a.dept_name,
-        a.order_status,
+        a.depart_id,
+        a.audit_status,
         a.audit_by,
         a.audit_date,
         a.refuse_reason,
-        a.amount_count,
-        a.amount_money,
-        a.submit_start,
+        a.total_num,
+        a.total_price,
+        a.submit_status,
 		a.create_by,
 		a.create_time,
 		a.update_by,
 		a.update_time,
 		a.sys_org_code,
+		a.merge_order_no,
 		a.remarks,
 		a.del_flag
 	</sql>
@@ -27,6 +27,15 @@
     <sql id="PdPurchaseOrderJoins">
     </sql>
 
+
+    <!-- 科室 -->
+    <sql id="sysDepartColumns">
+        f.depart_name AS "deptName"
+    </sql>
+
+    <sql id="sysDepartJoins">
+        LEFT JOIN sys_depart f ON a.depart_id = f.id
+    </sql>
 
     <!--用户-->
     <sql id="pdSysUserColumns">
@@ -40,10 +49,12 @@
     <select id="selectList" resultType="org.jeecg.modules.pd.vo.PdPurchaseOrderPage">
         SELECT
         <include refid="PdPurchaseOrderColumns"/>,
-        <include refid="pdSysUserColumns"/>
+        <include refid="pdSysUserColumns"/>,
+        <include refid="sysDepartColumns"/>
         FROM pd_purchase_order a
         <include refid="PdPurchaseOrderJoins"/>
         <include refid="pdSysUserJoins"/>
+        <include refid="sysDepartJoins"/>
         <where>
             a.del_flag =#{DEL_FLAG_NORMAL}
             <if test="id != null and id != ''">
@@ -52,15 +63,50 @@
             <if test="orderNo != null and orderNo != ''">
                 AND a.order_no = #{orderNo}
             </if>
+            <if test="auditStatus != null and auditStatus != ''">
+                AND a.audit_status = #{auditStatus}
+            </if>
+            <if test="submitStatus != null and submitStatus != ''">
+                AND a.submit_status = #{submitStatus}
+            </if>
             <if test="deptName != null and deptName != ''">
-                AND a.dept_name = #{deptName}
+                AND f.depart_name = #{deptName}
             </if>
-            <if test="orderStatus != null and orderStatus != ''">
-                AND a.order_status = #{orderStatus}
+            <if test="departId != null and departId != ''">
+                AND a.depart_id = #{departId}
             </if>
-            <if test="submitStart != null and submitStart != ''">
-                AND a.submit_start = #{submitStart}
+            <if test="departParentId != null and departParentId != ''">
+                AND a.depart_parent_id = #{departParentId}
             </if>
+            <if test="mergeOrderNo != null and mergeOrderNo != ''">
+                AND a.merge_order_no = #{mergeOrderNo}
+            </if>
+            <if test="submitStatusList != null and submitStatusList.size() > 0">
+                and a.submit_status IN
+                <foreach collection="submitStatusList" item="item" separator="," open="(" close=")">
+                    #{item}
+                </foreach>
+            </if>
+
+            <if test="auditStatusList != null and auditStatusList.size() > 0">
+                and a.audit_status IN
+                <foreach collection="auditStatusList" item="item" separator="," open="(" close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="departIdList != null and departIdList.size() > 0">
+                and a.depart_id IN
+                <foreach collection="departIdList" item="item" separator="," open="(" close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="queryDateStart != null and queryDateStart != ''">
+                AND a.order_date &gt;= #{queryDateStart}
+            </if>
+            <if test="queryDateEnd != null and queryDateEnd != ''">
+                AND a.order_date &lt;= #{queryDateEnd}
+            </if>
+            ORDER BY  field(a.audit_status, 1, 3, 2),a.update_time ASC
         </where>
     </select>
 
@@ -68,24 +114,26 @@
     <select id="choosePurchaseOrderList" resultType="org.jeecg.modules.pd.vo.PdPurchaseOrderPage"  parameterType="org.jeecg.modules.pd.vo.PdPurchaseOrderPage">
         SELECT DISTINCT
         a.id as purchaseId,
-        a.order_no as orderNo,
-        a.order_date as orderDate,
-        a.dept_name as deptName,
-        a.order_status as orderStatus,
+        a.merge_order_no as orderNo,
+        a.purchase_date as orderDate,
+        f.depart_name AS deptName,
+        a.audit_status as auditStatus,
         c.realname as auditByName
         FROM
-        pd_purchase_order a
-        LEFT JOIN pd_purchase_detail b on a.order_no = b.order_no
-        LEFT JOIN sys_user c ON c.id = a.audit_by
+        pd_purchase_order_merge a
+        LEFT JOIN pd_purchase_order g on g.merge_order_no = a.merge_order_no
+        LEFT JOIN pd_purchase_detail b on b.order_no = g.order_no
+        LEFT JOIN sys_user c ON c.id = a.merge_by
         LEFT JOIN pd_product d on b.product_id = d.id
+        LEFT JOIN sys_depart f ON a.depart_id = f.id
         <where>
             a.del_flag = #{DEL_FLAG_NORMAL}
-            AND a.order_status = '2'
+            AND a.audit_status = '2'  AND g.audit_status='2'
             <if test="id != null and id != ''">
                 AND a.id = #{id}
             </if>
-            <if test="orderNo != null and orderNo != ''">
-                AND a.order_no LIKE concat('%',#{orderNo},'%')
+            <if test="mergeOrderNo != null and mergeOrderNo != ''">
+                AND a.merge_order_no LIKE concat('%',#{mergeOrderNo},'%')
             </if>
             <if test="productName != null and productName != ''">
                 AND (
@@ -102,23 +150,28 @@
                 AND d.supplier_id = #{supplierId}
             </if>
             <if test="productNumber != null and productNumber != ''">
-                AND d.number LIKE concat('%',#{number},'%')
+                AND d.number LIKE concat('%',#{productNumber},'%')
             </if>
             <if test="queryDateStart != null and queryDateStart != ''">
-                AND a.order_date &gt;= #{queryDateStart}
+                AND a.purchase_date &gt;= #{queryDateStart}
             </if>
             <if test="queryDateEnd != null and queryDateEnd != ''">
-                AND a.order_date &lt;= #{queryDateEnd}
+                AND a.purchase_date &lt;= #{queryDateEnd}
+            </if>
+            <if test="departParentId != null and departParentId != ''">
+                AND a.depart_parent_id = #{departParentId}
             </if>
         </where>
-        order  by a.order_date desc
+        order  by a.purchase_date desc
     </select>
 
     <select id="choosePurchaseOrderDetailList" resultType="org.jeecg.modules.pd.vo.PdProductPage"  parameterType="org.jeecg.modules.pd.vo.PdPurchaseOrderPage">
         SELECT
+            a.order_no as orderNo,
             a.id as purchaseDetailId,
-            a.apply_count AS applyCount,
-            a.in_price as inPrice,
+            a.order_num AS orderNum,
+            a.arrival_num AS arrivalNum,
+            a.purchase_price as purchasePrice,
             b.number,
             b.NAME as productName,
             b.spec,
@@ -128,13 +181,128 @@
             e.NAME AS venderName
         FROM
             pd_purchase_detail a
+            LEFT JOIN pd_purchase_order f ON f.order_no = a.order_no
             LEFT JOIN pd_product b ON a.product_id = b.id
             LEFT JOIN pd_unit c ON b.unit_id = c.id
             LEFT JOIN pd_supplier d ON b.supplier_id = d.id
             LEFT JOIN pd_vender e ON b.vender_id = e.id
         WHERE
             a.del_flag = #{DEL_FLAG_NORMAL}
-            AND a.order_no = #{orderNo}
+            AND f.merge_order_no = #{mergeOrderNo}
+    </select>
 
+
+
+    <!-- 审核采购单状态 -->
+    <update id="batchUpdateOrderStatus" parameterType="java.util.HashMap">
+		UPDATE pd_purchase_order
+		SET audit_status = #{auditStatus},
+		    refuse_reason = #{refuseReason},
+		    audit_by = #{auditBy},
+		    audit_date = #{auditDate},
+		    submit_status=#{submitStatus}
+		WHERE order_no IN ${orderNos}
+	</update>
+
+
+
+    <!-- 更新合并单号 -->
+    <update id="batchUpdateMergeOrderNo" parameterType="java.util.HashMap">
+		UPDATE pd_purchase_order
+		SET merge_order_no = #{mergeOrderNo},
+		    update_by = #{updateBy},
+		    update_time = #{updateTime}
+		WHERE order_no IN ${orderNos}
+	</update>
+
+
+
+
+    <!-- 统计一个订单下的产品数量和金额 -->
+    <select id="getCountAndMoney" resultType="org.jeecg.modules.pd.entity.PdPurchaseOrder" parameterType="java.util.List">
+        SELECT
+        sum(total_num) as totalNum,
+        sum(total_price) as totalPrice
+        FROM pd_purchase_order
+        WHERE order_no IN
+        <foreach collection="orderNos" item="item" separator="," open="(" close=")">
+            #{item}
+        </foreach>
+    </select>
+
+
+    <!-- 根据时间范围统计采购数量及当日采购数量——首页展示用 -->
+    <select id="queryPurchaseOrderCount" resultType="java.util.Map" >
+       SELECT
+       sum(a.total_num) AS "orderCount",
+       sum(b.total_num)  AS "dayOrderNum"
+       from pd_purchase_order a
+      LEFT JOIN  pd_purchase_order b ON  a.id=b.id
+        AND DATE_FORMAT(b.order_date,'%Y-%m-%d')=DATE_FORMAT(#{orderDate},'%Y-%m-%d')
+        WHERE  a.del_flag=#{DEL_FLAG_NORMAL}
+      AND  a.audit_status='2'
+        <if test="departId != null and departId != ''">
+            AND a.depart_id = #{departId}
+        </if>
+        <if test="departParentId != null and departParentId != ''">
+            AND a.depart_parent_id = #{departParentId}
+        </if>
+        <if test="departIdList != null and departIdList.size() > 0">
+            and a.depart_id IN
+            <foreach collection="departIdList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+    </select>
+
+    <!-- 统计前一周的采购数量 -->
+    <select id="queryPurchaseOrderDateList" resultType="java.util.Map" >
+        SELECT
+        date(c.dday) as x,
+        sum(c.y) as y   FROM
+        (
+        SELECT   datelist as dday ,"0" as y FROM   calendar
+        where  DATE_SUB(CURDATE(), INTERVAL 6 DAY) &lt;= date(datelist)
+        and date(datelist)&lt;=CURDATE()
+        UNION ALL
+        SELECT   a.order_date as dday,  a.total_num as y
+        FROM  pd_purchase_order a
+        where  a.del_flag=#{DEL_FLAG_NORMAL}
+        AND  a.audit_status='2'
+        <if test="departId != null and departId != ''">
+            AND a.depart_id = #{departId}
+        </if>
+        <if test="departParentId != null and departParentId != ''">
+            AND a.depart_parent_id = #{departParentId}
+        </if>
+        <if test="departIdList != null and departIdList.size() > 0">
+            and a.depart_id IN
+            <foreach collection="departIdList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+
+      AND  DATE_SUB(CURDATE(), INTERVAL 6 DAY) &lt;= date(a.order_date)
+        and date(a.order_date) &lt;=CURDATE()
+        ) c
+        GROUP BY x
+    </select>
+
+
+
+    <!--  首页查询  根据采购产品类区分统计采购金额 -->
+    <select id="queryPurchaseOrderTotalList" resultType="java.util.Map" >
+        select
+        IFNULL(d.name,'其他') as x,
+        sum(a.total_price) as y,
+        sum(a.total_num) as z
+        from pd_purchase_order a
+        left join pd_purchase_detail b on a.order_no=b.order_no
+        left join pd_product c on b.product_id=c.id
+        left join pd_category d on d.id=c.category_two
+        where a.del_flag='0'
+        AND  DATE_SUB(CURDATE(), INTERVAL 30 DAY) &lt;= date(a.order_date)
+        and date(a.order_date) &lt;=CURDATE()
+        group by x  order by y desc
     </select>
 </mapper>

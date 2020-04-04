@@ -3,9 +3,10 @@
     :title="title"
     :width="drawerWidth"
     placement="right"
-    :closable="false"
+    :closable="true"
     @close="close"
     :visible="visible"
+    :maskClosable=disableSubmit
     :wrapStyle="{height: 'calc(100% - 108px)',overflow: 'auto',paddingBottom: '108px'}"
   >
     <a-spin :spinning="confirmLoading">
@@ -21,16 +22,16 @@
           :wrapperCol="wrapperCol"
           :label="menuLabel"
            >
-          <a-input placeholder="请输入名称" ref="inputFocus" @change="pinyinTran"  v-decorator="[ 'name', validatorRules.name]"/>
+          <a-input placeholder="请输入名称" :disabled="disableSubmit" autocomplete="off" ref="inputFocus" @change="pinyinTran"  v-decorator="[ 'name', validatorRules.name]"/>
         </a-form-item>
         <a-form-item label="拼音简码" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input v-decorator="[ 'py', validatorRules.py]" placeholder="请输入拼音简码"></a-input>
+          <a-input :disabled="disableSubmit" autocomplete="off" v-decorator="[ 'py', validatorRules.py]" ></a-input>
         </a-form-item>
         <a-form-item label="五笔简码" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input v-decorator="[ 'wb', validatorRules.wb]" placeholder="请输入五笔简码"></a-input>
+          <a-input :disabled="disableSubmit" autocomplete="off" v-decorator="[ 'wb', validatorRules.wb]" ></a-input>
         </a-form-item>
         <a-form-item label="自定义码" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input v-decorator="[ 'zdy', validatorRules.zdy]" placeholder="请输入自定义码"></a-input>
+          <a-input :disabled="disableSubmit" autocomplete="off" v-decorator="[ 'zdy', validatorRules.zdy]" ></a-input>
         </a-form-item>
 
 
@@ -55,14 +56,15 @@
         </a-form-item>
 
         <a-form-item label="备注" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input v-decorator="[ 'remarks', validatorRules.remarks]" placeholder="请输入备注"></a-input>
+          <a-input :disabled="disableSubmit" autocomplete="off" v-decorator="[ 'remarks', validatorRules.remarks]" ></a-input>
         </a-form-item>
         
       </a-form>
     </a-spin>
-    <div class="drawer-bootom-button" v-show="!disableSubmit">
-      <a-button type="primary" @click="handleOk">确定</a-button>
-      <a-button type="primary" @click="handleCancel">取消</a-button>
+    <div class="drawer-bootom-button" >
+      <a-button @click="close"  style="margin-right: 15px;" v-show="disableSubmit">关  闭</a-button>
+      <a-button v-show="!disableSubmit" type="primary" :loading="confirmLoading" @click="handleOk">确定</a-button>
+      <a-button v-show="!disableSubmit" @click="handleCancel">取消</a-button>
     </div>
 
   </a-drawer>
@@ -251,4 +253,17 @@
     margin-bottom: 30px;
     float: right;
   }
+.drawer-bootom-button {
+  position: absolute;
+  /*top:95%;*/
+  bottom: -30px;
+  width: 100%;
+  border-top: 1px solid #e8e8e8;
+  padding: 10px 16px;
+  text-align: right;
+  left: 0;
+  background: #fff;
+  border-radius: 0 0 2px 2px;
+  z-index:199;
+}
 </style>

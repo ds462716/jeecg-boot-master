@@ -2,15 +2,517 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.jeecg.modules.pd.mapper.PdProductStockMapper">
 
+	<sql id="pdProductStockColumns">
+		a.id,
+		a.create_by,
+		a.create_time,
+		a.update_by,
+		a.update_time,
+        a.sys_org_code,
+		a.product_id,
+		a.depart_id,
+		a.product_bar_code,
+		a.batch_no,
+		a.stock_num,
+		a.produce_date,
+		a.exp_date,
+		a.exp_status,
+		a.supplier_id,
+		a.is_long,
+		a.remarks,
+		a.huowei_code,
+		a.msg_send_state,
+		a.record_detail_id,
+		a.del_flag
+	</sql>
+
+	<sql id="pdProductStockJoins">
+	</sql>
+
+	<!-- 单位 -->
+	<sql id="pdUnitColumns">
+        b.name AS "unitName"
+    </sql>
+
+	<sql id="pdUnitJoins">
+        LEFT JOIN pd_unit b ON c.unit_id = b.id
+    </sql>
+
+	<!--产品-->
+	<sql id="pdProductColumns">
+        c.name as "productName",
+        c.number as "number",
+        c.spec as "spec",
+        c.version as "version",
+        c.registration as "registration",
+        c.purchase_price as "purchasePrice",
+        c.selling_price as "sellingPrice",
+        c.charge_code  as "chargeCode",
+        c.is_charge  as "isCharge",
+        c.jde_code as "jdeCode"
+	</sql>
+	<sql id="pdProductJoins">
+        LEFT JOIN pd_product c ON c.id = a.product_id
+    </sql>
+
+	<!-- 供应商 -->
+	<sql id="pdSupplierColumns">
+      d.name AS "supplierName"
+    </sql>
+	<sql id="pdSupplierJoins">
+      left join pd_supplier d on a.supplier_id = d.id
+    </sql>
+
+	<!-- 生产厂家 -->
+	<sql id="pdVenderColumns">
+      e.name AS "venderName"
+    </sql>
+	<sql id="pdVenderJoins">
+      left join pd_vender e on c.vender_id = e.id
+    </sql>
+
+	<!-- 科室 -->
+	<sql id="sysDepartColumns">
+        f.depart_name AS "deptName"
+    </sql>
+
+	<sql id="sysDepartJoins">
+        LEFT JOIN sys_depart f ON a.depart_id = f.id
+    </sql>
+
+
+	<sql id="pdGoodsAllocationColumns">
+      g.name AS "huoweiName"
+    </sql>
+	<sql id="pdGoodsAllocation">
+        LEFT JOIN pd_goods_allocation g ON a.huowei_code = g.code
+    </sql>
+
+	<sql id="pdApplyDetailColumns">
+		h.apply_no
+    </sql>
+	<sql id="pdApplyDetail">
+        LEFT JOIN pd_apply_detail h on a.product_id = h.product_id
+    </sql>
+
+	<sql id="pdAllocationDetailColumns">
+		j.allocation_no
+    </sql>
+	<sql id="pdAllocationDetail">
+		LEFT JOIN pd_allocation_detail j ON a.product_id = j.product_id
+    </sql>
+
+	<!-- 列表查询 -->
+	<select id="selectList" resultType="org.jeecg.modules.pd.entity.PdProductStock">
+		SELECT
+		<include refid="pdProductStockColumns"/>,
+		<include refid="pdUnitColumns"/>,
+		<include refid="pdProductColumns"/>,
+		<include refid="pdVenderColumns"/>,
+		<include refid="pdSupplierColumns"/>,
+		<include refid="sysDepartColumns"/>,
+		<include refid="pdGoodsAllocationColumns"/>
+		<if test="applyNo != null and applyNo != ''">
+			,<include refid="pdApplyDetailColumns"/>
+		</if>
+		<if test="allocationNo != null and allocationNo != ''">
+			,<include refid="pdAllocationDetailColumns"/>
+		</if>
+		FROM pd_product_stock a
+		<include refid="pdProductStockJoins"/>
+		<include refid="pdProductJoins"/>
+		<include refid="pdUnitJoins"/>
+		<include refid="pdVenderJoins"/>
+		<include refid="pdSupplierJoins"/>
+		<include refid="sysDepartJoins"/>
+		<include refid="pdGoodsAllocation"/>
+		<if test="applyNo != null and applyNo != ''">
+			<include refid="pdApplyDetail"/>
+		</if>
+		<if test="allocationNo != null and allocationNo != ''">
+			<include refid="pdAllocationDetail"/>
+		</if>
+		<where>
+			a.del_flag =#{DEL_FLAG_NORMAL} AND a.stock_num > 0
+			<if test="id != null and id != ''">
+				AND a.id = #{id}
+			</if>
+			<if test="productId != null and productId != ''">
+				AND a.product_id = #{productId}
+			</if>
+			<if test="departId != null and departId != ''">
+				AND a.depart_id = #{departId}
+			</if>
+			<if test="number != null and number != ''">
+				AND c.number LIKE concat('%',#{number},'%')
+			</if>
+			<if test="productName != null and productName != ''">
+				AND c.name LIKE concat('%',#{productName},'%')
+			</if>
+			<if test="spec != null and spec != ''">
+				AND c.spec LIKE concat('%',#{spec},'%')
+			</if>
+			<if test="version != null and version != ''">
+				AND c.version   LIKE concat('%',#{version},'%')
+			</if>
+			<if test="registration != null and registration != ''">
+				AND c.registration LIKE concat('%',#{registration},'%')
+			</if>
+			<if test="chargeCode != null and chargeCode != ''">
+				AND c.charge_code LIKE concat('%',#{chargeCode},'%')
+			</if>
+			<if test="productBarCode != null and productBarCode != ''">
+				AND a.product_bar_code = #{productBarCode}
+			</if>
+			<if test="batchNo != null and batchNo != ''">
+				AND a.batch_no LIKE concat('%',#{batchNo},'%')
+			</if>
+			<if test="expStatus != null and expStatus != ''">
+				AND a.exp_status = #{expStatus}
+			</if>
+			<if test="isLong != null and isLong != ''">
+				AND a.is_long = #{isLong}
+			</if>
+			<if test="supplierId != null and supplierId != ''">
+				AND a.supplier_id = #{supplierId}
+			</if>
+			<if test="venderId != null and venderId != ''">
+				AND c.vender_id = #{venderId}
+			</if>
+			<if test="huoweiCode != null and huoweiCode != ''">
+				AND a.huowei_code = #{huoweiCode}
+			</if>
+			<if test="expDate != null">
+				AND DATE_FORMAT(a.exp_date,'%Y-%m-%d') = DATE_FORMAT( #{expDate}, '%Y-%m-%d')
+			</if>
+			<if test="queryDateStart != null and queryDateStart != ''">
+				AND a.exp_date &gt;= #{queryDateStart}
+			</if>
+			<if test="queryDateEnd != null and queryDateEnd != ''">
+				AND a.exp_date &lt;= #{queryDateEnd}
+			</if>
+			<if test="applyNo != null and applyNo != ''">
+				AND h.apply_no = #{applyNo}
+			</if>
+			<if test="departParentId != null and departParentId != ''">
+				AND a.depart_parent_id = #{departParentId}
+			</if>
+			<if test="allocationNo != null and allocationNo != ''">
+				AND j.allocation_no = #{allocationNo}
+			</if>
+			<if test="departIdList != null and departIdList.size() > 0">
+				AND a.depart_id IN
+				<foreach collection="departIdList" item="item" separator="," open="(" close=")">
+					#{item}
+				</foreach>
+			</if>
+ 			order by  exp_status  desc,create_time desc
+		</where>
+	</select>
+
+
 	<delete id="deleteByMainId" parameterType="java.lang.String">
-		DELETE 
-		FROM  pd_product_stock 
-		WHERE
-			 storeroom_id = #{mainId} 	</delete>
+		DELETE  FROM  pd_product_stock  WHERE dept_id = #{mainId}
+</delete>
 	
 	<select id="selectByMainId" parameterType="java.lang.String" resultType="org.jeecg.modules.pd.entity.PdProductStock">
-		SELECT * 
-		FROM  pd_product_stock
-		WHERE
-			 storeroom_id = #{mainId} 	</select>
+		SELECT
+            <include refid="pdProductStockColumns"/>
+		 FROM  pd_product_stock
+		WHERE  depart_id = #{mainId}
+</select>
+
+
+
+	<!--修改库存明细相关信息-->
+	<update id="updateProductStock">
+		UPDATE pd_product_stock   SET
+
+		<if test="expStatus!=null and expStatus!='' ">
+			exp_status = #{expStatus}
+		</if>
+		<if test="stockNum !=null and stockNum!='' ">
+			stock_num = #{stockNum}
+		</if>
+		<if test="huoweiCode !=null and huoweiCode!='' ">
+			huowei_code = #{huoweiCode}
+		</if>
+		<if test="isLong!=null and isLong!='' ">
+			is_long = #{isLong}
+		</if>
+		WHERE 1=1
+		<if test="id != null and id != ''">
+			AND id = #{id}
+		</if>
+		<if test="departId != null and departId != ''">
+			AND depart_id = #{departId}
+		</if>
+		<if test="productId != null and productId != ''">
+			AND product_id = #{productId}
+		</if>
+	</update>
+
+
+
+	<select id="findForUpdate" resultType="org.jeecg.modules.pd.entity.PdProductStock">
+		SELECT
+		<include refid="pdProductStockColumns"/>
+		FROM pd_product_stock a
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="departId != null and departId != ''">
+				AND a.depart_id = #{departId}
+			</if>
+			<if test="productId != null and productId != ''">
+				AND a.product_id = #{productId}
+			</if>
+			<if test="productBarCode != null and productBarCode != ''">
+				AND a.product_bar_code = #{productBarCode}
+			</if>
+			<if test="batchNo != null and batchNo != ''">
+				AND a.batch_no = #{batchNo}
+			</if>
+			<if test="huoweiCode != null and huoweiCode != ''">
+				AND a.huowei_code = #{huoweiCode}
+			</if>
+		</where>
+		FOR UPDATE
+	</select>
+
+	<update id="updateStockNum">
+		UPDATE pd_product_stock SET
+			stock_num = #{stockNum}
+		WHERE id= #{id}
+	</update>
+
+	<update id="updateHuoweiCode" parameterType="org.jeecg.modules.pd.entity.PdProductStock">
+		UPDATE pd_product_stock SET
+			huowei_code = #{huoweiCode}
+		WHERE huowei_code= #{oldHuoweiCode}
+	</update>
+
+
+    <!-- 物流产品 -->
+    <select id="getByOriginalProduct" resultType="org.jeecg.modules.pd.entity.PdProductStock">
+        SELECT DISTINCT
+        <include refid="pdProductStockColumns"/>,
+		<include refid="pdUnitColumns"/>,
+		<include refid="pdProductColumns"/>,
+		<include refid="pdVenderColumns"/>,
+		<include refid="pdSupplierColumns"/>,
+        <include refid="sysDepartColumns"/>
+        FROM pd_product_stock a
+        <include refid="pdProductStockJoins"/>
+        <include refid="pdProductJoins"/>
+		<include refid="pdUnitJoins"/>
+		<include refid="pdVenderJoins"/>
+		<include refid="pdSupplierJoins"/>
+        <include refid="sysDepartJoins"/>
+        LEFT JOIN pd_dosage_detail p ON a.product_id = p.product_id   AND a.product_bar_code = p.product_bar_code AND a.batch_no = p.batch_no
+        LEFT JOIN pd_dosage s ON p.dosage_id = s.id
+        <where>
+            1 = 1
+            <if test="departId != null and departId != ''">
+                AND a.depart_id = #{departId}
+            </if>
+            <if test="departParentId != null and departParentId != ''">
+                AND a.depart_parent_id = #{departParentId}
+            </if>
+            <if test="number != null and number != ''">
+                AND c.number LIKE concat('%',#{number},'%')
+            </if>
+            <if test="batchNo != null and batchNo != ''">
+                AND a.batch_no = #{batchNo}
+            </if>
+            <if test="version != null and version != ''">
+                AND c.version = #{version}
+            </if>
+            <if test="spec != null and spec != ''">
+                AND c.spec = #{spec}
+            </if>
+            <if test="productName != null and productName != ''">
+                AND c.name LIKE CONCAT('%', #{productName}, '%')
+            </if>
+			<if test="registration != null and registration != ''">
+				AND c.registration LIKE concat('%',#{registration},'%')
+			</if>
+            <if test="inHospitalNo != null and inHospitalNo != ''">
+                AND s.in_hospital_no LIKE CONCAT('%', #{inHospitalNo}, '%')
+            </if>
+        </where>
+		group  by a.product_id,a.product_bar_code,a.batch_no,a.exp_date
+    </select>
+
+
+    <!-- 统计库存总数量——首页展示用 -->
+    <select id="queryProductStockCount" resultType="java.util.Map" >
+		SELECT
+        sum(a.stock_num) AS "stockCount"
+        from pd_product_stock a
+        WHERE  a.del_flag=#{DEL_FLAG_NORMAL}
+        <if test="departId != null and departId != ''">
+            AND a.depart_id = #{departId}
+        </if>
+        <if test="departParentId != null and departParentId != ''">
+            AND a.depart_parent_id = #{departParentId}
+        </if>
+		<if test="departIdList != null and departIdList.size() > 0">
+			AND a.depart_id IN
+			<foreach collection="departIdList" item="item" separator="," open="(" close=")">
+				#{item}
+			</foreach>
+		</if>
+    </select>
+
+
+	<!-- 统计前一周入库的库存数量 -->
+	<select id="queryStockDateList" resultType="java.util.Map" >
+		SELECT
+		date(c.dday) as x,
+		sum(c.y) as y
+		FROM
+		(
+		SELECT   datelist as dday ,"0" as y FROM   calendar
+		where  DATE_SUB(CURDATE(), INTERVAL 6 DAY) &lt;= date(datelist)
+		and date(datelist)  &lt;=CURDATE()
+		UNION ALL
+		SELECT   a.create_time as dday,  a.stock_num as y
+		FROM  pd_product_stock a
+		where	1=1
+		<if test="departId != null and departId != ''">
+			AND a.depart_id = #{departId}
+		</if>
+		<if test="departParentId != null and departParentId != ''">
+			AND a.depart_parent_id = #{departParentId}
+		</if>
+		<if test="departIdList != null and departIdList.size() > 0">
+			AND a.depart_id IN
+			<foreach collection="departIdList" item="item" separator="," open="(" close=")">
+				#{item}
+			</foreach>
+		</if>
+		AND  DATE_SUB(CURDATE(), INTERVAL 6 DAY)  &lt;= date(a.create_time)
+		and date(a.create_time)  &lt;=CURDATE()
+		) c
+		GROUP BY x
+	</select>
+
+	<!--  首页查询  根据库存产品类区分统计库存金额及数量 -->
+	<select id="queryStockTotalList" resultType="java.util.Map" >
+		select
+		IFNULL(d.name,'其他') as x,
+		sum(a.stock_num)  as y ,
+		sum(c.selling_price *  a.stock_num) as z
+		from pd_product_stock a
+		left join pd_product c on a.product_id=c.id
+		left join pd_category d on d.id=c.category_two
+		where
+		DATE_SUB(CURDATE(), INTERVAL 30 DAY) &lt;= date(a.create_time)
+		and date(a.create_time) &lt;=CURDATE()
+		group by x  order by y desc
+    </select>
+
+
+
+
+	<!-- 库存明细列表查询 —— 统计查询用 -->
+	<select id="queryList" resultType="org.jeecg.modules.pd.entity.PdProductStock">
+		SELECT
+		<include refid="pdProductStockColumns"/>,
+		<include refid="pdUnitColumns"/>,
+		<include refid="pdProductColumns"/>,
+		<include refid="pdVenderColumns"/>,
+		<include refid="pdSupplierColumns"/>,
+		<include refid="sysDepartColumns"/>,
+		<include refid="pdGoodsAllocationColumns"/>,
+		h.purchase_price as "inPurchasePrice"
+		FROM pd_product_stock a
+		<include refid="pdProductStockJoins"/>
+		<include refid="pdProductJoins"/>
+		<include refid="pdUnitJoins"/>
+		<include refid="pdVenderJoins"/>
+		<include refid="pdSupplierJoins"/>
+		<include refid="sysDepartJoins"/>
+		<include refid="pdGoodsAllocation"/>
+		LEFT JOIN pd_stock_record_detail h ON h.id=a.record_detail_id
+		<where>
+			a.del_flag =#{DEL_FLAG_NORMAL} AND a.stock_num > 0
+			<if test="id != null and id != ''">
+				AND a.id = #{id}
+			</if>
+			<if test="productId != null and productId != ''">
+				AND a.product_id = #{productId}
+			</if>
+			<if test="departId != null and departId != ''">
+				AND a.depart_id = #{departId}
+			</if>
+			<if test="number != null and number != ''">
+				AND c.number LIKE concat('%',#{number},'%')
+			</if>
+			<if test="productName != null and productName != ''">
+				AND c.name LIKE concat('%',#{productName},'%')
+			</if>
+			<if test="spec != null and spec != ''">
+				AND c.spec LIKE concat('%',#{spec},'%')
+			</if>
+			<if test="version != null and version != ''">
+				AND c.version   LIKE concat('%',#{version},'%')
+			</if>
+			<if test="batchNo != null and batchNo != ''">
+				AND a.batchNo LIKE concat('%',#{batchNo},'%')
+			</if>
+			<if test="registration != null and registration != ''">
+				AND c.registration LIKE concat('%',#{registration},'%')
+			</if>
+			<if test="chargeCode != null and chargeCode != ''">
+				AND c.charge_code LIKE concat('%',#{chargeCode},'%')
+			</if>
+			<if test="productBarCode != null and productBarCode != ''">
+				AND a.product_bar_code = #{productBarCode}
+			</if>
+			<if test="batchNo != null and batchNo != ''">
+				AND a.batch_no LIKE concat('%',#{batchNo},'%')
+			</if>
+			<if test="supplierId != null and supplierId != ''">
+				AND a.supplier_id = #{supplierId}
+			</if>
+			<if test="venderId != null and venderId != ''">
+				AND c.vender_id = #{venderId}
+			</if>
+			<if test="huoweiCode != null and huoweiCode != ''">
+				AND a.huowei_code = #{huoweiCode}
+			</if>
+			<if test="expDate != null">
+				AND DATE_FORMAT(a.exp_date,'%Y-%m-%d') = DATE_FORMAT( #{expDate}, '%Y-%m-%d')
+			</if>
+			<if test="queryDateStart != null and queryDateStart != ''">
+				AND a.exp_date &gt;= #{queryDateStart}
+			</if>
+			<if test="queryDateEnd != null and queryDateEnd != ''">
+				AND a.exp_date &lt;= #{queryDateEnd}
+			</if>
+			<if test="applyNo != null and applyNo != ''">
+				AND h.apply_no = #{applyNo}
+			</if>
+			<if test="departParentId != null and departParentId != ''">
+				AND a.depart_parent_id = #{departParentId}
+			</if>
+			<if test="expStatus != null and expStatus != ''">
+				AND a.exp_status = #{expStatus}
+			</if>
+			<if test="isLong != null and isLong != ''">
+				AND a.is_long = #{isLong}
+			</if>
+			<if test="allocationNo != null and allocationNo != ''">
+				AND j.allocation_no = #{allocationNo}
+			</if>
+			<if test="departIdList != null and departIdList.size() > 0">
+				AND a.depart_id IN
+				<foreach collection="departIdList" item="item" separator="," open="(" close=")">
+					#{item}
+				</foreach>
+			</if>
+			order by  exp_status  desc,create_time desc
+		</where>
+	</select>
 </mapper>

@@ -9,8 +9,11 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.system.query.QueryGenerator;
+import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.pd.entity.PdGroup;
 import org.jeecg.modules.pd.service.IPdGroupService;
@@ -60,9 +63,13 @@ public class PdGroupController extends JeecgController<PdGroup, IPdGroupService>
 								   @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
 								   @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
 								   HttpServletRequest req) {
-		QueryWrapper<PdGroup> queryWrapper = QueryGenerator.initQueryWrapper(pdGroup, req.getParameterMap());
-		Page<PdGroup> page = new Page<PdGroup>(pageNo, pageSize);
-		IPage<PdGroup> pageList = pdGroupService.page(page, queryWrapper);
+		Result<Page<PdGroup>> result = new Result<>();
+		Page<PdGroup> pageList = new Page<>(pageNo,pageSize);
+		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		pdGroup.setDepartParentId(sysUser.getDepartParentId());
+		pageList =pdGroupService.selectList(pageList,pdGroup);
+		result.setSuccess(true);
+		result.setResult(pageList);
 		return Result.ok(pageList);
 	}
 
@@ -76,6 +83,8 @@ public class PdGroupController extends JeecgController<PdGroup, IPdGroupService>
 		 long start = System.currentTimeMillis();
 		 Result<List<PdGroup>> result = new Result<>();
 		 try {
+			 LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+			 pdGroup.setDepartParentId(sysUser.getDepartParentId());
 			 List<PdGroup> list = pdGroupService.selectList(pdGroup);
 			 result.setResult(list);
 			 result.setSuccess(true);
@@ -93,6 +102,12 @@ public class PdGroupController extends JeecgController<PdGroup, IPdGroupService>
 	 */
 	@PostMapping(value = "/add")
 	public Result<?> add(@RequestBody PdGroup pdGroup) {
+		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		pdGroup.setDepartParentId(sysUser.getDepartParentId());
+		List<PdGroup> obj = pdGroupService.verify(pdGroup);
+		if (obj != null && obj.size()>0) {
+			return Result.error("组别已存在");
+		}
 		pdGroupService.save(pdGroup);
 		return Result.ok("添加成功！");
 	}
@@ -105,6 +120,12 @@ public class PdGroupController extends JeecgController<PdGroup, IPdGroupService>
 	 */
 	@PutMapping(value = "/edit")
 	public Result<?> edit(@RequestBody PdGroup pdGroup) {
+		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		pdGroup.setDepartParentId(sysUser.getDepartParentId());
+		List<PdGroup> obj = pdGroupService.verify(pdGroup);
+		if (obj != null && obj.size()>0) {
+			return Result.error("组别已存在");
+		}
 		pdGroupService.updateById(pdGroup);
 		return Result.ok("编辑成功!");
 	}
@@ -117,8 +138,8 @@ public class PdGroupController extends JeecgController<PdGroup, IPdGroupService>
 	 */
 	@DeleteMapping(value = "/delete")
 	public Result<?> delete(@RequestParam(name="id",required=true) String id) {
-		pdGroupService.removeById(id);
-		return Result.ok("删除成功!");
+		Result<Object> resul = pdGroupService.deleteV(id);
+		return resul;
 	}
 	
 	/**
@@ -129,8 +150,8 @@ public class PdGroupController extends JeecgController<PdGroup, IPdGroupService>
 	 */
 	@DeleteMapping(value = "/deleteBatch")
 	public Result<?> deleteBatch(@RequestParam(name="ids",required=true) String ids) {
-		this.pdGroupService.removeByIds(Arrays.asList(ids.split(",")));
-		return Result.ok("批量删除成功!");
+		Result<Object> resul = pdGroupService.deleteBatchV(ids);
+		return resul;
 	}
 	
 	/**

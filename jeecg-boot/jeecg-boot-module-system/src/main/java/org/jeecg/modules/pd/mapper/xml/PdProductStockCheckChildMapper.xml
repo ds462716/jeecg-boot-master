@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.pd.mapper.PdProductStockCheckChildMapper">
+
+	<sql id="pdProductStockCheckChildColumns">
+                 a.id,
+                 a.check_no,
+                 a.stock_id,
+                 a.check_num,
+                 a.profit_loss_count,
+                 a.create_time,
+                 a.create_by,
+                 a.update_time,
+                 a.update_by,
+                 a.remarks,
+                 a.del_flag
+	</sql>
+
+	<!-- 单位 -->
+	<sql id="pdUnitColumns">
+        b.name AS "unitName"
+    </sql>
+
+	<sql id="pdUnitJoins">
+        LEFT JOIN pd_unit b ON c.unit_id = b.id
+    </sql>
+
+	<!-- 库存明细表 -->
+	<sql id="pdProductStockColumns">
+        d.stock_num as "stockNum",
+        d.batch_no as "batchNo",
+        d.exp_date as "expDate"
+    </sql>
+
+	<sql id="pdProductStockJoins">
+        LEFT JOIN pd_product_stock d  on d.id=a.stock_id
+    </sql>
+
+	<!--产品-->
+	<sql id="pdProductColumns">
+		c.id as "productId",
+        c.number as "number",
+        c.name as "productName",
+        c.spec as "spec"
+
+ 	</sql>
+	<sql id="pdProductJoins">
+        LEFT JOIN pd_product c ON c.id = d.product_id
+    </sql>
+
+
+	<delete id="deleteByMainId" parameterType="java.lang.String">
+		DELETE 	FROM  pd_product_stock_check_child 	WHERE	 check_no = #{mainId} 	</delete>
+	
+	<select id="selectByMainId" parameterType="java.lang.String" resultType="org.jeecg.modules.pd.entity.PdProductStockCheckChild">
+		SELECT * FROM  pd_product_stock_check_child  WHERE	 check_no = #{mainId} 	</select>
+
+    <delete id="deleteByCheckNo" parameterType="java.lang.String">
+		DELETE FROM  pd_product_stock_check_child 	WHERE check_no = #{checkNo}
+   </delete>
+
+	<!--根据申购编号查询明细信息-->
+	<select id="selectByCheckNo" parameterType="java.lang.String" resultType="org.jeecg.modules.pd.entity.PdProductStockCheckChild">
+		SELECT
+		<include refid="pdProductStockCheckChildColumns"/>,
+        <include refid="pdProductStockColumns"/>,
+        <include refid="pdProductColumns"/>,
+		<include refid="pdUnitColumns"/>
+ 		FROM  pd_product_stock_check_child a
+        <include refid="pdProductStockJoins"/>
+		<include refid="pdProductJoins"/>
+		<include refid="pdUnitJoins"/>
+ 		WHERE a.check_no = #{checkNo}
+		ORDER BY a.create_time DESC
+	</select>
+</mapper>

@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.pd.mapper.PdDosageMapper">
+
+    <sql id="PdDosageColumns">
+        a.id,
+        a.dosage_no,
+        a.dosage_date,
+        a.total_sum,
+        a.total_price,
+        a.patient_info,
+        a.patient_detail_info,
+        a.exe_dept_id,
+        a.exe_dept_name,
+        a.opr_dept_id,
+        a.opr_dept_name,
+        a.surgeon_id,
+        a.surgeon_name,
+        a.sqrt_doctor_id,
+        a.sqrt_doctor_name,
+        a.in_hospital_no,
+        a.dosage_by,
+        a.subordinate_ward_id,
+        a.subordinate_ward_name,
+        a.outpatient_number,
+        a.operative_number,
+        a.display_flag,
+        a.hy_charged,
+        a.create_by,
+        a.create_time,
+        a.update_by,
+        a.update_time,
+        a.sys_org_code,
+        a.remarks,
+        a.depart_id,
+        a.depart_parent_id,
+        a.del_flag
+	</sql>
+
+    <select id="selectList" resultType="org.jeecg.modules.pd.entity.PdDosage" parameterType="org.jeecg.modules.pd.entity.PdDosage">
+        SELECT
+        <include refid="PdDosageColumns"/>,
+        b.realname AS dosageByName
+        FROM
+        `pd_dosage` a
+        LEFT JOIN sys_user b ON a.dosage_by = b.id
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+            <if test="dosageNo != null and dosageNo != ''">
+                AND a.dosage_no = #{dosageNo}
+            </if>
+            <if test="inHospitalNo != null and inHospitalNo != ''">
+                AND a.in_hospital_no = #{inHospitalNo}
+            </if>
+            <if test="dosageBy != null and dosageBy != ''">
+                AND a.dosage_by = #{dosageBy}
+            </if>
+            <if test="departId != null and departId != ''">
+                AND a.depart_id = #{departId}
+            </if>
+            <if test="departParentId != null and departParentId != ''">
+                AND a.depart_parent_id = #{departParentId}
+            </if>
+        </where>
+        order by a.create_time desc
+    </select>
+
+    <!-- 根据时间范围统计当日使用量 -->
+    <select id="queryPdDosageCount" resultType="java.util.Map" >
+        SELECT
+        sum(a.total_sum) AS "orderCount",
+        sum(b.total_sum) AS "dayOrderNum"
+        FROM
+        pd_dosage a
+        LEFT JOIN pd_dosage b ON a.id = b.id
+        AND DATE_FORMAT(b.dosage_date,'%Y-%m-%d') = DATE_FORMAT(#{dosageDate}, '%Y-%m-%d')
+        <where>
+        a.del_flag = #{DEL_FLAG_NORMAL}
+        <if test="departId != null and departId != ''">
+            AND a.depart_id = #{departId}
+        </if>
+        <if test="departParentId != null and departParentId != ''">
+            AND a.depart_parent_id = #{departParentId}
+        </if>
+        <if test="departIdList != null and departIdList.size() > 0">
+            and a.depart_id IN
+            <foreach collection="departIdList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        </where>
+    </select>
+
+
+    <!-- 统计前一周的使用量 -->
+    <select id="queryPdDosageDateList" resultType="java.util.Map" >
+        SELECT
+        date(c.dday) as x,
+        sum(c.y) as y   FROM
+        (
+        SELECT   datelist as dday ,"0" as y FROM   calendar
+        where  DATE_SUB(CURDATE(), INTERVAL 6 DAY) &lt;= date(datelist)
+        and date(datelist)&lt;=CURDATE()
+        UNION ALL
+        SELECT
+        a.dosage_date AS dday,
+        a.total_sum AS y
+        FROM
+        pd_dosage a
+        <where>
+        a.del_flag = #{DEL_FLAG_NORMAL}
+        <if test="departId != null and departId != ''">
+            AND a.depart_id = #{departId}
+        </if>
+        <if test="departParentId != null and departParentId != ''">
+            AND a.depart_parent_id = #{departParentId}
+        </if>
+        <if test="departIdList != null and departIdList.size() > 0">
+            and a.depart_id IN
+            <foreach collection="departIdList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        </where>
+        AND  DATE_SUB(CURDATE(), INTERVAL 6 DAY) &lt;= date(a.dosage_date)
+        and date(a.dosage_date) &lt;=CURDATE()
+        ) c
+        GROUP BY x
+    </select>
+
+    <!-- 首页查询  根据采购产品类区分统计使用金额  -->
+    <select id="queryPdDosageTotalList" resultType="java.util.Map" >
+        select
+        IFNULL(d.name,'其他') as x,
+        sum(a.total_price) as y,
+        sum(a.total_sum) as z
+        from pd_dosage a
+        left join pd_dosage_detail b on a.id=b.dosage_id
+        left join pd_product c on b.product_id=c.id
+        left join pd_category d on d.id=c.category_two
+        where a.del_flag='0'
+        AND  DATE_SUB(CURDATE(), INTERVAL 30 DAY) &lt;= date(a.dosage_date)
+        and date(a.dosage_date) &lt;=CURDATE()
+        group by x  order by y desc
+    </select>
+
+
+</mapper>

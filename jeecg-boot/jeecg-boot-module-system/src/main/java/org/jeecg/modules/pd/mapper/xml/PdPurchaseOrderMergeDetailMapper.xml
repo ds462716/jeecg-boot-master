@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.pd.mapper.PdPurchaseOrderMergeDetailMapper">
+
+	<sql id="pdPurchaseOrderMergeDetailColumns">
+        a.id,
+        a.create_by,
+        a.create_time,
+        a.update_by,
+        a.update_time,
+        a.sys_org_code,
+        a.product_id,
+        a.merge_order_no,
+        a.order_num,
+        a.order_no,
+        a.del_flag,
+        a.arrival_num,
+        a.supplier_id,
+        a.remarks
+	</sql>
+
+	<!-- 单位 -->
+	<sql id="pdUnitColumns">
+        b.name AS "unitName"
+    </sql>
+
+	<sql id="pdUnitJoins">
+        LEFT JOIN pd_unit b ON c.unit_id = b.id
+    </sql>
+
+	<!--产品-->
+	<sql id="pdProductColumns">
+		c.id as "productId",
+        c.number as "number",
+        c.name as "productName",
+        c.spec as "spec",
+        c.version as "version"
+ 	</sql>
+	<sql id="pdProductJoins">
+        LEFT JOIN pd_product c ON c.id = a.product_id
+    </sql>
+
+	<!-- 供应商 -->
+	<sql id="pdSupplierColumns">
+      d.name AS "supplierName"
+    </sql>
+	<sql id="pdSupplierJoins">
+      left join pd_supplier d on a.supplier_id = d.id
+    </sql>
+	<!-- 生产厂家 -->
+	<sql id="pdVenderColumns">
+      e.name AS "venderName"
+    </sql>
+	<sql id="pdVenderJoins">
+      left join pd_vender e on c.vender_id = e.id
+    </sql>
+
+	<!--查询明细信息-->
+	<select id="queryPdPurchaseMergeDetail"   resultType="org.jeecg.modules.pd.entity.PdPurchaseOrderMergeDetail">
+		SELECT
+		<include refid="pdPurchaseOrderMergeDetailColumns"/>,
+		<include refid="pdProductColumns"/>,
+		<include refid="pdUnitColumns"/>,
+		<include refid="pdSupplierColumns"/>,
+		<include refid="pdVenderColumns"/>
+		FROM  pd_purchase_order_merge_detail a
+		<include refid="pdProductJoins"/>
+		<include refid="pdUnitJoins"/>
+		<include refid="pdSupplierJoins"/>
+		<include refid="pdVenderJoins"/>
+		WHERE   a.del_flag =#{DEL_FLAG_NORMAL}
+		<if test="mergeOrderNo != null and mergeOrderNo != ''">
+			AND a.merge_order_no = #{mergeOrderNo}
+		</if>
+		ORDER BY a.create_time DESC
+	</select>
+
+
+	<delete id="deleteByMainId" parameterType="java.lang.String">
+		DELETE FROM  pd_purchase_order_merge_detail 	WHERE	 merge_order_no = #{mainId} 	</delete>
+	
+	<select id="selectByMainId" parameterType="java.lang.String" resultType="org.jeecg.modules.pd.entity.PdPurchaseOrderMergeDetail">
+		SELECT * 	FROM  pd_purchase_order_merge_detail	WHERE	 merge_order_no = #{mainId} 	</select>
+
+	<!-- 增加到货数量 用于入库保存/提交 add by jiangxz 20200227 -->
+	<update id="additionArrivalNum" parameterType="org.jeecg.modules.pd.entity.PdPurchaseOrderMergeDetail">
+		UPDATE
+			pd_purchase_order_merge_detail
+		SET
+			arrival_num = IFNULL(arrival_num,0) + #{arrivalNum}
+		WHERE
+			del_flag =#{DEL_FLAG_NORMAL}
+			and merge_order_no = #{mergeOrderNo}
+			and product_id = #{productId}
+	</update>
+
+	<!-- 扣减到货数量 用于入库拒绝 add by jiangxz 20200227 -->
+	<update id="subtractArrivalNum" parameterType="org.jeecg.modules.pd.entity.PdPurchaseOrderMergeDetail">
+		UPDATE
+			pd_purchase_order_merge_detail
+		SET
+			arrival_num = IFNULL(arrival_num,0) - #{arrivalNum}
+		WHERE
+			del_flag =#{DEL_FLAG_NORMAL}
+			and merge_order_no = #{mergeOrderNo}
+			and product_id = #{productId}
+
+	</update>
+</mapper>

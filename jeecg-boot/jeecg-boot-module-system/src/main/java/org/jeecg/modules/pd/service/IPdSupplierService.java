@@ -1,9 +1,13 @@
 package org.jeecg.modules.pd.service;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
+import org.jeecg.common.api.vo.Result;
 import org.jeecg.modules.pd.entity.PdSupplier;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Description: 供应商
@@ -13,7 +17,7 @@ import java.util.List;
  */
 public interface IPdSupplierService extends IService<PdSupplier> {
 
-    PdSupplier verify(PdSupplier pdSupplier);
+    List<PdSupplier> verify(PdSupplier pdSupplier);
 
     List<PdSupplier> selectList(PdSupplier pdSupplier);
 
@@ -22,4 +26,12 @@ public interface IPdSupplierService extends IService<PdSupplier> {
      * 修改证照有效期标识
      */
     void updateValidityFlag(PdSupplier pdSupplier);
+
+    Page<PdSupplier> selectList(Page<PdSupplier> pageList, PdSupplier pdSupplier);
+
+    Result<Object> deleteV(String id);
+
+    Result<Object> deleteBatchV(String ids);
+
+    Result<Object> importExcel(Map<String, MultipartFile> fileMap);
 }

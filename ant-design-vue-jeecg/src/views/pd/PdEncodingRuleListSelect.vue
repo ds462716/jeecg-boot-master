@@ -75,7 +75,7 @@
         :dataSource="dataSource"
         :pagination="ipagination"
         :loading="loading"
-        :rowSelection="{fixed:true,selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
+        :rowSelection="{fixed:false,selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
         
         @change="handleTableChange">
 
@@ -157,7 +157,7 @@
           }
         })
     }
-    timeout = setTimeout(fake, 300);
+    timeout = setTimeout(fake, 0);
   }
   export default {
     name: "PdEncodingRuleList",

@@ -1,12 +1,13 @@
 <template>
-  <a-modal
-    :title="title"
-    :width="width"
+  <j-modal
     :visible="visible"
-    :confirmLoading="confirmLoading"
-    @ok="handleOk"
+    :width="popModal.width"
+    :title="popModal.title"
+    :lockScroll="popModal.lockScroll"
+    :fullscreen="popModal.fullscreen"
+    :switchFullscreen="popModal.switchFullscreen"
     @cancel="handleCancel"
-    cancelText="关闭">
+  >
     <a-spin :spinning="confirmLoading">
       <!-- 查询区域 -->
       <div class="table-page-search-wrapper">
@@ -14,7 +15,7 @@
           <a-row :gutter="24">
             <a-col :md="6" :sm="8">
               <a-form-item label="申购单号">
-                <a-input placeholder="请输入采购单号" v-model="queryParam.orderNo"></a-input>
+                <a-input placeholder="请输入采购单号" v-model="queryParam.mergeOrderNo"></a-input>
               </a-form-item>
             </a-col>
             <a-col :md="6" :sm="8">
@@ -77,7 +78,8 @@
         :pagination="ipagination"
         :loading="loading"
         :expandedRowKeys= "expandedRowKeys"
-        :rowSelection="{type:'radio',selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
+        :customRow="onClickRow"
+        :rowSelection="{fixed:false,type:'radio',selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
         @expand="handleExpand"
         @change="handleTableChange">
 
@@ -88,14 +90,20 @@
           :dataSource="innerData"
           size="middle"
           bordered
-          rowKey="purchaseDetailId"
+          rowKey="id"
           :pagination="false"
           :loading="subloading"
         >
         </a-table>
       </a-table>
     </a-spin>
-  </a-modal>
+
+    <template slot="footer">
+      <a-button @click="handleCancel" style="margin-right: 15px;">取  消</a-button>
+      <a-button @click="handleOk" type="primary" style="margin-right: 15px;">确定</a-button>
+    </template>
+
+  </j-modal>
 </template>
 
 <script>
@@ -113,7 +121,7 @@
     data () {
       return {
         form: this.$form.createForm(this),
-        title:"选择产品",
+        title:"选择订单",
         width:1200,
         visible: false,
         innerData:[],
@@ -141,12 +149,12 @@
             }
           },
           {
-            title:'申购单号',
+            title:'合并申购单号',
             align:"center",
             dataIndex: 'orderNo'
           },
           {
-            title:'申购日期',
+            title:'审核日期',
             align:"center",
             dataIndex: 'orderDate',
             customRender:function (text) {
@@ -154,19 +162,19 @@
             }
           },
           {
-            title:'申购科室',
+            title:'审核科室',
             align:"center",
             dataIndex: 'deptName'
           },
           {
             title:'审核状态',
             align:"center",
-            dataIndex: 'orderStatus',
+            dataIndex: 'auditStatus',
             customRender:(text)=>{
               if(!text){
                 return ''
               }else{
-                return filterMultiDictText(this.dictOptions['orderStatus'], text+"")
+                return filterMultiDictText(this.dictOptions['auditStatus'], text+"")
               }
             }
           },
@@ -178,6 +186,12 @@
         ],
         innerColumns:[
           {
+            title:'合并申购编号',
+            align:"center",
+            width: 100,
+            dataIndex: 'mergeOrderNo'
+          },
+          {
             title:'产品编号',
             align:"center",
             width: 100,
@@ -186,58 +200,92 @@
           {
             title:'产品名称',
             align:"center",
+            width: 180,
             dataIndex: 'productName'
           },
           {
             title:'规格',
             align:"center",
+            width: 180,
             dataIndex: 'spec'
           },
           {
             title:'型号',
             align:"center",
+            width: 180,
             dataIndex: 'version'
           },
           {
             title:'申购数量',
             align:"center",
-            dataIndex: 'applyCount'
+            width: 75,
+            dataIndex: 'orderNum'
+          },
+          {
+            title:'到货数量',
+            align:"center",
+            width: 75,
+            dataIndex: 'arrivalNum'
           },
           {
             title:'申购单价',
             align:"center",
-            dataIndex: 'inPrice'
+            width: 75,
+            dataIndex: 'purchasePrice'
           },
           {
             title:'价格',
             align:"center",
+            width: 70,
             dataIndex: 'price'
           },
           {
             title:'单位',
             align:"center",
+            width: 70,
             dataIndex: 'unitName'
           },
           {
             title:'供应商',
             align:"center",
+            width: 150,
             dataIndex: 'supplierName'
           },
           {
             title:'厂家',
             align:"center",
+            width: 150,
             dataIndex: 'venderName'
+          },
+          {
+            title:'申购编号',
+            align:"center",
+            width: 100,
+            dataIndex: 'orderNo'
           },
         ],
         url: {
-          list: "/pd/pdPurchaseOrder/choosePurchaseOrderList",
-          detailList:"/pd/pdPurchaseOrder/choosePurchaseOrderDetailList",
+          list: "/pd/pdPurchaseOrderMerge/choosePurchaseOrderList",
+          chooseDetailList:"/pd/pdPurchaseOrderMerge/queryPdPurchaseMergeDetail",
           querySupplier:"/pd/pdSupplier/getSupplierList",
+          detailList:"/pd/pdPurchaseOrderMerge/queryPdPurchaseMergeDetail",
         },
+        tableScroll1:{x :13*47+50},
+        tableScroll:{x :13*147+50},
         dictOptions:{
           // deptName:[],
           orderStatus:[],
           // submitStart:[],
+        },
+        popModal: {
+          title: '选择采购订单',
+          visible: false,
+          width: '100%',
+          // width: '1200',
+          style: { top: '20px' },
+          switchFullscreen: true,  //缩放按钮
+          lockScroll: false,
+          fullscreen: true,
         },
       }
     },
@@ -248,7 +296,7 @@
         if(expanded===true){
           this.subloading = true;
           this.expandedRowKeys.push(record.purchaseId);
-          getAction(this.url.detailList, {orderNo: record.orderNo}).then((res) => {
+          getAction(this.url.chooseDetailList, {mergeOrderNo: record.orderNo}).then((res) => {
             if (res.success) {
               this.subloading = false;
               this.innerData = res.result;
@@ -266,9 +314,19 @@
         this.visible = true;
       },
       handleOk () {
-        let rows = this.selectionRows;
-        this.$emit('ok', rows);
-        this.close();
+        if(this.selectionRows.length > 0){
+          let params = { mergeOrderNo: this.selectionRows[0].orderNo }
+          getAction(this.url.detailList, params).then((res) => {
+            if (res.success) {
+              let data = res.result;
+              this.$emit('ok', data);
+              this.close();
+            }
+          });
+
+        }else{
+          this.$message.error("请选择一行数据!")
+        }
       },
       handleCancel () {
         this.close();
@@ -277,14 +335,14 @@
 
       },
       initDictConfig(){ //静态字典值加载
-        initDictOptions('order_status').then((res) => {
+        initDictOptions('audit_status').then((res) => {
           if (res.success) {
-            this.$set(this.dictOptions, 'orderStatus', res.result)
+            this.$set(this.dictOptions, 'auditStatus', res.result)
           }
         })
         initDictOptions('submit_status').then((res) => {
           if (res.success) {
-            this.$set(this.dictOptions, 'submitStart', res.result)
+            this.$set(this.dictOptions, 'submitStatus', res.result)
           }
         })
       },
@@ -315,7 +373,44 @@
         delete param.queryDate; //范围参数不传递后台，传后台会报错
         return filterObj(param);
       },
-
+      /**
+       * 点击行选中checkbox
+       * @param record
+       * @returns {{on: {click: on.click}}}
+       */
+      onClickRow(record) {
+        return {
+          on: {
+            click: (e) => {
+              //点击操作那一行不选中表格的checkbox
+              let pathArray = e.path;
+              //获取当前点击的是第几列
+              let td = pathArray[0];
+              let cellIndex = td.cellIndex;
+              //获取tr
+              let tr = pathArray[1];
+              //获取一共多少列
+              let lie = tr.childElementCount;
+              if(lie && cellIndex){
+                if(parseInt(lie)-parseInt(cellIndex) > 0){
+                  //操作那一行
+                  let recordId = record.purchaseId;
+                  let index = this.selectedRowKeys.indexOf(recordId);
+                  this.selectedRowKeys = [];
+                  this.selectionRows = [];
+                  if(index>=0){
+                    this.selectedRowKeys.splice(index, 1);
+                    this.selectionRows.splice(index, 1);
+                  }else{
+                    this.selectedRowKeys.push(recordId);
+                    this.selectionRows.push(record);
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
     }
   }
 

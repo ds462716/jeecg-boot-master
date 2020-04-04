@@ -1,17 +1,19 @@
 <template>
-  <a-drawer
+  <j-modal
+    :visible="visible"
+    :width="1200"
     :title="title"
-    :width="800"
-    placement="right"
-    :closable="false"
-    @close="close"
-    :maskClosable="true"
-    :confirmLoading="confirmLoading"
+    :lockScroll="lockScroll"
+    :fullscreen="fullscreen"
+    :switchFullscreen="switchFullscreen"
     @cancel="handleCancel"
-    :visible="visible">
+  >
+
     <a-spin :spinning="confirmLoading">
       <!-- 主表单区域 -->
-      <a-form :form="form">
+      <div style="background:#ECECEC; padding:20px">
+        <a-card title="" style="margin-bottom: 10px;">
+     <a-form :form="form">
         <a-row>
           <a-col :span="12">
             <a-form-item label="申领单号" :labelCol="labelCol" :wrapperCol="wrapperCol">
@@ -35,85 +37,106 @@
           </a-col>
           <a-col :span="12">
             <a-form-item label="申领总数量" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input-number disabled="disabled" v-decorator="[ 'applyNum', validatorRules.applyNum]"  style="width: 100%"/>
+              <a-input-number disabled="disabled" v-decorator="[ 'totalNum', validatorRules.totalNum]"  style="width: 100%"/>
             </a-form-item>
           </a-col>
           <a-col :span="12">
             <a-form-item   label="备注" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input  :disabled="disableSubmit"  v-decorator="[ 'remarks', validatorRules.remarks]"  style="width: 100%"/>
-            </a-form-item>
-          </a-col>
-            <!-- 子表单区域 -->
-          <div style="float: left;">
-            <a-button type="primary" icon="download" @click="exportXls('申领产品列表')">导出</a-button>
-            <a-button v-show="!disableSubmit" @click="choice" style="margin-left: 0px;margin-bottom: 20px"  type="primary">选择产品</a-button>
-          </div>
-          <div style="float: left;width:100%;margin-bottom: 70px;white-space:nowrap;overflow-x:auto;overflow-y:hidden;">
-            <table id="contentTable" class="tableStyle">
-              <tr>
-                <th v-show="!disableSubmit">操作</th>
-                <th>定数包名称</th>
-                <th>定数包编号</th>
-                <th>产品名称</th>
-                <th>产品编号</th>
-                <th>规格</th>
-                <th>型号</th>
-                <th>单位</th>
-                <th>产品数量</th>
-                <th>申领数量</th>
-                <th>库存数量</th>
-              </tr>
-              <tr v-for="(item, index) in pdApplyDetailTable.dataSource">
-                <td v-show="!disableSubmit"><a @click="deleteDetail(item.productId)">删除</a></td>
-                <td>{{item.packageId}}</td>
-                <td>{{item.packageName}}</td>
-                <td>{{item.productName}}</td>
-                <td>{{item.productNo}}</td>
-                <td>{{item.spec}}</td>
-                <td>{{item.version}}</td>
-                <td>{{item.unitName}}</td>
-                <td>{{item.productNum}}</td>
-                <td>
-                  <a-form-item>
-                    <a-input-number  :disabled="disableSubmit" :style="{width: 'calc(120% - 5px)'}" @blur="(e)=>{handleConfirmBlur(e.target,item)}"  v-decorator="['pdApplyDetailTable['+index+'].length', {'initialValue':item.applyCount,rules:validatorRules.applyCount}]"/>
-                  </a-form-item>
-                </td>
-                <td>{{item.stockNum}}</td>
-              </tr>
-            </table>
-          </div>
-          <a-col :span="12" v-show="disableSubmit">
-            <a-form-item   label="审核意见" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input  :disabled="disableSubmit"  v-decorator="[ 'refuseReason', validatorRules.refuseReason]"  style="width: 100%;height: 80px"/>
+              <a-input  :disabled="disableSubmit"  v-decorator="[ 'remarks', validatorRules.remarks]"  style="width: 100%;height: 60px"/>
             </a-form-item>
           </a-col>
         </a-row>
-        <pd-apply-detail-add-modal  ref="PdApplyDetailAddModal" @ok="modalFormOk"></pd-apply-detail-add-modal>
-      </a-form>
+     </a-form>
+      </a-card>
+        <a-card style="margin-bottom: 10px;">
+          <a-tabs v-model="activeKey" @change="handleChangeTabs">
+            <a-tab-pane tab="申领明细表" :key="refKeys[0]" :forceRender="true">
+              <div style="margin-bottom: 8px;">
+                <a-button v-show="!disableSubmit" type="primary" icon="plus" @click="choice">选择产品</a-button>
+                <span style="padding-left: 8px;"></span>
+                <!--<a-button v-show="!disableSubmit" type="primary" icon="plus" @click="choicePackage">选择定数包</a-button>
+                <span style="padding-left: 8px;"></span>-->
+                <a-popconfirm
+                  :title="`确定要删除吗?`"
+                  @confirm="handleConfirmDelete">
+                  <a-button v-show="!disableSubmit" type="primary" icon="minus">删除</a-button>
+                  <span class="gap"></span>
+                </a-popconfirm>
+                <span style="padding-left: 8px;"></span>
+                <!--<a-button type="primary" icon="download" @click="exportXls('申领产品列表')">导出</a-button>-->
+              </div>
+              <j-editable-table
+                bordered
+                :ref="refKeys[0]"
+                :loading="pdApplyDetailTable.loading"
+                :columns="pdApplyDetailTable.columns"
+                :dataSource="pdApplyDetailTable.dataSource"
+                :maxHeight="500"
+                :rowNumber="true"
+                :rowSelection="true"
+                :disabled="disableSubmit"
+                :actionButton="false"
+                @valueChange="valueChange"
+                style="text-overflow: ellipsis;"
+              >
+              </j-editable-table>
+            </a-tab-pane>
+          </a-tabs>
+        </a-card>
+        <a-card style="margin-bottom: 10px;" v-show="disableSubmit">
+          <a-form :form="form">
+            <a-row>
+              <a-col :span="12">
+                <a-form-item label="审核意见" :labelCol="labelCol" :wrapperCol="wrapperCol" style="text-align: left">
+                  <a-textarea :disabled="true" v-decorator="[ 'refuseReason', validatorRules.refuseReason]" placeholder="请输入审核意见"></a-textarea>
+                </a-form-item>
+              </a-col>
+            </a-row>
+          </a-form>
+        </a-card>
+      </div>
     </a-spin>
-    <div class="drawer-bootom-button" v-show="!disableSubmit">
-      <a-button @click="handleOk('submit')" type="primary" :loading="confirmLoading">提交</a-button>
-      <a-button @click="handleOk('save')" type="primary" :loading="confirmLoading">保存</a-button>
-      <a-popconfirm title="确定放弃编辑？" @confirm="handleCancel" okText="确定" cancelText="取消">
-        <a-button style="margin-right: .8rem">取消</a-button>
+    <template slot="footer">
+      <a-button @click="closeBtn" style="margin-right: 15px;" v-show="disableSubmit">关  闭</a-button>
+      <a-popconfirm title="确定放弃编辑？" @confirm="handleCancel" v-show="!disableSubmit" okText="确定" cancelText="取消">
+        <a-button style="margin-right: 15px;">取  消</a-button>
       </a-popconfirm>
-    </div>
-  </a-drawer>
+      <a-button @click="handleOk('save')" v-show="!disableSubmit" type="primary" :loading="confirmLoading" style="margin-right: 15px;">保存草稿</a-button>
+      <a-button @click="handleOk('submit')" v-show="!disableSubmit" type="primary" :loading="confirmLoading" style="margin-right: 15px;">提  交</a-button>
+    </template>
+      <pd-apply-detail-add-modal  ref="PdApplyDetailAddModal" @ok="modalFormOk"></pd-apply-detail-add-modal>
+      <pd-apply-package-add-modal  ref="PdApplyPackageAddModal" @ok="modalFormInfoOk"></pd-apply-package-add-modal>
+    </j-modal>
 </template>
 <script>
 
   import pick from 'lodash.pick'
-  import { httpAction,getAction,downFile } from '@/api/manage'
-  import { JEditableTableMixin } from '@/mixins/JEditableTableMixin'
+  import { httpAction,getAction,downFile,inArray} from '@/api/manage'
+  import { FormTypes,getRefPromise,validateFormAndTables } from '@/utils/JEditableTableUtil'
+  import {JEditableTableMixin } from '@/mixins/JEditableTableMixin'
   import JDate from '@/components/jeecg/JDate'
   import JDictSelectTag from "@/components/dict/JDictSelectTag"
-  import PdApplyDetailAddModal from './PdChooseProductListModel'
+  import PdApplyDetailAddModal from './PdProductStockListModel'
+  import PdApplyPackageAddModal from './PdChoosePackageListModel'
+
+  const VALIDATE_NO_PASSED = Symbol()
+  export { FormTypes, VALIDATE_NO_PASSED }
   export default {
     name: 'PdApplyOrderModal',
     mixins: [JEditableTableMixin],
-    components: {JDate, JDictSelectTag,PdApplyDetailAddModal},
+    components: {
+      JDate,
+      JDictSelectTag,
+      PdApplyDetailAddModal,
+      PdApplyPackageAddModal},
     data() {
       return {
+        model:{},
+        title: '这里是标题',
+        lockScroll: true,
+        fullscreen: true,
+        switchFullscreen: true,
+        disableSubmit:false,
         confirmLoading: false,
         labelCol: {span: 6},
         wrapperCol: {span: 16},
@@ -123,16 +146,38 @@
           applyNo:{},
           deptName:{},
           applyDate:{},
-          applyNum:{},
+          totalNum:{},
           realName:{},
           remarks:{},
-          refuseReason:{}
+          refuseReason:{},
         },
         refKeys: ['pdApplyDetail', ],
         tableKeys:['pdApplyDetail', ],
+        activeKey: 'pdApplyDetail',
         // 申领单详细表
         pdApplyDetailTable: {
-          dataSource: []
+          loading: false,
+          dataSource: [],
+          columns: [
+            { title: '产品ID', key: 'productId', type: FormTypes.hidden },
+            { title: '定数包Id', key: 'packageId', type: FormTypes.hidden },
+            { title: '定数包编号', width:"130px",   key: 'packageCode' },
+            { title: '定数包名称',  width:"130px", key: 'packageName' },
+            { title: '定数包产品数量',  width:"130px",type: FormTypes.normal, key: 'packageNum' },
+            { title: '产品名称', width:"250px",  key: 'productName' },
+            { title: '申领数量', key: 'applyNum', type: FormTypes.input, width:"80px",
+              placeholder: '${title}', defaultValue: '1',
+              validateRules: [{ required: true, message: '${title}不能为空' },
+                { pattern: '^(?:[1-9][0-9]*(?:\\.[0-9]+)?|0\\.(?!0+$)[0-9]+)$',message: '${title}的格式不正确' }]
+            },
+            { title: '产品编号',width:"200px",  key: 'number' },
+            { title: '规格',width:"240px",  key: 'spec' },
+            { title: '型号', width:"240px", key: 'version' },
+            { title: '单位',width:"50px",  key: 'unitName' },
+            { title: '发货数量', width:"100px", key: 'arrivalNum' },
+            { title: '库存数量', key: 'currentStockNum'},
+            { title: '出库科室库存数量', key: 'stockNum',type: FormTypes.hidden},
+          ]
         },
         url: {
           add: "/pd/pdApplyOrder/add",
@@ -141,7 +186,7 @@
           pdPurchaseDetail: {
             list: '/pd/pdApplyOrder/queryApplyDetail'
           },
-        }
+        },
       }
     },
     methods: {
@@ -185,129 +230,197 @@
       applyInfo() { //新增页面初始化
         getAction("/pd/pdApplyOrder/applyInfo",{}).then((res)=>{
           if (res.success) {
-            let model={};
-            this.model.applyNo=res.result.applyNo;//申领编号
-            this.model.deptName=res.result.deptName;//申领科室名称
-            this.model.deptId=res.result.deptId;//申领科室id
-            this.model.applyDate=res.result.applyDate;//申领日期
-            this.model.applyNum=res.result.applyNum;//申领总数量
-            this.model.applyBy=res.result.applyBy;//申领人编号
-            this.model.realName=res.result.realName;//申领人姓名
+            this.model=res.result;
             this.$nextTick(() => {
-              this.form.setFieldsValue(pick(this.model,'applyNo','deptName','applyNum','applyDate','realName','remarks'))
+              this.form.setFieldsValue(pick(this.model,'applyNo','deptName','totalNum','applyDate','realName','remarks'))
             })
           }
         })
       },
-      //修改申购数量后重新计算总数量及总金额
-      handleConfirmBlur(e,m){
-        const that = this;
-        let applyCount = e.value;//修改后的申领数量
-        let stockNum=m.stockNum;//目前库存数量
-        if(parseFloat(stockNum)<parseFloat(applyCount)){
-          that.$message.error("库存数量小于申领数量");
-          return;
-        }
-        m.applyCount=e.value;
-        let tableData=this.pdApplyDetailTable.dataSource;
-        let count=0;
-        for(let i=0;i<tableData.length;i++){
-          count=count+parseFloat(tableData[i].applyCount);//计算总数量
-        }
-        let model={};
-        this.model.applyNum=count;//申购总数量
-        this.$nextTick(() => {
-          this.form.setFieldsValue(pick(this.model,'applyNum'))
-        })
-      },
 
-      //选择产品
-      choice() {
-        this.$refs.PdApplyDetailAddModal.show();
-        this.$refs.PdApplyDetailAddModal.title = "选择产品";
-      },
-
-      deleteDetail(productId){
-        const newData = this.pdApplyDetailTable.dataSource.filter(item => item.productId !== productId);
-        let count=0;
-        for(let i=0;i<newData.length;i++){
-          count=count+parseFloat(newData[i].applyCount);//计算总数量
-        }
-        let model={};
-        this.model.applyNum=count;//申购总数量
-        this.$nextTick(() => {
-          this.form.setFieldsValue(pick(this.model,'applyNum'))
-        })
-        this.pdApplyDetailTable.dataSource = newData;
-      },
-
-      modalFormOk (formData) {//选择产品确定后返回所选择的数据
-        let values = [];
-        let count=0;
-        for(let i=0;i<formData.length;i++){
-          values.push({
-            productId: formData[i].productId,
-            productNo: formData[i].number,
-            productName: formData[i].productName,
-            spec: formData[i].spec,
-            version: formData[i].version,
-            unitName: formData[i].unitName,
-            applyCount: 1,//默认1
-            stockNum: formData[i].stockNum
-          })
-          count=count+1;//计算总数量
-        }
-        let model={};
-        this.model.applyNum=count;//申领总数量
-        this.$nextTick(() => {
-          this.form.setFieldsValue(pick(this.model,'applyNum'))
-        })
-        this.pdApplyDetailTable.dataSource = values;
-      },
-      handleOk (submitType) { //提交
-        this.model.submitStart='2';
-        if(submitType=="save"){
-          this.model.submitStart='1';
-        }
-        this.model.applyStatus='0';
-        const that = this;
-        // 触发表单验证
-        this.form.validateFields((err, values) => {
-          if (!err) {
-            //选择标识符的校验通过后
-            let pdApplyDetailList=this.pdApplyDetailTable.dataSource;
-            values.pdApplyDetailList=pdApplyDetailList;
-            if(pdApplyDetailList.length>0){
-              let httpurl = '';
-              let method = '';
-              if(!this.model.id){
-                httpurl+=this.url.add;
-                method = 'post';
-              }else{
-                httpurl+=this.url.edit;
-                method = 'put';
-              }
-              let formData = Object.assign(this.model, values);
-              httpAction(httpurl,formData,method).then((res)=>{
-                if(res.success){
-                  that.$message.success(res.message);
-                  that.$emit('ok');
-                }else{
-                  that.$message.warning(res.message);
-                }
-              }).finally(() => {
-                that.confirmLoading = false;
-                that.close();
-              })
-            }else{
-              that.$message.error("请选择产品");
+      // 表格数据变更
+      valueChange(event) {
+         if(event){
+          const { type, row, column, value, target } = event;
+         if(type === FormTypes.input){
+            if(column.key === "applyNum"){
+              // 申领数量变更
+              target.setValues([{rowKey: row.id, values: {applyNum :row.applyNum }}]);
+                // 计算总数量
+             this.getTotalNumAndPrice([]);
             }
           }
+        }
+      },
+      //选择产品
+      choice() {
+        this.$refs.PdApplyDetailAddModal.show({departId:this.model.departId,code:"2"});
+       },
+
+      //选择定数包产品
+      choicePackage() {
+        this.$refs.PdApplyPackageAddModal.show();
+        this.$refs.PdApplyPackageAddModal.title = "选择定数包";
+      },
+
+      handleConfirmDelete() {
+        if(this.$refs.pdApplyDetail.selectedRowIds.length > 0){
+          this.$refs.pdApplyDetail.removeSelectedRows();
+          this.$nextTick(() => {
+            // 计算总数量
+             this.getTotalNumAndPrice([]);
+          })
+        }else{
+          this.$message.error("请选择需要删除的数据！")
+        }
+      },
+       // 计算总数量
+      getTotalNumAndPrice(rows){
+        this.$nextTick(() => {
+          if (rows.length <= 0) {
+            let {values} = this.$refs.pdApplyDetail.getValuesSync({validate: false});
+            rows = values;
+          }
+          let totalNum = 0;
+          rows.forEach((item, idx) => {
+            if(item.packageCode !='' && item.packageCode !=null ){
+              totalNum+=parseFloat(item.applyNum) * parseFloat(item.packageNum) ;
+            }else{
+              totalNum+=parseFloat(item.applyNum);
+            }
+          })
+          this.model.totalNum = totalNum;
+          this.form.setFieldsValue(pick(this.model,'totalNum'))
+        });
+      },
+      modalFormOk (formData) { //选择产品确定后返回所选择的数据
+        let data = [];
+         this.$refs.pdApplyDetail.getValues((error, values) => {
+          formData.forEach((item, idx) => {
+            let bool = true;
+              values.forEach((value, idx) => {
+                let packageCode = value.packageCode;
+                if (packageCode == "" ||  packageCode == null  ) {
+                      if(item.productId==value.productId){
+                        bool=false;
+                       }
+                    }
+              })
+            if(bool){
+              data.push(item);
+            }
+            })
+          data.forEach((item, idx) => {
+            this.pdApplyDetailTable.dataSource = values;
+            this.addrows(item);
+          })
+          this.$nextTick(() => {
+            // 计算总数量
+            this.getTotalNumAndPrice(values);
+          })
         })
+      },
+      addrows(row) {
+        let data = {
+          packageId:row.packageId,
+          packageCode:row.code,
+          packageName:row.name,
+          packageNum:row.count,
+          productId: row.productId,
+          number: row.number,
+          productName:row.productName,
+          spec: row.spec,
+          version:row.version,
+          unitName:row.unitName,
+          applyNum: "1",//默认 1
+          stockNum:row.stockNum,
+        currentStockNum:row.currentStockNum
+        }
+        this.pdApplyDetailTable.dataSource.push(data)
+      },
+
+      modalFormInfoOk (formData) { //选择定数包产品确定后返回所选择的数据
+        let data = [];
+        this.$refs.pdApplyDetail.getValues((error, values) => {
+          formData.forEach((item, idx) => {
+            let bool = true;
+            values.forEach((value, idx) => {
+              let packageCode = value.packageCode;
+              if (packageCode != "" &&  packageCode != null  ) {
+                if(item.productId==value.productId){
+                  bool=false;
+                }
+              }
+            })
+            if(bool){
+              data.push(item);
+            }
+          })
+          data.forEach((item, idx) => {
+            this.pdApplyDetailTable.dataSource = values;
+            this.addrows(item);
+          })
+          this.$nextTick(() => {
+            // 计算总数量
+            this.getTotalNumAndPrice(values);
+          })
+        })
+      },
+
+      handleOk (submitType) { //提交
+        this.model.submitStatus = '1';
+        if(submitType=="submit"){
+          this.model.submitStatus='2';
+          this.model.auditStatus='1';
+        }
+        const that = this;
+        // 触发表单验证
+            this.getAllTable().then(tables => {
+              /** 一次性验证主表和所有的次表 */
+              return validateFormAndTables(this.form, tables)
+            }).then(allValues => {
+              if (typeof this.classifyIntoFormData !== 'function') {
+                throw this.throwNotFunction('classifyIntoFormData')
+              }
+              let formData = this.classifyIntoFormData(allValues)
+              // 发起请求
+              let pdApplyDetailList=formData.pdApplyDetailList;
+              if(pdApplyDetailList.length>0){
+                let httpurl = '';
+                let method = '';
+                if(!this.model.id){
+                  httpurl+=this.url.add;
+                  method = 'post';
+                }else{
+                  httpurl+=this.url.edit;
+                  method = 'put';
+                }
+                httpAction(httpurl,formData,method).then((res)=>{
+                  if(res.success){
+                    that.$message.success(res.message);
+                    that.$emit('ok');
+                  }else{
+                    that.$message.warning(res.message);
+                  }
+                }).finally(() => {
+                  that.confirmLoading = false;
+                  that.close();
+                })
+              }else{
+                that.$message.error("请选择产品");
+              }
+            }).catch(e => {
+              if (e.error === VALIDATE_NO_PASSED) {
+                // 如果有未通过表单验证的子表，就自动跳转到它所在的tab
+                this.activeKey = e.index == null ? this.activeKey : this.refKeys[e.index]
+              } else {
+                console.error(e)
+              }
+            })
       },
       /** 调用完edit()方法之后会自动调用此方法 */
       editAfter() {
-        let fieldval = pick(this.model,'applyNo','deptName','applyNum','applyDate','realName','remarks','refuseReason')
+        let fieldval = pick(this.model,'applyNo','deptName','totalNum','applyDate','realName','remarks','refuseReason')
         this.$nextTick(() => {
           this.form.setFieldsValue(fieldval)
         })
@@ -330,32 +443,23 @@
         this.$message.error(msg)
       },
       popupCallback(row){
-        this.form.setFieldsValue(pick(row,'applyNo','deptName','applyNum','applyDate','realname','remarks','refuseReason'))
+        this.form.setFieldsValue(pick(row,'applyNo','deptName','totalNum','applyDate','realname','remarks','refuseReason'))
       },
-
+      /** 关闭按钮 **/
+      closeBtn(){
+        this.visible = false;
+        this.$emit('close');
+      },
     }
   }
 </script>
 
 <style scoped>
   .drawer-bootom-button {
-    position: absolute;
-    /*top:95%;*/
-    bottom: -30px;
     width: 100%;
-    border-top: 1px solid #e8e8e8;
-    padding: 10px 16px;
     text-align: right;
-    left: 0;
     background: #fff;
-    border-radius: 0 0 2px 2px;
-    z-index:199;
-  }
-  /** Button按钮间距 */
-  .ant-btn {
-    margin-left: 30px;
-    margin-bottom: 30px;
-    float: right;
+    margin-top:10px;
   }
   .tableStyle> tr > th{
     border: 1px solid #e8e8e8;

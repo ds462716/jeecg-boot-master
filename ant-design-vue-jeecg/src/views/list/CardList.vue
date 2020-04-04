@@ -36,7 +36,7 @@
   for (let i = 0; i < 11; i++) {
     dataSource.push({
       title: 'Alipay',
-      avatar: 'https://gw.alipayobjects.com/zos/rmsportal/WdGqmHpayyMjiEhcKoVE.png',
+     //avatar: 'https://gw.alipayobjects.com/zos/rmsportal/WdGqmHpayyMjiEhcKoVE.png',
       content: '在中台产品的研发过程中，会出现不同的设计规范和实现方式，但其中往往存在很多类似的页面和组件，这些类似的组件会被抽离成一套标准规范。'
     })
   }
@@ -52,7 +52,7 @@
           { icon: 'info-circle-o', href: '#', title: '产品简介' },
           { icon: 'file-text', href: '#', title: '产品文档' }
         ],
-        extraImage: 'https://gw.alipayobjects.com/zos/rmsportal/RzwpdLnhmvDJToTdfDPe.png',
+        //extraImage: 'https://gw.alipayobjects.com/zos/rmsportal/RzwpdLnhmvDJToTdfDPe.png',
         dataSource
       }
     }

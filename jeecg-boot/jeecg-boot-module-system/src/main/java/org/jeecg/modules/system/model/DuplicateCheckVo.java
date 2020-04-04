@@ -41,4 +41,8 @@ public class DuplicateCheckVo implements Serializable {
 	@ApiModelProperty(value="数据ID",name="dataId",example="2000")
 	private String dataId;
 
+	/**
+	 * 机构ID
+	 */
+	private String departParentId;
 }

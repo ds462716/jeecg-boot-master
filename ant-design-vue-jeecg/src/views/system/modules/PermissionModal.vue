@@ -27,6 +27,12 @@
           <a-input placeholder="请输入菜单名称" v-decorator="[ 'name', validatorRules.name]" :readOnly="disableSubmit"/>
         </a-form-item>
 
+        <a-form-item label="是否是业务菜单" :labelCol="labelCol" :wrapperCol="wrapperCol">
+          <a-select  v-decorator="[ 'businessType',{'initialValue':'0',rules:businessTypeRules}]" placeholder="请选择是否是业务菜单">
+            <a-select-option value="0">是</a-select-option>
+            <a-select-option value="1">否</a-select-option>
+          </a-select>
+        </a-form-item>
 
         <a-form-item
           v-show="localMenuType!=0"
@@ -203,6 +209,12 @@
         show:true,//根据菜单类型，动态显示隐藏表单元素
         menuLabel:'菜单名称',
         isRequrie:true,  // 是否需要验证
+        businessTypeRules:[
+          {
+            required: true, // 必填
+            message: '请选择是否是业务菜单' // 显示的文本
+          }
+        ],
         labelCol: {
           xs: { span: 24 },
           sm: { span: 5 },
@@ -296,7 +308,7 @@
 
         this.visible = true;
         this.loadTree();
-        let fieldsVal = pick(this.model,'name','perms','permsType','component','url','sortNo','menuType','status');
+        let fieldsVal = pick(this.model,'name','perms','permsType','component','url','sortNo','menuType','businessType','status');
         this.$nextTick(() => {
           this.form.setFieldsValue(fieldsVal)
         });

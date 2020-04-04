@@ -28,4 +28,37 @@
             a.del_flag = '0'
 			and a.package_id = #{mainId}
 	</select>
+
+
+
+
+	<select id="selectList"  resultType="org.jeecg.modules.pd.entity.PdPackageDetail">
+		 SELECT
+		 a.package_id,
+		 a.count,
+		 a.product_id,
+		 b.code,
+		 b.name,
+		 c.number as "number",
+		 c.name as "productName",
+         c.spec as spec,
+         c.version as version,
+         d.name as unitName
+          FROM
+		 pd_package_detail a
+         LEFT JOIN pd_package b ON a.package_id=b.id
+		 LEFT JOIN pd_product c ON c.id=a.product_id
+		 LEFT JOIN pd_unit d ON c.unit_id = d.id
+		WHERE
+            a.del_flag = #{DEL_FLAG_NORMAL}
+		<if test="packageId != null and packageId != ''">
+			AND a.package_id = #{packageId}
+		</if>
+		<if test="departParentId != null and departParentId != ''">
+			AND a.depart_parent_id = #{departParentId}
+		</if>
+		<if test="departId != null and departId != ''">
+			AND a.depart_id = #{departId}
+		</if>
+	</select>
 </mapper>

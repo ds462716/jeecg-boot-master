@@ -1,18 +1,12 @@
 package org.jeecg.modules.pd.entity;
 
-
-
-import java.io.Serializable;
-import java.util.Date;
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
-import lombok.Data;
+import com.baomidou.mybatisplus.annotation.*;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import lombok.EqualsAndHashCode;
-import lombok.experimental.Accessors;
+import lombok.Data;
 import org.jeecgframework.poi.excel.annotation.Excel;
 import org.springframework.format.annotation.DateTimeFormat;
+
+import java.util.Date;
 
 /**
  * @Description: 申领单主表
@@ -51,30 +45,24 @@ public class PdApplyOrder extends BaseEntity {
     @Excel(name = "申领单号", width = 15)
     private String applyNo;
     /*提交状态*/
-    private String submitStart;
-	/**申领人*/
-    @Excel(name = "申领人", width = 15)
+    private String submitStatus;
+	/**申领人编号*/
+    @Excel(name = "申领人编号", width = 15)
     private String applyBy;
 	/**申领日期*/
     @Excel(name = "申领日期", width = 15, format = "yyyy-MM-dd")
 	@JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd")
     @DateTimeFormat(pattern="yyyy-MM-dd")
     private Date applyDate;
-	/**申领科室ID*/
-    @Excel(name = "申领科室ID", width = 15)
-    private String deptId;
-	/**申领科室名称*/
-    @Excel(name = "申领科室名称", width = 15)
-    private String deptName;
 	/**申领总数*/
-    @Excel(name = "申领总数", width = 15)
-    private Double applyNum;
-	/**实际领用个数*/
-    @Excel(name = "实际领用数量", width = 15)
-    private Double factCount;
+    @Excel(name = "申领总数量", width = 15)
+    private Double totalNum;
+	/**实际发货总数量*/
+    @Excel(name = "实际发货总数量", width = 15)
+    private Double arrivalCount;
 	/**申领单状态*/
     @Excel(name = "申领单状态", width = 15)
-    private String applyStatus;
+    private String auditStatus;
 	/**审核人*/
     @Excel(name = "审核人", width = 15)
     private String auditBy;
@@ -95,4 +83,12 @@ public class PdApplyOrder extends BaseEntity {
 	/**是否完结，1是，0否*/
     @Excel(name = "是否完结", width = 15)
     private String isEnd;
+    /**申领出库科室ID*/
+    private String outDepartId;
+    /**申领科室ID*/
+    @TableField(strategy = FieldStrategy.NOT_EMPTY)
+    private String departId;
+    /** 所属父部门*/
+    @TableField(strategy = FieldStrategy.NOT_EMPTY)
+    private String departParentId;
 }

@@ -1,12 +1,14 @@
 package org.jeecg.modules.pd.service.impl;
 
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.jeecg.modules.pd.entity.PdPurchaseDetail;
+import org.jeecg.modules.pd.entity.PdPurchaseOrder;
 import org.jeecg.modules.pd.mapper.PdPurchaseDetailMapper;
 import org.jeecg.modules.pd.service.IPdPurchaseDetailService;
-import org.springframework.stereotype.Service;
-import java.util.List;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 /**
  * @Description: 申购单详细表
@@ -21,7 +23,7 @@ public class PdPurchaseDetailServiceImpl extends ServiceImpl<PdPurchaseDetailMap
 	private PdPurchaseDetailMapper pdPurchaseDetailMapper;
 	
 	@Override
-	public List<PdPurchaseDetail> selectByOrderNo(String orderNo) {
-		return pdPurchaseDetailMapper.selectByOrderNo(orderNo);
+	public List<PdPurchaseDetail> queryPdPurchaseDetail(PdPurchaseDetail purchaseDetail) {
+		return pdPurchaseDetailMapper.queryPdPurchaseDetail(purchaseDetail);
 	}
 }

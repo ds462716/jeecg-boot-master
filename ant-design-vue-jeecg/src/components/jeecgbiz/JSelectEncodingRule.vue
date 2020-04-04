@@ -28,7 +28,7 @@
         // 定义在这里的参数都是可以在外部传递覆盖的，可以更灵活的定制化使用的组件
         default: {
           name: '编码规则',
-          width: 1200,
+          width: 1400,
           displayKey: 'name',
           returnKeys: ['id', 'id'],
           queryParamText: '编码名称',

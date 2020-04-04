@@ -19,7 +19,7 @@
                 暗色菜单风格
               </template>
               <div class="setting-drawer-index-item" @click="handleMenuTheme('dark')">
-                <img src="https://gw.alipayobjects.com/zos/rmsportal/LCkqqYNmvBEbokSDscrm.svg" alt="dark">
+                <img src="~@/assets/LCkqqYNmvBEbokSDscrm.svg" alt="dark">
                 <div class="setting-drawer-index-selectIcon" v-if="navTheme === 'dark'">
                   <a-icon type="check"/>
                 </div>
@@ -31,7 +31,7 @@
                 亮色菜单风格
               </template>
               <div class="setting-drawer-index-item" @click="handleMenuTheme('light')">
-                <img src="https://gw.alipayobjects.com/zos/rmsportal/jpRkZQMyYRryryPNtyIC.svg" alt="light">
+                <img src="~@/assets/jpRkZQMyYRryryPNtyIC.svg" alt="light">
                 <div class="setting-drawer-index-selectIcon" v-if="navTheme !== 'dark'">
                   <a-icon type="check"/>
                 </div>
@@ -66,7 +66,7 @@
                 侧边栏导航
               </template>
               <div class="setting-drawer-index-item" @click="handleLayout('sidemenu')">
-                <img src="https://gw.alipayobjects.com/zos/rmsportal/JopDzEhOqwOjeNTXkoje.svg" alt="sidemenu">
+                <img src="~@/assets/JopDzEhOqwOjeNTXkoje.svg" alt="sidemenu">
                 <div class="setting-drawer-index-selectIcon" v-if="layoutMode === 'sidemenu'">
                   <a-icon type="check"/>
                 </div>
@@ -78,7 +78,7 @@
                 顶部栏导航
               </template>
               <div class="setting-drawer-index-item" @click="handleLayout('topmenu')">
-                <img src="https://gw.alipayobjects.com/zos/rmsportal/KDNDBbriJhLwuqMoxcAr.svg" alt="topmenu">
+                <img src="~@/assets/KDNDBbriJhLwuqMoxcAr.svg" alt="topmenu">
                 <div class="setting-drawer-index-selectIcon" v-if="layoutMode !== 'sidemenu'">
                   <a-icon type="check"/>
                 </div>
@@ -144,14 +144,14 @@
           </div>
         </div>
         <a-divider />
-        <div :style="{ marginBottom: '24px' }">
+        <!--<div :style="{ marginBottom: '24px' }">
           <a-alert type="warning">
             <span slot="message">
               配置栏只在开发环境用于预览，生产环境不会展现，请手动修改配置文件
               <a href="https://github.com/sendya/ant-design-pro-vue/blob/master/src/defaultSettings.js" target="_blank">src/defaultSettings.js</a>
             </span>
           </a-alert>
-        </div>
+        </div>-->
       </div>
       <div class="setting-drawer-index-handle" @click="toggle" v-if="visible">
 <!--        <a-icon type="setting" v-if="!visible"/>-->

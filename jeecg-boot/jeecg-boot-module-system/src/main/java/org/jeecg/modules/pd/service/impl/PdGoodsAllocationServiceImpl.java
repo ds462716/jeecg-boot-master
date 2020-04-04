@@ -2,8 +2,13 @@ package org.jeecg.modules.pd.service.impl;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.jeecg.common.constant.PdConstant;
+import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.pd.entity.PdGoodsAllocation;
+import org.jeecg.modules.pd.entity.PdProductStock;
+import org.jeecg.modules.pd.entity.PdStockRecordDetail;
 import org.jeecg.modules.pd.mapper.PdGoodsAllocationMapper;
+import org.jeecg.modules.pd.mapper.PdProductStockMapper;
+import org.jeecg.modules.pd.mapper.PdStockRecordDetailMapper;
 import org.jeecg.modules.pd.service.IPdGoodsAllocationService;
 import org.jeecg.modules.pd.vo.PdGoodsAllocationPage;
 import org.jeecg.modules.system.model.SysDepartTreeModel;
@@ -11,8 +16,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Description: 货区货位表
@@ -25,43 +32,32 @@ public class PdGoodsAllocationServiceImpl extends ServiceImpl<PdGoodsAllocationM
 
     @Autowired
     private PdGoodsAllocationMapper pdGoodsAllocationMapper;
+    @Autowired
+    private PdStockRecordDetailMapper pdStockRecordDetailMapper;
+    @Autowired
+    private PdProductStockMapper pdProductStockMapper;
 
     @Override
-    public List<SysDepartTreeModel> queryTreeList(List<SysDepartTreeModel> departTreeList) {
-        if(CollectionUtils.isNotEmpty(departTreeList)){
-            for (SysDepartTreeModel departItem : departTreeList) { //循环一级机构
-                List<SysDepartTreeModel> departChildrenList = departItem.getChildren();
+    public List<PdGoodsAllocationPage> queryTreeList(String departId) {
+        List<PdGoodsAllocationPage> treeList = null;
+        if(oConvertUtils.isNotEmpty(departId)) {
+            PdGoodsAllocation query1 = new PdGoodsAllocation();
+            query1.setDepartId(departId);
+            treeList = pdGoodsAllocationMapper.selectHuoquList(query1);
 
-                if(CollectionUtils.isNotEmpty(departChildrenList)){
-                    for (SysDepartTreeModel childDepartItem : departChildrenList) {//循环二级机构
-                        PdGoodsAllocation pdGoodsAllocation = new PdGoodsAllocation();
-                        pdGoodsAllocation.setDepartId(childDepartItem.getId());
-                        List<SysDepartTreeModel> goodsParentList = pdGoodsAllocationMapper.selectParentList(pdGoodsAllocation);
-
-                        if(CollectionUtils.isNotEmpty(goodsParentList)){
-                            childDepartItem.setIsLeaf(false);
-                            childDepartItem.setChildren(goodsParentList);
-                            for (SysDepartTreeModel goodsParentItem : goodsParentList) {//循环货区
-                                goodsParentItem.setIsLeaf(true);
-                                goodsParentItem.setOrgType(PdConstant.GOODS_ALLCATION_FLAG_1); //货位标识
-                                PdGoodsAllocation pdGoodsAllocation2 = new PdGoodsAllocation();
-                                pdGoodsAllocation2.setParentId(goodsParentItem.getId());
-                                List<SysDepartTreeModel> goodsChildList = pdGoodsAllocationMapper.selectChildList(pdGoodsAllocation2);
-                                if(CollectionUtils.isNotEmpty(goodsChildList)){
-                                    goodsParentItem.setIsLeaf(false);
-                                    goodsParentItem.setChildren(goodsChildList);
-                                    for (SysDepartTreeModel goodsChildItem : goodsChildList) {//循环货位
-                                        goodsChildItem.setIsLeaf(true);
-                                        goodsChildItem.setOrgType(PdConstant.GOODS_ALLCATION_FLAG_2);//货位标识
-                                    }
-                                }
-                            }
-                        }
+            if(CollectionUtils.isNotEmpty(treeList)){
+                for (PdGoodsAllocationPage huoqu : treeList) {//循环货区
+                    PdGoodsAllocation query2 = new PdGoodsAllocation();
+                    query2.setParentId(huoqu.getId());
+                    query2.setDepartId(departId);
+                    List<PdGoodsAllocationPage> huoweiList = pdGoodsAllocationMapper.selectHuoweiList(query2);
+                    if(CollectionUtils.isNotEmpty(huoweiList)){
+                        huoqu.setChildren(huoweiList);
                     }
                 }
             }
         }
-        return departTreeList;
+        return treeList;
     }
 
     @Override
@@ -70,7 +66,9 @@ public class PdGoodsAllocationServiceImpl extends ServiceImpl<PdGoodsAllocationM
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public boolean updatePdGoodsAllocation(PdGoodsAllocation pdGoodsAllocation) {
+        PdGoodsAllocation oldItem = super.getById(pdGoodsAllocation.getId());
         Boolean bool = super.updateById(pdGoodsAllocation);
 
         if(bool && PdConstant.GOODS_ALLCATION_AREA_TYPE_2.equals(pdGoodsAllocation.getAreaType())){
@@ -88,6 +86,21 @@ public class PdGoodsAllocationServiceImpl extends ServiceImpl<PdGoodsAllocationM
                 parentItem.setId(pdGoodsAllocation.getParentId());
                 parentItem.setSubNum(sum);
                 super.updateById(parentItem);
+            }
+            if(!oldItem.getCode().equals(pdGoodsAllocation.getCode())){
+                // 货位编号变更 则变更出入库记录以及库存中的货位编号
+                PdStockRecordDetail detail = new PdStockRecordDetail();
+                detail.setInHuoweiCode(pdGoodsAllocation.getCode());
+                detail.setOldInHuoweiCode(oldItem.getCode());
+                detail.setOutHuoweiCode(pdGoodsAllocation.getCode());
+                detail.setOldOutHuoweiCode(oldItem.getCode());
+                pdStockRecordDetailMapper.updateInHuoweiCode(detail);
+                pdStockRecordDetailMapper.updateOutHuoweiCode(detail);
+
+                PdProductStock stock = new PdProductStock();
+                stock.setHuoweiCode(pdGoodsAllocation.getCode());
+                stock.setOldHuoweiCode(oldItem.getCode());
+                pdProductStockMapper.updateHuoweiCode(stock);
             }
         }
         return bool;
@@ -116,6 +129,56 @@ public class PdGoodsAllocationServiceImpl extends ServiceImpl<PdGoodsAllocationM
         }
 
         return bool;
+    }
+
+    @Override
+    public List<PdGoodsAllocationPage> getOptionsForSelect(PdGoodsAllocation pdGoodsAllocation) {
+        return pdGoodsAllocationMapper.getOptionsForSelect(pdGoodsAllocation);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public String deleteBatch(List<String> ids) {
+        String message = "";
+
+        for (String id : ids) {
+            PdGoodsAllocation pdGoodsAllocation = pdGoodsAllocationMapper.selectById(id);
+            if(pdGoodsAllocation != null){
+                if(pdGoodsAllocation.getAreaType().equals(PdConstant.GOODS_ALLCATION_AREA_TYPE_1)){
+                    PdGoodsAllocation query = new PdGoodsAllocation();
+                    query.setParentId(id);
+                    List<PdGoodsAllocationPage> huoweiList = pdGoodsAllocationMapper.selectHuoweiList(query);
+                    for(PdGoodsAllocationPage huowei : huoweiList){
+                        PdProductStock pdProductStock = new PdProductStock();
+                        pdProductStock.setHuoweiCode(huowei.getCode());
+                        List<PdProductStock> stockList = pdProductStockMapper.selectList(pdProductStock);
+                        if(CollectionUtils.isNotEmpty(stockList)){
+                            message = message + huowei.getName() + " ";
+                        }else{
+                            pdGoodsAllocationMapper.deleteById(huowei.getId());
+                        }
+                    }
+                    if(oConvertUtils.isEmpty(message)){
+                        // 货区下货位全部删除后，则删除该货区
+                        pdGoodsAllocationMapper.deleteById(id);
+                    }
+                }else{
+                    PdProductStock pdProductStock = new PdProductStock();
+                    pdProductStock.setHuoweiCode(pdGoodsAllocation.getCode());
+                    List<PdProductStock> stockList = pdProductStockMapper.selectList(pdProductStock);
+                    if(CollectionUtils.isNotEmpty(stockList)){
+                        message = message + pdGoodsAllocation.getName() + " ";
+                    }else{
+                        pdGoodsAllocationMapper.deleteById(id);
+                    }
+                }
+            }
+        }
+
+        if(oConvertUtils.isNotEmpty(message)){
+            return "货位 "+message+"中有库存，请移库后再进行删除操作！";
+        }
+        return PdConstant.TRUE;
     }
 
 }

@@ -25,7 +25,7 @@ const frozenBatch = (params)=>putAction("/sys/user/frozenBatch",params);
 //验证用户是否存在
 const checkOnlyUser = (params)=>getAction("/sys/user/checkOnlyUser",params);
 //改变密码
-const changPassword = (params)=>putAction("/sys/user/changPassword",params);
+const changePassword = (params)=>putAction("/sys/user/changePassword",params);
 
 //权限管理
 const addPermission= (params)=>postAction("/sys/permission/add",params);
@@ -34,6 +34,7 @@ const getPermissionList = (params)=>getAction("/sys/permission/list",params);
 /*update_begin author:wuxianquan date:20190908 for:添加查询一级菜单和子菜单查询api */
 const getSystemMenuList = (params)=>getAction("/sys/permission/getSystemMenuList",params);
 const getSystemSubmenu = (params)=>getAction("/sys/permission/getSystemSubmenu",params);
+const getSystemSubmenuBatch = (params) => getAction('/sys/permission/getSystemSubmenuBatch', params)
 /*update_end author:wuxianquan date:20190908 for:添加查询一级菜单和子菜单查询api */
 
 // const deletePermission = (params)=>deleteAction("/sys/permission/delete",params);
@@ -58,6 +59,13 @@ const deleteByDepartId   = (params)=>deleteAction("/sys/sysDepart/delete",params
 
 //货区货位管理
 const queryGoodsAllocationTreeList = (params)=>getAction("/pd/pdGoodsAllocation/queryTreeList",params);
+//二级部门管理
+const queryDepartPermission = (params)=>getAction("/sys/permission/queryDepartPermission",params);
+const saveDepartPermission = (params)=>postAction("/sys/permission/saveDepartPermission",params);
+const queryTreeListForDeptRole = (params)=>getAction("/sys/sysDepartPermission/queryTreeListForDeptRole",params);
+const queryDeptRolePermission = (params)=>getAction("/sys/sysDepartPermission/queryDeptRolePermission",params);
+const saveDeptRolePermission = (params)=>postAction("/sys/sysDepartPermission/saveDeptRolePermission",params);
+const queryMyDepartTreeList = (params)=>getAction("/sys/sysDepart/queryMyDeptTreeList",params);
 
 //日志管理
 //const getLogList = (params)=>getAction("/sys/log/list",params);
@@ -99,7 +107,7 @@ const duplicateCheck = (params)=>getAction("/sys/duplicate/check",params);
 const duplicateCheckHasDelFlag = (params)=>getAction("/sys/duplicate/checkHasDelFlag",params);
 // 加载分类字典
 const loadCategoryData = (params)=>getAction("/sys/category/loadAllData",params);
-
+const checkRuleByCode = (params) => getAction('/sys/checkRule/checkByCode', params)
 // 编码标识符
 const getEncodingIdentifierList = (params)=>getAction("/pd/pdEncodingIdentifier/getEncodingIdentifierList",params);
 //下拉列表查询编码规则
@@ -108,6 +116,22 @@ const getEncodingRuleList = (params)=>getAction("/pd/pdEncodingRule/getEncodingR
 //分类管理查询树结构
 const queryCategoryTreeList = (params)=>getAction("/pd/pdCategory/queryCategoryTreeList",params);
 const getCategoryList = (params)=>getAction("/pd/pdCategory/list",params);
+
+//新版本部门管理
+const queryPdDepaTreeList = (params)=>getAction("/pd/pdDepart/queryTreeList",params);
+const queryPdDepartTreeList = (params)=>getAction("/pd/pdDepart/queryPdDepartTreeList",params);
+const queryPermissionTreeList = (params)=>getAction("/pd/pdDepart/queryPermissionTreeList",params);
+const saveNDeptRolePermission = (params)=>postAction("/pd/pdDepart/saveDeptRolePermission",params);
+const queryUserDepart = (params)=>getAction("/pd/pdDepart/queryUserDepart",params);
+const queryAllDepart = (params)=>getAction("/pd/pdDepart/queryAllDepart",params);
+const savePdDepartPermission = (params)=>postAction("/pd/pdDepart/savePdDepartPermission",params);
+
+//产品校验编号是否禁用
+const isDisabledNumber = (params)=>getAction("/pd/pdProduct/isDisabledNumber",params);
+
+//院内物流追述
+const getByOriginalProduct = (params)=>getAction("/pd/pdStockLog/getByOriginalProduct",params);
+
 
 
 export {
@@ -123,7 +147,7 @@ export {
   queryall,
   frozenBatch,
   checkOnlyUser,
-  changPassword,
+  changePassword,
   getPermissionList,
   addPermission,
   editPermission,
@@ -159,11 +183,28 @@ export {
   queryTreeListForRole,
   getSystemMenuList,
   getSystemSubmenu,
+  getSystemSubmenuBatch,
   loadCategoryData,
   getEncodingIdentifierList,
   getEncodingRuleList,
   queryCategoryTreeList,
-  getCategoryList
+  getCategoryList,
+  checkRuleByCode,
+  queryDepartPermission,
+  saveDepartPermission,
+  queryTreeListForDeptRole,
+  queryDeptRolePermission,
+  saveDeptRolePermission,
+  queryMyDepartTreeList,
+  queryPdDepaTreeList,
+  queryPdDepartTreeList,
+  queryPermissionTreeList,
+  saveNDeptRolePermission,
+  queryUserDepart,
+  queryAllDepart,
+  isDisabledNumber,
+  savePdDepartPermission,
+  getByOriginalProduct
 }
 
 

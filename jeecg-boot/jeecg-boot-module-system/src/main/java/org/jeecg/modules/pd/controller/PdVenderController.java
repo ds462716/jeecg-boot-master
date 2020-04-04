@@ -9,8 +9,11 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.system.query.QueryGenerator;
+import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.pd.entity.PdVender;
 import org.jeecg.modules.pd.service.IPdVenderService;
@@ -61,9 +64,13 @@ public class PdVenderController extends JeecgController<PdVender, IPdVenderServi
 								   @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
 								   @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
 								   HttpServletRequest req) {
-		QueryWrapper<PdVender> queryWrapper = QueryGenerator.initQueryWrapper(pdVender, req.getParameterMap());
-		Page<PdVender> page = new Page<PdVender>(pageNo, pageSize);
-		IPage<PdVender> pageList = pdVenderService.page(page, queryWrapper);
+		Result<Page<PdVender>> result = new Result<>();
+		Page<PdVender> pageList = new Page<>(pageNo,pageSize);
+		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		pdVender.setDepartParentId(sysUser.getDepartParentId());
+		pageList =pdVenderService.selectList(pageList,pdVender);
+		result.setSuccess(true);
+		result.setResult(pageList);
 		return Result.ok(pageList);
 	}
 
@@ -78,6 +85,8 @@ public class PdVenderController extends JeecgController<PdVender, IPdVenderServi
 		 long start = System.currentTimeMillis();
 		 Result<List<PdVender>> result = new Result<>();
 		 try {
+			 LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+			 pdVender.setDepartParentId(sysUser.getDepartParentId());
 			 List<PdVender> list = pdVenderService.selectList(pdVender);
 			 result.setResult(list);
 			 result.setSuccess(true);
@@ -114,15 +123,11 @@ public class PdVenderController extends JeecgController<PdVender, IPdVenderServi
 						   @RequestParam MultipartFile[] licenceSiteUp8,@RequestParam MultipartFile[] licenceSiteUp9,
 						   @RequestParam MultipartFile[] licenceSiteUp10,@RequestParam MultipartFile[] licenceSiteUp11
 						   ) {
-         Result<Boolean> result = new Result<>();
-         //如果此参数为false则程序发生异常
-         result.setResult(true);
-         result.setMessage("添加成功");
-         PdVender obj = pdVenderService.verify(pdVender);
-         if (obj != null) {
-             result.setSuccess(false);
-             result.setMessage("生产厂家已存在");
-             return result;
+		 LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		 pdVender.setDepartParentId(sysUser.getDepartParentId());
+		 List<PdVender> obj = pdVenderService.verify(pdVender);
+         if (obj != null && obj.size()>0) {
+			 return Result.error("生产厂家已存在");
          }
 		 //存入图片
 		 if(!FileUploadUtil.isImgEmpty(licenceSiteUp0)){
@@ -192,15 +197,11 @@ public class PdVenderController extends JeecgController<PdVender, IPdVenderServi
                            @RequestParam MultipartFile[] licenceSiteUp8,@RequestParam MultipartFile[] licenceSiteUp9,
                            @RequestParam MultipartFile[] licenceSiteUp10,@RequestParam MultipartFile[] licenceSiteUp11
      ) {
-         Result<Boolean> result = new Result<>();
-         //如果此参数为false则程序发生异常
-         result.setResult(true);
-         result.setMessage("编辑成功");
-         PdVender obj = pdVenderService.verify(pdVender);
-         if (obj != null) {
-             result.setSuccess(false);
-             result.setMessage("生产厂家已存在");
-             return result;
+		 LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		 pdVender.setDepartParentId(sysUser.getDepartParentId());
+         List<PdVender> obj = pdVenderService.verify(pdVender);
+         if (obj != null && obj.size()>0) {
+			 return Result.error("生产厂家已存在");
          }
          //存入图片
          if(!FileUploadUtil.isImgEmpty(licenceSiteUp0)){
@@ -347,8 +348,8 @@ public class PdVenderController extends JeecgController<PdVender, IPdVenderServi
 	 */
 	@DeleteMapping(value = "/delete")
 	public Result<?> delete(@RequestParam(name="id",required=true) String id) {
-		pdVenderService.removeById(id);
-		return Result.ok("删除成功!");
+		Result<Object> resul = pdVenderService.deleteV(id);
+		return resul;
 	}
 	
 	/**
@@ -359,8 +360,8 @@ public class PdVenderController extends JeecgController<PdVender, IPdVenderServi
 	 */
 	@DeleteMapping(value = "/deleteBatch")
 	public Result<?> deleteBatch(@RequestParam(name="ids",required=true) String ids) {
-		this.pdVenderService.removeByIds(Arrays.asList(ids.split(",")));
-		return Result.ok("批量删除成功!");
+		Result<Object> resul = pdVenderService.deleteBatchV(ids);
+		return resul;
 	}
 	
 	/**
@@ -386,8 +387,18 @@ public class PdVenderController extends JeecgController<PdVender, IPdVenderServi
     */
     @RequestMapping(value = "/exportXls")
     public ModelAndView exportXls(HttpServletRequest request, PdVender pdVender) {
-        return super.exportXls(request, pdVender, PdVender.class, "生产厂家");
-    }
+		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		pdVender.setDepartParentId(sysUser.getDepartParentId());
+		//Step.1 获取导出数据
+		List<PdVender> pdProducts = pdVenderService.selectList(pdVender);
+		// Step.2 AutoPoi 导出Excel
+		ModelAndView mv = new ModelAndView(new JeecgEntityExcelView());
+		mv.addObject(NormalExcelConstants.FILE_NAME, "生产厂家列表");
+		mv.addObject(NormalExcelConstants.CLASS, PdVender.class);
+		mv.addObject(NormalExcelConstants.PARAMS, new ExportParams("生产厂家列表数据", "导出人:" + sysUser.getRealname(), "产品数据"));
+		mv.addObject(NormalExcelConstants.DATA_LIST, pdProducts);
+		return mv;
+	}
 
     /**
       * 通过excel导入数据
@@ -398,7 +409,10 @@ public class PdVenderController extends JeecgController<PdVender, IPdVenderServi
     */
     @RequestMapping(value = "/importExcel", method = RequestMethod.POST)
     public Result<?> importExcel(HttpServletRequest request, HttpServletResponse response) {
-        return super.importExcel(request, response, PdVender.class);
-    }
+		MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
+		Map<String, MultipartFile> fileMap = multipartRequest.getFileMap();
+		Result<Object> resul = pdVenderService.importExcel(fileMap);
+		return resul;
+	}
 
 }

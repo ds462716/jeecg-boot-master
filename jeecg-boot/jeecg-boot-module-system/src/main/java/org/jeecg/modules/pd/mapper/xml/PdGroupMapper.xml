@@ -16,8 +16,31 @@
             or a.wb LIKE concat('%',#{name},'%')
             or a.zdy LIKE concat('%',#{name},'%'))
         </if>
+        <if test="departId != null and departId != ''">
+            AND a.depart_id = #{departId}
+        </if>
+        <if test="departParentId != null and departParentId != ''">
+            AND a.depart_parent_id = #{departParentId}
+        </if>
         <!-- 为了查询效率 只查询十条记录该方法用于下拉选择 -->
-        ORDER BY a.update_time desc LIMIT 0,10
+        ORDER BY a.update_time desc
+    </select>
+
+    <!-- 校验组别是否唯一 -->
+    <select id="verify" resultType="org.jeecg.modules.pd.entity.PdGroup">
+        SELECT
+        *
+        FROM pd_group a
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+            and a.name = #{name}
+            <if test="id != null and id != ''">
+                AND a.id != #{id}
+            </if>
+            <if test="departParentId != null and departParentId != ''">
+                AND a.depart_parent_id = #{departParentId}
+            </if>
+        </where>
     </select>
 
 </mapper>

@@ -4,7 +4,88 @@
     <div class="table-page-search-wrapper">
       <a-form layout="inline" @keyup.enter.native="searchQuery">
         <a-row :gutter="24">
-
+          <a-col :md="6" :sm="8">
+            <a-form-item label="产品名称">
+              <a-input placeholder="请输入产品名称" v-model="queryParam.name"></a-input>
+            </a-form-item>
+          </a-col>
+          <a-col :md="6" :sm="8">
+            <a-form-item label="产品编号">
+              <a-input placeholder="请输入产品编号" v-model="queryParam.number"></a-input>
+            </a-form-item>
+          </a-col>
+          <a-col :md="6" :sm="8">
+            <a-form-item label="注册证">
+              <a-input placeholder="请输入注册证" v-model="queryParam.registration"></a-input>
+            </a-form-item>
+          </a-col>
+          <template v-if="toggleSearchStatus">
+            <a-col :md="6" :sm="8">
+              <a-form-item label="收费代码">
+                <a-input placeholder="请输入收费代码" v-model="queryParam.chargeCode"></a-input>
+              </a-form-item>
+            </a-col>
+            <a-col :md="6" :sm="8">
+              <a-form-item label="生产厂家">
+                <a-select
+                  showSearch
+                  :venderId="venderValue"
+                  placeholder="请选择生产厂家"
+                  :defaultActiveFirstOption="false"
+                  :allowClear="true"
+                  :showArrow="true"
+                  :filterOption="false"
+                  @search="venderHandleSearch"
+                  @change="venderHandleChange"
+                  @focus="venderHandleSearch"
+                  :notFoundContent="notFoundContent"
+                  v-model="queryParam.venderId"
+                >
+                  <a-select-option v-for="d in venderData" :key="d.value">{{d.text}}</a-select-option>
+                </a-select>
+              </a-form-item>
+            </a-col>
+            <a-col :md="6" :sm="8">
+              <a-form-item label="供应商">
+                <a-select
+                  showSearch
+                  :supplierId="supplierValue"
+                  placeholder="请选择供应商"
+                  :defaultActiveFirstOption="false"
+                  :allowClear="true"
+                  :showArrow="true"
+                  :filterOption="false"
+                  @search="supplierHandleSearch"
+                  @change="supplierHandleChange"
+                  @focus="supplierHandleSearch"
+                  :notFoundContent="notFoundContent"
+                  v-model="queryParam.supplierId"
+                >
+                  <a-select-option v-for="d in supplierData" :key="d.value">{{d.text}}</a-select-option>
+                </a-select>
+              </a-form-item>
+            </a-col>
+            <a-col :md="6" :sm="8">
+              <a-form-item label="规格">
+                <a-input placeholder="请输入规格" v-model="queryParam.spec"></a-input>
+              </a-form-item>
+            </a-col>
+            <a-col :md="6" :sm="8">
+              <a-form-item label="型号">
+                <a-input placeholder="请输入型号" v-model="queryParam.version"></a-input>
+              </a-form-item>
+            </a-col>
+          </template>
+          <a-col :md="6" :sm="8" >
+            <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
+              <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
+              <a-button type="primary" @click="searchReset" icon="reload" style="margin-left: 8px">重置</a-button>
+              <a @click="handleToggleSearch" style="margin-left: 8px">
+                {{ toggleSearchStatus ? '收起' : '展开' }}
+                <a-icon :type="toggleSearchStatus ? 'up' : 'down'"/>
+              </a>
+            </span>
+          </a-col>
         </a-row>
       </a-form>
     </div>
@@ -13,13 +94,14 @@
     <!-- 操作按钮区域 -->
     <div class="table-operator">
       <a-button @click="handleAdd" type="primary" icon="plus">新增</a-button>
-      <a-button type="primary" icon="download" @click="handleExportXls('pd_product')">导出</a-button>
+      <a-button type="primary" icon="download" @click="handleExportXls('产品')">导出</a-button>
       <a-upload name="file" :showUploadList="false" :multiple="false" :headers="tokenHeader" :action="importExcelUrl" @change="handleImportExcel">
         <a-button type="primary" icon="import">导入</a-button>
       </a-upload>
       <a-dropdown v-if="selectedRowKeys.length > 0">
         <a-menu slot="overlay">
           <a-menu-item key="1" @click="batchDel"><a-icon type="delete"/>删除</a-menu-item>
+          <a-menu-item key="2" @click="handleChargeCode"><a-icon type="edit"/>批量修改产品收费代码</a-menu-item>
         </a-menu>
         <a-button style="margin-left: 8px"> 批量操作 <a-icon type="down" /></a-button>
       </a-dropdown>
@@ -41,7 +123,8 @@
         :dataSource="dataSource"
         :pagination="ipagination"
         :loading="loading"
-        :rowSelection="{fixed:true,selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
+        :customRow="onClickRow"
+        :rowSelection="{fixed:false,selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
         
         @change="handleTableChange">
 
@@ -88,6 +171,18 @@
     </div>
 
     <pdProduct-modal ref="modalForm" @ok="modalFormOk"></pdProduct-modal>
+    <a-modal :visible="chargeCodeVisible"  :maskClosable="false"  :confirmLoading="confirmLoading"
+             @ok="handleOk" :width="900" @cancel="handleCancel">
+      <a-form :form="form">
+        <a-row class="form-row" :gutter="{ xs: 8, sm: 16, md: 24, lg: 32 }">
+          <a-col :lg="24" >
+            <a-form-item label="产品收费代码" :labelCol="labelCol" :wrapperCol="wrapperCol">
+              <a-input autocomplete="off" placeholder="请输入产品收费代码" v-decorator="[ 'chargeCode', validatorRules.chargeCodeT]"  style="width: 100%"/>
+            </a-form-item>
+          </a-col>
+        </a-row>
+      </a-form>
+    </a-modal>
   </a-card>
 </template>
 
@@ -96,6 +191,42 @@
   import { JeecgListMixin } from '@/mixins/JeecgListMixin'
   import PdProductModal from './modules/PdProductModal'
   import {initDictOptions, filterMultiDictText} from '@/components/dict/JDictSelectUtil'
+  import { getAction } from  '@/api/manage'
+
+  let timeout;
+  let currentValue;
+
+  function fetch(value, callback,url) {
+    if (timeout) {
+      clearTimeout(timeout);
+      timeout = null;
+    }
+    currentValue = value;
+
+    function fake() {
+      getAction(url,{name:value}).then((res)=>{
+        if (!res.success) {
+          this.cmsFailed(res.message);
+        }
+        if (currentValue === value) {
+          const result = res.result;
+          const data = [];
+          result.forEach(r => {
+            data.push({
+              value: r.id,
+              text: r.name,
+            });
+          });
+          callback(data);
+        }
+      })
+    }
+    timeout = setTimeout(fake, 0);
+  }
+
+  import { httpAction } from '@/api/manage'
+  import { validateDuplicateValue } from '@/utils/util'
+  import pick from 'lodash.pick'
 
   export default {
     name: "PdProductList",
@@ -105,7 +236,29 @@
     },
     data () {
       return {
-        description: 'pd_product管理页面',
+        description: '产品管理页面',
+        notFoundContent:"未找到内容",
+        venderData: [],
+        venderValue: undefined,
+        supplierData: [],
+        supplierValue: undefined,
+        chargeCodeVisible:false,
+        confirmLoading: false,
+        form: this.$form.createForm(this),
+        model: {},
+        labelCol: {
+          xs: { span: 24 },
+          sm: { span: 5 },
+        },
+        wrapperCol: {
+          xs: { span: 24 },
+          sm: { span: 16 },
+        },
+        validatorRules: {
+          chargeCodeT: {rules: [
+              {required: true, message: '请输入产品收费代码!'},
+            ]},
+        },
         // 表头
         columns: [
           {
@@ -167,6 +320,16 @@
             dataIndex: 'supplierName'
           },
           {
+            title:'产品收费代码',
+            align:"center",
+            dataIndex: 'chargeCode'
+          },
+          {
+            title:'注册证',
+            align:"center",
+            dataIndex: 'registration'
+          },
+          {
             title: '操作',
             dataIndex: 'action',
             align:"center",
@@ -180,6 +343,9 @@
           deleteBatch: "/pd/pdProduct/deleteBatch",
           exportXlsUrl: "/pd/pdProduct/exportXls",
           importExcelUrl: "pd/pdProduct/importExcel",
+          queryVender:"/pd/pdVender/getVenderList",
+          querySupplier:"/pd/pdSupplier/getSupplierList",
+          editChargeCodeBatch:"/pd/pdProduct/editChargeCodeBatch",
         },
         dictOptions:{
           isCharge:[],
@@ -192,14 +358,136 @@
       }
     },
     methods: {
+      loadData(arg) {
+        //加载数据 若传入参数1则加载第一页的内容
+        if (arg === 1) {
+          this.ipagination.current = 1;
+        }
+        let params = this.getQueryParams();//查询条件
+        this.loading = true;
+        getAction(this.url.list, params).then((res) => {
+          if (res.success) {
+            this.dataSource = res.result.records;
+          }
+          this.loading = false;
+        })
+      },
       initDictConfig(){
         initDictOptions('is_charge').then((res) => {
           if (res.success) {
             this.$set(this.dictOptions, 'isCharge', res.result)
           }
         })
+      },
+      //生产厂家查询start
+      venderHandleSearch(value) {
+        fetch(value, data => (this.venderData = data),this.url.queryVender);
+      },
+      venderHandleChange(value) {
+        this.venderValue = value;
+        fetch(value, data => (this.venderData = data),this.url.queryVender);
+      },
+      //生产厂家查询end
+      //供应商查询start
+      supplierHandleSearch(value) {
+        fetch(value, data => (this.supplierData = data),this.url.querySupplier);
+      },
+      supplierHandleChange(value) {
+        this.supplierValue = value;
+        fetch(value, data => (this.supplierData = data),this.url.querySupplier);
+      },
+      //批量修改收费代码点击事件
+      handleChargeCode(){
+        this.form.resetFields();
+        this.model = Object.assign({}, "");
+        this.$nextTick(() => {
+          this.form.setFieldsValue(pick(this.model,'chargeCode'))
+        });
+        this.chargeCodeVisible = true;//当前窗口打开
+      },
+      //产品收费代码窗口关闭事件
+      handleCancel(){
+        this.close()
+      },
+      close () {
+        this.$emit('close');
+        this.chargeCodeVisible = false;
+      },
+      //产品收费代码提交
+      handleOk(){
+        const that = this;
+        // 触发表单验证
+        that.form.validateFields((err, values) => {
+          if (!err) {
+            that.confirmLoading = true;
+            let httpurl = that.url.editChargeCodeBatch;
+            let method = 'post';
+            let formData = Object.assign(that.model, values);
+            if (that.selectedRowKeys.length <= 0) {
+              that.$message.warning('请选择一条记录！');
+              return;
+            } else {
+              let ids = "";
+              for (let a = 0; a < that.selectedRowKeys.length; a++) {
+                ids += that.selectedRowKeys[a] + ",";
+              }
+              let formDataAll = new FormData();
+              formDataAll.append("ids",ids);
+              for (let obj in formData) {
+                formDataAll.append(obj, formData[obj]?formData[obj]:"");
+              }
+              //console.log("表单提交数据",formData)
+              httpAction(httpurl,formDataAll,method).then((res)=>{
+                if(res.success){
+                  that.$message.success(res.message);
+                  that.$emit('ok');
+                  this.loadData();
+                }else{
+                  that.$message.warning(res.message);
+                }
+              }).finally(() => {
+                that.confirmLoading = false;
+                that.close();
+              })
+            }
+          }
+        })
+      },
+      //供应商查询end
+      /**
+       * 点击行选中checkbox
+       * @param record
+       * @returns {{on: {click: on.click}}}
+       */
+      onClickRow(record) {
+        return {
+          on: {
+            click: (e) => {
+              //点击操作那一行不选中表格的checkbox
+              let pathArray = e.path;
+              //获取当前点击的是第几列
+              let td = pathArray[0];
+              let cellIndex = td.cellIndex;
+              //获取tr
+              let tr = pathArray[1];
+              //获取一共多少列
+              let lie = tr.childElementCount;
+              if(lie && cellIndex){
+                if(parseInt(lie)-parseInt(cellIndex)!=1){
+                  //操作那一行
+                  let recordId = record.id;
+                  let index = this.selectedRowKeys.indexOf(recordId);
+                  if(index>=0){
+                    this.selectedRowKeys.splice(index, 1);
+                  }else{
+                    this.selectedRowKeys.push(recordId);
+                  }
+                }
+              }
+            }
+          }
+        }
       }
-       
     }
   }
 </script>

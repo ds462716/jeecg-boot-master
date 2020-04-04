@@ -1,6 +1,8 @@
 package org.jeecg.modules.pd.mapper;
 
 import java.util.List;
+import java.util.Map;
+
 import org.jeecg.modules.pd.entity.PdStockRecordDetail;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Param;
@@ -14,6 +16,26 @@ import org.apache.ibatis.annotations.Param;
 public interface PdStockRecordDetailMapper extends BaseMapper<PdStockRecordDetail> {
 
 	public boolean deleteByMainId(@Param("mainId") String mainId);
-    
-	public List<PdStockRecordDetail> selectByMainId(@Param("mainId") String mainId);
+
+	/**
+	 * 假删除
+	 * @param pdStockRecordDetail
+	 * @return
+	 */
+	public boolean deleteByDelFlag(PdStockRecordDetail pdStockRecordDetail);
+
+	public List<PdStockRecordDetail> selectByMainId(PdStockRecordDetail pdStockRecordDetail);
+
+	public List<PdStockRecordDetail> selectList(PdStockRecordDetail pdStockRecordDetail);
+
+	void updateInHuoweiCode(PdStockRecordDetail detail);
+
+	void updateOutHuoweiCode(PdStockRecordDetail detail);
+
+	/**
+	 * 统计库存总数量——首页展示用
+	 * @param detail
+	 * @return
+	 */
+	Map<String,Object> queryStockRecordCount(PdStockRecordDetail detail);
 }

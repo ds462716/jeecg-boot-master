@@ -2,9 +2,8 @@ package org.jeecg.modules.pd.entity;
 
 import java.io.Serializable;
 import java.util.Date;
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
+
+import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -51,6 +50,16 @@ public class PdPackage extends BaseEntity {
     private Date updateTime;
 	/**所属部门*/
     private String sysOrgCode;
-	/**父机构*/
-    private String sysOrgParentCode;
+
+    /**
+     * 所属部门
+     */
+    @TableField(strategy = FieldStrategy.NOT_EMPTY)
+    private String departId;
+
+    /**
+     * 所属顶级部门（医院id）
+     */
+    @TableField(strategy = FieldStrategy.NOT_EMPTY)
+    private String departParentId;
 }

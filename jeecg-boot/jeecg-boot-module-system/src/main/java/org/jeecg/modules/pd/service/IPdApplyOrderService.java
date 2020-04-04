@@ -1,16 +1,14 @@
 package org.jeecg.modules.pd.service;
 
-
-
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.IService;
 import org.jeecg.modules.pd.entity.PdApplyDetail;
 import org.jeecg.modules.pd.entity.PdApplyOrder;
-import com.baomidou.mybatisplus.extension.service.IService;
-import org.jeecg.modules.pd.entity.PdPurchaseOrder;
+import org.jeecg.modules.pd.vo.PdApplyOrderPage;
 
-import java.io.Serializable;
-import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Description: 申领单主表
@@ -39,5 +37,25 @@ public interface IPdApplyOrderService extends IService<PdApplyOrder> {
 	 * 
 	 */
 	public void updateMain(PdApplyOrder pdApplyOrder, List<PdApplyDetail> pdApplyDetailList);
+	/**
+	 * 用于申领单单弹出选择框
+	 * @param applyOrderPage
+	 * @return
+	 */
+	Page<PdApplyOrderPage> chooseApplyOrderList(Page<PdApplyOrderPage> pageList, PdApplyOrderPage applyOrderPage);
 
+	/**
+	 * 首页查询申领总数量
+	 */
+	Map<String,Object> queryApplyOrderCount(PdApplyOrder pdApplyOrder);
+
+	/**
+	 * 首页查询  根据范围统计每日的申领量
+	 */
+	List<HashMap> queryApplyOrderDateList(PdApplyOrderPage applyOrderPage);
+
+	/**
+	 * 首页查询  根据申领产品类区分统计申领金额及数量
+	 */
+	List<HashMap> queryApplyOrderTotalList(PdApplyOrderPage applyOrderPage);
 }

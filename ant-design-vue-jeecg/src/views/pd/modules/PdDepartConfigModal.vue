@@ -11,25 +11,25 @@
       <a-form :form="form">
 
         <a-form-item label="名称" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input ref="inputFocus" @change="pinyinTran" v-decorator="[ 'name', validatorRules.name]" placeholder="请输入名称"></a-input>
+          <a-input ref="inputFocus" :disabled="true" @change="pinyinTran" v-decorator="[ 'name', validatorRules.name]" placeholder="请输入名称"></a-input>
         </a-form-item>
         <a-form-item label="拼音简码" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input v-decorator="[ 'py', validatorRules.py]" placeholder="请输入拼音简码"></a-input>
+          <a-input :disabled="true" v-decorator="[ 'py', validatorRules.py]" placeholder="请输入拼音简码"></a-input>
         </a-form-item>
         <a-form-item label="五笔简码" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input v-decorator="[ 'wb', validatorRules.wb]" placeholder="请输入五笔简码"></a-input>
+          <a-input :disabled="true" v-decorator="[ 'wb', validatorRules.wb]" placeholder="请输入五笔简码"></a-input>
         </a-form-item>
         <a-form-item label="自定义码" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input v-decorator="[ 'zdy', validatorRules.zdy]" placeholder="请输入自定义码"></a-input>
+          <a-input :disabled="true" v-decorator="[ 'zdy', validatorRules.zdy]" placeholder="请输入自定义码"></a-input>
         </a-form-item>
         <a-form-item label="类型" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input v-decorator="[ 'type', validatorRules.type]" placeholder="请输入类型"></a-input>
+          <a-input :disabled="true" v-decorator="[ 'type', validatorRules.type]" placeholder="请输入类型"></a-input>
         </a-form-item>
         <a-form-item label="值" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input v-decorator="[ 'value', validatorRules.value]" placeholder="请输入值"></a-input>
+          <a-input-number  v-decorator="[ 'value', validatorRules.value]" placeholder="请输入值" style="width: 100%"/>
         </a-form-item>
         <a-form-item label="备注" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input v-decorator="[ 'remarks', validatorRules.remarks]" placeholder="请输入备注"></a-input>
+          <a-input :disabled="true" v-decorator="[ 'remarks', validatorRules.remarks]" placeholder="请输入备注"></a-input>
         </a-form-item>
 
       </a-form>
@@ -76,6 +76,9 @@
           type: {rules: [
           ]},
           value: {rules: [
+              {required: true, message: '请输入提醒时间!'},
+              { pattern:  /^([1-9]|[1-9][0-9]|[1-2][0-9][0-9]|[3][0-5][0-9]|(360|361|363|362|364|365))$/, message: '请输入1-365的数字类型' },
+
           ]},
           remarks: {rules: [
           ]},

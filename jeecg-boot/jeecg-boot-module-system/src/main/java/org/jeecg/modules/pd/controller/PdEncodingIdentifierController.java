@@ -12,9 +12,11 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import org.apache.commons.lang.StringUtils;
+import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.system.query.QueryGenerator;
+import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.pd.entity.PdEncodingIdentifier;
 import org.jeecg.modules.pd.service.IPdEncodingIdentifierService;
@@ -65,6 +67,8 @@ public class PdEncodingIdentifierController extends JeecgController<PdEncodingId
 								   @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
 								   @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
 								   HttpServletRequest req) {
+		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		pdEncodingIdentifier.setDepartParentId(sysUser.getDepartParentId());
 		QueryWrapper<PdEncodingIdentifier> queryWrapper = QueryGenerator.initQueryWrapper(pdEncodingIdentifier, req.getParameterMap());
 		Page<PdEncodingIdentifier> page = new Page<PdEncodingIdentifier>(pageNo, pageSize);
 		IPage<PdEncodingIdentifier> pageList = pdEncodingIdentifierService.page(page, queryWrapper);
@@ -82,12 +86,13 @@ public class PdEncodingIdentifierController extends JeecgController<PdEncodingId
 		 long start = System.currentTimeMillis();
 		 Result<List<PdEncodingIdentifier>> result = new Result<>();
 		 try {
+			 LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
 			 LambdaQueryWrapper<PdEncodingIdentifier> query = new LambdaQueryWrapper<PdEncodingIdentifier>();
-			 query.eq(PdEncodingIdentifier::getDelFlag, CommonConstant.DEL_FLAG_0);
-			 if(!StringUtils.isEmpty(pdEncodingIdentifier.getValue())){
+			 query.eq(PdEncodingIdentifier::getDepartParentId, sysUser.getDepartParentId());
+			 if(!oConvertUtils.isEmpty(pdEncodingIdentifier.getValue())){
 				 query.eq(PdEncodingIdentifier::getValue, pdEncodingIdentifier.getValue());
 			 }
-			 if(!StringUtils.isEmpty(pdEncodingIdentifier.getMeaning())){
+			 if(!oConvertUtils.isEmpty(pdEncodingIdentifier.getMeaning())){
 				 query.eq(PdEncodingIdentifier::getMeaning,pdEncodingIdentifier.getMeaning());
 			 }
 			 query.orderByAsc(PdEncodingIdentifier::getUpdateTime);

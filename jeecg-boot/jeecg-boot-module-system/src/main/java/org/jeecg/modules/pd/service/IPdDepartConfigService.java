@@ -11,4 +11,6 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface IPdDepartConfigService extends IService<PdDepartConfig> {
 
+    String findPdDepartConfig(String reminder_type);
+
 }

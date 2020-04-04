@@ -1,5 +1,6 @@
 package org.jeecg.modules.pd.vo;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
 import org.jeecg.modules.pd.entity.PdGoodsAllocation;
 
@@ -19,5 +20,22 @@ public class PdGoodsAllocationPage extends PdGoodsAllocation {
 	/**部门名称*/
 	private String departName;
 
-	private List<PdGoodsAllocationPage> children = new ArrayList<PdGoodsAllocationPage>();
+	/**
+	 * 下拉组件 标题
+	 */
+	private String label;
+
+	/**
+	 * 下拉组件 值
+	 */
+	private String value;
+
+	/**
+	 * 下拉组件 联动ID，父组件值
+	 */
+	private String parent;
+
+	private Boolean isLeaf;
+
+	private List<PdGoodsAllocationPage> children = null;
 }

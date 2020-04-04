@@ -1,17 +1,15 @@
 package org.jeecg.modules.system.service.impl;
 
-import java.util.List;
-
-import javax.annotation.Resource;
-
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.jeecg.modules.system.entity.SysAnnouncementSend;
 import org.jeecg.modules.system.mapper.SysAnnouncementSendMapper;
 import org.jeecg.modules.system.model.AnnouncementSendModel;
 import org.jeecg.modules.system.service.ISysAnnouncementSendService;
 import org.springframework.stereotype.Service;
 
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import javax.annotation.Resource;
+import java.util.*;
 
 /**
  * @Description: 用户通告阅读标记表
@@ -36,4 +34,8 @@ public class SysAnnouncementSendServiceImpl extends ServiceImpl<SysAnnouncementS
 		 return page.setRecords(sysAnnouncementSendMapper.getMyAnnouncementSendList(page, announcementSendModel));
 	}
 
+	@Override
+	public List<SysAnnouncementSend> selectMyAnnouncementSendList(String templateCode, String userId){
+       return sysAnnouncementSendMapper.selectMyAnnouncementSendList(templateCode,userId);
+	}
 }

@@ -19,6 +19,9 @@ public class PdProductPage extends PdProduct {
     /** 产品名称 **/
     private String productName;
 
+    /** 产品编号 **/
+    private String productNumber;
+
     /** 单位名称 **/
     private String unitName;
 
@@ -32,14 +35,23 @@ public class PdProductPage extends PdProduct {
     /** 采购明细id **/
     private String purchaseDetailId;
 
+    /**订单编号**/
+    private String orderNo;
+
+    /**合并订单编号**/
+    private String mergeOrderNo;
+
     /** 产品采购数量 **/
-    private Double applyCount;
+    private Double orderNum;
 
-    /** 采购单价 **/
-    private BigDecimal inPrice;
+    /** 产品到货数量 **/
+    private Double arrivalNum;
 
-    /** 采购价格 **/
+    /** 采购总价格 **/
     private BigDecimal price;
+
+    /** 产品库存数量 **/
+    private Double stockNum;
     //-------end 用于采购弹出框显示产品明细
 }
 

@@ -1,13 +1,12 @@
 package org.jeecg.modules.pd.entity;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
-import lombok.Data;
+import com.baomidou.mybatisplus.annotation.*;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import org.springframework.format.annotation.DateTimeFormat;
+import lombok.Data;
 import org.jeecgframework.poi.excel.annotation.Excel;
-import java.util.Date;
+import org.springframework.format.annotation.DateTimeFormat;
+
+import java.util.*;
 
 /**
  * @Description: 定数包明细
@@ -56,8 +55,42 @@ public class PdPackageDetail extends BaseEntity {
 	/**所属部门*/
 	@Excel(name = "所属部门", width = 15)
 	private String sysOrgCode;
-	/**父机构*/
-	@Excel(name = "父机构", width = 15)
-	private String sysOrgParentCode;
+
+	/**
+	 * 所属部门
+	 */
+	@TableField(strategy = FieldStrategy.NOT_EMPTY)
+	private String departId;
+
+	/**
+	 * 所属顶级部门（医院id）
+	 */
+	@TableField(strategy = FieldStrategy.NOT_EMPTY)
+	private String departParentId;
+
+    /*本科室库存数量*/
+	@TableField(exist = false)
+	private Double stockNum;
+	/*定数包编号*/
+	@TableField(exist = false)
+	private String code;
+	/*定数包名称*/
+	@TableField(exist = false)
+	private String name;
+	/*产品编号*/
+	@TableField(exist = false)
+	private String number;
+	/*产品名称*/
+	@TableField(exist = false)
+	private String productName;
+	/*产品规格*/
+	@TableField(exist = false)
+	private String spec;
+	/*产品型号*/
+	@TableField(exist = false)
+	private String version;
+	/*单位名称*/
+	@TableField(exist = false)
+	private String unitName;
 
 }

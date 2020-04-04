@@ -18,5 +18,4 @@ public interface PdProductRuleMapper extends BaseMapper<PdProductRule> {
 
     List<PdProductRule> selectList(PdProductRule pdProductRule);
 
-    PdEncodingRule getByRuleId(String ruleId);
 }

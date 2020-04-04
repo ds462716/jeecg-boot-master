@@ -2,6 +2,7 @@ package org.jeecg.modules.system.entity;
 
 import java.util.Date;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -98,7 +99,7 @@ public class SysUser implements Serializable {
     private String phone;
 
     /**
-     * 部门code
+     * 部门code(当前选择登录部门)
      */
     private String orgCode;
 
@@ -158,5 +159,33 @@ public class SysUser implements Serializable {
      */
     private String activitiSync;
 
+    /**
+     * 身份（0 普通成员 1 上级）
+     */
+    @Excel(name="（1普通成员 2上级）",width = 15)
+    private Integer identity;
 
+    /**
+     * 负责部门
+     */
+    @Excel(name="负责部门",width = 15,dictTable ="sys_depart",dicText = "depart_name",dicCode = "id")
+    @Dict(dictTable ="sys_depart",dicText = "depart_name",dicCode = "id")
+    private String departIds;
+
+    /**
+     * 当前部门
+     */
+    @TableField(exist = false)
+    private String currentDepartId;
+
+    /**
+     *最顶级部门id（医院id）
+     */
+    private String departParentId;
+
+    /**
+     * 部门名称集合
+     */
+    @TableField(exist = false)
+    private String departListName;
 }

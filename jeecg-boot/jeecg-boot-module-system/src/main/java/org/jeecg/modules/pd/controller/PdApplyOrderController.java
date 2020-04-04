@@ -1,43 +1,45 @@
 package org.jeecg.modules.pd.controller;
 
-import java.io.IOException;
-import java.math.BigDecimal;
-import java.util.*;
-import java.util.stream.Collectors;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
+import org.apache.shiro.SecurityUtils;
+import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.PdConstant;
+import org.jeecg.common.system.vo.LoginUser;
+import org.jeecg.modules.message.util.PushMsgUtil;
 import org.jeecg.modules.pd.entity.PdApplyDetail;
 import org.jeecg.modules.pd.entity.PdApplyOrder;
-import org.jeecg.modules.pd.entity.PdPurchaseDetail;
-import org.jeecg.modules.pd.entity.PdPurchaseOrder;
 import org.jeecg.modules.pd.service.IPdApplyDetailService;
 import org.jeecg.modules.pd.service.IPdApplyOrderService;
+import org.jeecg.modules.pd.service.IPdDepartService;
+import org.jeecg.modules.pd.service.IPdProductStockTotalService;
 import org.jeecg.modules.pd.util.UUIDUtil;
 import org.jeecg.modules.pd.vo.PdApplyOrderPage;
+import org.jeecg.modules.pd.vo.PdProductStockTotalPage;
 import org.jeecg.modules.system.entity.SysDepart;
+import org.jeecg.modules.system.entity.SysPermission;
 import org.jeecg.modules.system.service.ISysDepartService;
+import org.jeecg.modules.system.service.ISysPermissionService;
 import org.jeecgframework.poi.excel.ExcelImportUtil;
 import org.jeecgframework.poi.excel.def.NormalExcelConstants;
 import org.jeecgframework.poi.excel.entity.ExportParams;
 import org.jeecgframework.poi.excel.entity.ImportParams;
 import org.jeecgframework.poi.excel.view.JeecgEntityExcelView;
-import org.jeecg.common.system.vo.LoginUser;
-import org.apache.shiro.SecurityUtils;
-import org.jeecg.common.api.vo.Result;
-import org.jeecg.common.system.query.QueryGenerator;
-import org.jeecg.common.util.oConvertUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.servlet.ModelAndView;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.*;
 
  /**
  * @Description: 申领单主表
@@ -55,41 +57,67 @@ public class PdApplyOrderController {
 	private IPdApplyDetailService pdApplyDetailService;
 	 @Autowired
 	 private ISysDepartService sysDepartService;
+	 @Autowired
+	 private PushMsgUtil pushMsgUtil;
+	 @Autowired
+	 private IPdDepartService pdDepartService;
+	 @Autowired
+	 private IPdProductStockTotalService pdProductStockTotalService;
+	 @Autowired
+	 private ISysPermissionService sysPermissionService;
 	/**
 	 * 分页列表查询
 	 *
-	 * @param pdApplyOrder
+	 * @param pdApplyOrderPage
 	 * @param pageNo
 	 * @param pageSize
 	 * @param req
 	 * @return
 	 */
 	@GetMapping(value = "/list")
-	public Result<?> queryPageList(PdApplyOrder pdApplyOrder,
+	public Result<?> queryPageList(PdApplyOrderPage pdApplyOrderPage,
 								   @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
 								   @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
 								   HttpServletRequest req) {
 		Page<PdApplyOrder> page = new Page<PdApplyOrder>(pageNo, pageSize);
-		IPage<PdApplyOrder> pageList = pdApplyOrderService.selectList(page, pdApplyOrder);
+		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		pdApplyOrderPage.setDepartId(sysUser.getCurrentDepartId());
+		pdApplyOrderPage.setDepartParentId(sysUser.getDepartParentId());
+		IPage<PdApplyOrder> pageList = pdApplyOrderService.selectList(page, pdApplyOrderPage);
 		return Result.ok(pageList);
 	}
 	 /**
 	  * 分页列表查询(审核页面)
 	  *
-	  * @param pdApplyOrder
+	  * @param pdApplyOrderPage
 	  * @param pageNo
 	  * @param pageSize
 	  * @param req
 	  * @return
 	  */
 	 @GetMapping(value = "/auditList")
-	 public Result<?> queryPageAuditList(PdApplyOrder pdApplyOrder,
+	 public Result<?> queryPageAuditList(PdApplyOrderPage pdApplyOrderPage,
 									@RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
 									@RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
 									HttpServletRequest req) {
 		 Page<PdApplyOrder> page = new Page<PdApplyOrder>(pageNo, pageSize);
-		 pdApplyOrder.setSubmitStart(PdConstant.SUBMIT_STATE_2);// 已提交
-		 IPage<PdApplyOrder> pageList = pdApplyOrderService.selectList(page, pdApplyOrder);
+		 List<String> list=new ArrayList<>();
+		 list.add(PdConstant.AUDIT_STATE_1);//待审核
+		 list.add(PdConstant.AUDIT_STATE_2);//审核通过
+		 list.add(PdConstant.AUDIT_STATE_3);//已驳回
+		 pdApplyOrderPage.setAuditStatusList(list);
+		 LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		 SysDepart sysDepart=sysDepartService.queryDepartByOrgCode(sysUser.getOrgCode());
+
+		 if(StringUtils.isEmpty(pdApplyOrderPage.getDepartId())){
+			 //查询科室下所有下级科室的ID
+			 SysDepart depart=new SysDepart();
+			 List<String> departList=pdDepartService.selectListDepart(depart);
+			 pdApplyOrderPage.setDepartIdList(departList);
+		 }
+		 pdApplyOrderPage.setOutDepartId(sysDepart.getId());
+		 pdApplyOrderPage.setDepartParentId(sysUser.getDepartParentId());
+		 IPage<PdApplyOrder> pageList = pdApplyOrderService.selectList(page, pdApplyOrderPage);
 		 return Result.ok(pageList);
 	 }
 
@@ -105,18 +133,21 @@ public class PdApplyOrderController {
 		 String applyNo= UUIDUtil.generateOrderNoByType(PdConstant.ORDER_NO_FIRST_LETTER_SL);
 		 pdApplyOrder.setApplyNo(applyNo);
 		 pdApplyOrder.setApplyDate(new Date());
-		 pdApplyOrder.setApplyNum(0.00);
+		 pdApplyOrder.setTotalNum(0.00);
 		 LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
-		 SysDepart sysDepart=sysDepartService.getDepartByOrgCode(sysUser.getOrgCode());
+		 SysDepart sysDepart=sysDepartService.queryDepartByOrgCode(sysUser.getOrgCode());
+		 pdApplyOrder.setOutDepartId(sysDepart.getParentId());
 		 pdApplyOrder.setApplyBy(sysUser.getId());
 		 pdApplyOrder.setRealName(sysUser.getRealname());
-		 pdApplyOrder.setDeptId(sysDepart.getId());
+		 pdApplyOrder.setDepartId(sysDepart.getId());
 		 pdApplyOrder.setDeptName(sysDepart.getDepartName());
+		 pdApplyOrder.setSubmitStatus(PdConstant.SUBMIT_STATE_1);
+		 //pdApplyOrder.setAuditStatus(PdConstant.AUDIT_STATE_1);
 		 result.setResult(pdApplyOrder);
 		 result.setSuccess(true);
 		 return result;
 	 }
-	
+
 	/**
 	 *   添加
 	 *
@@ -127,11 +158,14 @@ public class PdApplyOrderController {
 	public Result<?> add(@RequestBody PdApplyOrderPage pdApplyOrderPage) {
 		PdApplyOrder pdApplyOrder = new PdApplyOrder();
 		BeanUtils.copyProperties(pdApplyOrderPage, pdApplyOrder);
-		pdApplyOrder.setApplyStatus(PdConstant.ORDER_STATE_0);//审核状态  0：待审核
+		//pdApplyOrder.setAuditStatus(PdConstant.AUDIT_STATE_1);//审核状态  1：待审核
 		pdApplyOrderService.saveMain(pdApplyOrder, pdApplyOrderPage.getPdApplyDetailList());
-		return Result.ok("添加成功！");
+		if (pdApplyOrderPage.getSubmitStatus().equals(PdConstant.SUBMIT_STATE_2)) {//如果是已提交
+			this.sendMsg(pdApplyOrderPage);//消息推送
+		}
+		return Result.ok("操作成功！");
 	}
-	
+
 	/**
 	 *  编辑
 	 *
@@ -146,16 +180,87 @@ public class PdApplyOrderController {
 		if(pdApplyOrderEntity==null) {
 			return Result.error("未找到对应数据");
 		}
-
-		String applyStatus=pdApplyOrder.getApplyStatus();//审核状态
-		if((PdConstant.ORDER_STATE_2).equals(applyStatus) || (PdConstant.ORDER_STATE_3).equals(applyStatus)){
-			LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
-			pdApplyOrder.setAuditBy(sysUser.getId());
-			pdApplyOrder.setAuditDate(new Date());
-		}
+		String applyStatus=pdApplyOrder.getAuditStatus();//审核状态
 		pdApplyOrderService.updateMain(pdApplyOrder, pdApplyOrderPage.getPdApplyDetailList());
-		return Result.ok("编辑成功!");
+		if(StringUtils.isNotEmpty(applyStatus)) {
+		if (PdConstant.AUDIT_STATE_1.equals(applyStatus) && pdApplyOrderPage.getSubmitStatus().equals(PdConstant.SUBMIT_STATE_2)) {//如果是已提交
+			this.sendMsg(pdApplyOrderPage);//消息推送
+		}
+		}
+		return Result.ok("操作成功!");
 	}
+
+
+
+	 /**
+	  *  审核
+	  *
+	  * @param pdApplyOrderPage
+	  * @return
+	  */
+	 @PutMapping(value = "/editApplyInf")
+	 public Result<?> editApplyInf(@RequestBody PdApplyOrderPage pdApplyOrderPage) {
+		 PdApplyOrder pdApplyOrder = new PdApplyOrder();
+		 BeanUtils.copyProperties(pdApplyOrderPage, pdApplyOrder);
+		 PdApplyOrder pdApplyOrderEntity = pdApplyOrderService.getById(pdApplyOrder.getId());
+		 if(pdApplyOrderEntity==null) {
+			 return Result.error("未找到对应数据");
+		 }
+		 String applyStatus=pdApplyOrder.getAuditStatus();//审核状态
+		 if(StringUtils.isNotEmpty(applyStatus)) {
+			 if ((PdConstant.AUDIT_STATE_2).equals(applyStatus) || (PdConstant.AUDIT_STATE_3).equals(applyStatus)) {
+				 LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+				 //判断申领数量不能大于出库科室的当前库存数量；
+				 Integer code = 200;
+				 Result result = null;
+				 if ((PdConstant.AUDIT_STATE_2).equals(applyStatus)) { //如果是审核通过，就查询当前科室下的
+					 String departId = sysUser.getCurrentDepartId();
+					 result = this.queryStock(departId, pdApplyOrderPage.getPdApplyDetailList());
+					 code = result.getCode();
+				 } else if ((PdConstant.AUDIT_STATE_1).equals(applyStatus)) {//如果是申领科室，就查询上级科室下的库存
+					 SysDepart sysDepart = sysDepartService.queryDepartByOrgCode(sysUser.getOrgCode());
+					 result = this.queryStock(sysDepart.getParentId(), pdApplyOrderPage.getPdApplyDetailList());
+					 code = result.getCode();
+				 }
+				 if (code != 200) {
+					 return Result.error(result.getMessage() + "库存数量不足");
+				 }
+				 pdApplyOrder.setAuditBy(sysUser.getId());
+				 pdApplyOrder.setAuditDate(new Date());
+			 }
+		 }
+		 pdApplyOrderService.updateById(pdApplyOrder);
+		 return Result.ok("审核成功!");
+	 }
+
+
+	/*判断出库科室库存*/
+	public Result<?> queryStock(String departId,List<PdApplyDetail> pdApplyDetailList){
+		String prodNames="";
+		if(pdApplyDetailList!=null && pdApplyDetailList.size()>0) {
+			for(PdApplyDetail entity:pdApplyDetailList) {
+				Double applyNum=entity.getApplyNum();
+				PdProductStockTotalPage stockTotalPage=new PdProductStockTotalPage();
+				stockTotalPage.setDepartId(departId);//上级科室ID;
+				stockTotalPage.setProductId(entity.getProductId());
+				List<PdProductStockTotalPage> aList = pdProductStockTotalService.findListForQuery(stockTotalPage);
+				if(CollectionUtils.isNotEmpty(aList)){
+					Double stockNum= aList.get(0).getStockNum();
+					if(applyNum>stockNum){
+						prodNames+=aList.get(0).getProductName();
+ 					}
+				}
+			}
+		}
+		 if(StringUtils.isNotEmpty(prodNames)){
+			return	Result.error(prodNames);
+
+		}
+		return Result.ok(null);
+
+	}
+
+
 	
 	/**
 	 *   通过id删除
@@ -200,12 +305,24 @@ public class PdApplyOrderController {
 	 /**
 	  * 通过申领单号查询明细表
 	  *
-	  * @param applyNo
+	  * @param applyDetail
 	  * @return
 	  */
 	 @GetMapping(value = "/queryApplyDetail")
-	 public Result<?> queryApplyDetail(@RequestParam(name="applyNo",required=true) String applyNo) {
-		 List<PdApplyDetail> pdApplyDetailList = pdApplyDetailService.selectByApplyNo(applyNo);
+	 public Result<?> queryApplyDetail(PdApplyDetail   applyDetail) {
+		 List<PdApplyDetail> pdApplyDetailList = pdApplyDetailService.selectByApplyNo(applyDetail);
+		 return Result.ok(pdApplyDetailList);
+	 }
+
+	 /**
+	  * 通过申领单号查询定数包明细
+	  *
+	  * @param applyDetail
+	  * @return
+	  */
+	 @GetMapping(value = "/queryApplyDetailPack")
+	 public Result<?> queryApplyDetailPack(PdApplyDetail   applyDetail) {
+		 List<PdApplyDetail> pdApplyDetailList = pdApplyDetailService.queryApplyDetailPack(applyDetail);
 		 return Result.ok(pdApplyDetailList);
 	 }
 
@@ -220,7 +337,9 @@ public class PdApplyOrderController {
 		// Step.1 组装查询条件查询数据
 		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
 		//Step.2 获取导出数据
-		List<PdApplyDetail> pdApplyDetailList = pdApplyDetailService.selectByApplyNo(pdApplyOrder.getApplyNo());
+		PdApplyDetail applyDetail=new PdApplyDetail();
+		applyDetail.setApplyNo(pdApplyOrder.getApplyNo());
+		List<PdApplyDetail> pdApplyDetailList = pdApplyDetailService.selectByApplyNo(applyDetail);
 		// Step.3 AutoPoi 导出Excel
 		ModelAndView mv = new ModelAndView(new JeecgEntityExcelView());
 		mv.addObject(NormalExcelConstants.FILE_NAME, "申领明细产品列表");
@@ -268,5 +387,59 @@ public class PdApplyOrderController {
       }
       return Result.ok("文件导入失败！");
     }
+	 /**
+	  * 申领订单选择框
+	  *
+	  * @param pdApplyOrderPage
+	  * @param pageNo
+	  * @param pageSize
+	  * @param req
+	  * @return
+	  */
+	 @GetMapping(value = "/chooseApplyOrderList")
+	 public Result<?> chooseApplyOrderList(PdApplyOrderPage pdApplyOrderPage,
+											  @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
+											  @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
+											  HttpServletRequest req) {
+		 Page<PdApplyOrderPage> page = new Page<PdApplyOrderPage>(pageNo, pageSize);
+		 IPage<PdApplyOrderPage> pageList = pdApplyOrderService.chooseApplyOrderList(page, pdApplyOrderPage);
+		 return Result.ok(pageList);
+	 }
 
+	 /**
+	  * 消息推送
+	  * @param pdApplyOrderPage
+	  * @return
+	  */
+	 public boolean sendMsg(PdApplyOrderPage pdApplyOrderPage) {
+		 Map<String, Object> map = new HashMap<>();
+		 //获取上级科室下的人员Id;
+		 LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		 SysDepart sysDepart =  sysDepartService.queryDepartByOrgCode(sysUser.getOrgCode());
+		 String departId=sysDepart.getParentId();
+		 List<String> userIdList = pdDepartService.findDepartUserIds(departId);
+
+		 String url = "";
+		 QueryWrapper<SysPermission> queryWrapper = new QueryWrapper<SysPermission>();
+		 queryWrapper.eq("name",PdConstant.AUDIT_MENU_7);
+		 List<SysPermission> permissionList = sysPermissionService.list(queryWrapper);
+		 if(CollectionUtils.isNotEmpty(permissionList)){
+			 url = permissionList.get(0).getUrl();
+		 }
+		 if (CollectionUtils.isNotEmpty(userIdList)) {
+			 String userIds = String.join(",", userIdList);
+			 Map<String, String> strMap = new HashMap<>();
+			 //模板注入参数
+			 strMap.put("userName", sysUser.getRealname());
+			 strMap.put("applyNo", pdApplyOrderPage.getApplyNo());
+			 strMap.put("url", url);
+			 map.put("map", strMap);
+			 //需要发送消息的用户id
+			 map.put("userIds", userIds + ",");
+			 //短信模板标识
+			 map.put("templateCode", PdConstant.APPLY_SUBMIT_MSG);
+			 return pushMsgUtil.newSendMessage(map);
+		 }
+		 return false;
+	 }
 }

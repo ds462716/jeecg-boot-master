@@ -1,10 +1,18 @@
 package org.jeecg.modules.pd.service.impl;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.ibatis.session.SqlSession;
+import org.apache.shiro.SecurityUtils;
+import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.PdConstant;
+import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.modules.pd.entity.PdEncodingRule;
 import org.jeecg.modules.pd.entity.PdEncodingRuleDetail;
+import org.jeecg.modules.pd.entity.PdProduct;
+import org.jeecg.modules.pd.entity.PdProductRule;
 import org.jeecg.modules.pd.mapper.PdEncodingRuleMapper;
+import org.jeecg.modules.pd.mapper.PdProductRuleMapper;
 import org.jeecg.modules.pd.service.IPdEncodingRuleDetailService;
 import org.jeecg.modules.pd.service.IPdEncodingRuleService;
 import org.jeecg.modules.pd.util.UUIDUtil;
@@ -13,6 +21,7 @@ import org.springframework.stereotype.Service;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -32,6 +41,11 @@ public class PdEncodingRuleServiceImpl extends ServiceImpl<PdEncodingRuleMapper,
     @Autowired
     private PdEncodingRuleMapper pdEncodingRuleMapper;
 
+    @Autowired
+    private PdProductRuleMapper pdProductRuleMapper;
+
+    @Autowired
+    private SqlSession sqlsession;
     @Override
     @Transactional
     public void savePdEncodingRule(PdEncodingRule pdEncodingRule) {
@@ -143,6 +157,63 @@ public class PdEncodingRuleServiceImpl extends ServiceImpl<PdEncodingRuleMapper,
                 this.updateById(pdEncodingRule);
             }
         }
+
+    }
+
+    @Override
+    public Result<Object> deleteV(String id) {
+        try{
+            PdProductRule pdProductRule = new PdProductRule();
+            pdProductRule.setRuleId(id);
+            List<PdProductRule> pdProductRules = pdProductRuleMapper.selectList(pdProductRule);
+            if(CollectionUtils.isNotEmpty(pdProductRules)){
+                return Result.error("删除失败!，当前编码规则被使用不能删除");
+            }
+            this.removeById(id);
+            PdEncodingRule pdEncodingRule = new PdEncodingRule();
+            pdEncodingRule.setId(id);
+            pdEncodingRuleDetailService.removeByCodeId(pdEncodingRule);
+            return Result.ok("删除成功!");
+        }catch(Exception e){
+            e.printStackTrace();
+            return Result.error("删除失败!，系统异常");
+        }
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public Result<Object> deleteBatchV(String ids) {
+        try{
+            PdEncodingRuleMapper dao = sqlsession.getMapper(PdEncodingRuleMapper.class);
+            List<String> idList = Arrays.asList(ids.split(","));
+            if(idList!=null && idList.size()>0){
+                boolean bl = true;
+                for(String id : idList){
+                    PdProductRule pdProductRule = new PdProductRule();
+                    pdProductRule.setRuleId(id);
+                    List<PdProductRule> pdProductRules = pdProductRuleMapper.selectList(pdProductRule);
+                    if(CollectionUtils.isNotEmpty(pdProductRules)){
+                        bl = false;
+                        continue;
+                    }
+                    this.removeById(id);
+                    PdEncodingRule pdEncodingRule = new PdEncodingRule();
+                    pdEncodingRule.setId(id);
+                    pdEncodingRuleDetailService.removeByCodeId(pdEncodingRule);
+                }
+                if(bl){
+                    return Result.ok("批量删除成功!");
+                }else{
+                    return Result.ok("部分删除成功，被使用的不能删除!");
+                }
+            }else{
+                return Result.error("删除失败,参数不正确!");
+            }
+        }catch(Exception e){
+            e.printStackTrace();
+            return Result.error("删除失败!，系统异常");
+        }
+
 
     }
 

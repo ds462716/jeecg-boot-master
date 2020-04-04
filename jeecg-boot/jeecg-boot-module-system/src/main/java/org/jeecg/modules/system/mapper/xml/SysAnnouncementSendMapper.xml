@@ -12,6 +12,9 @@
 		<result column="priority" property="priority" jdbcType="VARCHAR"/>
 		<result column="msg_category" property="msgCategory" jdbcType="VARCHAR"/>
 		<result column="send_time" property="sendTime" jdbcType="TIMESTAMP"/>
+		<result column="bus_id" property="busId" jdbcType="VARCHAR"/>
+		<result column="open_type" property="openType" jdbcType="VARCHAR"/>
+		<result column="open_page" property="openPage" jdbcType="VARCHAR"/>
 	</resultMap>
 	
 	<select id="queryByUserId" parameterType="String"  resultType="String">
@@ -30,7 +33,10 @@
 	   		sa.sender as sender,
 	   		sa.priority as priority,
 	   		sa.msg_category,
-	   		sa.send_time as send_time
+	   		sa.send_time as send_time,
+	   		sa.bus_id as bus_id,
+			sa.open_type as open_type,
+			sa.open_page as open_page
 	   from sys_announcement_send sas 
 	   left join sys_announcement sa ON sas.annt_id = sa.id
 	   where sa.send_status = '1'
@@ -44,5 +50,11 @@
 	   </if>
 	   order by sa.send_time desc
 	</select>
-	
+
+
+	<select id="selectMyAnnouncementSendList" parameterType="String"  resultMap="AnnouncementSendModel">
+	    select * from sys_announcement_send a
+	     where annt_id in(select b.id from sys_announcement b where b.template_code=#{templateCode} and b.del_flag = '0')
+             and a.user_id=#{userId}
+    </select>
 </mapper>

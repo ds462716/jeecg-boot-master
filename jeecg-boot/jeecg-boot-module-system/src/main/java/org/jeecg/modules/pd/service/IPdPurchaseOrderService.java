@@ -1,15 +1,16 @@
 package org.jeecg.modules.pd.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.IService;
 import org.jeecg.modules.pd.entity.PdPurchaseDetail;
 import org.jeecg.modules.pd.entity.PdPurchaseOrder;
-import com.baomidou.mybatisplus.extension.service.IService;
+import org.jeecg.modules.pd.entity.PdPurchaseOrderMerge;
 import org.jeecg.modules.pd.vo.PdProductPage;
 import org.jeecg.modules.pd.vo.PdPurchaseOrderPage;
 
-import java.io.Serializable;
-import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Description: 申购订单主表
@@ -49,7 +50,7 @@ public interface IPdPurchaseOrderService extends IService<PdPurchaseOrder> {
 	 * @param pdPurchaseOrderPage
 	 * @return
 	 */
-	Page<PdPurchaseOrderPage> choosePurchaseOrderList(Page<PdPurchaseOrderPage> pageList, PdPurchaseOrderPage pdPurchaseOrderPage);
+	Page<PdPurchaseOrderMerge> choosePurchaseOrderList(Page<PdPurchaseOrderMerge> pageList, PdPurchaseOrderPage pdPurchaseOrderPage);
 
 	/**
 	 * 用于采购单弹出选择框
@@ -57,4 +58,25 @@ public interface IPdPurchaseOrderService extends IService<PdPurchaseOrder> {
 	 * @return
 	 */
 	List<PdProductPage> choosePurchaseOrderDetailList(PdPurchaseOrderPage pdPurchaseOrderPage);
+
+	/**
+	 * 批量修改订单状态
+	 */
+	public int audit(String orderNos, String auditStatus, String refuseReason,String submitStatus) ;
+
+	/**
+	 * 首页查询采购总数量
+	 */
+	Map<String,Object> queryPurchaseOrderCount(PdPurchaseOrder pdPurchaseOrder);
+
+	/**
+	 * 首页查询  根据范围统计每日的采购量
+	 */
+	List<HashMap> queryPurchaseOrderDateList(PdPurchaseOrderPage purchaseOrderPage);
+
+
+	/**
+	 * 首页查询  根据采购产品类区分统计采购金额
+	 */
+	List<HashMap> queryPurchaseOrderTotalList(PdPurchaseOrderPage purchaseOrderPage);
 }

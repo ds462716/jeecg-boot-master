@@ -10,14 +10,14 @@
 		a.sys_org_code,
 		a.apply_no,
 		a.product_id,
-		a.product_no,
-		a.batch_no,
+ 		a.batch_no,
 		a.package_id,
-		a.package_count,
-		a.expire_date,
-		a.apply_count,
+		a.package_num,
+		a.exp_date,
+		a.apply_num,
 		a.stock_num,
-		a.refund_count,
+		a.current_stock_num,
+		IFNULL(a.arrival_num,0) as arrival_num,
 		a.remarks,
 		a.del_flag
 	</sql>
@@ -34,7 +34,7 @@
 	<!--产品-->
 	<sql id="pdProductColumns">
 		c.id as "productId",
-        c.number as "productNo",
+        c.number as "number",
         c.name as "productName",
         c.spec as "spec",
         c.version as "version"
@@ -43,6 +43,15 @@
         LEFT JOIN pd_product c ON c.id = a.product_id
     </sql>
 
+	<!--定数包-->
+	<sql id="pdPackageColumns">
+		 d.name AS "packageName",
+         d.code AS "packageCode"
+
+	</sql>
+	<sql id="pdPackageJoins">
+       LEFT JOIN pd_package d ON a.package_id=d.id
+    </sql>
 
 	<delete id="deleteByMainId" parameterType="java.lang.String">
 		DELETE FROM  pd_apply_detail WHERE id = #{mainId}
@@ -52,14 +61,70 @@
 		DELETE FROM  pd_apply_detail 	WHERE apply_no = #{applyNo}
    </delete>
 
-	<select id="selectByApplyNo" parameterType="java.lang.String" resultType="org.jeecg.modules.pd.entity.PdApplyDetail">
+	<select id="selectByApplyNo"   resultType="org.jeecg.modules.pd.entity.PdApplyDetail">
 		SELECT
 		<include refid="pdApplyDetailColumns"/>,
 		<include refid="pdProductColumns"/>,
-		<include refid="pdUnitColumns"/>
+		<include refid="pdUnitColumns"/>,
+		<include refid="pdPackageColumns"/>
 		FROM  pd_apply_detail a
 		<include refid="pdProductJoins"/>
 		<include refid="pdUnitJoins"/>
-		 WHERE a.apply_no = #{applyNo}
+		<include refid="pdPackageJoins"/>
+		 WHERE 1=1
+		<if test="applyNo != null and applyNo != ''">
+			AND a.apply_no = #{applyNo}
+		</if>
+		<if test="productAttr != null and productAttr != ''">
+			AND a.product_attr = #{productAttr}
+		</if>
+		  ORDER BY a.create_time DESC
     </select>
+
+	<!-- 增加发货数量 用于出库保存/提交 add by jiangxz 20200309 -->
+	<update id="additionArrivalNum" parameterType="org.jeecg.modules.pd.entity.PdApplyDetail">
+		UPDATE
+			pd_apply_detail
+		SET
+			arrival_num = IFNULL(arrival_num,0) + #{arrivalNum}
+		WHERE
+			del_flag =#{DEL_FLAG_NORMAL}
+			and apply_no = #{applyNo}
+			and product_id = #{productId}
+	</update>
+
+	<!-- 扣减发货数量 用于出库拒绝 add by jiangxz 20200309 -->
+	<update id="subtractArrivalNum" parameterType="org.jeecg.modules.pd.entity.PdApplyDetail">
+		UPDATE
+			pd_apply_detail
+		SET
+			arrival_num = IFNULL(arrival_num,0) - #{arrivalNum}
+		WHERE
+			del_flag =#{DEL_FLAG_NORMAL}
+			and apply_no = #{applyNo}
+			and product_id = #{productId}
+	</update>
+
+
+
+    <!--查询定数包申领明细-->
+	<select id="queryApplyDetailPack"   resultType="org.jeecg.modules.pd.entity.PdApplyDetail">
+      select a.id as "packageId",
+             a.code as "packageCode",
+             a.name as "packageName",
+             a.sum as "packageNum",
+             a.remarks as "remarks",
+		sum(b.apply_num) / a.sum as "applyNum"
+           from PD_PACKAGE a
+           LEFT JOIN pd_apply_detail b  on b.package_id=a.id
+          where 1=1
+
+		<if test="applyNo != null and applyNo != ''">
+			AND b.apply_no = #{applyNo}
+		</if>
+		<if test="productAttr != null and productAttr != ''">
+			AND b.product_attr = #{productAttr}
+		</if>
+           GROUP BY PACKAGE_ID
+	     </select>
 </mapper>

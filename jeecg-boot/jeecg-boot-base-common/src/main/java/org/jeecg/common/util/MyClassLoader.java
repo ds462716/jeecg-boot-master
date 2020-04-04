@@ -19,7 +19,7 @@ public class MyClassLoader extends ClassLoader {
 	public static String getPackPath(Object object) {
 		// 检查用户传入的参数是否为空
 		if (object == null) {
-			throw new java.lang.IllegalArgumentException("参数不能为空！");
+			throw new IllegalArgumentException("参数不能为空！");
 		}
 		// 获得类的全名，包括包名
 		String clsName = object.getClass().getName();
@@ -29,7 +29,7 @@ public class MyClassLoader extends ClassLoader {
 	public static String getAppPath(Class cls) {
 		// 检查用户传入的参数是否为空
 		if (cls == null) {
-			throw new java.lang.IllegalArgumentException("参数不能为空！");
+			throw new IllegalArgumentException("参数不能为空！");
 		}
 		ClassLoader loader = cls.getClassLoader();
 		// 获得类的全名，包括包名
@@ -42,7 +42,7 @@ public class MyClassLoader extends ClassLoader {
 			String packName = pack.getName();
 			// 此处简单判定是否是Java基础类库，防止用户传入JDK内置的类库
 			if (packName.startsWith("java.") || packName.startsWith("javax.")) {
-				throw new java.lang.IllegalArgumentException("不要传送系统类！");
+				throw new IllegalArgumentException("不要传送系统类！");
 			}
 			// 在类的名称中，去掉包名的部分，获得类的文件名
 			clsName = clsName.substring(packName.length() + 1);

@@ -1,6 +1,7 @@
 package org.jeecg.modules.pd.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import org.jeecg.common.api.vo.Result;
 import org.jeecg.modules.pd.entity.PdEncodingRule;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.jeecg.modules.pd.entity.PdEncodingRuleDetail;
@@ -22,4 +23,8 @@ public interface IPdEncodingRuleService extends IService<PdEncodingRule> {
     List<PdEncodingRule> selectList(PdEncodingRule pdEncodingRule);
 
     void updatePdEncodingRule(PdEncodingRule pdEncodingRule);
+
+    Result<Object> deleteV(String id);
+
+    Result<Object> deleteBatchV(String ids);
 }
