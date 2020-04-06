@@ -87,6 +87,7 @@
                 :rowNumber="true"
                 :rowSelection="true"
                 :actionButton="false"
+                :rowClassName="setdataCss"
                 :disabled="disableSubmit"
                 @valueChange="valueChange"
                 style="text-overflow: ellipsis;"
@@ -389,6 +390,9 @@
     created () {
     },
     methods: {
+      setdataCss(record,index) {
+        return "validity1";
+      },
       add () {
         this.edit({});
       },
@@ -748,4 +752,14 @@
   }
 </script>
 <style scoped>
+  .validity0{
+    border:1px solid #ccc;
+  }
+  .validity1{
+    border:2px solid #FF3333;
+  }
+
+  .validity2{
+    border:2px solid #FFFFCC;
+  }
 </style>

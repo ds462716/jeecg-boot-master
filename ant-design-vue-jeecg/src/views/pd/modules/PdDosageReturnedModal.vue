@@ -66,7 +66,7 @@
                 </a-row>
               </a-form>
 
-              <div style="margin-bottom: 8px;" v-show="!disableSubmit">
+              <div style="margin-bottom: 8px;" v-show="disableSubmit">
                 <a-button type="primary" icon="plus" @click="chooseProductList">选择产品</a-button>
                 <a-button type="primary" icon="plus" @click="choosePackageList" style="margin-left: 8px">选择定数包</a-button>
                 <a-popconfirm style="margin-left: 8px"
@@ -116,32 +116,32 @@
                 <a-row>
                   <a-col :md="6" :sm="8" v-if="hyCharged">
                     <a-form-item label="住院号" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                      <a-input :disabled="disableSubmit" v-decorator="[ 'inHospitalNo', validatorRules.inHospitalNo]"></a-input>
+                      <a-input :disabled="true" v-decorator="[ 'inHospitalNo', validatorRules.inHospitalNo]"></a-input>
                     </a-form-item>
                   </a-col>
                   <a-col :md="6" :sm="8" v-else="!hyCharged">
                     <a-form-item label="住院号" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                      <a-input :disabled="disableSubmit" v-decorator="[ 'inHospitalNo']" ></a-input>
+                      <a-input :disabled="true" v-decorator="[ 'inHospitalNo']" ></a-input>
                     </a-form-item>
                   </a-col>
                   <a-col :md="6" :sm="8" v-if="hyCharged">
                     <a-form-item label="病人信息" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                      <a-input :disabled="disableSubmit" v-decorator="[ 'patientInfo', validatorRules.patientInfo]" ></a-input>
+                      <a-input :disabled="true" v-decorator="[ 'patientInfo', validatorRules.patientInfo]" ></a-input>
                     </a-form-item>
                   </a-col>
                   <a-col :md="6" :sm="8" v-else="!hyCharged">
                     <a-form-item label="病人信息" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                      <a-input :disabled="disableSubmit" v-decorator="[ 'patientInfo']" ></a-input>
+                      <a-input :disabled="true" v-decorator="[ 'patientInfo']" ></a-input>
                     </a-form-item>
                   </a-col>
                   <a-col :md="6" :sm="8">
                     <a-form-item label="门诊号" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                      <a-input :disabled="disableSubmit" v-decorator="[ 'outpatientNumber', validatorRules.outpatientNumber]" ></a-input>
+                      <a-input :disabled="true" v-decorator="[ 'outpatientNumber', validatorRules.outpatientNumber]" ></a-input>
                     </a-form-item>
                   </a-col>
                   <a-col :md="6" :sm="8">
                     <a-form-item label="手术编号" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                      <a-input :disabled="disableSubmit" v-decorator="[ 'operativeNumber', validatorRules.operativeNumber]" ></a-input>
+                      <a-input :disabled="true" v-decorator="[ 'operativeNumber', validatorRules.operativeNumber]" ></a-input>
                     </a-form-item>
                   </a-col>
                 </a-row>
@@ -149,7 +149,7 @@
                 <a-row>
                   <a-col :md="6" :sm="8">
                     <a-form-item label="执行科室" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                      <a-input :disabled="disableSubmit" v-decorator="[ 'exeDeptName', validatorRules.exeDeptName]" ></a-input>
+                      <a-input :disabled="true" v-decorator="[ 'exeDeptName', validatorRules.exeDeptName]" ></a-input>
                     </a-form-item>
                     <!-- 执行科室id -->
                     <a-form-item >
@@ -158,7 +158,7 @@
                   </a-col>
                   <a-col :md="6" :sm="8">
                     <a-form-item label="手术科室" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                      <a-input :disabled="disableSubmit" v-decorator="[ 'oprDeptName', validatorRules.oprDeptName]"></a-input>
+                      <a-input :disabled="true" v-decorator="[ 'oprDeptName', validatorRules.oprDeptName]"></a-input>
                     </a-form-item>
                     <!-- 手术科室id -->
                     <a-form-item>
@@ -167,7 +167,7 @@
                   </a-col>
                   <a-col :md="6" :sm="8">
                     <a-form-item label="手术医生" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                      <a-input :disabled="disableSubmit" v-decorator="[ 'surgeonName', validatorRules.surgeonName]" ></a-input>
+                      <a-input :disabled="true" v-decorator="[ 'surgeonName', validatorRules.surgeonName]" ></a-input>
                     </a-form-item>
                     <!-- 手术医生id -->
                     <a-form-item>
@@ -176,7 +176,7 @@
                   </a-col>
                   <a-col :md="6" :sm="8">
                     <a-form-item label="开方医生" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                      <a-input :disabled="disableSubmit" v-decorator="[ 'sqrtDoctorName', validatorRules.sqrtDoctorName]" ></a-input>
+                      <a-input :disabled="true" v-decorator="[ 'sqrtDoctorName', validatorRules.sqrtDoctorName]" ></a-input>
                     </a-form-item>
                     <!-- 开方医生id -->
                     <a-form-item>
@@ -187,7 +187,7 @@
                 <a-row>
                   <a-col :md="6" :sm="8">
                     <a-form-item label="所属病区" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                      <a-input :disabled="disableSubmit" v-decorator="[ 'subordinateWardName', validatorRules.subordinateWardName]"></a-input>
+                      <a-input :disabled="true" v-decorator="[ 'subordinateWardName', validatorRules.subordinateWardName]"></a-input>
                     </a-form-item>
                     <!-- 所属病区id -->
                     <a-form-item>
@@ -197,10 +197,10 @@
                 </a-row>
 
                 <a-form-item label="病人详细信息" :labelCol="labelCol2" :wrapperCol="wrapperCol2">
-                  <a-textarea :disabled="disableSubmit" v-decorator="[ 'patientDetailInfo', validatorRules.patientDetailInfo]"></a-textarea>
+                  <a-textarea :disabled="true" v-decorator="[ 'patientDetailInfo', validatorRules.patientDetailInfo]"></a-textarea>
                 </a-form-item>
                 <a-form-item label="备注" :labelCol="labelCol2" :wrapperCol="wrapperCol2">
-                  <a-textarea :disabled="disableSubmit" v-decorator="[ 'remarks', validatorRules.remarks]" ></a-textarea>
+                  <a-textarea :disabled="true" v-decorator="[ 'remarks', validatorRules.remarks]" ></a-textarea>
                 </a-form-item>
 
               </a-form>
@@ -252,7 +252,7 @@
   })
 
   export default {
-    name: "PdDosageModal",
+    name: "PdDosageReturnedModal",
     mixins: [JEditableTableMixin],
     components: {
       PdChooseProductStockListModel,
@@ -291,7 +291,7 @@
             { title: '入库单价', key: 'purchasePrice', width:"80px" },
             { title: '出库单价', key: 'sellingPrice', width:"80px" },
             {
-              title: '用量数量', key: 'dosageCount', type: FormTypes.input, width:"80px",
+              title: '用量数量', key: 'dosageCount', type: FormTypes.input,disabled:true, width:"80px",
               placeholder: '${title}', defaultValue: '1',
               validateRules: [{ required: true, message: '${title}不能为空' },{ pattern: '^-?\\d+\\.?\\d*$',message: '${title}的格式不正确' }]
             },
