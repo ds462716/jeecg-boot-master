@@ -30,4 +30,8 @@ public interface IPdDosageService extends IService<PdDosage> {
     List<HashMap> queryPdDosageDateList(PdDosage pdDosage);
 
     List<HashMap> queryPurchaseOrderTotalList(PdDosage pdDosage);
+
+    Page<PdDosage> queryPdDosageList(Page<PdDosage> page, PdDosage pdDosage);
+
+    List<PdDosage> queryPdDosageList(PdDosage pdDosage);
 }

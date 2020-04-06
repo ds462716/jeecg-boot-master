@@ -1,21 +1,23 @@
-package org.jeecg.modules.pd.entity;
+package org.jeecg.modules.pd.vo;
 
-import java.math.BigDecimal;
-import java.util.Date;
-import java.util.List;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import lombok.Data;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import org.jeecg.modules.pd.vo.PdGoodsAllocationPage;
-import org.springframework.format.annotation.DateTimeFormat;
-import org.jeecgframework.poi.excel.annotation.Excel;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
+import org.jeecg.modules.pd.entity.BaseEntity;
+import org.jeecg.modules.pd.entity.PdDosageDetail;
+import org.jeecgframework.poi.excel.annotation.Excel;
+import org.springframework.format.annotation.DateTimeFormat;
+
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.List;
 
 /**
  * @Description: 用量表
@@ -28,7 +30,7 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 @EqualsAndHashCode(callSuper = false)
 @ApiModel(value="pd_dosage对象", description="用量表")
-public class PdDosage extends BaseEntity {
+public class PdDosagePage extends BaseEntity {
     private static final long serialVersionUID = 1L;
 
 	/**主键*/
@@ -52,7 +54,7 @@ public class PdDosage extends BaseEntity {
 	/**用量总金额*/
 	@Excel(name = "用量总金额", width = 15)
     @ApiModelProperty(value = "用量总金额")
-    private java.math.BigDecimal totalPrice;
+    private BigDecimal totalPrice;
 	/**病人信息*/
 	@Excel(name = "病人信息", width = 15)
     @ApiModelProperty(value = "病人信息")

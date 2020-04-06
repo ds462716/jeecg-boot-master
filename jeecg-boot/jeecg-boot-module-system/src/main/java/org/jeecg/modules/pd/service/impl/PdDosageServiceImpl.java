@@ -274,4 +274,20 @@ public class PdDosageServiceImpl extends ServiceImpl<PdDosageMapper, PdDosage> i
     public List<HashMap> queryPurchaseOrderTotalList(PdDosage pdDosage) {
         return pdDosageMapper.queryPdDosageTotalList(pdDosage);
     }
+
+    /**
+     * 统计查询-用量明细
+     * @param page
+     * @param pdDosage
+     * @return
+     */
+    @Override
+    public Page<PdDosage> queryPdDosageList(Page<PdDosage> page, PdDosage pdDosage) {
+        return page.setRecords(pdDosageMapper.queryPdDosageList(pdDosage));
+    }
+
+    @Override
+    public List<PdDosage> queryPdDosageList(PdDosage pdDosage) {
+        return pdDosageMapper.queryPdDosageList(pdDosage);
+    }
 }
