@@ -119,7 +119,7 @@
           {
             title:'用量库房',
             align:"center",
-            dataIndex: 'deptName'
+            dataIndex: 'departName'
           },
           {
             title:'货位',

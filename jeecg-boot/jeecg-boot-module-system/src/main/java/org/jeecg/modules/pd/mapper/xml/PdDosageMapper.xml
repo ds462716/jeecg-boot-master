@@ -121,7 +121,7 @@
 
     <!-- 科室 -->
     <sql id="sysDepartColumns">
-        sd.depart_name AS "deptName"
+        sd.depart_name AS "departName"
     </sql>
 
     <sql id="sysDepartJoins">

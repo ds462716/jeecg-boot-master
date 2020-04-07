@@ -228,7 +228,5 @@ public class PdDosage extends BaseEntity {
     private String dhyCharged;
     @TableField(exist = false)
     private String pdDosageDetailId;
-    @TableField(exist = false)
-    private String deptName;
 
 }
