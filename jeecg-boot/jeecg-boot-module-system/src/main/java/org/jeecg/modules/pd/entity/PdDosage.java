@@ -219,7 +219,9 @@ public class PdDosage extends BaseEntity {
     @TableField(exist = false)
     private String productBarCode;
     @TableField(exist = false)
-    private String expDate;
+    @JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd")
+    @DateTimeFormat(pattern="yyyy-MM-dd")
+    private Date expDate;
     @TableField(exist = false)
     private String dosageCount;
     @TableField(exist = false)
