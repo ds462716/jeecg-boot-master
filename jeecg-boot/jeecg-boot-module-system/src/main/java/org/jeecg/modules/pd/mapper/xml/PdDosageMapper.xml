@@ -248,7 +248,7 @@
     <select id="queryPdDosageList" resultType="org.jeecg.modules.pd.entity.PdDosage" parameterType="org.jeecg.modules.pd.entity.PdDosage">
         SELECT
         <include refid="pdDosageColumns"/>,
-        b.realname AS dosageByName,
+        su.realname AS dosageByName,
         <include refid="pdDosageDetailColumns"/>,
         <include refid="pdProductColumns"/>,
         <include refid="pdUnitColumns"/>,
@@ -257,7 +257,7 @@
         <include refid="sysDepartColumns"/>,
         <include refid="pdGoodsAllocationColumns"/>
         FROM pd_dosage a
-        LEFT JOIN sys_user b ON a.dosage_by = b.id
+        LEFT JOIN sys_user su ON a.dosage_by = su.id
         <include refid="pdDosageDetailJoins"/>
         <include refid="pdProductJoins"/>
         <include refid="pdUnitJoins"/>
