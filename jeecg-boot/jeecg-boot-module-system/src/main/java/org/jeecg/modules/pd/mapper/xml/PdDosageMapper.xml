@@ -130,7 +130,7 @@
 
 
     <sql id="pdGoodsAllocationColumns">
-      g.name AS "huoweiName"
+      g.name AS "outHuoweiName"
     </sql>
     <sql id="pdGoodsAllocation">
         LEFT JOIN pd_goods_allocation g ON dd.out_huowei_code = g.code

@@ -213,13 +213,7 @@ public class PdDosage extends BaseEntity {
     @TableField(exist = false)
     private String registration;//注册证号
     @TableField(exist = false)
-    private String inHuoweiName;// 入库货位
-    @TableField(exist = false)
     private String outHuoweiName;//出库货位
-    @TableField(exist = false)
-    private String oldInHuoweiCode;
-    @TableField(exist = false)
-    private String oldOutHuoweiCode;
     @TableField(exist = false)
     private String batchNo;
     @TableField(exist = false)

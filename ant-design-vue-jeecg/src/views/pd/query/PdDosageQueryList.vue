@@ -124,7 +124,7 @@
           {
             title:'货位',
             align:"center",
-            dataIndex: 'huoweiCode'
+            dataIndex: 'outHuoweiName'
           },
           {
             title:'用量日期',
