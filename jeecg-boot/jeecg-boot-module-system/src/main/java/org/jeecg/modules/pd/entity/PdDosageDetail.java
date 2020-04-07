@@ -76,7 +76,7 @@ public class PdDosageDetail extends BaseEntity {
     private java.math.BigDecimal amountMoney;
     /**是否执行收费*/
     @Excel(name = "是否已经执行收费0是1否", width = 15)
-    @ApiModelProperty(value = "是否已经执行收费0是1否")
+    @ApiModelProperty(value = "是否已经执行收费0是1否2已退回")
     private String hyCharged;
 	/**收费项目代码*/
 	@Excel(name = "收费项目代码", width = 15)

@@ -299,4 +299,21 @@ public class PdDosageServiceImpl extends ServiceImpl<PdDosageMapper, PdDosage> i
     public List<PdDosage> queryPdDosageList(PdDosage pdDosage) {
         return pdDosageMapper.queryPdDosageList(pdDosage);
     }
+
+    /**
+     * 库存回退
+     * @param pdDosage
+     */
+    @Override
+    public void dosageReturned(PdDosage pdDosage) {
+        List<PdDosageDetail> detailList = pdDosage.getPdDosageDetails();
+        if(detailList!=null && detailList.size()>0){
+            for(PdDosageDetail pdd : detailList){
+                BigDecimal leftRefundNum = new BigDecimal(0);
+                pdd.setLeftRefundNum(leftRefundNum.doubleValue());
+                pdd.setHyCharged(PdConstant.CHARGE_FLAG_2);
+            }
+            pdDosageDetailService.updateBatchById(detailList);
+        }
+    }
 }

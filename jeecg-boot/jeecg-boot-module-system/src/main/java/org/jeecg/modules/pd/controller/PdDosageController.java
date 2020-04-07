@@ -169,6 +169,18 @@ public class PdDosageController extends JeecgController<PdDosage, IPdDosageServi
 		 return Result.ok("添加成功！");
 	 }
 
+	 /**
+	  * 用量退回
+	  * @param pdDosage
+	  * @return
+	  */
+	 @PostMapping(value = "/dosageReturned")
+	 public Result<?> dosageReturned(@RequestBody PdDosage pdDosage) {
+		 //不收费
+		 pdDosageService.dosageReturned(pdDosage);
+		 return Result.ok("添加成功！");
+	 }
+
 	/**
 	 *   通过id删除
 	 *

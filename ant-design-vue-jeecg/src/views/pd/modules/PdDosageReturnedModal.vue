@@ -296,7 +296,7 @@
               validateRules: [{ required: true, message: '${title}不能为空' },{ pattern: '^-?\\d+\\.?\\d*$',message: '${title}的格式不正确' }]
             },
             { title: '用量金额', key: 'amountMoney', type: FormTypes.input, disabled:true, width:"100px" },
-            { title: '库存数量', key: 'stockNum', width:"80px" },
+            { title: '剩余可退数量', key: 'leftRefundNum', width:"80px" },
             { title: '收费项目代码', key: 'chargeCode', width:"80px" },
             { title: '是否计费', key: 'isCharge',type: FormTypes.hidden},
             { title: '是否计费', key: 'isChargeText', width:"80px"},
@@ -379,7 +379,7 @@
         },
         url: {
           init:"/pd/pdDosage/initModal",
-          submit: "/pd/pdDosage/submit",
+          submit: "/pd/pdDosageDetail/dosageReturned",
           add: "/pd/pdDosage/add",
           edit: "/pd/pdDosage/edit",
           departList:"/pd/pdDepart/getSysDepartList",
@@ -505,10 +505,10 @@
                   for(let item of values){
                     if(pdProductStock.id == item.productStockId){// 库存明细ID一致，就+1
                       isAddRow = false;
-                      if(Number(item.dosageCount) + 1 > Number(item.stockNum)){
+                      if(Number(item.dosageCount) + 1 > Number(item.leftRefundNum)){
                         //清空扫码框
                         this.clearQueryParam();
-                        this.$message.error("["+item.productName+"]出库数量不能大于库存数量！");
+                        this.$message.error("["+item.productName+"]出库数量不能大于剩余可退数量！");
                         return;
                       }
 
@@ -591,11 +591,11 @@
             if(column.key === "dosageCount"){
               let { values } = target.getValuesSync({ validate: false });
               for(let item of values){
-                if(item.id == row.id && Number(value) > Number(item.stockNum)){
-                  this.$message.error("["+row.productName+"]使用数量不能大于库存数量！");
+                if(item.id == row.id && Number(value) > Number(item.leftRefundNum)){
+                  this.$message.error("["+row.productName+"]使用数量不能大于剩余可退数量！");
                   // 产品数量变更 计算每条产品的价格
-                  let amountMoney = (Number(row.sellingPrice) * Number(item.stockNum)).toFixed(4);
-                  target.setValues([{rowKey: row.id, values: { amountMoney: amountMoney, dosageCount: item.stockNum }}])
+                  let amountMoney = (Number(row.sellingPrice) * Number(item.leftRefundNum)).toFixed(4);
+                  target.setValues([{rowKey: row.id, values: { amountMoney: amountMoney, dosageCount: item.leftRefundNum }}])
                   // 计算总数量和总价格
                   this.getTotalNumAndPrice([]);
                   return;
@@ -632,7 +632,7 @@
           dosageCount: 1,
           purchasePrice:row.purchasePrice,
           amountMoney:Number(!row.sellingPrice ? 0 : row.sellingPrice).toFixed(4),
-          stockNum:row.stockNum,
+          leftRefundNum:row.leftRefundNum,
           chargeCode:row.chargeCode,
           isChargeText:row.isCharge=="0"?"是":"否",
           isCharge:row.isCharg,
@@ -653,23 +653,34 @@
           }
 
           let formData = this.classifyIntoFormData(allValues);
-
-          if(formData.pdDosageDetails.length <= 0){
-            this.$message.warning("用量产品数据为空，请扫码出库或选择产品");
+          let selectedArrays = this.$refs.pdDosageDetail.selectedRowIds;
+          if(selectedArrays <= 0){
+            this.$message.warning("请勾选需要退费的产品");
             return;
           }
-
+          //查找出勾选的产品信息
+          let selectedIds = new Array();
+          for(let i =0;i<selectedArrays.length;i++){
+            let selectId = selectedArrays[i].substring(selectedArrays[i].lastIndexOf("-")+1);
+            selectedIds.push(selectId);
+          }
           let list = formData.pdDosageDetails;
-          for (let item of list){
-            if(Number(item.dosageCount) > Number(item.stockNum)){
-              this.$message.error("["+item.productName+"]用量数量不能大于库存数量！");
+          for (let i =0; i <list.length;i++){
+            //如果包含
+            if(selectedIds.indexOf(list[i].id)<0){
+              list.splice(i--, 1);
+              continue;
+            }
+            if(Number(list[i].dosageCount) > Number(list[i].leftRefundNum)){
+              this.$message.error("["+list[i].productName+"]用量数量不能大于剩余可退数量！");
               return;
             }
-            if(Number(item.dosageCount) <= 0){
-              this.$message.error("["+item.productName+"]用量数量必须大于0！");
+            if(Number(list[i].dosageCount) <= 0){
+              this.$message.error("["+list[i].productName+"]用量数量必须大于0！");
               return;
             }
           }
+          formData.pdDosageDetails = list;
           return this.request(formData);
         }).catch(e => {
           if (e.error === VALIDATE_NO_PASSED) {
