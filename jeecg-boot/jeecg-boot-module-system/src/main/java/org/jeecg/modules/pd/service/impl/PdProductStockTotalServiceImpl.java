@@ -67,7 +67,7 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
 	 * @param   pdStockRecord    入库记录
 	 * @return  String   更新库存结果  入库成功，返回字符串“true”，否则返回错误信息
 	 */
-	@Transactional(rollbackFor = Exception.class)
+	@Transactional
 	public String updateInStock(PdStockRecord pdStockRecord){
 
 		if(pdStockRecord == null || CollectionUtils.isEmpty(pdStockRecord.getPdStockRecordDetailList())){
@@ -145,7 +145,7 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
 	 * @param pdStockRecord   出库明细列表
 	 * @return  String   更新库存结果  入库成功，返回字符串“true”，否则返回错误信息
 	 */
-	@Transactional(rollbackFor = Exception.class)
+	@Transactional
 	public String updateOutStock(PdStockRecord pdStockRecord){
 		if(pdStockRecord == null || CollectionUtils.isEmpty(pdStockRecord.getPdStockRecordDetailList())){
 			return "参数有误";
@@ -202,7 +202,7 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
 	 * @param dosageDetails   使用明细
 	 * @return  String   更新库存结果
 	 */
-	@Transactional(rollbackFor = Exception.class)
+	@Transactional
 	@Override
 	public String updateUseStock(String departId, List<PdDosageDetail> dosageDetails){
 		//1、扣减出库库存，扣减出库库存明细
@@ -250,7 +250,7 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
 	 * @param  detailList    退回用量明细
 	 * @return  String        更新库存结果
 	 */
-	 @Transactional(rollbackFor = Exception.class)
+	@Transactional
 	public String updateRetunuseStock(String departId, List<PdDosageDetail> detailList){
 		//1、增加库存，增加库存明细
 		for(PdDosageDetail drt:detailList){
@@ -298,7 +298,7 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
 	 * @param  pdRejected    退货明细列表，不允许为空
 	 * @return Map      更新库存结果  入库成功，返回字符串“true”，否则返回错误信息
 	 */
-	@Transactional(rollbackFor = Exception.class)
+	@Transactional
 	@Override
 	public String updateRejectedStock(PdRejected pdRejected){
 		if(pdRejected == null || CollectionUtils.isEmpty(pdRejected.getPdRejectedDetailList())){
@@ -357,7 +357,7 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
 	 * @param stockTotal
 	 * @return
 	 * */
-	@Transactional(rollbackFor = Exception.class)
+	@Transactional
 	public Map<String,String> updateStockNumByProdIdAndDeptId(PdProductStockTotal stockTotal){
 		List<PdProductStockTotal> totalList = pdProductStockTotalMapper.findForUpdate(stockTotal);
 		PdProductStockTotal total = totalList.get(0);
@@ -380,7 +380,7 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
 	 * @param productStock
 	 * @return
 	 * */
-	@Transactional(rollbackFor = Exception.class)
+	@Transactional
 	@Override
 	public String updateStockHuowei(PdProductStock productStock) {
 		String huoWeiCode=productStock.getHuoweiCode();
