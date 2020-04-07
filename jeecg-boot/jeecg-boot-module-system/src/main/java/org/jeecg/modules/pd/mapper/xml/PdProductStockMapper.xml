@@ -515,4 +515,11 @@
 			order by  exp_status  desc,create_time desc
 		</where>
 	</select>
+
+
+	<update id="addStock">
+		UPDATE pd_product_stock SET
+			stock_num = stock_num+#{stockNum}
+		WHERE id = #{id}
+	</update>
 </mapper>

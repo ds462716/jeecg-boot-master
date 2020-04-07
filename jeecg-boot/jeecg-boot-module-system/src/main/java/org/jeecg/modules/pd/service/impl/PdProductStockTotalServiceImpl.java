@@ -3,7 +3,6 @@ package org.jeecg.modules.pd.service.impl;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.StringUtils;
 import org.jeecg.common.constant.PdConstant;
 import org.jeecg.modules.pd.entity.*;
 import org.jeecg.modules.pd.mapper.PdProductMapper;
@@ -162,6 +161,7 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
 			PdProductStockTotalPage stockTotalq = new PdProductStockTotalPage();
 			stockTotalq.setDepartId(outDeptId);
 			stockTotalq.setProductId(productId);
+			stockTotalq.setFilterType("1");//有值的话，则过滤库存数量为0的数据
 			List<PdProductStockTotalPage> productStockTotals = pdProductStockTotalMapper.selectList(stockTotalq);
 			// 扣减总库存
 			if(CollectionUtils.isNotEmpty(productStockTotals) && productStockTotals.size() == 1){
@@ -216,6 +216,7 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
 			PdProductStockTotalPage stockTotalq = new PdProductStockTotalPage();
 			stockTotalq.setDepartId(departId);
 			stockTotalq.setProductId(productId);
+			stockTotalq.setFilterType("1");//有值的话，则过滤库存数量为0的数据
 			List<PdProductStockTotalPage> productStockTotals = pdProductStockTotalMapper.selectList(stockTotalq);
 			if(productStockTotals != null && productStockTotals.size() == 1){
 				PdProductStockTotal productStockTotal = productStockTotals.get(0);
@@ -245,59 +246,51 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
 
 	/***
 	 * 	用量退回更新库存信息
-	 * @param  storeroomId     退回库房ID
+	 * @param  departId     退回科室ID
 	 * @param  detailList    退回用量明细
 	 * @return  String        更新库存结果
 	 */
-	/* @Transactional(rollbackFor = Exception.class)
-	public String updateRetunuseStock(String storeroomId, List<PdDosagertDetail> detailList){
-
+	 @Transactional(rollbackFor = Exception.class)
+	public String updateRetunuseStock(String departId, List<PdDosageDetail> detailList){
 		//1、增加库存，增加库存明细
-		for(PdDosagertDetail drt:detailList){
-			String productId = drt.getProdId();      //产品ID
-			String productNo = drt.getProdNo();      //产品编码
-			String productBarCode = drt.getProdBarcode();  //产品条码
+		for(PdDosageDetail drt:detailList){
+			String productId = drt.getProductId();      //产品ID
+			String number = drt.getNumber();      //产品编码
+			String productBarCode = drt.getProductBarCode();  //产品条码
 			String batchNo = drt.getBatchNo();       //产品批号
-			Integer productNum_i = drt.getRtCount();  //退回数量
-			int rtNum = productNum_i.intValue();
-
+			Double productNum_i = drt.getDosageCount();  //退回数量
 			//2、增加入库库存
-			PdProductStockTotal stockTotalqi = new PdProductStockTotal();
-			stockTotalqi.setStoreroomId(storeroomId);
-			stockTotalqi.setProductId(productId);
-			List<PdProductStockTotal> i_productStockTotals = pdProductStockTotalDao.findForUpdate(stockTotalqi);
-			//如果库存总表不存在产品，则新增产品库存总表信息
-			if(i_productStockTotals == null || i_productStockTotals.size() == 0){
-
-			}
-			//如果库存总表存在，则增加库存数量
-			else{
+			PdProductStockTotalPage stockTotalq = new PdProductStockTotalPage();
+			stockTotalq.setDepartId(departId);
+			stockTotalq.setProductId(productId);
+			List<PdProductStockTotalPage> i_productStockTotals = pdProductStockTotalMapper.selectList(stockTotalq);
+			if(i_productStockTotals != null || i_productStockTotals.size() >0){
+				//如果库存总表存在，则增加库存数量
 				PdProductStockTotal productStockTotal = i_productStockTotals.get(0);
-				productStockTotal.setStockNum(rtNum);
-				pdProductStockTotalDao.addStock(productStockTotal);
+				productStockTotal.setStockNum(productNum_i);
+				pdProductStockTotalMapper.addStock(productStockTotal);
+			}else{
+				//
 			}
-
 			//增加入库库存明细
 			PdProductStock i_productStockq = new PdProductStock();
-			i_productStockq.setStoreroomId(storeroomId);
+			i_productStockq.setDepartId(departId);
 			i_productStockq.setProductId(productId);
 			i_productStockq.setProductBarCode(productBarCode);
 			i_productStockq.setBatchNo(batchNo);
-			i_productStockq.setProductNo(productNo);
-			List<PdProductStock> i_productStocks = pdProductStockDao.findForUpdate(i_productStockq);
-			//如果库存明细表不存在，则新增
-			if(i_productStocks == null || i_productStocks.size() == 0){
-
-			}
-			//存在，则增加库存数量
-			else{
+			i_productStockq.setNumber(number);
+			List<PdProductStock> i_productStocks = pdProductStockMapper.findForUpdate(i_productStockq);
+			if(i_productStocks != null || i_productStocks.size() > 0){
+                   //存在，则增加库存数量
 				PdProductStock productStock = i_productStocks.get(0);
-				productStock.setStockNum(rtNum);
-				pdProductStockDao.addStock(productStock);
+				productStock.setStockNum(productNum_i);
+				pdProductStockMapper.addStock(productStock);
+			}else{
+              //
 			}
 		}
 		return "";
-	}*/
+	}
 
 	/***
 	 * 	退货更新库存信息

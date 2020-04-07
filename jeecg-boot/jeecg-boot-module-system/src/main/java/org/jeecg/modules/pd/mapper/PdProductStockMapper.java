@@ -62,5 +62,8 @@ public interface PdProductStockMapper extends BaseMapper<PdProductStock> {
 
 	List<PdProductStock> queryList(PdProductStock pdProductStock);
 
+	//加库存
+	public void addStock(PdProductStock pdProductStock);
+
 
 }

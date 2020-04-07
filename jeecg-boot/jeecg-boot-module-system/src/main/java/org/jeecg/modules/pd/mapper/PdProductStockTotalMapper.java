@@ -35,4 +35,7 @@ public interface PdProductStockTotalMapper extends BaseMapper<PdProductStockTota
 
     public Double queryCheckTotalNum(PdProductStockTotal stockTotal);
 
+    //加库存
+    public void addStock(PdProductStockTotal pdProductStockTotal);
+
 }
