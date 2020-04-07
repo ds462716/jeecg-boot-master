@@ -46,7 +46,7 @@
         <a-card style="margin-bottom: 10px;">
           <a-tabs v-model="activeKey" @change="handleChangeTabs">
             <a-tab-pane tab="产品明细" :key="refKeys[0]"  :forceRender="true">
-              <a-form v-show="!disableSubmit">
+              <a-form v-show="false">
                 <a-row>
                   <a-col :md="6" :sm="8">
                     <a-form-item label="产品编号" :labelCol="labelCol" :wrapperCol="wrapperCol">
@@ -66,7 +66,7 @@
                 </a-row>
               </a-form>
 
-              <div style="margin-bottom: 8px;" v-show="disableSubmit">
+              <div style="margin-bottom: 8px;" v-show="false">
                 <a-button type="primary" icon="plus" @click="chooseProductList">选择产品</a-button>
                 <a-button type="primary" icon="plus" @click="choosePackageList" style="margin-left: 8px">选择定数包</a-button>
                 <a-popconfirm style="margin-left: 8px"
@@ -106,12 +106,12 @@
             <a-tab-pane tab="收费信息" :key="refKeys[0]"  :forceRender="true">
               <a-form :form="form">
                 <a-row>
-                  <a-col :md="16" :sm="8">
+                  <!--<a-col :md="16" :sm="8">
                     <a-form-item label="执行收费" :labelCol="{span: 3}" :wrapperCol="{span: 20}">
                       <a-switch v-model="hyCharged"/>
                       <span style="color: red">  不选中的情况下，只在当前系统保存病人信息，医院系统中并不记账，此功能只作产品追溯用。</span>
                     </a-form-item>
-                  </a-col>
+                  </a-col>-->
                 </a-row>
                 <a-row>
                   <a-col :md="6" :sm="8" v-if="hyCharged">
@@ -215,7 +215,7 @@
       <a-popconfirm title="确定放弃编辑？" @confirm="handleCancel" v-show="!disableSubmit" okText="确定" cancelText="取消">
         <a-button style="margin-right: 15px;">取  消</a-button>
       </a-popconfirm>
-      <a-button @click="submitBtn" v-show="!disableSubmit" type="primary" :loading="confirmLoading" style="margin-right: 15px;">提  交</a-button>
+      <a-button @click="submitBtn" v-show="!disableSubmit" type="primary" :loading="confirmLoading" style="margin-right: 15px;">库存还回</a-button>
     </template>
 
     <pd-choose-product-stock-list-model ref="pdChooseProductStockListModel" @ok="returnProductStockData" ></pd-choose-product-stock-list-model>
@@ -454,6 +454,8 @@
       },
       close () {
         this.$emit('close');
+        this.totalSum = 0;
+        this.totalPrice = 0.0000;
         this.visible = false;
         this.pdDosageDetailTable.dataSource = [];
         this.eachAllTable((item) => {

@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.commons.lang3.StringUtils;
 import org.jeecg.common.constant.PdConstant;
+import org.jeecg.common.exception.JeecgBootException;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.DateUtils;
 import org.jeecg.common.util.oConvertUtils;
@@ -115,6 +116,7 @@ public class PdDosageServiceImpl extends ServiceImpl<PdDosageMapper, PdDosage> i
             //总金额
             BigDecimal moneyTotal = new BigDecimal(0);
             List<PdDosageDetail> tempArray = new ArrayList<>();
+            List<PdDosageDetail> chargeArray = new ArrayList<>();
             //产品物流
             List<PdStockLog> logList = new ArrayList<PdStockLog>();
             //数据合并
@@ -144,23 +146,28 @@ public class PdDosageServiceImpl extends ServiceImpl<PdDosageMapper, PdDosage> i
                 dosageTotal = dosageCount.add(dosageTotal);
                 moneyTotal = pdMoney.add(moneyTotal);
                 pdd.setDosageId(pdDosage.getId());
-                //如果没有接口
-                if(displayFlag.equals(PdConstant.IS_CHARGE_FLAG_1)){
-                    pdd.setHyCharged(displayFlag);
-                }else{
-                    pdd.setHyCharged(pdDosage.getHyCharged());
-                }
                 pdd.setAmountMoney(pdMoney);
                 pdd.setLeftRefundNum(pdd.getDosageCount());
-                tempArray.add(pdd);
                 //产品追踪信息
                 PdStockLog prodLog = new PdStockLog();
+                //需要收费的产品集合
+                if(PdConstant.CHARGE_FLAG_0.equals(pdDosage.getHyCharged())
+                        && PdConstant.CHARGE_FLAG_0.equals(pdd.getIsCharge())
+                        && !"".equals(pdd.getChargeCode())){
+                    pdd.setHyCharged(PdConstant.CHARGE_FLAG_0);
+                    prodLog.setLogType(PdConstant.STOCK_LOG_TYPE_6);
+                    chargeArray.add(pdd);
+                }else{
+                    //不收费的产品集合
+                    pdd.setHyCharged(PdConstant.CHARGE_FLAG_1);
+                    prodLog.setLogType(PdConstant.STOCK_LOG_TYPE_3);
+                    tempArray.add(pdd);
+                }
                 prodLog.setBatchNo(pdd.getBatchNo());
                 prodLog.setProductBarCode(pdd.getProductBarCode());
                 prodLog.setExpDate(pdd.getExpDate());
                 prodLog.setProductId(pdd.getProductId());
                 prodLog.setProductNum(pdd.getDosageCount());
-                prodLog.setLogType(PdConstant.STOCK_LOG_TYPE_3);
                 prodLog.setInFrom(pdDosage.getDepartName());
                 prodLog.setOutTo("病人:"+pdDosage.getPatientInfo());
                 prodLog.setPatientInfo(pdDosage.getPatientDetailInfo());
@@ -170,11 +177,13 @@ public class PdDosageServiceImpl extends ServiceImpl<PdDosageMapper, PdDosage> i
                 logList.add(prodLog);
             }
             if (!validFlag) {//数据校验没通过
-
+                throw new JeecgBootException("数据校验失败");
             } else {
                 //收费调用接口
-                if (PdConstant.CHARGE_FLAG_0.equals(pdDosage.getHyCharged()) && PdConstant.IS_CHARGE_FLAG_0.equals(displayFlag)){
-
+                if (PdConstant.CHARGE_FLAG_0.equals(pdDosage.getHyCharged())
+                        &&chargeArray.size()>0){
+                    //TODO 是计费切有收费代码的产品才会发往his系统
+                    throw new JeecgBootException("没有配置收费接口");
                 }
                 if(!tempArray.isEmpty())
                     pdDosageDetailService.saveBatch(tempArray);

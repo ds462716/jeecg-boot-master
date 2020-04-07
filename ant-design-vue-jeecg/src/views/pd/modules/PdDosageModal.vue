@@ -109,7 +109,7 @@
                 <a-row>
                   <a-col :md="16" :sm="8">
                     <a-form-item label="执行收费" :labelCol="{span: 3}" :wrapperCol="{span: 20}">
-                      <a-switch v-model="hyCharged"/>
+                      <a-switch :disabled="disableSubmit" v-model="hyCharged"/>
                       <span style="color: red">  不选中的情况下，只在当前系统保存病人信息，医院系统中并不记账，此功能只作产品追溯用。</span>
                     </a-form-item>
                   </a-col>
@@ -289,7 +289,7 @@
             { title: '批号', key: 'batchNo', width:"100px" },
             { title: '单位', key: 'unitName', width:"50px" },
             { title: '有效期', key: 'expDate', width:"100px" },
-            { title: '入库单价', key: 'purchasePrice', width:"80px" },
+            /*{ title: '入库单价', key: 'purchasePrice', width:"80px" },*/
             { title: '出库单价', key: 'sellingPrice', width:"80px" },
             {
               title: '用量数量', key: 'dosageCount', type: FormTypes.input, width:"80px",
@@ -418,13 +418,15 @@
             this.$nextTick(() => {
               // this.departList = res.result.sysDepartList; // 初始化部门列表 用于数据回显
               if(this.model.id){
-                // 新增页
+                // 详情页
                 this.initData = res.result;
                 if(res.result.hyCharged==0){
                   this.hyCharged = true;
                 }else{
                   this.hyCharged = false;
                 }
+                this.totalSum = res.result.totalSum;
+                this.totalPrice = res.result.totalPrice;
                 this.pdDosageDetailTable.dataSource = res.result.pdDosageDetails || [];
                 let fieldval = pick(this.initData,'dosageNo','dosageDate','departName','outHuoweiCode','dosageByName','inHospitalNo','patientInfo','patientDetailInfo','outpatientNumber','operativeNumber','exeDeptName','exeDeptId','oprDeptName','oprDeptId','surgeonName','surgeonId','sqrtDoctorName','sqrtDoctorId','subordinateWardName','subordinateWardId','remarks');
                 this.form.setFieldsValue(fieldval);
@@ -432,6 +434,7 @@
                 //获取光标
                 this.$refs['productNumberInput'].focus();
               }else{  // 新增页
+                this.hyCharged = true;
                 this.initData = res.result;
                 let fieldval = pick(this.initData,'dosageNo','dosageDate','departName','outHuoweiCode','dosageByName','inHospitalNo','patientInfo','patientDetailInfo','outpatientNumber','operativeNumber','exeDeptName','exeDeptId','oprDeptName','oprDeptId','surgeonName','surgeonId','sqrtDoctorName','sqrtDoctorId','subordinateWardName','subordinateWardId','remarks');
                 this.form.setFieldsValue(fieldval);
@@ -458,6 +461,8 @@
       },
       close () {
         this.$emit('close');
+        this.totalSum = 0;
+        this.totalPrice = 0.0000;
         this.visible = false;
         this.pdDosageDetailTable.dataSource = [];
         this.eachAllTable((item) => {
@@ -620,6 +625,7 @@
       },
       // 扫码 调用 新增一行
       addrowsByScanCode(row){
+        console.log(row)
         let data = {
           productStockId:row.id,
           productId: row.productId,
@@ -632,12 +638,12 @@
           expDate:row.expDate,
           sellingPrice:row.sellingPrice,
           dosageCount: 1,
-          purchasePrice:row.purchasePrice,
+          /*purchasePrice:row.purchasePrice,*/
           amountMoney:Number(!row.sellingPrice ? 0 : row.sellingPrice).toFixed(4),
           stockNum:row.stockNum,
           chargeCode:row.chargeCode,
           isChargeText:row.isCharge=="0"?"是":"否",
-          isCharge:row.isCharg,
+          isCharge:row.isCharge,
           outHuoweiName:row.huoweiName,
           outHuoweiCode:row.huoweiCode,
         }
@@ -691,8 +697,9 @@
           method = 'put'
         }
         this.confirmLoading = true
+        console.log(this.hyCharged)
         //是否收费标识
-        formData.hyCharged=this.hyCharged=="true"?"0":"1";
+        formData.hyCharged=this.hyCharged==true?"0":"1";
         httpAction(url, formData, method).then((res) => {
           if (res.success) {
             this.$message.success(res.message)
