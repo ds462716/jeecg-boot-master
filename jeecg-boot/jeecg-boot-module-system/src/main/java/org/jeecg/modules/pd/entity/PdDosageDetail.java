@@ -10,6 +10,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
+import org.jeecg.common.constant.PdConstant;
 import org.jeecgframework.poi.excel.annotation.Excel;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -75,6 +76,7 @@ public class PdDosageDetail extends BaseEntity {
     @Excel(name = "是否已经执行收费0是1否", width = 15)
     @ApiModelProperty(value = "是否已经执行收费0是1否2已退回")
     private String hyCharged;
+
 	/**收费项目代码*/
 	@Excel(name = "收费项目代码", width = 15)
     @ApiModelProperty(value = "收费项目代码")
@@ -154,4 +156,21 @@ public class PdDosageDetail extends BaseEntity {
     /**入库单价*/
     @Excel(name = "入库单价", width = 15)
     private java.math.BigDecimal purchasePrice;//进价
+
+    public String getHyChargedText() {
+        if(this.hyCharged!=null){
+            if(this.hyCharged.equals(PdConstant.CHARGE_FLAG_0)){
+                return "已收费";
+            }else if(this.hyCharged.equals(PdConstant.CHARGE_FLAG_1)){
+                return "未收费";
+            }else if(this.hyCharged.equals(PdConstant.CHARGE_FLAG_2)){
+                return "已退回";
+            }
+        }
+        return hyChargedText;
+    }
+
+    public void setHyChargedText(String hyChargedText) {
+        this.hyChargedText = hyChargedText;
+    }
 }
