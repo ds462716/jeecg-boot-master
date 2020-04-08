@@ -1,22 +1,19 @@
 package org.jeecg.modules.pd.entity;
 
-import java.io.Serializable;
-import java.io.UnsupportedEncodingException;
-import java.util.Date;
-import java.math.BigDecimal;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import lombok.Data;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import org.springframework.format.annotation.DateTimeFormat;
-import org.jeecgframework.poi.excel.annotation.Excel;
-import org.jeecg.common.aspect.annotation.Dict;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
+import org.jeecgframework.poi.excel.annotation.Excel;
+import org.springframework.format.annotation.DateTimeFormat;
+
+import java.util.Date;
 
 /**
  * @Description: 用量详情表
@@ -127,6 +124,10 @@ public class PdDosageDetail extends BaseEntity {
     @TableField(exist = false)
     private String outHuoweiName;//出库货位
     private String outHuoweiCode;
+
+    @TableField(exist = false)
+    private String inHuoweiName;//入库货位
+    private String inHuoweiCode;
 
     @TableField(exist = false)
     private String productName;//产品名称

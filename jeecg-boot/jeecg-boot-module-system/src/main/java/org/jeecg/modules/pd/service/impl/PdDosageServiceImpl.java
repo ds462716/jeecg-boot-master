@@ -306,14 +306,39 @@ public class PdDosageServiceImpl extends ServiceImpl<PdDosageMapper, PdDosage> i
      */
     @Override
     public void dosageReturned(PdDosage pdDosage) {
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
         List<PdDosageDetail> detailList = pdDosage.getPdDosageDetails();
         if(detailList!=null && detailList.size()>0){
+            //产品物流
+            List<PdStockLog> logList = new ArrayList<PdStockLog>();
             for(PdDosageDetail pdd : detailList){
+                //产品追踪信息
+                PdStockLog prodLog = new PdStockLog();
+                if(pdd.getLeftRefundNum()==0L){
+                    throw new JeecgBootException("参数不正确");
+                }
                 BigDecimal leftRefundNum = new BigDecimal(0);
                 pdd.setLeftRefundNum(leftRefundNum.doubleValue());
                 pdd.setHyCharged(PdConstant.CHARGE_FLAG_2);
+                prodLog.setLogType(PdConstant.STOCK_LOG_TYPE_4);
+                prodLog.setBatchNo(pdd.getBatchNo());
+                prodLog.setProductBarCode(pdd.getProductBarCode());
+                prodLog.setExpDate(pdd.getExpDate());
+                prodLog.setProductId(pdd.getProductId());
+                prodLog.setProductNum(pdd.getDosageCount());
+                prodLog.setInFrom(pdDosage.getDepartName());
+                prodLog.setOutTo("病人:"+pdDosage.getPatientInfo());
+                prodLog.setPatientInfo(pdDosage.getPatientDetailInfo());
+                prodLog.setInvoiceNo(pdDosage.getDosageNo());
+                prodLog.setChargeDeptName(pdDosage.getExeDeptName());
+                prodLog.setRecordTime(DateUtils.getDate());
+                logList.add(prodLog);
             }
+            if(!logList.isEmpty())
+                pdStockLogService.saveBatch(logList);
             pdDosageDetailService.updateBatchById(detailList);
+            pdProductStockTotalService.updateRetunuseStock(sysUser.getCurrentDepartId(),detailList);
         }
     }
+
 }

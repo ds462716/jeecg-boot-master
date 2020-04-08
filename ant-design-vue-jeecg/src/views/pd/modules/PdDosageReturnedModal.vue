@@ -379,7 +379,7 @@
         },
         url: {
           init:"/pd/pdDosage/initModal",
-          submit: "/pd/pdDosageDetail/dosageReturned",
+          dosageReturned: "/pd/pdDosage/dosageReturned",
           add: "/pd/pdDosage/add",
           edit: "/pd/pdDosage/edit",
           departList:"/pd/pdDepart/getSysDepartList",
@@ -694,11 +694,7 @@
 
       // 保存 提交 修改 请求函数
       request(formData) {
-        let url = this.url.submit, method = 'post'
-        if (this.model.id) {
-          url = this.url.edit
-          method = 'put'
-        }
+        let url = this.url.dosageReturned, method = 'post'
         this.confirmLoading = true
         //是否收费标识
         formData.hyCharged=this.hyCharged=="true"?"0":"1";
