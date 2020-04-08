@@ -259,6 +259,7 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
 			String number = drt.getNumber();      //产品编码
 			String productBarCode = drt.getProductBarCode();  //产品条码
 			String batchNo = drt.getBatchNo();       //产品批号
+			String huoweiCode = drt.getInHuoweiCode();//入库货位号
 			Double productNum_i = drt.getDosageCount();  //退回数量
 			//2、增加入库库存
 			PdProductStockTotalPage stockTotalq = new PdProductStockTotalPage();
@@ -280,6 +281,7 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
 			i_productStockq.setProductBarCode(productBarCode);
 			i_productStockq.setBatchNo(batchNo);
 			i_productStockq.setNumber(number);
+			i_productStockq.setHuoweiCode(huoweiCode);
 			List<PdProductStock> i_productStocks = pdProductStockMapper.findForUpdate(i_productStockq);
 			if(i_productStocks != null || i_productStocks.size() > 0){
                    //存在，则增加库存数量
