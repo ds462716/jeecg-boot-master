@@ -190,16 +190,17 @@
 
     <template slot="footer">
       <a-button @click="handleCancel" style="margin-right: 15px;" v-show="disableSubmit">关  闭</a-button>
-      <a-button @click="printBtn('1')" style="margin-right: 15px;" type="primary" v-show="showPrintBtn">打  印</a-button>
       <a-popconfirm title="确定放弃编辑？" @confirm="handleCancel" v-show="!disableSubmit" okText="确定" cancelText="取消">
         <a-button style="margin-right: 15px;">取  消</a-button>
       </a-popconfirm>
       <a-popconfirm title="确定撤回？" @confirm="cancelBtn" v-show="showCancelBtn" okText="确定" cancelText="取消">
-        <a-button style="margin-right: 50px;" :loading="confirmLoading" type="danger">撤  回</a-button>
-      </a-popconfirm>
+        <a-button style="margin-right: 15px;" :loading="confirmLoading" type="danger">撤  回</a-button>
+      </a-popconfirm> <!-- margin-right: 50px; -->
+      <a-button @click="printBtn('1')" style="margin-right: 15px;" type="primary" v-show="showPrintBtn">打  印</a-button>
       <a-button @click="saveBtn" v-show="!disableSubmit" type="primary" :loading="confirmLoading" style="margin-right: 15px;">保存草稿</a-button>
       <a-button @click="submitBtn('1')" v-show="!disableSubmit" type="primary" :loading="confirmLoading" style="margin-right: 15px;">提  交</a-button>
-      <a-button @click="submitBtn('2')" v-show="showSubmitAndPrint" type="primary" :loading="confirmLoading" style="margin-right: 15px;">提交并打印</a-button>
+      <!--<a-button @click="submitBtn('2')" v-show="showSubmitAndPrint" type="primary" :loading="confirmLoading" style="margin-right: 15px;">提交并打印</a-button>-->
+      <a-button @click="submitBtn('2')" v-show="!disableSubmit" type="primary" :loading="confirmLoading" style="margin-right: 15px;">提交并打印</a-button>
     </template>
 
     <pd-choose-apply-order-list-model ref="pdChooseApplyOrderListModel" @ok="returnApplyOrderData" ></pd-choose-apply-order-list-model>
@@ -451,7 +452,8 @@
           if(this.model.auditStatus == "1" && this.model.submitStatus == "2"){
             this.showCancelBtn = true;
           }
-          if(this.model.auditStatus == "2"){
+          // if(this.model.auditStatus == "2"){ // 审核完可打印
+          if(this.model.submitStatus == "2"){ // 提交完可打印
             this.showPrintBtn = true;
           }
           if(this.model.auditStatus == "2" || this.model.auditStatus == "3"){
@@ -603,10 +605,12 @@
           this.model.auditByName = this.model.submitByName;
           this.model.inDepartName = this.inDepartName;
         }
+        let { values } = this.$refs.pdStockRecordDetail.getValuesSync({ validate: false });
         this.model.totalSum = this.totalSum;
         this.model.outTotalPrice = this.outTotalPrice;
         this.model.inTotalPrice = this.inTotalPrice;
-        this.model.pdStockRecordDetailList = this.pdStockRecordDetailTable.dataSource;
+        // this.model.pdStockRecordDetailList = this.pdStockRecordDetailTable.dataSource;
+        this.model.pdStockRecordDetailList = values;
         this.$refs.pdStockRecordOutPrintModal.show(this.model);
         this.$refs.pdStockRecordOutPrintModal.title = this.stockOutText + "出库单";
       },
@@ -673,12 +677,11 @@
           httpAction(url, formData, method).then((res) => {
             if (res.success) {
               this.$message.success(res.message)
-              this.$emit('ok')
-              this.close()
-
+              this.$emit('ok');
               if(flag == "2"){
                 this.printBtn("2"); //通过并打印
               }
+              this.close();
             } else {
               this.$message.warning(res.message)
             }
