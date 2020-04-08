@@ -439,6 +439,8 @@
         // this.orderNo = "";
         // this.form.setFieldsValue({orderNo:""});
         this.mergeOrderNo = "";
+        this.totalSum = "";
+        this.inTotalPrice = "";
         this.form.setFieldsValue({mergeOrderNo:""});
         this.eachAllTable((item) => {
           item.initialize()

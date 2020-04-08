@@ -212,5 +212,9 @@ public interface PdConstant {
 	public final static String PROD_ATTR_1 = "1";//产品
 	public final static String PROD_ATTR_2 = "2";//定数包
 
+	// 巡查结果
+	public final static String RESULT_QUALIFIED = "合格";
+	public final static String RESULT_UNQUALIFIED = "不合格";
+	public final static String RESULT_OTHER = "其他";
 
 }
