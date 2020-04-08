@@ -625,7 +625,6 @@
       },
       // 扫码 调用 新增一行
       addrowsByScanCode(row){
-        console.log(row)
         let data = {
           productStockId:row.id,
           productId: row.productId,
@@ -697,7 +696,6 @@
           method = 'put'
         }
         this.confirmLoading = true
-        console.log(this.hyCharged)
         //是否收费标识
         formData.hyCharged=this.hyCharged==true?"0":"1";
         httpAction(url, formData, method).then((res) => {
