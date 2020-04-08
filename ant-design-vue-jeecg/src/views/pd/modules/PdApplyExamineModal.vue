@@ -225,6 +225,7 @@
             let values = [];
             values.pdApplyDetailList = pdPurchaseDetailList;
             let formData = Object.assign(this.model, values);
+            that.confirmLoading = true
             httpAction(this.url.edit, formData, 'put').then((res) => {
               if (res.success) {
                  if(type=="yes"){
