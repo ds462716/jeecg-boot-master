@@ -415,6 +415,8 @@
         this.queryParam = {};
         this.applyNo = "";
         this.allocationNo = "";
+        this.totalSum = "";
+        this.outTotalPrice = "";
         this.form.setFieldsValue({applyNo:""});
         this.form.setFieldsValue({allocationNo:""});
         this.eachAllTable((item) => {

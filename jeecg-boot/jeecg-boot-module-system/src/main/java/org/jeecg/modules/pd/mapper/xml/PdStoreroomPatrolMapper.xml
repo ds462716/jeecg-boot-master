@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.pd.mapper.PdStoreroomPatrolMapper">
+
+    <select id="selectList" resultType="org.jeecg.modules.pd.entity.PdStoreroomPatrol" parameterType="org.jeecg.modules.pd.entity.PdStoreroomPatrol">
+        SELECT
+            a.*,
+            b.depart_name as patrolDepartName
+        FROM
+            pd_storeroom_patrol a
+            LEFT JOIN sys_depart b ON a.patrol_depart_id = b.id
+        ORDER BY
+            a.patrol_date DESC
+    </select>
+</mapper>
