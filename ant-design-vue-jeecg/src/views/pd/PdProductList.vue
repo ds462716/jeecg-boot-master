@@ -123,6 +123,7 @@
         :dataSource="dataSource"
         :pagination="ipagination"
         :loading="loading"
+        :rowClassName="setdataCss"
         :customRow="onClickRow"
         :rowSelection="{fixed:false,selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
         
@@ -413,6 +414,11 @@
         this.$emit('close');
         this.chargeCodeVisible = false;
       },
+      setdataCss(record,index) {
+        console.log(record)
+        let validityFlag = record.validityFlag;
+        return "validityFlag"+validityFlag;
+      },
       //产品收费代码提交
       handleOk(){
         const that = this;
@@ -493,4 +499,14 @@
 </script>
 <style scoped>
   @import '~@assets/less/common.less'
+</style>
+<style>
+  .validityFlag0{
+  }
+  .validityFlag1{
+    background-color:#FF3333;
+  }
+  .validityFlag2{
+    background-color:#FFFFCC;
+  }
 </style>
