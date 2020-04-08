@@ -36,6 +36,7 @@
                   @change="supplierHandleChange"
                   @focus="supplierHandleSearch"
                   :notFoundContent="notFoundContent"
+                  :disabled="supplierSelecDisabled"
                   v-model="queryParam.supplierId"
                 >
                   <a-select-option v-for="d in supplierData" :key="d.value">{{d.text}}</a-select-option>
@@ -127,6 +128,7 @@
         innerData:[],
         expandedRowKeys:[],
         subloading:false,
+        supplierSelecDisabled:false,
 
         queryDate:[],
 
@@ -310,7 +312,13 @@
         this.$emit('close');
         this.visible = false;
       },
-      show() {
+      show(args) {
+        if(args && args.supplierId){
+          this.supplierHandleSearch(); //初始化供应商
+          this.queryParam.supplierId = args.supplierId;
+          this.supplierSelecDisabled = true;
+          this.loadData();
+        }
         this.visible = true;
       },
       handleOk () {
