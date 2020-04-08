@@ -18,6 +18,7 @@
                 :defaultActiveFirstOption="false"
                 :showArrow="true"
                 :filterOption="false"
+                :allowClear="true"
                 @search="departHandleSearch"
                 @focus="departHandleSearch"
                 :notFoundContent="notFoundContent"

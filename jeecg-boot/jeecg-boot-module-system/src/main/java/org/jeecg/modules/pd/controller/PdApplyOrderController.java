@@ -285,22 +285,38 @@ public class PdApplyOrderController {
 		this.pdApplyOrderService.removeByIds(Arrays.asList(ids.split(",")));
 		return Result.ok("批量删除成功！");
 	}
-	
-	/**
-	 * 通过id查询
-	 *
-	 * @param id
-	 * @return
-	 */
-	@GetMapping(value = "/queryById")
-	public Result<?> queryById(@RequestParam(name="id",required=true) String id) {
-		PdApplyOrder pdApplyOrder = pdApplyOrderService.getById(id);
-		if(pdApplyOrder==null) {
-			return Result.error("未找到对应数据");
-		}
-		return Result.ok(pdApplyOrder);
 
-	}
+	 /**
+	  * 通过id查询
+	  *
+	  * @param id
+	  * @return
+	  */
+	 @GetMapping(value = "/queryById")
+	 public Result<?> queryById(@RequestParam(name="id",required=true) String id) {
+		 PdApplyOrder pdApplyOrder = pdApplyOrderService.getById(id);
+		 if(pdApplyOrder==null) {
+			 return Result.error("未找到对应数据");
+		 }
+		 return Result.ok(pdApplyOrder);
+
+	 }
+
+	 /**
+	  * 查询单条数据
+	  *
+	  * @param pdApplyOrder
+	  * @return
+	  */
+	 @GetMapping(value = "/getOne")
+	 public Result<?> getOne(PdApplyOrder pdApplyOrder) {
+		 pdApplyOrder = pdApplyOrderService.getOne(new QueryWrapper<PdApplyOrder>(pdApplyOrder));
+
+		 if(pdApplyOrder==null) {
+			 return Result.error("未找到对应数据");
+		 }
+		 return Result.ok(pdApplyOrder);
+	 }
 	
 	 /**
 	  * 通过申领单号查询明细表
@@ -402,6 +418,8 @@ public class PdApplyOrderController {
 											  @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
 											  HttpServletRequest req) {
 		 Page<PdApplyOrderPage> page = new Page<PdApplyOrderPage>(pageNo, pageSize);
+		 LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		 pdApplyOrderPage.setDepartParentId(sysUser.getDepartParentId());
 		 IPage<PdApplyOrderPage> pageList = pdApplyOrderService.chooseApplyOrderList(page, pdApplyOrderPage);
 		 return Result.ok(pageList);
 	 }

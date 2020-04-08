@@ -51,6 +51,11 @@
                 </a-form-item>
               </a-col>
               <a-col :span="6">
+                <a-form-item label="出库类型" :labelCol="labelCol" :wrapperCol="wrapperCol">
+                  <j-dict-select-tag-expand :disabled="disableSubmit2" @change="outTypeChange" type="list" v-decorator="['outType', validatorRules.outType]" :trigger-change="true" dictCode="out_type" placeholder="请选择出库类型"/>
+                </a-form-item>
+              </a-col>
+              <a-col :span="6">
                 <a-form-item label="入库库房" :labelCol="labelCol" :wrapperCol="wrapperCol">
                   <a-select
                     showSearch
@@ -59,6 +64,7 @@
                     :defaultActiveFirstOption="false"
                     :showArrow="true"
                     :filterOption="false"
+                    :allowClear="true"
                     @search="departHandleSearch"
                     @change="departHandleChange"
                     @focus="departHandleSearch"
@@ -67,11 +73,6 @@
                   >
                     <a-select-option v-for="d in departList" :key="d.id" :text="d.departName" >{{d.departName}}</a-select-option>
                   </a-select>
-                </a-form-item>
-              </a-col>
-              <a-col :span="6">
-                <a-form-item label="出库类型" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                  <j-dict-select-tag-expand :disabled="disableSubmit2" @change="outTypeChange" type="list" v-decorator="['outType', validatorRules.outType]" :trigger-change="true" dictCode="out_type" placeholder="请选择出库类型"/>
                 </a-form-item>
               </a-col>
             </a-row>
@@ -388,6 +389,8 @@
           // querySupplier:"/pd/pdSupplier/getSupplierList",
           departList:"/pd/pdDepart/getSysDepartList",
           huoweiList:"/pd/pdGoodsAllocation/getOptions",
+          getApplyOrder:"/pd/pdApplyOrder/getOne",
+          getAllocationOrder:"/pd/pdAllocationRecord/getOne",
           pdStockRecordDetail: {
             list: "/pd/pdStockRecordOut/queryPdStockRecordDetailByMainId"
           },
@@ -749,7 +752,9 @@
         this.form.setFieldsValue({applyNo:""});
         this.form.setFieldsValue({allocationNo:""});
         this.pdOrderDetailTable.dataSource = [];
-        this.inDepartName = option.data.attrs.text;
+        if(option){
+          this.inDepartName = option.data.attrs.text;
+        }
         this.eachAllTable((item) => {
           item.initialize()
         })
@@ -781,10 +786,11 @@
       },
       chooseOrder(flag){
         // 校验是否选择入库科室
-        if(!this.checkInDepart()){
-          this.$message.error("请选择入库科室！");
-          return;
-        }
+        // if(!this.checkInDepart()){
+        //   this.$message.error("请选择入库科室！");
+        //   return;
+        // }
+        // ↑↑↑↑↑↑ modified by jiangxz 20200408 出库类型是调拨和申领的时候，可以不必须先选科室
 
         let inDepartId = this.form.getFieldValue("inDepartId");
         let outDepartId = this.form.getFieldValue("outDepartId");
@@ -805,6 +811,17 @@
             item.productNum = item.applyNum;
           })
           this.pdOrderDetailTable.dataSource = data;
+
+          let inDepartId = this.form.getFieldValue("inDepartId");
+          if(!inDepartId){
+            getAction(this.url.getApplyOrder,{applyNo:this.applyNo}).then((res)=>{
+              if (!res.success) {
+                this.cmsFailed(res.message);
+              }
+              let applyOrder = res.result;
+              this.form.setFieldsValue({inDepartId:applyOrder.departId});
+            })
+          }
         }
       },
       returnAllocationData(data){
@@ -818,6 +835,17 @@
             item.productNum = item.allocationNum;
           })
           this.pdOrderDetailTable.dataSource = data;
+
+          let inDepartId = this.form.getFieldValue("inDepartId");
+          if(!inDepartId){
+            getAction(this.url.getAllocationOrder,{allocationNo:this.allocationNo}).then((res)=>{
+              if (!res.success) {
+                this.cmsFailed(res.message);
+              }
+              let allocationOrder = res.result;
+              this.form.setFieldsValue({inDepartId:allocationOrder.inDeptId});
+            })
+          }
         }
       },
       // 选择产品 新增行

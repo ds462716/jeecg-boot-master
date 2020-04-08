@@ -172,6 +172,9 @@
             <if test="outDeptId != null and outDeptId != ''">
                 AND a.out_dept_id = #{outDeptId}
             </if>
+            <if test="departParentId != null and departParentId != ''">
+                AND a.depart_parent_id = #{departParentId}
+            </if>
         </where>
         order  by a.allocation_date desc
     </select>
