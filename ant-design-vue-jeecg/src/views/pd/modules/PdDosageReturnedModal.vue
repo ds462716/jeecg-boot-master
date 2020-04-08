@@ -228,7 +228,6 @@
   import pick from 'lodash.pick'
   import { validateDuplicateValue } from '@/utils/util'
   import { FormTypes,getRefPromise,validateFormAndTables } from '@/utils/JEditableTableUtil'
-  import ATextarea from "ant-design-vue/es/input/TextArea";
   import {stockScanCode} from '@/utils/barcode'
   import {httpAction, deleteAction, getAction} from '@/api/manage'
   import { JEditableTableMixin } from '@/mixins/JEditableTableMixin'
@@ -296,7 +295,8 @@
               validateRules: [{ required: true, message: '${title}不能为空' },{ pattern: '^-?\\d+\\.?\\d*$',message: '${title}的格式不正确' }]
             },
             { title: '用量金额', key: 'amountMoney', type: FormTypes.input, disabled:true, width:"100px" },
-            { title: '剩余可退数量', key: 'leftRefundNum', width:"80px" },
+            { title: '实际使用数量', key: 'leftRefundNum', width:"80px" },
+            { title: '收费状态', key: 'hyChargedText', width:"80px" },
             { title: '收费项目代码', key: 'chargeCode', width:"80px" },
             { title: '是否计费', key: 'isCharge',type: FormTypes.hidden},
             { title: '是否计费', key: 'isChargeText', width:"80px"},
@@ -421,6 +421,8 @@
                 }else{
                   this.hyCharged = false;
                 }
+                this.totalSum = res.result.totalSum;
+                this.totalPrice = res.result.totalPrice;
                 this.pdDosageDetailTable.dataSource = res.result.pdDosageDetails || [];
                 let fieldval = pick(this.initData,'dosageNo','dosageDate','departName','dosageByName','inHospitalNo','patientInfo','patientDetailInfo','outpatientNumber','operativeNumber','exeDeptName','exeDeptId','oprDeptName','oprDeptId','surgeonName','surgeonId','sqrtDoctorName','sqrtDoctorId','subordinateWardName','subordinateWardId','remarks');
                 this.form.setFieldsValue(fieldval);

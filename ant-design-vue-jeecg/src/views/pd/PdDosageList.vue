@@ -186,6 +186,11 @@
         this.$refs.pdDosageReturnedForm.edit(record);
         this.$refs.pdDosageReturnedForm.title="库存还回";
         this.$refs.pdDosageReturnedForm.disableSubmit = false;
+      },
+      handleDetail(record){
+        this.$refs.pdDosageReturnedForm.edit(record);
+        this.$refs.pdDosageReturnedForm.title="详情";
+        this.$refs.pdDosageReturnedForm.disableSubmit = true;
       }
     }
   }
