@@ -76,7 +76,8 @@ public class PdStoreroomPatrolController {
 //        PdStockRecord pdStockRecord = pdStockRecordService.initOutModal(id);
         PdStoreroomPatrol pdStoreroomPatrol = new PdStoreroomPatrol();
         if (oConvertUtils.isNotEmpty(id)) { // 查看页面
-
+            List<PdStoreroomPatrolDetail> detailList = pdStoreroomPatrolDetailService.selectByMainId(id);
+            pdStoreroomPatrol.setPdStoreroomPatrolDetailList(detailList);
         }else{
             pdStoreroomPatrol.setPatrolNo(UUIDUtil.generateOrderNoByType(PdConstant.ORDER_NO_FIRST_LETTER_XC));
             pdStoreroomPatrol.setPatrolDate(DateUtils.getDate());
@@ -116,7 +117,7 @@ public class PdStoreroomPatrolController {
         for (PdProductStock item : stockList) {
             PdStoreroomPatrolDetail patrol = new PdStoreroomPatrolDetail();
             BeanUtils.copyProperties(item, patrol);
-
+            patrol.setProductStockId(item.getId());
             patrol.setIsExp("");
             if(patrol.getExpDate() != null){
                 if(patrol.getExpDate().before(DateUtils.getDate())){

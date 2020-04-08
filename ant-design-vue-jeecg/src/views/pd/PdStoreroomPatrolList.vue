@@ -4,6 +4,44 @@
     <div class="table-page-search-wrapper">
       <a-form layout="inline" @keyup.enter.native="searchQuery">
         <a-row :gutter="24">
+          <a-col :md="6" :sm="8">
+            <a-form-item label="巡查单号">
+              <a-input placeholder="请输入巡查单号" v-model="queryParam.patrolNo"></a-input>
+            </a-form-item>
+          </a-col>
+          <a-col :span="6">
+            <a-form-item label="巡查科室">
+              <a-select
+                showSearch
+                placeholder="请选择巡查科室"
+                :supplierId="departValue"
+                :defaultActiveFirstOption="false"
+                :showArrow="true"
+                :filterOption="false"
+                @search="departHandleSearch"
+                @focus="departHandleSearch"
+                :notFoundContent="notFoundContent"
+                v-model="queryParam.patrolDepartId"
+              >
+                <a-select-option v-for="d in departList" :key="d.id">{{d.departName}}</a-select-option>
+              </a-select>
+            </a-form-item>
+          </a-col>
+          <a-col :md="6" :sm="8">
+            <a-form-item label="巡查日期">
+              <a-range-picker @change="dateChange" v-model="queryParam.queryDate"/>
+            </a-form-item>
+          </a-col>
+          <a-col :md="6" :sm="8">
+            <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
+              <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
+              <a-button type="primary" @click="searchReset" icon="reload" style="margin-left: 8px">重置</a-button>
+              <!--<a @click="handleToggleSearch" style="margin-left: 8px">-->
+              <!--{{ toggleSearchStatus ? '收起' : '展开' }}-->
+              <!--<a-icon :type="toggleSearchStatus ? 'up' : 'down'"/>-->
+              <!--</a>-->
+            </span>
+          </a-col>
 
         </a-row>
       </a-form>
@@ -13,16 +51,6 @@
     <!-- 操作按钮区域 -->
     <div class="table-operator">
       <a-button @click="handleAdd" type="primary" icon="plus">新增</a-button>
-      <!--<a-button type="primary" icon="download" @click="handleExportXls('pd_storeroom_patrol')">导出</a-button>-->
-      <!--<a-upload name="file" :showUploadList="false" :multiple="false" :headers="tokenHeader" :action="importExcelUrl" @change="handleImportExcel">-->
-        <!--<a-button type="primary" icon="import">导入</a-button>-->
-      <!--</a-upload>-->
-      <!--<a-dropdown v-if="selectedRowKeys.length > 0">-->
-        <!--<a-menu slot="overlay">-->
-          <!--<a-menu-item key="1" @click="batchDel"><a-icon type="delete"/>删除</a-menu-item>-->
-        <!--</a-menu>-->
-        <!--<a-button style="margin-left: 8px"> 批量操作 <a-icon type="down" /></a-button>-->
-      <!--</a-dropdown>-->
     </div>
 
     <!-- table区域-begin -->
@@ -43,26 +71,6 @@
         :loading="loading"
         :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
         @change="handleTableChange">
-
-        <template slot="htmlSlot" slot-scope="text">
-          <div v-html="text"></div>
-        </template>
-        <template slot="imgSlot" slot-scope="text">
-          <span v-if="!text" style="font-size: 12px;font-style: italic;">无此图片</span>
-          <img v-else :src="getImgView(text)" height="25px" alt="图片不存在" style="max-width:80px;font-size: 12px;font-style: italic;"/>
-        </template>
-        <template slot="fileSlot" slot-scope="text">
-          <span v-if="!text" style="font-size: 12px;font-style: italic;">无此文件</span>
-          <a-button
-            v-else
-            :ghost="true"
-            type="primary"
-            icon="download"
-            size="small"
-            @click="uploadFile(text)">
-            下载
-          </a-button>
-        </template>
 
         <span slot="action" slot-scope="text, record">
           <!--<a @click="handleEdit(record)">编辑</a>-->
@@ -91,6 +99,8 @@
 
   import { JeecgListMixin } from '@/mixins/JeecgListMixin'
   import PdStoreroomPatrolModal from './modules/PdStoreroomPatrolModal'
+  import {httpAction, deleteAction, getAction} from '@/api/manage'
+  import { filterObj } from '@/utils/util';
 
   export default {
     name: "PdStoreroomPatrolList",
@@ -101,6 +111,10 @@
     data () {
       return {
         description: '巡查列表',
+
+        notFoundContent:"未找到内容",
+        departValue: undefined,
+        departList:[],
         // 表头
         columns: [
           {
@@ -170,6 +184,7 @@
         ],
         url: {
           list: "/pd/pdStoreroomPatrol/list",
+          departList:"/pd/pdDepart/getSysDepartList",
           // delete: "/pd/pdStoreroomPatrol/delete",
           // deleteBatch: "/pd/pdStoreroomPatrol/deleteBatch",
           // exportXlsUrl: "/pd/pdStoreroomPatrol/exportXls",
@@ -185,7 +200,33 @@
     },
     methods: {
       initDictConfig(){
-      }
+      },
+      dateChange: function (value, dateString) {
+        this.queryParam.queryDateStart=dateString[0];
+        this.queryParam.queryDateEnd=dateString[1];
+      },
+      // 部门下拉框搜索
+      departHandleSearch(value){
+        getAction(this.url.departList,{departName:value,parentFlag:"0"}).then((res)=>{
+          if (!res.success) {
+            this.cmsFailed(res.message);
+          }
+          this.departList = res.result;
+        })
+      },
+      getQueryParams() {
+        //获取查询条件
+        let sqp = {}
+        if(this.superQueryParams){
+          sqp['superQueryParams']=encodeURI(this.superQueryParams)
+        }
+        var param = Object.assign(sqp, this.queryParam, this.isorter ,this.filters);
+        param.field = this.getQueryField();
+        param.pageNo = this.ipagination.current;
+        param.pageSize = this.ipagination.pageSize;
+        delete param.queryDate; //范围参数不传递后台，传后台会报错
+        return filterObj(param);
+      },
        
     }
   }

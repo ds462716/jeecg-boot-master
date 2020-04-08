@@ -45,6 +45,8 @@ public class PdStoreroomPatrolServiceImpl extends ServiceImpl<PdStoreroomPatrolM
 	@Transactional
 	public void saveMain(PdStoreroomPatrol pdStoreroomPatrol, List<PdStoreroomPatrolDetail> pdStoreroomPatrolDetailList) {
 		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		pdStoreroomPatrol.setPatrolMan(sysUser.getRealname());
+		pdStoreroomPatrolMapper.insert(pdStoreroomPatrol);
 
 		Double patrolCount = 0D; //巡查数量
 		Double passCount = 0D;   //合格数量
@@ -57,18 +59,17 @@ public class PdStoreroomPatrolServiceImpl extends ServiceImpl<PdStoreroomPatrolM
 				}else if(PdConstant.RESULT_UNQUALIFIED.equals(entity.getPatrolResult())){
 					failCount = failCount + entity.getStockNum();
 				}
-
 				//外键设置
 				entity.setStoreroomPatrolId(pdStoreroomPatrol.getId());
 				entity.setId(null);
 				pdStoreroomPatrolDetailMapper.insert(entity);
 			}
 		}
-		pdStoreroomPatrol.setPatrolMan(sysUser.getRealname());
 		pdStoreroomPatrol.setPatrolCount(patrolCount);
 		pdStoreroomPatrol.setPassCount(passCount);
 		pdStoreroomPatrol.setFailCount(failCount);
-		pdStoreroomPatrolMapper.insert(pdStoreroomPatrol);
+		// 更新数量
+		pdStoreroomPatrolMapper.updateById(pdStoreroomPatrol);
 	}
 
 	@Override

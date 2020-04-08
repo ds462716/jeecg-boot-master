@@ -23,7 +23,7 @@ import io.swagger.annotations.ApiModelProperty;
 @ApiModel(value="pd_storeroom_patrol对象", description="pd_storeroom_patrol")
 @Data
 @TableName("pd_storeroom_patrol_detail")
-public class PdStoreroomPatrolDetail implements Serializable {
+public class PdStoreroomPatrolDetail extends BaseEntity {
     private static final long serialVersionUID = 1L;
 
 	/**主键*/
@@ -33,6 +33,8 @@ public class PdStoreroomPatrolDetail implements Serializable {
 	/**巡查ID*/
 	@ApiModelProperty(value = "巡查ID")
 	private String storeroomPatrolId;
+	@ApiModelProperty(value = "库存明细ID")
+	private String productStockId;
 	/**产品主键*/
 	@Excel(name = "产品主键", width = 15)
 	@ApiModelProperty(value = "产品主键")
@@ -53,14 +55,12 @@ public class PdStoreroomPatrolDetail implements Serializable {
 	@Excel(name = "产品条码", width = 15)
 	@ApiModelProperty(value = "产品条码")
 	private String productBarCode;
+	@ApiModelProperty(value = "是否过期")
+	private String isExp; // 是否过期
 	/**备注信息 : 备注信息*/
 	@Excel(name = "备注信息 : 备注信息", width = 15)
 	@ApiModelProperty(value = "备注信息 : 备注信息")
 	private String remarks;
-	/**删除标记 : 删除标记（0：正常；1：删除）*/
-	@Excel(name = "删除标记 : 删除标记（0：正常；1：删除）", width = 15)
-	@ApiModelProperty(value = "删除标记 : 删除标记（0：正常；1：删除）")
-	private String delFlag;
 	/**extend1*/
 	@Excel(name = "extend1", width = 15)
 	@ApiModelProperty(value = "extend1")
@@ -126,6 +126,4 @@ public class PdStoreroomPatrolDetail implements Serializable {
 	private String registration;
 	@TableField(exist = false)
 	private String venderName;
-	@TableField(exist = false)
-	private String isExp; // 是否过期
 }

@@ -9,6 +9,22 @@
         FROM
             pd_storeroom_patrol a
             LEFT JOIN sys_depart b ON a.patrol_depart_id = b.id
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+            <if test="patrolNo != null and patrolNo != ''">
+                AND a.patrol_no LIKE concat('%',#{patrolNo},'%')
+            </if>
+            <if test="patrolDepartId != null and patrolDepartId != ''">
+                AND a.patrol_depart_id = #{patrolDepartId}
+            </if>
+            <if test="queryDateStart != null and queryDateStart != ''">
+                AND a.patrol_date &gt;= #{queryDateStart}
+            </if>
+            <if test="queryDateEnd != null and queryDateEnd != ''">
+                AND a.patrol_date &lt;= #{queryDateEnd}
+            </if>
+        </where>
+
         ORDER BY
             a.patrol_date DESC
     </select>

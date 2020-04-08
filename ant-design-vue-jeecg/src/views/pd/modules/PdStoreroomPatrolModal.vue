@@ -26,12 +26,9 @@
                 <a-form-item label="巡查日期" :labelCol="labelCol" :wrapperCol="wrapperCol">
                   <j-date disabled placeholder="请选巡查日期" v-decorator="[ 'patrolDate', {}]" style="width: 100%"/>
                 </a-form-item>
-                <a-form-item label="巡查部门ID" :labelCol="labelCol" :wrapperCol="wrapperCol" v-show="false">
-                  <a-input disabled v-decorator="[ 'patrolDepartId', {}]" ></a-input>
-                </a-form-item>
               </a-col>
               <a-col :md="5" :sm="8">
-                <a-form-item label="巡查库房" :labelCol="labelCol" :wrapperCol="wrapperCol">
+                <a-form-item label="巡查库房" :labelCol="labelCol" :wrapperCol="wrapperCol" v-show="!showPatrolDepartName">
                   <a-select
                     showSearch
                     placeholder="请选巡查库房"
@@ -48,9 +45,15 @@
                     <a-select-option v-for="d in departList" :key="d.id" :text="d.departName" >{{d.departName}}</a-select-option>
                   </a-select>
                 </a-form-item>
+                <a-form-item label="巡查部门ID" :labelCol="labelCol" :wrapperCol="wrapperCol" v-show="false">
+                  <a-input disabled v-decorator="[ 'patrolDepartId', {}]" ></a-input>
+                </a-form-item>
+                <a-form-item label="巡查库房" :labelCol="labelCol" :wrapperCol="wrapperCol" v-show="showPatrolDepartName">
+                  <a-input disabled v-decorator="[ 'patrolDepartName', {}]" ></a-input>
+                </a-form-item>
               </a-col>
             </a-row>
-            <a-row :gutter="24">
+            <a-row :gutter="24"  v-show="!disableSubmit">
               <a-col :md="5" :sm="8">
                 <a-form-item label="产品名称">
                   <a-input placeholder="请输入产品名称" v-model="queryParam.productName"></a-input>
@@ -92,7 +95,8 @@
                 :maxHeight="500"
                 :rowNumber="true"
                 :rowSelection="true"
-                :actionButton="false"/>
+                :actionButton="false"
+                :disabled="disableSubmit"/>
             </a-tab-pane>
           </a-tabs>
         </a-card>
@@ -148,6 +152,8 @@
     data() {
       return {
         queryParam:{},
+        showPatrolDepartName:false,
+
         /* 排序参数 */
         isorter:{
           column: 'createTime',
@@ -198,6 +204,7 @@
           columns: [
             { title: '产品主键', key: 'productId', type: FormTypes.hidden },
             { title: '产品条码', key: 'productBarCode', type: FormTypes.hidden },
+            { title: '库存明细ID', key: 'productStockId', type: FormTypes.hidden },
             // { title: '库房名称', key: 'departName', width:"200px" },
             { title: '产品名称', key: 'productName', width:"200px" },
             { title: '产品编号', key: 'number', width:"150px" },
@@ -275,7 +282,8 @@
         let params = {};
         if(this.model.id){
           this.popModal.title="巡查明细";
-          let fieldval = pick(this.model,'patrolNo','patrolDate','temperature','wetness')
+          this.showPatrolDepartName = true;
+          let fieldval = pick(this.model,'patrolNo','patrolDate','temperature','wetness','patrolDepartName')
           this.$nextTick(() => {
             this.form.setFieldsValue(fieldval);
           })
@@ -288,12 +296,12 @@
           if (res.success) {
             this.$nextTick(() => {
               if(this.model.id){
-
+                this.pdStoreroomPatrolDetailTable.dataSource = res.result.pdStoreroomPatrolDetailList || [];
                 // this.requestSubTableData(this.url.pdStoreroomPatrolDetail.list, params, this.pdStoreroomPatrolDetailTable)
               }else{
 
                 this.initData = res.result;
-                let fieldval = pick(this.initData,'patrolNo','patrolDate','temperature','wetness');
+                let fieldval = pick(this.initData,'patrolNo','patrolDate','temperature','wetness','patrolDepartName');
 
                 this.$nextTick(() => {
                   this.form.setFieldsValue(fieldval);
@@ -417,7 +425,7 @@
         this.$message.error(msg)
       },
      popupCallback(row){
-       this.form.setFieldsValue(pick(row,'patrolNo','patrolDate','temperature','wetness'))
+       this.form.setFieldsValue(pick(row,'patrolNo','patrolDate','temperature','wetness','patrolDepartName'))
      },
 
     }

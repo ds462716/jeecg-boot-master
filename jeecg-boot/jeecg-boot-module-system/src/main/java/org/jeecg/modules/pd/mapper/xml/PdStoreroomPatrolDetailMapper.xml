@@ -6,11 +6,29 @@
 		DELETE 
 		FROM  pd_storeroom_patrol_detail 
 		WHERE
-			 storeroom_patrol_id = #{mainId} 	</delete>
+			 storeroom_patrol_id = #{mainId}
+	</delete>
 	
 	<select id="selectByMainId" parameterType="java.lang.String" resultType="org.jeecg.modules.pd.entity.PdStoreroomPatrolDetail">
-		SELECT * 
-		FROM  pd_storeroom_patrol_detail
+		SELECT
+			a.*,
+			b.batch_no,
+			b.exp_date,
+			c.NAME AS productName,
+			c.number,
+			c.spec,
+			c.version,
+			c.registration,
+			d.`name` AS unitName,
+			e.`name` AS venderName
+		FROM
+			pd_storeroom_patrol_detail a
+			LEFT JOIN pd_product_stock b ON a.product_stock_id = b.id
+			LEFT JOIN pd_product c ON a.product_id = c.id
+			LEFT JOIN pd_unit d ON c.unit_id = d.id
+			LEFT JOIN pd_vender e ON c.vender_id = e.id
 		WHERE
-			 storeroom_patrol_id = #{mainId} 	</select>
+            a.del_flag = '0'
+			and storeroom_patrol_id = #{mainId}
+	</select>
 </mapper>
