@@ -41,6 +41,12 @@
             <a-input style="width: 30%;text-align: left" disabled v-model="record.supplierName"/>
           </a-col>
           <a-col :span="24" style="margin-top: 10px">
+            <span style="margin-left: 3%;text-align: right">
+              备注：
+            </span>
+            <a-input style="width: 50%;text-align: left" disabled v-model="record.remarks"/>
+          </a-col>
+          <a-col :span="24" style="margin-top: 10px">
             <!--<span>入库明细：</span>-->
             <a-table
               ref="table"

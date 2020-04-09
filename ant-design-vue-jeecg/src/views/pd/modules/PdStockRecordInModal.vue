@@ -564,6 +564,7 @@
         this.model.inTotalPrice = this.inTotalPrice;
         // this.model.pdStockRecordDetailList = this.pdStockRecordDetailTable.dataSource;
         this.model.pdStockRecordDetailList = values;
+        this.model.remarks = this.form.getFieldValue("remarks");
         this.$refs.pdStockRecordInPrintModal.show(this.model);
         this.$refs.pdStockRecordInPrintModal.title = this.stockInText + "入库单";
       },

@@ -612,6 +612,7 @@
         this.model.totalSum = this.totalSum;
         this.model.outTotalPrice = this.outTotalPrice;
         this.model.inTotalPrice = this.inTotalPrice;
+        this.model.remarks = this.form.getFieldValue("remarks");
         // this.model.pdStockRecordDetailList = this.pdStockRecordDetailTable.dataSource;
         this.model.pdStockRecordDetailList = values;
         this.$refs.pdStockRecordOutPrintModal.show(this.model);
