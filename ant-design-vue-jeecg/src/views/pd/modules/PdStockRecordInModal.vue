@@ -797,11 +797,35 @@
       // 选择产品弹出框回调函数
       returnProductData(data) {
         let rows = [];
+        let products = [];
+
+        if(this.allowStockInExpProduct == "0"){
+          let name = "";
+          data.forEach((item, idx) => {
+            let bool = true;
+            if(item.validityFlag == "1"){ // 证照过期标志
+              // bool = false; // TODO
+              if(name == ""){
+                name = name + item.productName;
+              }else{
+                name = name + "、" + item.productName;
+              }
+            }
+            if(bool){
+              products.push(item)
+            }
+          })
+          this.$message.error("产品[" + name + "]证照已过期，请更新证照信息！");
+        }else{
+          products = data;
+        }
+
         let { values } = this.$refs.pdStockRecordDetail.getValuesSync({ validate: false });
         if(values.length > 0){
           // 如果列表中有相同产品则不加行
-          data.forEach((item, idx) => {
+          products.forEach((item, idx) => {
             let bool = true;
+            let name = "";
             values.forEach((value, idx) => {
               if (value.productId == item.productId
                 && value.batchNo == "" && value.expDate == ""){
@@ -813,7 +837,7 @@
             }
           })
         }else{
-          rows = data;
+          rows = products;
         }
 
         //校验是否允许入库量大于订单量
@@ -988,7 +1012,12 @@
               let result = res.result;
               if(result.code == "200" || result.code == "203"){
                 let product = result.pdProduct;
-
+                //开关-是否允许入库证照过期的产品   1-允许；0不允许
+                if(that.allowStockInExpProduct == "0" && product.validityFlag == "1"){
+                  this.clearQueryParam();
+                  this.$message.error("产品[" + product.name + "]证照已过期，请更新证照信息！");
+                  // return;  // TODO
+                }
                 //校验开关-是否允许入库非订单产品
                 if(!this.checkAllowNotOrderProduct(product)){
                   return;
@@ -997,12 +1026,6 @@
                 if(!this.checkSupplier(product)){
                   return;
                 }
-                // if(this.allowStockInExpSupplier == "0"){ //开关-是否允许入库证照过期的供应商   1-允许；0不允许
-                //   if(!this.checkSupplierIsExp(product.supplierId)){
-                //
-                //   }
-                // }
-
 
                 let isAddRow = true;// 是否增加一行
                 // 循环表格数据
@@ -1100,7 +1123,7 @@
             return false;
           }
         }else{
-          //默认选中扫码产品的供应商 TODO
+          //默认选中扫码产品的供应商
           this.form.setFieldsValue({supplierId:product.supplierId});
           if(this.allowStockInExpSupplier == "0"){ //开关-是否允许入库证照过期的供应商   1-允许；0不允许
             let bool = this.checkSupplierIsExp(product.supplierId);
@@ -1120,8 +1143,8 @@
           }
           const result = res.result;
           if(result.validityFlag == "1"){
-            this.form.setFieldsValue({supplierId:""});
-            this.$message.error("供应商["+result.name+"]证照已过期，请先更新供应商证照信息！");
+            // this.form.setFieldsValue({supplierId:""});  // TODO
+            this.$message.error("供应商["+result.name+"]证照已过期，请更新供应商证照信息！");
             return false;
           }else{
             return true;

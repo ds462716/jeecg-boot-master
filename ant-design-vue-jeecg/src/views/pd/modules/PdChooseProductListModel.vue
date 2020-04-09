@@ -232,6 +232,18 @@
               return obj;
             },
           },
+          {
+            title: '证照过期标志',
+            align:"center",
+            dataIndex: 'validityFlag',
+            // colSpan: 0,
+            // customRender: (value, row, index) => {
+            //   const obj = {
+            //     attrs: {colSpan:0},
+            //   };
+            //   return obj;
+            // },
+          },
         ],
         url: {
           list: "/pd/pdProduct/chooseProductList",
