@@ -111,6 +111,10 @@ public interface PdConstant {
 	public final static String ON_OFF_STOCK_OUT_AUDIT = "on_off_stock_out_audit";
 	public final static Integer ON_OFF_STOCK_OUT_AUDIT_0 = 0; // 1-是；0-否
 	public final static Integer ON_OFF_STOCK_OUT_AUDIT_1 = 1; // 1-是；0-否
+	/**开关-是否允许入库证照过期的产品**/
+	public final static String ON_OFF_STOCK_IN_EXP_PRODUCT = "on_off_stock_in_exp_product";
+	/**开关-是否允许入库证照过期的供应商**/
+	public final static String ON_OFF_STOCK_IN_EXP_SUPPLIER = "on_off_stock_in_exp_supplier";
 
 
 	//系统消息提醒模板CODE

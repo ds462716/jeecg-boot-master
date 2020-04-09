@@ -652,6 +652,22 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
             pdStockRecord.setAllowStockInAudit(stockInAudit.getValue().toString());
         }
 
+        //开关-是否允许入库证照过期的产品   1-是；0-否
+        query.setCode(PdConstant.ON_OFF_STOCK_IN_EXP_PRODUCT);
+        PdOnOff stockInExpProduct = pdOnOffService.getOne(query);
+        if (stockInAudit != null && stockInAudit.getValue() != null) {
+            // 自动审批
+            pdStockRecord.setAllowStockInExpProduct(stockInExpProduct.getValue().toString());
+        }
+
+        //开关-是否允许入库证照过期的供应商   1-是；0-否
+        query.setCode(PdConstant.ON_OFF_STOCK_IN_EXP_SUPPLIER);
+        PdOnOff stockInExpSupplier = pdOnOffService.getOne(query);
+        if (stockInAudit != null && stockInAudit.getValue() != null) {
+            // 自动审批
+            pdStockRecord.setAllowStockInExpSupplier(stockInExpSupplier.getValue().toString());
+        }
+
         //开关-是否显示入库单抬头   1-是；0-否
         query.setCode(PdConstant.ON_OFF_STOCK_IN_TEXT);
         query.setValue(PdConstant.ON_OFF_STOCK_IN_TEXT_1);

@@ -293,10 +293,12 @@
 
         initData:{},
         queryParam:{},
-        allowInMoreOrder:"",		//开关-是否允许入库量大于订单量    1-允许；0-不允许
-        allowNotOrderProduct:"",		//开关-是否允许入库非订单产品     1-允许；0-不允
-        allowSupplier:"",//开关-是否允许入库非本供应商产品   1-允许；0不允许
-        allowEditPrice:"",//关-是否允许出入库时可修改进价和出价   1-允许；0不允许
+        allowInMoreOrder:"",		   //开关-是否允许入库量大于订单量    1-允许；0-不允许
+        allowNotOrderProduct:"",	 //开关-是否允许入库非订单产品     1-允许；0-不允
+        allowSupplier:"",          //开关-是否允许入库非本供应商产品   1-允许；0不允许
+        allowEditPrice:"",         //开关-是否允许出入库时可修改进价和出价   1-允许；0不允许
+        allowStockInExpProduct:"", //开关-是否允许入库证照过期的产品   1-允许；0不允许
+        allowStockInExpSupplier:"",//开关-是否允许入库证照过期的供应商   1-允许；0不允许
 
         //供应商下拉列表 start
         supplierValue: undefined,
@@ -411,6 +413,7 @@
           // edit: "/pd/pdStockRecordIn/edit",
           cancel: "/pd/pdStockRecordIn/cancel",
           querySupplier:"/pd/pdSupplier/getSupplierList",
+          querySupplierById:"/pd/pdSupplier/queryById",
           pdStockRecordDetail: {
             list: "/pd/pdStockRecordIn/queryPdStockRecordDetailByMainId"
           },
@@ -522,6 +525,8 @@
               this.allowNotOrderProduct = res.result.allowNotOrderProduct;
               this.allowSupplier = res.result.allowSupplier;
               this.allowEditPrice = res.result.allowEditPrice;
+              this.allowStockInExpProduct = res.result.allowStockInExpProduct;
+              this.allowStockInExpSupplier = res.result.allowStockInExpSupplier;
               if(this.disableSubmit){
                 this.allowEditPrice = "0";
               }
@@ -736,7 +741,10 @@
           })
         }
         this.supplierValue = value;
-        fetch(value, data => (this.supplierData = data),this.url.querySupplier);
+        // fetch(value, data => (this.supplierData = data),this.url.querySupplier);
+        if(this.allowStockInExpSupplier == "0"){ //开关-是否允许入库证照过期的供应商   1-允许；0不允许
+          this.checkSupplierIsExp(value);
+        }
       },
       //----------------供应商查询end
 
@@ -989,6 +997,12 @@
                 if(!this.checkSupplier(product)){
                   return;
                 }
+                // if(this.allowStockInExpSupplier == "0"){ //开关-是否允许入库证照过期的供应商   1-允许；0不允许
+                //   if(!this.checkSupplierIsExp(product.supplierId)){
+                //
+                //   }
+                // }
+
 
                 let isAddRow = true;// 是否增加一行
                 // 循环表格数据
@@ -1071,7 +1085,7 @@
       checkSupplier(product){
         let supplierId = this.form.getFieldValue("supplierId")
 
-        if(!product.supplierId){
+        if(!product.supplierId && this.allowSupplier == "0"){ // 是否允许入库非本供应商产品 1-允许；0-不允许
           this.$message.error("产品("+product.name+")没有维护供应商，请先维护供应商！");
           //清空扫码框
           this.clearQueryParam();
@@ -1086,10 +1100,33 @@
             return false;
           }
         }else{
-          //默认选中扫码产品的供应商
+          //默认选中扫码产品的供应商 TODO
           this.form.setFieldsValue({supplierId:product.supplierId});
+          if(this.allowStockInExpSupplier == "0"){ //开关-是否允许入库证照过期的供应商   1-允许；0不允许
+            let bool = this.checkSupplierIsExp(product.supplierId);
+            if(this.allowSupplier == "0" && !bool){
+              this.clearQueryParam();
+              return false;
+            }
+          }
         }
         return true;
+      },
+      //校验供应商证照是否过期
+      checkSupplierIsExp(supplierId){
+        getAction(this.url.querySupplierById,{id:supplierId}).then((res)=>{
+          if (!res.success) {
+            this.cmsFailed(res.message);
+          }
+          const result = res.result;
+          if(result.validityFlag == "1"){
+            this.form.setFieldsValue({supplierId:""});
+            this.$message.error("供应商["+result.name+"]证照已过期，请先更新供应商证照信息！");
+            return false;
+          }else{
+            return true;
+          }
+        })
       },
       //校验是否允许订单外产品入库
       checkAllowNotOrderProduct(product){
