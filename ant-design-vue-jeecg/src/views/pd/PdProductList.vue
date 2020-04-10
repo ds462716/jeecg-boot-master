@@ -98,6 +98,7 @@
       <a-upload name="file" :showUploadList="false" :multiple="false" :headers="tokenHeader" :action="importExcelUrl" @change="handleImportExcel">
         <a-button type="primary" icon="import">导入</a-button>
       </a-upload>
+      <a-button type="primary" icon="copy" @click="copy()">复制</a-button>
       <a-dropdown v-if="selectedRowKeys.length > 0">
         <a-menu slot="overlay">
           <a-menu-item key="1" @click="batchDel"><a-icon type="delete"/>删除</a-menu-item>
@@ -245,6 +246,7 @@
         supplierValue: undefined,
         chargeCodeVisible:false,
         confirmLoading: false,
+        copyRecord:"",
         form: this.$form.createForm(this),
         model: {},
         labelCol: {
@@ -415,7 +417,6 @@
         this.chargeCodeVisible = false;
       },
       setdataCss(record,index) {
-        console.log(record)
         let validityFlag = record.validityFlag;
         return "validityFlag"+validityFlag;
       },
@@ -459,6 +460,38 @@
           }
         })
       },
+      copy(){
+        let selectionRows = this.selectionRows;
+        if(selectionRows.length>0){
+          if(selectionRows.length==1){
+            this.copyRecord = Object.assign({}, selectionRows[0]);
+            this.$message.warning("复制成功");
+          }else{
+            this.$message.warning("不能选择多行复制");
+          }
+        }else{
+          this.$message.warning("请选择一行进行复制");
+        }
+      },
+      //新增方法重写  加入复制
+      handleAdd: function () {
+        if(this.copyRecord){
+          let record = this.copyRecord;
+          record.number = "";
+          record.id="";
+          this.copyRecord = "";
+          this.selectedRowKeys=[];
+          this.selectionRows=[];
+          this.$refs.modalForm.edit(record);
+          this.$refs.modalForm.title = "新增";
+          this.$refs.modalForm.disableSubmit = false;
+        }else{
+          this.$refs.modalForm.add();
+          this.$refs.modalForm.title = "新增";
+          this.$refs.modalForm.disableSubmit = false;
+        }
+
+      },
       //供应商查询end
       /**
        * 点击行选中checkbox
@@ -485,8 +518,10 @@
                   let index = this.selectedRowKeys.indexOf(recordId);
                   if(index>=0){
                     this.selectedRowKeys.splice(index, 1);
+                    this.selectionRows.splice(index, 1);
                   }else{
                     this.selectedRowKeys.push(recordId);
+                    this.selectionRows.push(record);
                   }
                 }
               }

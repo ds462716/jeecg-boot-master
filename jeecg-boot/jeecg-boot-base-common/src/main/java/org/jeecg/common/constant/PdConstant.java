@@ -169,11 +169,14 @@ public interface PdConstant {
 	public final static String REMINDER_TYPE_2 = "supplierNEP";//供应商近效期提醒时间
 	public final static String REMINDER_TYPE_3 = "stockNEP";//库存近效期提醒时间
 	public final static String REMINDER_TYPE_4 = "existRemind";//久存提醒时间
+	public final static String REMINDER_TYPE_5 = "productNEP";//产品证照近效期提醒时间
+
 
 	public final static String REMINDER_DETE_1 = "60";//生产厂家近效期提醒时间默认值
 	public final static String REMINDER_DETE_2 = "60";//供应商近效期提醒时间默认值
 	public final static String REMINDER_DETE_3 = "60";//库存近效期提醒时间默认值
 	public final static String REMINDER_DETE_4 = "60";//久存提醒时间默认值
+	public final static String REMINDER_DETE_5 = "60";//产品近效期提醒时间默认值
 
 	/**
 	 * 菜单名称变了需要改名字
@@ -186,6 +189,8 @@ public interface PdConstant {
 	public final static String AUDIT_MENU_6="生产厂家管理";
 	public final static String AUDIT_MENU_7="领用审核";
 	public final static String AUDIT_MENU_8="调拨审核";
+	public final static String AUDIT_MENU_9="产品管理";
+
 
 
 	//同步状态码
