@@ -83,12 +83,11 @@
 
             <!-- 动态生成tr -->
             <template v-for="(row,rowIndex) in rows">
-              <!-- tr 只加载可见的和预加载的总共十条数据 -->
+              <!-- tr 只加载可见的和预加载的总共十条数据-->
+              <!--modified  by jiangxz 20200410 取消动态加载 有bug-->
+                <!--v-if=" rowIndex >= parseInt(`${(scrollTop-rowHeight) / rowHeight}`) &&
+                    (parseInt(`${scrollTop / rowHeight}`) + 9) > rowIndex "-->
               <div
-                v-if="
-                rowIndex >= parseInt(`${(scrollTop-rowHeight) / rowHeight}`) &&
-                  (parseInt(`${scrollTop / rowHeight}`) + 9) > rowIndex
-              "
                 :id="`${caseId}tbody-tr-${rowIndex}`"
                 :data-idx="rowIndex"
                 class="tr"

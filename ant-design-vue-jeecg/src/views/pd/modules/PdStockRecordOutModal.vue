@@ -145,7 +145,7 @@
                 :loading="pdStockRecordDetailTable.loading"
                 :columns="pdStockRecordDetailTable.columns"
                 :dataSource="pdStockRecordDetailTable.dataSource"
-                :maxHeight="500"
+                :maxHeight="650"
                 :rowNumber="true"
                 :rowSelection="true"
                 :actionButton="false"
@@ -154,7 +154,6 @@
                 @added="setPriceDisabled"
                 style="text-overflow: ellipsis;"
               >
-              <!--:maxHeight 大于 600 后就会有BUG 一次性选择9条以上产品，会少显示一条-->
               </j-editable-table>
               <a-row style="margin-top:10px;text-align: right;padding-right: 5%">
                   <span style="font-weight: bold;font-size: large;padding-right: 5%">总数量：{{ totalSum }}</span>

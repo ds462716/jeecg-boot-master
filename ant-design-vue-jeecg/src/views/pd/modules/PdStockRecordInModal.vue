@@ -137,7 +137,7 @@
                 :loading="pdStockRecordDetailTable.loading"
                 :columns="pdStockRecordDetailTable.columns"
                 :dataSource="pdStockRecordDetailTable.dataSource"
-                :maxHeight="500"
+                :maxHeight="650"
                 :rowNumber="true"
                 :rowSelection="true"
                 :actionButton="false"
@@ -147,7 +147,6 @@
                 @added="setPriceDisabled"
                 style="text-overflow: ellipsis;"
               >
-              <!--:maxHeight 大于 600 后就会有BUG 一次性选择9条以上产品，会少显示一条-->
               </j-editable-table>
               <a-row style="margin-top:10px;text-align: right;padding-right: 5%">
                   <span style="font-weight: bold;font-size: large;padding-right: 5%">总数量：{{ totalSum }}</span>
@@ -403,7 +402,10 @@
             { title: '货位', key: 'inHuoweiCode', type: FormTypes.select, width:"150px", options: [],allowSearch:true, placeholder: '${title}' },
             // { title: '申购单号', key: 'orderNo', },
             { title: '合并申购单号', key: 'mergeOrderNo', type: FormTypes.input, disabled:true, width:"180px" },
-            { title: '生产厂家', key: 'venderName', type: FormTypes.hidden }
+            { title: '生产厂家', key: 'venderName', type: FormTypes.hidden },
+            { title: '紧急产品-0是1不是', key: 'isUrgent', type: FormTypes.hidden },
+            { title: '紧急产品需要采购数量', key: 'upQuantity', type: FormTypes.hidden },
+            { title: '紧急产品已采购数量', key: 'purchasedQuantity', type: FormTypes.hidden },
           ]
         },
         url: {
@@ -885,7 +887,10 @@
           batchNo:"",
           productNum: 1,
           mergeOrderNo:"",
-          inHuoweiCode:""
+          inHuoweiCode:"",
+          isUrgent:row.isUrgent,
+          upQuantity:row.upQuantity,
+          purchasedQuantity:row.purchasedQuantity
         }
         let purchaseOrderDetail = this.pdPurchaseOrderDetailTable.dataSource;
         for (let detail of purchaseOrderDetail) {
@@ -916,7 +921,10 @@
           batchNo:row.batchNo,
           productNum: 1,
           mergeOrderNo:"",
-          inHuoweiCode:""
+          inHuoweiCode:"",
+          isUrgent:row.pdProduct.isUrgent,
+          upQuantity:row.pdProduct.upQuantity,
+          purchasedQuantity:row.pdProduct.purchasedQuantity
         }
         let purchaseOrderDetail = this.pdPurchaseOrderDetailTable.dataSource;
         purchaseOrderDetail.forEach((detail, idx) => {
@@ -969,15 +977,27 @@
             if(column.key == "productNum"){
               // 产品数量变更 计算每条产品的价格
               let rows = target.getValuesSync({ validate: false });
-              let result = this.checkAllowInMoreOrder(row,rows.values);
-              if(!result.bool){
+              // 校验是否允许入库量大于订单量
+              let result1 = this.checkAllowInMoreOrder(row,rows.values);
+              if(!result1.bool){
                 // target.setValues([{rowKey: row.id, values: { productNum: result.num }}]);
-                let inTotalPrice = (Number(row.purchasePrice) * Number(result.num)).toFixed(4);
-                target.setValues([{rowKey: row.id, values: { inTotalPrice: inTotalPrice,productNum: result.num }}])
+                let inTotalPrice = (Number(row.purchasePrice) * Number(result1.num)).toFixed(4);
+                target.setValues([{rowKey: row.id, values: { inTotalPrice: inTotalPrice,productNum: result1.num }}])
               }else{
                 let inTotalPrice = (Number(row.purchasePrice) * Number(value)).toFixed(4);
                 target.setValues([{rowKey: row.id, values: { inTotalPrice: inTotalPrice }}])
               }
+
+              // 校验是否是紧急产品 TODO1
+              // let result2 = this.checkUrgentProduct(row,rows.values);
+              // if(!result2.bool){
+              //   let inTotalPrice = (Number(row.purchasePrice) * Number(result2.num)).toFixed(4);
+              //   target.setValues([{rowKey: row.id, values: { inTotalPrice: inTotalPrice,productNum: result2.num }}])
+              // }else{
+              //   let inTotalPrice = (Number(row.purchasePrice) * Number(value)).toFixed(4);
+              //   target.setValues([{rowKey: row.id, values: { inTotalPrice: inTotalPrice }}])
+              // }
+
             }else if(column.key == "purchasePrice"){
               let inTotalPrice = (Number(row.productNum) * Number(value)).toFixed(4);
               target.setValues([{rowKey: row.id, values: { inTotalPrice: inTotalPrice }}])
@@ -1178,6 +1198,41 @@
         }
         return true;
       },
+      // 校验是否是紧急产品 TODO1
+      // checkUrgentProduct(currentRow,rows){
+      //   let result = {};
+      //   result.bool = true;
+      //   if(currentRow.isUrgent == "0"){// 紧急产品
+      //     let upQuantity = Number(currentRow.upQuantity ? currentRow.upQuantity : ""); // 需要采购数量
+      //     let purchasedQuantity = Number(currentRow.purchasedQuantity ? currentRow.purchasedQuantity : ""); // 已采购数量
+      //     let lastNum = upQuantity-purchasedQuantity; // 可采购产品数量
+      //     let totalNum = 0; //当前产品总数量
+      //     let exceptNum = 0;//产品数量(除了当前编辑行)
+      //
+      //     for(let row of rows){
+      //       if(row.productId == currentRow.productId){
+      //         totalNum = totalNum + Number(row.productNum);
+      //         // if(currentRow.id != row.id && currentRow.productId == row.productId){
+      //         //   exceptNum = exceptNum + Number(row.productNum);
+      //         // }
+      //       }
+      //     }
+      //     exceptNum = totalNum - Number(currentRow.productNum);
+      //     if(totalNum > lastNum){
+      //       result.bool = false;
+      //       result.num = lastNum - exceptNum;
+      //       this.$message.error("入库产品["+currentRow.productName+"]是紧急产品，入库数量不能大于紧急产品需采购数量"+lastNum+"！");
+      //     }else{
+      //       result.bool = true;
+      //     }
+      //   }
+      //   return result;
+      // },
+      // /* 扫码调用 校验是否是紧急产品
+      //  */
+      // checkUrgentProductForScanCode(currentProductId,rows){
+      //
+      // },
       /* 修改产品数量时调用 校验是否允许入库量大于订单量 1-允许入库量大于订单量；0-不允许入库量大于订单量
          校验全局数据 入库数量是否大于订单量
        */

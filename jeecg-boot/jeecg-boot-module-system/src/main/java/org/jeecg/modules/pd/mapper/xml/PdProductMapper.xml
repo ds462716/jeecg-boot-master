@@ -378,19 +378,9 @@
     <select id="chooseProductList" resultType="org.jeecg.modules.pd.vo.PdProductPage" parameterType="org.jeecg.modules.pd.vo.PdProductPage">
         select DISTINCT
             a.id as productId,
-            a.number as number,
             a.number as productNumber,
             a.name as productName,
-            a.unit_id as unitId,
-            a.vender_id as venderId,
-            a.supplier_id as supplierId,
-            a.spec as spec,
-            a.selling_price as sellingPrice,
-            a.purchase_price as purchasePrice,
-            a.version as version,
-            a.registration as registration,
-            a.charge_code as chargeCode,
-            a.validity_flag as validityFlag,
+            a.*,
             b.name as unitName,
             c.name as venderName,
             d.name as supplierName
