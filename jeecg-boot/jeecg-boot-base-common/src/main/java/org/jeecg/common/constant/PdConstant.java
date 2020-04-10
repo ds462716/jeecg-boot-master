@@ -221,4 +221,6 @@ public interface PdConstant {
 	public final static String RESULT_UNQUALIFIED = "不合格";
 	public final static String RESULT_OTHER = "其他";
 
+	// 紧急产品标志   0-是；1-不是
+	public final static String IS_URGENT_0 = "0";
 }
