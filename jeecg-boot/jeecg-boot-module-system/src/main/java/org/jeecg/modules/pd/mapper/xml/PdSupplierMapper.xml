@@ -193,7 +193,8 @@
 		 licence_validity9 = #{licenceValidity9},
 		 licence_validity10 = #{licenceValidity10},
 		 licence_validity11 = #{licenceValidity11},
-		 validity_flag = #{validityFlag}
+		 validity_flag = #{validityFlag},
+		 msg_send_state = #{msgSendState}
 		  where id = #{id}
 	</update>
 </mapper>
