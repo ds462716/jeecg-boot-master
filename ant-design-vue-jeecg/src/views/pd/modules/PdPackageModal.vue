@@ -119,6 +119,7 @@
   import { FormTypes,getRefPromise } from '@/utils/JEditableTableUtil'
   import { JEditableTableMixin } from '@/mixins/JEditableTableMixin'
   import { makeWb } from '@/utils/wubi'
+  import {httpAction, deleteAction, getAction} from '@/api/manage'
   import PdChooseProductListModel from "./PdChooseProductListModel"
 
   export default {
@@ -215,6 +216,7 @@
         },
         url: {
           add: "/pd/pdPackage/add",
+          init: "/pd/pdPackage/initModal",
           edit: "/pd/pdPackage/edit",
           pdPackageDetail: {
             list: '/pd/pdPackage/queryPdPackageDetailByMainId'
@@ -245,14 +247,19 @@
       /** 调用完edit()方法之后会自动调用此方法 */
       editAfter() {
         let fieldval = pick(this.model,'code','name','sum','py','wb','zdy','remarks');
-        this.$nextTick(() => {
-          this.form.setFieldsValue({code:(new Date()).getTime()});
-          this.form.setFieldsValue(fieldval)
-        })
+        this.form.setFieldsValue(fieldval);
         // 加载子表数据
         if (this.model.id) {
           let params = { id: this.model.id }
           this.requestSubTableData(this.url.pdPackageDetail.list, params, this.pdPackageDetailTable)
+        }else{
+          getAction(this.url.init, {id:""}).then((res) => {
+            if (res.success) {
+              this.$nextTick(() => {
+                this.form.setFieldsValue({code:res.result.code});
+              })
+            }
+          })
         }
       },
       /** 整理成formData */

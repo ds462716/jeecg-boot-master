@@ -73,6 +73,7 @@ public interface PdConstant {
 	public final static String ORDER_NO_FIRST_LETTER_SG = "SG";//申购单
 	public final static String ORDER_NO_FIRST_LETTER_XC = "XC";//巡查单
 	public final static String ORDER_NO_FIRST_LETTER_PD = "PD";//盘点单
+	public final static String ORDER_NO_FIRST_LETTER_DSB = "DSB";//定数包
 
 	//是否过期
 	public final static String PD_STATE="pd_state";
