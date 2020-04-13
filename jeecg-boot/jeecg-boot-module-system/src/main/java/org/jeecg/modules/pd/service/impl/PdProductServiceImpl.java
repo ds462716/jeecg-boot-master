@@ -877,6 +877,9 @@ public class PdProductServiceImpl extends ServiceImpl<PdProductMapper, PdProduct
             pdProductRuleService.saveBatch(pdProductRules);
         }
     }
-
+    @Override
+    public void updateValidityFlag(PdProduct pdProduct){
+        pdProductMapper.updateValidityFlag(pdProduct);
+    }
 
 }

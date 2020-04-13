@@ -27,4 +27,6 @@ public interface PdProductMapper extends BaseMapper<PdProduct> {
     List<PdProduct> selectListByCT(PdProduct pdProduct);
 
     List<PdProduct> selectListByCTs(@Param("parMap")Map<String,Object> map);
+
+    void updateValidityFlag(PdProduct pdProduct);
 }

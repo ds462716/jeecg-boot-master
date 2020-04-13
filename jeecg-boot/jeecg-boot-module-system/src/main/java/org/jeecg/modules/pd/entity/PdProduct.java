@@ -258,6 +258,10 @@ public class PdProduct  extends BaseEntity {
     private java.lang.String sysOrgCode;
 	/**是否过期标识，0未过期，1已过期，2近效期*/
     private java.lang.String validityFlag;
+	/**
+	 * 消息发送状态，近效期1，已过期2，初始值为0
+	 */
+	private java.lang.String msgSendState;
 	/**产品收费代码*/
 	@Excel(name = "产品收费代码", width = 15)
     private java.lang.String chargeCode;

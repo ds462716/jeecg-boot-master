@@ -524,4 +524,23 @@
         </if>
     </select>
 
+    <!--  修改有效期标识 -->
+    <update id="updateValidityFlag">
+		UPDATE pd_product SET
+		 licence_validity0 = #{licenceValidity0},
+		 licence_validity1 = #{licenceValidity1},
+		 licence_validity2 = #{licenceValidity2},
+		 licence_validity3 = #{licenceValidity3},
+		 licence_validity4 = #{licenceValidity4},
+		 licence_validity5 = #{licenceValidity5},
+		 licence_validity6 = #{licenceValidity6},
+		 licence_validity7 = #{licenceValidity7},
+		 licence_validity8 = #{licenceValidity8},
+		 licence_validity9 = #{licenceValidity9},
+		 licence_validity10 = #{licenceValidity10},
+		 licence_validity11 = #{licenceValidity11},
+		 validity_flag = #{validityFlag},
+		 msg_send_state = #{msgSendState}
+		  where id = #{id}
+	</update>
 </mapper>
