@@ -22,12 +22,12 @@ public class PdProduct  extends BaseEntity {
 	/**主键*/
 	@TableId(type = IdType.ID_WORKER_STR)
     private java.lang.String id;
-	/**产品编号*/
-	@Excel(name = "产品编号", width = 15)
-    private java.lang.String number;
 	/**产品名称*/
 	@Excel(name = "产品名称", width = 15)
     private java.lang.String name;
+	/**产品编号*/
+	@Excel(name = "产品编号", width = 15)
+	private java.lang.String number;
 	/**拼音简码*/
 	@Excel(name = "拼音简码", width = 15)
     private java.lang.String py;
