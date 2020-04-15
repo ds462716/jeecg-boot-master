@@ -56,10 +56,10 @@
                 <a href="javascript:;" @click="handleAddPermissionSub(record)">添加部门权限</a>
               </a-menu-item>
               <a-menu-item>
-                <a href="javascript:;" @click="copyPermissionSub(record)">复制部门权限</a>
+                <a href="javascript:;" @click="copyPermissionSub(record)">复制部门权限及部门角色权限</a>
               </a-menu-item>
               <a-menu-item>
-                <a href="javascript:;" @click="pastePermissionSub(record)">粘贴部门权限</a>
+                <a href="javascript:;" @click="pastePermissionSub(record)">粘贴部门权限及部门角色权限</a>
               </a-menu-item>
               <a-menu-item>
                 <a href="javascript:;" @click="handleAddRoleSub(record)">添加部门角色</a>

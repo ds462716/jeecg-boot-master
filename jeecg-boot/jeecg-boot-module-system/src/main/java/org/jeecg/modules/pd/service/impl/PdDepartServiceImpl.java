@@ -13,6 +13,7 @@ import org.jeecg.common.constant.PdConstant;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.pd.service.IPdDepartService;
+import org.jeecg.modules.pd.util.UUIDUtil;
 import org.jeecg.modules.system.entity.*;
 import org.jeecg.modules.system.mapper.SysDepartMapper;
 import org.jeecg.modules.system.mapper.SysUserDepartMapper;
@@ -416,6 +417,7 @@ public class PdDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart>
      */
     @Override
     public Result<Object> copyPermission(String copyId, String pasteId, Result<Object> result) {
+        //复制部门权限
         List<SysDepartPermission> sysDepartPermissions = sysDepartPermissionService.list(new QueryWrapper<SysDepartPermission>().lambda().eq(SysDepartPermission::getDepartId, copyId));
         if(sysDepartPermissions!=null && sysDepartPermissions.size()>0){
             sysDepartPermissionService.remove(new QueryWrapper<SysDepartPermission>().lambda().eq(SysDepartPermission::getDepartId, pasteId));
@@ -424,6 +426,31 @@ public class PdDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart>
                 sysDepartPermission.setDepartId(pasteId);
             }
             sysDepartPermissionService.saveBatch(sysDepartPermissions);
+            List<SysDepartRole> sysDepartRoles = sysDepartRoleService.list(new QueryWrapper<SysDepartRole>().lambda().eq(SysDepartRole::getDepartId, copyId));
+            //复制部门角色
+            if(sysDepartRoles!=null && sysDepartRoles.size()>0){
+                sysDepartRoleService.remove(new QueryWrapper<SysDepartRole>().lambda().eq(SysDepartRole::getDepartId, pasteId));
+                sysDepartRolePermissionService.remove(new QueryWrapper<SysDepartRolePermission>().lambda().eq(SysDepartRolePermission::getDepartId, pasteId));
+                List<SysDepartRolePermission> allSysDepartRolePermission = new ArrayList<>();
+                for(SysDepartRole sysDepartRole :sysDepartRoles){
+                    String sysDepartRoleId = UUIDUtil.getUuid();
+                    List<SysDepartRolePermission> sysDepartRolePermissions = sysDepartRolePermissionService.list(new QueryWrapper<SysDepartRolePermission>().lambda().eq(SysDepartRolePermission::getRoleId, sysDepartRole.getId()));
+                    if(sysDepartRolePermissions!=null && sysDepartRolePermissions.size()>0){
+                        for(SysDepartRolePermission sysDepartRolePermission :sysDepartRolePermissions){
+                            sysDepartRolePermission.setId("");
+                            sysDepartRolePermission.setDepartId(pasteId);
+                            sysDepartRolePermission.setRoleId(sysDepartRoleId);
+                            allSysDepartRolePermission.add(sysDepartRolePermission);
+                        }
+                    }
+                    sysDepartRole.setId(sysDepartRoleId);
+                    sysDepartRole.setDepartId(pasteId);
+                    sysDepartRole.setRoleName(sysDepartRole.getRoleName()+UUIDUtil.getCurrentTimeNum());
+                    sysDepartRole.setRoleCode(sysDepartRole.getRoleCode()+UUIDUtil.getCurrentTimeNum());
+                }
+                sysDepartRoleService.saveBatch(sysDepartRoles);
+                sysDepartRolePermissionService.saveBatch(allSysDepartRolePermission);
+            }
             return Result.ok("粘贴成功");
         }else{
             return Result.error("粘贴失败，复制部门没有权限！");
