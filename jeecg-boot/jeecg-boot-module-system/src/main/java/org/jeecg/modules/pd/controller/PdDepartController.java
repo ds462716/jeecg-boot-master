@@ -421,4 +421,25 @@ public class PdDepartController extends JeecgController<PdDepartConfig, IPdDepar
         }
         return result;
     }
+
+    /**
+     * 复制粘贴部门权限
+     * @param copyId
+     * @param pasteId
+     * @param req
+     * @return
+     */
+    @PostMapping(value = "copyPermission")
+    public Result<Object> copyPermission(String copyId,String pasteId,
+                                HttpServletRequest req) {
+        Result<Object> result = new Result<>();
+        try{
+            result = pdDepartService.copyPermission(copyId,pasteId,result);
+        }catch(Exception e){
+            log.error(e.getMessage(), e);
+            result.setCode(500);
+            result.setMessage("粘贴失败");
+        }
+        return result;
+    }
 }

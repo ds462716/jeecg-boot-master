@@ -46,4 +46,6 @@ public interface IPdDepartService extends IService<SysDepart> {
     List<SysDepart> getSysTwoDepartList(SysDepart sysDepart);
 
     List<String> selectListDepart(SysDepart sysDepart);
+
+    Result<Object> copyPermission(String copyId, String pasteId, Result<Object> result);
 }
