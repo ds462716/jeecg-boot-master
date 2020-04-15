@@ -406,4 +406,27 @@ public class PdDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart>
               }
          return list;
     }
+
+    /**
+     * 复制粘贴部门权限
+     * @param copyId
+     * @param pasteId
+     * @param result
+     * @return
+     */
+    @Override
+    public Result<Object> copyPermission(String copyId, String pasteId, Result<Object> result) {
+        List<SysDepartPermission> sysDepartPermissions = sysDepartPermissionService.list(new QueryWrapper<SysDepartPermission>().lambda().eq(SysDepartPermission::getDepartId, copyId));
+        if(sysDepartPermissions!=null && sysDepartPermissions.size()>0){
+            sysDepartPermissionService.remove(new QueryWrapper<SysDepartPermission>().lambda().eq(SysDepartPermission::getDepartId, pasteId));
+            for(SysDepartPermission sysDepartPermission :sysDepartPermissions){
+                sysDepartPermission.setId("");
+                sysDepartPermission.setDepartId(pasteId);
+            }
+            sysDepartPermissionService.saveBatch(sysDepartPermissions);
+            return Result.ok("粘贴成功");
+        }else{
+            return Result.error("粘贴失败，复制部门没有权限！");
+        }
+    }
 }
