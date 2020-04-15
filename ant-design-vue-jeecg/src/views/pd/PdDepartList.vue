@@ -347,12 +347,17 @@
               let formData = new URLSearchParams();
               formData.append("copyId",this.copyPermission);
               formData.append("pasteId",record.id);
+              this.loading = true;
               httpAction(this.url.copyPermission,formData,"post").then((res)=>{
                 if(res.success){
                   this.$message.success("粘贴成功!")
+                  this.loading = false;
                 }else{
                   this.$message.warning(res.message);
+                  this.loading = false;
                 }
+              }).finally(() => {
+                this.loading = false;
               })
             }
           }else{
