@@ -7,7 +7,7 @@
         @change="handleTabClick">-->
         <!--<a-tab-pane key="tab1" tab="账号密码登陆">-->
       <a-card title="">
-        <span class="title">SPD院内医疗耗材信息管理系统</span>
+        <span class="title">医疗耗材供应链管理系统</span>
           <a-form-item>
             <a-input
               :style="{ marginTop: '24px' }"
