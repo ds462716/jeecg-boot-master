@@ -1,57 +1,60 @@
 <template>
   <div class="main">
-    <a-form :form="form" class="user-layout-login" ref="formLogin" id="formLogin">
+    <a-form :form="form" class="user-layout-login" style="margin-top: 18%;" ref="formLogin" id="formLogin">
       <!--<a-tabs
         :activeKey="customActiveKey"
         :tabBarStyle="{ textAlign: 'center', borderBottom: 'unset' }"
         @change="handleTabClick">-->
-        <!--<a-tab-pane key="tab1" tab="账号密码登陆">-->
-      <a-card title="">
-        <span class="title">SPD院内医疗耗材信息管理系统</span>
-          <a-form-item>
-            <a-input
-              :style="{ marginTop: '24px' }"
-              size="large"
-              v-decorator="['username',{rules: validatorRules.username.rules}]"
-              type="text"
-              placeholder="请输入用户名">
-              <a-icon slot="prefix" type="user" :style="{ color: 'rgba(0,0,0,.25)' }"/>
-            </a-input>
-          </a-form-item>
+        <!--<a-tab-pane key="tab1" tab="账号密码登陆">
+        style="padding: 0px;background-color: rgba(0,0,0,0);border: rgba(0,0,0,0)"
+        -->
+      <div>
+        <!--<h2 style="text-align: center;color: #234998;font-weight: revert">SPD院内医疗耗材信息管理系统</h2>-->
+        <h2 style="text-align: center;color: grey;font-weight: bold ">SPD院内医疗耗材信息管理系统</h2>
+        <a-form-item>
+          <a-input
+            style="margin-top: 3%;"
+            size="large"
+            v-decorator="['username',{rules: validatorRules.username.rules}]"
+            type="text"
+            placeholder="请输入用户名">
+            <a-icon slot="prefix" type="user" :style="{ color: 'rgba(0,0,0,.25)' }"/>
+          </a-input>
+        </a-form-item>
 
-          <a-form-item>
-            <a-input
-              v-decorator="['password',{rules: validatorRules.password.rules}]"
-              size="large"
-              type="password"
-              autocomplete="false"
-              placeholder="请输入密码">
-              <a-icon slot="prefix" type="lock" :style="{ color: 'rgba(0,0,0,.25)' }"/>
-            </a-input>
-          </a-form-item>
+        <a-form-item>
+          <a-input
+            v-decorator="['password',{rules: validatorRules.password.rules}]"
+            size="large"
+            type="password"
+            autocomplete="false"
+            placeholder="请输入密码">
+            <a-icon slot="prefix" type="lock" :style="{ color: 'rgba(0,0,0,.25)' }"/>
+          </a-input>
+        </a-form-item>
 
-          <a-row :gutter="0">
-            <a-col :span="16">
-              <a-form-item>
-                <a-input
-                  v-decorator="['inputCode',validatorRules.inputCode]"
-                  size="large"
-                  type="text"
-                  @change="inputCodeChange"
-                  autocomplete="off"
-                  placeholder="请输入验证码">
-                  <a-icon slot="prefix" type="smile" :style="{ color: 'rgba(0,0,0,.25)' }"/>
-                </a-input>
-              </a-form-item>
-            </a-col>
-            <a-col :span="8" style="text-align: right">
-              <img style="margin-top: 2px;" :src="randCodeImage" @click="handleChangeCheckCode"/>
-              <!--<j-graphic-code @success="generateCode" ref="jgraphicCodeRef" style="float: right" remote></j-graphic-code>-->
-            </a-col>
-          </a-row>
+        <a-row :gutter="0">
+          <a-col :span="16">
+            <a-form-item>
+              <a-input
+                v-decorator="['inputCode',validatorRules.inputCode]"
+                size="large"
+                type="text"
+                @change="inputCodeChange"
+                autocomplete="off"
+                placeholder="请输入验证码">
+                <a-icon slot="prefix" type="smile" :style="{ color: 'rgba(0,0,0,.25)' }"/>
+              </a-input>
+            </a-form-item>
+          </a-col>
+          <a-col :span="8" style="text-align: right">
+            <img style="margin-top: 2px;" :src="randCodeImage" @click="handleChangeCheckCode"/>
+            <!--<j-graphic-code @success="generateCode" ref="jgraphicCodeRef" style="float: right" remote></j-graphic-code>-->
+          </a-col>
+        </a-row>
 
-      </a-card>
-        <!--</a-tab-pane>-->
+      </div>
+        </a-tab-pane>
         <!--<a-tab-pane key="tab2" tab="手机号登陆">
           <a-form-item>
             <a-input
