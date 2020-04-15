@@ -10,7 +10,7 @@
         -->
       <div>
         <!--<h2 style="text-align: center;color: #234998;font-weight: revert">SPD院内医疗耗材信息管理系统</h2>-->
-        <h2 style="text-align: center;color: grey;font-weight: bold ">SPD院内医疗耗材信息管理系统</h2>
+        <h2 style="text-align: center;color: grey;font-weight: bold ">医疗耗材供应链管理系统</h2>
         <a-form-item>
           <a-input
             style="margin-top: 3%;"
@@ -54,7 +54,7 @@
         </a-row>
 
       </div>
-        </a-tab-pane>
+        <!--</a-tab-pane>-->
         <!--<a-tab-pane key="tab2" tab="手机号登陆">
           <a-form-item>
             <a-input
