@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
+import org.jeecg.common.constant.PdConstant;
 import org.jeecg.common.system.base.controller.JeecgController;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.oConvertUtils;
@@ -150,6 +151,7 @@ public class PdProductController extends JeecgController<PdProduct, IPdProductSe
 			 String filePath = FileUploadUtil.upload(licenceSiteUp11);
 			 pdProduct.setLicenceSite11(filePath);
 		 }
+		 pdProduct.setValidityFlag(PdConstant.PD_STATE_0);
 		 pdProductService.saveProduct(pdProduct);
 		 return Result.ok("添加成功！");
 	 }

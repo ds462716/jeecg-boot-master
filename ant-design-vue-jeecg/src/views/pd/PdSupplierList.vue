@@ -9,6 +9,15 @@
               <a-input placeholder="请输入名称" v-model="queryParam.name"></a-input>
             </a-form-item>
           </a-col>
+          <a-col :md="6" :sm="8">
+            <a-form-item label="状态">
+              <a-select placeholder="状态" v-model="queryParam.validityFlag" >
+                <a-select-option value="0">正常</a-select-option>
+                <a-select-option value="1">已过期</a-select-option>
+                <a-select-option value="2">近效期</a-select-option>
+              </a-select>
+            </a-form-item>
+          </a-col>
           <a-col :md="6" :sm="8" >
             <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
               <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>

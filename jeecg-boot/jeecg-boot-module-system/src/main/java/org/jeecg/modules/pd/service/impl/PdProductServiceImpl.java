@@ -772,6 +772,7 @@ public class PdProductServiceImpl extends ServiceImpl<PdProductMapper, PdProduct
                         bl = false;
                         break;
                     }
+                    ps.setValidityFlag(PdConstant.PD_STATE_0);
                     i ++;
                 }
 

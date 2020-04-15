@@ -365,6 +365,9 @@
         <if test="version != null and version != ''">
             AND a.version LIKE concat('%',#{version},'%')
         </if>
+        <if test="validityFlag != null and validityFlag != ''">
+            AND a.validity_flag = #{validityFlag}
+        </if>
         <if test="departId != null and departId != ''">
             AND a.depart_id = #{departId}
         </if>
