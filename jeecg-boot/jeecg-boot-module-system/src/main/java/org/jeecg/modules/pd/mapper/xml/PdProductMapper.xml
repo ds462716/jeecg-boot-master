@@ -374,7 +374,7 @@
         <if test="departParentId != null and departParentId != ''">
             AND a.depart_parent_id = #{departParentId}
         </if>
-        order by a.create_time desc, a.update_time desc
+        ORDER BY a.update_time,a.create_time desc
     </select>
 
     <!-- 用于产品弹出框 -->
@@ -445,7 +445,7 @@
                 AND a.depart_parent_id = #{departParentId}
             </if>
         </where>
-        ORDER BY a.update_time desc
+        ORDER BY a.update_time desc,a.create_time desc
     </select>
 
     <!-- 批量更新产品收费代码 -->

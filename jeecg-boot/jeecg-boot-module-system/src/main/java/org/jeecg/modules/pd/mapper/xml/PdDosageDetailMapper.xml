@@ -40,6 +40,6 @@
                 AND a.dosage_id = #{dosageId}
             </if>
         </where>
-        order by a.create_time desc
+        ORDER BY a.update_time desc,a.create_time desc
     </select>
 </mapper>

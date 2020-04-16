@@ -48,5 +48,6 @@
 				AND a.rule_id = #{ruleId}
 			</if>
 		</where>
+		ORDER BY a.update_time desc,a.create_time desc
 	</select>
 </mapper>

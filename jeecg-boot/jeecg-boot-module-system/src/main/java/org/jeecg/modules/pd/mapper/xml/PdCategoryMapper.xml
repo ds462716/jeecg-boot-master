@@ -38,6 +38,7 @@
 		<if test="departParentId != null and departParentId != ''">
 			AND a.depart_parent_id = #{departParentId}
 		</if>
+		ORDER BY a.update_time desc,a.create_time desc
 	</select>
 
 

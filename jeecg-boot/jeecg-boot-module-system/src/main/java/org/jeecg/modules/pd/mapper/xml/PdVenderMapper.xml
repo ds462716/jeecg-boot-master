@@ -159,7 +159,7 @@
 			AND a.depart_parent_id = #{departParentId}
 		</if>
 		<!-- 为了查询效率 只查询十条记录该方法用于下拉选择 -->
-		order by a.create_time,update_time desc
+		ORDER BY a.update_time desc,a.create_time desc
 	</select>
 
 	<!-- 生产厂家条件查询查询所有字段，用于定时任务 -->

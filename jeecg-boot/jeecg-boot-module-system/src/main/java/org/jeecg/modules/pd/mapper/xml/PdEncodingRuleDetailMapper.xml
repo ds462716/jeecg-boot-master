@@ -56,6 +56,6 @@
 			</if>
 
 		</where>
-		ORDER BY a.update_time DESC ,a.code_order ASC
+		ORDER BY a.update_time desc,a.create_time desc,a.code_order ASC
 	</select>
 </mapper>

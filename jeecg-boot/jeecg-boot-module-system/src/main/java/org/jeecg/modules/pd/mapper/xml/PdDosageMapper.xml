@@ -161,7 +161,7 @@
                 AND a.depart_parent_id = #{departParentId}
             </if>
         </where>
-        order by a.create_time desc
+        ORDER BY a.update_time desc,a.create_time desc
     </select>
 
     <!-- 根据时间范围统计当日使用量 -->
