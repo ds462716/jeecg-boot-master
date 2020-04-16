@@ -22,4 +22,6 @@ public interface PdDosageMapper extends BaseMapper<PdDosage> {
     List<HashMap> queryPdDosageDateList(PdDosage PdDosage);
 
     List<HashMap> queryPdDosageTotalList(PdDosage PdDosage);
+
+    List<PdDosage> queryPdDosageList(PdDosage pdDosage);
 }

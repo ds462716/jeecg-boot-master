@@ -94,7 +94,10 @@
          LEFT JOIN pd_product_stock_total g ON g.product_id=c.id  and g.depart_id=#{currentDepartId}
         </if>
         <where>
-            a.del_flag =#{DEL_FLAG_NORMAL} AND a.stock_num > 0
+            a.del_flag =#{DEL_FLAG_NORMAL}
+            <if test="filterType != null and filterType != ''">
+                AND a.stock_num > 0
+            </if>
             <if test="id != null and id != ''">
                 AND a.id = #{id}
             </if>
@@ -219,4 +222,11 @@
          AND a.depart_id = #{departId}
          AND a.depart_parent_id = #{departParentId}
     </select>
+
+    <!--加庫存-->
+    <update id="addStock">
+		UPDATE pd_product_stock_total SET
+			stock_num = stock_num+#{stockNum}
+		WHERE id = #{id}
+	</update>
 </mapper>

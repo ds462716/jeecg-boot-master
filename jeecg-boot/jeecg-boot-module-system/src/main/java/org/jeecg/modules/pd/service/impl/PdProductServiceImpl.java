@@ -671,7 +671,8 @@ public class PdProductServiceImpl extends ServiceImpl<PdProductMapper, PdProduct
                 for(PdProduct ps :list){ //校验产品编号是否唯
                     //校验产品编号
                     if(oConvertUtils.isEmpty(ps.getNumber())){
-                        ps.setNumber(UUIDUtil.generateNumber("93"));//生成编码
+                        String number = UUIDUtil.generateNumber("93");
+                        ps.setNumber(number.substring(0,number.length()-2)+i);//生成编码
                     }else{
                         if(checkNumber(pdProducts,ps)){
                             pdProducts.add(ps);
@@ -771,6 +772,7 @@ public class PdProductServiceImpl extends ServiceImpl<PdProductMapper, PdProduct
                         bl = false;
                         break;
                     }
+                    ps.setValidityFlag(PdConstant.PD_STATE_0);
                     i ++;
                 }
 
@@ -877,6 +879,9 @@ public class PdProductServiceImpl extends ServiceImpl<PdProductMapper, PdProduct
             pdProductRuleService.saveBatch(pdProductRules);
         }
     }
-
+    @Override
+    public void updateValidityFlag(PdProduct pdProduct){
+        pdProductMapper.updateValidityFlag(pdProduct);
+    }
 
 }

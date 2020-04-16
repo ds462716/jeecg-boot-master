@@ -17,7 +17,7 @@
         :type="collapsed ? 'menu-unfold' : 'menu-fold'"
         @click="toggle"/>
 
-      <span v-if="device === 'desktop'">欢迎进入SPD院内医疗耗材信息管理系统</span>
+      <span v-if="device === 'desktop'">欢迎进入医疗耗材供应链管理系统</span>
       <span v-else>Jeecg-Boot</span>
 
       <user-menu :theme="theme"/>

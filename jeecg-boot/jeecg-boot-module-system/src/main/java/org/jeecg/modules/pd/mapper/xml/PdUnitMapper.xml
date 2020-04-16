@@ -29,7 +29,7 @@
                 AND a.depart_parent_id = #{departParentId}
             </if>
         </where>
-        ORDER BY a.update_time desc
+        ORDER BY a.update_time desc,a.create_time desc
     </select>
 
     <!-- 校验单位是否唯一 -->

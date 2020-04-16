@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.jeecg.modules.pd.mapper.PdDosageMapper">
 
-    <sql id="PdDosageColumns">
+    <sql id="pdDosageColumns">
         a.id,
         a.dosage_no,
         a.dosage_date,
@@ -37,9 +37,108 @@
         a.del_flag
 	</sql>
 
+    <!-- 产品 -->
+    <sql id="pdProductColumns">
+        pp.id,
+        pp.number,
+        pp.name as productName,
+        pp.py,
+        pp.wb,
+        pp.bname,
+        pp.bpy,
+        pp.bwb,
+        pp.zdy,
+        pp.spec,
+        pp.version,
+        pp.unit_id,
+        pp.power,
+        pp.category_one,
+        pp.category_two,
+        pp.group_id,
+        pp.vender_id,
+        pp.supplier_id,
+        pp.purchase_price,
+        pp.selling_price,
+        pp.registration,
+        pp.description,
+        pp.is_charge,
+        pp.charge_code,
+        pp.is_urgent,
+        pp.up_quantity,
+        pp.purchased_quantity,
+        pp.create_by,
+        pp.create_time,
+        pp.update_by,
+        pp.update_time,
+        pp.sys_org_code,
+        pp.remarks,
+        pp.jde_code,
+        pp.validity_flag,
+        pp.del_flag
+    </sql>
+    <sql id="pdProductJoins">
+		LEFT JOIN pd_product pp on dd.product_id = pp.id
+	</sql>
+
+    <!-- 用量详情 -->
+    <sql id="pdDosageDetailColumns">
+        dd.id AS "pdDosageDetailId",
+		dd.product_bar_code AS "productBarCode",
+		dd.batch_no AS "batchNo",
+		dd.exp_date AS "expDate",
+		dd.dosage_count AS "dosageCount",
+		dd.hy_charged AS "dhyCharged",
+		dd.charge_code AS "chargeCode"
+	</sql>
+    <sql id="pdDosageDetailJoins">
+		LEFT JOIN pd_dosage_detail dd on a.id = dd.dosage_id
+	</sql>
+
+
+    <!-- 供应商 -->
+    <sql id="pdSupplierColumns">
+      e.`name` AS "supplierName"
+    </sql>
+    <sql id="pdSupplierJoins">
+      left join pd_supplier e on pp.supplier_id = e.id
+    </sql>
+
+    <!-- 生产厂家 -->
+    <sql id="pdVenderColumns">
+      f.`name` AS "venderName"
+    </sql>
+    <sql id="pdVenderJoins">
+      left join pd_vender f on pp.vender_id = f.id
+    </sql>
+
+    <!-- 单位 -->
+    <sql id="pdUnitColumns">
+        b.`name` AS "unitName"
+    </sql>
+    <sql id="pdUnitJoins">
+        LEFT JOIN pd_unit b ON pp.unit_id = b.id
+    </sql>
+
+    <!-- 科室 -->
+    <sql id="sysDepartColumns">
+        sd.depart_name AS "departName"
+    </sql>
+
+    <sql id="sysDepartJoins">
+        LEFT JOIN sys_depart sd ON a.depart_id = sd.id
+    </sql>
+
+
+    <sql id="pdGoodsAllocationColumns">
+      g.name AS "outHuoweiName"
+    </sql>
+    <sql id="pdGoodsAllocation">
+        LEFT JOIN pd_goods_allocation g ON dd.out_huowei_code = g.code
+    </sql>
+
     <select id="selectList" resultType="org.jeecg.modules.pd.entity.PdDosage" parameterType="org.jeecg.modules.pd.entity.PdDosage">
         SELECT
-        <include refid="PdDosageColumns"/>,
+        <include refid="pdDosageColumns"/>,
         b.realname AS dosageByName
         FROM
         `pd_dosage` a
@@ -62,7 +161,7 @@
                 AND a.depart_parent_id = #{departParentId}
             </if>
         </where>
-        order by a.create_time desc
+        ORDER BY a.update_time desc,a.create_time desc
     </select>
 
     <!-- 根据时间范围统计当日使用量 -->
@@ -142,6 +241,79 @@
         AND  DATE_SUB(CURDATE(), INTERVAL 30 DAY) &lt;= date(a.dosage_date)
         and date(a.dosage_date) &lt;=CURDATE()
         group by x  order by y desc
+    </select>
+
+
+    <!-- 统计查询-用量使用 -->
+    <select id="queryPdDosageList" resultType="org.jeecg.modules.pd.entity.PdDosage" parameterType="org.jeecg.modules.pd.entity.PdDosage">
+        SELECT
+        <include refid="pdDosageColumns"/>,
+        su.realname AS dosageByName,
+        <include refid="pdDosageDetailColumns"/>,
+        <include refid="pdProductColumns"/>,
+        <include refid="pdUnitColumns"/>,
+        <include refid="pdSupplierColumns"/>,
+        <include refid="pdVenderColumns"/>,
+        <include refid="sysDepartColumns"/>,
+        <include refid="pdGoodsAllocationColumns"/>
+        FROM pd_dosage a
+        LEFT JOIN sys_user su ON a.dosage_by = su.id
+        <include refid="pdDosageDetailJoins"/>
+        <include refid="pdProductJoins"/>
+        <include refid="pdUnitJoins"/>
+        <include refid="pdSupplierJoins"/>
+        <include refid="pdVenderJoins"/>
+        <include refid="sysDepartJoins"/>
+        <include refid="pdGoodsAllocation"/>
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+            <if test="dosageNo != null and dosageNo != ''">
+                AND a.dosage_no = #{dosageNo}
+            </if>
+            <if test="departId != null and departId != ''">
+                AND a.depart_id = #{departId}
+            </if>
+            <if test="departParentId != null and departParentId != ''">
+                AND a.depart_parent_id = #{departParentId}
+            </if>
+            <if test="departIdList != null and departIdList.size() > 0">
+                AND a.depart_id IN
+                <foreach collection="departIdList" item="item" separator="," open="(" close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="inHospitalNo != null and inHospitalNo != ''">
+                AND a.in_hospital_no = #{inHospitalNo}
+            </if>
+            <if test="patientInfo != null and patientInfo != ''">
+                AND a.patient_info LIKE concat('%',#{patientInfo},'%')
+            </if>
+            <if test="productName != null and productName != ''">
+                AND (pp.name LIKE concat('%',#{productName},'%')
+                or pp.py LIKE concat('%',#{productName},'%')
+                or pp.wb LIKE concat('%',#{productName},'%')
+                or pp.zdy LIKE concat('%',#{productName},'%')
+                or pp.bname LIKE concat('%',#{productName},'%')
+                or pp.bpy LIKE concat('%',#{productName},'%')
+                or pp.bwb LIKE concat('%',#{productName},'%')
+                )
+            </if>
+            <if test="version != null and version != ''">
+                AND pp.version = #{version}
+            </if>
+            <if test="spec != null and spec != ''">
+                AND pp.spec = #{spec}
+            </if>
+            <if test="productNumber != null and productNumber != ''">
+                AND pp.number LIKE concat('%',#{productNumber},'%')
+            </if>
+            <if test="batchNo != null and batchNo != ''">
+                AND dd.batch_no = #{batchNo}
+            </if>
+            <if test="supplierId != null and supplierId != ''">
+                AND e.supplier_id = #{supplierId}
+            </if>
+        </where>
     </select>
 
 

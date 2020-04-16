@@ -232,6 +232,54 @@
               return obj;
             },
           },
+          {
+            title: '证照过期标志',
+            align:"center",
+            dataIndex: 'validityFlag',
+            colSpan: 0,
+            customRender: (value, row, index) => {
+              const obj = {
+                attrs: {colSpan:0},
+              };
+              return obj;
+            },
+          },
+          {
+            title: '紧急产品-0是1不是',
+            align:"center",
+            dataIndex: 'isUrgent',
+            colSpan: 0,
+            customRender: (value, row, index) => {
+              const obj = {
+                attrs: {colSpan:0},
+              };
+              return obj;
+            },
+          },
+          {
+            title: '紧急产品需要采购数量',
+            align:"center",
+            dataIndex: 'upQuantity',
+            colSpan: 0,
+            customRender: (value, row, index) => {
+              const obj = {
+                attrs: {colSpan:0},
+              };
+              return obj;
+            },
+          },
+          {
+            title: '紧急产品已采购数量',
+            align:"center",
+            dataIndex: 'purchasedQuantity',
+            colSpan: 0,
+            customRender: (value, row, index) => {
+              const obj = {
+                attrs: {colSpan:0},
+              };
+              return obj;
+            },
+          },
         ],
         url: {
           list: "/pd/pdProduct/chooseProductList",

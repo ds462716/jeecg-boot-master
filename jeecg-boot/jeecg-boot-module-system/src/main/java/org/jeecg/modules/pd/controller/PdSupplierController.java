@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
+import org.jeecg.common.constant.PdConstant;
 import org.jeecg.common.system.base.controller.JeecgController;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.system.vo.LoginUser;
@@ -171,6 +172,7 @@ public class PdSupplierController extends JeecgController<PdSupplier, IPdSupplie
             String filePath = FileUploadUtil.upload(licenceSiteUp11);
             pdSupplier.setLicenceSite11(filePath);
         }
+        pdSupplier.setValidityFlag(PdConstant.PD_STATE_0);
         pdSupplierService.save(pdSupplier);
         return Result.ok("添加成功！");
     }

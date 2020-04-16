@@ -54,5 +54,9 @@ public class PdProductStockTotalPage extends PdProductStockTotal {
 	/*多个部门集合*/
 	@TableField(exist = false)
 	private List<String> departIdList;
+
+	/*是否过滤库存为0的数据  有值则过滤**/
+	@TableField(exist = false)
+	private String filterType;
 	
 }

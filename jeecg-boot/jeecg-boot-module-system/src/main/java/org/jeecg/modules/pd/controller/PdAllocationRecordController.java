@@ -248,6 +248,22 @@ public class PdAllocationRecordController {
 		return Result.ok(pdAllocationRecord);
 
 	}
+
+	/**
+	 * 查询单条数据
+	 *
+	 * @param pdAllocationRecord
+	 * @return
+	 */
+	@GetMapping(value = "/getOne")
+	public Result<?> getOne(PdAllocationRecord pdAllocationRecord) {
+		pdAllocationRecord = pdAllocationRecordService.getOne(new QueryWrapper<PdAllocationRecord>(pdAllocationRecord));
+
+		if(pdAllocationRecord==null) {
+			return Result.error("未找到对应数据");
+		}
+		return Result.ok(pdAllocationRecord);
+	}
 	
 
 	 /**

@@ -396,17 +396,55 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
             //审核通过
             String inType = pdStockRecord.getInType();
 
-            if (PdConstant.IN_TYPE_1.equals(inType)) {  //正常入库
-                // TODO 紧急产品处理逻辑
-            }
-//            else if (PdConstant.IN_TYPE_2.equals(inType)) {  //退货入库
-//            } else if (PdConstant.IN_TYPE_3.equals(inType)) {  //调拨入库
-//            }
-
             PdStockRecordDetail pdStockRecordDetail = new PdStockRecordDetail();
             pdStockRecordDetail.setRecordId(pdStockRecord.getId());
             List<PdStockRecordDetail> pdStockRecordDetailList = pdStockRecordDetailMapper.selectByMainId(pdStockRecordDetail);
             pdStockRecord.setPdStockRecordDetailList(pdStockRecordDetailList);
+
+            if (PdConstant.IN_TYPE_1.equals(inType)) {  //正常入库
+                // 紧急产品处理：
+                if (CollectionUtils.isNotEmpty(pdStockRecordDetailList)) {
+                    Set<String> setIds = new HashSet<>();
+
+                    for (PdStockRecordDetail detail : pdStockRecordDetailList) {
+                        Double sum = 0D;
+                        PdProduct pdProduct = pdProductService.getById(detail.getProductId());
+
+                        if(PdConstant.IS_URGENT_0.equals(pdProduct.getIsUrgent())){
+
+                            StringBuilder setId = new StringBuilder();
+                            setId.append(detail.getProductId());
+
+                            if(setIds.add(setId.toString())){
+                                //紧急产品已采购数量
+                                Double purchasedQuantity = pdProduct.getPurchasedQuantity() == null ? 0D : pdProduct.getPurchasedQuantity();
+                                // 紧急产品需要采购数量
+                                Double upQuantity = pdProduct.getUpQuantity() == null ? 0D : pdProduct.getUpQuantity();
+
+                                for (PdStockRecordDetail detail2 : pdStockRecordDetailList) {
+                                    if(detail.getProductId().equals(detail2.getProductId())){
+                                        sum = sum + detail2.getProductNum();
+                                    }
+                                }
+                                if(sum > upQuantity - purchasedQuantity){
+                                    throw new RuntimeException("紧急产品["+detail.getProductName()+"]入库数量["+sum+"]，不能大于需采购数量["+(upQuantity - purchasedQuantity)+"]");
+                                }else{
+                                    // 更新已采购数量
+                                    PdProduct update = new PdProduct();
+                                    update.setId(detail.getProductId());
+                                    update.setPurchasedQuantity(purchasedQuantity + sum);
+                                    pdProductService.updateProduct(update);
+                                }
+                            }
+                        }
+                    }
+                }
+
+            }else if (PdConstant.IN_TYPE_2.equals(inType)) {  //退货入库
+
+            }else if (PdConstant.IN_TYPE_3.equals(inType)) {  //调拨入库
+
+            }
 
             // 更新采购单到货数量
             if (CollectionUtils.isNotEmpty(pdStockRecordDetailList)) {
@@ -650,6 +688,22 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
         if (stockInAudit != null && stockInAudit.getValue() != null) {
             // 自动审批
             pdStockRecord.setAllowStockInAudit(stockInAudit.getValue().toString());
+        }
+
+        //开关-是否允许入库证照过期的产品   1-是；0-否
+        query.setCode(PdConstant.ON_OFF_STOCK_IN_EXP_PRODUCT);
+        PdOnOff stockInExpProduct = pdOnOffService.getOne(query);
+        if (stockInAudit != null && stockInAudit.getValue() != null) {
+            // 自动审批
+            pdStockRecord.setAllowStockInExpProduct(stockInExpProduct.getValue().toString());
+        }
+
+        //开关-是否允许入库证照过期的供应商   1-是；0-否
+        query.setCode(PdConstant.ON_OFF_STOCK_IN_EXP_SUPPLIER);
+        PdOnOff stockInExpSupplier = pdOnOffService.getOne(query);
+        if (stockInAudit != null && stockInAudit.getValue() != null) {
+            // 自动审批
+            pdStockRecord.setAllowStockInExpSupplier(stockInExpSupplier.getValue().toString());
         }
 
         //开关-是否显示入库单抬头   1-是；0-否

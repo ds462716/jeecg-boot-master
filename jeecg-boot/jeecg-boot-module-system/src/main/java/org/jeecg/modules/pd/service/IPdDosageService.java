@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.jeecg.modules.pd.entity.PdDosage;
 import com.baomidou.mybatisplus.extension.service.IService;
+import org.jeecg.modules.pd.entity.PdDosageDetail;
 
 import java.util.HashMap;
 import java.util.List;
@@ -30,4 +31,10 @@ public interface IPdDosageService extends IService<PdDosage> {
     List<HashMap> queryPdDosageDateList(PdDosage pdDosage);
 
     List<HashMap> queryPurchaseOrderTotalList(PdDosage pdDosage);
+
+    Page<PdDosage> queryPdDosageList(Page<PdDosage> page, PdDosage pdDosage);
+
+    List<PdDosage> queryPdDosageList(PdDosage pdDosage);
+
+    void dosageReturned(PdDosage pdDosage);
 }

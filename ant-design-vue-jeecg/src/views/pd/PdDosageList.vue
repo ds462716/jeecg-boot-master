@@ -96,12 +96,14 @@
 
   import { JeecgListMixin } from '@/mixins/JeecgListMixin'
   import PdDosageModal from './modules/PdDosageModal'
+  import PdDosageReturnedModal from './modules/PdDosageReturnedModal'
 
   export default {
     name: "PdDosageList",
     mixins:[JeecgListMixin],
     components: {
-      PdDosageModal
+      PdDosageModal,
+      PdDosageReturnedModal
     },
     data () {
       return {
@@ -183,6 +185,11 @@
       inventoryReturned(record){
         this.$refs.pdDosageReturnedForm.edit(record);
         this.$refs.pdDosageReturnedForm.title="库存还回";
+        this.$refs.pdDosageReturnedForm.disableSubmit = false;
+      },
+      handleDetail(record){
+        this.$refs.pdDosageReturnedForm.edit(record);
+        this.$refs.pdDosageReturnedForm.title="详情";
         this.$refs.pdDosageReturnedForm.disableSubmit = true;
       }
     }

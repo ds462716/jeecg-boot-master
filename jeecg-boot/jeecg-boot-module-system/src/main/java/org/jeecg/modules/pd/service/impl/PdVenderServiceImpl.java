@@ -5,6 +5,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
+import org.jeecg.common.constant.PdConstant;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.pd.entity.PdProduct;
@@ -170,6 +171,7 @@ public class PdVenderServiceImpl extends ServiceImpl<PdVenderMapper, PdVender> i
                         break;
                     }
                     i ++;
+                    ps.setValidityFlag(PdConstant.PD_STATE_0);
                 }
             } catch (Exception e) {
                 log.error(e.getMessage(),e);

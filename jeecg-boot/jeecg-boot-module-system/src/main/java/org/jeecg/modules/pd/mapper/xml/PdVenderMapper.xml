@@ -149,6 +149,9 @@
 			or a.wb LIKE concat('%',#{name},'%')
 			or a.zdy LIKE concat('%',#{name},'%'))
 		</if>
+		<if test="validityFlag != null and validityFlag != ''">
+			AND a.validity_flag = #{validityFlag}
+		</if>
 		<if test="departId != null and departId != ''">
 			AND a.depart_id = #{departId}
 		</if>
@@ -156,7 +159,7 @@
 			AND a.depart_parent_id = #{departParentId}
 		</if>
 		<!-- 为了查询效率 只查询十条记录该方法用于下拉选择 -->
-		ORDER BY a.update_time desc
+		ORDER BY a.update_time desc,a.create_time desc
 	</select>
 
 	<!-- 生产厂家条件查询查询所有字段，用于定时任务 -->
@@ -193,7 +196,8 @@
 		 licence_validity9 = #{licenceValidity9},
 		 licence_validity10 = #{licenceValidity10},
 		 licence_validity11 = #{licenceValidity11},
-		 validity_flag = #{validityFlag}
+		 validity_flag = #{validityFlag},
+		 msg_send_state = #{msgSendState}
 		  where id = #{id}
 	</update>
 </mapper>

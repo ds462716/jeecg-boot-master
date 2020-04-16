@@ -1,5 +1,6 @@
 package org.jeecg.modules.pd.entity;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 import com.baomidou.mybatisplus.annotation.IdType;
@@ -179,5 +180,55 @@ public class PdDosage extends BaseEntity {
     /*多个部门集合*/
     @TableField(exist = false)
     private List<String> departIdList;
+
+
+    /**
+     * 使用报表查询条件部门集合
+     */
+    @TableField(exist = false)
+    private String departIds;
+
+    //冗余
+    /*不是明细表字段*/
+    @TableField(exist = false)
+    private String productName;//产品名称
+    @TableField(exist = false)
+    private String number;//产品编号
+    @TableField(exist = false)
+    private String productNumber;//产品编号
+    @TableField(exist = false)
+    private String spec;//产品规格
+    @TableField(exist = false)
+    private String version;//产品型号
+    @TableField(exist = false)
+    private String unitName;//单位名称
+    @TableField(exist = false)
+    private String venderId;//生产厂家ID
+    @TableField(exist = false)
+    private String venderName;//生产厂家名称
+    @TableField(exist = false)
+	private String supplierId;//供应商ID
+    @TableField(exist = false)
+    private String supplierName;//供应商名称
+    @TableField(exist = false)
+    private String registration;//注册证号
+    @TableField(exist = false)
+    private String outHuoweiName;//出库货位
+    @TableField(exist = false)
+    private String batchNo;
+    @TableField(exist = false)
+    private String productBarCode;
+    @TableField(exist = false)
+    @JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd")
+    @DateTimeFormat(pattern="yyyy-MM-dd")
+    private Date expDate;
+    @TableField(exist = false)
+    private String dosageCount;
+    @TableField(exist = false)
+    private String chargeCode;
+    @TableField(exist = false)
+    private String dhyCharged;
+    @TableField(exist = false)
+    private String pdDosageDetailId;
 
 }

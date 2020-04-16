@@ -161,6 +161,9 @@
             <if test="departId != null and departId != ''">
                 AND a.depart_id = #{departId}
             </if>
+            <if test="departParentId != null and departParentId != ''">
+                AND a.depart_parent_id = #{departParentId}
+            </if>
         </where>
         order  by a.apply_date desc
     </select>

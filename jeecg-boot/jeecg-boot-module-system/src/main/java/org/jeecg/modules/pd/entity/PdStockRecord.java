@@ -181,6 +181,12 @@ public class PdStockRecord extends BaseEntity {
     /**开关-是否需要出库审批**/
     @TableField(exist = false)
     private String allowStockOutAudit;
+    /**开关-是否允许入库证照过期的产品**/
+    @TableField(exist = false)
+    private String allowStockInExpProduct;
+    /**开关-是否允许入库证照过期的供应商**/
+    @TableField(exist = false)
+    private String allowStockInExpSupplier;
     /**出库单抬头**/
     @TableField(exist = false)
     private String stockOutText;

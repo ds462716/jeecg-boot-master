@@ -15,23 +15,31 @@
         IF(b.is_charge=0,'是','否') isChargeText
     </sql>
 
+    <sql id="pdGoodsAllocationColumns">
+      g.name AS "outHuoweiName"
+    </sql>
+    <sql id="pdGoodsAllocation">
+        LEFT JOIN pd_goods_allocation g ON a.out_huowei_code = g.code
+    </sql>
+
 
     <select id="selectList" resultType="org.jeecg.modules.pd.entity.PdDosageDetail" parameterType="org.jeecg.modules.pd.entity.PdDosageDetail">
         SELECT
         a.*,
-        IF(a.hy_charged=0,'已收费','未收费') hyChargedText,
         <include refid="PdProductColumns"/>,
+        <include refid="pdGoodsAllocationColumns"/>,
         u.name as unitName
         FROM
         `pd_dosage_detail` a
         LEFT JOIN pd_product b ON a.product_id = b.id
         LEFT JOIN pd_unit u ON b.unit_id = u.id
+        <include refid="pdGoodsAllocation"/>
         <where>
             a.del_flag = #{DEL_FLAG_NORMAL}
             <if test="dosageId != null and dosageId != ''">
                 AND a.dosage_id = #{dosageId}
             </if>
         </where>
-        order by a.create_time desc
+        ORDER BY a.update_time desc,a.create_time desc
     </select>
 </mapper>

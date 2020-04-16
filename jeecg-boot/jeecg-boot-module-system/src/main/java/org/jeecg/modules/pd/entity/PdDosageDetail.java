@@ -1,22 +1,20 @@
 package org.jeecg.modules.pd.entity;
 
-import java.io.Serializable;
-import java.io.UnsupportedEncodingException;
-import java.util.Date;
-import java.math.BigDecimal;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import lombok.Data;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import org.springframework.format.annotation.DateTimeFormat;
-import org.jeecgframework.poi.excel.annotation.Excel;
-import org.jeecg.common.aspect.annotation.Dict;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
+import org.jeecg.common.constant.PdConstant;
+import org.jeecgframework.poi.excel.annotation.Excel;
+import org.springframework.format.annotation.DateTimeFormat;
+
+import java.util.Date;
 
 /**
  * @Description: 用量详情表
@@ -76,8 +74,9 @@ public class PdDosageDetail extends BaseEntity {
     private java.math.BigDecimal amountMoney;
     /**是否执行收费*/
     @Excel(name = "是否已经执行收费0是1否", width = 15)
-    @ApiModelProperty(value = "是否已经执行收费0是1否")
+    @ApiModelProperty(value = "是否已经执行收费0是1否2已退回")
     private String hyCharged;
+
 	/**收费项目代码*/
 	@Excel(name = "收费项目代码", width = 15)
     @ApiModelProperty(value = "收费项目代码")
@@ -129,6 +128,10 @@ public class PdDosageDetail extends BaseEntity {
     private String outHuoweiCode;
 
     @TableField(exist = false)
+    private String inHuoweiName;//入库货位
+    private String inHuoweiCode;
+
+    @TableField(exist = false)
     private String productName;//产品名称
     @TableField(exist = false)
     private String productNumber;//产品编号
@@ -153,4 +156,21 @@ public class PdDosageDetail extends BaseEntity {
     /**入库单价*/
     @Excel(name = "入库单价", width = 15)
     private java.math.BigDecimal purchasePrice;//进价
+
+    public String getHyChargedText() {
+        if(this.hyCharged!=null){
+            if(this.hyCharged.equals(PdConstant.CHARGE_FLAG_0)){
+                return "已收费";
+            }else if(this.hyCharged.equals(PdConstant.CHARGE_FLAG_1)){
+                return "未收费";
+            }else if(this.hyCharged.equals(PdConstant.CHARGE_FLAG_2)){
+                return "已退回";
+            }
+        }
+        return hyChargedText;
+    }
+
+    public void setHyChargedText(String hyChargedText) {
+        this.hyChargedText = hyChargedText;
+    }
 }

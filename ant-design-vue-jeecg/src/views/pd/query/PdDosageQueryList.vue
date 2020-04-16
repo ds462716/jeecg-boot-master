@@ -4,9 +4,24 @@
     <div class="table-page-search-wrapper">
       <a-form layout="inline" @keyup.enter.native="searchQuery">
         <a-row :gutter="24">
-          <a-col :md="6" :sm="8">
-            <a-form-item label="科室">
-              <a-input placeholder="请选择科室" v-model="queryParam.deptName"></a-input>
+          <a-col :span="6">
+            <a-form-item label="入库库房">
+              <a-select
+                mode="multiple"
+                showSearch
+                placeholder="请选择入库库房"
+                :supplierId="departValue"
+                :defaultActiveFirstOption="false"
+                :showArrow="true"
+                :filterOption="false"
+                :allowClear="true"
+                @search="departHandleSearch"
+                @focus="departHandleSearch"
+                :notFoundContent="notFoundContent"
+                v-model="queryParam.departIds"
+              >
+                <a-select-option v-for="d in departList" :key="d.id">{{d.departName}}</a-select-option>
+              </a-select>
             </a-form-item>
           </a-col>
           <a-col :md="6" :sm="8">
@@ -16,17 +31,17 @@
           </a-col>
           <a-col :md="6" :sm="8">
             <a-form-item label="产品编号">
-              <a-input placeholder="请输入产品编号" v-model="queryParam.productNo"></a-input>
+              <a-input placeholder="请输入产品编号" v-model="queryParam.productNumber"></a-input>
             </a-form-item>
           </a-col>
           <a-col :md="6" :sm="8">
             <a-form-item label="病人姓名">
-              <a-input placeholder="请输入病人姓名" v-model="queryParam.productNo"></a-input>
+              <a-input placeholder="请输入病人姓名" v-model="queryParam.patientInfo"></a-input>
             </a-form-item>
           </a-col>
           <a-col :md="6" :sm="8">
             <a-form-item label="住院号">
-              <a-input placeholder="请输入住院号" v-model="queryParam.productNo"></a-input>
+              <a-input placeholder="请输入住院号" v-model="queryParam.inHospitalNo"></a-input>
             </a-form-item>
           </a-col>
           <a-col :md="6" :sm="8">
@@ -55,11 +70,12 @@
         ref="table"
         size="middle"
         bordered
-        rowKey="id"
+        rowKey="pdDosageDetailId"
         :columns="columns"
         :dataSource="dataSource"
         :pagination="ipagination"
         :loading="loading"
+        :scroll="tableScroll"
         @change="handleTableChange">
       </a-table>
     </div>
@@ -68,6 +84,8 @@
 <script>
 
   import { JeecgListMixin} from '@/mixins/JeecgListMixin'
+  import { httpAction,getAction,downFile } from '@/api/manage'
+  import { filterObj } from '@/utils/util';
 
   export default {
     name: "PdDosageQueryList",
@@ -77,6 +95,10 @@
     data () {
       return {
         description: '用量明细查询',
+        tableScroll:{x :3500},
+        notFoundContent:"未找到内容",
+        departValue: undefined,
+        departList:[],
         // 表头
         columns: [
           {
@@ -92,17 +114,22 @@
           {
             title:'用量单号',
             align:"center",
-            dataIndex: 'deptName'
+            dataIndex: 'dosageNo'
           },
           {
             title:'用量库房',
             align:"center",
-            dataIndex: 'deptName'
+            dataIndex: 'departName'
+          },
+          {
+            title:'货位',
+            align:"center",
+            dataIndex: 'outHuoweiName'
           },
           {
             title:'用量日期',
             align:"center",
-            dataIndex: 'deptName'
+            dataIndex: 'dosageDate'
           },
           {
             title:'产品名称',
@@ -110,14 +137,9 @@
             dataIndex: 'productName'
           },
           {
-            title:'产品权限',
-            align:"center",
-            dataIndex: 'productNo'
-          },
-          {
             title:'产品条码',
             align:"center",
-            dataIndex: 'productNo'
+            dataIndex: 'productBarCode'
           },
           {
             title:'规格',
@@ -132,24 +154,24 @@
           {
             title:'批号',
             align:"center",
-            dataIndex: 'unitName'
+            dataIndex: 'batchNo'
           },
           {
             title:'有效期',
             align:"center",
-            dataIndex: 'limitUp'
+            dataIndex: 'expDate'
           },
           {
             title:'数量',
             align:"center",
-            dataIndex: 'limitDown'
+            dataIndex: 'dosageCount'
           },
           {
             title:'单位',
             align:"center",
-            dataIndex: 'limitDown'
+            dataIndex: 'unitName'
           },
-          {
+          /*{
             title:'单价',
             align:"center",
             dataIndex: 'limitDown'
@@ -158,71 +180,55 @@
             title:'金额',
             align:"center",
             dataIndex: 'limitDown'
-          },
+          },*/
           {
             title:'生产厂家',
             align:"center",
-            dataIndex: 'limitDown'
+            dataIndex: 'venderName'
           },
-          {
+          /*{
             title:'操作人',
             align:"center",
             dataIndex: 'stockNum'
-          },
+          },*/
           {
             title:'执行科室',
             align:"center",
-            dataIndex: 'limitDown'
+            dataIndex: 'exeDeptName'
           },
           {
             title:'手术科室',
             align:"center",
-            dataIndex: 'limitDown'
+            dataIndex: 'oprDeptName'
           },
           {
             title:'住院号',
             align:"center",
-            dataIndex: 'limitDown'
+            dataIndex: 'inHospitalNo'
           },
           {
             title:'病人姓名',
             align:"center",
-            dataIndex: 'limitDown'
+            dataIndex: 'patientInfo'
           },
           {
             title:'手术医生',
             align:"center",
-            dataIndex: 'limitDown'
+            dataIndex: 'surgeonName'
           },
           {
-            title:'HIS收费单价',
+            title:'HIS收费代码',
             align:"center",
-            dataIndex: 'limitDown'
+            dataIndex: 'chargeCode'
           },
-          {
-            title:'HIS收费数量',
-            align:"center",
-            dataIndex: 'limitDown'
-          },
-          {
-            title:'HIS收费金额',
-            align:"center",
-            dataIndex: 'limitDown'
-          },
-          {
-            title:'收费标志',
-            align:"center",
-            dataIndex: 'limitDown'
-          },
-          {
-            title:'备注',
-            align:"center",
-            dataIndex: 'limitDown'
-          }
         ],
         url: {
-          list: "",
-          exportXlsUrl: "",
+          list: "/pd/pdDosage/queryPdDosageList",
+          querySupplier:"/pd/pdSupplier/getSupplierList",
+          queryVender:"/pd/pdVender/getVenderList",
+          // departList:"/pd/pdDepart/getSysDepartList",
+          departList: "/pd/pdDepart/queryListTree",
+          exportXlsUrl: "/pd/pdDosage/exportXls",
         },
       }
     },
@@ -232,7 +238,28 @@
       }
     },
     methods: {
-
+    // 部门下拉框搜索
+      departHandleSearch(value){
+        getAction(this.url.departList,{departName:value}).then((res)=>{
+          if (!res.success) {
+            this.cmsFailed(res.message);
+          }
+          this.departList = res.result;
+        })
+      },
+      getQueryParams() {
+        //获取查询条件
+        let sqp = {}
+        if(this.superQueryParams){
+          sqp['superQueryParams']=encodeURI(this.superQueryParams)
+        }
+        var param = Object.assign(sqp, this.queryParam, this.isorter ,this.filters);
+        param.field = this.getQueryField();
+        param.pageNo = this.ipagination.current;
+        param.pageSize = this.ipagination.pageSize;
+        param.departIds = this.queryParam.departIds+"";
+        return filterObj(param);
+      },
     }
   }
 </script>

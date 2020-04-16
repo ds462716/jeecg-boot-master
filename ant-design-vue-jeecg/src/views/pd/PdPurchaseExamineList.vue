@@ -94,8 +94,8 @@
         :pagination="ipagination"
         :loading="loading"
         :customRow="onClickRow"
-        :rowSelection="{fixed:false,selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
-        @change="handleTableChange">
+        :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
+         @change="handleTableChange">
         <span slot="action" slot-scope="text, record">
           <a v-if="record.auditStatus=='1'" @click="handleEdit(record)">审核</a>&nbsp;&nbsp;&nbsp;
           <a href="javascript:;" @click="handleDetail(record)">详情</a>
@@ -333,6 +333,22 @@
           }
         })
       },
+      onSelectChange (selectedRowKeys) {
+        this.selectedRowKeys = selectedRowKeys;
+      },
+
+     /* onSelect(record, selected){
+        if(selected == true ){
+          this.selectionRows.push(record);
+        }else {
+          this.selectionRows.forEach(function(item,index,arr){
+            if(item.id == record.id) {
+              arr.splice(index, 1);
+            }
+          })
+        }
+        //--update-end----author:kangxiaolin---date:20190921------for:系统发送通知 用户多选失败 #513----
+      },*/
   onClickRow(record) {
     return {
       on: {
@@ -353,8 +369,10 @@
               let index = this.selectedRowKeys.indexOf(recordId);
               if(index>=0){
                 this.selectedRowKeys.splice(index, 1);
+                this.selectionRows.splice(index, 1);
               }else{
                 this.selectedRowKeys.push(recordId);
+                this.selectionRows.push(record);
               }
             }
           }

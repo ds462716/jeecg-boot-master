@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.pd.mapper.PdStoreroomPatrolDetailMapper">
+
+	<delete id="deleteByMainId" parameterType="java.lang.String">
+		DELETE 
+		FROM  pd_storeroom_patrol_detail 
+		WHERE
+			 storeroom_patrol_id = #{mainId}
+	</delete>
+	
+	<select id="selectByMainId" parameterType="java.lang.String" resultType="org.jeecg.modules.pd.entity.PdStoreroomPatrolDetail">
+		SELECT
+			a.*,
+			b.batch_no,
+			b.exp_date,
+			c.NAME AS productName,
+			c.number,
+			c.spec,
+			c.version,
+			c.registration,
+			d.`name` AS unitName,
+			e.`name` AS venderName
+		FROM
+			pd_storeroom_patrol_detail a
+			LEFT JOIN pd_product_stock b ON a.product_stock_id = b.id
+			LEFT JOIN pd_product c ON a.product_id = c.id
+			LEFT JOIN pd_unit d ON c.unit_id = d.id
+			LEFT JOIN pd_vender e ON c.vender_id = e.id
+		WHERE
+            a.del_flag = '0'
+			and storeroom_patrol_id = #{mainId}
+	</select>
+</mapper>

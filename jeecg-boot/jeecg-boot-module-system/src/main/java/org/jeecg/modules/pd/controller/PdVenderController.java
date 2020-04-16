@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
+import org.jeecg.common.constant.PdConstant;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.oConvertUtils;
@@ -178,6 +179,7 @@ public class PdVenderController extends JeecgController<PdVender, IPdVenderServi
 			 String filePath = FileUploadUtil.upload(licenceSiteUp11);
 			 pdVender.setLicenceSite11(filePath);
 		 }
+		 pdVender.setValidityFlag(PdConstant.PD_STATE_0);
 		 pdVenderService.save(pdVender);
 		 return Result.ok("添加成功！");
 	 }

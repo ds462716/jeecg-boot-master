@@ -112,6 +112,6 @@
             or a.code_query LIKE concat('%',#{name},'%')
             )
         </if>
-        ORDER BY a.update_time desc,b.code_order
+        ORDER BY a.update_time desc,a.create_time desc,b.code_order
     </select>
 </mapper>

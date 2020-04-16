@@ -56,6 +56,12 @@
                 <a href="javascript:;" @click="handleAddPermissionSub(record)">添加部门权限</a>
               </a-menu-item>
               <a-menu-item>
+                <a href="javascript:;" @click="copyPermissionSub(record)">复制部门权限及部门角色权限</a>
+              </a-menu-item>
+              <a-menu-item>
+                <a href="javascript:;" @click="pastePermissionSub(record)">粘贴部门权限及部门角色权限</a>
+              </a-menu-item>
+              <a-menu-item>
                 <a href="javascript:;" @click="handleAddRoleSub(record)">添加部门角色</a>
               </a-menu-item>
               <a-menu-item>
@@ -94,6 +100,7 @@
   import JDictSelectTag from '@/components/dict/JDictSelectTag.vue'
   import {initDictOptions, filterMultiDictText} from '@/components/dict/JDictSelectUtil'
   import { queryPdDepaTreeList } from '@/api/api'
+  import { httpAction } from '@/api/manage'
 
   export default {
     name: "PdDepartList",
@@ -109,6 +116,7 @@
       return {
         description: '部门管理页面',
         expandedRowKeys :[],
+        copyPermission:"",//复制的部门权限
         // 表头
         columns: [
           {
@@ -169,6 +177,7 @@
         ],
         url: {
           list: "/pd/pdDepart/queryTreeList",
+          copyPermission: "/pd/pdDepart/copyPermission",
           delete: '/pd/pdDepart/delete',
           edit: '/sys/sysDepart/edit',
           deleteBatch: '/sys/sysDepart/deleteBatch',
@@ -312,7 +321,53 @@
         }else{
           this.expandedRowKeys.push(record.id);
         }
-      }
+      },
+      /**
+       * 复制部门权限
+       * @param record
+       */
+      copyPermissionSub(record){
+        if(record.parentId){
+          this.copyPermission = record.id;
+          this.$message.success("复制成功!")
+        }else{
+          this.$message.error("不能复制当前机构的权限!")
+        }
+      },
+      /**
+       * 粘贴部门权限
+       * @param record
+       */
+      pastePermissionSub(record){
+        if(record.parentId){
+          if(this.copyPermission){
+            if(this.copyPermission == record.id){
+              this.$message.error("不能复制粘贴同一个!")
+            }else{
+              let formData = new URLSearchParams();
+              formData.append("copyId",this.copyPermission);
+              formData.append("pasteId",record.id);
+              this.loading = true;
+              httpAction(this.url.copyPermission,formData,"post").then((res)=>{
+                if(res.success){
+                  this.$message.success("粘贴成功!")
+                  this.loading = false;
+                }else{
+                  this.$message.warning(res.message);
+                  this.loading = false;
+                }
+              }).finally(() => {
+                this.loading = false;
+              })
+            }
+          }else{
+            this.$message.error("请先复制产品权限!")
+          }
+        }else{
+          this.$message.error("不能这样操作")
+        }
+      },
+
     }
   }
 </script>

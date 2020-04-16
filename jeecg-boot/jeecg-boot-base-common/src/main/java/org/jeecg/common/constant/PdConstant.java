@@ -73,6 +73,7 @@ public interface PdConstant {
 	public final static String ORDER_NO_FIRST_LETTER_SG = "SG";//申购单
 	public final static String ORDER_NO_FIRST_LETTER_XC = "XC";//巡查单
 	public final static String ORDER_NO_FIRST_LETTER_PD = "PD";//盘点单
+	public final static String ORDER_NO_FIRST_LETTER_DSB = "DSB";//定数包
 
 	//是否过期
 	public final static String PD_STATE="pd_state";
@@ -111,6 +112,10 @@ public interface PdConstant {
 	public final static String ON_OFF_STOCK_OUT_AUDIT = "on_off_stock_out_audit";
 	public final static Integer ON_OFF_STOCK_OUT_AUDIT_0 = 0; // 1-是；0-否
 	public final static Integer ON_OFF_STOCK_OUT_AUDIT_1 = 1; // 1-是；0-否
+	/**开关-是否允许入库证照过期的产品**/
+	public final static String ON_OFF_STOCK_IN_EXP_PRODUCT = "on_off_stock_in_exp_product";
+	/**开关-是否允许入库证照过期的供应商**/
+	public final static String ON_OFF_STOCK_IN_EXP_SUPPLIER = "on_off_stock_in_exp_supplier";
 
 
 	//系统消息提醒模板CODE
@@ -165,11 +170,14 @@ public interface PdConstant {
 	public final static String REMINDER_TYPE_2 = "supplierNEP";//供应商近效期提醒时间
 	public final static String REMINDER_TYPE_3 = "stockNEP";//库存近效期提醒时间
 	public final static String REMINDER_TYPE_4 = "existRemind";//久存提醒时间
+	public final static String REMINDER_TYPE_5 = "productNEP";//产品证照近效期提醒时间
+
 
 	public final static String REMINDER_DETE_1 = "60";//生产厂家近效期提醒时间默认值
 	public final static String REMINDER_DETE_2 = "60";//供应商近效期提醒时间默认值
 	public final static String REMINDER_DETE_3 = "60";//库存近效期提醒时间默认值
 	public final static String REMINDER_DETE_4 = "60";//久存提醒时间默认值
+	public final static String REMINDER_DETE_5 = "60";//产品近效期提醒时间默认值
 
 	/**
 	 * 菜单名称变了需要改名字
@@ -182,6 +190,8 @@ public interface PdConstant {
 	public final static String AUDIT_MENU_6="生产厂家管理";
 	public final static String AUDIT_MENU_7="领用审核";
 	public final static String AUDIT_MENU_8="调拨审核";
+	public final static String AUDIT_MENU_9="产品管理";
+
 
 
 	//同步状态码
@@ -199,6 +209,7 @@ public interface PdConstant {
 	//器械使用收费状态
 	public final static String  CHARGE_FLAG_0 ="0";//收费
 	public final static String  CHARGE_FLAG_1 ="1";//不收费
+	public final static String  CHARGE_FLAG_2 ="2";//已退回
 	public final static String  IS_CHARGE_FLAG_0 ="0";//有接口
 	public final static String  IS_CHARGE_FLAG_1 ="1";//没有接口
 
@@ -211,5 +222,11 @@ public interface PdConstant {
 	public final static String PROD_ATTR_1 = "1";//产品
 	public final static String PROD_ATTR_2 = "2";//定数包
 
+	// 巡查结果
+	public final static String RESULT_QUALIFIED = "合格";
+	public final static String RESULT_UNQUALIFIED = "不合格";
+	public final static String RESULT_OTHER = "其他";
 
+	// 紧急产品标志   0-是；1-不是
+	public final static String IS_URGENT_0 = "0";
 }

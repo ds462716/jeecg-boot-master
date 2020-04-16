@@ -365,31 +365,25 @@
         <if test="version != null and version != ''">
             AND a.version LIKE concat('%',#{version},'%')
         </if>
+        <if test="validityFlag != null and validityFlag != ''">
+            AND a.validity_flag = #{validityFlag}
+        </if>
         <if test="departId != null and departId != ''">
             AND a.depart_id = #{departId}
         </if>
         <if test="departParentId != null and departParentId != ''">
             AND a.depart_parent_id = #{departParentId}
         </if>
-        order by a.create_time desc, a.update_time desc
+        ORDER BY a.update_time,a.create_time desc
     </select>
 
     <!-- 用于产品弹出框 -->
     <select id="chooseProductList" resultType="org.jeecg.modules.pd.vo.PdProductPage" parameterType="org.jeecg.modules.pd.vo.PdProductPage">
         select DISTINCT
             a.id as productId,
-            a.number as number,
             a.number as productNumber,
             a.name as productName,
-            a.unit_id as unitId,
-            a.vender_id as venderId,
-            a.supplier_id as supplierId,
-            a.spec as spec,
-            a.selling_price as sellingPrice,
-            a.purchase_price as purchasePrice,
-            a.version as version,
-            a.registration as registration,
-            a.charge_code as chargeCode,
+            a.*,
             b.name as unitName,
             c.name as venderName,
             d.name as supplierName
@@ -451,7 +445,7 @@
                 AND a.depart_parent_id = #{departParentId}
             </if>
         </where>
-        ORDER BY a.update_time desc
+        ORDER BY a.update_time desc,a.create_time desc
     </select>
 
     <!-- 批量更新产品收费代码 -->
@@ -533,4 +527,23 @@
         </if>
     </select>
 
+    <!--  修改有效期标识 -->
+    <update id="updateValidityFlag">
+		UPDATE pd_product SET
+		 licence_validity0 = #{licenceValidity0},
+		 licence_validity1 = #{licenceValidity1},
+		 licence_validity2 = #{licenceValidity2},
+		 licence_validity3 = #{licenceValidity3},
+		 licence_validity4 = #{licenceValidity4},
+		 licence_validity5 = #{licenceValidity5},
+		 licence_validity6 = #{licenceValidity6},
+		 licence_validity7 = #{licenceValidity7},
+		 licence_validity8 = #{licenceValidity8},
+		 licence_validity9 = #{licenceValidity9},
+		 licence_validity10 = #{licenceValidity10},
+		 licence_validity11 = #{licenceValidity11},
+		 validity_flag = #{validityFlag},
+		 msg_send_state = #{msgSendState}
+		  where id = #{id}
+	</update>
 </mapper>

@@ -7,14 +7,17 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
+import org.jeecg.common.constant.PdConstant;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.pd.entity.PdPackage;
 import org.jeecg.modules.pd.entity.PdPackageDetail;
+import org.jeecg.modules.pd.entity.PdStockRecord;
 import org.jeecg.modules.pd.service.IPdPackageDetailService;
 import org.jeecg.modules.pd.service.IPdPackageService;
 import org.jeecg.modules.pd.service.IPdProductStockTotalService;
+import org.jeecg.modules.pd.util.UUIDUtil;
 import org.jeecg.modules.pd.vo.PdPackagePage;
 import org.jeecg.modules.pd.vo.PdProductStockTotalPage;
 import org.jeecgframework.poi.excel.ExcelImportUtil;
@@ -54,6 +57,19 @@ public class PdPackageController {
 	private IPdPackageDetailService pdPackageDetailService;
 	@Autowired
 	private IPdProductStockTotalService pdProductStockTotalService;
+
+	 /**
+	  * 初始化Modal页面
+	  *
+	  * @param req
+	  * @return
+	  */
+	 @GetMapping(value = "/initModal")
+	 public Result<?> initModal(@RequestParam(name = "id") String id, HttpServletRequest req) {
+		 PdPackage pdPackage = new PdPackage();
+		 pdPackage.setCode(UUIDUtil.generateOrderNoByType(PdConstant.ORDER_NO_FIRST_LETTER_DSB));
+		 return Result.ok(pdPackage);
+	 }
 
 	 /**
 	 * 分页列表查询

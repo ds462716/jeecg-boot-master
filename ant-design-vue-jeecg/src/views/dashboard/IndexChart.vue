@@ -106,7 +106,7 @@
 <!--
                 <rank-list title="耗材类别" :list="rankList"/>
 -->
-                <rank-total-list title="耗材类别(金额)" :list="rankList"/>
+                <rank-total-list title="耗材类别(金额:元)" :list="rankList"/>
               </a-col>
             </a-row>
           </a-tab-pane>
@@ -129,7 +129,7 @@
 
     <a-row>
       <a-col :span="24">
-        <a-card :loading="loading" :bordered="false" title="耗材分类金额统计(RMB)" :style="{ marginTop: '24px' }">
+        <a-card :loading="loading" :bordered="false" title="耗材分类金额统计(单位:元)" :style="{ marginTop: '24px' }">
           <!--<a-row>
             <a-col :span="6">
               <head-info title="今日IP" :content="loginfo.todayIp"></head-info>
@@ -226,7 +226,7 @@
         rankList,
         barData,
         model:{},
-        totalTitle:"采购金额统计",//默认
+        totalTitle:"采购金额统计(单位:元)",//默认
         countTitle:"采购数量统计",//默认
         loginfo:{},
         visitFields:['ip','visit'],
@@ -243,16 +243,16 @@
     methods: {
       deomtest(type){
         if(type=="apply"){
-          this.totalTitle="申领金额统计";
+          this.totalTitle="申领金额统计(单位:元)";
           this.countTitle="申领数量统计";
         }else  if(type=="dosage"){
-          this.totalTitle="使用金额统计";
+          this.totalTitle="使用金额统计(单位:元)";
           this.countTitle="使用数量统计";
         }else if(type=="stock") {
-          this.totalTitle="库存金额统计";
+          this.totalTitle="库存金额统计(单位:元)";
           this.countTitle="库存数量统计";
         }else{
-          this.totalTitle="采购金额统计";
+          this.totalTitle="采购金额统计(单位:元)";
           this.countTitle="采购数量统计";
         }
 

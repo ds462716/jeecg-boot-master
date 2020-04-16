@@ -227,6 +227,7 @@
             this.model.orderNos=this.model.orderNo;
             this.model.oprtSource="1";
             let formData = Object.assign(this.model, values);
+            that.confirmLoading = true;
             httpAction(this.url.edit, formData, 'put').then((res) => {
               if (res.success) {
                 that.$message.success("操作成功");

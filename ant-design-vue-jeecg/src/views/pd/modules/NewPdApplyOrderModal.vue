@@ -520,6 +520,7 @@
               httpurl+=this.url.edit;
               method = 'put';
             }
+            that.confirmLoading = true;
             httpAction(httpurl,formData,method).then((res)=>{
               if(res.success){
                 that.$message.success(res.message);

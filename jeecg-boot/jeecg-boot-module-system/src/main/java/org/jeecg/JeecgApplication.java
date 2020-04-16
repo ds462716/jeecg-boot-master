@@ -1,6 +1,7 @@
 package org.jeecg;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.cxf.staxutils.StaxUtils;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -8,6 +9,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.env.Environment;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
+import javax.annotation.PostConstruct;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
@@ -33,5 +35,10 @@ public class JeecgApplication {
         "Doc: \t\thttp://" + ip + ":" + port + path + "/doc.html\n" +
         "----------------------------------------------------------");
 
+  }
+  //解决webservice解析xml出错jar冲突问题
+  @PostConstruct
+  public void init(){
+    System.setProperty(StaxUtils.ALLOW_INSECURE_PARSER,"1");
   }
 }

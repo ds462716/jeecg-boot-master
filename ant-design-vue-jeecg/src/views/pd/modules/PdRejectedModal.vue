@@ -72,6 +72,8 @@
 
               <div style="margin-bottom: 8px;" v-show="!disableSubmit">
                 <a-button type="primary" icon="plus" @click="chooseProductList">选择产品</a-button>
+                <!--<a-button type="primary" icon="plus" @click="choosePurchaseOrder" style="margin-left: 8px" >从订单导入</a-button>-->
+
                 <a-popconfirm style="margin-left: 8px"
                               :title="`确定要删除吗?`"
                               @confirm="handleConfirmDelete">
@@ -127,6 +129,8 @@
     </template>
 
     <pd-choose-product-stock-list-model ref="pdChooseProductStockListModel" @ok="returnProductStockData" ></pd-choose-product-stock-list-model>
+    <pd-choose-purchase-order-list-model ref="pdChoosePurchaseOrderListModel" @ok="returnPurchaseOrderData" ></pd-choose-purchase-order-list-model>
+
   </j-modal>
 </template>
 
@@ -142,6 +146,7 @@
   import ATextarea from "ant-design-vue/es/input/TextArea";
   import {stockScanCode} from '@/utils/barcode'
   import PdChooseProductStockListModel from "./PdChooseProductStockListModel";
+  import PdChoosePurchaseOrderListModel from "./PdChoosePurchaseOrderListModel";
 
   const VALIDATE_NO_PASSED = Symbol()
   export { FormTypes, VALIDATE_NO_PASSED }
@@ -164,6 +169,7 @@
     name: 'PdRejectedModal',
     mixins: [JEditableTableMixin],
     components: {
+      PdChoosePurchaseOrderListModel,
       PdChooseProductStockListModel,
       ATextarea,
       JDate,
@@ -404,9 +410,26 @@
           this.$message.error("请选择需要删除的数据！")
         }
       },
+      //选择采购单
+      choosePurchaseOrder() {
+        let supplierId = this.form.getFieldValue("supplierId");
+        if(!supplierId){
+          this.$message.error("请选择供应商！");
+          return;
+        }
+        this.$refs.pdChoosePurchaseOrderListModel.show({supplierId:supplierId});
+      },
+      //选择订单后回调函数
+      returnPurchaseOrderData(data) {
+        // this.showOrderTable = true;
+        // this.pdPurchaseOrderDetailTable.dataSource = data;
+        // this.mergeOrderNo = data[0].mergeOrderNo;
+        // this.form.setFieldsValue({mergeOrderNo:data[0].mergeOrderNo});
+        // //校验产品列表是否有订单中的产品
+        // this.checkProductInOrder();
+      },
       // 选择产品 新增行
       chooseProductList() {
-        let outType = this.form.getFieldValue("outType");
         let supplierId = this.form.getFieldValue("supplierId");
         if(!supplierId){
           this.$message.error("请选择供应商！");

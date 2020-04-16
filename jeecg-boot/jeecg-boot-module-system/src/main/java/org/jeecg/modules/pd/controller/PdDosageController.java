@@ -17,6 +17,8 @@ import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.pd.entity.PdDosage;
+import org.jeecg.modules.pd.entity.PdDosageDetail;
+import org.jeecg.modules.pd.service.IPdDepartService;
 import org.jeecg.modules.pd.service.IPdDosageService;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -24,6 +26,8 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
 
+import org.jeecg.modules.pd.vo.PdDosagePage;
+import org.jeecg.modules.system.entity.SysDepart;
 import org.jeecgframework.poi.excel.ExcelImportUtil;
 import org.jeecgframework.poi.excel.def.NormalExcelConstants;
 import org.jeecgframework.poi.excel.entity.ExportParams;
@@ -54,6 +58,8 @@ import org.jeecg.common.aspect.annotation.AutoLog;
 public class PdDosageController extends JeecgController<PdDosage, IPdDosageService> {
 	@Autowired
 	private IPdDosageService pdDosageService;
+	@Autowired
+	private IPdDepartService pdDepartService;
 	
 	/**
 	 * 分页列表查询
@@ -120,6 +126,37 @@ public class PdDosageController extends JeecgController<PdDosage, IPdDosageServi
 	 }
 
 	 /**
+	  * 统计查询-用量明细
+	  * @param pdDosage
+	  * @param pageNo
+	  * @param pageSize
+	  * @param req
+	  * @return
+	  */
+	 @GetMapping(value = "/queryPdDosageList")
+	 public Result<?> queryPdDosageList(PdDosage pdDosage,
+											   @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
+											   @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
+											   HttpServletRequest req) {
+
+		 Page<PdDosage> page = new Page<>(pageNo, pageSize);
+		 LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		 pdDosage.setDepartParentId(sysUser.getDepartParentId());
+
+		 if(oConvertUtils.isNotEmpty(pdDosage.getDepartIds()) && !"undefined".equals(pdDosage.getDepartIds())){
+			 pdDosage.setDepartIdList(Arrays.asList(pdDosage.getDepartIds().split(",")));
+		 }else{
+			 //查询科室下所有下级科室的ID
+			 SysDepart sysDepart=new SysDepart();
+			 List<String> departList=pdDepartService.selectListDepart(sysDepart);
+			 pdDosage.setDepartIdList(departList);
+		 }
+
+		 page = pdDosageService.queryPdDosageList(page, pdDosage);
+		 return Result.ok(page);
+	 }
+
+	 /**
 	  * 提交
 	  *
 	  * @param pdDosage
@@ -129,6 +166,18 @@ public class PdDosageController extends JeecgController<PdDosage, IPdDosageServi
 	 public Result<?> submit(@RequestBody PdDosage pdDosage) {
 	 	//不收费
 		 pdDosageService.saveMain(pdDosage, PdConstant.IS_CHARGE_FLAG_1);
+		 return Result.ok("添加成功！");
+	 }
+
+	 /**
+	  * 用量退回
+	  * @param pdDosage
+	  * @return
+	  */
+	 @PostMapping(value = "/dosageReturned")
+	 public Result<?> dosageReturned(@RequestBody PdDosage pdDosage) {
+		 //不收费
+		 pdDosageService.dosageReturned(pdDosage);
 		 return Result.ok("添加成功！");
 	 }
 
@@ -185,7 +234,26 @@ public class PdDosageController extends JeecgController<PdDosage, IPdDosageServi
     */
     @RequestMapping(value = "/exportXls")
     public ModelAndView exportXls(HttpServletRequest request, PdDosage pdDosage) {
-        return super.exportXls(request, pdDosage, PdDosage.class, "用量表");
+		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		pdDosage.setDepartParentId(sysUser.getDepartParentId());
+
+		if(oConvertUtils.isNotEmpty(pdDosage.getDepartIds()) && !"undefined".equals(pdDosage.getDepartIds())){
+			pdDosage.setDepartIdList(Arrays.asList(pdDosage.getDepartIds().split(",")));
+		}else{
+			//查询科室下所有下级科室的ID
+			SysDepart sysDepart=new SysDepart();
+			List<String> departList=pdDepartService.selectListDepart(sysDepart);
+			pdDosage.setDepartIdList(departList);
+		}
+		List<PdDosage> detailList = pdDosageService.queryPdDosageList(pdDosage);
+		List<PdDosagePage> exportList = JSON.parseArray(JSON.toJSONString(detailList), PdDosagePage.class);
+		// Step.4 AutoPoi 导出Excel
+		ModelAndView mv = new ModelAndView(new JeecgEntityExcelView());
+		mv.addObject(NormalExcelConstants.FILE_NAME, "用量");
+		mv.addObject(NormalExcelConstants.CLASS, PdDosagePage.class);
+		mv.addObject(NormalExcelConstants.PARAMS, new ExportParams("用量数据", "导出人:" + sysUser.getRealname(), "用量表"));
+		mv.addObject(NormalExcelConstants.DATA_LIST, exportList);
+		return mv;
     }
 
     /**

@@ -46,7 +46,7 @@
         <a-card style="margin-bottom: 10px;">
           <a-tabs v-model="activeKey" @change="handleChangeTabs">
             <a-tab-pane tab="产品明细" :key="refKeys[0]"  :forceRender="true">
-              <a-form v-show="!disableSubmit">
+              <a-form v-show="false">
                 <a-row>
                   <a-col :md="6" :sm="8">
                     <a-form-item label="产品编号" :labelCol="labelCol" :wrapperCol="wrapperCol">
@@ -66,7 +66,7 @@
                 </a-row>
               </a-form>
 
-              <div style="margin-bottom: 8px;" v-show="!disableSubmit">
+              <div style="margin-bottom: 8px;" v-show="false">
                 <a-button type="primary" icon="plus" @click="chooseProductList">选择产品</a-button>
                 <a-button type="primary" icon="plus" @click="choosePackageList" style="margin-left: 8px">选择定数包</a-button>
                 <a-popconfirm style="margin-left: 8px"
@@ -106,42 +106,42 @@
             <a-tab-pane tab="收费信息" :key="refKeys[0]"  :forceRender="true">
               <a-form :form="form">
                 <a-row>
-                  <a-col :md="16" :sm="8">
+                  <!--<a-col :md="16" :sm="8">
                     <a-form-item label="执行收费" :labelCol="{span: 3}" :wrapperCol="{span: 20}">
                       <a-switch v-model="hyCharged"/>
                       <span style="color: red">  不选中的情况下，只在当前系统保存病人信息，医院系统中并不记账，此功能只作产品追溯用。</span>
                     </a-form-item>
-                  </a-col>
+                  </a-col>-->
                 </a-row>
                 <a-row>
                   <a-col :md="6" :sm="8" v-if="hyCharged">
                     <a-form-item label="住院号" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                      <a-input :disabled="disableSubmit" v-decorator="[ 'inHospitalNo', validatorRules.inHospitalNo]"></a-input>
+                      <a-input :disabled="true" v-decorator="[ 'inHospitalNo', validatorRules.inHospitalNo]"></a-input>
                     </a-form-item>
                   </a-col>
                   <a-col :md="6" :sm="8" v-else="!hyCharged">
                     <a-form-item label="住院号" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                      <a-input :disabled="disableSubmit" v-decorator="[ 'inHospitalNo']" ></a-input>
+                      <a-input :disabled="true" v-decorator="[ 'inHospitalNo']" ></a-input>
                     </a-form-item>
                   </a-col>
                   <a-col :md="6" :sm="8" v-if="hyCharged">
                     <a-form-item label="病人信息" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                      <a-input :disabled="disableSubmit" v-decorator="[ 'patientInfo', validatorRules.patientInfo]" ></a-input>
+                      <a-input :disabled="true" v-decorator="[ 'patientInfo', validatorRules.patientInfo]" ></a-input>
                     </a-form-item>
                   </a-col>
                   <a-col :md="6" :sm="8" v-else="!hyCharged">
                     <a-form-item label="病人信息" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                      <a-input :disabled="disableSubmit" v-decorator="[ 'patientInfo']" ></a-input>
+                      <a-input :disabled="true" v-decorator="[ 'patientInfo']" ></a-input>
                     </a-form-item>
                   </a-col>
                   <a-col :md="6" :sm="8">
                     <a-form-item label="门诊号" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                      <a-input :disabled="disableSubmit" v-decorator="[ 'outpatientNumber', validatorRules.outpatientNumber]" ></a-input>
+                      <a-input :disabled="true" v-decorator="[ 'outpatientNumber', validatorRules.outpatientNumber]" ></a-input>
                     </a-form-item>
                   </a-col>
                   <a-col :md="6" :sm="8">
                     <a-form-item label="手术编号" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                      <a-input :disabled="disableSubmit" v-decorator="[ 'operativeNumber', validatorRules.operativeNumber]" ></a-input>
+                      <a-input :disabled="true" v-decorator="[ 'operativeNumber', validatorRules.operativeNumber]" ></a-input>
                     </a-form-item>
                   </a-col>
                 </a-row>
@@ -149,7 +149,7 @@
                 <a-row>
                   <a-col :md="6" :sm="8">
                     <a-form-item label="执行科室" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                      <a-input :disabled="disableSubmit" v-decorator="[ 'exeDeptName', validatorRules.exeDeptName]" ></a-input>
+                      <a-input :disabled="true" v-decorator="[ 'exeDeptName', validatorRules.exeDeptName]" ></a-input>
                     </a-form-item>
                     <!-- 执行科室id -->
                     <a-form-item >
@@ -158,7 +158,7 @@
                   </a-col>
                   <a-col :md="6" :sm="8">
                     <a-form-item label="手术科室" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                      <a-input :disabled="disableSubmit" v-decorator="[ 'oprDeptName', validatorRules.oprDeptName]"></a-input>
+                      <a-input :disabled="true" v-decorator="[ 'oprDeptName', validatorRules.oprDeptName]"></a-input>
                     </a-form-item>
                     <!-- 手术科室id -->
                     <a-form-item>
@@ -167,7 +167,7 @@
                   </a-col>
                   <a-col :md="6" :sm="8">
                     <a-form-item label="手术医生" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                      <a-input :disabled="disableSubmit" v-decorator="[ 'surgeonName', validatorRules.surgeonName]" ></a-input>
+                      <a-input :disabled="true" v-decorator="[ 'surgeonName', validatorRules.surgeonName]" ></a-input>
                     </a-form-item>
                     <!-- 手术医生id -->
                     <a-form-item>
@@ -176,7 +176,7 @@
                   </a-col>
                   <a-col :md="6" :sm="8">
                     <a-form-item label="开方医生" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                      <a-input :disabled="disableSubmit" v-decorator="[ 'sqrtDoctorName', validatorRules.sqrtDoctorName]" ></a-input>
+                      <a-input :disabled="true" v-decorator="[ 'sqrtDoctorName', validatorRules.sqrtDoctorName]" ></a-input>
                     </a-form-item>
                     <!-- 开方医生id -->
                     <a-form-item>
@@ -187,7 +187,7 @@
                 <a-row>
                   <a-col :md="6" :sm="8">
                     <a-form-item label="所属病区" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                      <a-input :disabled="disableSubmit" v-decorator="[ 'subordinateWardName', validatorRules.subordinateWardName]"></a-input>
+                      <a-input :disabled="true" v-decorator="[ 'subordinateWardName', validatorRules.subordinateWardName]"></a-input>
                     </a-form-item>
                     <!-- 所属病区id -->
                     <a-form-item>
@@ -197,10 +197,10 @@
                 </a-row>
 
                 <a-form-item label="病人详细信息" :labelCol="labelCol2" :wrapperCol="wrapperCol2">
-                  <a-textarea :disabled="disableSubmit" v-decorator="[ 'patientDetailInfo', validatorRules.patientDetailInfo]"></a-textarea>
+                  <a-textarea :disabled="true" v-decorator="[ 'patientDetailInfo', validatorRules.patientDetailInfo]"></a-textarea>
                 </a-form-item>
                 <a-form-item label="备注" :labelCol="labelCol2" :wrapperCol="wrapperCol2">
-                  <a-textarea :disabled="disableSubmit" v-decorator="[ 'remarks', validatorRules.remarks]" ></a-textarea>
+                  <a-textarea :disabled="true" v-decorator="[ 'remarks', validatorRules.remarks]" ></a-textarea>
                 </a-form-item>
 
               </a-form>
@@ -215,7 +215,7 @@
       <a-popconfirm title="确定放弃编辑？" @confirm="handleCancel" v-show="!disableSubmit" okText="确定" cancelText="取消">
         <a-button style="margin-right: 15px;">取  消</a-button>
       </a-popconfirm>
-      <a-button @click="submitBtn" v-show="!disableSubmit" type="primary" :loading="confirmLoading" style="margin-right: 15px;">提  交</a-button>
+      <a-button @click="submitBtn" v-show="!disableSubmit" type="primary" :loading="confirmLoading" style="margin-right: 15px;">库存还回</a-button>
     </template>
 
     <pd-choose-product-stock-list-model ref="pdChooseProductStockListModel" @ok="returnProductStockData" ></pd-choose-product-stock-list-model>
@@ -228,7 +228,6 @@
   import pick from 'lodash.pick'
   import { validateDuplicateValue } from '@/utils/util'
   import { FormTypes,getRefPromise,validateFormAndTables } from '@/utils/JEditableTableUtil'
-  import ATextarea from "ant-design-vue/es/input/TextArea";
   import {stockScanCode} from '@/utils/barcode'
   import {httpAction, deleteAction, getAction} from '@/api/manage'
   import { JEditableTableMixin } from '@/mixins/JEditableTableMixin'
@@ -252,7 +251,7 @@
   })
 
   export default {
-    name: "PdDosageModal",
+    name: "PdDosageReturnedModal",
     mixins: [JEditableTableMixin],
     components: {
       PdChooseProductStockListModel,
@@ -291,12 +290,13 @@
             { title: '入库单价', key: 'purchasePrice', width:"80px" },
             { title: '出库单价', key: 'sellingPrice', width:"80px" },
             {
-              title: '用量数量', key: 'dosageCount', type: FormTypes.input, width:"80px",
+              title: '用量数量', key: 'dosageCount', type: FormTypes.input,disabled:true, width:"80px",
               placeholder: '${title}', defaultValue: '1',
               validateRules: [{ required: true, message: '${title}不能为空' },{ pattern: '^-?\\d+\\.?\\d*$',message: '${title}的格式不正确' }]
             },
             { title: '用量金额', key: 'amountMoney', type: FormTypes.input, disabled:true, width:"100px" },
-            { title: '库存数量', key: 'stockNum', width:"80px" },
+            { title: '实际使用数量', key: 'leftRefundNum', width:"80px" },
+            { title: '收费状态', key: 'hyChargedText', width:"80px" },
             { title: '收费项目代码', key: 'chargeCode', width:"80px" },
             { title: '是否计费', key: 'isCharge',type: FormTypes.hidden},
             { title: '是否计费', key: 'isChargeText', width:"80px"},
@@ -379,7 +379,7 @@
         },
         url: {
           init:"/pd/pdDosage/initModal",
-          submit: "/pd/pdDosage/submit",
+          dosageReturned: "/pd/pdDosage/dosageReturned",
           add: "/pd/pdDosage/add",
           edit: "/pd/pdDosage/edit",
           departList:"/pd/pdDepart/getSysDepartList",
@@ -421,6 +421,8 @@
                 }else{
                   this.hyCharged = false;
                 }
+                this.totalSum = res.result.totalSum;
+                this.totalPrice = res.result.totalPrice;
                 this.pdDosageDetailTable.dataSource = res.result.pdDosageDetails || [];
                 let fieldval = pick(this.initData,'dosageNo','dosageDate','departName','dosageByName','inHospitalNo','patientInfo','patientDetailInfo','outpatientNumber','operativeNumber','exeDeptName','exeDeptId','oprDeptName','oprDeptId','surgeonName','surgeonId','sqrtDoctorName','sqrtDoctorId','subordinateWardName','subordinateWardId','remarks');
                 this.form.setFieldsValue(fieldval);
@@ -454,6 +456,8 @@
       },
       close () {
         this.$emit('close');
+        this.totalSum = 0;
+        this.totalPrice = 0.0000;
         this.visible = false;
         this.pdDosageDetailTable.dataSource = [];
         this.eachAllTable((item) => {
@@ -503,10 +507,10 @@
                   for(let item of values){
                     if(pdProductStock.id == item.productStockId){// 库存明细ID一致，就+1
                       isAddRow = false;
-                      if(Number(item.dosageCount) + 1 > Number(item.stockNum)){
+                      if(Number(item.dosageCount) + 1 > Number(item.leftRefundNum)){
                         //清空扫码框
                         this.clearQueryParam();
-                        this.$message.error("["+item.productName+"]出库数量不能大于库存数量！");
+                        this.$message.error("["+item.productName+"]出库数量不能大于剩余可退数量！");
                         return;
                       }
 
@@ -589,11 +593,11 @@
             if(column.key === "dosageCount"){
               let { values } = target.getValuesSync({ validate: false });
               for(let item of values){
-                if(item.id == row.id && Number(value) > Number(item.stockNum)){
-                  this.$message.error("["+row.productName+"]使用数量不能大于库存数量！");
+                if(item.id == row.id && Number(value) > Number(item.leftRefundNum)){
+                  this.$message.error("["+row.productName+"]使用数量不能大于剩余可退数量！");
                   // 产品数量变更 计算每条产品的价格
-                  let amountMoney = (Number(row.sellingPrice) * Number(item.stockNum)).toFixed(4);
-                  target.setValues([{rowKey: row.id, values: { amountMoney: amountMoney, dosageCount: item.stockNum }}])
+                  let amountMoney = (Number(row.sellingPrice) * Number(item.leftRefundNum)).toFixed(4);
+                  target.setValues([{rowKey: row.id, values: { amountMoney: amountMoney, dosageCount: item.leftRefundNum }}])
                   // 计算总数量和总价格
                   this.getTotalNumAndPrice([]);
                   return;
@@ -630,7 +634,7 @@
           dosageCount: 1,
           purchasePrice:row.purchasePrice,
           amountMoney:Number(!row.sellingPrice ? 0 : row.sellingPrice).toFixed(4),
-          stockNum:row.stockNum,
+          leftRefundNum:row.leftRefundNum,
           chargeCode:row.chargeCode,
           isChargeText:row.isCharge=="0"?"是":"否",
           isCharge:row.isCharg,
@@ -651,23 +655,34 @@
           }
 
           let formData = this.classifyIntoFormData(allValues);
-
-          if(formData.pdDosageDetails.length <= 0){
-            this.$message.warning("用量产品数据为空，请扫码出库或选择产品");
+          let selectedArrays = this.$refs.pdDosageDetail.selectedRowIds;
+          if(selectedArrays <= 0){
+            this.$message.warning("请勾选需要退费的产品");
             return;
           }
-
+          //查找出勾选的产品信息
+          let selectedIds = new Array();
+          for(let i =0;i<selectedArrays.length;i++){
+            let selectId = selectedArrays[i].substring(selectedArrays[i].lastIndexOf("-")+1);
+            selectedIds.push(selectId);
+          }
           let list = formData.pdDosageDetails;
-          for (let item of list){
-            if(Number(item.dosageCount) > Number(item.stockNum)){
-              this.$message.error("["+item.productName+"]用量数量不能大于库存数量！");
+          for (let i =0; i <list.length;i++){
+            //如果包含
+            if(selectedIds.indexOf(list[i].id)<0){
+              list.splice(i--, 1);
+              continue;
+            }
+            if(Number(list[i].dosageCount) > Number(list[i].leftRefundNum)){
+              this.$message.error("["+list[i].productName+"]用量数量不能大于剩余可退数量！");
               return;
             }
-            if(Number(item.dosageCount) <= 0){
-              this.$message.error("["+item.productName+"]用量数量必须大于0！");
+            if(Number(list[i].dosageCount) <= 0){
+              this.$message.error("["+list[i].productName+"]用量数量必须大于0！");
               return;
             }
           }
+          formData.pdDosageDetails = list;
           return this.request(formData);
         }).catch(e => {
           if (e.error === VALIDATE_NO_PASSED) {
@@ -681,11 +696,7 @@
 
       // 保存 提交 修改 请求函数
       request(formData) {
-        let url = this.url.submit, method = 'post'
-        if (this.model.id) {
-          url = this.url.edit
-          method = 'put'
-        }
+        let url = this.url.dosageReturned, method = 'post'
         this.confirmLoading = true
         //是否收费标识
         formData.hyCharged=this.hyCharged=="true"?"0":"1";

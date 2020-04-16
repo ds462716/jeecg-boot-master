@@ -49,4 +49,6 @@ public interface IPdProductService extends IService<PdProduct> {
     Result<Object> deleteBatchV(String ids);
 
     Result<Object>  isDisabledNumber(PdProduct pdProduct);
+
+    void updateValidityFlag(PdProduct pdProduct);
 }

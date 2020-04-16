@@ -137,7 +137,7 @@
                 :loading="pdStockRecordDetailTable.loading"
                 :columns="pdStockRecordDetailTable.columns"
                 :dataSource="pdStockRecordDetailTable.dataSource"
-                :maxHeight="500"
+                :maxHeight="650"
                 :rowNumber="true"
                 :rowSelection="true"
                 :actionButton="false"
@@ -147,7 +147,6 @@
                 @added="setPriceDisabled"
                 style="text-overflow: ellipsis;"
               >
-              <!--:maxHeight 大于 600 后就会有BUG 一次性选择9条以上产品，会少显示一条-->
               </j-editable-table>
               <a-row style="margin-top:10px;text-align: right;padding-right: 5%">
                   <span style="font-weight: bold;font-size: large;padding-right: 5%">总数量：{{ totalSum }}</span>
@@ -209,16 +208,17 @@
 
     <template slot="footer">
       <a-button @click="closeBtn" style="margin-right: 15px;" v-show="disableSubmit">关  闭</a-button>
-      <a-button @click="printBtn('1')" style="margin-right: 15px;" type="primary" v-show="showPrintBtn">打  印</a-button>
       <a-popconfirm title="确定放弃编辑？" @confirm="handleCancel" v-show="!disableSubmit" okText="确定" cancelText="取消">
         <a-button style="margin-right: 15px;">取  消</a-button>
       </a-popconfirm>
       <a-popconfirm title="确定撤回？" @confirm="cancelBtn" v-show="showCancelBtn" okText="确定" cancelText="取消">
-        <a-button style="margin-right: 50px;" :loading="confirmLoading" type="danger">撤  回</a-button>
+        <a-button style="margin-right: 15px;" :loading="confirmLoading" type="danger">撤  回</a-button>
       </a-popconfirm>
+      <a-button @click="printBtn('1')" style="margin-right: 15px;" type="primary" v-show="showPrintBtn">打  印</a-button>
       <a-button @click="saveBtn" v-show="!disableSubmit" type="primary" :loading="confirmLoading" style="margin-right: 15px;">保存草稿</a-button>
       <a-button @click="submitBtn('1')" v-show="!disableSubmit" type="primary" :loading="confirmLoading" style="margin-right: 15px;">提  交</a-button>
-      <a-button @click="submitBtn('2')" v-show="showSubmitAndPrint" type="primary" :loading="confirmLoading" style="margin-right: 15px;">提交并打印</a-button>
+      <!--<a-button @click="submitBtn('2')" v-show="showSubmitAndPrint" type="primary" :loading="confirmLoading" style="margin-right: 15px;">提交并打印</a-button>-->
+      <a-button @click="submitBtn('2')" v-show="!disableSubmit" type="primary" :loading="confirmLoading" style="margin-right: 15px;">提交并打印</a-button>
     </template>
 
     <pd-choose-purchase-order-list-model  ref="pdChoosePurchaseOrderListModel" @ok="returnPurchaseOrderData" ></pd-choose-purchase-order-list-model>
@@ -292,10 +292,12 @@
 
         initData:{},
         queryParam:{},
-        allowInMoreOrder:"",		//开关-是否允许入库量大于订单量    1-允许；0-不允许
-        allowNotOrderProduct:"",		//开关-是否允许入库非订单产品     1-允许；0-不允
-        allowSupplier:"",//开关-是否允许入库非本供应商产品   1-允许；0不允许
-        allowEditPrice:"",//关-是否允许出入库时可修改进价和出价   1-允许；0不允许
+        allowInMoreOrder:"",		   //开关-是否允许入库量大于订单量    1-允许；0-不允许
+        allowNotOrderProduct:"",	 //开关-是否允许入库非订单产品     1-允许；0-不允
+        allowSupplier:"",          //开关-是否允许入库非本供应商产品   1-允许；0不允许
+        allowEditPrice:"",         //开关-是否允许出入库时可修改进价和出价   1-允许；0不允许
+        allowStockInExpProduct:"", //开关-是否允许入库证照过期的产品   1-允许；0不允许
+        allowStockInExpSupplier:"",//开关-是否允许入库证照过期的供应商   1-允许；0不允许
 
         //供应商下拉列表 start
         supplierValue: undefined,
@@ -400,7 +402,10 @@
             { title: '货位', key: 'inHuoweiCode', type: FormTypes.select, width:"150px", options: [],allowSearch:true, placeholder: '${title}' },
             // { title: '申购单号', key: 'orderNo', },
             { title: '合并申购单号', key: 'mergeOrderNo', type: FormTypes.input, disabled:true, width:"180px" },
-            { title: '生产厂家', key: 'venderName', type: FormTypes.hidden }
+            { title: '生产厂家', key: 'venderName', type: FormTypes.hidden },
+            { title: '紧急产品-0是1不是', key: 'isUrgent', type: FormTypes.hidden },
+            { title: '紧急产品需要采购数量', key: 'upQuantity', type: FormTypes.hidden },
+            { title: '紧急产品已采购数量', key: 'purchasedQuantity', type: FormTypes.hidden },
           ]
         },
         url: {
@@ -410,6 +415,7 @@
           // edit: "/pd/pdStockRecordIn/edit",
           cancel: "/pd/pdStockRecordIn/cancel",
           querySupplier:"/pd/pdSupplier/getSupplierList",
+          querySupplierById:"/pd/pdSupplier/queryById",
           pdStockRecordDetail: {
             list: "/pd/pdStockRecordIn/queryPdStockRecordDetailByMainId"
           },
@@ -439,6 +445,8 @@
         // this.orderNo = "";
         // this.form.setFieldsValue({orderNo:""});
         this.mergeOrderNo = "";
+        this.totalSum = "";
+        this.inTotalPrice = "";
         this.form.setFieldsValue({mergeOrderNo:""});
         this.eachAllTable((item) => {
           item.initialize()
@@ -467,7 +475,8 @@
             if(this.model.auditStatus == "1" && this.model.submitStatus == "2"){
               this.showCancelBtn = true;
             }
-            if(this.model.auditStatus == "2"){
+            // if(this.model.auditStatus == "2"){ // 审核完可打印
+            if(this.model.submitStatus == "2"){ // 提交完可打印
               this.showPrintBtn = true;
             }
             if(this.model.auditStatus == "2" || this.model.auditStatus == "3"){
@@ -518,6 +527,8 @@
               this.allowNotOrderProduct = res.result.allowNotOrderProduct;
               this.allowSupplier = res.result.allowSupplier;
               this.allowEditPrice = res.result.allowEditPrice;
+              this.allowStockInExpProduct = res.result.allowStockInExpProduct;
+              this.allowStockInExpSupplier = res.result.allowStockInExpSupplier;
               if(this.disableSubmit){
                 this.allowEditPrice = "0";
               }
@@ -550,9 +561,12 @@
         if(flag == "2"){
           this.model.auditDate = this.form.getFieldValue("submitDate");
         }
+        let { values } = this.$refs.pdStockRecordDetail.getValuesSync({ validate: false });
         this.model.totalSum = this.totalSum;
         this.model.inTotalPrice = this.inTotalPrice;
-        this.model.pdStockRecordDetailList = this.pdStockRecordDetailTable.dataSource;
+        // this.model.pdStockRecordDetailList = this.pdStockRecordDetailTable.dataSource;
+        this.model.pdStockRecordDetailList = values;
+        this.model.remarks = this.form.getFieldValue("remarks");
         this.$refs.pdStockRecordInPrintModal.show(this.model);
         this.$refs.pdStockRecordInPrintModal.title = this.stockInText + "入库单";
       },
@@ -680,12 +694,10 @@
             if (res.success) {
               this.$message.success(res.message)
               this.$emit('ok')
-              this.close()
-
               if(flag == "2"){
                 this.printBtn("2"); //通过并打印
               }
-
+              this.close();
             } else {
               this.$message.warning(res.message)
             }
@@ -732,7 +744,10 @@
           })
         }
         this.supplierValue = value;
-        fetch(value, data => (this.supplierData = data),this.url.querySupplier);
+        // fetch(value, data => (this.supplierData = data),this.url.querySupplier);
+        if(this.allowStockInExpSupplier == "0"){ //开关-是否允许入库证照过期的供应商   1-允许；0不允许
+          this.checkSupplierIsExp(value);
+        }
       },
       //----------------供应商查询end
 
@@ -785,11 +800,35 @@
       // 选择产品弹出框回调函数
       returnProductData(data) {
         let rows = [];
+        let products = [];
+
+        if(this.allowStockInExpProduct == "0"){
+          let name = "";
+          data.forEach((item, idx) => {
+            let bool = true;
+            if(item.validityFlag == "1"){ // 证照过期标志
+              // bool = false; // TODO
+              if(name == ""){
+                name = name + item.productName;
+              }else{
+                name = name + "、" + item.productName;
+              }
+            }
+            if(bool){
+              products.push(item)
+            }
+          })
+          this.$message.error("产品[" + name + "]证照已过期，请更新证照信息！");
+        }else{
+          products = data;
+        }
+
         let { values } = this.$refs.pdStockRecordDetail.getValuesSync({ validate: false });
         if(values.length > 0){
           // 如果列表中有相同产品则不加行
-          data.forEach((item, idx) => {
+          products.forEach((item, idx) => {
             let bool = true;
+            let name = "";
             values.forEach((value, idx) => {
               if (value.productId == item.productId
                 && value.batchNo == "" && value.expDate == ""){
@@ -801,7 +840,7 @@
             }
           })
         }else{
-          rows = data;
+          rows = products;
         }
 
         //校验是否允许入库量大于订单量
@@ -848,7 +887,10 @@
           batchNo:"",
           productNum: 1,
           mergeOrderNo:"",
-          inHuoweiCode:""
+          inHuoweiCode:"",
+          isUrgent:row.isUrgent,
+          upQuantity:row.upQuantity,
+          purchasedQuantity:row.purchasedQuantity
         }
         let purchaseOrderDetail = this.pdPurchaseOrderDetailTable.dataSource;
         for (let detail of purchaseOrderDetail) {
@@ -879,7 +921,10 @@
           batchNo:row.batchNo,
           productNum: 1,
           mergeOrderNo:"",
-          inHuoweiCode:""
+          inHuoweiCode:"",
+          isUrgent:row.pdProduct.isUrgent,
+          upQuantity:row.pdProduct.upQuantity,
+          purchasedQuantity:row.pdProduct.purchasedQuantity
         }
         let purchaseOrderDetail = this.pdPurchaseOrderDetailTable.dataSource;
         purchaseOrderDetail.forEach((detail, idx) => {
@@ -932,15 +977,27 @@
             if(column.key == "productNum"){
               // 产品数量变更 计算每条产品的价格
               let rows = target.getValuesSync({ validate: false });
-              let result = this.checkAllowInMoreOrder(row,rows.values);
-              if(!result.bool){
+              // 校验是否允许入库量大于订单量
+              let result1 = this.checkAllowInMoreOrder(row,rows.values);
+              if(!result1.bool){
                 // target.setValues([{rowKey: row.id, values: { productNum: result.num }}]);
-                let inTotalPrice = (Number(row.purchasePrice) * Number(result.num)).toFixed(4);
-                target.setValues([{rowKey: row.id, values: { inTotalPrice: inTotalPrice,productNum: result.num }}])
+                let inTotalPrice = (Number(row.purchasePrice) * Number(result1.num)).toFixed(4);
+                target.setValues([{rowKey: row.id, values: { inTotalPrice: inTotalPrice,productNum: result1.num }}])
               }else{
                 let inTotalPrice = (Number(row.purchasePrice) * Number(value)).toFixed(4);
                 target.setValues([{rowKey: row.id, values: { inTotalPrice: inTotalPrice }}])
               }
+
+              // 校验是否是紧急产品 TODO1
+              // let result2 = this.checkUrgentProduct(row,rows.values);
+              // if(!result2.bool){
+              //   let inTotalPrice = (Number(row.purchasePrice) * Number(result2.num)).toFixed(4);
+              //   target.setValues([{rowKey: row.id, values: { inTotalPrice: inTotalPrice,productNum: result2.num }}])
+              // }else{
+              //   let inTotalPrice = (Number(row.purchasePrice) * Number(value)).toFixed(4);
+              //   target.setValues([{rowKey: row.id, values: { inTotalPrice: inTotalPrice }}])
+              // }
+
             }else if(column.key == "purchasePrice"){
               let inTotalPrice = (Number(row.productNum) * Number(value)).toFixed(4);
               target.setValues([{rowKey: row.id, values: { inTotalPrice: inTotalPrice }}])
@@ -976,7 +1033,12 @@
               let result = res.result;
               if(result.code == "200" || result.code == "203"){
                 let product = result.pdProduct;
-
+                //开关-是否允许入库证照过期的产品   1-允许；0不允许
+                if(that.allowStockInExpProduct == "0" && product.validityFlag == "1"){
+                  this.clearQueryParam();
+                  this.$message.error("产品[" + product.name + "]证照已过期，请更新证照信息！");
+                  // return;  // TODO
+                }
                 //校验开关-是否允许入库非订单产品
                 if(!this.checkAllowNotOrderProduct(product)){
                   return;
@@ -1067,7 +1129,7 @@
       checkSupplier(product){
         let supplierId = this.form.getFieldValue("supplierId")
 
-        if(!product.supplierId){
+        if(!product.supplierId && this.allowSupplier == "0"){ // 是否允许入库非本供应商产品 1-允许；0-不允许
           this.$message.error("产品("+product.name+")没有维护供应商，请先维护供应商！");
           //清空扫码框
           this.clearQueryParam();
@@ -1084,8 +1146,31 @@
         }else{
           //默认选中扫码产品的供应商
           this.form.setFieldsValue({supplierId:product.supplierId});
+          if(this.allowStockInExpSupplier == "0"){ //开关-是否允许入库证照过期的供应商   1-允许；0不允许
+            let bool = this.checkSupplierIsExp(product.supplierId);
+            if(this.allowSupplier == "0" && !bool){
+              this.clearQueryParam();
+              return false;
+            }
+          }
         }
         return true;
+      },
+      //校验供应商证照是否过期
+      checkSupplierIsExp(supplierId){
+        getAction(this.url.querySupplierById,{id:supplierId}).then((res)=>{
+          if (!res.success) {
+            this.cmsFailed(res.message);
+          }
+          const result = res.result;
+          if(result.validityFlag == "1"){
+            // this.form.setFieldsValue({supplierId:""});  // TODO
+            this.$message.error("供应商["+result.name+"]证照已过期，请更新供应商证照信息！");
+            return false;
+          }else{
+            return true;
+          }
+        })
       },
       //校验是否允许订单外产品入库
       checkAllowNotOrderProduct(product){
@@ -1113,6 +1198,41 @@
         }
         return true;
       },
+      // 校验是否是紧急产品 TODO1
+      // checkUrgentProduct(currentRow,rows){
+      //   let result = {};
+      //   result.bool = true;
+      //   if(currentRow.isUrgent == "0"){// 紧急产品
+      //     let upQuantity = Number(currentRow.upQuantity ? currentRow.upQuantity : ""); // 需要采购数量
+      //     let purchasedQuantity = Number(currentRow.purchasedQuantity ? currentRow.purchasedQuantity : ""); // 已采购数量
+      //     let lastNum = upQuantity-purchasedQuantity; // 可采购产品数量
+      //     let totalNum = 0; //当前产品总数量
+      //     let exceptNum = 0;//产品数量(除了当前编辑行)
+      //
+      //     for(let row of rows){
+      //       if(row.productId == currentRow.productId){
+      //         totalNum = totalNum + Number(row.productNum);
+      //         // if(currentRow.id != row.id && currentRow.productId == row.productId){
+      //         //   exceptNum = exceptNum + Number(row.productNum);
+      //         // }
+      //       }
+      //     }
+      //     exceptNum = totalNum - Number(currentRow.productNum);
+      //     if(totalNum > lastNum){
+      //       result.bool = false;
+      //       result.num = lastNum - exceptNum;
+      //       this.$message.error("入库产品["+currentRow.productName+"]是紧急产品，入库数量不能大于紧急产品需采购数量"+lastNum+"！");
+      //     }else{
+      //       result.bool = true;
+      //     }
+      //   }
+      //   return result;
+      // },
+      // /* 扫码调用 校验是否是紧急产品
+      //  */
+      // checkUrgentProductForScanCode(currentProductId,rows){
+      //
+      // },
       /* 修改产品数量时调用 校验是否允许入库量大于订单量 1-允许入库量大于订单量；0-不允许入库量大于订单量
          校验全局数据 入库数量是否大于订单量
        */
