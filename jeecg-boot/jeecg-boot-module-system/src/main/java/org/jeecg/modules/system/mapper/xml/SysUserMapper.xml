@@ -197,6 +197,7 @@
 		<if test="parMap.deptParentId != null and parMap.deptParentId != ''">
 			and a.depart_parent_id = #{parMap.deptParentId}
 		</if>
+		ORDER BY a.update_time desc,a.create_time desc
 	</select>
 
 	<select id="findAllUserList" resultType="org.jeecg.modules.system.entity.SysUser">
