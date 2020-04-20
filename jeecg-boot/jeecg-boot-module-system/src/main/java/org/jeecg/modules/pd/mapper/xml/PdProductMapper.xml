@@ -12,6 +12,8 @@
         <result column="bpy" property="bpy" jdbcType="VARCHAR"/>
         <result column="bwb" property="bwb" jdbcType="VARCHAR"/>
         <result column="zdy" property="zdy" jdbcType="VARCHAR"/>
+        <result column="spec_unit" property="specUnit" jdbcType="VARCHAR"/>
+        <result column="spec_quantity" property="specQuantity" jdbcType="VARCHAR"/>
         <result column="spec" property="spec" jdbcType="VARCHAR"/>
         <result column="version" property="version" jdbcType="VARCHAR"/>
         <result column="unit_id" property="unitId" jdbcType="VARCHAR"/>
@@ -103,6 +105,7 @@
         <result column="remarks" property="remarks" jdbcType="VARCHAR"/>
         <result column="jde_code" property="jdeCode" jdbcType="VARCHAR"/>
         <result column="validity_flag" property="validityFlag" jdbcType="VARCHAR"/>
+        <result column="product_flag" property="productFlag" jdbcType="VARCHAR"/>
         <result column="del_flag" property="delFlag" jdbcType="VARCHAR"/>
         <collection property="pdProductRules" ofType="String">
             <!--<id column="id" property="id" jdbcType="VARCHAR"/>
@@ -128,6 +131,8 @@
         a.bpy,
         a.bwb,
         a.zdy,
+        a.spec_unit,
+        a.spec_quantity,
         a.spec,
         a.version,
         a.unit_id,
@@ -214,6 +219,7 @@
         a.remarks,
         a.jde_code,
         a.validity_flag,
+        a.product_flag,
         a.del_flag
 	</sql>
 
@@ -228,6 +234,8 @@
         a.bpy,
         a.bwb,
         a.zdy,
+        a.spec_unit,
+        a.spec_quantity,
         a.spec,
         a.version,
         a.unit_id,
@@ -254,6 +262,7 @@
         a.remarks,
         a.jde_code,
         a.validity_flag,
+        a.product_flag,
         a.del_flag
     </sql>
 
@@ -368,13 +377,16 @@
         <if test="validityFlag != null and validityFlag != ''">
             AND a.validity_flag = #{validityFlag}
         </if>
+        <if test="productFlag != null and productFlag != ''">
+            AND a.product_flag = #{productFlag}
+        </if>
         <if test="departId != null and departId != ''">
             AND a.depart_id = #{departId}
         </if>
         <if test="departParentId != null and departParentId != ''">
             AND a.depart_parent_id = #{departParentId}
         </if>
-        ORDER BY a.update_time,a.create_time desc
+        ORDER BY a.update_time desc,a.create_time desc
     </select>
 
     <!-- 用于产品弹出框 -->
@@ -440,6 +452,9 @@
             </if>
             <if test="mergeOrderNo != null and mergeOrderNo != ''">
                 AND e.merge_order_no = #{mergeOrderNo}
+            </if>
+            <if test="productFlag != null and productFlag != ''">
+                AND a.product_flag = #{productFlag}
             </if>
             <if test="departParentId != null and departParentId != ''">
                 AND a.depart_parent_id = #{departParentId}

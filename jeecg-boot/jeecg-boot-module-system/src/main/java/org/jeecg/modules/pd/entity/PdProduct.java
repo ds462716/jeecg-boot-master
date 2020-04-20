@@ -47,6 +47,12 @@ public class PdProduct  extends BaseEntity {
 	@Excel(name = "自定义简码", width = 15)
     private java.lang.String zdy;
 	/**规格*/
+	@Excel(name = "规格单位", width = 15)
+    private java.lang.String specUnit;
+	/**规格*/
+	@Excel(name = "规格数量", width = 15)
+    private java.lang.String specQuantity;
+	/**规格*/
 	@Excel(name = "规格", width = 15)
     private java.lang.String spec;
 	/**型号*/
@@ -256,6 +262,8 @@ public class PdProduct  extends BaseEntity {
 	private java.lang.String remarks;
 	/**所属部门*/
     private java.lang.String sysOrgCode;
+	/**是否过期标识，0产品，1试剂*/
+	private java.lang.String productFlag;
 	/**是否过期标识，0未过期，1已过期，2近效期*/
     private java.lang.String validityFlag;
 	/**
