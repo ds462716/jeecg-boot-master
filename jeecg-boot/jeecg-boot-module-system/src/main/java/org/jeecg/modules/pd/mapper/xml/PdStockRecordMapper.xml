@@ -39,7 +39,8 @@
         a.update_time,
         a.sys_org_code,
         a.depart_id,
-        a.depart_parent_id
+        a.depart_parent_id,
+        a.format
 	</sql>
 
 
