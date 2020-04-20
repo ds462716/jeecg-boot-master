@@ -15,8 +15,8 @@
       <a-form :form="form">
         <a-row class="form-row" :gutter="{ xs: 8, sm: 16, md: 24, lg: 32 }">
           <a-col :lg="12">
-            <a-form-item label="产品编号" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input ref="inputFocus" :disabled="focusDisable" autocomplete="off" @keyup.enter.native="getPrdNumber" v-decorator="[ 'number', validatorRules.number]" placeholder="请输入产品编号"></a-input>
+            <a-form-item label="试剂编号" :labelCol="labelCol" :wrapperCol="wrapperCol">
+              <a-input ref="inputFocus" :disabled="focusDisable" autocomplete="off" @keyup.enter.native="getPrdNumber" v-decorator="[ 'number', validatorRules.number]" placeholder="请输入试剂编号"></a-input>
             </a-form-item>
           </a-col>
           <a-col :lg="1" >
@@ -25,8 +25,8 @@
         </a-row>
         <a-row class="form-row" :gutter="{ xs: 8, sm: 16, md: 24, lg: 32 }">
           <a-col :lg="12">
-            <a-form-item label="产品名称" :labelCol="labelCol"  :wrapperCol="wrapperCol">
-              <a-input  :disabled="disableSubmit" autocomplete="off" @change="pinyinTran" v-decorator="[ 'name', validatorRules.name]" placeholder="请输入产品名称"></a-input>
+            <a-form-item label="试剂名称" :labelCol="labelCol"  :wrapperCol="wrapperCol">
+              <a-input  :disabled="disableSubmit" autocomplete="off" @change="pinyinTran" v-decorator="[ 'name', validatorRules.name]" placeholder="请输入试剂名称"></a-input>
             </a-form-item>
           </a-col>
           <a-col :lg="12">
@@ -66,7 +66,7 @@
 
         <a-row class="form-row" :gutter="{ xs: 8, sm: 16, md: 24, lg: 32 }">
           <a-col :lg="12">
-            <a-form-item label="产品别名" :labelCol="labelCol" :wrapperCol="wrapperCol">
+            <a-form-item label="试剂别名" :labelCol="labelCol" :wrapperCol="wrapperCol">
               <a-input :disabled="disableSubmit" autocomplete="off" @change="bmPinyinTran" v-decorator="[ 'bname', validatorRules.bname]" ></a-input>
             </a-form-item>
           </a-col>
@@ -86,6 +86,19 @@
           <a-col :lg="12">
             <a-form-item label="自定义简码" :labelCol="labelCol" :wrapperCol="wrapperCol">
               <a-input :disabled="disableSubmit" autocomplete="off" v-decorator="[ 'zdy', validatorRules.zdy]" ></a-input>
+            </a-form-item>
+          </a-col>
+        </a-row>
+
+        <a-row class="form-row" :gutter="{ xs: 8, sm: 16, md: 24, lg: 32 }">
+          <a-col :lg="12">
+            <a-form-item label="使用规格单位" :labelCol="labelCol" :wrapperCol="wrapperCol">
+              <a-input :disabled="disableSubmit" autocomplete="off" v-decorator="[ 'specUnit', validatorRules.specUnit]" placeholder="请输入规格单位"></a-input>
+            </a-form-item>
+          </a-col>
+          <a-col :lg="12">
+            <a-form-item label="使用规格数量" :labelCol="labelCol" :wrapperCol="wrapperCol">
+              <a-input-number :disabled="disableSubmit" autocomplete="off" v-decorator="[ 'specQuantity', validatorRules.specQuantity]" placeholder="请输入规格单位" style="width: 100%" ></a-input-number>
             </a-form-item>
           </a-col>
         </a-row>
@@ -309,7 +322,7 @@
         </a-form-item>
 
         <a-form-item v-show="false">
-          <a-input  autocomplete="off" v-decorator="[ 'productFlag',{'initialValue':'0'}]" ></a-input>
+          <a-input  autocomplete="off" v-decorator="[ 'productFlag',{'initialValue':'1'}]" ></a-input>
         </a-form-item>
 
         <label style="float:left;padding-top:15px;">证照扫描件</label>
@@ -412,7 +425,7 @@
   }
 
   export default {
-    name: "PdProductModal",
+    name: "PdProductReagentsModal",
     components: { 
       JDate,
       JDictSelectTagExpand,
@@ -489,6 +502,12 @@
           ]},
           zdy: {rules: [
           ]},
+          specUnit: {rules: [
+              {required: true, message: '请输入使用规格单位!'},
+            ]},
+          specQuantity: {rules: [
+              {required: true, message: '请输入使用规格数量!'},
+            ]},
           spec: {rules: [
               {required: true, message: '请输入规格!'},
           ]},
@@ -662,7 +681,7 @@
         this.focusDisable = false;
         this.visible = true;
         this.$nextTick(() => {
-          this.form.setFieldsValue(pick(this.model,'number','name','py','wb','bname','bpy','bwb','zdy','spec','version','unitId','power','pdProductRules','categoryOne','categoryTwo','groupId','venderId','isCharge','supplierId','purchasePrice','sellingPrice','registration','chargeCode','description','isUrgent','upQuantity','purchasedQuantity','licenceName0','licenceNum0','licenceDate0','licenceSite0','licenceName1','licenceNum1','licenceDate1','licenceSite1','licenceName2','licenceNum2','licenceDate2','licenceSite2','licenceName3','licenceNum3','licenceDate3','licenceSite3','licenceName4','licenceNum4','licenceDate4','licenceSite4','licenceName5','licenceNum5','licenceDate5','licenceSite5','licenceName6','licenceNum6','licenceDate6','licenceSite6','licenceName7','licenceNum7','licenceDate7','licenceSite7','licenceName8','licenceNum8','licenceDate8','licenceSite8','licenceName9','licenceNum9','licenceDate9','licenceSite9','licenceName10','licenceNum10','licenceDate10','licenceSite10','licenceName11','licenceNum11','licenceDate11','licenceSite11','jdeCode'))
+          this.form.setFieldsValue(pick(this.model,'number','name','py','wb','bname','bpy','bwb','zdy','specUnit','specQuantity','spec','version','unitId','power','pdProductRules','categoryOne','categoryTwo','groupId','venderId','isCharge','supplierId','purchasePrice','sellingPrice','registration','chargeCode','description','productFlag','isUrgent','upQuantity','purchasedQuantity','licenceName0','licenceNum0','licenceDate0','licenceSite0','licenceName1','licenceNum1','licenceDate1','licenceSite1','licenceName2','licenceNum2','licenceDate2','licenceSite2','licenceName3','licenceNum3','licenceDate3','licenceSite3','licenceName4','licenceNum4','licenceDate4','licenceSite4','licenceName5','licenceNum5','licenceDate5','licenceSite5','licenceName6','licenceNum6','licenceDate6','licenceSite6','licenceName7','licenceNum7','licenceDate7','licenceSite7','licenceName8','licenceNum8','licenceDate8','licenceSite8','licenceName9','licenceNum9','licenceDate9','licenceSite9','licenceName10','licenceNum10','licenceDate10','licenceSite10','licenceName11','licenceNum11','licenceDate11','licenceSite11','jdeCode'))
           //获取光标
           let input = this.$refs['inputFocus'];
           input.focus();
@@ -732,7 +751,7 @@
         this.close()
       },
       popupCallback(row){
-        this.form.setFieldsValue(pick(row,'number','name','py','wb','bname','bpy','bwb','zdy','spec','version','unitId','power','categoryOne','categoryTwo','groupId','venderId','isCharge','supplierId','purchasePrice','sellingPrice','registration','chargeCode','description','isUrgent','upQuantity','purchasedQuantity','licenceName0','licenceNum0','licenceDate0','licenceSite0','licenceName1','licenceNum1','licenceDate1','licenceSite1','licenceName2','licenceNum2','licenceDate2','licenceSite2','licenceName3','licenceNum3','licenceDate3','licenceSite3','licenceName4','licenceNum4','licenceDate4','licenceSite4','licenceName5','licenceNum5','licenceDate5','licenceSite5','licenceName6','licenceNum6','licenceDate6','licenceSite6','licenceName7','licenceNum7','licenceDate7','licenceSite7','licenceName8','licenceNum8','licenceDate8','licenceSite8','licenceName9','licenceNum9','licenceDate9','licenceSite9','licenceName10','licenceNum10','licenceDate10','licenceSite10','licenceName11','licenceNum11','licenceDate11','licenceSite11','jdeCode'))
+        this.form.setFieldsValue(pick(row,'number','name','py','wb','bname','bpy','bwb','zdy','specUnit','specQuantity','spec','version','unitId','power','categoryOne','categoryTwo','groupId','venderId','isCharge','supplierId','purchasePrice','sellingPrice','registration','chargeCode','description','productFlag','isUrgent','upQuantity','purchasedQuantity','licenceName0','licenceNum0','licenceDate0','licenceSite0','licenceName1','licenceNum1','licenceDate1','licenceSite1','licenceName2','licenceNum2','licenceDate2','licenceSite2','licenceName3','licenceNum3','licenceDate3','licenceSite3','licenceName4','licenceNum4','licenceDate4','licenceSite4','licenceName5','licenceNum5','licenceDate5','licenceSite5','licenceName6','licenceNum6','licenceDate6','licenceSite6','licenceName7','licenceNum7','licenceDate7','licenceSite7','licenceName8','licenceNum8','licenceDate8','licenceSite8','licenceName9','licenceNum9','licenceDate9','licenceSite9','licenceName10','licenceNum10','licenceDate10','licenceSite10','licenceName11','licenceNum11','licenceDate11','licenceSite11','jdeCode'))
       },
       pinyinTran(e){
         let val = e.target.value;
@@ -862,7 +881,7 @@
         let number = generateNumber(code);
         this.form.setFieldsValue({number:number});
       },
-      //扫码自动截取产品编号
+      //扫码自动截取试剂编号
       getPrdNumber(e){
         const that = this;
         let val = e.target.value;
@@ -899,11 +918,11 @@
           if (res.success) {
             callback()
           } else {
-            callback("产品编号已存在!")
+            callback("试剂编号已存在!")
           }
         })
       },
-      //是否禁用产品编号
+      //是否禁用试剂编号
       isDisabledNumber(productId){
         if(productId == ""){
           return;

@@ -15,3 +15,8 @@ INSERT INTO `sys_dict_item`(`id`, `dict_id`, `item_text`, `item_value`, `descrip
 
 -- add by zxh 20200420 产品加入试剂
 INSERT INTO `sys_permission` VALUES ('1252044092885708801', '1210107255254798338', '试剂管理', '/pd/PdProductReagents', 'pd/PdProductReagentsList', null, null, '1', '0', null, '1', '0.20', '0', null, '1', '1', '0', '0', null, 'admin', '2020-04-20 09:19:08', 'admin', '2020-04-20 09:19:42', '0', '0', '1', '0');
+
+-- add by zxh 20200420 产品加入试剂
+ALTER TABLE `pd_product`
+ADD COLUMN `spec_unit`  varchar(64) NULL COMMENT '试剂规格单位' AFTER `zdy`,
+ADD COLUMN `spec_quantity`  varchar(64) NULL COMMENT '试剂规格数量' AFTER `spec_unit`;

@@ -229,4 +229,8 @@ public interface PdConstant {
 
 	// 紧急产品标志   0-是；1-不是
 	public final static String IS_URGENT_0 = "0";
+
+	//产品表试剂或者产品0产品1试剂
+	public final static String PRODUCT_FLAG_0="0";
+	public final static String PRODUCT_FLAG_1="1";
 }

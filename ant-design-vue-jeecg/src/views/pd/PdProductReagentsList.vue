@@ -5,13 +5,13 @@
       <a-form layout="inline" @keyup.enter.native="searchQuery">
         <a-row :gutter="24">
           <a-col :md="6" :sm="8">
-            <a-form-item label="产品名称">
-              <a-input placeholder="请输入产品名称" v-model="queryParam.name"></a-input>
+            <a-form-item label="试剂名称">
+              <a-input placeholder="请输入试剂名称" v-model="queryParam.name"></a-input>
             </a-form-item>
           </a-col>
           <a-col :md="6" :sm="8">
-            <a-form-item label="产品编号">
-              <a-input placeholder="请输入产品编号" v-model="queryParam.number"></a-input>
+            <a-form-item label="试剂编号">
+              <a-input placeholder="请输入试剂编号" v-model="queryParam.number"></a-input>
             </a-form-item>
           </a-col>
           <a-col :md="6" :sm="8">
@@ -103,7 +103,7 @@
     <!-- 操作按钮区域 -->
     <div class="table-operator">
       <a-button @click="handleAdd" type="primary" icon="plus">新增</a-button>
-      <a-button type="primary" icon="download" @click="handleExportXls('产品')">导出</a-button>
+      <a-button type="primary" icon="download" @click="handleExportXls('试剂')">导出</a-button>
       <a-upload name="file" :showUploadList="false" :multiple="false" :headers="tokenHeader" :action="importExcelUrl" @change="handleImportExcel">
         <a-button type="primary" icon="import">导入</a-button>
       </a-upload>
@@ -111,7 +111,7 @@
       <a-dropdown v-if="selectedRowKeys.length > 0">
         <a-menu slot="overlay">
           <a-menu-item key="1" @click="batchDel"><a-icon type="delete"/>删除</a-menu-item>
-          <a-menu-item key="2" @click="handleChargeCode"><a-icon type="edit"/>批量修改产品收费代码</a-menu-item>
+          <a-menu-item key="2" @click="handleChargeCode"><a-icon type="edit"/>批量修改试剂收费代码</a-menu-item>
         </a-menu>
         <a-button style="margin-left: 8px"> 批量操作 <a-icon type="down" /></a-button>
       </a-dropdown>
@@ -181,7 +181,7 @@
       </a-table>
     </div>
 
-    <pdProduct-modal ref="modalForm" @ok="modalFormOk"></pdProduct-modal>
+    <pdProductReagents-modal ref="modalForm" @ok="modalFormOk"></pdProductReagents-modal>
     <a-modal :visible="chargeCodeVisible"  :maskClosable="false"  :confirmLoading="confirmLoading"
              @ok="handleOk" :width="900" @cancel="handleCancel">
       <a-form :form="form">
@@ -200,7 +200,7 @@
 <script>
 
   import { JeecgListMixin } from '@/mixins/JeecgListMixin'
-  import PdProductModal from './modules/PdProductModal'
+  import PdProductReagentsModal from './modules/PdProductReagentsModal'
   import {initDictOptions, filterMultiDictText} from '@/components/dict/JDictSelectUtil'
   import { getAction } from  '@/api/manage'
 
@@ -243,11 +243,11 @@
     name: "PdProductList",
     mixins:[JeecgListMixin],
     components: {
-      PdProductModal
+      PdProductReagentsModal
     },
     data () {
       return {
-        description: '产品管理页面',
+        description: '试剂管理页面',
         notFoundContent:"未找到内容",
         venderData: [],
         venderValue: undefined,
@@ -274,13 +274,13 @@
         // 表头
         columns: [
           {
-            title:'产品编号',
+            title:'试剂编号',
             align:"center",
             width:120,
             dataIndex: 'number'
           },
           {
-            title:'产品名称',
+            title:'试剂名称',
             align:"center",
             dataIndex: 'name'
           },
@@ -376,8 +376,8 @@
           this.ipagination.current = 1;
         }
         let params = this.getQueryParams();//查询条件
-        //查询产品
-        params.productFlag = 0;
+        //查询试剂
+        params.productFlag = 1;
         this.loading = true;
         getAction(this.url.list, params).then((res) => {
           if (res.success) {
@@ -500,6 +500,7 @@
           this.$refs.modalForm.add();
           this.$refs.modalForm.title = "新增";
           this.$refs.modalForm.disableSubmit = false;
+
         }
 
       },
