@@ -66,6 +66,8 @@ public class PdStockRecordDetail extends BaseEntity {
 	/**导入单号*/
 	private String importNo;
 	private String supplierId;//供应商ID
+	private String specUnitId;//规格单位
+	private Double specQuantity;//规格数量
 	/**备注*/
 	private String remarks;
 	/**删除标记（0：正常；1：删除）*/

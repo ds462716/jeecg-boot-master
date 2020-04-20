@@ -400,6 +400,7 @@
             a.name as productName,
             a.*,
             b.name as unitName,
+            bb.name as specUnitName,
             c.name as venderName,
             d.name as supplierName
         <if test="stockDepartId != null and stockDepartId != ''">
@@ -410,6 +411,7 @@
         </if>
         from pd_product a
         left join pd_unit b on a.unit_id = b.id
+        left join pd_unit bb on a.spec_unit_id = bb.id
         left join pd_vender c on a.vender_id = c.id
         left join pd_supplier d on a.supplier_id = d.id
         <if test="stockDepartId != null and stockDepartId != ''">
