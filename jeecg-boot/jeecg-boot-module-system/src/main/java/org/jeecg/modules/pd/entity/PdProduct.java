@@ -47,8 +47,11 @@ public class PdProduct  extends BaseEntity {
 	@Excel(name = "自定义简码", width = 15)
     private java.lang.String zdy;
 	/**规格*/
-	@Excel(name = "规格单位", width = 15)
-    private java.lang.String specUnit;
+
+    private java.lang.String specUnitId;
+    @TableField(exist = false)
+    @Excel(name = "规格单位", width = 15)
+    private java.lang.String specUnitName;
 	/**规格*/
 	@Excel(name = "规格数量", width = 15)
     private java.lang.String specQuantity;

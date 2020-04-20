@@ -12,7 +12,8 @@
         <result column="bpy" property="bpy" jdbcType="VARCHAR"/>
         <result column="bwb" property="bwb" jdbcType="VARCHAR"/>
         <result column="zdy" property="zdy" jdbcType="VARCHAR"/>
-        <result column="spec_unit" property="specUnit" jdbcType="VARCHAR"/>
+        <result column="spec_unit_id" property="specUnitId" jdbcType="VARCHAR"/>
+        <result column="specUnitName" property="specUnitName" jdbcType="VARCHAR"/>
         <result column="spec_quantity" property="specQuantity" jdbcType="VARCHAR"/>
         <result column="spec" property="spec" jdbcType="VARCHAR"/>
         <result column="version" property="version" jdbcType="VARCHAR"/>
@@ -131,7 +132,7 @@
         a.bpy,
         a.bwb,
         a.zdy,
-        a.spec_unit,
+        a.spec_unit_id,
         a.spec_quantity,
         a.spec,
         a.version,
@@ -234,7 +235,7 @@
         a.bpy,
         a.bwb,
         a.zdy,
-        a.spec_unit,
+        a.spec_unit_id,
         a.spec_quantity,
         a.spec,
         a.version,
@@ -272,10 +273,12 @@
 
     <!-- 单位 -->
     <sql id="pdUnitColumns">
-        b.`name` AS "unitName"
+        b.`name` AS "unitName",
+        sb.`name` AS "specUnitName"
     </sql>
     <sql id="pdUnitJoins">
         LEFT JOIN pd_unit b ON a.unit_id = b.id
+        LEFT JOIN pd_unit sb ON a.spec_unit_id = sb.id
     </sql>
 
     <!-- 分类 -->

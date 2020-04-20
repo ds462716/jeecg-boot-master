@@ -40,9 +40,9 @@
                 :showArrow="true"
                 :filterOption="false"
                 :disabled="disableSubmit"
-                @search="unitHandleSearch"
-                @change="unitHandleChange"
-                @focus="unitHandleSearch"
+                @search="bzUnitHandleSearch"
+                @change="bzUnitHandleChange"
+                @focus="bzUnitHandleSearch"
                 :notFoundContent="notFoundContent"
                 v-decorator="[ 'unitId', validatorRules.unitId]"
               >
@@ -93,7 +93,23 @@
         <a-row class="form-row" :gutter="{ xs: 8, sm: 16, md: 24, lg: 32 }">
           <a-col :lg="12">
             <a-form-item label="使用规格单位" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input :disabled="disableSubmit" autocomplete="off" v-decorator="[ 'specUnit', validatorRules.specUnit]" placeholder="请输入规格单位"></a-input>
+              <a-select
+                showSearch
+                :specUnitId="specUnitValue"
+                placeholder="请选择使用规格单位"
+                :defaultActiveFirstOption="false"
+                :allowClear="true"
+                :showArrow="true"
+                :filterOption="false"
+                :disabled="disableSubmit"
+                @search="ggUnitHandleSearch"
+                @change="ggUnitHandleChange"
+                @focus="ggUnitHandleSearch"
+                :notFoundContent="notFoundContent"
+                v-decorator="[ 'specUnitId', validatorRules.specUnitId]"
+              >
+                <a-select-option v-for="d in specUnitData" :key="d.value">{{d.text}}</a-select-option>
+              </a-select>
             </a-form-item>
           </a-col>
           <a-col :lg="12">
@@ -435,6 +451,8 @@
       return {
         unitData: [],
         unitValue: undefined,
+        specUnitData: [],
+        specUnitValue: undefined,
         venderData: [],
         venderValue: undefined,
         supplierData: [],
@@ -502,11 +520,12 @@
           ]},
           zdy: {rules: [
           ]},
-          specUnit: {rules: [
+          specUnitId: {rules: [
               {required: true, message: '请输入使用规格单位!'},
             ]},
           specQuantity: {rules: [
               {required: true, message: '请输入使用规格数量!'},
+              { pattern: /^[1-9]\d*$/, message: '请输入零以上的正整数' }
             ]},
           spec: {rules: [
               {required: true, message: '请输入规格!'},
@@ -570,7 +589,8 @@
         url: {
           add: "/pd/pdProduct/save",
           edit: "/pd/pdProduct/update",
-          queryUnit:"/pd/pdUnit/getUnitList",
+          queryBzUnit:"/pd/pdUnit/getUnitList?unitType=0",
+          queryGgUnit:"/pd/pdUnit/getUnitList?unitType=1",
           queryVender:"/pd/pdVender/getVenderList",
           querySupplier:"/pd/pdSupplier/getSupplierList",
           queryGroup:"/pd/pdGroup/getGroupList",
@@ -607,6 +627,13 @@
             text: record.unitName,
           });
           this.unitData = unitData;
+          //规格单位
+          const specUnitData = [];
+          specUnitData.push({
+            value: record.specUnitId,
+            text: record.specUnitName,
+          });
+          this.specUnitData = specUnitData;
           //生产厂家
           const venderData = [];
           venderData.push({
@@ -681,7 +708,7 @@
         this.focusDisable = false;
         this.visible = true;
         this.$nextTick(() => {
-          this.form.setFieldsValue(pick(this.model,'number','name','py','wb','bname','bpy','bwb','zdy','specUnit','specQuantity','spec','version','unitId','power','pdProductRules','categoryOne','categoryTwo','groupId','venderId','isCharge','supplierId','purchasePrice','sellingPrice','registration','chargeCode','description','productFlag','isUrgent','upQuantity','purchasedQuantity','licenceName0','licenceNum0','licenceDate0','licenceSite0','licenceName1','licenceNum1','licenceDate1','licenceSite1','licenceName2','licenceNum2','licenceDate2','licenceSite2','licenceName3','licenceNum3','licenceDate3','licenceSite3','licenceName4','licenceNum4','licenceDate4','licenceSite4','licenceName5','licenceNum5','licenceDate5','licenceSite5','licenceName6','licenceNum6','licenceDate6','licenceSite6','licenceName7','licenceNum7','licenceDate7','licenceSite7','licenceName8','licenceNum8','licenceDate8','licenceSite8','licenceName9','licenceNum9','licenceDate9','licenceSite9','licenceName10','licenceNum10','licenceDate10','licenceSite10','licenceName11','licenceNum11','licenceDate11','licenceSite11','jdeCode'))
+          this.form.setFieldsValue(pick(this.model,'number','name','py','wb','bname','bpy','bwb','zdy','specUnitId','specQuantity','spec','version','unitId','power','pdProductRules','categoryOne','categoryTwo','groupId','venderId','isCharge','supplierId','purchasePrice','sellingPrice','registration','chargeCode','description','productFlag','isUrgent','upQuantity','purchasedQuantity','licenceName0','licenceNum0','licenceDate0','licenceSite0','licenceName1','licenceNum1','licenceDate1','licenceSite1','licenceName2','licenceNum2','licenceDate2','licenceSite2','licenceName3','licenceNum3','licenceDate3','licenceSite3','licenceName4','licenceNum4','licenceDate4','licenceSite4','licenceName5','licenceNum5','licenceDate5','licenceSite5','licenceName6','licenceNum6','licenceDate6','licenceSite6','licenceName7','licenceNum7','licenceDate7','licenceSite7','licenceName8','licenceNum8','licenceDate8','licenceSite8','licenceName9','licenceNum9','licenceDate9','licenceSite9','licenceName10','licenceNum10','licenceDate10','licenceSite10','licenceName11','licenceNum11','licenceDate11','licenceSite11','jdeCode'))
           //获取光标
           let input = this.$refs['inputFocus'];
           input.focus();
@@ -751,7 +778,7 @@
         this.close()
       },
       popupCallback(row){
-        this.form.setFieldsValue(pick(row,'number','name','py','wb','bname','bpy','bwb','zdy','specUnit','specQuantity','spec','version','unitId','power','categoryOne','categoryTwo','groupId','venderId','isCharge','supplierId','purchasePrice','sellingPrice','registration','chargeCode','description','productFlag','isUrgent','upQuantity','purchasedQuantity','licenceName0','licenceNum0','licenceDate0','licenceSite0','licenceName1','licenceNum1','licenceDate1','licenceSite1','licenceName2','licenceNum2','licenceDate2','licenceSite2','licenceName3','licenceNum3','licenceDate3','licenceSite3','licenceName4','licenceNum4','licenceDate4','licenceSite4','licenceName5','licenceNum5','licenceDate5','licenceSite5','licenceName6','licenceNum6','licenceDate6','licenceSite6','licenceName7','licenceNum7','licenceDate7','licenceSite7','licenceName8','licenceNum8','licenceDate8','licenceSite8','licenceName9','licenceNum9','licenceDate9','licenceSite9','licenceName10','licenceNum10','licenceDate10','licenceSite10','licenceName11','licenceNum11','licenceDate11','licenceSite11','jdeCode'))
+        this.form.setFieldsValue(pick(row,'number','name','py','wb','bname','bpy','bwb','zdy','specUnitId','specQuantity','spec','version','unitId','power','categoryOne','categoryTwo','groupId','venderId','isCharge','supplierId','purchasePrice','sellingPrice','registration','chargeCode','description','productFlag','isUrgent','upQuantity','purchasedQuantity','licenceName0','licenceNum0','licenceDate0','licenceSite0','licenceName1','licenceNum1','licenceDate1','licenceSite1','licenceName2','licenceNum2','licenceDate2','licenceSite2','licenceName3','licenceNum3','licenceDate3','licenceSite3','licenceName4','licenceNum4','licenceDate4','licenceSite4','licenceName5','licenceNum5','licenceDate5','licenceSite5','licenceName6','licenceNum6','licenceDate6','licenceSite6','licenceName7','licenceNum7','licenceDate7','licenceSite7','licenceName8','licenceNum8','licenceDate8','licenceSite8','licenceName9','licenceNum9','licenceDate9','licenceSite9','licenceName10','licenceNum10','licenceDate10','licenceSite10','licenceName11','licenceNum11','licenceDate11','licenceSite11','jdeCode'))
       },
       pinyinTran(e){
         let val = e.target.value;
@@ -774,12 +801,19 @@
         this.form.setFieldsValue({bwb:wb});//获取五笔简码
       },
      //单位查询start
-      unitHandleSearch(value) {
-        fetch(value, data => (this.unitData = data),this.url.queryUnit);
+      bzUnitHandleSearch(value) {
+        fetch(value, data => (this.unitData = data),this.url.queryBzUnit);
       },
-      unitHandleChange(value) {
+      bzUnitHandleChange(value) {
         this.unitValue = value;
-        fetch(value, data => (this.unitData = data),this.url.queryUnit);
+        fetch(value, data => (this.unitData = data),this.url.queryBzUnit);
+      },
+      ggUnitHandleSearch(value) {
+        fetch(value, data => (this.specUnitData = data),this.url.queryGgUnit);
+      },
+      ggUnitHandleChange(value) {
+        this.specUnitValue = value;
+        fetch(value, data => (this.specUnitData = data),this.url.queryGgUnit);
       },
       //单位查询end
       //生产厂家查询start

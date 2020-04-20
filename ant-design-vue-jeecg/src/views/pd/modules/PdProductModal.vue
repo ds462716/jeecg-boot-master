@@ -40,9 +40,9 @@
                 :showArrow="true"
                 :filterOption="false"
                 :disabled="disableSubmit"
-                @search="unitHandleSearch"
-                @change="unitHandleChange"
-                @focus="unitHandleSearch"
+                @search="bzUnitHandleSearch"
+                @change="bzUnitHandleChange"
+                @focus="bzUnitHandleSearch"
                 :notFoundContent="notFoundContent"
                 v-decorator="[ 'unitId', validatorRules.unitId]"
               >
@@ -551,7 +551,7 @@
         url: {
           add: "/pd/pdProduct/save",
           edit: "/pd/pdProduct/update",
-          queryUnit:"/pd/pdUnit/getUnitList",
+          queryBzUnit:"/pd/pdUnit/getUnitList?unitType=0",
           queryVender:"/pd/pdVender/getVenderList",
           querySupplier:"/pd/pdSupplier/getSupplierList",
           queryGroup:"/pd/pdGroup/getGroupList",
@@ -755,12 +755,12 @@
         this.form.setFieldsValue({bwb:wb});//获取五笔简码
       },
      //单位查询start
-      unitHandleSearch(value) {
-        fetch(value, data => (this.unitData = data),this.url.queryUnit);
+      bzUnitHandleSearch(value) {
+        fetch(value, data => (this.unitData = data),this.url.queryBzUnit);
       },
-      unitHandleChange(value) {
+      bzUnitHandleChange(value) {
         this.unitValue = value;
-        fetch(value, data => (this.unitData = data),this.url.queryUnit);
+        fetch(value, data => (this.unitData = data),this.url.queryBzUnit);
       },
       //单位查询end
       //生产厂家查询start
