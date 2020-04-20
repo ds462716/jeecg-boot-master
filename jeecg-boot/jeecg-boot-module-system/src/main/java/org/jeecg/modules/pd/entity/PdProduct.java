@@ -54,7 +54,7 @@ public class PdProduct  extends BaseEntity {
     private java.lang.String specUnitName;
 	/**规格*/
 	@Excel(name = "规格数量", width = 15)
-    private java.lang.String specQuantity;
+    private Double specQuantity;
 	/**规格*/
 	@Excel(name = "规格", width = 15)
     private java.lang.String spec;

@@ -14,7 +14,7 @@
         <result column="zdy" property="zdy" jdbcType="VARCHAR"/>
         <result column="spec_unit_id" property="specUnitId" jdbcType="VARCHAR"/>
         <result column="specUnitName" property="specUnitName" jdbcType="VARCHAR"/>
-        <result column="spec_quantity" property="specQuantity" jdbcType="VARCHAR"/>
+        <result column="spec_quantity" property="specQuantity" jdbcType="DOUBLE"/>
         <result column="spec" property="spec" jdbcType="VARCHAR"/>
         <result column="version" property="version" jdbcType="VARCHAR"/>
         <result column="unit_id" property="unitId" jdbcType="VARCHAR"/>
