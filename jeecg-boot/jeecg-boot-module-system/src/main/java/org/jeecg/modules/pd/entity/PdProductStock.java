@@ -56,6 +56,12 @@ public class PdProductStock extends BaseEntity {
 	/**数量*/
 	@Excel(name = "数量", width = 15)
 	private Double stockNum;
+	/**库存规格数量*/
+	@Excel(name = "库存规格数量", width = 15)
+	private Double specNum;
+	/**库存占用状态  0:使用中   1:未使用*/
+	@Excel(name = "库存占用状态", width = 15)
+	private String nestatStatus;
 	/**生产日期*/
 	@Excel(name = "生产日期", width = 15, format = "yyyy-MM-dd")
 	@JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd")
