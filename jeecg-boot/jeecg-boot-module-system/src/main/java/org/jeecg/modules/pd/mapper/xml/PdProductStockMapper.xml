@@ -23,6 +23,8 @@
 		a.huowei_code,
 		a.msg_send_state,
 		a.record_detail_id,
+		a.spec_num,
+		a.nestat_status,
 		a.del_flag
 	</sql>
 
