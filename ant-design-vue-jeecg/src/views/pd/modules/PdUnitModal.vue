@@ -14,6 +14,12 @@
         <a-form-item label="名称" :labelCol="labelCol" :wrapperCol="wrapperCol">
           <a-input ref="inputFocus" autocomplete="off" @change="pinyinTran" v-decorator="[ 'name', validatorRules.name]" placeholder="请输入单位名称"></a-input>
         </a-form-item>
+        <a-form-item label="单位类型" :labelCol="labelCol" :wrapperCol="wrapperCol">
+          <a-select   v-decorator="[ 'unitType',{'initialValue':'0',rules:unitTypeRules}]" placeholder="请选择单位类型">
+            <a-select-option value="0">包装单位</a-select-option>
+            <a-select-option value="1">使用单位</a-select-option>
+          </a-select>
+        </a-form-item>
         <a-form-item label="拼音简码" :labelCol="labelCol" :wrapperCol="wrapperCol">
           <a-input autocomplete="off" v-decorator="[ 'py', validatorRules.py]" placeholder="请输入拼音简码"></a-input>
         </a-form-item>
@@ -76,6 +82,12 @@
           remarks: {rules: [
           ]},
         },
+        unitTypeRules:[
+          {
+            required: true, // 必填
+            message: '请选择单位类型' // 显示的文本
+          }
+        ],
         url: {
           add: "/pd/pdUnit/add",
           edit: "/pd/pdUnit/edit",
@@ -94,7 +106,7 @@
         this.visible = true;
         this.unitId = record.id;
         this.$nextTick(() => {
-          this.form.setFieldsValue(pick(this.model,'name','py','wb','zdy','remarks'))
+          this.form.setFieldsValue(pick(this.model,'name','unitType','py','wb','zdy','remarks'))
           //获取光标
           let input = this.$refs['inputFocus'];
           input.focus()
@@ -165,7 +177,7 @@
         this.close()
       },
       popupCallback(row){
-        this.form.setFieldsValue(pick(row,'name','py','wb','zdy','remarks'))
+        this.form.setFieldsValue(pick(row,'name','unitType','py','wb','zdy','remarks'))
       },
 
       

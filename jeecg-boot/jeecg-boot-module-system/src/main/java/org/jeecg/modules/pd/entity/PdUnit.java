@@ -25,6 +25,8 @@ public class PdUnit  extends BaseEntity {
 	/**单位名称*/
 	@Excel(name = "单位名称", width = 15)
     private String name;
+	@Excel(name = "单位类型", width = 15)
+	private String unitType;
 	/**拼音简码*/
 	@Excel(name = "拼音简码", width = 15)
     private String py;

@@ -20,3 +20,13 @@ INSERT INTO `sys_permission` VALUES ('1252044092885708801', '1210107255254798338
 ALTER TABLE `pd_product`
 ADD COLUMN `spec_unit`  varchar(64) NULL COMMENT '试剂规格单位' AFTER `zdy`,
 ADD COLUMN `spec_quantity`  varchar(64) NULL COMMENT '试剂规格数量' AFTER `spec_unit`;
+
+-- add by zxh 20200420 产品加入单位类型
+ALTER TABLE `pd_unit`
+ADD COLUMN `unit_type`  varchar(1) NULL COMMENT '单位类型' AFTER `name`;
+
+-- add by zxh 2020年4月20日11:26:18 产品加入单位类型
+INSERT INTO `sys_dict` VALUES ('1252073695738155010', '单位类型', 'unit_type', '', '0', 'admin', '2020-04-20 11:16:46', null, '2020-04-20 11:16:46', '0');
+INSERT INTO `sys_dict_item` VALUES ('1252073800750944258', '1252073695738155010', '包装单位', '0', '', '1', '1', 'admin', '2020-04-20 11:17:11', null, '2020-04-20 11:17:11');
+INSERT INTO `sys_dict_item` VALUES ('1252073837744705538', '1252073695738155010', '使用单位', '1', '', '1', '1', 'admin', '2020-04-20 11:17:20', null, '2020-04-20 11:17:20');
+
