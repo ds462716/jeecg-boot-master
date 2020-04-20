@@ -19,7 +19,7 @@ INSERT INTO `sys_permission` VALUES ('1252044092885708801', '1210107255254798338
 -- add by zxh 20200420 产品加入试剂
 ALTER TABLE `pd_product`
 ADD COLUMN `spec_unit_id`  varchar(64) NULL COMMENT '试剂规格单位' AFTER `zdy`,
-ADD COLUMN `spec_quantity`  varchar(64) NULL COMMENT '试剂规格数量' AFTER `spec_unit_id`;
+ADD COLUMN `spec_quantity`  double(11,2) NULL COMMENT '试剂规格数量' AFTER `spec_unit_id`;
 
 -- add by zxh 20200420 产品加入单位类型
 ALTER TABLE `pd_unit`
