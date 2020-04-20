@@ -1,5 +1,6 @@
+-- add by zxh 20200420 产品加入试剂
 ALTER TABLE `pd_product`
-ADD COLUMN `product_flag`  varchar(1) NOT NULL COMMENT '0产品，1试剂' AFTER `jde_code`
+ADD COLUMN `product_flag`  varchar(1) NOT NULL COMMENT '0产品，1试剂' AFTER `jde_code`;
 
 -- add by jiangxz 20200420 入库记录表增加业态字段
 ALTER TABLE `pd_stock_record` ADD COLUMN `format` varchar(32) NULL COMMENT '业态' AFTER `remarks`;
