@@ -42,6 +42,6 @@ INSERT INTO `sys_dict_item` VALUES ('1252139596743991298', '1252139529844842498'
 INSERT INTO `sys_dict_item` VALUES ('1252139634337538049', '1252139529844842498', '未使用', '1', '', 2, 1, 'admin', '2020-4-20 15:38:47', NULL, '2020-4-20 15:38:47');
 
 -- add by 2020年4月20日16:44:05 入库明细表加 规格单位 规格数量
-ALTER TABLE `jeecg-boot`.`pd_stock_record_detail`
+ALTER TABLE `pd_stock_record_detail`
 ADD COLUMN `spec_unit_id` varchar(64) NULL COMMENT '试剂规格单位' AFTER `supplier_id`,
 ADD COLUMN `spec_quantity` double(11, 4) NULL COMMENT '试剂规格数量' AFTER `spec_unit_id`;
