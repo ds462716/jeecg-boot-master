@@ -1,0 +1,2 @@
+ALTER TABLE `pd_product`
+ADD COLUMN `product_flag`  varchar(1) NOT NULL COMMENT '0产品，1试剂' AFTER `jde_code`
