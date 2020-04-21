@@ -104,74 +104,52 @@
 
         </a-card>
         <!-- 定数包区域 -->
-        <a-card style="margin-bottom: 10px;">
-          <a-tabs v-model="activeKey">
-            <a-tab-pane tab="定数包明细" :key="refKeys[0]" :forceRender="true">
-              <a-form v-show="!disableSubmit">
-                <a-row>
-                  <a-col :md="6" :sm="8">
-                    <a-form-item label="定数包编号" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                      <a-input ref="productNumberInput" v-focus placeholder="请输入定数包编号" v-model="queryParam.packageCode" @keyup.enter.native="searchQueryPackage(0)"></a-input>
-                    </a-form-item>
-                  </a-col>
+        <!--<a-card style="margin-bottom: 10px;">-->
+          <!--<a-tabs v-model="activeKey">-->
+            <!--<a-tab-pane tab="定数包明细" :key="refKeys[0]" :forceRender="true">-->
+              <!--<a-form v-show="!disableSubmit">-->
+                <!--<a-row>-->
+                  <!--<a-col :md="6" :sm="8">-->
+                    <!--<a-form-item label="定数包编号" :labelCol="labelCol" :wrapperCol="wrapperCol">-->
+                      <!--<a-input ref="productNumberInput" v-focus placeholder="请输入定数包编号" v-model="queryParam.packageCode" @keyup.enter.native="searchQueryPackage(0)"></a-input>-->
+                    <!--</a-form-item>-->
+                  <!--</a-col>-->
 
-                  <a-col :md="12" :sm="8">
-                    <a-form-item label="" :labelCol="labelCol" :wrapperCol="wrapperCol" style="text-align: left;padding-left: 15px;">
-                      提示：按<span style="color: red">Ctrl+Alt</span>键快速定位到定数包扫码输入框
-                    </a-form-item>
-                  </a-col>
-                </a-row>
-              </a-form>
+                  <!--<a-col :md="12" :sm="8">-->
+                    <!--<a-form-item label="" :labelCol="labelCol" :wrapperCol="wrapperCol" style="text-align: left;padding-left: 15px;">-->
+                      <!--提示：按<span style="color: red">Ctrl+Alt</span>键快速定位到定数包扫码输入框-->
+                    <!--</a-form-item>-->
+                  <!--</a-col>-->
+                <!--</a-row>-->
+              <!--</a-form>-->
 
-              <div style="margin-bottom: 8px;" v-show="!disableSubmit">
-                <a-button type="primary" icon="plus" @click="choosePackageList">选择定数包</a-button>
-                <!--<a-button type="primary" icon="plus" @click="choosePackageList" style="margin-left: 8px">选择定数包</a-button>-->
-                <a-popconfirm style="margin-left: 8px"
-                              :title="`确定要删除吗?`"
-                              @confirm="handleConfirmDeletePackage">
-                  <a-button type="primary" icon="minus">删除</a-button>
-                  <span class="gap"></span>
-                </a-popconfirm>
-              </div>
+              <!--<div style="margin-bottom: 8px;" v-show="!disableSubmit">-->
+                <!--<a-button type="primary" icon="plus" @click="choosePackageList">选择定数包</a-button>-->
+                <!--<a-popconfirm style="margin-left: 8px"-->
+                              <!--:title="`确定要删除吗?`"-->
+                              <!--@confirm="handleConfirmDeletePackage">-->
+                  <!--<a-button type="primary" icon="minus">删除</a-button>-->
+                  <!--<span class="gap"></span>-->
+                <!--</a-popconfirm>-->
+              <!--</div>-->
 
-              <a-table
-                v-show="showOrderTable"
-                ref="table"
-                size="middle"
-                bordered
-                rowKey="id"
-                :pagination="false"
-                :columns="pdPackageTable.columns"
-                :dataSource="pdPackageTable.dataSource"
-                :loading="pdPackageTable.loading" >
-                <template slot="htmlSlot" slot-scope="text">
-                  <div v-html="text"></div>
-                </template>
-              </a-table>
-
-              <!--<j-editable-table-->
+              <!--<a-table-->
+                <!--v-show="showOrderTable"-->
+                <!--ref="table"-->
+                <!--size="middle"-->
                 <!--bordered-->
-                <!--:ref="refKeys[0]"-->
-                <!--:loading="pdStockRecordDetailTable.loading"-->
-                <!--:columns="pdStockRecordDetailTable.columns"-->
-                <!--:dataSource="pdStockRecordDetailTable.dataSource"-->
-                <!--:maxHeight="650"-->
-                <!--:rowNumber="true"-->
-                <!--:rowSelection="true"-->
-                <!--:actionButton="false"-->
-                <!--:disabled="disableSubmit"-->
-                <!--@valueChange="valueChange"-->
-                <!--@added="setPriceDisabled"-->
-                <!--style="text-overflow: ellipsis;"-->
-              <!--&gt;-->
-              <!--</j-editable-table>-->
-              <!--<a-row style="margin-top:10px;text-align: right;padding-right: 5%">-->
-                <!--<span style="font-weight: bold;font-size: large;padding-right: 5%">总数量：{{ totalSum }}</span>-->
-                <!--<span style="font-weight: bold;font-size: large">总金额：{{ outTotalPrice }}</span>-->
-              <!--</a-row>-->
-            </a-tab-pane>
-          </a-tabs>
-        </a-card>
+                <!--rowKey="id"-->
+                <!--:pagination="false"-->
+                <!--:columns="pdPackageTable.columns"-->
+                <!--:dataSource="pdPackageTable.dataSource"-->
+                <!--:loading="pdPackageTable.loading" >-->
+                <!--<template slot="htmlSlot" slot-scope="text">-->
+                  <!--<div v-html="text"></div>-->
+                <!--</template>-->
+              <!--</a-table>-->
+            <!--</a-tab-pane>-->
+          <!--</a-tabs>-->
+        <!--</a-card>-->
 
         <!-- 产品列表区域 -->
         <a-card style="margin-bottom: 10px;">
