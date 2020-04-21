@@ -45,3 +45,41 @@ INSERT INTO `sys_dict_item` VALUES ('1252139634337538049', '1252139529844842498'
 ALTER TABLE `pd_stock_record_detail`
 ADD COLUMN `spec_unit_id` varchar(64) NULL COMMENT '试剂规格单位' AFTER `supplier_id`,
 ADD COLUMN `spec_quantity` double(11, 4) NULL COMMENT '试剂规格数量' AFTER `spec_unit_id`;
+
+-- add by 2020年4月21日09:23:29 使用包管理
+CREATE TABLE `pd_use_package` (
+  `id` varchar(36) NOT NULL,
+  `code` varchar(32) DEFAULT NULL COMMENT '使用包编号',
+  `name` varchar(200) DEFAULT NULL COMMENT '使用包名称',
+  `sum` int(11) DEFAULT NULL COMMENT '产品总数',
+  `py` varchar(32) DEFAULT NULL COMMENT '拼音简码',
+  `wb` varchar(32) DEFAULT NULL COMMENT '五笔简码',
+  `zdy` varchar(32) DEFAULT NULL COMMENT '自定义码',
+  `del_flag` varchar(1) NOT NULL COMMENT '删除标识，0-正常；1-删除',
+  `remarks` varchar(500) DEFAULT NULL COMMENT '备注',
+  `create_by` varchar(50) DEFAULT NULL COMMENT '创建人',
+  `create_time` datetime DEFAULT NULL COMMENT '创建日期',
+  `update_by` varchar(50) DEFAULT NULL COMMENT '更新人',
+  `update_time` datetime DEFAULT NULL COMMENT '更新日期',
+  `sys_org_code` varchar(64) DEFAULT NULL COMMENT '所属部门',
+  `depart_parent_id` varchar(64) NOT NULL COMMENT '所属父部门',
+  `depart_id` varchar(64) NOT NULL COMMENT '所属部门',
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
+
+CREATE TABLE `pd_use_package_detail` (
+  `id` varchar(36) NOT NULL,
+  `package_id` varchar(36) DEFAULT NULL COMMENT '使用包id',
+  `product_id` varchar(36) DEFAULT NULL COMMENT '产品id',
+  `count` double(11,2) DEFAULT '0.00' COMMENT '产品数量',
+  `remarks` varchar(320) DEFAULT NULL COMMENT '备注',
+  `del_flag` varchar(1) DEFAULT NULL COMMENT '删除标识，0-正常；1-删除',
+  `create_by` varchar(50) DEFAULT NULL COMMENT '创建人',
+  `create_time` datetime DEFAULT NULL COMMENT '创建日期',
+  `update_by` varchar(50) DEFAULT NULL COMMENT '更新人',
+  `update_time` datetime DEFAULT NULL COMMENT '更新日期',
+  `sys_org_code` varchar(64) DEFAULT NULL COMMENT '所属部门',
+  `depart_parent_id` varchar(64) NOT NULL COMMENT '所属父部门',
+  `depart_id` varchar(64) NOT NULL COMMENT '所属部门',
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
