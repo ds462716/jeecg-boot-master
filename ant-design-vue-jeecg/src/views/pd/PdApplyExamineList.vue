@@ -94,7 +94,7 @@
   import { JeecgListMixin,handleEdit} from '@/mixins/JeecgListMixin'
   import { deleteAction,getAction } from '@/api/manage'
   import { filterObj } from '@/utils/util';
-  import PdApplyExamineModal from './modules/PdApplyExamineModal'
+  import PdApplyExamineModal from './modules/NewPdApplyExamineModal'
   import JDictSelectTag from '@/components/dict/JDictSelectTag.vue'
   import {initDictOptions, filterMultiDictText} from '@/components/dict/JDictSelectUtil'
 

@@ -297,6 +297,18 @@
               return obj;
             },
           },
+          {
+            title: '规格单位ID',
+            align:"center",
+            dataIndex: 'specUnitId',
+            colSpan: 0,
+            customRender: (value, row, index) => {
+              const obj = {
+                attrs: {colSpan:0},
+              };
+              return obj;
+            },
+          },
         ],
         url: {
           list: "/pd/pdProduct/chooseProductList",

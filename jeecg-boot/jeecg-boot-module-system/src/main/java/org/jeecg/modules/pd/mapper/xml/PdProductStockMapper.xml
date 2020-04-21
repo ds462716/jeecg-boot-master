@@ -25,7 +25,9 @@
 		a.record_detail_id,
 		a.spec_num,
 		a.nestat_status,
-		a.del_flag
+		a.spec_unit_id,
+		a.spec_quantity,
+ 		a.del_flag
 	</sql>
 
 	<sql id="pdProductStockJoins">
