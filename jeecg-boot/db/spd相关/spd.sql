@@ -48,3 +48,35 @@ INSERT INTO `sys_dict_item` VALUES ('1252139634337538049', '1252139529844842498'
 ALTER TABLE `pd_stock_record_detail`
 ADD COLUMN `spec_unit_id` varchar(64) NULL COMMENT '试剂规格单位' AFTER `supplier_id`,
 ADD COLUMN `spec_quantity` double(11, 4) NULL COMMENT '试剂规格数量' AFTER `spec_unit_id`;
+
+-- add by jiangxz 2020年4月21日09:39:10 定数包产品数量 改为double
+ALTER TABLE `pd_package_detail`
+MODIFY COLUMN `count` double(11, 2) NULL DEFAULT 0 COMMENT '产品数量' AFTER `product_id`;
+
+-- add by jiangxz 2020年4月21日09:48:06 定数包打包记录表、打包记录明细表
+DROP TABLE IF EXISTS `pd_package_record`;
+CREATE TABLE `pd_package_record`  (
+  `id` varchar(36) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT 'id',
+  `package_id` varchar(36) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '定数包ID',
+  `depart_id` varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '科室ID',
+  `package_bar_code` varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '定数包流水码',
+  `status` char(1) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '出库状态：0-已出库；1-未出库',
+  `del_flag` varchar(1) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '删除标识，0-正常；1-删除',
+  `remarks` varchar(500) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '备注',
+  `create_by` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '创建人',
+  `create_time` datetime(0) NULL DEFAULT NULL COMMENT '创建日期',
+  `update_by` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '更新人',
+  `update_time` datetime(0) NULL DEFAULT NULL COMMENT '更新日期',
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Compact;
+DROP TABLE IF EXISTS `pd_package_record_detail`;
+CREATE TABLE `pd_package_record_detail`  (
+  `id` varchar(36) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `record_id` varchar(36) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '打包记录ID',
+  `product_id` varchar(36) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '产品ID',
+  `product_stock_id` varchar(36) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '库存明细ID',
+  `batch_no` varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '批号',
+  `exp_date` datetime(0) NULL DEFAULT NULL COMMENT '有效期',
+  `package_num` double(11, 2) NULL DEFAULT NULL COMMENT '打包数量',
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Compact;
