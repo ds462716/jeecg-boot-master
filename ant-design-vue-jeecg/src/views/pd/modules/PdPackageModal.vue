@@ -331,7 +331,6 @@
           values.forEach((item, idx) => {
             sum = sum + Number(item.count);
           })
-          // this.form.setFieldsValue({sum:sum});
           this.totalSum = sum;
         })
       },

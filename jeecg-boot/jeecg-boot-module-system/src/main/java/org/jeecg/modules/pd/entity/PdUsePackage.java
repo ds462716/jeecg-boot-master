@@ -28,7 +28,7 @@ public class PdUsePackage extends BaseEntity {
 	/**使用包名称*/
     private String name;
 	/**产品总数*/
-    private Integer sum;
+    private Double sum;
 	/**拼音简码*/
     private String py;
 	/**五笔简码*/
