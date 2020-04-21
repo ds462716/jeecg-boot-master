@@ -103,7 +103,7 @@
 
 <script>
 
-  import PdApplyOrderModal from './modules/PdApplyOrderModal'
+  import PdApplyOrderModal from './modules/NewPdApplyOrderModal'
   import { JeecgListMixin,batchDel} from '@/mixins/JeecgListMixin'
   import { deleteAction } from '@/api/manage'
   import { filterObj } from '@/utils/util';
