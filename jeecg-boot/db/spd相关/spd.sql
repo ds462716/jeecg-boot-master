@@ -86,7 +86,7 @@ CREATE TABLE `pd_use_package` (
   `id` varchar(36) NOT NULL,
   `code` varchar(32) DEFAULT NULL COMMENT '使用包编号',
   `name` varchar(200) DEFAULT NULL COMMENT '使用包名称',
-  `sum` int(11) DEFAULT NULL COMMENT '产品总数',
+  `sum` double(11,4) DEFAULT NULL COMMENT '产品总数',
   `py` varchar(32) DEFAULT NULL COMMENT '拼音简码',
   `wb` varchar(32) DEFAULT NULL COMMENT '五笔简码',
   `zdy` varchar(32) DEFAULT NULL COMMENT '自定义码',
