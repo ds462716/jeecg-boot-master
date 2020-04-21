@@ -302,7 +302,6 @@
           if (!err) {
             const that = this;
             let pdPurchaseDetailList = this.pdApplyDetailTable.dataSource;
-          return;
             let values = [];
             values.pdApplyDetailList = pdPurchaseDetailList;
             let formData = Object.assign(this.model, values);
