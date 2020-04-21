@@ -411,6 +411,8 @@
             { title: '紧急产品-0是1不是', key: 'isUrgent', type: FormTypes.hidden },
             { title: '紧急产品需要采购数量', key: 'upQuantity', type: FormTypes.hidden },
             { title: '紧急产品已采购数量', key: 'purchasedQuantity', type: FormTypes.hidden },
+            { title: '规格单位ID', key: 'specUnitId', type: FormTypes.hidden },
+            { title: '规格数量', key: 'specQuantity', type: FormTypes.hidden },
           ]
         },
         url: {
@@ -886,6 +888,8 @@
           unitName: row.unitName,
           venderName: row.venderName,
           supplierName: row.supplierName,
+          specUnitId: row.specUnitId,
+          specQuantity: row.specQuantity,
           productBarCode:"",
           produceDate:"",
           expDate:"",
@@ -920,6 +924,8 @@
           unitName: row.pdProduct.unitName,
           venderName: row.pdProduct.venderName,
           supplierName: row.pdProduct.supplierName,
+          specUnitId: row.pdProduct.specUnitId,
+          specQuantity: row.pdProduct.specQuantity,
           productBarCode:row.productBarCode,
           produceDate:row.produceDate,
           expDate:row.expDate,
