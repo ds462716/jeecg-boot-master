@@ -2,6 +2,7 @@ package org.jeecg.modules.pd.entity;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
@@ -27,7 +28,7 @@ public class PdPackage extends BaseEntity {
 	/**定数包名称*/
     private String name;
 	/**产品总数*/
-    private Integer sum;
+    private Double sum;
 	/**拼音简码*/
     private String py;
 	/**五笔简码*/
@@ -62,4 +63,7 @@ public class PdPackage extends BaseEntity {
      */
     @TableField(strategy = FieldStrategy.NOT_EMPTY)
     private String departParentId;
+
+    @TableField(exist = false)
+    private List<PdPackageDetail> pdPackageDetailList;
 }

@@ -18,7 +18,6 @@ import org.jeecg.modules.pd.service.IPdPackageDetailService;
 import org.jeecg.modules.pd.service.IPdPackageService;
 import org.jeecg.modules.pd.service.IPdProductStockTotalService;
 import org.jeecg.modules.pd.util.UUIDUtil;
-import org.jeecg.modules.pd.vo.PdPackagePage;
 import org.jeecg.modules.pd.vo.PdProductStockTotalPage;
 import org.jeecgframework.poi.excel.ExcelImportUtil;
 import org.jeecgframework.poi.excel.def.NormalExcelConstants;
@@ -97,32 +96,32 @@ public class PdPackageController {
 	/**
 	 *   添加
 	 *
-	 * @param pdPackagePage
+	 * @param PdPackage
 	 * @return
 	 */
 	@PostMapping(value = "/add")
-	public Result<?> add(@RequestBody PdPackagePage pdPackagePage) {
+	public Result<?> add(@RequestBody PdPackage PdPackage) {
 		PdPackage pdPackage = new PdPackage();
-		BeanUtils.copyProperties(pdPackagePage, pdPackage);
-		pdPackageService.saveMain(pdPackage, pdPackagePage.getPdPackageDetailList());
+		BeanUtils.copyProperties(PdPackage, pdPackage);
+		pdPackageService.saveMain(pdPackage, PdPackage.getPdPackageDetailList());
 		return Result.ok("添加成功！");
 	}
 	
 	/**
 	 *  编辑
 	 *
-	 * @param pdPackagePage
+	 * @param PdPackage
 	 * @return
 	 */
 	@PutMapping(value = "/edit")
-	public Result<?> edit(@RequestBody PdPackagePage pdPackagePage) {
+	public Result<?> edit(@RequestBody PdPackage PdPackage) {
 		PdPackage pdPackage = new PdPackage();
-		BeanUtils.copyProperties(pdPackagePage, pdPackage);
+		BeanUtils.copyProperties(PdPackage, pdPackage);
 		PdPackage pdPackageEntity = pdPackageService.getById(pdPackage.getId());
 		if(pdPackageEntity==null) {
 			return Result.error("未找到对应数据");
 		}
-		pdPackageService.updateMain(pdPackage, pdPackagePage.getPdPackageDetailList());
+		pdPackageService.updateMain(pdPackage, PdPackage.getPdPackageDetailList());
 		return Result.ok("编辑成功!");
 	}
 	
@@ -203,9 +202,9 @@ public class PdPackageController {
       }
 
       // Step.3 组装pageList
-      List<PdPackagePage> pageList = new ArrayList<PdPackagePage>();
+      List<PdPackage> pageList = new ArrayList<PdPackage>();
       for (PdPackage main : pdPackageList) {
-          PdPackagePage vo = new PdPackagePage();
+          PdPackage vo = new PdPackage();
           BeanUtils.copyProperties(main, vo);
           List<PdPackageDetail> pdPackageDetailList = pdPackageDetailService.selectByMainId(main.getId());
           vo.setPdPackageDetailList(pdPackageDetailList);
@@ -215,7 +214,7 @@ public class PdPackageController {
       // Step.4 AutoPoi 导出Excel
       ModelAndView mv = new ModelAndView(new JeecgEntityExcelView());
       mv.addObject(NormalExcelConstants.FILE_NAME, "定数包列表");
-      mv.addObject(NormalExcelConstants.CLASS, PdPackagePage.class);
+      mv.addObject(NormalExcelConstants.CLASS, PdPackage.class);
       mv.addObject(NormalExcelConstants.PARAMS, new ExportParams("定数包数据", "导出人:"+sysUser.getRealname(), "定数包"));
       mv.addObject(NormalExcelConstants.DATA_LIST, pageList);
       return mv;
@@ -239,8 +238,8 @@ public class PdPackageController {
           params.setHeadRows(1);
           params.setNeedSave(true);
           try {
-              List<PdPackagePage> list = ExcelImportUtil.importExcel(file.getInputStream(), PdPackagePage.class, params);
-              for (PdPackagePage page : list) {
+              List<PdPackage> list = ExcelImportUtil.importExcel(file.getInputStream(), PdPackage.class, params);
+              for (PdPackage page : list) {
                   PdPackage po = new PdPackage();
                   BeanUtils.copyProperties(page, po);
                   pdPackageService.saveMain(po, page.getPdPackageDetailList());

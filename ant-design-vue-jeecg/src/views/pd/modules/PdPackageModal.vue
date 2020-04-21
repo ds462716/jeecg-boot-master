@@ -1,12 +1,4 @@
 <template>
-  <!--<a-modal-->
-    <!--:title="title"-->
-    <!--:width="1600"-->
-    <!--:visible="visible"-->
-    <!--:maskClosable="false"-->
-    <!--:confirmLoading="confirmLoading"-->
-    <!--@ok="handleOk"-->
-    <!--@cancel="handleCancel">-->
   <j-modal
     :visible="visible"
     :width="popModal.width"
@@ -32,11 +24,11 @@
               <a-input v-decorator="[ 'name', validatorRules.name]"  @change="pinyinTran" placeholder="请输入定数包名称"></a-input>
             </a-form-item>
           </a-col>
-          <a-col :span="12">
-            <a-form-item label="产品总数" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input-number v-decorator="[ 'sum', validatorRules.sum]" placeholder="0" disabled="disabled" style="width: 100%"/>
-            </a-form-item>
-          </a-col>
+          <!--<a-col :span="12" v-show="false">-->
+            <!--<a-form-item label="产品总数" :labelCol="labelCol" :wrapperCol="wrapperCol">-->
+              <!--<a-input-number v-decorator="[ 'sum', validatorRules.sum]" placeholder="0" disabled="disabled" style="width: 100%"/>-->
+            <!--</a-form-item>-->
+          <!--</a-col>-->
           <a-col :span="12">
             <a-form-item label="拼音简码" :labelCol="labelCol" :wrapperCol="wrapperCol">
               <a-input v-decorator="[ 'py', validatorRules.py]" placeholder="请输入拼音简码"></a-input>
@@ -57,12 +49,6 @@
               <a-input v-decorator="[ 'remarks', validatorRules.remarks]" placeholder="请输入备注"></a-input>
             </a-form-item>
           </a-col>
-          <!--<a-col :span="12">-->
-            <!--<a-form-item label="父机构" :labelCol="labelCol" :wrapperCol="wrapperCol">-->
-              <!--<a-input v-decorator="[ 'departParentId', validatorRules.departParentId]" placeholder="请输入父机构"></a-input>-->
-            <!--</a-form-item>-->
-          <!--</a-col>-->
-
         </a-row>
       </a-form>
 
@@ -91,13 +77,10 @@
             :actionButton="false"
             @valueChange="valueChange"
           />
+          <a-row style="margin-top:10px;text-align: right;padding-right: 5%">
+            <span style="font-weight: bold;font-size: large;padding-right: 5%">总数量：{{ totalSum }}</span>
+          </a-row>
         </a-tab-pane>
-
-        <!--  如果要用默认的新增、删除按钮，设置 :actionButton="true"
-            @deleted="valueChange"   删除行事件
-            @added="valueChange"     新增行之后处理的事件 但是只能取到之前行的值，取不到本次新增行的值
-            @valueChange="valueChange"  更改值事件
-            -->
       </a-tabs>
 
     </a-spin>
@@ -116,11 +99,14 @@
 <script>
 
   import pick from 'lodash.pick'
-  import { FormTypes,getRefPromise } from '@/utils/JEditableTableUtil'
+  import { FormTypes,getRefPromise,validateFormAndTables } from '@/utils/JEditableTableUtil'
   import { JEditableTableMixin } from '@/mixins/JEditableTableMixin'
   import { makeWb } from '@/utils/wubi'
   import {httpAction, deleteAction, getAction} from '@/api/manage'
   import PdChooseProductListModel from "./PdChooseProductListModel"
+
+  const VALIDATE_NO_PASSED = Symbol()
+  export { FormTypes, VALIDATE_NO_PASSED }
 
   export default {
     name: 'PdPackageModal',
@@ -130,6 +116,8 @@
     },
     data() {
       return {
+        totalSum:'0',
+
         labelCol: {
           span: 6
         },
@@ -147,7 +135,6 @@
         validatorRules: {
           code: { rules: [{ required: true, message: '请输入定数包编号!' }] },
           name: { rules: [{ required: true, message: '请输入定数包名称!' }] },
-          sum:{},
           py:{},
           wb:{},
           zdy:{},
@@ -157,7 +144,6 @@
         tableKeys:['pdPackageDetail', ],
         activeKey: 'pdPackageDetail',
         id:0,
-        // sum:0,
         // 定数包明细
         pdPackageDetailTable: {
           loading: false,
@@ -204,14 +190,6 @@
               defaultValue: '',
               validateRules: [{ required: true, message: '${title}不能为空' },{pattern: '^-?\\d+$',message: '${title}的格式不正确' }]
             },
-            // {
-            //   title: '备注',
-            //   key: 'remarks',
-            //   type: FormTypes.input,
-            //   width:"200px",
-            //   placeholder: '请输入${title}',
-            //   defaultValue: '',
-            // },
           ]
         },
         url: {
@@ -246,21 +224,24 @@
       },
       /** 调用完edit()方法之后会自动调用此方法 */
       editAfter() {
-        let fieldval = pick(this.model,'code','name','sum','py','wb','zdy','remarks');
-        this.form.setFieldsValue(fieldval);
-        // 加载子表数据
-        if (this.model.id) {
-          let params = { id: this.model.id }
-          this.requestSubTableData(this.url.pdPackageDetail.list, params, this.pdPackageDetailTable)
-        }else{
-          getAction(this.url.init, {id:""}).then((res) => {
-            if (res.success) {
-              this.$nextTick(() => {
-                this.form.setFieldsValue({code:res.result.code});
-              })
-            }
-          })
-        }
+        let fieldval = pick(this.model,'code','name','py','wb','zdy','remarks');
+        this.$nextTick(() => {
+          this.form.setFieldsValue(fieldval);
+          this.totalSum = this.model.sum;
+          // 加载子表数据
+          if (this.model.id) {
+            let params = { id: this.model.id }
+            this.requestSubTableData(this.url.pdPackageDetail.list, params, this.pdPackageDetailTable)
+          }else{
+            getAction(this.url.init, {id:""}).then((res) => {
+              if (res.success) {
+                this.$nextTick(() => {
+                  this.form.setFieldsValue({code:res.result.code});
+                })
+              }
+            })
+          }
+        })
       },
       /** 整理成formData */
       classifyIntoFormData(allValues) {
@@ -275,7 +256,7 @@
         this.$message.error(msg)
       },
       popupCallback(row){
-        this.form.setFieldsValue(pick(row,'code','name','sum','py','wb','zdy','remarks'))
+        this.form.setFieldsValue(pick(row,'code','name','py','wb','zdy','remarks'))
       },
       pinyinTran(e){
         let val = e.target.value;
@@ -288,12 +269,49 @@
       },
       /** 关闭按钮点击事件 */
       handleCancel() {
-        this.visible = false
+        this.visible = false;
+        this.totalSum = '0';
         this.eachAllTable((item) => {
           item.initialize()
         })
-        this.$emit('close')
+        this.$emit('close');
         this.pdPackageDetailTable.dataSource = [];
+      },
+      /** 确定按钮点击事件 */
+      handleOk() {
+        /** 触发表单验证 */
+        this.getAllTable().then(tables => {
+          /** 一次性验证主表和所有的次表 */
+          return validateFormAndTables(this.form, tables)
+        }).then(allValues => {
+          if (typeof this.classifyIntoFormData !== 'function') {
+            throw this.throwNotFunction('classifyIntoFormData')
+          }
+          let formData = this.classifyIntoFormData(allValues)
+          if(formData.pdPackageDetailList.length <= 0){
+            this.$message.warning("定数包产品数据为空，请选择产品！");
+            return;
+          }
+
+          let { values } = this.$refs.pdPackageDetail.getValuesSync({ validate: false });
+          for(let row of values){
+            if(row.count <= 0){
+              this.$message.error("产品["+row.productName+"]数量必须大于0！");
+              return;
+            }
+          }
+
+          // 发起请求
+          formData.sum = this.totalSum;
+          return this.request(formData)
+        }).catch(e => {
+          if (e.error === VALIDATE_NO_PASSED) {
+            // 如果有未通过表单验证的子表，就自动跳转到它所在的tab
+            this.activeKey = e.index == null ? this.activeKey : this.refKeys[e.index]
+          } else {
+            console.error(e)
+          }
+        })
       },
       //删除行
       handleConfirmDelete() {
@@ -309,18 +327,12 @@
       // 产品数量变更
       valueChange(e) {
         this.$refs.pdPackageDetail.getValues((error, values) => {
-          // 错误数 = 0 则代表验证通过
-          // if (error === 0) {
-            // this.$message.success('验证通过')
-            // 将通过后的数组提交到后台或自行进行其他处理
-            let sum = 0;
-            values.forEach((item, idx) => {
-              sum = sum + Number(item.count);
-            })
-            this.form.setFieldsValue({sum:sum});
-          // } else {
-          //   this.$message.error('验证未通过')
-          // }
+          let sum = 0;
+          values.forEach((item, idx) => {
+            sum = sum + Number(item.count);
+          })
+          // this.form.setFieldsValue({sum:sum});
+          this.totalSum = sum;
         })
       },
       //弹出框返回调用
@@ -357,7 +369,7 @@
           unitName: row.unitName,
           venderName: row.venderName,
           supplierName: row.supplierName,
-          count: 1
+          count: 0
         }
         this.pdPackageDetailTable.dataSource.push(data);
         this.$refs.pdPackageDetail.add();
