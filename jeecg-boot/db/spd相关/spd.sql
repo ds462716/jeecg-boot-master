@@ -19,7 +19,7 @@ INSERT INTO `sys_permission` VALUES ('1252044092885708801', '1210107255254798338
 -- add by zxh 20200420 产品加入试剂
 ALTER TABLE `pd_product`
 ADD COLUMN `spec_unit_id`  varchar(64) NULL COMMENT '试剂规格单位' AFTER `zdy`,
-ADD COLUMN `spec_quantity`  double(11,2) NULL COMMENT '试剂规格数量' AFTER `spec_unit_id`;
+ADD COLUMN `spec_quantity`  double(11,4) NULL COMMENT '试剂规格数量' AFTER `spec_unit_id`;
 
 -- add by zxh 20200420 产品加入单位类型
 ALTER TABLE `pd_unit`
@@ -34,7 +34,9 @@ INSERT INTO `sys_dict_item` VALUES ('1252073837744705538', '1252073695738155010'
 -- add by mcb 20200420 库存明细表增加规格库存数量及库存占用状态
 ALTER TABLE `pd_product_stock`
 ADD COLUMN `spec_num`  double(32,2) DEFAULT NULL COMMENT '试剂库存规格数量',
-ADD COLUMN `nestat_status` varchar(4) DEFAULT '0' COMMENT '库存占用状态 0：使用中  1：未使用';
+ADD COLUMN `nestat_status` varchar(4) DEFAULT '0' COMMENT '库存占用状态 0：使用中  1：未使用',
+ADD COLUMN `spec_unit_id`  varchar(64) DEFAULT NULL COMMENT '试剂规格单位',
+ADD COLUMN `spec_quantity` double(11, 4) DEFAULT NULL COMMENT '试剂规格数量';
 
 -- add by mcb 2020年4月20日15:26:18  静态字典增加占用状态
 INSERT INTO `sys_dict` VALUES ('1252139529844842498', '占用状态', 'nestat_status', '0：使用中  1：未使用', 0, 'admin', '2020-4-20 15:38:21', NULL, '2020-4-20 15:38:21', 0);
@@ -45,6 +47,39 @@ INSERT INTO `sys_dict_item` VALUES ('1252139634337538049', '1252139529844842498'
 ALTER TABLE `pd_stock_record_detail`
 ADD COLUMN `spec_unit_id` varchar(64) NULL COMMENT '试剂规格单位' AFTER `supplier_id`,
 ADD COLUMN `spec_quantity` double(11, 4) NULL COMMENT '试剂规格数量' AFTER `spec_unit_id`;
+
+
+-- add by jiangxz 2020年4月21日09:39:10 定数包产品数量 改为double
+ALTER TABLE `pd_package_detail`
+MODIFY COLUMN `count` double(11, 2) NULL DEFAULT 0 COMMENT '产品数量' AFTER `product_id`;
+
+-- add by jiangxz 2020年4月21日09:48:06 定数包打包记录表、打包记录明细表
+DROP TABLE IF EXISTS `pd_package_record`;
+CREATE TABLE `pd_package_record`  (
+  `id` varchar(36) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT 'id',
+  `package_id` varchar(36) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '定数包ID',
+  `depart_id` varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '科室ID',
+  `package_bar_code` varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '定数包流水码',
+  `status` char(1) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '出库状态：0-已出库；1-未出库',
+  `del_flag` varchar(1) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '删除标识，0-正常；1-删除',
+  `remarks` varchar(500) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '备注',
+  `create_by` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '创建人',
+  `create_time` datetime(0) NULL DEFAULT NULL COMMENT '创建日期',
+  `update_by` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '更新人',
+  `update_time` datetime(0) NULL DEFAULT NULL COMMENT '更新日期',
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Compact;
+DROP TABLE IF EXISTS `pd_package_record_detail`;
+CREATE TABLE `pd_package_record_detail`  (
+  `id` varchar(36) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `record_id` varchar(36) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '打包记录ID',
+  `product_id` varchar(36) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '产品ID',
+  `product_stock_id` varchar(36) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '库存明细ID',
+  `batch_no` varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '批号',
+  `exp_date` datetime(0) NULL DEFAULT NULL COMMENT '有效期',
+  `package_num` double(11, 2) NULL DEFAULT NULL COMMENT '打包数量',
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Compact;
 
 -- add by 2020年4月21日09:23:29 使用包管理
 CREATE TABLE `pd_use_package` (
