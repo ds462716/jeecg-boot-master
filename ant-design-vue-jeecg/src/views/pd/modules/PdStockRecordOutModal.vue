@@ -464,10 +464,12 @@
             { title: '出库金额', key: 'outTotalPrice', type: FormTypes.input, disabled:true, width:"100px" },
             { title: '库存数量', key: 'stockNum', width:"80px" },
             { title: '出库货位', key: 'outHuoweiName', width:"100px" },
-            { title: '出库货位编号', key: 'outHuoweiCode', type: FormTypes.hidden },
-            { title: '供应商id', key: 'supplierId', type: FormTypes.hidden },
             { title: '生产日期', key: 'produceDate',  },
             { title: '入库货位', key: 'inHuoweiCode', type: FormTypes.select, width:"150px", options: [],allowSearch:true, placeholder: '${title}' },
+            { title: '出库货位编号', key: 'outHuoweiCode', type: FormTypes.hidden },
+            { title: '供应商id', key: 'supplierId', type: FormTypes.hidden },
+            { title: '规格单位ID', key: 'specUnitId', type: FormTypes.hidden },
+            { title: '规格数量', key: 'specQuantity', type: FormTypes.hidden },
           ]
         },
         url: {
@@ -1013,6 +1015,8 @@
           unitName:row.unitName,
           expDate:row.expDate,
           sellingPrice:row.sellingPrice,
+          specUnitId: row.specUnitId,
+          specQuantity: row.specQuantity,
           productNum: 1,
           purchasePrice:row.purchasePrice,
           outTotalPrice:Number(!row.sellingPrice ? 0 : row.sellingPrice).toFixed(4),

@@ -28,7 +28,9 @@
 		a.create_by,
 		a.create_time,
 		a.update_by,
-		a.update_time
+		a.update_time,
+		a.spec_unit_id,
+		a.spec_quantity
 	</sql>
 
 	<sql id="PdStockRecordDetailJoins">
