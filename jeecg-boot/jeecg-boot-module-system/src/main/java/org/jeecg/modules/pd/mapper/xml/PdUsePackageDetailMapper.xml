@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.pd.mapper.PdUsePackageDetailMapper">
+
+	<delete id="deleteByMainId" parameterType="java.lang.String">
+		UPDATE  pd_use_package_detail
+		SET del_flag = '1'
+		WHERE
+			 package_id = #{mainId}
+	</delete>
+	
+	<select id="selectByMainId" parameterType="java.lang.String" resultType="org.jeecg.modules.pd.entity.PdUsePackageDetail">
+		SELECT
+			a.*,
+            e.number as number,
+            e.name as productName,
+            e.spec as spec,
+            e.version as version,
+            b.name as unitName,
+            c.name as venderName,
+            d.name as supplierName
+		FROM  pd_use_package_detail a
+        left join pd_product e on a.product_id = e.id
+        left join pd_unit b on e.unit_id = b.id
+        left join pd_vender c on e.vender_id = c.id
+        left join pd_supplier d on e.supplier_id = d.id
+		WHERE
+            a.del_flag = '0'
+			and a.package_id = #{mainId}
+	</select>
+
+
+
+
+	<select id="selectList"  resultType="org.jeecg.modules.pd.entity.PdUsePackageDetail">
+		 SELECT
+		 a.package_id,
+		 a.count,
+		 a.product_id,
+		 b.code,
+		 b.name,
+		 c.number as "number",
+		 c.name as "productName",
+         c.spec as spec,
+         c.version as version,
+         d.name as unitName
+          FROM
+		 pd_use_package_detail a
+         LEFT JOIN pd_package b ON a.package_id=b.id
+		 LEFT JOIN pd_product c ON c.id=a.product_id
+		 LEFT JOIN pd_unit d ON c.unit_id = d.id
+		WHERE
+            a.del_flag = #{DEL_FLAG_NORMAL}
+		<if test="packageId != null and packageId != ''">
+			AND a.package_id = #{packageId}
+		</if>
+		<if test="departParentId != null and departParentId != ''">
+			AND a.depart_parent_id = #{departParentId}
+		</if>
+		<if test="departId != null and departId != ''">
+			AND a.depart_id = #{departId}
+		</if>
+	</select>
+</mapper>
