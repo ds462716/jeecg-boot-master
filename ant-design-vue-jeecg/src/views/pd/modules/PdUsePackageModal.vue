@@ -175,7 +175,7 @@
               key: 'unitName'
             },
             {
-              title: '使用单位',
+              title: '规格单位',
               align:"center",
               key: 'specUnitName'
             },

@@ -1,5 +1,6 @@
 package org.jeecg.modules.pd.controller;
 
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
@@ -16,6 +17,7 @@ import org.jeecg.modules.pd.service.IPdProductService;
 import org.jeecg.modules.pd.util.BarCodeUtil;
 import org.jeecg.modules.pd.util.FileUploadUtil;
 import org.jeecg.modules.pd.vo.PdProductPage;
+import org.jeecg.modules.pd.vo.PdProductReagents;
 import org.jeecgframework.poi.excel.def.NormalExcelConstants;
 import org.jeecgframework.poi.excel.entity.ExportParams;
 import org.jeecgframework.poi.excel.view.JeecgEntityExcelView;
@@ -436,6 +438,7 @@ public class PdProductController extends JeecgController<PdProduct, IPdProductSe
     public ModelAndView exportXls(HttpServletRequest request, PdProduct pdProduct ) {
         LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
         pdProduct.setDepartParentId(sysUser.getDepartParentId());
+		pdProduct.setProductFlag(PdConstant.PRODUCT_FLAG_0);
         //Step.1 获取导出数据
         List<PdProduct> pdProducts = pdProductService.selectList(pdProduct);
         // Step.2 AutoPoi 导出Excel
@@ -446,6 +449,29 @@ public class PdProductController extends JeecgController<PdProduct, IPdProductSe
         mv.addObject(NormalExcelConstants.DATA_LIST, pdProducts);
         return mv;
     }
+
+	 /**
+	  * 试剂导出
+	  * @param request
+	  * @param pdProduct
+	  * @return
+	  */
+	 @RequestMapping(value = "/exportXlsReagents")
+	 public ModelAndView exportXlsReagents(HttpServletRequest request, PdProduct pdProduct ) {
+		 LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		 pdProduct.setDepartParentId(sysUser.getDepartParentId());
+		 pdProduct.setProductFlag(PdConstant.PRODUCT_FLAG_1);
+		 //Step.1 获取导出数据
+		 List<PdProduct> pdProducts = pdProductService.selectList(pdProduct);
+		 List<PdProductReagents> exportList = JSON.parseArray(JSON.toJSONString(pdProducts), PdProductReagents.class);
+		 // Step.2 AutoPoi 导出Excel
+		 ModelAndView mv = new ModelAndView(new JeecgEntityExcelView());
+		 mv.addObject(NormalExcelConstants.FILE_NAME, "试剂列表");
+		 mv.addObject(NormalExcelConstants.CLASS, PdProductReagents.class);
+		 mv.addObject(NormalExcelConstants.PARAMS, new ExportParams("试剂列表数据", "导出人:" + sysUser.getRealname(), "试剂数据"));
+		 mv.addObject(NormalExcelConstants.DATA_LIST, exportList);
+		 return mv;
+	 }
 
     /**
       * 通过excel导入数据
@@ -461,6 +487,20 @@ public class PdProductController extends JeecgController<PdProduct, IPdProductSe
 		Result<Object> resul = pdProductService.importExcel(fileMap);
 		return resul;
 	}
+
+	 /**
+	  * 试剂导入
+	  * @param request
+	  * @param response
+	  * @return
+	  */
+	 @RequestMapping(value = "/importExcelReagents", method = RequestMethod.POST)
+	 public Result<?> importExcelReagents(HttpServletRequest request, HttpServletResponse response) {
+		 MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
+		 Map<String, MultipartFile> fileMap = multipartRequest.getFileMap();
+		 Result<Object> resul = pdProductService.importExcelReagents(fileMap);
+		 return resul;
+	 }
 
 	 /**
 	  * 查询产品列表，用于选择产品弹出框

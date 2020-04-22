@@ -28,7 +28,7 @@ ADD COLUMN `unit_type`  varchar(1) NULL COMMENT '单位类型' AFTER `name`;
 -- add by zxh 2020年4月20日11:26:18 产品加入单位类型
 INSERT INTO `sys_dict` VALUES ('1252073695738155010', '单位类型', 'unit_type', '', '0', 'admin', '2020-04-20 11:16:46', null, '2020-04-20 11:16:46', '0');
 INSERT INTO `sys_dict_item` VALUES ('1252073800750944258', '1252073695738155010', '包装单位', '0', '', '1', '1', 'admin', '2020-04-20 11:17:11', null, '2020-04-20 11:17:11');
-INSERT INTO `sys_dict_item` VALUES ('1252073837744705538', '1252073695738155010', '使用单位', '1', '', '1', '1', 'admin', '2020-04-20 11:17:20', null, '2020-04-20 11:17:20');
+INSERT INTO `sys_dict_item` VALUES ('1252073837744705538', '1252073695738155010', '规格单位', '1', '', '1', '1', 'admin', '2020-04-20 11:17:20', null, '2020-04-20 11:17:20');
 
 
 -- add by mcb 20200420 库存明细表增加规格库存数量及库存占用状态
@@ -121,4 +121,9 @@ CREATE TABLE `pd_use_package_detail` (
 
 -- add by 2020年4月22日15:49:16 器械分类
 ALTER TABLE `pd_product`
-ADD COLUMN `device_classification`  varchar(1) NULL COMMENT '器械分类0类，1类，2类，3类' AFTER `jde_code`
+ADD COLUMN `device_classification`  varchar(1) NULL COMMENT '器械分类0类，1类，2类，3类' AFTER `jde_code`;
+INSERT INTO `sys_dict` VALUES ('1252882340809883649', '器械分类', 'device_classification', '', '0', 'admin', '2020-04-22 16:50:02', null, '2020-04-22 16:50:02', '0');
+INSERT INTO `sys_dict_item` VALUES ('1252882417976688641', '1252882340809883649', '0类', '0', '', '1', '1', 'admin', '2020-04-22 16:50:21', null, '2020-04-22 16:50:21');
+INSERT INTO `sys_dict_item` VALUES ('1252882453347254273', '1252882340809883649', 'Ⅰ类', '1', '', '1', '1', 'admin', '2020-04-22 16:50:29', null, '2020-04-22 16:50:29');
+INSERT INTO `sys_dict_item` VALUES ('1252882477808435201', '1252882340809883649', 'Ⅱ类', '2', '', '1', '1', 'admin', '2020-04-22 16:50:35', null, '2020-04-22 16:50:35');
+INSERT INTO `sys_dict_item` VALUES ('1252882496439533569', '1252882340809883649', 'Ⅲ类', '3', '', '1', '1', 'admin', '2020-04-22 16:50:39', 'admin', '2020-04-22 16:54:50');

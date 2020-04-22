@@ -51,4 +51,6 @@ public interface IPdProductService extends IService<PdProduct> {
     Result<Object>  isDisabledNumber(PdProduct pdProduct);
 
     void updateValidityFlag(PdProduct pdProduct);
+
+    Result<Object> importExcelReagents(Map<String, MultipartFile> fileMap);
 }
