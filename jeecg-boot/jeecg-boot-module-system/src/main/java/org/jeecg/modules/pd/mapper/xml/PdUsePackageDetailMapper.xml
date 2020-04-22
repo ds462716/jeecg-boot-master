@@ -12,7 +12,7 @@
 	<select id="selectByMainId" parameterType="java.lang.String" resultType="org.jeecg.modules.pd.entity.PdUsePackageDetail">
 		SELECT
 			a.*,
-            e.number as number,
+            e.number as productNumber,
             e.name as productName,
             e.spec as spec,
             e.version as version,

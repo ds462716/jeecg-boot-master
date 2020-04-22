@@ -77,9 +77,9 @@
             :actionButton="false"
             @valueChange="valueChange"
           />
-          <a-row style="margin-top:10px;text-align: right;padding-right: 5%">
+          <!--<a-row style="margin-top:10px;text-align: right;padding-right: 5%">
             <span style="font-weight: bold;font-size: large;padding-right: 5%">总数量：{{ totalSum }}</span>
-          </a-row>
+          </a-row>-->
         </a-tab-pane>
       </a-tabs>
 
@@ -154,6 +154,11 @@
               type: FormTypes.hidden
             },
             {
+              title: '产品编号',
+              align:"center",
+              key: 'productNumber'
+            },
+            {
               title: '产品名称',
               align:"center",
               key: 'productName'
@@ -190,7 +195,7 @@
               key: 'supplierName'
             },
             {
-              title: '产品数量',
+              title: '用量',
               key: 'count',
               type: FormTypes.input,
               width:"200px",
@@ -372,6 +377,7 @@
       addrows(row){
         let data = {
           productId: row.productId,
+          productNumber: row.productNumber,
           productName: row.productName,
           spec: row.spec,
           unitName: row.unitName,

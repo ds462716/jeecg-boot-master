@@ -76,7 +76,7 @@ public class PdUsePackageDetail extends BaseEntity {
 	private String name;
 	/*产品编号*/
 	@TableField(exist = false)
-	private String number;
+	private String productNumber;
 	/*产品名称*/
 	@TableField(exist = false)
 	private String productName;
