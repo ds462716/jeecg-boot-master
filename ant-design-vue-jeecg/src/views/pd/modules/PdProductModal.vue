@@ -307,12 +307,7 @@
         <a-row class="form-row" :gutter="{ xs: 8, sm: 16, md: 24, lg: 32 }">
           <a-col :lg="12">
             <a-form-item label="器械分类" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-select :disabled="disableSubmit"  v-decorator="[ 'deviceClassification',{'initialValue':'0',rules:deviceClassification}]" placeholder="请选择器械分类">
-                <a-select-option value="0">0类</a-select-option>
-                <a-select-option value="1">Ⅰ类</a-select-option>
-                <a-select-option value="2">Ⅱ类</a-select-option>
-                <a-select-option value="3">Ⅲ类</a-select-option>
-              </a-select>
+              <j-dict-select-tag-expand  :disabled="disableSubmit" :trigger-change="true" dictCode="device_classification" v-decorator="['deviceClassification',validatorRules.deviceClassification]"  placeholder="请选择器械分类"/>
             </a-form-item>
           </a-col>
         </a-row>
@@ -392,6 +387,7 @@
   import { generateNumber,getPrdNumber,scanCode } from '@/utils/barcode'
   import {duplicateCheckHasDelFlag } from '@/api/api'
   import {isDisabledNumber } from '@/api/api'
+  import {initDictOptions} from '@/components/dict/JDictSelectUtil'
 
   let timeout;
   let currentValue;
@@ -461,6 +457,8 @@
         previewVisible: false,
         previewImage: '',
         model: {},
+        dictOptions:{
+        },
         imgIsShow:[{show:false},{show:false},{show:false},{show:false},{show:false},{show:false},{show:false},{show:false},{show:false},{show:false},{show:false},{show:false}],
         imgIsValidity:['validity0','validity0','validity0','validity0','validity0','validity0','validity0','validity0','validity0','validity0','validity0','validity0'],//0无过期，1已过期，2近效期
         labelCol: {
@@ -537,6 +535,9 @@
             ]},
           upQuantityT: {rules: [
               {required: true, message: '请输入紧急产品数量!'},
+            ]},
+          deviceClassification: {rules: [
+              {required: true, message: '请选择器械分类!'},
             ]},
           description: {rules: [
           ]},
@@ -932,6 +933,13 @@
       //注册证替换;
       registrationChange(e){
 
+      },
+      initDictConfig(){
+        initDictOptions('device_classification').then((res) => {
+          if (res.success) {
+            this.$set(this.dictOptions, 'deviceClassification', res.result)
+          }
+        })
       }
     }
   }

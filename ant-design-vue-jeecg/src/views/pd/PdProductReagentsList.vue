@@ -86,12 +86,7 @@
             </a-col>
             <a-col :md="6" :sm="8">
               <a-form-item label="器械分类">
-                <a-select placeholder="状态" v-model="queryParam.deviceClassification" >
-                  <a-select-option value="0">0类</a-select-option>
-                  <a-select-option value="1">Ⅰ类</a-select-option>
-                  <a-select-option value="2">Ⅱ类</a-select-option>
-                  <a-select-option value="3">Ⅲ类</a-select-option>
-                </a-select>
+                <j-dict-select-tag-expand v-model="queryParam.deviceClassification" dictCode="device_classification" placeholder="请选择器械分类"/>
               </a-form-item>
             </a-col>
           </template>
@@ -213,6 +208,7 @@
   import PdProductReagentsModal from './modules/PdProductReagentsModal'
   import {initDictOptions, filterMultiDictText} from '@/components/dict/JDictSelectUtil'
   import { getAction } from  '@/api/manage'
+  import JDictSelectTagExpand from "@/components/dict/JDictSelectTagExpand"
 
   let timeout;
   let currentValue;
@@ -253,7 +249,8 @@
     name: "PdProductList",
     mixins:[JeecgListMixin],
     components: {
-      PdProductReagentsModal
+      PdProductReagentsModal,
+      JDictSelectTagExpand
     },
     data () {
       return {
@@ -400,6 +397,11 @@
         initDictOptions('is_charge').then((res) => {
           if (res.success) {
             this.$set(this.dictOptions, 'isCharge', res.result)
+          }
+        }),
+        initDictOptions('device_classification').then((res) => {
+          if (res.success) {
+            this.$set(this.dictOptions, 'deviceClassification', res.result)
           }
         })
       },
