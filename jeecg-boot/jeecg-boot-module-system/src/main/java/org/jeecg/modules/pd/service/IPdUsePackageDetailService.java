@@ -7,7 +7,7 @@ import org.jeecg.modules.pd.entity.PdUsePackageDetail;
 import java.util.List;
 
 /**
- * @Description: 使用包明细
+ * @Description: 检验项目明细
  * @Author: zxh
  * @Date:   2020年4月21日09:09:04
  * @Version: V1.0

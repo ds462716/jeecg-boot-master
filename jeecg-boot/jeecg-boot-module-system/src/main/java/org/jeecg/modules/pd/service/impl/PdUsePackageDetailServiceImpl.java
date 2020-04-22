@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 /**
- * @Description: 使用包明细
+ * @Description: 检验项目明细
  * @Author: zxh
  * @Date:   2020年4月21日09:09:37
  * @Version: V1.0

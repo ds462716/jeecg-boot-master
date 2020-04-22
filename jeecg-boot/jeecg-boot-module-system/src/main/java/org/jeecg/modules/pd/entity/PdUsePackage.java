@@ -10,7 +10,7 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * @Description: 使用包
+ * @Description: 检验项目
  * @Author: zxh
  * @Date:   2020年4月21日09:21:28
  * @Version: V1.0
@@ -23,9 +23,9 @@ public class PdUsePackage extends BaseEntity {
 	/**主键*/
 	@TableId(type = IdType.ID_WORKER_STR)
     private String id;
-	/**使用包编号*/
+	/**检验项目编号*/
     private String code;
-	/**使用包名称*/
+	/**检验项目名称*/
     private String name;
 	/**产品总数*/
     private Double sum;
@@ -65,6 +65,6 @@ public class PdUsePackage extends BaseEntity {
     private String departParentId;
 
     @TableField(exist = false)
-    @ExcelCollection(name="使用包明细")
+    @ExcelCollection(name="检验项目明细")
     private List<PdUsePackageDetail> pdUsePackageDetailList;
 }
