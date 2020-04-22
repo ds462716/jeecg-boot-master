@@ -293,6 +293,11 @@ public class PdProduct  extends BaseEntity {
 	private Double purchasedQuantity;
 
 	/**
+	 * 器械分类（0,1,2,3）
+	 */
+	private String deviceClassification;
+
+	/**
 	 * 所属部门
 	 */
 	@TableField(strategy = FieldStrategy.NOT_EMPTY)

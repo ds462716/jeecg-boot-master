@@ -84,6 +84,16 @@
                 </a-select>
               </a-form-item>
             </a-col>
+            <a-col :md="6" :sm="8">
+              <a-form-item label="器械分类">
+                <a-select placeholder="状态" v-model="queryParam.deviceClassification" >
+                  <a-select-option value="0">0类</a-select-option>
+                  <a-select-option value="1">Ⅰ类</a-select-option>
+                  <a-select-option value="2">Ⅱ类</a-select-option>
+                  <a-select-option value="3">Ⅲ类</a-select-option>
+                </a-select>
+              </a-form-item>
+            </a-col>
           </template>
           <a-col :md="6" :sm="8" >
             <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">

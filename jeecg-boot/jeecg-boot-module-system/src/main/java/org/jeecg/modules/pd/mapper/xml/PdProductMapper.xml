@@ -105,6 +105,7 @@
         <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
         <result column="remarks" property="remarks" jdbcType="VARCHAR"/>
         <result column="jde_code" property="jdeCode" jdbcType="VARCHAR"/>
+        <result column="device_classification" property="deviceClassification" jdbcType="VARCHAR"/>
         <result column="validity_flag" property="validityFlag" jdbcType="VARCHAR"/>
         <result column="product_flag" property="productFlag" jdbcType="VARCHAR"/>
         <result column="del_flag" property="delFlag" jdbcType="VARCHAR"/>
@@ -219,6 +220,7 @@
         a.sys_org_code,
         a.remarks,
         a.jde_code,
+        a.device_classification,
         a.validity_flag,
         a.product_flag,
         a.del_flag
@@ -262,6 +264,7 @@
         a.sys_org_code,
         a.remarks,
         a.jde_code,
+        a.device_classification,
         a.validity_flag,
         a.product_flag,
         a.del_flag
@@ -383,6 +386,9 @@
         <if test="productFlag != null and productFlag != ''">
             AND a.product_flag = #{productFlag}
         </if>
+        <if test="deviceClassification != null and deviceClassification != ''">
+            AND a.device_classification = #{deviceClassification}
+        </if>
         <if test="departId != null and departId != ''">
             AND a.depart_id = #{departId}
         </if>
@@ -460,6 +466,9 @@
             </if>
             <if test="productFlag != null and productFlag != ''">
                 AND a.product_flag = #{productFlag}
+            </if>
+            <if test="deviceClassification != null and deviceClassification != ''">
+                AND a.device_classification = #{deviceClassification}
             </if>
             <if test="departParentId != null and departParentId != ''">
                 AND a.depart_parent_id = #{departParentId}

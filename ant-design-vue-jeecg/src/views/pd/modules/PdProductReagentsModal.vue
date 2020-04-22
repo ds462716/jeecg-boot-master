@@ -333,6 +333,20 @@
           </a-col>
         </a-row>
 
+
+        <a-row class="form-row" :gutter="{ xs: 8, sm: 16, md: 24, lg: 32 }">
+          <a-col :lg="12">
+            <a-form-item label="器械分类" :labelCol="labelCol" :wrapperCol="wrapperCol">
+              <a-select :disabled="disableSubmit"  v-decorator="[ 'deviceClassification',{'initialValue':'0',rules:deviceClassification}]" placeholder="请选择器械分类">
+                <a-select-option value="0">0类</a-select-option>
+                <a-select-option value="1">Ⅰ类</a-select-option>
+                <a-select-option value="2">Ⅱ类</a-select-option>
+                <a-select-option value="3">Ⅲ类</a-select-option>
+              </a-select>
+            </a-form-item>
+          </a-col>
+        </a-row>
+
         <a-form-item label="描述" :labelCol="labelCol" :wrapperCol="wrapperCol">
           <a-textarea :disabled="disableSubmit" autocomplete="off" v-decorator="[ 'description', validatorRules.description]"></a-textarea>
         </a-form-item>

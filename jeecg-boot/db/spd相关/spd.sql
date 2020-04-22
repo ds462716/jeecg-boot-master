@@ -118,3 +118,7 @@ CREATE TABLE `pd_use_package_detail` (
   `depart_id` varchar(64) NOT NULL COMMENT '所属部门',
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
+
+-- add by 2020年4月22日15:49:16 器械分类
+ALTER TABLE `pd_product`
+ADD COLUMN `device_classification`  varchar(1) NULL COMMENT '器械分类0类，1类，2类，3类' AFTER `jde_code`
