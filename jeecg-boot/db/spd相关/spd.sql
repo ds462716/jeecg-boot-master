@@ -81,11 +81,11 @@ CREATE TABLE `pd_package_record_detail`  (
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Compact;
 
--- add by 2020年4月21日09:23:29 使用包管理
+-- add by 2020年4月21日09:23:29 检验项目管理
 CREATE TABLE `pd_use_package` (
   `id` varchar(36) NOT NULL,
-  `code` varchar(32) DEFAULT NULL COMMENT '使用包编号',
-  `name` varchar(200) DEFAULT NULL COMMENT '使用包名称',
+  `code` varchar(32) DEFAULT NULL COMMENT '检验项目编号',
+  `name` varchar(200) DEFAULT NULL COMMENT '检验项目名称',
   `sum` double(11,4) DEFAULT NULL COMMENT '产品总数',
   `py` varchar(32) DEFAULT NULL COMMENT '拼音简码',
   `wb` varchar(32) DEFAULT NULL COMMENT '五笔简码',
@@ -104,7 +104,7 @@ CREATE TABLE `pd_use_package` (
 
 CREATE TABLE `pd_use_package_detail` (
   `id` varchar(36) NOT NULL,
-  `package_id` varchar(36) DEFAULT NULL COMMENT '使用包id',
+  `package_id` varchar(36) DEFAULT NULL COMMENT '检验项目id',
   `product_id` varchar(36) DEFAULT NULL COMMENT '产品id',
   `count` double(11,2) DEFAULT '0.00' COMMENT '产品数量',
   `remarks` varchar(320) DEFAULT NULL COMMENT '备注',

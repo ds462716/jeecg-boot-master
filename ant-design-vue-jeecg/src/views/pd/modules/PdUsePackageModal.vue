@@ -20,8 +20,8 @@
             </a-form-item>
           </a-col>
           <a-col :span="12">
-            <a-form-item label="使用包名称" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input v-decorator="[ 'name', validatorRules.name]"  autocomplete="off" @change="pinyinTran" placeholder="请输入使用包名称"></a-input>
+            <a-form-item label="检验项目名称" :labelCol="labelCol" :wrapperCol="wrapperCol">
+              <a-input v-decorator="[ 'name', validatorRules.name]"  autocomplete="off" @change="pinyinTran" placeholder="请输入检验项目名称"></a-input>
             </a-form-item>
           </a-col>
           <!--<a-col :span="12">-->
@@ -54,7 +54,7 @@
 
       <!-- 子表单区域 -->
       <a-tabs v-model="activeKey" @change="handleChangeTabs">
-        <a-tab-pane tab="使用包明细" :key="refKeys[0]" :forceRender="true">
+        <a-tab-pane tab="检验项目明细" :key="refKeys[0]" :forceRender="true">
           <div style="margin-bottom: 8px;">
             <a-button type="primary" icon="plus" @click="handleConfirmAdd">新增</a-button>
             <span style="padding-left: 8px;"></span>
@@ -129,8 +129,8 @@
         // 新增时子表默认添加几行空数据
         addDefaultRowNum: 0,
         validatorRules: {
-          code: { rules: [{ required: true, message: '请输入使用包编号!' }] },
-          name: { rules: [{ required: true, message: '请输入使用包名称!' }] },
+          code: { rules: [{ required: true, message: '请输入检验项目编号!' }] },
+          name: { rules: [{ required: true, message: '请输入检验项目名称!' }] },
           sum:{},
           py:{},
           wb:{},
@@ -142,7 +142,7 @@
         activeKey: 'pdUsePackageDetail',
         id:0,
         // sum:0,
-        // 使用包明细
+        // 检验项目明细
         pdUsePackageDetailTable: {
           loading: false,
           dataSource: [],
@@ -209,7 +209,7 @@
           },
         },
         popModal: {
-          title: '使用包管理',
+          title: '检验项目管理',
           visible: false,
           width: '100%',
           // width: '1200',
@@ -298,7 +298,7 @@
           }
           let formData = this.classifyIntoFormData(allValues)
           if(formData.pdUsePackageDetailList.length <= 0){
-            this.$message.warning("使用包产品数据为空，请选择产品！");
+            this.$message.warning("检验项目产品数据为空，请选择产品！");
             return;
           }
 

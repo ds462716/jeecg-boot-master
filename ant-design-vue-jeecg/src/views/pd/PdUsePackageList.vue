@@ -120,7 +120,7 @@
     },
     data () {
       return {
-        description: '使用包管理页面',
+        description: '检验项目管理页面',
         // 表头
         columns: [
           {
@@ -134,12 +134,12 @@
             }
           },
           {
-            title:'使用包编号',
+            title:'检验项目编号',
             align:"center",
             dataIndex: 'code'
           },
           {
-            title:'使用包名称',
+            title:'检验项目名称',
             align:"center",
             dataIndex: 'name'
           },

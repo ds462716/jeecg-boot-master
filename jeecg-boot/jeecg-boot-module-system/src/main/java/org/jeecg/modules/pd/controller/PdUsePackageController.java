@@ -38,7 +38,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
-* @Description: 使用包
+* @Description: 检验项目
 * @Author: zxh
 * @Date:   2020年4月21日09:18:57
 * @Version: V1.0
@@ -201,9 +201,9 @@ public class PdUsePackageController {
 
      // Step.4 AutoPoi 导出Excel
      ModelAndView mv = new ModelAndView(new JeecgEntityExcelView());
-     mv.addObject(NormalExcelConstants.FILE_NAME, "使用包列表");
+     mv.addObject(NormalExcelConstants.FILE_NAME, "检验项目列表");
      mv.addObject(NormalExcelConstants.CLASS, PdUsePackage.class);
-     mv.addObject(NormalExcelConstants.PARAMS, new ExportParams("使用包数据", "导出人:"+sysUser.getRealname(), "使用包"));
+     mv.addObject(NormalExcelConstants.PARAMS, new ExportParams("检验项目数据", "导出人:"+sysUser.getRealname(), "检验项目"));
      mv.addObject(NormalExcelConstants.DATA_LIST, pageList);
      return mv;
    }
@@ -247,7 +247,7 @@ public class PdUsePackageController {
 
 
     /**
-     * 使用包选择器用
+     * 检验项目选择器用
      *
      * @param pdUsePackage
      * @param pageNo
@@ -267,7 +267,7 @@ public class PdUsePackageController {
         return Result.ok(pageList);
     }
     /**
-     *  查询使用包明细   申领单及调拨单用
+     *  查询检验项目明细   申领单及调拨单用
      * @param pdUsePackageDetail
      * @return
      */

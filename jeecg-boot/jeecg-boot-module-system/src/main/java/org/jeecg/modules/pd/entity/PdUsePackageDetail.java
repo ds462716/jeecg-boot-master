@@ -22,8 +22,8 @@ public class PdUsePackageDetail extends BaseEntity {
 	/**主键*/
 	@TableId(type = IdType.ID_WORKER_STR)
 	private String id;
-	/**使用包id*/
-	@Excel(name = "使用包id", width = 15)
+	/**检验项目id*/
+	@Excel(name = "检验项目id", width = 15)
 	private String packageId;
 	/**产品id*/
 	private String productId;
@@ -68,10 +68,10 @@ public class PdUsePackageDetail extends BaseEntity {
     /*本科室库存数量*/
 	@TableField(exist = false)
 	private Double stockNum;
-	/*使用包编号*/
+	/*检验项目编号*/
 	@TableField(exist = false)
 	private String code;
-	/*使用包名称*/
+	/*检验项目名称*/
 	@TableField(exist = false)
 	private String name;
 	/*产品编号*/
