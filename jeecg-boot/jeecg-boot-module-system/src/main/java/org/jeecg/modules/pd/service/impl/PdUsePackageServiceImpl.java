@@ -94,4 +94,9 @@ public class PdUsePackageServiceImpl extends ServiceImpl<PdUsePackageMapper, PdU
 		return pageList.setRecords(pdUsePackageMapper.queryList(pdUsePackage));
 	}
 
+	@Override
+	public List<PdUsePackage> verify(PdUsePackage pdUsePackage) {
+		return pdUsePackageMapper.verify(pdUsePackage);
+	}
+
 }

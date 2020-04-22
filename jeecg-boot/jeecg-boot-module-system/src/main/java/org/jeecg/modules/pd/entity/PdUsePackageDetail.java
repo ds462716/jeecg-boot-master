@@ -102,6 +102,13 @@ public class PdUsePackageDetail extends BaseEntity {
 	//规格数量
 	@TableField(exist = false)
 	private String specQuantity;
+	//产品类型
+	@TableField(exist = false)
+	private String productFlag;
+	//产品类型
+	@TableField(exist = false)
+	private String productFlagName;
+
 
 
 }

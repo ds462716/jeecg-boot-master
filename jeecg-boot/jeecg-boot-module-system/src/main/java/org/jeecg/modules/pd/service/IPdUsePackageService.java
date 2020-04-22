@@ -53,4 +53,6 @@ public interface IPdUsePackageService extends IService<PdUsePackage> {
 	 * @return
 	 */
 	Page<PdUsePackage> queryList(Page<PdUsePackage> pageList, PdUsePackage pdUsePackage);
+
+    List<PdUsePackage> verify(PdUsePackage pdUsePackage);
 }

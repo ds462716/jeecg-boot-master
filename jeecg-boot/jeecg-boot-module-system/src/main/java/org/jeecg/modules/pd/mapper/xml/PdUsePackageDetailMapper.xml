@@ -17,6 +17,8 @@
             e.spec as spec,
             e.version as version,
             e.spec_quantity as specQuantity,
+            e.product_flag as productFlag,
+            if(e.product_flag=0,'耗材','试剂') as productFlagName,
 		 	sb.`name` as specUnitName,
             b.name as unitName,
             c.name as venderName,

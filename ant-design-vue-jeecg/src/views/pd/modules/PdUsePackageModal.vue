@@ -195,10 +195,21 @@
               key: 'supplierName'
             },
             {
+              title: '产品类型',
+              align:"center",
+              key: 'productFlagName'
+            },
+            {
+              title: '产品类型',
+              align:"center",
+              key: 'productFlag',
+              type: FormTypes.hidden
+            },
+            {
               title: '用量',
               key: 'count',
               type: FormTypes.input,
-              width:"200px",
+              width:"80px",
               placeholder: '请输入${title}',
               defaultValue: '',
               validateRules: [{ required: true, message: '${title}不能为空' },{pattern: '^-?\\d+$',message: '${title}的格式不正确' }]
@@ -383,7 +394,9 @@
           unitName: row.unitName,
           venderName: row.venderName,
           supplierName: row.supplierName,
-          count: 0
+          productFlag:row.productFlag,
+          productFlagName:row.productFlag==0?"耗材":"试剂",
+          count: 1
         }
         this.pdUsePackageDetailTable.dataSource.push(data);
         this.$refs.pdUsePackageDetail.add();
