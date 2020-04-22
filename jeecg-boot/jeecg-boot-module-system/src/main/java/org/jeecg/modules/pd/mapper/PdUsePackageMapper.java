@@ -14,4 +14,6 @@ import java.util.List;
 public interface PdUsePackageMapper extends BaseMapper<PdUsePackage> {
 
     List<PdUsePackage> queryList(PdUsePackage pdUsePackage);
+
+    List<PdUsePackage> verify(PdUsePackage pdUsePackage);
 }

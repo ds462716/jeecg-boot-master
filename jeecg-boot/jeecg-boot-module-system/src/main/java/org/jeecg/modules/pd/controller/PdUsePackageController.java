@@ -96,6 +96,12 @@ public class PdUsePackageController {
     */
    @PostMapping(value = "/add")
    public Result<?> add(@RequestBody PdUsePackage pdUsePackage) {
+       LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+       pdUsePackage.setDepartParentId(sysUser.getDepartParentId());
+       List<PdUsePackage> obj = pdUsePackageService.verify(pdUsePackage);
+       if (obj != null && obj.size()>0) {
+           return Result.error("检验包已存在");
+       }
        pdUsePackageService.saveMain(pdUsePackage, pdUsePackage.getPdUsePackageDetailList());
        return Result.ok("添加成功！");
    }
@@ -111,6 +117,12 @@ public class PdUsePackageController {
        PdUsePackage pdUsePackageEntity = pdUsePackageService.getById(pdUsePackage.getId());
        if(pdUsePackageEntity==null) {
            return Result.error("未找到对应数据");
+       }
+       LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+       pdUsePackage.setDepartParentId(sysUser.getDepartParentId());
+       List<PdUsePackage> obj = pdUsePackageService.verify(pdUsePackage);
+       if (obj != null && obj.size()>0) {
+           return Result.error("检验包已存在");
        }
        pdUsePackageService.updateMain(pdUsePackage, pdUsePackage.getPdUsePackageDetailList());
        return Result.ok("编辑成功!");

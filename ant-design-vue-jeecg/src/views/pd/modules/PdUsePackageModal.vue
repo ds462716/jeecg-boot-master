@@ -77,9 +77,9 @@
             :actionButton="false"
             @valueChange="valueChange"
           />
-          <a-row style="margin-top:10px;text-align: right;padding-right: 5%">
+          <!--<a-row style="margin-top:10px;text-align: right;padding-right: 5%">
             <span style="font-weight: bold;font-size: large;padding-right: 5%">总数量：{{ totalSum }}</span>
-          </a-row>
+          </a-row>-->
         </a-tab-pane>
       </a-tabs>
 
@@ -154,6 +154,11 @@
               type: FormTypes.hidden
             },
             {
+              title: '产品编号',
+              align:"center",
+              key: 'productNumber'
+            },
+            {
               title: '产品名称',
               align:"center",
               key: 'productName'
@@ -190,10 +195,21 @@
               key: 'supplierName'
             },
             {
-              title: '产品数量',
+              title: '产品类型',
+              align:"center",
+              key: 'productFlagName'
+            },
+            {
+              title: '产品类型',
+              align:"center",
+              key: 'productFlag',
+              type: FormTypes.hidden
+            },
+            {
+              title: '用量',
               key: 'count',
               type: FormTypes.input,
-              width:"200px",
+              width:"80px",
               placeholder: '请输入${title}',
               defaultValue: '',
               validateRules: [{ required: true, message: '${title}不能为空' },{pattern: '^-?\\d+$',message: '${title}的格式不正确' }]
@@ -304,6 +320,10 @@
 
           let { values } = this.$refs.pdUsePackageDetail.getValuesSync({ validate: false });
           for(let row of values){
+            if(row.specQuantity &&Number(row.count) > Number(row.specQuantity)){
+              this.$message.error("["+row.productName+"]试剂用量不能大于规格数量！");
+              return;
+            }
             if(row.count <= 0){
               this.$message.error("产品["+row.productName+"]数量必须大于0！");
               return;
@@ -334,14 +354,37 @@
         this.$refs.pdChooseProductListModel.show();
       },
       // 产品数量变更
-      valueChange(e) {
-        this.$refs.pdUsePackageDetail.getValues((error, values) => {
-          let sum = 0;
-          values.forEach((item, idx) => {
-            sum = sum + Number(item.count);
-          })
-          this.totalSum = sum;
-        })
+      valueChange(event) {
+        if(event){
+          const { type, row, column, value, target } = event;
+          if (type === FormTypes.select) {
+
+          }else if(type === FormTypes.input){
+            if(column.key === "count"){
+              let { values } = target.getValuesSync({ validate: false });
+              let sum = 0;
+              for(let item of values){
+                sum = sum + Number(item.count);
+                if(item.id == row.id&&item.specQuantity && Number(value) > Number(item.specQuantity)) {
+                  this.$message.error("[" + row.productName + "]试剂用量不能大于规格数量！");
+                  target.setValues([{rowKey: row.id, values: {count: item.specQuantity }}])
+                  return;
+                }
+              }
+              this.totalSum = sum;
+            }
+          }
+        }
+        // this.$refs.pdUsePackageDetail.getValues((error, values) => {
+        //   let sum = 0;
+        //   for(let item of values){
+        //     if(item.id == row.id && Number(value) > Number(item.stockNum)){
+        //       this.$message.error("["+row.productName+"]使用数量不能大于库存数量！");
+        //     }
+        //     sum = sum + Number(item.count);
+        //   }
+        //   this.totalSum = sum;
+        // })
       },
       //弹出框返回调用
       returnData(formData) {
@@ -372,12 +415,17 @@
       addrows(row){
         let data = {
           productId: row.productId,
+          productNumber: row.productNumber,
           productName: row.productName,
           spec: row.spec,
+          specUnitName: row.specUnitName,
+          specQuantity: row.specQuantity,
           unitName: row.unitName,
           venderName: row.venderName,
           supplierName: row.supplierName,
-          count: 0
+          productFlag:row.productFlag,
+          productFlagName:row.productFlag==0?"耗材":"试剂",
+          count: 1
         }
         this.pdUsePackageDetailTable.dataSource.push(data);
         this.$refs.pdUsePackageDetail.add();

@@ -29,7 +29,7 @@ public class PdUsePackageDetail extends BaseEntity {
 	private String productId;
 	/**产品数量*/
 	@Excel(name = "产品数量", width = 15)
-	private Integer count;
+	private Double count;
 	/**备注*/
 	@Excel(name = "备注", width = 15)
 	private String remarks;
@@ -76,7 +76,7 @@ public class PdUsePackageDetail extends BaseEntity {
 	private String name;
 	/*产品编号*/
 	@TableField(exist = false)
-	private String number;
+	private String productNumber;
 	/*产品名称*/
 	@TableField(exist = false)
 	private String productName;
@@ -101,7 +101,14 @@ public class PdUsePackageDetail extends BaseEntity {
 	private String specUnitName;
 	//规格数量
 	@TableField(exist = false)
-	private String specQuantity;
+	private Double specQuantity;
+	//产品类型
+	@TableField(exist = false)
+	private String productFlag;
+	//产品类型
+	@TableField(exist = false)
+	private String productFlagName;
+
 
 
 }
