@@ -233,4 +233,14 @@ public interface PdConstant {
 	//产品表试剂或者产品0产品1试剂
 	public final static String PRODUCT_FLAG_0="0";
 	public final static String PRODUCT_FLAG_1="1";
+
+	//产品单位分类
+	public final static String PRODUCT_UNIT_TYPE_0="0";//包装单位
+	public final static String PRODUCT_UNIT_TYPE_1="1";//规格单位
+
+
+    //库存占用状态
+    public final static String STOCK_NESTAT_STATUS_0="0";//使用中
+    public final static String STOCK_NESTAT_STATUS_1="1";//未使用
+    public final static String STOCK_NESTAT_STATUS_2="2";//已用完
 }

@@ -17,7 +17,7 @@
         <a-form-item label="单位类型" :labelCol="labelCol" :wrapperCol="wrapperCol">
           <a-select   v-decorator="[ 'unitType',{'initialValue':'0',rules:unitTypeRules}]" placeholder="请选择单位类型">
             <a-select-option value="0">包装单位</a-select-option>
-            <a-select-option value="1">使用单位</a-select-option>
+            <a-select-option value="1">规格单位</a-select-option>
           </a-select>
         </a-form-item>
         <a-form-item label="拼音简码" :labelCol="labelCol" :wrapperCol="wrapperCol">

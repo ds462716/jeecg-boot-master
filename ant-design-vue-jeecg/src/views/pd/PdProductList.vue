@@ -84,6 +84,11 @@
                 </a-select>
               </a-form-item>
             </a-col>
+            <a-col :md="6" :sm="8">
+              <a-form-item label="器械分类">
+                <j-dict-select-tag-expand v-model="queryParam.deviceClassification" dictCode="device_classification" placeholder="请选择器械分类"/>
+              </a-form-item>
+            </a-col>
           </template>
           <a-col :md="6" :sm="8" >
             <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
@@ -238,12 +243,14 @@
   import { httpAction } from '@/api/manage'
   import { validateDuplicateValue } from '@/utils/util'
   import pick from 'lodash.pick'
+  import JDictSelectTagExpand from "@/components/dict/JDictSelectTagExpand"
 
   export default {
     name: "PdProductList",
     mixins:[JeecgListMixin],
     components: {
-      PdProductModal
+      PdProductModal,
+      JDictSelectTagExpand
     },
     data () {
       return {
@@ -390,6 +397,11 @@
         initDictOptions('is_charge').then((res) => {
           if (res.success) {
             this.$set(this.dictOptions, 'isCharge', res.result)
+          }
+        }),
+        initDictOptions('device_classification').then((res) => {
+          if (res.success) {
+            this.$set(this.dictOptions, 'deviceClassification', res.result)
           }
         })
       },

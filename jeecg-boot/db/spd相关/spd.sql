@@ -28,13 +28,13 @@ ADD COLUMN `unit_type`  varchar(1) NULL COMMENT '单位类型' AFTER `name`;
 -- add by zxh 2020年4月20日11:26:18 产品加入单位类型
 INSERT INTO `sys_dict` VALUES ('1252073695738155010', '单位类型', 'unit_type', '', '0', 'admin', '2020-04-20 11:16:46', null, '2020-04-20 11:16:46', '0');
 INSERT INTO `sys_dict_item` VALUES ('1252073800750944258', '1252073695738155010', '包装单位', '0', '', '1', '1', 'admin', '2020-04-20 11:17:11', null, '2020-04-20 11:17:11');
-INSERT INTO `sys_dict_item` VALUES ('1252073837744705538', '1252073695738155010', '使用单位', '1', '', '1', '1', 'admin', '2020-04-20 11:17:20', null, '2020-04-20 11:17:20');
+INSERT INTO `sys_dict_item` VALUES ('1252073837744705538', '1252073695738155010', '规格单位', '1', '', '1', '1', 'admin', '2020-04-20 11:17:20', null, '2020-04-20 11:17:20');
 
 
 -- add by mcb 20200420 库存明细表增加规格库存数量及库存占用状态
 ALTER TABLE `pd_product_stock`
 ADD COLUMN `spec_num`  double(32,2) DEFAULT NULL COMMENT '试剂库存规格数量',
-ADD COLUMN `nestat_status` varchar(4) DEFAULT '0' COMMENT '库存占用状态 0：使用中  1：未使用',
+ADD COLUMN `nestat_status` varchar(4) DEFAULT '1' COMMENT '库存占用状态 0：使用中  1：未使用 2:已用完',
 ADD COLUMN `spec_unit_id`  varchar(64) DEFAULT NULL COMMENT '试剂规格单位',
 ADD COLUMN `spec_quantity` double(11, 4) DEFAULT NULL COMMENT '试剂规格数量';
 
@@ -42,7 +42,7 @@ ADD COLUMN `spec_quantity` double(11, 4) DEFAULT NULL COMMENT '试剂规格数�
 INSERT INTO `sys_dict` VALUES ('1252139529844842498', '占用状态', 'nestat_status', '0：使用中  1：未使用', 0, 'admin', '2020-4-20 15:38:21', NULL, '2020-4-20 15:38:21', 0);
 INSERT INTO `sys_dict_item` VALUES ('1252139596743991298', '1252139529844842498', '使用中', '0', '', 1, 1, 'admin', '2020-4-20 15:38:38', NULL, '2020-4-20 15:38:38');
 INSERT INTO `sys_dict_item` VALUES ('1252139634337538049', '1252139529844842498', '未使用', '1', '', 2, 1, 'admin', '2020-4-20 15:38:47', NULL, '2020-4-20 15:38:47');
-
+INSERT INTO `sys_dict_item` VALUES ('1252896597530947586', '1252139529844842498', '已用完', '2', '', 3, 1, 'admin', '2020-4-22 17:46:41', NULL, '2020-4-22 17:46:41');
 -- add by 2020年4月20日16:44:05 入库明细表加 规格单位 规格数量
 ALTER TABLE `pd_stock_record_detail`
 ADD COLUMN `spec_unit_id` varchar(64) NULL COMMENT '试剂规格单位' AFTER `supplier_id`,
@@ -121,3 +121,12 @@ CREATE TABLE `pd_use_package_detail` (
   `depart_id` varchar(64) NOT NULL COMMENT '所属部门',
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
+
+-- add by 2020年4月22日15:49:16 器械分类
+ALTER TABLE `pd_product`
+ADD COLUMN `device_classification`  varchar(1) NULL COMMENT '器械分类0类，1类，2类，3类' AFTER `jde_code`;
+INSERT INTO `sys_dict` VALUES ('1252882340809883649', '器械分类', 'device_classification', '', '0', 'admin', '2020-04-22 16:50:02', null, '2020-04-22 16:50:02', '0');
+INSERT INTO `sys_dict_item` VALUES ('1252882417976688641', '1252882340809883649', '0类', '0', '', '1', '1', 'admin', '2020-04-22 16:50:21', null, '2020-04-22 16:50:21');
+INSERT INTO `sys_dict_item` VALUES ('1252882453347254273', '1252882340809883649', 'Ⅰ类', '1', '', '1', '1', 'admin', '2020-04-22 16:50:29', null, '2020-04-22 16:50:29');
+INSERT INTO `sys_dict_item` VALUES ('1252882477808435201', '1252882340809883649', 'Ⅱ类', '2', '', '1', '1', 'admin', '2020-04-22 16:50:35', null, '2020-04-22 16:50:35');
+INSERT INTO `sys_dict_item` VALUES ('1252882496439533569', '1252882340809883649', 'Ⅲ类', '3', '', '1', '1', 'admin', '2020-04-22 16:50:39', 'admin', '2020-04-22 16:54:50');

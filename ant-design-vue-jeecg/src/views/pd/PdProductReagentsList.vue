@@ -84,6 +84,11 @@
                 </a-select>
               </a-form-item>
             </a-col>
+            <a-col :md="6" :sm="8">
+              <a-form-item label="器械分类">
+                <j-dict-select-tag-expand v-model="queryParam.deviceClassification" dictCode="device_classification" placeholder="请选择器械分类"/>
+              </a-form-item>
+            </a-col>
           </template>
           <a-col :md="6" :sm="8" >
             <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
@@ -203,6 +208,7 @@
   import PdProductReagentsModal from './modules/PdProductReagentsModal'
   import {initDictOptions, filterMultiDictText} from '@/components/dict/JDictSelectUtil'
   import { getAction } from  '@/api/manage'
+  import JDictSelectTagExpand from "@/components/dict/JDictSelectTagExpand"
 
   let timeout;
   let currentValue;
@@ -243,7 +249,8 @@
     name: "PdProductList",
     mixins:[JeecgListMixin],
     components: {
-      PdProductReagentsModal
+      PdProductReagentsModal,
+      JDictSelectTagExpand
     },
     data () {
       return {
@@ -353,8 +360,8 @@
           list: "/pd/pdProduct/list",
           delete: "/pd/pdProduct/delete",
           deleteBatch: "/pd/pdProduct/deleteBatch",
-          exportXlsUrl: "/pd/pdProduct/exportXls",
-          importExcelUrl: "pd/pdProduct/importExcel",
+          exportXlsUrl: "/pd/pdProduct/exportXlsReagents",
+          importExcelUrl: "pd/pdProduct/importExcelReagents",
           queryVender:"/pd/pdVender/getVenderList",
           querySupplier:"/pd/pdSupplier/getSupplierList",
           editChargeCodeBatch:"/pd/pdProduct/editChargeCodeBatch",
@@ -390,6 +397,11 @@
         initDictOptions('is_charge').then((res) => {
           if (res.success) {
             this.$set(this.dictOptions, 'isCharge', res.result)
+          }
+        }),
+        initDictOptions('device_classification').then((res) => {
+          if (res.success) {
+            this.$set(this.dictOptions, 'deviceClassification', res.result)
           }
         })
       },

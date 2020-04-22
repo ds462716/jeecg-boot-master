@@ -198,6 +198,9 @@
 			<if test="applyNo != null and applyNo != ''">
 				AND h.apply_no = #{applyNo}
 			</if>
+			<if test="nestatStatus != null and nestatStatus != ''">
+				AND a.nestat_status = #{nestatStatus}
+			</if>
 			<if test="departParentId != null and departParentId != ''">
 				AND a.depart_parent_id = #{departParentId}
 			</if>
@@ -279,6 +282,9 @@
 			<if test="huoweiCode != null and huoweiCode != ''">
 				AND a.huowei_code = #{huoweiCode}
 			</if>
+			<if test="nestatStatus != null and nestatStatus != ''">
+				AND a.nestat_status = #{nestatStatus}
+			</if>
 		</where>
 		FOR UPDATE
 	</select>
@@ -328,6 +334,9 @@
             <if test="batchNo != null and batchNo != ''">
                 AND a.batch_no = #{batchNo}
             </if>
+			<if test="nestatStatus != null and nestatStatus != ''">
+				AND a.nestat_status = #{nestatStatus}
+			</if>
             <if test="version != null and version != ''">
                 AND c.version = #{version}
             </if>
@@ -525,5 +534,13 @@
 		UPDATE pd_product_stock SET
 			stock_num = stock_num+#{stockNum}
 		WHERE id = #{id}
+	</update>
+
+	<update id="updateStockSpecNum">
+		UPDATE pd_product_stock SET
+			stock_num = #{stockNum},
+			spec_num = #{specNum},
+			nestat_status = #{nestatStatus}
+		WHERE id= #{id}
 	</update>
 </mapper>
