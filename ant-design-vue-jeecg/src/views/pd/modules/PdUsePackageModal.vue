@@ -15,8 +15,8 @@
         <a-row>
 
           <a-col :span="12">
-            <a-form-item label="定数包编号" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input v-decorator="[ 'code', validatorRules.code]" autocomplete="off" disabled="disabled" placeholder="请输入定数包编号"></a-input>
+            <a-form-item label="检验项目编号" :labelCol="labelCol" :wrapperCol="wrapperCol">
+              <a-input v-decorator="[ 'code', validatorRules.code]" autocomplete="off"  placeholder="请输入定数包编号"></a-input>
             </a-form-item>
           </a-col>
           <a-col :span="12">
@@ -241,13 +241,13 @@
             let params = { id: this.model.id }
             this.requestSubTableData(this.url.pdUsePackageDetail.list, params, this.pdUsePackageDetailTable)
           }else{
-            getAction(this.url.init, {id:""}).then((res) => {
+            /*getAction(this.url.init, {id:""}).then((res) => {
               if (res.success) {
                 this.$nextTick(() => {
                   this.form.setFieldsValue({code:res.result.code});
                 })
               }
-            })
+            })*/
           }
 
         })
