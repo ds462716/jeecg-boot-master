@@ -539,7 +539,8 @@
 	<update id="updateStockSpecNum">
 		UPDATE pd_product_stock SET
 			stock_num = #{stockNum},
-			spec_num = #{specNum}
+			spec_num = #{specNum},
+			nestat_status = #{nestatStatus}
 		WHERE id= #{id}
 	</update>
 </mapper>

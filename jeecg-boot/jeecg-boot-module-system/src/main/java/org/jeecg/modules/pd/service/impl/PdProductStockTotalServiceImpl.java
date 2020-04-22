@@ -527,6 +527,7 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
                                 if(specNum==0){
                                     stock.setSpecNum(specNum);
                                     stock.setStockNum(0.00);
+                                    stock.setNestatStatus(PdConstant.STOCK_NESTAT_STATUS_2);//已用完
                                 }else{
                                     stock.setSpecNum(specNum);
                                 }
