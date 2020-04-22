@@ -320,6 +320,10 @@
 
           let { values } = this.$refs.pdUsePackageDetail.getValuesSync({ validate: false });
           for(let row of values){
+            if(row.specQuantity &&Number(row.count) > Number(row.specQuantity)){
+              this.$message.error("["+row.productName+"]试剂用量不能大于规格数量！");
+              return;
+            }
             if(row.count <= 0){
               this.$message.error("产品["+row.productName+"]数量必须大于0！");
               return;
@@ -350,14 +354,37 @@
         this.$refs.pdChooseProductListModel.show();
       },
       // 产品数量变更
-      valueChange(e) {
-        this.$refs.pdUsePackageDetail.getValues((error, values) => {
-          let sum = 0;
-          values.forEach((item, idx) => {
-            sum = sum + Number(item.count);
-          })
-          this.totalSum = sum;
-        })
+      valueChange(event) {
+        if(event){
+          const { type, row, column, value, target } = event;
+          if (type === FormTypes.select) {
+
+          }else if(type === FormTypes.input){
+            if(column.key === "count"){
+              let { values } = target.getValuesSync({ validate: false });
+              let sum = 0;
+              for(let item of values){
+                sum = sum + Number(item.count);
+                if(item.id == row.id&&item.specQuantity && Number(value) > Number(item.specQuantity)) {
+                  this.$message.error("[" + row.productName + "]试剂用量不能大于规格数量！");
+                  target.setValues([{rowKey: row.id, values: {count: item.specQuantity }}])
+                  return;
+                }
+              }
+              this.totalSum = sum;
+            }
+          }
+        }
+        // this.$refs.pdUsePackageDetail.getValues((error, values) => {
+        //   let sum = 0;
+        //   for(let item of values){
+        //     if(item.id == row.id && Number(value) > Number(item.stockNum)){
+        //       this.$message.error("["+row.productName+"]使用数量不能大于库存数量！");
+        //     }
+        //     sum = sum + Number(item.count);
+        //   }
+        //   this.totalSum = sum;
+        // })
       },
       //弹出框返回调用
       returnData(formData) {
@@ -391,6 +418,8 @@
           productNumber: row.productNumber,
           productName: row.productName,
           spec: row.spec,
+          specUnitName: row.specUnitName,
+          specQuantity: row.specQuantity,
           unitName: row.unitName,
           venderName: row.venderName,
           supplierName: row.supplierName,

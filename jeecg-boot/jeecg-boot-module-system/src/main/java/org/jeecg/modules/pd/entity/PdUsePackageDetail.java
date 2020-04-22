@@ -101,7 +101,7 @@ public class PdUsePackageDetail extends BaseEntity {
 	private String specUnitName;
 	//规格数量
 	@TableField(exist = false)
-	private String specQuantity;
+	private Double specQuantity;
 	//产品类型
 	@TableField(exist = false)
 	private String productFlag;
