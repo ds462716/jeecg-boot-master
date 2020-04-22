@@ -50,6 +50,8 @@ ADD COLUMN `spec_quantity` double(11, 4) NULL COMMENT '试剂规格数量' AFTER
 
 
 -- add by jiangxz 2020年4月21日09:39:10 定数包产品数量 改为double
+ALTER TABLE `pd_package`
+MODIFY COLUMN `sum` double(11, 2) NULL DEFAULT NULL COMMENT '产品总数' AFTER `name`;
 ALTER TABLE `pd_package_detail`
 MODIFY COLUMN `count` double(11, 2) NULL DEFAULT 0 COMMENT '产品数量' AFTER `product_id`;
 
