@@ -99,7 +99,7 @@
 <script>
 
   import pick from 'lodash.pick'
-  import { FormTypes,getRefPromise } from '@/utils/JEditableTableUtil'
+  import { FormTypes,getRefPromise,validateFormAndTables,VALIDATE_NO_PASSED } from '@/utils/JEditableTableUtil'
   import { JEditableTableMixin } from '@/mixins/JEditableTableMixin'
   import { makeWb } from '@/utils/wubi'
   import {httpAction, deleteAction, getAction} from '@/api/manage'

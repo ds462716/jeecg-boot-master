@@ -7,6 +7,7 @@ import org.jeecg.modules.pd.entity.PdUsePackage;
 import org.jeecg.modules.pd.entity.PdUsePackageDetail;
 import org.jeecg.modules.pd.mapper.PdUsePackageDetailMapper;
 import org.jeecg.modules.pd.mapper.PdUsePackageMapper;
+import org.jeecg.modules.pd.service.IPdUsePackageDetailService;
 import org.jeecg.modules.pd.service.IPdUsePackageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,21 +28,24 @@ public class PdUsePackageServiceImpl extends ServiceImpl<PdUsePackageMapper, PdU
 
 	@Autowired
 	private PdUsePackageMapper pdUsePackageMapper;
+
+	@Autowired
+	private IPdUsePackageDetailService pdUsePackageDetailService;
+
 	@Autowired
 	private PdUsePackageDetailMapper pdUsePackageDetailMapper;
 	
 	@Override
 	@Transactional
-	public void saveMain(PdUsePackage PdUsePackage, List<PdUsePackageDetail> PdUsePackageDetailList) {
+	public void saveMain(PdUsePackage PdUsePackage, List<PdUsePackageDetail> pdUsePackageDetailList) {
 		pdUsePackageMapper.insert(PdUsePackage);
-		if(PdUsePackageDetailList!=null && PdUsePackageDetailList.size()>0) {
-			for(PdUsePackageDetail entity:PdUsePackageDetailList) {
+		if(pdUsePackageDetailList!=null && pdUsePackageDetailList.size()>0) {
+			for(PdUsePackageDetail entity:pdUsePackageDetailList) {
 				//外键设置
 				entity.setPackageId(PdUsePackage.getId());
-				entity.setDelFlag(PdConstant.DEL_FLAG_0);
 				entity.setId(null);
-				pdUsePackageDetailMapper.insert(entity);
 			}
+			pdUsePackageDetailService.saveBatch(pdUsePackageDetailList);
 		}
 	}
 
@@ -59,9 +63,8 @@ public class PdUsePackageServiceImpl extends ServiceImpl<PdUsePackageMapper, PdU
 				//外键设置
 				entity.setPackageId(pdUsePackage.getId());
 				entity.setId(null);
-				entity.setDelFlag(PdConstant.DEL_FLAG_0);
-				pdUsePackageDetailMapper.insert(entity);
 			}
+			pdUsePackageDetailService.saveBatch(pdUsePackageDetailList);
 		}
 	}
 
