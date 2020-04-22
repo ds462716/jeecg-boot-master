@@ -262,7 +262,8 @@
 
       //选择产品
       choice() {
-        this.$refs.PdPurchaseDetailAddModal.show({stockDepartId:this.model.departId});
+        this.$refs.PdPurchaseDetailAddModal
+          .show({stockDepartId:this.model.departId});
         this.$refs.PdPurchaseDetailAddModal.title = "选择产品";
       },
 

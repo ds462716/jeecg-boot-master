@@ -96,5 +96,12 @@ public class PdUsePackageDetail extends BaseEntity {
 	/** 供应商名称 **/
 	@TableField(exist = false)
 	private String supplierName;
+	//规格单位
+	@TableField(exist = false)
+	private String specUnitName;
+	//规格数量
+	@TableField(exist = false)
+	private String specQuantity;
+
 
 }

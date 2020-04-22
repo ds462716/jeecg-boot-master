@@ -170,6 +170,16 @@
               key: 'unitName'
             },
             {
+              title: '使用单位',
+              align:"center",
+              key: 'specUnitName'
+            },
+            {
+              title: '规格数量',
+              align:"center",
+              key: 'specQuantity'
+            },
+            {
               title: '生产厂家',
               align:"center",
               key: 'venderName'
