@@ -16,12 +16,12 @@
 
           <a-col :span="12">
             <a-form-item label="定数包编号" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input v-decorator="[ 'code', validatorRules.code]" disabled="disabled" placeholder="请输入定数包编号"></a-input>
+              <a-input v-decorator="[ 'code', validatorRules.code]" autocomplete="off" disabled="disabled" placeholder="请输入定数包编号"></a-input>
             </a-form-item>
           </a-col>
           <a-col :span="12">
             <a-form-item label="使用包名称" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input v-decorator="[ 'name', validatorRules.name]"  @change="pinyinTran" placeholder="请输入使用包名称"></a-input>
+              <a-input v-decorator="[ 'name', validatorRules.name]"  autocomplete="off" @change="pinyinTran" placeholder="请输入使用包名称"></a-input>
             </a-form-item>
           </a-col>
           <!--<a-col :span="12">-->
@@ -31,22 +31,22 @@
           <!--</a-col>-->
           <a-col :span="12">
             <a-form-item label="拼音简码" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input v-decorator="[ 'py', validatorRules.py]" placeholder="请输入拼音简码"></a-input>
+              <a-input v-decorator="[ 'py', validatorRules.py]" autocomplete="off" placeholder="请输入拼音简码"></a-input>
             </a-form-item>
           </a-col>
           <a-col :span="12">
             <a-form-item label="五笔简码" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input v-decorator="[ 'wb', validatorRules.wb]" placeholder="请输入五笔简码"></a-input>
+              <a-input v-decorator="[ 'wb', validatorRules.wb]" autocomplete="off" placeholder="请输入五笔简码"></a-input>
             </a-form-item>
           </a-col>
           <a-col :span="12">
             <a-form-item label="自定义码" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input v-decorator="[ 'zdy', validatorRules.zdy]" placeholder="请输入自定义码"></a-input>
+              <a-input v-decorator="[ 'zdy', validatorRules.zdy]" autocomplete="off" placeholder="请输入自定义码"></a-input>
             </a-form-item>
           </a-col>
           <a-col :span="12">
             <a-form-item label="备注" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input v-decorator="[ 'remarks', validatorRules.remarks]" placeholder="请输入备注"></a-input>
+              <a-input v-decorator="[ 'remarks', validatorRules.remarks]" autocomplete="off" placeholder="请输入备注"></a-input>
             </a-form-item>
           </a-col>
         </a-row>
