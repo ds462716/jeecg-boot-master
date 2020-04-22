@@ -34,7 +34,7 @@ INSERT INTO `sys_dict_item` VALUES ('1252073837744705538', '1252073695738155010'
 -- add by mcb 20200420 库存明细表增加规格库存数量及库存占用状态
 ALTER TABLE `pd_product_stock`
 ADD COLUMN `spec_num`  double(32,2) DEFAULT NULL COMMENT '试剂库存规格数量',
-ADD COLUMN `nestat_status` varchar(4) DEFAULT '0' COMMENT '库存占用状态 0：使用中  1：未使用',
+ADD COLUMN `nestat_status` varchar(4) DEFAULT '1' COMMENT '库存占用状态 0：使用中  1：未使用 2:已用完',
 ADD COLUMN `spec_unit_id`  varchar(64) DEFAULT NULL COMMENT '试剂规格单位',
 ADD COLUMN `spec_quantity` double(11, 4) DEFAULT NULL COMMENT '试剂规格数量';
 
