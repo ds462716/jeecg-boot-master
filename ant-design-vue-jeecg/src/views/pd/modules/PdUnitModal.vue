@@ -71,7 +71,7 @@
         validatorRules: {
           name: {rules: [
             {required: true, message: '请输入单位名称!'},
-            {validator: this.validateUnitname}
+            /*{validator: this.validateUnitname}*/
           ]},
           py: {rules: [
           ]},
@@ -162,12 +162,12 @@
               if(res.success){
                 that.$message.success(res.message);
                 that.$emit('ok');
+                that.close();
               }else{
                 that.$message.warning(res.message);
               }
             }).finally(() => {
               that.confirmLoading = false;
-              that.close();
             })
           }
          
