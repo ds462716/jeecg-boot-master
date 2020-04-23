@@ -127,3 +127,43 @@ INSERT INTO `sys_dict_item` VALUES ('1252882417976688641', '1252882340809883649'
 INSERT INTO `sys_dict_item` VALUES ('1252882453347254273', '1252882340809883649', 'Ⅰ类', '1', '', '1', '1', 'admin', '2020-04-22 16:50:29', null, '2020-04-22 16:50:29');
 INSERT INTO `sys_dict_item` VALUES ('1252882477808435201', '1252882340809883649', 'Ⅱ类', '2', '', '1', '1', 'admin', '2020-04-22 16:50:35', null, '2020-04-22 16:50:35');
 INSERT INTO `sys_dict_item` VALUES ('1252882496439533569', '1252882340809883649', 'Ⅲ类', '3', '', '1', '1', 'admin', '2020-04-22 16:50:39', 'admin', '2020-04-22 16:54:50');
+
+-- add by 2020年4月23日16:59:06 检验包管理
+CREATE TABLE `ex_inspection_items` (
+  `id` varchar(36) NOT NULL,
+  `patient_name` varchar(64) DEFAULT NULL COMMENT '患者姓名',
+  `patient_sex` varchar(64) DEFAULT NULL COMMENT '患者性别',
+  `patient_age` varchar(64) DEFAULT NULL COMMENT '患者年龄',
+  `card_id` varchar(64) DEFAULT NULL COMMENT '就诊卡号3',
+  `bar_code` varchar(64) DEFAULT NULL COMMENT '条形码',
+  `apply_doctor` varchar(64) DEFAULT NULL COMMENT '申请医生',
+  `apply_department` varchar(64) DEFAULT NULL COMMENT '申请科室',
+  `test_doctor` varchar(64) DEFAULT NULL COMMENT '检验医生',
+  `test_department` varchar(64) DEFAULT NULL COMMENT '检验科室',
+  `patient_type` varchar(64) DEFAULT NULL COMMENT '患者类型',
+  `group_by` varchar(64) DEFAULT NULL COMMENT '工作组',
+  `receive_date` varchar(64) DEFAULT NULL COMMENT '接收日期',
+  `test_date` varchar(64) DEFAULT NULL COMMENT '检验日期',
+  `specimen_type` varchar(64) DEFAULT NULL COMMENT '样本类型',
+  `state` varchar(1) DEFAULT NULL COMMENT '状态',
+  `create_by` varchar(50) DEFAULT NULL COMMENT '创建人',
+  `create_time` datetime DEFAULT NULL COMMENT '创建日期',
+  `update_by` varchar(50) DEFAULT NULL COMMENT '更新人',
+  `update_time` datetime DEFAULT NULL COMMENT '更新日期',
+  `sys_org_code` varchar(64) DEFAULT NULL COMMENT '所属部门',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+CREATE TABLE `ex_inspection_items_detail` (
+  `id` varchar(36) NOT NULL,
+  `ref_id` varchar(64) DEFAULT NULL COMMENT '检查项目Id',
+  `test_combination_name` varchar(64) DEFAULT NULL COMMENT '组合名称',
+  `testitem_name` varchar(64) DEFAULT NULL COMMENT '检查项目名称',
+  `testitem_code` varchar(64) DEFAULT NULL COMMENT '检查项目代码',
+  `testitem_cost` varchar(32) DEFAULT NULL COMMENT '检查项目费用',
+  `create_by` varchar(50) DEFAULT NULL COMMENT '创建人',
+  `create_time` datetime DEFAULT NULL COMMENT '创建日期',
+  `update_by` varchar(50) DEFAULT NULL COMMENT '更新人',
+  `update_time` datetime DEFAULT NULL COMMENT '更新日期',
+  `sys_org_code` varchar(64) DEFAULT NULL COMMENT '所属部门',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
