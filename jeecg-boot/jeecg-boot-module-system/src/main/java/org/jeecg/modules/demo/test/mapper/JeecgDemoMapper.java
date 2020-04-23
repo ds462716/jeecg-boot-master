@@ -27,4 +27,5 @@ public interface JeecgDemoMapper extends BaseMapper<JeecgDemo> {
 	 */
 	public IPage<JeecgDemo> queryListWithPermission(Page<JeecgDemo> page,@Param("permissionSql")String permissionSql);
 
+	List<Map<String, Object>> selectByCondition();
 }

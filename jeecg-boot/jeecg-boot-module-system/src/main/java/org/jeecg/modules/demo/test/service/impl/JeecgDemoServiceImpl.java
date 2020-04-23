@@ -1,5 +1,6 @@
 package org.jeecg.modules.demo.test.service.impl;
 
+import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -10,8 +11,12 @@ import org.jeecg.modules.demo.test.mapper.JeecgDemoMapper;
 import org.jeecg.modules.demo.test.service.IJeecgDemoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * @Description: jeecg 测试demo
@@ -23,6 +28,8 @@ import org.springframework.transaction.annotation.Transactional;
 public class JeecgDemoServiceImpl extends ServiceImpl<JeecgDemoMapper, JeecgDemo> implements IJeecgDemoService {
 	@Autowired
 	JeecgDemoMapper jeecgDemoMapper;
+	@Autowired
+	private JdbcTemplate jdbcTemplate;
 	
 	/**
 	 * 事务控制在service层面
@@ -70,6 +77,13 @@ public class JeecgDemoServiceImpl extends ServiceImpl<JeecgDemoMapper, JeecgDemo
 		//编程方式，获取当前请求的数据权限规则SQL片段
 		String sql = QueryGenerator.installAuthJdbc(JeecgDemo.class);
 		return this.baseMapper.queryListWithPermission(page, sql);
+	}
+
+	@Override
+	@DS("multi-datasource1")
+	public List<Map<String, Object>> selectByCondition() {
+		Object object = jeecgDemoMapper.selectByCondition();
+		return null;
 	}
 
 }
