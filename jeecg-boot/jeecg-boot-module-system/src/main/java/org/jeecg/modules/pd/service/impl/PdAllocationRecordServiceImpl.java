@@ -3,12 +3,16 @@ package org.jeecg.modules.pd.service.impl;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.ibatis.session.SqlSession;
+import org.jeecg.common.constant.PdConstant;
 import org.jeecg.modules.pd.entity.PdAllocationDetail;
 import org.jeecg.modules.pd.entity.PdAllocationRecord;
+import org.jeecg.modules.pd.entity.PdPackageDetail;
 import org.jeecg.modules.pd.mapper.PdAllocationDetailMapper;
 import org.jeecg.modules.pd.mapper.PdAllocationRecordMapper;
 import org.jeecg.modules.pd.service.IPdAllocationRecordService;
+import org.jeecg.modules.pd.service.IPdPackageDetailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,6 +36,8 @@ public class PdAllocationRecordServiceImpl extends ServiceImpl<PdAllocationRecor
 	private PdAllocationDetailMapper pdAllocationDetailMapper;
 	@Autowired
 	private SqlSession sqlSession;
+	@Autowired
+	private IPdPackageDetailService packageDetailService;
 
 
 	/**
@@ -51,10 +57,28 @@ public class PdAllocationRecordServiceImpl extends ServiceImpl<PdAllocationRecor
 		PdAllocationDetailMapper dao=sqlSession.getMapper(PdAllocationDetailMapper.class);
 		if(pdAllocationDetailList!=null && pdAllocationDetailList.size()>0) {
 			for(PdAllocationDetail entity:pdAllocationDetailList) {
-				//外键设置
-				entity.setAllocationNo(pdAllocationRecord.getAllocationNo());
-				dao.insert(entity);
-				//pdAllocationDetailMapper.insert(entity);
+				if(StringUtils.isNotEmpty(entity.getPackageId())){
+					List<PdPackageDetail> pmpList = packageDetailService.selectByMainId(entity.getPackageId());
+					for(PdPackageDetail ppmp : pmpList){
+						PdAllocationDetail pd = new PdAllocationDetail();
+						pd.setAllocationNo(pdAllocationRecord.getAllocationNo());
+						pd.setPackageId(entity.getPackageId());
+						pd.setPackageCode(entity.getPackageCode());
+						pd.setPackageName(entity.getPackageName());
+						pd.setProductId(ppmp.getProductId());
+						Double packProdNum = entity.getAllocationNum() * ppmp.getCount();
+						pd.setAllocationNum(packProdNum);
+						pd.setStockNum( ppmp.getStockNum());
+						pd.setProductAttr(PdConstant.PROD_ATTR_2);
+						dao.insert(pd);
+					}
+				}else{
+					//外键设置
+					entity.setAllocationNo(pdAllocationRecord.getAllocationNo());
+					entity.setProductAttr(PdConstant.PROD_ATTR_1);
+					entity.setId(null);
+					dao.insert(entity);
+				}
 			}
 		}
 	}
@@ -69,10 +93,28 @@ public class PdAllocationRecordServiceImpl extends ServiceImpl<PdAllocationRecor
 		PdAllocationDetailMapper dao=sqlSession.getMapper(PdAllocationDetailMapper.class);
 		if(pdAllocationDetailList!=null && pdAllocationDetailList.size()>0) {
 			for(PdAllocationDetail entity:pdAllocationDetailList) {
-				//外键设置
-				entity.setAllocationNo(pdAllocationRecord.getAllocationNo());
-				dao.insert(entity);
-				//pdAllocationDetailMapper.insert(entity);
+				if(StringUtils.isNotEmpty(entity.getPackageId())){
+					List<PdPackageDetail> pmpList = packageDetailService.selectByMainId(entity.getPackageId());
+					for(PdPackageDetail ppmp : pmpList){
+						PdAllocationDetail pd = new PdAllocationDetail();
+						pd.setAllocationNo(pdAllocationRecord.getAllocationNo());
+						pd.setPackageId(entity.getPackageId());
+						pd.setPackageCode(entity.getPackageCode());
+						pd.setPackageName(entity.getPackageName());
+						pd.setProductId(ppmp.getProductId());
+						Double packProdNum = entity.getAllocationNum() * ppmp.getCount();
+						pd.setAllocationNum(packProdNum);
+						pd.setStockNum( ppmp.getStockNum());
+						pd.setProductAttr(PdConstant.PROD_ATTR_2);
+						dao.insert(pd);
+					}
+				}else{
+					//外键设置
+					entity.setAllocationNo(pdAllocationRecord.getAllocationNo());
+					entity.setProductAttr(PdConstant.PROD_ATTR_1);
+					entity.setId(null);
+					dao.insert(entity);
+				}
 			}
 		}
 	}

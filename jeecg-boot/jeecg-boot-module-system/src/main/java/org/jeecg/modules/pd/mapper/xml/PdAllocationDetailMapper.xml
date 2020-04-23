@@ -71,7 +71,13 @@
 		<include refid="pdProductJoins"/>
 		<include refid="pdUnitJoins"/>
 		<include refid="pdPackageJoins"/>
-		WHERE a.allocation_no = #{allocationNo}
+		WHERE 1=1
+		<if test="allocationNo != null and allocationNo != ''">
+			AND a.allocation_no = #{allocationNo}
+		</if>
+		<if test="productAttr != null and productAttr != ''">
+			AND a.product_attr = #{productAttr}
+		</if>
 		ORDER BY a.create_time DESC
 	</select>	<!-- 增加发货数量 用于出库保存/提交 add by jiangxz 20200309 -->
 	<update id="additionArrivalNum" parameterType="org.jeecg.modules.pd.entity.PdAllocationDetail" >
@@ -96,4 +102,26 @@
 			and allocation_no = #{allocationNo}
 			and product_id = #{productId}
 	</update>
+
+
+	<!--查询定数包调拨明细-->
+	<select id="queryAllocationDetailPack"   resultType="org.jeecg.modules.pd.entity.PdAllocationDetail">
+		select a.id as "packageId",
+		a.code as "packageCode",
+		a.name as "packageName",
+		a.sum as "packageNum",
+		a.remarks as "remarks",
+		sum(b.allocation_num) / a.sum as "allocation_num"
+		from PD_PACKAGE a
+		LEFT JOIN pd_allocation_detail b  on b.package_id=a.id
+		where 1=1
+
+		<if test="allocationNo != null and allocationNo != ''">
+			AND b.allocation_no = #{allocationNo}
+		</if>
+		<if test="productAttr != null and productAttr != ''">
+			AND b.product_attr = #{productAttr}
+		</if>
+		GROUP BY PACKAGE_ID
+	</select>
 </mapper>
