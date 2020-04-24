@@ -212,7 +212,7 @@
               width:"80px",
               placeholder: '请输入${title}',
               defaultValue: '',
-              validateRules: [{ required: true, message: '${title}不能为空' },{pattern: '^-?\\d+$',message: '${title}的格式不正确' }]
+              validateRules: [{ required: true, message: '${title}不能为空' },{pattern: '^(([1-9]{1}\\d*)|([0]{1}))(\\.(\\d){1,4})?$',message: '${title}的格式不正确' }]
             },
           ]
         },
