@@ -1,9 +1,10 @@
 package org.jeecg.modules.pd.mapper;
 
-import java.util.List;
-import org.jeecg.modules.pd.entity.PdAllocationDetail;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Param;
+import org.jeecg.modules.pd.entity.PdAllocationDetail;
+
+import java.util.List;
 
 /**
  * @Description: 调拨明细表
@@ -14,9 +15,9 @@ import org.apache.ibatis.annotations.Param;
 public interface PdAllocationDetailMapper extends BaseMapper<PdAllocationDetail> {
 
 	public boolean deleteByMainId(@Param("mainId") String mainId);
-    
 
-	public List<PdAllocationDetail> selectByAllocationNo(@Param("allocationNo") String allocationNo);    /**
+	public List<PdAllocationDetail> queryAllocationDetailPack(PdAllocationDetail allocationDetail);
+	public List<PdAllocationDetail> selectByAllocationNo(PdAllocationDetail allocationNo);    /**
 	 * 增加发货数量 用于出库保存/提交 add by jiangxz 20200309
 	 *
 	 * @param detail

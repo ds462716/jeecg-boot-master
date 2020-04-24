@@ -1,12 +1,13 @@
 package org.jeecg.modules.pd.service.impl;
 
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.jeecg.modules.pd.entity.PdAllocationDetail;
 import org.jeecg.modules.pd.mapper.PdAllocationDetailMapper;
 import org.jeecg.modules.pd.service.IPdAllocationDetailService;
-import org.springframework.stereotype.Service;
-import java.util.List;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 /**
  * @Description: 调拨明细表
@@ -22,8 +23,13 @@ public class PdAllocationDetailServiceImpl extends ServiceImpl<PdAllocationDetai
 	
 
 	@Override
-	public List<PdAllocationDetail> selectByAllocationNo(String allocationNo) {
-		return pdAllocationDetailMapper.selectByAllocationNo(allocationNo);
+	public List<PdAllocationDetail> selectByAllocationNo(PdAllocationDetail allocationDetail) {
+		return pdAllocationDetailMapper.selectByAllocationNo(allocationDetail);
+	}
+
+	@Override
+	public List<PdAllocationDetail> queryAllocationDetailPack(PdAllocationDetail allocationDetail) {
+		return pdAllocationDetailMapper.queryAllocationDetailPack(allocationDetail);
 	}
 
 }

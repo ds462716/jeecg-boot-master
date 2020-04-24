@@ -269,14 +269,27 @@ public class PdAllocationRecordController {
 	 /**
 	  * 通过调拨单号查询明细表
 	  *
-	  * @param allocationNo
+	  * @param allocationDetail
 	  * @return
 	  */
 	 @GetMapping(value = "/queryPdAllocationDetailList")
-	 public Result<?> queryPdAllocationDetailList(@RequestParam(name="allocationNo",required=true) String allocationNo) {
-		 List<PdAllocationDetail> pdAllocationDetailList = pdAllocationDetailService.selectByAllocationNo(allocationNo);
+	 public Result<?> queryPdAllocationDetailList(PdAllocationDetail  allocationDetail) {
+		 List<PdAllocationDetail> pdAllocationDetailList = pdAllocationDetailService.selectByAllocationNo(allocationDetail);
 		 return Result.ok(pdAllocationDetailList);
 	 }
+
+
+	/**
+	 * 通过调拨单号查询定数包明细
+	 *
+	 * @param allocationDetail
+	 * @return
+	 */
+	@GetMapping(value = "/queryAllocationDetailPack")
+	public Result<?> queryAllocationDetailPack(PdAllocationDetail allocationDetail) {
+		List<PdAllocationDetail> pdAllocationDetailList = pdAllocationDetailService.queryAllocationDetailPack(allocationDetail);
+		return Result.ok(pdAllocationDetailList);
+	}
 
     /**
     * 导出excel
@@ -288,7 +301,9 @@ public class PdAllocationRecordController {
     public ModelAndView exportXls(HttpServletRequest request, PdAllocationRecord pdAllocationRecord) {
 		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
 		//Step.1 获取导出数据
-		List<PdAllocationDetail> pdAllocationDetailList = pdAllocationDetailService.selectByAllocationNo(pdAllocationRecord.getAllocationNo());
+		PdAllocationDetail allocation=new PdAllocationDetail();
+		allocation.setAllocationNo(pdAllocationRecord.getAllocationNo());
+		List<PdAllocationDetail> pdAllocationDetailList = pdAllocationDetailService.selectByAllocationNo(allocation);
 		// Step.2 AutoPoi 导出Excel
 		ModelAndView mv = new ModelAndView(new JeecgEntityExcelView());
 		mv.addObject(NormalExcelConstants.FILE_NAME, "调拨产品列表");
