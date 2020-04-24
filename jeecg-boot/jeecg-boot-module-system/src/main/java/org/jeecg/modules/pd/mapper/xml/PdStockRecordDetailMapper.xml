@@ -19,7 +19,7 @@
         a.product_num * IFNULL(a.selling_price,0) as outTotalPrice,
         a.produce_date,
         a.exp_date,
-        a.package_id,
+        a.package_record_id,
         a.high_low_supplies,
         a.import_no,
         a.supplier_id,
