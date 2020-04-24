@@ -171,6 +171,9 @@ CREATE TABLE `ex_inspection_items_detail` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- add by jiangxz 2020年4月24日10:51:59 出库记录 定数包ID打包记录ID
+-- add by jiangxz 2020年4月24日10:51:59 出库记录明细 定数包ID改为打包记录ID
 ALTER TABLE `pd_stock_record_detail`
 CHANGE COLUMN `package_id` `package_record_id` varchar(36) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '打包记录ID' AFTER `exp_date`;
+-- add by jiangxz 2020年4月24日10:51:59 出库记录 增加打包记录ID字段
+ALTER TABLE `jeecg-boot`.`pd_stock_record`
+ADD COLUMN `package_record_id` varchar(36) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '打包记录ID' AFTER `supplier_id`;
