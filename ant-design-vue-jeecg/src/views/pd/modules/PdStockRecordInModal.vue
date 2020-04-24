@@ -28,7 +28,6 @@
               </a-col>
               <a-col :span="6">
                 <a-form-item label="入库类型" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                  <!--<j-dict-select-tag-expand :disabled="disableSubmit" type="list" v-decorator="['inType', validatorRules.inType]" :trigger-change="true" dictCode="in_type" placeholder="请选择入库类型"/>-->
                   <j-dict-select-tag-expand disabled type="list" v-decorator="['inType', validatorRules.inType]" :trigger-change="true" dictCode="in_type" placeholder="请选择入库类型"/>
                 </a-form-item>
               </a-col>
@@ -67,6 +66,11 @@
                   >
                     <a-select-option v-for="d in supplierData" :key="d.value">{{d.text}}</a-select-option>
                   </a-select>
+                </a-form-item>
+              </a-col>
+              <a-col :span="6">
+                <a-form-item label="业态" :labelCol="labelCol" :wrapperCol="wrapperCol">
+                  <j-dict-select-tag-expand :disabled="disableSubmit" type="list" v-decorator="['format', validatorRules.format]" :trigger-change="true" dictCode="format" placeholder="请选择入库类型"/>
                 </a-form-item>
               </a-col>
             </a-row>
@@ -322,6 +326,7 @@
           recordNo:{},
           recordType:{},
           inType:{rules: [{required: true, message: '请选择入库类型!'}]},
+          format:{},
           // orderNo:{},
           mergeOrderNo:{},
           remarks:{},
@@ -406,6 +411,8 @@
             { title: '紧急产品-0是1不是', key: 'isUrgent', type: FormTypes.hidden },
             { title: '紧急产品需要采购数量', key: 'upQuantity', type: FormTypes.hidden },
             { title: '紧急产品已采购数量', key: 'purchasedQuantity', type: FormTypes.hidden },
+            { title: '规格单位ID', key: 'specUnitId', type: FormTypes.hidden },
+            { title: '规格数量', key: 'specQuantity', type: FormTypes.hidden },
           ]
         },
         url: {
@@ -485,7 +492,7 @@
 
             this.popModal.title="入库明细";
           let fieldval = pick(this.model,'recordNo','mergeOrderNo','inType','submitBy','submitByName','submitDate','remarks','inDepartId','supplierId',
-            'testResult','storageResult','temperature','humidity','remarks','refuseReason')
+            'testResult','storageResult','temperature','humidity','remarks','refuseReason','format')
           this.$nextTick(() => {
             this.form.setFieldsValue(fieldval);
           })
@@ -516,7 +523,7 @@
                 this.initData.humidity = "50";
                 this.submitDateStr = res.result.submitDateStr;
                 let fieldval = pick(this.initData,'recordNo','mergeOrderNo','inType','submitBy','submitByName','submitDate','remarks','inDepartId','supplierId',
-                  'testResult','storageResult','temperature','humidity','remarks','refuseReason');
+                  'testResult','storageResult','temperature','humidity','remarks','refuseReason','format');
                 this.form.setFieldsValue(fieldval);
                 //获取光标
                 this.$refs['productNumberInput'].focus();
@@ -728,7 +735,7 @@
       },
       popupCallback(row){
         this.form.setFieldsValue(pick(row,'recordNo','mergeOrderNo','inType','submitBy','submitByName','submitDate','remarks','inDepartId','supplierId',
-          'testResult','storageResult','temperature','humidity','remarks','refuseReason'))
+          'testResult','storageResult','temperature','humidity','remarks','refuseReason','format'))
       },
 
       //-----------------供应商查询start
@@ -881,6 +888,8 @@
           unitName: row.unitName,
           venderName: row.venderName,
           supplierName: row.supplierName,
+          specUnitId: row.specUnitId,
+          specQuantity: row.specQuantity,
           productBarCode:"",
           produceDate:"",
           expDate:"",
@@ -915,6 +924,8 @@
           unitName: row.pdProduct.unitName,
           venderName: row.pdProduct.venderName,
           supplierName: row.pdProduct.supplierName,
+          specUnitId: row.pdProduct.specUnitId,
+          specQuantity: row.pdProduct.specQuantity,
           productBarCode:row.productBarCode,
           produceDate:row.produceDate,
           expDate:row.expDate,

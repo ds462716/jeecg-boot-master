@@ -92,5 +92,7 @@ public class PdPackageDetail extends BaseEntity {
 	/*单位名称*/
 	@TableField(exist = false)
 	private String unitName;
+	@TableField(exist = false)
+	private List<String> packageIds;		//定数包id集合
 
 }

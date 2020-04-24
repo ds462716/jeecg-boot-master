@@ -7,8 +7,6 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.constant.PdConstant;
-import org.jeecg.common.system.query.QueryGenerator;
-import org.jeecg.common.system.vo.DictModel;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.DateUtils;
 import org.jeecg.common.util.oConvertUtils;
@@ -769,7 +767,9 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
             }
             //查调拨单列表
             if (oConvertUtils.isNotEmpty(pdStockRecord.getAllocationNo())) {
-                List<PdAllocationDetail> pdAllocationDetailList = pdAllocationDetailService.selectByAllocationNo(pdStockRecord.getAllocationNo());
+                PdAllocationDetail allocationDetail=new PdAllocationDetail();
+                allocationDetail.setAllocationNo(pdStockRecord.getApplyNo());
+                List<PdAllocationDetail> pdAllocationDetailList = pdAllocationDetailService.selectByAllocationNo(allocationDetail);
                 pdStockRecord.setPdAllocationDetailList(pdAllocationDetailList);
             }
 

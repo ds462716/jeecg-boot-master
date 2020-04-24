@@ -103,10 +103,57 @@
           </div>
 
         </a-card>
+        <!-- 定数包区域 -->
+        <!--<a-card style="margin-bottom: 10px;">-->
+          <!--<a-tabs v-model="activeKey">-->
+            <!--<a-tab-pane tab="定数包明细" :key="refKeys[0]" :forceRender="true">-->
+              <!--<a-form v-show="!disableSubmit">-->
+                <!--<a-row>-->
+                  <!--<a-col :md="6" :sm="8">-->
+                    <!--<a-form-item label="定数包编号" :labelCol="labelCol" :wrapperCol="wrapperCol">-->
+                      <!--<a-input ref="productNumberInput" v-focus placeholder="请输入定数包编号" v-model="queryParam.packageCode" @keyup.enter.native="searchQueryPackage(0)"></a-input>-->
+                    <!--</a-form-item>-->
+                  <!--</a-col>-->
+
+                  <!--<a-col :md="12" :sm="8">-->
+                    <!--<a-form-item label="" :labelCol="labelCol" :wrapperCol="wrapperCol" style="text-align: left;padding-left: 15px;">-->
+                      <!--提示：按<span style="color: red">Ctrl+Alt</span>键快速定位到定数包扫码输入框-->
+                    <!--</a-form-item>-->
+                  <!--</a-col>-->
+                <!--</a-row>-->
+              <!--</a-form>-->
+
+              <!--<div style="margin-bottom: 8px;" v-show="!disableSubmit">-->
+                <!--<a-button type="primary" icon="plus" @click="choosePackageList">选择定数包</a-button>-->
+                <!--<a-popconfirm style="margin-left: 8px"-->
+                              <!--:title="`确定要删除吗?`"-->
+                              <!--@confirm="handleConfirmDeletePackage">-->
+                  <!--<a-button type="primary" icon="minus">删除</a-button>-->
+                  <!--<span class="gap"></span>-->
+                <!--</a-popconfirm>-->
+              <!--</div>-->
+
+              <!--<a-table-->
+                <!--v-show="showOrderTable"-->
+                <!--ref="table"-->
+                <!--size="middle"-->
+                <!--bordered-->
+                <!--rowKey="id"-->
+                <!--:pagination="false"-->
+                <!--:columns="pdPackageTable.columns"-->
+                <!--:dataSource="pdPackageTable.dataSource"-->
+                <!--:loading="pdPackageTable.loading" >-->
+                <!--<template slot="htmlSlot" slot-scope="text">-->
+                  <!--<div v-html="text"></div>-->
+                <!--</template>-->
+              <!--</a-table>-->
+            <!--</a-tab-pane>-->
+          <!--</a-tabs>-->
+        <!--</a-card>-->
 
         <!-- 产品列表区域 -->
         <a-card style="margin-bottom: 10px;">
-          <a-tabs v-model="activeKey" @change="handleChangeTabs">
+          <a-tabs v-model="activeKey">
             <a-tab-pane tab="产品明细" :key="refKeys[0]" :forceRender="true">
               <a-form v-show="!disableSubmit">
                 <a-row>
@@ -122,7 +169,7 @@
                   </a-col>
                   <a-col :md="12" :sm="8">
                     <a-form-item label="" :labelCol="labelCol" :wrapperCol="wrapperCol" style="text-align: left;padding-left: 15px;">
-                      提示：按<span style="color: red">Ctrl+Alt</span>键快速定位到扫码输入框
+                      提示：按<span style="color: red">Ctrl+Alt</span>键快速定位到产品扫码输入框
                     </a-form-item>
                   </a-col>
                 </a-row>
@@ -349,6 +396,28 @@
             { title: '定数包编号', align:"center", dataIndex: 'packageCode' },
           ],
         },
+        // 定数包列表
+        pdPackageTable: {
+          loading: false,
+          dataSource: [],
+          columns: [
+            {
+              title: '定数包ID', align:"center", dataIndex: 'productId',
+              colSpan: 0,
+              customRender: (value, row, index) => {
+                const obj = {
+                  attrs: {colSpan:0},
+                };
+                return obj;
+              },
+            },
+            { title: '定数包编号', align:"center", dataIndex: 'orderNo' },
+            { title: '定数包名称', align:"center", dataIndex: 'number' },
+            { title: '产品总数量', align:"center", dataIndex: 'productName' },
+            { title: '打包人', align:"center", dataIndex: 'packageName' },
+            { title: '打包时间', align:"center", dataIndex: 'packageCode' },
+          ],
+        },
         // 出入库明细表(产品明细)  , type: FormTypes.hidden
         pdStockRecordDetailTable: {
           loading: false,
@@ -373,10 +442,12 @@
             { title: '出库金额', key: 'outTotalPrice', type: FormTypes.input, disabled:true, width:"100px" },
             { title: '库存数量', key: 'stockNum', width:"80px" },
             { title: '出库货位', key: 'outHuoweiName', width:"100px" },
-            { title: '出库货位编号', key: 'outHuoweiCode', type: FormTypes.hidden },
-            { title: '供应商id', key: 'supplierId', type: FormTypes.hidden },
             { title: '生产日期', key: 'produceDate',  },
             { title: '入库货位', key: 'inHuoweiCode', type: FormTypes.select, width:"150px", options: [],allowSearch:true, placeholder: '${title}' },
+            { title: '出库货位编号', key: 'outHuoweiCode', type: FormTypes.hidden },
+            { title: '供应商id', key: 'supplierId', type: FormTypes.hidden },
+            { title: '规格单位ID', key: 'specUnitId', type: FormTypes.hidden },
+            { title: '规格数量', key: 'specQuantity', type: FormTypes.hidden },
           ]
         },
         url: {
@@ -922,6 +993,8 @@
           unitName:row.unitName,
           expDate:row.expDate,
           sellingPrice:row.sellingPrice,
+          specUnitId: row.specUnitId,
+          specQuantity: row.specQuantity,
           productNum: 1,
           purchasePrice:row.purchasePrice,
           outTotalPrice:Number(!row.sellingPrice ? 0 : row.sellingPrice).toFixed(4),
@@ -1084,6 +1157,10 @@
             this.clearQueryParam();
           })
         }
+      },
+      // 定数包扫码
+      searchQueryPackage(){
+
       },
       // 校验是否选择入库科室
       checkInDepart(){

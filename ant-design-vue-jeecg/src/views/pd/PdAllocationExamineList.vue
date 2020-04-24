@@ -101,7 +101,7 @@
   import { JeecgListMixin,handleEdit } from '@/mixins/JeecgListMixin'
   import { filterObj } from '@/utils/util';
   import {initDictOptions, filterMultiDictText} from '@/components/dict/JDictSelectUtil'
-  import PdAllocationExamineModal from './modules/PdAllocationExamineModal'
+  import PdAllocationExamineModal from './modules/NewPdAllocationExamineModal'
   import {getAction } from '@/api/manage'
 
   let timeout;

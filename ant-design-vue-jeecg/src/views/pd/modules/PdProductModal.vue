@@ -6,6 +6,7 @@
     :lockScroll="lockScroll"
     :fullscreen="fullscreen"
     :switchFullscreen="switchFullscreen"
+    :maskClosable=disableSubmit
     @cancel="handleCancel"
 
   >
@@ -39,9 +40,9 @@
                 :showArrow="true"
                 :filterOption="false"
                 :disabled="disableSubmit"
-                @search="unitHandleSearch"
-                @change="unitHandleChange"
-                @focus="unitHandleSearch"
+                @search="bzUnitHandleSearch"
+                @change="bzUnitHandleChange"
+                @focus="bzUnitHandleSearch"
                 :notFoundContent="notFoundContent"
                 v-decorator="[ 'unitId', validatorRules.unitId]"
               >
@@ -303,8 +304,20 @@
           </a-col>
         </a-row>
 
+        <a-row class="form-row" :gutter="{ xs: 8, sm: 16, md: 24, lg: 32 }">
+          <a-col :lg="12">
+            <a-form-item label="器械分类" :labelCol="labelCol" :wrapperCol="wrapperCol">
+              <j-dict-select-tag-expand  :disabled="disableSubmit" :trigger-change="true" dictCode="device_classification" v-decorator="['deviceClassification',validatorRules.deviceClassification]"  placeholder="请选择器械分类"/>
+            </a-form-item>
+          </a-col>
+        </a-row>
+
         <a-form-item label="描述" :labelCol="labelCol" :wrapperCol="wrapperCol">
           <a-textarea :disabled="disableSubmit" autocomplete="off" v-decorator="[ 'description', validatorRules.description]"></a-textarea>
+        </a-form-item>
+
+        <a-form-item v-show="false">
+          <a-input  autocomplete="off" v-decorator="[ 'productFlag',{'initialValue':'0'}]" ></a-input>
         </a-form-item>
 
         <label style="float:left;padding-top:15px;">证照扫描件</label>
@@ -374,6 +387,7 @@
   import { generateNumber,getPrdNumber,scanCode } from '@/utils/barcode'
   import {duplicateCheckHasDelFlag } from '@/api/api'
   import {isDisabledNumber } from '@/api/api'
+  import {initDictOptions} from '@/components/dict/JDictSelectUtil'
 
   let timeout;
   let currentValue;
@@ -443,6 +457,8 @@
         previewVisible: false,
         previewImage: '',
         model: {},
+        dictOptions:{
+        },
         imgIsShow:[{show:false},{show:false},{show:false},{show:false},{show:false},{show:false},{show:false},{show:false},{show:false},{show:false},{show:false},{show:false}],
         imgIsValidity:['validity0','validity0','validity0','validity0','validity0','validity0','validity0','validity0','validity0','validity0','validity0','validity0'],//0无过期，1已过期，2近效期
         labelCol: {
@@ -520,6 +536,9 @@
           upQuantityT: {rules: [
               {required: true, message: '请输入紧急产品数量!'},
             ]},
+          deviceClassification: {rules: [
+              {required: true, message: '请选择器械分类!'},
+            ]},
           description: {rules: [
           ]},
           jdeCode: {rules: [
@@ -546,7 +565,7 @@
         url: {
           add: "/pd/pdProduct/save",
           edit: "/pd/pdProduct/update",
-          queryUnit:"/pd/pdUnit/getUnitList",
+          queryBzUnit:"/pd/pdUnit/getUnitList?unitType=0",
           queryVender:"/pd/pdVender/getVenderList",
           querySupplier:"/pd/pdSupplier/getSupplierList",
           queryGroup:"/pd/pdGroup/getGroupList",
@@ -657,7 +676,7 @@
         this.focusDisable = false;
         this.visible = true;
         this.$nextTick(() => {
-          this.form.setFieldsValue(pick(this.model,'number','name','py','wb','bname','bpy','bwb','zdy','spec','version','unitId','power','pdProductRules','categoryOne','categoryTwo','groupId','venderId','isCharge','supplierId','purchasePrice','sellingPrice','registration','chargeCode','description','isUrgent','upQuantity','purchasedQuantity','licenceName0','licenceNum0','licenceDate0','licenceSite0','licenceName1','licenceNum1','licenceDate1','licenceSite1','licenceName2','licenceNum2','licenceDate2','licenceSite2','licenceName3','licenceNum3','licenceDate3','licenceSite3','licenceName4','licenceNum4','licenceDate4','licenceSite4','licenceName5','licenceNum5','licenceDate5','licenceSite5','licenceName6','licenceNum6','licenceDate6','licenceSite6','licenceName7','licenceNum7','licenceDate7','licenceSite7','licenceName8','licenceNum8','licenceDate8','licenceSite8','licenceName9','licenceNum9','licenceDate9','licenceSite9','licenceName10','licenceNum10','licenceDate10','licenceSite10','licenceName11','licenceNum11','licenceDate11','licenceSite11','jdeCode'))
+          this.form.setFieldsValue(pick(this.model,'number','name','py','wb','bname','bpy','bwb','zdy','spec','version','unitId','power','pdProductRules','categoryOne','categoryTwo','groupId','venderId','isCharge','supplierId','purchasePrice','sellingPrice','registration','chargeCode','description','isUrgent','upQuantity','purchasedQuantity','licenceName0','licenceNum0','licenceDate0','licenceSite0','licenceName1','licenceNum1','licenceDate1','licenceSite1','licenceName2','licenceNum2','licenceDate2','licenceSite2','licenceName3','licenceNum3','licenceDate3','licenceSite3','licenceName4','licenceNum4','licenceDate4','licenceSite4','licenceName5','licenceNum5','licenceDate5','licenceSite5','licenceName6','licenceNum6','licenceDate6','licenceSite6','licenceName7','licenceNum7','licenceDate7','licenceSite7','licenceName8','licenceNum8','licenceDate8','licenceSite8','licenceName9','licenceNum9','licenceDate9','licenceSite9','licenceName10','licenceNum10','licenceDate10','licenceSite10','licenceName11','licenceNum11','licenceDate11','licenceSite11','jdeCode','deviceClassification'))
           //获取光标
           let input = this.$refs['inputFocus'];
           input.focus();
@@ -727,7 +746,7 @@
         this.close()
       },
       popupCallback(row){
-        this.form.setFieldsValue(pick(row,'number','name','py','wb','bname','bpy','bwb','zdy','spec','version','unitId','power','categoryOne','categoryTwo','groupId','venderId','isCharge','supplierId','purchasePrice','sellingPrice','registration','chargeCode','description','isUrgent','upQuantity','purchasedQuantity','licenceName0','licenceNum0','licenceDate0','licenceSite0','licenceName1','licenceNum1','licenceDate1','licenceSite1','licenceName2','licenceNum2','licenceDate2','licenceSite2','licenceName3','licenceNum3','licenceDate3','licenceSite3','licenceName4','licenceNum4','licenceDate4','licenceSite4','licenceName5','licenceNum5','licenceDate5','licenceSite5','licenceName6','licenceNum6','licenceDate6','licenceSite6','licenceName7','licenceNum7','licenceDate7','licenceSite7','licenceName8','licenceNum8','licenceDate8','licenceSite8','licenceName9','licenceNum9','licenceDate9','licenceSite9','licenceName10','licenceNum10','licenceDate10','licenceSite10','licenceName11','licenceNum11','licenceDate11','licenceSite11','jdeCode'))
+        this.form.setFieldsValue(pick(row,'number','name','py','wb','bname','bpy','bwb','zdy','spec','version','unitId','power','categoryOne','categoryTwo','groupId','venderId','isCharge','supplierId','purchasePrice','sellingPrice','registration','chargeCode','description','isUrgent','upQuantity','purchasedQuantity','licenceName0','licenceNum0','licenceDate0','licenceSite0','licenceName1','licenceNum1','licenceDate1','licenceSite1','licenceName2','licenceNum2','licenceDate2','licenceSite2','licenceName3','licenceNum3','licenceDate3','licenceSite3','licenceName4','licenceNum4','licenceDate4','licenceSite4','licenceName5','licenceNum5','licenceDate5','licenceSite5','licenceName6','licenceNum6','licenceDate6','licenceSite6','licenceName7','licenceNum7','licenceDate7','licenceSite7','licenceName8','licenceNum8','licenceDate8','licenceSite8','licenceName9','licenceNum9','licenceDate9','licenceSite9','licenceName10','licenceNum10','licenceDate10','licenceSite10','licenceName11','licenceNum11','licenceDate11','licenceSite11','jdeCode','deviceClassification'))
       },
       pinyinTran(e){
         let val = e.target.value;
@@ -750,12 +769,12 @@
         this.form.setFieldsValue({bwb:wb});//获取五笔简码
       },
      //单位查询start
-      unitHandleSearch(value) {
-        fetch(value, data => (this.unitData = data),this.url.queryUnit);
+      bzUnitHandleSearch(value) {
+        fetch(value, data => (this.unitData = data),this.url.queryBzUnit);
       },
-      unitHandleChange(value) {
+      bzUnitHandleChange(value) {
         this.unitValue = value;
-        fetch(value, data => (this.unitData = data),this.url.queryUnit);
+        fetch(value, data => (this.unitData = data),this.url.queryBzUnit);
       },
       //单位查询end
       //生产厂家查询start
@@ -914,6 +933,13 @@
       //注册证替换;
       registrationChange(e){
 
+      },
+      initDictConfig(){
+        initDictOptions('device_classification').then((res) => {
+          if (res.success) {
+            this.$set(this.dictOptions, 'deviceClassification', res.result)
+          }
+        })
       }
     }
   }

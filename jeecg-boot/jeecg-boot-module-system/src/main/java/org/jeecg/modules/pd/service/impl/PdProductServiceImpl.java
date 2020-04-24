@@ -1,5 +1,6 @@
 package org.jeecg.modules.pd.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.aliyuncs.regions.ProductDomain;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.commons.collections.CollectionUtils;
@@ -18,6 +19,7 @@ import org.jeecg.modules.pd.service.*;
 import org.jeecg.modules.pd.util.BarCodeUtil;
 import org.jeecg.modules.pd.util.UUIDUtil;
 import org.jeecg.modules.pd.vo.PdProductPage;
+import org.jeecg.modules.pd.vo.PdProductReagents;
 import org.jeecgframework.poi.excel.ExcelImportUtil;
 import org.jeecgframework.poi.excel.entity.ImportParams;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -669,6 +671,7 @@ public class PdProductServiceImpl extends ServiceImpl<PdProductMapper, PdProduct
                 pdProduct.setDepartParentId(sysUser.getDepartParentId());
                 List<PdProduct> pdProducts = this.selectList(pdProduct);
                 for(PdProduct ps :list){ //校验产品编号是否唯
+                    ps.setProductFlag(PdConstant.PRODUCT_FLAG_0);
                     //校验产品编号
                     if(oConvertUtils.isEmpty(ps.getNumber())){
                         String number = UUIDUtil.generateNumber("93");
@@ -693,6 +696,7 @@ public class PdProductServiceImpl extends ServiceImpl<PdProductMapper, PdProduct
                         PdUnit pdUnit = new PdUnit();
                         pdUnit.setDepartParentId(sysUser.getDepartParentId());
                         pdUnit.setName(ps.getUnitName());
+                        pdUnit.setUnitType(PdConstant.PRODUCT_UNIT_TYPE_0);
                         List<PdUnit> units = unitDao.verify(pdUnit);
                         if(units.size()==1){
                             ps.setUnitId(units.get(0).getId());
@@ -772,6 +776,12 @@ public class PdProductServiceImpl extends ServiceImpl<PdProductMapper, PdProduct
                         bl = false;
                         break;
                     }
+                    //校验器械分类
+                    if(!checkDeviceClassification(ps.getDeviceClassification())){
+                        message = "导入失败,第"+(i+1)+"行器械分类不能为空或填写错误";
+                        bl = false;
+                        break;
+                    }
                     ps.setValidityFlag(PdConstant.PD_STATE_0);
                     i ++;
                 }
@@ -796,6 +806,192 @@ public class PdProductServiceImpl extends ServiceImpl<PdProductMapper, PdProduct
         }
     }
 
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public Result<Object> importExcelReagents(Map<String, MultipartFile> fileMap) {
+        PdProductMapper dao = sqlsession.getMapper(PdProductMapper.class);
+        PdVenderMapper venderDao = sqlsession.getMapper(PdVenderMapper.class);
+        PdUnitMapper unitDao = sqlsession.getMapper(PdUnitMapper.class);
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        List<PdProductReagents> pdProductReagentsList = new ArrayList<>();
+        List<PdProduct> list = new ArrayList<>();
+        boolean bl = true;
+        String message = "表格内没有内容";
+        for (Map.Entry<String, MultipartFile> entity : fileMap.entrySet()) {
+            MultipartFile file = entity.getValue();// 获取上传文件对象
+            ImportParams params = new ImportParams();
+            params.setTitleRows(2);
+            params.setHeadRows(1);
+            params.setNeedSave(true);
+            try {
+                pdProductReagentsList = ExcelImportUtil.importExcel(file.getInputStream(), PdProductReagents.class, params);
+                list = JSON.parseArray(JSON.toJSONString(pdProductReagentsList), PdProduct.class);
+                int i = 0;
+                //查询所有的产品
+                PdProduct pdProduct = new PdProduct();
+                pdProduct.setDepartParentId(sysUser.getDepartParentId());
+                List<PdProduct> pdProducts = this.selectList(pdProduct);
+                for(PdProduct ps :list){ //校验产品编号是否唯
+                    ps.setProductFlag(PdConstant.PRODUCT_FLAG_1);
+                    //校验产品编号
+                    if(oConvertUtils.isEmpty(ps.getNumber())){
+                        String number = UUIDUtil.generateNumber("93");
+                        ps.setNumber(number.substring(0,number.length()-2)+i);//生成编码
+                    }else{
+                        if(checkNumber(pdProducts,ps)){
+                            pdProducts.add(ps);
+                        }else{
+                            message = "导入失败,第"+(i+1)+"行产品编号不能重复";
+                            bl = false;
+                            break;
+                        }
+                    }
+                    //校验产品名称
+                    if(oConvertUtils.isEmpty(ps.getName())){
+                        message = "导入失败,第"+(i+1)+"行产品名称不能为空";
+                        bl = false;
+                        break;
+                    }
+                    //包装单位转换成id
+                    if(oConvertUtils.isNotEmpty(ps.getUnitName())){
+                        PdUnit pdUnit = new PdUnit();
+                        pdUnit.setDepartParentId(sysUser.getDepartParentId());
+                        pdUnit.setName(ps.getUnitName());
+                        pdUnit.setUnitType(PdConstant.PRODUCT_UNIT_TYPE_0);
+                        List<PdUnit> units = unitDao.verify(pdUnit);
+                        if(units.size()==1){
+                            ps.setUnitId(units.get(0).getId());
+                        }else{
+                            message = "导入失败,第"+(i+1)+"行产品单位填写错误";
+                            bl = false;
+                            break;
+                        }
+                    }else{
+                        message = "导入失败,第"+(i+1)+"行产品单位不存在";
+                        bl = false;
+                        break;
+                    }
+                    //规格单位转换成id
+                    if(oConvertUtils.isNotEmpty(ps.getSpecUnitName())){
+                        PdUnit pdUnit = new PdUnit();
+                        pdUnit.setDepartParentId(sysUser.getDepartParentId());
+                        pdUnit.setName(ps.getSpecUnitName());
+                        pdUnit.setUnitType(PdConstant.PRODUCT_UNIT_TYPE_1);
+                        List<PdUnit> units = unitDao.verify(pdUnit);
+                        if(units.size()==1){
+                            ps.setSpecUnitId(units.get(0).getId());
+                        }else{
+                            message = "导入失败,第"+(i+1)+"行产品规格单位填写错误";
+                            bl = false;
+                            break;
+                        }
+                    }else{
+                        message = "导入失败,第"+(i+1)+"行产品规格单位不存在";
+                        bl = false;
+                        break;
+                    }
+                    //校验规格数量
+                    if(!checkDouble(ps.getSpecQuantity())){
+                        message = "导入失败,第"+(i+1)+"行规格数量格式不正确";
+                        bl = false;
+                        break;
+                    }
+                    //校验规格
+                    if(oConvertUtils.isEmpty(ps.getSpec())){
+                        message = "导入失败,第"+(i+1)+"行规格不能为空";
+                        bl = false;
+                        break;
+                    }
+                    //产品生产厂家转换成id
+                    if(oConvertUtils.isNotEmpty(ps.getVenderName())){
+                        PdVender pdVender = new PdVender();
+                        pdVender.setDepartParentId(sysUser.getDepartParentId());
+                        pdVender.setName(ps.getVenderName());
+                        List<PdVender> venders = venderDao.verify(pdVender);
+                        if(venders.size()==1){
+                            ps.setVenderId(venders.get(0).getId());
+                        }else{
+                            message = "导入失败,第"+(i+1)+"行生产厂家填写错误";
+                            bl = false;
+                            break;
+                        }
+                    }else{
+                        message = "导入失败,第"+(i+1)+"行生产厂家不存在";
+                        bl = false;
+                        break;
+                    }
+                    //校验注册证
+                    if(oConvertUtils.isEmpty(ps.getRegistration())){
+                        message = "导入失败,第"+(i+1)+"行注册证不能为空";
+                        bl = false;
+                        break;
+                    }
+                    //校验是否计费
+                    if(!checksStr(ps.getIsCharge())){
+                        message = "导入失败,第"+(i+1)+"行是否计费不能为空或填写错误";
+                        bl = false;
+                        break;
+                    }
+                    //校验产品收费代码是否填写
+                    if("0".equals(ps.getIsCharge()) && oConvertUtils.isEmpty(ps.getChargeCode())){
+                        message = "导入失败,第"+(i+1)+"行没有填写产品收费代码";
+                        bl = false;
+                        break;
+                    }
+                    //校验是否紧急产品
+                    if(!checksStr(ps.getIsUrgent())){
+                        message = "导入失败,第"+(i+1)+"行是否紧急产品不能为空或填写错误";
+                        bl = false;
+                        break;
+                    }
+                    //校验产品进价
+                    if(!isMoney(ps.getPurchasePrice())){
+                        message = "导入失败,第"+(i+1)+"行产品进价格式不正确";
+                        bl = false;
+                        break;
+                    }
+                    //校验产品出价
+                    if(!isMoney(ps.getSellingPrice())){
+                        message = "导入失败,第"+(i+1)+"行产品出价格式不正确";
+                        bl = false;
+                        break;
+                    }
+                    //校验产品权限
+                    if(!checksStr(ps.getPower())){
+                        message = "导入失败,第"+(i+1)+"行产品权限不能为空或填写错误";
+                        bl = false;
+                        break;
+                    }
+                    //校验器械分类
+                    if(!checkDeviceClassification(ps.getDeviceClassification())){
+                        message = "导入失败,第"+(i+1)+"行器械分类不能为空或填写错误";
+                        bl = false;
+                        break;
+                    }
+                    ps.setValidityFlag(PdConstant.PD_STATE_0);
+                    i ++;
+                }
+
+            } catch (Exception e) {
+                log.error(e.getMessage(),e);
+                return Result.error("文件导入失败:"+e.getMessage());
+            } finally {
+                try {
+                    file.getInputStream().close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        //全部正确才能导入
+        if(bl && list.size()>0){
+            this.saveBatch(list);
+            return Result.ok("文件导入成功");
+        }else{
+            return Result.error("文件导入失败:"+message);
+        }
+    }
     /**
      * 校验是否计费和是否紧急产品
      * @param pdProduct
@@ -809,6 +1005,29 @@ public class PdProductServiceImpl extends ServiceImpl<PdProductMapper, PdProduct
         if("0".equals(isCharge)){
             return true;
         }else if("1".equals(isCharge)){
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+    /**
+     * 校验器械分类
+     * @param str
+     * @return
+     */
+    private boolean checkDeviceClassification(String str){
+        if(oConvertUtils.isEmpty(str)){
+            return false;
+        }
+        String isCharge = str.trim();
+        if("0".equals(isCharge)){
+            return true;
+        }else if("1".equals(isCharge)){
+            return true;
+        }else if("2".equals(isCharge)){
+            return true;
+        }else if("3".equals(isCharge)){
             return true;
         }else{
             return false;
@@ -833,6 +1052,17 @@ public class PdProductServiceImpl extends ServiceImpl<PdProductMapper, PdProduct
             return true;
         }
 
+    }
+
+    //校验是否是数字类型
+    public static boolean checkDouble(Double num){
+        if(num ==null){
+            return false;
+        }else if(num>0){
+            return true;
+        }else{
+            return false;
+        }
     }
 
     /**

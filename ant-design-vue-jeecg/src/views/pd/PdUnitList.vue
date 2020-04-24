@@ -108,6 +108,7 @@
 
   import { JeecgListMixin } from '@/mixins/JeecgListMixin'
   import PdUnitModal from './modules/PdUnitModal'
+  import {initDictOptions, filterMultiDictText} from '@/components/dict/JDictSelectUtil'
 
   export default {
     name: "PdUnitList",
@@ -134,6 +135,19 @@
             title:'单位名称',
             align:"center",
             dataIndex: 'name'
+          },
+          {
+            title:'单位类型',
+            align:"center",
+            dataIndex: 'unitType',
+            customRender:(text)=>{
+              text +="";
+              if(!text){
+                return ''
+              }else{
+                return filterMultiDictText(this.dictOptions['unitType'], text+"")
+              }
+            }
           },
           {
             title:'拼音简码',
@@ -170,6 +184,7 @@
           importExcelUrl: "pd/pdUnit/importExcel",
         },
         dictOptions:{
+          unitType:[],
         },
       }
     },
@@ -180,6 +195,11 @@
     },
     methods: {
       initDictConfig(){
+        initDictOptions('unit_type').then((res) => {
+          if (res.success) {
+            this.$set(this.dictOptions, 'unitType', res.result)
+          }
+        })
       },
       /**
        * 点击行选中checkbox

@@ -65,5 +65,9 @@ public interface PdProductStockMapper extends BaseMapper<PdProductStock> {
 	//加库存
 	public void addStock(PdProductStock pdProductStock);
 
-
+	/**
+	 * 更新库存明细规格数量
+	 * @param pdProductStock
+	 */
+	public void updateStockSpecNum(PdProductStock pdProductStock);
 }

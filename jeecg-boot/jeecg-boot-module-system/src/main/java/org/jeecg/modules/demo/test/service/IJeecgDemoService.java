@@ -5,6 +5,9 @@ import org.jeecg.modules.demo.test.entity.JeecgDemo;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 
+import java.util.List;
+import java.util.Map;
+
 /**
  * @Description: jeecg 测试demo
  * @Author: jeecg-boot
@@ -24,4 +27,7 @@ public interface IJeecgDemoService extends JeecgService<JeecgDemo> {
 	 * @return
 	 */
 	IPage<JeecgDemo> queryListWithPermission(int pageSize,int pageNo);
+
+
+	List<Map<String, Object>> selectByCondition();
 }

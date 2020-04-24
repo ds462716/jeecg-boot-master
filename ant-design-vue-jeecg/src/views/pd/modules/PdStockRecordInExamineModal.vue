@@ -62,6 +62,11 @@
                   </a-select>
                 </a-form-item>
               </a-col>
+              <a-col :span="6">
+                <a-form-item label="业态" :labelCol="labelCol" :wrapperCol="wrapperCol">
+                  <j-dict-select-tag-expand disabled type="list" v-decorator="['format', validatorRules.format]" :trigger-change="true" dictCode="format" placeholder="请选择入库类型"/>
+                </a-form-item>
+              </a-col>
             </a-row>
           </a-form>
 
@@ -264,6 +269,7 @@
           inType:{rules: [{required: true, message: '请选择入库类型!'}]},
           refuseReason:{},
           remarks:{},
+          format:{},
           isAllowProduct:{rules: [{required: true, message: '请选择!'}]},
           isAllowNum:{rules: [{required: true, message: '请选择!'}]},
           testResult:{rules: [{required: true, message: '请选择验收结果!'}]},
@@ -380,7 +386,7 @@
         this.supplierHandleSearch();
 
         let fieldval = pick(this.model,'recordNo','inType','submitBy','submitByName','submitDate','inDepartId','supplierId',
-          'testResult','storageResult','temperature','humidity','remarks','refuseReason')
+          'testResult','storageResult','temperature','humidity','remarks','refuseReason','format')
 
         let params = { id: this.model.id }
 
@@ -496,7 +502,7 @@
       },
       popupCallback(row){
         this.form.setFieldsValue(pick(row,'recordNo','inType','submitBy','submitByName','submitDate','inDepartId','supplierId',
-          'testResult','storageResult','temperature','humidity','remarks','refuseReason'))
+          'testResult','storageResult','temperature','humidity','remarks','refuseReason','format'))
       },
 
       //-----------------供应商查询start

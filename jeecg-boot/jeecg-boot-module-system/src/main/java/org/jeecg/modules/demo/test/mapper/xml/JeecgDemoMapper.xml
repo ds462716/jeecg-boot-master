@@ -11,4 +11,10 @@
 	<select id="queryListWithPermission" parameterType="Object" resultType="org.jeecg.modules.demo.test.entity.JeecgDemo">
 		select * from demo where 1=1 ${permissionSql}
 	</select>
+
+
+	<select id="selectByCondition" parameterType="Object" resultType="org.jeecg.modules.demo.test.entity.JeecgDemo">
+		select top 10 * from Sun_User
+	</select>
+
 </mapper>

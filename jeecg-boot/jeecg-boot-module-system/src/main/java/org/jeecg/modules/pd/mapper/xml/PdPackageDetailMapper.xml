@@ -60,5 +60,11 @@
 		<if test="departId != null and departId != ''">
 			AND a.depart_id = #{departId}
 		</if>
+		<if test="packageIds != null and packageIds.size() > 0">
+			and a.package_id IN
+			<foreach collection="packageIds" item="item" separator="," open="(" close=")">
+				#{item}
+			</foreach>
+		</if>
 	</select>
 </mapper>

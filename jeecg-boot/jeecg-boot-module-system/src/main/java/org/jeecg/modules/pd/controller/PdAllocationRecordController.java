@@ -168,6 +168,30 @@ public class PdAllocationRecordController {
 			return Result.error("未找到对应数据");
 		}
 		String auditStatus=pdAllocationRecord.getAuditStatus();//审核状态
+		pdAllocationRecordService.updateMain(pdAllocationRecord, pdAllocationRecord.getPdAllocationDetailList());
+		if(StringUtils.isNotEmpty(auditStatus)) {
+			if (PdConstant.AUDIT_STATE_1.equals(auditStatus) && pdAllocationRecord.getSubmitStatus().equals(PdConstant.SUBMIT_STATE_2)) {//如果是已提交
+				this.sendMsg(pdAllocationRecord);//消息推送
+			}
+		}
+		return Result.ok("操作成功!");
+	}
+
+
+
+	/**
+	 *  审核
+	 *
+	 * @param pdAllocationRecord
+	 * @return
+	 */
+	@PutMapping(value = "/editAllocationInf")
+	public Result<?> editAllocationInf(@RequestBody PdAllocationRecord pdAllocationRecord) {
+		PdAllocationRecord pdAllocationRecordEntity = pdAllocationRecordService.getById(pdAllocationRecord.getId());
+		if(pdAllocationRecordEntity==null) {
+			return Result.error("未找到对应数据");
+		}
+		String auditStatus=pdAllocationRecord.getAuditStatus();//审核状态
 		if(StringUtils.isNotEmpty(auditStatus)) {
 			if ((PdConstant.AUDIT_STATE_2).equals(auditStatus) || (PdConstant.AUDIT_STATE_3).equals(auditStatus)) {
 				LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
@@ -200,16 +224,12 @@ public class PdAllocationRecordController {
 				pdAllocationRecord.setAuditDate(new Date());
 			}
 		}
-		pdAllocationRecordService.updateMain(pdAllocationRecord, pdAllocationRecord.getPdAllocationDetailList());
-		if(StringUtils.isNotEmpty(auditStatus)) {
-			if (PdConstant.AUDIT_STATE_1.equals(auditStatus) && pdAllocationRecord.getSubmitStatus().equals(PdConstant.SUBMIT_STATE_2)) {//如果是已提交
-				this.sendMsg(pdAllocationRecord);//消息推送
-			}
-		}
-		return Result.ok("操作成功!");
+		pdAllocationRecordService.updateById(pdAllocationRecord);
+		return Result.ok("审核成功!");
 	}
-	
-	 /**
+
+
+	/**
 	  *   通过id删除
 	  *
 	  * @param id
@@ -269,14 +289,27 @@ public class PdAllocationRecordController {
 	 /**
 	  * 通过调拨单号查询明细表
 	  *
-	  * @param allocationNo
+	  * @param allocationDetail
 	  * @return
 	  */
 	 @GetMapping(value = "/queryPdAllocationDetailList")
-	 public Result<?> queryPdAllocationDetailList(@RequestParam(name="allocationNo",required=true) String allocationNo) {
-		 List<PdAllocationDetail> pdAllocationDetailList = pdAllocationDetailService.selectByAllocationNo(allocationNo);
+	 public Result<?> queryPdAllocationDetailList(PdAllocationDetail  allocationDetail) {
+		 List<PdAllocationDetail> pdAllocationDetailList = pdAllocationDetailService.selectByAllocationNo(allocationDetail);
 		 return Result.ok(pdAllocationDetailList);
 	 }
+
+
+	/**
+	 * 通过调拨单号查询定数包明细
+	 *
+	 * @param allocationDetail
+	 * @return
+	 */
+	@GetMapping(value = "/queryAllocationDetailPack")
+	public Result<?> queryAllocationDetailPack(PdAllocationDetail allocationDetail) {
+		List<PdAllocationDetail> pdAllocationDetailList = pdAllocationDetailService.queryAllocationDetailPack(allocationDetail);
+		return Result.ok(pdAllocationDetailList);
+	}
 
     /**
     * 导出excel
@@ -288,7 +321,9 @@ public class PdAllocationRecordController {
     public ModelAndView exportXls(HttpServletRequest request, PdAllocationRecord pdAllocationRecord) {
 		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
 		//Step.1 获取导出数据
-		List<PdAllocationDetail> pdAllocationDetailList = pdAllocationDetailService.selectByAllocationNo(pdAllocationRecord.getAllocationNo());
+		PdAllocationDetail allocation=new PdAllocationDetail();
+		allocation.setAllocationNo(pdAllocationRecord.getAllocationNo());
+		List<PdAllocationDetail> pdAllocationDetailList = pdAllocationDetailService.selectByAllocationNo(allocation);
 		// Step.2 AutoPoi 导出Excel
 		ModelAndView mv = new ModelAndView(new JeecgEntityExcelView());
 		mv.addObject(NormalExcelConstants.FILE_NAME, "调拨产品列表");

@@ -63,6 +63,8 @@ public class PdStockRecord extends BaseEntity {
     /**备注*/
     @Excel(name = "备注", width = 15)
     private String remarks;
+    @Excel(name = "业态", width = 15)
+    private String format;
     /**验收结果 : 0-合格；1-不合格*/
     @Excel(name = "验收结果 : 0-合格；1-不合格", width = 15)
     private String testResult;

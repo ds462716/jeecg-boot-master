@@ -5,8 +5,8 @@ import org.apache.cxf.Bus;
 import org.apache.cxf.bus.spring.SpringBus;
 import org.apache.cxf.jaxws.EndpointImpl;
 import org.apache.cxf.transport.servlet.CXFServlet;
-import org.jeecg.modules.pd.cxf.WebServiceDemoService;
-import org.jeecg.modules.pd.cxf.impl.WebServiceDemoServiceImpl;
+import org.jeecg.modules.external.cxf.WebServiceService;
+import org.jeecg.modules.external.cxf.impl.WebServiceServiceImpl;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -33,15 +33,15 @@ public class CxfConfig {
     }
 
     @Bean
-    public WebServiceDemoService demoJsonService(){
-        return new WebServiceDemoServiceImpl();
+    public WebServiceService demoJsonService(){
+        return new WebServiceServiceImpl();
     }
 
     /**
-     * 注册WebServiceDemoService接口到webservice服务
+     * 注册WebServiceService接口到webservice服务
      * @return
      */
-    @Bean(name = "WebServiceDemoEndpoint")
+    @Bean(name = "WebServiceEndpoint")
     public Endpoint sweptPayEndpoint() {
         EndpointImpl endpoint = new EndpointImpl(springBus(), demoJsonService());
         endpoint.publish("/webservice");

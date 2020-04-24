@@ -280,7 +280,14 @@
       },
 
       submitPrintBtn() {  //通过并打印
+        this.model.packageIds=[];
         this.model.pdApplyDetailList = this.pdApplyDetailTable.dataSource;
+        var source = this.table2.dataSource;
+        let packageIds="";
+        source.forEach((value, idx) => {
+          packageIds+=value.packageId+",";
+        })
+        this.model.packageIds = packageIds;
         this.$refs.PdApplyOrderPrintModal.show(this.model);
         this.$refs.PdApplyOrderPrintModal.title = "申领单";
       },
@@ -302,7 +309,6 @@
           if (!err) {
             const that = this;
             let pdPurchaseDetailList = this.pdApplyDetailTable.dataSource;
-          return;
             let values = [];
             values.pdApplyDetailList = pdPurchaseDetailList;
             let formData = Object.assign(this.model, values);

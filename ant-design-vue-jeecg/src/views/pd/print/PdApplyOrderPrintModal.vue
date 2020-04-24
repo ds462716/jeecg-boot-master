@@ -54,6 +54,20 @@
             </a-table>
           </a-col>
 
+          <a-col :span="24" style="margin-top: 10px">
+            <!--<span>入库明细：</span>-->
+            <a-table
+              ref="table"
+              size="small"
+              v-show="packDataSource.length>0"
+              bordered
+              :pagination="false"
+              :columns="packColumns"
+              :dataSource="packDataSource"
+            >
+            </a-table>
+          </a-col>
+
           <a-col :span="24" style="margin-top: 10px;">
             <span style="margin-left: 80%;font-size: medium;font-weight: bold">
               合计数量：{{ record.totalNum }}
@@ -80,6 +94,7 @@
     </j-modal>
 </template>
 <script>
+  import {getAction } from '@/api/manage'
   export default {
     components: {
 
@@ -97,10 +112,7 @@
         fullscreen: true,
         switchFullscreen: false,
         columns: [
-          { title: '定数包编号',  align:"center",  dataIndex: 'packageId' },
-          { title: '定数包名称',  align:"center", dataIndex: 'packageName' },
           { title: '产品名称',  align:"center",  dataIndex: 'productName' },
-          { title: '申领数量',   align:"center",dataIndex: 'applyNum'},
           { title: '产品编号', align:"center",  dataIndex: 'number' },
           { title: '规格', align:"center",  dataIndex: 'spec' },
           { title: '型号',  align:"center", dataIndex: 'version' },
@@ -109,6 +121,20 @@
           { title: '库存数量',  align:"center", dataIndex: 'stockNum' },
         ],
         dataSource: [],
+
+        packColumns: [
+          {title:'产品名称', align:"center", dataIndex: 'productName'},
+          {title:'产品编号', align:"center", width: 100, dataIndex: 'number'},
+          {title:'规格', align:"center", dataIndex: 'spec'},
+          {title:'型号', align:"center", dataIndex: 'version'},
+          {title:'单位', align:"center", dataIndex: 'unitName'},
+          /*{title:'发货数量',  align:"center", dataIndex: 'arrivalNum' },*/
+          {title:'定数包编号', align:"center", width: 100, dataIndex: 'code'},
+          {title:'定数包名称', align:"center", width: 100, dataIndex: 'name'},
+          {title:'定数包产品数量', align:"center", width: 100, dataIndex: 'count'},
+        ],
+        packDataSource: [],
+
         labelCol: {
           xs: { span: 24 },
           sm: { span: 2 },
@@ -128,6 +154,8 @@
       // 重写close方法
       close() {
         this.visible = false;
+        this.dataSource =[];
+        this.packDataSource=[];
         this.$emit('close')
       },
       /** 关闭按钮 **/
@@ -138,7 +166,17 @@
         this.visible = true;
         this.record = record;
         this.dataSource = record.pdApplyDetailList;
-        console.log(this.dataSource)
+        console.log(this.dataSource);
+        let packageIds  = record.packageIds;
+        if(packageIds != null && packageIds !=""){
+        //根据定数包获取查询定数包产品明细
+          packageIds=packageIds.substring(0, (packageIds.length-1));
+          getAction("/pd/pdPackage/queryPdPackageDetailList", {packageIds: packageIds}).then((res) => {
+          if (res.success) {
+             this.packDataSource = res.result;
+          }
+        });
+        }
       },
     }
   }

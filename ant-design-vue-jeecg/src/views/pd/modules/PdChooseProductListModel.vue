@@ -13,33 +13,38 @@
       <div class="table-page-search-wrapper">
         <a-form layout="inline" @keyup.enter.native="searchQuery">
           <a-row :gutter="24">
-            <a-col :md="6" :sm="8">
+            <a-col :md="5" :sm="8">
               <a-form-item label="产品名称">
                 <a-input placeholder="请输入产品名称" v-model="queryParam.name"></a-input>
               </a-form-item>
             </a-col>
-            <a-col :md="6" :sm="8">
+            <a-col :md="5" :sm="8">
               <a-form-item label="产品编号">
                 <a-input placeholder="请输入产品编号" v-model="queryParam.number"></a-input>
               </a-form-item>
             </a-col>
-            <a-col :md="6" :sm="8">
+            <a-col :md="5" :sm="8">
               <a-form-item label="规格">
                 <a-input placeholder="请输入规格" v-model="queryParam.spec"></a-input>
               </a-form-item>
             </a-col>
+            <a-col :md="5" :sm="8">
+              <a-form-item label="是否试剂">
+                <j-dict-select-tag type="list" v-model="queryParam.productFlag" dictCode="yn" placeholder="请选择"/>
+              </a-form-item>
+            </a-col>
             <template v-if="toggleSearchStatus">
-              <a-col :md="6" :sm="8">
+              <a-col :md="5" :sm="8">
                 <a-form-item label="注册证">
                   <a-input placeholder="请输入注册证" v-model="queryParam.registration"></a-input>
                 </a-form-item>
               </a-col>
-              <a-col :md="6" :sm="8">
+              <a-col :md="5" :sm="8">
                 <a-form-item label="收费代码">
                   <a-input placeholder="请输入收费代码" v-model="queryParam.chargeCode"></a-input>
                 </a-form-item>
               </a-col>
-              <a-col :md="6" :sm="8">
+              <a-col :md="5" :sm="8">
                 <a-form-item label="供应商">
                   <a-select
                     ref="supplierSelect"
@@ -61,7 +66,7 @@
                   </a-select>
                 </a-form-item>
               </a-col>
-              <a-col :md="6" :sm="8">
+              <a-col :md="5" :sm="8">
                 <a-form-item label="生产厂家">
                   <a-select
                     showSearch
@@ -82,7 +87,7 @@
                 </a-form-item>
               </a-col>
             </template>
-            <a-col :md="6" :sm="8">
+            <a-col :md="4" :sm="8">
             <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
               <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
               <a-button type="primary" @click="searchReset" icon="reload" style="margin-left: 8px">重置</a-button>
@@ -129,11 +134,13 @@
   import { httpAction,getAction } from '@/api/manage'
   import { JeecgListMixin } from '@/mixins/JeecgListMixin'
   import { FormTypes } from '@/utils/JEditableTableUtil'
+  import JDictSelectTagExpand from "@/components/dict/JDictSelectTagExpand"
 
   export default {
     name: "PdChooseProductListModel",
     mixins:[JeecgListMixin],
     components: {
+      JDictSelectTagExpand
     },
     data () {
       return {
@@ -187,6 +194,16 @@
             title:'单位',
             align:"center",
             dataIndex: 'unitName'
+          },
+          {
+            title:'规格单位',
+            align:"center",
+            dataIndex: 'specUnitName'
+          },
+          {
+            title:'规格数量',
+            align:"center",
+            dataIndex: 'specQuantity'
           },
           {
             title:'供应商',
@@ -272,6 +289,18 @@
             title: '紧急产品已采购数量',
             align:"center",
             dataIndex: 'purchasedQuantity',
+            colSpan: 0,
+            customRender: (value, row, index) => {
+              const obj = {
+                attrs: {colSpan:0},
+              };
+              return obj;
+            },
+          },
+          {
+            title: '规格单位ID',
+            align:"center",
+            dataIndex: 'specUnitId',
             colSpan: 0,
             customRender: (value, row, index) => {
               const obj = {
