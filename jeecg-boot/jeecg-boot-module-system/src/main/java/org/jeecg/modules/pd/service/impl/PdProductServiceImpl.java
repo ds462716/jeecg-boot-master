@@ -880,7 +880,7 @@ public class PdProductServiceImpl extends ServiceImpl<PdProductMapper, PdProduct
                         pdUnit.setUnitType(PdConstant.PRODUCT_UNIT_TYPE_1);
                         List<PdUnit> units = unitDao.verify(pdUnit);
                         if(units.size()==1){
-                            ps.setUnitId(units.get(0).getId());
+                            ps.setSpecUnitId(units.get(0).getId());
                         }else{
                             message = "导入失败,第"+(i+1)+"行产品规格单位填写错误";
                             bl = false;
