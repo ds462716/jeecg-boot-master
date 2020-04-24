@@ -170,3 +170,7 @@ CREATE TABLE `ex_inspection_items_detail` (
   `sys_org_code` varchar(64) DEFAULT NULL COMMENT '所属部门',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- add by jiangxz 2020年4月24日10:51:59 出库记录 定数包ID打包记录ID
+ALTER TABLE `pd_stock_record_detail`
+CHANGE COLUMN `package_id` `package_record_id` varchar(36) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '打包记录ID' AFTER `exp_date`;
