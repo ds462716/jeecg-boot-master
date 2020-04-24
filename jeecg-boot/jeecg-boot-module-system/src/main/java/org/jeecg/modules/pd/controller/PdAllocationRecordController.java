@@ -168,6 +168,30 @@ public class PdAllocationRecordController {
 			return Result.error("未找到对应数据");
 		}
 		String auditStatus=pdAllocationRecord.getAuditStatus();//审核状态
+		pdAllocationRecordService.updateMain(pdAllocationRecord, pdAllocationRecord.getPdAllocationDetailList());
+		if(StringUtils.isNotEmpty(auditStatus)) {
+			if (PdConstant.AUDIT_STATE_1.equals(auditStatus) && pdAllocationRecord.getSubmitStatus().equals(PdConstant.SUBMIT_STATE_2)) {//如果是已提交
+				this.sendMsg(pdAllocationRecord);//消息推送
+			}
+		}
+		return Result.ok("操作成功!");
+	}
+
+
+
+	/**
+	 *  审核
+	 *
+	 * @param pdAllocationRecord
+	 * @return
+	 */
+	@PutMapping(value = "/editAllocationInf")
+	public Result<?> editAllocationInf(@RequestBody PdAllocationRecord pdAllocationRecord) {
+		PdAllocationRecord pdAllocationRecordEntity = pdAllocationRecordService.getById(pdAllocationRecord.getId());
+		if(pdAllocationRecordEntity==null) {
+			return Result.error("未找到对应数据");
+		}
+		String auditStatus=pdAllocationRecord.getAuditStatus();//审核状态
 		if(StringUtils.isNotEmpty(auditStatus)) {
 			if ((PdConstant.AUDIT_STATE_2).equals(auditStatus) || (PdConstant.AUDIT_STATE_3).equals(auditStatus)) {
 				LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
@@ -200,16 +224,12 @@ public class PdAllocationRecordController {
 				pdAllocationRecord.setAuditDate(new Date());
 			}
 		}
-		pdAllocationRecordService.updateMain(pdAllocationRecord, pdAllocationRecord.getPdAllocationDetailList());
-		if(StringUtils.isNotEmpty(auditStatus)) {
-			if (PdConstant.AUDIT_STATE_1.equals(auditStatus) && pdAllocationRecord.getSubmitStatus().equals(PdConstant.SUBMIT_STATE_2)) {//如果是已提交
-				this.sendMsg(pdAllocationRecord);//消息推送
-			}
-		}
-		return Result.ok("操作成功!");
+		pdAllocationRecordService.updateById(pdAllocationRecord);
+		return Result.ok("审核成功!");
 	}
-	
-	 /**
+
+
+	/**
 	  *   通过id删除
 	  *
 	  * @param id

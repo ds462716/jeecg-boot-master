@@ -59,8 +59,8 @@
             <a-table
               ref="table"
               size="small"
+              v-show="packDataSource.length>0"
               bordered
-              rowKey="id"
               :pagination="false"
               :columns="packColumns"
               :dataSource="packDataSource"

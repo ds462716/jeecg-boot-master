@@ -129,7 +129,7 @@
   import { JeecgListMixin,batchDel } from '@/mixins/JeecgListMixin'
   import { filterObj } from '@/utils/util';
   import {initDictOptions, filterMultiDictText} from '@/components/dict/JDictSelectUtil'
-  import PdAllocationRecordModal from './modules/PdAllocationRecordModal'
+  import PdAllocationRecordModal from './modules/NewPdAllocationRecordModal'
   import { deleteAction,getAction } from '@/api/manage'
 
   let timeout;
