@@ -58,5 +58,7 @@ public class PdProductStockTotalPage extends PdProductStockTotal {
 	/*是否过滤库存为0的数据  有值则过滤**/
 	@TableField(exist = false)
 	private String filterType;
-	
+	/**试剂产品or普通产品，0产品，1试剂*/
+	@TableField(exist = false)
+	private String productFlag;
 }

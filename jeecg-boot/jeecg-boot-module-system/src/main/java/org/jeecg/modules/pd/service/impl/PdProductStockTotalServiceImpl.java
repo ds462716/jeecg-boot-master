@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -465,6 +466,45 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
 
 
 
+    /**
+     * 库存规格数量清零操作
+     *
+     * @param productStock
+     * @return
+     */
+    @Transactional
+    @Override
+    public String updateStockSpecNum(PdProductStock productStock) {
+        String ids = productStock.getIds();//库存明细ID
+        String reason=productStock.getReason();//清零原因
+        List arr = Arrays.asList(ids.split(","));
+        for (int i = 0; i < arr.size(); i++) {
+            String id=(String)arr.get(i);
+            PdProductStock stock=pdProductStockMapper.selectById(id);
+            Double stockNum=stock.getStockNum();
+            //明細表清零
+            stock.setSpecNum(0.00);
+            stock.setStockNum(0.00);
+            stock.setReason(reason);
+            stock.setNestatStatus(PdConstant.STOCK_NESTAT_STATUS_2);
+            pdProductStockMapper.updateById(stock);
+            //更新总库存数量
+            PdProductStockTotal stockTotal=new PdProductStockTotal();
+            stockTotal.setDepartParentId(stock.getDepartParentId());
+            stockTotal.setDepartId(stock.getDepartId());
+            stockTotal.setProductId(stock.getProductId());
+            List<PdProductStockTotal> list= pdProductStockTotalMapper.findForUpdate(stockTotal);
+            if(CollectionUtils.isNotEmpty(list)){
+                PdProductStockTotal total= list.get(0);
+                Double stock_num=total.getStockNum();
+                if(stock_num>0){
+                    total.setStockNum(total.getStockNum() - stockNum);
+                }
+                pdProductStockTotalMapper.updateById(total);
+            }
+        }
+        return PdConstant.TRUE;
+    }
 
     /***
      * 	试剂耗材产品更新库存用量信息(Lis系统推送的数据)

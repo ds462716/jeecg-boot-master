@@ -24,6 +24,9 @@ public class PdProductStock extends BaseEntity {
 	/**主键*/
 	@TableId(type = IdType.ID_WORKER_STR)
 	private String id;
+	/**主键集合*/
+	@TableField(exist = false)
+	private String ids;
 	/**创建人*/
 	private String createBy;
 	/**创建日期*/
@@ -59,7 +62,7 @@ public class PdProductStock extends BaseEntity {
 	/**库存规格数量*/
 	@Excel(name = "库存规格数量", width = 15)
 	private Double specNum;
-	/**库存占用状态  0:使用中   1:未使用*/
+	/**库存占用状态  0:使用中   1:未使用 2:已用完*/
 	@Excel(name = "库存占用状态", width = 15)
 	private String nestatStatus;
 	private String specUnitId;//规格单位
@@ -93,6 +96,8 @@ public class PdProductStock extends BaseEntity {
 	/**产品id*/
 	@Excel(name = "入库明细Id", width = 15)
 	private String recordDetailId;
+	/**规格库存数量清零原因*/
+	private String reason;
 	/**货位名称**/
 	@Excel(name = "货位名称", width = 15)
 	@TableField(exist = false)

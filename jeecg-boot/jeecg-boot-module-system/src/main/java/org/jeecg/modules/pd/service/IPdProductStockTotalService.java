@@ -89,9 +89,19 @@ public interface IPdProductStockTotalService extends IService<PdProductStockTota
 
 
     /**
+     * 库存规格数量清零操作
+     * @param productStock
+     * @return
+     * */
+    public String updateStockSpecNum(PdProductStock productStock);
+
+    /**
      *试剂耗材产品更新库存用量信息(Lis系统推送的数据)
      * @param param
      * @return
      */
     public String lisUpdateUseStock( Map<String,Object> param);
+
+
+
 }

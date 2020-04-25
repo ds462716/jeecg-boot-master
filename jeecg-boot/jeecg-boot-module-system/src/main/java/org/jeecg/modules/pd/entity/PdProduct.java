@@ -263,7 +263,7 @@ public class PdProduct  extends BaseEntity {
 	private java.lang.String remarks;
 	/**所属部门*/
     private java.lang.String sysOrgCode;
-	/**是否过期标识，0产品，1试剂*/
+	/**试剂产品or普通产品，0产品，1试剂*/
 	private java.lang.String productFlag;
 	/**是否过期标识，0未过期，1已过期，2近效期*/
     private java.lang.String validityFlag;

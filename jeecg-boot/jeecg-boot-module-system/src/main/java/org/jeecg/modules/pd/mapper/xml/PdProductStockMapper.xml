@@ -53,7 +53,8 @@
         c.selling_price as "sellingPrice",
         c.charge_code  as "chargeCode",
         c.is_charge  as "isCharge",
-        c.jde_code as "jdeCode"
+        c.jde_code as "jdeCode",
+        c.product_flag as "productFlag"
 	</sql>
 	<sql id="pdProductJoins">
         LEFT JOIN pd_product c ON c.id = a.product_id
