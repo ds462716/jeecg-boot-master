@@ -253,15 +253,24 @@
     <select id="queryApplyOrderTotalList" resultType="java.util.Map" >
         select
         IFNULL(d.name,'其他') as x,
-        sum(a.arrival_count)  as y ,
-        sum(c.selling_price *  a.arrival_count) as 'z'
+        sum(c.selling_price *  b.apply_num) as y,
+        sum(b.apply_num)  as z
         from pd_apply_order a
         left join pd_apply_detail b on a.apply_no=b.apply_no
         left join pd_product c on b.product_id=c.id
         left join pd_category d on d.id=c.category_two
-        where a.del_flag=#{DEL_FLAG_NORMAL}
+        where a.del_flag=#{DEL_FLAG_NORMAL} AND a.audit_status='2'
         AND  DATE_SUB(CURDATE(), INTERVAL 30 DAY) &lt;= date(a.apply_date)
         and date(a.apply_date) &lt;=CURDATE()
+        <if test="departIdList != null and departIdList.size() > 0">
+            and a.depart_id IN
+            <foreach collection="departIdList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="departParentId != null and departParentId != ''">
+            AND a.depart_parent_id = #{departParentId}
+        </if>
         group by x  order by y desc
     </select>
 </mapper>
