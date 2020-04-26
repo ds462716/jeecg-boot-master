@@ -419,10 +419,10 @@
                 return parseInt(index)+1;
               }
             },
-            { title:'定数包编号', align:"center", dataIndex: 'code' },
+            { title:'定数包编号', align:"center", dataIndex: 'packageCode' },
             { title:'定数包条码', align:"center", dataIndex: 'packageBarCode' },
-            { title:'定数包名称', align:"center", dataIndex: 'name' },
-            { title:'产品总数', align:"center", dataIndex: 'sum' },
+            { title:'定数包名称', align:"center", dataIndex: 'packageName' },
+            { title:'产品总数', align:"center", dataIndex: 'packageSum' },
             { title:'打包人', align:"center", dataIndex: 'createBy' },
             { title:'打包时间', align:"center", dataIndex: 'createTime',
               customRender:function (text) {

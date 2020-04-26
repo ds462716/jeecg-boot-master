@@ -16,17 +16,17 @@
 
           <a-col :span="12">
             <a-form-item label="定数包编号" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input v-decorator="[ 'code', validatorRules.code]" disabled="disabled" placeholder="请输入定数包编号"></a-input>
+              <a-input v-decorator="[ 'packageCode', validatorRules.packageCode]" disabled="disabled" placeholder="请输入定数包编号"></a-input>
             </a-form-item>
           </a-col>
           <a-col :span="12">
             <a-form-item label="定数包名称" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input v-decorator="[ 'name', validatorRules.name]"  @change="pinyinTran" placeholder="请输入定数包名称"></a-input>
+              <a-input v-decorator="[ 'packageName', validatorRules.packageName]"  @change="pinyinTran" placeholder="请输入定数包名称"></a-input>
             </a-form-item>
           </a-col>
           <!--<a-col :span="12" v-show="false">-->
             <!--<a-form-item label="产品总数" :labelCol="labelCol" :wrapperCol="wrapperCol">-->
-              <!--<a-input-number v-decorator="[ 'sum', validatorRules.sum]" placeholder="0" disabled="disabled" style="width: 100%"/>-->
+              <!--<a-input-number v-decorator="[ 'packageSum', validatorRules.packageSum]" placeholder="0" disabled="disabled" style="width: 100%"/>-->
             <!--</a-form-item>-->
           <!--</a-col>-->
           <a-col :span="12">
@@ -133,8 +133,8 @@
         // 新增时子表默认添加几行空数据
         addDefaultRowNum: 0,
         validatorRules: {
-          code: { rules: [{ required: true, message: '请输入定数包编号!' }] },
-          name: { rules: [{ required: true, message: '请输入定数包名称!' }] },
+          packageCode: { rules: [{ required: true, message: '请输入定数包编号!' }] },
+          packageName: { rules: [{ required: true, message: '请输入定数包名称!' }] },
           py:{},
           wb:{},
           zdy:{},
@@ -229,10 +229,10 @@
       },
       /** 调用完edit()方法之后会自动调用此方法 */
       editAfter() {
-        let fieldval = pick(this.model,'code','name','py','wb','zdy','remarks');
+        let fieldval = pick(this.model,'packageCode','packageName','py','wb','zdy','remarks');
         this.$nextTick(() => {
           this.form.setFieldsValue(fieldval);
-          this.totalSum = this.model.sum;
+          this.totalSum = this.model.packageSum;
           // 加载子表数据
           if (this.model.id) {
             let params = { id: this.model.id }
@@ -241,7 +241,7 @@
             getAction(this.url.init, {id:""}).then((res) => {
               if (res.success) {
                 this.$nextTick(() => {
-                  this.form.setFieldsValue({code:res.result.code});
+                  this.form.setFieldsValue({packageCode:res.result.packageCode});
                 })
               }
             })
@@ -261,7 +261,7 @@
         this.$message.error(msg)
       },
       popupCallback(row){
-        this.form.setFieldsValue(pick(row,'code','name','py','wb','zdy','remarks'))
+        this.form.setFieldsValue(pick(row,'packageCode','packageName','py','wb','zdy','remarks'))
       },
       pinyinTran(e){
         let val = e.target.value;
@@ -307,7 +307,7 @@
           }
 
           // 发起请求
-          formData.sum = this.totalSum;
+          formData.packageSum = this.totalSum;
           return this.request(formData)
         }).catch(e => {
           if (e.error === VALIDATE_NO_PASSED) {

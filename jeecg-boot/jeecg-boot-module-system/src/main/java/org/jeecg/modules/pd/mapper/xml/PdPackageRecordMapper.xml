@@ -4,22 +4,22 @@
     <select id="queryList" resultType="org.jeecg.modules.pd.entity.PdPackageRecord" parameterType="org.jeecg.modules.pd.entity.PdPackageRecord">
         SELECT
         a.*,
-        c.code,
-        c.name,
-        c.sum
+        c.package_code,
+        c.package_name,
+        c.package_sum
         FROM
         pd_package_record a
         LEFT JOIN pd_package c ON a.package_id = c.id
         <where>
             a.del_flag = #{DEL_FLAG_NORMAL}
-            <if test="name != null and name != ''">
-                AND ( c.name LIKE concat('%',#{name},'%')
-                or c.py LIKE concat('%',#{name},'%')
-                or c.wb LIKE concat('%',#{name},'%')
-                or c.zdy LIKE concat('%',#{name},'%') )
+            <if test="packageName != null and packageName != ''">
+                AND ( c.package_name LIKE concat('%',#{packageName},'%')
+                or c.py LIKE concat('%',#{packageName},'%')
+                or c.wb LIKE concat('%',#{packageName},'%')
+                or c.zdy LIKE concat('%',#{packageName},'%') )
             </if>
-            <if test="code != null and code != ''">
-                AND c.code LIKE concat('%',#{code},'%')
+            <if test="packageCode != null and packageCode != ''">
+                AND c.package_code LIKE concat('%',#{packageCode},'%')
             </if>
             <if test="packageBarCode != null and packageBarCode != ''">
                 AND a.package_bar_code = #{packageBarCode}

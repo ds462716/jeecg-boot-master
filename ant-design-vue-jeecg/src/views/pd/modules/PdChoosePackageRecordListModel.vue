@@ -15,12 +15,12 @@
           <a-row :gutter="24">
             <a-col :md="5" :sm="8">
               <a-form-item label="定数包编号">
-                <a-input placeholder="请输入定数包编号" v-model="queryParam.code"></a-input>
+                <a-input placeholder="请输入定数包编号" v-model="queryParam.packageCode"></a-input>
               </a-form-item>
             </a-col>
             <a-col :md="5" :sm="8">
               <a-form-item label="定数包名称">
-                <a-input placeholder="请输入定数包名称" v-model="queryParam.name"></a-input>
+                <a-input placeholder="请输入定数包名称" v-model="queryParam.packageName"></a-input>
               </a-form-item>
             </a-col>
             <!--<template v-if="toggleSearchStatus">-->
@@ -119,10 +119,10 @@
               return parseInt(index)+1;
             }
           },
-          { title:'定数包编号', align:"center", dataIndex: 'code' },
+          { title:'定数包编号', align:"center", dataIndex: 'packageCode' },
           { title:'定数包条码', align:"center", dataIndex: 'packageBarCode' },
-          { title:'定数包名称', align:"center", dataIndex: 'name' },
-          { title:'产品总数', align:"center", dataIndex: 'sum' },
+          { title:'定数包名称', align:"center", dataIndex: 'packageName' },
+          { title:'产品总数', align:"center", dataIndex: 'packageSum' },
           { title:'打包人', align:"center", dataIndex: 'createBy' },
           { title:'打包时间', align:"center", dataIndex: 'createTime',
             customRender:function (text) {

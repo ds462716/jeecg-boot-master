@@ -185,3 +185,8 @@ INSERT INTO `sys_permission`(`id`, `parent_id`, `name`, `url`, `component`, `com
 INSERT INTO `sys_dict` (`id`, `dict_name`, `dict_code`, `description`, `del_flag`, `create_by`, `create_time`, `update_by`, `update_time`, `type`) VALUES ('1254304620731985922', '定数包打包记录状态', 'package_record_status', '', 0, 'admin', '2020-04-26 15:01:40', NULL, '2020-04-26 15:01:40', 0);
 INSERT INTO `sys_dict_item` (`id`, `dict_id`, `item_text`, `item_value`, `description`, `sort_order`, `status`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES ('1254304707726045186', '1254304620731985922', '已出库', '0', '', 1, 1, 'admin', '2020-04-26 15:02:01', NULL, '2020-04-26 15:02:01');
 INSERT INTO `sys_dict_item` (`id`, `dict_id`, `item_text`, `item_value`, `description`, `sort_order`, `status`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES ('1254304737581101058', '1254304620731985922', '未出库', '1', '', 1, 1, 'admin', '2020-04-26 15:02:08', NULL, '2020-04-26 15:02:08');
+-- add by jiangxz 2020年4月26日14:14:30 定数包字段名称修改
+ALTER TABLE `pd_package`
+CHANGE COLUMN `code` `package_code` varchar(32) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '定数包编号' AFTER `id`,
+CHANGE COLUMN `name` `package_name` varchar(200) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '定数包名称' AFTER `package_code`,
+CHANGE COLUMN `sum` `package_sum` double(11, 2) NULL DEFAULT NULL COMMENT '产品总数' AFTER `package_name`;
