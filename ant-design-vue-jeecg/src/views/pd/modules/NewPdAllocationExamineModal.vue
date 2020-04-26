@@ -196,33 +196,47 @@
         table2:{
           dataSource:[],
           columns: [
-            {title: '#', dataIndex: 'packageId', key:'rowIndex', width:60, align:"center",
+            {title: '#', dataIndex: 'packageRecordId', key:'rowIndex', width:60, align:"center",
               customRender:function (t,r,index) {
                 return parseInt(index)+1;
               }
             },
             {title:'定数包编号', align:"center",key:"packageCode", dataIndex: 'packageCode'},
             {title:'定数包名称', align:"center", key:"packageName",dataIndex: 'packageName'},
-            {title:'产品总数', align:"center", key:"packageNum",dataIndex: 'packageNum'},
-            {title:'调拨数量', align:"center",key:"allocationNum",width: 100, dataIndex: 'allocationNum',},
+            { title:'定数包条码', align:"center", dataIndex: 'packageBarCode' },
+            {title:'产品总数', align:"center", key:"packageSum",dataIndex: 'packageSum'},
+            {title:'调拨数量', align:"center",key:"allocationNum", dataIndex: 'allocationNum'},
+            { title:'打包人', align:"center", dataIndex: 'createBy' },
             {title:'备注', align:"center", key:"remarks",dataIndex: 'remarks'}
           ]
         },
         innerColumns:[
-          {title:'定数包编号', align:"center", width: 100, dataIndex: 'code'},
-          {title:'定数包名称', align:"center", width: 100, dataIndex: 'name'},
-          {title:'定数包产品数量', align:"center", width: 100, dataIndex: 'count'},
-          {title:'产品编号', align:"center", width: 100, dataIndex: 'number'},
-          {title:'产品名称', align:"center", dataIndex: 'productName'},
-          {title:'规格', align:"center", dataIndex: 'spec'},
-          {title:'型号', align:"center", dataIndex: 'version'},
-          {title:'单位', align:"center", dataIndex: 'unitName'},
-          /*{title:'库存数量', align:"center", dataIndex: 'stockNum'},*/
+          { title:'产品名称', align:"center", dataIndex: 'productName' },
+          { title:'产品编号', align:"center", dataIndex: 'productNumber' },
+          { title:'产品条码', align:"center",dataIndex: 'productBarCode' },
+          { title:'规格', align:"center", dataIndex: 'spec' },
+          { title:'批号', align:"center", dataIndex: 'batchNo' },
+          { title:'单位', align:"center", dataIndex: 'unitName' },
+          { title:'有效期', align:"center", dataIndex: 'expDate',
+            customRender:function (text) {
+              return !text?"":(text.length>10?text.substr(0,10):text)
+            }
+          },
+          { title:'入库单价', align:"center", dataIndex: 'purchasePrice' },
+          { title:'出库单价', align:"center", dataIndex: 'sellingPrice' },
+          { title:'定数包产品数量', align:"center", dataIndex: 'productNum' },
+          { title:'出库金额', align:"center", dataIndex: 'outTotalPrice' },
+          { title:'库存数量', align:"center", dataIndex: 'stockNum' },
+          { title: '出库货位', align:"center", dataIndex: 'outHuoweiName' },
+          { title: '生产日期', align:"center", dataIndex: 'produceDate',
+            customRender:function (text) {
+              return !text?"":(text.length>10?text.substr(0,10):text)
+            }}
         ],
         url: {
           edit: "/pd/pdAllocationRecord/editAllocationInf",
           exportXlsUrl: "/pd/pdAllocationRecord/exportXls",
-          chooseDetailList:"/pd/pdPackage/queryPdPackageDetailList",
+          chooseDetailList:"/pd/pdPackageRecord/queryPdPackageRecordDetailByMainId",
           pdAllocationDetail: {
             list: '/pd/pdAllocationRecord/queryPdAllocationDetailList',
             packList: '/pd/pdAllocationRecord/queryAllocationDetailPack'
@@ -241,7 +255,7 @@
         if(expanded===true){
           this.subloading = true;
           this.expandedRowKeys.push(record.packageId);
-          getAction(this.url.chooseDetailList, {packageId: record.packageId}).then((res) => {
+          getAction(this.url.chooseDetailList, {id: record.packageRecordId}).then((res) => {
             if (res.success) {
               this.subloading = false;
               this.innerData = res.result;

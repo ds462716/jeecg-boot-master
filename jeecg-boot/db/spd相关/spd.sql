@@ -190,3 +190,9 @@ ALTER TABLE `pd_package`
 CHANGE COLUMN `code` `package_code` varchar(32) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '定数包编号' AFTER `id`,
 CHANGE COLUMN `name` `package_name` varchar(200) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '定数包名称' AFTER `package_code`,
 CHANGE COLUMN `sum` `package_sum` double(11, 2) NULL DEFAULT NULL COMMENT '产品总数' AFTER `package_name`;
+
+-- add by mcb 2020年4月26日19:14:30 增加打包记录id
+ALTER TABLE `pd_apply_detail`
+ADD COLUMN `package_record_id` varchar(64) NULL COMMENT '打包记录id';
+ALTER TABLE `pd_allocation_detail`
+ADD COLUMN `package_record_id` varchar(64) NULL COMMENT '打包记录id';
