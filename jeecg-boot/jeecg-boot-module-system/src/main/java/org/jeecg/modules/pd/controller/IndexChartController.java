@@ -82,6 +82,8 @@ public class IndexChartController {
         LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
         //查询科室下所有下级科室的ID
         SysDepart depart=new SysDepart();
+        depart.setDepartId(sysUser.getCurrentDepartId());
+        depart.setDepartParentId(sysUser.getDepartParentId());
         List<String> departList=pdDepartService.selectListDepart(depart);
         //采购量统计
         PdPurchaseOrderPage purchaseOrderPage=new  PdPurchaseOrderPage();
@@ -153,6 +155,8 @@ public class IndexChartController {
         LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
         //查询科室下所有下级科室的ID
         SysDepart depart=new SysDepart();
+        depart.setDepartId(sysUser.getCurrentDepartId());
+        depart.setDepartParentId(sysUser.getDepartParentId());
         List<String> departList=pdDepartService.selectListDepart(depart);
         PdPurchaseOrderPage purchaseOrderPage=new  PdPurchaseOrderPage();
         purchaseOrderPage.setDepartIdList(departList);
@@ -176,6 +180,8 @@ public class IndexChartController {
         LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
         //查询科室下所有下级科室的ID
         SysDepart depart=new SysDepart();
+        depart.setDepartId(sysUser.getCurrentDepartId());
+        depart.setDepartParentId(sysUser.getDepartParentId());
         List<String> departList=pdDepartService.selectListDepart(depart);
         PdApplyOrderPage applyOrderPage=new  PdApplyOrderPage();
         applyOrderPage.setDepartIdList(departList);
@@ -199,6 +205,8 @@ public class IndexChartController {
         LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
         //查询科室下所有下级科室的ID
         SysDepart depart=new SysDepart();
+        depart.setDepartId(sysUser.getCurrentDepartId());
+        depart.setDepartParentId(sysUser.getDepartParentId());
         List<String> departList=pdDepartService.selectListDepart(depart);
         PdDosage dosage=new  PdDosage();
         dosage.setDepartIdList(departList);
@@ -221,6 +229,8 @@ public class IndexChartController {
         LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
         //查询科室下所有下级科室的ID
         SysDepart depart=new SysDepart();
+        depart.setDepartId(sysUser.getCurrentDepartId());
+        depart.setDepartParentId(sysUser.getDepartParentId());
         List<String> departList=pdDepartService.selectListDepart(depart);
         PdProductStock productStock=new  PdProductStock();
         productStock.setDepartIdList(departList);
@@ -245,12 +255,14 @@ public class IndexChartController {
         LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
         //查询科室下所有下级科室的ID
         SysDepart depart=new SysDepart();
+        depart.setDepartId(sysUser.getCurrentDepartId());
+        depart.setDepartParentId(sysUser.getDepartParentId());
         List<String> departList=pdDepartService.selectListDepart(depart);
-        if("purchase".equals(type)){//采购耗材分类统计
-            PdPurchaseOrderPage purchaseOrderPage=new  PdPurchaseOrderPage();
-            purchaseOrderPage.setDepartIdList(departList);
-            purchaseOrderPage.setDepartParentId(sysUser.getDepartParentId());
-            orderCountDate=pdPurchaseOrderService.queryPurchaseOrderTotalList(purchaseOrderPage);
+        if("stock".equals(type)){//库存耗材分类统计
+            PdProductStock  stock =new  PdProductStock();
+            stock.setDepartIdList(departList);
+            stock.setDepartParentId(sysUser.getDepartParentId());
+            orderCountDate=pdProductStockService.queryStockTotalList(stock);
         }else if("apply".equals(type)){//申领耗材分类统计
             PdApplyOrderPage applyOrderPage=new  PdApplyOrderPage();
             applyOrderPage.setDepartIdList(departList);
@@ -261,11 +273,11 @@ public class IndexChartController {
              dosage.setDepartIdList(departList);
              dosage.setDepartParentId(sysUser.getDepartParentId());
             orderCountDate=dosageService.queryPurchaseOrderTotalList(dosage);
-        }else {//库存耗材分类统计
-            PdProductStock  stock =new  PdProductStock();
-            stock.setDepartIdList(departList);
-            stock.setDepartParentId(sysUser.getDepartParentId());
-            orderCountDate=pdProductStockService.queryStockTotalList(stock);
+        }else {//采购耗材分类统计
+            PdPurchaseOrderPage purchaseOrderPage=new  PdPurchaseOrderPage();
+            purchaseOrderPage.setDepartIdList(departList);
+            purchaseOrderPage.setDepartParentId(sysUser.getDepartParentId());
+            orderCountDate=pdPurchaseOrderService.queryPurchaseOrderTotalList(purchaseOrderPage);
         }
         map.put("orderCountDate",orderCountDate);
         return Result.ok(map);

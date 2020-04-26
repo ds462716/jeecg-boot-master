@@ -483,4 +483,68 @@ public class PdProductStockTotalController {
 		return Result.ok(page);
 	}
 
+
+
+
+	/**
+	 *库存规格数量清零
+	 *
+	 * @param productStock
+	 * @return
+	 */
+	@PutMapping(value = "/updateStockSpecNum")
+	public Result<?> updateStockSpecNum(@RequestBody PdProductStock productStock) {
+		pdProductStockTotalService.updateStockSpecNum(productStock);
+		return Result.ok("操作成功!");
+	}
+
+
+	/**
+	 * 设置库存上下线数值
+	 *
+	 * @param pdProductStockTotalPage
+	 * @return
+	 */
+	/*@PutMapping(value = "/updateStockSpecNum")
+	public Result<?> updateStockSpecNum(@RequestBody PdProductStockTotalPage pdProductStockTotalPage) {
+		/*String ids = pdProductStockTotalPage.getIds();
+		Double upNum=pdProductStockTotalPage.getLimitUp();
+		Double downNum=pdProductStockTotalPage.getLimitDown();
+		List arr = Arrays.asList(ids.split(","));
+		for (int i = 0; i < arr.size(); i++) {
+			String id=(String)arr.get(i);
+			PdProductStockTotal stockTotal =new PdProductStockTotal();
+			stockTotal.setId(id);
+			//先查询库存上限或下限数量，比较设置的上限值不能小于当前下限值；
+			PdProductStockTotal stock_total = pdProductStockTotalService.getById(id);
+			if (ObjectUtils.isNotEmpty(downNum) ) {//下限
+				Double  limitUp= stock_total.getLimitUp();
+				if(ObjectUtils.isNotEmpty(limitUp)){
+					if(limitUp > downNum){
+						stockTotal.setLimitDown(downNum);
+					}else{
+						return Result.error("库存下限不能大于库存上限");
+					}
+				}else{
+					stockTotal.setLimitDown(downNum);
+				}
+
+			}
+			if (ObjectUtils.isNotEmpty(upNum)) {//上限
+				Double  limitDown= stock_total.getLimitDown();
+				if(ObjectUtils.isNotEmpty(limitDown)){
+					if(upNum > limitDown){
+						stockTotal.setLimitUp(upNum);
+					}else{
+						return Result.error("库存上限必须大于库存下限");
+					}
+				}else{
+					stockTotal.setLimitUp(upNum);
+				}
+			}
+			pdProductStockTotalService.updateProductStockTotal(stockTotal);
+		}*/
+		/*return Result.ok("设置成功!");
+	}*/
+
 }

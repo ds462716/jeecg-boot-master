@@ -53,7 +53,8 @@
         c.selling_price as "sellingPrice",
         c.charge_code  as "chargeCode",
         c.is_charge  as "isCharge",
-        c.jde_code as "jdeCode"
+        c.jde_code as "jdeCode",
+        c.product_flag as "productFlag"
 	</sql>
 	<sql id="pdProductJoins">
         LEFT JOIN pd_product c ON c.id = a.product_id
@@ -414,14 +415,23 @@
 	<select id="queryStockTotalList" resultType="java.util.Map" >
 		select
 		IFNULL(d.name,'其他') as x,
-		sum(a.stock_num)  as y ,
-		sum(c.selling_price *  a.stock_num) as z
+		sum(c.selling_price *  a.stock_num) as y,
+		sum(a.stock_num)  as z
 		from pd_product_stock a
 		left join pd_product c on a.product_id=c.id
 		left join pd_category d on d.id=c.category_two
 		where
 		DATE_SUB(CURDATE(), INTERVAL 30 DAY) &lt;= date(a.create_time)
 		and date(a.create_time) &lt;=CURDATE()
+		<if test="departIdList != null and departIdList.size() > 0">
+			and a.depart_id IN
+			<foreach collection="departIdList" item="item" separator="," open="(" close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="departParentId != null and departParentId != ''">
+			AND a.depart_parent_id = #{departParentId}
+		</if>
 		group by x  order by y desc
     </select>
 

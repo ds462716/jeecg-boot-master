@@ -53,6 +53,8 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
     @Autowired
     private PdAllocationDetailMapper pdAllocationDetailMapper;
     @Autowired
+    private PdPackageRecordMapper pdPackageRecordMapper;
+    @Autowired
     private IPdProductStockTotalService pdProductStockTotalService;
     @Autowired
     private IPdStockLogService pdStockLogService;
@@ -78,6 +80,10 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
     private PushMsgUtil pushMsgUtil;
     @Autowired
     private IPdProductService pdProductService;
+    @Autowired
+    private IPdPackageRecordService pdPackageRecordService;
+    @Autowired
+    private IPdPackageRecordDetailService pdPackageRecordDetailService;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -506,6 +512,8 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
             List<PdStockRecordDetail> pdStockRecordDetailList = pdStockRecordDetailMapper.selectByMainId(pdStockRecordDetail);
             pdStockRecord.setPdStockRecordDetailList(pdStockRecordDetailList);
 
+            Set<String> packageRecordIdSet = new HashSet<>();
+
             // 0.更新申领单或调拨单 发货数量
             if (CollectionUtils.isNotEmpty(pdStockRecordDetailList)) {
                 Double arrivalApplyCount = 0D;
@@ -530,6 +538,11 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
                         pdAllocationDetailMapper.additionArrivalNum(pdAllocationDetail);
                         arrivalAllocationCount = arrivalAllocationCount + entity.getProductNum();
                     }
+
+                    // 取定数包打包记录ID
+                    if(oConvertUtils.isNotEmpty(entity.getPackageRecordId())){
+                        packageRecordIdSet.add(entity.getPackageRecordId());
+                    }
                 }
 
                 //更新申领单发货总数量
@@ -552,6 +565,7 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
 
             //1.处理出库库存
             String inStr = pdProductStockTotalService.updateOutStock(pdStockRecord);
+
             //2.保存出库日志记录
             this.saveStockLog(pdStockRecord, "", outType);
 
@@ -571,7 +585,19 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
 
             //5.处理入库库存
             String inStr2 = pdProductStockTotalService.updateInStock(inRecord);
-            //6.保存入库日志记录
+
+            //6.处理订书包记录（修改状态为已出库）
+            if(packageRecordIdSet != null && packageRecordIdSet.size() > 0){
+                List<String> packageRecordIdList = new ArrayList<>(packageRecordIdSet);
+                for (String id : packageRecordIdList) {
+                    PdPackageRecord pdPackageRecord = new PdPackageRecord();
+                    pdPackageRecord.setId(id);
+                    pdPackageRecord.setStatus(PdConstant.PACKAGE_RECORD_STATUS_0);//已出库
+                    pdPackageRecordMapper.updateById(pdPackageRecord);
+                }
+            }
+
+            //7.保存入库日志记录
             this.saveStockLog(inRecord, PdConstant.IN_TYPE_1, "");
 
             if (PdConstant.TRUE.equals(inStr) && PdConstant.TRUE.equals(inStr2)) {
@@ -739,10 +765,12 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
                 pdStockRecord.setAuditByName(sysUser.getRealname());
             }
 
-            //查入库单明细
+            //查出库单明细
             PdStockRecordDetail pdStockRecordDetail = new PdStockRecordDetail();
             pdStockRecordDetail.setRecordId(id);
             List<PdStockRecordDetail> pdStockRecordDetailList = pdStockRecordDetailService.selectByMainId(pdStockRecordDetail);
+            List<PdStockRecordDetail> pdStockRecordDetailListWithOutPackage = new ArrayList<>();
+            Set<String> packageRecordIdSet = new HashSet<>();
             BigDecimal inTotalPrice = new BigDecimal(0);//总金额
             BigDecimal outTotalPrice = new BigDecimal(0);//总金额
             Double totalSum = new Double(0);//总数量
@@ -752,11 +780,32 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
                 BigDecimal purchasePrice = item.getPurchasePrice() == null ? new BigDecimal(0) : item.getPurchasePrice();
                 outTotalPrice = outTotalPrice.add(sellingPrice.multiply(BigDecimal.valueOf(item.getProductNum())).setScale(4, BigDecimal.ROUND_HALF_UP));
                 inTotalPrice = inTotalPrice.add(purchasePrice.multiply(BigDecimal.valueOf(item.getProductNum())).setScale(4, BigDecimal.ROUND_HALF_UP));
+
+                // 分离定数包的出库明细，页面上需分开展示
+                if(oConvertUtils.isEmpty(item.getPackageRecordId())){
+                    pdStockRecordDetailListWithOutPackage.add(item);
+                }else{
+                    packageRecordIdSet.add(item.getPackageRecordId());
+                }
             }
+
             pdStockRecord.setTotalSum(totalSum);
             pdStockRecord.setInTotalPrice(inTotalPrice);
             pdStockRecord.setOutTotalPrice(outTotalPrice);
-            pdStockRecord.setPdStockRecordDetailList(pdStockRecordDetailList);
+//            pdStockRecord.setPdStockRecordDetailList(pdStockRecordDetailList);
+            pdStockRecord.setPdStockRecordDetailList(pdStockRecordDetailListWithOutPackage);
+            //定数包 出库明细
+            if(packageRecordIdSet.size() > 0){
+                PdPackageRecord pdPackageRecord = new PdPackageRecord();
+                pdPackageRecord.setDepartParentId(sysUser.getDepartParentId());
+                pdPackageRecord.setIdList(new ArrayList<>(packageRecordIdSet));
+                List<PdPackageRecord> pdPackageRecordList = pdPackageRecordService.queryList(pdPackageRecord);
+                for (PdPackageRecord record : pdPackageRecordList) {
+                    List<PdPackageRecordDetail> detailList = pdPackageRecordDetailService.selectByMainId(record.getId());
+                    record.setPdPackageRecordDetailList(detailList);
+                }
+                pdStockRecord.setPdPackageRecordList(pdPackageRecordList);
+            }
 
             //查申领单列表
             if (oConvertUtils.isNotEmpty(pdStockRecord.getApplyNo())) {

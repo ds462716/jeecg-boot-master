@@ -73,6 +73,17 @@
         </a-form>
       </div>
       <!-- 查询区域-END -->
+      <!-- 操作按钮区域 -->
+
+      <div class="table-operator">
+        <a-button v-show="this.model.productFlag=='1'" @click="handleUpdate()" type="primary"  >规格数量清零</a-button>
+      </div>
+      <hr/>
+      <div>
+          <div class="ant-alert ant-alert-info" style="margin-bottom: 16px;">
+            <i class="anticon anticon-info-circle ant-alert-icon"></i> 已选择 <a style="font-weight: 600">{{ selectedRowKeys.length }}</a>项
+            <a style="margin-left: 24px" @click="onClearSelected">清空</a>
+          </div>
       <a-table
         ref="table"
         size="middle"
@@ -84,6 +95,7 @@
         :rowClassName="setdataCss"
         :loading="loading"
         :scroll="tableScroll"
+        :rowSelection="{fixed:false,selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
         @change="handleTableChange">
          <span slot="action" slot-scope="text, record">
           <a  @click="yiHuoWei(record)">移库</a>
@@ -91,9 +103,14 @@
         <a v-bind:disabled="record.produceDate!=null" @click="handleEdit(record)">修改</a>
          </span>
       </a-table>
+      </div>
     </a-spin>
+    <!--修改-->
      <pd-update-stock-modal ref="PdUpdateStockModal" @ok="modalFormOk"></pd-update-stock-modal>
+    <!--移庫-->
      <pd-stock-huo-wei-modal ref="PdStockHuoWeiModal" @ok="modalFormOk"></pd-stock-huo-wei-modal>
+     <!--規格數量清零-->
+     <pd-product-stock-spec-modal ref="modalForm1" @ok="modalFormOk"></pd-product-stock-spec-modal>
   </a-modal>
 </template>
 
@@ -105,6 +122,7 @@
   import {initDictOptions, filterMultiDictText} from '@/components/dict/JDictSelectUtil'
   import PdUpdateStockModal from './PdUpdateStockModal'
   import PdStockHuoWeiModal from './PdStockHuoWeiModal'
+  import PdProductStockSpecModal from './PdProductStockSpecModal'
   import JDate from "../../../components/jeecg/JDate";
 
   const VALIDATE_NO_PASSED = Symbol()
@@ -115,7 +133,8 @@
     components: {
       JDate,
       PdUpdateStockModal,
-      PdStockHuoWeiModal
+      PdStockHuoWeiModal,
+      PdProductStockSpecModal
     },
     data () {
       return {
@@ -151,11 +170,6 @@
             title:'规格',
             align:"center",
             dataIndex: 'spec'
-          },
-          {
-            title:'型号',
-            align:"center",
-            dataIndex: 'version'
           },
           {
             title:'批号',
@@ -196,6 +210,16 @@
             title:'数量',
             align:"center",
             dataIndex: 'stockNum'
+          },
+          {
+            title:'规格单位',
+            align:"center",
+            dataIndex: 'specUnitId'
+          },
+          {
+            title:'库存规格数量',
+            align:"center",
+            dataIndex: 'specNum'
           },
           {
             title:'是否过期',
@@ -274,6 +298,32 @@
         this.loadData(1);
       },
 
+
+      handleUpdate() { //规格库存数量清零
+        if (this.selectedRowKeys.length <= 0) {
+          this.$message.warning('请勾选需要清零的数据！');
+          return;
+        }
+        let  ids="";
+        let batchNos="";
+        //只能是使用中的试剂才能清零
+        this.selectionRows.forEach(function(item,index){
+          if(item.nestatStatus != '0') {
+            batchNos+=item.batchNo+",";
+          }else{
+            ids +=item.id+",";
+          }
+        });
+
+         if(batchNos !=""){
+           this.$message.warning("只能清零已使用的规格库存数量！");
+           return;
+         }
+        this.$refs.modalForm1.edit({"ids":ids});
+        this.$refs.modalForm1.title ="清零原因"
+        this.$refs.modalForm1.disableSubmit = false;
+      },
+
       edit (record) {
         this.form.resetFields();
         this.model = Object.assign({}, record);
@@ -349,3 +399,5 @@
     background-color:#FF3333;
   }
 </style>
+
+

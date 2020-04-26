@@ -294,15 +294,24 @@
     <select id="queryPurchaseOrderTotalList" resultType="java.util.Map" >
         select
         IFNULL(d.name,'其他') as x,
-        sum(a.total_price) as y,
-        sum(a.total_num) as z
+        sum(b.order_money) as y,
+        sum(b.order_num) as z
         from pd_purchase_order a
         left join pd_purchase_detail b on a.order_no=b.order_no
         left join pd_product c on b.product_id=c.id
         left join pd_category d on d.id=c.category_two
-        where a.del_flag='0'
+        where a.del_flag='0'  AND a.audit_status='2'
         AND  DATE_SUB(CURDATE(), INTERVAL 30 DAY) &lt;= date(a.order_date)
         and date(a.order_date) &lt;=CURDATE()
+        <if test="departIdList != null and departIdList.size() > 0">
+            and a.depart_id IN
+            <foreach collection="departIdList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="departParentId != null and departParentId != ''">
+            AND a.depart_parent_id = #{departParentId}
+        </if>
         group by x  order by y desc
     </select>
 </mapper>

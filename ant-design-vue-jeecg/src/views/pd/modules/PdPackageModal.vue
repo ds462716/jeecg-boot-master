@@ -156,6 +156,11 @@
               type: FormTypes.hidden
             },
             {
+              title: '产品编号',
+              align:"center",
+              key: 'productNumber'
+            },
+            {
               title: '产品名称',
               align:"center",
               key: 'productName'
@@ -364,6 +369,7 @@
         let data = {
           productId: row.productId,
           productName: row.productName,
+          productNumber : row.number,
           spec: row.spec,
           unitName: row.unitName,
           venderName: row.venderName,
