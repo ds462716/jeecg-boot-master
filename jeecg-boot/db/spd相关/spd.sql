@@ -175,6 +175,9 @@ CREATE TABLE `ex_inspection_items_detail` (
 ALTER TABLE `pd_stock_record_detail`
 CHANGE COLUMN `package_id` `package_record_id` varchar(36) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '打包记录ID' AFTER `exp_date`;
 
--- add by jiangxz 2020年4月25日 库存明细增加规格库存数量清零原因字段
+-- add by mcb 2020年4月25日 库存明细增加规格库存数量清零原因字段
 ALTER TABLE `pd_product_stock`
 ADD COLUMN `reason` varchar(2000) NULL COMMENT '规格库存数量清零原因';
+
+-- add by jiangxz 2020年4月26日14:14:30 定数包打包记录 菜单
+INSERT INTO `sys_permission`(`id`, `parent_id`, `name`, `url`, `component`, `component_name`, `redirect`, `menu_type`, `business_type`, `perms`, `perms_type`, `sort_no`, `always_show`, `icon`, `is_route`, `is_leaf`, `keep_alive`, `hidden`, `description`, `create_by`, `create_time`, `update_by`, `update_time`, `del_flag`, `rule_flag`, `status`, `internal_or_external`) VALUES ('1254291714732748802', '1218784892172963842', '定数包打包记录', '/pd/PdPackageRecordList', 'pd/PdPackageRecordList', NULL, NULL, 1, '0', NULL, '1', 1.10, 0, NULL, 1, 1, 0, 0, NULL, 'admin', '2020-04-26 14:10:23', NULL, '2020-04-26 14:10:23', 0, 0, '1', 0);
