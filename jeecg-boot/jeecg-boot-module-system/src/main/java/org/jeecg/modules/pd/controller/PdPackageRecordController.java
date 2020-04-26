@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.jeecg.common.constant.PdConstant;
 import org.jeecgframework.poi.excel.ExcelImportUtil;
 import org.jeecgframework.poi.excel.def.NormalExcelConstants;
 import org.jeecgframework.poi.excel.entity.ExportParams;
@@ -76,6 +77,19 @@ public class PdPackageRecordController {
         Page<PdPackageRecord> page = new Page<PdPackageRecord>(pageNo, pageSize);
         LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
         pdPackageRecord.setDepartParentId(sysUser.getDepartParentId());
+        IPage<PdPackageRecord> pageList = pdPackageRecordService.queryList(page, pdPackageRecord);
+        return Result.ok(pageList);
+    }
+
+    @GetMapping(value = "/pdChoosePackageRecordList")
+    public Result<?> pdChoosePackageRecordList(PdPackageRecord pdPackageRecord,
+                                   @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
+                                   @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
+                                   HttpServletRequest req) {
+        Page<PdPackageRecord> page = new Page<PdPackageRecord>(pageNo, pageSize);
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        pdPackageRecord.setDepartParentId(sysUser.getDepartParentId());
+        pdPackageRecord.setStatus(PdConstant.PACKAGE_RECORD_STATUS_1);
         IPage<PdPackageRecord> pageList = pdPackageRecordService.queryList(page, pdPackageRecord);
         return Result.ok(pageList);
     }

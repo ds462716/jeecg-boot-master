@@ -224,7 +224,7 @@
           },
         ],
         url: {
-          list: "/pd/pdPackageRecord/list",
+          list: "/pd/pdPackageRecord/pdChoosePackageRecordList",
           queryPackageRecordListByIds: "/pd/pdPackageRecord/queryPackageRecordListByIds",
           chooseDetailList:"/pd/pdPackageRecord/queryPdPackageRecordDetailByMainId",
         },

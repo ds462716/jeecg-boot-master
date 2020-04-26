@@ -53,6 +53,8 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
     @Autowired
     private PdAllocationDetailMapper pdAllocationDetailMapper;
     @Autowired
+    private PdPackageRecordMapper pdPackageRecordMapper;
+    @Autowired
     private IPdProductStockTotalService pdProductStockTotalService;
     @Autowired
     private IPdStockLogService pdStockLogService;
@@ -510,6 +512,8 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
             List<PdStockRecordDetail> pdStockRecordDetailList = pdStockRecordDetailMapper.selectByMainId(pdStockRecordDetail);
             pdStockRecord.setPdStockRecordDetailList(pdStockRecordDetailList);
 
+            Set<String> packageRecordIdSet = new HashSet<>();
+
             // 0.更新申领单或调拨单 发货数量
             if (CollectionUtils.isNotEmpty(pdStockRecordDetailList)) {
                 Double arrivalApplyCount = 0D;
@@ -534,6 +538,11 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
                         pdAllocationDetailMapper.additionArrivalNum(pdAllocationDetail);
                         arrivalAllocationCount = arrivalAllocationCount + entity.getProductNum();
                     }
+
+                    // 取定数包打包记录ID
+                    if(oConvertUtils.isNotEmpty(entity.getPackageRecordId())){
+                        packageRecordIdSet.add(entity.getPackageRecordId());
+                    }
                 }
 
                 //更新申领单发货总数量
@@ -556,6 +565,7 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
 
             //1.处理出库库存
             String inStr = pdProductStockTotalService.updateOutStock(pdStockRecord);
+
             //2.保存出库日志记录
             this.saveStockLog(pdStockRecord, "", outType);
 
@@ -575,7 +585,19 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
 
             //5.处理入库库存
             String inStr2 = pdProductStockTotalService.updateInStock(inRecord);
-            //6.保存入库日志记录
+
+            //6.处理订书包记录（修改状态为已出库）
+            if(packageRecordIdSet != null && packageRecordIdSet.size() > 0){
+                List<String> packageRecordIdList = new ArrayList<>(packageRecordIdSet);
+                for (String id : packageRecordIdList) {
+                    PdPackageRecord pdPackageRecord = new PdPackageRecord();
+                    pdPackageRecord.setId(id);
+                    pdPackageRecord.setStatus(PdConstant.PACKAGE_RECORD_STATUS_0);//已出库
+                    pdPackageRecordMapper.updateById(pdPackageRecord);
+                }
+            }
+
+            //7.保存入库日志记录
             this.saveStockLog(inRecord, PdConstant.IN_TYPE_1, "");
 
             if (PdConstant.TRUE.equals(inStr) && PdConstant.TRUE.equals(inStr2)) {

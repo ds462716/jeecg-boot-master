@@ -243,4 +243,9 @@ public interface PdConstant {
     public final static String STOCK_NESTAT_STATUS_0="0";//使用中
     public final static String STOCK_NESTAT_STATUS_1="1";//未使用
     public final static String STOCK_NESTAT_STATUS_2="2";//已用完
+
+	//定数包打包记录出库状态
+	public final static String PACKAGE_RECORD_STATUS_0="0";//出库状态：0-已出库；1-未出库
+	public final static String PACKAGE_RECORD_STATUS_1="1";//出库状态：0-已出库；1-未出库
+
 }

@@ -12,7 +12,6 @@
         LEFT JOIN pd_package c ON a.package_id = c.id
         <where>
             a.del_flag = #{DEL_FLAG_NORMAL}
-            AND a.STATUS = '1'
             <if test="packageBarCode != null and packageBarCode != ''">
                 AND a.packageBarCode LIKE concat('%',#{packageBarCode},'%')
             </if>
@@ -24,6 +23,9 @@
             </if>
             <if test="code != null and code != ''">
                 AND c.code LIKE concat('%',#{code},'%')
+            </if>
+            <if test="status != null and status != ''">
+                AND a.status = #{status}
             </if>
             <if test="departParentId != null and departParentId != ''">
                 AND a.depart_parent_id = #{departParentId}
