@@ -12,9 +12,6 @@
         LEFT JOIN pd_package c ON a.package_id = c.id
         <where>
             a.del_flag = #{DEL_FLAG_NORMAL}
-            <if test="packageBarCode != null and packageBarCode != ''">
-                AND a.packageBarCode LIKE concat('%',#{packageBarCode},'%')
-            </if>
             <if test="name != null and name != ''">
                 AND ( c.name LIKE concat('%',#{name},'%')
                 or c.py LIKE concat('%',#{name},'%')
@@ -23,6 +20,9 @@
             </if>
             <if test="code != null and code != ''">
                 AND c.code LIKE concat('%',#{code},'%')
+            </if>
+            <if test="packageBarCode != null and packageBarCode != ''">
+                AND a.package_bar_code = #{packageBarCode}
             </if>
             <if test="status != null and status != ''">
                 AND a.status = #{status}

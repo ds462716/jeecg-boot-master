@@ -111,7 +111,7 @@
                 <a-row>
                   <a-col :md="6" :sm="8">
                     <a-form-item label="定数包条码" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                      <a-input ref="packageBarCodeInput" placeholder="请输入定数包条码" v-model="queryParam.packageBarCode" @keyup.enter.native="searchQueryPackage(0)"></a-input>
+                      <a-input ref="packageBarCodeInput" placeholder="请输入定数包条码" v-model="packageQueryParam.packageBarCode" @keyup.enter.native="searchQueryPackage(0)"></a-input>
                     </a-form-item>
                   </a-col>
                 </a-row>
@@ -276,7 +276,7 @@
   import {httpAction, deleteAction, getAction} from '@/api/manage'
   import JDictSelectTagExpand from "@/components/dict/JDictSelectTagExpand"
   import ATextarea from "ant-design-vue/es/input/TextArea";
-  import {stockScanCode} from '@/utils/barcode'
+  import {stockScanCode, packageRecordScanCode} from '@/utils/barcode'
   import PdChooseProductStockListModel from "./PdChooseProductStockListModel";
   import PdChooseApplyOrderListModel from "./PdChooseApplyOrderListModel";
   import PdChooseAllocationListModel from "./PdChooseAllocationListModel";
@@ -322,6 +322,8 @@
 
         initData:{},
         queryParam:{},
+        packageQueryParam:{},
+
         allowInMoreOrder:"",		//开关-是否允许入库量大于订单量   1-允许入库量大于订单量；0-不允许入库量大于订单量
         allowEditPrice:"",//关-是否允许出入库时可修改进价和出价   1-允许；0不允许
 
@@ -391,8 +393,8 @@
             { title: '申请数量', align:"center", dataIndex: 'productNum' },
             { title: '已发货数量', align:"center", dataIndex: 'arrivalNum' },
             { title: '单位', align:"center", dataIndex: 'unitName' },
-            { title: '定数包名称', align:"center", dataIndex: 'packageName' },
-            { title: '定数包编号', align:"center", dataIndex: 'packageCode' },
+            // { title: '定数包名称', align:"center", dataIndex: 'packageName' },
+            // { title: '定数包编号', align:"center", dataIndex: 'packageCode' },
           ],
         },
         // 定数包列表
@@ -608,6 +610,7 @@
         this.showPackageTable = false;
         this.pdOrderDetailTable.dataSource = [];
         this.queryParam = {};
+        this.packageQueryParam = {};
         this.applyNo = "";
         this.allocationNo = "";
         this.totalSum = "";
@@ -902,7 +905,7 @@
             this.$message.warning("出库产品数据为空，请扫码出库、选择产品或选择定数包");
             return;
           }
-          //定数包 TODO
+          //定数包
           if(this.pdPackageTable.dataSource.length > 0){
             for (let data of this.pdPackageTable.dataSource){
               for(let item of data.pdPackageRecordDetailList){
@@ -1282,7 +1285,6 @@
           if(this.pdPackageTable.dataSource.length > 0){
             for (let data of this.pdPackageTable.dataSource){
               for(let item of data.pdPackageRecordDetailList){
-                // TODO
                 totalSum = totalSum + Number(item.productNum);
                 outTotalPrice = outTotalPrice + Number(item.outTotalPrice);
               }
@@ -1296,6 +1298,9 @@
       clearQueryParam(){
         this.queryParam = {};
         this.$refs.productNumberInput.focus();
+      },
+      clearPackageQueryParam(){
+        this.packageQueryParam = {};
       },
       setPriceDisabled(){
         if(this.allowEditPrice == "1"){
@@ -1426,8 +1431,51 @@
         }
       },
       // 定数包扫码
-      searchQueryPackage(){
+      searchQueryPackage(num){
+        let that = this;
+        let packageBarCode = this.packageQueryParam.packageBarCode.trim();
+        if(!packageBarCode){
+          this.$message.error("请输入定数包条码！");
+          return;
+        }
 
+        if(num == 0) {       //定数包扫码
+          //解析条码
+          packageRecordScanCode(packageBarCode).then((res) => {
+            if (res.code == "200") {
+              let result = res.result;
+              if (result.code == "200" || result.code == "203") {
+                let pdPackageRecord = result.pdPackageRecord;
+                let isAddRow = true;// 是否增加一行
+                if(that.pdPackageTable.dataSource.length > 0){
+                  for (let item of that.pdPackageTable.dataSource){
+                    if(item.id == pdPackageRecord.id){
+                      isAddRow = false;
+                      break;
+                    }
+                  }
+                  if(isAddRow){
+                    that.pdPackageTable.dataSource.push(pdPackageRecord);
+                  }
+                }else{
+                  that.showPackageTable = true;
+                  that.pdPackageTable.dataSource.push(pdPackageRecord);
+                }
+                if (result.code == "203") { // 近效期提醒
+                  this.$message.error(result.msg);
+                }
+              } else if (result.code == "201") {
+                this.$message.error(result.msg);
+              } else {
+                this.$message.error(result.msg);
+              }
+            } else {
+              this.$message.error(res.message);
+            }
+            //清空扫码框
+            this.clearPackageQueryParam();
+          })
+        }
       },
       // 校验是否选择入库科室
       checkInDepart(){

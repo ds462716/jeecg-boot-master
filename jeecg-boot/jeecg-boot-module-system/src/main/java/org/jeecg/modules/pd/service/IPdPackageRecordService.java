@@ -1,12 +1,14 @@
 package org.jeecg.modules.pd.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import org.jeecg.common.api.vo.Result;
 import org.jeecg.modules.pd.entity.PdPackageRecordDetail;
 import org.jeecg.modules.pd.entity.PdPackageRecord;
 import com.baomidou.mybatisplus.extension.service.IService;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Description: pd_package_record
@@ -52,4 +54,12 @@ public interface IPdPackageRecordService extends IService<PdPackageRecord> {
 	 * @return
 	 */
 	Page<PdPackageRecord> queryList(Page<PdPackageRecord> pageList, PdPackageRecord pdPackageRecord);
+
+	/**
+	 * 定数包打包记录扫码
+	 * @param Barcode1
+	 * @param result
+	 * @return
+	 */
+	Result<Map> packageRecordScanCode(String Barcode1, Result<Map> result);
 }
