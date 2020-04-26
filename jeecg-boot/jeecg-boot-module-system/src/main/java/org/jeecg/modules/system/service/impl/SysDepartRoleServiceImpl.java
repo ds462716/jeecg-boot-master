@@ -67,7 +67,7 @@ public class SysDepartRoleServiceImpl extends ServiceImpl<SysDepartRoleMapper, S
     @Override
     public Result<Object> deleteBatchV(String ids) {
         try{
-            SysDepartRoleUserMapper dao = sqlsession.getMapper(SysDepartRoleUserMapper.class);
+            SysDepartRoleMapper dao = sqlsession.getMapper(SysDepartRoleMapper.class);
             List<String> idList = Arrays.asList(ids.split(","));
             if(idList!=null && idList.size()>0){
                 boolean bl = true;
