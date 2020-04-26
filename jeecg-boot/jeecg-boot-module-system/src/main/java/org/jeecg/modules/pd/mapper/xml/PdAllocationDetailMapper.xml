@@ -45,8 +45,8 @@
 
 	<!--定数包-->
 	<sql id="pdPackageColumns">
-		 d.name AS "packageName",
-         d.code AS "packageCode"
+		 d.package_name AS "packageName",
+         d.package_code AS "packageCode"
 
 	</sql>
 	<sql id="pdPackageJoins">
@@ -107,21 +107,28 @@
 	<!--查询定数包调拨明细-->
 	<select id="queryAllocationDetailPack"   resultType="org.jeecg.modules.pd.entity.PdAllocationDetail">
 		select a.id as "packageId",
-		a.code as "packageCode",
-		a.name as "packageName",
-		a.sum as "packageNum",
-		a.remarks as "remarks",
-		sum(b.allocation_num) / a.sum as "allocation_num"
+		a.package_code as "packageCode",
+		a.package_name as "packageName",
+		a.package_sum as "packageSum",
+		c.remarks as "remarks",
+		sum(b.allocation_num) / a.package_sum as "allocation_num",
+		c.package_bar_code as "packageBarCode",
+		c.create_by as "createBy",
+		c.create_time as "createTime",
+		b.package_record_id as "packageRecordId"
 		from PD_PACKAGE a
 		LEFT JOIN pd_allocation_detail b  on b.package_id=a.id
+		LEFT JOIN pd_package_record c on c.id=b.package_record_id
 		where 1=1
-
 		<if test="allocationNo != null and allocationNo != ''">
 			AND b.allocation_no = #{allocationNo}
 		</if>
 		<if test="productAttr != null and productAttr != ''">
 			AND b.product_attr = #{productAttr}
 		</if>
-		GROUP BY PACKAGE_ID
+		<if test="packageRecordId != null and packageRecordId != ''">
+			AND b.package_record_id = #{packageRecordId}
+		</if>
+		GROUP BY b.package_id
 	</select>
 </mapper>

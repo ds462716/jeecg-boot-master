@@ -62,6 +62,7 @@ public class PdAllocationRecordServiceImpl extends ServiceImpl<PdAllocationRecor
 					for(PdPackageDetail ppmp : pmpList){
 						PdAllocationDetail pd = new PdAllocationDetail();
 						pd.setAllocationNo(pdAllocationRecord.getAllocationNo());
+						pd.setPackageRecordId(entity.getPackageRecordId());
 						pd.setPackageId(entity.getPackageId());
 						pd.setPackageCode(entity.getPackageCode());
 						pd.setPackageName(entity.getPackageName());
@@ -98,6 +99,7 @@ public class PdAllocationRecordServiceImpl extends ServiceImpl<PdAllocationRecor
 					for(PdPackageDetail ppmp : pmpList){
 						PdAllocationDetail pd = new PdAllocationDetail();
 						pd.setAllocationNo(pdAllocationRecord.getAllocationNo());
+						pd.setPackageRecordId(entity.getPackageRecordId());
 						pd.setPackageId(entity.getPackageId());
 						pd.setPackageCode(entity.getPackageCode());
 						pd.setPackageName(entity.getPackageName());

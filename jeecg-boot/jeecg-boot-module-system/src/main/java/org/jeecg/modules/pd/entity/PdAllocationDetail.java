@@ -65,6 +65,8 @@ public class PdAllocationDetail extends BaseEntity {
 	private String productAttr;
 	/**所属定数包ID*/
 	private String packageId;
+	/**定数包打包记录ID*/
+	private String packageRecordId;
 	/**'调拨时定数包产品数量'*/
 	private Double packageNum;
 	/**实际发货数量*/
@@ -93,4 +95,8 @@ public class PdAllocationDetail extends BaseEntity {
 	@TableField(exist = false)
 	@Excel(name = "定数包编号", width = 15)
 	private String packageCode;//定数包编号
+	@TableField(exist = false)
+	private String packageBarCode;//定数包条码
+	@TableField(exist = false)
+	private String packageSum;//定数包产品总数
 }
