@@ -85,4 +85,9 @@ public class PdPackageRecord extends BaseEntity {
     private String sum;           //定数包产品总数
     @TableField(exist = false)
     private List<String> idList;
+
+    @TableField(exist = false)
+    private String productNumber; // 产品编号 查询用
+    @TableField(exist = false)
+    private String productName; // 产品名称 查询用
 }

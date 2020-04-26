@@ -70,7 +70,7 @@ public class PdPackageRecordServiceImpl extends ServiceImpl<PdPackageRecordMappe
 	@Override
 	@Transactional
 	public void delMain(String id) {
-		pdPackageRecordDetailMapper.deleteByMainId(id);
+//		pdPackageRecordDetailMapper.deleteByMainId(id);
 		pdPackageRecordMapper.deleteById(id);
 	}
 
@@ -78,7 +78,7 @@ public class PdPackageRecordServiceImpl extends ServiceImpl<PdPackageRecordMappe
 	@Transactional
 	public void delBatchMain(Collection<? extends Serializable> idList) {
 		for(Serializable id:idList) {
-			pdPackageRecordDetailMapper.deleteByMainId(id.toString());
+//			pdPackageRecordDetailMapper.deleteByMainId(id.toString());
 			pdPackageRecordMapper.deleteById(id);
 		}
 	}

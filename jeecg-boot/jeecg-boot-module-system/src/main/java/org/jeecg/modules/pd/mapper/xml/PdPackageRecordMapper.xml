@@ -39,6 +39,39 @@
                     #{item}
                 </foreach>
             </if>
+
+            <if test="productName != null and productName != ''">
+                AND a.id in (
+                    SELECT DISTINCT
+                      m.record_id
+                    FROM
+                      pd_package_record_detail m
+                    LEFT JOIN pd_product n ON m.product_id = n.id
+                    WHERE
+                        n.number LIKE concat('%',#{productName},'%')
+                        or n.name LIKE concat('%',#{productName},'%')
+                        or n.py LIKE concat('%',#{productName},'%')
+                        or n.wb LIKE concat('%',#{productName},'%')
+                        or n.bname LIKE concat('%',#{productName},'%')
+                        or n.bpy LIKE concat('%',#{productName},'%')
+                        or n.bwb LIKE concat('%',#{productName},'%')
+                        or n.zdy LIKE concat('%',#{productName},'%')
+                )
+            </if>
+            <if test="productNumber != null and productNumber != ''">
+                AND a.id in (
+                    SELECT DISTINCT
+                      m.record_id
+                    FROM
+                      pd_package_record_detail m
+                    LEFT JOIN pd_product n ON m.product_id = n.id
+                    WHERE
+                      n.number LIKE concat('%',#{productNumber},'%')
+                )
+            </if>
+
+
+
         </where>
         ORDER BY a.update_time desc
     </select>
