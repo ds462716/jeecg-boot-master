@@ -48,6 +48,8 @@ public class PdApplyDetail extends BaseEntity {
 	private String batchNo;
 	/**所属定数包ID*/
 	private String packageId;
+	/**定数包打包记录id*/
+	private String packageRecordId;
 	/**'申领时定数包产品数量'*/
 	private Double packageNum;
 	/**产品属性：1、产品 2、定数包*/
@@ -91,6 +93,11 @@ public class PdApplyDetail extends BaseEntity {
 	private String packageName;//定数包名称
 	@TableField(exist = false)
 	private String packageCode;//定数包编号
+	@TableField(exist = false)
+	private String packageBarCode;//定数包条码
+	@TableField(exist = false)
+	private String packageSum;//定数包产品总数
+
 
 }
 

@@ -45,8 +45,8 @@
 
 	<!--定数包-->
 	<sql id="pdPackageColumns">
-		 d.name AS "packageName",
-         d.code AS "packageCode"
+		 d.package_name AS "packageName",
+         d.package_code AS "packageCode"
 
 	</sql>
 	<sql id="pdPackageJoins">
@@ -110,21 +110,29 @@
     <!--查询定数包申领明细-->
 	<select id="queryApplyDetailPack"   resultType="org.jeecg.modules.pd.entity.PdApplyDetail">
       select a.id as "packageId",
-             a.code as "packageCode",
-             a.name as "packageName",
-             a.sum as "packageNum",
-             a.remarks as "remarks",
-		sum(b.apply_num) / a.sum as "applyNum"
-           from PD_PACKAGE a
-           LEFT JOIN pd_apply_detail b  on b.package_id=a.id
-          where 1=1
+		a.package_code as "packageCode",
+		a.package_name as "packageName",
+		a.package_sum as "packageSum",
+		c.remarks as "remarks",
+		sum(b.apply_num) / a.package_sum as "applyNum",
+		c.package_bar_code as "packageBarCode",
+		c.create_by as "createBy",
+		c.create_time as "createTime",
+		b.package_record_id as "packageRecordId"
+		from PD_PACKAGE a
+		LEFT JOIN pd_apply_detail b  on b.package_id=a.id
+		LEFT JOIN pd_package_record c on c.id=b.package_record_id
+		where 1=1
 
 		<if test="applyNo != null and applyNo != ''">
 			AND b.apply_no = #{applyNo}
 		</if>
+		<if test="packageRecordId != null and packageRecordId != ''">
+			AND b.package_record_id = #{packageRecordId}
+		</if>
 		<if test="productAttr != null and productAttr != ''">
 			AND b.product_attr = #{productAttr}
 		</if>
-           GROUP BY PACKAGE_ID
+           GROUP BY b.package_id
 	     </select>
 </mapper>
