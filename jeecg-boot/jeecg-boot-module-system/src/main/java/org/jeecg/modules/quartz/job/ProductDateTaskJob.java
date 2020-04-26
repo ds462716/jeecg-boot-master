@@ -54,7 +54,7 @@ public class ProductDateTaskJob implements Job {
         log.info("产品证照有效期到期定时任务进来了，时间:" + DateUtils.getTimestamp());
         Date date = DateUtils.getDate();//当前日期
         Integer venderRemind = Integer.valueOf(PdConstant.REMINDER_DETE_5);//设定的常量值（默认的有效期限）
-        String venderDay = PdDepartConfigService.findPdDepartConfig(PdConstant.REMINDER_TYPE_5);
+        String venderDay = PdDepartConfigService.findPdDepartConfig(PdConstant.REMINDER_TYPE_5,"");
         if (!StringUtils.isEmpty(venderDay)) {
             venderRemind = Integer.valueOf(venderDay);
         }

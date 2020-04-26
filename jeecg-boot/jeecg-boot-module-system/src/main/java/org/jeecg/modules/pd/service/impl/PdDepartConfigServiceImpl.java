@@ -24,10 +24,9 @@ import java.util.List;
 public class PdDepartConfigServiceImpl extends ServiceImpl<PdDepartConfigMapper, PdDepartConfig> implements IPdDepartConfigService {
 
     @Override
-    public String findPdDepartConfig(String reminderType){
+    public String findPdDepartConfig(String reminderType,String departParentId){
         LambdaQueryWrapper<PdDepartConfig> query = new LambdaQueryWrapper<>();
-        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
-        query.eq(PdDepartConfig::getDepartParentId,sysUser.getDepartParentId());
+        query.eq(PdDepartConfig::getDepartParentId,departParentId);
         query.eq(PdDepartConfig::getType,reminderType);
         query.eq(PdDepartConfig::getIsDefault, PdConstant.IS_DEFAULT_1);
         PdDepartConfig pdDepartConfig = this.getOne(query);

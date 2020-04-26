@@ -38,7 +38,7 @@ public class QuartPdStockLongJob implements Job {
          */
         log.info("-------------------更新久存状态开始-------------------");
         Integer stockRemind = Integer.valueOf(PdConstant.REMINDER_DETE_4);//设定的常量值（默认的有效期限）
-        String stockDay = PdDepartConfigService.findPdDepartConfig(PdConstant.REMINDER_TYPE_4);
+        String stockDay = PdDepartConfigService.findPdDepartConfig(PdConstant.REMINDER_TYPE_4,"");
         if (!StringUtils.isEmpty(stockDay)) {
             stockRemind = Integer.valueOf(stockDay);
         }

@@ -51,7 +51,7 @@ public class QuartPdExpireJob implements Job {
          */
         log.info("-------------------更新过期状态开始-------------------");
         Integer stockRemind = Integer.valueOf(PdConstant.REMINDER_DETE_3);//设定的常量值（默认的有效期限）
-        String stockDay = PdDepartConfigService.findPdDepartConfig(PdConstant.REMINDER_TYPE_3);
+        String stockDay = PdDepartConfigService.findPdDepartConfig(PdConstant.REMINDER_TYPE_3,"");
         if (!StringUtils.isEmpty(stockDay)) {
             stockRemind = Integer.valueOf(stockDay);
         }
