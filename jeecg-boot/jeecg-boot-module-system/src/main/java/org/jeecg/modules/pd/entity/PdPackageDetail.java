@@ -29,13 +29,10 @@ public class PdPackageDetail extends BaseEntity {
 	private String productId;
 	/**产品数量*/
 	@Excel(name = "产品数量", width = 15)
-	private Integer count;
+	private Double count;
 	/**备注*/
 	@Excel(name = "备注", width = 15)
 	private String remarks;
-	/**删除标识，0-正常；1-删除*/
-	@Excel(name = "删除标识，0-正常；1-删除", width = 15)
-	private String delFlag;
 	/**创建人*/
 	@Excel(name = "创建人", width = 15)
 	private String createBy;

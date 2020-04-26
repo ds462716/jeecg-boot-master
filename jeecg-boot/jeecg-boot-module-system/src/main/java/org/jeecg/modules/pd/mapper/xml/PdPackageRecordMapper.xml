@@ -1,5 +1,43 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.jeecg.modules.pd.mapper.PdPackageRecordMapper">
-
+    <select id="queryList" resultType="org.jeecg.modules.pd.entity.PdPackageRecord" parameterType="org.jeecg.modules.pd.entity.PdPackageRecord">
+        SELECT
+        a.*,
+        c.code,
+        c.name,
+        c.sum
+        FROM
+        pd_package_record a
+        LEFT JOIN pd_package c ON a.package_id = c.id
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+            AND a.STATUS = '1'
+            <if test="packageBarCode != null and packageBarCode != ''">
+                AND a.packageBarCode LIKE concat('%',#{packageBarCode},'%')
+            </if>
+            <if test="name != null and name != ''">
+                AND ( c.name LIKE concat('%',#{name},'%')
+                or c.py LIKE concat('%',#{name},'%')
+                or c.wb LIKE concat('%',#{name},'%')
+                or c.zdy LIKE concat('%',#{name},'%') )
+            </if>
+            <if test="code != null and code != ''">
+                AND c.code LIKE concat('%',#{code},'%')
+            </if>
+            <if test="departParentId != null and departParentId != ''">
+                AND a.depart_parent_id = #{departParentId}
+            </if>
+            <if test="departId != null and departId != ''">
+                AND a.depart_id = #{departId}
+            </if>
+            <if test="idList != null and idList.size() > 0">
+                AND a.id IN
+                <foreach collection="idList" item="item" separator="," open="(" close=")">
+                    #{item}
+                </foreach>
+            </if>
+        </where>
+        ORDER BY a.update_time desc
+    </select>
 </mapper>

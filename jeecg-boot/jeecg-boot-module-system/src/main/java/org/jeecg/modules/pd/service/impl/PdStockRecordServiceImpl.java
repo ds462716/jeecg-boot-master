@@ -78,6 +78,10 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
     private PushMsgUtil pushMsgUtil;
     @Autowired
     private IPdProductService pdProductService;
+    @Autowired
+    private IPdPackageRecordService pdPackageRecordService;
+    @Autowired
+    private IPdPackageRecordDetailService pdPackageRecordDetailService;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -739,10 +743,12 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
                 pdStockRecord.setAuditByName(sysUser.getRealname());
             }
 
-            //查入库单明细
+            //查出库单明细
             PdStockRecordDetail pdStockRecordDetail = new PdStockRecordDetail();
             pdStockRecordDetail.setRecordId(id);
             List<PdStockRecordDetail> pdStockRecordDetailList = pdStockRecordDetailService.selectByMainId(pdStockRecordDetail);
+            List<PdStockRecordDetail> pdStockRecordDetailListWithOutPackage = new ArrayList<>();
+            Set<String> packageRecordIdSet = new HashSet<>();
             BigDecimal inTotalPrice = new BigDecimal(0);//总金额
             BigDecimal outTotalPrice = new BigDecimal(0);//总金额
             Double totalSum = new Double(0);//总数量
@@ -752,11 +758,32 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
                 BigDecimal purchasePrice = item.getPurchasePrice() == null ? new BigDecimal(0) : item.getPurchasePrice();
                 outTotalPrice = outTotalPrice.add(sellingPrice.multiply(BigDecimal.valueOf(item.getProductNum())).setScale(4, BigDecimal.ROUND_HALF_UP));
                 inTotalPrice = inTotalPrice.add(purchasePrice.multiply(BigDecimal.valueOf(item.getProductNum())).setScale(4, BigDecimal.ROUND_HALF_UP));
+
+                // 分离定数包的出库明细，页面上需分开展示
+                if(oConvertUtils.isEmpty(item.getPackageRecordId())){
+                    pdStockRecordDetailListWithOutPackage.add(item);
+                }else{
+                    packageRecordIdSet.add(item.getPackageRecordId());
+                }
             }
+
             pdStockRecord.setTotalSum(totalSum);
             pdStockRecord.setInTotalPrice(inTotalPrice);
             pdStockRecord.setOutTotalPrice(outTotalPrice);
-            pdStockRecord.setPdStockRecordDetailList(pdStockRecordDetailList);
+//            pdStockRecord.setPdStockRecordDetailList(pdStockRecordDetailList);
+            pdStockRecord.setPdStockRecordDetailList(pdStockRecordDetailListWithOutPackage);
+            //定数包 出库明细
+            if(packageRecordIdSet.size() > 0){
+                PdPackageRecord pdPackageRecord = new PdPackageRecord();
+                pdPackageRecord.setDepartParentId(sysUser.getDepartParentId());
+                pdPackageRecord.setIdList(new ArrayList<>(packageRecordIdSet));
+                List<PdPackageRecord> pdPackageRecordList = pdPackageRecordService.queryList(pdPackageRecord);
+                for (PdPackageRecord record : pdPackageRecordList) {
+                    List<PdPackageRecordDetail> detailList = pdPackageRecordDetailService.selectByMainId(record.getId());
+                    record.setPdPackageRecordDetailList(detailList);
+                }
+                pdStockRecord.setPdPackageRecordList(pdPackageRecordList);
+            }
 
             //查申领单列表
             if (oConvertUtils.isNotEmpty(pdStockRecord.getApplyNo())) {

@@ -9,9 +9,12 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 /**
  * @Description: pd_package_record
  * @Author: jiangxz
- * @Date:   2020-03-04
+ * @Date:   2020-04-22
  * @Version: V1.0
  */
 public interface PdPackageRecordMapper extends BaseMapper<PdPackageRecord> {
+
+
+    List<PdPackageRecord> queryList(PdPackageRecord pdPackageRecord);
 
 }

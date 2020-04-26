@@ -156,6 +156,10 @@ public class PdStockRecord extends BaseEntity {
     // 调拨单明细
     @TableField(exist = false)
     private List<PdAllocationDetail> pdAllocationDetailList;
+    // 定数包记录
+    @TableField(exist = false)
+    private List<PdPackageRecord> pdPackageRecordList;
+
     /**出入库日期 字符串格式*/
     @TableField(exist = false)
     private String submitDateStr;

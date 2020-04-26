@@ -59,8 +59,8 @@ public class PdStockRecordDetail extends BaseEntity {
 	@JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd")
     @DateTimeFormat(pattern="yyyy-MM-dd")
 	private Date expDate;
-	/**定数包ID*/
-	private String packageId;
+	/**定数包 打包记录ID*/
+	private String packageRecordId;
 	/**高低值耗材标志 1-高值；2-低值*/
 	private String highLowSupplies;
 	/**导入单号*/
