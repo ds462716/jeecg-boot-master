@@ -54,17 +54,18 @@ public class ProductDateTaskJob implements Job {
         log.info("产品证照有效期到期定时任务进来了，时间:" + DateUtils.getTimestamp());
         Date date = DateUtils.getDate();//当前日期
         Integer venderRemind = Integer.valueOf(PdConstant.REMINDER_DETE_5);//设定的常量值（默认的有效期限）
-        String venderDay = PdDepartConfigService.findPdDepartConfig(PdConstant.REMINDER_TYPE_5,"");
-        if (!StringUtils.isEmpty(venderDay)) {
-            venderRemind = Integer.valueOf(venderDay);
-        }
         //获取生产厂家信息数据
         PdProduct product = new PdProduct();
         List<PdProduct> productList = pdProductService.selectList(product);
         if (productList != null && productList.size() > 0) {
+            String departId=productList.get(0).getDepartId();
+            String departParentId=productList.get(0).getDepartParentId();
+            String venderDay = PdDepartConfigService.findPdDepartConfig(PdConstant.REMINDER_TYPE_5,departParentId);
+            if (!StringUtils.isEmpty(venderDay)) {
+                venderRemind = Integer.valueOf(venderDay);
+            }
              StringBuffer productName1=new StringBuffer();
             StringBuffer productName2=new StringBuffer();
-            String departId=productList.get(0).getDepartId();
             for (PdProduct pdProduct : productList) {
                 String flag="0";//所有证照过期标识
                 Date afterMonthDate = null;

@@ -38,17 +38,18 @@ public class QuartPdStockLongJob implements Job {
          */
         log.info("-------------------更新久存状态开始-------------------");
         Integer stockRemind = Integer.valueOf(PdConstant.REMINDER_DETE_4);//设定的常量值（默认的有效期限）
-        String stockDay = PdDepartConfigService.findPdDepartConfig(PdConstant.REMINDER_TYPE_4,"");
-        if (!StringUtils.isEmpty(stockDay)) {
-            stockRemind = Integer.valueOf(stockDay);
-        }
         List<PdProductStock> list = pdProductStockService.selectList(new PdProductStock());
         Map<String, Set<String>> m=new HashMap<String, Set<String>>();
         for (PdProductStock pdProductStock : list) {
             PdProductStock pd = new PdProductStock();
             String deptId = pdProductStock.getDepartId();
-             Date createTime = pdProductStock.getCreateTime();
+            String departParentId = pdProductStock.getDepartParentId();
+            Date createTime = pdProductStock.getCreateTime();
             Date date = new Date();
+            String stockDay = PdDepartConfigService.findPdDepartConfig(PdConstant.REMINDER_TYPE_4,departParentId);
+            if (!StringUtils.isEmpty(stockDay)) {
+                stockRemind = Integer.valueOf(stockDay);
+            }
             if (ObjectUtil.isNotEmpty(createTime)){
                 Date afterMonth = DateUtils.getDateToAddDate(createTime, stockRemind);
                 if((DateUtils.isSameDay(date,afterMonth)) && date.after(afterMonth)){

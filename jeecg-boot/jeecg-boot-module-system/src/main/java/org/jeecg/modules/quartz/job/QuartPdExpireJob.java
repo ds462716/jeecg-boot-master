@@ -51,10 +51,6 @@ public class QuartPdExpireJob implements Job {
          */
         log.info("-------------------更新过期状态开始-------------------");
         Integer stockRemind = Integer.valueOf(PdConstant.REMINDER_DETE_3);//设定的常量值（默认的有效期限）
-        String stockDay = PdDepartConfigService.findPdDepartConfig(PdConstant.REMINDER_TYPE_3,"");
-        if (!StringUtils.isEmpty(stockDay)) {
-            stockRemind = Integer.valueOf(stockDay);
-        }
         List<PdProductStock> list = pdProductStockService.selectList(new PdProductStock());
         Map<String, Set<String>> m=new HashMap<String, Set<String>>();//存产品ID
         Map<String, Set<String>> p=new HashMap<String, Set<String>>();//存产品名称
@@ -63,6 +59,10 @@ public class QuartPdExpireJob implements Job {
             String deptId = pdProductStock.getDepartId();
             Date validDate = pdProductStock.getExpDate();
             Date date = new Date();
+            String stockDay = PdDepartConfigService.findPdDepartConfig(PdConstant.REMINDER_TYPE_3,pdProductStock.getDepartParentId());
+            if (!StringUtils.isEmpty(stockDay)) {
+                stockRemind = Integer.valueOf(stockDay);
+            }
             pd.setMsgSendState(PdConstant.MSG_SEND_STATUS_0);
             if (ObjectUtil.isNotEmpty(validDate)){
                 if ((!DateUtils.isSameDay(date, validDate)) && date.after(validDate)) { //过期

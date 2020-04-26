@@ -58,17 +58,18 @@ public class AvailableDateTaskJob implements Job {
         log.info("生产厂家及供应商证照有效期到期定时任务进来了，时间:" + DateUtils.getTimestamp());
         Date date = DateUtils.getDate();//当前日期
         Integer venderRemind = Integer.valueOf(PdConstant.REMINDER_DETE_1);//设定的常量值（默认的有效期限）
-        String venderDay = PdDepartConfigService.findPdDepartConfig(PdConstant.REMINDER_TYPE_1,"");
-        if (!StringUtils.isEmpty(venderDay)) {
-            venderRemind = Integer.valueOf(venderDay);
-        }
         //获取生产厂家信息数据
         PdVender vender = new PdVender();
         List<PdVender> venderList = pdVenderService.selectAllList(vender);
         if (venderList != null && venderList.size() > 0) {
+            String departId=venderList.get(0).getDepartId();
+            String departParentId=venderList.get(0).getDepartParentId();
+            String venderDay = PdDepartConfigService.findPdDepartConfig(PdConstant.REMINDER_TYPE_1,departParentId);
+            if (!StringUtils.isEmpty(venderDay)) {
+                venderRemind = Integer.valueOf(venderDay);
+            }
             StringBuffer verderName1=new StringBuffer();
             StringBuffer verderName2=new StringBuffer();
-            String departId=venderList.get(0).getDepartId();
             for (PdVender pdVender : venderList) {
                 String flag="0";//所有证照过期标识
                 Date afterMonthDate = null;
@@ -217,15 +218,16 @@ public class AvailableDateTaskJob implements Job {
         //获取供应商信息数据
         PdSupplier supplier = new PdSupplier();
         Integer supplierRemind = Integer.valueOf(PdConstant.REMINDER_DETE_2);//设定的常量值（默认的有效期限）
-        String supplierDay = PdDepartConfigService.findPdDepartConfig(PdConstant.REMINDER_TYPE_2,"");
-        if (!StringUtils.isEmpty(supplierDay)) {
-            supplierRemind = Integer.valueOf(supplierDay);
-        }
         List<PdSupplier> list = pdSupplierService.selectAllList(supplier);
         if (list != null && list.size() > 0) {
+            String departId=list.get(0).getDepartId();
+            String departParentId=list.get(0).getDepartParentId();
+            String supplierDay = PdDepartConfigService.findPdDepartConfig(PdConstant.REMINDER_TYPE_2,departParentId);
+            if (!StringUtils.isEmpty(supplierDay)) {
+                supplierRemind = Integer.valueOf(supplierDay);
+            }
             StringBuffer supplierName1=new StringBuffer();
             StringBuffer supplierName2=new StringBuffer();
-            String departId=list.get(0).getDepartId();
             for (PdSupplier pdSupplier : list) {
                 String flag="0"; //所有证照过期标识
                 Date afterMonthDate = null;
