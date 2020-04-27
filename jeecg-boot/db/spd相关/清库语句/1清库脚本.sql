@@ -18,7 +18,7 @@ TRUNCATE TABLE pd_stock_log;           -- 库存日志
 TRUNCATE TABLE pd_package;             -- 定数包
 TRUNCATE TABLE pd_package_detail;      -- 定数包明细
 TRUNCATE TABLE pd_package_record;      -- 定数包打包记录
-TRUNCATE TABLE pd_package_record_detail--定数包打包记录明细表
+TRUNCATE TABLE pd_package_record_detail;-- 定数包打包记录明细表
 TRUNCATE TABLE pd_goods_allocation;    -- 货区货位
 TRUNCATE TABLE pd_rejected;            -- 退货
 TRUNCATE TABLE pd_rejected_detail;     -- 退货明细
