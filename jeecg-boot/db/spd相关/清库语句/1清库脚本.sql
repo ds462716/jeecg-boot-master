@@ -18,6 +18,7 @@ TRUNCATE TABLE pd_stock_log;           -- 库存日志
 TRUNCATE TABLE pd_package;             -- 定数包
 TRUNCATE TABLE pd_package_detail;      -- 定数包明细
 TRUNCATE TABLE pd_package_record;      -- 定数包打包记录
+TRUNCATE TABLE pd_package_record_detail--定数包打包记录明细表
 TRUNCATE TABLE pd_goods_allocation;    -- 货区货位
 TRUNCATE TABLE pd_rejected;            -- 退货
 TRUNCATE TABLE pd_rejected_detail;     -- 退货明细
@@ -37,9 +38,8 @@ TRUNCATE TABLE pd_dosage;-- 器械使用表
 TRUNCATE TABLE pd_dosage_detail;-- 器械使用详情表
 TRUNCATE TABLE pd_use_package;-- 检验包表
 TRUNCATE TABLE pd_use_package_detail;-- 检验包表
-
-
 --不用清理的表
+-- pd_on_off 开关表
 
 
 
