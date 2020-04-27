@@ -293,6 +293,9 @@
 	<update id="updateStockNum">
 		UPDATE pd_product_stock SET
 			stock_num = #{stockNum}
+		<if test="specNum != null and specNum != ''">
+			,spec_num = #{specNum}
+		</if>
 		WHERE id= #{id}
 	</update>
 

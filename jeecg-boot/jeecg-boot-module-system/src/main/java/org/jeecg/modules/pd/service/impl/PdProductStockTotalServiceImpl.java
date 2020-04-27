@@ -196,7 +196,7 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
                     throw new RuntimeException("扣减库存失败，[" + stockRecordDetail.getProductName() + "]库存数量不足");
                 }
                 productStock.setStockNum(num);
-                productStock.setSpecNum(stockRecordDetail.getSpecQuantity() == null ? 0D : stockRecordDetail.getSpecQuantity() * stockRecordDetail.getProductNum());// 库存规格数量= 产品规格数量* 入库数量
+                productStock.setSpecNum(stockRecordDetail.getSpecQuantity() == null ? 0D : stockRecordDetail.getSpecQuantity() * num);// 库存规格数量= 产品规格数量* 入库数量
 
                 pdProductStockMapper.updateStockNum(productStock);
             } else {
@@ -657,7 +657,9 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
     public String insertProdStock(PdProductStock productStock,Double syNum){
        //将原有的库存明细中的库存数量减1
         Double stockNum=productStock.getStockNum();
-        productStock.setStockNum(stockNum-1);
+         productStock.setStockNum(stockNum-1);
+        productStock.setSpecNum(productStock.getSpecQuantity() == null ? 0D : productStock.getSpecQuantity() * productStock.getStockNum());// 库存规格数量= 产品规格数量* 库存数量
+        // productStock.setSpecNum();
         pdProductStockMapper.updateStockNum(productStock);
         productStock.setId(null);
         productStock.setStockNum(1.00);

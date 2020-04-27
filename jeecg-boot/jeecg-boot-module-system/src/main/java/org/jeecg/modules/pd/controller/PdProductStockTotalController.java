@@ -81,6 +81,7 @@ public class PdProductStockTotalController {
 			 stockTotalPage.setDepartIdList(departList);
 		 }
 		 stockTotalPage.setDepartParentId(sysUser.getDepartParentId());
+		 stockTotalPage.setFilterType("1");//有值的话，则过滤库存数量为0的数据
          page = pdProductStockTotalService.selectList(page,stockTotalPage);
 		//计算总库存数量，近效期数量，过期数量等值；
          //**************************
