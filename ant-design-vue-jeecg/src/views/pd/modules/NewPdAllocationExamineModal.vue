@@ -76,7 +76,7 @@
               <a-table
                 ref="table"
                 bordered
-                rowKey="packageId"
+                rowKey="packageRecordId"
                 :columns="table2.columns"
                 :dataSource="table2.dataSource"
                 :loading="pdAllocationDetailTable.loading"
@@ -255,7 +255,7 @@
         this.innerData=[];
         if(expanded===true){
           this.subloading = true;
-          this.expandedRowKeys.push(record.packageId);
+          this.expandedRowKeys.push(record.packageRecordId);
           getAction(this.url.chooseDetailList, {id: record.packageRecordId}).then((res) => {
             if (res.success) {
               this.subloading = false;
