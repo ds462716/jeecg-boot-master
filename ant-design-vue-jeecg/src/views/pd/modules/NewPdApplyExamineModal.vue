@@ -235,6 +235,7 @@
           edit: "/pd/pdApplyOrder/editApplyInf",
           exportXlsUrl: "/pd/pdApplyOrder/exportXls",
           chooseDetailList:"/pd/pdPackageRecord/queryPdPackageRecordDetailByMainId",
+          queryPackageRecordListByIds: "/pd/pdPackageRecord/queryPackageRecordListByIds",
           pdApplyDetail: {
             list: '/pd/pdApplyOrder/queryApplyDetail',
             packList: '/pd/pdApplyOrder/queryApplyDetailPack'
@@ -331,15 +332,7 @@
             httpAction(this.url.edit, formData, 'put').then((res) => {
               if (res.success) {
                  if(type=="yes"){
-                   let args = {};
-                   args.outType = "1";  //  1-申领出库; 2-科室出库; 3-调拨出库
-                   args.data = pdApplyDetailList;  // 申领单或调拨单产品明细 按选择器传值就行
-                   args.pdPackageRecordList = this.table2.dataSource;  // 申领单或调拨单定数包明细 按选择器传值就行
-                  //args.pdPackageRecordList.pdPackageRecordDetailList=this.innerData;
-                   args.inDepartId = this.model.departId; //入库部门ID
-                   this.$refs.stockForm.add(args);
-                   this.$refs.stockForm.title = "新增出库";
-                   this.$refs.stockForm.disableSubmit = false;
+                   this.recordOut();
                 }
                // that.$message.success("操作成功");
                 that.$emit('ok');
@@ -352,10 +345,28 @@
             })
           }
           })
-
       },
 
-
+  recordOut(){
+    let args = {};
+    args.outType = "1";  //  1-申领出库; 2-科室出库; 3-调拨出库
+    args.data = this.pdApplyDetailTable.dataSource;  // 申领单或调拨单产品明细 按选择器传值就行
+    var source = this.table2.dataSource;
+    let packageRecordIds="";
+    source.forEach((value, idx) => {
+      packageRecordIds+=value.packageRecordId+",";
+    })
+    getAction(this.url.queryPackageRecordListByIds, {ids:packageRecordIds}).then((res) => {
+      if (res.success) {
+        let data = {};
+        args.pdPackageRecordList = res.result;
+        args.inDepartId = this.model.departId; //入库部门ID
+        this.$refs.stockForm.add(args);
+        this.$refs.stockForm.title = "新增出库";
+        this.$refs.stockForm.disableSubmit = false;
+      }
+    });
+  },
 
  //--------------
       editLound(){
