@@ -652,6 +652,7 @@ public class PdProductServiceImpl extends ServiceImpl<PdProductMapper, PdProduct
     public Result<Object> importExcel(Map<String, MultipartFile> fileMap) {
         PdProductMapper dao = sqlsession.getMapper(PdProductMapper.class);
         PdVenderMapper venderDao = sqlsession.getMapper(PdVenderMapper.class);
+        PdSupplierMapper supplierDao = sqlsession.getMapper(PdSupplierMapper.class);
         PdUnitMapper unitDao = sqlsession.getMapper(PdUnitMapper.class);
         LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
         List<PdProduct> list = new ArrayList<>();
@@ -734,6 +735,20 @@ public class PdProductServiceImpl extends ServiceImpl<PdProductMapper, PdProduct
                         bl = false;
                         break;
                     }
+                    //产品供应商转换成id
+                    if(oConvertUtils.isNotEmpty(ps.getSupplierName())){
+                        PdSupplier pdSupplier = new PdSupplier();
+                        pdSupplier.setDepartParentId(sysUser.getDepartParentId());
+                        pdSupplier.setName(ps.getSupplierName());
+                        List<PdSupplier> pdSuppliers = supplierDao.verify(pdSupplier);
+                        if(pdSuppliers.size()==1){
+                            ps.setSupplierId(pdSuppliers.get(0).getId());
+                        }else{
+                            message = "导入失败,第"+(i+1)+"行供应商填写错误";
+                            bl = false;
+                            break;
+                        }
+                    }
                     //校验注册证
                     if(oConvertUtils.isEmpty(ps.getRegistration())){
                         message = "导入失败,第"+(i+1)+"行注册证不能为空";
@@ -812,6 +827,7 @@ public class PdProductServiceImpl extends ServiceImpl<PdProductMapper, PdProduct
     public Result<Object> importExcelReagents(Map<String, MultipartFile> fileMap) {
         PdProductMapper dao = sqlsession.getMapper(PdProductMapper.class);
         PdVenderMapper venderDao = sqlsession.getMapper(PdVenderMapper.class);
+        PdSupplierMapper supplierDao = sqlsession.getMapper(PdSupplierMapper.class);
         PdUnitMapper unitDao = sqlsession.getMapper(PdUnitMapper.class);
         LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
         List<PdProductReagents> pdProductReagentsList = new ArrayList<>();
@@ -920,6 +936,20 @@ public class PdProductServiceImpl extends ServiceImpl<PdProductMapper, PdProduct
                         message = "导入失败,第"+(i+1)+"行生产厂家不存在";
                         bl = false;
                         break;
+                    }
+                    //产品供应商转换成id
+                    if(oConvertUtils.isNotEmpty(ps.getSupplierName())){
+                        PdSupplier pdSupplier = new PdSupplier();
+                        pdSupplier.setDepartParentId(sysUser.getDepartParentId());
+                        pdSupplier.setName(ps.getSupplierName());
+                        List<PdSupplier> pdSuppliers = supplierDao.verify(pdSupplier);
+                        if(pdSuppliers.size()==1){
+                            ps.setSupplierId(pdSuppliers.get(0).getId());
+                        }else{
+                            message = "导入失败,第"+(i+1)+"行供应商填写错误";
+                            bl = false;
+                            break;
+                        }
                     }
                     //校验注册证
                     if(oConvertUtils.isEmpty(ps.getRegistration())){

@@ -93,6 +93,7 @@ public class PdProductReagents extends BaseEntity {
 	/**供应商*/
     private String supplierId;
 	@TableField(exist = false)
+	@Excel(name = "供应商", width = 15)
 	private String supplierName;
 	/**进价*/
 	@Excel(name = "进价", width = 15)
