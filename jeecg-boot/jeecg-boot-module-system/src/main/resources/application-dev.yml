@@ -99,7 +99,7 @@ spring:
           url: jdbc:mysql://119.23.56.26:3366/jeecg-boot?characterEncoding=UTF-8&useUnicode=true&useSSL=false
           #url: jdbc:mysql://localhost:3306/jeecg-boot-l?characterEncoding=UTF-8&useUnicode=true&useSSL=false
           username: root
-          password: 1234
+          password: gy@86776988
           driver-class-name: com.mysql.jdbc.Driver
         # 多数据源配置
 #        multi-datasource1:
