@@ -1,5 +1,6 @@
 let url ="/pd/pdProduct/scanCode";
 let stockUrl ="/pd/pdProduct/stockScanCode";
+let packageRecordUrl ="/pd/pdPackageRecord/packageRecordScanCode";
 import { httpAction } from '@/api/manage'
 
 /**
@@ -33,6 +34,20 @@ export async function stockScanCode(Barcode1, Barcode2){
   let res = await httpAction(stockUrl,formData,"post");
   return res;
 }
+
+/**
+ * 定数包记录扫码
+ * @param Barcode1  定数包打包记录条码
+ * @returns {Promise<*>}
+ */
+export async function packageRecordScanCode(Barcode1){
+  //封装查询参数
+  let formData = new URLSearchParams();
+  formData.append("Barcode1",Barcode1);
+  let res = await httpAction(packageRecordUrl,formData,"post");
+  return res;
+}
+
 
 /**
  * 扫码取产品编号  如果修改  需要同步修改BarCodeUtil的getPrdNumber方法 和HIBCBarcodeDec方法  2020年2月22日11:19:57

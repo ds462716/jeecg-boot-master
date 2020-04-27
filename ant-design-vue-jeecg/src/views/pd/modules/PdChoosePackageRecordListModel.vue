@@ -13,36 +13,36 @@
       <div class="table-page-search-wrapper">
         <a-form layout="inline" @keyup.enter.native="searchQuery">
           <a-row :gutter="24">
-            <a-col :md="6" :sm="8">
+            <a-col :md="5" :sm="8">
               <a-form-item label="定数包编号">
-                <a-input placeholder="请输入定数包编号" v-model="queryParam.code"></a-input>
+                <a-input placeholder="请输入定数包编号" v-model="queryParam.packageCode"></a-input>
               </a-form-item>
             </a-col>
-            <a-col :md="6" :sm="8">
+            <a-col :md="5" :sm="8">
               <a-form-item label="定数包名称">
-                <a-input placeholder="请输入定数包名称" v-model="queryParam.name"></a-input>
+                <a-input placeholder="请输入定数包名称" v-model="queryParam.packageName"></a-input>
               </a-form-item>
             </a-col>
-            <template v-if="toggleSearchStatus">
-              <a-col :md="6" :sm="8">
+            <!--<template v-if="toggleSearchStatus">-->
+              <a-col :md="5" :sm="8">
                 <a-form-item label="产品编号">
-                  <a-input placeholder="请输入产品编号" v-model="queryParam.number"></a-input>
+                  <a-input placeholder="请输入产品编号" v-model="queryParam.productNumber"></a-input>
                 </a-form-item>
               </a-col>
-              <a-col :md="6" :sm="8">
+              <a-col :md="5" :sm="8">
                 <a-form-item label="产品名称">
                   <a-input placeholder="请输入产品名称" v-model="queryParam.productName"></a-input>
                 </a-form-item>
               </a-col>
-            </template>
+            <!--</template>-->
             <a-col :md="6" :sm="8">
             <span style="float: right;overflow: hidden;" class="table-page-search-submitButtons">
               <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
               <a-button type="primary" @click="searchReset" icon="reload" style="margin-left: 8px">重置</a-button>
-              <a @click="handleToggleSearch" style="margin-left: 8px">
-                {{ toggleSearchStatus ? '收起' : '展开' }}
-                <a-icon :type="toggleSearchStatus ? 'up' : 'down'"/>
-              </a>
+              <!--<a @click="handleToggleSearch" style="margin-left: 8px">-->
+                <!--{{ toggleSearchStatus ? '收起' : '展开' }}-->
+                <!--<a-icon :type="toggleSearchStatus ? 'up' : 'down'"/>-->
+              <!--</a>-->
             </span>
             </a-col>
 
@@ -119,10 +119,10 @@
               return parseInt(index)+1;
             }
           },
-          { title:'定数包编号', align:"center", dataIndex: 'code' },
+          { title:'定数包编号', align:"center", dataIndex: 'packageCode' },
           { title:'定数包条码', align:"center", dataIndex: 'packageBarCode' },
-          { title:'定数包名称', align:"center", dataIndex: 'name' },
-          { title:'产品总数', align:"center", dataIndex: 'sum' },
+          { title:'定数包名称', align:"center", dataIndex: 'packageName' },
+          { title:'产品总数', align:"center", dataIndex: 'packageSum' },
           { title:'打包人', align:"center", dataIndex: 'createBy' },
           { title:'打包时间', align:"center", dataIndex: 'createTime',
             customRender:function (text) {
@@ -236,7 +236,7 @@
           width: '100%',
           // width: '1200',
           style: { top: '20px' },
-          switchFullscreen: true,  //缩放按钮
+          switchFullscreen: false,  //缩放按钮
           lockScroll: false,
           fullscreen: true,
         },

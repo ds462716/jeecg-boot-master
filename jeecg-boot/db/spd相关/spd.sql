@@ -175,6 +175,24 @@ CREATE TABLE `ex_inspection_items_detail` (
 ALTER TABLE `pd_stock_record_detail`
 CHANGE COLUMN `package_id` `package_record_id` varchar(36) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '打包记录ID' AFTER `exp_date`;
 
--- add by jiangxz 2020年4月25日 库存明细增加规格库存数量清零原因字段
+-- add by mcb 2020年4月25日 库存明细增加规格库存数量清零原因字段
 ALTER TABLE `pd_product_stock`
 ADD COLUMN `reason` varchar(2000) NULL COMMENT '规格库存数量清零原因';
+
+-- add by jiangxz 2020年4月26日14:14:30 定数包打包记录 菜单
+INSERT INTO `sys_permission`(`id`, `parent_id`, `name`, `url`, `component`, `component_name`, `redirect`, `menu_type`, `business_type`, `perms`, `perms_type`, `sort_no`, `always_show`, `icon`, `is_route`, `is_leaf`, `keep_alive`, `hidden`, `description`, `create_by`, `create_time`, `update_by`, `update_time`, `del_flag`, `rule_flag`, `status`, `internal_or_external`) VALUES ('1254291714732748802', '1218784892172963842', '定数包打包记录', '/pd/PdPackageRecordList', 'pd/PdPackageRecordList', NULL, NULL, 1, '0', NULL, '1', 1.10, 0, NULL, 1, 1, 0, 0, NULL, 'admin', '2020-04-26 14:10:23', NULL, '2020-04-26 14:10:23', 0, 0, '1', 0);
+-- add by jiangxz 2020年4月26日14:14:30 定数包打包记录状态数据字典
+INSERT INTO `sys_dict` (`id`, `dict_name`, `dict_code`, `description`, `del_flag`, `create_by`, `create_time`, `update_by`, `update_time`, `type`) VALUES ('1254304620731985922', '定数包打包记录状态', 'package_record_status', '', 0, 'admin', '2020-04-26 15:01:40', NULL, '2020-04-26 15:01:40', 0);
+INSERT INTO `sys_dict_item` (`id`, `dict_id`, `item_text`, `item_value`, `description`, `sort_order`, `status`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES ('1254304707726045186', '1254304620731985922', '已出库', '0', '', 1, 1, 'admin', '2020-04-26 15:02:01', NULL, '2020-04-26 15:02:01');
+INSERT INTO `sys_dict_item` (`id`, `dict_id`, `item_text`, `item_value`, `description`, `sort_order`, `status`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES ('1254304737581101058', '1254304620731985922', '未出库', '1', '', 1, 1, 'admin', '2020-04-26 15:02:08', NULL, '2020-04-26 15:02:08');
+-- add by jiangxz 2020年4月26日14:14:30 定数包字段名称修改
+ALTER TABLE `pd_package`
+CHANGE COLUMN `code` `package_code` varchar(32) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '定数包编号' AFTER `id`,
+CHANGE COLUMN `name` `package_name` varchar(200) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '定数包名称' AFTER `package_code`,
+CHANGE COLUMN `sum` `package_sum` double(11, 2) NULL DEFAULT NULL COMMENT '产品总数' AFTER `package_name`;
+
+-- add by mcb 2020年4月26日19:14:30 增加打包记录id
+ALTER TABLE `pd_apply_detail`
+ADD COLUMN `package_record_id` varchar(64) NULL COMMENT '打包记录id';
+ALTER TABLE `pd_allocation_detail`
+ADD COLUMN `package_record_id` varchar(64) NULL COMMENT '打包记录id';

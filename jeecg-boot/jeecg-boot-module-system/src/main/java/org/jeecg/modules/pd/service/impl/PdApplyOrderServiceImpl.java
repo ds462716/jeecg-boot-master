@@ -69,6 +69,7 @@ public class PdApplyOrderServiceImpl extends ServiceImpl<PdApplyOrderMapper, PdA
  					for(PdPackageDetail ppmp : pmpList){
 						PdApplyDetail pd = new PdApplyDetail();
 						pd.setApplyNo(pdApplyOrder.getApplyNo());
+						pd.setPackageRecordId(entity.getPackageRecordId());
 						pd.setPackageId(entity.getPackageId());
 						pd.setPackageCode(entity.getPackageCode());
 						pd.setPackageName(entity.getPackageName());
@@ -105,6 +106,7 @@ public class PdApplyOrderServiceImpl extends ServiceImpl<PdApplyOrderMapper, PdA
 					for(PdPackageDetail ppmp : pmpList){
 						PdApplyDetail pd = new PdApplyDetail();
 						pd.setApplyNo(pdApplyOrder.getApplyNo());
+						pd.setPackageRecordId(entity.getPackageRecordId());
 						pd.setPackageId(entity.getPackageId());
 						pd.setPackageCode(entity.getPackageCode());
 						pd.setPackageName(entity.getPackageName());

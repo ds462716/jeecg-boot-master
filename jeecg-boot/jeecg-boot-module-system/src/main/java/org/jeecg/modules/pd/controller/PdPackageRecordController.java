@@ -81,6 +81,14 @@ public class PdPackageRecordController {
         return Result.ok(pageList);
     }
 
+    /**
+     * 定数包选择器用
+     * @param pdPackageRecord
+     * @param pageNo
+     * @param pageSize
+     * @param req
+     * @return
+     */
     @GetMapping(value = "/pdChoosePackageRecordList")
     public Result<?> pdChoosePackageRecordList(PdPackageRecord pdPackageRecord,
                                    @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
@@ -92,6 +100,26 @@ public class PdPackageRecordController {
         pdPackageRecord.setStatus(PdConstant.PACKAGE_RECORD_STATUS_1);
         IPage<PdPackageRecord> pageList = pdPackageRecordService.queryList(page, pdPackageRecord);
         return Result.ok(pageList);
+    }
+
+    /**
+     * 定数包打包记录扫码
+     * @param Barcode1
+     * @param req
+     * @return
+     */
+    @PostMapping(value = "packageRecordScanCode")
+    public Result<Map> packageRecordScanCode(String Barcode1, HttpServletRequest req) {
+        Result<Map> result = new Result<Map>();
+        try{
+            result = pdPackageRecordService.packageRecordScanCode(Barcode1, result);
+            result.setCode(200);
+        }catch(Exception e){
+            log.error(e.getMessage(), e);
+            result.setCode(500);
+            result.setMessage("条码格式不正确");
+        }
+        return result;
     }
 
     /**

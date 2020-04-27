@@ -6,12 +6,12 @@
         <a-row :gutter="24">
           <a-col :md="6" :sm="8">
             <a-form-item label="定数包编号">
-              <a-input placeholder="请输入定数包编号" v-model="queryParam.code"></a-input>
+              <a-input placeholder="请输入定数包编号" v-model="queryParam.packageCode"></a-input>
             </a-form-item>
           </a-col>
           <a-col :md="6" :sm="8">
             <a-form-item label="定数包名称">
-              <a-input placeholder="定数包名称\拼音码\五笔码\自定义码" v-model="queryParam.name"></a-input>
+              <a-input placeholder="定数包名称\拼音码\五笔码\自定义码" v-model="queryParam.packageName"></a-input>
             </a-form-item>
           </a-col>
           <a-col :md="6" :sm="8">
@@ -136,17 +136,17 @@
           {
             title:'定数包编号',
             align:"center",
-            dataIndex: 'code'
+            dataIndex: 'packageCode'
           },
           {
             title:'定数包名称',
             align:"center",
-            dataIndex: 'name'
+            dataIndex: 'packageName'
           },
           {
             title:'产品总数',
             align:"center",
-            dataIndex: 'sum'
+            dataIndex: 'packageSum'
           },
           {
             title:'拼音简码',

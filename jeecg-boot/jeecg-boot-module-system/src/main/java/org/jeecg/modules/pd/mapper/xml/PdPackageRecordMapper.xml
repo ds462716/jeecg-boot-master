@@ -4,25 +4,25 @@
     <select id="queryList" resultType="org.jeecg.modules.pd.entity.PdPackageRecord" parameterType="org.jeecg.modules.pd.entity.PdPackageRecord">
         SELECT
         a.*,
-        c.code,
-        c.name,
-        c.sum
+        c.package_code,
+        c.package_name,
+        c.package_sum
         FROM
         pd_package_record a
         LEFT JOIN pd_package c ON a.package_id = c.id
         <where>
             a.del_flag = #{DEL_FLAG_NORMAL}
+            <if test="packageName != null and packageName != ''">
+                AND ( c.package_name LIKE concat('%',#{packageName},'%')
+                or c.py LIKE concat('%',#{packageName},'%')
+                or c.wb LIKE concat('%',#{packageName},'%')
+                or c.zdy LIKE concat('%',#{packageName},'%') )
+            </if>
+            <if test="packageCode != null and packageCode != ''">
+                AND c.package_code LIKE concat('%',#{packageCode},'%')
+            </if>
             <if test="packageBarCode != null and packageBarCode != ''">
-                AND a.packageBarCode LIKE concat('%',#{packageBarCode},'%')
-            </if>
-            <if test="name != null and name != ''">
-                AND ( c.name LIKE concat('%',#{name},'%')
-                or c.py LIKE concat('%',#{name},'%')
-                or c.wb LIKE concat('%',#{name},'%')
-                or c.zdy LIKE concat('%',#{name},'%') )
-            </if>
-            <if test="code != null and code != ''">
-                AND c.code LIKE concat('%',#{code},'%')
+                AND a.package_bar_code = #{packageBarCode}
             </if>
             <if test="status != null and status != ''">
                 AND a.status = #{status}
@@ -39,6 +39,39 @@
                     #{item}
                 </foreach>
             </if>
+
+            <if test="productName != null and productName != ''">
+                AND a.id in (
+                    SELECT DISTINCT
+                      m.record_id
+                    FROM
+                      pd_package_record_detail m
+                    LEFT JOIN pd_product n ON m.product_id = n.id
+                    WHERE
+                        n.number LIKE concat('%',#{productName},'%')
+                        or n.name LIKE concat('%',#{productName},'%')
+                        or n.py LIKE concat('%',#{productName},'%')
+                        or n.wb LIKE concat('%',#{productName},'%')
+                        or n.bname LIKE concat('%',#{productName},'%')
+                        or n.bpy LIKE concat('%',#{productName},'%')
+                        or n.bwb LIKE concat('%',#{productName},'%')
+                        or n.zdy LIKE concat('%',#{productName},'%')
+                )
+            </if>
+            <if test="productNumber != null and productNumber != ''">
+                AND a.id in (
+                    SELECT DISTINCT
+                      m.record_id
+                    FROM
+                      pd_package_record_detail m
+                    LEFT JOIN pd_product n ON m.product_id = n.id
+                    WHERE
+                      n.number LIKE concat('%',#{productNumber},'%')
+                )
+            </if>
+
+
+
         </where>
         ORDER BY a.update_time desc
     </select>

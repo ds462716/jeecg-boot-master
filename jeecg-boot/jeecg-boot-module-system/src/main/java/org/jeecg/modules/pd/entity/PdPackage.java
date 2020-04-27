@@ -24,11 +24,11 @@ public class PdPackage extends BaseEntity {
 	@TableId(type = IdType.ID_WORKER_STR)
     private String id;
 	/**定数包编号*/
-    private String code;
+    private String packageCode;
 	/**定数包名称*/
-    private String name;
+    private String packageName;
 	/**产品总数*/
-    private Double sum;
+    private Double packageSum;
 	/**拼音简码*/
     private String py;
 	/**五笔简码*/

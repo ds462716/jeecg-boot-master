@@ -66,7 +66,7 @@ public class PdPackageController {
 	 @GetMapping(value = "/initModal")
 	 public Result<?> initModal(@RequestParam(name = "id") String id, HttpServletRequest req) {
 		 PdPackage pdPackage = new PdPackage();
-		 pdPackage.setCode(UUIDUtil.generateOrderNoByType(PdConstant.ORDER_NO_FIRST_LETTER_DSB));
+		 pdPackage.setPackageCode(UUIDUtil.generateOrderNoByType(PdConstant.ORDER_NO_FIRST_LETTER_DSB));
 		 return Result.ok(pdPackage);
 	 }
 
