@@ -260,7 +260,7 @@
           expStatus:[],
           isLong:[],
         },
-        tableScroll:{x :10*140+30},
+        tableScroll:{x :13*147+50},
       }
     },
     created () {

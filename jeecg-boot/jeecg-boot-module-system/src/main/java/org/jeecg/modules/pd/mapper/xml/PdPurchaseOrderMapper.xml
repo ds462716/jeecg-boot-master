@@ -294,7 +294,7 @@
     <select id="queryPurchaseOrderTotalList" resultType="java.util.Map" >
         select
         IFNULL(d.name,'其他') as x,
-        sum(b.order_money) as y,
+        IFNULL(sum(b.order_money),0) as y,
         sum(b.order_num) as z
         from pd_purchase_order a
         left join pd_purchase_detail b on a.order_no=b.order_no

@@ -421,7 +421,7 @@
 	<select id="queryStockTotalList" resultType="java.util.Map" >
 		select
 		IFNULL(d.name,'其他') as x,
-		sum(c.selling_price *  a.stock_num) as y,
+		IFNULL(sum(c.selling_price * a.stock_num),0) as y,
 		sum(a.stock_num)  as z
 		from pd_product_stock a
 		left join pd_product c on a.product_id=c.id

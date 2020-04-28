@@ -253,7 +253,7 @@
     <select id="queryApplyOrderTotalList" resultType="java.util.Map" >
         select
         IFNULL(d.name,'其他') as x,
-        sum(c.selling_price *  b.apply_num) as y,
+        IFNULL(sum(c.selling_price *  b.apply_num),0) as y,
         sum(b.apply_num)  as z
         from pd_apply_order a
         left join pd_apply_detail b on a.apply_no=b.apply_no

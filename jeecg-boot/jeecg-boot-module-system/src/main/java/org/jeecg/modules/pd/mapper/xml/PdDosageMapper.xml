@@ -231,7 +231,7 @@
     <select id="queryPdDosageTotalList" resultType="java.util.Map" >
         select
         IFNULL(d.name,'其他') as x,
-        sum(a.total_price) as y,
+        IFNULL(sum(a.total_price),0) as y,
         sum(b.dosage_count) as z
         from pd_dosage a
         left join pd_dosage_detail b on a.id=b.dosage_id
