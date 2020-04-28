@@ -242,6 +242,9 @@
 		<if test="stockNum !=null and stockNum!='' ">
 			stock_num = #{stockNum}
 		</if>
+		<if test="specNum !=null and specNum!='' ">
+			spec_num = #{specNum}
+		</if>
 		<if test="huoweiCode !=null and huoweiCode!='' ">
 			huowei_code = #{huoweiCode}
 		</if>

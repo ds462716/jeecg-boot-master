@@ -412,6 +412,7 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
         i_productStockq.setProductBarCode(productStock.getProductBarCode());//2019年7月24日16:53:43 放开
         i_productStockq.setBatchNo(productStock.getBatchNo());
         i_productStockq.setHuoweiCode(huoWeiCode);
+        i_productStockq.setNestatStatus(PdConstant.STOCK_NESTAT_STATUS_1);
         List<PdProductStock> i_productStocks = pdProductStockMapper.selectList(i_productStockq);
         //如果库存明细表不存在，直接修改货位就行
         if (CollectionUtils.isEmpty(i_productStocks) || i_productStocks.size() == 0) {
@@ -428,14 +429,15 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
             pdproductStock.setProduceDate(productStock.getProduceDate());
             pdproductStock.setSpecNum(productStock.getSpecNum());
             pdproductStock.setNestatStatus(productStock.getNestatStatus());
-            pdproductStock.setSpecQuantity(pdproductStock.getSpecQuantity());
-            pdproductStock.setSpecUnitId(pdproductStock.getSpecUnitId());
+            pdproductStock.setSpecQuantity(productStock.getSpecQuantity());
+            pdproductStock.setSpecUnitId(productStock.getSpecUnitId());
             productStockService.save(pdproductStock);
             //更新老货位上的库存数量
-            PdProductStock pdproductStock_1 = new PdProductStock();
-            pdproductStock_1.setStockNum(stockNum - ykStockNum);
-            pdproductStock_1.setId(productStock.getId());
-            productStockService.updateProductStock(pdproductStock_1);
+            PdProductStock pdProductStock_1 = new PdProductStock();
+            pdProductStock_1.setStockNum(stockNum - ykStockNum);
+            pdProductStock_1.setId(productStock.getId());
+            pdProductStock_1.setSpecNum(productStock.getSpecQuantity() == null ? 0D : productStock.getSpecQuantity()    * pdProductStock_1.getStockNum());// 库存规格数量= 产品规格数量* 入库数量
+            productStockService.updateProductStock(pdProductStock_1);
         } else { //如果修改后的货位已经有耗材存在，则在新货位上增加数量,之前货位的数量减去移库的数量
             PdProductStock stock = i_productStocks.get(0);
             if (!stock.getId().equals(productStock.getId())) {
@@ -443,11 +445,11 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
                 stock.setStockNum(ykStockNum + stock.getStockNum());
                 pdProductStockMapper.updateById(stock);
                 //更新老货位上的库存数量
-                productStock.setStockNum(stockNum - ykStockNum);
-                PdProductStock pdproductStock_2 = new PdProductStock();
-                pdproductStock_2.setStockNum(stockNum - ykStockNum);
-                pdproductStock_2.setId(productStock.getId());
-                pdProductStockMapper.updateProductStock(pdproductStock_2);
+                PdProductStock pdProductStock_2 = new PdProductStock();
+                pdProductStock_2.setStockNum(stockNum - ykStockNum);
+                pdProductStock_2.setId(productStock.getId());
+                pdProductStock_2.setSpecNum(productStock.getSpecQuantity() == null ? 0D : productStock.getSpecQuantity()    * pdProductStock_2.getStockNum());// 库存规格数量= 产品规格数量* 入库数量
+                pdProductStockMapper.updateProductStock(pdProductStock_2);
             }
         }
         return PdConstant.TRUE;
