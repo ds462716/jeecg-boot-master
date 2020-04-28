@@ -2,6 +2,7 @@ package org.jeecg.modules.pd.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.aliyuncs.regions.ProductDomain;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.ibatis.session.SqlSession;
@@ -80,8 +81,8 @@ public class PdProductServiceImpl extends ServiceImpl<PdProductMapper, PdProduct
     }
 
     @Override
-    public Page<PdProduct> selectList(Page<PdProduct> page, PdProduct pdProduct) {
-        return page.setRecords(pdProductMapper.selectList(pdProduct));
+    public IPage<PdProduct> selectList(Page<PdProduct> page, PdProduct pdProduct) {
+        return pdProductMapper.selectListByPage(page,pdProduct);
     }
 
     /**

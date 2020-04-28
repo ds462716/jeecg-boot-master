@@ -389,6 +389,7 @@
         getAction(this.url.list, params).then((res) => {
           if (res.success) {
             this.dataSource = res.result.records;
+            this.ipagination.total = res.result.total;
           }
           this.loading = false;
         })

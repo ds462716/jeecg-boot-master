@@ -18,6 +18,7 @@ import org.jeecg.modules.pd.util.BarCodeUtil;
 import org.jeecg.modules.pd.util.FileUploadUtil;
 import org.jeecg.modules.pd.vo.PdProductPage;
 import org.jeecg.modules.pd.vo.PdProductReagents;
+import org.jeecg.modules.system.entity.SysUser;
 import org.jeecgframework.poi.excel.def.NormalExcelConstants;
 import org.jeecgframework.poi.excel.entity.ExportParams;
 import org.jeecgframework.poi.excel.view.JeecgEntityExcelView;
@@ -60,11 +61,11 @@ public class PdProductController extends JeecgController<PdProduct, IPdProductSe
 								   @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
 								   @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
 								   HttpServletRequest req) {
-		Result<Page<PdProduct>> result = new Result<Page<PdProduct>>();
-		Page<PdProduct> pageList = new Page<PdProduct>(pageNo,pageSize);
+		Result<IPage<PdProduct>> result = new Result<IPage<PdProduct>>();
+		Page<PdProduct> page = new Page<PdProduct>(pageNo,pageSize);
 		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
 		pdProduct.setDepartParentId(sysUser.getDepartParentId());
-		pageList =pdProductService.selectList(pageList,pdProduct);//
+		IPage<PdProduct> pageList =pdProductService.selectList(page,pdProduct);//
 		result.setSuccess(true);
 		result.setResult(pageList);
 		return Result.ok(pageList);

@@ -1,5 +1,6 @@
 package org.jeecg.modules.pd.service;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.modules.pd.entity.PdCategory;
@@ -22,7 +23,7 @@ public interface IPdProductService extends IService<PdProduct> {
 
     Page<PdProductPage> chooseProductList(Page<PdProductPage> pageList, PdProduct pdProduct);
 
-    Page<PdProduct> selectList(Page<PdProduct> pageList, PdProduct pdProduct);
+    IPage<PdProduct> selectList(Page<PdProduct> pageList, PdProduct pdProduct);
 
     void updateProduct(PdProduct pdProduct);
 
