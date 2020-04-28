@@ -89,13 +89,13 @@
       <div class="salesCard">
         <a-tabs default-active-key="1" size="large" :tab-bar-style="{marginBottom: '24px', paddingLeft: '16px'}">
           <div class="extra-wrapper" slot="tabBarExtraContent">
-            <div class="extra-item">
-              <a @click="query('day')">今日</a>
-              <a @click="query('week')">本周</a>
-              <a @click="query('month')">本月</a>
-              <a @click="query('year')">本年</a>
+            <div  id="divCSS" class="extra-item">
+              <a-button @click="query('day')" >今日</a-button>
+              <a-button @click="query('week')">本周</a-button>
+              <a-button @click="query('month')">本月</a-button>
+              <a-button @click="query('year')">本年</a-button>
             </div>
-            <a-range-picker :style="{width: '256px'}" />
+           <!-- <a-range-picker :style="{width: '256px'}" /> 日期查询-->
           </div>
           <a-tab-pane loading="true" tab="金额" key="1">
             <a-row>
@@ -259,8 +259,14 @@
       },
 
       query(dayType){//根据年/月/周/日查询
+
+
+
         this.initLogInfo (dayType); //加载总数量和日统计量
         this.initOrderTotalList("",dayType);
+
+
+
       },
 
 
