@@ -6,6 +6,7 @@ import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.PdConstant;
 import org.jeecg.common.system.vo.LoginUser;
+import org.jeecg.common.util.DateUtils;
 import org.jeecg.modules.pd.entity.PdDosage;
 import org.jeecg.modules.pd.entity.PdProductStock;
 import org.jeecg.modules.pd.entity.PdStockRecordDetail;
@@ -68,7 +69,7 @@ public class IndexChartController {
      */
 
     @GetMapping(value = "/list")
-    public Result<?> queryPageAuditList(Map<String,Object> params){
+    public Result<?> queryPageAuditList(IndexChartPage chartPage){
         Map map=new HashMap();
         Double orderCount=0.00;//总采购量
         Double applyCount=0.00;//总申领数量
@@ -79,6 +80,9 @@ public class IndexChartController {
         Double dayDosageNum=0.00;//今日使用量
         Double dayRecordNum=0.00;//今日入库量
 
+       String dayType=chartPage.getDayType();
+       String queryDateStart="";//查询开始日期
+       String queryDateEnd="";  //查询结束日期
         LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
         //查询科室下所有下级科室的ID
         SysDepart depart=new SysDepart();
@@ -90,6 +94,21 @@ public class IndexChartController {
         purchaseOrderPage.setOrderDate(new Date());
         purchaseOrderPage.setDepartIdList(departList);
         purchaseOrderPage.setDepartParentId(sysUser.getDepartParentId());
+        if("year".equals(dayType)){//根据当年查询
+            queryDateStart=DateUtils.formatDate(DateUtils.getBeginDayOfYear());//本年开始时间
+            queryDateEnd=DateUtils.formatDate(DateUtils.getEndDayOfYear());//本年结束时间
+        }else if("month".equals(dayType)){//根据当月查询
+            queryDateStart=DateUtils.formatDate(DateUtils.getBeginDayOfMonth());//本月开始时间
+            queryDateEnd=DateUtils.formatDate(DateUtils.getEndDayOfMonth());//本月结束时间
+        }else if("week".equals(dayType)){//根据本周查询
+            queryDateStart=DateUtils.formatDate(DateUtils.getBeginDayOfWeek());//本周开始时间
+            queryDateEnd=DateUtils.formatDate(DateUtils.getEndDayOfWeek());//本周结束时间
+        }else if("day".equals(dayType)){//根据当日查询
+            queryDateStart=DateUtils.formatDate(DateUtils.getDayBegin());//当日开始时间
+            queryDateEnd=DateUtils.formatDate(DateUtils.getDayEnd());//当日结束时间
+        }
+        purchaseOrderPage.setQueryDateStart(queryDateStart);
+        purchaseOrderPage.setQueryDateEnd(queryDateEnd);
         Map<String,Object> orderMap=pdPurchaseOrderService.queryPurchaseOrderCount(purchaseOrderPage);
         orderCount=MapUtils.getDouble(orderMap,"orderCount");
         dayOrderNum=MapUtils.getDouble(orderMap,"dayOrderNum");
@@ -98,6 +117,8 @@ public class IndexChartController {
         applyOrderPage.setApplyDate(new Date());
         applyOrderPage.setDepartIdList(departList);
         applyOrderPage.setDepartParentId(sysUser.getDepartParentId());
+        applyOrderPage.setQueryDateStart(queryDateStart);
+        applyOrderPage.setQueryDateEnd(queryDateEnd);
         Map<String,Object> applyMap=pdApplyOrderService.queryApplyOrderCount(applyOrderPage);
         applyCount=MapUtils.getDouble(applyMap,"applyCount");
         dayApplyNum=MapUtils.getDouble(applyMap,"dayApplyNum");
@@ -106,6 +127,8 @@ public class IndexChartController {
         applyOrderPage.setApplyDate(new Date());
         stock.setDepartIdList(departList);
         stock.setDepartParentId(sysUser.getDepartParentId());
+        stock.setQueryDateStart(queryDateStart);
+        stock.setQueryDateEnd(queryDateEnd);
         Map<String,Object> stockMap=pdProductStockService.queryProductStockCount(stock);
         stockCount=MapUtils.getDouble(stockMap,"stockCount");
 
@@ -117,8 +140,8 @@ public class IndexChartController {
         recordDetail.setDepartParentId(sysUser.getDepartParentId());
         recordDetail.setAuditStatus(PdConstant.AUDIT_STATE_2); // 审核通过
         recordDetail.setAuditDate(new Date());// 查询当前日期
-        recordDetail.setQueryInDateStart(null);// 查询日期范围
-        recordDetail.setQueryInDateEnd(null);// 查询日期范围
+        //recordDetail.setQueryInDateStart(null);// 查询日期范围
+        //recordDetail.setQueryInDateEnd(null);// 查询日期范围
         Map<String,Object> recordMap = pdStockRecordDetailService.queryStockRecordCount(recordDetail);
         dayRecordNum=MapUtils.getDouble(recordMap,"recordCount");
 
@@ -129,6 +152,8 @@ public class IndexChartController {
         dosage.setDepartIdList(departList); //部门范围
         dosage.setDepartParentId(sysUser.getDepartParentId());
         dosage.setDosageDate(new Date());// 查询当前日期
+        dosage.setQueryDateStart(queryDateStart);
+        dosage.setQueryDateEnd(queryDateEnd);
         Map<String,Object> dosageMap = dosageService.queryPdDosageCount(dosage);
         dosageCount=MapUtils.getDouble(dosageMap,"orderCount");//总使用量
         dayDosageNum=MapUtils.getDouble(dosageMap,"dayOrderNum");//当日使用量
@@ -250,6 +275,22 @@ public class IndexChartController {
     @GetMapping(value = "/orderTotalList")
     public Result<?> orderTotalList(IndexChartPage chartPage, HttpServletRequest req){
         String type=chartPage.getType();
+        String dayType=chartPage.getDayType();
+        String queryDateStart="";//查询开始日期
+        String queryDateEnd="";  //查询结束日期
+        if("year".equals(dayType)){//根据当年查询
+            queryDateStart=DateUtils.formatDate(DateUtils.getBeginDayOfYear());//本年开始时间
+            queryDateEnd=DateUtils.formatDate(DateUtils.getEndDayOfYear());//本年结束时间
+        }else if("month".equals(dayType)){//根据当月查询
+            queryDateStart=DateUtils.formatDate(DateUtils.getBeginDayOfMonth());//本月开始时间
+            queryDateEnd=DateUtils.formatDate(DateUtils.getEndDayOfMonth());//本月结束时间
+        }else if("week".equals(dayType)){//根据本周查询
+            queryDateStart=DateUtils.formatDate(DateUtils.getBeginDayOfWeek());//本周开始时间
+            queryDateEnd=DateUtils.formatDate(DateUtils.getEndDayOfWeek());//本周结束时间
+        }else if("day".equals(dayType)){//根据当日查询
+            queryDateStart=DateUtils.formatDate(DateUtils.getDayBegin());//当日开始时间
+            queryDateEnd=DateUtils.formatDate(DateUtils.getDayEnd());//当日结束时间
+        }
         Map map=new HashMap();
         List<HashMap> orderCountDate=new  ArrayList<HashMap>();//根据类别统计采购数量和金额
         LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
@@ -262,21 +303,29 @@ public class IndexChartController {
             PdProductStock  stock =new  PdProductStock();
             stock.setDepartIdList(departList);
             stock.setDepartParentId(sysUser.getDepartParentId());
+            stock.setQueryDateStart(queryDateStart);
+            stock.setQueryDateEnd(queryDateEnd);
             orderCountDate=pdProductStockService.queryStockTotalList(stock);
         }else if("apply".equals(type)){//申领耗材分类统计
             PdApplyOrderPage applyOrderPage=new  PdApplyOrderPage();
             applyOrderPage.setDepartIdList(departList);
             applyOrderPage.setDepartParentId(sysUser.getDepartParentId());
+            applyOrderPage.setQueryDateStart(queryDateStart);
+            applyOrderPage.setQueryDateEnd(queryDateEnd);
             orderCountDate=pdApplyOrderService.queryApplyOrderTotalList(applyOrderPage);
         }else if("dosage".equals(type)){//耗材使用量分类统计
             PdDosage dosage=new  PdDosage();
              dosage.setDepartIdList(departList);
              dosage.setDepartParentId(sysUser.getDepartParentId());
-            orderCountDate=dosageService.queryPurchaseOrderTotalList(dosage);
+            dosage.setQueryDateStart(queryDateStart);
+            dosage.setQueryDateEnd(queryDateEnd);
+            orderCountDate=dosageService.queryPdDosageTotalList(dosage);
         }else {//采购耗材分类统计
             PdPurchaseOrderPage purchaseOrderPage=new  PdPurchaseOrderPage();
             purchaseOrderPage.setDepartIdList(departList);
             purchaseOrderPage.setDepartParentId(sysUser.getDepartParentId());
+            purchaseOrderPage.setQueryDateStart(queryDateStart);
+            purchaseOrderPage.setQueryDateEnd(queryDateEnd);
             orderCountDate=pdPurchaseOrderService.queryPurchaseOrderTotalList(purchaseOrderPage);
         }
         map.put("orderCountDate",orderCountDate);

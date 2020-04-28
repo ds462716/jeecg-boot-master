@@ -213,6 +213,12 @@
                 #{item}
             </foreach>
         </if>
+        <if test="queryDateStart != null and queryDateStart != ''">
+            AND a.apply_date &gt;= #{queryDateStart}
+        </if>
+        <if test="queryDateEnd != null and queryDateEnd != ''">
+            AND a.apply_date &lt;= #{queryDateEnd}
+        </if>
     </select>
 
 
@@ -260,8 +266,7 @@
         left join pd_product c on b.product_id=c.id
         left join pd_category d on d.id=c.category_two
         where a.del_flag=#{DEL_FLAG_NORMAL} AND a.audit_status='2'
-        AND  DATE_SUB(CURDATE(), INTERVAL 30 DAY) &lt;= date(a.apply_date)
-        and date(a.apply_date) &lt;=CURDATE()
+        <!--AND  DATE_SUB(CURDATE(), INTERVAL 30 DAY) &lt;= date(a.apply_date)  and date(a.apply_date) &lt;=CURDATE()-->
         <if test="departIdList != null and departIdList.size() > 0">
             and a.depart_id IN
             <foreach collection="departIdList" item="item" separator="," open="(" close=")">
@@ -270,6 +275,12 @@
         </if>
         <if test="departParentId != null and departParentId != ''">
             AND a.depart_parent_id = #{departParentId}
+        </if>
+        <if test="queryDateStart != null and queryDateStart != ''">
+            AND a.apply_date &gt;= #{queryDateStart}
+        </if>
+        <if test="queryDateEnd != null and queryDateEnd != ''">
+            AND a.apply_date &lt;= #{queryDateEnd}
         </if>
         group by x  order by y desc
     </select>

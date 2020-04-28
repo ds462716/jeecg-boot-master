@@ -300,6 +300,11 @@ public class PdDosageServiceImpl extends ServiceImpl<PdDosageMapper, PdDosage> i
         return pdDosageMapper.queryPdDosageList(pdDosage);
     }
 
+    @Override
+    public List<HashMap> queryPdDosageTotalList(PdDosage pdDosage) {
+        return pdDosageMapper.queryPdDosageTotalList(pdDosage);
+    }
+
     /**
      * 库存回退
      * @param pdDosage

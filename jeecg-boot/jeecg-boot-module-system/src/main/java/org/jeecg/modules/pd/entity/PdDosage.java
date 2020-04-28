@@ -230,5 +230,10 @@ public class PdDosage extends BaseEntity {
     private String dhyCharged;
     @TableField(exist = false)
     private String pdDosageDetailId;
-
+    /** 查询日期起始 **/
+    @TableField(exist = false)
+    private String queryDateStart;
+    /** 查询日期结束 **/
+    @TableField(exist = false)
+    private String queryDateEnd;
 }
