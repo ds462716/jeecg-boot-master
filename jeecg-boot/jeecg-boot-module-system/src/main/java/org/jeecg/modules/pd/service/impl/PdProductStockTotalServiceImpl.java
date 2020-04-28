@@ -538,12 +538,12 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
                    if(CollectionUtils.isNotEmpty(detailList)){
                        for(PdUsePackageDetail detail:detailList){
                         String productId= detail.getProductId();//产品ID
-                        Double syNum= 0.00;//detail.getCount();//配置的使用量
+                        Double syNum= detail.getCount();//配置的使用量
                         //查询检验科室库存明细(先查询使用中的)
                            PdProductStock o_productStockq = new PdProductStock();
                            o_productStockq.setDepartId("");//暂定检验科
                            o_productStockq.setProductId(productId);
-                           o_productStockq.setNestatStatus("0");
+                           o_productStockq.setNestatStatus(PdConstant.STOCK_NESTAT_STATUS_0);
                            //方法重新写
                            List<PdProductStock> productStocks = pdProductStockMapper.selectList(o_productStockq);
                             if(CollectionUtils.isEmpty(productStocks)){
@@ -596,17 +596,7 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
  3)除用量之外都扣减未使用的库存；
 
 
- 4.试剂扣减库存的问题：
- 例如：
- 一瓶试剂为100人份，试剂用到80人份就一瓶使用完了，
-     但是系统上库存的规格数量还有20人份或者100人份的试剂用到110人份了，
-     这块需要如何处理，因为如果按照人份来扣减库存，就会存在一个系统库存和实际用量不一致的问题；
-
- 结论：少用的情况下，如果1瓶100人份，实际用到了110人份，
-     系统还是按照正常的扣减库存逻辑处理，就是扣完1瓶100人份，
-     在继续扣减第二瓶的10份；
- 多用的情况下，可以人为去修改库存明细规格数量和库存数量（这里的修改是直接规格数量和库存数量归零），
-     且必须填写修改原因；*/
+ */
 
         //1、扣减出库库存，扣减出库库存明细
        /* for (PdDosageDetail dosageDetail : dosageDetails) {
