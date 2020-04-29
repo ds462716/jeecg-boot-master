@@ -26,6 +26,29 @@
         ORDER BY a.update_time desc,a.create_time desc
     </select>
 
+    <select id="selectListByPage"  resultType="org.jeecg.modules.pd.entity.PdGroup">
+        SELECT
+        *
+        FROM pd_group a
+        <where>
+            a.del_flag = #{entity.DEL_FLAG_NORMAL}
+        </where>
+        <if test="entity.name != null and entity.name != ''">
+            AND (a.name LIKE concat('%',#{entity.name},'%')
+            or a.py LIKE concat('%',#{entity.name},'%')
+            or a.wb LIKE concat('%',#{entity.name},'%')
+            or a.zdy LIKE concat('%',#{entity.name},'%'))
+        </if>
+        <if test="entity.departId != null and entity.departId != ''">
+            AND a.depart_id = #{entity.departId}
+        </if>
+        <if test="entity.departParentId != null and entity.departParentId != ''">
+            AND a.depart_parent_id = #{entity.departParentId}
+        </if>
+        <!-- 为了查询效率 只查询十条记录该方法用于下拉选择 -->
+        ORDER BY a.update_time desc,a.create_time desc
+    </select>
+
     <!-- 校验组别是否唯一 -->
     <select id="verify" resultType="org.jeecg.modules.pd.entity.PdGroup">
         SELECT

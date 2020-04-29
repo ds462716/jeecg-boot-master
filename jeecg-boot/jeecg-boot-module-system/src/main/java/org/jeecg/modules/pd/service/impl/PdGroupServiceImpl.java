@@ -45,7 +45,7 @@ public class PdGroupServiceImpl extends ServiceImpl<PdGroupMapper, PdGroup> impl
 
     @Override
     public Page<PdGroup> selectList(Page<PdGroup> page, PdGroup pdGroup) {
-        return page.setRecords(pdGroupMapper.selectList(pdGroup));
+        return pdGroupMapper.selectListByPage(page,pdGroup);
     }
 
     @Override
