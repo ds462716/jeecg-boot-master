@@ -213,7 +213,7 @@ public class PdDosageServiceImpl extends ServiceImpl<PdDosageMapper, PdDosage> i
      */
     @Override
     public IPage<PdDosage> queryList(Page<PdDosage> page, PdDosage pdDosage) {
-        return page.setRecords(pdDosageMapper.selectList(pdDosage));
+        return pdDosageMapper.selectListByPage(page,pdDosage);
     }
 
     //合并相同的用量

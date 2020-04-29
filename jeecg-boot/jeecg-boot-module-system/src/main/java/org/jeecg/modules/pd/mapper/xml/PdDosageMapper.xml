@@ -164,6 +164,34 @@
         ORDER BY a.update_time desc,a.create_time desc
     </select>
 
+    <select id="selectListByPage" resultType="org.jeecg.modules.pd.entity.PdDosage" parameterType="org.jeecg.modules.pd.entity.PdDosage">
+        SELECT
+        <include refid="pdDosageColumns"/>,
+        b.realname AS dosageByName
+        FROM
+        `pd_dosage` a
+        LEFT JOIN sys_user b ON a.dosage_by = b.id
+        <where>
+            a.del_flag = #{entity.DEL_FLAG_NORMAL}
+            <if test="entity.dosageNo != null and entity.dosageNo != ''">
+                AND a.dosage_no = #{entity.dosageNo}
+            </if>
+            <if test="entity.inHospitalNo != null and entity.inHospitalNo != ''">
+                AND a.in_hospital_no = #{entity.inHospitalNo}
+            </if>
+            <if test="entity.dosageBy != null and entity.dosageBy != ''">
+                AND a.dosage_by = #{entity.dosageBy}
+            </if>
+            <if test="entity.departId != null and entity.departId != ''">
+                AND a.depart_id = #{entity.departId}
+            </if>
+            <if test="entity.departParentId != null and entity.departParentId != ''">
+                AND a.depart_parent_id = #{entity.departParentId}
+            </if>
+        </where>
+        ORDER BY a.update_time desc,a.create_time desc
+    </select>
+
     <!-- 根据时间范围统计当日使用量 -->
     <select id="queryPdDosageCount" resultType="java.util.Map" >
         SELECT
