@@ -44,8 +44,8 @@ public class PdUnitServiceImpl extends ServiceImpl<PdUnitMapper, PdUnit> impleme
     }
 
     @Override
-    public Page<PdUnit> queryList(Page<PdUnit> pageList, PdUnit pdUnit) {
-        return pageList.setRecords(pdUnitMapper.queryList(pdUnit));
+    public Page<PdUnit> queryList(Page<PdUnit> page, PdUnit pdUnit) {
+        return pdUnitMapper.selectListByPage(page,pdUnit);
     }
 
     @Override

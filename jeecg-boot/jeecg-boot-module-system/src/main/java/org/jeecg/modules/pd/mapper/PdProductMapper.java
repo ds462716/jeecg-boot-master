@@ -18,7 +18,7 @@ import org.jeecg.modules.pd.vo.PdProductPage;
  */
 public interface PdProductMapper extends BaseMapper<PdProduct> {
 
-    IPage<PdProductPage> chooseProductList(Page<PdProductPage> page, @Param("entity") PdProduct entity);
+    Page<PdProductPage> chooseProductList(Page<PdProductPage> page, @Param("entity") PdProduct entity);
 
     List<PdProduct> selectList(PdProduct pdProduct);
 
@@ -32,5 +32,5 @@ public interface PdProductMapper extends BaseMapper<PdProduct> {
 
     void updateValidityFlag(PdProduct pdProduct);
 
-    IPage<PdProduct> selectListByPage(Page<PdProduct> page, @Param("entity") PdProduct entity);
+    Page<PdProduct> selectListByPage(Page<PdProduct> page, @Param("entity") PdProduct entity);
 }

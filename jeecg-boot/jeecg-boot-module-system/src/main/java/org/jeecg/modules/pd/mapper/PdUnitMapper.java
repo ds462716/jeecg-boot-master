@@ -2,6 +2,7 @@ package org.jeecg.modules.pd.mapper;
 
 import java.util.List;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Param;
 import org.jeecg.modules.pd.entity.PdUnit;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
@@ -17,4 +18,6 @@ public interface PdUnitMapper extends BaseMapper<PdUnit> {
     List<PdUnit> queryList(PdUnit pdUnit);
 
     List<PdUnit> verify(PdUnit pdUnit);
+
+    Page<PdUnit> selectListByPage(Page<PdUnit> page, @Param("entity") PdUnit entity);
 }

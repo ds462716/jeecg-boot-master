@@ -75,12 +75,12 @@ public class PdProductServiceImpl extends ServiceImpl<PdProductMapper, PdProduct
 
 
     @Override
-    public IPage<PdProductPage> chooseProductList(Page<PdProductPage> page, PdProduct pdProduct) {
+    public Page<PdProductPage> chooseProductList(Page<PdProductPage> page, PdProduct pdProduct) {
         return pdProductMapper.chooseProductList(page,pdProduct);
     }
 
     @Override
-    public IPage<PdProduct> selectList(Page<PdProduct> page, PdProduct pdProduct) {
+    public Page<PdProduct> selectList(Page<PdProduct> page, PdProduct pdProduct) {
         return pdProductMapper.selectListByPage(page,pdProduct);
     }
 
