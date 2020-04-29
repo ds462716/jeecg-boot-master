@@ -10,6 +10,7 @@ import org.jeecg.common.constant.PdConstant;
 import org.jeecg.common.system.base.controller.JeecgController;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.system.vo.LoginUser;
+import org.jeecg.modules.pd.entity.PdProduct;
 import org.jeecg.modules.pd.entity.PdSupplier;
 import org.jeecg.modules.pd.service.IPdSupplierService;
 import org.jeecg.modules.pd.util.FileUploadUtil;
@@ -59,13 +60,10 @@ public class PdSupplierController extends JeecgController<PdSupplier, IPdSupplie
                                   @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
                                   @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
                                   HttpServletRequest req) {
-       Result<Page<PdSupplier>> result = new Result<>();
-       Page<PdSupplier> pageList = new Page<>(pageNo,pageSize);
+       Page<PdSupplier> page = new Page<>(pageNo,pageSize);
        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
        pdSupplier.setDepartParentId(sysUser.getDepartParentId());
-       pageList =pdSupplierService.selectList(pageList,pdSupplier);
-       result.setSuccess(true);
-       result.setResult(pageList);
+       IPage<PdSupplier> pageList =pdSupplierService.selectList(page,pdSupplier);
        return Result.ok(pageList);
    }
 

@@ -66,7 +66,7 @@ public class PdSupplierServiceImpl extends ServiceImpl<PdSupplierMapper, PdSuppl
 
     @Override
     public Page<PdSupplier> selectList(Page<PdSupplier> page, PdSupplier pdSupplier) {
-        return page.setRecords(pdSupplierMapper.selectList(pdSupplier));
+        return pdSupplierMapper.selectListByPage(page,pdSupplier);
     }
 
     @Override
