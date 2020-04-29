@@ -103,7 +103,15 @@
                 AND a.id = #{id}
             </if>
             <if test="productName != null and productName != ''">
-                AND c.name  LIKE concat('%',#{productName},'%')
+                AND (
+                c.name LIKE concat('%',#{productName},'%')
+                or c.py LIKE concat('%',#{productName},'%')
+                or c.wb LIKE concat('%',#{productName},'%')
+                or c.bname LIKE concat('%',#{productName},'%')
+                or c.bpy LIKE concat('%',#{productName},'%')
+                or c.bwb LIKE concat('%',#{productName},'%')
+                or c.zdy LIKE concat('%',#{productName},'%')
+                )
             </if>
             <if test="number != null and number != ''">
                 AND c.number =LIKE concat('%',#{number},'%')
