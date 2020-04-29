@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.pd.mapper.HisChargeMapper">
+
+	<sql id="HisChargeInfColumns">
+        a.id,
+        a.create_by,
+		a.create_time,
+		a.update_by,
+		a.update_time,
+		a.sys_org_code,
+		a.del_flag,
+		a.fsf_xmbh,
+		a.fsf_xmmc,
+		a.fsf_xmgg,
+		a.fsf_spec,
+		a.fsf_version,
+		a.fsf_unitname,
+		a.fsf_vender,
+		a.fsf_supplier,
+		a.fsf_ksbh,
+		a.fsf_ks,
+		a.fsf_xmlb
+	</sql>
+    <!--查询HIS系统收费项目基础信息-->
+	<select id="selectByHisCharge" parameterType="java.lang.String" resultType="org.jeecg.modules.pd.entity.HisChargeInf">
+		select  * from spd_his_sf_xm
+	</select>
+
+    <!--删除所有收费项目基础信息-->
+	<delete id="deleteChargeInf">
+		DELETE 	FROM  his_charge_inf
+    </delete>
+
+
+
+	<!-- 列表查询 -->
+	<select id="selectList" resultType="org.jeecg.modules.pd.entity.HisChargeInf">
+		SELECT
+		<include refid="HisChargeInfColumns"/>
+		FROM his_charge_inf a
+		where 1=1 AND	a.del_flag =#{DEL_FLAG_NORMAL}
+			<if test="id != null and id != ''">
+				AND a.id = #{id}
+			</if>
+	</select>
+</mapper>

@@ -196,3 +196,27 @@ ALTER TABLE `pd_apply_detail`
 ADD COLUMN `package_record_id` varchar(64) NULL COMMENT '打包记录id';
 ALTER TABLE `pd_allocation_detail`
 ADD COLUMN `package_record_id` varchar(64) NULL COMMENT '打包记录id';
+
+-- add by mcb 2020年4月29日19:14:30 增加HIS系统收费项目基础信息表
+CREATE TABLE `his_charge_inf` (
+  `id` varchar(36) NOT NULL,
+  `create_by` varchar(50) DEFAULT NULL COMMENT '创建人',
+  `create_time` datetime DEFAULT NULL COMMENT '创建日期',
+  `update_by` varchar(50) DEFAULT NULL COMMENT '更新人',
+  `update_time` datetime DEFAULT NULL COMMENT '更新日期',
+  `sys_org_code` varchar(64) DEFAULT NULL COMMENT '所属部门',
+  `fsf_xmbh` varchar(32) DEFAULT NULL COMMENT '收费项目代码',
+  `fsf_xmmc` varchar(64) DEFAULT NULL COMMENT '收费项目名称',
+  `fsf_xmgg` varchar(64) DEFAULT NULL COMMENT '收费项目规格',
+  `fsf_spec` varchar(64) DEFAULT NULL COMMENT '规格',
+  `fsf_version` varchar(64) DEFAULT NULL COMMENT '型号',
+  `fsf_unitname` varchar(32) DEFAULT NULL COMMENT '单位名称',
+  `fsf_vender` varchar(64) DEFAULT NULL COMMENT '生产厂家',
+  `fsf_supplier` varchar(64) DEFAULT NULL COMMENT '供应商',
+  `fsf_ksbh` varchar(32) DEFAULT NULL COMMENT '收费科室代码',
+  `fsf_ks` varchar(64) DEFAULT NULL COMMENT '收费科室名称',
+  `fsf_xmlb` varchar(32) DEFAULT NULL COMMENT '收费类别标识',
+  `del_flag` varchar(4) DEFAULT '0' COMMENT '删除标识',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
