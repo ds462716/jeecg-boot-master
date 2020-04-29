@@ -1,5 +1,6 @@
 package org.jeecg.modules.pd.service.impl;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.jeecg.modules.pd.entity.PdRejectedDetail;
 import org.jeecg.modules.pd.mapper.PdRejectedDetailMapper;
@@ -34,7 +35,7 @@ public class PdRejectedDetailServiceImpl extends ServiceImpl<PdRejectedDetailMap
     }
 
     @Override
-    public Page<PdRejectedDetail> selectList(Page<PdRejectedDetail> pageList, PdRejectedDetail pdRejectedDetail) {
-        return pageList.setRecords(pdRejectedDetailMapper.selectList(pdRejectedDetail));
+    public IPage<PdRejectedDetail> selectList(Page<PdRejectedDetail> pageList, PdRejectedDetail pdRejectedDetail) {
+        return pdRejectedDetailMapper.selectList(pageList, pdRejectedDetail);
     }
 }

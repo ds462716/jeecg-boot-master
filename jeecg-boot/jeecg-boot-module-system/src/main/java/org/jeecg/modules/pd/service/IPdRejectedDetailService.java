@@ -1,5 +1,6 @@
 package org.jeecg.modules.pd.service;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.jeecg.modules.pd.entity.PdRejectedDetail;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -18,5 +19,5 @@ public interface IPdRejectedDetailService extends IService<PdRejectedDetail> {
 
     List<PdRejectedDetail> selectList(PdRejectedDetail pdRejectedDetail);
 
-    Page<PdRejectedDetail> selectList(Page<PdRejectedDetail> pageList, PdRejectedDetail pdRejectedDetail);
+    IPage<PdRejectedDetail> selectList(Page<PdRejectedDetail> pageList, PdRejectedDetail pdRejectedDetail);
 }

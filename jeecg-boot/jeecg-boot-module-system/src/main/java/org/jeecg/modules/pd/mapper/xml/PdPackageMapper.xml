@@ -22,21 +22,21 @@
         a.depart_parent_id
         FROM pd_package a
         <where>
-            a.del_flag = #{DEL_FLAG_NORMAL}
-            <if test="packageName != null and packageName != ''">
-                AND ( a.package_name LIKE concat('%',#{packageName},'%')
-                or a.py LIKE concat('%',#{packageName},'%')
-                or a.wb LIKE concat('%',#{packageName},'%')
-                or a.zdy LIKE concat('%',#{packageName},'%') )
+            a.del_flag = #{entity.DEL_FLAG_NORMAL}
+            <if test="entity.packageName != null and entity.packageName != ''">
+                AND ( a.package_name LIKE concat('%',#{entity.packageName},'%')
+                or a.py LIKE concat('%',#{entity.packageName},'%')
+                or a.wb LIKE concat('%',#{entity.packageName},'%')
+                or a.zdy LIKE concat('%',#{entity.packageName},'%') )
             </if>
-            <if test="packageCode != null and packageCode != ''">
-                AND a.package_code LIKE concat('%',#{packageCode},'%')
+            <if test="entity.packageCode != null and entity.packageCode != ''">
+                AND a.package_code LIKE concat('%',#{entity.packageCode},'%')
             </if>
-            <if test="departParentId != null and departParentId != ''">
-                AND a.depart_parent_id = #{departParentId}
+            <if test="entity.departParentId != null and entity.departParentId != ''">
+                AND a.depart_parent_id = #{entity.departParentId}
             </if>
-            <if test="departId != null and departId != ''">
-                AND a.depart_id = #{departId}
+            <if test="entity.departId != null and entity.departId != ''">
+                AND a.depart_id = #{entity.departId}
             </if>
         </where>
         ORDER BY a.update_time desc
