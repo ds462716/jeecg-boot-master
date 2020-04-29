@@ -16,6 +16,7 @@ import org.jeecg.common.constant.PdConstant;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.oConvertUtils;
+import org.jeecg.modules.pd.entity.PdProduct;
 import org.jeecg.modules.pd.entity.PdVender;
 import org.jeecg.modules.pd.service.IPdVenderService;
 
@@ -65,13 +66,10 @@ public class PdVenderController extends JeecgController<PdVender, IPdVenderServi
 								   @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
 								   @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
 								   HttpServletRequest req) {
-		Result<Page<PdVender>> result = new Result<>();
-		Page<PdVender> pageList = new Page<>(pageNo,pageSize);
+		Page<PdVender> page = new Page<>(pageNo,pageSize);
 		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
 		pdVender.setDepartParentId(sysUser.getDepartParentId());
-		pageList =pdVenderService.selectList(pageList,pdVender);
-		result.setSuccess(true);
-		result.setResult(pageList);
+		IPage<PdVender> pageList =pdVenderService.selectList(page,pdVender);
 		return Result.ok(pageList);
 	}
 

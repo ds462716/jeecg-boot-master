@@ -2,6 +2,8 @@ package org.jeecg.modules.pd.mapper;
 
 import java.util.List;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import org.apache.ibatis.annotations.Param;
 import org.jeecg.modules.pd.entity.PdVender;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
@@ -20,4 +22,6 @@ public interface PdVenderMapper extends BaseMapper<PdVender> {
     void updateValidityFlag(PdVender pdVender);
 
     List<PdVender> selectAllList(PdVender pdVender);
+
+    Page<PdVender> selectListByPage(Page<PdVender> page, @Param("entity") PdVender entity);
 }

@@ -70,7 +70,7 @@ public class PdVenderServiceImpl extends ServiceImpl<PdVenderMapper, PdVender> i
 
     @Override
     public Page<PdVender> selectList(Page<PdVender> page, PdVender pdVender) {
-        return page.setRecords(pdVenderMapper.selectList(pdVender));
+        return pdVenderMapper.selectListByPage(page,pdVender);
     }
 
     @Override
