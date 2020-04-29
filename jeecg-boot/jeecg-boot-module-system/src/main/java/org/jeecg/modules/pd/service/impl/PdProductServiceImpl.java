@@ -75,9 +75,8 @@ public class PdProductServiceImpl extends ServiceImpl<PdProductMapper, PdProduct
 
 
     @Override
-    public Page<PdProductPage> chooseProductList(Page<PdProductPage> pageList, PdProduct pdProduct) {
-
-        return pageList.setRecords(pdProductMapper.chooseProductList(pdProduct));
+    public IPage<PdProductPage> chooseProductList(Page<PdProductPage> page, PdProduct pdProduct) {
+        return pdProductMapper.chooseProductList(page,pdProduct);
     }
 
     @Override

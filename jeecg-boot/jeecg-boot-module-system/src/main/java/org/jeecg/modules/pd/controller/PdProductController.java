@@ -61,13 +61,10 @@ public class PdProductController extends JeecgController<PdProduct, IPdProductSe
 								   @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
 								   @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
 								   HttpServletRequest req) {
-		Result<IPage<PdProduct>> result = new Result<IPage<PdProduct>>();
 		Page<PdProduct> page = new Page<PdProduct>(pageNo,pageSize);
 		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
 		pdProduct.setDepartParentId(sysUser.getDepartParentId());
 		IPage<PdProduct> pageList =pdProductService.selectList(page,pdProduct);//
-		result.setSuccess(true);
-		result.setResult(pageList);
 		return Result.ok(pageList);
 	}
 	

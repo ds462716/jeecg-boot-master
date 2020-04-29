@@ -21,7 +21,7 @@ import java.util.Map;
  */
 public interface IPdProductService extends IService<PdProduct> {
 
-    Page<PdProductPage> chooseProductList(Page<PdProductPage> pageList, PdProduct pdProduct);
+    IPage<PdProductPage> chooseProductList(Page<PdProductPage> pageList, PdProduct pdProduct);
 
     IPage<PdProduct> selectList(Page<PdProduct> pageList, PdProduct pdProduct);
 
