@@ -43,6 +43,47 @@
     </select>
 
 
+    <select id="selectListByPage" resultType="org.jeecg.modules.pd.entity.PdUsePackage" parameterType="org.jeecg.modules.pd.entity.PdUsePackage">
+        SELECT
+        a.id,
+        a.code,
+        a.name,
+        a.sum,
+        a.py,
+        a.wb,
+        a.zdy,
+        a.create_by,
+        a.create_time,
+        a.update_by,
+        a.update_time,
+        a.remarks,
+        a.del_flag,
+        a.sys_org_code,
+        a.depart_id,
+        a.depart_parent_id
+        FROM pd_use_package a
+        <where>
+            a.del_flag = #{entity.DEL_FLAG_NORMAL}
+            <if test="entity.name != null and entity.name != ''">
+                AND ( a.name LIKE concat('%',#{entity.name},'%')
+                or a.py LIKE concat('%',#{entity.name},'%')
+                or a.wb LIKE concat('%',#{entity.name},'%')
+                or a.zdy LIKE concat('%',#{entity.name},'%') )
+            </if>
+            <if test="entity.code != null and entity.code != ''">
+                AND a.code LIKE concat('%',#{entity.code},'%')
+            </if>
+            <if test="entity.departParentId != null and entity.departParentId != ''">
+                AND a.depart_parent_id = #{entity.departParentId}
+            </if>
+            <if test="entity.departId != null and entity.departId != ''">
+                AND a.depart_id = #{entity.departId}
+            </if>
+        </where>
+        ORDER BY a.update_time desc
+    </select>
+
+
     <!-- 校验组别是否唯一 -->
     <select id="verify" resultType="org.jeecg.modules.pd.entity.PdUsePackage">
         SELECT
