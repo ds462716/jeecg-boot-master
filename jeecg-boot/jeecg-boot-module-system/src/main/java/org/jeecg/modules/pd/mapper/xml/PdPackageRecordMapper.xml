@@ -11,36 +11,36 @@
         pd_package_record a
         LEFT JOIN pd_package c ON a.package_id = c.id
         <where>
-            a.del_flag = #{DEL_FLAG_NORMAL}
-            <if test="packageName != null and packageName != ''">
-                AND ( c.package_name LIKE concat('%',#{packageName},'%')
-                or c.py LIKE concat('%',#{packageName},'%')
-                or c.wb LIKE concat('%',#{packageName},'%')
-                or c.zdy LIKE concat('%',#{packageName},'%') )
+            a.del_flag = #{entity.DEL_FLAG_NORMAL}
+            <if test="entity.packageName != null and entity.packageName != ''">
+                AND ( c.package_name LIKE concat('%',#{entity.packageName},'%')
+                or c.py LIKE concat('%',#{entity.packageName},'%')
+                or c.wb LIKE concat('%',#{entity.packageName},'%')
+                or c.zdy LIKE concat('%',#{entity.packageName},'%') )
             </if>
-            <if test="packageCode != null and packageCode != ''">
-                AND c.package_code LIKE concat('%',#{packageCode},'%')
+            <if test="entity.packageCode != null and entity.packageCode != ''">
+                AND c.package_code LIKE concat('%',#{entity.packageCode},'%')
             </if>
-            <if test="packageBarCode != null and packageBarCode != ''">
-                AND a.package_bar_code = #{packageBarCode}
+            <if test="entity.packageBarCode != null and entity.packageBarCode != ''">
+                AND a.package_bar_code = #{entity.packageBarCode}
             </if>
-            <if test="status != null and status != ''">
-                AND a.status = #{status}
+            <if test="entity.status != null and entity.status != ''">
+                AND a.status = #{entity.status}
             </if>
-            <if test="departParentId != null and departParentId != ''">
-                AND a.depart_parent_id = #{departParentId}
+            <if test="entity.departParentId != null and entity.departParentId != ''">
+                AND a.depart_parent_id = #{entity.departParentId}
             </if>
-            <if test="departId != null and departId != ''">
-                AND a.depart_id = #{departId}
+            <if test="entity.departId != null and entity.departId != ''">
+                AND a.depart_id = #{entity.departId}
             </if>
-            <if test="idList != null and idList.size() > 0">
+            <if test="entity.idList != null and entity.idList.size() > 0">
                 AND a.id IN
-                <foreach collection="idList" item="item" separator="," open="(" close=")">
+                <foreach collection="entity.idList" item="item" separator="," open="(" close=")">
                     #{item}
                 </foreach>
             </if>
 
-            <if test="productName != null and productName != ''">
+            <if test="entity.productName != null and entity.productName != ''">
                 AND a.id in (
                     SELECT DISTINCT
                       m.record_id
@@ -48,17 +48,17 @@
                       pd_package_record_detail m
                     LEFT JOIN pd_product n ON m.product_id = n.id
                     WHERE
-                        n.number LIKE concat('%',#{productName},'%')
-                        or n.name LIKE concat('%',#{productName},'%')
-                        or n.py LIKE concat('%',#{productName},'%')
-                        or n.wb LIKE concat('%',#{productName},'%')
-                        or n.bname LIKE concat('%',#{productName},'%')
-                        or n.bpy LIKE concat('%',#{productName},'%')
-                        or n.bwb LIKE concat('%',#{productName},'%')
-                        or n.zdy LIKE concat('%',#{productName},'%')
+                        n.number LIKE concat('%',#{entity.productName},'%')
+                        or n.name LIKE concat('%',#{entity.productName},'%')
+                        or n.py LIKE concat('%',#{entity.productName},'%')
+                        or n.wb LIKE concat('%',#{entity.productName},'%')
+                        or n.bname LIKE concat('%',#{entity.productName},'%')
+                        or n.bpy LIKE concat('%',#{entity.productName},'%')
+                        or n.bwb LIKE concat('%',#{entity.productName},'%')
+                        or n.zdy LIKE concat('%',#{entity.productName},'%')
                 )
             </if>
-            <if test="productNumber != null and productNumber != ''">
+            <if test="entity.productNumber != null and entity.productNumber != ''">
                 AND a.id in (
                     SELECT DISTINCT
                       m.record_id
@@ -66,7 +66,7 @@
                       pd_package_record_detail m
                     LEFT JOIN pd_product n ON m.product_id = n.id
                     WHERE
-                      n.number LIKE concat('%',#{productNumber},'%')
+                      n.number LIKE concat('%',#{entity.productNumber},'%')
                 )
             </if>
 

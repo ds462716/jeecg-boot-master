@@ -1,5 +1,6 @@
 package org.jeecg.modules.pd.service;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.modules.pd.entity.PdPackageRecordDetail;
@@ -53,7 +54,7 @@ public interface IPdPackageRecordService extends IService<PdPackageRecord> {
 	 * @param pdPackageRecord
 	 * @return
 	 */
-	Page<PdPackageRecord> queryList(Page<PdPackageRecord> pageList, PdPackageRecord pdPackageRecord);
+	IPage<PdPackageRecord> queryList(Page<PdPackageRecord> pageList, PdPackageRecord pdPackageRecord);
 
 	/**
 	 * 定数包打包记录扫码

@@ -1,5 +1,6 @@
 package org.jeecg.modules.pd.service.impl;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.shiro.SecurityUtils;
@@ -91,10 +92,10 @@ public class PdRejectedServiceImpl extends ServiceImpl<PdRejectedMapper, PdRejec
     }
 
     @Override
-    public Page<PdRejected> queryList(Page<PdRejected> pageList, PdRejected pdRejected) {
+    public IPage<PdRejected> queryList(Page<PdRejected> pageList, PdRejected pdRejected) {
         LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
         pdRejected.setDepartParentId(sysUser.getDepartParentId());
-        return pageList.setRecords(pdRejectedMapper.selectList(pdRejected));
+        return pdRejectedMapper.selectList(pageList,pdRejected);
     }
 
     /**

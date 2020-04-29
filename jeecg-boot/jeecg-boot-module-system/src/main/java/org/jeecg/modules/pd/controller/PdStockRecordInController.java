@@ -333,8 +333,8 @@ public class PdStockRecordInController {
             pdStockRecordDetail.setInDepartIdList(departList);
         }
 
-        page = pdStockRecordDetailService.selectList(page, pdStockRecordDetail);
-        return Result.ok(page);
+        IPage<PdStockRecordDetail> pageList = pdStockRecordDetailService.selectList(page, pdStockRecordDetail);
+        return Result.ok(pageList);
     }
 
     /**

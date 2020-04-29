@@ -3,6 +3,8 @@ package org.jeecg.modules.pd.mapper;
 import java.util.List;
 import java.util.Map;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.jeecg.modules.pd.entity.PdStockRecordDetail;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Param;
@@ -26,7 +28,10 @@ public interface PdStockRecordDetailMapper extends BaseMapper<PdStockRecordDetai
 
 	public List<PdStockRecordDetail> selectByMainId(PdStockRecordDetail pdStockRecordDetail);
 
-	public List<PdStockRecordDetail> selectList(PdStockRecordDetail pdStockRecordDetail);
+	public List<PdStockRecordDetail> selectList(@Param("entity") PdStockRecordDetail pdStockRecordDetail);
+
+	IPage<PdStockRecordDetail> selectList(Page<PdStockRecordDetail> page, @Param("entity") PdStockRecordDetail pdStockRecordDetail);
+
 
 	void updateInHuoweiCode(PdStockRecordDetail detail);
 

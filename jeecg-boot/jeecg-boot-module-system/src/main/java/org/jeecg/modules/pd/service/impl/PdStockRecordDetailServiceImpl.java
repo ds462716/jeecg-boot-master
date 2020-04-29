@@ -1,6 +1,7 @@
 package org.jeecg.modules.pd.service.impl;
 
 import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.jeecg.modules.pd.entity.PdPurchaseOrder;
 import org.jeecg.modules.pd.entity.PdStockRecordDetail;
@@ -40,8 +41,8 @@ public class PdStockRecordDetailServiceImpl extends ServiceImpl<PdStockRecordDet
 	 * @return
 	 */
 	@Override
-	public Page<PdStockRecordDetail> selectList(Page<PdStockRecordDetail> page, PdStockRecordDetail pdStockRecordDetail) {
-		return page.setRecords(pdStockRecordDetailMapper.selectList(pdStockRecordDetail));
+	public IPage<PdStockRecordDetail> selectList(Page<PdStockRecordDetail> page, PdStockRecordDetail pdStockRecordDetail) {
+		return pdStockRecordDetailMapper.selectList(page, pdStockRecordDetail);
 	}
 
 	/**

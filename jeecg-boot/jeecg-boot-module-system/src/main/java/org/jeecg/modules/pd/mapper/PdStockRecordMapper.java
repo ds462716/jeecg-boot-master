@@ -1,6 +1,8 @@
 package org.jeecg.modules.pd.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Param;
 import org.jeecg.modules.pd.entity.PdStockRecord;
 
@@ -15,7 +17,10 @@ import java.util.List;
 public interface PdStockRecordMapper extends BaseMapper<PdStockRecord> {
 
 
-    List<PdStockRecord> selectList(PdStockRecord pdStockRecord);
+    List<PdStockRecord> selectList(@Param("entity") PdStockRecord pdStockRecord);
+
+    IPage<PdStockRecord> selectList(Page<PdStockRecord> page, @Param("entity") PdStockRecord pdStockRecord);
+
 
     /**
      * 获取一条记录

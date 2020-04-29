@@ -1,5 +1,6 @@
 package org.jeecg.modules.pd.controller;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.ObjectUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
@@ -289,7 +290,7 @@ public class PdProductStockTotalController {
 		 pdStockRecordDetail.setDeptId(stockTotalPage.getDepartId());
 		 LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
 		 pdStockRecordDetail.setDepartParentId(sysUser.getDepartParentId());
-		 page = pdStockRecordDetailService.selectList(page,pdStockRecordDetail);
+		 IPage<PdStockRecordDetail> pageList = pdStockRecordDetailService.selectList(page,pdStockRecordDetail);
 		 Double productTotNum = 0.00;//入库总数量
 		 Double productOutTotNum = 0.00;//出库总数量
 		 BigDecimal inPrice = new BigDecimal(0);//入库总金额
@@ -308,7 +309,7 @@ public class PdProductStockTotalController {
 		 }
 
 		 Map map=new HashMap();
-		 map.put("page",page);
+		 map.put("page",pageList);
 		 map.put("productTotNum",productTotNum);//入库总数量
 		 map.put("productOutTotNum",productOutTotNum);//出库总数量
 		 map.put("inPrice",inPrice);//入库总金额

@@ -1,6 +1,7 @@
 package org.jeecg.modules.pd.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.apache.commons.collections.CollectionUtils;
@@ -356,7 +357,7 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
     }
 
     @Override
-    public Page<PdStockRecord> queryList(Page<PdStockRecord> pageList, PdStockRecord pdStockRecord,String recodeType) {
+    public IPage<PdStockRecord> queryList(Page<PdStockRecord> pageList, PdStockRecord pdStockRecord, String recodeType) {
         LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
         pdStockRecord.setDepartParentId(sysUser.getDepartParentId());
 //        pdStockRecord.setDepartId(sysUser.getCurrentDepartId());
@@ -365,7 +366,7 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
         }else if(PdConstant.RECODE_TYPE_2.equals(recodeType)){
             pdStockRecord.setOutDepartId(sysUser.getCurrentDepartId());
         }
-        return pageList.setRecords(pdStockRecordMapper.selectList(pdStockRecord));
+        return pdStockRecordMapper.selectList(pageList,pdStockRecord);
     }
 
     @Override

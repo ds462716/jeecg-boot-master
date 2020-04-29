@@ -1,5 +1,6 @@
 package org.jeecg.modules.pd.service.impl;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.jeecg.common.constant.PdConstant;
 import org.jeecg.modules.pd.entity.PdPackage;
@@ -86,8 +87,8 @@ public class PdPackageServiceImpl extends ServiceImpl<PdPackageMapper, PdPackage
 	}
 
 	@Override
-	public Page<PdPackage> queryList(Page<PdPackage> pageList, PdPackage pdPackage) {
-		return pageList.setRecords(pdPackageMapper.queryList(pdPackage));
+	public IPage<PdPackage> queryList(Page<PdPackage> pageList, PdPackage pdPackage) {
+		return pdPackageMapper.queryList(pageList, pdPackage);
 	}
 
 }

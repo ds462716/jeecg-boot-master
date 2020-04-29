@@ -1,5 +1,6 @@
 package org.jeecg.modules.pd.service;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.jeecg.modules.pd.entity.PdPackageDetail;
 import org.jeecg.modules.pd.entity.PdPackage;
@@ -51,5 +52,5 @@ public interface IPdPackageService extends IService<PdPackage> {
 	 * @param pdPackage
 	 * @return
 	 */
-	Page<PdPackage> queryList(Page<PdPackage> pageList, PdPackage pdPackage);
+	IPage<PdPackage> queryList(Page<PdPackage> pageList, PdPackage pdPackage);
 }

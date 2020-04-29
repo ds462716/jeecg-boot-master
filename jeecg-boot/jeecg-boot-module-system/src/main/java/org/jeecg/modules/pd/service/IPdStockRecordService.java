@@ -1,5 +1,6 @@
 package org.jeecg.modules.pd.service;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.jeecg.modules.pd.entity.PdStockRecordDetail;
 import org.jeecg.modules.pd.entity.PdStockRecord;
@@ -63,7 +64,7 @@ public interface IPdStockRecordService extends IService<PdStockRecord> {
 	 * @param pdStockRecord
 	 * @return
 	 */
-	Page<PdStockRecord> queryList(Page<PdStockRecord> pageList, PdStockRecord pdStockRecord,String recodeType);
+	IPage<PdStockRecord> queryList(Page<PdStockRecord> pageList, PdStockRecord pdStockRecord, String recodeType);
 
 	/**
 	 * 获取一条记录

@@ -61,63 +61,63 @@
         left join sys_user e on a.submit_by = e.id
         left join sys_user f on a.audit_by = f.id
         <where>
-            a.del_flag = #{DEL_FLAG_NORMAL}
-            <if test="recordNo != null and recordNo != ''">
-                AND a.record_no LIKE concat('%',#{recordNo},'%')
+            a.del_flag = #{entity.DEL_FLAG_NORMAL}
+            <if test="entity.recordNo != null and entity.recordNo != ''">
+                AND a.record_no LIKE concat('%',#{entity.recordNo},'%')
             </if>
-            <if test="recordType != null and recordType != ''">
-                AND a.record_type = #{recordType}
+            <if test="entity.recordType != null and entity.recordType != ''">
+                AND a.record_type = #{entity.recordType}
             </if>
-            <if test="outType != null and outType != ''">
-                AND a.out_type = #{outType}
+            <if test="entity.outType != null and entity.outType != ''">
+                AND a.out_type = #{entity.outType}
             </if>
-            <if test="inType != null and inType != ''">
-                AND a.in_type = #{inType}
+            <if test="entity.inType != null and entity.inType != ''">
+                AND a.in_type = #{entity.inType}
             </if>
-            <if test="auditStatus != null and auditStatus != ''">
-                AND a.audit_status = #{auditStatus}
+            <if test="entity.auditStatus != null and entity.auditStatus != ''">
+                AND a.audit_status = #{entity.auditStatus}
             </if>
-            <if test="orderNo != null and orderNo != ''">
-                AND a.order_no = #{orderNo}
+            <if test="entity.orderNo != null and entity.orderNo != ''">
+                AND a.order_no = #{entity.orderNo}
             </if>
-            <if test="mergeOrderNo != null and mergeOrderNo != ''">
-                AND a.merge_order_no = #{mergeOrderNo}
+            <if test="entity.mergeOrderNo != null and entity.mergeOrderNo != ''">
+                AND a.merge_order_no = #{entity.mergeOrderNo}
             </if>
-            <if test="allocationNo != null and allocationNo != ''">
-                AND a.allocation_no = #{allocationNo}
+            <if test="entity.allocationNo != null and entity.allocationNo != ''">
+                AND a.allocation_no = #{entity.allocationNo}
             </if>
-            <if test="applyNo != null and applyNo != ''">
-                AND a.apply_no = #{applyNo}
+            <if test="entity.applyNo != null and entity.applyNo != ''">
+                AND a.apply_no = #{entity.applyNo}
             </if>
-            <if test="dosagertNo != null and dosagertNo != ''">
-                AND a.dosagert_no = #{dosagertNo}
+            <if test="entity.dosagertNo != null and entity.dosagertNo != ''">
+                AND a.dosagert_no = #{entity.dosagertNo}
             </if>
-            <if test="submitBy != null and submitBy != ''">
-                AND a.submit_by = #{submitBy}
+            <if test="entity.submitBy != null and entity.submitBy != ''">
+                AND a.submit_by = #{entity.submitBy}
             </if>
-            <if test="submitStatus != null and submitStatus != ''">
-                AND a.submit_status = #{submitStatus}
+            <if test="entity.submitStatus != null and entity.submitStatus != ''">
+                AND a.submit_status = #{entity.submitStatus}
             </if>
-            <if test="outDepartId != null and outDepartId != ''">
-                AND a.out_depart_id = #{outDepartId}
+            <if test="entity.outDepartId != null and entity.outDepartId != ''">
+                AND a.out_depart_id = #{entity.outDepartId}
             </if>
-            <if test="inDepartId != null and inDepartId != ''">
-                AND a.in_depart_id = #{inDepartId}
+            <if test="entity.inDepartId != null and entity.inDepartId != ''">
+                AND a.in_depart_id = #{entity.inDepartId}
             </if>
-            <if test="supplierId != null and supplierId != ''">
-                AND a.supplier_id = #{supplierId}
+            <if test="entity.supplierId != null and entity.supplierId != ''">
+                AND a.supplier_id = #{entity.supplierId}
             </if>
-            <if test="departId != null and departId != ''">
-                AND a.depart_id = #{departId}
+            <if test="entity.departId != null and entity.departId != ''">
+                AND a.depart_id = #{entity.departId}
             </if>
-            <if test="departParentId != null and departParentId != ''">
-                AND a.depart_parent_id = #{departParentId}
+            <if test="entity.departParentId != null and entity.departParentId != ''">
+                AND a.depart_parent_id = #{entity.departParentId}
             </if>
-            <if test="queryDateStart != null and queryDateStart != ''">
-                AND a.submit_date &gt;= #{queryDateStart}
+            <if test="entity.queryDateStart != null and entity.queryDateStart != ''">
+                AND a.submit_date &gt;= #{entity.queryDateStart}
             </if>
-            <if test="queryDateEnd != null and queryDateEnd != ''">
-                AND a.submit_date &lt;= #{queryDateEnd}
+            <if test="entity.queryDateEnd != null and entity.queryDateEnd != ''">
+                AND a.submit_date &lt;= #{entity.queryDateEnd}
             </if>
         </where>
         order by a.create_time desc

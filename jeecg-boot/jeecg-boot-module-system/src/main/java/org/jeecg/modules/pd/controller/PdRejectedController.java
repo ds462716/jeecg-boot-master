@@ -202,7 +202,7 @@ public class PdRejectedController extends JeecgController<PdRejected, IPdRejecte
         LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
         pdRejectedDetail.setDepartParentId(sysUser.getDepartParentId());
 
-        Page<PdRejectedDetail> list = pdRejectedDetailService.selectList(page,pdRejectedDetail);
+        IPage<PdRejectedDetail> list = pdRejectedDetailService.selectList(page,pdRejectedDetail);
 
         return Result.ok(list);
     }
