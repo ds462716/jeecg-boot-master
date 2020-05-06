@@ -59,6 +59,7 @@
         :loading="loading"
         :expandedRowKeys= "expandedRowKeys"
         :rowSelection="{type:'radio',selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
+        :customRow="onClickRow"
         @expand="handleExpand"
         @change="handleTableChange">
 
@@ -211,6 +212,7 @@
         }
       },
       close () {
+        this.expandedRowKeys=[];
         this.selectedRowKeys = [];
         this.selectionRows = [];
         this.$emit('close');
@@ -220,18 +222,20 @@
         this.visible = true;
       },
       handleOk () {
-        if(this.selectionRows.length > 0){
-          /*let params = { packageId: this.selectionRows[0].id }
+        if(this.selectionRows.length == 1){
+          let params = { packageId: this.selectionRows[0].id }
           getAction(this.url.chooseDetailList, params).then((res) => {
             if (res.success) {
               let data = res.result;
-              this.$emit('ok', data);
+              let rows = this.selectionRows;
+              rows[0].pdPackageDetailList = data;
+              this.$emit('ok', rows);
               this.close();
             }
-          });*/
-          let rows = this.selectionRows;
-          this.$emit('ok', rows);
-          this.close();
+          });
+          // let rows = this.selectionRows;
+          // this.$emit('ok', rows);
+          // this.close();
         }else{
           this.$message.error("请选择一行数据!")
         }
@@ -245,8 +249,36 @@
       initDictConfig(){ //静态字典值加载
 
       },
-
-
+      onClickRow(record) {
+        return {
+          on: {
+            click: (e) => {
+              //点击操作那一行不选中表格的checkbox
+              let pathArray = e.path;
+              let td = pathArray[0];//获取当前点击的是第几列
+              let cellIndex = td.cellIndex;
+              let tr = pathArray[1];//获取tr
+              let lie = tr.childElementCount;//获取一共多少列
+              this.selectedRowKeys = [];
+              this.selectionRows = [];
+              if(lie && cellIndex){
+                if(parseInt(lie)-parseInt(cellIndex) > 0){
+                  //操作那一行
+                  let recordId = record.id;
+                  let index = this.selectedRowKeys.indexOf(recordId);
+                  if(index>=0){
+                    this.selectedRowKeys.splice(index, 1);
+                    this.selectionRows.splice(index, 1);
+                  }else{
+                    this.selectedRowKeys.push(recordId);
+                    this.selectionRows.push(record);
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
       getQueryParams() {
         //获取查询条件
         let sqp = {}

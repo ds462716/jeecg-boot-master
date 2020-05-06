@@ -70,10 +70,10 @@ public class PdPackageDetail extends BaseEntity {
 	private Double stockNum;
 	/*定数包编号*/
 	@TableField(exist = false)
-	private String code;
+	private String packageCode;
 	/*定数包名称*/
 	@TableField(exist = false)
-	private String name;
+	private String packageName;
 	/*产品编号*/
 	@TableField(exist = false)
 	private String number;

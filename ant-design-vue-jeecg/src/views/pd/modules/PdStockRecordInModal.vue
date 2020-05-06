@@ -825,7 +825,9 @@
               products.push(item)
             }
           })
-          this.$message.error("产品[" + name + "]证照已过期，请更新证照信息！");
+          if(name){
+            this.$message.error("产品[" + name + "]证照已过期，请更新证照信息！");
+          }
         }else{
           products = data;
         }

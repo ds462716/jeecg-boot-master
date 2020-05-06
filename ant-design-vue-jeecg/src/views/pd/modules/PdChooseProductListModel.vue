@@ -334,6 +334,7 @@
       close () {
         this.selectedRowKeys = [];
         this.selectionRows = [];
+        this.dataSource2 = [];
         // this.queryParam.supplierId="";
         this.queryParam = {};
         this.loadData(1);
@@ -457,10 +458,10 @@
                   let index = this.selectedRowKeys.indexOf(recordId);
                   if(index>=0){
                     this.selectedRowKeys.splice(index, 1);
-                    this.selectionRows.splice(index, 1);
+                    this.dataSource2.splice(index, 1);
                   }else{
                     this.selectedRowKeys.push(recordId);
-                    this.selectionRows.push(record);
+                    this.dataSource2.push(record);
                   }
                 }
               }

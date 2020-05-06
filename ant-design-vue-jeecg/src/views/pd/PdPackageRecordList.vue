@@ -49,11 +49,7 @@
     
     <!-- 操作按钮区域 -->
     <div class="table-operator">
-      <!--<a-button @click="handleAdd" type="primary" icon="plus">新增</a-button>-->
-      <!--<a-button type="primary" icon="download" @click="handleExportXls('pd_package_record')">导出</a-button>-->
-      <!--<a-upload name="file" :showUploadList="false" :multiple="false" :headers="tokenHeader" :action="importExcelUrl" @change="handleImportExcel">-->
-        <!--<a-button type="primary" icon="import">导入</a-button>-->
-      <!--</a-upload>-->
+      <a-button @click="handleAdd" type="primary" icon="plus">打包</a-button>
       <a-dropdown v-if="selectedRowKeys.length > 0">
         <a-menu slot="overlay">
           <a-menu-item key="1" @click="batchDel"><a-icon type="delete"/>删除</a-menu-item>
@@ -77,7 +73,8 @@
         :dataSource="dataSource"
         :pagination="ipagination"
         :loading="loading"
-        :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
+        :expandedRowKeys= "expandedRowKeys"
+        :rowSelection="{fixed:false,selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
         :customRow="onClickRow"
         @change="handleTableChange"
         @expand="handleExpand">
@@ -87,18 +84,6 @@
                 <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.id)">
                   <a>删除</a>
                 </a-popconfirm>
-
-          <!--<a-divider type="vertical" />-->
-          <!--<a-dropdown>-->
-            <!--<a class="ant-dropdown-link">更多 <a-icon type="down" /></a>-->
-            <!--<a-menu slot="overlay">-->
-              <!--<a-menu-item>-->
-                <!--<a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.id)">-->
-                  <!--<a>删除</a>-->
-                <!--</a-popconfirm>-->
-              <!--</a-menu-item>-->
-            <!--</a-menu>-->
-          <!--</a-dropdown>-->
         </span>
 
 
@@ -117,22 +102,23 @@
       </a-table>
     </div>
 
-    <!--<pdPackageRecord-modal ref="modalForm" @ok="modalFormOk"></pdPackageRecord-modal>-->
+    <pd-package-record-modal ref="modalForm" @ok="modalFormOk"></pd-package-record-modal>
   </a-card>
 </template>
 
 <script>
 
   import { JeecgListMixin } from '@/mixins/JeecgListMixin'
-  // import PdPackageRecordModal from './modules/PdPackageRecordModal'
   import {initDictOptions, filterMultiDictText} from '@/components/dict/JDictSelectUtil'
   import { httpAction,getAction } from '@/api/manage'
   import { filterObj } from '@/utils/util';
+  import PdPackageRecordModal from "./modules/PdPackageRecordModal";
 
   export default {
     name: "PdPackageRecordList",
     mixins:[JeecgListMixin],
     components: {
+      PdPackageRecordModal
     },
     data () {
       return {
