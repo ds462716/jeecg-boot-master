@@ -4,7 +4,7 @@
 
 	<!--删除HIS系统科室信息-->
 	<delete id="deleteHisDepartInf">
-		DELETE 	FROM  his_depart_inf
+		DELETE 	FROM  ex_his_depart_inf
     </delete>
 
 </mapper>
