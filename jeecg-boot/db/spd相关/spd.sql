@@ -228,3 +228,38 @@ INSERT INTO `sys_permission` VALUES ('1254291714732748802', '1218784892172963842
 INSERT INTO `sys_permission` VALUES ('1252411354562027522', '1255448486688649218', '检验配置管理', '/pd/PdUsePackageList', 'pd/PdUsePackageList', NULL, NULL, 1, '0', NULL, '1', 3.00, 0, NULL, 1, 1, 0, 0, NULL, 'admin', '2020-4-21 09:38:30', 'admin', '2020-4-29 19:17:19', 0, 0, '1', 0);
 DELETE FROM `sys_permission` WHERE id ='1252044092885708801';
 INSERT INTO `sys_permission` VALUES ('1252044092885708801', '1255448486688649218', '试剂管理', '/pd/PdProductReagents', 'pd/PdProductReagentsList', NULL, NULL, 1, '0', NULL, '1', 1.00, 0, NULL, 1, 1, 0, 0, NULL, 'admin', '2020-4-20 09:19:08', 'admin', '2020-4-29 19:17:04', 0, 0, '1', 0);
+--- add by mcb 2020年5月6日11:14:30 增加HIS系统用户管理菜单
+INSERT INTO `sys_permission` VALUES ('1257863184923021314', '1210107255254798338', 'HIS用户管理', '/pd/PdHisUser', 'pd/PdHisUserList', NULL, NULL, 1, '0', NULL, '1', 13.00, 0, NULL, 1, 1, 0, 0, NULL, 'admin', '2020-5-6 10:42:08', NULL, '2020-5-6 10:42:08', 0, 0, '1', 0);
+--- add by mcb 2020年5月6日11:14:30 增加HIS系统用户信息表
+CREATE TABLE `his_user_inf` (
+  `id` varchar(36) NOT NULL,
+  `create_by` varchar(50) DEFAULT NULL COMMENT '创建人',
+  `create_time` datetime DEFAULT NULL COMMENT '创建日期',
+  `update_by` varchar(50) DEFAULT NULL COMMENT '更新人',
+  `update_time` datetime DEFAULT NULL COMMENT '更新日期',
+  `sys_org_code` varchar(64) DEFAULT NULL COMMENT '所属部门',
+  `fsf_yhm` varchar(32) DEFAULT NULL COMMENT '人员内部工号',
+  `fsf_yhid` varchar(32) DEFAULT NULL COMMENT '登录ID号',
+  `fsf_yhxm` varchar(32) DEFAULT NULL COMMENT '姓名',
+  `fsf_yhks` varchar(32) DEFAULT NULL COMMENT '所属科室代码',
+  `del_flag` varchar(4) DEFAULT NULL COMMENT '删除标识',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--- add by mcb 2020年5月6日11:14:30 增加HIS系统科室信息表
+
+CREATE TABLE `his_depart_inf` (
+  `id` varchar(36) NOT NULL,
+  `create_by` varchar(50) DEFAULT NULL COMMENT '创建人',
+  `create_time` datetime DEFAULT NULL COMMENT '创建日期',
+  `update_by` varchar(50) DEFAULT NULL COMMENT '更新人',
+  `update_time` datetime DEFAULT NULL COMMENT '更新日期',
+  `sys_org_code` varchar(64) DEFAULT NULL COMMENT '所属部门',
+  `fsf_ksbh` varchar(32) DEFAULT NULL COMMENT '科室编号',
+  `fsf_ksmc` varchar(32) DEFAULT NULL COMMENT '科室名称',
+  `fsf_ksjm` varchar(32) DEFAULT NULL COMMENT '科室拼音简码',
+  `del_flag` varchar(4) DEFAULT NULL COMMENT '删除标识',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
