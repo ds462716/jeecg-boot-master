@@ -60,7 +60,7 @@
         :loading="loading"
         :expandedRowKeys= "expandedRowKeys"
         :customRow="onClickRow"
-        :rowSelection="{fixed:false,selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
+        :rowSelection="{fixed:false,selectedRowKeys: selectedRowKeys, onSelectAll:onSelectAll,onSelect:onSelect,onChange: onSelectChange}"
         @expand="handleExpand"
         @change="handleTableChange">
 
@@ -107,6 +107,10 @@
         expandedRowKeys:[],
         subloading:false,
         confirmLoading: false,
+
+        dataSource2: [],
+        selectedRowKeys: [],
+        selectedRows: [],
         // 表头
         columns: [
           {
@@ -260,6 +264,7 @@
       close () {
         this.selectedRowKeys = [];
         this.selectionRows = [];
+        this.dataSource2 = [];
         this.$emit('close');
         this.visible = false;
       },
@@ -294,7 +299,6 @@
 
       },
 
-
       getQueryParams() {
         //获取查询条件
         let sqp = {}
@@ -307,6 +311,40 @@
         param.pageSize = this.ipagination.pageSize;
         delete param.queryDate; //范围参数不传递后台，传后台会报错
         return filterObj(param);
+      },
+
+      onSelectAll(selected, selectedRows, changeRows) {
+        if (selected === true) {
+          for (var a = 0; a < changeRows.length; a++) {
+            this.dataSource2.push(changeRows[a]);
+          }
+        } else {
+          for (var b = 0; b < changeRows.length; b++) {
+            this.dataSource2.splice(this.dataSource2.indexOf(changeRows[b]), 1);
+          }
+        }
+      },
+      onSelect(record, selected) {
+        if (selected === true) {
+          this.dataSource2.push(record);
+        } else {
+          var index = this.dataSource2.indexOf(record);
+          if (index >= 0) {
+            this.dataSource2.splice(this.dataSource2.indexOf(record), 1);
+          }
+
+        }
+      },
+      onSelectChange(selectedRowKeys, selectedRows) {
+        this.selectedRowKeys = selectedRowKeys;
+        this.selectionRows = selectedRows;
+      },
+      onClearSelected() {
+        this.selectedRowKeys = [];
+        this.selectionRows = [];
+      },
+      handleDelete: function (record) {
+        this.dataSource2.splice(this.dataSource2.indexOf(record), 1);
       },
       /**
        * 点击行选中checkbox

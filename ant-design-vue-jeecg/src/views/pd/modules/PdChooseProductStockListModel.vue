@@ -123,7 +123,7 @@
         :pagination="ipagination"
         :loading="loading"
         :customRow="onClickRow"
-        :rowSelection="{fixed:false,selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
+        :rowSelection="{fixed:false,selectedRowKeys: selectedRowKeys, onSelectAll:onSelectAll,onSelect:onSelect,onChange: onSelectChange}"
         @change="handleTableChange">
       </a-table>
     </a-spin>
@@ -170,6 +170,10 @@
         applyNo:"",
         allocationNo:"",
         supplierId:"", //供应商ID
+
+        dataSource2: [],
+        selectedRowKeys: [],
+        selectedRows: [],
 
         // 表头
         columns: [
@@ -304,6 +308,7 @@
       close () {
         this.selectedRowKeys = [];
         this.selectionRows = [];
+        this.dataSource2 = [];
         this.queryParam = {};
         this.loadData(1);
         this.$emit('close');
@@ -331,7 +336,7 @@
         this.visible = true;
       },
       handleOk () {
-        let rows = this.selectionRows;
+        let rows = this.dataSource2;
         this.$emit('ok', rows);
         this.close();
       },
@@ -372,6 +377,39 @@
         })
       },
 
+      onSelectAll(selected, selectedRows, changeRows) {
+        if (selected === true) {
+          for (var a = 0; a < changeRows.length; a++) {
+            this.dataSource2.push(changeRows[a]);
+          }
+        } else {
+          for (var b = 0; b < changeRows.length; b++) {
+            this.dataSource2.splice(this.dataSource2.indexOf(changeRows[b]), 1);
+          }
+        }
+      },
+      onSelect(record, selected) {
+        if (selected === true) {
+          this.dataSource2.push(record);
+        } else {
+          var index = this.dataSource2.indexOf(record);
+          if (index >= 0) {
+            this.dataSource2.splice(this.dataSource2.indexOf(record), 1);
+          }
+
+        }
+      },
+      onSelectChange(selectedRowKeys, selectedRows) {
+        this.selectedRowKeys = selectedRowKeys;
+        this.selectionRows = selectedRows;
+      },
+      onClearSelected() {
+        this.selectedRowKeys = [];
+        this.selectionRows = [];
+      },
+      handleDelete: function (record) {
+        this.dataSource2.splice(this.dataSource2.indexOf(record), 1);
+      },
       /**
        * 点击行选中checkbox
        * @param record
@@ -397,10 +435,10 @@
                   let index = this.selectedRowKeys.indexOf(recordId);
                   if(index>=0){
                     this.selectedRowKeys.splice(index, 1);
-                    this.selectionRows.splice(index, 1);
+                    this.dataSource2.splice(index, 1);
                   }else{
                     this.selectedRowKeys.push(recordId);
-                    this.selectionRows.push(record);
+                    this.dataSource2.push(record);
                   }
                 }
               }
