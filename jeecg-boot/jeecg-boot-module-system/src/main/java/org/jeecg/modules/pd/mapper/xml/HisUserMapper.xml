@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.pd.mapper.HisUserMapper">
+
+	<sql id="HisUserInfColumns">
+        a.id,
+        a.create_by,
+		a.create_time,
+		a.update_by,
+		a.update_time,
+		a.sys_org_code,
+		a.del_flag,
+		a.fsf_yhm,
+		a.fsf_yhid,
+		a.fsf_yhxm,
+		a.fsf_yhks
+	</sql>
+
+	<!--用户-->
+	<sql id="pdHisDepartColumns">
+        b.fsf_ksmc as "fsfKsmc"
+	</sql>
+	<sql id="pdHisDepartJoins">
+        LEFT JOIN his_depart_inf b ON b.fsf_ksbh = a.fsf_yhks
+     </sql>
+
+	<!-- 列表查询 -->
+	<select id="selectList" resultType="org.jeecg.modules.pd.entity.HisUserInf">
+		SELECT
+		<include refid="HisUserInfColumns"/>,
+		<include refid="pdHisDepartColumns"/>
+		FROM his_user_inf a
+		<include refid="pdHisDepartJoins"/>
+		where 1=1 AND	a.del_flag =#{DEL_FLAG_NORMAL}
+			<if test="id != null and id != ''">
+				AND a.id = #{id}
+			</if>
+		<if test="userName != null and userName != ''">
+			AND a.fsf_yhxm LIKE concat('%',#{userName},'%')
+		</if>
+		<if test="departName != null and departName != ''">
+			AND b.fsf_ksmc  LIKE concat('%',#{departName},'%')
+		</if>
+	</select>
+
+</mapper>

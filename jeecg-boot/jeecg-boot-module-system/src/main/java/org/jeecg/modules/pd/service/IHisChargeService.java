@@ -3,6 +3,8 @@ package org.jeecg.modules.pd.service;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.jeecg.modules.pd.entity.HisChargeInf;
+import org.jeecg.modules.pd.entity.HisDepartInf;
+import org.jeecg.modules.pd.entity.HisUserInf;
 
 import java.util.List;
 
@@ -27,5 +29,11 @@ public interface IHisChargeService extends IService<HisChargeInf> {
 
     /*删除后保存所有收费项目基础信息*/
     void saveMain(List<HisChargeInf> list);
+
+    /*查询his系统科室信息*/
+    List<HisDepartInf> selectHisDepart();
+
+    /*查询his系统用户信息*/
+    List<HisUserInf> selectHisUser();
 
 }

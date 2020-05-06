@@ -4,6 +4,8 @@ import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.jeecg.modules.pd.entity.HisChargeInf;
+import org.jeecg.modules.pd.entity.HisDepartInf;
+import org.jeecg.modules.pd.entity.HisUserInf;
 import org.jeecg.modules.pd.mapper.HisChargeMapper;
 import org.jeecg.modules.pd.service.IHisChargeService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,5 +54,21 @@ public class HisChargeServiceImpl extends ServiceImpl<HisChargeMapper, HisCharge
 				 hisChargeMapper.insert(inf);
 			 }
 		}
+	}
+
+
+
+	@Override
+	@DS("multi-datasource1")
+	public List<HisDepartInf> selectHisDepart() {
+		List list = hisChargeMapper.selectHisDepart();
+		return list;
+	}
+
+	@Override
+	@DS("multi-datasource1")
+	public List<HisUserInf> selectHisUser() {
+		List list = hisChargeMapper.selectHisUser();
+		return list;
 	}
 }

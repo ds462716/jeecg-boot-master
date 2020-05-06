@@ -49,7 +49,7 @@ public class PdHisChargeController {
 
 
    /**
-    *   同步更新
+    *   同步更新HIS收费项目基础信息
     *
     * @param hisChargeInf
     * @return
@@ -60,7 +60,5 @@ public class PdHisChargeController {
        hisChargeService.saveMain(list);
        return Result.ok("操作成功！");
    }
-
-
 
 }

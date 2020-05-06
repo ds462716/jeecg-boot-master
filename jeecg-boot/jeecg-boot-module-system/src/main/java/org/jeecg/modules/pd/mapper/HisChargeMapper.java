@@ -2,6 +2,8 @@ package org.jeecg.modules.pd.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.jeecg.modules.pd.entity.HisChargeInf;
+import org.jeecg.modules.pd.entity.HisDepartInf;
+import org.jeecg.modules.pd.entity.HisUserInf;
 
 import java.util.List;
 
@@ -18,4 +20,8 @@ public interface HisChargeMapper extends BaseMapper<HisChargeInf> {
 	List<HisChargeInf> selectByHisCharge();
 
 	void deleteChargeInf();
+
+	List<HisDepartInf> selectHisDepart();
+
+	List<HisUserInf> selectHisUser();
 }

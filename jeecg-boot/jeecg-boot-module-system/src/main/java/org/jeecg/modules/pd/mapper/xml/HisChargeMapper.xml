@@ -44,4 +44,16 @@
 				AND a.id = #{id}
 			</if>
 	</select>
+
+
+
+	<!--查询HIS系统科室信息-->
+	<select id="selectHisDepart" parameterType="java.lang.String" resultType="org.jeecg.modules.pd.entity.HisDepartInf">
+		select  * from v_his_ks
+	</select>
+
+	<!--查询HIS系统用户信息-->
+	<select id="selectHisUser" parameterType="java.lang.String" resultType="org.jeecg.modules.pd.entity.HisUserInf">
+		select  * from v_his_ users
+	</select>
 </mapper>
