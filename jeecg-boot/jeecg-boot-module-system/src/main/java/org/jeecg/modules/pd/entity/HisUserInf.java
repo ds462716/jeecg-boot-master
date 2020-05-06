@@ -18,7 +18,7 @@ import java.util.Date;
  * @Version: V1.0
  */
 @Data
-@TableName("his_user_inf")
+@TableName("ex_his_user_inf")
 public class HisUserInf extends BaseEntity {
     private static final long serialVersionUID = 1L;
     
