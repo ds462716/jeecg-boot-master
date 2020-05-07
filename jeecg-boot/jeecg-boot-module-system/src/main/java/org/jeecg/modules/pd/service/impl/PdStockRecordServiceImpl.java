@@ -19,6 +19,7 @@ import org.jeecg.modules.pd.util.UUIDUtil;
 import org.jeecg.modules.pd.vo.PdGoodsAllocationPage;
 import org.jeecg.modules.system.entity.SysDepart;
 import org.jeecg.modules.system.entity.SysPermission;
+import org.jeecg.modules.system.service.ISysDepartService;
 import org.jeecg.modules.system.service.ISysDictService;
 import org.jeecg.modules.system.service.ISysPermissionService;
 import org.springframework.beans.BeanUtils;
@@ -85,6 +86,8 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
     private IPdPackageRecordService pdPackageRecordService;
     @Autowired
     private IPdPackageRecordDetailService pdPackageRecordDetailService;
+    @Autowired
+    private ISysDepartService sysDepartService;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -662,8 +665,10 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
             }
         } else {  // 新增页面
 
+            SysDepart depart = sysDepartService.getById(sysUser.getCurrentDepartId());
             //部门id
             pdStockRecord.setInDepartId(sysUser.getCurrentDepartId());
+            pdStockRecord.setInDepartName(depart.getDepartName());
             //获取入库单号
             pdStockRecord.setRecordNo(UUIDUtil.generateOrderNoByType(PdConstant.ORDER_NO_FIRST_LETTER_RK));
             //获取当前日期

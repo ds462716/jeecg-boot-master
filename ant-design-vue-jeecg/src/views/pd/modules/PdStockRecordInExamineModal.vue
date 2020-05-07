@@ -423,7 +423,10 @@
       },
       /**打印按钮**/
       printBtn(flag){
-        if(flag == "2"){
+        // if(flag == "2"){
+        //   this.model.auditDate = this.form.getFieldValue("submitDate");
+        // }
+        if(!this.model.auditDate){
           this.model.auditDate = this.form.getFieldValue("submitDate");
         }
         this.model.totalSum = this.totalSum;

@@ -64,7 +64,7 @@
                     :notFoundContent="notFoundContent"
                     v-decorator="[ 'supplierId', validatorRules.supplierId]"
                   >
-                    <a-select-option v-for="d in supplierData" :key="d.value">{{d.text}}</a-select-option>
+                    <a-select-option v-for="d in supplierData" :key="d.value" :text="d.text" >{{d.text}}</a-select-option>
                   </a-select>
                 </a-form-item>
               </a-col>
@@ -302,7 +302,8 @@
         allowEditPrice:"",         //开关-是否允许出入库时可修改进价和出价   1-允许；0不允许
         allowStockInExpProduct:"", //开关-是否允许入库证照过期的产品   1-允许；0不允许
         allowStockInExpSupplier:"",//开关-是否允许入库证照过期的供应商   1-允许；0不允许
-
+        inDepartName:"",
+        supplierName:"",
         //供应商下拉列表 start
         supplierValue: undefined,
         notFoundContent:"未找到内容",
@@ -413,6 +414,7 @@
             { title: '紧急产品已采购数量', key: 'purchasedQuantity', type: FormTypes.hidden },
             { title: '规格单位ID', key: 'specUnitId', type: FormTypes.hidden },
             { title: '规格数量', key: 'specQuantity', type: FormTypes.hidden },
+            { title: '注册证号', key: 'registration', type: FormTypes.hidden },
           ]
         },
         url: {
@@ -522,6 +524,7 @@
                 this.initData.temperature = "25";
                 this.initData.humidity = "50";
                 this.submitDateStr = res.result.submitDateStr;
+                this.inDepartName = res.result.inDepartName;
                 let fieldval = pick(this.initData,'recordNo','mergeOrderNo','inType','submitBy','submitByName','submitDate','remarks','inDepartId','supplierId',
                   'testResult','storageResult','temperature','humidity','remarks','refuseReason','format');
                 this.form.setFieldsValue(fieldval);
@@ -565,8 +568,17 @@
       },
       /**打印按钮**/
       printBtn(flag){
-        if(flag == "2"){
+        // if(flag == "2"){
+        //   this.model.auditDate = this.form.getFieldValue("submitDate");
+        // }
+        if(!this.model.auditDate){
           this.model.auditDate = this.form.getFieldValue("submitDate");
+        }
+        if(!this.model.inDepartName){
+          this.model.inDepartName = this.inDepartName;
+        }
+        if(!this.model.supplierName){
+          this.model.supplierName = this.supplierName;
         }
         let { values } = this.$refs.pdStockRecordDetail.getValuesSync({ validate: false });
         this.model.totalSum = this.totalSum;
@@ -742,7 +754,7 @@
       supplierHandleSearch(value) {
         fetch(value, data => (this.supplierData = data),this.url.querySupplier);
       },
-      supplierHandleChange(value) {
+      supplierHandleChange(value,option) {
         if(this.allowSupplier == "0"){ // 是否允许入库非本供应商产品 1-允许；0-不允许
           this.totalSum = '0';
           this.inTotalPrice = '0.0000';
@@ -754,6 +766,11 @@
         // fetch(value, data => (this.supplierData = data),this.url.querySupplier);
         if(this.allowStockInExpSupplier == "0"){ //开关-是否允许入库证照过期的供应商   1-允许；0不允许
           this.checkSupplierIsExp(value);
+        }
+
+        if(option){
+          this.supplierName = option.data.attrs.text;
+          console.log(this.supplierName);
         }
       },
       //----------------供应商查询end
@@ -892,6 +909,7 @@
           supplierName: row.supplierName,
           specUnitId: row.specUnitId,
           specQuantity: row.specQuantity,
+          registration: row.registration,
           productBarCode:"",
           produceDate:"",
           expDate:"",
@@ -928,6 +946,7 @@
           supplierName: row.pdProduct.supplierName,
           specUnitId: row.pdProduct.specUnitId,
           specQuantity: row.pdProduct.specQuantity,
+          registration: row.pdProduct.registration,
           productBarCode:row.productBarCode,
           produceDate:row.produceDate,
           expDate:row.expDate,
@@ -1159,6 +1178,7 @@
         }else{
           //默认选中扫码产品的供应商
           this.form.setFieldsValue({supplierId:product.supplierId});
+          this.supplierName = product.supplierName;
           if(this.allowStockInExpSupplier == "0"){ //开关-是否允许入库证照过期的供应商   1-允许；0不允许
             let bool = this.checkSupplierIsExp(product.supplierId);
             if(this.allowSupplier == "0" && !bool){
