@@ -1,6 +1,7 @@
 package org.jeecg.modules.pd.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -47,6 +48,10 @@ public class HisDepartInf extends BaseEntity {
     private String fsfKsbh;//科室编号
     private String fsfKsmc;//科室名称
     private String fsfKsjm;//科室拼音简码
+    private String spdDepartId;//关联科室
+
+    @TableField(exist = false)
+    private String departName;
 
 
 

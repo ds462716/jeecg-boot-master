@@ -61,7 +61,7 @@
                 AND a.id = #{id}
             </if>
             <if test="orderNo != null and orderNo != ''">
-                AND a.order_no = #{orderNo}
+                AND a.order_no   LIKE concat('%',#{orderNo},'%')
             </if>
             <if test="auditStatus != null and auditStatus != ''">
                 AND a.audit_status = #{auditStatus}

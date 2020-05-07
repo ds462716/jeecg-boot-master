@@ -24,13 +24,25 @@
         LEFT JOIN ex_his_depart_inf b ON b.fsf_ksbh = a.fsf_yhks
      </sql>
 
+
+	<!-- 科室 -->
+	<sql id="sysDepartColumns">
+        c.depart_name AS "departName"
+    </sql>
+
+	<sql id="sysDepartJoins">
+        LEFT JOIN sys_depart c ON b.spd_depart_id = c.id
+    </sql>
+
 	<!-- 列表查询 -->
 	<select id="selectList" resultType="org.jeecg.modules.pd.entity.HisUserInf">
 		SELECT
 		<include refid="HisUserInfColumns"/>,
-		<include refid="pdHisDepartColumns"/>
+		<include refid="pdHisDepartColumns"/>,
+		<include refid="sysDepartColumns"/>
 		FROM ex_his_user_inf a
 		<include refid="pdHisDepartJoins"/>
+		<include refid="sysDepartJoins"/>
 		where 1=1 AND	a.del_flag =#{DEL_FLAG_NORMAL}
 			<if test="id != null and id != ''">
 				AND a.id = #{id}
