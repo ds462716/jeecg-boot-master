@@ -258,6 +258,7 @@ CREATE TABLE `ex_his_depart_inf` (
   `fsf_ksbh` varchar(32) DEFAULT NULL COMMENT '科室编号',
   `fsf_ksmc` varchar(32) DEFAULT NULL COMMENT '科室名称',
   `fsf_ksjm` varchar(32) DEFAULT NULL COMMENT '科室拼音简码',
+  `spd_depart_id` varchar(64) DEFAULT NULL COMMENT '关联SPD系统科室ID',
   `del_flag` varchar(4) DEFAULT NULL COMMENT '删除标识',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
