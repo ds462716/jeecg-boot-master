@@ -263,4 +263,5 @@ CREATE TABLE `ex_his_depart_inf` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-
+--- add by mcb 2020年5月7日11:14:30 增加HIS系统科室管理菜单
+INSERT INTO `sys_permission` VALUES ('1258213960258211841', '1210107255254798338', 'HIS科室管理', '/pd/PdHisDepart', 'pd/PdHisDepartList', NULL, NULL, 1, '0', NULL, '1', 14.00, 0, NULL, 1, 1, 0, 0, NULL, 'admin', '2020-5-7 09:55:59', NULL, '2020-5-7 09:55:59', 0, 0, '1', 0);
