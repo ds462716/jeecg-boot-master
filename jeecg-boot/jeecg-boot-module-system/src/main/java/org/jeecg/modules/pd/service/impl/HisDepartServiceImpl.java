@@ -3,10 +3,8 @@ package org.jeecg.modules.pd.service.impl;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.jeecg.modules.pd.entity.HisDepartInf;
-import org.jeecg.modules.pd.entity.HisUserInf;
 import org.jeecg.modules.pd.mapper.HisDepartMapper;
-import org.jeecg.modules.pd.mapper.HisUserMapper;
-import org.jeecg.modules.pd.service.IHisUserService;
+import org.jeecg.modules.pd.service.IHisDepartService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,39 +18,37 @@ import java.util.List;
  * @Version: V1.0
  */
 @Service
-public class HisUserServiceImpl extends ServiceImpl<HisUserMapper, HisUserInf> implements IHisUserService {
-	@Autowired
-	HisUserMapper hisUserMapper;
+	public class HisDepartServiceImpl extends ServiceImpl<HisDepartMapper, HisDepartInf> implements IHisDepartService {
+
 	@Autowired
 	HisDepartMapper hisDepartMapper;
 
 	/**
 	 * 查询列表
 	 * @param page
-	 * @param hisUserInf
+	 * @param hisDepartInf
 	 * @return
 	 */
 	@Override
-	public Page<HisUserInf> selectList(Page<HisUserInf> page, HisUserInf hisUserInf) {
-		return page.setRecords(hisUserMapper.selectList(hisUserInf));
+	public Page<HisDepartInf> selectList(Page<HisDepartInf> page, HisDepartInf hisDepartInf) {
+		return page.setRecords(hisDepartMapper.selectList(hisDepartInf));
 	}
 
 
 	@Override
+	public List<HisDepartInf> selectHisDepartInf(HisDepartInf hisDepartInf) {
+		return hisDepartMapper.selectList(hisDepartInf);
+	}
+
+	@Override
 	@Transactional
-	public void synUpdateDeptOrUser(List<HisDepartInf> deptList, List<HisUserInf> userList) {
+	public void synUpdateDept(List<HisDepartInf> deptList) {
 		if (deptList != null && deptList.size() > 0) {
-			hisUserMapper.deleteHisUserInf();
 			for(HisDepartInf deptInf: deptList){
 				HisDepartInf inf=hisDepartMapper.queryHisDepart(deptInf.getFsfKsbh());
 				if(inf==null){
 				hisDepartMapper.insert(deptInf);
 				}
-			}
-		}
-		if(userList != null && userList.size() > 0){
-			for(HisUserInf userInf: userList){
-				hisUserMapper.insert(userInf);
 			}
 		}
 	}

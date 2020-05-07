@@ -2,9 +2,67 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.jeecg.modules.pd.mapper.HisDepartMapper">
 
+	<sql id="HisDepartInfColumns">
+        a.id,
+        a.create_by,
+		a.create_time,
+		a.update_by,
+		a.update_time,
+		a.sys_org_code,
+		a.del_flag,
+		a.fsf_ksbh,
+		a.fsf_ksmc,
+		a.fsf_ksjm,
+		a.spd_depart_id
+	</sql>
+
+	<!-- 科室 -->
+	<sql id="sysDepartColumns">
+        c.depart_name AS "departName"
+    </sql>
+
+	<sql id="sysDepartJoins">
+        LEFT JOIN sys_depart c ON a.spd_depart_id = c.id
+    </sql>
+
+	<!-- 列表查询 -->
+	<select id="selectList" resultType="org.jeecg.modules.pd.entity.HisDepartInf">
+		SELECT
+		<include refid="HisDepartInfColumns"/>,
+		<include refid="sysDepartColumns"/>
+		FROM ex_his_depart_inf a
+		<include refid="sysDepartJoins"/>
+		where 1=1
+		AND	a.del_flag =#{DEL_FLAG_NORMAL}
+		<if test="fsfKsbh != null and fsfKsbh != ''">
+			AND a.fsf_ksbh = #{fsfKsbh}
+		</if>
+		<if test="fsfKsmc != null and fsfKsmc != ''">
+			AND a.fsf_ksmc = #{fsfKsmc}
+		</if>
+		<if test="spdDepartId != null and spdDepartId != ''">
+			AND a.spd_depart_id = #{spdDepartId}
+		</if>
+	</select>
+
+
+	<!-- 查询 -->
+	<select id="queryHisDepart" resultType="org.jeecg.modules.pd.entity.HisDepartInf">
+		SELECT
+		<include refid="HisDepartInfColumns"/>
+		FROM ex_his_depart_inf a
+		where 1=1
+		AND	a.del_flag =#{DEL_FLAG_NORMAL}
+		<if test="fsfKsbh != null and fsfKsbh != ''">
+			AND a.fsf_ksbh = #{fsfKsbh}
+		</if>
+	</select>
+
+
+
 	<!--删除HIS系统科室信息-->
 	<delete id="deleteHisDepartInf">
-		DELETE 	FROM  his_depart_inf
+		DELETE 	FROM  ex_his_depart_inf
     </delete>
 
 </mapper>

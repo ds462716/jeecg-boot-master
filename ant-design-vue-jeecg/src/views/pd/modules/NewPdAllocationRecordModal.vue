@@ -388,8 +388,6 @@
       },
       //选择产品
       choice() {
-
-
           //判断是否选择了出库科室
           let outDeptId = this.form.getFieldValue("outDeptId");
           if(outDeptId==null){
@@ -401,6 +399,12 @@
 
       //选择定数包产品
       choicePackage() {
+        //判断是否选择了出库科室
+        let outDeptId = this.form.getFieldValue("outDeptId");
+        if(outDeptId==null){
+          this.$message.warning("请先选择出库科室")
+          return
+        }
         this.$refs.PdAllocationPackageAddModal.show();
         this.$refs.PdAllocationPackageAddModal.title = "选择定数包";
       },

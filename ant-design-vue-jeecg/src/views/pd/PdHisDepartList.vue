@@ -10,18 +10,12 @@
             </a-form-item>
           </a-col>
           <a-col :md="6" :sm="8">
-            <a-form-item label="用户名称">
-              <a-input placeholder="请输入用户名称" v-model="queryParam.userName"></a-input>
-            </a-form-item>
-          </a-col>
-          <a-col :md="6" :sm="8">
             <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
               <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
               <a-button type="primary" @click="searchReset" icon="reload" style="margin-left: 8px">重置</a-button>
 
             </span>
           </a-col>
-
         </a-row>
       </a-form>
     </div>
@@ -55,41 +49,28 @@
           <div v-html="text"></div>
         </template>
 
-
-
         <span slot="action" slot-scope="text, record">
-          <a @click="handleEdit(record)">编辑</a>
-
-          <a-divider type="vertical" />
-          <a-dropdown>
-            <a class="ant-dropdown-link">更多 <a-icon type="down" /></a>
-            <a-menu slot="overlay">
-              <a-menu-item>
-                <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.id)">
-                  <a>删除</a>
-                </a-popconfirm>
-              </a-menu-item>
-            </a-menu>
-          </a-dropdown>
+          <a @click="departEdit(record)">科室维护</a>
         </span>
 
       </a-table>
     </div>
-
+    <his-depart-modal ref="modalForm" @ok="modalFormOk"></his-depart-modal>
   </a-card>
 </template>
 
 <script>
 
   import { JeecgListMixin } from '@/mixins/JeecgListMixin'
+  import HisDepartModal from "./modules/HisDepartModal"
   import { httpAction } from '@/api/manage'
   export default {
-    name: "PdHisUserList",
+    name: "PdHisDepartList",
     mixins:[JeecgListMixin],
-    components: {},
+    components: {HisDepartModal},
     data () {
       return {
-        description: 'HIS用户管理页面',
+        description: 'HIS科室管理页面',
         // 表头
         columns: [
           {
@@ -103,19 +84,9 @@
             }
           },
           {
-            title:'登录ID号',
-            align:"center",
-            dataIndex: 'fsfYhid'
-          },
-          {
-            title:'姓名',
-            align:"center",
-            dataIndex: 'fsfYhxm'
-          },
-          {
             title:'his科室编号',
             align:"center",
-            dataIndex: 'fsfYhks'
+            dataIndex: 'fsfKsbh'
           },
           {
             title:'his科室名称',
@@ -123,14 +94,20 @@
             dataIndex: 'fsfKsmc'
           },
           {
-            title:'关联科室',
+            title:'关联科室名称',
             align:"center",
             dataIndex: 'departName'
           },
+          {
+            title: '操作',
+            dataIndex: 'action',
+            align:"center",
+            scopedSlots: { customRender: 'action' }
+          }
         ],
         url: {
-          list: "/pd/pdHisUser/list",
-          synUpdate: "/pd/pdHisUser/synUpdateDeptOrUser",
+          list: "/pd/pdHisDepart/list",
+          synUpdate: "/pd/pdHisDepart/synUpdateDept",
          },
         dictOptions:{
         },
@@ -151,6 +128,12 @@
           }
         })
 
+      },
+
+      departEdit: function (record) {
+        this.$refs.modalForm.title = "编辑";
+        this.$refs.modalForm.disableSubmit = false;
+        this.$refs.modalForm.edit(record);
       },
 
       initDictConfig(){
