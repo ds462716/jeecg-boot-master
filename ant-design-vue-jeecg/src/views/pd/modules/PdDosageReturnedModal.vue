@@ -287,7 +287,7 @@
             { title: '批号', key: 'batchNo', width:"100px" },
             { title: '单位', key: 'unitName', width:"50px" },
             { title: '有效期', key: 'expDate', width:"100px" },
-            { title: '入库单价', key: 'purchasePrice', width:"80px" },
+            /*{ title: '入库单价', key: 'purchasePrice', width:"80px" },*/
             { title: '出库单价', key: 'sellingPrice', width:"80px" },
             {
               title: '用量数量', key: 'dosageCount', type: FormTypes.input,disabled:true, width:"80px",

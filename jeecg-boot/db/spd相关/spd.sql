@@ -280,3 +280,12 @@ DROP TABLE `ex_inspection_items_detail`;
 
 ALTER TABLE `ex_inspection_items`
 MODIFY COLUMN `card_id`  varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '就诊卡号' AFTER `patient_age`;
+
+ALTER TABLE `ex_inspection_items`
+CHANGE COLUMN `testItem_name` `test_item_name`  varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '检查项目名称' AFTER `combination_code`,
+CHANGE COLUMN `testItem_code` `test_item_code`  varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '检查项目代码' AFTER `test_item_name`,
+CHANGE COLUMN `testItem_cost` `test_item_cost`  double(11,4) NULL DEFAULT NULL COMMENT '检查项目费用' AFTER `test_item_code`;
+
+-- add by zxh 2020年5月8日14:54:22 器械使用详情加入单价
+ALTER TABLE `pd_dosage_detail`
+ADD COLUMN `selling_price`  decimal(11,4) NULL COMMENT '出库单价' AFTER `left_refund_num`;
