@@ -137,7 +137,7 @@ CREATE TABLE `ex_inspection_items` (
   `patient_name` varchar(64) DEFAULT NULL COMMENT '患者姓名',
   `patient_sex` varchar(64) DEFAULT NULL COMMENT '患者性别',
   `patient_age` varchar(64) DEFAULT NULL COMMENT '患者年龄',
-  `card_id` varchar(64) DEFAULT NULL COMMENT '就诊卡号3',
+  `card_id` varchar(64) DEFAULT NULL COMMENT '就诊卡号',
   `bar_code` varchar(64) DEFAULT NULL COMMENT '条形码',
   `apply_doctor` varchar(64) DEFAULT NULL COMMENT '申请医生',
   `apply_department` varchar(64) DEFAULT NULL COMMENT '申请科室',
@@ -278,3 +278,5 @@ ALTER TABLE `ex_inspection_items`
 ADD COLUMN `jy_id`  varchar(64) NULL COMMENT 'lis系统主键' AFTER `id`
 DROP TABLE `ex_inspection_items_detail`;
 
+ALTER TABLE `ex_inspection_items`
+MODIFY COLUMN `card_id`  varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '就诊卡号' AFTER `patient_age`;
