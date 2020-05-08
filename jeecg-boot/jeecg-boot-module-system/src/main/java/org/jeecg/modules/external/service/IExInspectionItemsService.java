@@ -3,6 +3,8 @@ package org.jeecg.modules.external.service;
 import org.jeecg.modules.external.entity.ExInspectionItems;
 import com.baomidou.mybatisplus.extension.service.IService;
 
+import java.util.List;
+
 /**
  * @Description: 检查项目表
  * @Author: jiangxz
@@ -11,4 +13,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface IExInspectionItemsService extends IService<ExInspectionItems> {
 
+    List<ExInspectionItems> selectList(ExInspectionItems exInspectionItems);
+
+    List<String> selectListIds();
 }

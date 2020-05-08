@@ -265,3 +265,16 @@ CREATE TABLE `ex_his_depart_inf` (
 
 --- add by mcb 2020年5月7日11:14:30 增加HIS系统科室管理菜单
 INSERT INTO `sys_permission` VALUES ('1258213960258211841', '1210107255254798338', 'HIS科室管理', '/pd/PdHisDepart', 'pd/PdHisDepartList', NULL, NULL, 1, '0', NULL, '1', 14.00, 0, NULL, 1, 1, 0, 0, NULL, 'admin', '2020-5-7 09:55:59', NULL, '2020-5-7 09:55:59', 0, 0, '1', 0);
+
+-- add by zxh 2020年5月6日15:02:49 lis对接表字段优化
+ALTER TABLE `ex_inspection_items`
+ADD COLUMN `combination_name`  varchar(64) NULL COMMENT '项目组合名称' AFTER `state`,
+ADD COLUMN `combination_code`  varchar(64) NULL COMMENT '项目组合代码' AFTER `combination_name`,
+ADD COLUMN `testItem_name`  varchar(64) NULL COMMENT '检查项目名称' AFTER `combination_code`,
+ADD COLUMN `testItem_code`  varchar(64) NULL COMMENT '检查项目代码' AFTER `testItem_name`,
+ADD COLUMN `testItem_cost`  double(11,4) NULL COMMENT '检查项目费用' AFTER `testItem_code`,
+ADD COLUMN `accept_status`  varchar(1) NULL COMMENT '读取状态' AFTER `testItem_cost`;
+ALTER TABLE `ex_inspection_items`
+ADD COLUMN `jy_id`  varchar(64) NULL COMMENT 'lis系统主键' AFTER `id`
+DROP TABLE `ex_inspection_items_detail`;
+

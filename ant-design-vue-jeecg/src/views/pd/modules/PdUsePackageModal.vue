@@ -16,7 +16,7 @@
 
           <a-col :span="12">
             <a-form-item label="检验项目编号" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input v-decorator="[ 'code', validatorRules.code]" autocomplete="off"  placeholder="请输入定数包编号"></a-input>
+              <a-input v-decorator="[ 'code', validatorRules.code]" autocomplete="off"  placeholder="请输入检验项目编号"></a-input>
             </a-form-item>
           </a-col>
           <a-col :span="12">

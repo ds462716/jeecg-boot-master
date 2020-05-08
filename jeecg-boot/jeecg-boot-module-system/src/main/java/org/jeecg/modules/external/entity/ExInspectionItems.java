@@ -36,6 +36,8 @@ public class ExInspectionItems extends BaseEntity {
 	@TableId(type = IdType.ID_WORKER_STR)
     @ApiModelProperty(value = "主键")
     private String id;
+    @ApiModelProperty(value = "lis系统主键")
+	private String jyId;
 	/**患者姓名*/
 	@Excel(name = "患者姓名", width = 15)
     @ApiModelProperty(value = "患者姓名")
@@ -96,6 +98,24 @@ public class ExInspectionItems extends BaseEntity {
 	@Excel(name = "状态", width = 15)
     @ApiModelProperty(value = "状态")
     private String state;
+    @Excel(name = "项目组合名称", width = 15)
+    @ApiModelProperty(value = "项目组合名称")
+    private String combinationName;
+    @Excel(name = "项目组合代码", width = 15)
+    @ApiModelProperty(value = "项目组合代码")
+    private String combinationCode;
+    @Excel(name = "检查项目名称", width = 15)
+    @ApiModelProperty(value = "检查项目名称")
+    private String testItemName;
+    @Excel(name = "检查项目代码", width = 15)
+    @ApiModelProperty(value = "检查项目代码")
+    private String testItemCode;
+    @Excel(name = "检查项目费用", width = 15)
+    @ApiModelProperty(value = "检查项目费用")
+    private Double testItemCost;
+    @Excel(name = "读取状态", width = 15)
+    @ApiModelProperty(value = "读取状态")
+    private String acceptStatus;
 	/**创建人*/
 	@Excel(name = "创建人", width = 15)
     @ApiModelProperty(value = "创建人")
@@ -120,26 +140,4 @@ public class ExInspectionItems extends BaseEntity {
 	@Excel(name = "所属部门", width = 15)
     @ApiModelProperty(value = "所属部门")
     private String sysOrgCode;
-
-    /**
-     * 所属部门
-     */
-    @TableField(strategy = FieldStrategy.NOT_EMPTY)
-    private String departId;
-
-    /**
-     * 所属顶级部门（医院id）
-     */
-    @TableField(strategy = FieldStrategy.NOT_EMPTY)
-    private String departParentId;
-
-    /**
-     * 检验项目代码集合
-     */
-    private String data;
-    /**
-     * 检验项目代码集合
-     */
-    @TableField(exist = false)
-    private List<ExInspectionItemsDetail> exInspectionItemsDetails;
 }

@@ -14,4 +14,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  */
 public interface ExInspectionItemsMapper extends BaseMapper<ExInspectionItems> {
 
+    List<ExInspectionItems> selectList(ExInspectionItems exInspectionItems);
+
+    List<String> selectListIds();
 }
