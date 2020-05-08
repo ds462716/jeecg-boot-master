@@ -29,7 +29,7 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 @EqualsAndHashCode(callSuper = false)
 @ApiModel(value="ex_inspection_items对象", description="检查项目表")
-public class ExInspectionItems extends BaseEntity {
+public class ExInspectionItems{
     private static final long serialVersionUID = 1L;
 
 	/**主键*/
@@ -50,9 +50,9 @@ public class ExInspectionItems extends BaseEntity {
 	@Excel(name = "患者年龄", width = 15)
     @ApiModelProperty(value = "患者年龄")
     private String patientAge;
-	/**就诊卡号3*/
-	@Excel(name = "就诊卡号3", width = 15)
-    @ApiModelProperty(value = "就诊卡号3")
+	/**就诊卡号*/
+	@Excel(name = "就诊卡号", width = 15)
+    @ApiModelProperty(value = "就诊卡号")
     private String cardId;
 	/**条形码*/
 	@Excel(name = "条形码", width = 15)

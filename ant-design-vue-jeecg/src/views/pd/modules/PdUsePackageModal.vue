@@ -16,12 +16,12 @@
 
           <a-col :span="12">
             <a-form-item label="检验项目编号" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input v-decorator="[ 'code', validatorRules.code]" autocomplete="off"  placeholder="请输入检验项目编号"></a-input>
+              <a-input :disabled="disableSubmit" v-decorator="[ 'code', validatorRules.code]" autocomplete="off"  placeholder="请输入检验项目编号"></a-input>
             </a-form-item>
           </a-col>
           <a-col :span="12">
             <a-form-item label="检验项目名称" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input v-decorator="[ 'name', validatorRules.name]"  autocomplete="off" @change="pinyinTran" placeholder="请输入检验项目名称"></a-input>
+              <a-input :disabled="disableSubmit" v-decorator="[ 'name', validatorRules.name]"  autocomplete="off" @change="pinyinTran" placeholder="请输入检验项目名称"></a-input>
             </a-form-item>
           </a-col>
           <!--<a-col :span="12">-->
@@ -31,37 +31,37 @@
           <!--</a-col>-->
           <a-col :span="12">
             <a-form-item label="拼音简码" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input v-decorator="[ 'py', validatorRules.py]" autocomplete="off" placeholder="请输入拼音简码"></a-input>
+              <a-input :disabled="disableSubmit" v-decorator="[ 'py', validatorRules.py]" autocomplete="off" placeholder="请输入拼音简码"></a-input>
             </a-form-item>
           </a-col>
           <a-col :span="12">
             <a-form-item label="五笔简码" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input v-decorator="[ 'wb', validatorRules.wb]" autocomplete="off" placeholder="请输入五笔简码"></a-input>
+              <a-input :disabled="disableSubmit" v-decorator="[ 'wb', validatorRules.wb]" autocomplete="off" placeholder="请输入五笔简码"></a-input>
             </a-form-item>
           </a-col>
           <a-col :span="12">
             <a-form-item label="自定义码" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input v-decorator="[ 'zdy', validatorRules.zdy]" autocomplete="off" placeholder="请输入自定义码"></a-input>
+              <a-input :disabled="disableSubmit" v-decorator="[ 'zdy', validatorRules.zdy]" autocomplete="off" placeholder="请输入自定义码"></a-input>
             </a-form-item>
           </a-col>
           <a-col :span="12">
             <a-form-item label="备注" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input v-decorator="[ 'remarks', validatorRules.remarks]" autocomplete="off" placeholder="请输入备注"></a-input>
+              <a-input :disabled="disableSubmit" v-decorator="[ 'remarks', validatorRules.remarks]" autocomplete="off" placeholder="请输入备注"></a-input>
             </a-form-item>
           </a-col>
         </a-row>
       </a-form>
 
       <!-- 子表单区域 -->
-      <a-tabs v-model="activeKey" @change="handleChangeTabs">
+      <a-tabs  v-model="activeKey" @change="handleChangeTabs">
         <a-tab-pane tab="检验项目明细" :key="refKeys[0]" :forceRender="true">
           <div style="margin-bottom: 8px;">
-            <a-button type="primary" icon="plus" @click="handleConfirmAdd">新增</a-button>
+            <a-button v-show="!disableSubmit" type="primary" icon="plus" @click="handleConfirmAdd">新增</a-button>
             <span style="padding-left: 8px;"></span>
               <a-popconfirm
                 :title="`确定要删除吗?`"
                 @confirm="handleConfirmDelete">
-                <a-button type="primary" icon="minus">删除</a-button>
+                <a-button v-show="!disableSubmit" type="primary" icon="minus">删除</a-button>
                 <span class="gap"></span>
               </a-popconfirm>
           </div>
@@ -75,6 +75,7 @@
             :rowNumber="true"
             :rowSelection="true"
             :actionButton="false"
+            :disabled="disableSubmit"
             @valueChange="valueChange"
           />
           <!--<a-row style="margin-top:10px;text-align: right;padding-right: 5%">
@@ -86,10 +87,11 @@
     </a-spin>
 
     <template slot="footer">
-      <a-popconfirm title="确定放弃编辑？" @confirm="handleCancel" okText="确定" cancelText="取消">
+      <a-button @click="close" style="margin-right: 15px;" v-show="disableSubmit">关  闭</a-button>
+      <a-button @click="handleOk" v-show="!disableSubmit" type="primary" :loading="confirmLoading" style="margin-right: 15px;">提  交</a-button>
+      <a-popconfirm title="确定放弃编辑？" @confirm="handleCancel" v-show="!disableSubmit" okText="确定" cancelText="取消">
         <a-button style="margin-right: 15px;">取  消</a-button>
       </a-popconfirm>
-      <a-button @click="handleOk" type="primary" :loading="confirmLoading" style="margin-right: 15px;">保  存</a-button>
     </template>
 
     <pd-choose-product-list-model  ref="pdChooseProductListModel" @ok="returnData" ></pd-choose-product-list-model>
@@ -114,6 +116,7 @@
     data() {
       return {
         totalSum:'0',
+        disableSubmit:false,
         labelCol: {
           span: 6
         },

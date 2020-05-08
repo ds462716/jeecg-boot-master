@@ -1,12 +1,15 @@
 package org.jeecg.modules.pd.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
+import org.jeecg.common.aspect.annotation.AutoLog;
 import org.jeecg.common.constant.PdConstant;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.system.vo.LoginUser;
@@ -87,6 +90,19 @@ public class PdUsePackageController {
        IPage<PdUsePackage> pageList = pdUsePackageService.queryList(page, pdUsePackage);
        return Result.ok(pageList);
    }
+
+    @AutoLog(value = "检查项目表-通过id查询")
+    @ApiOperation(value="检查项目表-通过项目代码查询", notes="检查项目表-通过项目代码查询")
+    @GetMapping(value = "/queryUsePackageDetail")
+    public Result<?> queryUsePackageDetail(@RequestParam(name="testItemCode",required=true) String testItemCode) {
+        LambdaQueryWrapper<PdUsePackage> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(PdUsePackage::getCode, testItemCode);
+        PdUsePackage pdUsePackage = pdUsePackageService.getOne(queryWrapper);
+        if(pdUsePackage==null) {
+            return Result.error("未找到对应数据");
+        }
+        return Result.ok(pdUsePackage);
+    }
 
    /**
     *   添加

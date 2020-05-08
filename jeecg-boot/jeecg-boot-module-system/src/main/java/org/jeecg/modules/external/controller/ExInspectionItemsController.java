@@ -9,6 +9,8 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.util.oConvertUtils;
@@ -71,13 +73,6 @@ public class ExInspectionItemsController extends JeecgController<ExInspectionIte
 		IPage<ExInspectionItems> pageList = exInspectionItemsService.page(page, queryWrapper);
 		return Result.ok(pageList);
 	}
-
-	 @GetMapping(value = "/test")
-	 public Result<?> test(ExInspectionItems exInspectionItems,
-									HttpServletRequest req) {
-		 List<ExInspectionItems> exInspectionItemss = exInspectionItemsService.selectList(exInspectionItems);
-		 return Result.ok(exInspectionItemss);
-	 }
 	
 	/**
 	 *   添加
