@@ -289,3 +289,6 @@ CHANGE COLUMN `testItem_cost` `test_item_cost`  double(11,4) NULL DEFAULT NULL C
 -- add by zxh 2020年5月8日14:54:22 器械使用详情加入单价
 ALTER TABLE `pd_dosage_detail`
 ADD COLUMN `selling_price`  decimal(11,4) NULL COMMENT '出库单价' AFTER `left_refund_num`;
+
+-- add by zxh 2020年5月8日14:54:22 手动执行lis发过来的项目包
+INSERT INTO `sys_permission` VALUES ('1258590018295095297', '1255448486688649218', '检验项目使用', '/external/exInspectionItems', 'external/ExInspectionItemsList', null, null, '1', '0', null, '1', '1.00', '0', null, '1', '1', '0', '0', null, 'admin', '2020-05-08 10:50:18', null, '2020-05-08 10:50:18', '0', '0', '1', '0');
