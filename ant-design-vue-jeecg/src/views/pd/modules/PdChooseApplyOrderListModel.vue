@@ -171,23 +171,23 @@
           }
         ],
         innerColumns:[
-          {
-            title:'定数包编号',
-            align:"center",
-            width: 100,
-            dataIndex: 'packageCode'
-          }, {
-            title:'定数包名称',
-            align:"center",
-            width: 100,
-            dataIndex: 'packageName'
-          },
-          {
-            title:'定数包产品数量',
-            align:"center",
-            width: 100,
-            dataIndex: 'packageNum'
-          },
+          // {
+          //   title:'定数包编号',
+          //   align:"center",
+          //   width: 100,
+          //   dataIndex: 'packageCode'
+          // }, {
+          //   title:'定数包名称',
+          //   align:"center",
+          //   width: 100,
+          //   dataIndex: 'packageName'
+          // },
+          // {
+          //   title:'定数包产品数量',
+          //   align:"center",
+          //   width: 100,
+          //   dataIndex: 'packageNum'
+          // },
           {
             title:'产品编号',
             align:"center",

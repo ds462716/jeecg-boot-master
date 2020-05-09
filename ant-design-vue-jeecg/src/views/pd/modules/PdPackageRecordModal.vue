@@ -204,23 +204,6 @@
           ],
           innerColumns:[
             {
-              title:'定数包编号',
-              align:"center",
-              width: 100,
-              dataIndex: 'packageCode'
-            }, {
-              title:'定数包名称',
-              align:"center",
-              width: 100,
-              dataIndex: 'packageName'
-            },
-            {
-              title:'定数包产品数量',
-              align:"center",
-              width: 100,
-              dataIndex: 'count'
-            },
-            {
               title:'产品编号',
               align:"center",
               width: 100,
@@ -247,9 +230,27 @@
               dataIndex: 'unitName'
             },
             {
+              title:'定数包产品数量',
+              align:"center",
+              width: 100,
+              dataIndex: 'count'
+            },
+            {
               title:'库存数量',
               align:"center",
               dataIndex: 'stockNum'
+            },
+            {
+              title:'产品ID',
+              align:"center",
+              dataIndex: 'productId',
+              colSpan: 0,
+              customRender: (value, row, index) => {
+                const obj = {
+                  attrs: {colSpan:0},
+                };
+                return obj;
+              },
             },
           ],
         },

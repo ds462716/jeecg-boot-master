@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.pd.mapper.PdPurchaseSaleStockReportMapper">
+
+    <select id="selectListByPage" resultType="org.jeecg.modules.pd.vo.PdPurchaseSaleStockReportPage" parameterType="org.jeecg.modules.pd.vo.PdPurchaseSaleStockReportPage">
+        SELECT
+            @rowNum:=@rowNum + 1 as id,
+            jxc.depart_name,
+            jxc.supplier_name,
+            jxc.product_number,
+            jxc.product_name,
+            jxc.spec,
+            sum( jxc.first_stock_num ) AS first_stock_num,
+            sum( jxc.supplier_in_stock_num ) AS supplier_in_stock_num,
+            sum( jxc.in_stock_num ) AS in_stock_num,
+            sum( jxc.out_stock_num ) AS out_stock_num,
+            sum( jxc.dosage_num ) AS dosage_num,
+            sum( jxc.selling_price ) AS selling_price,
+            sum( jxc.dosage_money ) AS dosage_money,
+            sum( jxc.rejected_num ) AS rejected_num,
+            sum( jxc.stock_num ) AS stock_num
+        FROM
+        (
+            SELECT
+                ps.id,
+                de.id AS depart_id,
+                pd.number AS product_number,
+                pd.NAME AS product_name,
+                pd.spec,
+                su.NAME AS supplier_name,
+                de.depart_name,
+                ps.stock_num AS stock_num,
+                qckc.product_num AS first_stock_num,
+                bqrk.product_num AS supplier_in_stock_num,
+                dr.product_num AS in_stock_num,
+                dc.product_num AS out_stock_num,
+                th.rejected_count AS rejected_num,
+                yl.left_refund_num AS dosage_num,
+                yl.selling_price AS selling_price,
+                yl.amount_money AS dosage_money
+            FROM
+              pd_product_stock ps
+            LEFT JOIN pd_supplier su ON ps.supplier_id = su.id
+            LEFT JOIN pd_product pd ON ps.product_id = pd.id
+            LEFT JOIN sys_depart de ON ps.depart_id = de.id
+            LEFT JOIN (
+                SELECT
+                    a.id AS rkmxid,
+                    a.product_num,
+                    a.product_id,
+                    a.supplier_id,
+                    c.id AS product_stock_id
+                FROM
+                  pd_stock_record_detail a
+                LEFT JOIN pd_stock_record b ON a.record_id = b.id
+                LEFT JOIN pd_product_stock c ON a.id = c.record_detail_id AND c.nestat_status = '1'
+                WHERE
+                    a.del_flag = '0'
+                    AND b.del_flag = '0'
+                    AND b.audit_status = '2'
+                    AND b.record_type = '1'
+                    AND ( b.out_depart_id IS NULL OR b.out_depart_id = '' )
+                    <if test="entity.departParentId != null and entity.departParentId != ''">
+                        AND a.depart_parent_id = #{entity.departParentId}
+                    </if>
+                    <if test="entity.departId != null and entity.departId != ''">
+                        AND b.in_depart_id = #{entity.departId}
+                    </if>
+                    <if test="entity.queryDateStart != null and entity.queryDateStart != ''">
+                        AND DATE_FORMAT(b.audit_date,"%Y-%m-%d") &lt; #{entity.queryDateStart}
+                    </if>
+            ) qckc ON ps.id = qckc.product_stock_id
+            LEFT JOIN (
+                SELECT
+                    a.id AS rkmxid,
+                    a.product_num,
+                    a.product_id,
+                    a.supplier_id,
+                    c.id AS product_stock_id
+                FROM
+                  pd_stock_record_detail a
+                LEFT JOIN pd_stock_record b ON a.record_id = b.id
+                LEFT JOIN pd_product_stock c ON a.id = c.record_detail_id AND c.nestat_status = '1'
+                WHERE
+                    a.del_flag = '0'
+                    AND b.del_flag = '0'
+                    AND b.audit_status = '2'
+                    AND b.record_type = '1'
+                    AND ( b.out_depart_id IS NULL OR b.out_depart_id = '' )
+                    <if test="entity.departParentId != null and entity.departParentId != ''">
+                        AND a.depart_parent_id = #{entity.departParentId}
+                    </if>
+                    <if test="entity.departId != null and entity.departId != ''">
+                        AND b.in_depart_id = #{entity.departId}
+                    </if>
+                    <if test="entity.queryDateStart != null and entity.queryDateStart != ''">
+                        AND DATE_FORMAT(b.audit_date,"%Y-%m-%d") &gt;= #{entity.queryDateStart}
+                    </if>
+                    <if test="entity.queryDateEnd != null and entity.queryDateEnd != ''">
+                        AND DATE_FORMAT(b.audit_date,"%Y-%m-%d") &lt;= #{entity.queryDateEnd}
+                    </if>
+            ) bqrk ON ps.id = bqrk.product_stock_id
+            LEFT JOIN (
+                SELECT
+                    sum( a.product_num ) AS product_num,
+                    a.product_id,
+                    a.supplier_id,
+                    c.id AS product_stock_id
+                FROM
+                    pd_stock_record_detail a
+                LEFT JOIN pd_stock_record b ON a.record_id = b.id
+                LEFT JOIN pd_product_stock c ON a.product_stock_id = c.id AND c.nestat_status = '1'
+                LEFT JOIN pd_stock_record_detail d ON c.record_detail_id = d.id
+                WHERE
+                    a.del_flag = '0'
+                    AND b.del_flag = '0'
+                    AND b.audit_status = '2'
+                    AND b.record_type = '2'
+                    <if test="entity.departParentId != null and entity.departParentId != ''">
+                        AND a.depart_parent_id = #{entity.departParentId}
+                    </if>
+                    <if test="entity.departId != null and entity.departId != ''">
+                        AND b.out_depart_id = #{entity.departId}
+                    </if>
+                    <if test="entity.queryDateStart != null and entity.queryDateStart != ''">
+                        AND DATE_FORMAT(b.audit_date,"%Y-%m-%d") &gt;= #{entity.queryDateStart}
+                    </if>
+                    <if test="entity.queryDateEnd != null and entity.queryDateEnd != ''">
+                        AND DATE_FORMAT(b.audit_date,"%Y-%m-%d") &lt;= #{entity.queryDateEnd}
+                    </if>
+                    GROUP BY a.product_id, a.supplier_id, c.id
+            ) dc ON ps.id = dc.product_stock_id
+            LEFT JOIN (
+                SELECT
+                    a.id AS rkmxid,
+                    a.product_num,
+                    a.product_id,
+                    a.supplier_id,
+                    c.id AS product_stock_id
+                FROM
+                    pd_stock_record_detail a
+                LEFT JOIN pd_stock_record b ON a.record_id = b.id
+                LEFT JOIN pd_product_stock c ON a.id = c.record_detail_id AND c.nestat_status = '1'
+                WHERE
+                    a.del_flag = '0'
+                    AND b.del_flag = '0'
+                    AND b.audit_status = '2'
+                    AND b.record_type = '1'
+                    AND ( b.out_depart_id IS NOT NULL AND b.out_depart_id &lt;&gt; '' )
+                    <if test="entity.departParentId != null and entity.departParentId != ''">
+                        AND a.depart_parent_id = #{entity.departParentId}
+                    </if>
+                    <if test="entity.departId != null and entity.departId != ''">
+                        AND b.in_depart_id = #{entity.departId}
+                    </if>
+                    <if test="entity.queryDateStart != null and entity.queryDateStart != ''">
+                        AND DATE_FORMAT(b.audit_date,"%Y-%m-%d") &gt;= #{entity.queryDateStart}
+                    </if>
+                    <if test="entity.queryDateEnd != null and entity.queryDateEnd != ''">
+                        AND DATE_FORMAT(b.audit_date,"%Y-%m-%d") &lt;= #{entity.queryDateEnd}
+                    </if>
+            ) dr ON ps.id = dr.product_stock_id
+            LEFT JOIN (
+                SELECT
+                    a.rejected_count,
+                    a.product_stock_id
+                FROM
+                    pd_rejected_detail a
+                WHERE
+                    a.del_flag = '0'
+                    <if test="entity.departId != null and entity.departId != ''">
+                        AND a.depart_id = #{entity.departId}
+                    </if>
+                    <if test="entity.departParentId != null and entity.departParentId != ''">
+                        AND a.depart_parent_id = #{entity.departParentId}
+                    </if>
+                    <if test="entity.queryDateStart != null and entity.queryDateStart != ''">
+                        AND DATE_FORMAT(a.create_time,"%Y-%m-%d") &gt;= #{entity.queryDateStart}
+                    </if>
+                    <if test="entity.queryDateEnd != null and entity.queryDateEnd != ''">
+                        AND DATE_FORMAT(a.create_time,"%Y-%m-%d") &lt;= #{entity.queryDateEnd}
+                    </if>
+            ) th ON ps.id = th.product_stock_id
+            LEFT JOIN (
+                SELECT
+                    a.left_refund_num,
+                    a.selling_price,
+                    a.amount_money,
+                    a.product_stock_id
+                FROM
+                    pd_dosage_detail a
+                WHERE
+                    a.del_flag = '0'
+                    <if test="entity.departId != null and entity.departId != ''">
+                        AND a.depart_id = #{entity.departId}
+                    </if>
+                    <if test="entity.departParentId != null and entity.departParentId != ''">
+                        AND a.depart_parent_id = #{entity.departParentId}
+                    </if>
+                    <if test="entity.queryDateStart != null and entity.queryDateStart != ''">
+                        AND DATE_FORMAT(a.create_time,"%Y-%m-%d") &gt;= #{entity.queryDateStart}
+                    </if>
+                    <if test="entity.queryDateEnd != null and entity.queryDateEnd != ''">
+                        AND DATE_FORMAT(a.create_time,"%Y-%m-%d") &lt;= #{entity.queryDateEnd}
+                    </if>
+            ) yl ON ps.id = yl.product_stock_id
+            WHERE
+                ps.nestat_status = '1'
+                <if test="entity.departId != null and entity.departId != ''">
+                    AND ps.depart_id = #{entity.departId}
+                </if>
+                <if test="entity.departParentId != null and entity.departParentId != ''">
+                    AND ps.depart_parent_id = #{entity.departParentId}
+                </if>
+                <if test="entity.supplierId != null and entity.supplierId != ''">
+                    AND ps.supplier_id = #{entity.supplierId}
+                </if>
+                <if test="entity.productName != null and entity.productName != ''">
+                    AND (
+                    pd.number LIKE concat('%',#{entity.productName},'%')
+                    or pd.name LIKE concat('%',#{entity.productName},'%')
+                    or pd.py LIKE concat('%',#{entity.productName},'%')
+                    or pd.wb LIKE concat('%',#{entity.productName},'%')
+                    or pd.bname LIKE concat('%',#{entity.productName},'%')
+                    or pd.bpy LIKE concat('%',#{entity.productName},'%')
+                    or pd.bwb LIKE concat('%',#{entity.productName},'%')
+                    or pd.zdy LIKE concat('%',#{entity.productName},'%')
+                    )
+                </if>
+                <if test="entity.productNumber != null and entity.productNumber != ''">
+                    AND pd.number LIKE concat('%',#{entity.productNumber},'%')
+                </if>
+                <if test="entity.spec != null and entity.spec != ''">
+                    AND pd.spec LIKE concat('%',#{entity.spec},'%')
+                </if>
+            ORDER BY
+                ps.supplier_id, ps.product_id, de.depart_name
+        ) jxc,(SELECT @rowNum:=0) n
+        GROUP BY
+            jxc.depart_name, jxc.supplier_name, jxc.product_number, jxc.product_name, jxc.supplier_name, jxc.spec
+    </select>
+</mapper>
