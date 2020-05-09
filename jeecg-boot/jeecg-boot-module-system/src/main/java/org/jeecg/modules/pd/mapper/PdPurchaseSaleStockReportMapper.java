@@ -5,6 +5,8 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Param;
 import org.jeecg.modules.pd.vo.PdPurchaseSaleStockReportPage;
 
+import java.util.List;
+
 /**
  * @author jiangxz
  * @description 进销存报表
@@ -18,7 +20,9 @@ public interface PdPurchaseSaleStockReportMapper extends BaseMapper<PdPurchaseSa
      * @param vo
      * @return
      */
-    Page<PdPurchaseSaleStockReportPage> selectListByPage(Page<PdPurchaseSaleStockReportPage> page, @Param("entity") PdPurchaseSaleStockReportPage vo);
+    Page<PdPurchaseSaleStockReportPage> selectList(Page<PdPurchaseSaleStockReportPage> page, @Param("entity") PdPurchaseSaleStockReportPage vo);
+
+    List<PdPurchaseSaleStockReportPage> selectList(@Param("entity") PdPurchaseSaleStockReportPage vo);
 
 }
 

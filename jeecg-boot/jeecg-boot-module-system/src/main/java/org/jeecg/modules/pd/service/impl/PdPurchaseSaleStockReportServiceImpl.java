@@ -9,6 +9,8 @@ import org.jeecg.modules.pd.vo.PdPurchaseSaleStockReportPage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 /**
  * @author jiangxz
  * @description 进销存报表
@@ -22,6 +24,11 @@ public class PdPurchaseSaleStockReportServiceImpl extends ServiceImpl<PdPurchase
 
     @Override
     public IPage<PdPurchaseSaleStockReportPage> selectList(Page<PdPurchaseSaleStockReportPage> pageList, PdPurchaseSaleStockReportPage vo) {
-        return pdPurchaseSaleStockReportMapper.selectListByPage(pageList,vo);
+        return pdPurchaseSaleStockReportMapper.selectList(pageList,vo);
+    }
+
+    @Override
+    public List<PdPurchaseSaleStockReportPage> selectList(PdPurchaseSaleStockReportPage vo) {
+        return pdPurchaseSaleStockReportMapper.selectList(vo);
     }
 }
