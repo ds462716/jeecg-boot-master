@@ -73,7 +73,7 @@ public class PdPurchaseSaleStockReportController extends JeecgController<PdPurch
         ModelAndView mv = new ModelAndView(new JeecgEntityExcelView());
         mv.addObject(NormalExcelConstants.FILE_NAME, "进销存报表");
         mv.addObject(NormalExcelConstants.CLASS, PdPurchaseSaleStockReportPage.class);
-        mv.addObject(NormalExcelConstants.PARAMS, new ExportParams("进销存报表数据", "导出人:" + sysUser.getRealname(), "进销存报表"));
+        mv.addObject(NormalExcelConstants.PARAMS, new ExportParams("进销存报表", "导出人:" + sysUser.getRealname(), "进销存报表"));
         mv.addObject(NormalExcelConstants.DATA_LIST, exportList);
         return mv;
     }
