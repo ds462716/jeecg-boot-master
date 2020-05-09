@@ -224,7 +224,6 @@ CREATE TABLE `ex_his_charge_inf` (
 --- add by mcb 2020年5月6日9:14:30 增加试剂管理主菜单
 INSERT INTO `sys_permission` VALUES ('1255456003879661569', '1255448486688649218', '收费项目管理', '/pd/PdChargeList', 'pd/PdChargeList', NULL, NULL, 1, '0', NULL, '1', 2.00, 0, NULL, 1, 1, 0, 0, NULL, 'admin', '2020-4-29 19:16:51', 'admin', '2020-4-29 19:17:12', 0, 0, '1', 0);
 INSERT INTO `sys_permission` VALUES ('1255448486688649218', '', '试剂管理', '/pdProductReagent', 'layouts/RouteView', NULL, NULL, 0, '0', NULL, '1', 0.80, 0, 'rocket', 1, 0, 0, 0, NULL, 'admin', '2020-4-29 18:46:59', 'admin', '2020-4-29 18:48:45', 0, 0, '1', 0);
-INSERT INTO `sys_permission` VALUES ('1254291714732748802', '1218784892172963842', '定数包打包记录', '/pd/PdPackageRecordList', 'pd/PdPackageRecordList', NULL, NULL, 1, '0', NULL, '1', 1.10, 0, NULL, 1, 1, 0, 0, NULL, 'admin', '2020-4-26 14:10:23', NULL, '2020-4-26 14:10:23', 0, 0, '1', 0);
 INSERT INTO `sys_permission` VALUES ('1252411354562027522', '1255448486688649218', '检验配置管理', '/pd/PdUsePackageList', 'pd/PdUsePackageList', NULL, NULL, 1, '0', NULL, '1', 3.00, 0, NULL, 1, 1, 0, 0, NULL, 'admin', '2020-4-21 09:38:30', 'admin', '2020-4-29 19:17:19', 0, 0, '1', 0);
 DELETE FROM `sys_permission` WHERE id ='1252044092885708801';
 INSERT INTO `sys_permission` VALUES ('1252044092885708801', '1255448486688649218', '试剂管理', '/pd/PdProductReagents', 'pd/PdProductReagentsList', NULL, NULL, 1, '0', NULL, '1', 1.00, 0, NULL, 1, 1, 0, 0, NULL, 'admin', '2020-4-20 09:19:08', 'admin', '2020-4-29 19:17:04', 0, 0, '1', 0);
