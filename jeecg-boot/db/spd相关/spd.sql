@@ -295,3 +295,28 @@ INSERT INTO `sys_permission` VALUES ('1258590018295095297', '1255448486688649218
 -- add by jiangxz 2020年5月9日14:11:55 进销存报表
 update sys_permission set url = '/pd/query/PdPurchaseSaleStockReportList',component = 'pd/query/PdPurchaseSaleStockReportList' where name = '进销存报表'
 
+-- add by mcb 2020年5月11日14:11:55 增加自动补货记录表
+CREATE TABLE `pd_auto_order_inf` (
+  `id` varchar(36) NOT NULL,
+  `create_by` varchar(50) DEFAULT NULL COMMENT '创建人',
+  `create_time` datetime DEFAULT NULL COMMENT '创建日期',
+  `update_by` varchar(50) DEFAULT NULL COMMENT '更新人',
+  `update_time` datetime DEFAULT NULL COMMENT '更新日期',
+  `sys_org_code` varchar(64) DEFAULT NULL COMMENT '所属部门',
+  `auto_date` datetime DEFAULT NULL COMMENT '补货申请日期',
+  `auto_num` double DEFAULT NULL COMMENT '自动补货数量',
+  `limit_down` double DEFAULT NULL COMMENT '库存下限数量',
+  `stock_num` double DEFAULT NULL COMMENT '补货时库存数量',
+  `product_id` varchar(32) DEFAULT NULL COMMENT '补货产品id',
+  `depart_id` varchar(32) DEFAULT NULL COMMENT '补货科室id',
+  `depart_parent_id` varchar(32) DEFAULT NULL COMMENT '机构ID',
+  `order_type` varchar(4) DEFAULT NULL COMMENT '生成订单类型 0:申领单  1：采购单',
+  `order_no` varchar(32) DEFAULT NULL COMMENT '对应订单编号',
+  `del_flag` varchar(4) DEFAULT NULL COMMENT '删除状态',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- add by mcb 2020年5月11日14:11:55 库存总表增加自动补货数量字段
+
+ALTER TABLE `pd_product_stock_total`
+ADD COLUMN `auto_num` double(32,2) DEFAULT NULL COMMENT '自动补货数量';
