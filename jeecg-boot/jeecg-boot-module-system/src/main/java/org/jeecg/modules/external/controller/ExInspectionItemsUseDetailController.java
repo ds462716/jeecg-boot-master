@@ -9,15 +9,11 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.system.query.QueryGenerator;
-import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.oConvertUtils;
-import org.jeecg.modules.external.entity.ExInspectionItems;
-import org.jeecg.modules.external.service.IExInspectionItemsService;
+import org.jeecg.modules.external.entity.ExInspectionItemsUseDetail;
+import org.jeecg.modules.external.service.IExInspectionItemsUseDetailService;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -41,68 +37,66 @@ import io.swagger.annotations.ApiOperation;
 import org.jeecg.common.aspect.annotation.AutoLog;
 
  /**
- * @Description: 检查项目表
+ * @Description: 检验项目使用详情表
  * @Author: jiangxz
- * @Date:   2020-04-23
+ * @Date:   2020-05-11
  * @Version: V1.0
  */
-@Api(tags="检查项目表")
+@Api(tags="检验项目使用详情表")
 @RestController
-@RequestMapping("/external/exInspectionItems")
+@RequestMapping("/external/exInspectionItemsUseDetail")
 @Slf4j
-public class ExInspectionItemsController extends JeecgController<ExInspectionItems, IExInspectionItemsService> {
+public class ExInspectionItemsUseDetailController extends JeecgController<ExInspectionItemsUseDetail, IExInspectionItemsUseDetailService> {
 	@Autowired
-	private IExInspectionItemsService exInspectionItemsService;
+	private IExInspectionItemsUseDetailService exInspectionItemsUseDetailService;
 	
 	/**
 	 * 分页列表查询
 	 *
-	 * @param exInspectionItems
+	 * @param exInspectionItemsUseDetail
 	 * @param pageNo
 	 * @param pageSize
 	 * @param req
 	 * @return
 	 */
-	@AutoLog(value = "检查项目表-分页列表查询")
-	@ApiOperation(value="检查项目表-分页列表查询", notes="检查项目表-分页列表查询")
+	@AutoLog(value = "检验项目使用详情表-分页列表查询")
+	@ApiOperation(value="检验项目使用详情表-分页列表查询", notes="检验项目使用详情表-分页列表查询")
 	@GetMapping(value = "/list")
-	public Result<?> queryPageList(ExInspectionItems exInspectionItems,
+	public Result<?> queryPageList(ExInspectionItemsUseDetail exInspectionItemsUseDetail,
 								   @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
 								   @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
 								   HttpServletRequest req) {
-		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
-		QueryWrapper<ExInspectionItems> queryWrapper = QueryGenerator.initQueryWrapper(exInspectionItems, req.getParameterMap());
-		queryWrapper.eq("depart_id", sysUser.getCurrentDepartId());
-		Page<ExInspectionItems> page = new Page<ExInspectionItems>(pageNo, pageSize);
-		IPage<ExInspectionItems> pageList = exInspectionItemsService.page(page, queryWrapper);
+		QueryWrapper<ExInspectionItemsUseDetail> queryWrapper = QueryGenerator.initQueryWrapper(exInspectionItemsUseDetail, req.getParameterMap());
+		Page<ExInspectionItemsUseDetail> page = new Page<ExInspectionItemsUseDetail>(pageNo, pageSize);
+		IPage<ExInspectionItemsUseDetail> pageList = exInspectionItemsUseDetailService.page(page, queryWrapper);
 		return Result.ok(pageList);
 	}
 	
 	/**
 	 *   添加
 	 *
-	 * @param exInspectionItems
+	 * @param exInspectionItemsUseDetail
 	 * @return
 	 */
-	@AutoLog(value = "检查项目表-添加")
-	@ApiOperation(value="检查项目表-添加", notes="检查项目表-添加")
+	@AutoLog(value = "检验项目使用详情表-添加")
+	@ApiOperation(value="检验项目使用详情表-添加", notes="检验项目使用详情表-添加")
 	@PostMapping(value = "/add")
-	public Result<?> add(@RequestBody ExInspectionItems exInspectionItems) {
-		exInspectionItemsService.save(exInspectionItems);
+	public Result<?> add(@RequestBody ExInspectionItemsUseDetail exInspectionItemsUseDetail) {
+		exInspectionItemsUseDetailService.save(exInspectionItemsUseDetail);
 		return Result.ok("添加成功！");
 	}
 	
 	/**
 	 *  编辑
 	 *
-	 * @param exInspectionItems
+	 * @param exInspectionItemsUseDetail
 	 * @return
 	 */
-	@AutoLog(value = "检查项目表-编辑")
-	@ApiOperation(value="检查项目表-编辑", notes="检查项目表-编辑")
+	@AutoLog(value = "检验项目使用详情表-编辑")
+	@ApiOperation(value="检验项目使用详情表-编辑", notes="检验项目使用详情表-编辑")
 	@PutMapping(value = "/edit")
-	public Result<?> edit(@RequestBody ExInspectionItems exInspectionItems) {
-		exInspectionItemsService.updateById(exInspectionItems);
+	public Result<?> edit(@RequestBody ExInspectionItemsUseDetail exInspectionItemsUseDetail) {
+		exInspectionItemsUseDetailService.updateById(exInspectionItemsUseDetail);
 		return Result.ok("编辑成功!");
 	}
 	
@@ -112,11 +106,11 @@ public class ExInspectionItemsController extends JeecgController<ExInspectionIte
 	 * @param id
 	 * @return
 	 */
-	@AutoLog(value = "检查项目表-通过id删除")
-	@ApiOperation(value="检查项目表-通过id删除", notes="检查项目表-通过id删除")
+	@AutoLog(value = "检验项目使用详情表-通过id删除")
+	@ApiOperation(value="检验项目使用详情表-通过id删除", notes="检验项目使用详情表-通过id删除")
 	@DeleteMapping(value = "/delete")
 	public Result<?> delete(@RequestParam(name="id",required=true) String id) {
-		exInspectionItemsService.removeById(id);
+		exInspectionItemsUseDetailService.removeById(id);
 		return Result.ok("删除成功!");
 	}
 	
@@ -126,11 +120,11 @@ public class ExInspectionItemsController extends JeecgController<ExInspectionIte
 	 * @param ids
 	 * @return
 	 */
-	@AutoLog(value = "检查项目表-批量删除")
-	@ApiOperation(value="检查项目表-批量删除", notes="检查项目表-批量删除")
+	@AutoLog(value = "检验项目使用详情表-批量删除")
+	@ApiOperation(value="检验项目使用详情表-批量删除", notes="检验项目使用详情表-批量删除")
 	@DeleteMapping(value = "/deleteBatch")
 	public Result<?> deleteBatch(@RequestParam(name="ids",required=true) String ids) {
-		this.exInspectionItemsService.removeByIds(Arrays.asList(ids.split(",")));
+		this.exInspectionItemsUseDetailService.removeByIds(Arrays.asList(ids.split(",")));
 		return Result.ok("批量删除成功!");
 	}
 	
@@ -140,26 +134,26 @@ public class ExInspectionItemsController extends JeecgController<ExInspectionIte
 	 * @param id
 	 * @return
 	 */
-	@AutoLog(value = "检查项目表-通过id查询")
-	@ApiOperation(value="检查项目表-通过id查询", notes="检查项目表-通过id查询")
+	@AutoLog(value = "检验项目使用详情表-通过id查询")
+	@ApiOperation(value="检验项目使用详情表-通过id查询", notes="检验项目使用详情表-通过id查询")
 	@GetMapping(value = "/queryById")
 	public Result<?> queryById(@RequestParam(name="id",required=true) String id) {
-		ExInspectionItems exInspectionItems = exInspectionItemsService.getById(id);
-		if(exInspectionItems==null) {
+		ExInspectionItemsUseDetail exInspectionItemsUseDetail = exInspectionItemsUseDetailService.getById(id);
+		if(exInspectionItemsUseDetail==null) {
 			return Result.error("未找到对应数据");
 		}
-		return Result.ok(exInspectionItems);
+		return Result.ok(exInspectionItemsUseDetail);
 	}
 
     /**
     * 导出excel
     *
     * @param request
-    * @param exInspectionItems
+    * @param exInspectionItemsUseDetail
     */
     @RequestMapping(value = "/exportXls")
-    public ModelAndView exportXls(HttpServletRequest request, ExInspectionItems exInspectionItems) {
-        return super.exportXls(request, exInspectionItems, ExInspectionItems.class, "检查项目表");
+    public ModelAndView exportXls(HttpServletRequest request, ExInspectionItemsUseDetail exInspectionItemsUseDetail) {
+        return super.exportXls(request, exInspectionItemsUseDetail, ExInspectionItemsUseDetail.class, "检验项目使用详情表");
     }
 
     /**
@@ -171,7 +165,7 @@ public class ExInspectionItemsController extends JeecgController<ExInspectionIte
     */
     @RequestMapping(value = "/importExcel", method = RequestMethod.POST)
     public Result<?> importExcel(HttpServletRequest request, HttpServletResponse response) {
-        return super.importExcel(request, response, ExInspectionItems.class);
+        return super.importExcel(request, response, ExInspectionItemsUseDetail.class);
     }
 
 }

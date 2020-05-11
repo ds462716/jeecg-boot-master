@@ -140,4 +140,16 @@ public class ExInspectionItems{
 	@Excel(name = "所属部门", width = 15)
     @ApiModelProperty(value = "所属部门")
     private String sysOrgCode;
+
+    /**
+     * 所属部门
+     */
+    @TableField(strategy = FieldStrategy.NOT_EMPTY)
+    private String departId;
+
+    /**
+     * 所属顶级部门（医院id）
+     */
+    @TableField(strategy = FieldStrategy.NOT_EMPTY)
+    private String departParentId;
 }
