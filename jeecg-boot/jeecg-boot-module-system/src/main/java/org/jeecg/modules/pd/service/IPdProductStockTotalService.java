@@ -103,6 +103,12 @@ public interface IPdProductStockTotalService extends IService<PdProductStockTota
      */
     public String lisUpdateUseStock(ExInspectionItems item);
 
-
+    /**
+     * 检验项目手动扣减库存明细
+     * @param departId
+     * @param productStockList
+     * @return
+     */
+    public String jyUpdateStockNum(String departId,List<PdProductStock> productStockList);
 
 }

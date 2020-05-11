@@ -643,6 +643,7 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
      * @return
      */
     @Transactional
+    @Override
     public String jyUpdateStockNum(String departId,List<PdProductStock> productStockList) {
         if(StringUtils.isEmpty(departId)){
             throw new RuntimeException("参数错误，科室ID不能为空！");
