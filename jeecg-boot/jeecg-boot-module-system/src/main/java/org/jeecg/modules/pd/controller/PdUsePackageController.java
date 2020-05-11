@@ -71,6 +71,25 @@ public class PdUsePackageController {
     }
 
     /**
+     * 根据ids查询列表
+     * @param ids
+     * @return
+     */
+    @GetMapping(value = "/queryPackageRecordListByIds")
+    public Result<?> queryPackageRecordListByIds(@RequestParam(name = "ids", required = true) String ids) {
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        PdUsePackage pdUsePackage = new PdUsePackage();
+        pdUsePackage.setDepartParentId(sysUser.getDepartParentId());
+        pdUsePackage.setIdList(Arrays.asList(ids.split(",")));
+        List<PdUsePackage> list = pdUsePackageService.queryList(pdUsePackage);
+        for (PdUsePackage record : list) {
+            List<PdUsePackageDetail> detailList = pdUsePackageDetailService.selectByMainId(record.getId());
+            record.setPdUsePackageDetailList(detailList);
+        }
+        return Result.ok(list);
+    }
+
+    /**
     * 分页列表查询
     *
     * @param pdUsePackage

@@ -67,4 +67,7 @@ public class PdUsePackage extends BaseEntity {
     @TableField(exist = false)
     @ExcelCollection(name="检验项目明细")
     private List<PdUsePackageDetail> pdUsePackageDetailList;
+
+    @TableField(exist = false)
+    private List<String> idList;
 }

@@ -91,7 +91,7 @@ public class PdUsePackageServiceImpl extends ServiceImpl<PdUsePackageMapper, PdU
 
 	@Override
 	public Page<PdUsePackage> queryList(Page<PdUsePackage> page, PdUsePackage pdUsePackage) {
-		return pdUsePackageMapper.selectListByPage(page,pdUsePackage);
+		return pdUsePackageMapper.queryList(page,pdUsePackage);
 	}
 
 	@Override

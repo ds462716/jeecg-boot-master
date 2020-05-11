@@ -1,49 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.jeecg.modules.pd.mapper.PdUsePackageMapper">
-
     <select id="queryList" resultType="org.jeecg.modules.pd.entity.PdUsePackage" parameterType="org.jeecg.modules.pd.entity.PdUsePackage">
-        SELECT
-        a.id,
-        a.code,
-        a.name,
-        a.sum,
-        a.py,
-        a.wb,
-        a.zdy,
-        a.create_by,
-        a.create_time,
-        a.update_by,
-        a.update_time,
-        a.remarks,
-        a.del_flag,
-        a.sys_org_code,
-        a.depart_id,
-        a.depart_parent_id
-        FROM pd_use_package a
-        <where>
-            a.del_flag = #{DEL_FLAG_NORMAL}
-            <if test="name != null and name != ''">
-                AND ( a.name LIKE concat('%',#{name},'%')
-                or a.py LIKE concat('%',#{name},'%')
-                or a.wb LIKE concat('%',#{name},'%')
-                or a.zdy LIKE concat('%',#{name},'%') )
-            </if>
-            <if test="code != null and code != ''">
-                AND a.code LIKE concat('%',#{code},'%')
-            </if>
-            <if test="departParentId != null and departParentId != ''">
-                AND a.depart_parent_id = #{departParentId}
-            </if>
-            <if test="departId != null and departId != ''">
-                AND a.depart_id = #{departId}
-            </if>
-        </where>
-        ORDER BY a.update_time desc
-    </select>
-
-
-    <select id="selectListByPage" resultType="org.jeecg.modules.pd.entity.PdUsePackage" parameterType="org.jeecg.modules.pd.entity.PdUsePackage">
         SELECT
         a.id,
         a.code,
@@ -78,6 +36,12 @@
             </if>
             <if test="entity.departId != null and entity.departId != ''">
                 AND a.depart_id = #{entity.departId}
+            </if>
+            <if test="entity.idList != null and entity.idList.size() > 0">
+                AND a.id IN
+                <foreach collection="entity.idList" item="item" separator="," open="(" close=")">
+                    #{item}
+                </foreach>
             </if>
         </where>
         ORDER BY a.update_time desc
