@@ -70,4 +70,13 @@ public interface PdProductStockMapper extends BaseMapper<PdProductStock> {
 	 * @param pdProductStock
 	 */
 	public void updateStockSpecNum(PdProductStock pdProductStock);
+
+
+
+	/**
+	 * 库存明细查询,根据有效期排序查询
+	 * 注意：带事务方法调用时使用
+	 * @param pdProductStock
+	 */
+	public List<PdProductStock> selectOrExpDate(PdProductStock pdProductStock);
 }

@@ -195,5 +195,8 @@ public class PdProductStock extends BaseEntity {
 	@TableField(exist = false)
 	private String departIds; //批量查询用
 
+	@TableField(exist = false)
+	private String productFlag; // 试剂产品or普通产品，0产品，1试剂
+
 
 }

@@ -3,8 +3,9 @@ package org.jeecg.modules.pd.service.impl;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.MapUtils;
+import org.apache.commons.lang.StringUtils;
 import org.jeecg.common.constant.PdConstant;
+import org.jeecg.modules.external.entity.ExInspectionItems;
 import org.jeecg.modules.pd.entity.*;
 import org.jeecg.modules.pd.mapper.PdProductMapper;
 import org.jeecg.modules.pd.mapper.PdProductStockMapper;
@@ -12,10 +13,12 @@ import org.jeecg.modules.pd.mapper.PdProductStockTotalMapper;
 import org.jeecg.modules.pd.service.IPdProductStockService;
 import org.jeecg.modules.pd.service.IPdProductStockTotalService;
 import org.jeecg.modules.pd.service.IPdUsePackageDetailService;
+import org.jeecg.modules.pd.service.IPdUsePackageService;
 import org.jeecg.modules.pd.vo.PdProductStockTotalPage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ObjectUtils;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -40,7 +43,8 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
     private PdProductMapper pdProductMapper;
     @Autowired
     private IPdUsePackageDetailService  usePackageDetailService;
-
+    @Autowired
+    private IPdUsePackageService pdUsePackageService;
     /**
      * 查询列表
      *
@@ -512,134 +516,100 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
      * 	试剂耗材产品更新库存用量信息(Lis系统推送的数据)
      */
     @Transactional
-    public String lisUpdateUseStock( Map<String,Object> param) {
-        String patientName= MapUtils.getString(param,"patientName");//患者姓名
-        String patientSex= MapUtils.getString(param,"patientSex");//患者性别
-        String patientAge= MapUtils.getString(param,"patientAge");//患者年龄
-        String cardID= MapUtils.getString(param,"cardID");//就诊卡号
-        String barCode= MapUtils.getString(param,"barCode");//条形码
-        String applyDoctor= MapUtils.getString(param,"applyDoctor");//申请医生
-        String applyDepartment= MapUtils.getString(param,"applyDepartment");//申请科室
-        String testDoctor= MapUtils.getString(param,"testDoctor");//检验医生
-        String testDepartment= MapUtils.getString(param,"testDepartment");//检验科室
-        String patientType= MapUtils.getString(param,"patientType");//患者类型
-        String groupBy= MapUtils.getString(param,"groupBy");//工作组
-        String receiveDate= MapUtils.getString(param,"receiveDate");//接收日期
-        String testDate= MapUtils.getString(param,"testDate");//检验日期
-        String specimenType= MapUtils.getString(param,"specimenType");//样本日期
-        List<Map<String,Object>> dataList=(List<Map<String,Object>>)param.get("data");
-        for(Map<String,Object> map:dataList){
-            String testCombinationName= MapUtils.getString(param,"testCombinationName");//组合名称
-            String testItemName= MapUtils.getString(param,"testItemName");//检查项目名称
-            String testItemCode= MapUtils.getString(param,"testItemCode");//检查项目代码
-            String testItemCost= MapUtils.getString(param,"testItemCost");//检查项目费用
-
+    @Override
+    public String lisUpdateUseStock(ExInspectionItems items) {
+        String departId=items.getDepartId();
+        PdUsePackage usePackage =new PdUsePackage();
+        usePackage.setCode(items.getTestItemCode());
+        List<PdUsePackage> list= pdUsePackageService.queryList(usePackage);
+        if(CollectionUtils.isEmpty(list)){
+            throw new RuntimeException("检验项目未配置！");
+        }
             PdUsePackageDetail usePackageDetail=new PdUsePackageDetail();
-            usePackageDetail.setPackageId(testItemCode);
+            usePackageDetail.setPackageId(list.get(0).getId());
             List<PdUsePackageDetail> detailList= usePackageDetailService.queryPdUsePackageList(usePackageDetail);
                    if(CollectionUtils.isNotEmpty(detailList)){
                        for(PdUsePackageDetail detail:detailList){
                         String productId= detail.getProductId();//产品ID
+                        String productFlag= detail.getProductFlag();
                         Double syNum= detail.getCount();//配置的使用量
-                        //查询检验科室库存明细(先查询使用中的)
+                       if(PdConstant.PRODUCT_FLAG_0.equals(productFlag)){//普通耗材
+                           PdProductStockTotal stockTotal=new PdProductStockTotal();
+                           stockTotal.setDepartId(departId);
+                           stockTotal.setProductId(productId);
+                           List<PdProductStockTotal> stockTotals= pdProductStockTotalMapper.findForUpdate(stockTotal);
+                           if(CollectionUtils.isEmpty(stockTotals)){
+                               throw new RuntimeException("扣减总库存失败,根据产品ID：["+productId+"]获取不到库存信息");
+                           }
+                           //扣减总库存
+                           PdProductStockTotal productStockTotal = stockTotals.get(0);
+                           Double stockNum_i = productStockTotal.getStockNum();
+                           Double newStockNum = stockNum_i - syNum;
+                           productStockTotal.setStockNum(newStockNum);
+                           pdProductStockTotalMapper.updateStockNum(productStockTotal);
+                          //扣减明细库存
+                           PdProductStock stock=new PdProductStock();
+                           stock.setDepartId(departId);
+                           stock.setProductId(productId);
+                           List<PdProductStock> stocks= pdProductStockMapper.selectOrExpDate(stock);
+                           if(CollectionUtils.isEmpty(stocks)){
+                               throw new RuntimeException("扣减库存失败,根据产品ID：["+productId+"]获取不到库存信息");
+                           }
+                           PdProductStock productStock_i = stocks.get(0);
+                           Double num = productStock_i.getStockNum() - syNum;
+                           if (num < 0) {
+                               throw new RuntimeException("扣减库存失败，[" + productStock_i.getProductName() + "]库存数量不足");
+                           }
+                           productStock_i.setStockNum(num);
+                           productStock_i.setSpecNum(productStock_i.getSpecQuantity() == null ? 0D : productStock_i.getSpecQuantity()    * productStock_i.getStockNum());// 库存规格数量= 产品规格数量* 入库数量
+                           pdProductStockMapper.updateStockNum(productStock_i);
+                       }else{ //试剂
+                           //查询科室库存明细(先查询使用中的)
                            PdProductStock o_productStockq = new PdProductStock();
-                           o_productStockq.setDepartId("");//暂定检验科
+                           o_productStockq.setDepartId(departId);
                            o_productStockq.setProductId(productId);
                            o_productStockq.setNestatStatus(PdConstant.STOCK_NESTAT_STATUS_0);
-                           //方法重新写
-                           List<PdProductStock> productStocks = pdProductStockMapper.selectList(o_productStockq);
-                            if(CollectionUtils.isEmpty(productStocks)){
-                                PdProductStock productStockq = new PdProductStock();
-                                productStockq.setDepartId("");//暂定检验科
-                                productStockq.setProductId(productId);
-                                //方法重新写
-                                List<PdProductStock> productStockList = pdProductStockMapper.selectList(o_productStockq);
-                                if(CollectionUtils.isNotEmpty(productStockList)){
-                                    //新增一条使用中的明细信息,并扣减
-                                    this.insertProdStock(productStockList.get(0),syNum);
-                                }else{
-                                    //没有库存明细数据的情况下，待处理
-
-
-
-                                }
-                            }else{
-                                PdProductStock stock= productStocks.get(0);
-                                Double specNum= stock.getSpecNum() - syNum;
-                                if(specNum==0){
-                                    stock.setSpecNum(specNum);
-                                    stock.setStockNum(0.00);
-                                    stock.setNestatStatus(PdConstant.STOCK_NESTAT_STATUS_2);//已用完
-                                }else{
-                                    stock.setSpecNum(specNum);
-                                }
-                                pdProductStockMapper.updateStockSpecNum(stock);
-                            }
-
+                           List<PdProductStock> productStocks = pdProductStockMapper.selectOrExpDate(o_productStockq);
+                           if(CollectionUtils.isEmpty(productStocks)){ //如果没有使用中的库存
+                               PdProductStock productStockq = new PdProductStock();
+                               productStockq.setDepartId(departId);
+                               productStockq.setProductId(productId);
+                               List<PdProductStock> productStockList = pdProductStockMapper.selectOrExpDate(productStockq);
+                               if(CollectionUtils.isNotEmpty(productStockList)){
+                                   //新增一条使用中的明细信息,并扣减
+                                   this.insertProdStock(productStockList.get(0),syNum);
+                               }else{
+                                   throw new RuntimeException("扣减库存失败,根据产品ID：["+productId+"]获取不到库存信息");
+                               }
+                           }else{ //直接扣减使用中的库存规格数量
+                               PdProductStock stock= productStocks.get(0);
+                               Double specNum= stock.getSpecNum() - syNum;
+                               if(specNum==0){//如果扣完规格数量是0的情况下，则将库存数量设置为0，并更新库存总表库存数量
+                                   stock.setSpecNum(specNum);
+                                   stock.setStockNum(0.00);
+                                   stock.setNestatStatus(PdConstant.STOCK_NESTAT_STATUS_2);//已用完
+                                   //更新总库存信息
+                                   PdProductStockTotal stockTotal=new PdProductStockTotal();
+                                   stockTotal.setDepartId(departId);
+                                   stockTotal.setProductId(productId);
+                                   List<PdProductStockTotal> stockTotals= pdProductStockTotalMapper.findForUpdate(stockTotal);
+                                   if(CollectionUtils.isEmpty(stockTotals)){
+                                       throw new RuntimeException("扣减总库存失败,根据产品ID：["+productId+"]获取不到库存信息");
+                                   }
+                                   //扣减总库存
+                                   PdProductStockTotal productStockTotal = stockTotals.get(0);
+                                   Double stockNum_i = productStockTotal.getStockNum();
+                                   Double newStockNum = stockNum_i -1;
+                                   productStockTotal.setStockNum(newStockNum);
+                                   pdProductStockTotalMapper.updateStockNum(productStockTotal);
+                               }else{
+                                   stock.setSpecNum(specNum);
+                               }
+                               pdProductStockMapper.updateStockSpecNum(stock);
+                           }
+                         }
                        }
-                   }else{
-                       //待处理，数据先落地，后续配置完成后通过页面提交按钮去操作扣减库存
-                   }
-        }
-
-       //先获取lis系统推送过来的数据以及检验项目代码等信息
-        //根据检验项目代码查询检验项目配置表的配置用量明细信息
-        //根据所配置的用量明细进行扣减库存
-        //扣减库存是扣减规格数量的数据；
-
-    /**3.扣减库存时，根据单位换算可通过规格数量扣减库存。
-     * 当通过规格单位扣减库存时，且规格数量和包装数量不一致时，
-     * 在原有库存数量减1，同时在库存表中增加一行库存数据，该行占用状态为使用中状态，
-     * 不允许做用量之外的其他业务。新增行数据的包装单位为1，
-     * 规格数量扣减一人份。当规格数量全部扣减完后，包装数量也为0。
-     *
- 结论：1)库存明细表增加占用状态字段：0：使用中  1：未使用
- 2)新增的一行库存数据（使用中）只做用量扣减操作；
- 3)除用量之外都扣减未使用的库存；
-
-
- */
-
-        //1、扣减出库库存，扣减出库库存明细
-       /* for (PdDosageDetail dosageDetail : dosageDetails) {
-            String productId = dosageDetail.getProductId();    //产品ID
-            String prodBarcode = dosageDetail.getProductBarCode();  //条码
-            String batchNo = dosageDetail.getBatchNo();
-            String huoweiCode = dosageDetail.getOutHuoweiCode();
-            Double productNum = dosageDetail.getDosageCount();  //数量
-            //1、扣减出库库存，扣减出库库存明细
-            PdProductStockTotalPage stockTotalq = new PdProductStockTotalPage();
-            stockTotalq.setDepartId(departId);
-            stockTotalq.setProductId(productId);
-            stockTotalq.setFilterType("1");//有值的话，则过滤库存数量为0的数据
-            List<PdProductStockTotalPage> productStockTotals = pdProductStockTotalMapper.selectList(stockTotalq);
-            if (productStockTotals != null && productStockTotals.size() == 1) {
-                PdProductStockTotal productStockTotal = productStockTotals.get(0);
-                Double stockNum = productStockTotal.getStockNum();
-                Double num = stockNum - productNum;
-                productStockTotal.setStockNum(num);
-                pdProductStockTotalMapper.updateStockNum(productStockTotal);
-            }else {
-                throw new RuntimeException("库存没有产品[" + dosageDetail.getProductName() + "]！");
-            }
-
-            PdProductStock o_productStockq = new PdProductStock();
-            o_productStockq.setDepartId(departId);
-            o_productStockq.setProductId(productId);
-            o_productStockq.setProductBarCode(prodBarcode);
-            o_productStockq.setBatchNo(batchNo);
-            o_productStockq.setHuoweiCode(huoweiCode);
-            List<PdProductStock> productStocks = pdProductStockMapper.selectList(o_productStockq);
-            if (productStocks != null && productStocks.size() >= 0) {
-                PdProductStock productStock = productStocks.get(0);
-                Double stockNum = productStock.getStockNum();
-                Double num = stockNum - productNum;
-                productStock.setStockNum(num);
-                pdProductStockMapper.updateStockNum(productStock);
-            }else {
-                throw new RuntimeException("库存明细没有产品[" + dosageDetail.getProductName() + "]！");
-            }
-        }*/
+                     }
         return PdConstant.TRUE;
     }
 
@@ -658,7 +628,113 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
         Double specQuantity=productStock.getSpecQuantity();
         Double specNum=specQuantity - syNum;
         productStock.setSpecNum(specNum);
+        productStock.setNestatStatus(PdConstant.STOCK_NESTAT_STATUS_0);
         pdProductStockMapper.insert(productStock);
+        return PdConstant.TRUE;
+    }
+
+
+
+
+    /**
+     *检验项目手动扣减库存方法
+     * @param departId
+     * @param productStockList
+     * @return
+     */
+    @Transactional
+    public String jyUpdateStockNum(String departId,List<PdProductStock> productStockList) {
+        if(StringUtils.isEmpty(departId)){
+            throw new RuntimeException("参数错误，科室ID不能为空！");
+        }
+        if(CollectionUtils.isNotEmpty(productStockList)){
+            for(PdProductStock productStock:productStockList){
+               String productId= productStock.getProductId();//产品ID
+               String productFlag=productStock.getProductFlag();
+               Double  stockNum=productStock.getStockNum();//库存数量
+               Double  specNum=productStock.getSpecNum();//库存规格数量
+               if(StringUtils.isEmpty(productId) ||  StringUtils.isEmpty(productFlag)){
+                   throw new RuntimeException("参数错误！");
+               }
+                if(ObjectUtils.isEmpty(stockNum) &&  ObjectUtils.isEmpty(specNum)){
+                    throw new RuntimeException("库存数量或库存规格数量不能为空！");
+                }
+                PdProductStockTotal stockTotal=new PdProductStockTotal();
+                stockTotal.setDepartId(departId);
+                stockTotal.setProductId(productId);
+                List<PdProductStockTotal> stockTotals= pdProductStockTotalMapper.findForUpdate(stockTotal);
+                if(CollectionUtils.isEmpty(stockTotals)){
+                    throw new RuntimeException("扣减总库存失败,根据产品ID：["+productId+"]获取不到库存信息");
+                }
+                PdProductStock stock=new PdProductStock();
+                stock.setDepartId(departId);
+                stock.setProductId(productId);
+                List<PdProductStock> productStocks= pdProductStockMapper.selectOrExpDate(stock);
+                if(CollectionUtils.isEmpty(productStocks)){
+                    throw new RuntimeException("扣减库存失败,根据产品ID：["+productId+"]获取不到库存明细信息");
+                }
+                if(PdConstant.PRODUCT_FLAG_0.equals(productFlag)){ //产品
+                        //扣减总库存
+                        PdProductStockTotal productStockTotal = stockTotals.get(0);
+                        Double stockNum_i = productStockTotal.getStockNum();
+                        Double newStockNum = stockNum_i - stockNum;
+                        productStockTotal.setStockNum(newStockNum);
+                        pdProductStockTotalMapper.updateStockNum(productStockTotal);
+                        //扣减明细库存
+                        PdProductStock productStock_i = productStocks.get(0);
+                        Double num = productStock_i.getStockNum() - stockNum;
+                        if (num < 0) {
+                            throw new RuntimeException("扣减库存失败，[" + productStock_i.getProductName() + "]库存数量不足");
+                        }
+                        productStock_i.setStockNum(num);
+                        productStock_i.setSpecNum(productStock.getSpecQuantity() == null ? 0D : productStock.getSpecQuantity()    * productStock_i.getStockNum());// 库存规格数量= 产品规格数量* 入库数量
+                        pdProductStockMapper.updateStockNum(productStock_i);
+                    }else{ //试剂
+                    //查询科室库存明细(先查询使用中的)
+                    PdProductStock o_productStockq = new PdProductStock();
+                    o_productStockq.setDepartId(departId);
+                    o_productStockq.setProductId(productId);
+                    o_productStockq.setNestatStatus(PdConstant.STOCK_NESTAT_STATUS_0);
+                    List<PdProductStock> productStocks_i = pdProductStockMapper.selectOrExpDate(o_productStockq);
+                    if(CollectionUtils.isEmpty(productStocks_i)){ //如果没有使用中的库存
+                        PdProductStock productStockq = new PdProductStock();
+                        productStockq.setDepartId(departId);
+                        productStockq.setProductId(productId);
+                        List<PdProductStock>  StockList = pdProductStockMapper.selectOrExpDate(productStockq);
+                        if(CollectionUtils.isNotEmpty(StockList)){
+                            this.insertProdStock(StockList.get(0),specNum); //新增一条使用中的明细信息,并扣减
+                        }else{
+                            throw new RuntimeException("扣减库存失败,根据产品ID：["+productId+"]获取不到库存信息");
+                        }
+                    }else { //直接扣减使用中的库存规格数量
+                        PdProductStock stock_i = productStocks_i.get(0);
+                        Double newSpecNum = stock_i.getSpecNum() - specNum;
+                        if (newSpecNum == 0) { //如果扣完规格数量是0的情况下，则将库存数量设置为0，并更新库存总表库存数量
+                            stock.setSpecNum(newSpecNum);
+                            stock.setStockNum(0.00);
+                            stock.setNestatStatus(PdConstant.STOCK_NESTAT_STATUS_2);//已用完
+                            //更新总库存信息
+                            PdProductStockTotal stockTotal_i = new PdProductStockTotal();
+                            stockTotal_i.setDepartId(departId);
+                            stockTotal_i.setProductId(productId);
+                            List<PdProductStockTotal> stockTotals_i = pdProductStockTotalMapper.findForUpdate(stockTotal_i);
+                            if (CollectionUtils.isEmpty(stockTotals_i)) {
+                                throw new RuntimeException("扣减总库存失败,根据产品ID：[" + productId + "]获取不到库存信息");
+                            }
+                            //扣减总库存
+                            PdProductStockTotal productStockTotal = stockTotals_i.get(0);
+                            Double stockNum_i = productStockTotal.getStockNum();
+                            Double newStockNum = stockNum_i - 1;
+                            productStockTotal.setStockNum(newStockNum);
+                            pdProductStockTotalMapper.updateStockNum(productStockTotal);
+                        } else {
+                            stock.setSpecNum(newSpecNum);
+                        }
+                        pdProductStockMapper.updateStockSpecNum(stock);
+                       }
+                    }
+                 }
+              }
         return PdConstant.TRUE;
     }
 }

@@ -578,4 +578,26 @@
 			nestat_status = #{nestatStatus}
 		WHERE id= #{id}
 	</update>
+
+
+
+
+	<select id="selectOrExpDate" resultType="org.jeecg.modules.pd.entity.PdProductStock">
+		SELECT
+		<include refid="pdProductStockColumns"/>
+		FROM pd_product_stock a
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="departId != null and departId != ''">
+				AND a.depart_id = #{departId}
+			</if>
+			<if test="productId != null and productId != ''">
+				AND a.product_id = #{productId}
+			</if>
+			<if test="nestatStatus != null and nestatStatus != ''">
+				AND a.nestat_status = #{nestatStatus}
+			</if>
+		</where>
+		ORDER BY   exp_date  FOR UPDATE
+	</select>
 </mapper>
