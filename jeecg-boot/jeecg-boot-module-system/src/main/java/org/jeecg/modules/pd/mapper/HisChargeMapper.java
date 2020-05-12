@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.jeecg.modules.pd.entity.HisChargeInf;
 import org.jeecg.modules.pd.entity.HisDepartInf;
 import org.jeecg.modules.pd.entity.HisUserInf;
+import org.jeecg.modules.pd.entity.NewPdDosage;
 
 import java.util.List;
 
@@ -24,4 +25,12 @@ public interface HisChargeMapper extends BaseMapper<HisChargeInf> {
 	List<HisDepartInf> selectHisDepart();
 
 	List<HisUserInf> selectHisUser();
+
+	List<HisUserInf> queryPatientInfoSS(NewPdDosage newPdDosage);
+
+	List<HisUserInf> queryPatientInfoJC(NewPdDosage newPdDosage);
+
+	List<HisUserInf> queryPatientInfoJY(NewPdDosage newPdDosage);
+
+	List<HisUserInf> queryPatientInfoMZ(NewPdDosage newPdDosage);
 }

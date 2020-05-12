@@ -20,11 +20,12 @@
 		a.fsf_supplier,
 		a.fsf_ksbh,
 		a.fsf_ks,
-		a.fsf_xmlb
+		a.fsf_xmlb,
+		a.fsf_je
 	</sql>
     <!--查询HIS系统收费项目基础信息-->
 	<select id="selectByHisCharge" parameterType="java.lang.String" resultType="org.jeecg.modules.pd.entity.HisChargeInf">
-		select  * from spd_his_sf_xm
+		select  * from v_spd_his_sf_xm
 	</select>
 
     <!--删除所有收费项目基础信息-->
@@ -49,11 +50,32 @@
 
 	<!--查询HIS系统科室信息-->
 	<select id="selectHisDepart" parameterType="java.lang.String" resultType="org.jeecg.modules.pd.entity.HisDepartInf">
-		select  * from v_his_ks
+		select  * from v_spd_his_ks
 	</select>
 
 	<!--查询HIS系统用户信息-->
 	<select id="selectHisUser" parameterType="java.lang.String" resultType="org.jeecg.modules.pd.entity.HisUserInf">
-		select  * from v_his_ users
+		select  * from v_spd_his_users
+	</select>
+
+
+
+	<!--查询HIS系统病人信息  手術項目-->
+	<select id="queryPatientInfoSS"   resultType="org.jeecg.modules.pd.entity.NewPdDosage">
+		select  * from v_his_ users  where  fsf_zyh=#{inHospitalNo}
+	</select>
+
+	<!--查询HIS系统病人信息  檢查項目-->
+	<select id="queryPatientInfoJC"   resultType="org.jeecg.modules.pd.entity.NewPdDosage">
+		select  * from v_his_ users  where  fsf_zyh=#{inHospitalNo}
+	</select>
+	<!--查询HIS系统病人信息  检验項目-->
+	<select id="queryPatientInfoJY"   resultType="org.jeecg.modules.pd.entity.NewPdDosage">
+		select  * from v_his_ users  where  fsf_zyh=#{inHospitalNo}
+	</select>
+
+	<!--查询HIS系统病人信息  门诊病人-->
+	<select id="queryPatientInfoMZ"   resultType="org.jeecg.modules.pd.entity.NewPdDosage">
+		select  * from v_his_ users  where  fsf_mzh=#{outpatientNumber}
 	</select>
 </mapper>

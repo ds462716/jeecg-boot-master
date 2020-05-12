@@ -52,7 +52,7 @@
 		<include refid="HisDepartInfColumns"/>
 		FROM ex_his_depart_inf a
 		where 1=1
-		AND	a.del_flag =#{DEL_FLAG_NORMAL}
+		AND	a.del_flag ="0"
 		<if test="fsfKsbh != null and fsfKsbh != ''">
 			AND a.fsf_ksbh = #{fsfKsbh}
 		</if>

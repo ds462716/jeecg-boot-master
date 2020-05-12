@@ -1,6 +1,7 @@
 package org.jeecg.modules.pd.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Param;
 import org.jeecg.modules.pd.entity.HisDepartInf;
 
 import java.util.List;
@@ -17,5 +18,5 @@ public interface HisDepartMapper extends BaseMapper<HisDepartInf> {
 
 	void deleteHisDepartInf();
 
-	HisDepartInf queryHisDepart(String fsfKsbh);
+	HisDepartInf queryHisDepart(@Param("fsfKsbh") String fsfKsbh);
 }

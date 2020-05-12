@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import org.jeecg.modules.pd.entity.HisChargeInf;
 import org.jeecg.modules.pd.entity.HisDepartInf;
 import org.jeecg.modules.pd.entity.HisUserInf;
+import org.jeecg.modules.pd.entity.NewPdDosage;
 
 import java.util.List;
 
@@ -35,5 +36,8 @@ public interface IHisChargeService extends IService<HisChargeInf> {
 
     /*查询his系统用户信息*/
     List<HisUserInf> selectHisUser();
+
+    /*查询his系统病人信息*/
+    List<NewPdDosage> queryPatientInfoList(NewPdDosage newPdDosage);
 
 }

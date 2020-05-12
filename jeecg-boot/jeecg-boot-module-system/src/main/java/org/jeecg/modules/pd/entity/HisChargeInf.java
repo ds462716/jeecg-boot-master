@@ -6,6 +6,7 @@ import lombok.Data;
 import org.jeecgframework.poi.excel.annotation.Excel;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 /**
@@ -53,5 +54,5 @@ public class HisChargeInf extends BaseEntity {
     private String fsfKsbh;//收费科室代码
     private String fsfKs;//收费科室名称
     private String fsfXmlb;//收费类别标识
-
+    private BigDecimal fsfJe;//收费金额
 }

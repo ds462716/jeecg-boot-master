@@ -335,3 +335,6 @@ ADD COLUMN `auto_num` double(32,2) DEFAULT NULL COMMENT '自动补货数量';
 -- add by mcb 2020年5月11日14:11:55 增加自动补货定时任务
 INSERT INTO `sys_quartz_job` VALUES ('1248489519106277378', 'admin', '2020-4-10 13:54:31', 0, 'admin', '2020-4-27 15:30:27', 'org.jeecg.modules.quartz.job.AutoOrderTaskJob', '3/5 * * * * ? *', NULL, '自动补货生成订单定时任务', -1);
 
+-- add by mcb 2020年5月12日14:11:55 增加收费金额字段
+ALTER TABLE `ex_his_charge_inf`
+ADD COLUMN `fsf_je` decimal(20,2) DEFAULT NULL COMMENT '收费金额';

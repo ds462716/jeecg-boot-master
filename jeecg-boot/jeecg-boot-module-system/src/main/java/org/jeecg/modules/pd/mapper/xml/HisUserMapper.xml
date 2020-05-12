@@ -55,4 +55,10 @@
 		</if>
 	</select>
 
+
+	<!--删除所有HIS用戶信息-->
+	<delete id="deleteHisUserInf">
+		DELETE 	FROM  ex_his_user_inf
+    </delete>
+
 </mapper>

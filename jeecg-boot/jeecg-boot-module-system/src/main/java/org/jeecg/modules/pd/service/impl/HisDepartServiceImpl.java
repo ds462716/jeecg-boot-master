@@ -45,9 +45,10 @@ import java.util.List;
 	public void synUpdateDept(List<HisDepartInf> deptList) {
 		if (deptList != null && deptList.size() > 0) {
 			for(HisDepartInf deptInf: deptList){
-				HisDepartInf inf=hisDepartMapper.queryHisDepart(deptInf.getFsfKsbh());
+				String fsfKsbh=deptInf.getFsfKsbh();
+				HisDepartInf inf=hisDepartMapper.queryHisDepart(fsfKsbh);
 				if(inf==null){
-				hisDepartMapper.insert(deptInf);
+					hisDepartMapper.insert(deptInf);
 				}
 			}
 		}

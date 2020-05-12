@@ -95,7 +95,7 @@
 <script>
 
   import { JeecgListMixin } from '@/mixins/JeecgListMixin'
-  import PdDosageModal from './modules/PdDosageModal'
+  import PdDosageModal from './modules/NewPdDosageModal'
   import PdDosageReturnedModal from './modules/PdDosageReturnedModal'
 
   export default {
