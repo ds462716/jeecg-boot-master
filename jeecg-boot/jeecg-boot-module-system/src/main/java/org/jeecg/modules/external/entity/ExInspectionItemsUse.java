@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.util.Date;
 import java.math.BigDecimal;
+import java.util.List;
 
 import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
@@ -80,4 +81,6 @@ public class ExInspectionItemsUse  {
      */
     @TableField(strategy = FieldStrategy.NOT_EMPTY)
     private String departParentId;
+
+    private List<ExInspectionItemsUseDetail> exInspectionItemsUseDetails;
 }

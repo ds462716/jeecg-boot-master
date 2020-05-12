@@ -75,8 +75,8 @@ public class PdUsePackageController {
      * @param ids
      * @return
      */
-    @GetMapping(value = "/queryPackageRecordListByIds")
-    public Result<?> queryPackageRecordListByIds(@RequestParam(name = "ids", required = true) String ids) {
+    @GetMapping(value = "/queryPdUsePackageListByIds")
+    public Result<?> queryPdUsePackageListByIds(@RequestParam(name = "ids", required = true) String ids) {
         LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
         PdUsePackage pdUsePackage = new PdUsePackage();
         pdUsePackage.setDepartParentId(sysUser.getDepartParentId());

@@ -295,6 +295,18 @@ INSERT INTO `sys_permission` VALUES ('1258590018295095297', '1255448486688649218
 -- add by jiangxz 2020年5月9日14:11:55 进销存报表
 update sys_permission set url = '/pd/query/PdPurchaseSaleStockReportList',component = 'pd/query/PdPurchaseSaleStockReportList' where name = '进销存报表'
 
+-- add by zxh 2020年5月11日10:54:56 检验项目同步加入部门
+ALTER TABLE `ex_inspection_items`
+ADD COLUMN `depart_id`  varchar(64) NULL COMMENT '所属部门' AFTER `sys_org_code`,
+ADD COLUMN `depart_parent_id`  varchar(64) NULL COMMENT '所属父部门' AFTER `depart_id`;
+INSERT INTO `sys_dict` VALUES ('1259668780394835970', '检验项目类型', 'inspection_item_type', '', '0', 'admin', '2020-05-11 10:16:55', 'admin', '2020-05-11 10:58:01', '0');
+INSERT INTO `sys_dict_item` VALUES ('1259668832395816961', '1259668780394835970', '复检', '1', '', '1', '1', 'admin', '2020-05-11 10:17:08', null, '2020-05-11 10:17:08');
+INSERT INTO `sys_dict_item` VALUES ('1259668854369775617', '1259668780394835970', '质控', '2', '', '1', '1', 'admin', '2020-05-11 10:17:13', null, '2020-05-11 10:17:13');
+INSERT INTO `sys_dict_item` VALUES ('1259668878419914753', '1259668780394835970', '测试', '3', '', '1', '1', 'admin', '2020-05-11 10:17:19', null, '2020-05-11 10:17:19');
+INSERT INTO `sys_dict_item` VALUES ('1259668901975126018', '1259668780394835970', '空白阴阳对照', '4', '', '1', '1', 'admin', '2020-05-11 10:17:24', null, '2020-05-11 10:17:24');
+INSERT INTO `sys_dict_item` VALUES ('1259668924741808129', '1259668780394835970', '其他', '5', '', '1', '1', 'admin', '2020-05-11 10:17:30', null, '2020-05-11 10:17:30');
+INSERT INTO `sys_permission` VALUES ('1259662438426750977', '1255448486688649218', '检验项目手动使用', '/external/exInspectionItemsUse', 'external/ExInspectionItemsUseList', null, null, '1', '0', null, '1', '3.00', '0', null, '1', '1', '0', '0', null, 'admin', '2020-05-11 09:51:43', null, '2020-05-11 09:51:43', '0', '0', '1', '0');
+
 -- add by mcb 2020年5月11日14:11:55 增加自动补货记录表
 CREATE TABLE `pd_auto_order_inf` (
   `id` varchar(36) NOT NULL,
