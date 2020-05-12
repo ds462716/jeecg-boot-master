@@ -213,6 +213,11 @@
             dataIndex: 'limitDown'
           },
           {
+            title:'自动补货量',
+            align:"center",
+            dataIndex: 'autoNum'
+          },
+          {
             title:'是否过期',
             align:"center",
             dataIndex: 'expStatus',

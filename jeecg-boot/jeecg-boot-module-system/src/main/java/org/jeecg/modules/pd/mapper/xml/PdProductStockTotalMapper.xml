@@ -7,8 +7,11 @@
 		a.product_id,
 		a.stock_num,
 		a.depart_id,
+		a.depart_parent_id,
+		a.sys_org_code,
 		a.limit_up,
 		a.limit_down,
+		a.auto_num,
 		a.exp_date,
 		a.exp_status,
 		a.is_long,
@@ -168,8 +171,9 @@
             limit_up = #{limitUp}
         </if>
         <if test="limitDown!=null and limitDown!='' ">
-            limit_down = #{limitDown}
+            limit_down = #{limitDown},auto_num = #{autoNum}
         </if>
+
         <if test="expDate!=null and expDate!='' ">
             exp_date = #{expDate}
         </if>
@@ -207,6 +211,38 @@
         </where>
         FOR UPDATE
     </select>
+
+
+
+
+    <!--查询库存总表（设置了库存下限且自动补货数量大于0的数据） -->
+    <select id="findListForAutoNum" resultType="org.jeecg.modules.pd.vo.PdProductStockTotalPage">
+        SELECT
+        <include refid="pdProductStockTotalColumns"/>,
+        <include refid="pdProductColumns"/>,
+        <include refid="pdUnitColumns"/>,
+        <include refid="sysDepartColumns"/>
+        FROM pd_product_stock_total a
+        <include refid="pdProductStockTotalJoins"/>
+        <include refid="pdProductJoins"/>
+        <include refid="pdUnitJoins"/>
+        <include refid="sysDepartJoins"/>
+        <where>
+            a.del_flag =#{DEL_FLAG_NORMAL}  AND a.limit_down >0  and a.auto_num  >0
+            <if test="id != null and id != ''">
+                AND a.id = #{id}
+            </if>
+            <if test="departId != null and departId != ''">
+                AND  a.depart_id = #{departId}
+            </if>
+            <if test="departParentId != null and departParentId != ''">
+                AND a.depart_parent_id = #{departParentId}
+            </if>
+        </where>
+    </select>
+
+
+
 
     <update id="updateStockNum">
 		UPDATE pd_product_stock_total SET

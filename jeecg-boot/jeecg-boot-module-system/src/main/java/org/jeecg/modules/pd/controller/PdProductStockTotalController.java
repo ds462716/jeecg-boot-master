@@ -167,6 +167,7 @@ public class PdProductStockTotalController {
 						  }
 				  }else{
 					stockTotal.setLimitDown(downNum);
+					stockTotal.setAutoNum(pdProductStockTotalPage.getAutoNum());
 				}
 
 			 }

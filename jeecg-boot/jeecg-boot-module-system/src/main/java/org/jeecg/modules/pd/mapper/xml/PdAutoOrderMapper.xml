@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.pd.mapper.PdAutoOrderMapper">
+
+	<sql id="HisDepartInfColumns">
+        a.id,
+        a.create_by,
+		a.create_time,
+		a.update_by,
+		a.update_time,
+		a.sys_org_code,
+		a.del_flag,
+		a.auto_date,
+		a.auto_num,
+		a.limit_down,
+		a.stock_num,
+		a.product_id,
+		a.depart_id,
+		a.depart_parent_id,
+		a.order_type,
+		a.order_no
+	</sql>
+
+
+	<!-- 列表查询 -->
+	<select id="queryList" resultType="org.jeecg.modules.pd.entity.PdAutoOrderInf">
+		SELECT
+		<include refid="HisDepartInfColumns"/>
+		FROM pd_auto_order_inf a
+		where  	a.del_flag =#{DEL_FLAG_NORMAL}
+		<if test="departId != null and departId != ''">
+			AND a.depart_id = #{departId}
+		</if>
+		<if test="productId != null and productId != ''">
+			AND a.product_id = #{productId}
+		</if>
+		<if test="autoNum != null and autoNum != ''">
+			AND a.auto_num = #{autoNum}
+		</if>
+	</select>
+
+
+
+</mapper>

@@ -738,4 +738,12 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
               }
         return PdConstant.TRUE;
     }
+
+    /**
+     * 查询库存总表（设置了库存下限且自动补货数量大于0的数据）
+     */
+    @Override
+    public List<PdProductStockTotalPage> findListForAutoNum(PdProductStockTotal stockTotal) {
+        return pdProductStockTotalMapper.findListForAutoNum(stockTotal);
+    }
 }

@@ -57,6 +57,9 @@ public class PdProductStockTotal extends BaseEntity {
 	/**库存下限*/
     @Excel(name = "库存下限", width = 15)
     private Double limitDown;
+    /**自动补货数量*/
+    @Excel(name = "自动补货数量", width = 15)
+    private Double autoNum;
 	/**过期标识*/
     @Excel(name = "过期标识", width = 15)
     private String expStatus;
@@ -110,6 +113,7 @@ public class PdProductStockTotal extends BaseEntity {
 
     @TableField(exist = false)
     private String departIds; //批量查询用
+
 }
 
 

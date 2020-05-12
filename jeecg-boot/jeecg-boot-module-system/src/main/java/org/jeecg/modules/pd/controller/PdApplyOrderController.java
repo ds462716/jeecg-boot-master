@@ -249,6 +249,8 @@ public class PdApplyOrderController {
 					if(applyNum>stockNum){
 						prodNames+=aList.get(0).getProductName();
  					}
+				}else{
+					return	Result.error(entity.getProductName());
 				}
 			}
 		}

@@ -9,18 +9,22 @@ import org.jeecg.common.constant.PdConstant;
 import org.jeecg.modules.pd.entity.PdApplyDetail;
 import org.jeecg.modules.pd.entity.PdApplyOrder;
 import org.jeecg.modules.pd.entity.PdPackageDetail;
+import org.jeecg.modules.pd.entity.PdProductStockTotal;
 import org.jeecg.modules.pd.mapper.PdApplyDetailMapper;
 import org.jeecg.modules.pd.mapper.PdApplyOrderMapper;
 import org.jeecg.modules.pd.service.IPdApplyOrderService;
 import org.jeecg.modules.pd.service.IPdPackageDetailService;
+import org.jeecg.modules.pd.service.IPdProductStockTotalService;
+import org.jeecg.modules.pd.util.UUIDUtil;
 import org.jeecg.modules.pd.vo.PdApplyOrderPage;
+import org.jeecg.modules.pd.vo.PdProductStockTotalPage;
+import org.jeecg.modules.system.entity.SysDepart;
+import org.jeecg.modules.system.mapper.SysDepartMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @Description: 申领单主表
@@ -39,8 +43,10 @@ public class PdApplyOrderServiceImpl extends ServiceImpl<PdApplyOrderMapper, PdA
 	private SqlSession sqlSession;
 	@Autowired
 	private IPdPackageDetailService packageDetailService;
-
-
+	@Autowired
+	private SysDepartMapper sysDepartMapper;
+	@Autowired
+	private IPdProductStockTotalService pdProductStockTotalService;
 
 	/**
 	 * 查询列表
@@ -154,5 +160,64 @@ public class PdApplyOrderServiceImpl extends ServiceImpl<PdApplyOrderMapper, PdA
 	@Override
 	public List<HashMap> queryApplyOrderTotalList(PdApplyOrderPage applyOrderPage) {
 		return pdApplyOrderMapper.queryApplyOrderTotalList(applyOrderPage);
+	}
+
+	/**
+	 * 生成自动申领申请单
+	 */
+	@Transactional
+    @Override
+	public void autoApplyOrderInfo(Set<PdProductStockTotal> stockTotalList,String departId) {
+		PdApplyDetailMapper dao=sqlSession.getMapper(PdApplyDetailMapper.class);
+		 String applyNo= UUIDUtil.generateOrderNoByType(PdConstant.ORDER_NO_FIRST_LETTER_SL);
+		String orgCode="";
+		Double totalNum=0.00;
+		String createBy="";
+		Double stockNum=0.00;
+		if(CollectionUtils.isNotEmpty(stockTotalList)) {
+				for (PdProductStockTotal stockTotal : stockTotalList) {
+					orgCode = stockTotal.getSysOrgCode();
+					createBy=stockTotal.getCreateBy();
+					PdApplyDetail pdApplyDetail = new PdApplyDetail();
+					pdApplyDetail.setApplyNo(applyNo);//申领单号;
+					pdApplyDetail.setProductId(stockTotal.getProductId());//产品ID
+					pdApplyDetail.setCreateBy(stockTotal.getCreateBy());
+					pdApplyDetail.setSysOrgCode(stockTotal.getSysOrgCode());
+					//获取出库科室库存数量
+					PdProductStockTotalPage total=new PdProductStockTotalPage();
+					SysDepart sysDepart = sysDepartMapper.queryDepartByOrgCode(orgCode);
+					total.setDepartId(sysDepart.getParentId());
+					total.setProductId(stockTotal.getProductId());
+					total.setFilterType("1");
+					List<PdProductStockTotalPage> list=pdProductStockTotalService.findListForQuery(total);
+					if(CollectionUtils.isNotEmpty(list)){
+						for(PdProductStockTotal stockTotal1:  list){
+							stockNum+=stockTotal1.getStockNum();
+						}
+					}
+					pdApplyDetail.setStockNum(stockNum);//出库科室库存数量
+					pdApplyDetail.setApplyNum(stockTotal.getAutoNum());//申领数量=自动补货数量
+					pdApplyDetail.setProductAttr(PdConstant.PROD_ATTR_1);//产品属性
+					pdApplyDetail.setCurrentStockNum(stockTotal.getStockNum());
+					dao.insert(pdApplyDetail);
+					totalNum += stockTotal.getAutoNum();
+				}
+				PdApplyOrder pdApplyOrder = new PdApplyOrder();
+				pdApplyOrder.setApplyNo(applyNo);//申领单号;
+			    pdApplyOrder.setCreateBy(createBy);
+			    pdApplyOrder.setUpdateBy(createBy);
+				pdApplyOrder.setApplyBy(createBy);//申领人
+				pdApplyOrder.setApplyDate(new Date());//申领日期
+			    pdApplyOrder.setSysOrgCode(orgCode);
+				pdApplyOrder.setRemarks("自动生成申领补货单");
+				pdApplyOrder.setAuditStatus(PdConstant.AUDIT_STATE_1);//审核状态
+				pdApplyOrder.setSubmitStatus(PdConstant.SUBMIT_STATE_2);//提交状态
+				pdApplyOrder.setTotalNum(totalNum);//申领总数
+				pdApplyOrder.setDepartId(departId);//申领科室ID
+ 				SysDepart sysDepart = sysDepartMapper.queryDepartByOrgCode(orgCode);
+				pdApplyOrder.setOutDepartId(sysDepart.getParentId());//出库科室ID
+			    pdApplyOrder.setDepartParentId(sysDepart.getDepartParentId());
+				pdApplyOrderMapper.insert(pdApplyOrder);
+		}
 	}
 }

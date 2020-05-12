@@ -38,4 +38,9 @@ public interface PdProductStockTotalMapper extends BaseMapper<PdProductStockTota
     //加库存
     public void addStock(PdProductStockTotal pdProductStockTotal);
 
+    /**
+     * 查询库存总表（设置了库存下限且自动补货数量大于0的数据）
+     */
+    List<PdProductStockTotalPage> findListForAutoNum(PdProductStockTotal stockTotal);
+
 }

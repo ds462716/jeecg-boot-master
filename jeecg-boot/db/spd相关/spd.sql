@@ -317,6 +317,9 @@ CREATE TABLE `pd_auto_order_inf` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- add by mcb 2020年5月11日14:11:55 库存总表增加自动补货数量字段
-
 ALTER TABLE `pd_product_stock_total`
 ADD COLUMN `auto_num` double(32,2) DEFAULT NULL COMMENT '自动补货数量';
+
+-- add by mcb 2020年5月11日14:11:55 增加自动补货定时任务
+INSERT INTO `sys_quartz_job` VALUES ('1248489519106277378', 'admin', '2020-4-10 13:54:31', 0, 'admin', '2020-4-27 15:30:27', 'org.jeecg.modules.quartz.job.AutoOrderTaskJob', '3/5 * * * * ? *', NULL, '自动补货生成订单定时任务', -1);
+
