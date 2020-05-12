@@ -1,5 +1,6 @@
 package org.jeecg.modules.pd.service.impl;
 
+import com.baomidou.mybatisplus.core.toolkit.ObjectUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.apache.commons.collections.CollectionUtils;
@@ -167,10 +168,10 @@ public class PdPurchaseOrderServiceImpl extends ServiceImpl<PdPurchaseOrderMappe
 		String orderNo= UUIDUtil.generateOrderNoByType(PdConstant.ORDER_NO_FIRST_LETTER_SG);
 		String orgCode="";
 		Double totalNum=0.00;
-		BigDecimal totalPrice=BigDecimal.ZERO;//总金额
+		BigDecimal totalPrice=BigDecimal.ZERO;//订单总金额
+		BigDecimal orderPrice=BigDecimal.ZERO;//产品总金额
 		String departId="";
 		String createBy="";
-		Double stockNum=0.00;
 		if(CollectionUtils.isNotEmpty(stockTotalList)) {
 			for (PdProductStockTotal stockTotal : stockTotalList) {
 				orgCode = stockTotal.getSysOrgCode();
@@ -184,13 +185,15 @@ public class PdPurchaseOrderServiceImpl extends ServiceImpl<PdPurchaseOrderMappe
 				pdPurchaseDetail.setStockNum(stockTotal.getStockNum());
 				pdPurchaseDetail.setRemarks("自动补货");
 				pdPurchaseDetail.setSupplierId(stockTotal.getSupplierId());
-
-				pdPurchaseDetail.setOrderMoney(null);//申购总金额
+				if(ObjectUtils.isNotEmpty(stockTotal.getPurchasePrice())){
+					orderPrice=	BigDecimal.valueOf(stockTotal.getAutoNum()).multiply(stockTotal.getPurchasePrice());
+				}
+				pdPurchaseDetail.setOrderMoney(orderPrice);//申购总金额
 				pdPurchaseDetail.setOrderNum(stockTotal.getAutoNum());
-				pdPurchaseDetail.setPurchasePrice(null);//产品单价
+				pdPurchaseDetail.setPurchasePrice(stockTotal.getPurchasePrice());//产品单价
 				dao.insert(pdPurchaseDetail);
 				totalNum += stockTotal.getAutoNum();
-				 totalPrice.add(pdPurchaseDetail.getOrderMoney());
+				totalPrice.add(pdPurchaseDetail.getOrderMoney());
 			}
 			PdPurchaseOrder pdPurchaseOrder = new PdPurchaseOrder();
 			pdPurchaseOrder.setOrderNo(orderNo);//采购单号

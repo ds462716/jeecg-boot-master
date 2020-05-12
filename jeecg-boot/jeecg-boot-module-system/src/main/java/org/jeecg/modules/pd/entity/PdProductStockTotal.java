@@ -6,6 +6,7 @@ import lombok.Data;
 import org.jeecgframework.poi.excel.annotation.Excel;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 /**
@@ -113,6 +114,10 @@ public class PdProductStockTotal extends BaseEntity {
 
     @TableField(exist = false)
     private String departIds; //批量查询用
+    //产品单价
+    @TableField(exist = false)
+    private BigDecimal purchasePrice;
+
 
 }
 
