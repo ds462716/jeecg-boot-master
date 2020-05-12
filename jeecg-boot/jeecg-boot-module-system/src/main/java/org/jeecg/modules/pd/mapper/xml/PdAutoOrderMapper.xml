@@ -37,6 +37,9 @@
 		<if test="autoNum != null and autoNum != ''">
 			AND a.auto_num = #{autoNum}
 		</if>
+        <if test="orderType != null and orderType != ''">
+            AND a.order_type = #{orderType}
+        </if>
 	</select>
 
 

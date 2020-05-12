@@ -2,12 +2,14 @@ package org.jeecg.modules.quartz.job;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
+import org.jeecg.common.constant.PdConstant;
 import org.jeecg.common.util.DateUtils;
 import org.jeecg.modules.pd.entity.PdAutoOrderInf;
 import org.jeecg.modules.pd.entity.PdProductStockTotal;
 import org.jeecg.modules.pd.service.IPdApplyOrderService;
 import org.jeecg.modules.pd.service.IPdAutoOrderService;
 import org.jeecg.modules.pd.service.IPdProductStockTotalService;
+import org.jeecg.modules.pd.service.IPdPurchaseOrderService;
 import org.jeecg.modules.pd.vo.PdProductStockTotalPage;
 import org.jeecg.modules.system.entity.SysDepart;
 import org.jeecg.modules.system.service.ISysDepartService;
@@ -33,6 +35,8 @@ public class AutoOrderTaskJob implements Job {
     @Autowired
     private IPdApplyOrderService pdApplyOrderService;
     @Autowired
+    private IPdPurchaseOrderService pdpurchaseOrderService;
+    @Autowired
     private IPdAutoOrderService autoOrderService;
 
     @Override
@@ -45,7 +49,8 @@ public class AutoOrderTaskJob implements Job {
         log.info("库存不足自动补货定时任务进来了，时间:" + DateUtils.getTimestamp());
         PdProductStockTotal total = new PdProductStockTotal();
         List<PdProductStockTotalPage> list = pdProductStockTotalService.findListForAutoNum(total);
-        Map<String, HashSet<PdProductStockTotal>> m = new HashMap<String, HashSet<PdProductStockTotal>>();
+        Map<String, HashSet<PdProductStockTotal>> applyList = new HashMap<String, HashSet<PdProductStockTotal>>();//存储申领单
+        List<PdProductStockTotal> purchaseList = new ArrayList<PdProductStockTotal>();//存储采购单
         if (CollectionUtils.isNotEmpty(list)) {
             for (PdProductStockTotal stockTotal : list) {
                 PdProductStockTotal stockTotal_1=new PdProductStockTotal();
@@ -54,31 +59,47 @@ public class AutoOrderTaskJob implements Job {
                 Double stockNum = stockTotal.getStockNum();//库存数量
                 Double limitDown = stockTotal.getLimitDown();//库存下限
                 Double autoNum = stockTotal.getAutoNum();//自动补货量
+                SysDepart sysDepart = sysDepartService.queryDepartByOrgCode(stockTotal.getSysOrgCode());
                 if (stockNum < limitDown) { //需要补货
                     //判断是一级科室还是二级科室，如果是二级科室，则生成申领单，
                     // 如果是一级科室，则生成采购单
-                    SysDepart sysDepart = sysDepartService.queryDepartByOrgCode(stockTotal.getSysOrgCode());
                     if (sysDepart.getParentId().equals(stockTotal.getDepartParentId())) { //说明是一级科室
                         //生成采购单
-
-
-
-
+                       //判断是否已经生成过采购单了
+                        PdAutoOrderInf autoOrderInfo = new PdAutoOrderInf();
+                        autoOrderInfo.setDepartId(departId);
+                        autoOrderInfo.setProductId(stockTotal.getProductId());
+                        autoOrderInfo.setOrderType(PdConstant.AUTO_ORDER_1);
+                        List<PdAutoOrderInf> autoList = autoOrderService.queryList(autoOrderInfo);
+                        if (CollectionUtils.isEmpty(autoList) || autoList.size()==0) {
+                            purchaseList.add(stockTotal);
+                            //保存到表里
+                            PdAutoOrderInf info = new PdAutoOrderInf();
+                            info.setDepartId(departId);
+                            info.setProductId(stockTotal.getProductId());
+                            info.setAutoDate(new Date());
+                            info.setAutoNum(autoNum);
+                            info.setLimitDown(limitDown);
+                            info.setStockNum(stockNum);
+                            info.setOrderType(PdConstant.AUTO_ORDER_1);
+                            autoOrderService.save(info);
+                        }
                     } else {
                         //判断是否已经生成过申领单了
                         PdAutoOrderInf autoOrderInfo = new PdAutoOrderInf();
                         autoOrderInfo.setDepartId(departId);
                         autoOrderInfo.setProductId(stockTotal.getProductId());
+                        autoOrderInfo.setOrderType(PdConstant.AUTO_ORDER_0);
                         List<PdAutoOrderInf> autoList = autoOrderService.queryList(autoOrderInfo);
                         if (CollectionUtils.isEmpty(autoList) || autoList.size()==0) {
-                            if (m.containsKey(departId)) {
-                                HashSet<PdProductStockTotal> totals = (HashSet<PdProductStockTotal>)m.get(departId);
+                            if (applyList.containsKey(departId)) {
+                                HashSet<PdProductStockTotal> totals = (HashSet<PdProductStockTotal>)applyList.get(departId);
                                 totals.add(stockTotal_1);
-                                 m.put(departId, totals);
+                                applyList.put(departId, totals);
                             } else {
                                 HashSet<PdProductStockTotal> totals =new HashSet<PdProductStockTotal>();
                                 totals.add(stockTotal_1);
-                                m.put(departId, totals);
+                                applyList.put(departId, totals);
                            }
                         //保存到表里
                             PdAutoOrderInf info = new PdAutoOrderInf();
@@ -88,7 +109,7 @@ public class AutoOrderTaskJob implements Job {
                             info.setAutoNum(autoNum);
                             info.setLimitDown(limitDown);
                             info.setStockNum(stockNum);
-                            info.setOrderType("0");
+                            info.setOrderType(PdConstant.AUTO_ORDER_0);
                         autoOrderService.save(info);
                 }
             }
@@ -98,6 +119,10 @@ public class AutoOrderTaskJob implements Job {
                     PdAutoOrderInf autoOrderInfo = new PdAutoOrderInf();
                     autoOrderInfo.setDepartId(departId);
                     autoOrderInfo.setProductId(stockTotal.getProductId());
+                    autoOrderInfo.setOrderType(PdConstant.AUTO_ORDER_0);
+                    if (sysDepart.getParentId().equals(stockTotal.getDepartParentId())) {
+                        autoOrderInfo.setOrderType(PdConstant.AUTO_ORDER_1);
+                    }
                     List<PdAutoOrderInf> autoList = autoOrderService.queryList(autoOrderInfo);
                     if (CollectionUtils.isNotEmpty(autoList)) {
                         for (PdAutoOrderInf info : autoList) {
@@ -108,12 +133,16 @@ public class AutoOrderTaskJob implements Job {
             }
         }
 //---------------------------------------
+
+        //生成采购单
+        log.info(purchaseList.toString());
+        pdpurchaseOrderService.autoPurchaseOrderInfo(purchaseList);
         //生成申领单
-        log.info(m.toString());
-        Iterator<String> iter = m.keySet().iterator();
+        log.info(applyList.toString());
+        Iterator<String> iter = applyList.keySet().iterator();
            while (iter.hasNext()) {
             String deptId = iter.next();
-               Set<PdProductStockTotal> set = m.get(deptId);
+               Set<PdProductStockTotal> set = applyList.get(deptId);
             pdApplyOrderService.autoApplyOrderInfo(set, deptId);
         }
 //--------------------------------------------

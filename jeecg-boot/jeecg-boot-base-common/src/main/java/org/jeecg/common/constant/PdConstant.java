@@ -248,4 +248,9 @@ public interface PdConstant {
 	public final static String PACKAGE_RECORD_STATUS_0="0";//出库状态：0-已出库；1-未出库
 	public final static String PACKAGE_RECORD_STATUS_1="1";//出库状态：0-已出库；1-未出库
 
+
+	//自动补货订单类别
+	public final static String AUTO_ORDER_0="0";//自动申领单
+	public final static String AUTO_ORDER_1="1";//自动采购单
+
 }

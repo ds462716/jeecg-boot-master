@@ -2,6 +2,7 @@ package org.jeecg.modules.pd.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
+import org.jeecg.modules.pd.entity.PdProductStockTotal;
 import org.jeecg.modules.pd.entity.PdPurchaseDetail;
 import org.jeecg.modules.pd.entity.PdPurchaseOrder;
 import org.jeecg.modules.pd.entity.PdPurchaseOrderMerge;
@@ -79,4 +80,10 @@ public interface IPdPurchaseOrderService extends IService<PdPurchaseOrder> {
 	 * 首页查询  根据采购产品类区分统计采购金额
 	 */
 	List<HashMap> queryPurchaseOrderTotalList(PdPurchaseOrderPage purchaseOrderPage);
+
+	/**
+	 * 自动生成采购单补货
+	 * @param stockTotalList
+	 */
+	public void autoPurchaseOrderInfo(List<PdProductStockTotal> stockTotalList) ;
 }
