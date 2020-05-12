@@ -186,14 +186,14 @@ public class PdPurchaseOrderServiceImpl extends ServiceImpl<PdPurchaseOrderMappe
 				pdPurchaseDetail.setRemarks("自动补货");
 				pdPurchaseDetail.setSupplierId(stockTotal.getSupplierId());
 				if(ObjectUtils.isNotEmpty(stockTotal.getPurchasePrice())){
-					orderPrice=	BigDecimal.valueOf(stockTotal.getAutoNum()).multiply(stockTotal.getPurchasePrice());
+					orderPrice=BigDecimal.valueOf(stockTotal.getAutoNum()).multiply(stockTotal.getPurchasePrice());
 				}
 				pdPurchaseDetail.setOrderMoney(orderPrice);//申购总金额
 				pdPurchaseDetail.setOrderNum(stockTotal.getAutoNum());
 				pdPurchaseDetail.setPurchasePrice(stockTotal.getPurchasePrice());//产品单价
 				dao.insert(pdPurchaseDetail);
 				totalNum += stockTotal.getAutoNum();
-				totalPrice.add(pdPurchaseDetail.getOrderMoney());
+				totalPrice=totalPrice.add(orderPrice);
 			}
 			PdPurchaseOrder pdPurchaseOrder = new PdPurchaseOrder();
 			pdPurchaseOrder.setOrderNo(orderNo);//采购单号

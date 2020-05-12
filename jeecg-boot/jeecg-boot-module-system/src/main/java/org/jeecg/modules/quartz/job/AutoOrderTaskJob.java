@@ -135,8 +135,10 @@ public class AutoOrderTaskJob implements Job {
 //---------------------------------------
 
         //生成采购单
-        log.info(purchaseList.toString());
-        pdpurchaseOrderService.autoPurchaseOrderInfo(purchaseList);
+        if(purchaseList.size()>0){
+            log.info(purchaseList.toString());
+            pdpurchaseOrderService.autoPurchaseOrderInfo(purchaseList);
+        }
         //生成申领单
         log.info(applyList.toString());
         Iterator<String> iter = applyList.keySet().iterator();
