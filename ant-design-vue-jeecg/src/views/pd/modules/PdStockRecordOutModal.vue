@@ -555,6 +555,8 @@
             { title: '供应商id', key: 'supplierId', type: FormTypes.hidden },
             { title: '规格单位ID', key: 'specUnitId', type: FormTypes.hidden },
             { title: '规格数量', key: 'specQuantity', type: FormTypes.hidden },
+            { title: '注册证号', key: 'registration', type: FormTypes.hidden },
+            { title: '生产厂家', key: 'venderName', type: FormTypes.hidden },
           ]
         },
         url: {
@@ -1259,6 +1261,8 @@
           stockNum:row.stockNum,
           outHuoweiName:row.huoweiName,
           outHuoweiCode:row.huoweiCode,
+          registration:row.registration,
+          venderName:row.venderName,
           inHuoweiCode:"",
           supplierId:row.supplierId,
           produceDate:row.produceDate
