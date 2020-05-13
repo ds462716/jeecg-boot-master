@@ -220,29 +220,32 @@
             { title: '产品名称', key: 'productName', type: FormTypes.normal,width:"220px" },
             { title: '产品编号', key: 'productNumber', width:"160px" },
             { title: '产品条码', key: 'productBarCode', type: FormTypes.input, disabled:true, width:"200px" },
-            { title: '规格', key: 'spec', width:"150px" },
+            { title: '规格', key: 'spec', width:"220px" },
             { title: '批号', key: 'batchNo', width:"100px" },
             { title: '单位', key: 'unitName', width:"50px" },
             { title: '有效期', key: 'expDate', width:"100px" },
-            { title: '入库单价', key: 'purchasePrice', width:"80px" },
+           /* { title: '入库单价', key: 'purchasePrice', width:"80px" },*/
             { title: '出库单价', key: 'sellingPrice', type: FormTypes.input, disabled:true, width:"80px" },
             {
-              title: '出库数量', key: 'productNum', type: FormTypes.input, width:"80px",
+              title: '用量', key: 'productNum', type: FormTypes.input, width:"80px",
               placeholder: '${title}', defaultValue: '1',
               validateRules: [{ required: true, message: '${title}不能为空' },{ pattern: '^-?\\d+\\.?\\d*$',message: '${title}的格式不正确' }]
             },
-            { title: '出库金额', key: 'outTotalPrice', type: FormTypes.input, disabled:true, width:"100px" },
+            /*{ title: '出库金额', key: 'outTotalPrice', type: FormTypes.input, disabled:true, width:"100px" },*/
             { title: '库存数量', key: 'stockNum', width:"80px" },
+            { title: '规格单位', key: 'specUnitName', width:"80px" },
+            { title: '规格数量', key: 'specQuantity', width:"80px" },
             { title: '出库货位', key: 'outHuoweiName', width:"100px" },
-            { title: '生产日期', key: 'produceDate',  },
-            { title: '入库货位', key: 'inHuoweiCode', type: FormTypes.select, width:"150px", options: [],allowSearch:true, placeholder: '${title}' },
+            { title: '产品类型', key: 'productFlagName', width:"100px" },
+            /*{ title: '生产日期', key: 'produceDate',  },
+            { title: '入库货位', key: 'inHuoweiCode', type: FormTypes.select, width:"150px", options: [],allowSearch:true, placeholder: '${title}' },*/
 
             { title: '库存明细ID', key: 'productStockId', type: FormTypes.hidden },
             { title: '产品ID', key: 'productId', type: FormTypes.hidden },
             { title: '出库货位编号', key: 'outHuoweiCode', type: FormTypes.hidden },
             { title: '供应商id', key: 'supplierId', type: FormTypes.hidden },
             { title: '规格单位ID', key: 'specUnitId', type: FormTypes.hidden },
-            { title: '规格数量', key: 'specQuantity', type: FormTypes.hidden },
+            { title: '产品类型', key: 'productFlag', type: FormTypes.hidden },
           ]
         },
         labelCol: {
@@ -360,12 +363,21 @@
           }
           let list = formData.exInspectionItemsUseDetails;
           for (let item of list){
-            if(Number(item.productNum) > Number(item.stockNum)){
-              this.$message.error("["+item.productName+"]出库数量不能大于库存数量！");
-              return;
+            console.log(item)
+            if(item.productFlag == 0){
+              if(Number(item.productNum) > Number(item.stockNum)){
+                this.$message.error("["+item.productName+"]用量不能大于库存数量！");
+                return;
+              }
+            }else{
+              if(Number(item.productNum) > Number(item.specQuantity)){
+                this.$message.error("["+item.productName+"]用量不能大于规格数量！");
+                return;
+              }
             }
+
             if(Number(item.productNum) <= 0){
-              this.$message.error("["+item.productName+"]出库数量必须大于0！");
+              this.$message.error("["+item.productName+"]用量必须大于0！");
               return;
             }
           }
@@ -554,13 +566,21 @@
                   for(let item of values){
                     if(pdProductStock.id == item.productStockId){// 库存明细ID一致，就+1
                       isAddRow = false;
-                      if(Number(item.productNum) + 1 > Number(item.stockNum)){
-                        //清空扫码框
-                        this.clearQueryParam();
-                        this.$message.error("["+item.productName+"]出库数量不能大于库存数量！");
-                        return;
+                      if(item.productFlag == 0){
+                        if(Number(item.productNum) + 1 > Number(item.stockNum)){
+                          //清空扫码框
+                          this.clearQueryParam();
+                          this.$message.error("["+item.productName+"]用量不能大于库存数量！");
+                          return;
+                        }
+                      }else{
+                        if(Number(item.productNum) + 1 > Number(item.specQuantity)){
+                          //清空扫码框
+                          this.clearQueryParam();
+                          this.$message.error("["+item.productName+"]用量不能大于规格数量！");
+                          return;
+                        }
                       }
-
                       let productNum = Number(item.productNum) + 1;
                       let outTotalPrice = (Number(item.sellingPrice) * Number(productNum)).toFixed(4);
 
@@ -602,13 +622,24 @@
             if(column.key === "productNum"){
               let { values } = target.getValuesSync({ validate: false });
               for(let item of values){
-                if(item.id == row.id && Number(value) > Number(item.stockNum)){
-                  this.$message.error("["+row.productName+"]出库数量不能大于库存数量！");
-                  // 产品数量变更 计算每条产品的价格
-                  let outTotalPrice = (Number(row.sellingPrice) * Number(item.stockNum)).toFixed(4);
-                  target.setValues([{rowKey: row.id, values: { outTotalPrice: outTotalPrice, productNum: item.stockNum }}])
-                  return;
+                if(item.productFlag == 0){
+                  if(item.id == row.id && Number(value) > Number(item.stockNum)){
+                    this.$message.error("["+row.productName+"]用量不能大于库存数量！");
+                    // 产品数量变更 计算每条产品的价格
+                    let outTotalPrice = (Number(row.sellingPrice) * Number(item.stockNum)).toFixed(4);
+                    target.setValues([{rowKey: row.id, values: { outTotalPrice: outTotalPrice, productNum: item.stockNum }}])
+                    return;
+                  }
+                }else{
+                  if(item.id == row.id && Number(value) > Number(item.specQuantity)){
+                    this.$message.error("["+row.productName+"]用量不能大于规格数量！");
+                    // 产品数量变更 计算每条产品的价格
+                    let outTotalPrice = (Number(row.sellingPrice) * Number(item.stockNum)).toFixed(4);
+                    target.setValues([{rowKey: row.id, values: { outTotalPrice: outTotalPrice, productNum: item.specQuantity }}])
+                    return;
+                  }
                 }
+
               }
               // 产品数量变更 计算每条产品的价格
               let outTotalPrice = (Number(row.sellingPrice) * Number(value)).toFixed(4);
@@ -648,6 +679,7 @@
       },
       // 点“选择产品”按钮后 调用 新增一行
       addrows(row){
+        console.log(row)
         let data = {
           productStockId:row.id,
           productId: row.productId,
@@ -662,14 +694,18 @@
           specUnitId: row.specUnitId,
           specQuantity: row.specQuantity,
           productNum: 1,
-          purchasePrice:row.purchasePrice,
+          /*purchasePrice:row.purchasePrice,*/
           outTotalPrice:Number(!row.sellingPrice ? 0 : row.sellingPrice).toFixed(4),
           stockNum:row.stockNum,
           outHuoweiName:row.huoweiName,
           outHuoweiCode:row.huoweiCode,
-          inHuoweiCode:"",
+          productFlag:row.productFlag,
+          productFlagName:row.productFlag==0?"耗材":"试剂",
+          specUnitName:row.specUnitName,
+          specQuantity:row.specQuantity,
+          /*inHuoweiCode:"",*/
           supplierId:row.supplierId,
-          produceDate:row.produceDate
+          /*produceDate:row.produceDate*/
         }
         this.exInspectionItemsUseDetailTable.dataSource.push(data);
       },

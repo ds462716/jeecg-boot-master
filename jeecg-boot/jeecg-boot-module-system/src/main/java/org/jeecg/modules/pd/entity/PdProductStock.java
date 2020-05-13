@@ -66,6 +66,8 @@ public class PdProductStock extends BaseEntity {
 	@Excel(name = "库存占用状态", width = 15)
 	private String nestatStatus;
 	private String specUnitId;//规格单位
+	@TableField(exist = false)
+	private String specUnitName;//规格单位
 
 	private Double specQuantity;//规格数量
 	/**生产日期*/

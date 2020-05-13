@@ -35,11 +35,13 @@
 
 	<!-- 单位 -->
 	<sql id="pdUnitColumns">
-        b.name AS "unitName"
+        b.name AS "unitName",
+        sb.`name` AS "specUnitName"
     </sql>
 
 	<sql id="pdUnitJoins">
         LEFT JOIN pd_unit b ON c.unit_id = b.id
+         LEFT JOIN pd_unit sb ON a.spec_unit_id = sb.id
     </sql>
 
 	<!--产品-->

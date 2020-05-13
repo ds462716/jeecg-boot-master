@@ -25,7 +25,7 @@ public class ExInspectionItemsUseServiceImpl extends ServiceImpl<ExInspectionIte
 
     @Override
     public void submit(ExInspectionItemsUse exInspectionItemsUse) {
-        this.save(exInspectionItemsUse);
+        //this.save(exInspectionItemsUse);
         List<ExInspectionItemsUseDetail> exInspectionItemsUseDetailList = new ArrayList<>();
         //手动选择的库存
         if(exInspectionItemsUse.getExInspectionItemsUseDetails()!=null && exInspectionItemsUse.getExInspectionItemsUseDetails().size()>0){
