@@ -81,6 +81,6 @@ public class ExInspectionItemsUse  {
      */
     @TableField(strategy = FieldStrategy.NOT_EMPTY)
     private String departParentId;
-
+    @TableField(exist = false)
     private List<ExInspectionItemsUseDetail> exInspectionItemsUseDetails;
 }
