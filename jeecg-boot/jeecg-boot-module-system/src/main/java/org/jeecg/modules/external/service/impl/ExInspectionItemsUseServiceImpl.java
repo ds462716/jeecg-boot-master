@@ -29,7 +29,7 @@ public class ExInspectionItemsUseServiceImpl extends ServiceImpl<ExInspectionIte
         List<ExInspectionItemsUseDetail> exInspectionItemsUseDetailList = new ArrayList<>();
         //手动选择的库存
         if(exInspectionItemsUse.getExInspectionItemsUseDetails()!=null && exInspectionItemsUse.getExInspectionItemsUseDetails().size()>0){
-            exInspectionItemsUseDetailList.addAll(exInspectionItemsUse.getExInspectionItemsUseDetails());
+            //exInspectionItemsUseDetailList.addAll(exInspectionItemsUse.getExInspectionItemsUseDetails());
         }
         //选择定数包的产品
         if(exInspectionItemsUse.getPdUsePackageDetails()!=null && exInspectionItemsUse.getPdUsePackageDetails().size()>0){
