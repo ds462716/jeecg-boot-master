@@ -196,6 +196,7 @@
           }
         })
       },
+      //打印字体设置
       customRow(record) {
         return {
           style: {
@@ -243,7 +244,7 @@
     /*margin-bottom: 10px;*/
   /*}*/
 </style>
-
+<!-- 打印去页眉页脚 去边距 -->
 <style media="print">
   @page {
     size: auto;
