@@ -47,18 +47,83 @@
           <a-col :span="24" style="margin-top: 0px">
           </a-col>
           <a-col :span="24" style="margin-top: 5px">
-            <!--<span>入库明细：</span>-->
-            <a-table
-              ref="table"
-              size="small"
-              bordered
-              rowKey="id"
-              :pagination="false"
-              :columns="columns"
-              :customRow="customRow"
-              :dataSource="dataSource"
-              >
-            </a-table>
+            <!--<a-table-->
+              <!--ref="table"-->
+              <!--size="small"-->
+              <!--bordered-->
+              <!--rowKey="id"-->
+              <!--:pagination="false"-->
+              <!--:columns="columns"-->
+              <!--:customRow="customRow"-->
+              <!--:dataSource="dataSource"-->
+              <!--&gt;-->
+            <!--</a-table>-->
+            <table width="100%" id="contentTable" class="tableStyle">
+              <tr>
+                <th style="border: 1px solid #e8e8e8;text-align: center;font-weight: 500;padding: 3px 3px;">
+                  产品名称
+                </th>
+                <th style="border: 1px solid #e8e8e8;text-align: center;font-weight: 500;padding: 3px 3px;">
+                  生产厂家
+                </th>
+                <th style="border: 1px solid #e8e8e8;text-align: center;font-weight: 500;padding: 3px 3px;">
+                  注册证号
+                </th>
+                <th style="border: 1px solid #e8e8e8;text-align: center;font-weight: 500;padding: 3px 3px;">
+                  规格
+                </th>
+                <th style="border: 1px solid #e8e8e8;text-align: center;font-weight: 500;padding: 3px 3px;">
+                  批号
+                </th>
+                <th style="border: 1px solid #e8e8e8;text-align: center;font-weight: 500;padding: 3px 3px;">
+                  生产日期
+                </th>
+                <th style="border: 1px solid #e8e8e8;text-align: center;font-weight: 500;padding: 3px 3px;">
+                  有效期
+                </th>
+                <th style="border: 1px solid #e8e8e8;text-align: center;font-weight: 500;padding: 3px 3px;">
+                  数量
+                </th>
+                <th style="border: 1px solid #e8e8e8;text-align: center;font-weight: 500;padding: 3px 3px;">
+                  单价
+                </th>
+                <th style="border: 1px solid #e8e8e8;text-align: center;font-weight: 500;padding: 3px 3px;">
+                  金额
+                </th>
+              </tr>
+              <tr v-for="(item, index) in dataSource">
+                <td style="text-align: center;border: 1px solid #e8e8e8;padding: 3px 3px;font-weight: 500;font-size: x-small">
+                  {{ item.productName }}
+                </td>
+                <td style="text-align: center;border: 1px solid #e8e8e8;padding: 3px 3px;font-weight: 500;font-size: x-small">
+                  {{ item.venderName }}
+                </td>
+                <td style="text-align: center;border: 1px solid #e8e8e8;padding: 3px 3px;font-weight: 500;font-size: x-small">
+                  {{ item.registration }}
+                </td>
+                <td style="text-align: center;border: 1px solid #e8e8e8;padding: 3px 3px;font-weight: 500;font-size: x-small">
+                  {{ item.spec }}
+                </td>
+                <td style="text-align: center;border: 1px solid #e8e8e8;padding: 3px 3px;font-weight: 500;font-size: x-small">
+                  {{ item.batchNo }}
+                </td>
+                <td style="text-align: center;border: 1px solid #e8e8e8;padding: 3px 3px;font-weight: 500;font-size: x-small">
+                  {{ item.produceDate }}
+                </td>
+                <td style="text-align: center;border: 1px solid #e8e8e8;padding: 3px 3px;font-weight: 500;font-size: x-small">
+                  {{ item.expDate }}
+                </td>
+                <td style="text-align: center;border: 1px solid #e8e8e8;padding: 3px 3px;font-weight: 500;font-size: x-small">
+                  {{ item.productNum }}
+                </td>
+                <td style="text-align: center;border: 1px solid #e8e8e8;padding: 3px 3px;font-weight: 500;font-size: x-small">
+                  {{ item.purchasePrice }}
+                </td>
+                <td style="text-align: center;border: 1px solid #e8e8e8;padding: 3px 3px;font-weight: 500;font-size: x-small">
+                  {{ item.inTotalPrice }}
+                </td>
+              </tr>
+            </table>
           </a-col>
 
           <a-col :span="24" style="margin-top: 5px;">
