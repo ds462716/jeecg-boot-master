@@ -7,12 +7,14 @@ import org.jeecg.modules.external.entity.ExInspectionItems;
 import org.jeecg.modules.external.service.IExInspectionItemsService;
 import org.jeecg.modules.pd.entity.PdUsePackage;
 import org.jeecg.modules.pd.entity.PdUsePackageDetail;
+import org.jeecg.modules.pd.service.IPdProductStockTotalService;
 import org.jeecg.modules.pd.service.IPdUsePackageDetailService;
 import org.jeecg.modules.pd.service.IPdUsePackageService;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
+
 import java.util.Iterator;
 import java.util.List;
 
@@ -32,6 +34,9 @@ public class LisInspectionItemsTaskJob implements Job {
 
     @Autowired
     private IPdUsePackageDetailService pdUsePackageDetailService;
+
+    @Autowired
+    private IPdProductStockTotalService pdProductStockTotalService;
 
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
@@ -54,17 +59,23 @@ public class LisInspectionItemsTaskJob implements Job {
             }
             if(list!=null && list.size()>0){
                 //扣减库存
-                for(ExInspectionItems exInspectionItems :list){
+                for(ExInspectionItems items :list){
                     LambdaQueryWrapper<PdUsePackage> query = new LambdaQueryWrapper<>();
-                    query.eq(PdUsePackage::getCode, exInspectionItems.getTestItemCode());
+                    query.eq(PdUsePackage::getCode, items.getTestItemCode());
                     PdUsePackage pdUsePackage = pdUsePackageService.getOne(query);
-                    //不存在
+                    //不存在或沒有配置檢驗用量明細
                     if(pdUsePackage!=null){
                         LambdaQueryWrapper<PdUsePackageDetail> queryOne = new LambdaQueryWrapper<>();
                         queryOne.eq(PdUsePackageDetail::getPackageId, pdUsePackage.getId());
                         List<PdUsePackageDetail> pdUsePackageDetails = pdUsePackageDetailService.list(queryOne);
                         if(pdUsePackageDetails!=null && pdUsePackageDetails.size()>0){
-
+                            try{
+                                pdProductStockTotalService.lisUpdateUseStock(items.getTestDepartment(),pdUsePackageDetails);
+                            }catch (Exception e){
+                                e.getMessage();
+                                log.error("扣減用量失敗:" + e.getMessage());
+                                items.setAcceptStatus("0");
+                            }
                         }
                     }else{
                         //TODO 是否发消息给管理

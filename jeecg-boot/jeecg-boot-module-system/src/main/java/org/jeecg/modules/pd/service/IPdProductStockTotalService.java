@@ -2,7 +2,6 @@ package org.jeecg.modules.pd.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
-import org.jeecg.modules.external.entity.ExInspectionItems;
 import org.jeecg.modules.pd.entity.*;
 import org.jeecg.modules.pd.vo.PdProductStockTotalPage;
 
@@ -98,10 +97,10 @@ public interface IPdProductStockTotalService extends IService<PdProductStockTota
 
     /**
      *试剂耗材产品更新库存用量信息(Lis系统推送的数据)
-     * @param item
+     * @param detailList
      * @return
      */
-    public String lisUpdateUseStock(ExInspectionItems item);
+    public String lisUpdateUseStock(String testDepartment,List<PdUsePackageDetail> detailList);
 
     /**
      * 检验项目手动扣减库存明细

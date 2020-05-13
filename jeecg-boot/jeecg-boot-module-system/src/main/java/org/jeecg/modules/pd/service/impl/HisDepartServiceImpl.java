@@ -21,7 +21,7 @@ import java.util.List;
 	public class HisDepartServiceImpl extends ServiceImpl<HisDepartMapper, HisDepartInf> implements IHisDepartService {
 
 	@Autowired
-	HisDepartMapper hisDepartMapper;
+	private HisDepartMapper hisDepartMapper;
 
 	/**
 	 * 查询列表
@@ -38,6 +38,11 @@ import java.util.List;
 	@Override
 	public List<HisDepartInf> selectHisDepartInf(HisDepartInf hisDepartInf) {
 		return hisDepartMapper.selectList(hisDepartInf);
+	}
+
+	@Override
+	public  HisDepartInf queryHisDepart(String fsfKsbh) {
+		return hisDepartMapper.queryHisDepart(fsfKsbh);
 	}
 
 	@Override

@@ -27,6 +27,7 @@ public interface IHisDepartService extends IService<HisDepartInf> {
     public List<HisDepartInf> selectHisDepartInf(HisDepartInf hisDepartInf);
 
 
+    public HisDepartInf queryHisDepart(String  fsfKsbh);
     /*更新HIS系统科室信息*/
     void synUpdateDept(List<HisDepartInf> deptList);
 

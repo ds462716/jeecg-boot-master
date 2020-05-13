@@ -5,15 +5,11 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.jeecg.common.constant.PdConstant;
-import org.jeecg.modules.external.entity.ExInspectionItems;
 import org.jeecg.modules.pd.entity.*;
 import org.jeecg.modules.pd.mapper.PdProductMapper;
 import org.jeecg.modules.pd.mapper.PdProductStockMapper;
 import org.jeecg.modules.pd.mapper.PdProductStockTotalMapper;
-import org.jeecg.modules.pd.service.IPdProductStockService;
-import org.jeecg.modules.pd.service.IPdProductStockTotalService;
-import org.jeecg.modules.pd.service.IPdUsePackageDetailService;
-import org.jeecg.modules.pd.service.IPdUsePackageService;
+import org.jeecg.modules.pd.service.*;
 import org.jeecg.modules.pd.vo.PdProductStockTotalPage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -42,6 +38,9 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
     private IPdUsePackageDetailService  usePackageDetailService;
     @Autowired
     private IPdUsePackageService pdUsePackageService;
+    @Autowired
+    private IHisDepartService hisDepartService;
+
     /**
      * 查询列表
      *
@@ -514,18 +513,20 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
      */
     @Transactional
     @Override
-    public String lisUpdateUseStock(ExInspectionItems items) {
-        String departId=items.getDepartId();
-        PdUsePackage usePackage =new PdUsePackage();
-        usePackage.setCode(items.getTestItemCode());
-        List<PdUsePackage> list= pdUsePackageService.queryList(usePackage);
-        if(CollectionUtils.isEmpty(list)){
-            throw new RuntimeException("检验项目未配置！");
-        }
-            PdUsePackageDetail usePackageDetail=new PdUsePackageDetail();
-            usePackageDetail.setPackageId(list.get(0).getId());
-            List<PdUsePackageDetail> detailList= usePackageDetailService.queryPdUsePackageList(usePackageDetail);
-                   if(CollectionUtils.isNotEmpty(detailList)){
+    public String lisUpdateUseStock(String testDepartment,List<PdUsePackageDetail> detailList) {
+        HisDepartInf hisDepartInf=hisDepartService.queryHisDepart(testDepartment);
+        String departId=hisDepartInf.getSpdDepartId();
+        //String departId=items.getDepartId();
+        //PdUsePackage usePackage =new PdUsePackage();
+        //usePackage.setCode(items.getTestItemCode());
+        //List<PdUsePackage> list= pdUsePackageService.queryList(usePackage);
+        //if(CollectionUtils.isEmpty(list)){
+           // throw new RuntimeException("检验项目未配置！");
+       // }
+            //PdUsePackageDetail usePackageDetail=new PdUsePackageDetail();
+           // usePackageDetail.setPackageId(list.get(0).getId());
+           // List<PdUsePackageDetail> detailList= usePackageDetailService.queryPdUsePackageList(usePackageDetail);
+                //   if(CollectionUtils.isNotEmpty(detailList)){
                        for(PdUsePackageDetail detail:detailList){
                         String productId= detail.getProductId();//产品ID
                         String productFlag= detail.getProductFlag();
@@ -606,7 +607,7 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
                            }
                          }
                        }
-                     }
+                     //}
         return PdConstant.TRUE;
     }
 

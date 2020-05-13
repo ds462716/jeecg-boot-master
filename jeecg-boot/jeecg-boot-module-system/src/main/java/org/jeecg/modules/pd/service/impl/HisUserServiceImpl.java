@@ -22,9 +22,9 @@ import java.util.List;
 @Service
 public class HisUserServiceImpl extends ServiceImpl<HisUserMapper, HisUserInf> implements IHisUserService {
 	@Autowired
-	HisUserMapper hisUserMapper;
+	private HisUserMapper hisUserMapper;
 	@Autowired
-	HisDepartMapper hisDepartMapper;
+	private HisDepartMapper hisDepartMapper;
 
 	/**
 	 * 查询列表
