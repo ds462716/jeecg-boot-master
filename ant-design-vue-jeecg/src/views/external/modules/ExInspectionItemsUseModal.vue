@@ -24,7 +24,11 @@
             </a-col>
             <a-col :lg="12">
               <a-form-item label="关联病人信息" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                <a-input v-decorator="[ 'refId', validatorRules.refId]" placeholder="请关联病人信息"></a-input>
+                <a-input :disabled="true" v-decorator="[ 'refName']" placeholder="请关联病人信息"></a-input>
+                <a-button @click="choice"  v-show="!disableSubmit"  type="primary">关联病人信息</a-button>
+              </a-form-item>
+              <a-form-item v-show="false" :labelCol="labelCol" :wrapperCol="wrapperCol">
+                <a-input  v-decorator="['refId']"/>
               </a-form-item>
             </a-col>
           </a-row>
@@ -59,7 +63,7 @@
               :dataSource="pdPackageTable.dataSource"
               :loading="pdPackageTable.loading"
               :customRow="onClickRow"
-              :rowSelection="{fixed:false,selectedRowKeys: pdPackageTable.selectedRowKeys,onChange: onSelectChange}"
+              :rowSelection="{selectedRowKeys: pdPackageTable.selectedRowKeys,onChange: onSelectChange}"
             >
             </a-table>
           </a-tab-pane>
@@ -143,6 +147,7 @@
       <a-button @click="handleOk" v-show="!disableSubmit" type="primary" :loading="confirmLoading" style="margin-right: 15px;">提  交</a-button>
     </template>
 
+    <ex-inspection-items-add-modal ref="exInspectionItemsAddModal" @ok="modalFormOk"></ex-inspection-items-add-modal>
     <ex-choose-package-exInspection-items-list-model ref="exChoosePackageExInspectionItemsListModel" @ok="returnPackageRecordData" ></ex-choose-package-exInspection-items-list-model>
     <pd-choose-product-stock-list-model ref="pdChooseProductStockListModel" @ok="returnProductStockData" ></pd-choose-product-stock-list-model>
   </j-modal>
@@ -158,6 +163,7 @@
   import JDictSelectTagExpand from "@/components/dict/JDictSelectTagExpand";
   import {initDictOptions} from '@/components/dict/JDictSelectUtil';
   import ExChoosePackageExInspectionItemsListModel from "./ExChoosePackageExInspectionItemsListModel";
+  import ExInspectionItemsAddModal from "./ExInspectionItemsAddModal";
   import { randomUUID,validateDuplicateValue } from '@/utils/util';
   import {stockScanCode} from '@/utils/barcode';
   import { FormTypes,getRefPromise,validateFormAndTables } from '@/utils/JEditableTableUtil';
@@ -173,7 +179,8 @@
       ExChoosePackageExInspectionItemsListModel,
       PdChooseProductStockListModel,
       JEditableTable,
-      JEditableTableMixin
+      JEditableTableMixin,
+      ExInspectionItemsAddModal,
     },
     data () {
       return {
@@ -317,7 +324,7 @@
         this.model = Object.assign({}, record);
         this.visible = true;
         this.$nextTick(() => {
-          this.form.setFieldsValue(pick(this.model,'refId','itemType'))
+          this.form.setFieldsValue(pick(this.model,'refId','itemType','refName'))
         })
       },
       close () {
@@ -407,7 +414,7 @@
         this.close()
       },
       popupCallback(row){
-        this.form.setFieldsValue(pick(row,'refId','itemType'))
+        this.form.setFieldsValue(pick(row,'refId','itemType','refName'))
       },
       initDictConfig(){
         initDictOptions('inspection_item_type').then((res) => {
@@ -737,6 +744,16 @@
       },
       throwNotFunction(name) {
         return `${name} 未定义或不是一个函数`
+      },
+      //选择标识符
+      choice() {
+        this.$refs.exInspectionItemsAddModal.show();
+        this.$refs.exInspectionItemsAddModal.title = "关联病人信息";
+      },
+      modalFormOk (formData) {
+        var info = formData[0];
+        this.form.setFieldsValue({refId:info.id});
+        this.form.setFieldsValue({refName:info.patientName});
       },
     }
   }
