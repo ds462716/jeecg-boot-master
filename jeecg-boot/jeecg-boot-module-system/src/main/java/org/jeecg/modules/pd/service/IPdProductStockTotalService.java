@@ -113,6 +113,15 @@ public interface IPdProductStockTotalService extends IService<PdProductStockTota
 
 
     /**
+     * 检验项目手动扣减库存方法(定数包)
+     * @param departId
+     * @param usePackageDetailList
+     * @return
+     */
+    public List<PdProductStock> jyUpdatePackageStockNum(String departId,List<PdUsePackageDetail> usePackageDetailList);
+
+
+    /**
      * 查询库存总表（设置了库存下限且自动补货数量大于0的数据）
      */
     List<PdProductStockTotalPage> findListForAutoNum(PdProductStockTotal stockTotal);
