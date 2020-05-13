@@ -9,6 +9,7 @@ import java.util.List;
 import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import org.jeecg.modules.pd.entity.PdUsePackageDetail;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.jeecgframework.poi.excel.annotation.Excel;
 import org.jeecg.common.aspect.annotation.Dict;
@@ -83,4 +84,7 @@ public class ExInspectionItemsUse  {
     private String departParentId;
     @TableField(exist = false)
     private List<ExInspectionItemsUseDetail> exInspectionItemsUseDetails;
+
+    @TableField(exist = false)
+    private List<PdUsePackageDetail> pdUsePackageDetails;
 }

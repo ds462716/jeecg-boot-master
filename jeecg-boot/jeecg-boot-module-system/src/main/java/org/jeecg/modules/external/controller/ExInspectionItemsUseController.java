@@ -85,6 +85,14 @@ public class ExInspectionItemsUseController extends JeecgController<ExInspection
 		exInspectionItemsUseService.save(exInspectionItemsUse);
 		return Result.ok("添加成功！");
 	}
+	 @AutoLog(value = "检验项目使用表-添加")
+	 @ApiOperation(value="检验项目使用表-添加", notes="检验项目使用表-添加")
+	 @PostMapping(value = "/submit")
+	 public Result<?> submit(@RequestBody ExInspectionItemsUse exInspectionItemsUse) {
+		 exInspectionItemsUseService.submit(exInspectionItemsUse);
+		 return Result.ok("添加成功！");
+	 }
+
 	
 	/**
 	 *  编辑

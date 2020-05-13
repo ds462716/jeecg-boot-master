@@ -11,4 +11,5 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface IExInspectionItemsUseService extends IService<ExInspectionItemsUse> {
 
+    void submit(ExInspectionItemsUse exInspectionItemsUse);
 }

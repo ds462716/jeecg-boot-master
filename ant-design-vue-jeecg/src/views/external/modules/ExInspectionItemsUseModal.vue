@@ -270,6 +270,7 @@
         },
         url: {
           add: "/external/exInspectionItemsUse/add",
+          submit: "/external/exInspectionItemsUse/submit",
           edit: "/external/exInspectionItemsUse/edit",
         },
         popModal: {
@@ -325,7 +326,7 @@
         this.pdPackageTable.selectionRows = [];
       },
       handleOk () {
-        this.request(this.url.add,"post");
+        this.request(this.url.submit,"post");
       },
       /** 确定按钮点击事件 */
       request(url, method) {
@@ -345,6 +346,11 @@
             if(selectedArrays.length <= 0){
               this.$message.warning("请勾选检验项目中的产品");
               return;
+            }else{
+              formData.pdUsePackageDetails = [];
+              for (let data of this.pdPackageTable.dataSource){
+                formData.pdUsePackageDetails.push(data);
+              }
             }
           }else{
             if(formData.exInspectionItemsUseDetails.length <= 0){
@@ -352,17 +358,7 @@
               return;
             }
           }
-          //定数包
-          if(this.pdPackageTable.dataSource.length > 0){
-            for (let data of this.pdPackageTable.dataSource){
-              for(let item of data.pdPackageRecordDetailList){
-                formData.exInspectionItemsUseDetails.push(item);
-              }
-            }
-          }
-
           let list = formData.exInspectionItemsUseDetails;
-
           for (let item of list){
             if(Number(item.productNum) > Number(item.stockNum)){
               this.$message.error("["+item.productName+"]出库数量不能大于库存数量！");
@@ -373,10 +369,9 @@
               return;
             }
           }
-
           // 发起请求
           this.confirmLoading = true
-          /*httpAction(url, formData, method).then((res) => {
+          httpAction(url, formData, method).then((res) => {
             if (res.success) {
               this.$message.success(res.message)
               this.$emit('ok');
@@ -386,7 +381,7 @@
             }
           }).finally(() => {
             this.confirmLoading = false
-          })*/
+          })
         }).catch(e => {
           if (e.error === VALIDATE_NO_PASSED) {
             // 如果有未通过表单验证的子表，就自动跳转到它所在的tab
