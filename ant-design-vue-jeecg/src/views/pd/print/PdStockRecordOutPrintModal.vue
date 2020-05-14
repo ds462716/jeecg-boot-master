@@ -82,77 +82,103 @@
             <!--</a-table>-->
             <table width="100%" id="contentTable" class="tableStyle">
               <tr>
-                <th style="border: 1px solid #e8e8e8;text-align: center;font-weight: 500;padding: 3px 3px;">
+                <th style="border: 1px solid #e8e8e8;text-align: center;padding: 3px 3px;width:18%">
                   产品名称
                 </th>
-                <th style="border: 1px solid #e8e8e8;text-align: center;font-weight: 500;padding: 3px 3px;">
+                <th style="border: 1px solid #e8e8e8;text-align: center;padding: 3px 3px;">
                   生产厂家
                 </th>
-                <th style="border: 1px solid #e8e8e8;text-align: center;font-weight: 500;padding: 3px 3px;">
+                <th style="border: 1px solid #e8e8e8;text-align: center;padding: 3px 3px;width:10%">
                   注册证号
                 </th>
-                <th style="border: 1px solid #e8e8e8;text-align: center;font-weight: 500;padding: 3px 3px;">
+                <th style="border: 1px solid #e8e8e8;text-align: center;padding: 3px 3px;width:12%">
                   规格
                 </th>
-                <th style="border: 1px solid #e8e8e8;text-align: center;font-weight: 500;padding: 3px 3px;">
+                <th style="border: 1px solid #e8e8e8;text-align: center;padding: 3px 3px;width:8%">
                   批号
                 </th>
-                <th style="border: 1px solid #e8e8e8;text-align: center;font-weight: 500;padding: 3px 3px;">
+                <th style="border: 1px solid #e8e8e8;text-align: center;padding: 3px 3px;width:8%">
                   有效期
                 </th>
-                <th style="border: 1px solid #e8e8e8;text-align: center;font-weight: 500;padding: 3px 3px;">
+                <th style="border: 1px solid #e8e8e8;text-align: center;padding: 3px 3px;width:4%">
                   数量
                 </th>
-                <th style="border: 1px solid #e8e8e8;text-align: center;font-weight: 500;padding: 3px 3px;">
+                <th style="border: 1px solid #e8e8e8;text-align: center;padding: 3px 3px;width:7%">
                   出库单价
                 </th>
-                <th style="border: 1px solid #e8e8e8;text-align: center;font-weight: 500;padding: 3px 3px;">
+                <th style="border: 1px solid #e8e8e8;text-align: center;padding: 3px 3px;width:7%">
                   出库金额
                 </th>
               </tr>
               <tr v-for="(item, index) in dataSource">
-                <td style="text-align: center;border: 1px solid #e8e8e8;padding: 3px 3px;font-weight: 500;font-size: x-small">
+                <td style="text-align: center;border: 1px solid #e8e8e8;padding: 3px 3px;font-size: xx-small">
                   {{ item.productName }}
                 </td>
-                <td style="text-align: center;border: 1px solid #e8e8e8;padding: 3px 3px;font-weight: 500;font-size: x-small">
+                <td style="text-align: center;border: 1px solid #e8e8e8;padding: 3px 3px;font-size: xx-small">
                   {{ item.venderName }}
                 </td>
-                <td style="text-align: center;border: 1px solid #e8e8e8;padding: 3px 3px;font-weight: 500;font-size: x-small">
-                  {{ item.registration }}
+                <td style="text-align: center;border: 1px solid #e8e8e8;padding: 3px 3px;font-size: xx-small">
+                  <!--{{ item.registration }}-->
+                  <a-select
+                    size="small"
+                    style="width: 100%;font-size: xx-small"
+                    :defaultValue="item.registrationSelected"
+                    :showArrow="false"
+                    :dropdownMatchSelectWidth="false"
+                  >
+                    <a-select-option v-for="(registration, index) in item.registrationList" :key="registration">
+                      {{ registration }}
+                    </a-select-option>
+                  </a-select>
                 </td>
-                <td style="text-align: center;border: 1px solid #e8e8e8;padding: 3px 3px;font-weight: 500;font-size: x-small">
+                <td style="text-align: center;border: 1px solid #e8e8e8;padding: 3px 3px;font-size: xx-small">
                   {{ item.spec }}
                 </td>
-                <td style="text-align: center;border: 1px solid #e8e8e8;padding: 3px 3px;font-weight: 500;font-size: x-small">
+                <td style="text-align: center;border: 1px solid #e8e8e8;padding: 3px 3px;font-size: xx-small">
                   {{ item.batchNo }}
                 </td>
-                <td style="text-align: center;border: 1px solid #e8e8e8;padding: 3px 3px;font-weight: 500;font-size: x-small">
+                <td style="text-align: center;border: 1px solid #e8e8e8;padding: 3px 3px;font-size: xx-small">
                   {{ item.expDate }}
                 </td>
-                <td style="text-align: center;border: 1px solid #e8e8e8;padding: 3px 3px;font-weight: 500;font-size: x-small">
+                <td style="text-align: center;border: 1px solid #e8e8e8;padding: 3px 3px;font-size: xx-small">
                   {{ item.productNum }}
                 </td>
-                <td style="text-align: center;border: 1px solid #e8e8e8;padding: 3px 3px;font-weight: 500;font-size: x-small">
+                <td style="text-align: center;border: 1px solid #e8e8e8;padding: 3px 3px;font-size: xx-small">
                   {{ item.sellingPrice }}
                 </td>
-                <td style="text-align: center;border: 1px solid #e8e8e8;padding: 3px 3px;font-weight: 500;font-size: x-small">
+                <td style="text-align: center;border: 1px solid #e8e8e8;padding: 3px 3px;font-size: xx-small">
                   {{ item.outTotalPrice }}
+                </td>
+              </tr>
+              <tr>
+                <td  colspan="5" style="text-align: center;border: 1px solid #e8e8e8;padding: 3px 3px;font-size: small">
+                </td>
+                <td style="text-align: center;border: 1px solid #e8e8e8;padding: 3px 3px;font-size: small">
+                  合计
+                </td>
+                <td style="text-align: center;border: 1px solid #e8e8e8;padding: 3px 3px;font-size: small">
+                  {{ record.totalSum }}
+                </td>
+                <td style="text-align: center;border: 1px solid #e8e8e8;padding: 3px 3px;font-size: small">
+                </td>
+                <td style="text-align: center;border: 1px solid #e8e8e8;padding: 3px 3px;font-size: small">
+                  {{ record.outTotalPrice }}
                 </td>
               </tr>
             </table>
           </a-col>
 
-          <a-col :span="24" style="margin-top: 5px;">
-            <span style="margin-left: 60%;font-weight: bold">
-              合计数量：{{ record.totalSum }}
-            </span>
+          <!--<a-col :span="24" style="margin-top: 5px;">-->
+            <!--<span style="margin-left: 60%;">-->
+              <!--合计数量：{{ record.totalSum }}-->
+            <!--</span>-->
             <!--<span style="margin-left: 2%;font-weight: bold">-->
               <!--合计入库金额：{{ record.inTotalPrice }} 元-->
             <!--</span>-->
-            <span style="margin-left: 2%;font-weight: bold">
-              合计出库金额：{{ record.outTotalPrice }} 元
-            </span>
-          </a-col>
+            <!--<span style="margin-left: 2%;">-->
+              <!--合计出库金额：{{ record.outTotalPrice }} 元-->
+            <!--</span>-->
+          <!--</a-col>-->
 
           <a-col :span="24" style="margin-top: 5px">
             <span style="margin-left: 3%">
@@ -246,7 +272,20 @@
         this.visible = true;
         this.dataSource = record.pdStockRecordDetailList;
         this.record = record;
-        console.log(this.dataSource)
+
+        for (let item of this.dataSource){
+          let registration = item.registration.replace(/；/g, ";")
+          let registrationList = [];
+          let list = registration.split(";");
+          for (let li of list){
+            li = li.replace(/(^\s*)|(\s*$)/g, "");
+            if(li){
+              registrationList.push(li)
+            }
+          }
+          item.registrationSelected = registrationList[registrationList.length-1];
+          item.registrationList = registrationList;
+        }
       },
       initDictConfig(){ //静态字典值加载
         initDictOptions('out_type').then((res) => {
@@ -294,7 +333,7 @@
     color:#000000!important;
   }
   .explain .ant-input,.sign .ant-input{
-    font-weight:bolder;
+    /*font-weight:bolder;*/
     text-align:center;
     border-left-width:0px!important;
     border-top-width:0px!important;

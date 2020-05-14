@@ -200,5 +200,9 @@ public class PdProductStock extends BaseEntity {
 	@TableField(exist = false)
 	private String productFlag; // 试剂产品or普通产品，0产品，1试剂
 
+	@TableField(exist = false) //试剂产品数量
+	private Double productNum;
 
+	@TableField(exist = false) //试剂定数包id
+	private String packageId;
 }

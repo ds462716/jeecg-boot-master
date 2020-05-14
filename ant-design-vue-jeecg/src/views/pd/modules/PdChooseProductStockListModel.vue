@@ -92,6 +92,11 @@
                   </a-select>
                 </a-form-item>
               </a-col>
+              <a-col :md="6" :sm="8">
+                <a-form-item label="产品类型">
+                  <a-checkbox-group :disabled="productFlagDisabled" v-model="productFlagCheckValues" :options="productFlagOptions" @change="productFlagChange" />
+                </a-form-item>
+              </a-col>
             </template>
             <a-col :md="6" :sm="8">
             <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
@@ -170,6 +175,11 @@
         applyNo:"",
         allocationNo:"",
         supplierId:"", //供应商ID
+
+        productFlagDisabled:false,
+        productFlag:"", //0-器械；1-试剂
+        productFlagOptions:[ { label: '器械', value: '0' },{ label: '试剂', value: '1' }],
+        productFlagCheckValues:[],
 
         dataSource2: [],
         selectedRowKeys: [],
@@ -310,6 +320,8 @@
         this.selectionRows = [];
         this.dataSource2 = [];
         this.queryParam = {};
+        this.productFlag = "";
+        this.productFlagCheckValues = [];
         this.loadData(1);
         this.$emit('close');
         this.visible = false;
@@ -332,6 +344,11 @@
             this.supplierSelecDisabled = true;
           })
         }
+        if(params && params.productFlag){
+          this.productFlag = params.productFlag;
+          this.productFlagCheckValues.push(params.productFlag);
+          this.productFlagDisabled = true;
+        }
         this.loadData(1);
         this.visible = true;
       },
@@ -345,6 +362,14 @@
       },
       popupCallback(row){
 
+      },
+      searchReset() {
+        this.queryParam = {}
+        if(!this.productFlagDisabled){
+          this.productFlag = "";
+          this.productFlagCheckValues = [];
+        }
+        this.loadData(1);
       },
       loadData(arg) {
         if(!this.url.list){
@@ -364,6 +389,9 @@
         }
         if(this.supplierId){
           params.supplierId = this.supplierId;
+        }
+        if(this.productFlag){
+          params.productFlag = this.productFlag;
         }
         this.loading = true;
         getAction(this.url.list, params).then((res) => {
@@ -484,7 +512,12 @@
           }
         })
       },
-
+      productFlagChange(checkList){
+        this.productFlag = "";
+        if(this.productFlagCheckValues.length == 1){
+          this.productFlag = this.productFlagCheckValues[0];
+        }
+      },
       expDateChange: function (value, dateString) {
         this.queryParam.queryDateStart=dateString[0];
         this.queryParam.queryDateEnd=dateString[1];

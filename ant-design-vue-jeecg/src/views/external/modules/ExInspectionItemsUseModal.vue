@@ -358,8 +358,12 @@
               return;
             }else{
               formData.pdUsePackageDetails = [];
-              for (let data of this.pdPackageTable.dataSource){
-                formData.pdUsePackageDetails.push(data);
+              for(let index =0;index<dataSource.length;index++){
+                let item = dataSource[index];
+                let i = selectedArrays.indexOf(item.id);
+                if(i>=0){
+                  formData.pdUsePackageDetails.push(item);
+                }
               }
             }
           }else{
@@ -370,7 +374,6 @@
           }
           let list = formData.exInspectionItemsUseDetails;
           for (let item of list){
-            console.log(item)
             if(item.productFlag == 0){
               if(Number(item.productNum) > Number(item.stockNum)){
                 this.$message.error("["+item.productName+"]用量不能大于库存数量！");
@@ -476,6 +479,7 @@
                 code:pdPdUsePackage.code,
                 name:pdPdUsePackage.name,
                 id:item.productId,
+                productId:item.productId,
                 productName:item.productName,
                 productNumber:item.productNumber,
                 spec:item.spec,
@@ -485,6 +489,7 @@
                 venderName:item.venderName,
                 supplierName:item.supplierName,
                 productFlagName:item.productFlagName,
+                productFlag:item.productFlag,
                 count:item.count
               }
               console.log(data);
