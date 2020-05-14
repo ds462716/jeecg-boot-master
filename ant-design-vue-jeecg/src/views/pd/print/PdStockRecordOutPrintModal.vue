@@ -111,13 +111,13 @@
                 </th>
               </tr>
               <tr v-for="(item, index) in dataSource">
-                <td style="text-align: center;border: 1px solid #e8e8e8;padding: 3px 3px;font-size: x-small">
+                <td style="text-align: center;border: 1px solid #e8e8e8;padding: 3px 3px;font-size: xx-small">
                   {{ item.productName }}
                 </td>
-                <td style="text-align: center;border: 1px solid #e8e8e8;padding: 3px 3px;font-size: x-small">
+                <td style="text-align: center;border: 1px solid #e8e8e8;padding: 3px 3px;font-size: xx-small">
                   {{ item.venderName }}
                 </td>
-                <td style="text-align: center;border: 1px solid #e8e8e8;padding: 3px 3px;font-size: x-small">
+                <td style="text-align: center;border: 1px solid #e8e8e8;padding: 3px 3px;font-size: xx-small">
                   <!--{{ item.registration }}-->
                   <a-select
                     size="small"
@@ -131,27 +131,27 @@
                     </a-select-option>
                   </a-select>
                 </td>
-                <td style="text-align: center;border: 1px solid #e8e8e8;padding: 3px 3px;font-size: x-small">
+                <td style="text-align: center;border: 1px solid #e8e8e8;padding: 3px 3px;font-size: xx-small">
                   {{ item.spec }}
                 </td>
-                <td style="text-align: center;border: 1px solid #e8e8e8;padding: 3px 3px;font-size: x-small">
+                <td style="text-align: center;border: 1px solid #e8e8e8;padding: 3px 3px;font-size: xx-small">
                   {{ item.batchNo }}
                 </td>
-                <td style="text-align: center;border: 1px solid #e8e8e8;padding: 3px 3px;font-size: x-small">
+                <td style="text-align: center;border: 1px solid #e8e8e8;padding: 3px 3px;font-size: xx-small">
                   {{ item.expDate }}
                 </td>
-                <td style="text-align: center;border: 1px solid #e8e8e8;padding: 3px 3px;font-size: x-small">
+                <td style="text-align: center;border: 1px solid #e8e8e8;padding: 3px 3px;font-size: xx-small">
                   {{ item.productNum }}
                 </td>
-                <td style="text-align: center;border: 1px solid #e8e8e8;padding: 3px 3px;font-size: x-small">
+                <td style="text-align: center;border: 1px solid #e8e8e8;padding: 3px 3px;font-size: xx-small">
                   {{ item.sellingPrice }}
                 </td>
-                <td style="text-align: center;border: 1px solid #e8e8e8;padding: 3px 3px;font-size: x-small">
+                <td style="text-align: center;border: 1px solid #e8e8e8;padding: 3px 3px;font-size: xx-small">
                   {{ item.outTotalPrice }}
                 </td>
               </tr>
               <tr>
-                <td  colspan="5" style="text-align: center;border: 1px solid #e8e8e8;padding: 3px 3px;font-size: x-small">
+                <td  colspan="5" style="text-align: center;border: 1px solid #e8e8e8;padding: 3px 3px;font-size: small">
                 </td>
                 <td style="text-align: center;border: 1px solid #e8e8e8;padding: 3px 3px;font-size: small">
                   合计
