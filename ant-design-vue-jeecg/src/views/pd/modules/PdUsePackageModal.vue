@@ -65,18 +65,19 @@
                 <span class="gap"></span>
               </a-popconfirm>
           </div>
-
           <j-editable-table
+            bordered
             :ref="refKeys[0]"
             :loading="pdUsePackageDetailTable.loading"
             :columns="pdUsePackageDetailTable.columns"
             :dataSource="pdUsePackageDetailTable.dataSource"
-            :maxHeight="380"
+            :maxHeight="500"
             :rowNumber="true"
             :rowSelection="true"
             :actionButton="false"
             :disabled="disableSubmit"
             @valueChange="valueChange"
+            style="text-overflow: ellipsis;"
           />
           <!--<a-row style="margin-top:10px;text-align: right;padding-right: 5%">
             <span style="font-weight: bold;font-size: large;padding-right: 5%">总数量：{{ totalSum }}</span>
@@ -159,37 +160,44 @@
             {
               title: '产品编号',
               align:"center",
+              width:"200px",
               key: 'productNumber'
             },
             {
               title: '产品名称',
               align:"center",
+              width:"300px",
               key: 'productName'
             },
             {
               title: '规格',
               align:"center",
+              width:"200px",
               key: 'spec'
 
             },
             {
               title: '单位',
               align:"center",
+              width:"50px",
               key: 'unitName'
             },
             {
               title: '规格单位',
               align:"center",
+              width:"50px",
               key: 'specUnitName'
             },
             {
               title: '规格数量',
               align:"center",
+              width:"50px",
               key: 'specQuantity'
             },
             {
               title: '生产厂家',
               align:"center",
+              width:"350px",
               key: 'venderName'
             },
             {
@@ -200,6 +208,7 @@
             {
               title: '产品类型',
               align:"center",
+              width:"50px",
               key: 'productFlagName'
             },
             {
