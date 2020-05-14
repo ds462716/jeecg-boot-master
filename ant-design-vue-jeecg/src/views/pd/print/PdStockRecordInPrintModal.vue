@@ -63,77 +63,104 @@
                 <th style="border: 1px solid #e8e8e8;text-align: center;padding: 3px 3px;">
                   产品名称
                 </th>
-                <th style="border: 1px solid #e8e8e8;text-align: center;padding: 3px 3px;">
+                <th style="border: 1px solid #e8e8e8;text-align: center;padding: 3px 3px;width:15%">
                   生产厂家
                 </th>
-                <th style="border: 1px solid #e8e8e8;text-align: center;padding: 3px 3px;">
+                <th style="border: 1px solid #e8e8e8;text-align: center;padding: 3px 3px;width:10%">
                   注册证号
                 </th>
-                <th style="border: 1px solid #e8e8e8;text-align: center;padding: 3px 3px;">
+                <th style="border: 1px solid #e8e8e8;text-align: center;padding: 3px 3px;width:10%">
                   规格
                 </th>
-                <th style="border: 1px solid #e8e8e8;text-align: center;padding: 3px 3px;">
+                <th style="border: 1px solid #e8e8e8;text-align: center;padding: 3px 3px;width:8%">
                   批号
                 </th>
-                <th style="border: 1px solid #e8e8e8;text-align: center;padding: 3px 3px;">
+                <th style="border: 1px solid #e8e8e8;text-align: center;padding: 3px 3px;width:8%">
                   生产日期
                 </th>
-                <th style="border: 1px solid #e8e8e8;text-align: center;padding: 3px 3px;">
+                <th style="border: 1px solid #e8e8e8;text-align: center;padding: 3px 3px;width:8%">
                   有效期
                 </th>
-                <th style="border: 1px solid #e8e8e8;text-align: center;padding: 3px 3px;">
+                <th style="border: 1px solid #e8e8e8;text-align: center;padding: 3px 3px;width:4%">
                   数量
                 </th>
-                <th style="border: 1px solid #e8e8e8;text-align: center;padding: 3px 3px;">
+                <th style="border: 1px solid #e8e8e8;text-align: center;padding: 3px 3px;width:4%">
                   单价
                 </th>
-                <th style="border: 1px solid #e8e8e8;text-align: center;padding: 3px 3px;">
+                <th style="border: 1px solid #e8e8e8;text-align: center;padding: 3px 3px;width:5%">
                   金额
                 </th>
               </tr>
               <tr v-for="(item, index) in dataSource">
-                <td style="text-align: center;border: 1px solid #e8e8e8;padding: 3px 3px;font-size: x-small">
+                <td style="text-align: center;border: 1px solid #e8e8e8;padding: 3px 3px;font-size: xx-small">
                   {{ item.productName }}
                 </td>
-                <td style="text-align: center;border: 1px solid #e8e8e8;padding: 3px 3px;font-size: x-small">
+                <td style="text-align: center;border: 1px solid #e8e8e8;padding: 3px 3px;font-size: xx-small">
                   {{ item.venderName }}
                 </td>
-                <td style="text-align: center;border: 1px solid #e8e8e8;padding: 3px 3px;font-size: x-small">
-                  {{ item.registration }}
+                <td style="text-align: center;border: 1px solid #e8e8e8;padding: 3px 3px;font-size: xx-small">
+                  <!--{{ item.registration }}-->
+                  <a-select
+                    size="small"
+                    style="width: 100%;font-size: xx-small"
+                    :defaultValue="item.registrationSelected"
+                    :showArrow="false"
+                    :dropdownMatchSelectWidth="false"
+                  >
+                    <a-select-option v-for="(registration, index) in item.registrationList" :key="registration">
+                      {{ registration }}
+                    </a-select-option>
+                  </a-select>
+
                 </td>
-                <td style="text-align: center;border: 1px solid #e8e8e8;padding: 3px 3px;font-size: x-small">
+                <td style="text-align: center;border: 1px solid #e8e8e8;padding: 3px 3px;font-size: xx-small">
                   {{ item.spec }}
                 </td>
-                <td style="text-align: center;border: 1px solid #e8e8e8;padding: 3px 3px;font-size: x-small">
+                <td style="text-align: center;border: 1px solid #e8e8e8;padding: 3px 3px;font-size: xx-small">
                   {{ item.batchNo }}
                 </td>
-                <td style="text-align: center;border: 1px solid #e8e8e8;padding: 3px 3px;font-size: x-small">
+                <td style="text-align: center;border: 1px solid #e8e8e8;padding: 3px 3px;font-size: xx-small">
                   {{ item.produceDate }}
                 </td>
-                <td style="text-align: center;border: 1px solid #e8e8e8;padding: 3px 3px;font-size: x-small">
+                <td style="text-align: center;border: 1px solid #e8e8e8;padding: 3px 3px;font-size: xx-small">
                   {{ item.expDate }}
                 </td>
-                <td style="text-align: center;border: 1px solid #e8e8e8;padding: 3px 3px;font-size: x-small">
+                <td style="text-align: center;border: 1px solid #e8e8e8;padding: 3px 3px;font-size: xx-small">
                   {{ item.productNum }}
                 </td>
-                <td style="text-align: center;border: 1px solid #e8e8e8;padding: 3px 3px;font-size: x-small">
+                <td style="text-align: center;border: 1px solid #e8e8e8;padding: 3px 3px;font-size: xx-small">
                   {{ item.purchasePrice }}
                 </td>
-                <td style="text-align: center;border: 1px solid #e8e8e8;padding: 3px 3px;font-size: x-small">
+                <td style="text-align: center;border: 1px solid #e8e8e8;padding: 3px 3px;font-size: xx-small">
                   {{ item.inTotalPrice }}
+                </td>
+              </tr>
+              <tr>
+                <td  colspan="6" style="text-align: center;border: 1px solid #e8e8e8;padding: 3px 3px;font-size: small">
+                </td>
+                <td style="text-align: center;border: 1px solid #e8e8e8;padding: 3px 3px;font-size: small">
+                  合计
+                </td>
+                <td style="text-align: center;border: 1px solid #e8e8e8;padding: 3px 3px;font-size: small">
+                  {{ record.totalSum }}
+                </td>
+                <td style="text-align: center;border: 1px solid #e8e8e8;padding: 3px 3px;font-size: small">
+                </td>
+                <td style="text-align: center;border: 1px solid #e8e8e8;padding: 3px 3px;font-size: small">
+                  {{ record.inTotalPrice }}
                 </td>
               </tr>
             </table>
           </a-col>
 
-          <a-col :span="24" style="margin-top: 5px;">
-            <span style="margin-left: 60%;font-weight: bold">
-              合计数量：{{ record.totalSum }}
-            </span>
-            <span style="margin-left: 2%;font-weight: bold">
-              合计金额：{{ record.inTotalPrice }}
-            </span>
-          </a-col>
+          <!--<a-col :span="24" style="margin-top: 5px;">-->
+            <!--<span style="margin-left: 60%;font-weight: bold">-->
+              <!--合计数量：{{ record.totalSum }}-->
+            <!--</span>-->
+            <!--<span style="margin-left: 2%;font-weight: bold">-->
+              <!--合计金额：{{ record.inTotalPrice }}-->
+            <!--</span>-->
+          <!--</a-col>-->
 
           <a-col :span="24" style="margin-top: 5px">
             <span style="margin-left: 3%">
@@ -206,6 +233,7 @@
       // 重写close方法
       close() {
         this.visible = false;
+        this.dataSource = [];
         this.$emit('close')
       },
       /** 关闭按钮 **/
@@ -216,7 +244,20 @@
         this.visible = true;
         this.record = record;
         this.dataSource = record.pdStockRecordDetailList;
-        console.log(this.dataSource)
+
+        for (let item of this.dataSource){
+          let registration = item.registration.replace(/；/g, ";")
+          let registrationList = [];
+          let list = registration.split(";");
+          for (let li of list){
+            li = li.replace(/(^\s*)|(\s*$)/g, "");
+            if(li){
+              registrationList.push(li)
+            }
+          }
+          item.registrationSelected = registrationList[registrationList.length-1];
+          item.registrationList = registrationList;
+        }
       },
       customRow(record) {
         return {
