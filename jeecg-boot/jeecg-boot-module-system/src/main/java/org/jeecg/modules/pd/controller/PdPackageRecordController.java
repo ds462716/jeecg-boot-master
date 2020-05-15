@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.jeecg.common.constant.PdConstant;
+import org.jeecg.common.util.DateUtils;
 import org.jeecgframework.poi.excel.ExcelImportUtil;
 import org.jeecgframework.poi.excel.def.NormalExcelConstants;
 import org.jeecgframework.poi.excel.entity.ExportParams;
@@ -57,6 +58,25 @@ public class PdPackageRecordController {
     private IPdPackageRecordService pdPackageRecordService;
     @Autowired
     private IPdPackageRecordDetailService pdPackageRecordDetailService;
+
+    /**
+     * 初始化Modal页面
+     *
+     * @param req
+     * @return
+     */
+    @GetMapping(value = "/initModal")
+    public Result<?> initModal(@RequestParam(name = "id") String id, HttpServletRequest req) {
+        PdPackageRecord pdPackageRecord = new PdPackageRecord();
+
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+
+        pdPackageRecord.setCreateTime(DateUtils.getDate());
+        pdPackageRecord.setCreateBy(sysUser.getRealname());
+        pdPackageRecord.setPackageBarCode(DateUtils.date2Str(DateUtils.getDate(),DateUtils.yyMMdd.get()));;
+
+        return Result.ok(pdPackageRecord);
+    }
 
     /**
      * 分页列表查询
