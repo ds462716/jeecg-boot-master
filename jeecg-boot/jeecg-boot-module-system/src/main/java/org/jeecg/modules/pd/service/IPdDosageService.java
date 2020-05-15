@@ -19,7 +19,7 @@ public interface IPdDosageService extends IService<PdDosage> {
 
     PdDosage initModal(String id);
 
-    void saveMain(PdDosage pdDosage,String displayFlag);
+    void saveMain(PdDosage pdDosage, String displayFlag);
 
     IPage<PdDosage> queryList(Page<PdDosage> page, PdDosage pdDosage);
 
@@ -38,4 +38,8 @@ public interface IPdDosageService extends IService<PdDosage> {
     List<HashMap> queryPdDosageTotalList(PdDosage PdDosage);
 
     void dosageReturned(PdDosage pdDosage);
+
+
+    /*市立医院用*/
+    void newSaveMain(PdDosage pdDosage, String displayFlag);
 }

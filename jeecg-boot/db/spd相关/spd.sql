@@ -338,3 +338,14 @@ INSERT INTO `sys_quartz_job` VALUES ('1248489519106277378', 'admin', '2020-4-10 
 -- add by mcb 2020年5月12日14:11:55 增加收费金额字段
 ALTER TABLE `ex_his_charge_inf`
 ADD COLUMN `fsf_je` decimal(20,2) DEFAULT NULL COMMENT '收费金额';
+
+
+-- add by mcb 2020年5月14日14:11:55 增加病人信息相关字段
+ALTER TABLE `pd_dosage`
+ADD COLUMN `patient_type`  varchar(64) NULL COMMENT '病人类型' AFTER `del_flag`,
+ADD COLUMN `medical_record_no`  varchar(64) NULL COMMENT '病历号' AFTER `patient_type`,
+ADD COLUMN `hospitalizations_num`  int(11) NULL COMMENT '住院次数' AFTER `medical_record_no`,
+ADD COLUMN `operation_name`  varchar(64) NULL AFTER `hospitalizations_num`,
+ADD COLUMN `operation_time`  datetime NULL COMMENT '手术时间' AFTER `operation_name`,
+ADD COLUMN `bed_number`  varchar(64) NULL COMMENT '病床号' AFTER `operation_time`,
+ADD COLUMN `admission_date`  datetime NULL COMMENT '入院日期' AFTER `bed_number`;

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.pd.mapper.ExHisZyInfMapper">
+
+
+
+
+
+
+
+	<!-- 计费信息插入HIS系统中间表(门诊)-->
+		<insert id="saveExHisMzInf">
+			INSERT INTO spd_his_mzsf(
+			fsf_brid,
+			fsf_yjxh,
+			fsf_xmbh,
+			fsf_mc,
+			fsb_sl,
+			fsb_je,
+			fsf_kd_ks,
+			fsf_rq,
+			fsb_ry,
+			fsf_zt,
+			his_jlxh,
+			fsf_xh
+			) VALUES <foreach collection="list" item="item" index="index" open="" close="" separator=",">
+			(
+			#{item.fsfBrid},
+			#{item.fsfYjxh},
+			#{item.fsfXmbh},
+			#{item.fsfMc},
+			#{item.fsbSl},
+			#{item.fsbJe},
+			#{item.fsfKdKs},
+			#{item.fsfRq},
+			#{item.fsbRy},
+			#{item.fsfZt},
+			#{item.hisJlxh},
+			#{item.fsfXh}
+			)</foreach>
+		</insert>
+
+
+
+	<!-- 计费信息插入HIS系统中间表(住院)-->
+	<insert id="saveExHisZyInf">
+		<!--INSERT INTO spd_his_zysf(
+		fsf_zyh,fsf_zyhm,fsf_cs,fsf_xmbh,fsf_mc,fsf_xh
+		) VALUES <foreach collection="list" item="item" index="index" open="" close="" separator=",">
+		(
+		'8',
+		'8',
+		'8',
+		'8',
+		'99',
+		'99'
+		)</foreach>-->
+		INSERT INTO SYS_LOG(id,type) values ('3','2')
+	</insert>
+
+</mapper>

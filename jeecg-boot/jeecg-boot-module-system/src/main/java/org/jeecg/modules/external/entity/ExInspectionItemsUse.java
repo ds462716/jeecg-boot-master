@@ -1,23 +1,19 @@
 package org.jeecg.modules.external.entity;
 
-import java.io.Serializable;
-import java.io.UnsupportedEncodingException;
-import java.util.Date;
-import java.math.BigDecimal;
-import java.util.List;
-
 import com.baomidou.mybatisplus.annotation.*;
-import lombok.Data;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import org.jeecg.modules.pd.entity.PdProductStock;
-import org.jeecg.modules.pd.entity.PdUsePackageDetail;
-import org.springframework.format.annotation.DateTimeFormat;
-import org.jeecgframework.poi.excel.annotation.Excel;
-import org.jeecg.common.aspect.annotation.Dict;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
+import org.jeecg.modules.pd.entity.PdProductStock;
+import org.jeecg.modules.pd.entity.PdUsePackageDetail;
+import org.jeecgframework.poi.excel.annotation.Excel;
+import org.springframework.format.annotation.DateTimeFormat;
+
+import java.util.Date;
+import java.util.List;
 
 /**
  * @Description: 检验项目使用表

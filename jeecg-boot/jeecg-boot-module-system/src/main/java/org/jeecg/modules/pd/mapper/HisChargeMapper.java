@@ -4,7 +4,9 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.jeecg.modules.pd.entity.HisChargeInf;
 import org.jeecg.modules.pd.entity.HisDepartInf;
 import org.jeecg.modules.pd.entity.HisUserInf;
-import org.jeecg.modules.pd.entity.NewPdDosage;
+import org.jeecg.modules.pd.entity.PdDosage;
+import org.jeecg.modules.pd.vo.ExHisMzInfPage;
+import org.jeecg.modules.pd.vo.ExHisZyInfPage;
 
 import java.util.List;
 
@@ -26,11 +28,15 @@ public interface HisChargeMapper extends BaseMapper<HisChargeInf> {
 
 	List<HisUserInf> selectHisUser();
 
-	List<HisUserInf> queryPatientInfoSS(NewPdDosage newPdDosage);
+	List<PdDosage> queryPatientInfoSS(PdDosage pdDosage);
 
-	List<HisUserInf> queryPatientInfoJC(NewPdDosage newPdDosage);
+	List<PdDosage> queryPatientInfoJC(PdDosage pdDosage);
 
-	List<HisUserInf> queryPatientInfoJY(NewPdDosage newPdDosage);
+	List<PdDosage> queryPatientInfoJY(PdDosage pdDosage);
 
-	List<HisUserInf> queryPatientInfoMZ(NewPdDosage newPdDosage);
+	List<PdDosage> queryPatientInfoMZ(PdDosage pdDosage);
+
+	int saveExHisMzInf(ExHisMzInfPage exHisMzInf);
+
+	int saveExHisZyInf(List<ExHisZyInfPage> exHisZyInf);
 }

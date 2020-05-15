@@ -61,21 +61,108 @@
 
 
 	<!--查询HIS系统病人信息  手術項目-->
-	<select id="queryPatientInfoSS"   resultType="org.jeecg.modules.pd.entity.NewPdDosage">
-		select  * from v_his_ users  where  fsf_zyh=#{inHospitalNo}
+	<select id="queryPatientInfoSS"   resultType="org.jeecg.modules.pd.entity.PdDosage">
+		select
+		a.fsf_zyh as "inHospitalNo",-- 住院号
+		a.fsf_zyhm as "medicalRecordNo",-- 病历号
+		a.fsf_cs as "hospitalizationsNum",-- 住院次数
+        a.fsf_xm as "patientInfo",  -- 病人姓名
+        a.fsf_ssks as "oprDeptId",-- 手术科室
+        s.fsf_ksmc as "oprDeptName",-- 手术科室名称
+        a.fsf_brbs as "operativeNumber",-- 病人手术编号
+        a.fsf_ssmc as "operationName",  -- 手术名称
+        a.fsf_sssj as "operationTime",  -- 手术时间
+         /*a.fsf_ks as "oprDeptName",-- 申请科室*/
+        a.fsf_ksdm as "sqrtDoctorId",-- 申请科室代码
+        a.fsf_brch as "bedNumber",-- 病人床号
+        a.fsf_xb as "fsfXb",-- 性别
+        a.fsf_csrq as "fsfCsrq",-- 出生日期
+        a.fsf_zjhm as "fsfZjhm",-- 证件号码
+        a.fsf_ryrq as "admissionDate",-- 入院日期
+        a.fsf_zzys as "surgeonName"-- 诊治医生
+         from [v_spd_his_ person] a
+         LEFT JOIN   v_spd_his_ks s  on s. fsf_ksbh=a.fsf_ssks
+          where  a.fsf_zyh=#{inHospitalNo}
 	</select>
 
 	<!--查询HIS系统病人信息  檢查項目-->
-	<select id="queryPatientInfoJC"   resultType="org.jeecg.modules.pd.entity.NewPdDosage">
-		select  * from v_his_ users  where  fsf_zyh=#{inHospitalNo}
+	<select id="queryPatientInfoJC"   resultType="org.jeecg.modules.pd.entity.PdDosage">
+		select  * from [v_spd_his_ person]  where  fsf_zyh=#{inHospitalNo}
 	</select>
 	<!--查询HIS系统病人信息  检验項目-->
-	<select id="queryPatientInfoJY"   resultType="org.jeecg.modules.pd.entity.NewPdDosage">
-		select  * from v_his_ users  where  fsf_zyh=#{inHospitalNo}
+	<select id="queryPatientInfoJY"   resultType="org.jeecg.modules.pd.entity.PdDosage">
+		select  * from [v_spd_his_ person] where  fsf_zyh=#{inHospitalNo}
 	</select>
 
 	<!--查询HIS系统病人信息  门诊病人-->
-	<select id="queryPatientInfoMZ"   resultType="org.jeecg.modules.pd.entity.NewPdDosage">
-		select  * from v_his_ users  where  fsf_mzh=#{outpatientNumber}
+	<select id="queryPatientInfoMZ"   resultType="org.jeecg.modules.pd.entity.PdDosage">
+		select
+		a.fsf_brid_mz as "medicalRecordNo",  --病人id
+        a.fsf_brxm_mz as "patientInfo",  -- 病人姓名
+        a.fsf_brkh_mz as "outpatientNumber",  -- 病人卡号
+        a.fsf_csny_mz as "fsfCsrq",  -- 出生年月
+        a.fsf_sfzh_mz,  -- 收费账号
+        a.fsf_hkdz_mz,-- 户口地址
+        a.fsf_jtdh_mz,-- 联系电话
+        a.fsf_brxb_mz as "fsfXb",  -- 性别
+        a.fsf_jzhm_mz,
+        a.fsf_ghxh_mz,
+        a.fsf_jzxh_mz,
+        a.fsf_yjxh_mz,
+        a.fsf_kssj_mz,-- 检查日期
+        a.fsf_ksdm_mz-- 科室代码
+		  from v_spd_his_mz  a where  a.fsf_brkh_mz=#{outpatientNumber}
 	</select>
+
+
+
+	<!-- 计费信息插入HIS系统中间表(门诊)-->
+		<insert id="saveExHisMzInf">
+			INSERT INTO spd_his_mzsf(
+			fsf_brid,
+			fsf_yjxh,
+			fsf_xmbh,
+			fsf_mc,
+			fsb_sl,
+			fsb_je,
+			fsf_kd_ks,
+			fsf_rq,
+			fsb_ry,
+			fsf_zt,
+			his_jlxh,
+			fsf_xh
+			) VALUES <foreach collection="list" item="item" index="index" open="" close="" separator=",">
+			(
+			#{item.fsfBrid},
+			#{item.fsfYjxh},
+			#{item.fsfXmbh},
+			#{item.fsfMc},
+			#{item.fsbSl},
+			#{item.fsbJe},
+			#{item.fsfKdKs},
+			#{item.fsfRq},
+			#{item.fsbRy},
+			#{item.fsfZt},
+			#{item.hisJlxh},
+			#{item.fsfXh}
+			)</foreach>
+		</insert>
+
+
+
+	<!-- 计费信息插入HIS系统中间表(住院)-->
+	<insert id="saveExHisZyInf">
+		INSERT INTO spd_his_zysf(
+		fsf_zyh,fsf_zyhm,fsf_cs,fsf_xmbh,fsf_mc,fsf_xh
+		) VALUES <foreach collection="list" item="item" index="index" open="" close="" separator=",">
+		(
+		'8',
+		'8',
+		'8',
+		'8',
+		'99',
+		'99'
+		)</foreach>
+	</insert>
+
 </mapper>

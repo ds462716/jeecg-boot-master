@@ -3,12 +3,12 @@ package org.jeecg.modules.pd.service.impl;
 import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import org.jeecg.modules.pd.entity.HisChargeInf;
-import org.jeecg.modules.pd.entity.HisDepartInf;
-import org.jeecg.modules.pd.entity.HisUserInf;
-import org.jeecg.modules.pd.entity.NewPdDosage;
+import org.apache.commons.lang.StringUtils;
+import org.jeecg.modules.pd.entity.*;
 import org.jeecg.modules.pd.mapper.HisChargeMapper;
 import org.jeecg.modules.pd.service.IHisChargeService;
+import org.jeecg.modules.pd.vo.ExHisMzInfPage;
+import org.jeecg.modules.pd.vo.ExHisZyInfPage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -25,7 +25,7 @@ import java.util.List;
 @Service
 public class HisChargeServiceImpl extends ServiceImpl<HisChargeMapper, HisChargeInf> implements IHisChargeService {
 	@Autowired
-	HisChargeMapper hisChargeMapper;
+	private HisChargeMapper hisChargeMapper;
 
 	/**
 	 * 查询列表
@@ -78,21 +78,63 @@ public class HisChargeServiceImpl extends ServiceImpl<HisChargeMapper, HisCharge
    //查詢HIS系統病人信息
 	@Override
 	@DS("multi-datasource1")
-	public List<NewPdDosage> queryPatientInfoList(NewPdDosage   newPdDosage) {
-		List list=new ArrayList<>();
-		String patientType=newPdDosage.getPatientType();
-		String prjType=newPdDosage.getPrjType();
-		if("2".equals(patientType)){//门诊
-			    list=hisChargeMapper.queryPatientInfoMZ(newPdDosage);
-		}else{  //住院
-			if("0".equals(prjType)){  //手术项目
-				list=hisChargeMapper.queryPatientInfoSS(newPdDosage);
-			}else if("1".equals(prjType)){  //检查项目
-				list = hisChargeMapper.queryPatientInfoJC(newPdDosage);
-			}else{//检验项目
-				list = hisChargeMapper.queryPatientInfoJY(newPdDosage);
-			}
+	public List<PdDosage> queryPatientInfoList(PdDosage   pdDosage) {
+		List<PdDosage> list=new ArrayList<PdDosage>();
+		String patientType=pdDosage.getPatientType();
+		String prjType=pdDosage.getPrjType();
+		String inHospitalNo=pdDosage.getInHospitalNo();//住院号
+		String outpatientNumber=pdDosage.getOutpatientNumber();//门诊号
+		if(StringUtils.isEmpty(inHospitalNo) && StringUtils.isNotEmpty(outpatientNumber)){  //门诊
+			    list=hisChargeMapper.queryPatientInfoMZ(pdDosage);
+		}else if(StringUtils.isNotEmpty(inHospitalNo)){  //住院
+			//if("0".equals(prjType)){  //手术项目
+				list=hisChargeMapper.queryPatientInfoSS(pdDosage);
+			//}else if("1".equals(prjType)){  //检查项目
+				//list = hisChargeMapper.queryPatientInfoJC(newPdDosage);
+			//}else{//检验项目
+				//list = hisChargeMapper.queryPatientInfoJY(newPdDosage);
+			//}
 		}
 		return list;
+	}
+
+
+
+	//计费信息插入HIS中间表（门诊）
+	@Override
+	@Transactional
+	@DS("multi-datasource1")
+	public int saveExHisMzInf(ExHisMzInfPage exHisMzInf) {
+		return  hisChargeMapper.saveExHisMzInf(exHisMzInf);
+ 	}
+
+
+	//计费信息插入HIS中间表（住院）
+	@Override
+	@Transactional
+	@DS("multi-datasource1")
+	public int saveExHisZyInf(PdDosage pdDosage,List<PdDosageDetail> chargeArray) {
+ 		List<ExHisZyInfPage> list=new ArrayList<ExHisZyInfPage>();
+ 		for(PdDosageDetail dosageDetail :chargeArray){
+		ExHisZyInfPage  hisZyInfPage=new ExHisZyInfPage();
+		hisZyInfPage.setFsfZyh(pdDosage.getInHospitalNo());//住院号
+		hisZyInfPage.setFsfZyhm(pdDosage.getMedicalRecordNo());//病历号
+		hisZyInfPage.setFsfCs("3");//住院次数
+		hisZyInfPage.setFsbSl(dosageDetail.getDosageCount()+"");//数量
+		hisZyInfPage.setFsfXmbh(dosageDetail.getChargeCode());//收费项目编号
+		hisZyInfPage.setFsfMc(dosageDetail.getProductName());//收费项目名称
+		hisZyInfPage.setFsbGg("33");//规格
+		hisZyInfPage.setFsbJe("445");//金额
+		hisZyInfPage.setFsfKdKs("66");//开单科室
+		hisZyInfPage.setFsfZxKs("执行");//执行科室
+		hisZyInfPage.setFsfRq("");//计费日期
+		hisZyInfPage.setFsbRy("5");//计费人员
+		hisZyInfPage.setFsbZt("0");//计费状态
+		hisZyInfPage.setFsbXh(dosageDetail.getId());//序号
+		hisZyInfPage.setFsbTfjlxh("123");//自增长序号
+		hisZyInfPage.setFsbBrbs("123");//手术编号
+		list.add(hisZyInfPage);
+		}
+		return  hisChargeMapper.saveExHisZyInf(list);
 	}
 }

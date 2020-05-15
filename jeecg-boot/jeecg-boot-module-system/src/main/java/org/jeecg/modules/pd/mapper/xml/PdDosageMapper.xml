@@ -34,6 +34,8 @@
         a.remarks,
         a.depart_id,
         a.depart_parent_id,
+        a.medical_record_no,
+        a.operation_name,
         a.del_flag
 	</sql>
 
