@@ -219,6 +219,7 @@
           { title:'供应商', align:"center", dataIndex: 'supplierName' },
           { title: '生产厂家', align:"center", dataIndex: 'venderName' },
           { title: '库存数量', align:"center", dataIndex: 'stockNum' },
+          { title: '规格数量', align:"center", dataIndex: 'specNum' },
           { title: '进价', align:"center",dataIndex: 'purchasePrice' },
           { title: '出价', align:"center",dataIndex: 'sellingPrice' },
           { title: '货位', align:"center", dataIndex: 'huoweiName' },
