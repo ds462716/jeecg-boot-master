@@ -183,7 +183,7 @@
 
         productFlagDisabled:false,
         productFlag:"", //0-器械；1-试剂
-        productFlagOptions:[ { label: '器械', value: '0' },{ label: '试剂', value: '1' }],
+        productFlagOptions:[ { label: '耗材', value: '0' },{ label: '试剂', value: '1' }],
         productFlagCheckValues:[],
 
         nestatStatusDisabled:false,
@@ -211,6 +211,7 @@
           },
           { title:'产品编号', align:"center", dataIndex: 'number' },
           { title:'产品名称', align:"center", dataIndex: 'productName' },
+          { title:'产品类型', align:"center", dataIndex: 'productFlagName' },
           { title:'规格', align:"center", dataIndex: 'spec' },
           { title:'型号', align:"center", dataIndex: 'version' },
           { title:'批号', align:"center", dataIndex: 'batchNo' },

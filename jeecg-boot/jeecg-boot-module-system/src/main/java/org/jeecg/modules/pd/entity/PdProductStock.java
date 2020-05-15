@@ -211,4 +211,7 @@ public class PdProductStock extends BaseEntity {
 
     @TableField(exist = false)
     private String productIds;
+
+	@TableField(exist = false)
+    private String productFlagName;
 }
