@@ -482,7 +482,7 @@ public class PdProductStockTotalController {
 		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
 		productStock.setDepartId(sysUser.getCurrentDepartId());
 		productStock.setDepartParentId(sysUser.getDepartParentId());
-		productStock.setNestatStatus(PdConstant.STOCK_NESTAT_STATUS_1);
+//		productStock.setNestatStatus(PdConstant.STOCK_NESTAT_STATUS_1);
 		page = pdProductStockService.selectList(page,productStock);
 		return Result.ok(page);
 	}

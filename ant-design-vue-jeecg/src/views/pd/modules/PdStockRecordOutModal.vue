@@ -1099,15 +1099,15 @@
             this.$message.error("请先导入申领单！");
             return;
           }
-          this.$refs.pdChooseProductStockListModel.show({applyNo:this.applyNo});
+          this.$refs.pdChooseProductStockListModel.show({applyNo:this.applyNo,nestatStatus:"1"});
         }else if(outType == "2"){
-          this.$refs.pdChooseProductStockListModel.show({});
+          this.$refs.pdChooseProductStockListModel.show({nestatStatus:"1"});
         }else if(outType == "3"){  //调拨单
           if(!this.allocationNo){
             this.$message.error("请先导入调拨单！");
             return;
           }
-          this.$refs.pdChooseProductStockListModel.show({allocationNo:this.allocationNo});
+          this.$refs.pdChooseProductStockListModel.show({allocationNo:this.allocationNo,nestatStatus:"1"});
         }else{
           this.$message.error("请选择出库类型！");
           return;

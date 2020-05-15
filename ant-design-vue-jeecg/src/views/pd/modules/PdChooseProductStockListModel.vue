@@ -97,6 +97,11 @@
                   <a-checkbox-group :disabled="productFlagDisabled" v-model="productFlagCheckValues" :options="productFlagOptions" @change="productFlagChange" />
                 </a-form-item>
               </a-col>
+              <a-col :md="6" :sm="8">
+                <a-form-item label="使用状态">
+                  <a-checkbox-group :disabled="nestatStatusDisabled" v-model="nestatStatusCheckValues" :options="nestatStatusOptions" @change="nestatStatusChange" />
+                </a-form-item>
+              </a-col>
             </template>
             <a-col :md="6" :sm="8">
             <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
@@ -180,6 +185,11 @@
         productFlag:"", //0-器械；1-试剂
         productFlagOptions:[ { label: '器械', value: '0' },{ label: '试剂', value: '1' }],
         productFlagCheckValues:[],
+
+        nestatStatusDisabled:false,
+        nestatStatus:"", //0:使用中   1:未使用 2:已用完
+        nestatStatusOptions:[ { label: '未使用', value: '1' },{ label: '使用中', value: '0' }],
+        nestatStatusCheckValues:[],
 
         productIdList: [],
 
@@ -321,10 +331,13 @@
         this.selectedRowKeys = [];
         this.selectionRows = [];
         this.dataSource2 = [];
+        this.dataSource = [];
         this.queryParam = {};
         this.productFlag = "";
         this.productFlagCheckValues = [];
         this.productIdList = [];
+        this.nestatStatus = "";
+        this.nestatStatusCheckValues = [];
         this.applyNo = "";
         this.allocationNo = "";
         this.supplierId = "";
@@ -355,7 +368,11 @@
           this.productFlagCheckValues.push(params.productFlag);
           this.productFlagDisabled = true;
         }
-
+        if(params && params.nestatStatus){
+          this.nestatStatus = params.nestatStatus;
+          this.nestatStatusCheckValues.push(params.nestatStatus);
+          this.nestatStatusDisabled = true;
+        }
         if(params && params.productIdList){
           this.productIdList = params.productIdList;
         }
@@ -380,6 +397,10 @@
           this.productFlag = "";
           this.productFlagCheckValues = [];
         }
+        if(!this.nestatStatusDisabled){
+          this.nestatStatus = "";
+          this.nestatStatusCheckValues = [];
+        }
         this.loadData(1);
       },
       loadData(arg) {
@@ -403,6 +424,9 @@
         }
         if(this.productFlag){
           params.productFlag = this.productFlag;
+        }
+        if(this.nestatStatus){
+          params.nestatStatus = this.nestatStatus;
         }
         if(this.productIdList){
           params.productIds = this.productIdList.join(",");
@@ -530,6 +554,12 @@
         this.productFlag = "";
         if(this.productFlagCheckValues.length == 1){
           this.productFlag = this.productFlagCheckValues[0];
+        }
+      },
+      nestatStatusChange(checkList){
+        this.nestatStatus = "";
+        if(this.nestatStatusCheckValues.length == 1){
+          this.nestatStatus = this.nestatStatusCheckValues[0];
         }
       },
       expDateChange: function (value, dateString) {
