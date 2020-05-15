@@ -205,4 +205,10 @@ public class PdProductStock extends BaseEntity {
 
 	@TableField(exist = false) //试剂定数包id
 	private String packageId;
+
+    @TableField(exist = false)
+    private List<String> productIdList;
+
+    @TableField(exist = false)
+    private String productIds;
 }

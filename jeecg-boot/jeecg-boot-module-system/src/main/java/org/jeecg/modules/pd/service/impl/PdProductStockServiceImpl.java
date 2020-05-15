@@ -2,6 +2,7 @@ package org.jeecg.modules.pd.service.impl;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.pd.entity.PdProductStock;
 import org.jeecg.modules.pd.mapper.PdProductStockMapper;
 import org.jeecg.modules.pd.service.IPdProductStockService;
@@ -9,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -34,6 +36,9 @@ public class PdProductStockServiceImpl extends ServiceImpl<PdProductStockMapper,
 	 */
 	@Override
 	public Page<PdProductStock> selectList(Page<PdProductStock> page, PdProductStock productStock) {
+		if(oConvertUtils.isNotEmpty(productStock.getProductIds())){
+			productStock.setProductIdList(Arrays.asList(productStock.getProductIds().split(",")));
+		}
 		return page.setRecords(pdProductStockMapper.selectList(productStock));
 	}
 

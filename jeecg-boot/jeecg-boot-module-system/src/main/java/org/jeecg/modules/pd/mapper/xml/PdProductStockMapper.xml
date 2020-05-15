@@ -227,6 +227,12 @@
 					#{item}
 				</foreach>
 			</if>
+			<if test="productIdList != null and productIdList.size() > 0">
+				AND a.product_id IN
+				<foreach collection="productIdList" item="productId" separator="," open="(" close=")">
+					#{productId}
+				</foreach>
+			</if>
  			order by  exp_status  desc,create_time desc
 		</where>
 	</select>

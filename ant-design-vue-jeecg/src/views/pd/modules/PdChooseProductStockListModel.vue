@@ -181,6 +181,8 @@
         productFlagOptions:[ { label: '器械', value: '0' },{ label: '试剂', value: '1' }],
         productFlagCheckValues:[],
 
+        productIdList: [],
+
         dataSource2: [],
         selectedRowKeys: [],
         selectedRows: [],
@@ -322,7 +324,11 @@
         this.queryParam = {};
         this.productFlag = "";
         this.productFlagCheckValues = [];
-        this.loadData(1);
+        this.productIdList = [];
+        this.applyNo = "";
+        this.allocationNo = "";
+        this.supplierId = "";
+        // this.loadData(1);
         this.$emit('close');
         this.visible = false;
       },
@@ -349,6 +355,11 @@
           this.productFlagCheckValues.push(params.productFlag);
           this.productFlagDisabled = true;
         }
+
+        if(params && params.productIdList){
+          this.productIdList = params.productIdList;
+        }
+
         this.loadData(1);
         this.visible = true;
       },
@@ -392,6 +403,9 @@
         }
         if(this.productFlag){
           params.productFlag = this.productFlag;
+        }
+        if(this.productIdList){
+          params.productIds = this.productIdList.join(",");
         }
         this.loading = true;
         getAction(this.url.list, params).then((res) => {

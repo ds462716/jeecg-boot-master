@@ -42,28 +42,12 @@
                   v-show="pdPackageTable.show"
                   ref="table"
                   bordered
-                  rowKey="id"
+                  rowKey="productId"
                   :pagination="false"
                   :columns="pdPackageTable.columns"
                   :dataSource="pdPackageTable.dataSource"
                   :loading="pdPackageTable.loading"
-                  :expandedRowKeys= "pdPackageTable.expandedRowKeys"
-                  @expand="handleExpand"
-                  @change="handleTableChange"
                 >
-
-                  <a-table
-                    slot="expandedRowRender"
-                    slot-scope="text"
-                    size="middle"
-                    bordered
-                    rowKey="purchaseDetailId"
-                    :pagination="false"
-                    :columns="pdPackageTable.innerColumns"
-                    :dataSource="pdPackageTable.innerData"
-                    :loading="pdPackageTable.subloading"
-                  >
-                  </a-table>
                 </a-table>
               </a-tab-pane>
             </a-tabs>
@@ -74,25 +58,49 @@
           <a-tabs>
             <a-tab-pane tab="库存明细" :forceRender="true">
               <div style="margin-bottom: 8px;">
-                <a-button type="primary" icon="plus" @click="">选择库存</a-button>
+                <a-button type="primary" icon="plus" @click="chooseProductList">选择库存</a-button>
                 <a-popconfirm style="margin-left: 8px" :title="`确定要删除吗?`" @confirm="">
                   <a-button type="primary" icon="minus">删除</a-button>
                   <span class="gap"></span>
                 </a-popconfirm>
               </div>
-              <a-table
-                v-show="pdProductStockTable.show"
-                ref="table"
-                bordered
-                rowKey="id"
-                :pagination="false"
-                :columns="pdProductStockTable.columns"
-                :dataSource="pdProductStockTable.dataSource"
-                :loading="pdProductStockTable.loading"
-                :rowSelection="{fixed:false,selectedRowKeys: pdProductStockTable.selectedRowKeys, onChange: onSelectChange}"
-                :customRow="onClickRow"
-              >
-              </a-table>
+              <!--<a-table-->
+                <!--v-show="pdProductStockTable.show"-->
+                <!--ref="table"-->
+                <!--bordered-->
+                <!--rowKey="id"-->
+                <!--:pagination="false"-->
+                <!--:columns="pdProductStockTable.columns"-->
+                <!--:dataSource="pdProductStockTable.dataSource"-->
+                <!--:loading="pdProductStockTable.loading"-->
+                <!--:rowSelection="{fixed:false,selectedRowKeys: pdProductStockTable.selectedRowKeys, onChange: onSelectChange}"-->
+                <!--:customRow="onClickRow"-->
+              <!--&gt;-->
+              <!--</a-table>-->
+
+
+
+              <!--<j-editable-table-->
+                <!--bordered-->
+                <!--ref="editable"-->
+                <!--:loading="pdProductStockTable.loading"-->
+                <!--:columns="pdProductStockTable.columns"-->
+                <!--:dataSource="pdProductStockTable.dataSource"-->
+                <!--:maxHeight="650"-->
+                <!--:rowNumber="true"-->
+                <!--:rowSelection="true"-->
+                <!--:actionButton="false"-->
+                <!--:disabled="disableSubmit"-->
+                <!--@valueChange="valueChange"-->
+                <!--style="text-overflow: ellipsis;"-->
+              <!--&gt;-->
+              <!--</j-editable-table>-->
+              <!--<a-row style="margin-top:10px;text-align: right;padding-right: 5%">-->
+                <!--<span style="font-weight: bold;font-size: large;padding-right: 5%">总数量：{{ totalSum }}</span>-->
+                <!--<span style="font-weight: bold;font-size: large">总金额：{{ outTotalPrice }}</span>-->
+              <!--</a-row>-->
+
+
             </a-tab-pane>
           </a-tabs>
         </a-card>
@@ -121,6 +129,7 @@
 
 
     <pd-choose-package-list-model  ref="pdChoosePackageListModel" @ok="returnPackageData" ></pd-choose-package-list-model>
+    <pd-choose-product-stock-list-model ref="pdChooseProductStockListModel" @ok="returnProductStockData" ></pd-choose-product-stock-list-model>
 
   </j-modal>
 </template>
@@ -130,15 +139,17 @@
   import pick from 'lodash.pick'
   import JDate from '@/components/jeecg/JDate'
   import JDictSelectTagExpand from "@/components/dict/JDictSelectTagExpand"
-  import ATextarea from "ant-design-vue/es/input/TextArea";
-  import { JeecgListMixin } from '@/mixins/JeecgListMixin'
+  import ATextarea from "ant-design-vue/es/input/TextArea"
+  // import { JeecgListMixin } from '@/mixins/JeecgListMixin'
   import { httpAction, deleteAction, getAction } from '@/api/manage'
-  import PdChoosePackageListModel from "./PdChoosePackageListModel";
+  import PdChoosePackageListModel from "./PdChoosePackageListModel"
+  import PdChooseProductStockListModel from "./PdChooseProductStockListModel"
 
   export default {
     name: 'PdPackageRecordModal',
-    mixins: [JeecgListMixin],
+    // mixins: [JeecgListMixin],
     components: {
+      PdChooseProductStockListModel,
       PdChoosePackageListModel,
       ATextarea,
       JDate,
@@ -157,15 +168,12 @@
 
         disableSubmit:false,
 
-        initData:{},
         queryParam:{},
+
         pdPackageTable:{
           show: false,
           dataSource:[],
-          innerData:[],
-          expandedRowKeys:[],
           loading:false,
-          subloading:false,
           // 表头
           columns: [
             {
@@ -175,7 +183,7 @@
               width:60,
               align:"center",
               customRender:function (t,r,index) {
-                return parseInt(index)+1;
+                return parseInt(index) + 1;
               }
             },
             {
@@ -191,18 +199,6 @@
                 return !text?"":(text.length>10?text.substr(0,10):text)
               }
             },
-            {
-              title:'产品总数',
-              align:"center",
-              dataIndex: 'packageSum'
-            },
-            {
-              title:'备注',
-              align:"center",
-              dataIndex: 'remarks'
-            }
-          ],
-          innerColumns:[
             {
               title:'产品编号',
               align:"center",
@@ -232,7 +228,7 @@
             {
               title:'定数包产品数量',
               align:"center",
-              width: 100,
+              width: 200,
               dataIndex: 'count'
             },
             {
@@ -296,11 +292,9 @@
         this.visible = false;
         this.pdPackageTable.show = false;
         this.pdPackageTable.dataSource = [];
-        this.pdPackageTable.innerData = [];
-        this.pdPackageTable.expandedRowKeys = [];
         this.pdProductStockTable.dataSource = [];
-        this.pdProductStockTable.selectedRowKeys = [];
-        this.pdProductStockTable.selectionRows = [];
+        // this.pdProductStockTable.selectedRowKeys = [];
+        // this.pdProductStockTable.selectionRows = [];
 
         this.queryParam = {};
         this.$emit('close');
@@ -339,9 +333,20 @@
       handleConfirmDelete() {
 
       },
-      // 选择产品
+      // 选择产品 新增行
       chooseProductList() {
+        let packageData = this.pdPackageTable.dataSource;
 
+        if(packageData.length <= 0){
+          this.$message.error("请选择定数包！");
+          return;
+        }
+        // let packageDetailList = packageData[0].pdPackageDetailList;
+        let productIdList = [];
+        packageData.forEach((item, idx) => {
+          productIdList.push(item.productId)
+        })
+        this.$refs.pdChooseProductStockListModel.show({productIdList:productIdList});
       },
       // 选择产品后返回
       returnProductStockData(data) {
@@ -353,22 +358,16 @@
       },
       // 选择定数包后返回
       returnPackageData(data){
-        this.pdPackageTable.dataSource = data;
+        // this.pdPackageTable.dataSource = data;
+        let pdPackageDetailList = data[0].pdPackageDetailList;
+
+        pdPackageDetailList.forEach((item, idx) => {
+          item.packageCode = data[0].packageCode;
+          item.packageName = data[0].packageName;
+        })
+
+        this.pdPackageTable.dataSource = pdPackageDetailList;
         this.pdPackageTable.show = true;
-      },
-      //定数包展开按钮
-      handleExpand(expanded, record){
-        this.pdPackageTable.expandedRowKeys=[];
-        this.pdPackageTable.innerData=[];
-        if(expanded===true){
-          this.pdPackageTable.expandedRowKeys.push(record.id);
-          this.pdPackageTable.innerData = record.pdPackageDetailList;
-        }
-      },
-      //定数包列表选中
-      onSelectChange(selectedRowKeys, selectionRows) {
-        this.pdProductStockTable.selectedRowKeys = selectedRowKeys;
-        this.pdProductStockTable.selectionRows = selectionRows;
       },
       // 清空选中
       onClearSelected() {
