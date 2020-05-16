@@ -43,8 +43,8 @@ public class WebServiceServiceImpl implements WebServiceService {
             exInspectionItems.setTestDepartment(testDepartment);
             exInspectionItems.setPatientType(patientType);
             exInspectionItems.setGroupBy(groupBy);
-            exInspectionItems.setReceiveDate(receiveDate);
-            exInspectionItems.setTestDate(testDate);
+            //exInspectionItems.setReceiveDate(receiveDate);
+            //exInspectionItems.setTestDate(testDate);
             exInspectionItems.setSpecimenType(specimenType);
             exInspectionItems.setState(state);
             exInspectionItems.setId(UUIDUtil.getUuid());
