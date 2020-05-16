@@ -1,6 +1,7 @@
 package org.jeecg.modules.pd.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.jeecg.modules.pd.vo.ExHisMzInfPage;
 import org.jeecg.modules.pd.vo.ExHisZyInfPage;
 
 import java.util.List;
@@ -14,5 +15,8 @@ import java.util.List;
 public interface ExHisZyInfMapper extends BaseMapper<ExHisZyInfPage> {
 
 
-	int saveExHisZyInf(List<ExHisZyInfPage> exHisZyInf);
+	 int saveExHisZyInf(List<ExHisZyInfPage> exHisZyInf);
+
+	 int saveExHisMzInf(List<ExHisMzInfPage> exHisMzInf);
+
 }

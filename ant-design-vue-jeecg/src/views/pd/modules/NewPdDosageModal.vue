@@ -466,7 +466,6 @@
            }
         let  formData={inHospitalNo:inHospitalNo,
                       outpatientNumber:outpatientNumber,prjType:prjType};
-
         getAction(this.url.queryPatientInfoList,formData).then((res)=>{
           if (res.success) {
             if(res.result.length==1){

@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.jeecg.modules.pd.entity.PdDosage;
+import org.jeecg.modules.pd.entity.PdDosageDetail;
 
 import java.util.HashMap;
 import java.util.List;
@@ -41,5 +42,5 @@ public interface IPdDosageService extends IService<PdDosage> {
 
 
     /*市立医院用*/
-    void newSaveMain(PdDosage pdDosage, String displayFlag);
+    List<PdDosageDetail> newSaveMain(PdDosage pdDosage, String displayFlag);
 }

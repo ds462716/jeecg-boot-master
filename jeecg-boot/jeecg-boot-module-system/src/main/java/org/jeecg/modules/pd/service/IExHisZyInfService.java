@@ -19,4 +19,7 @@ public interface IExHisZyInfService extends IService<ExHisZyInfPage> {
     //计费信息插入HIS中间表(住院)
     public int saveExHisZyInf(PdDosage pdDosage, List<PdDosageDetail> chargeArray);
 
+    //计费信息插入HIS中间表(门诊)
+    public int saveExHisMzInf(PdDosage pdDosage, List<PdDosageDetail> chargeArray);
+
 }

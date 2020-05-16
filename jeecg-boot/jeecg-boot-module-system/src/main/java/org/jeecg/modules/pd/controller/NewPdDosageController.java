@@ -3,9 +3,12 @@ package org.jeecg.modules.pd.controller;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.PdConstant;
 import org.jeecg.modules.pd.entity.PdDosage;
+import org.jeecg.modules.pd.entity.PdDosageDetail;
+import org.jeecg.modules.pd.service.IExHisZyInfService;
 import org.jeecg.modules.pd.service.IHisChargeService;
 import org.jeecg.modules.pd.service.IPdDosageService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +33,9 @@ public class NewPdDosageController {
     @Autowired
     private IPdDosageService pdDosageService;
 
+    @Autowired
+    private IExHisZyInfService exHisZyInfService;
+
     /**
      * 提交
      *
@@ -38,9 +44,16 @@ public class NewPdDosageController {
      */
     @PostMapping(value = "/submit")
     public Result<?> submit(@RequestBody PdDosage pdDosage) {
-        //不收费
-         pdDosageService.newSaveMain(pdDosage, PdConstant.IS_CHARGE_FLAG_1);
-        return Result.ok("添加成功！");
+        List<PdDosageDetail> list= pdDosageService.newSaveMain(pdDosage, PdConstant.IS_CHARGE_FLAG_1);
+         //数据推送到HIS中间表
+        if(CollectionUtils.isNotEmpty(list)){
+              if(StringUtils.isNotEmpty(pdDosage.getInHospitalNo())){//住院
+                  exHisZyInfService.saveExHisZyInf(pdDosage, list);
+              }else{//门诊
+
+              }
+        }
+         return Result.ok("添加成功！");
     }
 
 

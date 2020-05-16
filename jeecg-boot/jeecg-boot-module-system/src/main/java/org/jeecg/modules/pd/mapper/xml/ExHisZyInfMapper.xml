@@ -44,7 +44,7 @@
 
 	<!-- 计费信息插入HIS系统中间表(住院)-->
 	<insert id="saveExHisZyInf">
-		<!--INSERT INTO spd_his_zysf(
+		 INSERT INTO spd_his_zysf(
 		fsf_zyh,fsf_zyhm,fsf_cs,fsf_xmbh,fsf_mc,fsf_xh
 		) VALUES <foreach collection="list" item="item" index="index" open="" close="" separator=",">
 		(
@@ -54,8 +54,8 @@
 		'8',
 		'99',
 		'99'
-		)</foreach>-->
-		INSERT INTO SYS_LOG(id,type) values ('3','2')
+		)</foreach>
+
 	</insert>
 
 </mapper>

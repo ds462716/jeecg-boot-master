@@ -15,7 +15,6 @@ import org.jeecg.modules.pd.entity.*;
 import org.jeecg.modules.pd.mapper.PdDosageMapper;
 import org.jeecg.modules.pd.service.*;
 import org.jeecg.modules.pd.util.UUIDUtil;
-import org.jeecg.modules.pd.vo.ExHisMzInfPage;
 import org.jeecg.modules.pd.vo.PdGoodsAllocationPage;
 import org.jeecg.modules.system.entity.SysDepart;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -358,7 +357,7 @@ public class PdDosageServiceImpl extends ServiceImpl<PdDosageMapper, PdDosage> i
      */
     @Transactional
     @Override
-    public void newSaveMain(PdDosage pdDosage,String displayFlag) {
+    public List<PdDosageDetail> newSaveMain(PdDosage pdDosage,String displayFlag) {
         List<PdDosageDetail> detailList = pdDosage.getPdDosageDetails();
         pdDosage.setId(UUIDUtil.getUuid());
         //校验数据的合法性
@@ -369,13 +368,13 @@ public class PdDosageServiceImpl extends ServiceImpl<PdDosageMapper, PdDosage> i
                 it.remove();
             }
         }
+        List<PdDosageDetail> tempArray = new ArrayList<>();
+        List<PdDosageDetail> chargeArray = new ArrayList<>();
         if(detailList != null && detailList.size() > 0) {
             //总数量
             BigDecimal dosageTotal = new BigDecimal(0);
             //总金额
             BigDecimal moneyTotal = new BigDecimal(0);
-            List<PdDosageDetail> tempArray = new ArrayList<>();
-            List<PdDosageDetail> chargeArray = new ArrayList<>();
             //产品物流
             List<PdStockLog> logList = new ArrayList<PdStockLog>();
             //数据合并
@@ -441,12 +440,11 @@ public class PdDosageServiceImpl extends ServiceImpl<PdDosageMapper, PdDosage> i
                 //收费调用接口
                 if (PdConstant.CHARGE_FLAG_0.equals(pdDosage.getHyCharged())
                         &&chargeArray.size()>0){
-                    if(StringUtils.isNotEmpty(pdDosage.getInHospitalNo())){
+                    //这样会有问题，一个service实现类中不能存在多个不同数据源的service实现类
+                  /*if(StringUtils.isNotEmpty(pdDosage.getInHospitalNo())){
                         exHisZyInfService.saveExHisZyInf(pdDosage,chargeArray);
-                    }else{
-                        ExHisMzInfPage hisMzInfPage=new ExHisMzInfPage();
-                        hisChargeService.saveExHisMzInf(hisMzInfPage);
-                    }
+                    }*/
+                    pdDosageDetailService.saveBatch(chargeArray);
                 }
                 if(!tempArray.isEmpty())
                     pdDosageDetailService.saveBatch(tempArray);
@@ -465,6 +463,7 @@ public class PdDosageServiceImpl extends ServiceImpl<PdDosageMapper, PdDosage> i
                 pdProductStockTotalService.updateUseStock(sysUser.getCurrentDepartId(),afterDealList);
             }
         }
+        return chargeArray;
     }
 
 }

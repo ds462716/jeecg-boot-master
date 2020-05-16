@@ -6,6 +6,7 @@ import org.jeecg.modules.pd.entity.PdDosage;
 import org.jeecg.modules.pd.entity.PdDosageDetail;
 import org.jeecg.modules.pd.mapper.ExHisZyInfMapper;
 import org.jeecg.modules.pd.service.IExHisZyInfService;
+import org.jeecg.modules.pd.vo.ExHisMzInfPage;
 import org.jeecg.modules.pd.vo.ExHisZyInfPage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -56,5 +57,31 @@ public class ExHisZyInfServiceImpl extends ServiceImpl<ExHisZyInfMapper, ExHisZy
 		list.add(hisZyInfPage);
 		}
 		return  exHisZyInfMapper.saveExHisZyInf(list);
+	}
+
+	//计费信息插入HIS中间表（门诊）
+	@Override
+	@Transactional
+	@DS("multi-datasource1")
+	public int saveExHisMzInf(PdDosage pdDosage,List<PdDosageDetail> chargeArray) {
+		List<ExHisMzInfPage> list=new ArrayList<ExHisMzInfPage>();
+		for(PdDosageDetail dosageDetail :chargeArray){
+			ExHisMzInfPage  hisMzInfPage=new ExHisMzInfPage();
+			hisMzInfPage.setFsfBrId("");//病人门诊ID
+			hisMzInfPage.setFsfYjxh("");//对应ms_yj01表yjxh
+			hisMzInfPage.setFsfJzxh("");//对应MS_YJ01中jzxh
+			hisMzInfPage.setFsbSl(dosageDetail.getDosageCount()+"");//数量
+			hisMzInfPage.setFsfXmbh(dosageDetail.getChargeCode());//收费项目编号
+			hisMzInfPage.setFsfMc(dosageDetail.getProductName());//收费项目名称
+			hisMzInfPage.setFsbJe("445");//金额
+			hisMzInfPage.setFsfKdKs("66");//开单科室
+			hisMzInfPage.setFsfZxKs("执行");//执行科室
+			hisMzInfPage.setFsfRq("");//计费日期
+			hisMzInfPage.setFsbRy("5");//计费人员
+			hisMzInfPage.setFsbZt("0");//计费状态
+			hisMzInfPage.setFsbXh(dosageDetail.getId());//序号
+			list.add(hisMzInfPage);
+		}
+		return  exHisZyInfMapper.saveExHisMzInf(list);
 	}
 }
