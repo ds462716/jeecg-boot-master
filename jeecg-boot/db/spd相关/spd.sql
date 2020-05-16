@@ -358,5 +358,5 @@ MODIFY COLUMN `test_date`  datetime NULL DEFAULT NULL COMMENT '检验日期' AFT
 ADD COLUMN `remarks`  varchar(1000) NULL DEFAULT NULL COMMENT '备注' AFTER `depart_parent_id`;
 
 
--- add by mcb 2020年5月11日14:11:55 增加获取检验项目扣减库存用量定时任务
+-- add by mcb 2020年5月16日10:11:55 增加获取检验项目扣减库存用量定时任务
 INSERT INTO `sys_quartz_job` VALUES ('1248489519106277379', 'admin', '2020-5-16 11:23:31', 0, 'admin', '2020-5-16 11:23:31', 'org.jeecg.modules.quartz.job.LisInspectionItemsTaskJob', '3/5 * * * * ? *', NULL, '获取检验项目扣减库存用量定时任务', -1);
