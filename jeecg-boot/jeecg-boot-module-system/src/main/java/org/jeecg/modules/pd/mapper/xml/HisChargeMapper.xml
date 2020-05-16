@@ -116,6 +116,33 @@
 
 
 
+
+	<!--查询检验項目明細信息-->
+	<select id="selectExjianYan"   resultType="org.jeecg.modules.external.entity.ExInspectionItems">
+		select
+		applyNo as "jyId",
+		patientName as "patientName",
+		patientSex as "patientSex",
+		patientAge as "patientAge",
+		CARDID as "cardId",
+		barCode as "barCode",
+		REQUSTTIME as "receiveDate",
+		applyDoctor as "applyDoctor",
+		applyDepartment as "applyDepartment",
+		testDepartment as "testDepartment",
+		patientType as "patientType",
+		combinationName as "combinationName",
+		YLXH as "testItemCode",
+		YLMC as "testItemName",
+		CHECKTIME as "testDate"
+		from  [v_spd_his_ JYperson] a where  CHECKTIME >= #{queryDateEnd}
+	</select>
+
+
+
+
+
+
 	<!-- 计费信息插入HIS系统中间表(门诊)-->
 		<insert id="saveExHisMzInf">
 			INSERT INTO spd_his_mzsf(

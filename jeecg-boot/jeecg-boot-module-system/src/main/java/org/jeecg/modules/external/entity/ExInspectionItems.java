@@ -1,22 +1,16 @@
 package org.jeecg.modules.external.entity;
 
-import java.io.Serializable;
-import java.io.UnsupportedEncodingException;
-import java.util.Date;
-import java.math.BigDecimal;
-import java.util.List;
-
 import com.baomidou.mybatisplus.annotation.*;
-import lombok.Data;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import org.jeecg.modules.pd.entity.BaseEntity;
-import org.springframework.format.annotation.DateTimeFormat;
-import org.jeecgframework.poi.excel.annotation.Excel;
-import org.jeecg.common.aspect.annotation.Dict;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
+import org.jeecgframework.poi.excel.annotation.Excel;
+import org.springframework.format.annotation.DateTimeFormat;
+
+import java.util.Date;
 
 /**
  * @Description: 检查项目表
@@ -82,14 +76,18 @@ public class ExInspectionItems{
 	@Excel(name = "工作组", width = 15)
     @ApiModelProperty(value = "工作组")
     private String groupBy;
-	/**接收日期*/
-	@Excel(name = "接收日期", width = 15)
+    /**接收日期*/
+    @Excel(name = "接收日期", width = 20, format = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd HH:mm:ss")
+    @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
     @ApiModelProperty(value = "接收日期")
-    private String receiveDate;
+    private Date receiveDate;
 	/**检验日期*/
-	@Excel(name = "检验日期", width = 15)
+    @Excel(name = "检验日期", width = 20, format = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd HH:mm:ss")
+    @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
     @ApiModelProperty(value = "检验日期")
-    private String testDate;
+    private Date testDate;
 	/**样本类型*/
 	@Excel(name = "样本类型", width = 15)
     @ApiModelProperty(value = "样本类型")
@@ -140,7 +138,9 @@ public class ExInspectionItems{
 	@Excel(name = "所属部门", width = 15)
     @ApiModelProperty(value = "所属部门")
     private String sysOrgCode;
-
+    /**备注*/
+    @Excel(name = "备注", width = 15)
+    private String remarks;
     /**
      * 所属部门
      */

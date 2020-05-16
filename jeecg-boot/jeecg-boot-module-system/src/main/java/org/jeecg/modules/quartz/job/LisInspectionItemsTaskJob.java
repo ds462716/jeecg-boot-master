@@ -7,6 +7,7 @@ import org.jeecg.modules.external.entity.ExInspectionItems;
 import org.jeecg.modules.external.service.IExInspectionItemsService;
 import org.jeecg.modules.pd.entity.PdUsePackage;
 import org.jeecg.modules.pd.entity.PdUsePackageDetail;
+import org.jeecg.modules.pd.service.IHisChargeService;
 import org.jeecg.modules.pd.service.IPdProductStockTotalService;
 import org.jeecg.modules.pd.service.IPdUsePackageDetailService;
 import org.jeecg.modules.pd.service.IPdUsePackageService;
@@ -19,7 +20,7 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * 获取HIS系统收费项目基础信息定时任务
+ * 获取检验项目信息扣减库存定时任务
  *
  * @Author Scott
  */
@@ -38,22 +39,20 @@ public class LisInspectionItemsTaskJob implements Job {
     @Autowired
     private IPdProductStockTotalService pdProductStockTotalService;
 
+    @Autowired
+    private IHisChargeService hisChargeService;
+
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
-        /**
-         * 定时获取HIS系统收费项目基础信息，并保存到基础信息表中
-         * //步骤1：配置Lis系统数据源信息
-         * //步骤2：调用Lis系统视图信息；视图名称:XXX
-         */
-        log.info("获取LIS检验项目任务开始，时间:" + DateUtils.getTimestamp());
-        List<ExInspectionItems> list=exInspectionItemsService.selectList(new ExInspectionItems());
+        log.info("根据检验项目扣减库存任务开始，时间:" + DateUtils.getTimestamp());
+        List<ExInspectionItems> list=hisChargeService.selectExjianYan(new ExInspectionItems());
         if(list!=null && list.size()>0){
-            List<String> ids = exInspectionItemsService.selectListIds();
+            List<String> jyIds = exInspectionItemsService.selectListIds();
             //增量同步
             Iterator<ExInspectionItems> it = list.iterator();
             while(it.hasNext()){
                 ExInspectionItems exInspectionItems= it.next();
-                if(ids.contains(exInspectionItems.getId())){
+                if(jyIds.contains(exInspectionItems.getJyId())){
                     it.remove();
                 }
             }
@@ -71,14 +70,17 @@ public class LisInspectionItemsTaskJob implements Job {
                         if(pdUsePackageDetails!=null && pdUsePackageDetails.size()>0){
                             try{
                                 pdProductStockTotalService.lisUpdateUseStock(items.getTestDepartment(),pdUsePackageDetails);
+                                items.setAcceptStatus("0");//已扣减
                             }catch (Exception e){
                                 e.getMessage();
                                 log.error("扣減用量失敗:" + e.getMessage());
-                                items.setAcceptStatus("0");
+                                items.setRemarks(e.getMessage());
+                                items.setAcceptStatus("2");
                             }
                         }
                     }else{
-                        //TODO 是否发消息给管理
+                        items.setRemarks("检验项目用量未配置");
+                        items.setAcceptStatus("1");// 0：已扣减  1：未配置检验项目用量  2:未扣减
                     }
                 }
                 exInspectionItemsService.saveBatch(list);
@@ -86,6 +88,6 @@ public class LisInspectionItemsTaskJob implements Job {
         }
 
 
-        log.info("获取LIS检验项目任务结束，时间:" + DateUtils.getTimestamp());
+        log.info("根据检验项目扣减库存任务结束，时间:" + DateUtils.getTimestamp());
     }
 }

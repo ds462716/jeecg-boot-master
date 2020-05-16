@@ -4,6 +4,7 @@ import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.apache.commons.lang.StringUtils;
+import org.jeecg.modules.external.entity.ExInspectionItems;
 import org.jeecg.modules.pd.entity.*;
 import org.jeecg.modules.pd.mapper.HisChargeMapper;
 import org.jeecg.modules.pd.service.IHisChargeService;
@@ -72,6 +73,14 @@ public class HisChargeServiceImpl extends ServiceImpl<HisChargeMapper, HisCharge
 	@DS("multi-datasource1")
 	public List<HisUserInf> selectHisUser() {
 		List list = hisChargeMapper.selectHisUser();
+		return list;
+	}
+	//查询检验项目明细信息
+	@Override
+	@DS("multi-datasource1")
+	public List<ExInspectionItems> selectExjianYan(ExInspectionItems exInspectionItems){
+		List<ExInspectionItems> list=null;
+		hisChargeMapper.selectExjianYan(exInspectionItems);
 		return list;
 	}
 

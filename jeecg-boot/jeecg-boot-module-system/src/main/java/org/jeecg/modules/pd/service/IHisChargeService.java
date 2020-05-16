@@ -2,6 +2,7 @@ package org.jeecg.modules.pd.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
+import org.jeecg.modules.external.entity.ExInspectionItems;
 import org.jeecg.modules.pd.entity.*;
 import org.jeecg.modules.pd.vo.ExHisMzInfPage;
 
@@ -43,5 +44,9 @@ public interface IHisChargeService extends IService<HisChargeInf> {
 
     //计费信息插入HIS中间表(住院)
     public int saveExHisZyInf(PdDosage pdDosage, List<PdDosageDetail> chargeArray);
+
+    //获取检验项目明细
+    public List<ExInspectionItems> selectExjianYan(ExInspectionItems exInspectionItems);
+
 
 }

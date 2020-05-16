@@ -1,6 +1,7 @@
 package org.jeecg.modules.pd.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.jeecg.modules.external.entity.ExInspectionItems;
 import org.jeecg.modules.pd.entity.HisChargeInf;
 import org.jeecg.modules.pd.entity.HisDepartInf;
 import org.jeecg.modules.pd.entity.HisUserInf;
@@ -39,4 +40,6 @@ public interface HisChargeMapper extends BaseMapper<HisChargeInf> {
 	int saveExHisMzInf(ExHisMzInfPage exHisMzInf);
 
 	int saveExHisZyInf(List<ExHisZyInfPage> exHisZyInf);
+
+	List<ExInspectionItems> selectExjianYan(ExInspectionItems exInspectionItems);
 }

@@ -3,15 +3,11 @@
 <mapper namespace="org.jeecg.modules.external.mapper.ExInspectionItemsMapper">
 
     <select id="selectList"  resultType="org.jeecg.modules.external.entity.ExInspectionItems">
-        SELECT
-        *
-        FROM ex_inspection_items_view a
+        SELECT  *  FROM ex_inspection_items  a
     </select>
 
     <!-- 增量同步 -->
     <select id="selectListIds"  resultType="String">
-        SELECT
-        id
-        FROM ex_inspection_items_view a
+        SELECT  jy_id as "jyId"  FROM ex_inspection_items  a
     </select>
 </mapper>

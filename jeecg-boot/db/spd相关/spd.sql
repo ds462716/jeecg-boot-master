@@ -349,3 +349,10 @@ ADD COLUMN `operation_name`  varchar(64) NULL AFTER `hospitalizations_num`,
 ADD COLUMN `operation_time`  datetime NULL COMMENT '手术时间' AFTER `operation_name`,
 ADD COLUMN `bed_number`  varchar(64) NULL COMMENT '病床号' AFTER `operation_time`,
 ADD COLUMN `admission_date`  datetime NULL COMMENT '入院日期' AFTER `bed_number`;
+
+
+-- add by mcb 2020年5月16日10:11:55 字段数据类型修改并增加备注字段
+ALTER TABLE `ex_inspection_items`
+MODIFY COLUMN `receive_date`  datetime NULL DEFAULT NULL COMMENT '接收日期' AFTER `group_by`,
+MODIFY COLUMN `test_date`  datetime NULL DEFAULT NULL COMMENT '检验日期' AFTER `receive_date`,
+ADD COLUMN `remarks`  varchar(1000) NULL DEFAULT NULL COMMENT '备注' AFTER `depart_parent_id`;
