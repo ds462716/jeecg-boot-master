@@ -370,4 +370,6 @@ INSERT INTO `SYS_DICT_ITEM` VALUES ('1262211294640087042', '1262211106076762114'
 -- add by jiangxz 2020年5月18日11:56:22 出入库明细加注册证号
 ALTER TABLE `pd_stock_record_detail`  ADD COLUMN `registration` varchar(255) NULL COMMENT '注册证' AFTER `exp_date`;
 
-
+-- add by jiangxz 2020年5月18日17:56:22 用量主表增加扩展字段
+ALTER TABLE `pd_dosage`  ADD COLUMN `extension1` varchar(64) NULL COMMENT '扩展字段1';
+ALTER TABLE `pd_dosage`  ADD COLUMN `extension2` varchar(64) NULL COMMENT '扩展字段2';

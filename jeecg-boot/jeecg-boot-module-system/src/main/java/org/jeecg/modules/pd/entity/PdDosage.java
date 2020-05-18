@@ -182,7 +182,8 @@ public class PdDosage extends BaseEntity {
     @Excel(name = "手术名称", width = 15)
     @ApiModelProperty(value = "手术名称")
     private String operationName;
-
+    private String  extension1;//扩展字段1
+    private String  extension2;//扩展字段2
     /**性别*/
     @TableField(exist = false)
     private String fsfXb;
@@ -274,8 +275,6 @@ public class PdDosage extends BaseEntity {
     /** 查询日期结束 **/
     @TableField(exist = false)
     private String queryDateEnd;
-
-
     /**
      * 查询病人信息类别
      */

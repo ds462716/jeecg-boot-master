@@ -16,11 +16,11 @@
 			fsf_zx_ks,
 			Fsf_rq,
 			Fsb_ry,
-			fsb_zt,
-			his_jlxh
+			fsf_zt,
+			Fsf_XH
 			) VALUES <foreach collection="list" item="item" index="index" open="" close="" separator=",">
 			(
-			#{item.fsfBrid},
+			#{item.fsfBrId},
 			#{item.fsfYjxh},
 			#{item.fsfJzxh},
 			#{item.fsfXmbh},
@@ -32,7 +32,7 @@
 			#{item.fsfRq},
 			#{item.fsbRy},
 			#{item.fsbZt},
-			#{item.hisJlxh}
+			#{item.fsbXh}
 			)</foreach>
 		</insert>
 

@@ -103,16 +103,16 @@
         a.fsf_brxm_mz as "patientInfo",  -- 病人姓名
         a.fsf_brkh_mz as "outpatientNumber",  -- 病人卡号
         a.fsf_csny_mz as "fsfCsrq",  -- 出生年月
-        a.fsf_sfzh_mz,  -- 收费账号
-        a.fsf_hkdz_mz,-- 户口地址
-        a.fsf_jtdh_mz,-- 联系电话
+        /*a.fsf_sfzh_mz as "",  -- 收费账号*/
+        /*a.fsf_hkdz_mz as "",-- 户口地址*/
+        /*a.fsf_jtdh_mz as "", -- 联系电话*/
         a.fsf_brxb_mz as "fsfXb",  -- 性别
-        a.fsf_jzhm_mz as "fsfJzhmMz",
-        a.fsf_ghxh_mz as "fsfGhxhMz",
-        a.fsf_jzxh_mz as "fsfJzxhMz",
-        a.fsf_yjxh_mz as "fsfYjxhMz",
+        /*a.fsf_jzhm_mz as "fsfJzhmMz",*/
+        /*a.fsf_ghxh_mz as "fsfGhxhMz",*/
+        a.fsf_jzxh_mz as "extension2",
+        a.fsf_yjxh_mz as "extension1",
         a.fsf_kssj_mz as "admissionDate",-- 检查日期
-        a.fsf_ksdm_mz as "exeDeptId",-- 执行科室代码
+        a.fsf_ksdm_mz as "oprDeptId",-- 执行科室代码
         s.fsf_ksmc as "oprDeptName"-- 执行科室名称
 		  from v_spd_his_mz  a
 		  LEFT JOIN   v_spd_his_ks s  on s.fsf_ksbh=a.fsf_ksdm_mz
