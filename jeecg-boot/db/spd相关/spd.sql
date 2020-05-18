@@ -350,6 +350,12 @@ ADD COLUMN `operation_time`  datetime NULL COMMENT '手术时间' AFTER `operati
 ADD COLUMN `bed_number`  varchar(64) NULL COMMENT '病床号' AFTER `operation_time`,
 ADD COLUMN `admission_date`  datetime NULL COMMENT '入院日期' AFTER `bed_number`;
 
+-- add by zxh 2020年5月15日14:06:44  检验项目手动使用优化字段
+ALTER TABLE `ex_inspection_items_use_detail`
+MODIFY COLUMN `product_num`  double(11,2) NULL DEFAULT NULL COMMENT '产品数量（出入库数量）' AFTER `out_huowei_code`,
+MODIFY COLUMN `selling_price`  decimal(11,4) NULL DEFAULT NULL COMMENT '出库单价' AFTER `product_num`;
+
+
 
 -- add by mcb 2020年5月16日10:11:55 字段数据类型修改并增加备注字段
 ALTER TABLE `ex_inspection_items`

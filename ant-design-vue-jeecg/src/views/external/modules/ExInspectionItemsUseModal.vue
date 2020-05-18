@@ -241,7 +241,7 @@
             /*{ title: '出库金额', key: 'outTotalPrice', type: FormTypes.input, disabled:true, width:"100px" },*/
             { title: '库存数量', key: 'stockNum', width:"80px" },
             { title: '规格单位', key: 'specUnitName', width:"80px" },
-            { title: '规格数量', key: 'specQuantity', width:"80px" },
+            { title: '规格数量', key: 'specNum', width:"80px" },
             { title: '出库货位', key: 'outHuoweiName', width:"100px" },
             { title: '产品类型', key: 'productFlagName', width:"100px" },
             /*{ title: '生产日期', key: 'produceDate',  },
@@ -380,7 +380,7 @@
                 return;
               }
             }else{
-              if(Number(item.productNum) > Number(item.specQuantity)){
+              if(Number(item.productNum) > Number(item.specNum)){
                 this.$message.error("["+item.productName+"]用量不能大于规格数量！");
                 return;
               }
@@ -586,7 +586,7 @@
                           return;
                         }
                       }else{
-                        if(Number(item.productNum) + 1 > Number(item.specQuantity)){
+                        if(Number(item.productNum) + 1 > Number(item.specNum)){
                           //清空扫码框
                           this.clearQueryParam();
                           this.$message.error("["+item.productName+"]用量不能大于规格数量！");
@@ -643,11 +643,11 @@
                     return;
                   }
                 }else{
-                  if(item.id == row.id && Number(value) > Number(item.specQuantity)){
+                  if(item.id == row.id && Number(value) > Number(item.specNum)){
                     this.$message.error("["+row.productName+"]用量不能大于规格数量！");
                     // 产品数量变更 计算每条产品的价格
                     let outTotalPrice = (Number(row.sellingPrice) * Number(item.stockNum)).toFixed(4);
-                    target.setValues([{rowKey: row.id, values: { outTotalPrice: outTotalPrice, productNum: item.specQuantity }}])
+                    target.setValues([{rowKey: row.id, values: { outTotalPrice: outTotalPrice, productNum: item.specNum }}])
                     return;
                   }
                 }
@@ -704,7 +704,6 @@
           expDate:row.expDate,
           sellingPrice:row.sellingPrice,
           specUnitId: row.specUnitId,
-          specQuantity: row.specQuantity,
           productNum: 1,
           /*purchasePrice:row.purchasePrice,*/
           outTotalPrice:Number(!row.sellingPrice ? 0 : row.sellingPrice).toFixed(4),
@@ -714,7 +713,7 @@
           productFlag:row.productFlag,
           productFlagName:row.productFlag==0?"耗材":"试剂",
           specUnitName:row.specUnitName,
-          specQuantity:row.specQuantity,
+          specNum: row.specNum,
           /*inHuoweiCode:"",*/
           supplierId:row.supplierId,
           /*produceDate:row.produceDate*/
