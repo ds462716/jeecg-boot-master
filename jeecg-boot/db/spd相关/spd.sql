@@ -366,3 +366,8 @@ INSERT INTO `SYS_DICT` VALUES ('1262211106076762114', '试剂扣减状态', 'acc
 INSERT INTO `SYS_DICT_ITEM` VALUES ('1262211216206602242', '1262211106076762114', '已扣减', '0', '', 1, 1, 'admin', '2020-5-18 10:39:39', 'admin', '2020-5-18 10:40:18');
 INSERT INTO `SYS_DICT_ITEM` VALUES ('1262211261735772161', '1262211106076762114', '未配置检验用量', '1', '', 2, 1, 'admin', '2020-5-18 10:39:50', 'admin', '2020-5-18 10:40:27');
 INSERT INTO `SYS_DICT_ITEM` VALUES ('1262211294640087042', '1262211106076762114', '未扣减', '2', '', 3, 1, 'admin', '2020-5-18 10:39:58', 'admin', '2020-5-18 10:40:36');
+
+-- add by jiangxz 2020年5月18日11:56:22 出入库明细加注册证号
+ALTER TABLE `pd_stock_record_detail`  ADD COLUMN `registration` varchar(255) NULL COMMENT '注册证' AFTER `exp_date`;
+
+
