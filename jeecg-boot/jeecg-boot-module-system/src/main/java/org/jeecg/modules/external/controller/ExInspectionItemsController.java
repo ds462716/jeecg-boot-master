@@ -190,6 +190,7 @@ public class ExInspectionItemsController extends JeecgController<ExInspectionIte
 			 if(pdUsePackageDetails!=null && pdUsePackageDetails.size()>0){
 				 try{
 					 pdProductStockTotalService.lisUpdateUseStock(items.getTestDepartment(),pdUsePackageDetails);
+                     items.setRemarks("");
 					 items.setAcceptStatus(PdConstant.ACCEPT_STATUS_0);//已扣减
 				 }catch (Exception e){
 					 e.getMessage();

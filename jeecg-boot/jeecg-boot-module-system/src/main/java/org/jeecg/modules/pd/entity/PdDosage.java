@@ -178,9 +178,9 @@ public class PdDosage extends BaseEntity {
     @ApiModelProperty(value = "住院次数")
     private String hospitalizationsNum;
 
-    /**住院次数*/
-    @Excel(name = "住院次数", width = 15)
-    @ApiModelProperty(value = "住院次数")
+    /**手术名称*/
+    @Excel(name = "手术名称", width = 15)
+    @ApiModelProperty(value = "手术名称")
     private String operationName;
 
     /**性别*/
