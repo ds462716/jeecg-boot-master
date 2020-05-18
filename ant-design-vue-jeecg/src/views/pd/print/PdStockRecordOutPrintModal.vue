@@ -366,6 +366,8 @@
   @page {
     size: auto;
     margin-top: 5mm;
+    margin-left: 13mm;
+    margin-right: 13mm;
     margin-bottom: 0mm;
   }
 </style>
