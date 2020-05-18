@@ -289,7 +289,7 @@
             { title: '入库单价', key: 'purchasePrice', width:"80px" },
             { title: '出库单价', key: 'sellingPrice', width:"80px" },
             {
-              title: '打包数量', key: 'packageNum', type: FormTypes.input, width:"80px",
+              title: '打包数量', key: '‘【', type: FormTypes.input, width:"80px",
               placeholder: '${title}', defaultValue: '1',
               validateRules: [{ required: true, message: '${title}不能为空' },{ pattern: '^-?\\d+\\.?\\d*$',message: '${title}的格式不正确' }]
             },
