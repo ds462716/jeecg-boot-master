@@ -222,6 +222,18 @@
             dataIndex: 'specNum'
           },
           {
+            title:'使用状态',
+            align:"center",
+            dataIndex: 'nestatStatus',
+            customRender:(text)=>{
+              if(!text){
+                return ''
+              }else{
+                return filterMultiDictText(this.dictOptions['nestatStatus'], text+"")
+              }
+            }
+          },
+          {
             title:'是否过期',
             align:"center",
             dataIndex: 'expStatus',
@@ -258,6 +270,7 @@
         },
         dictOptions:{
           expStatus:[],
+          nestatStatus:[],
           isLong:[],
         },
         tableScroll:{x :13*147+50},
@@ -373,6 +386,11 @@
         initDictOptions('pd_isLong').then((res) => {
           if (res.success) {
             this.$set(this.dictOptions, 'isLong', res.result)
+          }
+        })
+        initDictOptions('nestat_status').then((res) => {
+          if (res.success) {
+            this.$set(this.dictOptions, 'nestatStatus', res.result)
           }
         })
       },

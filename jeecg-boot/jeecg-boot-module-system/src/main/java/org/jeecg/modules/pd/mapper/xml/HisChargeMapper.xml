@@ -120,13 +120,13 @@
 	<!--查询检验項目明細信息-->
 	<select id="selectExjianYan"   resultType="org.jeecg.modules.external.entity.ExInspectionItems">
 		select
-		applyNo as "jyId",
+		aplyNo as "jyId",
 		patientName as "patientName",
 		patientSex as "patientSex",
 		patientAge as "patientAge",
 		CARDID as "cardId",
 		barCode as "barCode",
-		REQUSTTIME as "receiveDate",
+		REQUESTTIME as "receiveDate",
 		applyDoctor as "applyDoctor",
 		applyDepartment as "applyDepartment",
 		testDepartment as "testDepartment",
@@ -135,7 +135,11 @@
 		YLXH as "testItemCode",
 		YLMC as "testItemName",
 		CHECKTIME as "testDate"
-		from  [v_spd_his_ JYperson] a where  CHECKTIME >= #{queryDateEnd}
+		from  [v_spd_his_ JYperson]   where
+		 1=1
+		<if test="queryDateEnd != null and queryDateEnd != ''">
+			AND  CHECKTIME >= #{queryDateEnd}
+		</if>
 	</select>
 
 

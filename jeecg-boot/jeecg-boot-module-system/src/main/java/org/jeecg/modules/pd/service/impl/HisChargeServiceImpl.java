@@ -79,8 +79,7 @@ public class HisChargeServiceImpl extends ServiceImpl<HisChargeMapper, HisCharge
 	@Override
 	@DS("multi-datasource1")
 	public List<ExInspectionItems> selectExjianYan(ExInspectionItems exInspectionItems){
-		List<ExInspectionItems> list=null;
-		hisChargeMapper.selectExjianYan(exInspectionItems);
+		List<ExInspectionItems> list=hisChargeMapper.selectExjianYan(exInspectionItems);
 		return list;
 	}
 

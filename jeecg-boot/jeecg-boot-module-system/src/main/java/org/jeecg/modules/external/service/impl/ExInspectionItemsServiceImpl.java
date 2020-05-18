@@ -1,5 +1,6 @@
 package org.jeecg.modules.external.service.impl;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.jeecg.modules.external.entity.ExInspectionItems;
 import org.jeecg.modules.external.mapper.ExInspectionItemsMapper;
@@ -20,6 +21,17 @@ public class ExInspectionItemsServiceImpl extends ServiceImpl<ExInspectionItemsM
 
     @Autowired
     private ExInspectionItemsMapper exInspectionItemsMapper;
+
+    /**
+     * 查询列表
+     * @param page
+     * @param exInspectionItems
+     * @return
+     */
+    @Override
+    public Page<ExInspectionItems> selectList(Page<ExInspectionItems> page, ExInspectionItems exInspectionItems) {
+        return page.setRecords(exInspectionItemsMapper.selectList(exInspectionItems));
+    }
 
     @Override
     public List<ExInspectionItems> selectList(ExInspectionItems exInspectionItems) {

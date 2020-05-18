@@ -360,3 +360,9 @@ ADD COLUMN `remarks`  varchar(1000) NULL DEFAULT NULL COMMENT '备注' AFTER `de
 
 -- add by mcb 2020年5月16日10:11:55 增加获取检验项目扣减库存用量定时任务
 INSERT INTO `sys_quartz_job` VALUES ('1248489519106277379', 'admin', '2020-5-16 11:23:31', 0, 'admin', '2020-5-16 11:23:31', 'org.jeecg.modules.quartz.job.LisInspectionItemsTaskJob', '3/5 * * * * ? *', NULL, '获取检验项目扣减库存用量定时任务', -1);
+
+-- add by mcb 2020年5月18日10:11:55 增加扣减状态静态字典
+INSERT INTO `SYS_DICT` VALUES ('1262211106076762114', '试剂扣减状态', 'accept_status', '0:已扣减  1：未配置检验用量  2：未扣减', 0, 'admin', '2020-5-18 10:39:13', NULL, '2020-5-18 10:39:13', 0);
+INSERT INTO `SYS_DICT_ITEM` VALUES ('1262211216206602242', '1262211106076762114', '已扣减', '0', '', 1, 1, 'admin', '2020-5-18 10:39:39', 'admin', '2020-5-18 10:40:18');
+INSERT INTO `SYS_DICT_ITEM` VALUES ('1262211261735772161', '1262211106076762114', '未配置检验用量', '1', '', 2, 1, 'admin', '2020-5-18 10:39:50', 'admin', '2020-5-18 10:40:27');
+INSERT INTO `SYS_DICT_ITEM` VALUES ('1262211294640087042', '1262211106076762114', '未扣减', '2', '', 3, 1, 'admin', '2020-5-18 10:39:58', 'admin', '2020-5-18 10:40:36');

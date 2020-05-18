@@ -1,46 +1,34 @@
 package org.jeecg.modules.external.controller;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import org.apache.shiro.SecurityUtils;
-import org.jeecg.common.api.vo.Result;
-import org.jeecg.common.system.query.QueryGenerator;
-import org.jeecg.common.system.vo.LoginUser;
-import org.jeecg.common.util.oConvertUtils;
-import org.jeecg.modules.external.entity.ExInspectionItems;
-import org.jeecg.modules.external.service.IExInspectionItemsService;
-
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import lombok.extern.slf4j.Slf4j;
-
-import org.jeecgframework.poi.excel.ExcelImportUtil;
-import org.jeecgframework.poi.excel.def.NormalExcelConstants;
-import org.jeecgframework.poi.excel.entity.ExportParams;
-import org.jeecgframework.poi.excel.entity.ImportParams;
-import org.jeecgframework.poi.excel.view.JeecgEntityExcelView;
-import org.jeecg.common.system.base.controller.JeecgController;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.MultipartHttpServletRequest;
-import org.springframework.web.servlet.ModelAndView;
-import com.alibaba.fastjson.JSON;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.shiro.SecurityUtils;
+import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.aspect.annotation.AutoLog;
+import org.jeecg.common.constant.PdConstant;
+import org.jeecg.common.system.base.controller.JeecgController;
+import org.jeecg.common.system.vo.LoginUser;
+import org.jeecg.modules.external.entity.ExInspectionItems;
+import org.jeecg.modules.external.service.IExInspectionItemsService;
+import org.jeecg.modules.pd.entity.PdUsePackage;
+import org.jeecg.modules.pd.entity.PdUsePackageDetail;
+import org.jeecg.modules.pd.service.IPdProductStockTotalService;
+import org.jeecg.modules.pd.service.IPdUsePackageDetailService;
+import org.jeecg.modules.pd.service.IPdUsePackageService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
 
- /**
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.Arrays;
+import java.util.List;
+
+/**
  * @Description: 检查项目表
  * @Author: jiangxz
  * @Date:   2020-04-23
@@ -53,7 +41,15 @@ import org.jeecg.common.aspect.annotation.AutoLog;
 public class ExInspectionItemsController extends JeecgController<ExInspectionItems, IExInspectionItemsService> {
 	@Autowired
 	private IExInspectionItemsService exInspectionItemsService;
-	
+
+	@Autowired
+	private IPdUsePackageService pdUsePackageService;
+
+	@Autowired
+	private IPdUsePackageDetailService pdUsePackageDetailService;
+
+	@Autowired
+	private IPdProductStockTotalService pdProductStockTotalService;
 	/**
 	 * 分页列表查询
 	 *
@@ -71,10 +67,8 @@ public class ExInspectionItemsController extends JeecgController<ExInspectionIte
 								   @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
 								   HttpServletRequest req) {
 		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
-		QueryWrapper<ExInspectionItems> queryWrapper = QueryGenerator.initQueryWrapper(exInspectionItems, req.getParameterMap());
-		queryWrapper.eq("depart_id", sysUser.getCurrentDepartId());
 		Page<ExInspectionItems> page = new Page<ExInspectionItems>(pageNo, pageSize);
-		IPage<ExInspectionItems> pageList = exInspectionItemsService.page(page, queryWrapper);
+		IPage<ExInspectionItems> pageList = exInspectionItemsService.selectList(page, exInspectionItems);
 		return Result.ok(pageList);
 	}
 	
@@ -173,5 +167,50 @@ public class ExInspectionItemsController extends JeecgController<ExInspectionIte
     public Result<?> importExcel(HttpServletRequest request, HttpServletResponse response) {
         return super.importExcel(request, response, ExInspectionItems.class);
     }
+
+
+
+	 /**
+	  *  重新扣减检验用量
+	  *
+	  * @param items
+	  * @return
+	  */
+	 @PostMapping(value = "/editUsePackage")
+	 public Result<?> editUsePackage(@RequestBody ExInspectionItems items) {
+		 LambdaQueryWrapper<PdUsePackage> query = new LambdaQueryWrapper<>();
+		 query.eq(PdUsePackage::getCode, items.getTestItemCode());
+		 query.eq(PdUsePackage::getName,items.getTestItemName());
+		 PdUsePackage pdUsePackage = pdUsePackageService.getOne(query);
+		 //不存在或沒有配置檢驗用量明細
+		 if(pdUsePackage!=null){
+			 PdUsePackageDetail detail=new PdUsePackageDetail();
+			 detail.setPackageId(pdUsePackage.getId());
+			 List<PdUsePackageDetail> pdUsePackageDetails = pdUsePackageDetailService.queryPdUsePackageList(detail);
+			 if(pdUsePackageDetails!=null && pdUsePackageDetails.size()>0){
+				 try{
+					 pdProductStockTotalService.lisUpdateUseStock(items.getTestDepartment(),pdUsePackageDetails);
+					 items.setAcceptStatus(PdConstant.ACCEPT_STATUS_0);//已扣减
+				 }catch (Exception e){
+					 e.getMessage();
+					 log.error("扣減用量失敗:" + e.getMessage());
+					 items.setRemarks(e.getMessage());
+					 items.setAcceptStatus(PdConstant.ACCEPT_STATUS_2);
+					 exInspectionItemsService.updateById(items);
+					 return Result.error(e.getMessage());
+				 }
+			 }else{
+				 items.setRemarks("检验项目用量未配置");
+				 items.setAcceptStatus(PdConstant.ACCEPT_STATUS_1);// 0：已扣减  1：未配置检验用量  2:未扣减
+				 return Result.error("扣減用量失敗:检验项目用量未配置");
+			 }
+		 }else{
+			 items.setRemarks("检验项目未配置");
+			 items.setAcceptStatus(PdConstant.ACCEPT_STATUS_1);// 0：已扣减  1：未配置检验用量  2:未扣减
+			 return Result.error("扣減用量失敗:检验项目未配置");
+		 }
+	 	 exInspectionItemsService.updateById(items);
+		 return Result.ok("扣减成功!");
+	 }
 
 }

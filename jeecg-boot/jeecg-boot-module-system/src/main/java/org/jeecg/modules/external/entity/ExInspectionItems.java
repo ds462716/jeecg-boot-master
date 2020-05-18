@@ -52,14 +52,20 @@ public class ExInspectionItems{
 	@Excel(name = "条形码", width = 15)
     @ApiModelProperty(value = "条形码")
     private String barCode;
-	/**申请医生*/
-	@Excel(name = "申请医生", width = 15)
-    @ApiModelProperty(value = "申请医生")
+	/**申请医生ID*/
+	@Excel(name = "申请医生ID", width = 15)
+    @ApiModelProperty(value = "申请医生ID")
     private String applyDoctor;
-	/**申请科室*/
-	@Excel(name = "申请科室", width = 15)
-    @ApiModelProperty(value = "申请科室")
+    /**申请医生姓名*/
+    @TableField(exist = false)
+    private String applyDoctorName;
+	/**申请科室ID*/
+	@Excel(name = "申请科室ID", width = 15)
+    @ApiModelProperty(value = "申请科室ID")
     private String applyDepartment;
+    /**申请科室名称*/
+    @TableField(exist = false)
+    private String applyDepartmentName;
 	/**检验医生*/
 	@Excel(name = "检验医生", width = 15)
     @ApiModelProperty(value = "检验医生")
@@ -152,4 +158,11 @@ public class ExInspectionItems{
      */
     @TableField(strategy = FieldStrategy.NOT_EMPTY)
     private String departParentId;
+
+
+    /** 查询日期结束 **/
+    @TableField(exist = false)
+    private String queryDateEnd;
+
+
 }

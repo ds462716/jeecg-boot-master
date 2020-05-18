@@ -2,8 +2,60 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.jeecg.modules.external.mapper.ExInspectionItemsMapper">
 
+    <sql id="exInspectionItemsColumns">
+        a.id,
+        a.jy_id,
+        a.patient_name,
+        a.patient_sex,
+        a.patient_age,
+        a.card_id,
+        a.bar_code,
+        a.apply_doctor,
+        a.apply_department,
+        a.test_doctor,
+        a.test_department,
+        a.patient_type,
+        a.group_by,
+        a.receive_date,
+        a.test_date,
+        a.specimen_type,
+        a.state,
+        a.combination_name,
+        a.combination_code,
+        a.test_item_name,
+        a.test_item_code,
+        a.test_item_cost,
+        a.accept_status,
+        a.create_by,
+        a.create_time,
+        a.update_by,
+        a.update_time,
+        a.sys_org_code,
+        a.depart_id,
+        a.depart_parent_id,
+        a.remarks
+	</sql>
+
+
+
+
+
+
     <select id="selectList"  resultType="org.jeecg.modules.external.entity.ExInspectionItems">
-        SELECT  *  FROM ex_inspection_items  a
+        SELECT
+        <include refid="exInspectionItemsColumns"/>,
+        b.fsf_yhxm as "applyDoctorName",
+        c.fsf_ksmc as "applyDepartmentName"
+          FROM ex_inspection_items  a
+        left join  ex_his_user_inf b on b.fsf_yhm=a.apply_doctor
+        left join  ex_his_depart_inf c on c.fsf_ksbh=a.apply_department
+        where 1=1
+        <if test="patientName != null and patientName != ''">
+            AND a.patient_name LIKE concat('%',#{patientName},'%')
+        </if>
+        <if test="testItemCode != null and testItemCode != ''">
+            AND a.test_item_code LIKE concat('%',#{testItemCode},'%')
+        </if>
     </select>
 
     <!-- 增量同步 -->

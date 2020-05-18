@@ -53,7 +53,7 @@
          d.name as unitName
           FROM
 		 pd_use_package_detail a
-         LEFT JOIN pd_package b ON a.package_id=b.id
+         LEFT JOIN pd_use_package b ON a.package_id=b.id
 		 LEFT JOIN pd_product c ON c.id=a.product_id
 		 LEFT JOIN pd_unit d ON c.unit_id = d.id
 		 LEFT JOIN pd_unit sb ON c.spec_unit_id = sb.id

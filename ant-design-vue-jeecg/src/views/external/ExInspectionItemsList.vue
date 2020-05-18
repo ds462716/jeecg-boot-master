@@ -4,7 +4,26 @@
     <div class="table-page-search-wrapper">
       <a-form layout="inline" @keyup.enter.native="searchQuery">
         <a-row :gutter="24">
-
+          <a-col :md="6" :sm="8">
+            <a-form-item label="病人姓名">
+              <a-input placeholder="请输入病人姓名" v-model="queryParam.patientName"></a-input>
+            </a-form-item>
+          </a-col>
+          <a-col :md="6" :sm="8">
+            <a-form-item label="检验项目代码">
+              <a-input placeholder="请输入检验项目代码" v-model="queryParam.testItemCode"></a-input>
+            </a-form-item>
+          </a-col>
+          <a-col :md="6" :sm="8">
+            <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
+              <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
+              <a-button type="primary" @click="searchReset" icon="reload" style="margin-left: 8px">重置</a-button>
+              <a @click="handleToggleSearch" style="margin-left: 8px">
+                {{ toggleSearchStatus ? '收起' : '展开' }}
+                <a-icon :type="toggleSearchStatus ? 'up' : 'down'"/>
+              </a>
+            </span>
+          </a-col>
         </a-row>
       </a-form>
     </div>
@@ -60,7 +79,9 @@
   import { JeecgListMixin } from '@/mixins/JeecgListMixin'
   import ExInspectionItemsModal from './modules/ExInspectionItemsModal'
   import PdUsePackageModal from '../pd/modules/PdUsePackageModal'
-  import {getAction} from '@/api/manage'
+  import {httpAction,getAction} from '@/api/manage'
+  import {initDictOptions, filterMultiDictText} from '@/components/dict/JDictSelectUtil'
+
 
   export default {
     name: "ExInspectionItemsList",
@@ -102,17 +123,12 @@
           {
             title:'申请医生',
             align:"center",
-            dataIndex: 'applyDoctor'
+            dataIndex: 'applyDoctorName'
           },
           {
             title:'申请科室',
             align:"center",
-            dataIndex: 'applyDepartment'
-          },
-          {
-            title:'检验医生',
-            align:"center",
-            dataIndex: 'testDoctor'
+            dataIndex: 'applyDepartmentName'
           },
           {
             title:'检验科室',
@@ -125,39 +141,25 @@
             dataIndex: 'patientType'
           },
           {
-            title:'工作组',
-            align:"center",
-            dataIndex: 'groupBy'
-          },
-          {
             title:'接收日期',
             align:"center",
-            dataIndex: 'receiveDate'
+            dataIndex: 'receiveDate',
+            customRender:function (text) {
+              return !text?"":(text.length>10?text.substr(0,10):text)
+            }
           },
           {
             title:'检验日期',
             align:"center",
-            dataIndex: 'testDate'
-          },
-          {
-            title:'样本类型',
-            align:"center",
-            dataIndex: 'specimenType'
-          },
-          {
-            title:'状态',
-            align:"center",
-            dataIndex: 'state'
+            dataIndex: 'testDate',
+            customRender:function (text) {
+              return !text?"":(text.length>10?text.substr(0,10):text)
+            }
           },
           {
             title:'项目组合名称',
             align:"center",
             dataIndex: 'combinationName'
-          },
-          {
-            title:'项目组合代码',
-            align:"center",
-            dataIndex: 'combinationCode'
           },
           {
             title:'检查项目名称',
@@ -170,15 +172,22 @@
             dataIndex: 'testItemCode'
           },
           {
-            title:'检查项目费用',
+            title:'扣减状态',
             align:"center",
-            dataIndex: 'testItemCost'
+            dataIndex: 'acceptStatus',
+            customRender:(text)=>{
+              if(!text){
+                return ''
+              }else{
+                return filterMultiDictText(this.dictOptions['acceptStatus'], text+"")
+              }
+            }
           },
-          {
-            title:'读取状态',
-            align:"center",
-            dataIndex: 'acceptStatus'
-          },
+            {
+           title:'备注',
+           align:"center",
+           dataIndex: 'remarks'
+         },
           {
             title: '操作',
             dataIndex: 'action',
@@ -195,9 +204,12 @@
           deleteBatch: "/external/exInspectionItems/deleteBatch",
           exportXlsUrl: "/external/exInspectionItems/exportXls",
           importExcelUrl: "external/exInspectionItems/importExcel",
+          editUsePackage:"/external/exInspectionItems/editUsePackage",
         },
-        dictOptions:{},
-        tableScroll:{x :10*140+30},
+        dictOptions:{
+          acceptStatus:[],
+        },
+        tableScroll:{x :10*200+30},
       }
     },
     computed: {
@@ -206,15 +218,32 @@
       }
     },
     methods: {
-      initDictConfig(){
+
+
+      initDictConfig(){ //静态字典值加载
+        initDictOptions('accept_status').then((res) => {
+          if (res.success) {
+            this.$set(this.dictOptions, 'acceptStatus', res.result)
+          }
+        })
       },
+
+
+
       //重新扣减
       editUsePackageDetail: function (record) {
-        //TODO 试剂扣减算法
+        httpAction(this.url.editUsePackage,record,"post").then((res)=>{
+          if(res.success){
+            this.$message.success(res.message)
+             //loadData();
+          }else{
+            this.$message.warning(res.message)
+          }
+        })
       },
       //查询检验包详情
       queryUsePackageDetail: function (record) {
-        getAction(this.url.queryUsePackageDetail, {testItemCode:record.testItemCode}).then((res) => {
+        getAction(this.url.queryUsePackageDetail, {testItemName:record.testItemName,testItemCode:record.testItemCode}).then((res) => {
           if (res.success) {
             this.$refs.pdUsePackageModal.edit(res.result);
             this.$refs.pdUsePackageModal.title = "详情";

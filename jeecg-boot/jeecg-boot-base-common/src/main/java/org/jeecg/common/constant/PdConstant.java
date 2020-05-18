@@ -253,4 +253,9 @@ public interface PdConstant {
 	public final static String AUTO_ORDER_0="0";//自动申领单
 	public final static String AUTO_ORDER_1="1";//自动采购单
 
+	//试剂扣减状态
+	public final static String ACCEPT_STATUS_0="0";//已扣减
+	public final static String ACCEPT_STATUS_1="1";//未配置检验用量
+	public final static String ACCEPT_STATUS_2="2";//未扣减
+
 }

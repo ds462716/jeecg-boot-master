@@ -515,7 +515,7 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
     @Override
     public String lisUpdateUseStock(String testDepartment,List<PdUsePackageDetail> detailList) {
         HisDepartInf hisDepartInf=hisDepartService.queryHisDepart(testDepartment);
-        String departId=hisDepartInf.getSpdDepartId();
+        String departId="743dc34c1bcd4e4fa9503ccebce7edc6";//hisDepartInf.getSpdDepartId();
         //String departId=items.getDepartId();
         //PdUsePackage usePackage =new PdUsePackage();
         //usePackage.setCode(items.getTestItemCode());
