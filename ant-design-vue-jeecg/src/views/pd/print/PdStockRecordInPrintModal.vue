@@ -313,8 +313,6 @@
   @page {
     size: auto;
     margin-top: 5mm;
-    margin-left: 0mm;
-    margin-right: 0mm;
     margin-bottom: 0mm;
   }
 </style>
