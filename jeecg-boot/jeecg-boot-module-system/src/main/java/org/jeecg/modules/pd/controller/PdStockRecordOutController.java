@@ -163,8 +163,11 @@ public class PdStockRecordOutController {
                 return Result.error("出库单已被提交，不能再次提交！");
             }
         }
-        pdStockRecordService.submit(pdStockRecord, pdStockRecord.getPdStockRecordDetailList(), PdConstant.RECODE_TYPE_2);
-        return Result.ok("添加成功！");
+        String recordId = pdStockRecordService.submit(pdStockRecord, pdStockRecord.getPdStockRecordDetailList(), PdConstant.RECODE_TYPE_2);
+        Map<String,Object> result = new HashMap<>();
+        result.put("recordId",recordId);
+        result.put("message","提交成功！");
+        return Result.ok(result);
     }
 
     /**
@@ -210,6 +213,24 @@ public class PdStockRecordOutController {
     }
 
     /**
+     * 目前只用于打印后更新注册号
+     * @param pdStockRecord
+     * @return
+     */
+    @PutMapping(value = "/edit")
+    public Result<?> edit(@RequestBody PdStockRecord pdStockRecord) {
+
+        if(CollectionUtils.isNotEmpty(pdStockRecord.getPdStockRecordDetailList())){
+            Date date = DateUtils.getDate();
+            for(PdStockRecordDetail item : pdStockRecord.getPdStockRecordDetailList()){
+                item.setUpdateTime(date);
+            }
+            pdStockRecordDetailService.updateBatchById(pdStockRecord.getPdStockRecordDetailList());
+        }
+        return Result.ok("编辑成功!");
+    }
+
+    /**
      * 通过id删除
      *
      * @param id
@@ -250,7 +271,31 @@ public class PdStockRecordOutController {
      */
     @GetMapping(value = "/queryById")
     public Result<?> queryById(@RequestParam(name = "id", required = true) String id) {
-        PdStockRecord pdStockRecord = pdStockRecordService.getById(id);
+
+        PdStockRecord pdStockRecord = new PdStockRecord();
+        pdStockRecord.setId(id);
+        pdStockRecord = pdStockRecordService.getOne(pdStockRecord);
+
+        PdStockRecordDetail pdStockRecordDetail = new PdStockRecordDetail();
+        pdStockRecordDetail.setRecordId(id);
+        List<PdStockRecordDetail> pdStockRecordDetailList = pdStockRecordDetailService.selectByMainId(pdStockRecordDetail);
+        pdStockRecord.setPdStockRecordDetailList(pdStockRecordDetailList);
+
+
+        BigDecimal inTotalPrice = new BigDecimal(0);//总金额
+        BigDecimal outTotalPrice = new BigDecimal(0);//总金额
+        Double totalSum = new Double(0);//总数量
+        for (PdStockRecordDetail item : pdStockRecordDetailList) {
+            totalSum = totalSum + item.getProductNum();
+            BigDecimal purchasePrice = item.getPurchasePrice() == null ? new BigDecimal(0) : item.getPurchasePrice();
+            BigDecimal sellingPrice = item.getSellingPrice() == null ? new BigDecimal(0) : item.getSellingPrice();
+            inTotalPrice = inTotalPrice.add(purchasePrice.multiply(BigDecimal.valueOf(item.getProductNum())).setScale(4, BigDecimal.ROUND_HALF_UP));
+            outTotalPrice = outTotalPrice.add(sellingPrice.multiply(BigDecimal.valueOf(item.getProductNum())).setScale(4, BigDecimal.ROUND_HALF_UP));
+        }
+        pdStockRecord.setTotalSum(totalSum);
+        pdStockRecord.setInTotalPrice(inTotalPrice);
+        pdStockRecord.setOutTotalPrice(outTotalPrice);
+
         if (pdStockRecord == null) {
             return Result.error("未找到对应数据");
         }

@@ -564,6 +564,7 @@
           submit: "/pd/pdStockRecordOut/submit",
           add: "/pd/pdStockRecordOut/add",
           cancel: "/pd/pdStockRecordOut/cancel",
+          queryById: "/pd/pdStockRecordOut/queryById",
           // edit: "/pd/pdStockRecordOut/edit",
           // querySupplier:"/pd/pdSupplier/getSupplierList",
           departList:"/pd/pdDepart/getSysDepartList",
@@ -832,36 +833,18 @@
       },
       /**打印按钮**/
       printBtn(flag){
-        if(flag == "2"){
-          // this.model.auditDate = this.form.getFieldValue("submitDate");
-          this.model.auditByName = this.model.submitByName;
-          // this.model.inDepartName = this.inDepartName;
+        let recordId = this.model.id;
+        if(!recordId){
+          this.$message.warning("参数不正确，请重新打印！");
+          return;
         }
-        if(!this.model.auditDate){
-          this.model.auditDate = this.form.getFieldValue("submitDate");
-        }
-        if(!this.model.inDepartName){
-          this.model.inDepartName = this.inDepartName;
-        }
-
-        let { values } = this.$refs.pdStockRecordDetail.getValuesSync({ validate: false });
-        this.model.totalSum = this.totalSum;
-        this.model.outTotalPrice = this.outTotalPrice;
-        this.model.inTotalPrice = this.inTotalPrice;
-        this.model.remarks = this.form.getFieldValue("remarks");
-        // this.model.pdStockRecordDetailList = this.pdStockRecordDetailTable.dataSource;
-        // 定数包相关
-        if(this.pdPackageTable.dataSource.length > 0){
-          for (let table of this.pdPackageTable.dataSource){
-            for (let item of table.pdPackageRecordDetailList){
-              values.push(item);
-            }
+        getAction(this.url.queryById, {id:this.model.id}).then((res) => {
+          if(!res.result.auditDate){
+            res.result.auditDate = res.result.submitDate;
           }
-        }
-
-        this.model.pdStockRecordDetailList = values;
-        this.$refs.pdStockRecordOutPrintModal.show(this.model);
-        this.$refs.pdStockRecordOutPrintModal.title = this.stockOutText + "出库单";
+          this.$refs.pdStockRecordOutPrintModal.show(res.result);
+          this.$refs.pdStockRecordOutPrintModal.title = this.stockOutText + "出库单";
+        })
       },
       /**撤回**/
       cancelBtn(){
@@ -933,14 +916,15 @@
           this.confirmLoading = true
           httpAction(url, formData, method).then((res) => {
             if (res.success) {
-              this.$message.success(res.message)
+              this.model.id = res.result.recordId;
+              this.$message.success(res.message);
               this.$emit('ok');
+              this.close();
               if(flag == "2"){
                 this.printBtn("2"); //通过并打印
               }
-              this.close();
             } else {
-              this.$message.warning(res.message)
+              this.$message.warning(res.message);
             }
           }).finally(() => {
             this.confirmLoading = false

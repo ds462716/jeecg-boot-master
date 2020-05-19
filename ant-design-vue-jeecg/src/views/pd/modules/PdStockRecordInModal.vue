@@ -421,7 +421,7 @@
           init:"/pd/pdStockRecordIn/initModal",
           submit: "/pd/pdStockRecordIn/submit",
           add: "/pd/pdStockRecordIn/add",
-          // edit: "/pd/pdStockRecordIn/edit",
+          queryById: "/pd/pdStockRecordIn/queryById",
           cancel: "/pd/pdStockRecordIn/cancel",
           querySupplier:"/pd/pdSupplier/getSupplierList",
           querySupplierById:"/pd/pdSupplier/queryById",
@@ -568,26 +568,19 @@
       },
       /**打印按钮**/
       printBtn(flag){
-        // if(flag == "2"){
-        //   this.model.auditDate = this.form.getFieldValue("submitDate");
-        // }
-        if(!this.model.auditDate){
-          this.model.auditDate = this.form.getFieldValue("submitDate");
+        let recordId = this.model.id;
+        if(!recordId){
+          this.$message.warning("参数不正确，请重新打印！");
+          return;
         }
-        if(!this.model.inDepartName){
-          this.model.inDepartName = this.inDepartName;
-        }
-        if(!this.model.supplierName){
-          this.model.supplierName = this.supplierName;
-        }
-        let { values } = this.$refs.pdStockRecordDetail.getValuesSync({ validate: false });
-        this.model.totalSum = this.totalSum;
-        this.model.inTotalPrice = this.inTotalPrice;
-        // this.model.pdStockRecordDetailList = this.pdStockRecordDetailTable.dataSource;
-        this.model.pdStockRecordDetailList = values;
-        this.model.remarks = this.form.getFieldValue("remarks");
-        this.$refs.pdStockRecordInPrintModal.show(this.model);
-        this.$refs.pdStockRecordInPrintModal.title = this.stockInText + "入库单";
+        getAction(this.url.queryById, {id:this.model.id}).then((res) => {
+
+          if(!res.result.auditDate){
+            res.result.auditDate = res.result.submitDate;
+          }
+          this.$refs.pdStockRecordInPrintModal.show(res.result);
+          this.$refs.pdStockRecordInPrintModal.title = this.stockInText + "入库单";
+        })
       },
       /** 关闭按钮点击事件 */
       handleCancel() {
@@ -639,7 +632,6 @@
 
           let isexp = false, iszero = false, isproduce = false, bool = false;
           let name = "", name1 = "", name2 = "";
-
 
           let { values } = this.$refs.pdStockRecordDetail.getValuesSync({ validate: false });
           for(let row of values){
@@ -711,14 +703,15 @@
           this.confirmLoading = true
           httpAction(url, formData, method).then((res) => {
             if (res.success) {
-              this.$message.success(res.message)
-              this.$emit('ok')
+              this.model.id = res.result.recordId;
+              this.$message.success(res.result.message);
+              this.$emit('ok');
+              this.close();
               if(flag == "2"){
                 this.printBtn("2"); //通过并打印
               }
-              this.close();
             } else {
-              this.$message.warning(res.message)
+              this.$message.warning(res.message);
             }
           }).finally(() => {
             this.confirmLoading = false
@@ -909,7 +902,7 @@
           supplierName: row.supplierName,
           specUnitId: row.specUnitId,
           specQuantity: row.specQuantity,
-          registration: row.registration,
+          // registration: row.registration,
           productBarCode:"",
           produceDate:"",
           expDate:"",
@@ -946,7 +939,7 @@
           supplierName: row.pdProduct.supplierName,
           specUnitId: row.pdProduct.specUnitId,
           specQuantity: row.pdProduct.specQuantity,
-          registration: row.pdProduct.registration,
+          // registration: row.pdProduct.registration,
           productBarCode:row.productBarCode,
           produceDate:row.produceDate,
           expDate:row.expDate,
