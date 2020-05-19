@@ -236,35 +236,21 @@
           selectionRows: [],
           dataSource: [],
           columns: [
-            { title: '产品名称', key: 'productName', type: FormTypes.normal,width:"220px" },
-            { title: '产品编号', key: 'productNumber', width:"160px" },
-            { title: '产品条码', key: 'productBarCode', type: FormTypes.input, disabled:true, width:"200px" },
-            { title: '规格', key: 'spec', width:"220px" },
-            { title: '批号', key: 'batchNo', width:"100px" },
-            { title: '单位', key: 'unitName', width:"50px" },
-            { title: '有效期', key: 'expDate', width:"100px" },
-            /* { title: '入库单价', key: 'purchasePrice', width:"80px" },*/
-            { title: '出库单价', key: 'sellingPrice', type: FormTypes.input, disabled:true, width:"80px" },
-            {
-              title: '用量', key: 'productNum', type: FormTypes.input, width:"80px",
-              placeholder: '${title}', defaultValue: '1',
-              validateRules: [{ required: true, message: '${title}不能为空' },{ pattern: '^-?\\d+\\.?\\d*$',message: '${title}的格式不正确' }]
-            },
-            /*{ title: '出库金额', key: 'outTotalPrice', type: FormTypes.input, disabled:true, width:"100px" },*/
-            { title: '库存数量', key: 'stockNum', width:"80px" },
-            { title: '规格单位', key: 'specUnitName', width:"80px" },
-            { title: '规格数量', key: 'specNum', width:"80px" },
-            { title: '出库货位', key: 'outHuoweiName', width:"100px" },
-            { title: '产品类型', key: 'productFlagName', width:"100px" },
-            /*{ title: '生产日期', key: 'produceDate',  },
-            { title: '入库货位', key: 'inHuoweiCode', type: FormTypes.select, width:"150px", options: [],allowSearch:true, placeholder: '${title}' },*/
-
-            { title: '库存明细ID', key: 'productStockId', type: FormTypes.hidden },
-            { title: '产品ID', key: 'productId', type: FormTypes.hidden },
-            { title: '出库货位编号', key: 'outHuoweiCode', type: FormTypes.hidden },
-            { title: '供应商id', key: 'supplierId', type: FormTypes.hidden },
-            { title: '规格单位ID', key: 'specUnitId', type: FormTypes.hidden },
-            { title: '产品类型', key: 'productFlag', type: FormTypes.hidden },
+            { title:'检验项目包编号', align:"center", dataIndex: 'code' },
+            { title:'检验项目包名称', align:"center", dataIndex: 'name' },
+            { title:'产品名称', align:"center", dataIndex: 'productName' },
+            { title:'产品编号', align:"center", dataIndex: 'productNumber' },
+            { title:'产品条码', align:"center", dataIndex: 'productBarCode' },
+            { title:'批号', align:"center", dataIndex: 'batchNo' },
+            { title:'有效期', align:"center", dataIndex: 'expDate' },
+            { title:'规格', align:"center", dataIndex: 'spec' },
+            { title:'单位', align:"center", dataIndex: 'unitName' },
+            { title:'规格单位', align:"center", dataIndex: 'specUnitName' },
+            { title:'规格数量', align:"center", dataIndex: 'specQuantity' },
+            { title:'生产厂家', align:"center", dataIndex: 'venderName' },
+           /* { title:'供应商', align:"center", dataIndex: 'supplierName' },*/
+            { title:'产品类型', align:"center", dataIndex: 'productFlagName' },
+            { title:'用量', align:"center", dataIndex: 'productNum' },
           ],
 
         },
@@ -376,6 +362,8 @@
           this.loading = true;
           this.showPackageTable = false;
           this.popModal.title="详情";
+          this.form.resetFields();
+          this.model = Object.assign({}, record);
           let fieldval = pick(this.model,'id','refId','itemType','refName');
           let params = { id: record.id };
           getAction(this.url.init, params).then((res) => {
@@ -384,7 +372,6 @@
                 //详情页
                 this.form.setFieldsValue(fieldval);
                 this.exInspectionItemsUseDetailTable.dataSource = res.result.useDetailList || [];
-                console.log(res.result.pakageUseDetailList);
                 this.pdPackageStockTable.dataSource = res.result.pakageUseDetailList || [];
                 this.loading = false;
               })

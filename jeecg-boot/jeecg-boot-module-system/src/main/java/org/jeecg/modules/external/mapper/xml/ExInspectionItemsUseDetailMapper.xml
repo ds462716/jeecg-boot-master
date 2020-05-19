@@ -20,6 +20,7 @@
         c.name as "productName",
         c.spec as "spec",
         c.version as "version",
+        if(c.product_flag=0,'耗材','试剂') as productFlagName,
         c.jde_code as "jdeCode",
         c.registration as "productRegistration"
 	</sql>

@@ -146,4 +146,7 @@ public class ExInspectionItemsUseDetail  {
     private String spec;//产品规格
     @TableField(exist = false)
     private String version;//产品型号
+    @TableField(exist = false)
+    private String productFlagName;//产品型号
+
 }
