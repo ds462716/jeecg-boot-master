@@ -350,13 +350,6 @@ ADD COLUMN `operation_time`  datetime NULL COMMENT '手术时间' AFTER `operati
 ADD COLUMN `bed_number`  varchar(64) NULL COMMENT '病床号' AFTER `operation_time`,
 ADD COLUMN `admission_date`  datetime NULL COMMENT '入院日期' AFTER `bed_number`;
 
--- add by zxh 2020年5月15日14:06:44  检验项目手动使用优化字段
-ALTER TABLE `ex_inspection_items_use_detail`
-MODIFY COLUMN `product_num`  double(11,2) NULL DEFAULT NULL COMMENT '产品数量（出入库数量）' AFTER `out_huowei_code`,
-MODIFY COLUMN `selling_price`  decimal(11,4) NULL DEFAULT NULL COMMENT '出库单价' AFTER `product_num`;
-
-
-
 -- add by mcb 2020年5月16日10:11:55 字段数据类型修改并增加备注字段
 ALTER TABLE `ex_inspection_items`
 MODIFY COLUMN `receive_date`  datetime NULL DEFAULT NULL COMMENT '接收日期' AFTER `group_by`,
@@ -379,3 +372,41 @@ ALTER TABLE `pd_stock_record_detail`  ADD COLUMN `registration` varchar(255) NUL
 -- add by jiangxz 2020年5月18日17:56:22 用量主表增加扩展字段
 ALTER TABLE `pd_dosage`  ADD COLUMN `extension1` varchar(64) NULL COMMENT '扩展字段1';
 ALTER TABLE `pd_dosage`  ADD COLUMN `extension2` varchar(64) NULL COMMENT '扩展字段2';
+
+-- add by zxh 2020年5月19日09:06:32  检验项目手动使用优化字段
+CREATE TABLE `ex_inspection_items_use` (
+  `id` varchar(36) NOT NULL,
+  `ref_id` varchar(64) DEFAULT NULL COMMENT '关联病人信息id',
+  `item_type` varchar(1) DEFAULT NULL COMMENT '检验项目类型1复检，2质控，3测试，4空白阴阳对照，5其他',
+  `create_by` varchar(50) DEFAULT NULL COMMENT '创建人',
+  `create_time` datetime DEFAULT NULL COMMENT '创建日期',
+  `update_by` varchar(50) DEFAULT NULL COMMENT '更新人',
+  `update_time` datetime DEFAULT NULL COMMENT '更新日期',
+  `remarks` varchar(244) DEFAULT NULL COMMENT '备注',
+  `sys_org_code` varchar(64) DEFAULT NULL COMMENT '所属部门',
+  `depart_id` varchar(64) DEFAULT NULL COMMENT '所属部门',
+  `depart_parent_id` varchar(64) DEFAULT NULL COMMENT '所属父部门',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE `ex_inspection_items_use_detail` (
+  `id` varchar(36) NOT NULL,
+  `ref_id` varchar(64) DEFAULT NULL COMMENT '检验项目使用id',
+  `product_id` varchar(64) DEFAULT NULL COMMENT '产品ID',
+  `package_id` varchar(64) DEFAULT NULL COMMENT '检验包的id',
+  `product_bar_code` varchar(64) DEFAULT NULL COMMENT '产品条码',
+  `batch_no` varchar(64) DEFAULT NULL COMMENT '产品批号',
+  `exp_date` datetime DEFAULT NULL COMMENT '有效期',
+  `product_stock_id` varchar(64) DEFAULT NULL COMMENT '产品库存明细id-用于出库时记录出库库存id',
+  `out_huowei_code` varchar(64) DEFAULT NULL COMMENT '出库货位编号',
+  `product_num` double(11,2) DEFAULT NULL COMMENT '产品数量（出入库数量）',
+  `selling_price` decimal(11,4) DEFAULT NULL COMMENT '出库单价',
+  `create_by` varchar(50) DEFAULT NULL COMMENT '创建人',
+  `create_time` datetime DEFAULT NULL COMMENT '创建日期',
+  `update_by` varchar(50) DEFAULT NULL COMMENT '更新人',
+  `update_time` datetime DEFAULT NULL COMMENT '更新日期',
+  `sys_org_code` varchar(64) DEFAULT NULL COMMENT '所属部门',
+  `depart_id` varchar(64) DEFAULT NULL COMMENT '所属部门',
+  `depart_parent_id` varchar(64) DEFAULT NULL COMMENT '所属父部门',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
