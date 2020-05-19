@@ -37,7 +37,7 @@ public class PdStockRecordInPage {
 	@Excel(name = "产品编号", width = 15)
 	private String number;//产品编号
 	@Excel(name = "产品名称", width = 15)
-	private String productNumber;//产品编号
+	private String productName;//产品编号
 	@Excel(name = "产品条码", width = 15)
 	private String productBarCode;
 	@Excel(name = "规格", width = 15)

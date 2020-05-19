@@ -23,7 +23,6 @@
         a.high_low_supplies,
         a.import_no,
         a.supplier_id,
-        a.remarks,
         a.sys_org_code,
 		a.create_by,
 		a.create_time,
@@ -84,6 +83,7 @@
       g.record_no AS "recordNo",
       g.in_type AS "inType",
       g.out_type AS "outType",
+      g.remarks as "remarks",
 	(select r.depart_name from sys_depart r where r.id=g.in_depart_id) AS "inDepartName",
 	(select r.depart_name from sys_depart r where r.id=g.out_depart_id) AS "outDepartName"
     </sql>
