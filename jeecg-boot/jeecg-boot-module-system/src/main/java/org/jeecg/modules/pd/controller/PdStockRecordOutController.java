@@ -15,10 +15,7 @@ import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.DateUtils;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.message.util.PushMsgUtil;
-import org.jeecg.modules.pd.entity.PdGoodsAllocation;
-import org.jeecg.modules.pd.entity.PdPurchaseDetail;
-import org.jeecg.modules.pd.entity.PdStockRecord;
-import org.jeecg.modules.pd.entity.PdStockRecordDetail;
+import org.jeecg.modules.pd.entity.*;
 import org.jeecg.modules.pd.service.*;
 import org.jeecg.modules.pd.util.UUIDUtil;
 import org.jeecg.modules.pd.vo.PdGoodsAllocationPage;
@@ -61,6 +58,8 @@ public class PdStockRecordOutController {
     private IPdStockRecordService pdStockRecordService;
     @Autowired
     private IPdStockRecordDetailService pdStockRecordDetailService;
+    @Autowired
+    private IPdProductStockService pdProductStockService;
     @Autowired
     private ISysDepartService sysDepartService;
     @Autowired
@@ -224,6 +223,19 @@ public class PdStockRecordOutController {
             Date date = DateUtils.getDate();
             for(PdStockRecordDetail item : pdStockRecord.getPdStockRecordDetailList()){
                 item.setUpdateTime(date);
+
+                // 更新对应的入库单注册证号
+                PdStockRecordDetail detail = pdStockRecordDetailService.getById(item.getId());
+                if(oConvertUtils.isNotEmpty(detail.getProductStockId())){
+                    PdProductStock stock = pdProductStockService.getById(detail.getProductStockId());
+                    if(stock != null && oConvertUtils.isNotEmpty(stock.getRecordDetailId())){
+                        PdStockRecordDetail inRecord = new PdStockRecordDetail();
+                        inRecord.setId(stock.getRecordDetailId());
+                        inRecord.setRegistration(item.getRegistration());
+                        inRecord.setUpdateTime(date);
+                        pdStockRecordDetailService.updateById(inRecord);
+                    }
+                }
             }
             pdStockRecordDetailService.updateBatchById(pdStockRecord.getPdStockRecordDetailList());
         }
