@@ -90,7 +90,7 @@
 
 	<!--查询HIS系统门诊病人退费信息-->
 	<select id="queryMztfList"   resultType="java.util.Map">
-		select  * from  [v_spd_his_person_mzt]   where  fsf_brkh_mz=#{outpatientNumber}
+		select  * from  [v_spd_his_person_mzt]   where  fsf_xh=#{id}
 	</select>
 
 	<!--查询HIS系统病人信息  门诊病人-->
