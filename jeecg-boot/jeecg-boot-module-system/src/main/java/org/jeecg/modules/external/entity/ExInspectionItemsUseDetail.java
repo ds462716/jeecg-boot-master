@@ -72,11 +72,11 @@ public class ExInspectionItemsUseDetail  {
 	/**产品数量（出入库数量）*/
 	@Excel(name = "产品数量（出入库数量）", width = 15)
     @ApiModelProperty(value = "产品数量（出入库数量）")
-    private String productNum;
+    private Double productNum;
 	/**出库单价*/
 	@Excel(name = "出库单价", width = 15)
     @ApiModelProperty(value = "出库单价")
-    private String sellingPrice;
+    private BigDecimal sellingPrice;
 	/**创建人*/
 	@Excel(name = "创建人", width = 15)
     @ApiModelProperty(value = "创建人")

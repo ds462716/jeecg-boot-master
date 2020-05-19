@@ -602,7 +602,7 @@
 		<include refid="pdProductStockColumns"/>
 		FROM pd_product_stock a
 		<where>
-			a.del_flag = #{DEL_FLAG_NORMAL}
+			a.del_flag = #{DEL_FLAG_NORMAL} AND a.stock_num > 0 AND a.spec_num > 0
 			<if test="departId != null and departId != ''">
 				AND a.depart_id = #{departId}
 			</if>

@@ -2,41 +2,37 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.jeecg.modules.pd.mapper.ExHisZyInfMapper">
 
-
-
-
-
-
-
 	<!-- 计费信息插入HIS系统中间表(门诊)-->
 		<insert id="saveExHisMzInf">
 			INSERT INTO spd_his_mzsf(
 			fsf_brid,
 			fsf_yjxh,
+			fsf_jzxh,
 			fsf_xmbh,
 			fsf_mc,
 			fsb_sl,
 			fsb_je,
 			fsf_kd_ks,
-			fsf_rq,
-			fsb_ry,
+			fsf_zx_ks,
+			Fsf_rq,
+			Fsb_ry,
 			fsf_zt,
-			his_jlxh,
-			fsf_xh
+			Fsf_XH
 			) VALUES <foreach collection="list" item="item" index="index" open="" close="" separator=",">
 			(
-			#{item.fsfBrid},
+			#{item.fsfBrId},
 			#{item.fsfYjxh},
+			#{item.fsfJzxh},
 			#{item.fsfXmbh},
 			#{item.fsfMc},
 			#{item.fsbSl},
 			#{item.fsbJe},
 			#{item.fsfKdKs},
+			#{item.fsfZxKs},
 			#{item.fsfRq},
 			#{item.fsbRy},
-			#{item.fsfZt},
-			#{item.hisJlxh},
-			#{item.fsfXh}
+			#{item.fsbZt},
+			#{item.fsbXh}
 			)</foreach>
 		</insert>
 
@@ -45,15 +41,40 @@
 	<!-- 计费信息插入HIS系统中间表(住院)-->
 	<insert id="saveExHisZyInf">
 		 INSERT INTO spd_his_zysf(
-		fsf_zyh,fsf_zyhm,fsf_cs,fsf_xmbh,fsf_mc,fsf_xh
+		fsf_zyh,
+		fsf_zyhm,
+		fsf_cs,
+		fsf_xmbh,
+		fsf_mc,
+		fsb_gg,
+		Fsb_sl,
+		Fsb_je,
+		fsf_kd_ks,
+		Fsf_zx_ks,
+		Fsf_rq,
+		Fsb_ry,
+		fsf_zt,
+		fsf_xh,
+		fsf_tfxh,
+		fsf_brbs
 		) VALUES <foreach collection="list" item="item" index="index" open="" close="" separator=",">
 		(
-		'8',
-		'8',
-		'8',
-		'8',
-		'99',
-		'99'
+		#{item.fsfZyh},
+		#{item.fsfZyhm},
+		#{item.fsfCs},
+		#{item.fsfXmbh},
+		#{item.fsfMc},
+		#{item.fsbGg},
+		#{item.FsbSl},
+		#{item.FsbJe},
+		#{item.fsfKdKs},
+		#{item.FsfZxKs},
+		#{item.FsfRq},
+		#{item.FsbRy},
+		#{item.fsbZt},
+		#{item.fsbXh},
+		#{item.fsbTfjlxh},
+		#{item.fsbBrbs}
 		)</foreach>
 
 	</insert>

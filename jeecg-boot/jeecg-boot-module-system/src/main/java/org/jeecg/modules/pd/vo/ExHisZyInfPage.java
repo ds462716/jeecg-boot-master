@@ -2,6 +2,8 @@ package org.jeecg.modules.pd.vo;
 
 import lombok.Data;
 
+import java.math.BigDecimal;
+import java.util.Date;
 /**
  * @Description:  住院收费实体类
  * @Author: jeecg-boot
@@ -16,15 +18,15 @@ public class ExHisZyInfPage {
     private String fsfXmbh;//收费项目编号	具体产品收费项目代码
     private String FsfMc;//名称	产品名称
     private String FsbGg;//规格	产品规格
-    private String FsbSl;//数量	产品数量
-    private String FsbJe;//金额
+    private Double FsbSl;//数量	产品数量
+    private BigDecimal FsbJe;//金额
     private String fsfKdKs;//开单科室	取住院病人信息申请科室
     private String FsfZxKs;//执行科室	取住院病人信息执行科室
-    private String FsfRq;//计费日期
+    private Date FsfRq;//计费日期
     private String FsbRy;//计费人员	与HIS操作人员中一致对照
     private String FsbZt; //HIS计费状态	计费为1，未计费为0
-    private String FsbXh;//序号	自增长序号，计退费用
-    private String FsbTfjlxh;//自增长序号，计退费用	取收费序号
+    private Long FsbXh;//序号	自增长序号，计退费用
+    private Long FsbTfjlxh;//自增长序号，计退费用	取收费序号
     private String FsbBrbs;//HIS手术编号	有编号的会记录到手术费用表中
     private String HisJlxh;//HIS计费jlxh	HIS系统填写
 }

@@ -686,6 +686,9 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
                             throw new RuntimeException("扣减库存失败，[" + productStock_i.getProductName() + "]库存数量不足");
                         }
                         productStock_i.setStockNum(num);
+                        if(num==0.00){
+                            productStock_i.setNestatStatus(PdConstant.STOCK_NESTAT_STATUS_2);//已用完
+                        }
                         productStock_i.setSpecNum(productStock.getSpecQuantity() == null ? 0D : productStock.getSpecQuantity()    * productStock_i.getStockNum());// 库存规格数量= 产品规格数量* 入库数量
                         pdProductStockMapper.updateStockNum(productStock_i);
                     }else{ //试剂
@@ -746,7 +749,7 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
             for(PdProductStock productStock:productStockList){
                 String productFlag=productStock.getProductFlag();
                 String productId= productStock.getProductId();//产品ID
-                Double productNum= productStock.getProductNum();//产品ID
+                Double count= productStock.getProductNum();//扣减数量
                 if(StringUtils.isEmpty(productStock.getId()) ||  StringUtils.isEmpty(productFlag)){
                     throw new RuntimeException("参数错误！");
                 }
@@ -758,8 +761,7 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
                     throw new RuntimeException("扣减总库存失败,根据产品ID：["+productId+"]获取不到库存信息");
                 }
                 PdProductStock o_productStockq = new PdProductStock();
-                o_productStockq.setId(productStock.getId());
-                o_productStockq.setNestatStatus(PdConstant.STOCK_NESTAT_STATUS_1);
+                o_productStockq.setId(productStock.getProductStockId());
                 List<PdProductStock> productStocks = pdProductStockMapper.selectList(o_productStockq);
                 if(CollectionUtils.isEmpty(productStocks)){
                     throw new RuntimeException("扣减库存失败,根据产品ID：["+productId+"]获取不到库存明细信息");
@@ -768,12 +770,12 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
                     //扣减总库存
                     PdProductStockTotal productStockTotal = stockTotals.get(0);
                     Double stockNum_i = productStockTotal.getStockNum();
-                    Double newStockNum = stockNum_i - productNum;
+                    Double newStockNum = stockNum_i - count;
                     productStockTotal.setStockNum(newStockNum);
                     pdProductStockTotalMapper.updateStockNum(productStockTotal);
                     //扣减明细库存
                     PdProductStock productStock_i = productStocks.get(0);
-                    Double num = productStock_i.getStockNum() - productNum;
+                    Double num = productStock_i.getStockNum() - count;
                     if (num < 0) {
                         throw new RuntimeException("扣减库存失败，[" + productStock_i.getProductName() + "]库存数量不足");
                     }
@@ -782,29 +784,59 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
                     pdProductStockMapper.updateStockNum(productStock_i);
                 }else{
                     PdProductStock stock_i = productStocks.get(0);
-                    Double newSpecNum = stock_i.getSpecNum() - productNum;
-                    if (newSpecNum == 0) { //如果扣完规格数量是0的情况下，则将库存数量设置为0，并更新库存总表库存数量
-                        o_productStockq.setSpecNum(newSpecNum);
-                        o_productStockq.setStockNum(0.00);
-                        o_productStockq.setNestatStatus(PdConstant.STOCK_NESTAT_STATUS_2);//已用完
-                        //更新总库存信息
-                        PdProductStockTotal stockTotal_i = new PdProductStockTotal();
-                        stockTotal_i.setDepartId(departId);
-                        stockTotal_i.setProductId(productId);
-                        List<PdProductStockTotal> stockTotals_i = pdProductStockTotalMapper.findForUpdate(stockTotal_i);
-                        if (CollectionUtils.isEmpty(stockTotals_i)) {
-                            throw new RuntimeException("扣减总库存失败,根据产品ID：[" + productId + "]获取不到库存信息");
+                    if(stock_i.getSpecNum()>=count){
+                        //如果扣完规格数量是0的情况下，则将库存数量设置为0，并更新库存总表库存数量
+                        //如果状态为未使用
+                        if(PdConstant.STOCK_NESTAT_STATUS_1.equals(stock_i.getNestatStatus())){
+                            Double specQuantity = stock_i.getSpecQuantity();
+                            Double bzCount = (Double) Math.ceil(count/specQuantity);
+                            //3.1 扣减总库存数量
+                            PdProductStockTotal productStockTotal = stockTotals.get(0);
+                            if(productStockTotal.getStockNum()<bzCount){
+                                throw new RuntimeException("扣减库存失败,根据产品ID：["+stock_i.getProductName()+"]获取不到库存明细信息");
+                            }
+                            Double stockNum_i = productStockTotal.getStockNum();
+                            Double newStockNum = stockNum_i - bzCount;
+                            productStockTotal.setStockNum(newStockNum);
+                            pdProductStockTotalMapper.updateStockNum(productStockTotal);
+                            //扣减库存数量
+                            Double newSpecNum_ii = stock_i.getSpecNum();
+                            //新建一条记录的规格数量
+                            Double newSpecNum_i = (bzCount*specQuantity)-count;
+                            //原本库存的规格数量
+                            Double zNewSpecNum_i = newSpecNum_ii-(bzCount*specQuantity);
+                            stock_i.setSpecNum(zNewSpecNum_i);
+                            if(zNewSpecNum_i==0.00){
+                                stock_i.setNestatStatus(PdConstant.STOCK_NESTAT_STATUS_2);//已用完
+                                stock_i.setStockNum(0.00);
+                                pdProductStockMapper.updateStockNum(stock_i);
+                            }else{
+                                Double stockNum_ii = stock_i.getStockNum() - bzCount;
+                                stock_i.setStockNum(stockNum_ii);
+                                pdProductStockMapper.updateStockNum(stock_i);
+                                if(newSpecNum_i!=0.00){
+                                    stock_i.setId(null);
+                                    //如果已用完改状态
+                                    stock_i.setStockNum(1.00);
+                                    stock_i.setNestatStatus(PdConstant.STOCK_NESTAT_STATUS_0);
+                                    stock_i.setSpecNum(newSpecNum_i);
+                                    pdProductStockMapper.insert(stock_i);
+                                }
+                            }
+                        }else{
+                            //TODO 需要考虑状态变成已使用超过基础规格数量的试剂扣减总库存的问题
+                            Double specNum = stock_i.getSpecNum() - count;
+                            //如果已用完改状态
+                            if(specNum==0.00){
+                                stock_i.setStockNum(0.00);
+                                stock_i.setNestatStatus(PdConstant.STOCK_NESTAT_STATUS_2);
+                            }
+                            stock_i.setSpecNum(specNum);
+                            pdProductStockMapper.updateStockSpecNum(stock_i);
                         }
-                        //扣减总库存
-                        PdProductStockTotal productStockTotal = stockTotals_i.get(0);
-                        Double stockNum_i = productStockTotal.getStockNum();
-                        Double newStockNum = stockNum_i - 1;
-                        productStockTotal.setStockNum(newStockNum);
-                        pdProductStockTotalMapper.updateStockNum(productStockTotal);
-                    } else {
-                        o_productStockq.setSpecNum(newSpecNum);
+                    }else{
+                        throw new RuntimeException("扣减库存失败，[" + stock_i.getProductName() + "]库存数量不足");
                     }
-                    pdProductStockMapper.updateStockSpecNum(o_productStockq);
                 }
             }
         }
@@ -824,7 +856,6 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
         if(StringUtils.isEmpty(departId)){
             throw new RuntimeException("参数错误，科室ID不能为空！");
         }
-
         List<PdProductStock> productStockList=new ArrayList<PdProductStock>();
            if(CollectionUtils.isNotEmpty(usePackageDetailList)) {
                for (PdUsePackageDetail packageDetail : usePackageDetailList) {
@@ -851,24 +882,88 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
                    }
                    //3：如果是普通产品
                    if(PdConstant.PRODUCT_FLAG_0.equals(productFlag)){
+                       //判断用量是否大于产品总数量，如果大于则扣减失败
                        //3.1 扣减总库存数量
                        PdProductStockTotal productStockTotal = stockTotals.get(0);
+                       if(productStockTotal.getStockNum()<count){
+                           throw new RuntimeException("扣减库存失败,根据产品ID：["+productId+"]获取不到库存明细信息");
+                       }
                        Double stockNum_i = productStockTotal.getStockNum();
                        Double newStockNum = stockNum_i - count;
                        productStockTotal.setStockNum(newStockNum);
                        pdProductStockTotalMapper.updateStockNum(productStockTotal);
                        //3.2 扣减明细库存数量
-                       PdProductStock productStock_i = productStocks.get(0);
-                       Double num = productStock_i.getStockNum() - count;
-                       if (num < 0) {
-                           throw new RuntimeException("扣减库存失败，[" + productStock_i.getProductName() + "]库存数量不足");
+                       try{
+                           for(PdProductStock ps :productStocks){
+                               if(ps.getStockNum()>=count){
+                                   Double num = ps.getStockNum() - count;
+                                   ps.setStockNum(num);
+                                   if(num==0.00){
+                                       ps.setNestatStatus(PdConstant.STOCK_NESTAT_STATUS_2);//已用完
+                                   }
+                                   pdProductStockMapper.updateStockNum(ps);
+                                   ps.setPackageId(packageId);
+                                   ps.setProductNum(count);
+                                   productStockList.add(ps);
+                                   break;
+                               }else{
+                                   ps.setPackageId(packageId);
+                                   ps.setProductNum(ps.getStockNum());
+                                   count = count - ps.getStockNum();
+                                   ps.setStockNum(0.00);
+                                   ps.setNestatStatus(PdConstant.STOCK_NESTAT_STATUS_2);//已用完
+                                   pdProductStockMapper.updateStockNum(ps);
+                                   productStockList.add(ps);
+                               }
+                           }
+                       }catch (Exception e){
+                           throw new RuntimeException("扣减库存失败，[" + productStocks.get(0).getProductName() + "]库存数量不足");
                        }
-                       productStock_i.setStockNum(num);
-                       pdProductStockMapper.updateStockNum(productStock_i);
-                       //3.3 将扣减的库存明细信息存储到对象集合中，操作结束后返回
-                       productStock_i.setPackageId(packageId);
-                       productStockList.add(productStock_i);
-                   }else{  //4：否则是试剂
+                       /*PdProductStock productStock_i = productStocks.get(0);
+                       if(productStock_i.getStockNum()>=count){
+                           Double num = productStock_i.getStockNum() - count;
+                           if (num < 0) {
+                               throw new RuntimeException("扣减库存失败，[" + productStock_i.getProductName() + "]库存数量不足");
+                           }
+                           productStock_i.setStockNum(num);
+                           if(num==0.00){
+                               productStock_i.setNestatStatus(PdConstant.STOCK_NESTAT_STATUS_2);//已用完
+                           }
+                           pdProductStockMapper.updateStockNum(productStock_i);
+                           //3.3 将扣减的库存明细信息存储到对象集合中，操作结束后返回
+                           productStock_i.setPackageId(packageId);
+                           productStock_i.setProductNum(count);
+                           productStockList.add(productStock_i);
+                       }else{
+                           try{
+                               for(PdProductStock ps :productStocks){
+                                   if(ps.getStockNum()>=count){
+                                       Double num = ps.getStockNum() - count;
+                                       ps.setStockNum(num);
+                                       if(num==0.00){
+                                           ps.setNestatStatus(PdConstant.STOCK_NESTAT_STATUS_2);//已用完
+                                       }
+                                       pdProductStockMapper.updateStockNum(ps);
+                                       ps.setPackageId(packageId);
+                                       ps.setProductNum(count);
+                                       productStockList.add(ps);
+                                       break;
+                                   }else{
+                                       ps.setPackageId(packageId);
+                                       ps.setProductNum(ps.getStockNum());
+                                       count = count - ps.getStockNum();
+                                       ps.setStockNum(0.00);
+                                       ps.setNestatStatus(PdConstant.STOCK_NESTAT_STATUS_2);//已用完
+                                       pdProductStockMapper.updateStockNum(ps);
+                                       productStockList.add(ps);
+                                   }
+                               }
+                           }catch (Exception e){
+                               throw new RuntimeException("扣减库存失败，[" + productStock_i.getProductName() + "]库存数量不足");
+                           }
+                       }*/
+                   }else{
+                       //4：否则是试剂
                        //4.1 查询扣減科室下库存明细(先查询使用中的)，根据有效期排序
                        PdProductStock o_productStockq = new PdProductStock();
                        o_productStockq.setDepartId(departId);
@@ -880,45 +975,169 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
                            PdProductStock productStockq = new PdProductStock();
                            productStockq.setDepartId(departId);
                            productStockq.setProductId(productId);
-                           o_productStockq.setNestatStatus(PdConstant.STOCK_NESTAT_STATUS_1);
+                           productStockq.setNestatStatus(PdConstant.STOCK_NESTAT_STATUS_1);
                            List<PdProductStock>  StockList = pdProductStockMapper.selectOrExpDate(productStockq);
                            // 4.3 如果有值，則取最近有效期的数据用于新增一条使用中的明细信息,并扣减，否则报错
                            if(CollectionUtils.isNotEmpty(StockList)){
-                               StockList.get(0).setPackageId(packageId);
-                               productStockList.add(StockList.get(0));//存储需要返回的库存明细对象
-                               this.insertProdStock(StockList.get(0),count);
+                               for(PdProductStock psii :StockList ){
+                                   if(psii.getSpecNum()>=count){
+                                       Double specQuantity = StockList.get(0).getSpecQuantity();
+                                       Double bzCount = (Double) Math.ceil(count/specQuantity);
+                                       //3.1 扣减总库存数量
+                                       PdProductStockTotal productStockTotal = stockTotals.get(0);
+                                       if(productStockTotal.getStockNum()<bzCount){
+                                           throw new RuntimeException("扣减库存失败,根据产品ID：["+psii.getProductName()+"]获取不到库存明细信息");
+                                       }
+                                       Double stockNum_i = productStockTotal.getStockNum();
+                                       Double newStockNum = stockNum_i - bzCount;
+                                       productStockTotal.setStockNum(newStockNum);
+                                       pdProductStockTotalMapper.updateStockNum(productStockTotal);
+                                       //扣减库存数量
+                                       Double newSpecNum = psii.getSpecNum();
+                                       //新建一条记录的规格数量
+                                       Double newSpecNum_i = (bzCount*specQuantity)-count;
+                                       //原本库存的规格数量
+                                       Double zNewSpecNum_i = newSpecNum-(bzCount*specQuantity);
+                                       psii.setSpecNum(zNewSpecNum_i);
+                                       if(zNewSpecNum_i==0.00){
+                                           psii.setNestatStatus(PdConstant.STOCK_NESTAT_STATUS_2);//已用完
+                                           psii.setStockNum(0.00);
+                                           pdProductStockMapper.updateStockNum(psii);
+                                       }else{
+                                           Double stockNum_ii = psii.getStockNum() - bzCount;
+                                           psii.setStockNum(stockNum_ii);
+                                           pdProductStockMapper.updateStockNum(psii);
+                                           if(newSpecNum_i!=0.00){
+                                               psii.setId(null);
+                                               //如果已用完改状态
+                                               psii.setStockNum(1.00);
+                                               psii.setNestatStatus(PdConstant.STOCK_NESTAT_STATUS_0);
+                                               psii.setSpecNum(newSpecNum_i);
+                                               pdProductStockMapper.insert(psii);
+                                           }
+                                       }
+                                       psii.setPackageId(packageId);
+                                       psii.setProductNum(count);
+                                       productStockList.add(psii);
+                                       break;
+                                   }else{
+                                       PdProductStockTotal productStockTotal = stockTotals.get(0);
+                                       Double stockNum_i = productStockTotal.getStockNum();
+                                       Double newStockNum = stockNum_i - psii.getStockNum();
+                                       productStockTotal.setStockNum(newStockNum);
+                                       pdProductStockTotalMapper.updateStockNum(productStockTotal);
+                                       psii.setPackageId(packageId);
+                                       psii.setProductNum(psii.getSpecNum());
+                                       count = count - psii.getSpecNum();
+                                       psii.setStockNum(0.00);
+                                       psii.setSpecNum(0.00);
+                                       psii.setNestatStatus(PdConstant.STOCK_NESTAT_STATUS_2);//已用完
+                                       pdProductStockMapper.updateStockNum(psii);
+                                       productStockList.add(psii);
+                                   }
+                               }
                            }else{
                                throw new RuntimeException("扣减库存失败,根据产品ID：["+productId+"]获取不到库存信息");
                            }
                        }else {
-                             //4.3 直接扣减使用中的库存规格数量
-                           PdProductStock stock_i = productStocks_i.get(0);
-                           stock_i.setPackageId(packageId);
-                           productStockList.add(stock_i);//存储需要返回的库存明细对象
-                           Double newSpecNum = stock_i.getSpecNum() - count;
-                            //4.4 如果扣完规格数量后是0的情况下，则将库存数量设置为0，并更新库存总表库存数量和占用状态为已用完
-                           if (newSpecNum == 0) {
-                               stock.setSpecNum(newSpecNum);
-                               stock.setStockNum(0.00);
-                               stock.setNestatStatus(PdConstant.STOCK_NESTAT_STATUS_2);//已用完
-                               //4.5 更新总库存信息
-                               PdProductStockTotal stockTotal_i = new PdProductStockTotal();
-                               stockTotal_i.setDepartId(departId);
-                               stockTotal_i.setProductId(productId);
-                               List<PdProductStockTotal> stockTotals_i = pdProductStockTotalMapper.findForUpdate(stockTotal_i);
-                               if (CollectionUtils.isEmpty(stockTotals_i)) {
-                                   throw new RuntimeException("扣减总库存失败,根据产品ID：[" + productId + "]获取不到库存信息");
-                               }
-                               //扣减总库存
-                               PdProductStockTotal productStockTotal = stockTotals_i.get(0);
-                               Double stockNum_i = productStockTotal.getStockNum();
-                               Double newStockNum = stockNum_i - 1;
-                               productStockTotal.setStockNum(newStockNum);
-                               pdProductStockTotalMapper.updateStockNum(productStockTotal);
-                           } else {
-                               stock.setSpecNum(newSpecNum);
-                           }
-                           pdProductStockMapper.updateStockSpecNum(stock);
+                           //4.3 直接扣减使用中的库存规格数量
+                            try{
+                                //先消耗所有使用中的库存
+                                for(PdProductStock psi :productStocks_i){
+                                    if(psi.getSpecNum()>=count){
+                                        Double specNum = psi.getSpecNum() - count;
+                                        //如果已用完改状态
+                                        if(specNum==0.00){
+                                            psi.setStockNum(0.00);
+                                            psi.setNestatStatus(PdConstant.STOCK_NESTAT_STATUS_2);
+                                        }
+                                        psi.setSpecNum(specNum);
+                                        pdProductStockMapper.updateStockSpecNum(psi);
+                                        psi.setPackageId(packageId);
+                                        psi.setProductNum(count);
+                                        productStockList.add(psi);//存储需要返回的库存明细对象
+                                        //扣减完毕后归零
+                                        count = 0.00;
+                                        break;
+                                    }else{
+                                        psi.setPackageId(packageId);
+                                        psi.setProductNum(psi.getSpecNum());
+                                        count = count - psi.getSpecNum();
+                                        psi.setStockNum(0.00);
+                                        psi.setSpecNum(0.00);
+                                        psi.setNestatStatus(PdConstant.STOCK_NESTAT_STATUS_2);//已用完
+                                        pdProductStockMapper.updateStockNum(psi);
+                                        productStockList.add(psi);
+                                    }
+                                }
+                                //如果使用中的全部消耗完毕也没扣减完则查询未使用的
+                                if(count>0.00){
+                                    PdProductStock productStockq = new PdProductStock();
+                                    productStockq.setDepartId(departId);
+                                    productStockq.setProductId(productId);
+                                    productStockq.setNestatStatus(PdConstant.STOCK_NESTAT_STATUS_1);
+                                    List<PdProductStock>  StockList = pdProductStockMapper.selectOrExpDate(productStockq);
+                                    for(PdProductStock psii :StockList ){
+                                        if(psii.getSpecNum()>=count){
+                                            Double specQuantity = productStocks_i.get(0).getSpecQuantity();
+                                            Double bzCount = (Double) Math.ceil(count/specQuantity);
+                                            //3.1 扣减总库存数量
+                                            PdProductStockTotal productStockTotal = stockTotals.get(0);
+                                            if(productStockTotal.getStockNum()<bzCount){
+                                                throw new RuntimeException("扣减库存失败,根据产品ID：["+psii.getProductName()+"]获取不到库存明细信息");
+                                            }
+                                            Double stockNum_i = productStockTotal.getStockNum();
+                                            Double newStockNum = stockNum_i - bzCount;
+                                            productStockTotal.setStockNum(newStockNum);
+                                            pdProductStockTotalMapper.updateStockNum(productStockTotal);
+                                            //扣减库存数量
+                                            Double newSpecNum = psii.getSpecNum();
+                                            //新建一条记录的规格数量
+                                            Double newSpecNum_i = (bzCount*specQuantity)-count;
+                                            //原本库存的规格数量
+                                            Double zNewSpecNum_i = newSpecNum-(bzCount*specQuantity);
+                                            psii.setSpecNum(zNewSpecNum_i);
+                                            if(zNewSpecNum_i==0.00){
+                                                psii.setNestatStatus(PdConstant.STOCK_NESTAT_STATUS_2);//已用完
+                                                psii.setStockNum(0.00);
+                                                pdProductStockMapper.updateStockNum(psii);
+                                            }else{
+                                                Double stockNum_ii = psii.getStockNum() - bzCount;
+                                                psii.setStockNum(stockNum_ii);
+                                                pdProductStockMapper.updateStockNum(psii);
+                                                if(newSpecNum_i!=0.00){
+                                                    psii.setId(null);
+                                                    //如果已用完改状态
+                                                    psii.setStockNum(1.00);
+                                                    psii.setNestatStatus(PdConstant.STOCK_NESTAT_STATUS_0);
+                                                    psii.setSpecNum(newSpecNum_i);
+                                                    pdProductStockMapper.insert(psii);
+                                                }
+                                            }
+                                            psii.setPackageId(packageId);
+                                            psii.setProductNum(count);
+                                            productStockList.add(psii);
+                                            break;
+                                        }else{
+                                            PdProductStockTotal productStockTotal = stockTotals.get(0);
+                                            Double stockNum_i = productStockTotal.getStockNum();
+                                            Double newStockNum = stockNum_i - psii.getStockNum();
+                                            productStockTotal.setStockNum(newStockNum);
+                                            pdProductStockTotalMapper.updateStockNum(productStockTotal);
+                                            psii.setPackageId(packageId);
+                                            psii.setProductNum(psii.getSpecNum());
+                                            count = count - psii.getSpecNum();
+                                            psii.setStockNum(0.00);
+                                            psii.setSpecNum(0.00);
+                                            psii.setNestatStatus(PdConstant.STOCK_NESTAT_STATUS_2);//已用完
+                                            pdProductStockMapper.updateStockNum(psii);
+                                            productStockList.add(psii);
+                                        }
+                                    }
+                                }
+                            }catch (Exception e){
+                                throw new RuntimeException("扣减库存失败，[" + productStocks_i.get(0).getProductName() + "]库存数量不足");
+                            }
                          }
                        }
                    }
@@ -933,5 +1152,16 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
     @Override
     public List<PdProductStockTotalPage> findListForAutoNum(PdProductStockTotal stockTotal) {
         return pdProductStockTotalMapper.findListForAutoNum(stockTotal);
+    }
+
+    public static void main (String [] args){
+        Double a = 200.00;
+        Double b = 200.00;
+        System.out.println(a%b);
+        if(a%b==0.00){
+            System.out.println("1");
+        }else{
+            System.out.println("2");
+        }
     }
 }

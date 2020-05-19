@@ -15,6 +15,15 @@
             </a-form-item>
           </a-col>
           <a-col :md="6" :sm="8">
+            <a-form-item label="扣减状态">
+                <a-select v-model="queryParam.acceptStatus" placeholder="请选择扣减状态">
+                  <a-select-option value="0">已扣减</a-select-option>
+                  <a-select-option value="1">未配置检验用量</a-select-option>
+                  <a-select-option value="2">未扣减</a-select-option>
+                </a-select>
+            </a-form-item>
+          </a-col>
+          <a-col :md="6" :sm="8">
             <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
               <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
               <a-button type="primary" @click="searchReset" icon="reload" style="margin-left: 8px">重置</a-button>

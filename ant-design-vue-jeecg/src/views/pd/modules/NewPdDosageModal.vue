@@ -180,6 +180,20 @@
                     <a-form-item >
                       <a-input type="hidden" v-decorator="[ 'oprDeptId']"></a-input>
                     </a-form-item>
+                    <!-- 开单科室id -->
+                    <a-form-item >
+                      <a-input type="hidden" v-decorator="[ 'sqrtDoctorId']"></a-input>
+                    </a-form-item>
+                    <!-- 住院次数 -->
+                    <a-form-item >
+                      <a-input type="hidden" v-decorator="[ 'hospitalizationsNum']"></a-input>
+                    </a-form-item>
+                    <a-form-item >
+                      <a-input type="hidden" v-decorator="[ 'extension1']"></a-input>
+                    </a-form-item>
+                    <a-form-item >
+                      <a-input type="hidden" v-decorator="[ 'extension2']"></a-input>
+                    </a-form-item>
                   </a-col>
                   <a-col :md="6" :sm="8">
                     <a-form-item label="病历号" :labelCol="labelCol" :wrapperCol="wrapperCol">
@@ -335,9 +349,10 @@
           surgeonId: {rules: []},
           surgeonName: {rules: []},
           prjType:{rules:[]},
+          hospitalizationsNum:{rules:[]},
           sqrtDoctorId: {rules: []},
           sqrtDoctorName: {rules: []},
-          inHospitalNo: {rules: [{required: true, message: '请输入住院号!'},]},
+          inHospitalNo: {rules: []},
           dosageBy: {rules: []},
           subordinateWardId: {rules: []},
           subordinateWardName: {rules: []},
@@ -470,7 +485,7 @@
           if (res.success) {
             if(res.result.length==1){
               res.result[0].patientDetailInfo="姓名:"+res.result[0].patientInfo+",性别:"+res.result[0].fsfXb+",出生日期:"+res.result[0].fsfCsrq;
-            let fieldval = pick(res.result[0],'inHospitalNo','patientInfo','operativeNumber','operationName','outpatientNumber','operativeName','medicalRecordNo','surgeonName','patientDetailInfo','remarks');
+             let fieldval = pick(res.result[0],'inHospitalNo','patientInfo','operativeNumber','operationName','outpatientNumber','medicalRecordNo','sqrtDoctorId','oprDeptId','oprDeptName','exeDeptId','exeDeptName','surgeonName','surgeonId','patientDetailInfo','hospitalizationsNum','remarks','extension1','extension2');
               this.form.setFieldsValue(fieldval);
             }else{
               this.$refs.PdChooseDosageListModel.width = 1550;
@@ -486,7 +501,7 @@
 
       modalFormOk (formData) { //选择病人信息确定后返回所选择的数据
         formData.patientDetailInfo="姓名:"+formData.patientInfo+",性别:"+formData.fsfXb+",出生日期:"+formData.fsfCsrq;
-        let fieldval = pick(formData,'patientInfo','operativeNumber','operationName','outpatientNumber','medicalRecordNo','oprDeptName','exeDeptId','exeDeptName','surgeonName','surgeonId','patientDetailInfo','remarks');
+        let fieldval = pick(formData,'inHospitalNo','patientInfo','operativeNumber','operationName','outpatientNumber','medicalRecordNo','sqrtDoctorId','oprDeptId','oprDeptName','exeDeptId','exeDeptName','surgeonName','surgeonId','patientDetailInfo','hospitalizationsNum','remarks','extension1','extension2');
         this.form.setFieldsValue(fieldval);
       },
       // 扫码查询
@@ -706,6 +721,10 @@
 
       // 保存 提交 修改 请求函数
       request(formData) {
+        if(formData.inHospitalNo && formData.outpatientNumber){
+          this.$message.error("请先根据住院号或门诊号查询病人信息！");
+          return;
+        }
         let url = this.url.submit, method = 'post'
         if (this.model.id) {
           url = this.url.edit

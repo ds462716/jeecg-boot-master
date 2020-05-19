@@ -6,8 +6,6 @@ import org.jeecg.modules.pd.entity.HisChargeInf;
 import org.jeecg.modules.pd.entity.HisDepartInf;
 import org.jeecg.modules.pd.entity.HisUserInf;
 import org.jeecg.modules.pd.entity.PdDosage;
-import org.jeecg.modules.pd.vo.ExHisMzInfPage;
-import org.jeecg.modules.pd.vo.ExHisZyInfPage;
 
 import java.util.List;
 
@@ -36,10 +34,6 @@ public interface HisChargeMapper extends BaseMapper<HisChargeInf> {
 	List<PdDosage> queryPatientInfoJY(PdDosage pdDosage);
 
 	List<PdDosage> queryPatientInfoMZ(PdDosage pdDosage);
-
-	int saveExHisMzInf(ExHisMzInfPage exHisMzInf);
-
-	int saveExHisZyInf(List<ExHisZyInfPage> exHisZyInf);
 
 	List<ExInspectionItems> selectExjianYan(ExInspectionItems exInspectionItems);
 }

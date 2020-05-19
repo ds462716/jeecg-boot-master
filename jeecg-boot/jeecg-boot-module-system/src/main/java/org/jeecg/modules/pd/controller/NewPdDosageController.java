@@ -50,7 +50,7 @@ public class NewPdDosageController {
               if(StringUtils.isNotEmpty(pdDosage.getInHospitalNo())){//住院
                   exHisZyInfService.saveExHisZyInf(pdDosage, list);
               }else{//门诊
-
+                  exHisZyInfService.saveExHisMzInf(pdDosage, list);
               }
         }
          return Result.ok("添加成功！");

@@ -5,11 +5,12 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.apache.commons.lang.StringUtils;
 import org.jeecg.modules.external.entity.ExInspectionItems;
-import org.jeecg.modules.pd.entity.*;
+import org.jeecg.modules.pd.entity.HisChargeInf;
+import org.jeecg.modules.pd.entity.HisDepartInf;
+import org.jeecg.modules.pd.entity.HisUserInf;
+import org.jeecg.modules.pd.entity.PdDosage;
 import org.jeecg.modules.pd.mapper.HisChargeMapper;
 import org.jeecg.modules.pd.service.IHisChargeService;
-import org.jeecg.modules.pd.vo.ExHisMzInfPage;
-import org.jeecg.modules.pd.vo.ExHisZyInfPage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -104,45 +105,5 @@ public class HisChargeServiceImpl extends ServiceImpl<HisChargeMapper, HisCharge
 			//}
 		}
 		return list;
-	}
-
-
-
-	//计费信息插入HIS中间表（门诊）
-	@Override
-	@Transactional
-	@DS("multi-datasource1")
-	public int saveExHisMzInf(ExHisMzInfPage exHisMzInf) {
-		return  hisChargeMapper.saveExHisMzInf(exHisMzInf);
- 	}
-
-
-	//计费信息插入HIS中间表（住院）
-	@Override
-	@Transactional
-	@DS("multi-datasource1")
-	public int saveExHisZyInf(PdDosage pdDosage,List<PdDosageDetail> chargeArray) {
- 		List<ExHisZyInfPage> list=new ArrayList<ExHisZyInfPage>();
- 		for(PdDosageDetail dosageDetail :chargeArray){
-		ExHisZyInfPage  hisZyInfPage=new ExHisZyInfPage();
-		hisZyInfPage.setFsfZyh(pdDosage.getInHospitalNo());//住院号
-		hisZyInfPage.setFsfZyhm(pdDosage.getMedicalRecordNo());//病历号
-		hisZyInfPage.setFsfCs("3");//住院次数
-		hisZyInfPage.setFsbSl(dosageDetail.getDosageCount()+"");//数量
-		hisZyInfPage.setFsfXmbh(dosageDetail.getChargeCode());//收费项目编号
-		hisZyInfPage.setFsfMc(dosageDetail.getProductName());//收费项目名称
-		hisZyInfPage.setFsbGg("33");//规格
-		hisZyInfPage.setFsbJe("445");//金额
-		hisZyInfPage.setFsfKdKs("66");//开单科室
-		hisZyInfPage.setFsfZxKs("执行");//执行科室
-		hisZyInfPage.setFsfRq("");//计费日期
-		hisZyInfPage.setFsbRy("5");//计费人员
-		hisZyInfPage.setFsbZt("0");//计费状态
-		hisZyInfPage.setFsbXh(dosageDetail.getId());//序号
-		hisZyInfPage.setFsbTfjlxh("123");//自增长序号
-		hisZyInfPage.setFsbBrbs("123");//手术编号
-		list.add(hisZyInfPage);
-		}
-		return  hisChargeMapper.saveExHisZyInf(list);
 	}
 }
