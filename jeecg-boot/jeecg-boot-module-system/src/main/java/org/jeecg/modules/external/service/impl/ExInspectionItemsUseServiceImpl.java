@@ -1,7 +1,9 @@
 package org.jeecg.modules.external.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.system.vo.LoginUser;
+import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.external.entity.ExInspectionItemsUse;
 import org.jeecg.modules.external.entity.ExInspectionItemsUseDetail;
 import org.jeecg.modules.external.mapper.ExInspectionItemsUseMapper;
@@ -21,7 +23,7 @@ import java.util.List;
 
 /**
  * @Description: 检验项目使用表
- * @Author: jiangxz
+ * @Author: zxh
  * @Date:   2020-05-11
  * @Version: V1.0
  */
@@ -68,5 +70,29 @@ public class ExInspectionItemsUseServiceImpl extends ServiceImpl<ExInspectionIte
             exInspectionItemsUseDetailService.saveBatch(exInspectionItemsUseAll);
         }
 
+    }
+
+    @Override
+    public ExInspectionItemsUse initOutModal(String id) {
+        ExInspectionItemsUse exInspectionItemsUse = this.getById(id);
+
+        ExInspectionItemsUseDetail exInspectionItemsUseDetail = new ExInspectionItemsUseDetail();
+        exInspectionItemsUseDetail.setRefId(id);
+        exInspectionItemsUseDetail.setPackageTrueFlag("true");
+        //查询定数包消耗的产品
+        List<ExInspectionItemsUseDetail> exInspectionItemsUseDetails = exInspectionItemsUseDetailService.selectList(exInspectionItemsUseDetail);
+        if(exInspectionItemsUseDetails!=null && exInspectionItemsUseDetails.size()>0){
+            exInspectionItemsUse.setPakageUseDetailList(exInspectionItemsUseDetails);
+        }
+        //查询消耗的产品
+        ExInspectionItemsUseDetail eiud = new ExInspectionItemsUseDetail();
+        eiud.setRefId(id);
+        eiud.setPackageFalseFlag("true");
+        //查询定数包消耗的产品
+        List<ExInspectionItemsUseDetail> exInspectionItemsUseDetailList = exInspectionItemsUseDetailService.selectList(eiud);
+        if(exInspectionItemsUseDetailList!=null && exInspectionItemsUseDetailList.size()>0){
+            exInspectionItemsUse.setUseDetailList(exInspectionItemsUseDetailList);
+        }
+        return exInspectionItemsUse;
     }
 }

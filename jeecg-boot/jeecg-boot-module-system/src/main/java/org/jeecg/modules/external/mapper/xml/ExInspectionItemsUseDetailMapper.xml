@@ -2,4 +2,95 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.jeecg.modules.external.mapper.ExInspectionItemsUseDetailMapper">
 
+    <!-- 单位 -->
+    <sql id="pdUnitColumns">
+        b.name AS "unitName",
+        sb.`name` AS "specUnitName"
+    </sql>
+
+    <sql id="pdUnitJoins">
+        LEFT JOIN pd_unit b ON c.unit_id = b.id
+         LEFT JOIN pd_unit sb ON c.spec_unit_id = sb.id
+    </sql>
+
+    <!--产品-->
+    <sql id="pdProductColumns">
+        c.number as "number",
+        c.number as "productNumber",
+        c.name as "productName",
+        c.spec as "spec",
+        c.version as "version",
+        c.jde_code as "jdeCode",
+        c.registration as "productRegistration"
+	</sql>
+    <sql id="pdProductJoins">
+        LEFT JOIN pd_product c ON c.id = a.product_id
+    </sql>
+
+    <!-- 生产厂家 -->
+    <sql id="pdVenderColumns">
+      e.name AS "venderName"
+    </sql>
+    <sql id="pdVenderJoins">
+      left join pd_vender e on c.vender_id = e.id
+    </sql>
+
+    <!-- 供应商 -->
+    <sql id="pdSupplierColumns">
+      d.name AS "supplierName"
+    </sql>
+    <sql id="pdSupplierJoins">
+      left join pd_supplier d on a.supplier_id = d.id
+    </sql>
+
+    <!-- 货位 -->
+    <sql id="pdGoodsAllocationColumns">
+        k.name as outHuoweiName
+	</sql>
+    <sql id="pdGoodsAllocationJoins">
+        LEFT JOIN pd_goods_allocation k ON k.code = a.out_huowei_code
+    </sql>
+
+
+    <sql id="pdUsePackageColumns">
+        cc.code as code,cc.name as name
+	</sql>
+    <sql id="pdUsePackageJoins">
+       LEFT JOIN pd_use_package cc on a.package_id = cc.id
+    </sql>
+
+    <select id="selectList"  resultType="org.jeecg.modules.external.entity.ExInspectionItemsUseDetail">
+        SELECT
+        a.*,
+        <include refid="pdUnitColumns"/>,
+        <include refid="pdUsePackageColumns"/>,
+        <include refid="pdProductColumns"/>,
+        <include refid="pdVenderColumns"/>,
+        <include refid="pdGoodsAllocationColumns"/>
+        FROM ex_inspection_items_use_detail a
+        <include refid="pdProductJoins"/>
+        <include refid="pdUsePackageJoins"/>
+        <include refid="pdVenderJoins"/>
+        <include refid="pdUnitJoins"/>
+        <include refid="pdGoodsAllocationJoins"/>
+        <where>
+            1 = 1
+        </where>
+        <if test="refId != null and refId != ''">
+            AND a.ref_id = #{refId}
+        </if>
+        <if test="departId != null and departId != ''">
+            AND a.depart_id = #{departId}
+        </if>
+        <if test="departParentId != null and departParentId != ''">
+            AND a.depart_parent_id = #{departParentId}
+        </if>
+        <if test="packageTrueFlag != null and packageTrueFlag != ''">
+            AND a.package_id is not null
+        </if>
+        <if test="packageFalseFlag != null and packageFalseFlag != ''">
+            AND a.package_id is null  or a.package_id=''
+        </if>
+    </select>
+
 </mapper>

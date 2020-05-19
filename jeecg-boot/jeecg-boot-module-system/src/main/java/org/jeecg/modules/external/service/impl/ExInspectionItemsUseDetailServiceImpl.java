@@ -7,6 +7,8 @@ import org.springframework.stereotype.Service;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
+import java.util.List;
+
 /**
  * @Description: 检验项目使用详情表
  * @Author: jiangxz
@@ -16,4 +18,8 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 @Service
 public class ExInspectionItemsUseDetailServiceImpl extends ServiceImpl<ExInspectionItemsUseDetailMapper, ExInspectionItemsUseDetail> implements IExInspectionItemsUseDetailService {
 
+    @Override
+    public List<ExInspectionItemsUseDetail> selectList(ExInspectionItemsUseDetail exInspectionItemsUseDetail) {
+        return this.baseMapper.selectList(exInspectionItemsUseDetail);
+    }
 }

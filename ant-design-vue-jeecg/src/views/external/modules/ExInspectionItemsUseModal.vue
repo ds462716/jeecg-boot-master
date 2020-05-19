@@ -37,10 +37,10 @@
       </a-card>
 
       <!-- 检验项目包区域 -->
-      <a-card style="margin-bottom: 10px;" v-show="showPackageCard">
+      <a-card style="margin-bottom: 10px;" >
         <a-tabs v-model="activeKey">
-          <a-tab-pane tab="检验项目包明细" :key="refKeys[0]" :forceRender="true">
-            <div style="margin-bottom: 8px;" v-show="showPackageBtn">
+          <a-tab-pane tab="检验项目包明细" :key="refKeys[0]"  :forceRender="true">
+            <div style="margin-bottom: 8px;" v-show="showPackageTable">
               <a-button type="primary" icon="plus" @click="choosePackageList">选择检验项目</a-button>
               <a-popconfirm style="margin-left: 8px"
                             :title="`确定要删除吗?`"
@@ -49,7 +49,7 @@
                 <span class="gap"></span>
               </a-popconfirm>
             </div>
-            <div class="ant-alert ant-alert-info" style="margin-bottom: 16px;">
+            <div class="ant-alert ant-alert-info"  v-show="showPackageTable" style="margin-bottom: 16px;">
               <i class="anticon anticon-info-circle ant-alert-icon"></i> 已选择 <a style="font-weight: 600">{{ pdPackageTable.selectedRowKeys.length }}</a>项
               <a style="margin-left: 24px" @click="onClearSelected">清空</a>
             </div>
@@ -64,6 +64,18 @@
               :loading="pdPackageTable.loading"
               :customRow="onClickRow"
               :rowSelection="{selectedRowKeys: pdPackageTable.selectedRowKeys,onChange: onSelectChange}"
+            >
+            </a-table>
+
+            <a-table
+              v-show="!showPackageTable"
+              ref="table"
+              bordered
+              rowKey="id"
+              :pagination="false"
+              :columns="pdPackageStockTable.columns"
+              :dataSource="pdPackageStockTable.dataSource"
+              :loading="pdPackageStockTable.loading"
             >
             </a-table>
           </a-tab-pane>
@@ -156,7 +168,7 @@
 <script>
 
   import Vue from 'vue'
-  import { httpAction } from '@/api/manage';
+  import { httpAction,getAction } from '@/api/manage';
   import pick from 'lodash.pick';
   import JEditableTable from '@/components/jeecg/JEditableTable'
   import { JEditableTableMixin } from '@/mixins/JEditableTableMixin'
@@ -219,6 +231,43 @@
             { title:'用量', align:"center", dataIndex: 'count' },
           ],
         },
+        pdPackageStockTable:{
+          selectedRowKeys: [],
+          selectionRows: [],
+          dataSource: [],
+          columns: [
+            { title: '产品名称', key: 'productName', type: FormTypes.normal,width:"220px" },
+            { title: '产品编号', key: 'productNumber', width:"160px" },
+            { title: '产品条码', key: 'productBarCode', type: FormTypes.input, disabled:true, width:"200px" },
+            { title: '规格', key: 'spec', width:"220px" },
+            { title: '批号', key: 'batchNo', width:"100px" },
+            { title: '单位', key: 'unitName', width:"50px" },
+            { title: '有效期', key: 'expDate', width:"100px" },
+            /* { title: '入库单价', key: 'purchasePrice', width:"80px" },*/
+            { title: '出库单价', key: 'sellingPrice', type: FormTypes.input, disabled:true, width:"80px" },
+            {
+              title: '用量', key: 'productNum', type: FormTypes.input, width:"80px",
+              placeholder: '${title}', defaultValue: '1',
+              validateRules: [{ required: true, message: '${title}不能为空' },{ pattern: '^-?\\d+\\.?\\d*$',message: '${title}的格式不正确' }]
+            },
+            /*{ title: '出库金额', key: 'outTotalPrice', type: FormTypes.input, disabled:true, width:"100px" },*/
+            { title: '库存数量', key: 'stockNum', width:"80px" },
+            { title: '规格单位', key: 'specUnitName', width:"80px" },
+            { title: '规格数量', key: 'specNum', width:"80px" },
+            { title: '出库货位', key: 'outHuoweiName', width:"100px" },
+            { title: '产品类型', key: 'productFlagName', width:"100px" },
+            /*{ title: '生产日期', key: 'produceDate',  },
+            { title: '入库货位', key: 'inHuoweiCode', type: FormTypes.select, width:"150px", options: [],allowSearch:true, placeholder: '${title}' },*/
+
+            { title: '库存明细ID', key: 'productStockId', type: FormTypes.hidden },
+            { title: '产品ID', key: 'productId', type: FormTypes.hidden },
+            { title: '出库货位编号', key: 'outHuoweiCode', type: FormTypes.hidden },
+            { title: '供应商id', key: 'supplierId', type: FormTypes.hidden },
+            { title: '规格单位ID', key: 'specUnitId', type: FormTypes.hidden },
+            { title: '产品类型', key: 'productFlag', type: FormTypes.hidden },
+          ],
+
+        },
         // 出入库明细表(产品明细)  , type: FormTypes.hidden
         exInspectionItemsUseDetailTable: {
           loading: false,
@@ -279,6 +328,7 @@
           itemType: {rules: [{required: true, message: '请选择检验项目类型!'}]},
         },
         url: {
+          init:"/external/exInspectionItemsUse/initModal",
           add: "/external/exInspectionItemsUse/add",
           submit: "/external/exInspectionItemsUse/submit",
           edit: "/external/exInspectionItemsUse/edit",
@@ -320,12 +370,36 @@
         this.edit({});
       },
       edit (record) {
-        this.form.resetFields();
-        this.model = Object.assign({}, record);
-        this.visible = true;
-        this.$nextTick(() => {
-          this.form.setFieldsValue(pick(this.model,'refId','itemType','refName'))
-        })
+        if(record.hasOwnProperty("id")){
+          //详情
+          this.visible = true;
+          this.loading = true;
+          this.showPackageTable = false;
+          this.popModal.title="详情";
+          let fieldval = pick(this.model,'id','refId','itemType','refName');
+          let params = { id: record.id };
+          getAction(this.url.init, params).then((res) => {
+            if (res.success) {
+              this.$nextTick(() => {
+                //详情页
+                this.form.setFieldsValue(fieldval);
+                this.exInspectionItemsUseDetailTable.dataSource = res.result.useDetailList || [];
+                console.log(res.result.pakageUseDetailList);
+                this.pdPackageStockTable.dataSource = res.result.pakageUseDetailList || [];
+                this.loading = false;
+              })
+            }
+
+          })
+        }else{
+          this.showPackageTable = true;
+          this.form.resetFields();
+          this.model = Object.assign({}, record);
+          this.visible = true;
+          this.$nextTick(() => {
+            this.form.setFieldsValue(pick(this.model,'refId','itemType','refName'))
+          })
+        }
       },
       close () {
         this.$emit('close');

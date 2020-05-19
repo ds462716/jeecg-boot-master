@@ -84,4 +84,10 @@ public class ExInspectionItemsUse  {
 
     @TableField(exist = false)
     private List<PdUsePackageDetail> pdUsePackageDetails;
+
+    @TableField(exist = false)
+    private List<ExInspectionItemsUseDetail> pakageUseDetailList;
+
+    @TableField(exist = false)
+    private List<ExInspectionItemsUseDetail> useDetailList;
 }

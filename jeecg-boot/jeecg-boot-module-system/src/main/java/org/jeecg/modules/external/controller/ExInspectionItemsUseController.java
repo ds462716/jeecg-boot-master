@@ -93,6 +93,12 @@ public class ExInspectionItemsUseController extends JeecgController<ExInspection
 		 return Result.ok("添加成功！");
 	 }
 
+	 @GetMapping(value = "/initModal")
+	 public Result<?> initModal(@RequestParam(name = "id") String id, HttpServletRequest req) {
+		 ExInspectionItemsUse exInspectionItemsUse = exInspectionItemsUseService.initOutModal(id);
+		 return Result.ok(exInspectionItemsUse);
+	 }
+
 	
 	/**
 	 *  编辑

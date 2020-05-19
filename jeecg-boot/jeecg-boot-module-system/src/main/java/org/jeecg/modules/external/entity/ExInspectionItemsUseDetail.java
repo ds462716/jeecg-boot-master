@@ -5,6 +5,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.Date;
 import java.math.BigDecimal;
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
@@ -109,4 +110,40 @@ public class ExInspectionItemsUseDetail  {
 	@Excel(name = "所属父部门", width = 15)
     @ApiModelProperty(value = "所属父部门")
     private String departParentId;
+
+    @TableField(exist = false)
+	private String code;//检验包代码
+    @TableField(exist = false)
+    private String name;//检验包名称
+    @TableField(exist = false)
+    private String packageTrueFlag;//查询检验包产品标识
+    private String packageFalseFlag;//查询检验包产品标识
+
+    @TableField(exist = false)
+    private String supplierName;
+    @TableField(exist = false)
+    private String venderName;
+
+    //冗余
+    @TableField(exist = false)
+    private String outHuoweiName;//出库货位
+
+    @TableField(exist = false)
+    private String inHuoweiName;//入库货位
+    private String inHuoweiCode;
+
+    @TableField(exist = false)
+    private String productName;//产品名称
+    @TableField(exist = false)
+    private String productNumber;//产品编号
+    @TableField(exist = false)
+    private String unitName;//单位
+    @TableField(exist = false)
+    private String specUnitName;//单位
+    @TableField(exist = false)
+    private String number;//产品编号
+    @TableField(exist = false)
+    private String spec;//产品规格
+    @TableField(exist = false)
+    private String version;//产品型号
 }
