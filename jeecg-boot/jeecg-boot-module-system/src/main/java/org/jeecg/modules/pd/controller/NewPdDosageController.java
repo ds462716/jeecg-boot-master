@@ -44,13 +44,13 @@ public class NewPdDosageController {
      */
     @PostMapping(value = "/submit")
     public Result<?> submit(@RequestBody PdDosage pdDosage) {
-        List<PdDosageDetail> list= pdDosageService.newSaveMain(pdDosage, PdConstant.IS_CHARGE_FLAG_1);
+        List<PdDosageDetail> list= pdDosageService.newSaveMain(pdDosage, PdConstant.IS_CHARGE_FLAG_0);
          //数据推送到HIS中间表
         if(CollectionUtils.isNotEmpty(list)){
               if(StringUtils.isNotEmpty(pdDosage.getInHospitalNo())){//住院
-                  exHisZyInfService.saveExHisZyInf(pdDosage, list);
+                  exHisZyInfService.saveExHisZyInf(pdDosage, list,PdConstant.IS_CHARGE_TYPE_1);
               }else{//门诊
-                  exHisZyInfService.saveExHisMzInf(pdDosage, list);
+                  exHisZyInfService.saveExHisMzInf(pdDosage, list,PdConstant.IS_CHARGE_TYPE_1);
               }
         }
          return Result.ok("添加成功！");
@@ -78,6 +78,49 @@ public class NewPdDosageController {
             log.error(e.getMessage(), e);
         }
         return result;
+    }
+
+
+
+    /**
+     * 取消收费
+     * @param pdDosage
+     * @return
+     */
+    @PostMapping(value = "/dosageCnclFee")
+    public Result<?> dosageCnclFee(@RequestBody PdDosage pdDosage) {
+        List<PdDosageDetail> detailList = pdDosage.getPdDosageDetails();
+        //数据推送到HIS中间表
+        if(CollectionUtils.isNotEmpty(detailList)){
+            if(StringUtils.isNotEmpty(pdDosage.getInHospitalNo())){//住院
+                exHisZyInfService.saveExHisZyInf(pdDosage, detailList,PdConstant.IS_CHARGE_TYPE_0);
+            }else{//门诊
+                exHisZyInfService.saveExHisMzInf(pdDosage, detailList,PdConstant.IS_CHARGE_TYPE_0);
+            }
+            pdDosageService.dosageCnclFee(pdDosage);
+        }
+        return Result.ok("操作成功！");
+    }
+
+
+    /**
+     * 收费
+     * @param pdDosage
+     * @return
+     */
+    @PostMapping(value = "/dosageFee")
+    public Result<?> dosageFee(@RequestBody PdDosage pdDosage) {
+        List<PdDosageDetail> detailList = pdDosage.getPdDosageDetails();
+        //数据推送到HIS中间表
+        if(CollectionUtils.isNotEmpty(detailList)){
+            if(StringUtils.isNotEmpty(pdDosage.getInHospitalNo())){//住院
+                exHisZyInfService.saveExHisZyInf(pdDosage, detailList,PdConstant.IS_CHARGE_TYPE_1);
+            }else{//门诊
+                exHisZyInfService.saveExHisMzInf(pdDosage, detailList,PdConstant.IS_CHARGE_TYPE_1);
+            }
+            pdDosageService.dosageFee(pdDosage);
+        }
+        return Result.ok("操作成功！");
     }
 
 }

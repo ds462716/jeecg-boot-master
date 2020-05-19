@@ -17,9 +17,9 @@ public interface IExHisZyInfService extends IService<ExHisZyInfPage> {
 
 
     //计费信息插入HIS中间表(住院)
-    public int saveExHisZyInf(PdDosage pdDosage, List<PdDosageDetail> chargeArray);
+    public int saveExHisZyInf(PdDosage pdDosage, List<PdDosageDetail> chargeArray,String chargeType);
 
     //计费信息插入HIS中间表(门诊)
-    public int saveExHisMzInf(PdDosage pdDosage, List<PdDosageDetail> chargeArray);
+    public int saveExHisMzInf(PdDosage pdDosage, List<PdDosageDetail> chargeArray,String chargeType);
 
 }

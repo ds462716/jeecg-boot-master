@@ -308,10 +308,46 @@ public class PdDosageServiceImpl extends ServiceImpl<PdDosageMapper, PdDosage> i
     }
 
     /**
+     * 取消收费
+     * @param pdDosage
+     */
+    @Override
+    @Transactional
+    public void dosageCnclFee(PdDosage pdDosage) {
+        List<PdDosageDetail> detailList = pdDosage.getPdDosageDetails();
+        if(detailList!=null && detailList.size()>0){
+            for(PdDosageDetail pdd : detailList){
+                pdd.setHyCharged(PdConstant.CHARGE_FLAG_1);
+            }
+            pdDosageDetailService.updateBatchById(detailList);
+         }
+
+    }
+
+    /**
+     * 收费
+     * @param pdDosage
+     */
+    @Override
+    @Transactional
+    public void dosageFee(PdDosage pdDosage) {
+        List<PdDosageDetail> detailList = pdDosage.getPdDosageDetails();
+        if(detailList!=null && detailList.size()>0){
+            for(PdDosageDetail pdd : detailList){
+                pdd.setHyCharged(PdConstant.CHARGE_FLAG_0);
+            }
+            pdDosageDetailService.updateBatchById(detailList);
+        }
+
+    }
+
+
+    /**
      * 库存回退
      * @param pdDosage
      */
     @Override
+    @Transactional
     public void dosageReturned(PdDosage pdDosage) {
         LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
         List<PdDosageDetail> detailList = pdDosage.getPdDosageDetails();
@@ -347,7 +383,6 @@ public class PdDosageServiceImpl extends ServiceImpl<PdDosageMapper, PdDosage> i
             pdProductStockTotalService.updateRetunuseStock(sysUser.getCurrentDepartId(),detailList);
         }
     }
-
 
 
 

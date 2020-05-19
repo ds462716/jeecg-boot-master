@@ -40,6 +40,10 @@ public interface IPdDosageService extends IService<PdDosage> {
 
     void dosageReturned(PdDosage pdDosage);
 
+    void dosageCnclFee(PdDosage pdDosage);
+
+    void dosageFee(PdDosage pdDosage);
+
 
     /*市立医院用*/
     List<PdDosageDetail> newSaveMain(PdDosage pdDosage, String displayFlag);

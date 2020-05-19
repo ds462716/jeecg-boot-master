@@ -17,11 +17,12 @@ public class ExHisZyInfPage {
     private String fsfCs;//次数	取住院病人信息
     private String fsfXmbh;//收费项目编号	具体产品收费项目代码
     private String FsfMc;//名称	产品名称
-    private String FsbGg;//规格	产品规格
     private Double FsbSl;//数量	产品数量
     private BigDecimal FsbJe;//金额
     private String fsfKdKs;//开单科室	取住院病人信息申请科室
     private String FsfZxKs;//执行科室	取住院病人信息执行科室
+
+    private String FsbGg;//规格	产品规格
     private Date FsfRq;//计费日期
     private String FsbRy;//计费人员	与HIS操作人员中一致对照
     private String FsbZt; //HIS计费状态	计费为1，未计费为0

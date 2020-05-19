@@ -36,6 +36,9 @@
         a.depart_parent_id,
         a.medical_record_no,
         a.operation_name,
+        a.hospitalizations_num,
+        a.sqrt_doctor_id,
+        a.exe_dept_name,
         a.del_flag
 	</sql>
 
