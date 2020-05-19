@@ -30,7 +30,8 @@
 		a.update_by,
 		a.update_time,
 		a.spec_unit_id,
-		a.spec_quantity
+		a.spec_quantity,
+        a.registration
 	</sql>
 
 	<sql id="PdStockRecordDetailJoins">
@@ -53,7 +54,7 @@
         c.spec as "spec",
         c.version as "version",
         c.jde_code as "jdeCode",
-        c.registration as "registration"
+        c.registration as "productRegistration"
 	</sql>
 	<sql id="pdProductJoins">
         LEFT JOIN pd_product c ON c.id = a.product_id

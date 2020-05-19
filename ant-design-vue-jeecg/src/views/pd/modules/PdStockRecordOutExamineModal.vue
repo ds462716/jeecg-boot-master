@@ -461,6 +461,7 @@
           init:"/pd/pdStockRecordOut/initModal",
           audit: "/pd/pdStockRecordOut/audit",
           departList:"/pd/pdDepart/getSysDepartList",
+          queryById: "/pd/pdStockRecordOut/queryById",
         },
         popModal: {
           title: '这里是标题',
@@ -577,24 +578,37 @@
         // if(flag == "2"){
         //   this.model.auditDate = this.form.getFieldValue("submitDate");
         // }
-        if(!this.model.auditDate){
-          this.model.auditDate = this.form.getFieldValue("submitDate");
+        // if(!this.model.auditDate){
+        //   this.model.auditDate = this.form.getFieldValue("submitDate");
+        // }
+        // this.model.totalSum = this.totalSum;
+        // this.model.outTotalPrice = this.outTotalPrice;
+        // this.model.inTotalPrice = this.inTotalPrice;
+        // let values = this.pdStockRecordDetailTable.dataSource;
+        // // 定数包相关
+        // if(this.pdPackageTable.dataSource.length > 0){
+        //   for (let table of this.pdPackageTable.dataSource){
+        //     for (let item of table.pdPackageRecordDetailList){
+        //       values.push(item);
+        //     }
+        //   }
+        // }
+        // this.model.pdStockRecordDetailList = values;
+        // this.$refs.pdStockRecordOutPrintModal.show(this.model);
+        // this.$refs.pdStockRecordOutPrintModal.title = this.stockOutText + "出库单";
+
+        let recordId = this.model.id;
+        if(!recordId){
+          this.$message.warning("参数不正确，请重新打印！");
+          return;
         }
-        this.model.totalSum = this.totalSum;
-        this.model.outTotalPrice = this.outTotalPrice;
-        this.model.inTotalPrice = this.inTotalPrice;
-        let values = this.pdStockRecordDetailTable.dataSource;
-        // 定数包相关
-        if(this.pdPackageTable.dataSource.length > 0){
-          for (let table of this.pdPackageTable.dataSource){
-            for (let item of table.pdPackageRecordDetailList){
-              values.push(item);
-            }
+        getAction(this.url.queryById, {id:this.model.id}).then((res) => {
+          if(!res.result.auditDate){
+            res.result.auditDate = res.result.submitDate;
           }
-        }
-        this.model.pdStockRecordDetailList = values;
-        this.$refs.pdStockRecordOutPrintModal.show(this.model);
-        this.$refs.pdStockRecordOutPrintModal.title = this.stockOutText + "出库单";
+          this.$refs.pdStockRecordOutPrintModal.show(res.result);
+          this.$refs.pdStockRecordOutPrintModal.title = this.stockOutText + "出库单";
+        })
       },
       /** 关闭按钮点击事件 */
       handleCancel() {

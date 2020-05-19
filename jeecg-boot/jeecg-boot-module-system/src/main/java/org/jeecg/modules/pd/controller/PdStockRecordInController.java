@@ -13,6 +13,7 @@ import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.PdConstant;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.system.vo.LoginUser;
+import org.jeecg.common.util.DateUtils;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.message.util.PushMsgUtil;
 import org.jeecg.modules.pd.entity.PdStockRecord;
@@ -39,6 +40,7 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -161,8 +163,11 @@ public class PdStockRecordInController {
                 return Result.error("入库单已被提交，不能再次提交！");
             }
         }
-        pdStockRecordService.submit(pdStockRecord, pdStockRecord.getPdStockRecordDetailList(), PdConstant.RECODE_TYPE_1);
-        return Result.ok("提交成功！");
+        String recordId = pdStockRecordService.submit(pdStockRecord, pdStockRecord.getPdStockRecordDetailList(), PdConstant.RECODE_TYPE_1);
+        Map<String,Object> result = new HashMap<>();
+        result.put("recordId",recordId);
+        result.put("message","提交成功！");
+        return Result.ok(result);
     }
 
     /**
@@ -208,6 +213,24 @@ public class PdStockRecordInController {
     }
 
     /**
+     * 目前只用于打印后更新注册号
+     * @param pdStockRecord
+     * @return
+     */
+    @PutMapping(value = "/edit")
+    public Result<?> edit(@RequestBody PdStockRecord pdStockRecord) {
+
+        if(CollectionUtils.isNotEmpty(pdStockRecord.getPdStockRecordDetailList())){
+            Date date = DateUtils.getDate();
+            for(PdStockRecordDetail item : pdStockRecord.getPdStockRecordDetailList()){
+                item.setUpdateTime(date);
+            }
+            pdStockRecordDetailService.updateBatchById(pdStockRecord.getPdStockRecordDetailList());
+        }
+        return Result.ok("编辑成功!");
+    }
+
+    /**
      * 通过id删除
      *
      * @param id
@@ -247,7 +270,27 @@ public class PdStockRecordInController {
      */
     @GetMapping(value = "/queryById")
     public Result<?> queryById(@RequestParam(name = "id", required = true) String id) {
-        PdStockRecord pdStockRecord = pdStockRecordService.getById(id);
+
+        PdStockRecord pdStockRecord = new PdStockRecord();
+        pdStockRecord.setId(id);
+        pdStockRecord = pdStockRecordService.getOne(pdStockRecord);
+
+        PdStockRecordDetail pdStockRecordDetail = new PdStockRecordDetail();
+        pdStockRecordDetail.setRecordId(id);
+        List<PdStockRecordDetail> pdStockRecordDetailList = pdStockRecordDetailService.selectByMainId(pdStockRecordDetail);
+        pdStockRecord.setPdStockRecordDetailList(pdStockRecordDetailList);
+
+
+        BigDecimal totalPrice = new BigDecimal(0);//总金额
+        Double totalSum = new Double(0);//总数量
+        for (PdStockRecordDetail item : pdStockRecordDetailList) {
+            totalSum = totalSum + item.getProductNum();
+            BigDecimal purchasePrice = item.getPurchasePrice() == null ? new BigDecimal(0) : item.getPurchasePrice();
+            totalPrice = totalPrice.add(purchasePrice.multiply(BigDecimal.valueOf(item.getProductNum())).setScale(4, BigDecimal.ROUND_HALF_UP));
+        }
+        pdStockRecord.setTotalSum(totalSum);
+        pdStockRecord.setInTotalPrice(totalPrice);
+
         if (pdStockRecord == null) {
             return Result.error("未找到对应数据");
         }

@@ -112,8 +112,9 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void submit(PdStockRecord pdStockRecord, List<PdStockRecordDetail> pdStockRecordDetailList, String recordType) {
+    public String submit(PdStockRecord pdStockRecord, List<PdStockRecordDetail> pdStockRecordDetailList, String recordType) {
         LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        String recordId = "";
         // 修改前先删除数据
         if (oConvertUtils.isNotEmpty(pdStockRecord.getId())) {
             this.delMain(pdStockRecord.getId());
@@ -124,7 +125,7 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
             pdStockRecord.setRecordType(PdConstant.RECODE_TYPE_1); // 入库
             pdStockRecord.setSubmitStatus(PdConstant.SUBMIT_STATE_2); // 已提交
             pdStockRecord.setAuditStatus(PdConstant.AUDIT_STATE_1);   // 待审核
-            this.saveInStockRecord(pdStockRecord, pdStockRecordDetailList, "");
+            recordId = this.saveInStockRecord(pdStockRecord, pdStockRecordDetailList, "");
 
             PdOnOff query = new PdOnOff();
             query.setDepartParentId(sysUser.getDepartParentId());
@@ -146,7 +147,7 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
             pdStockRecord.setRecordType(PdConstant.RECODE_TYPE_2); // 出库
             pdStockRecord.setSubmitStatus(PdConstant.SUBMIT_STATE_2); // 已提交
             pdStockRecord.setAuditStatus(PdConstant.AUDIT_STATE_1);   // 待审核
-            this.saveOutStockRecord(pdStockRecord, pdStockRecordDetailList);
+            recordId = this.saveOutStockRecord(pdStockRecord, pdStockRecordDetailList);
 
             PdOnOff query = new PdOnOff();
             query.setDepartParentId(sysUser.getDepartParentId());
@@ -165,6 +166,8 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
                 this.sendMsg(pdStockRecord,PdConstant.AUDIT_MENU_2,PdConstant.STOCK_RECORD_OUT_SUBMIT_MSG);
             }
         }
+
+        return recordId;
     }
 
     private String saveInStockRecord(PdStockRecord pdStockRecord, List<PdStockRecordDetail> pdStockRecordDetailList, String outType) {

@@ -352,6 +352,7 @@
           init:"/pd/pdStockRecordIn/initModal",
           audit: "/pd/pdStockRecordIn/audit",
           querySupplier:"/pd/pdSupplier/getSupplierList",
+          queryById: "/pd/pdStockRecordIn/queryById",
         },
         popModal: {
           title: '这里是标题',
@@ -423,17 +424,19 @@
       },
       /**打印按钮**/
       printBtn(flag){
-        // if(flag == "2"){
-        //   this.model.auditDate = this.form.getFieldValue("submitDate");
-        // }
-        if(!this.model.auditDate){
-          this.model.auditDate = this.form.getFieldValue("submitDate");
+        let recordId = this.model.id;
+        if(!recordId){
+          this.$message.warning("参数不正确，请重新打印！");
+          return;
         }
-        this.model.totalSum = this.totalSum;
-        this.model.inTotalPrice = this.inTotalPrice;
-        this.model.pdStockRecordDetailList = this.pdStockRecordDetailTable.dataSource;
-        this.$refs.pdStockRecordInPrintModal.show(this.model);
-        this.$refs.pdStockRecordInPrintModal.title = this.stockInText + "入库单";
+        getAction(this.url.queryById, {id:this.model.id}).then((res) => {
+
+          if(!res.result.auditDate){
+            res.result.auditDate = res.result.submitDate;
+          }
+          this.$refs.pdStockRecordInPrintModal.show(res.result);
+          this.$refs.pdStockRecordInPrintModal.title = this.stockInText + "入库单";
+        })
       },
       /** 关闭按钮 **/
       closeBtn(){

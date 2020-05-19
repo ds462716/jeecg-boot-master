@@ -59,6 +59,8 @@ public class PdStockRecordDetail extends BaseEntity {
 	@JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd")
     @DateTimeFormat(pattern="yyyy-MM-dd")
 	private Date expDate;
+
+	private String registration;//注册证号
 	/**定数包 打包记录ID*/
 	private String packageRecordId;
 	/**高低值耗材标志 1-高值；2-低值*/
@@ -119,8 +121,6 @@ public class PdStockRecordDetail extends BaseEntity {
 //	private String supplierId;//供应商ID
 	@TableField(exist = false)
 	private String supplierName;//供应商名称
-	@TableField(exist = false)
-	private String registration;//注册证号
 	@TableField(exist = false)
 	private String inDepartName;//入库科室名称
 	@TableField(exist = false)
@@ -205,5 +205,7 @@ public class PdStockRecordDetail extends BaseEntity {
 	private Double upQuantity; // 紧急产品需要采购数量
 	@TableField(exist = false)
 	private Double purchasedQuantity; //紧急产品已采购数量
+	@TableField(exist = false)
+	private String productRegistration; //产品表中的注册证
 
 }
