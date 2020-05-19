@@ -8,6 +8,7 @@ import org.jeecg.modules.pd.entity.HisDepartInf;
 import org.jeecg.modules.pd.entity.HisUserInf;
 import org.jeecg.modules.pd.entity.PdDosage;
 
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -43,6 +44,9 @@ public interface IHisChargeService extends IService<HisChargeInf> {
 
     //获取检验项目明细
     public List<ExInspectionItems> selectExjianYan(ExInspectionItems exInspectionItems);
+
+    /*查询his系统门诊病人退费信息*/
+    List<HashMap>  queryMztfList(PdDosage pdDosage);
 
 
 }

@@ -14,6 +14,7 @@ import org.jeecg.modules.pd.service.IPdDosageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -95,8 +96,13 @@ public class NewPdDosageController {
             if(StringUtils.isNotEmpty(pdDosage.getInHospitalNo())){//住院
                 exHisZyInfService.saveExHisZyInf(pdDosage, detailList,PdConstant.IS_CHARGE_TYPE_0);
             }else{//门诊
-                exHisZyInfService.saveExHisMzInf(pdDosage, detailList,PdConstant.IS_CHARGE_TYPE_0);
-            }
+                List<HashMap>  list= hisChargeService.queryMztfList(pdDosage);
+                if(CollectionUtils.isEmpty(list)){
+                    exHisZyInfService.saveExHisMzInf(pdDosage, detailList,PdConstant.IS_CHARGE_TYPE_0);
+                }else{
+                    return  Result.error("不允许操作");
+                }
+                 }
             pdDosageService.dosageCnclFee(pdDosage);
         }
         return Result.ok("操作成功！");

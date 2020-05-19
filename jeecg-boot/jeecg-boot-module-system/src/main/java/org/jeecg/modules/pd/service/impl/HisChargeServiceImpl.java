@@ -16,7 +16,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
  * @Description: jeecg 测试demo
@@ -105,5 +105,13 @@ public class HisChargeServiceImpl extends ServiceImpl<HisChargeMapper, HisCharge
 			//}
 		}
 		return list;
+	}
+
+	//查询his系统门诊病人退费信息
+	@Override
+	@DS("multi-datasource1")
+	public List<HashMap>  queryMztfList(PdDosage pdDosage) {
+		return hisChargeMapper.queryMztfList(pdDosage);
+
 	}
 }
