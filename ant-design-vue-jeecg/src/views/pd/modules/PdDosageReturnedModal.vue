@@ -673,6 +673,11 @@
               list.splice(i--, 1);
               continue;
             }
+            if(list[i].hyChargedText !='未收费'){
+              this.$message.warning(list[i].productName+"不是未收费产品,无法库存还回");
+              return;
+            }
+
             if(Number(list[i].dosageCount) > Number(list[i].leftRefundNum)){
               this.$message.error("["+list[i].productName+"]用量数量不能大于剩余可退数量！");
               return;

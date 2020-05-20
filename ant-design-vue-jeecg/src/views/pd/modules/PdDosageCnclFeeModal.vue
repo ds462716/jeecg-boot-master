@@ -758,6 +758,9 @@
             }else if(list[i].hyChargedText=='未收费'){
               this.$message.warning(list[i].productName+"产品未收费,无法进行退费");
               return;
+            }else if(list[i].hyChargedText=='已退费'){
+              this.$message.warning(list[i].productName+"产品已退费,无需再次退费");
+              return;
             }
           }
           formData.pdDosageDetails = list;

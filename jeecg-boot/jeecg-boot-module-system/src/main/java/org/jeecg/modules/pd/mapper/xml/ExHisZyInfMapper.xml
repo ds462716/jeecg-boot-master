@@ -55,7 +55,8 @@
 		Fsb_ry,
 		fsf_zt,
 		fsf_xh,
-		fsf_brbs
+		fsf_brbs,
+		fsf_tfxh
 		) VALUES <foreach collection="list" item="item" index="index" open="" close="" separator=",">
 		(
 		#{item.fsfZyh},
@@ -72,7 +73,8 @@
 		#{item.FsbRy},
 		#{item.fsbZt},
 		#{item.fsbXh},
-		#{item.fsbBrbs}
+		#{item.fsbBrbs},
+		#{item.fsbTfjlxh}
 		)</foreach>
 
 	</insert>

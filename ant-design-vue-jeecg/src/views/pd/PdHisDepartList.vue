@@ -23,7 +23,7 @@
     
     <!-- 操作按钮区域 -->
     <div class="table-operator">
-      <a-button @click="sysUpdate" type="primary" icon="plus">同步更新</a-button>
+      <a-button @click="sysUpdate" type="primary"  :loading="confirmLoading" icon="plus">同步更新</a-button>
     </div>
 
     <!-- table区域-begin -->
@@ -63,7 +63,7 @@
 
   import { JeecgListMixin } from '@/mixins/JeecgListMixin'
   import HisDepartModal from "./modules/HisDepartModal"
-  import { httpAction } from '@/api/manage'
+  import {getAction,httpAction } from '@/api/manage'
   export default {
     name: "PdHisDepartList",
     mixins:[JeecgListMixin],
@@ -71,6 +71,7 @@
     data () {
       return {
         description: 'HIS科室管理页面',
+        confirmLoading: false,
         // 表头
         columns: [
           {
@@ -118,14 +119,32 @@
 
     },
     methods: {
+
+      loadData(arg) {
+        //加载数据 若传入参数1则加载第一页的内容
+        if (arg === 1) {
+          this.ipagination.current = 1;
+        }
+        let params = this.getQueryParams();//查询条件
+        //查询
+        getAction(this.url.list, params).then((res) => {
+          if (res.success) {
+            this.dataSource = res.result.records;
+          }
+        })
+      },
       sysUpdate: function () {
+        const that = this;
+        that.confirmLoading = true;
         httpAction(this.url.synUpdate,{},"post").then((res)=>{
           if(res.success){
             that.$message.success(res.message);
-            that.$emit('ok');
+            that.loadData(1);
           }else{
             that.$message.warning(res.message);
           }
+        }).finally(() => {
+          that.confirmLoading = false;
         })
 
       },

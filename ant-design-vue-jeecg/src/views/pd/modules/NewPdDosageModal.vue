@@ -691,14 +691,15 @@
           }
 
           let formData = this.classifyIntoFormData(allValues);
-
           if(formData.pdDosageDetails.length <= 0){
             this.$message.warning("用量产品数据为空，请扫码出库或选择产品");
             return;
           }
-
+          alert(formData.pdDosageDetails[0].id);
           let list = formData.pdDosageDetails;
+          alert(list[0].id);
           for (let item of list){
+            item.id=null;
             if(Number(item.dosageCount) > Number(item.stockNum)){
               this.$message.error("["+item.productName+"]用量数量不能大于库存数量！");
               return;

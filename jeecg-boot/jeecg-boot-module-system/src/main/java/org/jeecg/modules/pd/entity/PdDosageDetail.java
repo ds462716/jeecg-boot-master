@@ -31,9 +31,9 @@ public class PdDosageDetail extends BaseEntity {
     private static final long serialVersionUID = 1L;
 
 	/**主键*/
-	@TableId(type = IdType.ID_WORKER_STR)
+	@TableId(type = IdType.AUTO)
     @ApiModelProperty(value = "主键")
-    private String id;
+    private int id;
 	/**用量表id*/
 	@Excel(name = "用量表id", width = 15)
     @ApiModelProperty(value = "用量表id")
@@ -164,6 +164,8 @@ public class PdDosageDetail extends BaseEntity {
                 return "未收费";
             }else if(this.hyCharged.equals(PdConstant.CHARGE_FLAG_2)){
                 return "已退回";
+            }else if(this.hyCharged.equals(PdConstant.CHARGE_FLAG_3)){
+                return "已退费";
             }
         }
         return hyChargedText;

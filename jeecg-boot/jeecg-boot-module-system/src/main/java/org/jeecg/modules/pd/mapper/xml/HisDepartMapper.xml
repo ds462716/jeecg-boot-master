@@ -38,7 +38,7 @@
 			AND a.fsf_ksbh = #{fsfKsbh}
 		</if>
 		<if test="fsfKsmc != null and fsfKsmc != ''">
-			AND a.fsf_ksmc = #{fsfKsmc}
+			AND a.fsf_ksmc LIKE concat('%',#{fsfKsmc},'%')
 		</if>
 		<if test="spdDepartId != null and spdDepartId != ''">
 			AND a.spd_depart_id = #{spdDepartId}
