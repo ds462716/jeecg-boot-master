@@ -30,6 +30,9 @@
                 <a-form-item label="打包日期" :labelCol="labelCol" :wrapperCol="wrapperCol">
                   <j-date disabled placeholder="请选择打包日期" v-decorator="[ 'createTime', validatorRules.createTime]" :trigger-change="true" style="width: 100%"/>
                 </a-form-item>
+                <a-form-item label="定数包ID" :labelCol="labelCol" :wrapperCol="wrapperCol" v-show="false">
+                  <a-input disabled v-decorator="[ 'packageId', validatorRules.packageId]" :trigger-change="true" style="width: 100%"/>
+                </a-form-item>
               </a-col>
             </a-row>
           </a-form>
@@ -289,7 +292,7 @@
             { title: '入库单价', key: 'purchasePrice', width:"80px" },
             { title: '出库单价', key: 'sellingPrice', width:"80px" },
             {
-              title: '打包数量', key: '‘【', type: FormTypes.input, width:"80px",
+              title: '打包数量', key: 'packageNum', type: FormTypes.input, width:"80px",
               placeholder: '${title}', defaultValue: '1',
               validateRules: [{ required: true, message: '${title}不能为空' },{ pattern: '^-?\\d+\\.?\\d*$',message: '${title}的格式不正确' }]
             },
@@ -313,6 +316,7 @@
           createBy:{},
           createTime:{},
           remarks:{},
+          packageId: {},
         },
         url: {
           init:"/pd/pdPackageRecord/initModal",
@@ -446,41 +450,63 @@
 
           let formData = this.classifyIntoFormData(allValues);
 
+          if(!formData.packageId){
+            this.$message.warning("定数包读取失败，请重新选择定数包！");
+            return;
+          }
+
           if(formData.pdPackageRecordDetailList.length <= 0){
             this.$message.warning("打包产品数据为空，请扫码打包或选择库存产品！");
             return;
           }
           
-          let list = formData.pdPackageRecordDetailList;
+          let recordList = formData.pdPackageRecordDetailList;
+          let packageList = this.pdPackageTable.dataSource;
 
-          for (let item of list){
+          for(let pa of packageList){
+            let isInPackage = false; // 打包的产品是否在定数包中
+            let count = Number(pa.count);//定数包产品数量
+            let sumPackageNum = 0;//打包产品总数
+            for(let record of recordList){
+              if(pa.productId == record.productId){
+                isInPackage = true;
+                sumPackageNum = sumPackageNum + Number(record.packageNum);
+              }
+            }
+            if(!isInPackage){
+              this.$message.error("产品["+pa.productName+"]没有被打包，请继续打包！");
+              return;
+            }
+            if(sumPackageNum != count){
+              this.$message.error("产品["+pa.productName+"]打包数量与定数包产品数量不一致，请重新打包！");
+              return;
+            }
+          }
+
+          for (let item of recordList){
             if(Number(item.packageNum) > Number(item.stockNum)){
-              this.$message.error("["+item.productName+"]出库数量不能大于库存数量！");
+              this.$message.error("["+item.productName+"]打包数量不能大于库存数量！");
               return;
             }
             if(Number(item.packageNum) <= 0){
-              this.$message.error("["+item.productName+"]出库数量必须大于0！");
+              this.$message.error("["+item.productName+"]打包数量必须大于0！");
               return;
             }
-            // TODO 校验打包数量 和定数包数量是否一致
           }
 
           // 发起请求
-          // this.confirmLoading = true
-          // httpAction(url, formData, method).then((res) => {
-          //   if (res.success) {
-          //     this.$message.success(res.message)
-          //     this.$emit('ok');
-          //     if(flag == "2"){
-          //       this.printBtn("2"); //通过并打印
-          //     }
-          //     this.close();
-          //   } else {
-          //     this.$message.warning(res.message)
-          //   }
-          // }).finally(() => {
-          //   this.confirmLoading = false
-          // })
+          this.confirmLoading = true
+          httpAction(url, formData, method).then((res) => {
+            if (res.success) {
+              this.$message.success(res.message)
+              this.$emit('ok');
+              this.close();
+            } else {
+              this.$message.warning(res.message)
+            }
+          }).finally(() => {
+            this.confirmLoading = false
+          })
         }).catch(e => {
           if (e.error === VALIDATE_NO_PASSED) {
             // 如果有未通过表单验证的子表，就自动跳转到它所在的tab
@@ -552,10 +578,17 @@
       chooseProductList() {
         let packageData = this.pdPackageTable.dataSource;
 
-        if(packageData.length <= 0){
-          this.$message.error("请选择定数包！");
+        let packageId = this.form.getFieldValue("packageId");
+        if(!packageId){
+          this.$message.warning("请选择定数包！");
           return;
         }
+
+        // if(packageData.length <= 0){
+        //   this.$message.error("请选择定数包！");
+        //   return;
+        // }
+
         // let packageDetailList = packageData[0].pdPackageDetailList;
         let productIdList = [];
         packageData.forEach((item, idx) => {
@@ -601,6 +634,8 @@
         this.pdPackageRecordDetailTable.dataSource = [];
         this.recordTotalSum = 0;
         this.recordTotalPrice = 0;
+
+        this.form.setFieldsValue({"packageId":data[0].id});
 
         let pdPackageDetailList = data[0].pdPackageDetailList;
 

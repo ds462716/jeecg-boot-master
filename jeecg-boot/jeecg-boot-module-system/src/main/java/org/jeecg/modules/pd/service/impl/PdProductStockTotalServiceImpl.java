@@ -207,6 +207,120 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
         return PdConstant.TRUE;
     }
 
+    /**
+     * 定数包拆包加库存
+     * @param pdPackageRecord
+     * @return
+     */
+    @Transactional
+    @Override
+    public String updateInStockForPackage(PdPackageRecord pdPackageRecord) {
+        if (pdPackageRecord == null || CollectionUtils.isEmpty(pdPackageRecord.getPdPackageRecordDetailList())) {
+            return "参数有误";
+        }
+
+        String outDeptId = pdPackageRecord.getDepartId();
+        List<PdPackageRecordDetail> packageRecordDetails = pdPackageRecord.getPdPackageRecordDetailList();
+
+        for (PdPackageRecordDetail pdPackageRecordDetail : packageRecordDetails) {
+            String productId = pdPackageRecordDetail.getProductId();     //产品ID
+            Double packageNum = pdPackageRecordDetail.getPackageNum();  //数量
+
+            PdProductStockTotalPage stockTotalq = new PdProductStockTotalPage();
+            stockTotalq.setDepartId(outDeptId);
+            stockTotalq.setProductId(productId);
+//            stockTotalq.setFilterType("1");//有值的话，则过滤库存数量为0的数据
+            List<PdProductStockTotalPage> productStockTotals = pdProductStockTotalMapper.selectList(stockTotalq);
+            // 扣减总库存
+            if (CollectionUtils.isNotEmpty(productStockTotals) && productStockTotals.size() == 1) {
+                PdProductStockTotal productStockTotal = productStockTotals.get(0);
+                Double num = productStockTotal.getStockNum() + packageNum;
+                productStockTotal.setStockNum(num);
+                pdProductStockTotalMapper.updateStockNum(productStockTotal);
+            } else {
+                throw new RuntimeException("库存没有产品[" + pdPackageRecordDetail.getProductName() + "]！");
+            }
+
+            PdProductStock o_productStockq = new PdProductStock();
+            o_productStockq.setId(pdPackageRecordDetail.getProductStockId());
+            o_productStockq.setNestatStatus(PdConstant.STOCK_NESTAT_STATUS_1);
+            List<PdProductStock> productStocks = pdProductStockMapper.selectList(o_productStockq);
+            // 扣减库存
+            if (CollectionUtils.isNotEmpty(productStocks)) {
+                PdProductStock productStock = productStocks.get(0);
+                Double num = productStock.getStockNum() + packageNum;
+                productStock.setStockNum(num);
+                productStock.setSpecNum(productStock.getSpecQuantity() == null ? 0D : productStock.getSpecQuantity() * num);// 库存规格数量= 产品规格数量* 入库数量
+
+                pdProductStockMapper.updateStockNum(productStock);
+            } else {
+                throw new RuntimeException("库存没有产品[" + pdPackageRecordDetail.getProductName() + "]！");
+            }
+        }
+
+        return PdConstant.TRUE;
+    }
+
+    /**
+     * 定数包打包扣库存
+     * @param pdPackageRecord
+     * @return
+     */
+    @Transactional
+    @Override
+    public String updateOutStockForPackage(PdPackageRecord pdPackageRecord) {
+        if (pdPackageRecord == null || CollectionUtils.isEmpty(pdPackageRecord.getPdPackageRecordDetailList())) {
+            return "参数有误";
+        }
+
+        String outDeptId = pdPackageRecord.getDepartId();
+        List<PdPackageRecordDetail> packageRecordDetails = pdPackageRecord.getPdPackageRecordDetailList();
+
+        for (PdPackageRecordDetail pdPackageRecordDetail : packageRecordDetails) {
+            String productId = pdPackageRecordDetail.getProductId();     //产品ID
+            Double packageNum = pdPackageRecordDetail.getPackageNum();  //数量
+
+            PdProductStockTotalPage stockTotalq = new PdProductStockTotalPage();
+            stockTotalq.setDepartId(outDeptId);
+            stockTotalq.setProductId(productId);
+            stockTotalq.setFilterType("1");//有值的话，则过滤库存数量为0的数据
+            List<PdProductStockTotalPage> productStockTotals = pdProductStockTotalMapper.selectList(stockTotalq);
+            // 扣减总库存
+            if (CollectionUtils.isNotEmpty(productStockTotals) && productStockTotals.size() == 1) {
+                PdProductStockTotal productStockTotal = productStockTotals.get(0);
+                Double num = productStockTotal.getStockNum() - packageNum;
+                if (num < 0) {
+                    throw new RuntimeException("扣减总库存失败，[" + pdPackageRecordDetail.getProductName() + "]总库存数量不足");
+                }
+                productStockTotal.setStockNum(num);
+                pdProductStockTotalMapper.updateStockNum(productStockTotal);
+            } else {
+                throw new RuntimeException("库存没有产品[" + pdPackageRecordDetail.getProductName() + "]！");
+            }
+
+            PdProductStock o_productStockq = new PdProductStock();
+            o_productStockq.setId(pdPackageRecordDetail.getProductStockId());
+            o_productStockq.setNestatStatus(PdConstant.STOCK_NESTAT_STATUS_1);
+            List<PdProductStock> productStocks = pdProductStockMapper.selectList(o_productStockq);
+            // 扣减库存
+            if (CollectionUtils.isNotEmpty(productStocks)) {
+                PdProductStock productStock = productStocks.get(0);
+                Double num = productStock.getStockNum() - packageNum;
+                if (num < 0) {
+                    throw new RuntimeException("扣减库存失败，[" + pdPackageRecordDetail.getProductName() + "]库存数量不足");
+                }
+                productStock.setStockNum(num);
+                productStock.setSpecNum(productStock.getSpecQuantity() == null ? 0D : productStock.getSpecQuantity() * num);// 库存规格数量= 产品规格数量* 入库数量
+
+                pdProductStockMapper.updateStockNum(productStock);
+            } else {
+                throw new RuntimeException("库存没有产品[" + pdPackageRecordDetail.getProductName() + "]！");
+            }
+        }
+
+        return PdConstant.TRUE;
+    }
+
     /***
      * 	器械使用更新库存信息
      * @param departId     科室ID

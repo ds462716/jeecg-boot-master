@@ -82,7 +82,7 @@
         <span slot="action" slot-scope="text, record">
           <!--<a @click="handleDelete(record.id)">查看</a>-->
                 <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.id)">
-                  <a>删除</a>
+                  <a>拆包</a>
                 </a-popconfirm>
         </span>
 
@@ -139,8 +139,8 @@
               return parseInt(index)+1;
             }
           },
+          { title:'打包流水码', align:"center", dataIndex: 'packageBarCode' },
           { title:'定数包编号', align:"center", dataIndex: 'packageCode' },
-          { title:'定数包条码', align:"center", dataIndex: 'packageBarCode' },
           { title:'定数包名称', align:"center", dataIndex: 'packageName' },
           { title:'产品总数', align:"center", dataIndex: 'packageSum' },
           { title:'状态', align:"center", dataIndex: 'status',
@@ -184,6 +184,11 @@
           { title:'批号', align:"center", dataIndex: 'batchNo' },
           // { title:'型号', align:"center", dataIndex: 'version' },
           { title:'单位', align:"center", dataIndex: 'unitName' },
+          { title: '生产日期', align:"center", dataIndex: 'produceDate',
+            customRender:function (text) {
+              return !text?"":(text.length>10?text.substr(0,10):text)
+            }
+          },
           { title:'有效期', align:"center", dataIndex: 'expDate',
             customRender:function (text) {
               return !text?"":(text.length>10?text.substr(0,10):text)
@@ -191,15 +196,10 @@
           },
           { title:'入库单价', align:"center", dataIndex: 'purchasePrice' },
           { title:'出库单价', align:"center", dataIndex: 'sellingPrice' },
-          { title:'定数包产品数量', align:"center", dataIndex: 'productNum' },
-          { title:'出库金额', align:"center", dataIndex: 'outTotalPrice' },
-          { title:'库存数量', align:"center", dataIndex: 'stockNum' },
+          { title:'打包数量', align:"center", dataIndex: 'packageNum' },
+          // { title:'出库金额', align:"center", dataIndex: 'outTotalPrice' },
+          // { title:'库存数量', align:"center", dataIndex: 'stockNum' },
           { title: '出库货位', align:"center", dataIndex: 'outHuoweiName' },
-          { title: '生产日期', align:"center", dataIndex: 'produceDate',
-            customRender:function (text) {
-              return !text?"":(text.length>10?text.substr(0,10):text)
-            }
-          },
           { title: '打包记录ID', align:"center", dataIndex: 'packageRecordId',
             colSpan: 0,
             customRender: (value, row, index) => {

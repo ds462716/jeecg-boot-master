@@ -49,6 +49,20 @@ public interface IPdProductStockTotalService extends IService<PdProductStockTota
     public String updateOutStock(PdStockRecord pdStockRecord);
 
     /**
+     * 定数包拆包加库存
+     * @param pdPackageRecord
+     * @return
+     */
+    public String updateInStockForPackage(PdPackageRecord pdPackageRecord);
+
+    /**
+     * 定数包打包扣库存
+     * @param pdPackageRecord
+     * @return
+     */
+    public String updateOutStockForPackage(PdPackageRecord pdPackageRecord);
+
+    /**
      * 院外退货更新库存信息
      * @param stockTotal
      * @return
