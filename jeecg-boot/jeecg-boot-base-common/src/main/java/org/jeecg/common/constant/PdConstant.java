@@ -156,6 +156,8 @@ public interface PdConstant {
 	public final static String STOCK_LOG_TYPE_5 = "5";//耗材退货
 	public final static String STOCK_LOG_TYPE_6 = "6";//执行收费
 	public final static String STOCK_LOG_TYPE_7 = "7";//耗材院外退货
+	public final static String STOCK_LOG_TYPE_8 = "8";//定数包打包
+	public final static String STOCK_LOG_TYPE_9 = "9";//定数包拆包
 
 
 	//生产厂家及供应商证照到期消息提醒发送状态
