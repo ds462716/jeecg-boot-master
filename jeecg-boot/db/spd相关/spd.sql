@@ -410,3 +410,8 @@ CREATE TABLE `ex_inspection_items_use_detail` (
   `depart_parent_id` varchar(64) DEFAULT NULL COMMENT '所属父部门',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- add by jiangxz 2020年5月20日14:58:03 定数包打包相关日志数据字典
+INSERT INTO `sys_dict_item`(`id`, `dict_id`, `item_text`, `item_value`, `description`, `sort_order`, `status`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES ('1262999977709240322', '1233244236134825986', '定数包打包', '8', '', 8, 1, 'admin', '2020-05-20 14:53:55', NULL, '2020-05-20 14:53:55');
+INSERT INTO `sys_dict_item`(`id`, `dict_id`, `item_text`, `item_value`, `description`, `sort_order`, `status`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES ('1263000120286216194', '1233244236134825986', '定数包拆包', '9', '', 9, 1, 'admin', '2020-05-20 14:54:29', NULL, '2020-05-20 14:54:29');
+
