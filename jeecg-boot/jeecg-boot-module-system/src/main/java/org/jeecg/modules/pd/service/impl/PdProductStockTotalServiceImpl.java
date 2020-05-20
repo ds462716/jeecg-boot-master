@@ -919,49 +919,6 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
                        }catch (Exception e){
                            throw new RuntimeException("扣减库存失败，[" + productStocks.get(0).getProductName() + "]库存数量不足");
                        }
-                       /*PdProductStock productStock_i = productStocks.get(0);
-                       if(productStock_i.getStockNum()>=count){
-                           Double num = productStock_i.getStockNum() - count;
-                           if (num < 0) {
-                               throw new RuntimeException("扣减库存失败，[" + productStock_i.getProductName() + "]库存数量不足");
-                           }
-                           productStock_i.setStockNum(num);
-                           if(num==0.00){
-                               productStock_i.setNestatStatus(PdConstant.STOCK_NESTAT_STATUS_2);//已用完
-                           }
-                           pdProductStockMapper.updateStockNum(productStock_i);
-                           //3.3 将扣减的库存明细信息存储到对象集合中，操作结束后返回
-                           productStock_i.setPackageId(packageId);
-                           productStock_i.setProductNum(count);
-                           productStockList.add(productStock_i);
-                       }else{
-                           try{
-                               for(PdProductStock ps :productStocks){
-                                   if(ps.getStockNum()>=count){
-                                       Double num = ps.getStockNum() - count;
-                                       ps.setStockNum(num);
-                                       if(num==0.00){
-                                           ps.setNestatStatus(PdConstant.STOCK_NESTAT_STATUS_2);//已用完
-                                       }
-                                       pdProductStockMapper.updateStockNum(ps);
-                                       ps.setPackageId(packageId);
-                                       ps.setProductNum(count);
-                                       productStockList.add(ps);
-                                       break;
-                                   }else{
-                                       ps.setPackageId(packageId);
-                                       ps.setProductNum(ps.getStockNum());
-                                       count = count - ps.getStockNum();
-                                       ps.setStockNum(0.00);
-                                       ps.setNestatStatus(PdConstant.STOCK_NESTAT_STATUS_2);//已用完
-                                       pdProductStockMapper.updateStockNum(ps);
-                                       productStockList.add(ps);
-                                   }
-                               }
-                           }catch (Exception e){
-                               throw new RuntimeException("扣减库存失败，[" + productStock_i.getProductName() + "]库存数量不足");
-                           }
-                       }*/
                    }else{
                        //4：否则是试剂
                        //4.1 查询扣減科室下库存明细(先查询使用中的)，根据有效期排序
@@ -979,19 +936,22 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
                            List<PdProductStock>  StockList = pdProductStockMapper.selectOrExpDate(productStockq);
                            // 4.3 如果有值，則取最近有效期的数据用于新增一条使用中的明细信息,并扣减，否则报错
                            if(CollectionUtils.isNotEmpty(StockList)){
+                               //3.1 扣减总库存数量
+                               PdProductStockTotal productStockTotal = stockTotals.get(0);
                                for(PdProductStock psii :StockList ){
                                    if(psii.getSpecNum()>=count){
                                        Double specQuantity = StockList.get(0).getSpecQuantity();
                                        Double bzCount = (Double) Math.ceil(count/specQuantity);
-                                       //3.1 扣减总库存数量
-                                       PdProductStockTotal productStockTotal = stockTotals.get(0);
                                        if(productStockTotal.getStockNum()<bzCount){
                                            throw new RuntimeException("扣减库存失败,根据产品ID：["+psii.getProductName()+"]获取不到库存明细信息");
                                        }
                                        Double stockNum_i = productStockTotal.getStockNum();
-                                       Double newStockNum = stockNum_i - bzCount;
-                                       productStockTotal.setStockNum(newStockNum);
-                                       pdProductStockTotalMapper.updateStockNum(productStockTotal);
+                                       Double newStockNum = stockNum_i - (bzCount-1);
+                                       //如果包装数量没有变则不扣减总库存
+                                       if(stockNum_i!=newStockNum){
+                                           productStockTotal.setStockNum(newStockNum);
+                                           pdProductStockTotalMapper.updateStockNum(productStockTotal);
+                                       }
                                        //扣减库存数量
                                        Double newSpecNum = psii.getSpecNum();
                                        //新建一条记录的规格数量
@@ -1003,6 +963,11 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
                                            psii.setNestatStatus(PdConstant.STOCK_NESTAT_STATUS_2);//已用完
                                            psii.setStockNum(0.00);
                                            pdProductStockMapper.updateStockNum(psii);
+                                           //已用完修改库存总表
+                                           Double stockTotalNum_i = productStockTotal.getStockNum();
+                                           Double newStockTotalNum = stockTotalNum_i - 1;
+                                           productStockTotal.setStockNum(newStockTotalNum);
+                                           pdProductStockTotalMapper.updateStockNum(productStockTotal);
                                        }else{
                                            Double stockNum_ii = psii.getStockNum() - bzCount;
                                            psii.setStockNum(stockNum_ii);
@@ -1014,6 +979,12 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
                                                psii.setNestatStatus(PdConstant.STOCK_NESTAT_STATUS_0);
                                                psii.setSpecNum(newSpecNum_i);
                                                pdProductStockMapper.insert(psii);
+                                           }else{
+                                               //已用完修改库存总表
+                                               Double stockTotalNum_i = productStockTotal.getStockNum();
+                                               Double newStockTotalNum = stockTotalNum_i - 1;
+                                               productStockTotal.setStockNum(newStockTotalNum);
+                                               pdProductStockTotalMapper.updateStockNum(productStockTotal);
                                            }
                                        }
                                        psii.setPackageId(packageId);
@@ -1021,7 +992,6 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
                                        productStockList.add(psii);
                                        break;
                                    }else{
-                                       PdProductStockTotal productStockTotal = stockTotals.get(0);
                                        Double stockNum_i = productStockTotal.getStockNum();
                                        Double newStockNum = stockNum_i - psii.getStockNum();
                                        productStockTotal.setStockNum(newStockNum);
@@ -1042,6 +1012,7 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
                        }else {
                            //4.3 直接扣减使用中的库存规格数量
                             try{
+                                PdProductStockTotal productStockTotal = stockTotals.get(0);
                                 //先消耗所有使用中的库存
                                 for(PdProductStock psi :productStocks_i){
                                     if(psi.getSpecNum()>=count){
@@ -1050,6 +1021,10 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
                                         if(specNum==0.00){
                                             psi.setStockNum(0.00);
                                             psi.setNestatStatus(PdConstant.STOCK_NESTAT_STATUS_2);
+                                            Double stockTotalNum_i = productStockTotal.getStockNum();
+                                            Double newStockTotalNum = stockTotalNum_i - 1;
+                                            productStockTotal.setStockNum(newStockTotalNum);
+                                            pdProductStockTotalMapper.updateStockNum(productStockTotal);
                                         }
                                         psi.setSpecNum(specNum);
                                         pdProductStockMapper.updateStockSpecNum(psi);
@@ -1067,6 +1042,10 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
                                         psi.setSpecNum(0.00);
                                         psi.setNestatStatus(PdConstant.STOCK_NESTAT_STATUS_2);//已用完
                                         pdProductStockMapper.updateStockNum(psi);
+                                        Double stockTotalNum_i = productStockTotal.getStockNum();
+                                        Double newStockTotalNum = stockTotalNum_i - 1;
+                                        productStockTotal.setStockNum(newStockTotalNum);
+                                        pdProductStockTotalMapper.updateStockNum(productStockTotal);
                                         productStockList.add(psi);
                                     }
                                 }
@@ -1082,14 +1061,16 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
                                             Double specQuantity = productStocks_i.get(0).getSpecQuantity();
                                             Double bzCount = (Double) Math.ceil(count/specQuantity);
                                             //3.1 扣减总库存数量
-                                            PdProductStockTotal productStockTotal = stockTotals.get(0);
                                             if(productStockTotal.getStockNum()<bzCount){
                                                 throw new RuntimeException("扣减库存失败,根据产品ID：["+psii.getProductName()+"]获取不到库存明细信息");
                                             }
                                             Double stockNum_i = productStockTotal.getStockNum();
-                                            Double newStockNum = stockNum_i - bzCount;
-                                            productStockTotal.setStockNum(newStockNum);
-                                            pdProductStockTotalMapper.updateStockNum(productStockTotal);
+                                            Double newStockNum = stockNum_i - (bzCount-1);
+                                            //如果包装数量没有变则不扣减总库存
+                                            if(stockNum_i!=newStockNum){
+                                                productStockTotal.setStockNum(newStockNum);
+                                                pdProductStockTotalMapper.updateStockNum(productStockTotal);
+                                            }
                                             //扣减库存数量
                                             Double newSpecNum = psii.getSpecNum();
                                             //新建一条记录的规格数量
@@ -1101,6 +1082,11 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
                                                 psii.setNestatStatus(PdConstant.STOCK_NESTAT_STATUS_2);//已用完
                                                 psii.setStockNum(0.00);
                                                 pdProductStockMapper.updateStockNum(psii);
+                                                //已用完修改库存总表
+                                                Double stockTotalNum_i = productStockTotal.getStockNum();
+                                                Double newStockTotalNum = stockTotalNum_i - 1;
+                                                productStockTotal.setStockNum(newStockTotalNum);
+                                                pdProductStockTotalMapper.updateStockNum(productStockTotal);
                                             }else{
                                                 Double stockNum_ii = psii.getStockNum() - bzCount;
                                                 psii.setStockNum(stockNum_ii);
@@ -1112,6 +1098,12 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
                                                     psii.setNestatStatus(PdConstant.STOCK_NESTAT_STATUS_0);
                                                     psii.setSpecNum(newSpecNum_i);
                                                     pdProductStockMapper.insert(psii);
+                                                }else{
+                                                    //已用完修改库存总表
+                                                    Double stockTotalNum_i = productStockTotal.getStockNum();
+                                                    Double newStockTotalNum = stockTotalNum_i - 1;
+                                                    productStockTotal.setStockNum(newStockTotalNum);
+                                                    pdProductStockTotalMapper.updateStockNum(productStockTotal);
                                                 }
                                             }
                                             psii.setPackageId(packageId);
@@ -1119,7 +1111,6 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
                                             productStockList.add(psii);
                                             break;
                                         }else{
-                                            PdProductStockTotal productStockTotal = stockTotals.get(0);
                                             Double stockNum_i = productStockTotal.getStockNum();
                                             Double newStockNum = stockNum_i - psii.getStockNum();
                                             productStockTotal.setStockNum(newStockNum);
@@ -1155,8 +1146,10 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
     }
 
     public static void main (String [] args){
-        Double a = 200.00;
-        Double b = 200.00;
+        Double a = 220.00;
+        Double b = 220.00;
+        Double bzCount = (Double) Math.ceil(a/b);
+        System.out.println(bzCount);
         System.out.println(a%b);
         if(a%b==0.00){
             System.out.println("1");
