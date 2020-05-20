@@ -124,7 +124,7 @@
             align:"center",
             dataIndex: 'cardId'
           },
-          {
+         /* {
             title:'条形码',
             align:"center",
             dataIndex: 'barCode'
@@ -133,7 +133,7 @@
             title:'申请医生',
             align:"center",
             dataIndex: 'applyDoctorName'
-          },
+          },*/
           {
             title:'申请科室',
             align:"center",
@@ -149,14 +149,14 @@
             align:"center",
             dataIndex: 'patientType'
           },
-          {
+          /*{
             title:'接收日期',
             align:"center",
             dataIndex: 'receiveDate',
             customRender:function (text) {
               return !text?"":(text.length>10?text.substr(0,10):text)
             }
-          },
+          },*/
           {
             title:'检验日期',
             align:"center",
@@ -227,7 +227,22 @@
       }
     },
     methods: {
-
+      loadData(arg) {
+        //加载数据 若传入参数1则加载第一页的内容
+        if (arg === 1) {
+          this.ipagination.current = 1;
+        }
+        this.loading = true;
+        let params = this.getQueryParams();//查询条件
+        //查询
+        getAction(this.url.list, params).then((res) => {
+          if (res.success) {
+            this.dataSource = res.result.records;
+            this.ipagination.total = res.result.total;
+          }
+          this.loading = false;
+        })
+      },
 
       initDictConfig(){ //静态字典值加载
         initDictOptions('accept_status').then((res) => {
@@ -244,7 +259,7 @@
         httpAction(this.url.editUsePackage,record,"post").then((res)=>{
           if(res.success){
             this.$message.success(res.message)
-             //loadData();
+             this.loadData();
           }else{
             this.$message.warning(res.message)
           }

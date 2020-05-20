@@ -4,7 +4,9 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.constant.PdConstant;
+import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.modules.pd.entity.*;
 import org.jeecg.modules.pd.mapper.PdProductMapper;
 import org.jeecg.modules.pd.mapper.PdProductStockMapper;
@@ -40,6 +42,8 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
     private IPdUsePackageService pdUsePackageService;
     @Autowired
     private IHisDepartService hisDepartService;
+    @Autowired
+    private IPdSpecLogService pdSpecLogService;
 
     /**
      * 查询列表
@@ -595,15 +599,28 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
         String reason=productStock.getReason();//清零原因
         List arr = Arrays.asList(ids.split(","));
         for (int i = 0; i < arr.size(); i++) {
+            PdSpecLog pdSpecLog=new PdSpecLog();
             String id=(String)arr.get(i);
             PdProductStock stock=pdProductStockMapper.selectById(id);
             Double stockNum=stock.getStockNum();
+
+            //记录到清零日志表
+            LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+            pdSpecLog.setPersonId(sysUser.getId());//操作人ID
+            pdSpecLog.setPersonName(sysUser.getRealname());//操作人姓名
+            pdSpecLog.setProductId(stock.getProductId());//产品id
+            pdSpecLog.setStockId(id);//库存明细ID
+            pdSpecLog.setSpecNum(stock.getSpecNum());//清零规格库存数量
+            pdSpecLog.setReason(reason);//清零原因
+            pdSpecLogService.save(pdSpecLog);
+
             //明細表清零
             stock.setSpecNum(0.00);
             stock.setStockNum(0.00);
             stock.setReason(reason);
             stock.setNestatStatus(PdConstant.STOCK_NESTAT_STATUS_2);
             pdProductStockMapper.updateById(stock);
+
             //更新总库存数量
             PdProductStockTotal stockTotal=new PdProductStockTotal();
             stockTotal.setDepartParentId(stock.getDepartParentId());
@@ -621,6 +638,7 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
         }
         return PdConstant.TRUE;
     }
+
 
     /***
      * 	试剂耗材产品更新库存用量信息(Lis系统推送的数据)

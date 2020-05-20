@@ -61,6 +61,33 @@
         </if>
     </select>
 
+
+
+
+    <select id="selectListByPage" resultType="org.jeecg.modules.external.entity.ExInspectionItems" parameterType="org.jeecg.modules.external.entity.ExInspectionItems">
+        SELECT
+        <include refid="exInspectionItemsColumns"/>,
+        b.fsf_yhxm as "applyDoctorName",
+        c.fsf_ksmc as "applyDepartmentName"
+        FROM ex_inspection_items  a
+        left join  ex_his_user_inf b on b.fsf_yhm=a.apply_doctor
+        left join  ex_his_depart_inf c on c.fsf_ksbh=a.apply_department
+        where 1=1
+        <if test="entity.patientName != null and entity.patientName != ''">
+            AND a.patient_name LIKE concat('%',#{entity.patientName},'%')
+        </if>
+        <if test="entity.testItemCode != null and entity.testItemCode != ''">
+            AND a.test_item_code LIKE concat('%',#{entity.testItemCode},'%')
+        </if>
+        <if test="entity.acceptStatus != null and entity.acceptStatus != ''">
+            AND a.accept_status=#{entity.acceptStatus}
+        </if>
+    </select>
+
+
+
+
+
     <!-- 增量同步 -->
     <select id="selectListIds"  resultType="String">
         SELECT  jy_id as "jyId"  FROM ex_inspection_items  a
