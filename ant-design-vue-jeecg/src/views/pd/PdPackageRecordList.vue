@@ -81,7 +81,7 @@
 
         <span slot="action" slot-scope="text, record">
           <!--<a @click="handleDelete(record.id)">查看</a>-->
-                <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.id)">
+                <a-popconfirm title="确定拆包吗?" @confirm="() => handleDelete(record.id)">
                   <a>拆包</a>
                 </a-popconfirm>
         </span>
@@ -110,7 +110,7 @@
 
   import { JeecgListMixin } from '@/mixins/JeecgListMixin'
   import {initDictOptions, filterMultiDictText} from '@/components/dict/JDictSelectUtil'
-  import { httpAction,getAction } from '@/api/manage'
+  import {httpAction, deleteAction, getAction} from '@/api/manage'
   import { filterObj } from '@/utils/util';
   import PdPackageRecordModal from "./modules/PdPackageRecordModal";
 
@@ -296,6 +296,22 @@
             }
           });
         }
+      },
+      handleDelete(id){
+        if(!this.url.delete){
+          this.$message.error("请设置url.delete属性!")
+          return
+        }
+        // var that = this;
+        deleteAction(this.url.delete, {id: id}).then((res) => {
+          if (res.this) {
+            this.$message.success(res.message);
+            this.loadData();
+          } else {
+            this.$message.warning(res.message);
+          }
+        });
+
       },
       /**
        * 点击行选中checkbox

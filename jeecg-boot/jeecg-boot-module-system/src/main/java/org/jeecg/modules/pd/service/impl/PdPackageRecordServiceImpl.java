@@ -101,6 +101,9 @@ public class PdPackageRecordServiceImpl extends ServiceImpl<PdPackageRecordMappe
 	@Transactional
 	public void delMain(String id) {
 //		pdPackageRecordDetailMapper.deleteByMainId(id);
+
+
+
 		pdPackageRecordMapper.deleteById(id);
 	}
 

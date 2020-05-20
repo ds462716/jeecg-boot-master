@@ -210,7 +210,7 @@ public class PdPackageRecordController {
     @DeleteMapping(value = "/delete")
     public Result<?> delete(@RequestParam(name = "id", required = true) String id) {
         pdPackageRecordService.delMain(id);
-        return Result.ok("删除成功!");
+        return Result.ok("拆包成功!");
     }
 
     /**
