@@ -47,7 +47,7 @@ public class LisInspectionItemsTaskJob implements Job {
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
         log.info("根据检验项目扣减库存任务开始，时间:" + DateUtils.getTimestamp());
         ExInspectionItems item= new ExInspectionItems();
-        //item.setQueryDateEnd(DateUtils.formatDate(DateUtils.getDayEnd()));//当日结束时间
+        item.setQueryDateEnd(DateUtils.formatDate(DateUtils.getDayEnd()));//当日结束时间
         List<ExInspectionItems> list=hisChargeService.selectExjianYan(item);
         if(list!=null && list.size()>0){
             List<String> jyIds = exInspectionItemsService.selectListIds();
@@ -82,7 +82,9 @@ public class LisInspectionItemsTaskJob implements Job {
                                 items.setAcceptStatus(PdConstant.ACCEPT_STATUS_2);
                             }
                         }else{
-                            list.remove(items);
+                           // list.remove(items);
+                            items.setRemarks("检验项目用量未配置");
+                            items.setAcceptStatus(PdConstant.ACCEPT_STATUS_1);// 0：已扣减  1：未配置检验用量  2:未扣减
                         }
                     }else{
                         items.setRemarks("检验项目未配置");

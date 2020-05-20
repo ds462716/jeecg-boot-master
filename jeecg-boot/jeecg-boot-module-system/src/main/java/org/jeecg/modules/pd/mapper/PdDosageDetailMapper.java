@@ -2,7 +2,6 @@ package org.jeecg.modules.pd.mapper;
 
 import java.util.List;
 
-import org.apache.ibatis.annotations.Param;
 import org.jeecg.modules.pd.entity.PdDosageDetail;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
