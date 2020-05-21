@@ -80,13 +80,13 @@ public class ExHisZyInfServiceImpl extends ServiceImpl<ExHisZyInfMapper, ExHisZy
 			hisMzInfPage.setFsfBrId(pdDosage.getMedicalRecordNo());//病人ID
 			hisMzInfPage.setFsfYjxh(pdDosage.getExtension1());//对应ms_yj01表yjxh
 			hisMzInfPage.setFsfJzxh(pdDosage.getExtension2());//对应MS_YJ01中jzxh
-			if(PdConstant.IS_CHARGE_TYPE_0.equals(chargeType)){ //如果是退费操作
-			hisMzInfPage.setFsbSl(Double.valueOf("-"+dosageDetail.getDosageCount()));//数量
-			hisMzInfPage.setFsbJe(new BigDecimal("-"+dosageDetail.getAmountMoney()));//金额
-			}else{
+			//if(PdConstant.IS_CHARGE_TYPE_0.equals(chargeType)){ //如果是退费操作
+			//hisMzInfPage.setFsbSl(Double.valueOf("-"+dosageDetail.getDosageCount()));//数量
+			//hisMzInfPage.setFsbJe(new BigDecimal("-"+dosageDetail.getAmountMoney()));//金额
+			//}else{
 			hisMzInfPage.setFsbSl(dosageDetail.getDosageCount());//数量
 			hisMzInfPage.setFsbJe(dosageDetail.getAmountMoney());//金额
-			}
+			//}
 			hisMzInfPage.setFsfXmbh(dosageDetail.getChargeCode());//收费项目编号
 			hisMzInfPage.setFsfMc(dosageDetail.getProductName());//收费项目名称
 			hisMzInfPage.setFsfKdKs(pdDosage.getOprDeptId());//开单科室
