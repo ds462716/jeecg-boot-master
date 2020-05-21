@@ -270,11 +270,7 @@
         tableScroll:{x :13*147+50},
       }
     },
-    computed: {
-      importExcelUrl: function(){
-        return `${window._CONFIG['domianURL']}/${this.url.importExcelUrl}`;
-      }
-    },
+
     methods: {
      //科室查询start
       departHandleSearch(value) {
