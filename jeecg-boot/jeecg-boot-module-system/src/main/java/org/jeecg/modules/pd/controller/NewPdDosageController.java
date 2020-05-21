@@ -97,9 +97,9 @@ public class NewPdDosageController {
             }else{//门诊
                 String  prodNames= hisChargeService.queryMztfList(pdDosage);
                 if(StringUtils.isNotEmpty(prodNames)){
-                    exHisZyInfService.saveExHisMzInf(pdDosage, detailList,PdConstant.IS_CHARGE_TYPE_0);
+                   //exHisZyInfService.saveExHisMzInf(pdDosage, detailList,PdConstant.IS_CHARGE_TYPE_0);
                 }else{
-                    return  Result.error(prodNames+"在HIS系统还没有进行退费操作，不允许取消收费");
+                    return  Result.error(prodNames+"在HIS系统还没有进行退费，不允许操作");
                    }
                  }
             pdDosageService.dosageCnclFee(pdDosage);
