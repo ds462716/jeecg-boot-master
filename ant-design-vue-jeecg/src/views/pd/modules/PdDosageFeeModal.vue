@@ -196,12 +196,7 @@
                   </a-col>
                 </a-row>-->
                 <a-row>
-                  <a-col :md="6" :sm="8" v-if="hyCharged">
-                    <a-form-item label="住院号" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                      <a-input :disabled="true" v-decorator="[ 'inHospitalNo', validatorRules.inHospitalNo]"  @keyup.enter.native="selectHis(0)"></a-input>
-                    </a-form-item>
-                  </a-col>
-                  <a-col :md="6" :sm="8" v-else="!hyCharged">
+                  <a-col :md="6" :sm="8">
                     <a-form-item label="住院号" :labelCol="labelCol" :wrapperCol="wrapperCol">
                       <a-input :disabled="true" v-decorator="[ 'inHospitalNo']" ></a-input>
                     </a-form-item>
@@ -211,12 +206,7 @@
                       <a-input :disabled="true" v-decorator="[ 'outpatientNumber', validatorRules.outpatientNumber]" @keyup.enter.native="selectHis(1)"></a-input>
                     </a-form-item>
                   </a-col>
-                  <a-col :md="6" :sm="8" v-if="hyCharged">
-                    <a-form-item label="病人姓名" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                      <a-input :disabled="true" v-decorator="[ 'patientInfo', validatorRules.patientInfo]" ></a-input>
-                    </a-form-item>
-                  </a-col>
-                  <a-col :md="6" :sm="8" v-else="!hyCharged">
+                  <a-col :md="6" :sm="8" >
                     <a-form-item label="病人姓名" :labelCol="labelCol" :wrapperCol="wrapperCol">
                       <a-input :disabled="true" v-decorator="[ 'patientInfo']" ></a-input>
                     </a-form-item>

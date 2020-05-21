@@ -353,9 +353,7 @@
             ]},
           sqrtDoctorName: {rules: [
             ]},
-          inHospitalNo: {rules: [
-              {required: true, message: '请输入住院号!'},
-            ]},
+          inHospitalNo: {rules: []},
           dosageBy: {rules: [
             ]},
           subordinateWardId: {rules: [

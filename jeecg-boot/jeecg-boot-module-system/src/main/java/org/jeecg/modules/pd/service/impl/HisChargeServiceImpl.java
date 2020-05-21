@@ -3,12 +3,10 @@ package org.jeecg.modules.pd.service.impl;
 import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.StringUtils;
 import org.jeecg.modules.external.entity.ExInspectionItems;
-import org.jeecg.modules.pd.entity.HisChargeInf;
-import org.jeecg.modules.pd.entity.HisDepartInf;
-import org.jeecg.modules.pd.entity.HisUserInf;
-import org.jeecg.modules.pd.entity.PdDosage;
+import org.jeecg.modules.pd.entity.*;
 import org.jeecg.modules.pd.mapper.HisChargeMapper;
 import org.jeecg.modules.pd.service.IHisChargeService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +14,8 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.ArrayList;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @Description: jeecg 测试demo
@@ -110,8 +109,18 @@ public class HisChargeServiceImpl extends ServiceImpl<HisChargeMapper, HisCharge
 	//查询his系统门诊病人退费信息
 	@Override
 	@DS("multi-datasource1")
-	public List<HashMap>  queryMztfList(PdDosage pdDosage) {
-		return hisChargeMapper.queryMztfList(pdDosage);
+	public String  queryMztfList(PdDosage pdDosage) {
+		String prodNames=null;
+		List<PdDosageDetail> list=pdDosage.getPdDosageDetails();
+		if(list !=null && list.size()>0){
+			for(PdDosageDetail detail: list){
+		     Map params=hisChargeMapper.queryMztfList(detail.getId()+"");
+                      if(MapUtils.isNotEmpty(params)){
+						  prodNames+=MapUtils.getString(params,"fsf_mc")+",";
+					  }
+			   }
+		}
+		return prodNames;
 
 	}
 }

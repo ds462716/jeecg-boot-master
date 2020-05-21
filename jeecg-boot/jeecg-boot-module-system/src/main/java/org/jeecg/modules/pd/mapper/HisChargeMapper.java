@@ -6,8 +6,7 @@ import org.jeecg.modules.pd.entity.HisChargeInf;
 import org.jeecg.modules.pd.entity.HisDepartInf;
 import org.jeecg.modules.pd.entity.HisUserInf;
 import org.jeecg.modules.pd.entity.PdDosage;
-
-import java.util.HashMap;
+import java.util.*;
 import java.util.List;
 
 /**
@@ -32,7 +31,7 @@ public interface HisChargeMapper extends BaseMapper<HisChargeInf> {
 
 	List<PdDosage> queryPatientInfoJC(PdDosage pdDosage);
 
-	List<HashMap>  queryMztfList(PdDosage pdDosage);
+	 Map<String,Object>   queryMztfList(String  id);
 
 	List<PdDosage> queryPatientInfoMZ(PdDosage pdDosage);
 

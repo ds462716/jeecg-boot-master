@@ -14,7 +14,6 @@ import org.jeecg.modules.pd.service.IPdDosageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -96,12 +95,12 @@ public class NewPdDosageController {
             if(StringUtils.isNotEmpty(pdDosage.getInHospitalNo())){//住院
                 exHisZyInfService.saveExHisZyInf(pdDosage, detailList,PdConstant.IS_CHARGE_TYPE_0);
             }else{//门诊
-                List<HashMap>  list= hisChargeService.queryMztfList(pdDosage);
-                if(CollectionUtils.isEmpty(list)){
+                String  prodNames= hisChargeService.queryMztfList(pdDosage);
+                if(StringUtils.isNotEmpty(prodNames)){
                     exHisZyInfService.saveExHisMzInf(pdDosage, detailList,PdConstant.IS_CHARGE_TYPE_0);
                 }else{
-                    return  Result.error("不允许操作");
-                }
+                    return  Result.error(prodNames+"在HIS系统还没有进行退费操作，不允许取消收费");
+                   }
                  }
             pdDosageService.dosageCnclFee(pdDosage);
         }
