@@ -171,8 +171,14 @@ public class PdPackageRecordController {
     @ApiOperation(value = "pd_package_record-添加", notes = "pd_package_record-添加")
     @PostMapping(value = "/add")
     public Result<?> add(@RequestBody PdPackageRecord pdPackageRecord) {
-        pdPackageRecordService.saveMain(pdPackageRecord, pdPackageRecord.getPdPackageRecordDetailList());
-        return Result.ok("添加成功！");
+
+        Map<String, String> result = pdPackageRecordService.saveMain(pdPackageRecord, pdPackageRecord.getPdPackageRecordDetailList());
+
+        if (PdConstant.SUCCESS_200.equals(result.get("code"))) {
+            return Result.ok(result.get("message"));
+        } else {
+            return Result.error(result.get("message"));
+        }
     }
 
     /**
@@ -204,7 +210,7 @@ public class PdPackageRecordController {
     @DeleteMapping(value = "/delete")
     public Result<?> delete(@RequestParam(name = "id", required = true) String id) {
         pdPackageRecordService.delMain(id);
-        return Result.ok("删除成功!");
+        return Result.ok("拆包成功!");
     }
 
     /**

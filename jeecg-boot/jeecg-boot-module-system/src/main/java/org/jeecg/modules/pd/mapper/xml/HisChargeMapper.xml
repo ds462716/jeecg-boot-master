@@ -44,6 +44,12 @@
 			<if test="id != null and id != ''">
 				AND a.id = #{id}
 			</if>
+        <if test="fsfXmbh != null and fsfXmbh != ''">
+            AND a.fsf_xmbh LIKE concat('%',#{fsfXmbh},'%')
+        </if>
+        <if test="fsfXmmc != null and fsfXmmc != ''">
+            AND a.fsf_xmmc LIKE concat('%',#{fsfXmmc},'%')
+        </if>
 	</select>
 
 
@@ -81,7 +87,7 @@
         a.fsf_ryrq as "admissionDate",-- 入院日期
         a.fsf_zzys as "surgeonId",-- 诊治医生ID
         d.fsf_yhxm as "surgeonName"-- 诊治医生名称
-         from [v_spd_his_ person] a
+         from [v_spd_his_person] a
          LEFT JOIN   v_spd_his_ks s  on s.fsf_ksbh=a.fsf_ssks
          LEFT JOIN   v_spd_his_users d  on d.fsf_yhm=a.fsf_zzys
           where  a.fsf_zyh=#{inHospitalNo}
@@ -122,25 +128,25 @@
 	<!--查询检验項目明細信息-->
 	<select id="selectExjianYan"   resultType="org.jeecg.modules.external.entity.ExInspectionItems">
 		select
-		aplyNo as "jyId",
-		patientName as "patientName",
-		patientSex as "patientSex",
+		FSF_ID as "jyId",
+		fsf_xm as "patientName",
+		fsf_xb as "patientSex",
 		patientAge as "patientAge",
-		CARDID as "cardId",
-		barCode as "barCode",
-		REQUESTTIME as "receiveDate",
-		applyDoctor as "applyDoctor",
-		applyDepartment as "applyDepartment",
-		testDepartment as "testDepartment",
-		patientType as "patientType",
-		combinationName as "combinationName",
-		YLXH as "testItemCode",
-		YLMC as "testItemName",
-		CHECKTIME as "testDate"
-		from  [v_spd_his_ JYperson]   where
-		 1=1
-		<if test="queryDateEnd != null and queryDateEnd != ''">
-			AND  CHECKTIME >= #{queryDateEnd}
+		 fsf_zyh as "cardId",
+		<!--barCode as "barCode",-->
+       <!--REQUESTTIME as "receiveDate",-->
+      fsf_ksdm as "applyDepartment",
+      fsf_jyks as "testDepartment",
+      patientType as "patientType",
+      combinationName as "combinationName",
+      fsf_jyxmbh as "testItemCode",
+      fsf_jymc as "testItemName",
+      fsf_jysj as "testDate"
+      from  [v_spd_his_JYperson]   where
+       1=1
+      <if test="queryDateEnd != null and queryDateEnd != ''">
+           <!--AND  fsf_jysj >= #{queryDateEnd}-->
+			AND  fsf_jysj >='2020-05-05'
 		</if>
 	</select>
 </mapper>

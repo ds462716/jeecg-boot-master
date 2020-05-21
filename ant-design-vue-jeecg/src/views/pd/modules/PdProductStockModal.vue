@@ -29,7 +29,11 @@
                 <a-input placeholder="请输入产品名称" v-model="queryParam.productName"></a-input>
               </a-form-item>
             </a-col>
-
+            <a-col :md="6" :sm="8">
+              <a-form-item label="使用状态">
+                <j-dict-select-tag v-model="queryParam.nestatStatus" dictCode="nestat_status"/>
+              </a-form-item>
+            </a-col>
             <template :md="6" v-if="toggleSearchStatus">
               <a-col :md="6" :sm="8">
                 <a-form-item label="规格">
@@ -76,8 +80,8 @@
       <!-- 操作按钮区域 -->
 
       <div class="table-operator">
-        <a-button v-show="this.model.productFlag=='1'" @click="handleUpdate()" type="primary"  >规格数量清零</a-button>
-      </div>
+        <a-button v-show="this.model.productFlag=='1'  &&  isDisabledAuth('stock:form:specRemove')" @click="handleUpdate()" type="primary"  >规格数量清零</a-button>
+       </div>
       <hr/>
       <div>
           <div class="ant-alert ant-alert-info" style="margin-bottom: 16px;">
@@ -124,6 +128,7 @@
   import PdStockHuoWeiModal from './PdStockHuoWeiModal'
   import PdProductStockSpecModal from './PdProductStockSpecModal'
   import JDate from "../../../components/jeecg/JDate";
+  import { disabledAuthFilter } from "@/utils/authFilter"
 
   const VALIDATE_NO_PASSED = Symbol()
   export { FormTypes, VALIDATE_NO_PASSED }
@@ -207,14 +212,14 @@
             dataIndex: 'registration'
           },
           {
-            title:'数量',
+            title:'库存数量',
             align:"center",
             dataIndex: 'stockNum'
           },
           {
             title:'规格单位',
             align:"center",
-            dataIndex: 'specUnitId'
+            dataIndex: 'specUnitName'
           },
           {
             title:'库存规格数量',
@@ -329,7 +334,7 @@
         });
 
          if(batchNos !=""){
-           this.$message.warning("只能清零已使用的规格库存数量！");
+           this.$message.warning("只能清零使用中产品的规格库存数量！");
            return;
          }
         this.$refs.modalForm1.edit({"ids":ids});
@@ -397,6 +402,14 @@
       setdataCss(record,index) {
         let expire = record.expStatus;
         return "expire"+expire;
+      },
+      /**
+       * 校验权限
+       * @param code
+       * @returns {boolean|*}
+       */
+      isDisabledAuth(code){
+        return !disabledAuthFilter(code);
       },
     }
   }

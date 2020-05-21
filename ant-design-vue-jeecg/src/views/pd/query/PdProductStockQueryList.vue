@@ -37,8 +37,12 @@
               <a-input placeholder="请输入产品编号" v-model="queryParam.number"></a-input>
             </a-form-item>
           </a-col>
-
           <template v-if="toggleSearchStatus">
+            <a-col :md="6" :sm="8">
+              <a-form-item label="使用状态">
+                <j-dict-select-tag v-model="queryParam.nestatStatus" dictCode="nestat_status"/>
+              </a-form-item>
+            </a-col>
             <a-col :md="6" :sm="8">
               <a-form-item label="规格">
                 <a-input placeholder="请输入规格" v-model="queryParam.spec"></a-input>
@@ -138,7 +142,9 @@
 
   import { JeecgListMixin ,handleEdit} from '@/mixins/JeecgListMixin'
   import { getAction } from '@/api/manage'
-  import { filterObj } from '@/utils/util';
+  import { filterObj } from '@/utils/util'
+  import {initDictOptions, filterMultiDictText} from '@/components/dict/JDictSelectUtil'
+
 
   export default {
     name: "PdProductStockQueryList",
@@ -189,6 +195,11 @@
             dataIndex: 'number'
           },
           {
+            title:'产品类型',
+            align:"center",
+            dataIndex: 'productFlagName'
+          },
+          {
             title:'产品条码',
             align:"center",
             dataIndex: 'productBarCode'
@@ -214,9 +225,31 @@
             dataIndex: 'produceDate'
           },
           {
-            title:'数量',
+            title:'库存数量',
             align:"center",
             dataIndex: 'stockNum'
+          },
+          {
+            title:'规格单位',
+            align:"center",
+            dataIndex: 'specUnitName'
+          },
+          {
+            title:'库存规格数量',
+            align:"center",
+            dataIndex: 'specNum'
+          },
+          {
+            title:'使用状态',
+            align:"center",
+            dataIndex: 'nestatStatus',
+            customRender:(text)=>{
+              if(!text){
+                return ''
+              }else{
+                return filterMultiDictText(this.dictOptions['nestatStatus'], text+"")
+              }
+            }
           },
           {
             title:'进价',
@@ -262,6 +295,7 @@
           queryVender:"/pd/pdVender/getVenderList",
         },
         dictOptions:{
+            nestatStatus:[],
         },
         tableScroll:{x :13*147+50},
       }
@@ -335,6 +369,14 @@
         param.pageSize = this.ipagination.pageSize;
         param.departIds = this.queryParam.departIds+"";
         return filterObj(param);
+      },
+
+      initDictConfig(){ //静态字典值加载
+        initDictOptions('nestat_status').then((res) => {
+          if (res.success) {
+            this.$set(this.dictOptions, 'nestatStatus', res.result)
+          }
+        })
       },
     }
   }

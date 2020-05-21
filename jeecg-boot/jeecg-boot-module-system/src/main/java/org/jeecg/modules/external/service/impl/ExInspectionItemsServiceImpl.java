@@ -30,7 +30,7 @@ public class ExInspectionItemsServiceImpl extends ServiceImpl<ExInspectionItemsM
      */
     @Override
     public Page<ExInspectionItems> selectList(Page<ExInspectionItems> page, ExInspectionItems exInspectionItems) {
-        return page.setRecords(exInspectionItemsMapper.selectList(exInspectionItems));
+            return exInspectionItemsMapper.selectListByPage(page,exInspectionItems);
     }
 
     @Override

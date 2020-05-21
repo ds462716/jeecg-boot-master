@@ -63,6 +63,7 @@ public class ExHisZyInfServiceImpl extends ServiceImpl<ExHisZyInfMapper, ExHisZy
 		hisZyInfPage.setFsbZt("0");//计费状态  0：未计费
 		hisZyInfPage.setFsbXh(Long.valueOf(dosageDetail.getId()));//序号
 		hisZyInfPage.setFsbBrbs(pdDosage.getOperativeNumber());//手术编号
+		hisZyInfPage.setFsbTfjlxh(Long.valueOf(dosageDetail.getId()));
 		list.add(hisZyInfPage);
 		}
 		return  exHisZyInfMapper.saveExHisZyInf(list);

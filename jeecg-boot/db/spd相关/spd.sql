@@ -410,3 +410,31 @@ CREATE TABLE `ex_inspection_items_use_detail` (
   `depart_parent_id` varchar(64) DEFAULT NULL COMMENT '所属父部门',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- add by jiangxz 2020年5月20日14:58:03 定数包打包相关日志数据字典
+INSERT INTO `sys_dict_item`(`id`, `dict_id`, `item_text`, `item_value`, `description`, `sort_order`, `status`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES ('1262999977709240322', '1233244236134825986', '定数包打包', '8', '', 8, 1, 'admin', '2020-05-20 14:53:55', NULL, '2020-05-20 14:53:55');
+INSERT INTO `sys_dict_item`(`id`, `dict_id`, `item_text`, `item_value`, `description`, `sort_order`, `status`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES ('1263000120286216194', '1233244236134825986', '定数包拆包', '9', '', 9, 1, 'admin', '2020-05-20 14:54:29', NULL, '2020-05-20 14:54:29');
+
+
+-- add by mcb 2020年5月20日09:06:32  收费项目管理菜单移到基础信息模块
+update sys_permission set parent_id='1210107255254798338'   where id='1255456003879661569';
+
+-- add by mcb 2020年5月20日09:06:32  字段长度变更
+ALTER TABLE `ex_inspection_items`
+MODIFY COLUMN `combination_name`  varchar(200) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '项目组合名称' AFTER `state`;
+
+-- add by mcb 2020年5月20日09:06:32  字段数据类型变更
+delete from `pd_dosage_detail`;
+ALTER TABLE `pd_dosage_detail`
+MODIFY COLUMN `id`  int(64) NOT NULL AUTO_INCREMENT FIRST ;
+
+
+-- add by mcb 2020年5月20日14:58:03 器械使用耗材退费日志数据字典
+INSERT INTO `sys_dict_item`(`id`, `dict_id`, `item_text`, `item_value`, `description`, `sort_order`, `status`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES ('1263023784303230977', '1233244236134825986', '耗材退费', '10', '', 10, 1, 'admin', '2020-05-20 14:54:29', NULL, '2020-05-20 14:54:29');
+-- add by mcb 2020年5月20日17:58:03 试剂类菜单名称更改
+update sys_permission set name='检验明细管理'  where  id='1258590018295095297';
+update sys_permission set name='检验用量扣减'  where  id='1259662438426750977';
+
+-- add by mcb 2020年5月20日18:58:03 增加规格数量清零日志菜单及清零按钮权限
+INSERT INTO `sys_permission` VALUES ('1263053062075985922', '1255448486688649218', '库存清零日志', '/pd/PdSpecLog', 'pd/PdSpecLogList', NULL, NULL, 1, '0', NULL, '1', 5.00, 0, NULL, 1, 1, 0, 0, NULL, 'admin', '2020-5-20 18:24:51', NULL, '2020-5-20 18:24:51', 0, 0, '1', 0);
+INSERT INTO `sys_permission` VALUES ('1263062064688214018', '1218804573101428738', '规格数量清零按钮权限', NULL, NULL, NULL, NULL, 2, '0', 'stock:form:specRemove', '2', 1.00, 0, NULL, 1, 1, 0, 0, NULL, 'admin', '2020-5-20 19:00:37', NULL, '2020-5-20 19:00:37', 0, 0, '1', 0);

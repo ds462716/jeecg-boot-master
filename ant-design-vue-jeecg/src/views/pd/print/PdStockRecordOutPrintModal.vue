@@ -201,7 +201,7 @@
   import { httpAction } from '@/api/manage'
 
   export default {
-    components: {
+    componens: {
 
     },
     name: 'PdStockRecordOutPrintModal',

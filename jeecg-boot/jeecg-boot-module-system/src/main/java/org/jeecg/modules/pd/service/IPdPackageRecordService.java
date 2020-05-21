@@ -23,7 +23,7 @@ public interface IPdPackageRecordService extends IService<PdPackageRecord> {
 	 * 添加一对多
 	 * 
 	 */
-	public void saveMain(PdPackageRecord pdPackageRecord,List<PdPackageRecordDetail> pdPackageRecordDetailList) ;
+	Map<String, String> saveMain(PdPackageRecord pdPackageRecord,List<PdPackageRecordDetail> pdPackageRecordDetailList) ;
 	
 	/**
 	 * 修改一对多

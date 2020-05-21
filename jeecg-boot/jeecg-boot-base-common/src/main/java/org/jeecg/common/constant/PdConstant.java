@@ -156,6 +156,9 @@ public interface PdConstant {
 	public final static String STOCK_LOG_TYPE_5 = "5";//耗材退货
 	public final static String STOCK_LOG_TYPE_6 = "6";//执行收费
 	public final static String STOCK_LOG_TYPE_7 = "7";//耗材院外退货
+	public final static String STOCK_LOG_TYPE_8 = "8";//定数包打包
+	public final static String STOCK_LOG_TYPE_9 = "9";//定数包拆包
+	public final static String STOCK_LOG_TYPE_10 = "10";//执行退费
 
 
 	//生产厂家及供应商证照到期消息提醒发送状态
@@ -210,6 +213,7 @@ public interface PdConstant {
 	public final static String  CHARGE_FLAG_0 ="0";//已收费
 	public final static String  CHARGE_FLAG_1 ="1";//未收费
 	public final static String  CHARGE_FLAG_2 ="2";//已退回
+	public final static String  CHARGE_FLAG_3 ="3";//已退费
 	public final static String  IS_CHARGE_FLAG_0 ="0";//有接口
 	public final static String  IS_CHARGE_FLAG_1 ="1";//没有接口
 
