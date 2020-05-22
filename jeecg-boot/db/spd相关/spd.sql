@@ -479,3 +479,32 @@ INSERT INTO `sys_permission` VALUES ('1263006502161293314', '1218784892172963842
 -- add by jxz 2020年5月22日17:00:03 出入库明细表增加ref条形码字段
 ALTER TABLE `pd_stock_record_detail`
 ADD COLUMN `ref_bar_code` varchar(64) NULL COMMENT 'REF条码' AFTER `product_bar_code`;
+
+-- add by mcb 2020年5月22日16:00:03 增加试剂用量扣减明细表
+CREATE TABLE `ex_deductuin_dosage` (
+  `id` varchar(36) NOT NULL,
+  `create_by` varchar(50) DEFAULT NULL COMMENT '创建人',
+  `create_time` datetime DEFAULT NULL COMMENT '创建日期',
+  `update_by` varchar(50) DEFAULT NULL COMMENT '更新人',
+  `update_time` datetime DEFAULT NULL COMMENT '更新日期',
+  `sys_org_code` varchar(64) DEFAULT NULL COMMENT '所属部门',
+  `depart_id` varchar(32) DEFAULT NULL COMMENT '科室ID',
+  `depart_parent_id` varchar(32) DEFAULT NULL COMMENT '机构ID',
+  `product_id` varchar(32) DEFAULT NULL COMMENT '产品ID',
+  `exp_date` datetime DEFAULT NULL COMMENT '产品有效期',
+  `batch_no` varchar(32) DEFAULT NULL COMMENT '产品批次号',
+  `product_bar_code` varchar(64) DEFAULT NULL COMMENT '产品条码',
+  `patient_name` varchar(32) DEFAULT NULL COMMENT '病人姓名',
+  `in_hospital_no` varchar(32) DEFAULT NULL COMMENT '住院号',
+  `outpatient_number` varchar(32) DEFAULT NULL COMMENT '门诊号',
+  `deductuin_type` varchar(32) DEFAULT NULL COMMENT '扣减来源',
+  `spec_unit_id` varchar(32) DEFAULT NULL COMMENT '规格单位',
+  `spec_quantity` double DEFAULT NULL COMMENT '规格数量',
+  `spec_num` double DEFAULT NULL COMMENT '扣减规格数量',
+  `spec_date` datetime DEFAULT NULL COMMENT '扣减日期',
+  `stock_id` varchar(32) DEFAULT NULL COMMENT '对应库存明细ID',
+  `person_name` varchar(32) DEFAULT NULL COMMENT '操作人',
+  `del_flag` varchar(4) DEFAULT NULL COMMENT '删除状态',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+

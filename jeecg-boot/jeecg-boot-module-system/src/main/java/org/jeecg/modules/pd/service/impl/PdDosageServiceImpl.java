@@ -171,7 +171,7 @@ public class PdDosageServiceImpl extends ServiceImpl<PdDosageMapper, PdDosage> i
                 prodLog.setProductId(pdd.getProductId());
                 prodLog.setProductNum(pdd.getDosageCount());
                 prodLog.setInFrom(pdDosage.getDepartName());
-                prodLog.setOutTo("病人:"+pdDosage.getPatientInfo());
+                prodLog.setOutTo("病人:"+pdDosage.getPatientInfo()!=null?pdDosage.getPatientInfo():"");
                 prodLog.setPatientInfo(pdDosage.getPatientDetailInfo());
                 prodLog.setInvoiceNo(pdDosage.getDosageNo());
                 prodLog.setChargeDeptName(pdDosage.getExeDeptName());
@@ -335,7 +335,7 @@ public class PdDosageServiceImpl extends ServiceImpl<PdDosageMapper, PdDosage> i
                 prodLog.setProductId(pdd.getProductId());
                 prodLog.setProductNum(pdd.getDosageCount());
                 prodLog.setInFrom(pdDosage.getDepartName());
-                prodLog.setOutTo("病人:"+pdDosage.getPatientInfo());
+                prodLog.setOutTo("病人:"+pdDosage.getPatientInfo()!=null?pdDosage.getPatientInfo():"");
                 prodLog.setPatientInfo(pdDosage.getPatientDetailInfo());
                 prodLog.setInvoiceNo(pdDosage.getDosageNo());
                 prodLog.setChargeDeptName(pdDosage.getExeDeptName());
@@ -394,7 +394,7 @@ public class PdDosageServiceImpl extends ServiceImpl<PdDosageMapper, PdDosage> i
                 prodLog.setProductId(pdd.getProductId());
                 prodLog.setProductNum(pdd.getDosageCount());
                 prodLog.setInFrom(pdDosage.getDepartName());
-                prodLog.setOutTo("病人:"+pdDosage.getPatientInfo());
+                prodLog.setOutTo("病人:"+pdDosage.getPatientInfo()!=null?pdDosage.getPatientInfo():"");
                 prodLog.setPatientInfo(pdDosage.getPatientDetailInfo());
                 prodLog.setInvoiceNo(pdDosage.getDosageNo());
                 prodLog.setChargeDeptName(pdDosage.getExeDeptName());
@@ -486,7 +486,7 @@ public class PdDosageServiceImpl extends ServiceImpl<PdDosageMapper, PdDosage> i
                 prodLog.setProductId(pdd.getProductId());
                 prodLog.setProductNum(pdd.getDosageCount());
                 prodLog.setInFrom(pdDosage.getDepartName());
-                prodLog.setOutTo("病人:"+pdDosage.getPatientInfo());
+                prodLog.setOutTo("病人:"+pdDosage.getPatientInfo()!=null?pdDosage.getPatientInfo():"");
                 prodLog.setPatientInfo(pdDosage.getPatientDetailInfo());
                 prodLog.setInvoiceNo(pdDosage.getDosageNo());
                 prodLog.setChargeDeptName(pdDosage.getExeDeptName());
