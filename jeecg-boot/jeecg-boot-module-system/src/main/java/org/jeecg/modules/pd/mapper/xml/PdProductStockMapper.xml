@@ -193,6 +193,7 @@
 			</if>
 			<if test="productBarCode != null and productBarCode != ''">
 				AND a.product_bar_code = #{productBarCode}
+                   or a.ref_bar_code = #{productBarCode}
 			</if>
 			<if test="batchNo != null and batchNo != ''">
 				AND a.batch_no LIKE concat('%',#{batchNo},'%')
