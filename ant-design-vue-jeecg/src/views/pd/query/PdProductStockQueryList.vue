@@ -38,6 +38,11 @@
             </a-form-item>
           </a-col>
           <template v-if="toggleSearchStatus">
+            <a-col :md="5" :sm="8">
+              <a-form-item label="是否试剂">
+                <j-dict-select-tag type="list" v-model="queryParam.productFlag" dictCode="yn" placeholder="请选择"/>
+              </a-form-item>
+            </a-col>
             <a-col :md="6" :sm="8">
               <a-form-item label="使用状态">
                 <j-dict-select-tag v-model="queryParam.nestatStatus" dictCode="nestat_status"/>

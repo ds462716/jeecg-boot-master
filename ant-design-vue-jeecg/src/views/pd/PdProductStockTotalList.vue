@@ -30,6 +30,11 @@
               <a-input placeholder="请输入产品名称" v-model="queryParam.productName"></a-input>
             </a-form-item>
           </a-col>
+          <a-col :md="5" :sm="8">
+            <a-form-item label="是否试剂">
+              <j-dict-select-tag type="list" v-model="queryParam.productFlag" dictCode="yn" placeholder="请选择"/>
+            </a-form-item>
+          </a-col>
           <template :md="6" v-if="toggleSearchStatus">
             <a-col :md="6" :sm="8">
               <a-form-item label="产品编号">
@@ -176,6 +181,11 @@
             title:'产品名称',
             align:"center",
             dataIndex: 'productName'
+          },
+          {
+            title:'产品类型',
+            align:"center",
+            dataIndex: 'productFlagName'
           },
           {
             title:'产品编号',

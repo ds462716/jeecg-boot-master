@@ -37,6 +37,18 @@ public class ExInspectionItemsUse  {
 	@Excel(name = "关联病人信息id", width = 15)
     @ApiModelProperty(value = "关联病人信息id")
     private String refId;
+    /**关联病人姓名*/
+    @Excel(name = "关联病人姓名", width = 15)
+    @ApiModelProperty(value = "关联病人姓名")
+    private String refName;
+    /**住院号*/
+    @Excel(name = "住院号", width = 15)
+    @ApiModelProperty(value = "住院号")
+    private String inHospitalNo;
+    /**门诊号*/
+    @Excel(name = "门诊号", width = 15)
+    @ApiModelProperty(value = "门诊号")
+    private String outpatientNumber;
 	/**检验项目类型1复检，2质控，3测试，4空白阴阳对照，5其他*/
 	@Excel(name = "检验项目类型1复检，2质控，3测试，4空白阴阳对照，5其他", width = 15)
     @ApiModelProperty(value = "检验项目类型1复检，2质控，3测试，4空白阴阳对照，5其他")

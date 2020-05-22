@@ -61,4 +61,7 @@ public class PdProductStockTotalPage extends PdProductStockTotal {
 	/**试剂产品or普通产品，0产品，1试剂*/
 	@TableField(exist = false)
 	private String productFlag;
+
+	@TableField(exist = false)
+	private String productFlagName;
 }
