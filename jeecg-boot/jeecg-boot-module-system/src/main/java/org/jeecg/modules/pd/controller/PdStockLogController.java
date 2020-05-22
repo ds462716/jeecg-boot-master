@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
+import org.jeecg.common.constant.PdConstant;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.oConvertUtils;
@@ -94,6 +95,7 @@ public class PdStockLogController extends JeecgController<PdStockLog, IPdStockLo
 									HttpServletRequest req) {
 		 LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
 		 pdProductStock.setDepartParentId(sysUser.getDepartParentId());
+		 pdProductStock.setProductFlag(PdConstant.PRODUCT_FLAG_0);
 		 List<PdProductStock> pdProductStocks  = pdProductStockService.getByOriginalProduct(pdProductStock);
 		 return Result.ok(pdProductStocks);
 	 }
