@@ -34,6 +34,7 @@ public class PdStockRecordDetail extends BaseEntity {
 	private String productId;
 	/**产品条码*/
 	private String productBarCode;
+	private String refBarCode;// REF条型码
 	/**采购订单号*/
 	private String orderNo;
 	/**合并采购订单号*/

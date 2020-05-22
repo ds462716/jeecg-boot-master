@@ -15,6 +15,7 @@ import org.jeecg.modules.message.util.PushMsgUtil;
 import org.jeecg.modules.pd.entity.*;
 import org.jeecg.modules.pd.mapper.*;
 import org.jeecg.modules.pd.service.*;
+import org.jeecg.modules.pd.util.SnowUtils;
 import org.jeecg.modules.pd.util.UUIDUtil;
 import org.jeecg.modules.pd.vo.PdGoodsAllocationPage;
 import org.jeecg.modules.system.entity.SysDepart;
@@ -58,6 +59,8 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
     private PdPackageRecordMapper pdPackageRecordMapper;
     @Autowired
     private IPdProductStockTotalService pdProductStockTotalService;
+    @Autowired
+    private IPdProductStockService pdProductStockService;
     @Autowired
     private IPdStockLogService pdStockLogService;
     @Autowired
@@ -238,7 +241,7 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
         }
 
         if(CollectionUtils.isNotEmpty(newDetailList)){
-            //关-是否允许出入库时可修改进价和出价
+            //开关-是否允许出入库时可修改进价和出价
             PdOnOff query = new PdOnOff();
             LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
             query.setDepartParentId(sysUser.getDepartParentId());
@@ -259,6 +262,11 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
                     detail.setImportNo(pdStockRecord.getApplyNo());
                 } else if (PdConstant.OUT_TYPE_3.equals(outType)) {
                     detail.setImportNo(pdStockRecord.getAllocationNo());
+                }
+
+                if (oConvertUtils.isEmpty(outType)) {
+                    // 从供货商入库 则生成REF码
+                    detail.setRefBarCode(SnowUtils.bigKey());
                 }
                 pdStockRecordDetailMapper.insert(detail);
                 // 修改产品进价
@@ -413,14 +421,13 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
             pdStockRecord.setPdStockRecordDetailList(pdStockRecordDetailList);
 
             if (PdConstant.IN_TYPE_1.equals(inType)) {  //正常入库
-                // 紧急产品处理：
                 if (CollectionUtils.isNotEmpty(pdStockRecordDetailList)) {
                     Set<String> setIds = new HashSet<>();
 
                     for (PdStockRecordDetail detail : pdStockRecordDetailList) {
                         Double sum = 0D;
                         PdProduct pdProduct = pdProductService.getById(detail.getProductId());
-
+                        // 紧急产品处理：
                         if(PdConstant.IS_URGENT_0.equals(pdProduct.getIsUrgent())){
 
                             StringBuilder setId = new StringBuilder();
