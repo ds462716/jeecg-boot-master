@@ -26,11 +26,12 @@ export async function scanCode(Barcode1, Barcode2){
  * @param that
  * @returns {Promise<*>}
  */
-export async function stockScanCode(Barcode1, Barcode2){
+export async function stockScanCode(Barcode1, Barcode2,productFlag){
   //封装查询参数
   let formData = new URLSearchParams();
   formData.append("Barcode1",Barcode1);
   formData.append("Barcode2",Barcode2);
+  formData.append("productFlag",productFlag);
   let res = await httpAction(stockUrl,formData,"post");
   return res;
 }
