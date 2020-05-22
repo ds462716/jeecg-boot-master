@@ -1,21 +1,21 @@
 <template>
   <a-modal
     :visible="visible"
-    :width="1200"
+    :width="400"
     :height="150"
     @cancel="handleCancel"
     :closable="false"
   >
-    <button class="no-print" @click="print">打印</button>
-    <section  ref="batchPrintRef" style="margin:0 auto;">
-      <div v-for="(item, index) in printData.length">
-        <div style="page-break-after:always">
-          <div class="codeListBox" style="margin-top:2px;"><h5 style="display:inline-block;">厂商：</h5><span class="venderNameSpan">{{ printData[index].venderName }}</span></div>
-          <div class="codeListBox"><h5 style="display:inline-block;">产品名称：</h5><span class="proNameSpan">{{ printData[index].productName }}</span></div>
-          <div class="codeListBox"><h5 style="display:inline-block;">规格：</h5><span class="specSpan">{{ printData[index].spec }}</span></div>
-          <div class="codeListBox" style="margin-bottom:15px;"><h5 style="display:inline-block;">型号：</h5><span class="versionSpan">{{ printData[index].version }}</span></div>
-          <img :id="['barcode'+index]" style="width: 50%" />
-        </div>
+    <div class="no-print" style="text-align: right">
+      <a-button v-print="'#printContent'" ghost type="primary">打印</a-button>
+    </div>
+    <section  id="printContent">
+      <div v-for="(item, index) in printData.length" style="page-break-after:always;width: 400px;">
+          <svg :id="['barcode'+index]" style="margin-top:5px;" />
+          <div class="codeListBox" style="margin-top:5px;"><p>批号：</p><div>{{ printData[index].batchNo }}</div></div>
+          <div class="codeListBox"><p>效期：</p><div>{{ printData[index].expDate }}</div></div>
+          <div class="codeListBox"><p>名称：</p><div>{{ printData[index].productName }}</div></div>
+          <!--<div class="codeListBox"><p>型号：</p><div>{{ printData[index].version }}</div></div>-->
       </div>
     </section>
 
@@ -31,8 +31,7 @@
 <script>
   import Vue from 'vue'
   import JsBarcode from 'jsbarcode'
-  //import Print from '@/utils/print'
-  import Print from 'vue-print-nb'
+  import Print from '@/utils/print'
   Vue.use(Print); //注册
 
   export default {
@@ -67,18 +66,20 @@
       },
       init(record){
         this.printData = record;
-        console.log(this.printData)
         this.visible = true;
         this.$nextTick(() => {
           for(let index = 0;index<record.length;index++){
             let id = "#barcode"+index;
-            JsBarcode(id, record[index].productBarCode, {
+            JsBarcode(id, "SJ9013412110242", {
               format: "CODE128",
-              displayValue: 1,
-              fontSize: 24,
-              lineColor: "#000",
-              height: 66,
-              textAlign: "center"
+              lineColor: "#000000",
+              font:"cursive",
+              fontOptions: "bold",
+              fontSize: 25,
+              textAlign:"center",
+              /*displayValue: false,*/
+              height: 88,
+              width:2,
             })
           }
         })
@@ -94,6 +95,19 @@
   }
 </script>
 <style scoped>
-  .codeListBox>h5{display:inline-block;font-size:15px;color:#666;padding:5px 5px 0 5px;font-weight:400;width:110px;text-align:right;}
-  .codeListBox>span{display:inline-block;font-size:13px;}
+  * {
+    color: #000000!important;
+    -webkit-tap-highlight-color: #000000!important;
+  }
+  .codeListBox>p{
+    display:inline-block;
+    font-size:10px;
+    color:#666;
+    padding:-5px -5px 0 -5px;
+    text-align:left;}
+  .codeListBox>div{
+    display:inline-block;
+    font-weight:400;
+    font-size:10px;
+    }
 </style>
