@@ -469,3 +469,7 @@ CREATE TABLE `pd_spec_log` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+
+-- add by mcb 2020年5月22日16:00:03 库存明细表增加ref条形码字段
+ALTER TABLE `pd_product_stock`
+ADD COLUMN `ref_bar_code`  varchar(64) NULL COMMENT 'REF条形码' AFTER `reason`;

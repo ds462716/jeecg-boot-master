@@ -28,7 +28,8 @@
 		a.nestat_status,
 		a.spec_unit_id,
 		a.spec_quantity,
- 		a.del_flag
+ 		a.del_flag,
+ 		a.ref_barcode
 	</sql>
 
 	<sql id="pdProductStockJoins">

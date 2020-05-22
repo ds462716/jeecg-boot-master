@@ -53,6 +53,8 @@ public class PdProductStock extends BaseEntity {
 	/**产品条码*/
 	@Excel(name = "产品条码", width = 15)
 	private String productBarCode;
+	/**REF条型码*/
+	private String refBarCode;
 	/**批次号*/
 	@Excel(name = "批次号", width = 15)
 	private String batchNo;
