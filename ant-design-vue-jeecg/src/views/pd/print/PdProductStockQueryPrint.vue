@@ -12,7 +12,7 @@
     <section  id="printContent">
       <div v-for="(item, index) in printData.length" style="page-break-after:always;width: 400px;">
           <svg :id="['barcode'+index]" style="margin-top:5px;" />
-          <div class="codeListBox" style="margin-top:5px;"><p>批号：</p><div>{{ printData[index].batchNo }}</div></div>
+          <div class="codeListBox"><p>批号：</p><div>{{ printData[index].batchNo }}</div></div>
           <div class="codeListBox"><p>效期：</p><div>{{ printData[index].expDate }}</div></div>
           <div class="codeListBox"><p>名称：</p><div>{{ printData[index].productName }}</div></div>
           <!--<div class="codeListBox"><p>型号：</p><div>{{ printData[index].version }}</div></div>-->
@@ -70,15 +70,15 @@
         this.$nextTick(() => {
           for(let index = 0;index<record.length;index++){
             let id = "#barcode"+index;
-            JsBarcode(id, "SJ9013412110242", {
+            JsBarcode(id, record[index].refBarCode, {
               format: "CODE128",
               lineColor: "#000000",
               font:"cursive",
               fontOptions: "bold",
-              fontSize: 25,
+              fontSize: 20,
               textAlign:"center",
               /*displayValue: false,*/
-              height: 88,
+              height: 66,
               width:2,
             })
           }
@@ -101,13 +101,15 @@
   }
   .codeListBox>p{
     display:inline-block;
-    font-size:10px;
+    font-size:18px;
     color:#666;
     padding:-5px -5px 0 -5px;
+    margin:1px;
     text-align:left;}
   .codeListBox>div{
     display:inline-block;
-    font-weight:400;
-    font-size:10px;
+    margin:1px;
+    font-weight:600;
+    font-size:18px;
     }
 </style>
