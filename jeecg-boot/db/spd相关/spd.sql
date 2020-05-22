@@ -473,3 +473,5 @@ CREATE TABLE `pd_spec_log` (
 -- add by mcb 2020年5月22日16:00:03 库存明细表增加ref条形码字段
 ALTER TABLE `pd_product_stock`
 ADD COLUMN `ref_bar_code`  varchar(64) NULL COMMENT 'REF条形码' AFTER `reason`;
+-- add by zxh 2020年5月22日16:30:23 条码打印
+INSERT INTO `sys_permission` VALUES ('1263006502161293314', '1218784892172963842', '条码打印', '/pd/print/PdProductStockQueryModal', 'pd/print/PdProductStockQueryModal', null, null, '1', '0', null, '1', '1.01', '0', null, '1', '1', '0', '0', null, 'admin', '2020-05-20 15:19:50', 'admin', '2020-05-20 15:20:35', '0', '0', '1', '0');
