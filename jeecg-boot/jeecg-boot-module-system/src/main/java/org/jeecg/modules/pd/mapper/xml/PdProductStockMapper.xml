@@ -385,6 +385,9 @@
 			<if test="registration != null and registration != ''">
 				AND c.registration LIKE concat('%',#{registration},'%')
 			</if>
+			<if test="productFlag != null and productFlag != ''">
+				AND c.product_flag LIKE concat('%',#{productFlag},'%')
+			</if>
             <if test="inHospitalNo != null and inHospitalNo != ''">
                 AND s.in_hospital_no LIKE CONCAT('%', #{inHospitalNo}, '%')
             </if>

@@ -109,7 +109,7 @@
   .codeListBox>div{
     display:inline-block;
     margin:1px;
-    font-weight:600;
+    font-weight:400;
     font-size:18px;
     }
 </style>
