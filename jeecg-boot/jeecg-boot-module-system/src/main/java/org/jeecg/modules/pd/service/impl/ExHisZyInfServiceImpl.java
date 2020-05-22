@@ -48,9 +48,11 @@ public class ExHisZyInfServiceImpl extends ServiceImpl<ExHisZyInfMapper, ExHisZy
 		if(PdConstant.IS_CHARGE_TYPE_0.equals(chargeType)){ //如果是退费操作
 		hisZyInfPage.setFsbSl(Double.valueOf("-"+dosageDetail.getDosageCount()));//数量
 		hisZyInfPage.setFsbJe(new BigDecimal("-"+dosageDetail.getAmountMoney()));//金额
+		hisZyInfPage.setFsbTfjlxh(Long.valueOf(dosageDetail.getId()));
 		}else{
 		hisZyInfPage.setFsbSl(dosageDetail.getDosageCount());//数量
 		hisZyInfPage.setFsbJe(dosageDetail.getAmountMoney());//金额
+		hisZyInfPage.setFsbTfjlxh(null);
 		}
 		hisZyInfPage.setFsfXmbh(dosageDetail.getChargeCode());//收费项目编号
 		hisZyInfPage.setFsfMc(dosageDetail.getProductName());//收费项目名称
@@ -63,7 +65,6 @@ public class ExHisZyInfServiceImpl extends ServiceImpl<ExHisZyInfMapper, ExHisZy
 		hisZyInfPage.setFsbZt("0");//计费状态  0：未计费
 		hisZyInfPage.setFsbXh(Long.valueOf(dosageDetail.getId()));//序号
 		hisZyInfPage.setFsbBrbs(pdDosage.getOperativeNumber());//手术编号
-		hisZyInfPage.setFsbTfjlxh(Long.valueOf(dosageDetail.getId()));
 		list.add(hisZyInfPage);
 		}
 		return  exHisZyInfMapper.saveExHisZyInf(list);

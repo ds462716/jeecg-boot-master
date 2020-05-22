@@ -513,8 +513,14 @@
 			<if test="departId != null and departId != ''">
 				AND a.depart_id = #{departId}
 			</if>
+			<if test="nestatStatus != null and nestatStatus != ''">
+				AND a.nestat_status=#{nestatStatus}
+			</if>
 			<if test="number != null and number != ''">
 				AND c.number LIKE concat('%',#{number},'%')
+			</if>
+			<if test="productFlag != null and productFlag != ''">
+				AND c.product_flag = #{productFlag}
 			</if>
 			<if test="productName != null and productName != ''">
 				AND c.name LIKE concat('%',#{productName},'%')

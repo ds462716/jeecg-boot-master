@@ -85,12 +85,10 @@
         a.fsf_csrq as "fsfCsrq",-- 出生日期
         a.fsf_zjhm as "fsfZjhm",-- 证件号码
         a.fsf_ryrq as "admissionDate",-- 入院日期
-        a.fsf_zzys as "surgeonId",-- 诊治医生ID
-        d.fsf_yhxm as "surgeonName"-- 诊治医生名称
+        a.fsf_zzys as "surgeonName"-- 诊治医生
          from [v_spd_his_person] a
          LEFT JOIN   v_spd_his_ks s  on s.fsf_ksbh=a.fsf_ssks
-         LEFT JOIN   v_spd_his_users d  on d.fsf_yhm=a.fsf_zzys
-          where  a.fsf_zyh=#{inHospitalNo}
+           where  a.fsf_zyhm=#{medicalRecordNo}
 	</select>
 
 

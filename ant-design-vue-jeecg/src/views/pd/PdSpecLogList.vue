@@ -96,6 +96,16 @@
             dataIndex: 'specNum'
           },
           {
+            title:'产品规格单位',
+            align:"center",
+            dataIndex: 'specUnitName'
+          },
+          {
+            title:'产品规格数量',
+            align:"center",
+            dataIndex: 'specQuantity'
+          },
+          {
             title:'清零时间',
             align:"center",
             dataIndex: 'createTime',

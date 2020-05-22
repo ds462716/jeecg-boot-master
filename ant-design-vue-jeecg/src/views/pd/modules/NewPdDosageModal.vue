@@ -136,18 +136,18 @@
                 </a-row>-->
                 <a-row>
                   <a-col :md="6" :sm="8" v-if="hyCharged">
-                    <a-form-item label="住院号" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                      <a-input :disabled="disableSubmit" v-decorator="[ 'inHospitalNo', validatorRules.inHospitalNo]"  @keyup.enter.native="selectHis(0)"></a-input>
+                    <a-form-item label="病历号" :labelCol="labelCol" :wrapperCol="wrapperCol">
+                      <a-input autocomplete="off" :disabled="disableSubmit" v-decorator="[ 'medicalRecordNo', validatorRules.medicalRecordNo]"  @keyup.enter.native="selectHis(0)"></a-input>
                     </a-form-item>
                   </a-col>
                   <a-col :md="6" :sm="8" v-else="!hyCharged">
-                    <a-form-item label="住院号" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                      <a-input :disabled="disableSubmit" v-decorator="[ 'inHospitalNo']" @keyup.enter.native="selectHis(0)"></a-input>
+                    <a-form-item label="病历号" :labelCol="labelCol" :wrapperCol="wrapperCol">
+                      <a-input :disabled="disableSubmit" v-decorator="[ 'medicalRecordNo']" @keyup.enter.native="selectHis(0)"></a-input>
                     </a-form-item>
                   </a-col>
                   <a-col :md="6" :sm="8">
                     <a-form-item label="门诊号" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                      <a-input :disabled="disableSubmit" v-decorator="[ 'outpatientNumber', validatorRules.outpatientNumber]" @keyup.enter.native="selectHis(1)"></a-input>
+                      <a-input autocomplete="off" :disabled="disableSubmit" v-decorator="[ 'outpatientNumber', validatorRules.outpatientNumber]" @keyup.enter.native="selectHis(1)"></a-input>
                     </a-form-item>
                   </a-col>
                   <a-col :md="6" :sm="8" v-if="hyCharged">
@@ -196,8 +196,8 @@
                     </a-form-item>
                   </a-col>
                   <a-col :md="6" :sm="8">
-                    <a-form-item label="病历号" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                      <a-input :disabled="true" v-decorator="[ 'medicalRecordNo', validatorRules.medicalRecordNo]"></a-input>
+                    <a-form-item label="住院号" :labelCol="labelCol" :wrapperCol="wrapperCol">
+                      <a-input :disabled="true" v-decorator="[ 'inHospitalNo', validatorRules.inHospitalNo]"></a-input>
                     </a-form-item>
                   </a-col>
                   <a-col :md="6" :sm="8">
@@ -207,7 +207,7 @@
                   </a-col>
                 </a-row>
                 <a-form-item label="病人详细信息" :labelCol="labelCol2" :wrapperCol="wrapperCol2">
-                  <a-textarea :disabled="true" v-decorator="[ 'patientDetailInfo', validatorRules.patientInfo]"></a-textarea>
+                  <a-textarea :disabled="true" v-decorator="[ 'patientDetailInfo']"></a-textarea>
                 </a-form-item>
                 <a-form-item label="备注" :labelCol="labelCol2" :wrapperCol="wrapperCol2">
                   <a-textarea :disabled="disableSubmit" v-decorator="[ 'remarks', validatorRules.remarks]" ></a-textarea>
@@ -462,25 +462,23 @@
 
 
       selectHis(num){//查詢病人信息   num:0：住院病人查詢   1：門診病人查詢
-        let  inHospitalNo='';
+        let  medicalRecordNo='';
         let  outpatientNumber='';
-        let prjType={};
-           if(num=='0'){
-            inHospitalNo=this.form.getFieldValue('inHospitalNo');
-            if(inHospitalNo=="" || inHospitalNo==null){
-              this.$message.error("请输入住院号！");
+            if(num=='0'){
+              medicalRecordNo=this.form.getFieldValue('medicalRecordNo');
+            if(medicalRecordNo=="" || medicalRecordNo==null){
+              this.$message.error("请输入病历号！");
               return;
-            }
-             prjType=this.form.getFieldValue('prjType');
-           }else{
+             }
+            }else{
             outpatientNumber=this.form.getFieldValue('outpatientNumber');
              if(outpatientNumber=="" || outpatientNumber==null){
                this.$message.error("请输入门诊号！");
                return;
              }
            }
-        let  formData={inHospitalNo:inHospitalNo,
-                      outpatientNumber:outpatientNumber,prjType:prjType};
+        let  formData={medicalRecordNo:medicalRecordNo,
+                      outpatientNumber:outpatientNumber,prjType:num};
         getAction(this.url.queryPatientInfoList,formData).then((res)=>{
           if (res.success) {
             if(res.result.length==1){
@@ -492,7 +490,7 @@
               this.$refs.PdChooseDosageListModel.show(res.result);
             }
           } else {
-            that.$message.error(res.message);
+            this.$message.error(res.message);
           }
         })
 
@@ -691,22 +689,38 @@
           }
 
           let formData = this.classifyIntoFormData(allValues);
-          if(formData.pdDosageDetails.length <= 0){
-            this.$message.warning("用量产品数据为空，请扫码出库或选择产品");
+
+
+          let selectedArrays = this.$refs.pdDosageDetail.selectedRowIds;
+          if(selectedArrays <= 0){
+            this.$message.warning("请勾选需要退费的产品");
             return;
           }
+          //查找出勾选的产品信息
+          let selectedIds = new Array();
+          for(let i =0;i<selectedArrays.length;i++){
+            let selectId = selectedArrays[i].substring(selectedArrays[i].lastIndexOf("-")+1);
+            selectedIds.push(selectId);
+          }
+
           let list = formData.pdDosageDetails;
-          for (let item of list){
-            item.id=null;
-            if(Number(item.dosageCount) > Number(item.stockNum)){
-              this.$message.error("["+item.productName+"]用量数量不能大于库存数量！");
+          for (let i =0; i <list.length;i++){
+            //如果包含
+            if(selectedIds.indexOf(list[i].id)<0){
+              list.splice(i--, 1);
+              continue;
+            }
+            list[i].id=null;
+            if(Number(list[i].dosageCount) > Number(list[i].stockNum)){
+              this.$message.error("["+list[i].productName+"]用量数量不能大于库存数量！");
               return;
             }
-            if(Number(item.dosageCount) <= 0){
-              this.$message.error("["+item.productName+"]用量数量必须大于0！");
+            if(Number(list[i].dosageCount) <= 0){
+              this.$message.error("["+list[i].productName+"]用量数量必须大于0！");
               return;
             }
           }
+          formData.pdDosageDetails = list;
           return this.request(formData);
         }).catch(e => {
           if (e.error === VALIDATE_NO_PASSED) {

@@ -17,15 +17,25 @@
         <a-form :form="form">
 
           <a-row class="form-row" :gutter="{ xs: 8, sm: 16, md: 24, lg: 32 }">
-            <a-col :lg="12">
-              <a-form-item label="检验项目类型" :labelCol="labelCol" :wrapperCol="wrapperCol">
+            <a-col :md="6" :sm="8">
+              <a-form-item label="检验类型" :labelCol="labelCol" :wrapperCol="wrapperCol">
                 <j-dict-select-tag-expand  :disabled="disableSubmit" :trigger-change="true" dictCode="inspection_item_type" v-decorator="['itemType',validatorRules.itemType]"  placeholder="请选择检验项目类型"/>
               </a-form-item>
             </a-col>
-            <a-col :lg="12">
-              <a-form-item label="关联病人信息" :labelCol="labelCol" :wrapperCol="wrapperCol">
+            <a-col :md="6" :sm="8">
+              <a-form-item label="住院号" :labelCol="labelCol" :wrapperCol="wrapperCol">
+                <a-input  autocomplete="off" :disabled="disableSubmit" v-decorator="[ 'inHospitalNo', validatorRules.inHospitalNo]"  @keyup.enter.native="selectHis(0)"></a-input>
+              </a-form-item>
+            </a-col>
+            <a-col :md="6" :sm="8">
+              <a-form-item label="门诊号" :labelCol="labelCol" :wrapperCol="wrapperCol">
+                <a-input autocomplete="off" :disabled="disableSubmit" v-decorator="[ 'outpatientNumber', validatorRules.outpatientNumber]" @keyup.enter.native="selectHis(1)"></a-input>
+              </a-form-item>
+            </a-col>
+            <a-col :md="6" :sm="8">
+              <a-form-item label="病人姓名" :labelCol="labelCol" :wrapperCol="wrapperCol">
                 <a-input :disabled="true" v-decorator="[ 'refName']" placeholder="请关联病人信息"></a-input>
-                <a-button @click="choice"  v-show="!disableSubmit"  type="primary">关联病人信息</a-button>
+               <!-- <a-button @click="choice"  v-show="!disableSubmit"  type="primary">关联病人信息</a-button>-->
               </a-form-item>
               <a-form-item v-show="false" :labelCol="labelCol" :wrapperCol="wrapperCol">
                 <a-input  v-decorator="['refId']"/>
@@ -162,6 +172,7 @@
     <ex-inspection-items-add-modal ref="exInspectionItemsAddModal" @ok="modalFormOk"></ex-inspection-items-add-modal>
     <ex-choose-package-exInspection-items-list-model ref="exChoosePackageExInspectionItemsListModel" @ok="returnPackageRecordData" ></ex-choose-package-exInspection-items-list-model>
     <pd-choose-product-stock-list-model ref="pdChooseProductStockListModel" @ok="returnProductStockData" ></pd-choose-product-stock-list-model>
+    <pd-choose-dosage-list-model   ref="PdChooseDosageListModel" @ok="newModalFormOk"></pd-choose-dosage-list-model>
   </j-modal>
 </template>
 
@@ -180,6 +191,7 @@
   import {stockScanCode} from '@/utils/barcode';
   import { FormTypes,getRefPromise,validateFormAndTables } from '@/utils/JEditableTableUtil';
   import PdChooseProductStockListModel from "../../pd/modules/PdChooseProductStockListModel";
+  import PdChooseDosageListModel from "../../pd/modules/PdChooseDosageListModel";
 
   const VALIDATE_NO_PASSED = Symbol()
   export { FormTypes, VALIDATE_NO_PASSED }
@@ -193,6 +205,7 @@
       JEditableTable,
       JEditableTableMixin,
       ExInspectionItemsAddModal,
+      PdChooseDosageListModel
     },
     data () {
       return {
@@ -318,9 +331,10 @@
           add: "/external/exInspectionItemsUse/add",
           submit: "/external/exInspectionItemsUse/submit",
           edit: "/external/exInspectionItemsUse/edit",
+          queryPatientInfoList:"/pd/newPdDosage/queryPatientInfoList",
         },
         popModal: {
-          title: '这里是标题',
+          title: '用量扣减',
           visible: false,
           width: '100%',
           // width: '1200',
@@ -399,6 +413,46 @@
       handleOk () {
         this.request(this.url.submit,"post");
       },
+
+      selectHis(num) {
+        let  inHospitalNo='';
+        let  outpatientNumber='';
+        if(num=='0'){
+          inHospitalNo=this.form.getFieldValue('inHospitalNo');
+          if(inHospitalNo=="" || inHospitalNo==null){
+            this.$message.error("请输入住院号！");
+            return;
+          }
+          this.form.setFieldsValue({outpatientNumber:""});
+        }else{
+          outpatientNumber=this.form.getFieldValue('outpatientNumber');
+          if(outpatientNumber=="" || outpatientNumber==null){
+            this.$message.error("请输入门诊号！");
+            return;
+          }
+          this.form.setFieldsValue({inHospitalNo:""});
+        }
+        let  formData={inHospitalNo:inHospitalNo,
+          outpatientNumber:outpatientNumber,prjType:num};
+        getAction(this.url.queryPatientInfoList,formData).then((res)=>{
+          if (res.success) {
+            if(res.result.length==1){
+              this.form.setFieldsValue({refName:res.result[0].patientInfo});
+            }else{
+              this.$refs.PdChooseDosageListModel.width = 1550;
+              this.$refs.PdChooseDosageListModel.show(res.result);
+            }
+          } else {
+            this.$message.error(res.message);
+          }
+        })
+
+      },
+
+      newModalFormOk (formData) { //选择病人信息确定后返回所选择的数据
+        this.form.setFieldsValue({refName:formData.patientInfo});
+      },
+
       /** 确定按钮点击事件 */
       request(url, method) {
         /** 触发表单验证 */

@@ -124,9 +124,19 @@
             }
           },
           {
-            title:'病人信息',
+            title:'病人姓名',
             align:"center",
-            dataIndex: 'refId'
+            dataIndex: 'refName'
+          },
+          {
+            title:'住院号',
+            align:"center",
+            dataIndex: 'inHospitalNo'
+          },
+          {
+            title:'门诊号',
+            align:"center",
+            dataIndex: 'outpatientNumber'
           },
           {
             title:'备注',

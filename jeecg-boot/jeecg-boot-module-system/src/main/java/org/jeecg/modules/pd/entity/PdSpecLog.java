@@ -73,6 +73,11 @@ public class PdSpecLog extends BaseEntity {
 	@Excel(name = "对应的库存明细ID", width = 15)
     @ApiModelProperty(value = "对应的库存明细ID")
     private String stockId;
+    @Excel(name = "规格单位ID", width = 15)
+    private String specUnitId;//规格单位ID
+    @Excel(name = "规格数量", width = 15)
+    private Double specQuantity;//规格数量
+
 	/**清零原因*/
 	@Excel(name = "清零原因", width = 15)
     @ApiModelProperty(value = "清零原因")
@@ -95,4 +100,6 @@ public class PdSpecLog extends BaseEntity {
     private String departName;//科室名称
     @TableField(exist = false)
     private String productName;//产品名称
+    @TableField(exist = false)
+    private String specUnitName;//规格单位名称
 }

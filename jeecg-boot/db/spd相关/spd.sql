@@ -438,3 +438,34 @@ update sys_permission set name='检验用量扣减'  where  id='1259662438426750
 -- add by mcb 2020年5月20日18:58:03 增加规格数量清零日志菜单及清零按钮权限
 INSERT INTO `sys_permission` VALUES ('1263053062075985922', '1255448486688649218', '库存清零日志', '/pd/PdSpecLog', 'pd/PdSpecLogList', NULL, NULL, 1, '0', NULL, '1', 5.00, 0, NULL, 1, 1, 0, 0, NULL, 'admin', '2020-5-20 18:24:51', NULL, '2020-5-20 18:24:51', 0, 0, '1', 0);
 INSERT INTO `sys_permission` VALUES ('1263062064688214018', '1218804573101428738', '规格数量清零按钮权限', NULL, NULL, NULL, NULL, 2, '0', 'stock:form:specRemove', '2', 1.00, 0, NULL, 1, 1, 0, 0, NULL, 'admin', '2020-5-20 19:00:37', NULL, '2020-5-20 19:00:37', 0, 0, '1', 0);
+
+
+-- add by mcb 2020年5月21日18:58:03 增加病人姓名
+ALTER TABLE `ex_inspection_items_use`
+ADD COLUMN `ref_name`  varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NULL COMMENT '病人姓名' AFTER `depart_parent_id`,
+ADD COLUMN `in_hospital_no`  varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NULL COMMENT '住院号' AFTER `ref_name`,
+ADD COLUMN `outpatient_number`  varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NULL COMMENT '门诊号' AFTER `in_hospital_no`;
+
+
+-- add by mcb 2020年5月22日10:58:03 增加规格数量清零日志表
+CREATE TABLE `pd_spec_log` (
+  `id` varchar(36) NOT NULL,
+  `create_by` varchar(50) DEFAULT NULL COMMENT '创建人',
+  `create_time` datetime DEFAULT NULL COMMENT '创建日期',
+  `update_by` varchar(50) DEFAULT NULL COMMENT '更新人',
+  `update_time` datetime DEFAULT NULL COMMENT '更新日期',
+  `sys_org_code` varchar(64) DEFAULT NULL COMMENT '所属部门',
+  `person_name` varchar(32) DEFAULT NULL COMMENT '操作人姓名',
+  `person_id` varchar(32) DEFAULT NULL COMMENT '操作人ID',
+  `spec_num` double DEFAULT NULL COMMENT '清零前剩余规格数量',
+  `stock_id` varchar(64) DEFAULT NULL COMMENT '对应的库存明细ID',
+  `reason` varchar(200) DEFAULT NULL COMMENT '清零原因',
+  `product_id` varchar(32) DEFAULT NULL COMMENT '产品ID',
+  `depart_id` varchar(32) DEFAULT NULL COMMENT '所属部门ID',
+  `depart_parent_id` varchar(32) DEFAULT NULL COMMENT '所属机构ID',
+  `del_flag` varchar(4) DEFAULT NULL,
+  `spec_unit_id` varchar(32) DEFAULT NULL COMMENT '产品规格单位',
+  `spec_quantity` double DEFAULT NULL COMMENT '产品规格数量',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+

@@ -6,12 +6,12 @@
         <a-row :gutter="24">
           <a-col :md="6" :sm="8">
             <a-form-item label="收费项目代码">
-              <a-input placeholder="请输入收费项目代码" v-model="queryParam.code"></a-input>
+              <a-input placeholder="请输入收费项目代码" v-model="queryParam.fsfXmbh"></a-input>
             </a-form-item>
           </a-col>
           <a-col :md="6" :sm="8">
             <a-form-item label="收费项目名称">
-              <a-input placeholder="收费项目名称" v-model="queryParam.name"></a-input>
+              <a-input placeholder="收费项目名称" v-model="queryParam.fsfXmmc"></a-input>
             </a-form-item>
           </a-col>
           <a-col :md="6" :sm="8">

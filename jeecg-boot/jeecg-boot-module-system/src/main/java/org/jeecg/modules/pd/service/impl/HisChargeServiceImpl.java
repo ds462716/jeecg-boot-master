@@ -4,7 +4,6 @@ import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.apache.commons.collections.MapUtils;
-import org.apache.commons.lang.StringUtils;
 import org.jeecg.modules.external.entity.ExInspectionItems;
 import org.jeecg.modules.pd.entity.*;
 import org.jeecg.modules.pd.mapper.HisChargeMapper;
@@ -90,18 +89,10 @@ public class HisChargeServiceImpl extends ServiceImpl<HisChargeMapper, HisCharge
 		List<PdDosage> list=new ArrayList<PdDosage>();
 		String patientType=pdDosage.getPatientType();
 		String prjType=pdDosage.getPrjType();
-		String inHospitalNo=pdDosage.getInHospitalNo();//住院号
-		String outpatientNumber=pdDosage.getOutpatientNumber();//门诊号
-		if(StringUtils.isEmpty(inHospitalNo) && StringUtils.isNotEmpty(outpatientNumber)){  //门诊
+		if("1".equals(prjType)){  //门诊
 			    list=hisChargeMapper.queryPatientInfoMZ(pdDosage);
-		}else if(StringUtils.isNotEmpty(inHospitalNo)){  //住院
-			//if("0".equals(prjType)){  //手术项目
+		}else{  //住院
 				list=hisChargeMapper.queryPatientInfoSS(pdDosage);
-			//}else if("1".equals(prjType)){  //检查项目
-				//list = hisChargeMapper.queryPatientInfoJC(newPdDosage);
-			//}else{//检验项目
-				//list = hisChargeMapper.queryPatientInfoJY(newPdDosage);
-			//}
 		}
 		return list;
 	}

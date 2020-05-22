@@ -612,6 +612,8 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
             pdSpecLog.setStockId(id);//库存明细ID
             pdSpecLog.setSpecNum(stock.getSpecNum());//清零规格库存数量
             pdSpecLog.setReason(reason);//清零原因
+            pdSpecLog.setSpecQuantity(stock.getSpecQuantity());//规格数量
+            pdSpecLog.setSpecUnitId(stock.getSpecUnitId());//规格单位
             pdSpecLogService.save(pdSpecLog);
 
             //明細表清零

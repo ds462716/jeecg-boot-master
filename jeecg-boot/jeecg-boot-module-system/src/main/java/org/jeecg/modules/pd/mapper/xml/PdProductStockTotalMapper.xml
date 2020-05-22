@@ -44,7 +44,11 @@
         c.spec as "spec",
         c.version as "version",
         c.purchase_price as "purchasePrice",
-        c.product_flag as "productFlag"
+        c.product_flag as "productFlag",
+        case
+        	when c.product_flag = '0' then "耗材"
+		 	when c.product_flag = '1' then "试剂"
+		end as "productFlagName"
 	</sql>
     <sql id="pdProductJoins">
         LEFT JOIN pd_product c ON c.id = a.product_id
@@ -119,6 +123,9 @@
             </if>
             <if test="number != null and number != ''">
                 AND c.number  LIKE concat('%',#{number},'%')
+            </if>
+            <if test="productFlag != null and productFlag != ''">
+                AND c.product_flag =#{productFlag}
             </if>
             <if test="spec != null and spec != ''">
                 AND c.spec   LIKE concat('%',#{spec},'%')

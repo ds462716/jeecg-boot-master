@@ -11,11 +11,14 @@
         a.stock_id,
         a.create_time,
         a.reason,
+        a.spec_quantity,
         b.name as "productName",
-        c.depart_name AS "departName"
+        c.depart_name AS "departName",
+        d.name AS "specUnitName"
         FROM pd_spec_log a
         LEFT JOIN pd_product b on a.product_id = b.id
         LEFT JOIN sys_depart c ON a.depart_id = c.id
+        LEFT JOIN pd_unit d ON a.spec_unit_id = d.id
         <where>
             a.del_flag = #{DEL_FLAG_NORMAL}
             <if test=" personName != null and personName != ''">
