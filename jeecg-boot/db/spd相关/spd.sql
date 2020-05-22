@@ -478,4 +478,4 @@ INSERT INTO `sys_permission` VALUES ('1263006502161293314', '1218784892172963842
 
 -- add by jxz 2020年5月22日17:00:03 出入库明细表增加ref条形码字段
 ALTER TABLE `pd_stock_record_detail`
-ADD COLUMN `ref_barcode` varchar(64) NULL COMMENT 'REF条码' AFTER `product_bar_code`;
+ADD COLUMN `ref_bar_code` varchar(64) NULL COMMENT 'REF条码' AFTER `product_bar_code`;
