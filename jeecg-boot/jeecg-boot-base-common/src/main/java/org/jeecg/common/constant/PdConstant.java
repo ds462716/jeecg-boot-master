@@ -266,5 +266,11 @@ public interface PdConstant {
 	public final static String ACCEPT_STATUS_2="2";//未扣减
 
 
+	//试剂扣减来源
+	public final static String DEDUCTUIN_TYPE_0="0";//HIS系统
+	public final static String DEDUCTUIN_TYPE_1="1";//SPD系统
+
+
+
 
 }
