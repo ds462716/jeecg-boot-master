@@ -219,4 +219,8 @@ public class PdProductStock extends BaseEntity {
 
 	@TableField(exist = false)
 	private String productStockId;//操作试剂冗余字段
+
+	@TableField(exist = false)
+	private String recordNo;//入库单号
+
 }

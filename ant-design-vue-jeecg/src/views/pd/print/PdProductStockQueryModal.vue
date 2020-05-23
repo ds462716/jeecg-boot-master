@@ -28,6 +28,11 @@
             </a-form-item>
           </a-col>
           <a-col :md="6" :sm="8">
+            <a-form-item label="入库单号">
+              <a-input placeholder="请输入入库单号" v-model="queryParam.recordNo"></a-input>
+            </a-form-item>
+          </a-col>
+          <a-col :md="6" :sm="8">
             <a-form-item label="产品名称">
               <a-input placeholder="请输入产品名称" v-model="queryParam.productName"></a-input>
             </a-form-item>

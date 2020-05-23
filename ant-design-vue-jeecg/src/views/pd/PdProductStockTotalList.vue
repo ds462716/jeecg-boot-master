@@ -88,7 +88,7 @@
      <div class="table-operator">
       <a-button @click="handleUpdate('Up')" type="primary" icon="plus">设置库存上限</a-button>
       <a-button @click="handleUpdate('Down')" type="primary" icon="plus">设置库存下限</a-button>
-      <a-button type="primary" icon="download" @click="handleExportXls('库存明细')">导出</a-button>
+      <!--<a-button type="primary" icon="download" @click="handleExportXls('库存明细')">导出</a-button>-->
     </div>
     <!-- table区域-begin -->
     <div>

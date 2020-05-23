@@ -507,6 +507,7 @@
 		<include refid="sysDepartJoins"/>
 		<include refid="pdGoodsAllocation"/>
 		LEFT JOIN pd_stock_record_detail h ON h.id=a.record_detail_id
+        LEFT JOIN pd_stock_record hh on h.record_id = hh.id
 		<where>
 			a.del_flag =#{DEL_FLAG_NORMAL} AND a.stock_num > 0
 			<if test="id != null and id != ''">
@@ -530,6 +531,9 @@
 			<if test="productName != null and productName != ''">
 				AND c.name LIKE concat('%',#{productName},'%')
 			</if>
+            <if test="recordNo != null and recordNo != ''">
+                AND  hh.record_no LIKE concat('%',#{recordNo},'%')
+            </if>
 			<if test="spec != null and spec != ''">
 				AND c.spec LIKE concat('%',#{spec},'%')
 			</if>
@@ -537,7 +541,7 @@
 				AND c.version   LIKE concat('%',#{version},'%')
 			</if>
 			<if test="batchNo != null and batchNo != ''">
-				AND a.batchNo LIKE concat('%',#{batchNo},'%')
+				AND a.batch_no LIKE concat('%',#{batchNo},'%')
 			</if>
 			<if test="registration != null and registration != ''">
 				AND c.registration LIKE concat('%',#{registration},'%')
