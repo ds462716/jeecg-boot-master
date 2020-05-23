@@ -419,6 +419,7 @@
         },
         url: {
           init:"/pd/pdStockRecordIn/initModal",
+          getOnOff:"/pd/pdStockRecordIn/getOnOff",
           submit: "/pd/pdStockRecordIn/submit",
           add: "/pd/pdStockRecordIn/add",
           queryById: "/pd/pdStockRecordIn/queryById",
@@ -532,6 +533,39 @@
                 this.$refs['productNumberInput'].focus();
               }
 
+              // this.stockInText = res.result.stockInText;
+              // this.allowInMoreOrder = res.result.allowInMoreOrder;
+              // this.allowNotOrderProduct = res.result.allowNotOrderProduct;
+              // this.allowSupplier = res.result.allowSupplier;
+              // this.allowEditPrice = res.result.allowEditPrice;
+              // this.allowStockInExpProduct = res.result.allowStockInExpProduct;
+              // this.allowStockInExpSupplier = res.result.allowStockInExpSupplier;
+              // if(this.disableSubmit){
+              //   this.allowEditPrice = "0";
+              // }
+              this.goodsAllocationList = res.result.goodsAllocationList;
+              //开关-是否需要入库审批  1-是；0-否
+              // if(res.result.allowStockInAudit == "0" && this.disableSubmit == false){
+              //   this.showSubmitAndPrint = true;
+              // }
+
+              this.pdStockRecordDetailTable.columns.forEach((item, idx) => {
+                if(item.key == "inHuoweiCode"){
+                  item.options = this.goodsAllocationList;
+                }
+              })
+            })
+          }
+          if(res.code==510){
+            this.$message.warning(res.message)
+          }
+          this.loading = false;
+        })
+
+        getAction(this.url.getOnOff, params).then((res) => {
+          if (res.success) {
+            this.$nextTick(() => {
+
               this.stockInText = res.result.stockInText;
               this.allowInMoreOrder = res.result.allowInMoreOrder;
               this.allowNotOrderProduct = res.result.allowNotOrderProduct;
@@ -542,17 +576,10 @@
               if(this.disableSubmit){
                 this.allowEditPrice = "0";
               }
-              this.goodsAllocationList = res.result.goodsAllocationList;
               //开关-是否需要入库审批  1-是；0-否
               if(res.result.allowStockInAudit == "0" && this.disableSubmit == false){
                 this.showSubmitAndPrint = true;
               }
-
-              this.pdStockRecordDetailTable.columns.forEach((item, idx) => {
-                if(item.key == "inHuoweiCode"){
-                  item.options = this.goodsAllocationList;
-                }
-              })
             })
           }
           if(res.code==510){

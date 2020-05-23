@@ -22,7 +22,7 @@ public interface IPdStockRecordService extends IService<PdStockRecord> {
 	 * 添加一对多
 	 *
 	 */
-	public void saveMain(PdStockRecord pdStockRecord, List<PdStockRecordDetail> pdStockRecordDetailList, String recordType) ;
+	public String saveMain(PdStockRecord pdStockRecord, List<PdStockRecordDetail> pdStockRecordDetailList, String recordType) ;
 
 	/**
 	 * 审核
@@ -84,6 +84,12 @@ public interface IPdStockRecordService extends IService<PdStockRecord> {
 	 * @return
 	 */
 	PdStockRecord initInModal(String id);
+
+	/**
+	 * 获取开关
+	 * @return
+	 */
+	PdStockRecord getOnOff();
 
 	/**
 	 * 初始化出库页面

@@ -138,14 +138,17 @@ public class PdStockRecordOutController {
      */
     @PostMapping(value = "/add")
     public Result<?> add(@RequestBody PdStockRecord pdStockRecord) {
-        if (oConvertUtils.isNotEmpty(pdStockRecord.getId())) {
-            PdStockRecord entity = pdStockRecordService.getById(pdStockRecord.getId());
-            if(entity != null && PdConstant.SUBMIT_STATE_2.equals(entity.getSubmitStatus())){
-                return Result.error("出库单已被提交，不能保存草稿！");
-            }
+        List<PdStockRecord> list = pdStockRecordService.queryList(pdStockRecord,PdConstant.RECODE_TYPE_2);
+        if(CollectionUtils.isNotEmpty(list)){
+            return Result.error("出库单已被保存或提交，不能保存草稿！");
         }
-        pdStockRecordService.saveMain(pdStockRecord, pdStockRecord.getPdStockRecordDetailList(), PdConstant.RECODE_TYPE_2);
-        return Result.ok("添加成功！");
+
+        String recordId = pdStockRecordService.saveMain(pdStockRecord, pdStockRecord.getPdStockRecordDetailList(), PdConstant.RECODE_TYPE_2);
+
+        Map<String,Object> result = new HashMap<>();
+        result.put("recordId",recordId);
+        result.put("message","保存成功！");
+        return Result.ok(result);
     }
 
     /**

@@ -120,7 +120,7 @@
                 AND a.submit_date &lt;= #{entity.queryDateEnd}
             </if>
         </where>
-        order by a.create_time desc
+        order by a.audit_status asc,a.submit_status asc,a.create_time desc
     </select>
 
     <select id="getOne" resultType="org.jeecg.modules.pd.entity.PdStockRecord" parameterType="org.jeecg.modules.pd.entity.PdStockRecord">

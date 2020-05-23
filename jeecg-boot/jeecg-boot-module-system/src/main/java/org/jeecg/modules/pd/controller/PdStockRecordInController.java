@@ -88,6 +88,12 @@ public class PdStockRecordInController {
         return Result.ok(pdStockRecord);
     }
 
+    @GetMapping(value = "/getOnOff")
+    public Result<?> getOnOff(@RequestParam(name = "id") String id, HttpServletRequest req) {
+        PdStockRecord pdStockRecord = pdStockRecordService.getOnOff();
+        return Result.ok(pdStockRecord);
+    }
+
     /**
      * 分页列表查询
      *
@@ -138,14 +144,17 @@ public class PdStockRecordInController {
     @PostMapping(value = "/add")
     @RequiresPermissions("stock:form:inRecord")
     public Result<?> add(@RequestBody PdStockRecord pdStockRecord) {
-        if (oConvertUtils.isNotEmpty(pdStockRecord.getId())) {
-            PdStockRecord entity = pdStockRecordService.getById(pdStockRecord.getId());
-            if(entity != null && PdConstant.SUBMIT_STATE_2.equals(entity.getSubmitStatus())){
-                return Result.error("入库单已被提交，不能保存草稿！");
-            }
+        List<PdStockRecord> list = pdStockRecordService.queryList(pdStockRecord,PdConstant.RECODE_TYPE_1);
+        if(CollectionUtils.isNotEmpty(list)){
+            return Result.error("入库单已被保存或提交，不能保存草稿！");
         }
-        pdStockRecordService.saveMain(pdStockRecord, pdStockRecord.getPdStockRecordDetailList(), PdConstant.RECODE_TYPE_1);
-        return Result.ok("保存成功！");
+
+        String recordId = pdStockRecordService.saveMain(pdStockRecord, pdStockRecord.getPdStockRecordDetailList(), PdConstant.RECODE_TYPE_1);
+
+        Map<String,Object> result = new HashMap<>();
+        result.put("recordId",recordId);
+        result.put("message","保存成功！");
+        return Result.ok(result);
     }
 
     /**
@@ -168,7 +177,7 @@ public class PdStockRecordInController {
         result.put("recordId",recordId);
         result.put("message","提交成功！");
         return Result.ok(result);
-    }
+}
 
     /**
      * 审批

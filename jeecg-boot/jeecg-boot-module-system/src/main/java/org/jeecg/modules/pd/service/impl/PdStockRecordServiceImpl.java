@@ -94,7 +94,8 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void saveMain(PdStockRecord pdStockRecord, List<PdStockRecordDetail> pdStockRecordDetailList, String recordType) {
+    public String saveMain(PdStockRecord pdStockRecord, List<PdStockRecordDetail> pdStockRecordDetailList, String recordType) {
+        String recordId = "";
         // 修改前先删除数据
         if (oConvertUtils.isNotEmpty(pdStockRecord.getId())) {
             this.delMain(pdStockRecord.getId());
@@ -104,13 +105,14 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
             pdStockRecord.setRecordType(PdConstant.RECODE_TYPE_1); // 入库
             pdStockRecord.setSubmitStatus(PdConstant.SUBMIT_STATE_1); // 待提交
 //            pdStockRecord.setAuditStatus(PdConstant.AUDIT_STATE_1);   // 待审核
-            this.saveInStockRecord(pdStockRecord, pdStockRecordDetailList, "");
+            recordId = this.saveInStockRecord(pdStockRecord, pdStockRecordDetailList, "");
         } else if (PdConstant.RECODE_TYPE_2.equals(recordType)) {
             pdStockRecord.setRecordType(PdConstant.RECODE_TYPE_2); // 出库
             pdStockRecord.setSubmitStatus(PdConstant.SUBMIT_STATE_1); // 待提交
 //            pdStockRecord.setAuditStatus(PdConstant.AUDIT_STATE_1);   // 待审核
-            this.saveOutStockRecord(pdStockRecord, pdStockRecordDetailList);
+            recordId = this.saveOutStockRecord(pdStockRecord, pdStockRecordDetailList);
         }
+        return recordId;
     }
 
     @Override
@@ -692,6 +694,19 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
 
         }
 
+
+        //库区库位下拉框
+        pdStockRecord.setGoodsAllocationList(goodsAllocationList);
+
+        return pdStockRecord;
+    }
+
+    @Override
+    public PdStockRecord getOnOff() {
+        PdStockRecord pdStockRecord = new PdStockRecord();
+
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+
         PdOnOff query = new PdOnOff();
         query.setDepartParentId(sysUser.getDepartParentId());
         //开关-是否允许入库量大于订单量   1-允许入库量大于订单量；0-不允许入库量大于订单量
@@ -755,10 +770,6 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
         }else{
             pdStockRecord.setStockInText("");
         }
-
-        //库区库位下拉框
-        pdStockRecord.setGoodsAllocationList(goodsAllocationList);
-
         return pdStockRecord;
     }
 
