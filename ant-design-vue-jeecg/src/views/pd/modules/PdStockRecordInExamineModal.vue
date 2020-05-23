@@ -381,7 +381,7 @@
         this.loadData();
       },
       loadData() {
-        this.loading = true;
+        // this.loading = true;
         this.popModal.title="入库审核";
         //初始化供应商，用于回显供应商
         this.supplierHandleSearch();
@@ -391,6 +391,7 @@
 
         let params = { id: this.model.id }
 
+        this.pdStockRecordDetailTable.loading = true;
         getAction(this.url.init, params).then((res) => {
           if (res.success) {
             this.$nextTick(() => {
@@ -419,7 +420,8 @@
           if(res.code===510){
             this.$message.warning(res.message)
           }
-          this.loading = false;
+          // this.loading = false;
+          this.pdStockRecordDetailTable.loading = false;
         })
       },
       /**打印按钮**/
