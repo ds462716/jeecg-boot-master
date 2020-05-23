@@ -1,5 +1,7 @@
 package org.jeecg.modules.external.service;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.jeecg.modules.external.entity.ExInspectionItemsUse;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -14,4 +16,6 @@ public interface IExInspectionItemsUseService extends IService<ExInspectionItems
     void submit(ExInspectionItemsUse exInspectionItemsUse);
 
     ExInspectionItemsUse initOutModal(String id);
+
+    IPage<ExInspectionItemsUse> selectList(Page<ExInspectionItemsUse> page, ExInspectionItemsUse exInspectionItemsUse);
 }

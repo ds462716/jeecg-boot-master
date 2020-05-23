@@ -2,4 +2,29 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.jeecg.modules.external.mapper.ExInspectionItemsUseMapper">
 
+    <select id="selectListByPage" resultType="org.jeecg.modules.external.entity.ExInspectionItemsUse">
+        SELECT
+        *
+        FROM ex_inspection_items_use a
+        <where>
+            1 = 1
+        </where>
+        <if test="entity.itemType != null and entity.itemType != ''">
+            AND a.item_type = #{entity.itemType}
+        </if>
+        <if test="entity.departId != null and entity.departId != ''">
+            AND a.depart_id = #{entity.departId}
+        </if>
+        <if test="entity.departParentId != null and entity.departParentId != ''">
+            AND a.depart_parent_id = #{entity.departParentId}
+        </if>
+        <if test="entity.queryDateStart != null and entity.queryDateStart != ''">
+            AND a.create_time &gt;= #{entity.queryDateStart}
+        </if>
+        <if test="entity.queryDateEnd != null and entity.queryDateEnd != ''">
+            AND a.create_time &lt;= #{entity.queryDateEnd}
+        </if>
+        ORDER BY a.update_time desc,a.create_time desc
+    </select>
+
 </mapper>

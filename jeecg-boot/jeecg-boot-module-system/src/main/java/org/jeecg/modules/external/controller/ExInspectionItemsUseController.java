@@ -9,8 +9,11 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.system.query.QueryGenerator;
+import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.external.entity.ExInspectionItemsUse;
 import org.jeecg.modules.external.service.IExInspectionItemsUseService;
@@ -66,9 +69,10 @@ public class ExInspectionItemsUseController extends JeecgController<ExInspection
 								   @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
 								   @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
 								   HttpServletRequest req) {
-		QueryWrapper<ExInspectionItemsUse> queryWrapper = QueryGenerator.initQueryWrapper(exInspectionItemsUse, req.getParameterMap());
-		Page<ExInspectionItemsUse> page = new Page<ExInspectionItemsUse>(pageNo, pageSize);
-		IPage<ExInspectionItemsUse> pageList = exInspectionItemsUseService.page(page, queryWrapper);
+		Page<ExInspectionItemsUse> page = new Page<ExInspectionItemsUse>(pageNo,pageSize);
+		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		exInspectionItemsUse.setDepartParentId(sysUser.getDepartParentId());
+		IPage<ExInspectionItemsUse> pageList =exInspectionItemsUseService.selectList(page,exInspectionItemsUse);//
 		return Result.ok(pageList);
 	}
 	

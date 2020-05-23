@@ -2,6 +2,8 @@ package org.jeecg.modules.external.mapper;
 
 import java.util.List;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Param;
 import org.jeecg.modules.external.entity.ExInspectionItemsUse;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
@@ -14,4 +16,5 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  */
 public interface ExInspectionItemsUseMapper extends BaseMapper<ExInspectionItemsUse> {
 
+    IPage<ExInspectionItemsUse> selectListByPage(Page<ExInspectionItemsUse> page, @Param("entity") ExInspectionItemsUse entity);
 }

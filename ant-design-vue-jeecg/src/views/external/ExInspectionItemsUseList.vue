@@ -4,7 +4,26 @@
     <div class="table-page-search-wrapper">
       <a-form layout="inline" @keyup.enter.native="searchQuery">
         <a-row :gutter="24">
-
+          <a-col :md="6" :sm="8">
+            <a-form-item label="检验项目类型">
+              <j-dict-select-tag-expand v-model="queryParam.itemType" dictCode="inspection_item_type" placeholder="请选择检验项目类型"/>
+            </a-form-item>
+          </a-col>
+          <a-col :md="6" :sm="8">
+            <a-form-item label="提交日期">
+              <a-range-picker @change="dateChange" v-model="queryParam.queryDate"/>
+            </a-form-item>
+          </a-col>
+          <a-col :md="6" :sm="8" >
+            <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
+              <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
+              <a-button type="primary" @click="searchReset" icon="reload" style="margin-left: 8px">重置</a-button>
+              <a @click="handleToggleSearch" style="margin-left: 8px">
+                {{ toggleSearchStatus ? '收起' : '展开' }}
+                <a-icon :type="toggleSearchStatus ? 'up' : 'down'"/>
+              </a>
+            </span>
+          </a-col>
         </a-row>
       </a-form>
     </div>
@@ -89,12 +108,15 @@
   import { JeecgListMixin } from '@/mixins/JeecgListMixin'
   import ExInspectionItemsUseModal from './modules/ExInspectionItemsUseModal'
   import {initDictOptions, filterMultiDictText} from '@/components/dict/JDictSelectUtil'
+  import JDictSelectTagExpand from "@/components/dict/JDictSelectTagExpand"
+  import { filterObj } from '@/utils/util';
 
   export default {
     name: "ExInspectionItemsUseList",
     mixins:[JeecgListMixin],
     components: {
-      ExInspectionItemsUseModal
+      ExInspectionItemsUseModal,
+      JDictSelectTagExpand
     },
     data () {
       return {
@@ -179,7 +201,24 @@
             this.$set(this.dictOptions, 'itemType', res.result)
           }
         })
-      }
+      },
+      dateChange: function (value, dateString) {
+        this.queryParam.queryDateStart=dateString[0];
+        this.queryParam.queryDateEnd=dateString[1];
+      },
+      getQueryParams() {
+        //获取查询条件
+        let sqp = {}
+        if(this.superQueryParams){
+          sqp['superQueryParams']=encodeURI(this.superQueryParams)
+        }
+        var param = Object.assign(sqp, this.queryParam, this.isorter ,this.filters);
+        param.field = this.getQueryField();
+        param.pageNo = this.ipagination.current;
+        param.pageSize = this.ipagination.pageSize;
+        delete param.queryDate; //范围参数不传递后台，传后台会报错
+        return filterObj(param);
+      },
     }
   }
 </script>

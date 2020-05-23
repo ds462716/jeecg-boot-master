@@ -1,6 +1,8 @@
 package org.jeecg.modules.external.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.oConvertUtils;
@@ -94,5 +96,10 @@ public class ExInspectionItemsUseServiceImpl extends ServiceImpl<ExInspectionIte
             exInspectionItemsUse.setUseDetailList(exInspectionItemsUseDetailList);
         }
         return exInspectionItemsUse;
+    }
+
+    @Override
+    public IPage<ExInspectionItemsUse> selectList(Page<ExInspectionItemsUse> page, ExInspectionItemsUse exInspectionItemsUse) {
+        return baseMapper.selectListByPage(page,exInspectionItemsUse);
     }
 }
