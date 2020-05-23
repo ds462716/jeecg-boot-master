@@ -378,7 +378,7 @@
           this.popModal.title="详情";
           this.form.resetFields();
           this.model = Object.assign({}, record);
-          let fieldval = pick(this.model,'id','refId','itemType','refName');
+          let fieldval = pick(this.model,'refId','itemType','refName','inHospitalNo','outpatientNumber');
           let params = { id: record.id };
           getAction(this.url.init, params).then((res) => {
             if (res.success) {
@@ -398,7 +398,7 @@
           this.model = Object.assign({}, record);
           this.visible = true;
           this.$nextTick(() => {
-            this.form.setFieldsValue(pick(this.model,'refId','itemType','refName'))
+            this.form.setFieldsValue(pick(this.model,'refId','itemType','refName','inHospitalNo','outpatientNumber'))
           })
         }
       },
@@ -532,7 +532,7 @@
         this.close()
       },
       popupCallback(row){
-        this.form.setFieldsValue(pick(row,'refId','itemType','refName'))
+        this.form.setFieldsValue(pick(row,'refId','itemType','refName','inHospitalNo','outpatientNumber'))
       },
       initDictConfig(){
         initDictOptions('inspection_item_type').then((res) => {
@@ -588,6 +588,7 @@
           if(pdUsePackageDetailList!=null && pdUsePackageDetailList.length>0){
             this.showPackageTable = true;
             this.pdPackageTable.dataSource = [];
+            this.pdPackageTable.selectedRowKeys = [];
             for(let item of  pdUsePackageDetailList){
               let data = {
                 packageId:pdPdUsePackage.id,
@@ -607,7 +608,6 @@
                 productFlag:item.productFlag,
                 count:item.count
               }
-              console.log(data);
               this.pdPackageTable.dataSource.push(data);
             }
           }
@@ -806,7 +806,6 @@
       },
       // 点“选择产品”按钮后 调用 新增一行
       addrows(row){
-        console.log(row)
         let data = {
           productStockId:row.id,
           productId: row.productId,
