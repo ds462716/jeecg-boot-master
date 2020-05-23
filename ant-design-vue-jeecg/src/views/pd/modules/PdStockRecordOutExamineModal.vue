@@ -502,7 +502,7 @@
         this.loadData();
       },
       loadData() {
-        this.loading = true;
+        // this.loading = true;
         this.popModal.title="出库审核";
         this.departHandleSearch();  // 初始化部门列表 用于数据回显
 
@@ -510,6 +510,7 @@
 
         let params = { id: this.model.id };
 
+        this.pdStockRecordDetailTable.loading = true;
         getAction(this.url.init, params).then((res) => {
           if (res.success) {
             this.$nextTick(() => {
@@ -566,7 +567,8 @@
           if(res.code===510){
             this.$message.warning(res.message)
           }
-          this.loading = false;
+          // this.loading = false;
+          this.pdStockRecordDetailTable.loading = false;
         })
       },
       /** 关闭按钮 **/
@@ -575,28 +577,6 @@
       },
       /**打印按钮**/
       printBtn(flag){
-        // if(flag == "2"){
-        //   this.model.auditDate = this.form.getFieldValue("submitDate");
-        // }
-        // if(!this.model.auditDate){
-        //   this.model.auditDate = this.form.getFieldValue("submitDate");
-        // }
-        // this.model.totalSum = this.totalSum;
-        // this.model.outTotalPrice = this.outTotalPrice;
-        // this.model.inTotalPrice = this.inTotalPrice;
-        // let values = this.pdStockRecordDetailTable.dataSource;
-        // // 定数包相关
-        // if(this.pdPackageTable.dataSource.length > 0){
-        //   for (let table of this.pdPackageTable.dataSource){
-        //     for (let item of table.pdPackageRecordDetailList){
-        //       values.push(item);
-        //     }
-        //   }
-        // }
-        // this.model.pdStockRecordDetailList = values;
-        // this.$refs.pdStockRecordOutPrintModal.show(this.model);
-        // this.$refs.pdStockRecordOutPrintModal.title = this.stockOutText + "出库单";
-
         let recordId = this.model.id;
         if(!recordId){
           this.$message.warning("参数不正确，请重新打印！");
