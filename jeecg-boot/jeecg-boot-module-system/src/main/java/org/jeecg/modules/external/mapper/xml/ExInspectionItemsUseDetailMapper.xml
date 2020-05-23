@@ -94,4 +94,23 @@
         </if>
     </select>
 
+    <select id="selectListByCT" resultType="org.jeecg.modules.external.entity.ExInspectionItemsUseDetail">
+        SELECT
+        *
+        FROM ex_inspection_items_use_detail a
+        <where>
+            1 = 1
+        </where>
+        <if test="packageId != null and packageId != ''">
+            AND a.package_id = #{packageId}
+        </if>
+        <if test="departId != null and departId != ''">
+            AND a.depart_id = #{departId}
+        </if>
+        <if test="departParentId != null and departParentId != ''">
+            AND a.depart_parent_id = #{departParentId}
+        </if>
+        order by a.create_time desc, a.update_time desc
+    </select>
+
 </mapper>

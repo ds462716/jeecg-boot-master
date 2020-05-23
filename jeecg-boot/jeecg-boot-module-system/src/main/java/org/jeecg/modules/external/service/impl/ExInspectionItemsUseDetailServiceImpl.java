@@ -3,6 +3,7 @@ package org.jeecg.modules.external.service.impl;
 import org.jeecg.modules.external.entity.ExInspectionItemsUseDetail;
 import org.jeecg.modules.external.mapper.ExInspectionItemsUseDetailMapper;
 import org.jeecg.modules.external.service.IExInspectionItemsUseDetailService;
+import org.jeecg.modules.pd.entity.PdUsePackage;
 import org.springframework.stereotype.Service;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -21,5 +22,10 @@ public class ExInspectionItemsUseDetailServiceImpl extends ServiceImpl<ExInspect
     @Override
     public List<ExInspectionItemsUseDetail> selectList(ExInspectionItemsUseDetail exInspectionItemsUseDetail) {
         return this.baseMapper.selectList(exInspectionItemsUseDetail);
+    }
+
+    @Override
+    public List<PdUsePackage> selectListByCT(ExInspectionItemsUseDetail exInspectionItemsUseDetail) {
+        return baseMapper.selectListByCT(exInspectionItemsUseDetail);
     }
 }
