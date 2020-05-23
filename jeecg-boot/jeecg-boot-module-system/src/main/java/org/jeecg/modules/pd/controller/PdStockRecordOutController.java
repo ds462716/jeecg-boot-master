@@ -138,9 +138,16 @@ public class PdStockRecordOutController {
      */
     @PostMapping(value = "/add")
     public Result<?> add(@RequestBody PdStockRecord pdStockRecord) {
-        List<PdStockRecord> list = pdStockRecordService.queryList(pdStockRecord,PdConstant.RECODE_TYPE_2);
-        if(CollectionUtils.isNotEmpty(list)){
-            return Result.error("出库单已被保存或提交，不能保存草稿！");
+        if(oConvertUtils.isEmpty(pdStockRecord.getId())){
+            List<PdStockRecord> list = pdStockRecordService.queryList(pdStockRecord,PdConstant.RECODE_TYPE_2);
+            if(CollectionUtils.isNotEmpty(list)){
+                return Result.error("出库单已被保存或提交，不能保存草稿！");
+            }
+        }else{
+            PdStockRecord entity = pdStockRecordService.getById(pdStockRecord.getId());
+            if(entity != null && PdConstant.SUBMIT_STATE_2.equals(entity.getSubmitStatus())){
+                return Result.error("出库单已被提交，不能保存草稿！");
+            }
         }
 
         String recordId = pdStockRecordService.saveMain(pdStockRecord, pdStockRecord.getPdStockRecordDetailList(), PdConstant.RECODE_TYPE_2);
