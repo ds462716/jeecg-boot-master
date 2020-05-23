@@ -333,9 +333,6 @@
           }
         })
       },
-      onSelectChange (selectedRowKeys) {
-        this.selectedRowKeys = selectedRowKeys;
-      },
 
      /* onSelect(record, selected){
         if(selected == true ){
