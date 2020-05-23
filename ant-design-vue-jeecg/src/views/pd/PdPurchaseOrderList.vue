@@ -9,26 +9,22 @@
               <a-input placeholder="请输入申购编号" v-model="queryParam.orderNo"></a-input>
             </a-form-item>
           </a-col>
-          <!--<a-col :md="6" :sm="8">
-            <a-form-item label="申购科室">
-              <a-input placeholder="请输入申购科室名称" v-model="queryParam.deptName"></a-input>
+          <a-col :md="6" :sm="8">
+            <a-form-item label="审核状态">
+              <a-select v-model="queryParam.auditStatus" placeholder="请选择审核状态">
+                <a-select-option value="1">待审核</a-select-option>
+                <a-select-option value="2">审核通过</a-select-option>
+                <a-select-option value="3">已驳回</a-select-option>
+              </a-select>
             </a-form-item>
-          </a-col>-->
+          </a-col>
           <a-col  :md="6" :sm="8">
             <a-form-item label="申购日期">
               <a-range-picker @change="rejectedDateChange" v-model="queryParam.queryDate"/>
             </a-form-item>
           </a-col>
           <template :md="6" v-if="toggleSearchStatus">
-            <a-col :md="6" :sm="8">
-              <a-form-item label="审核状态">
-                <a-select v-model="queryParam.auditStatus" placeholder="请选择审核状态">
-                  <a-select-option value="1">待审核</a-select-option>
-                  <a-select-option value="2">审核通过</a-select-option>
-                  <a-select-option value="3">已驳回</a-select-option>
-                </a-select>
-              </a-form-item>
-            </a-col>
+
           </template>
           <a-col :md="6" :sm="8">
             <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">

@@ -340,8 +340,12 @@ public class PdPurchaseOrderController {
 	 public boolean sendMsg(PdPurchaseOrderPage purchaseOrderPage) {
 		 Map<String, Object> map = new HashMap<>();
 		 LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
-		 List<String> userIdList =pdDepartService.findMenuUser(sysUser.getCurrentDepartId(),PdConstant.AUDIT_MENU_3);
-
+		 SysDepart sysDepart=sysDepartService.getById(sysUser.getCurrentDepartId());
+		 String departId=sysUser.getCurrentDepartId();
+		 if(!sysDepart.getParentId().equals(sysDepart.getDepartParentId())){
+			 departId=sysDepart.getParentId();
+		 }
+		 List<String> userIdList =pdDepartService.findMenuUser(departId,PdConstant.AUDIT_MENU_3);
 		 String url = "";
 		 QueryWrapper<SysPermission> queryWrapper = new QueryWrapper<SysPermission>();
 		 queryWrapper.eq("name",PdConstant.AUDIT_MENU_3);

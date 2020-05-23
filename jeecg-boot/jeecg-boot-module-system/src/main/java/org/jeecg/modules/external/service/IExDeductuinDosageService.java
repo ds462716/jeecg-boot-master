@@ -1,7 +1,9 @@
 package org.jeecg.modules.external.service;
 
-import org.jeecg.modules.external.entity.ExDeductuinDosage;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
+import org.jeecg.modules.external.entity.ExDeductuinDosage;
 import org.jeecg.modules.pd.entity.PdProductStock;
 
 /**
@@ -12,6 +14,7 @@ import org.jeecg.modules.pd.entity.PdProductStock;
  */
 public interface IExDeductuinDosageService extends IService<ExDeductuinDosage> {
 
+    IPage<ExDeductuinDosage> selectList(Page<ExDeductuinDosage> pageList, ExDeductuinDosage deductuinDosage);
 
     void saveExdeuctuinDosage(PdProductStock stock);
 

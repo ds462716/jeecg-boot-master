@@ -4,7 +4,7 @@
     <div class="table-page-search-wrapper">
       <a-form layout="inline" @keyup.enter.native="searchQuery">
         <a-row :gutter="24">
-              <a-col :md="6" :sm="8">
+             <!-- <a-col :md="6" :sm="8">
                 <a-form-item label="科室">
                   <a-select
                     mode="multiple"
@@ -24,7 +24,7 @@
                   </a-select>
 
                 </a-form-item>
-              </a-col>
+              </a-col>-->
               <a-col :md="6" :sm="8">
                 <a-form-item label="产品名称">
                   <a-input placeholder="请输入产品名称" v-model="queryParam.productName"></a-input>
@@ -112,12 +112,12 @@
           {
             title:'科室',
             align:"center",
-            dataIndex: 'departId'
+            dataIndex: 'departName'
           },
           {
             title:'产品名称',
             align:"center",
-            dataIndex: 'productId'
+            dataIndex: 'productName'
           },
           {
             title:'产品有效期',
@@ -141,29 +141,22 @@
             }
           },
           {
-            title:'病人姓名',
+            title:'扣减类型',
             align:"center",
-            dataIndex: 'patientName'
-          },
-          {
-            title:'住院号',
-            align:"center",
-            dataIndex: 'inHospitalNo'
-          },
-          {
-            title:'门诊号',
-            align:"center",
-            dataIndex: 'outpatientNumber'
-          },
-          {
-            title:'扣减来源',
-            align:"center",
-            dataIndex: 'deductuinType'
+            dataIndex: 'deductuinType',
+            customRender:(text)=>{
+              if(!text){
+                return ''
+              }else{
+                return filterMultiDictText(this.dictOptions['deductuinType'], text+"")
+              }
+            }
+
           },
           {
             title:'规格单位',
             align:"center",
-            dataIndex: 'specUnitId'
+            dataIndex: 'specUnitName'
           },
           {
             title:'规格数量',
@@ -205,7 +198,9 @@
           importExcelUrl: "pd/exDeductuinDosage/importExcel",
           queryDepart: "/pd/pdDepart/queryListTree",
         },
-        dictOptions:{},
+        dictOptions:{
+          deductuinType:[],
+        },
       }
     },
     computed: {
@@ -214,6 +209,22 @@
       }
     },
     methods: {
+      loadData(arg) {
+
+        //加载数据 若传入参数1则加载第一页的内容
+        if (arg === 1) {
+          this.ipagination.current = 1;
+        }
+        let params = this.getQueryParams();//查询条件
+        this.loading = true;
+        getAction(this.url.list, params).then((res) => {
+          if (res.success) {
+            this.dataSource = res.result.records;
+            this.ipagination.total = res.result.total;
+          }
+          this.loading = false;
+        })
+      },
       //科室查询start
       departHandleSearch(value) {
         getAction(this.url.queryDepart,{departName:value}).then((res)=>{
@@ -221,6 +232,7 @@
             this.cmsFailed(res.message);
           }
           this.departData = res.result;
+
         })
       },
       //科室查询end
@@ -229,6 +241,11 @@
 
 
       initDictConfig(){
+        initDictOptions('deductuin_type').then((res) => {
+          if (res.success) {
+            this.$set(this.dictOptions, 'deductuinType', res.result)
+          }
+        })
       }
     }
   }

@@ -1,15 +1,18 @@
 package org.jeecg.modules.external.controller;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.system.base.controller.JeecgController;
-import org.jeecg.common.system.query.QueryGenerator;
+import org.jeecg.common.system.vo.LoginUser;
+import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.external.entity.ExDeductuinDosage;
 import org.jeecg.modules.external.service.IExDeductuinDosageService;
+import org.jeecg.modules.pd.service.IPdDepartService;
+import org.jeecg.modules.system.entity.SysDepart;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
@@ -17,8 +20,9 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Arrays;
+import java.util.List;
 
- /**
+/**
  * @Description: 试剂用量扣减记录表
  * @Author: jiangxz
  * @Date:   2020-05-22
@@ -31,7 +35,8 @@ import java.util.Arrays;
 public class ExDeductuinDosageController extends JeecgController<ExDeductuinDosage, IExDeductuinDosageService> {
 	@Autowired
 	private IExDeductuinDosageService exDeductuinDosageService;
-	
+    @Autowired
+    private IPdDepartService pdDepartService;
 	/**
 	 * 分页列表查询
 	 *
@@ -46,9 +51,20 @@ public class ExDeductuinDosageController extends JeecgController<ExDeductuinDosa
 								   @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
 								   @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
 								   HttpServletRequest req) {
-		QueryWrapper<ExDeductuinDosage> queryWrapper = QueryGenerator.initQueryWrapper(exDeductuinDosage, req.getParameterMap());
 		Page<ExDeductuinDosage> page = new Page<ExDeductuinDosage>(pageNo, pageSize);
-		IPage<ExDeductuinDosage> pageList = exDeductuinDosageService.page(page, queryWrapper);
+		//IPage<ExDeductuinDosage> pageList = exDeductuinDosageService.page(page, queryWrapper);
+		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		exDeductuinDosage.setDepartParentId(sysUser.getDepartParentId());
+
+        if(oConvertUtils.isNotEmpty(exDeductuinDosage.getDepartIds()) && !"undefined".equals(exDeductuinDosage.getDepartIds())){
+            exDeductuinDosage.setDepartIdList(Arrays.asList(exDeductuinDosage.getDepartIds().split(",")));
+        }else{
+            //查询科室下所有下级科室的ID
+            SysDepart sysDepart=new SysDepart();
+            List<String> departList=pdDepartService.selectListDepart(sysDepart);
+            exDeductuinDosage.setDepartIdList(departList);
+        }
+		IPage<ExDeductuinDosage> pageList =exDeductuinDosageService.selectList(page,exDeductuinDosage);//
 		return Result.ok(pageList);
 	}
 	

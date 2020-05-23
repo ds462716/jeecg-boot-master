@@ -75,6 +75,9 @@ public class PdPurchaseOrderMerge extends BaseEntity {
     /*合并申购订单orderNos*/
     @TableField(exist = false)
     private String orderNos;
+	/*申购订单orderNo*/
+	@TableField(exist = false)
+	private String orderNo;
 	/*按钮操作类型  1:批量审核    2：合并并提交   3：批量拒绝*/
 	@TableField(exist = false)
 	private String oprtSource;

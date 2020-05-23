@@ -1,6 +1,8 @@
 package org.jeecg.modules.external.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import org.apache.ibatis.annotations.Param;
 import org.jeecg.modules.external.entity.ExDeductuinDosage;
 
 /**
@@ -10,5 +12,7 @@ import org.jeecg.modules.external.entity.ExDeductuinDosage;
  * @Version: V1.0
  */
 public interface ExDeductuinDosageMapper extends BaseMapper<ExDeductuinDosage> {
+
+    Page<ExDeductuinDosage> selectListByPage(Page<ExDeductuinDosage> page, @Param("entity") ExDeductuinDosage entity);
 
 }

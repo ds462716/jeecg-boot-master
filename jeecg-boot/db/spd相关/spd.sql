@@ -508,3 +508,15 @@ CREATE TABLE `ex_deductuin_dosage` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+-- add by mcb 2020年5月23日16:30:23 试剂用量查询
+INSERT INTO `sys_permission` VALUES ('1263760305687826434', '1218785597982052353', '试剂用量查询', '/pd/ExDeductuinDosage', 'pd/query/ExDeductuinDosageQueryList', NULL, NULL, 1, '0', NULL, '1', 6.00, 0, NULL, 1, 1, 0, 0, NULL, 'admin', '2020-5-22 17:15:11', 'admin', '2020-5-22 17:15:29', 0, 0, '1', 0);
+
+-- add by mcb 2020年5月23日16:30:23 合并采购订单明细增加字段
+ALTER TABLE `pd_purchase_order_merge_detail`
+ADD COLUMN `purchase_price`  decimal(20,4)   NULL  COMMENT '申购单价' AFTER `order_no`,
+ADD COLUMN `price`  decimal(20,4)   NULL COMMENT '价格' AFTER `purchase_price`;
+
+-- add by mcb 2020年5月23日16:30:23 增加扣減类型
+INSERT INTO `sys_dict` VALUES ('1264129484446199809', '扣減类型', 'deductuin_type', '0:自动扣减   1:人工扣减', 0, 'admin', '2020-5-23 17:42:10', NULL, '2020-5-23 17:42:10', 0);
+INSERT INTO `sys_dict_item` VALUES ('1264129617623740417', '1264129484446199809', '自动扣减', '0', '', 1, 1, 'admin', '2020-5-23 17:42:42', NULL, '2020-5-23 17:42:42');
+INSERT INTO `sys_dict_item` VALUES ('1264129658933440514', '1264129484446199809', '人工扣减', '1', '', 2, 1, 'admin', '2020-5-23 17:42:52', NULL, '2020-5-23 17:42:52');

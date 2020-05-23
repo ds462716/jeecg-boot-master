@@ -1,5 +1,6 @@
 package org.jeecg.modules.external.service.impl;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.constant.PdConstant;
@@ -24,6 +25,14 @@ public class ExDeductuinDosageServiceImpl extends ServiceImpl<ExDeductuinDosageM
     @Autowired
     private ExDeductuinDosageMapper deductuinDosageMapper;
 
+
+    @Override
+    public Page<ExDeductuinDosage> selectList(Page<ExDeductuinDosage> page, ExDeductuinDosage deductuinDosage) {
+        return deductuinDosageMapper.selectListByPage(page,deductuinDosage);
+    }
+
+
+
     /**
      * 人工扣减试剂用量记录
      * @param stock
@@ -41,7 +50,7 @@ public class ExDeductuinDosageServiceImpl extends ServiceImpl<ExDeductuinDosageM
       deductuinDosage.setPatientName("");//病人姓名
       deductuinDosage.setInHospitalNo("");//住院号
       deductuinDosage.setOutpatientNumber("");//门诊号
-      deductuinDosage.setDeductuinType(PdConstant.DEDUCTUIN_TYPE_1);//扣减来源   1:SPD系统
+      deductuinDosage.setDeductuinType(PdConstant.DEDUCTUIN_TYPE_1);
       deductuinDosage.setSpecUnitId(stock.getSpecUnitId());  //规格单位
       deductuinDosage.setSpecQuantity(stock.getSpecQuantity());//规格数量
       deductuinDosage.setSpecNum(stock.getProductNum());//扣减规格数量
@@ -67,7 +76,7 @@ public class ExDeductuinDosageServiceImpl extends ServiceImpl<ExDeductuinDosageM
         deductuinDosage.setPatientName("");//病人姓名
         deductuinDosage.setInHospitalNo("");//住院号
         deductuinDosage.setOutpatientNumber("");//门诊号
-        deductuinDosage.setDeductuinType(PdConstant.DEDUCTUIN_TYPE_0);//扣减来源   1:HIS系统
+        deductuinDosage.setDeductuinType(PdConstant.DEDUCTUIN_TYPE_0);
         deductuinDosage.setSpecUnitId(stock.getSpecUnitId());  //规格单位
         deductuinDosage.setSpecQuantity(stock.getSpecQuantity());//规格数量
         deductuinDosage.setSpecNum(stock.getProductNum());//扣减规格数量

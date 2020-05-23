@@ -41,14 +41,19 @@
         LEFT JOIN sys_user b ON b.id = a.merge_by
     </sql>
 
+    <!--采购订单-->
+    <sql id="pdPurchaseOrderJoins">
+       LEFT JOIN pd_purchase_order d ON d.merge_order_no = a.merge_order_no
+    </sql>
+
     <!-- 列表查询 -->
     <select id="selectList" resultType="org.jeecg.modules.pd.entity.PdPurchaseOrderMerge">
-        SELECT
+        SELECT  DISTINCT
         <include refid="PdPurchaseOrderMergeColumns"/>,
         <include refid="pdSysUserColumns"/>,
         <include refid="sysDepartColumns"/>
         FROM pd_purchase_order_merge a
-        <include refid="PdPurchaseOrderMergeJoins"/>
+        <include refid="pdPurchaseOrderJoins"/>
         <include refid="pdSysUserJoins"/>
         <include refid="sysDepartJoins"/>
         <where>
@@ -56,7 +61,12 @@
             <if test="id != null and id != ''">
                 AND a.id = #{id}
             </if>
-
+            <if test="mergeOrderNo != null and mergeOrderNo != ''">
+                AND a.merge_order_no   LIKE concat('%',#{mergeOrderNo},'%')
+            </if>
+            <if test="orderNo != null and orderNo != ''">
+                AND d.order_no   LIKE concat('%',#{orderNo},'%')
+            </if>
             <if test="auditStatus != null and auditStatus != ''">
                 AND a.audit_status = #{auditStatus}
             </if>

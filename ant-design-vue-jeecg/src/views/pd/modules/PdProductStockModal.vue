@@ -154,6 +154,15 @@
           jCount:{},//近效期数量
         },
         confirmLoading: false,
+        disableSubmit:false,
+        labelCol: {
+          xs: { span: 24 },
+          sm: { span: 5 },
+        },
+        wrapperCol: {
+          xs: { span: 24 },
+          sm: { span: 16 },
+        },
         // 表头
         columns: [
           {

@@ -16,6 +16,8 @@
         a.del_flag,
         a.arrival_num,
         a.supplier_id,
+        a.purchase_price,
+        a.price,
         a.remarks
 	</sql>
 
@@ -71,6 +73,20 @@
 		WHERE   a.del_flag =#{DEL_FLAG_NORMAL}
 		<if test="mergeOrderNo != null and mergeOrderNo != ''">
 			AND a.merge_order_no = #{mergeOrderNo}
+		</if>
+		<if test="productName != null and productName != ''">
+			AND (
+			c.name LIKE concat('%',#{productName},'%')
+			or c.py LIKE concat('%',#{productName},'%')
+			or c.wb LIKE concat('%',#{productName},'%')
+			or c.bname LIKE concat('%',#{productName},'%')
+			or c.bpy LIKE concat('%',#{productName},'%')
+			or c.bwb LIKE concat('%',#{productName},'%')
+			or c.zdy LIKE concat('%',#{productName},'%')
+			)
+		</if>
+		<if test="orderNo != null and orderNo != ''">
+			AND a.order_no LIKE concat('%',#{orderNo},'%')
 		</if>
 		ORDER BY a.create_time DESC
 	</select>

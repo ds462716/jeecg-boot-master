@@ -10,6 +10,7 @@ import lombok.Data;
 import org.jeecgframework.poi.excel.annotation.Excel;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 /**
@@ -56,13 +57,17 @@ public class PdPurchaseOrderMergeDetail extends BaseEntity {
 	/**到货数量*/
 	@Excel(name = "到货数量", width = 15)
 	private Double arrivalNum;
+	/**申购单价*/
+	@Excel(name = "申购单价", width = 15)
+	private BigDecimal purchasePrice;
+	/**价格*/
+	@Excel(name = "价格", width = 15)
+	private BigDecimal price;
 	/**供应商ID*/
 	private String supplierId;
 	/**备注*/
 	@Excel(name = "备注", width = 15)
 	private String remarks;
-
-
 	@TableField(exist = false)
 	@Excel(name = "产品名称", width = 15)
 	private String productName;//产品名称

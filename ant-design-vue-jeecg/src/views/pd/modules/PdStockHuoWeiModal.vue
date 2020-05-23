@@ -86,6 +86,7 @@
         notFoundContent:"未找到内容",
         model: {},
         formData:[],
+        disableSubmit:false,
         labelCol: {
           xs: { span: 24 },
           sm: { span: 5 },

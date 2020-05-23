@@ -34,7 +34,7 @@
               <a-input disabled="disabled" v-decorator="[ 'deptName', validatorRules.deptName]" placeholder="请输入库房名称"></a-input>
             </a-form-item>
           </a-col>
-          <a-col :span="12">
+         <!-- <a-col :span="12">
             <a-form-item label="申购总数量" :labelCol="labelCol" :wrapperCol="wrapperCol">
               <a-input-number disabled="disabled" v-decorator="[ 'totalNum', validatorRules.totalNum]"  style="width: 100%"/>
             </a-form-item>
@@ -43,7 +43,7 @@
             <a-form-item label="申购总金额" :labelCol="labelCol" :wrapperCol="wrapperCol">
               <a-input-number disabled="disabled" v-decorator="[ 'totalPrice', validatorRules.totalPrice]" style="width: 100%"/>
             </a-form-item>
-          </a-col>
+          </a-col>-->
         </a-row>
         <pd-purchase-detail-add-modal  ref="PdPurchaseDetailAddModal" @ok="modalFormOk"></pd-purchase-detail-add-modal>
       </a-form>
@@ -78,6 +78,10 @@
                 @valueChange="valueChange"
                 style="text-overflow: ellipsis;"
               />
+              <a-row style="margin-top:10px;text-align: right;padding-right: 5%">
+                <span style="font-weight: bold;font-size: large;padding-right: 5%">总数量：{{this.model.totalNum }}</span>
+                <span style="font-weight: bold;font-size: large">总金额：{{ this.model.totalPrice }}</span>
+              </a-row>
             </a-tab-pane>
           </a-tabs>
         </a-card>
