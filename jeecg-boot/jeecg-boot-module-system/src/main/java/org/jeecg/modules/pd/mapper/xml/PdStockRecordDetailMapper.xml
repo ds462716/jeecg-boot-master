@@ -30,7 +30,8 @@
 		a.update_time,
 		a.spec_unit_id,
 		a.spec_quantity,
-        a.registration
+        a.registration,
+ 		a.ref_bar_code
 	</sql>
 
 	<sql id="PdStockRecordDetailJoins">

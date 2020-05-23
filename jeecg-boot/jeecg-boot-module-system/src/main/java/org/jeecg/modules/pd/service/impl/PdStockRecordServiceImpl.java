@@ -15,6 +15,7 @@ import org.jeecg.modules.message.util.PushMsgUtil;
 import org.jeecg.modules.pd.entity.*;
 import org.jeecg.modules.pd.mapper.*;
 import org.jeecg.modules.pd.service.*;
+import org.jeecg.modules.pd.util.SnowUtils;
 import org.jeecg.modules.pd.util.UUIDUtil;
 import org.jeecg.modules.pd.vo.PdGoodsAllocationPage;
 import org.jeecg.modules.system.entity.SysDepart;
@@ -59,6 +60,8 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
     @Autowired
     private IPdProductStockTotalService pdProductStockTotalService;
     @Autowired
+    private IPdProductStockService pdProductStockService;
+    @Autowired
     private IPdStockLogService pdStockLogService;
     @Autowired
     private IPdStockRecordDetailService pdStockRecordDetailService;
@@ -91,7 +94,8 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void saveMain(PdStockRecord pdStockRecord, List<PdStockRecordDetail> pdStockRecordDetailList, String recordType) {
+    public String saveMain(PdStockRecord pdStockRecord, List<PdStockRecordDetail> pdStockRecordDetailList, String recordType) {
+        String recordId = "";
         // 修改前先删除数据
         if (oConvertUtils.isNotEmpty(pdStockRecord.getId())) {
             this.delMain(pdStockRecord.getId());
@@ -101,13 +105,14 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
             pdStockRecord.setRecordType(PdConstant.RECODE_TYPE_1); // 入库
             pdStockRecord.setSubmitStatus(PdConstant.SUBMIT_STATE_1); // 待提交
 //            pdStockRecord.setAuditStatus(PdConstant.AUDIT_STATE_1);   // 待审核
-            this.saveInStockRecord(pdStockRecord, pdStockRecordDetailList, "");
+            recordId = this.saveInStockRecord(pdStockRecord, pdStockRecordDetailList, "");
         } else if (PdConstant.RECODE_TYPE_2.equals(recordType)) {
             pdStockRecord.setRecordType(PdConstant.RECODE_TYPE_2); // 出库
             pdStockRecord.setSubmitStatus(PdConstant.SUBMIT_STATE_1); // 待提交
 //            pdStockRecord.setAuditStatus(PdConstant.AUDIT_STATE_1);   // 待审核
-            this.saveOutStockRecord(pdStockRecord, pdStockRecordDetailList);
+            recordId = this.saveOutStockRecord(pdStockRecord, pdStockRecordDetailList);
         }
+        return recordId;
     }
 
     @Override
@@ -238,7 +243,7 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
         }
 
         if(CollectionUtils.isNotEmpty(newDetailList)){
-            //关-是否允许出入库时可修改进价和出价
+            //开关-是否允许出入库时可修改进价和出价
             PdOnOff query = new PdOnOff();
             LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
             query.setDepartParentId(sysUser.getDepartParentId());
@@ -259,6 +264,11 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
                     detail.setImportNo(pdStockRecord.getApplyNo());
                 } else if (PdConstant.OUT_TYPE_3.equals(outType)) {
                     detail.setImportNo(pdStockRecord.getAllocationNo());
+                }
+
+                if (oConvertUtils.isEmpty(outType)) {
+                    // 从供货商入库 则生成REF码
+                    detail.setRefBarCode(SnowUtils.bigKey());
                 }
                 pdStockRecordDetailMapper.insert(detail);
                 // 修改产品进价
@@ -413,14 +423,13 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
             pdStockRecord.setPdStockRecordDetailList(pdStockRecordDetailList);
 
             if (PdConstant.IN_TYPE_1.equals(inType)) {  //正常入库
-                // 紧急产品处理：
                 if (CollectionUtils.isNotEmpty(pdStockRecordDetailList)) {
                     Set<String> setIds = new HashSet<>();
 
                     for (PdStockRecordDetail detail : pdStockRecordDetailList) {
                         Double sum = 0D;
                         PdProduct pdProduct = pdProductService.getById(detail.getProductId());
-
+                        // 紧急产品处理：
                         if(PdConstant.IS_URGENT_0.equals(pdProduct.getIsUrgent())){
 
                             StringBuilder setId = new StringBuilder();
@@ -685,6 +694,19 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
 
         }
 
+
+        //库区库位下拉框
+        pdStockRecord.setGoodsAllocationList(goodsAllocationList);
+
+        return pdStockRecord;
+    }
+
+    @Override
+    public PdStockRecord getOnOff() {
+        PdStockRecord pdStockRecord = new PdStockRecord();
+
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+
         PdOnOff query = new PdOnOff();
         query.setDepartParentId(sysUser.getDepartParentId());
         //开关-是否允许入库量大于订单量   1-允许入库量大于订单量；0-不允许入库量大于订单量
@@ -748,10 +770,6 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
         }else{
             pdStockRecord.setStockInText("");
         }
-
-        //库区库位下拉框
-        pdStockRecord.setGoodsAllocationList(goodsAllocationList);
-
         return pdStockRecord;
     }
 
