@@ -35,7 +35,8 @@ public class HisChargeServiceImpl extends ServiceImpl<HisChargeMapper, HisCharge
 	 */
 	@Override
 	public Page<HisChargeInf> selectList(Page<HisChargeInf> page, HisChargeInf hisChargeInf) {
-		return page.setRecords(hisChargeMapper.selectList(hisChargeInf));
+		return hisChargeMapper.selectListByPage(page,hisChargeInf);
+		//return page.setRecords(hisChargeMapper.selectList(hisChargeInf));
 	}
 
 

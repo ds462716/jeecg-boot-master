@@ -68,6 +68,7 @@ public class LisInspectionItemsTaskJob implements Job {
                     PdUsePackage pdUsePackage = pdUsePackageService.getOne(query);
                     //不存在或沒有配置檢驗用量明細
                     if(pdUsePackage!=null){
+                        items.setPackageId(pdUsePackage.getId());
                         PdUsePackageDetail detail=new PdUsePackageDetail();
                         detail.setPackageId(pdUsePackage.getId());
                         List<PdUsePackageDetail> pdUsePackageDetails = pdUsePackageDetailService.queryPdUsePackageList(detail);

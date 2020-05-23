@@ -49,6 +49,31 @@
 	</select>
 
 
+	<!-- 列表查询 -->
+	<select id="selectListByPage" resultType="org.jeecg.modules.pd.entity.HisDepartInf">
+		SELECT
+		<include refid="HisDepartInfColumns"/>,
+		<include refid="sysDepartColumns"/>
+		FROM ex_his_depart_inf a
+		<include refid="sysDepartJoins"/>
+		where 1=1
+		AND	a.del_flag =#{entity.DEL_FLAG_NORMAL}
+		<if test="entity.fsfKsbh != null and entity.fsfKsbh != ''">
+			AND a.fsf_ksbh = #{entity.fsfKsbh}
+		</if>
+		<if test="entity.fsfKsmc != null and entity.fsfKsmc != ''">
+			AND a.fsf_ksmc LIKE concat('%',#{entity.fsfKsmc},'%')
+		</if>
+		<if test="entity.departName != null and entity.departName != ''">
+			AND a.fsf_ksmc LIKE concat('%',#{entity.departName},'%')
+		</if>
+		<if test="entity.spdDepartId != null and entity.spdDepartId != ''">
+			AND a.spd_depart_id = #{entity.spdDepartId}
+		</if>
+		order by create_time desc
+	</select>
+
+
 	<!-- 查询 -->
 	<select id="queryHisDepart" resultType="org.jeecg.modules.pd.entity.HisDepartInf">
 		SELECT

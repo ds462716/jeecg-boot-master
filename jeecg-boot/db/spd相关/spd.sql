@@ -520,3 +520,7 @@ ADD COLUMN `price`  decimal(20,4)   NULL COMMENT '价格' AFTER `purchase_price`
 INSERT INTO `sys_dict` VALUES ('1264129484446199809', '扣減类型', 'deductuin_type', '0:自动扣减   1:人工扣减', 0, 'admin', '2020-5-23 17:42:10', NULL, '2020-5-23 17:42:10', 0);
 INSERT INTO `sys_dict_item` VALUES ('1264129617623740417', '1264129484446199809', '自动扣减', '0', '', 1, 1, 'admin', '2020-5-23 17:42:42', NULL, '2020-5-23 17:42:42');
 INSERT INTO `sys_dict_item` VALUES ('1264129658933440514', '1264129484446199809', '人工扣减', '1', '', 2, 1, 'admin', '2020-5-23 17:42:52', NULL, '2020-5-23 17:42:52');
+
+-- add by mcb 2020年5月23日16:30:23 增加检验项目ID
+ALTER TABLE `ex_inspection_items`
+ADD COLUMN `package_id`  varchar(32) CHARACTER SET utf8 COLLATE utf8_general_ci NULL COMMENT '检验项目id' AFTER `remarks`;

@@ -410,6 +410,7 @@ public class PdProductStockTotalController {
 		 LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
 		 stockTotalPage.setDepartParentId(sysUser.getDepartParentId());
 		 stockTotalPage.setCurrentDepartId(sysUser.getCurrentDepartId());
+		 stockTotalPage.setFilterType("1");//如果传值，则过滤库存数量为0的
 		String code= stockTotalPage.getCode();
 		 if(StringUtils.isNotEmpty(code) && stockTotalPage.getCode().equals("2")){ //如果是申领单过来的话
 			 //获取父级部门ID

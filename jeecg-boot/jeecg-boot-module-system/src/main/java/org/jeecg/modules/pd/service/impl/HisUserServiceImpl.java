@@ -34,7 +34,8 @@ public class HisUserServiceImpl extends ServiceImpl<HisUserMapper, HisUserInf> i
 	 */
 	@Override
 	public Page<HisUserInf> selectList(Page<HisUserInf> page, HisUserInf hisUserInf) {
-		return page.setRecords(hisUserMapper.selectList(hisUserInf));
+		return hisUserMapper.selectListByPage(page,hisUserInf);
+		//return page.setRecords(hisUserMapper.selectList(hisUserInf));
 	}
 
 

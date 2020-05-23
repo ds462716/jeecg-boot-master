@@ -144,6 +144,9 @@ public class ExInspectionItems{
 	@Excel(name = "所属部门", width = 15)
     @ApiModelProperty(value = "所属部门")
     private String sysOrgCode;
+
+    /**检验项目ID*/
+    private String packageId;
     /**备注*/
     @Excel(name = "备注", width = 15)
     private String remarks;

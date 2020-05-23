@@ -53,6 +53,24 @@
 	</select>
 
 
+	<!-- 列表查询 -->
+	<select id="selectListByPage" resultType="org.jeecg.modules.pd.entity.HisChargeInf">
+		SELECT
+		<include refid="HisChargeInfColumns"/>
+		FROM ex_his_charge_inf a
+		where 1=1 AND	a.del_flag =#{entity.DEL_FLAG_NORMAL}
+		<if test="entity.id != null and entity.id != ''">
+			AND a.id = #{entity.id}
+		</if>
+		<if test="entity.fsfXmbh != null and entity.fsfXmbh != ''">
+			AND a.fsf_xmbh LIKE concat('%',#{entity.fsfXmbh},'%')
+		</if>
+		<if test="entity.fsfXmmc != null and entity.fsfXmmc != ''">
+			AND a.fsf_xmmc LIKE concat('%',#{entity.fsfXmmc},'%')
+		</if>
+	</select>
+
+
 
 	<!--查询HIS系统科室信息-->
 	<select id="selectHisDepart" parameterType="java.lang.String" resultType="org.jeecg.modules.pd.entity.HisDepartInf">

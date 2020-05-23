@@ -1,13 +1,13 @@
 package org.jeecg.modules.pd.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import org.apache.ibatis.annotations.Param;
 import org.jeecg.modules.external.entity.ExInspectionItems;
-import org.jeecg.modules.pd.entity.HisChargeInf;
-import org.jeecg.modules.pd.entity.HisDepartInf;
-import org.jeecg.modules.pd.entity.HisUserInf;
-import org.jeecg.modules.pd.entity.PdDosage;
-import java.util.*;
+import org.jeecg.modules.pd.entity.*;
+
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Description: HIs接口相关
@@ -18,6 +18,8 @@ import java.util.List;
 public interface HisChargeMapper extends BaseMapper<HisChargeInf> {
 
 	List<HisChargeInf> selectList(HisChargeInf hisChargeInf);
+
+	Page<HisChargeInf> selectListByPage(Page<HisChargeInf> page, @Param("entity") HisChargeInf entity);
 
 	List<HisChargeInf> selectByHisCharge();
 

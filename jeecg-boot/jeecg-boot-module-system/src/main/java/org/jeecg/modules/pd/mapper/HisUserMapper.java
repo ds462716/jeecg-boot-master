@@ -1,6 +1,8 @@
 package org.jeecg.modules.pd.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import org.apache.ibatis.annotations.Param;
 import org.jeecg.modules.pd.entity.HisUserInf;
 
 import java.util.List;
@@ -14,6 +16,8 @@ import java.util.List;
 public interface HisUserMapper extends BaseMapper<HisUserInf> {
 
 	List<HisUserInf> selectList(HisUserInf hisUserInf);
+
+	Page<HisUserInf> selectListByPage(Page<HisUserInf> page, @Param("entity") HisUserInf entity);
 
 	void deleteHisUserInf();
 }

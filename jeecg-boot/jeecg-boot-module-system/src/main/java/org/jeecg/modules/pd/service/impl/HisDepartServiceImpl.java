@@ -31,7 +31,8 @@ import java.util.List;
 	 */
 	@Override
 	public Page<HisDepartInf> selectList(Page<HisDepartInf> page, HisDepartInf hisDepartInf) {
-		return page.setRecords(hisDepartMapper.selectList(hisDepartInf));
+		return hisDepartMapper.selectListByPage(page,hisDepartInf);
+		//return page.setRecords(hisDepartMapper.selectList(hisDepartInf));
 	}
 
 

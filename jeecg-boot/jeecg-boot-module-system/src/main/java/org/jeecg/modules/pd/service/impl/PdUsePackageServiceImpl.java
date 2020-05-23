@@ -7,7 +7,9 @@ import org.apache.ibatis.session.SqlSession;
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.system.vo.LoginUser;
+import org.jeecg.modules.external.entity.ExInspectionItems;
 import org.jeecg.modules.external.entity.ExInspectionItemsUseDetail;
+import org.jeecg.modules.external.mapper.ExInspectionItemsMapper;
 import org.jeecg.modules.external.service.IExInspectionItemsUseDetailService;
 import org.jeecg.modules.pd.entity.PdUsePackage;
 import org.jeecg.modules.pd.entity.PdUsePackageDetail;
@@ -47,6 +49,9 @@ public class PdUsePackageServiceImpl extends ServiceImpl<PdUsePackageMapper, PdU
 
 	@Autowired
 	private SqlSession sqlsession;
+
+	@Autowired
+	private ExInspectionItemsMapper exInspectionItemsMapper;
 
 	
 	@Override
@@ -122,12 +127,16 @@ public class PdUsePackageServiceImpl extends ServiceImpl<PdUsePackageMapper, PdU
 	@Override
 	public Result<Object> deleteV(String id) {
 		try{
-			ExInspectionItemsUseDetail exInspectionItemsUseDetail = new ExInspectionItemsUseDetail();
 			LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+			ExInspectionItemsUseDetail exInspectionItemsUseDetail = new ExInspectionItemsUseDetail();
 			exInspectionItemsUseDetail.setDepartParentId(sysUser.getDepartParentId());
 			exInspectionItemsUseDetail.setPackageId(id);
 			List<PdUsePackage> pdUsePackages = exInspectionItemsUseDetailService.selectListByCT(exInspectionItemsUseDetail);
-			if(CollectionUtils.isNotEmpty(pdUsePackages)){
+			ExInspectionItems exInspectionItems = new ExInspectionItems();
+			exInspectionItems.setDepartParentId(sysUser.getDepartParentId());
+			exInspectionItems.setPackageId(id);
+			List<ExInspectionItems> ExInspectionItemList=exInspectionItemsMapper.selectList(exInspectionItems);
+			if(CollectionUtils.isNotEmpty(pdUsePackages) || CollectionUtils.isNotEmpty(ExInspectionItemList)){
 				return Result.error("删除失败!，当前检验项目被使用不能删除");
 			}
 			this.removeById(id);

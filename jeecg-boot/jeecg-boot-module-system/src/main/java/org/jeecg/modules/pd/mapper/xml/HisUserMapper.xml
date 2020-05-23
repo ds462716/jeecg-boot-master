@@ -56,6 +56,30 @@
 	</select>
 
 
+
+	<!-- 列表查询 -->
+	<select id="selectListByPage" resultType="org.jeecg.modules.pd.entity.HisUserInf">
+		SELECT
+		<include refid="HisUserInfColumns"/>,
+		<include refid="pdHisDepartColumns"/>,
+		<include refid="sysDepartColumns"/>
+		FROM ex_his_user_inf a
+		<include refid="pdHisDepartJoins"/>
+		<include refid="sysDepartJoins"/>
+		where 1=1 AND	a.del_flag =#{entity.DEL_FLAG_NORMAL}
+		<if test="entity.id != null and entity.id != ''">
+			AND a.id = #{entity.id}
+		</if>
+		<if test="entity.userName != null and entity.userName != ''">
+			AND a.fsf_yhxm LIKE concat('%',#{entity.userName},'%')
+		</if>
+		<if test="entity.departName != null and entity.departName != ''">
+			AND b.fsf_ksmc  LIKE concat('%',#{entity.departName},'%')
+		</if>
+		order by create_time desc
+	</select>
+
+
 	<!--删除所有HIS用戶信息-->
 	<delete id="deleteHisUserInf">
 		DELETE 	FROM  ex_his_user_inf
