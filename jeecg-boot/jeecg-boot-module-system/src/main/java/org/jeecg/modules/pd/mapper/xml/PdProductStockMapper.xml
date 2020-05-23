@@ -537,7 +537,7 @@
 				AND c.version   LIKE concat('%',#{version},'%')
 			</if>
 			<if test="batchNo != null and batchNo != ''">
-				AND a.batchNo LIKE concat('%',#{batchNo},'%')
+				AND a.batch_no LIKE concat('%',#{batchNo},'%')
 			</if>
 			<if test="registration != null and registration != ''">
 				AND c.registration LIKE concat('%',#{registration},'%')
