@@ -524,7 +524,7 @@
                 AND a.spec LIKE concat('%',#{entity.spec},'%')
             </if>
             <if test="entity.supplierId != null and entity.supplierId != ''">
-                AND a.supplier_id = #{entity.xsupplierId}
+                AND a.supplier_id = #{entity.supplierId}
             </if>
             <if test="entity.venderId != null and entity.venderId != ''">
                 AND a.vender_id = #{entity.venderId}
