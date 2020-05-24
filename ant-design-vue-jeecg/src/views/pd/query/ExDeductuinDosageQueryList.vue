@@ -35,6 +35,11 @@
                   <a-input placeholder="请输入产品编号" v-model="queryParam.number"></a-input>
                 </a-form-item>
               </a-col>
+          <a-col :md="6" :sm="8">
+            <a-form-item label="扣减类型">
+              <j-dict-select-tag v-model="queryParam.deductuinType" dictCode="deductuin_type"/>
+            </a-form-item>
+          </a-col>
 
           <a-col :md="6" :sm="8">
             <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
@@ -132,14 +137,11 @@
             align:"center",
             dataIndex: 'batchNo'
           },
-          {
+        /*  {
             title:'产品条码',
             align:"center",
-            dataIndex: 'productBarCode',
-            customRender:function (text) {
-              return !text?"":(text.length>10?text.substr(0,10):text)
-            }
-          },
+            dataIndex: 'productBarCode'
+          },*/
           {
             title:'扣减类型',
             align:"center",
