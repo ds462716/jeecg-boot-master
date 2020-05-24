@@ -259,7 +259,7 @@
             })
             this.model.totalNum = totalNum;
             this.model.totalPrice = totalPrice.toFixed(2);//申购总金额
-            this.form.setFieldsValue(pick(this.model, 'totalNum', 'totalPrice'))
+            //this.form.setFieldsValue(pick(this.model, 'totalNum', 'totalPrice'))
 
         });
       },

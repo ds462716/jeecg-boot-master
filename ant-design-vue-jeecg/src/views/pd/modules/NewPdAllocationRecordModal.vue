@@ -463,7 +463,7 @@
             totalNum += parseFloat(item.allocationNum);
           })
           this.model.totalNum = totalNum;
-          this.form.setFieldsValue(pick(this.model, 'totalNum'))
+          //this.form.setFieldsValue(pick(this.model, 'totalNum'))
         })
       },
       modalFormOk (formData) { //选择产品确定后返回所选择的数据
