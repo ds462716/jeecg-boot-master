@@ -14,7 +14,8 @@
           <svg :id="['barcode'+index]" style="margin-top:5px;" />
           <div class="codeListBox"><p>批号：</p><div>{{ printData[index].batchNo }}</div></div>
           <div class="codeListBox"><p>效期：</p><div>{{ printData[index].expDate }}</div></div>
-          <div class="codeListBox"><p>名称：</p><div>{{ printData[index].productName }}</div></div>
+          <div v-if="printData[index].productName.length < 12" class="codeListBox"><p>名称：</p><div>{{ printData[index].productName }}</div></div>
+          <div v-else class="codeListBoxM"><p>名称：</p><div>{{ printData[index].productName }}</div></div>
           <!--<div class="codeListBox"><p>型号：</p><div>{{ printData[index].version }}</div></div>-->
       </div>
     </section>
@@ -112,4 +113,20 @@
     font-weight:400;
     font-size:18px;
     }
+  .codeListBoxM>p{
+    display:inline-block;
+    font-size:18px;
+    margin:1px;
+    text-align:left;
+    overflow: hidden;
+  }
+  .codeListBoxM>div{
+    width: 230px;
+    display:inline-block;
+    margin:1px;
+    font-weight:400;
+    font-size:14px;
+    white-space:normal;
+    word-break: break-all;
+  }
 </style>
