@@ -844,7 +844,7 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
             //查调拨单列表
             if (oConvertUtils.isNotEmpty(pdStockRecord.getAllocationNo())) {
                 PdAllocationDetail allocationDetail=new PdAllocationDetail();
-                allocationDetail.setAllocationNo(pdStockRecord.getApplyNo());
+                allocationDetail.setAllocationNo(pdStockRecord.getAllocationNo());
                 List<PdAllocationDetail> pdAllocationDetailList = pdAllocationDetailService.selectByAllocationNo(allocationDetail);
                 pdStockRecord.setPdAllocationDetailList(pdAllocationDetailList);
             }
