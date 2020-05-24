@@ -144,7 +144,7 @@
   import {httpAction, deleteAction, getAction} from '@/api/manage'
   import JDictSelectTagExpand from "@/components/dict/JDictSelectTagExpand"
   import ATextarea from "ant-design-vue/es/input/TextArea";
-  import {thStockScanCode} from '@/utils/barcode'
+  import {stockScanCode} from '@/utils/barcode'
   import PdChooseProductStockListModel from "./PdChooseProductStockListModel";
   import PdChoosePurchaseOrderListModel from "./PdChoosePurchaseOrderListModel";
 
@@ -573,7 +573,7 @@
               if(pdProductStockList.length <= 0){
                 //清空扫码框
                 this.clearQueryParam();
-                this.$message.error("库存中没有该产品！");
+                this.$message.error("当前科室中没有该产品！");
                 return;
               }
               let { values } = this.$refs.pdRejectedDetail.getValuesSync({ validate: false });
