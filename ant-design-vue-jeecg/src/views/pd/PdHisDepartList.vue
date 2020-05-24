@@ -127,11 +127,13 @@
         }
         let params = this.getQueryParams();//查询条件
         //查询
+        this.loading = true;
         getAction(this.url.list, params).then((res) => {
           if (res.success) {
             this.dataSource = res.result.records;
             this.ipagination.total = res.result.total;
           }
+          this.loading = false;
         })
       },
       sysUpdate: function () {

@@ -35,11 +35,11 @@
               <j-date  disabled="disabled" v-decorator="[ 'applyDate', validatorRules.applyDate]" :trigger-change="true" style="width: 100%"/>
             </a-form-item>
           </a-col>
-          <a-col :span="12">
+        <!--  <a-col :span="12">
             <a-form-item label="申领总数量" :labelCol="labelCol" :wrapperCol="wrapperCol">
               <a-input-number disabled="disabled" v-decorator="[ 'totalNum', validatorRules.totalNum]"  style="width: 100%"/>
             </a-form-item>
-          </a-col>
+          </a-col>-->
           <a-col :span="12">
             <a-form-item   label="备注" :labelCol="labelCol" :wrapperCol="wrapperCol">
               <a-input  disabled="disabled"  v-decorator="[ 'remarks', validatorRules.remarks]"  style="width: 100%;height: 60px"/>
@@ -91,6 +91,9 @@
                   :loading="subloading">
                 </a-table>
               </a-table>
+              <a-row style="margin-top:10px;text-align: right;padding-right: 5%">
+              <span style="font-weight: bold;font-size: large;padding-right: 5%">总数量：{{this.model.totalNum }}</span>
+            </a-row>
             </a-tab-pane>
           </a-tabs>
         </a-card>
@@ -179,11 +182,11 @@
             { title: '定数包名称',  width:"130px", key: 'packageName' },*/
             { title: '产品ID', key: 'productId', type: FormTypes.hidden },
             { title: '产品名称', width:"250px",  key: 'productName' },
-            { title: '申领数量',  width:"100px",key: 'applyNum'},
             { title: '产品编号',width:"200px",  key: 'number' },
             { title: '规格',width:"240px",  key: 'spec' },
             { title: '型号', width:"240px", key: 'version' },
             { title: '单位',width:"50px",  key: 'unitName' },
+            { title: '申领数量',  width:"100px",key: 'applyNum'},
             { title: '发货数量', width:"100px", key: 'arrivalNum' },
             { title: '库存数量',  key: 'stockNum' },
           ]

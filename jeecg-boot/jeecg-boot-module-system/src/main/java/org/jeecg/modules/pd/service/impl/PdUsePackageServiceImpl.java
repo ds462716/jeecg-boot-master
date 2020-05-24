@@ -133,7 +133,6 @@ public class PdUsePackageServiceImpl extends ServiceImpl<PdUsePackageMapper, PdU
 			exInspectionItemsUseDetail.setPackageId(id);
 			List<PdUsePackage> pdUsePackages = exInspectionItemsUseDetailService.selectListByCT(exInspectionItemsUseDetail);
 			ExInspectionItems exInspectionItems = new ExInspectionItems();
-			exInspectionItems.setDepartParentId(sysUser.getDepartParentId());
 			exInspectionItems.setPackageId(id);
 			List<ExInspectionItems> ExInspectionItemList=exInspectionItemsMapper.selectList(exInspectionItems);
 			if(CollectionUtils.isNotEmpty(pdUsePackages) || CollectionUtils.isNotEmpty(ExInspectionItemList)){

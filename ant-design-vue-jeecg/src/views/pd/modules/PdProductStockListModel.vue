@@ -1,5 +1,5 @@
 <template>
-  <a-modal
+  <j-modal
     :title="title"
     :width="width"
     :visible="visible"
@@ -37,13 +37,14 @@
                     placeholder="请选择供应商"
                     :defaultActiveFirstOption="false"
                     :showArrow="true"
+                    :allowClear="true"
                     :filterOption="false"
                     @search="supplierHandleSearch"
                     @change="supplierHandleChange"
                     @focus="supplierHandleSearch"
                     :notFoundContent="notFoundContent"
                     v-model="queryParam.supplierId"
-                    :disabled="supplierSelecDisabled"
+
                   >
                     <a-select-option v-for="d in supplierData" :key="d.value">{{d.text}}</a-select-option>
                   </a-select>
@@ -64,6 +65,7 @@
                     @focus="venderHandleSearch"
                     :notFoundContent="notFoundContent"
                     v-model="queryParam.venderId"
+                    :disabled="supplierSelecDisabled"
                   >
                     <a-select-option v-for="d in venderData" :key="d.value">{{d.text}}</a-select-option>
                   </a-select>
@@ -85,6 +87,10 @@
         </a-form>
       </div>
       <!-- 查询区域-END -->
+      <div class="ant-alert ant-alert-info" style="margin-bottom: 16px;">
+        <i class="anticon anticon-info-circle ant-alert-icon"></i> 已选择 <a style="font-weight: 600">{{ selectedRowKeys.length }}</a>项
+        <a style="margin-left: 24px" @click="onClearSelected">清空</a>
+      </div>
       <a-table
         ref="table"
         size="middle"
@@ -98,7 +104,7 @@
         @change="handleTableChange">
       </a-table>
     </a-spin>
-  </a-modal>
+  </j-modal>
 </template>
 
 <script>
@@ -155,6 +161,11 @@
             title:'产品名称',
             align:"center",
             dataIndex: 'productName'
+          },
+          {
+            title:'产品类型',
+            align:"center",
+            dataIndex: 'productFlagName'
           },
           {
             title:'规格',
@@ -251,6 +262,10 @@
       },
       handleCancel () {
         this.close();
+      },
+      onClearSelected() {
+        this.selectedRowKeys = [];
+        this.selectionRows = [];
       },
       popupCallback(row){
 

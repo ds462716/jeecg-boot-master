@@ -54,11 +54,11 @@
                   <a-input disabled="disabled" v-decorator="[ 'inDeptName', validatorRules.inDeptName]"></a-input>
                 </a-form-item>
               </a-col>
-              <a-col :span="12">
+            <!--  <a-col :span="12">
                 <a-form-item label="调拨总数量" :labelCol="labelCol" :wrapperCol="wrapperCol">
                   <a-input-number disabled="disabled" v-decorator="[ 'totalNum', validatorRules.totalNum]" style="width: 100%"/>
                 </a-form-item>
-              </a-col>
+              </a-col>-->
               <a-col :span="12">
                 <a-form-item label="备注" :labelCol="labelCol" :wrapperCol="wrapperCol">
                   <a-input v-decorator="[ 'remarks', validatorRules.remarks]"  style="width: 100%;height: 60px"></a-input>
@@ -149,6 +149,9 @@
                 />
         </span>
               </a-table>
+              <a-row style="margin-top:10px;text-align: right;padding-right: 5%">
+                <span style="font-weight: bold;font-size: large;padding-right: 5%">总数量：{{this.model.totalNum }}</span>
+              </a-row>
             </a-tab-pane>
           </a-tabs>
         </a-card>

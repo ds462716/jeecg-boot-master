@@ -52,6 +52,9 @@ public class PdProductPage extends PdProduct {
 
     /** 产品库存数量 **/
     private Double stockNum;
+
+    /**产品类型名称or普通产品，0产品，1试剂*/
+    private java.lang.String productFlagName;
     //-------end 用于采购弹出框显示产品明细
 }
 

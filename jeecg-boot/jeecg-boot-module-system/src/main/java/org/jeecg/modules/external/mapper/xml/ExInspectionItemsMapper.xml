@@ -60,6 +60,9 @@
         <if test="acceptStatus != null and acceptStatus != ''">
             AND a.accept_status=#{acceptStatus}
         </if>
+        <if test="packageId != null and packageId != ''">
+            AND a.package_id=#{packageId}
+        </if>
     </select>
 
 

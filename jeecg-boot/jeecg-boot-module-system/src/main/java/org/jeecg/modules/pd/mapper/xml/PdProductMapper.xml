@@ -473,6 +473,10 @@
             a.number as productNumber,
             a.name as productName,
             a.*,
+        case
+        when a.product_flag = '0' then "耗材"
+        when a.product_flag = '1' then "试剂"
+        end as "productFlagName",
             b.name as unitName,
             bb.name as specUnitName,
             c.name as venderName,

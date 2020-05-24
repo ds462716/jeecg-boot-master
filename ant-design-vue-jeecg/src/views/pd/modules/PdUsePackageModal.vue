@@ -325,10 +325,10 @@
             throw this.throwNotFunction('classifyIntoFormData')
           }
           let formData = this.classifyIntoFormData(allValues)
-          if(formData.pdUsePackageDetailList.length <= 0){
+          /*if(formData.pdUsePackageDetailList.length <= 0){
             this.$message.warning("检验项目产品数据为空，请选择产品！");
             return;
-          }
+          }*/
 
           let { values } = this.$refs.pdUsePackageDetail.getValuesSync({ validate: false });
           for(let row of values){

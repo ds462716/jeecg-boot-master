@@ -289,6 +289,8 @@ public class PdProductStockTotalController {
 		 pdStockRecordDetail.setProductId(stockTotalPage.getProductId());
 		 pdStockRecordDetail.setAuditStatus(PdConstant.AUDIT_STATE_2);
 		 pdStockRecordDetail.setDeptId(stockTotalPage.getDepartId());
+		 pdStockRecordDetail.setBatchNo(stockTotalPage.getBatchNo());
+		 pdStockRecordDetail.setVenderId(stockTotalPage.getVenderId());
 		 LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
 		 pdStockRecordDetail.setDepartParentId(sysUser.getDepartParentId());
 		 IPage<PdStockRecordDetail> pageList = pdStockRecordDetailService.selectList(page,pdStockRecordDetail);

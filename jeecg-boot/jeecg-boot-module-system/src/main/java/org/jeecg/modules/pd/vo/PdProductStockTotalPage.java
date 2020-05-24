@@ -64,4 +64,7 @@ public class PdProductStockTotalPage extends PdProductStockTotal {
 
 	@TableField(exist = false)
 	private String productFlagName;
+
+	@TableField(exist = false)
+	private String batchNo;
 }

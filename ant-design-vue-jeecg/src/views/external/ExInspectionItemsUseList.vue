@@ -145,7 +145,7 @@
               }
             }
           },
-          {
+         /* {
             title:'病人姓名',
             align:"center",
             dataIndex: 'refName'
@@ -159,14 +159,14 @@
             title:'门诊号',
             align:"center",
             dataIndex: 'outpatientNumber'
-          },
+          },*/
           {
             title:'备注',
             align:"center",
             dataIndex: 'remarks'
           },
           {
-            title:'创建时间',
+            title:'扣减时间',
             align:"center",
             dataIndex: 'createTime'
           },

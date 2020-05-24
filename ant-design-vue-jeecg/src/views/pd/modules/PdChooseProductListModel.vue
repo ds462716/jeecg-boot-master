@@ -184,6 +184,11 @@
             dataIndex: 'productName'
           },
           {
+            title:'产品类型',
+            align:"center",
+            dataIndex: 'productFlagName'
+          },
+          {
             title:'规格',
             align:"center",
             dataIndex: 'spec'

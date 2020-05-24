@@ -63,7 +63,7 @@
                 AND a.id = #{id}
             </if>
             <if test="allocationNo != null and allocationNo != ''">
-                AND a.allocation_no = #{allocationNo}
+                AND a.allocation_no LIKE concat('%',#{allocationNo},'%')
             </if>
             <if test="auditStatus != null and auditStatus != ''">
                 AND a.audit_status = #{auditStatus}
