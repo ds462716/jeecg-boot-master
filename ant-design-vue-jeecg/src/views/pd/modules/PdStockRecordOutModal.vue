@@ -704,7 +704,7 @@
                   this.orderTableTitle = "";
                   this.showOrderTable = false;
                 }else if(res.result.outType == "3"){
-                  this.orderTableTitle = "调拨单明细";
+                  this.orderTableTitle = "调拨单明细"; 
                   let pdApplyDetailList = res.result.pdAllocationDetailList || [];
                   pdApplyDetailList.forEach((item, idx) => {
                     item.orderNo = item.allocationNo;
