@@ -28,7 +28,7 @@
               </a-form-item>
             </a-col>
             <template v-if="toggleSearchStatus">
-              <a-col :md="8" :sm="8">
+               <a-col :md="8" :sm="8">
                 <a-form-item label="供应商">
                   <a-select
                     ref="supplierSelect"
@@ -135,7 +135,6 @@
         supplierValue: undefined,
         notFoundContent:"未找到内容",
         supplierData: [],
-
         // 表头
         columns: [
           /*{

@@ -338,7 +338,7 @@
               let model={};
               this.model=res.result;
               this.$nextTick(() => {
-                this.form.setFieldsValue(pick(this.model,'allocationNo','allocationDate','totalNum','inDeptName','outDeptName','outDeptId','realName','remarks','rejectReason'))
+                this.form.setFieldsValue(pick(this.model,'allocationNo','allocationDate','inDeptName','outDeptName','outDeptId','realName','remarks','rejectReason'))
               })
             }
           })
@@ -463,7 +463,7 @@
             totalNum += parseFloat(item.allocationNum);
           })
           this.model.totalNum = totalNum;
-          this.form.setFieldsValue(pick(this.model, 'totalNum'))
+          //this.form.setFieldsValue(pick(this.model, 'totalNum'))
         })
       },
       modalFormOk (formData) { //选择产品确定后返回所选择的数据
@@ -614,7 +614,7 @@
       },
       /** 调用完edit()方法之后会自动调用此方法 */
       editAfter() {
-        let fieldval =  pick(this.model,'allocationNo','allocationDate','totalNum','inDeptName','outDeptName','outDeptId','realName','remarks','rejectReason')
+        let fieldval =  pick(this.model,'allocationNo','allocationDate','inDeptName','outDeptName','outDeptId','realName','remarks','rejectReason')
         this.$nextTick(() => {
           this.form.setFieldsValue(fieldval)
         })
@@ -641,7 +641,7 @@
         this.$message.error(msg)
       },
       popupCallback(row){
-        this.form.setFieldsValue(pick(row,'allocationNo','allocationDate','totalNum','inDeptName','outDeptName','outDeptId','realName','remarks','rejectReason'))
+        this.form.setFieldsValue(pick(row,'allocationNo','allocationDate','inDeptName','outDeptName','outDeptId','realName','remarks','rejectReason'))
       },
 
 

@@ -524,3 +524,8 @@ INSERT INTO `sys_dict_item` VALUES ('1264129658933440514', '1264129484446199809'
 -- add by mcb 2020年5月23日16:30:23 增加检验项目ID
 ALTER TABLE `ex_inspection_items`
 ADD COLUMN `package_id`  varchar(32) CHARACTER SET utf8 COLLATE utf8_general_ci NULL COMMENT '检验项目id' AFTER `remarks`;
+
+-- add by mcb 2020年5月24日16:30:23 增加索引
+CREATE INDEX item_doctor ON ex_inspection_items (apply_doctor,apply_department);
+CREATE INDEX fsf_yhm ON ex_his_user_inf (fsf_yhm);
+CREATE INDEX fsf_ksbh ON ex_his_depart_inf (fsf_ksbh);

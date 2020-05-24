@@ -385,7 +385,7 @@
 
       /** 调用完edit()方法之后会自动调用此方法 */
       editAfter() {
-        let fieldval = pick(this.model,'allocationNo','allocationDate','totalNum','outDeptName','inDeptName','realName','remarks','rejectReason')
+        let fieldval = pick(this.model,'allocationNo','allocationDate','outDeptName','inDeptName','realName','remarks','rejectReason')
          this.$nextTick(() => {
           this.form.setFieldsValue(fieldval)
         })
@@ -413,7 +413,7 @@
         this.$message.error(msg)
       },
       popupCallback(row){
-        this.form.setFieldsValue(pick(row,'allocationNo','allocationDate','totalNum','outDeptName','inDeptName','realName','remarks','rejectReason'))
+        this.form.setFieldsValue(pick(row,'allocationNo','allocationDate','outDeptName','inDeptName','realName','remarks','rejectReason'))
        },
       /** 关闭按钮 **/
       closeBtn(){

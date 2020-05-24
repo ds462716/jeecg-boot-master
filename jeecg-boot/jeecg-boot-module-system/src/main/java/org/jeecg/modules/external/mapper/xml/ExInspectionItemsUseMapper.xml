@@ -7,7 +7,7 @@
         a.*
         FROM ex_inspection_items_use a
         LEFT JOIN ex_inspection_items_use_detail b  on b.ref_id=a.id
-        LEFT JOIN pd_product c  on c.id=b.product_id
+        LEFT JOIN pd_product c  on c.id=b.product_id  and c.del_flag='0'
         <where>
             1 = 1
         </where>

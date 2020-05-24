@@ -70,4 +70,10 @@ public class PdUsePackage extends BaseEntity {
 
     @TableField(exist = false)
     private List<String> idList;
+
+    @TableField(exist = false)
+    private String number;
+
+    @TableField(exist = false)
+    private String productName;
 }
