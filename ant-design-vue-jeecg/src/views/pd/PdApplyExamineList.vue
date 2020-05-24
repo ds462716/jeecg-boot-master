@@ -5,8 +5,8 @@
       <a-form layout="inline" @keyup.enter.native="searchQuery">
         <a-row :gutter="24">
           <a-col :md="6" :sm="8">
-            <a-form-item label="申领编号">
-              <a-input placeholder="请输入申领编号" v-model="queryParam.applyNo"></a-input>
+            <a-form-item label="申领单号">
+              <a-input placeholder="请输入申领单号" v-model="queryParam.applyNo"></a-input>
             </a-form-item>
           </a-col>
           <a-col :md="6" :sm="8">
@@ -151,7 +151,7 @@
             }
           },
           {
-            title:'申领编号',
+            title:'申领单号',
             align:"center",
             dataIndex: 'applyNo'
           },
