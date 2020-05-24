@@ -3,9 +3,11 @@
 <mapper namespace="org.jeecg.modules.external.mapper.ExInspectionItemsUseMapper">
 
     <select id="selectListByPage" resultType="org.jeecg.modules.external.entity.ExInspectionItemsUse">
-        SELECT
-        *
+        SELECT DISTINCT
+        a.*
         FROM ex_inspection_items_use a
+        LEFT JOIN ex_inspection_items_use_detail b  on b.ref_id=a.id
+        LEFT JOIN pd_product c  on c.id=b.product_id
         <where>
             1 = 1
         </where>
@@ -23,6 +25,17 @@
         </if>
         <if test="entity.queryDateEnd != null and entity.queryDateEnd != ''">
             AND a.create_time &lt;= #{entity.queryDateEnd}
+        </if>
+        <if test="entity.productName != null and entity.productName != ''">
+            AND (
+            c.name LIKE concat('%',#{entity.productName},'%')
+            or c.py LIKE concat('%',#{entity.productName},'%')
+            or c.wb LIKE concat('%',#{entity.productName},'%')
+            or c.zdy LIKE concat('%',#{entity.productName},'%')
+            or c.bname LIKE concat('%',#{entity.productName},'%')
+            or c.bpy LIKE concat('%',#{entity.productName},'%')
+            or c.bwb LIKE concat('%',#{entity.productName},'%')
+            )
         </if>
         ORDER BY a.update_time desc,a.create_time desc
     </select>

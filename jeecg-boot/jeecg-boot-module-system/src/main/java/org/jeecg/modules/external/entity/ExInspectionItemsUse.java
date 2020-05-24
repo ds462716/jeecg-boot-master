@@ -109,4 +109,7 @@ public class ExInspectionItemsUse  {
     /** 查询日期结束 **/
     @TableField(exist = false)
     private String queryDateEnd;
+
+    @TableField(exist = false)
+    private String productName;
 }
