@@ -585,7 +585,7 @@
       // 选择产品 新增行
       chooseProductList() {
         this.$refs.pdChooseProductStockListModel.width = 1550;
-        this.$refs.pdChooseProductStockListModel.show({});
+        this.$refs.pdChooseProductStockListModel.show({productFlag:"0",nestatStatus:'1'});
       },
       // 选择定数包
       choosePackageList() {

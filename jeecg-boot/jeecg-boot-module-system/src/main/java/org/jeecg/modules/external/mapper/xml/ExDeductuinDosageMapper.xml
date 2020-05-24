@@ -91,6 +91,9 @@
         <if test="entity.departId != null and entity.departId != ''">
             AND a.depart_id = #{entity.departId}
         </if>
+        <if test="entity.deductuinType != null and entity.deductuinType != ''">
+            AND a.deductuin_type = #{entity.deductuinType}
+        </if>
         <if test="entity.departIdList != null and entity.departIdList.size() > 0">
             AND a.depart_id IN
             <foreach collection="entity.departIdList" item="item" separator="," open="(" close=")">
