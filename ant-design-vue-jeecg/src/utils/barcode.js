@@ -23,34 +23,18 @@ export async function scanCode(Barcode1, Barcode2){
  *
  * @param Barcode1 产品编号
  * @param Barcode2 二级条码
+ * @param productFlag 产品类型0耗材1试剂
+ * @param nestatStatus 1未使用""查未使用和以使用
  * @param that
  * @returns {Promise<*>}
  */
-export async function stockScanCode(Barcode1, Barcode2,productFlag){
+export async function stockScanCode(Barcode1, Barcode2,productFlag,nestatStatus){
   //封装查询参数
   let formData = new URLSearchParams();
   formData.append("Barcode1",Barcode1);
   formData.append("Barcode2",Barcode2);
   formData.append("productFlag",productFlag);
-  formData.append("nestatStatus","");
-  let res = await httpAction(stockUrl,formData,"post");
-  return res;
-}
-
-/**
- * 退货扫码
- * @param Barcode1
- * @param Barcode2
- * @param productFlag
- * @returns {Promise<*>}
- */
-export async function thStockScanCode(Barcode1, Barcode2,productFlag,nestatStatus){
-  //封装查询参数
-  let formData = new URLSearchParams();
-  formData.append("Barcode1",Barcode1);
-  formData.append("Barcode2",Barcode2);
-  formData.append("productFlag",productFlag);
-  formData.append("nestatStatus","1");
+  formData.append("nestatStatus",nestatStatus);
   let res = await httpAction(stockUrl,formData,"post");
   return res;
 }

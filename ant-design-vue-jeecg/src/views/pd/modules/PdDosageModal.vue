@@ -494,8 +494,8 @@
             this.$message.error("请输入二级条码！");
             return;
           }
-          //解析条码
-          stockScanCode(productNumber,productBarCode,"0").then((res) => {
+          //解析条码//
+          stockScanCode(productNumber,productBarCode,"0","1").then((res) => {
             if(res.code == "200" || res.code == "203"){
               let pdProductStockList = res.result;
               if(!pdProductStockList){
