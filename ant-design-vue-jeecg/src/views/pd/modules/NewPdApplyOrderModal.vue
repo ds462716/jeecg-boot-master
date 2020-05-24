@@ -311,7 +311,7 @@
           if (res.success) {
             this.model=res.result;
             this.$nextTick(() => {
-              this.form.setFieldsValue(pick(this.model,'applyNo','deptName','totalNum','applyDate','realName','remarks'))
+              this.form.setFieldsValue(pick(this.model,'applyNo','deptName','applyDate','realName','remarks'))
             })
           }
         })
@@ -419,7 +419,7 @@
               totalNum += parseFloat(item.applyNum);
             })
             this.model.totalNum = totalNum;
-            this.form.setFieldsValue(pick(this.model, 'totalNum'))
+            //this.form.setFieldsValue(pick(this.model, 'totalNum'))
           })
       },
       modalFormOk (formData) { //选择产品确定后返回所选择的数据
@@ -570,7 +570,7 @@
       },
       /** 调用完edit()方法之后会自动调用此方法 */
       editAfter() {
-        let fieldval = pick(this.model,'applyNo','deptName','totalNum','applyDate','realName','remarks','refuseReason')
+        let fieldval = pick(this.model,'applyNo','deptName','applyDate','realName','remarks','refuseReason')
         this.$nextTick(() => {
           this.form.setFieldsValue(fieldval)
         })
@@ -596,7 +596,7 @@
         this.$message.error(msg)
       },
       popupCallback(row){
-        this.form.setFieldsValue(pick(row,'applyNo','deptName','totalNum','applyDate','realname','remarks','refuseReason'))
+        this.form.setFieldsValue(pick(row,'applyNo','deptName','applyDate','realname','remarks','refuseReason'))
       },
       /** 关闭按钮 **/
       closeBtn(){
