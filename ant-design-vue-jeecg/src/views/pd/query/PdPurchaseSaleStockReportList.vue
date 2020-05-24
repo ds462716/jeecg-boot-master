@@ -262,11 +262,12 @@
       },
       //重写 loadData 为空方法体
       loadData(arg) {
+        this.queryData();
       },
       queryData(arg) {
 
         if(!this.queryParam.queryDateStart || !this.queryParam.queryDateEnd){
-          this.$message.warning("请输入筛选日期！");
+          this.$message.warning("必须输入筛选日期查询！");
           return;
         }
 

@@ -144,7 +144,7 @@
   import {httpAction, deleteAction, getAction} from '@/api/manage'
   import JDictSelectTagExpand from "@/components/dict/JDictSelectTagExpand"
   import ATextarea from "ant-design-vue/es/input/TextArea";
-  import {stockScanCode} from '@/utils/barcode'
+  import {thStockScanCode} from '@/utils/barcode'
   import PdChooseProductStockListModel from "./PdChooseProductStockListModel";
   import PdChoosePurchaseOrderListModel from "./PdChoosePurchaseOrderListModel";
 
@@ -552,15 +552,24 @@
             return;
           }
           //解析条码
-          stockScanCode(productNumber,productBarCode,"").then((res) => {
+          thStockScanCode(productNumber,productBarCode,"").then((res) => {
             if(res.code == "200" || res.code == "203"){
-              let pdProductStockList = res.result;
-              if(!pdProductStockList){
+              let result = res.result;
+              if(!result){
                 //清空扫码框
                 this.clearQueryParam();
                 this.$message.error("条码解析失败，请校验条码是否正确！");
                 return;
               }
+              let pdProductStockList = [];
+
+              // 过滤非当前供应商产品
+              for(let pdProductStock of result){
+                if(pdProductStock.supplierId == supplierId){
+                  pdProductStockList.push(pdProductStock);
+                }
+              }
+
               if(pdProductStockList.length <= 0){
                 //清空扫码框
                 this.clearQueryParam();
