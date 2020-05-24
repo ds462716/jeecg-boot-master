@@ -300,7 +300,7 @@ public class PdProductServiceImpl extends ServiceImpl<PdProductMapper, PdProduct
      * @return
      */
     @Override
-    public Result<List<PdProductStock>> getStocks(String Barcode1,String Barcode2,String productFlag, Result<List<PdProductStock>> result) {
+    public Result<List<PdProductStock>> getStocks(String Barcode1,String Barcode2,String productFlag,String nestatStatus, Result<List<PdProductStock>> result) {
         try{
             List<PdProductStock> pdProductStocks = new ArrayList<>();
             //去空格转为大写
@@ -321,6 +321,7 @@ public class PdProductServiceImpl extends ServiceImpl<PdProductMapper, PdProduct
                 pdProductStock.setProductBarCode(productBarCode);
                 pdProductStock.setProductFlag(productFlag);
                 pdProductStock.setDepartId(sysUser.getCurrentDepartId());
+                pdProductStock.setNestatStatus(nestatStatus);
                 pdProductStocks = pdProductStockService.selectList(pdProductStock);
                 //有库存直接返回
                 if (pdProductStocks != null && pdProductStocks.size() > 0) {
@@ -350,6 +351,7 @@ public class PdProductServiceImpl extends ServiceImpl<PdProductMapper, PdProduct
                                 pdProductStock.setProductId(pdProduct.getId());
                                 pdProductStock.setDepartId(sysUser.getCurrentDepartId());
                                 pdProductStock.setProductFlag(productFlag);
+                                pdProductStock.setNestatStatus(nestatStatus);
                                 //根据条件查询库存
                                 pdProductStocks = pdProductStockService.selectList(pdProductStock);
                                 if (pdProductStocks != null && pdProductStocks.size() > 0) {
@@ -374,6 +376,7 @@ public class PdProductServiceImpl extends ServiceImpl<PdProductMapper, PdProduct
                                     pdProductStock.setProductId(pdProduct.getId());
                                     pdProductStock.setDepartId(sysUser.getCurrentDepartId());
                                     pdProductStock.setProductFlag(productFlag);
+                                    pdProductStock.setNestatStatus(nestatStatus);
                                     //根据条件查询库存
                                     pdProductStocks = pdProductStockService.selectList(pdProductStock);
                                     if (pdProductStocks != null && pdProductStocks.size() > 0) {
@@ -502,6 +505,7 @@ public class PdProductServiceImpl extends ServiceImpl<PdProductMapper, PdProduct
                         pdProductStock.setBatchNo((String) resultMap.get("batchNo"));
                         pdProductStock.setDepartId(sysUser.getCurrentDepartId());
                         pdProductStock.setProductFlag(productFlag);
+                        pdProductStock.setNestatStatus(nestatStatus);
                         //根据条件查询库存
                         pdProductStocks = pdProductStockService.selectList(pdProductStock);
                     }else {
