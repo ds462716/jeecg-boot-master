@@ -704,7 +704,7 @@
                   this.orderTableTitle = "";
                   this.showOrderTable = false;
                 }else if(res.result.outType == "3"){
-                  this.orderTableTitle = "调拨单明细"; 
+                  this.orderTableTitle = "调拨单明细";
                   let pdApplyDetailList = res.result.pdAllocationDetailList || [];
                   pdApplyDetailList.forEach((item, idx) => {
                     item.orderNo = item.allocationNo;
@@ -1340,6 +1340,11 @@
       },
       // 扫码查询
       searchQuery(num) {
+        if(!this.checkInDepart()) {
+          this.clearQueryParam();
+          this.$message.error("请选择入库科室！");
+          return;
+        }
         let productNumber = this.queryParam.productNumber;
         if(!productNumber){
           //清空扫码框
