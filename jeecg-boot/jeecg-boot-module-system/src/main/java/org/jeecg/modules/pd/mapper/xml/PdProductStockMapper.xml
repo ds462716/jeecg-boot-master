@@ -192,12 +192,11 @@
 				AND c.vender_id = #{venderId}
 			</if>
 			<if test="productBarCode != null and productBarCode != ''">
-				AND a.product_bar_code = #{productBarCode}
-                   or a.ref_bar_code = #{productBarCode}
+				AND (a.product_bar_code = #{productBarCode}  or a.ref_bar_code = #{productBarCode})
 			</if>
 			<if test="batchNo != null and batchNo != ''">
-				AND a.batch_no LIKE concat('%',#{batchNo},'%')
-			</if>
+			AND a.batch_no LIKE concat('%',#{batchNo},'%')
+		</if>
 			<if test="expStatus != null and expStatus != ''">
 				AND a.exp_status = #{expStatus}
 			</if>
