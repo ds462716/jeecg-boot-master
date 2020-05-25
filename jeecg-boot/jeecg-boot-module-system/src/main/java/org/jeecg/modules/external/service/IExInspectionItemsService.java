@@ -26,4 +26,6 @@ public interface IExInspectionItemsService extends IService<ExInspectionItems> {
     List<ExInspectionItems> selectList(ExInspectionItems exInspectionItems);
 
     List<String> selectListIds();
+
+    void batchUsePackageDetail(String ids);
 }

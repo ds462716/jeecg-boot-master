@@ -214,4 +214,23 @@ public class ExInspectionItemsController extends JeecgController<ExInspectionIte
 		 return Result.ok("扣减成功!");
 	 }
 
+
+
+	/**
+	 *  批量扣减
+	 *
+	 * @param ids
+	 * @return
+	 */
+	@PostMapping(value = "/batchUsePackageDetail")
+	public Result<?> batchUsePackageDetail(@RequestParam(name="ids",required=true) String ids) {
+		try {
+			exInspectionItemsService.batchUsePackageDetail(ids);
+		}catch (Exception e){
+			e.getMessage();
+			Result.error("操作失败!");
+		}
+		return Result.ok("操作成功!");
+	}
+
 }

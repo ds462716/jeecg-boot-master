@@ -23,8 +23,8 @@
               </a-form-item>
             </a-col>
             <a-col :md="6" :sm="8">
-              <a-form-item label="住院号" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                <a-input  autocomplete="off" :disabled="disableSubmit" v-decorator="[ 'inHospitalNo', validatorRules.inHospitalNo]"  @keyup.enter.native="selectHis(0)"></a-input>
+              <a-form-item label="病历号" :labelCol="labelCol" :wrapperCol="wrapperCol">
+                <a-input  autocomplete="off" :disabled="disableSubmit" v-decorator="[ 'medicalRecordNo', validatorRules.medicalRecordNo]"  @keyup.enter.native="selectHis(0)"></a-input>
               </a-form-item>
             </a-col>
             <a-col :md="6" :sm="8">
@@ -415,12 +415,12 @@
       },
 
       selectHis(num) {
-        let  inHospitalNo='';
+        let  medicalRecordNo='';
         let  outpatientNumber='';
         if(num=='0'){
-          inHospitalNo=this.form.getFieldValue('inHospitalNo');
-          if(inHospitalNo=="" || inHospitalNo==null){
-            this.$message.error("请输入住院号！");
+          medicalRecordNo=this.form.getFieldValue('medicalRecordNo');
+          if(medicalRecordNo=="" || medicalRecordNo==null){
+            this.$message.error("请输入病历号！");
             return;
           }
           this.form.setFieldsValue({outpatientNumber:""});
@@ -430,9 +430,9 @@
             this.$message.error("请输入门诊号！");
             return;
           }
-          this.form.setFieldsValue({inHospitalNo:""});
+          this.form.setFieldsValue({medicalRecordNo:""});
         }
-        let  formData={inHospitalNo:inHospitalNo,
+        let  formData={medicalRecordNo:medicalRecordNo,
           outpatientNumber:outpatientNumber,prjType:num};
         getAction(this.url.queryPatientInfoList,formData).then((res)=>{
           if (res.success) {

@@ -39,15 +39,14 @@
     <!-- 查询区域-END -->
     
     <!-- 操作按钮区域 -->
-    <!--<div class="table-operator">
-      <a-button @click="handleAdd" type="primary" icon="plus">新增</a-button>
-      <a-dropdown v-if="selectedRowKeys.length > 0">
+     <div class="table-operator">
+       <a-button @click="batchUsePackageDetail" type="primary" icon="edit">批量扣减</a-button>
+      <!-- <a-dropdown v-if="selectedRowKeys.length > 0">
         <a-menu slot="overlay">
-          <a-menu-item key="1" @click="batchDel"><a-icon type="delete"/>删除</a-menu-item>
         </a-menu>
         <a-button style="margin-left: 8px"> 批量操作 <a-icon type="down" /></a-button>
-      </a-dropdown>
-    </div>-->
+      </a-dropdown>-->
+    </div>
 
     <!-- table区域-begin -->
     <div>
@@ -214,6 +213,7 @@
           exportXlsUrl: "/external/exInspectionItems/exportXls",
           importExcelUrl: "external/exInspectionItems/importExcel",
           editUsePackage:"/external/exInspectionItems/editUsePackage",
+          batchUsePackageDetail:"/external/exInspectionItems/batchUsePackageDetail",
         },
         dictOptions:{
           acceptStatus:[],
@@ -251,7 +251,29 @@
           }
         })
       },
+      //批量扣减
+      batchUsePackageDetail:function() {
+        if (this.selectedRowKeys.length <= 0) {
+          this.$message.warning('请勾选需要扣减的记录！');
+          return;
+        } else {
+          var ids = "";
+          for (var a = 0; a < this.selectedRowKeys.length; a++) {
+            ids += this.selectedRowKeys[a] + ",";
+          }
+        }
+        let formDataAll = new FormData();
+        formDataAll.append("ids",ids);
+        httpAction(this.url.batchUsePackageDetail,formDataAll,"post").then((res)=>{
+          if(res.success){
+            this.$message.success(res.message)
+            this.loadData();
+          }else{
+            this.$message.warning(res.message)
+          }
+        })
 
+      },
 
 
       //重新扣减
