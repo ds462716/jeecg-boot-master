@@ -538,3 +538,12 @@ ADD COLUMN `visit_no` varchar(64) NULL DEFAULT NULL COMMENT '就诊流水号（�
 ALTER TABLE `pd_dosage_detail`
 ADD COLUMN `his_charge_id` varchar(64) NULL DEFAULT NULL COMMENT 'His计费ID（丰城中医院）' AFTER `del_flag`,
 ADD COLUMN `his_charge_item_id` varchar(64) NULL DEFAULT NULL COMMENT 'His计费明细ID（丰城中医院）' AFTER `his_charge_id`;
+
+
+
+-- add by mcb 2020年5月26日16:30:23 增加库房类型
+INSERT INTO `sys_dict_item`  VALUES ('1265113802844839938', '1243463467576647681', '三級库房', '3', '', 3, 1, 'admin', '2020-05-26 10:53:30', NULL, '2020-05-26 10:53:30');
+
+-- add by mcb 2020年5月26日16:30:23 增加检验科室ID及检验室ID
+ALTER TABLE `pd_use_package`
+ADD COLUMN `test_depart_id` varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NULL COMMENT '检验科室ID' AFTER `depart_id`,

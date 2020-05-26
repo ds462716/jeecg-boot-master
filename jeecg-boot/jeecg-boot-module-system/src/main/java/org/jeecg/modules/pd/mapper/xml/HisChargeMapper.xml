@@ -38,8 +38,10 @@
 	<!-- 列表查询 -->
 	<select id="selectList" resultType="org.jeecg.modules.pd.entity.HisChargeInf">
 		SELECT
-		<include refid="HisChargeInfColumns"/>
+		<include refid="HisChargeInfColumns"/>,
+		b.b.fsf_ksmc as "departName"
 		FROM ex_his_charge_inf a
+		left join ex_his_depart_inf b  on a.fsf_ks=b.fsf_ksbh
 		where 1=1 AND	a.del_flag =#{DEL_FLAG_NORMAL}
 			<if test="id != null and id != ''">
 				AND a.id = #{id}
@@ -50,14 +52,19 @@
         <if test="fsfXmmc != null and fsfXmmc != ''">
             AND a.fsf_xmmc LIKE concat('%',#{fsfXmmc},'%')
         </if>
+		<if test="departName != null and departName != ''">
+			AND b.fsf_ksmc LIKE concat('%',#{departName},'%')
+		</if>
 	</select>
 
 
 	<!-- 列表查询 -->
 	<select id="selectListByPage" resultType="org.jeecg.modules.pd.entity.HisChargeInf">
 		SELECT
-		<include refid="HisChargeInfColumns"/>
+		<include refid="HisChargeInfColumns"/>,
+		b.b.fsf_ksmc as "departName"
 		FROM ex_his_charge_inf a
+		left join ex_his_depart_inf b  on a.fsf_ks=b.fsf_ksbh
 		where 1=1 AND	a.del_flag =#{entity.DEL_FLAG_NORMAL}
 		<if test="entity.id != null and entity.id != ''">
 			AND a.id = #{entity.id}
@@ -67,6 +74,9 @@
 		</if>
 		<if test="entity.fsfXmmc != null and entity.fsfXmmc != ''">
 			AND a.fsf_xmmc LIKE concat('%',#{entity.fsfXmmc},'%')
+		</if>
+		<if test="entity.departName != null and entity.departName != ''">
+			AND b.fsf_ksmc LIKE concat('%',#{departName},'%')
 		</if>
 	</select>
 

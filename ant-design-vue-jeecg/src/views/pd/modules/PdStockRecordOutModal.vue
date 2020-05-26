@@ -280,8 +280,8 @@
   import PdChooseProductStockListModel from "./PdChooseProductStockListModel";
   import PdChooseApplyOrderListModel from "./PdChooseApplyOrderListModel";
   import PdChooseAllocationListModel from "./PdChooseAllocationListModel";
-  //import PdStockRecordOutPrintModal from "../../external/print/ExStockRecordOutPrintModal";
-  import PdStockRecordOutPrintModal from "../print/PdStockRecordOutPrintModal";
+  import PdStockRecordOutPrintModal from "../../external/print/ExStockRecordOutPrintModal";
+  //import PdStockRecordOutPrintModal from "../print/PdStockRecordOutPrintModal";
   import PdChoosePackageRecordListModel from "./PdChoosePackageRecordListModel";
 
   const VALIDATE_NO_PASSED = Symbol()

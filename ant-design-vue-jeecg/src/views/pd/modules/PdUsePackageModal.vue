@@ -30,6 +30,27 @@
             <!--</a-form-item>-->
           <!--</a-col>-->
           <a-col :span="12">
+            <a-form-item
+              label="检验科室名称"
+              :labelCol="labelCol"
+              :wrapperCol="wrapperCol"
+              :validate-status="validateStatus"
+              :hasFeedback="true"
+              :required="true">
+              <a-tree-select
+                style="width:100%"
+                :dropdownStyle="{ maxHeight: '200px', overflow: 'auto' }"
+                :treeData="treeData"
+                v-model="model.testDepartId"
+                placeholder="请选择检验科室"
+                :disabled="disableSubmit"
+              >
+              </a-tree-select>
+            </a-form-item>
+
+
+          </a-col>
+          <a-col :span="12">
             <a-form-item label="拼音简码" :labelCol="labelCol" :wrapperCol="wrapperCol">
               <a-input :disabled="disableSubmit" v-decorator="[ 'py', validatorRules.py]" autocomplete="off" placeholder="请输入拼音简码"></a-input>
             </a-form-item>
@@ -107,7 +128,7 @@
   import { makeWb } from '@/utils/wubi'
   import {httpAction, deleteAction, getAction} from '@/api/manage'
   import PdChooseProductListModel from "./PdChooseProductListModel"
-
+  import {queryPdDepartTreeList} from '@/api/api'
   export default {
     name: 'PdUsePackageModal',
     mixins: [JEditableTableMixin],
@@ -117,6 +138,8 @@
     data() {
       return {
         totalSum:'0',
+        treeData:[],
+        validateStatus:"",
         disableSubmit:false,
         labelCol: {
           span: 6
@@ -260,6 +283,7 @@
       },
       /** 调用完edit()方法之后会自动调用此方法 */
       editAfter() {
+        this.loadTree();
         let fieldval = pick(this.model,'code','name','py','wb','zdy','remarks');
         this.$nextTick(() => {
           this.form.setFieldsValue(fieldval);
@@ -441,7 +465,23 @@
         }
         this.pdUsePackageDetailTable.dataSource.push(data);
         this.$refs.pdUsePackageDetail.add();
-      }
+      },
+
+
+      loadTree(){
+        let that = this;
+        queryPdDepartTreeList().then((res)=>{
+          if(res.success){
+            that.treeData = [];
+            let treeList = res.result.treeList
+            for(let a=0;a<treeList.length;a++){
+              let temp = treeList[a];
+              temp.isLeaf = temp.leaf;
+              that.treeData.push(temp);
+            }
+          }
+        });
+      },
     }
   }
 </script>
