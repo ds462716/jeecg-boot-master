@@ -167,6 +167,10 @@ public class PdDosage extends BaseEntity {
     @ApiModelProperty(value = "所属医院")
     private String departParentId;
 
+    /**病床号*/
+    @Excel(name = "病床号", width = 15)
+    @ApiModelProperty(value = "病床号")
+    private String bedNumber;
 
     /**病例号*/
     @Excel(name = "病例号", width = 15)
