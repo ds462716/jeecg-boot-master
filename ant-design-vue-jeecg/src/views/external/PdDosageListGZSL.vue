@@ -109,10 +109,10 @@
 <script>
 
   import { JeecgListMixin } from '@/mixins/JeecgListMixin'
-  import PdDosageModal from './modules/NewPdDosageModal'
-  import PdDosageReturnedModal from './modules/PdDosageReturnedModal'
-  import PdDosageFeeModal from './modules/PdDosageFeeModal'
-  import PdDosageCnclFeeModal from './modules/PdDosageCnclFeeModal'
+  import PdDosageModal from '../pd/modules/NewPdDosageModal'
+  import PdDosageReturnedModal from '../pd/modules/PdDosageReturnedModal'
+  import PdDosageFeeModal from '../pd/modules/PdDosageFeeModal'
+  import PdDosageCnclFeeModal from '../pd/modules/PdDosageCnclFeeModal'
   export default {
     name: "PdDosageList",
     mixins:[JeecgListMixin],
