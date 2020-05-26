@@ -529,3 +529,12 @@ ADD COLUMN `package_id`  varchar(32) CHARACTER SET utf8 COLLATE utf8_general_ci 
 CREATE INDEX item_doctor ON ex_inspection_items (apply_doctor,apply_department);
 CREATE INDEX fsf_yhm ON ex_his_user_inf (fsf_yhm);
 CREATE INDEX fsf_ksbh ON ex_his_depart_inf (fsf_ksbh);
+
+-- add by jiangxz 2020年5月26日15:30:11 就诊流水号
+ALTER TABLE `pd_dosage`
+ADD COLUMN `visit_no` varchar(64) NULL DEFAULT NULL COMMENT '就诊流水号（丰城中医院）' AFTER `del_flag`;
+
+-- add by jiangxz 2020年5月26日15:30:11 His计费ID
+ALTER TABLE `pd_dosage_detail`
+ADD COLUMN `his_charge_id` varchar(64) NULL DEFAULT NULL COMMENT 'His计费ID（丰城中医院）' AFTER `del_flag`,
+ADD COLUMN `his_charge_item_id` varchar(64) NULL DEFAULT NULL COMMENT 'His计费明细ID（丰城中医院）' AFTER `his_charge_id`;
