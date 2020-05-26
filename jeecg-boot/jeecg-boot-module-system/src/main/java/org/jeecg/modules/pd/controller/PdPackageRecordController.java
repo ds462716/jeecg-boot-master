@@ -200,7 +200,7 @@ public class PdPackageRecordController {
     }
 
     /**
-     * 通过id删除
+     * 定数包拆包
      *
      * @param id
      * @return
@@ -223,7 +223,7 @@ public class PdPackageRecordController {
     @ApiOperation(value = "pd_package_record-批量删除", notes = "pd_package_record-批量删除")
     @DeleteMapping(value = "/deleteBatch")
     public Result<?> deleteBatch(@RequestParam(name = "ids", required = true) String ids) {
-        this.pdPackageRecordService.delBatchMain(Arrays.asList(ids.split(",")));
+//        this.pdPackageRecordService.delBatchMain(Arrays.asList(ids.split(",")));
         return Result.ok("批量删除成功！");
     }
 

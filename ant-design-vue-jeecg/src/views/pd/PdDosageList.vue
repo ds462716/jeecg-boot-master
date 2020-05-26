@@ -88,6 +88,7 @@
     </div>
 
     <pdDosage-modal ref="modalForm" @ok="modalFormOk"></pdDosage-modal>
+    <pd-dosage-modal-for-f-c-zhongyi ref="pdDosageModalForFCZhongyi" @ok="modalFormOk"></pd-dosage-modal-for-f-c-zhongyi>
     <pdDosageReturned-modal ref="pdDosageReturnedForm" @ok="modalFormOk"></pdDosageReturned-modal>
   </a-card>
 </template>
@@ -97,16 +98,20 @@
   import { JeecgListMixin } from '@/mixins/JeecgListMixin'
   import PdDosageModal from './modules/PdDosageModal'
   import PdDosageReturnedModal from './modules/PdDosageReturnedModal'
+  import { deleteAction, getAction,downFile } from '@/api/manage'
+  import PdDosageModalForFCZhongyi from "../external/modules/PdDosageModalForFCZhongyi";
 
   export default {
     name: "PdDosageList",
     mixins:[JeecgListMixin],
     components: {
+      PdDosageModalForFCZhongyi,
       PdDosageModal,
       PdDosageReturnedModal
     },
     data () {
       return {
+        hospitalCode:"",
         description: '用量表管理页面',
         // 表头
         columns: [
@@ -181,6 +186,41 @@
     },
     methods: {
       initDictConfig(){
+      },
+      // 重写loadData方法
+      loadData(arg) {
+        if(!this.url.list){
+          this.$message.error("请设置url.list属性!")
+          return
+        }
+        //加载数据 若传入参数1则加载第一页的内容
+        if (arg === 1) {
+          this.ipagination.current = 1;
+        }
+        var params = this.getQueryParams();//查询条件
+        this.loading = true;
+        getAction(this.url.list, params).then((res) => {
+          if (res.success) {
+            this.dataSource = res.result.pageList.records;
+            this.ipagination.total = res.result.pageList.total;
+            this.hospitalCode = res.result.hospitalCode;
+          }
+          if(res.code===510){
+            this.$message.warning(res.message)
+          }
+          this.loading = false;
+        })
+      },
+      handleAdd: function () {
+        if(this.hospitalCode=="FCZYY"){ // 丰城市中医院
+          this.$refs.pdDosageModalForFCZhongyi.add();
+          this.$refs.pdDosageModalForFCZhongyi.title = "新增";
+          this.$refs.pdDosageModalForFCZhongyi.disableSubmit = false;
+        }else{
+          this.$refs.modalForm.add();
+          this.$refs.modalForm.title = "新增";
+          this.$refs.modalForm.disableSubmit = false;
+        }
       },
       inventoryReturned(record){
         this.$refs.pdDosageReturnedForm.edit(record);

@@ -22,15 +22,18 @@ import org.jeecgframework.poi.excel.def.NormalExcelConstants;
 import org.jeecgframework.poi.excel.entity.ExportParams;
 import org.jeecgframework.poi.excel.view.JeecgEntityExcelView;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
- /**
+/**
  * @Description: 用量表
  * @Author: zxh
  * @Date:   2020-03-13
@@ -45,6 +48,9 @@ public class PdDosageController extends JeecgController<PdDosage, IPdDosageServi
 	private IPdDosageService pdDosageService;
 	@Autowired
 	private IPdDepartService pdDepartService;
+
+	@Value("${jeecg.hospital_code}")
+	private String hospitalCode;
 	
 	/**
 	 * 分页列表查询
@@ -67,7 +73,12 @@ public class PdDosageController extends JeecgController<PdDosage, IPdDosageServi
 		pdDosage.setDepartParentId(sysUser.getDepartParentId());
 		pdDosage.setDepartId(sysUser.getCurrentDepartId());
 		IPage<PdDosage> pageList = pdDosageService.queryList(page, pdDosage);
-		return Result.ok(pageList);
+
+		Map<String,Object> map = new HashMap<>();
+		map.put("hospitalCode",hospitalCode);
+		map.put("pageList",pageList);
+
+		return Result.ok(map);
 	}
 	
 	/**

@@ -100,9 +100,11 @@ public class PdPackageRecordServiceImpl extends ServiceImpl<PdPackageRecordMappe
 	@Override
 	@Transactional
 	public void delMain(String id) {
-//		pdPackageRecordDetailMapper.deleteByMainId(id);
-
-
+		PdPackageRecord pdPackageRecord = pdPackageRecordMapper.selectById(id);
+		List<PdPackageRecordDetail> pdPackageRecordDetailList = pdPackageRecordDetailMapper.selectByMainId(id);
+		pdPackageRecord.setPdPackageRecordDetailList(pdPackageRecordDetailList);
+		// 拆包 库存还回
+		pdProductStockTotalService.updateInStockForPackage(pdPackageRecord);
 
 		pdPackageRecordMapper.deleteById(id);
 	}
