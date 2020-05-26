@@ -18,10 +18,13 @@
         a.del_flag,
         a.sys_org_code,
         a.depart_id,
+        a.test_depart_id,
+        d.depart_name as "testDepartName",
         a.depart_parent_id
         FROM pd_use_package a
         left join pd_use_package_detail b on a.id=b.package_id   AND b.del_flag='0'
         left join pd_product c on c.id=b.product_id and c.del_flag='0'
+        left join sys_depart d on d.id=a.test_depart_id and d.del_flag='0'
         <where>
             a.del_flag = #{entity.DEL_FLAG_NORMAL}
             <if test="entity.name != null and entity.name != ''">

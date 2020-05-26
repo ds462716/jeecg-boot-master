@@ -654,7 +654,7 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
     @Override
     public String lisUpdateUseStock(String testDepartment,List<PdUsePackageDetail> detailList) {
         //HisDepartInf hisDepartInf=hisDepartService.queryHisDepart(testDepartment);
-        String departId="743dc34c1bcd4e4fa9503ccebce7edc6";//目前只扣减检验科的
+        String departId=testDepartment;//
                        for(PdUsePackageDetail detail:detailList){
                         String productId= detail.getProductId();//产品ID
                         String productFlag= detail.getProductFlag();

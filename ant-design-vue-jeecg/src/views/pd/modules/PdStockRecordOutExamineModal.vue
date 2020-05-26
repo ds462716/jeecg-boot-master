@@ -202,8 +202,8 @@
   import JDictSelectTagExpand from "@/components/dict/JDictSelectTagExpand"
   import ATextarea from "ant-design-vue/es/input/TextArea";
   import {stockScanCode} from '@/utils/barcode'
-  import PdStockRecordOutPrintModal from "../print/PdStockRecordOutPrintModal";
-  //simport PdStockRecordOutPrintModal from "../../external/print/ExStockRecordOutPrintModal";
+  //import PdStockRecordOutPrintModal from "../print/PdStockRecordOutPrintModal";
+  import PdStockRecordOutPrintModal from "../../external/print/ExStockRecordOutPrintModal";
 
 
   const VALIDATE_NO_PASSED = Symbol()

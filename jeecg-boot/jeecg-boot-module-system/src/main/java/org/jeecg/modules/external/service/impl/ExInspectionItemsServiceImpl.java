@@ -3,6 +3,7 @@ package org.jeecg.modules.external.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.apache.commons.lang.StringUtils;
 import org.jeecg.common.constant.PdConstant;
 import org.jeecg.modules.external.entity.ExInspectionItems;
 import org.jeecg.modules.external.mapper.ExInspectionItemsMapper;
@@ -70,25 +71,31 @@ public class ExInspectionItemsServiceImpl extends ServiceImpl<ExInspectionItemsM
             query.eq(PdUsePackage::getCode, items.getTestItemCode());
             query.eq(PdUsePackage::getName,items.getTestItemName());
             PdUsePackage pdUsePackage = pdUsePackageService.getOne(query);
+            String testDpeartId=pdUsePackage.getTestDepartId();
             //不存在或沒有配置檢驗用量明細
             if(pdUsePackage!=null){
-                PdUsePackageDetail detail=new PdUsePackageDetail();
-                detail.setPackageId(pdUsePackage.getId());
-                List<PdUsePackageDetail> pdUsePackageDetails = pdUsePackageDetailService.queryPdUsePackageList(detail);
-                if(pdUsePackageDetails!=null && pdUsePackageDetails.size()>0){
-                    try{
-                        pdProductStockTotalService.lisUpdateUseStock(items.getTestDepartment(),pdUsePackageDetails);
-                        items.setRemarks("");
-                        items.setAcceptStatus(PdConstant.ACCEPT_STATUS_0);//已扣减
-                    }catch (Exception e){
-                        e.getMessage();
-                        log.error("扣減用量失敗:" + e.getMessage());
-                        items.setRemarks(e.getMessage());
-                        items.setAcceptStatus(PdConstant.ACCEPT_STATUS_2);
+                if(StringUtils.isEmpty(testDpeartId)){
+                    items.setRemarks("未配置检验科室");
+                    items.setAcceptStatus(PdConstant.ACCEPT_STATUS_2);// 0：已扣减  1：未配置检验用量  2:未扣减
+                }else {
+                    PdUsePackageDetail detail = new PdUsePackageDetail();
+                    detail.setPackageId(pdUsePackage.getId());
+                    List<PdUsePackageDetail> pdUsePackageDetails = pdUsePackageDetailService.queryPdUsePackageList(detail);
+                    if (pdUsePackageDetails != null && pdUsePackageDetails.size() > 0) {
+                        try {
+                            pdProductStockTotalService.lisUpdateUseStock(testDpeartId, pdUsePackageDetails);
+                            items.setRemarks("");
+                            items.setAcceptStatus(PdConstant.ACCEPT_STATUS_0);//已扣减
+                        } catch (Exception e) {
+                            e.getMessage();
+                            log.error("扣減用量失敗:" + e.getMessage());
+                            items.setRemarks(e.getMessage());
+                            items.setAcceptStatus(PdConstant.ACCEPT_STATUS_2);
+                        }
+                    } else {
+                        items.setRemarks("检验项目用量未配置:"+pdUsePackage.getRemarks());
+                        items.setAcceptStatus(PdConstant.ACCEPT_STATUS_1);// 0：已扣减  1：未配置检验用量  2:未扣减
                     }
-                }else{
-                    items.setRemarks("检验项目用量未配置");
-                    items.setAcceptStatus(PdConstant.ACCEPT_STATUS_1);// 0：已扣减  1：未配置检验用量  2:未扣减
                 }
             }else{
                 items.setRemarks("检验项目未配置");

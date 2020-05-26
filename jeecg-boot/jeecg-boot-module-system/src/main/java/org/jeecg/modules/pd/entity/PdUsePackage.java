@@ -51,6 +51,8 @@ public class PdUsePackage extends BaseEntity {
     private Date updateTime;
 	/**所属部门*/
     private String sysOrgCode;
+    /**检验科室ID*/
+    private String testDepartId;
 
     /**
      * 所属部门
@@ -76,4 +78,8 @@ public class PdUsePackage extends BaseEntity {
 
     @TableField(exist = false)
     private String productName;
+
+    /**检验科室名称*/
+    @TableField(exist = false)
+    private String testDepartName;
 }

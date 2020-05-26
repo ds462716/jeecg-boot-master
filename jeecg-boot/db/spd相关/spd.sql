@@ -529,3 +529,11 @@ ADD COLUMN `package_id`  varchar(32) CHARACTER SET utf8 COLLATE utf8_general_ci 
 CREATE INDEX item_doctor ON ex_inspection_items (apply_doctor,apply_department);
 CREATE INDEX fsf_yhm ON ex_his_user_inf (fsf_yhm);
 CREATE INDEX fsf_ksbh ON ex_his_depart_inf (fsf_ksbh);
+
+
+-- add by mcb 2020年5月26日16:30:23 增加库房类型
+INSERT INTO `sys_dict_item`  VALUES ('1265113802844839938', '1243463467576647681', '三級库房', '3', '', 3, 1, 'admin', '2020-05-26 10:53:30', NULL, '2020-05-26 10:53:30');
+
+-- add by mcb 2020年5月26日16:30:23 增加检验科室ID及检验室ID
+ALTER TABLE `pd_use_package`
+ADD COLUMN `test_depart_id` varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NULL COMMENT '检验科室ID' AFTER `depart_id`,
