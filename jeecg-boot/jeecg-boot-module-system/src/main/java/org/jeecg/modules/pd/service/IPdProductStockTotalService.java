@@ -135,4 +135,7 @@ public interface IPdProductStockTotalService extends IService<PdProductStockTota
 
     public PdProductStock insertProdStock(PdProductStock productStock);
 
+    public PdProductStock closeProdStock(PdProductStock productStock);
+
+
 }
