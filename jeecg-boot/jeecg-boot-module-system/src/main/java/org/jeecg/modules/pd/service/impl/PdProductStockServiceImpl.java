@@ -59,6 +59,12 @@ public class PdProductStockServiceImpl extends ServiceImpl<PdProductStockMapper,
 
 
 	@Override
+	public  PdProductStock getOne(PdProductStock pdProductStock) {
+		return pdProductStockMapper.getOne(pdProductStock);
+	}
+
+
+	@Override
 	@Transactional
 	public void updateProductStock(PdProductStock productStock) {
 		pdProductStockMapper.updateProductStock(productStock);
