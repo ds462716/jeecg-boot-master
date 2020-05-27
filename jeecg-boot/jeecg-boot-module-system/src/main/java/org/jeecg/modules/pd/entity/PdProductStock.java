@@ -223,4 +223,7 @@ public class PdProductStock extends BaseEntity {
 	@TableField(exist = false)
 	private String recordNo;//入库单号
 
+	@TableField(exist = false)
+	private List<String> stockIdList;
+
 }

@@ -242,6 +242,12 @@
 					#{productId}
 				</foreach>
 			</if>
+			<if test="stockIdList != null and stockIdList.size() > 0">
+				AND a.id IN
+				<foreach collection="stockIdList" item="id" separator="," open="(" close=")">
+					#{id}
+				</foreach>
+			</if>
  			order by  exp_status  desc,create_time desc
 		</where>
 	</select>
