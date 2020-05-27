@@ -78,6 +78,10 @@
 		<if test="entity.departName != null and entity.departName != ''">
 			AND b.fsf_ksmc LIKE concat('%',#{departName},'%')
 		</if>
+		<if test="entity.fsfXmlb != null and entity.fsfXmlb != ''">
+			AND a.fsf_xmlb LIKE concat('%',#{entity.fsfXmlb},'%')
+		</if>
+		order by a.fsf_xmbh desc
 	</select>
 
 
