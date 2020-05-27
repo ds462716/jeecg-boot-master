@@ -543,6 +543,7 @@ public class PdProductServiceImpl extends ServiceImpl<PdProductMapper, PdProduct
      * @param result
      * @return
      */
+    @Override
     public Result<List<PdProductStock>> decap(String Barcode,Result<List<PdProductStock>> result) {
         PdProductStock pdProductStock = new PdProductStock();
         pdProductStock.setRefBarCode(Barcode);

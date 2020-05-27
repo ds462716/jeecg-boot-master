@@ -54,4 +54,6 @@ public interface IPdProductService extends IService<PdProduct> {
     void updateValidityFlag(PdProduct pdProduct);
 
     Result<Object> importExcelReagents(Map<String, MultipartFile> fileMap);
+
+    Result<List<PdProductStock>> decap(String barcode, Result<List<PdProductStock>> result);
 }

@@ -350,6 +350,25 @@ public class PdProductController extends JeecgController<PdProduct, IPdProductSe
 	}
 
 	 /**
+	  *
+	  * @param Barcode
+	  * @param req
+	  * @return
+	  */
+	 @PostMapping(value = "decap")
+	 public Result<?> decap(String Barcode) {
+		 Result<List<PdProductStock>> result = new Result<>();
+		 try{
+			 result = pdProductService.decap(Barcode,result);
+		 }catch(Exception e){
+			 log.error(e.getMessage(), e);
+			 result.setCode(500);
+			 result.setMessage("条码格式不正确");
+		 }
+		 return result;
+	 }
+
+	 /**
 	  * 条码解析并查询库存
 	  * @param Barcode1
 	  * @param Barcode2
