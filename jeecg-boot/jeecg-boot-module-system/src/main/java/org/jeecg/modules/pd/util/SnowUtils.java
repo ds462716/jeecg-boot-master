@@ -85,10 +85,29 @@ public class SnowUtils {
 		return Long.toUnsignedString(bigNum,32).toUpperCase();
 	}
 
-	public static void main(String [] args){
-		for(int i = 0;i<1;i++){
-			//System.out.println(strKey());
-			System.out.println(bigKey());
+	public static String  onlyBigKey(int index) {
+		checkAndInit();
+		if (LocalDateTime.now().toEpochSecond(ZoneOffset.of("+8")) != recordSecond) {
+			recordSecond = LocalDateTime.now().toEpochSecond(ZoneOffset.of("+8"));
+			bigAtomic.set(minNum);
 		}
+		String differ = String.valueOf(recordSecond);
+		differ = differ.substring(5);
+		int atomic = bigAtomic.getAndIncrement();
+		if (atomic == 9999) {
+			String text = "bigKey超出阈值:" + LocalDateTime.now().toString();
+			throw new RuntimeException(text);
+		}
+		return differ + atomic + machineCode +String.format("%05d", index);
+	}
+
+	public static void main(String [] args){
+		for(int i = 0;i<10000;i++){
+			//System.out.println(strKey());
+			//System.out.println(onlyBigKey(i));
+			//System.out.println(bigKey());
+			System.out.println(onlyBigKey(i));
+		}
+		//System.out.println(onlyBigKey(1));
 	}
 }

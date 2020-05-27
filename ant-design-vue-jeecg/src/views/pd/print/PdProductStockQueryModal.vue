@@ -119,6 +119,8 @@
     <!-- 操作按钮区域 -->
     <div class="table-operator">
       <a-button type="primary" icon="plus" @click="batchPrint()">批量打印</a-button>
+      <a-button type="primary" icon="plus" :loading="confirmLoading" @click="onlyPrint()">打印唯一码</a-button>
+      <a-button type="primary" icon="delete" @click="handleDelete">清除条码</a-button>
     </div>
     <!-- table区域-begin -->
     <div>
@@ -145,6 +147,21 @@
       </a-table>
     </div>
     <pdProduct-stock-query-print ref="printModalForm" ></pdProduct-stock-query-print>
+    <a-modal :visible="orderVisible"  :maskClosable="false"  :confirmLoading="confirmLoading"
+             @ok="handleOk" :width="900" @cancel="handleCancel">
+      <a-form :form="form">
+        <a-row class="form-row" :gutter="{ xs: 8, sm: 16, md: 24, lg: 32 }">
+          <a-col :lg="24" >
+            <a-form-item label="输入开始序号" :labelCol="labelCol" :wrapperCol="wrapperCol">
+              <a-input-number autocomplete="off" v-model="startOrder" placeholder="请输入开始序号"  style="width: 100%"/>
+            </a-form-item>
+            <a-form-item label="输入结束序号" :labelCol="labelCol" :wrapperCol="wrapperCol">
+              <a-input-number autocomplete="off" v-model="endOrder" placeholder="请输入结束序号" style="width: 100%"/>
+            </a-form-item>
+          </a-col>
+        </a-row>
+      </a-form>
+    </a-modal>
   </a-card>
 
 </template>
@@ -153,7 +170,7 @@
 <script>
 
   import { JeecgListMixin ,handleEdit} from '@/mixins/JeecgListMixin'
-  import { getAction } from '@/api/manage'
+  import { getAction ,deleteAction } from '@/api/manage'
   import { filterObj } from '@/utils/util';
   import PdProductStockQueryPrint from './PdProductStockQueryPrint'
 
@@ -170,10 +187,22 @@
         departValue: undefined,
         notFoundContent:"未找到内容",
         supplierValue: undefined,
+        orderVisible:false,
         supplierData: [],
         previewVisible:false,
         confirmLoading: false,
         venderValue: undefined,
+        startOrder: "",
+        endOrder: "",
+        form: this.$form.createForm(this),
+        labelCol: {
+          xs: { span: 24 },
+          sm: { span: 5 },
+        },
+        wrapperCol: {
+          xs: { span: 24 },
+          sm: { span: 16 },
+        },
         venderData: [],
         // 表头
         columns: [
@@ -269,6 +298,7 @@
           queryDepart: "/pd/pdDepart/queryListTree",
           querySupplier:"/pd/pdSupplier/getSupplierList",
           queryVender:"/pd/pdVender/getVenderList",
+          deleteCode:"/pd/pdProductStockUniqueCode/deleteCode",
         },
         dictOptions:{
         },
@@ -384,8 +414,101 @@
           this.$message.error("请选择需要打印的内容!")
         }
       },
+      onlyPrint(){
+        if(this.selectionRows.length>0){
+          if(this.selectionRows.length==1){
+            let stockObj = this.selectionRows[0];
+            if(stockObj.stockNum>200){
+              this.orderVisible = true;
+            }else{
+              this.$refs.printModalForm.onlyInit(stockObj,"","");
+            }
+          }else{
+            this.$message.error("只能勾选一条进行打印!")
+          }
+        }else{
+          this.$message.error("请选择需要打印的内容!")
+        }
+      },
       handleImgCancel () {
         this.previewVisible = false;
+      },
+      handleOk(){
+        let startOrder = this.startOrder;
+        let endOrder = this.endOrder;
+        if(this.isRealNum(startOrder) && this.isRealNum(endOrder)){
+          let stockObj = this.selectionRows[0];
+          let stockNum = parseInt(stockObj.stockNum);
+          if(startOrder>0 && endOrder>0){
+            if(stockNum>=endOrder){
+              if(endOrder-startOrder<200){
+                this.orderVisible = false;
+                this.$refs.printModalForm.onlyInit(stockObj,startOrder,endOrder);
+                this.startOrder = "";
+                this.endOrder = "";
+              }else{
+                this.$message.error("系统只允许每次最多打印两百个条码!")
+              }
+            }else{
+              this.$message.error("结束序号超出库存总数!")
+            }
+          }else{
+            this.$message.error("请输入正确的序号!")
+          }
+        }else{
+          this.$message.error("请输入开始序号和结束序号!")
+        }
+      },
+      handleCancel () {
+        this.close()
+      },
+      close () {
+        //解决滚动条缓存bug
+        this.$emit('close');
+        this.orderVisible = false;
+      },
+      isRealNum(val){
+        // isNaN()函数 把空串 空格 以及NUll 按照0来处理 所以先去除，
+        if(val === "" || val ==null){
+          return false;
+        }
+        if(!isNaN(val)){
+          return true;
+       }else{
+        return false;
+       }
+     },
+      handleDelete() {
+        if (this.selectedRowKeys.length <= 0) {
+          this.$message.warning('请选择一条记录！');
+          return;
+        }else{
+          if(this.selectedRowKeys.length!=1){
+            this.$message.warning('请勿选择多条记录！');
+            return;
+          }else{
+            let id = this.selectedRowKeys[0];
+            let that = this;
+            this.$confirm({
+              title: "确认删除",
+              content: "是否删除选中库存的条码?",
+              onOk: function () {
+                that.loading = true;
+                deleteAction(that.url.deleteCode, {id: id}).then((res) => {
+                  if (res.success) {
+                    that.$message.success(res.message);
+                    that.loadData();
+                    that.onClearSelected();
+                  } else {
+                    that.$message.warning(res.message);
+                  }
+                }).finally(() => {
+                  that.loading = false;
+                });
+              }
+            });
+          }
+        }
       },
     },
   }

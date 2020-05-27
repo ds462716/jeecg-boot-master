@@ -2,6 +2,7 @@ package org.jeecg.modules.pd.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.aliyuncs.regions.ProductDomain;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.commons.collections.CollectionUtils;
@@ -71,6 +72,14 @@ public class PdProductServiceImpl extends ServiceImpl<PdProductMapper, PdProduct
 
     @Autowired
     private IPdStockRecordDetailService pdStockRecordDetailService;
+
+    @Autowired
+    private IPdProductStockUniqueCodeService pdProductStockUniqueCodeService;
+
+    @Autowired
+    private IPdProductStockTotalService pdProductStockTotalService;
+
+
 
 
 
@@ -526,6 +535,52 @@ public class PdProductServiceImpl extends ServiceImpl<PdProductMapper, PdProduct
         }
         return  result;
 
+    }
+
+    /**
+     * 开瓶扫码
+     * @param Barcode
+     * @param result
+     * @return
+     */
+    public Result<List<PdProductStock>> decap(String Barcode,Result<List<PdProductStock>> result) {
+        PdProductStock pdProductStock = new PdProductStock();
+        pdProductStock.setRefBarCode(Barcode);
+        //查询该条码是否开瓶
+        pdProductStock.setProductFlag(PdConstant.PRODUCT_FLAG_1);//试剂
+        pdProductStock.setNestatStatus(PdConstant.STOCK_NESTAT_STATUS_0);//使用中
+        List<PdProductStock> pdProductStocks = pdProductStockService.selectList(pdProductStock);
+        if(pdProductStocks!=null && pdProductStocks.size()>0){
+            result.setCode(MessageConstant.ICODE_STATE_500);
+            result.setMessage("该试剂已被使用");
+        }else{
+            LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+            LambdaQueryWrapper<PdProductStockUniqueCode> query = new LambdaQueryWrapper<PdProductStockUniqueCode>()
+                    .eq(PdProductStockUniqueCode::getId, Barcode)
+                    .eq(PdProductStockUniqueCode::getCodeState,PdConstant.CODE_PRINT_STATE_0)//正常状态不包括已退货和已用完的
+                    .eq(PdProductStockUniqueCode::getDepartId,sysUser.getCurrentDepartId());//当前科室下的
+            //查询状态是正常状态且是当前科室下的
+            PdProductStockUniqueCode pdProductStockUniqueCode = pdProductStockUniqueCodeService.getOne(query);
+            if(pdProductStockUniqueCode!=null){
+                PdProductStock ps = new PdProductStock();
+                ps.setId(pdProductStockUniqueCode.getProductStockId());
+                //查询该条码是否开瓶
+                ps.setProductFlag(PdConstant.PRODUCT_FLAG_1);//试剂
+                ps.setNestatStatus(PdConstant.STOCK_NESTAT_STATUS_1);//未使用
+                //查询该条码是否是试剂且未使用
+                List<PdProductStock> pds = pdProductStockService.selectList(ps);
+                if(pds!=null && pds.size()>0){
+                    PdProductStock newPdProductStock = pds.get(0);
+                    newPdProductStock.setRefBarCode(Barcode);
+                    PdProductStock productStock_i= pdProductStockTotalService.insertProdStock(newPdProductStock);
+                }
+
+            }else{
+                result.setCode(MessageConstant.ICODE_STATE_500);
+                result.setMessage("没有扫描到记录，该试剂可能已退货和已用完");
+            }
+        }
+        return result;
     }
 
     //批量更新产品收费代码

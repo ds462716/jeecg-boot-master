@@ -23,8 +23,6 @@
     <template  slot="footer">
       <a-button class="no-print" @click="close" style="margin-right: 15px;" >关  闭</a-button>
     </template>
-
-
   </a-modal>
 </template>
 
@@ -33,6 +31,7 @@
   import Vue from 'vue'
   import JsBarcode from 'jsbarcode'
   import Print from '@/utils/print'
+  import { httpAction ,getAction } from '@/api/manage'
   Vue.use(Print); //注册
 
   export default {
@@ -53,6 +52,10 @@
         dictOptions:{
         },
         tableScroll:{x :13*147+50},
+        url: {
+          uniqueCodeGeneration: "/pd/pdProductStockUniqueCode/uniqueCodeGeneration",
+          batchCodeGeneration: "/pd/pdProductStockUniqueCode/batchCodeGeneration",
+        },
       }
     },
 
@@ -66,31 +69,102 @@
         this.visible = false;
       },
       init(record){
-        this.printData = record;
-        this.visible = true;
-        this.$nextTick(() => {
-          for(let index = 0;index<record.length;index++){
-            let id = "#barcode"+index;
-            JsBarcode(id, record[index].refBarCode, {
-              format: "CODE128",
-              lineColor: "#000000",
-              font:"cursive",
-              fontOptions: "bold",
-              fontSize: 20,
-              textAlign:"center",
-              /*displayValue: false,*/
-              height: 66,
-              width:2,
-            })
+        let ids = "";
+        for (let a = 0; a < record.length; a++) {
+          ids += record[a].id + ",";
+        }
+        let formData = new URLSearchParams();
+        formData.append("ids",ids);
+        httpAction(this.url.batchCodeGeneration,formData,"post").then((res)=>{
+          if(res.success){
+            if(res.code ==200 || res.code ==202){
+              if(res.code ==202){
+                this.$message.error(res.message)
+              }
+              let uniqueCodes= res.result;
+              if(uniqueCodes.length>0){
+                this.printData = uniqueCodes;
+                this.visible = true;
+                this.$nextTick(() => {
+                  for(let index = 0;index<uniqueCodes.length;index++){
+                    let id = "#barcode"+index;
+                    JsBarcode(id, uniqueCodes[index].id, {
+                      format: "CODE128",
+                      lineColor: "#000000",
+                      font:"cursive",
+                      fontOptions: "bold",
+                      fontSize: 20,
+                      textAlign:"center",
+                      /*displayValue: false,*/
+                      height: 66,
+                      width:2,
+                    })
+                  }
+                })
+              }
+            }else{
+              this.$message.error(res.message)
+            }
+          }else{
+            this.$message.error("系统异常!")
           }
-        })
+          this.confirmLoading = false;
+        }).finally(() => {
+          this.confirmLoading = false;
+        });
+      },
+
+      onlyInit(record,startOrder,endOrder){
+        //查询库存数量根据数量生产唯一码
+        let formData = new URLSearchParams();
+        formData.append("productStockId",record.id);
+        formData.append("startOrder",startOrder);
+        formData.append("endOrder",endOrder);
+        httpAction(this.url.uniqueCodeGeneration,formData,"post").then((res)=>{
+          if(res.success){
+            if(res.code ==200 || res.code ==202){
+              if(res.code ==202){
+                this.$message.error(res.message)
+              }
+              let uniqueCodes= res.result;
+              if(uniqueCodes.length>0){
+                this.printData = uniqueCodes;
+                this.visible = true;
+                this.$nextTick(() => {
+                  for(let index = 0;index<uniqueCodes.length;index++){
+                    let id = "#barcode"+index;
+                    JsBarcode(id, uniqueCodes[index].id, {
+                      format: "CODE128",
+                      lineColor: "#000000",
+                      font:"cursive",
+                      fontOptions: "bold",
+                      fontSize: 20,
+                      textAlign:"center",
+                      /*displayValue: false,*/
+                      height: 66,
+                      width:2,
+                    })
+                  }
+                })
+              }
+            }else{
+              this.$message.error(res.message)
+            }
+          }else{
+            this.$message.error("系统异常!")
+          }
+          this.confirmLoading = false;
+        }).finally(() => {
+          this.confirmLoading = false;
+        });
       },
       print(){
         setTimeout(() => {
           this.$print(this.$refs.batchPrintRef);
         }, 1500)
 
-      }
+      },
+
     },
 
   }
