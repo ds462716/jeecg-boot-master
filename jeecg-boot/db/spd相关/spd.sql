@@ -547,3 +547,27 @@ INSERT INTO `sys_dict_item`  VALUES ('1265113802844839938', '1243463467576647681
 -- add by mcb 2020年5月26日16:30:23 增加检验科室ID及检验室ID
 ALTER TABLE `pd_use_package`
 ADD COLUMN `test_depart_id` varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NULL COMMENT '检验科室ID' AFTER `depart_id`,
+
+-- add by mcb 2020年5月26日16:30:23 增加开闭瓶菜单
+ INSERT INTO `sys_permission` VALUES ('1265210177987076098', '1255448486688649218', '开闭瓶管理', '/external/PdBottle', 'external/PdBottleList', NULL, NULL, 1, '0', NULL, '1', 6.00, 0, NULL, 1, 1, 0, 0, NULL, 'admin', '2020-05-26 17:16:28', 'admin', '2020-05-26 17:16:38', 0, 0, '1', 0);
+
+-- add by mcb 2020年5月26日16:30:23 增加开闭瓶信息表
+CREATE TABLE `pd_bottle_inf` (
+  `id` varchar(36) NOT NULL,
+  `create_by` varchar(50) DEFAULT NULL COMMENT '创建人',
+  `create_time` datetime DEFAULT NULL COMMENT '创建日期',
+  `update_by` varchar(50) DEFAULT NULL COMMENT '更新人',
+  `update_time` datetime DEFAULT NULL COMMENT '更新日期',
+  `sys_org_code` varchar(64) DEFAULT NULL COMMENT '所属部门',
+  `boottle_by` varchar(32) DEFAULT NULL COMMENT '开瓶操作人',
+  `boottle_date` datetime DEFAULT NULL COMMENT '开瓶时间',
+  `ref_bar_code` varchar(64) DEFAULT NULL COMMENT '试剂对应条码',
+  `stock_id` varchar(64) DEFAULT NULL COMMENT '对应库存明细ID',
+  `close_date` datetime DEFAULT NULL COMMENT '闭瓶时间',
+  `close_by` varchar(32) DEFAULT NULL COMMENT '闭瓶操作人',
+  `remarks` varchar(200) DEFAULT NULL COMMENT '备注',
+  `depart_id` varchar(32) DEFAULT NULL COMMENT '所属部门',
+  `depart_parent_id` varchar(32) DEFAULT NULL COMMENT '所属机构',
+   `del_flag` varchar(4) DEFAULT NULL COMMENT '删除状态',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
