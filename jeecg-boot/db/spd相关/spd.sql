@@ -571,3 +571,21 @@ CREATE TABLE `pd_bottle_inf` (
    `del_flag` varchar(4) DEFAULT NULL COMMENT '删除状态',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- add by zxh 2020年5月27日12:09:28 库存对照条码表
+CREATE TABLE `pd_product_stock_unique_code` (
+  `id` varchar(36) NOT NULL COMMENT '主键',
+  `product_stock_id` varchar(64) DEFAULT NULL COMMENT '库存明细表id',
+  `unique_code_order` int(11) DEFAULT NULL COMMENT '条码序号',
+  `print_type` varchar(1) DEFAULT NULL COMMENT '打印类型0唯一码打印，1批量打印',
+  `code_state` varchar(1) DEFAULT NULL COMMENT '条码状态0正常，1已退货，2已用完',
+  `depart_id` varchar(64) DEFAULT NULL COMMENT '所属部门',
+  `depart_parent_id` varchar(64) DEFAULT NULL COMMENT '所属医院',
+  `create_by` varchar(50) DEFAULT NULL COMMENT '创建人',
+  `create_time` datetime DEFAULT NULL COMMENT '创建日期',
+  `update_by` varchar(50) DEFAULT NULL COMMENT '更新人',
+  `update_time` datetime DEFAULT NULL COMMENT '更新日期',
+  `sys_org_code` varchar(64) DEFAULT NULL COMMENT '所属部门',
+  `del_flag` varchar(1) NOT NULL COMMENT '删除标识',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
