@@ -1,6 +1,6 @@
 let url ="/pd/pdProduct/scanCode";
 let stockUrl ="/pd/pdProduct/stockScanCode";
-let decap ="/pd/pdProduct/decap";
+let openingQuotation ="/pd/pdProduct/openingQuotation";
 let packageRecordUrl ="/pd/pdPackageRecord/packageRecordScanCode";
 import { httpAction } from '@/api/manage'
 
@@ -25,11 +25,11 @@ export async function scanCode(Barcode1, Barcode2){
  * @param Barcode
  * @returns {Promise<*>}
  */
-export async function decap(Barcode){
+export async function openingQuotation(Barcode){
   //封装查询参数
   let formData = new URLSearchParams();
   formData.append("Barcode",Barcode);
-  let res = await httpAction(decap,formData,"post");
+  let res = await httpAction(openingQuotation,formData,"post");
   return res;
 }
 

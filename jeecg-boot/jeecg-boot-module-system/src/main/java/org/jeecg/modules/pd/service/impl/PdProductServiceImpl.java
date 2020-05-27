@@ -544,7 +544,7 @@ public class PdProductServiceImpl extends ServiceImpl<PdProductMapper, PdProduct
      * @return
      */
     @Override
-    public Result<List<PdProductStock>> decap(String Barcode,Result<List<PdProductStock>> result) {
+    public Result<List<PdProductStock>> openingQuotation(String Barcode,Result<List<PdProductStock>> result) {
         PdProductStock pdProductStock = new PdProductStock();
         pdProductStock.setRefBarCode(Barcode);
         //查询该条码是否开瓶

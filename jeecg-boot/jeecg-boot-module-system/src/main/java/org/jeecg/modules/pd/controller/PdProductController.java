@@ -355,11 +355,11 @@ public class PdProductController extends JeecgController<PdProduct, IPdProductSe
 	  * @param req
 	  * @return
 	  */
-	 @PostMapping(value = "decap")
-	 public Result<?> decap(String Barcode) {
+	 @PostMapping(value = "openingQuotation")
+	 public Result<?> openingQuotation(String Barcode) {
 		 Result<List<PdProductStock>> result = new Result<>();
 		 try{
-			 result = pdProductService.decap(Barcode,result);
+			 result = pdProductService.openingQuotation(Barcode,result);
 		 }catch(Exception e){
 			 log.error(e.getMessage(), e);
 			 result.setCode(500);
