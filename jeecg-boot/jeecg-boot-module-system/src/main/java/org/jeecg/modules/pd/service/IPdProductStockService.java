@@ -30,6 +30,12 @@ public interface IPdProductStockService extends IService<PdProductStock> {
     List<PdProductStock> selectList(PdProductStock pdProductStock);
 
 	/**
+	 * 获取一条记录
+	 * @param pdProductStock
+	 * @return
+	 */
+	PdProductStock getOne(PdProductStock pdProductStock);
+	/**
 	 * 更新库存明细表过期状态
 	 */
 	public void updateProductStock(PdProductStock productStock);

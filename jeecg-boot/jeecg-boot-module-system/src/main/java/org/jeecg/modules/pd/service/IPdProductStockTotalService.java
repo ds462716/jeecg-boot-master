@@ -131,4 +131,8 @@ public interface IPdProductStockTotalService extends IService<PdProductStockTota
     List<PdProductStockTotalPage> findListForAutoNum(PdProductStockTotal stockTotal);
 
     String jyUpdateProductStockNum(String departId, List<PdProductStock> exInspectionItemsUseDetails);
+
+
+    public PdProductStock insertProdStock(PdProductStock productStock);
+
 }

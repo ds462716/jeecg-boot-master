@@ -247,6 +247,35 @@
 	</select>
 
 
+
+	<select id="getOne" resultType="org.jeecg.modules.pd.entity.PdProductStock" parameterType="org.jeecg.modules.pd.entity.PdProductStock">
+
+		SELECT
+		<include refid="pdProductStockColumns"/>
+		FROM pd_product_stock a
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="id != null and id != ''">
+				AND a.id = #{id}
+			</if>
+			<if test="departId != null and departId != ''">
+				AND a.depart_id = #{departId}
+			</if>
+			<if test="productId != null and productId != ''">
+				AND a.product_id = #{productId}
+			</if>
+			<if test="nestatStatus != null and nestatStatus != ''">
+				AND a.nestat_status = #{nestatStatus}
+			</if>
+			<if test="refBarCode != null and refBarCode != ''">
+				AND a.ref_bar_code = #{refBarCode}
+			</if>
+		</where>
+
+	</select>
+
+
+
 	<delete id="deleteByMainId" parameterType="java.lang.String">
 		DELETE  FROM  pd_product_stock  WHERE dept_id = #{mainId}
 </delete>
