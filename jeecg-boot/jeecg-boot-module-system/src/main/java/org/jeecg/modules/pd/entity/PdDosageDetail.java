@@ -118,9 +118,11 @@ public class PdDosageDetail extends BaseEntity {
     @ApiModelProperty(value = "所属医院")
     private String departParentId;
 
-
     /**产品库存ID*/
     private String productStockId;
+
+    private String hisChargeId;//His计费ID（丰城中医院）
+    private String hisChargeItemId;//His计费明细ID（丰城中医院）
 
     //冗余
     @TableField(exist = false)

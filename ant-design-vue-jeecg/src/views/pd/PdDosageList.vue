@@ -4,7 +4,32 @@
     <div class="table-page-search-wrapper">
       <a-form layout="inline" @keyup.enter.native="searchQuery">
         <a-row :gutter="24">
+          <a-col :md="6" :sm="8">
+            <a-form-item label="用量单号">
+              <a-input placeholder="请输入用量单号" v-model="queryParam.dosageNo"></a-input>
+            </a-form-item>
+          </a-col>
+          <a-col :md="6" :sm="8">
+            <a-form-item label="患者姓名">
+              <a-input placeholder="请输入患者姓名" v-model="queryParam.patientInfo"></a-input>
+            </a-form-item>
+          </a-col>
+          <a-col :md="6" :sm="8">
+            <a-form-item label="住院号">
+              <a-input placeholder="请输入住院号" v-model="queryParam.inHospitalNo"></a-input>
+            </a-form-item>
+          </a-col>
 
+          <a-col :md="6" :sm="8" >
+            <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
+              <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
+              <a-button type="primary" @click="searchReset" icon="reload" style="margin-left: 8px">重置</a-button>
+              <a @click="handleToggleSearch" style="margin-left: 8px">
+                {{ toggleSearchStatus ? '收起' : '展开' }}
+                <a-icon :type="toggleSearchStatus ? 'up' : 'down'"/>
+              </a>
+            </span>
+          </a-col>
         </a-row>
       </a-form>
     </div>
@@ -64,32 +89,27 @@
 
         <span slot="action" slot-scope="text, record">
           <!--<a @click="handleEdit(record)">编辑</a>-->
-          <a @click="handleDetail(record)">查询</a>
-
+          <a @click="handleDetail(record)">查看</a>
           <a-divider type="vertical" />
-          <a-dropdown>
-            <a class="ant-dropdown-link">更多 <a-icon type="down" /></a>
-              <a-menu slot="overlay">
-                <a-menu-item>
-                 <a @click="inventoryReturned(record)">库存还回</a>
-                </a-menu-item>
-              </a-menu>-->
-           <!-- <a-menu slot="overlay">
-              <a-menu-item>
-                <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.id)">
-                  <a>删除</a>
-                </a-popconfirm>
-              </a-menu-item>
-            </a-menu>-->
-          </a-dropdown>
+           <a @click="inventoryFee(record)">收费</a>
+          <a-divider type="vertical" />
+           <a @click="inventoryCnclFee(record)">取消收费</a>
+          <a-divider type="vertical" />
+           <a @click="inventoryReturned(record)">库存还回</a>
         </span>
-
       </a-table>
     </div>
 
     <pdDosage-modal ref="modalForm" @ok="modalFormOk"></pdDosage-modal>
-    <pd-dosage-modal-for-f-c-zhongyi ref="pdDosageModalForFCZhongyi" @ok="modalFormOk"></pd-dosage-modal-for-f-c-zhongyi>
     <pdDosageReturned-modal ref="pdDosageReturnedForm" @ok="modalFormOk"></pdDosageReturned-modal>
+    <pd-dosage-fee-modal ref="pdDosageFeeForm" @ok="modalFormOk"></pd-dosage-fee-modal>
+    <pd-dosage-cncl-fee-modal  ref="pdDosageCnclFeeForm" @ok="modalFormOk"></pd-dosage-cncl-fee-modal>
+
+    <pd-dosage-modal-f-c-z-y-y ref="pdDosageModalFCZYY" @ok="modalFormOk"></pd-dosage-modal-f-c-z-y-y>
+    <pd-dosage-returned-modal-f-c-z-y-y ref="pdDosageReturnedModalFCZYY" @ok="modalFormOk"></pd-dosage-returned-modal-f-c-z-y-y>
+    <pd-dosage-fee-modal-f-c-z-y-y ref="pdDosageFeeModalFCZYY" @ok="modalFormOk"></pd-dosage-fee-modal-f-c-z-y-y>
+    <pd-dosage-cncl-fee-modal-f-c-z-z-y ref="pdDosageCnclFeeModalFCZZY" @ok="modalFormOk"></pd-dosage-cncl-fee-modal-f-c-z-z-y>
+
   </a-card>
 </template>
 
@@ -99,15 +119,25 @@
   import PdDosageModal from './modules/PdDosageModal'
   import PdDosageReturnedModal from './modules/PdDosageReturnedModal'
   import { deleteAction, getAction,downFile } from '@/api/manage'
-  import PdDosageModalForFCZhongyi from "../external/modules/PdDosageModalForFCZhongyi";
+  import PdDosageModalFCZYY from "../external/fengcheng/modules/PdDosageModalFCZYY";
+  import PdDosageReturnedModalFCZYY from "../external/fengcheng/modules/PdDosageReturnedModalFCZYY";
+  import PdDosageFeeModal from '../pd/modules/PdDosageFeeModal'
+  import PdDosageCnclFeeModal from '../pd/modules/PdDosageCnclFeeModal'
+  import PdDosageFeeModalFCZYY from "../external/fengcheng/modules/PdDosageFeeModalFCZYY";
+  import PdDosageCnclFeeModalFCZZY from "../external/fengcheng/modules/PdDosageCnclFeeModalFCZZY";
 
   export default {
     name: "PdDosageList",
     mixins:[JeecgListMixin],
     components: {
-      PdDosageModalForFCZhongyi,
+      PdDosageCnclFeeModalFCZZY,
+      PdDosageFeeModalFCZYY,
+      PdDosageReturnedModalFCZYY,
+      PdDosageModalFCZYY,
       PdDosageModal,
-      PdDosageReturnedModal
+      PdDosageReturnedModal,
+      PdDosageFeeModal,
+      PdDosageCnclFeeModal
     },
     data () {
       return {
@@ -146,7 +176,7 @@
             dataIndex: 'totalPrice'
           },
           {
-            title:'病人信息',
+            title:'患者姓名',
             align:"center",
             dataIndex: 'patientInfo'
           },
@@ -213,24 +243,62 @@
       },
       handleAdd: function () {
         if(this.hospitalCode=="FCZYY"){ // 丰城市中医院
-          this.$refs.pdDosageModalForFCZhongyi.add();
-          this.$refs.pdDosageModalForFCZhongyi.title = "新增";
-          this.$refs.pdDosageModalForFCZhongyi.disableSubmit = false;
+          this.$refs.pdDosageModalFCZYY.add();
+          this.$refs.pdDosageModalFCZYY.title = "新增";
+          this.$refs.pdDosageModalFCZYY.disableSubmit = false;
         }else{
           this.$refs.modalForm.add();
           this.$refs.modalForm.title = "新增";
           this.$refs.modalForm.disableSubmit = false;
         }
       },
-      inventoryReturned(record){
-        this.$refs.pdDosageReturnedForm.edit(record);
-        this.$refs.pdDosageReturnedForm.title="库存还回";
-        this.$refs.pdDosageReturnedForm.disableSubmit = false;
+      //收费
+      inventoryFee(record){
+        if(this.hospitalCode=="FCZYY"){ // 丰城市中医院
+          this.$refs.pdDosageFeeModalFCZYY.edit(record);
+          this.$refs.pdDosageFeeModalFCZYY.title="收费";
+          this.$refs.pdDosageFeeModalFCZYY.disableSubmit = false;
+        }else{
+          this.$refs.pdDosageFeeForm.edit(record);
+          this.$refs.pdDosageFeeForm.title="收费";
+          this.$refs.pdDosageFeeForm.disableSubmit = false;
+        }
       },
+      //取消收费
+      inventoryCnclFee(record){
+        if(this.hospitalCode=="FCZYY") { // 丰城市中医院
+          this.$refs.pdDosageCnclFeeModalFCZZY.edit(record);
+          this.$refs.pdDosageCnclFeeModalFCZZY.title="取消收费";
+          this.$refs.pdDosageCnclFeeModalFCZZY.disableSubmit = false;
+        }else{
+          this.$refs.pdDosageCnclFeeForm.edit(record);
+          this.$refs.pdDosageCnclFeeForm.title="取消收费";
+          this.$refs.pdDosageCnclFeeForm.disableSubmit = false;
+        }
+      },
+      //库存还回
+      inventoryReturned(record){
+        if(this.hospitalCode=="FCZYY"){ // 丰城市中医院
+          this.$refs.pdDosageReturnedModalFCZYY.edit(record);
+          this.$refs.pdDosageReturnedModalFCZYY.title = "库存还回";
+          this.$refs.pdDosageReturnedModalFCZYY.disableSubmit = false;
+        }else{
+          this.$refs.pdDosageReturnedForm.edit(record);
+          this.$refs.pdDosageReturnedForm.title="库存还回";
+          this.$refs.pdDosageReturnedForm.disableSubmit = false;
+        }
+      },
+      // 详情
       handleDetail(record){
-        this.$refs.pdDosageReturnedForm.edit(record);
-        this.$refs.pdDosageReturnedForm.title="详情";
-        this.$refs.pdDosageReturnedForm.disableSubmit = true;
+        if(this.hospitalCode=="FCZYY"){ // 丰城市中医院
+          this.$refs.pdDosageReturnedModalFCZYY.edit(record);
+          this.$refs.pdDosageReturnedModalFCZYY.title = "详情";
+          this.$refs.pdDosageReturnedModalFCZYY.disableSubmit = true;
+        }else{
+          this.$refs.pdDosageReturnedForm.edit(record);
+          this.$refs.pdDosageReturnedForm.title="详情";
+          this.$refs.pdDosageReturnedForm.disableSubmit = true;
+        }
       }
     }
   }

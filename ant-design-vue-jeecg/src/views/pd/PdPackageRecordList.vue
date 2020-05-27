@@ -304,7 +304,7 @@
         }
         // var that = this;
         deleteAction(this.url.delete, {id: id}).then((res) => {
-          if (res.this) {
+          if (res.success) {
             this.$message.success(res.message);
             this.loadData();
           } else {

@@ -188,6 +188,12 @@ public class PdDosage extends BaseEntity {
     private String operationName;
     private String  extension1;//扩展字段1
     private String  extension2;//扩展字段2
+
+    private String visitNo;//就诊流水号（丰城中医院）
+
+    @TableField(exist = false)
+    private String oprDate;// 登记日期
+
     /**性别*/
     @TableField(exist = false)
     private String fsfXb;

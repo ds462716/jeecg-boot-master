@@ -14,6 +14,9 @@ public interface PdConstant {
 	/** 成功标志 add by jiangxz 20200310 */
 	public static final String SUCCESS_200 = "200";
 
+	public static final String SUCCESS_0 = "0"; //成功标识
+	public static final String FAIL_1 = "-1";    //失败标识
+
 	/** 编码规则  start */
 	//应用标识符类型 固定长度
 	public static final String  IDENTIFIER_TYPE_1= "1";
