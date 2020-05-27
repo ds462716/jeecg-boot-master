@@ -546,7 +546,7 @@ INSERT INTO `sys_dict_item`  VALUES ('1265113802844839938', '1243463467576647681
 
 -- add by mcb 2020年5月26日16:30:23 增加检验科室ID及检验室ID
 ALTER TABLE `pd_use_package`
-ADD COLUMN `test_depart_id` varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NULL COMMENT '检验科室ID' AFTER `depart_id`,
+ADD COLUMN `test_depart_id` varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NULL COMMENT '检验科室ID' AFTER `depart_id`;
 
 -- add by mcb 2020年5月26日16:30:23 增加开闭瓶菜单
  INSERT INTO `sys_permission` VALUES ('1265210177987076098', '1255448486688649218', '开闭瓶管理', '/external/PdBottle', 'external/PdBottleList', NULL, NULL, 1, '0', NULL, '1', 6.00, 0, NULL, 1, 1, 0, 0, NULL, 'admin', '2020-05-26 17:16:28', 'admin', '2020-05-26 17:16:38', 0, 0, '1', 0);
@@ -589,3 +589,8 @@ CREATE TABLE `pd_product_stock_unique_code` (
   `del_flag` varchar(1) NOT NULL COMMENT '删除标识',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+-- add by mcb 2020年5月27日16:30:23 增加实际使用规格数量
+ALTER TABLE `pd_bottle_inf`
+ADD COLUMN `spec_num` double(20, 4) NULL DEFAULT 0  COMMENT '实际使用规格数量' AFTER `del_flag`;

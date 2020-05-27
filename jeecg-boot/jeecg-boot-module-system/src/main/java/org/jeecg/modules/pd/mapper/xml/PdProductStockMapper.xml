@@ -209,6 +209,9 @@
 			<if test="huoweiCode != null and huoweiCode != ''">
 				AND a.huowei_code = #{huoweiCode}
 			</if>
+			<if test="refBarCode != null and refBarCode != ''">
+				AND a.ref_bar_code = #{refBarCode}
+			</if>
 			<if test="expDate != null">
 				AND DATE_FORMAT(a.exp_date,'%Y-%m-%d') = DATE_FORMAT( #{expDate}, '%Y-%m-%d')
 			</if>

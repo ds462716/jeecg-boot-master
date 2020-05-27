@@ -4,7 +4,6 @@ import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.PdConstant;
@@ -18,7 +17,6 @@ import org.jeecg.modules.pd.util.BarCodeUtil;
 import org.jeecg.modules.pd.util.FileUploadUtil;
 import org.jeecg.modules.pd.vo.PdProductPage;
 import org.jeecg.modules.pd.vo.PdProductReagents;
-import org.jeecg.modules.system.entity.SysUser;
 import org.jeecgframework.poi.excel.def.NormalExcelConstants;
 import org.jeecgframework.poi.excel.entity.ExportParams;
 import org.jeecgframework.poi.excel.view.JeecgEntityExcelView;
@@ -30,7 +28,6 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -352,7 +349,6 @@ public class PdProductController extends JeecgController<PdProduct, IPdProductSe
 	 /**
 	  *
 	  * @param Barcode
-	  * @param req
 	  * @return
 	  */
 	 @PostMapping(value = "openingQuotation")
@@ -360,6 +356,24 @@ public class PdProductController extends JeecgController<PdProduct, IPdProductSe
 		 Result<List<PdProductStock>> result = new Result<>();
 		 try{
 			 result = pdProductService.openingQuotation(Barcode,result);
+		 }catch(Exception e){
+			 log.error(e.getMessage(), e);
+			 result.setCode(500);
+			 result.setMessage("条码格式不正确");
+		 }
+		 return result;
+	 }
+
+	 /**
+	  *
+	  * @param Barcode
+	  * @return
+	  */
+	 @PostMapping(value = "closeIngQuotation")
+	 public Result<?> closeIngQuotation(String Barcode) {
+		 Result<List<PdProductStock>> result = new Result<>();
+		 try{
+			 result = pdProductService.closeIngQuotation(Barcode,result);
 		 }catch(Exception e){
 			 log.error(e.getMessage(), e);
 			 result.setCode(500);

@@ -442,6 +442,7 @@
         if(this.nestatStatus){
           params.nestatStatus = this.nestatStatus;
         }
+        alert(this.nestatStatus);
         if(this.productIdList){
           params.productIds = this.productIdList.join(",");
         }

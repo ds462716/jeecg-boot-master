@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.external.mapper.PdBottleInfMapper">
+
+
+
+    <select id="selectList"  resultType="org.jeecg.modules.external.entity.PdBottleInf">
+        SELECT
+        a.*,
+        c.name as "productName",
+        d.depart_name as "departName"
+        from pd_bottle_inf a
+        left join pd_product_stock b on a.stock_id=b.id
+        left join pd_product c on c.id=b.product_id  and c.del_flag=#{entity.DEL_FLAG_NORMAL}
+        left join sys_depart d on d.id=a.depart_id and d.del_flag=#{entity.DEL_FLAG_NORMAL}
+         where  a.del_flag=#{entity.DEL_FLAG_NORMAL}
+        <if test="entity.productName != null and entity.productName != ''">
+            AND (c.name LIKE concat('%',#{entity.productName},'%')
+            or c.py LIKE concat('%',#{entity.productName},'%')
+            or c.wb LIKE concat('%',#{entity.productName},'%')
+            or c.zdy LIKE concat('%',#{entity.productName},'%')
+            or c.bname LIKE concat('%',#{entity.productName},'%')
+            or c.bpy LIKE concat('%',#{entity.productName},'%')
+            or c.bwb LIKE concat('%',#{entity.productName},'%')
+            )
+        </if>
+        <if test="entity.boottleBy != null and entity.boottleBy != ''">
+            AND a.boottle_by = #{entity.boottleBy}
+        </if>
+        <if test="entity.departId != null and entity.departId != ''">
+            AND a.depart_id = #{entity.departId}
+        </if>
+        <if test="entity.departParentId != null and entity.departParentId != ''">
+            AND a.depart_parent_id = #{entity.departParentId}
+        </if>
+
+    </select>
+
+
+
+
+
+
+
+    <select id="getOne" resultType="org.jeecg.modules.external.entity.PdBottleInf" parameterType="org.jeecg.modules.external.entity.PdBottleInf">
+
+        SELECT
+       *
+        FROM pd_bottle_inf a
+        <where>
+            1=1
+            <if test="id != null and id != ''">
+                AND a.id = #{id}
+            </if>
+            <if test="departId != null and departId != ''">
+                AND a.depart_id = #{departId}
+            </if>
+            <if test="refBarCode != null and refBarCode != ''">
+                AND a.ref_bar_code = #{refBarCode}
+            </if>
+        </where>
+
+    </select>
+
+
+    <!-- 更新使用規格數量 -->
+    <update id="updateSpecNum">
+        UPDATE pd_bottle_inf SET spec_num = spec_num+#{specNum}   WHERE ref_bar_code= #{refBarCode}
+    </update>
+
+</mapper>
