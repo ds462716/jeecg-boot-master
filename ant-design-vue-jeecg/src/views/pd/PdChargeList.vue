@@ -20,6 +20,11 @@
           </a-form-item>
           </a-col>
           <a-col :md="6" :sm="8">
+            <a-form-item label="项目类别">
+              <a-input placeholder="请输入项目类别" v-model="queryParam.fsfXmlb"></a-input>
+            </a-form-item>
+          </a-col>
+          <a-col :md="6" :sm="8">
             <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
               <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
               <a-button type="primary" @click="searchReset" icon="reload" style="margin-left: 8px">重置</a-button>
@@ -122,6 +127,11 @@
             title:'收费项目规格',
             align:"center",
             dataIndex: 'fsfXmgg'
+          },
+          {
+            title:'收费类别',
+            align:"center",
+            dataIndex: 'fsfXmlb'
           },
           {
             title:'收费金额',
