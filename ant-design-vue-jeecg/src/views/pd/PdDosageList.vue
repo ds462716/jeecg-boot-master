@@ -279,6 +279,7 @@
       //库存还回
       inventoryReturned(record){
         if(this.hospitalCode=="FCZYY"){ // 丰城市中医院
+          record.dhyCharged = "1";
           this.$refs.pdDosageReturnedModalFCZYY.edit(record);
           this.$refs.pdDosageReturnedModalFCZYY.title = "库存还回";
           this.$refs.pdDosageReturnedModalFCZYY.disableSubmit = false;
@@ -291,6 +292,7 @@
       // 详情
       handleDetail(record){
         if(this.hospitalCode=="FCZYY"){ // 丰城市中医院
+          record.dhyCharged = "";
           this.$refs.pdDosageReturnedModalFCZYY.edit(record);
           this.$refs.pdDosageReturnedModalFCZYY.title = "详情";
           this.$refs.pdDosageReturnedModalFCZYY.disableSubmit = true;

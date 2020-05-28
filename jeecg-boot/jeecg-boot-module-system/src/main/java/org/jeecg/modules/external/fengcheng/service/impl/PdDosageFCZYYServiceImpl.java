@@ -9,15 +9,15 @@ import org.jeecg.common.constant.PdConstant;
 import org.jeecg.common.exception.JeecgBootException;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.DateUtils;
+import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.external.fengcheng.service.IPdDosageFCZYYService;
 import org.jeecg.modules.external.fengcheng.util.HisApiForFCZhongyiUtils;
-import org.jeecg.modules.pd.entity.PdDosage;
-import org.jeecg.modules.pd.entity.PdDosageDetail;
-import org.jeecg.modules.pd.entity.PdProductStock;
-import org.jeecg.modules.pd.entity.PdStockLog;
+import org.jeecg.modules.pd.entity.*;
 import org.jeecg.modules.pd.mapper.PdDosageMapper;
 import org.jeecg.modules.pd.service.*;
 import org.jeecg.modules.pd.util.UUIDUtil;
+import org.jeecg.modules.pd.vo.PdGoodsAllocationPage;
+import org.jeecg.modules.system.entity.SysDepart;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,6 +51,48 @@ public class PdDosageFCZYYServiceImpl extends ServiceImpl<PdDosageMapper, PdDosa
     private PdDosageMapper pdDosageMapper;
 
     private static Logger logger = LoggerFactory.getLogger(PdDosageFCZYYServiceImpl.class);
+
+    @Override
+    public PdDosage initModal(PdDosage param) {
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        SysDepart sysDepart = pdDepartService.getById(sysUser.getCurrentDepartId());
+        PdDosage pdDosage = new PdDosage();
+        if (pdDosage !=null && oConvertUtils.isNotEmpty(param.getId())) { // 查看页面
+            pdDosage = this.getById(param.getId());
+            // 新增页面
+            pdDosage.setDepartName(sysDepart.getDepartName());
+            pdDosage.setDosageByName(sysUser.getRealname());
+            PdGoodsAllocation pdGoodsAllocation = new PdGoodsAllocation();
+            pdGoodsAllocation.setDepartId(sysUser.getCurrentDepartId());
+            pdGoodsAllocation.setAreaType(PdConstant.GOODS_ALLCATION_AREA_TYPE_2);
+            List<PdGoodsAllocationPage> goodsAllocationList = pdGoodsAllocationService.getOptionsForSelect(pdGoodsAllocation);
+            //库区库位下拉框
+            pdDosage.setGoodsAllocationList(goodsAllocationList);
+            PdDosageDetail pdDosageDetail = new PdDosageDetail();
+            pdDosageDetail.setDosageId(param.getId());
+            pdDosageDetail.setHyCharged(param.getDhyCharged());
+            List<PdDosageDetail> pdDosageDetails = pdDosageDetailService.selectList(pdDosageDetail);
+            pdDosage.setPdDosageDetails(pdDosageDetails);
+
+        } else {  // 新增页面
+            pdDosage.setDepartId(sysDepart.getId());
+            pdDosage.setDepartName(sysDepart.getDepartName());
+            //获取出库单号
+            pdDosage.setDosageNo(UUIDUtil.generateOrderNoByType(PdConstant.ORDER_NO_FIRST_LETTER_YL));
+            //获取当前日期
+            pdDosage.setDosageDate(DateUtils.getDate());
+            //登录人姓名
+            pdDosage.setDosageBy(sysUser.getId());
+            pdDosage.setDosageByName(sysUser.getRealname());
+            PdGoodsAllocation pdGoodsAllocation = new PdGoodsAllocation();
+            pdGoodsAllocation.setDepartId(sysUser.getCurrentDepartId());
+            pdGoodsAllocation.setAreaType(PdConstant.GOODS_ALLCATION_AREA_TYPE_2);
+            List<PdGoodsAllocationPage> goodsAllocationList = pdGoodsAllocationService.getOptionsForSelect(pdGoodsAllocation);
+            //库区库位下拉框
+            pdDosage.setGoodsAllocationList(goodsAllocationList);
+        }
+        return pdDosage;
+    }
 
     @Override
     public List<PdDosage> queryPatientInfoList(PdDosage pdDosage) {
@@ -109,11 +151,11 @@ public class PdDosageFCZYYServiceImpl extends ServiceImpl<PdDosageMapper, PdDosa
             //产品物流
             List<PdStockLog> logList = new ArrayList<PdStockLog>();
             //数据合并
-            List<PdDosageDetail> afterDealList = dealRepeatData(detailList);
+//            List<PdDosageDetail> afterDealList = dealRepeatData(detailList);
             JSONObject json = new JSONObject();
             int i = 0;
             boolean validFlag = true;
-            for(PdDosageDetail pdd : afterDealList){
+            for(PdDosageDetail pdd : detailList){
                 //校验不合法数据和大于库存数据
                 PdProductStock pps = new PdProductStock();
                 pps.setId(pdd.getProductStockId());
@@ -214,7 +256,7 @@ public class PdDosageFCZYYServiceImpl extends ServiceImpl<PdDosageMapper, PdDosa
                 //保存用量
                 this.save(pdDosage);
                 //扣减当前库房的库存
-                pdProductStockTotalService.updateUseStock(sysUser.getCurrentDepartId(),afterDealList);
+                pdProductStockTotalService.updateUseStock(sysUser.getCurrentDepartId(),detailList);
             }
         }
         return chargeArray;
@@ -257,42 +299,77 @@ public class PdDosageFCZYYServiceImpl extends ServiceImpl<PdDosageMapper, PdDosa
         }
     }
 
+    @Override
+    public void dosageFee(PdDosage pdDosage) {
+        List<PdDosageDetail> detailList = pdDosage.getPdDosageDetails();
+
+        //更新病人信息
+        PdDosage update = new PdDosage();
+        update.setId(pdDosage.getId());
+        update.setPatientInfo(pdDosage.getPatientInfo());
+        update.setPatientDetailInfo(pdDosage.getPatientDetailInfo());
+        update.setExeDeptId(pdDosage.getExeDeptId());
+        update.setExeDeptName(pdDosage.getExeDeptName());
+        update.setOprDeptId(pdDosage.getOprDeptId());
+        update.setOprDeptName(pdDosage.getOprDeptName());
+        update.setSurgeonId(pdDosage.getSurgeonId());
+        update.setSurgeonName(pdDosage.getSurgeonName());
+        update.setSqrtDoctorId(pdDosage.getSqrtDoctorId());
+        update.setSqrtDoctorName(pdDosage.getSqrtDoctorName());
+        update.setInHospitalNo(pdDosage.getInHospitalNo());
+        update.setSubordinateWardId(pdDosage.getSubordinateWardId());
+        update.setSubordinateWardName(pdDosage.getSubordinateWardName());
+        update.setOutpatientNumber(pdDosage.getOutpatientNumber());
+        update.setPatientType(pdDosage.getPatientType());
+        update.setOperativeNumber(pdDosage.getOperativeNumber());
+        update.setOperationName(pdDosage.getOperationName());
+        update.setVisitNo(pdDosage.getVisitNo());
+        pdDosageMapper.updateById(update);
+
+        if(detailList!=null && detailList.size()>0){
+            for(PdDosageDetail pdd : detailList){
+                pdd.setHyCharged(PdConstant.CHARGE_FLAG_0);
+            }
+            pdDosageDetailService.updateBatchById(detailList);
+        }
+    }
+
 
     //合并相同的用量
-    private List<PdDosageDetail> dealRepeatData(final List<PdDosageDetail> list){
-        List<PdDosageDetail> tempArray = new ArrayList<PdDosageDetail>();
-        Set<String> pids = new HashSet<String>();
-        if(list != null && list.size() > 0){
-            for(PdDosageDetail temp : list){
-                String expdate = DateUtils.date2Str(temp.getExpDate(),DateUtils.yyMMdd.get());
-                if (temp == null || StringUtils.isEmpty(temp.getProductId()) || StringUtils.isEmpty(temp.getProductBarCode())
-                        || StringUtils.isEmpty(temp.getBatchNo()) || StringUtils.isEmpty(expdate)) {
-                    continue;
-                }
-                StringBuilder sb = new StringBuilder();
-                sb.append(temp.getProductId()).append(temp.getProductBarCode()).append(temp.getProductBarCode()).append(temp.getBatchNo());
-                if(pids.contains(sb.toString())){
-                    continue;
-                }
-                BigDecimal dosageTotal = new BigDecimal(0);
-                for(PdDosageDetail tp : list){
-                    if ( tp != null) {
-                        String tExpdate = DateUtils.date2Str(tp.getExpDate(),DateUtils.yyMMdd.get());
-                        if(temp.getBatchNo().equals(tp.getBatchNo())
-                                && expdate.equals(tExpdate)
-                                && temp.getProductBarCode().equals(tp.getProductBarCode())
-                                && temp.getProductId().equals(tp.getProductId())){
-                            pids.add(sb.toString());
-                            BigDecimal dosageCount = new BigDecimal(tp.getDosageCount());
-                            dosageTotal = dosageCount.add(dosageTotal);
-                        }
-                    }
-                }
-                temp.setDosageCount(dosageTotal.doubleValue());
-                tempArray.add(temp);
-            }
-        }
-        return tempArray;
-    }
+//    private List<PdDosageDetail> dealRepeatData(final List<PdDosageDetail> list){
+//        List<PdDosageDetail> tempArray = new ArrayList<PdDosageDetail>();
+//        Set<String> pids = new HashSet<String>();
+//        if(list != null && list.size() > 0){
+//            for(PdDosageDetail temp : list){
+//                String expdate = DateUtils.date2Str(temp.getExpDate(),DateUtils.yyMMdd.get());
+//                if (temp == null || StringUtils.isEmpty(temp.getProductId()) || StringUtils.isEmpty(temp.getProductBarCode())
+//                        || StringUtils.isEmpty(temp.getBatchNo()) || StringUtils.isEmpty(expdate)) {
+//                    continue;
+//                }
+//                StringBuilder sb = new StringBuilder();
+//                sb.append(temp.getProductId()).append(temp.getProductBarCode()).append(temp.getProductBarCode()).append(temp.getBatchNo());
+//                if(pids.contains(sb.toString())){
+//                    continue;
+//                }
+//                BigDecimal dosageTotal = new BigDecimal(0);
+//                for(PdDosageDetail tp : list){
+//                    if ( tp != null) {
+//                        String tExpdate = DateUtils.date2Str(tp.getExpDate(),DateUtils.yyMMdd.get());
+//                        if(temp.getBatchNo().equals(tp.getBatchNo())
+//                                && expdate.equals(tExpdate)
+//                                && temp.getProductBarCode().equals(tp.getProductBarCode())
+//                                && temp.getProductId().equals(tp.getProductId())){
+//                            pids.add(sb.toString());
+//                            BigDecimal dosageCount = new BigDecimal(tp.getDosageCount());
+//                            dosageTotal = dosageCount.add(dosageTotal);
+//                        }
+//                    }
+//                }
+//                temp.setDosageCount(dosageTotal.doubleValue());
+//                tempArray.add(temp);
+//            }
+//        }
+//        return tempArray;
+//    }
 
 }

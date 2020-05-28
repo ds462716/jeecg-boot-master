@@ -115,6 +115,10 @@
           this.loading = false;
         })
       },
+      searchReset() {
+        this.queryParam = {};
+        this.dataSource = [];
+      },
 
       initDictConfig(){
       }

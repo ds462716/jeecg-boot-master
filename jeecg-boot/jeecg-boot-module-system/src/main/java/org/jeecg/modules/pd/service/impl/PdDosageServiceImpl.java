@@ -27,7 +27,7 @@ import java.util.*;
 /**
  * @Description: 用量表
  * @Author: jiangxz
- * @Date:   2020-03-13
+ * @Date: 2020-03-13
  * @Version: V1.0
  */
 @Service
@@ -97,22 +97,23 @@ public class PdDosageServiceImpl extends ServiceImpl<PdDosageMapper, PdDosage> i
 
     /**
      * 器械使用保存
+     *
      * @param pdDosage
      */
     @Transactional
     @Override
-    public void saveMain(PdDosage pdDosage,String displayFlag) {
+    public void saveMain(PdDosage pdDosage, String displayFlag) {
         List<PdDosageDetail> detailList = pdDosage.getPdDosageDetails();
         pdDosage.setId(UUIDUtil.getUuid());
         //校验数据的合法性
         Iterator<PdDosageDetail> it = detailList.iterator();
-        while(it.hasNext()){
+        while (it.hasNext()) {
             PdDosageDetail child = it.next();
-            if(child.getDosageCount()==null || child.getProductId()==null){
+            if (child.getDosageCount() == null || child.getProductId() == null) {
                 it.remove();
             }
         }
-        if(detailList != null && detailList.size() > 0) {
+        if (detailList != null && detailList.size() > 0) {
             //总数量
             BigDecimal dosageTotal = new BigDecimal(0);
             //总金额
@@ -122,11 +123,11 @@ public class PdDosageServiceImpl extends ServiceImpl<PdDosageMapper, PdDosage> i
             //产品物流
             List<PdStockLog> logList = new ArrayList<PdStockLog>();
             //数据合并
-            List<PdDosageDetail> afterDealList = dealRepeatData(detailList);
+//            List<PdDosageDetail> afterDealList = dealRepeatData(detailList);
             JSONObject json = new JSONObject();
             int i = 0;
             boolean validFlag = true;
-            for(PdDosageDetail pdd : afterDealList){
+            for (PdDosageDetail pdd : detailList) {
                 //校验不合法数据和大于库存数据
                 PdProductStock pps = new PdProductStock();
                 pps.setId(pdd.getProductStockId());
@@ -135,14 +136,14 @@ public class PdDosageServiceImpl extends ServiceImpl<PdDosageMapper, PdDosage> i
                 //pps.setExpDate(pdd.getExpDate());
                 //pps.setProductBarCode(pdd.getProductBarCode());
                 PdProductStock tempPps = pdProductStockService.getById(pps);
-                if( null == tempPps || pdd.getDosageCount() > tempPps.getStockNum()){
+                if (null == tempPps || pdd.getDosageCount() > tempPps.getStockNum()) {
                     validFlag = false;
                     json.put(String.valueOf(i), pdd);
                     i = i + 1;
                     continue;
                 }
 
-                BigDecimal sprice = pdd.getSellingPrice()==null?new BigDecimal(0):pdd.getSellingPrice();
+                BigDecimal sprice = pdd.getSellingPrice() == null ? new BigDecimal(0) : pdd.getSellingPrice();
                 BigDecimal pdMoney = new BigDecimal(pdd.getDosageCount()).multiply(sprice);
                 BigDecimal dosageCount = new BigDecimal(pdd.getDosageCount());
                 dosageTotal = dosageCount.add(dosageTotal);
@@ -153,13 +154,13 @@ public class PdDosageServiceImpl extends ServiceImpl<PdDosageMapper, PdDosage> i
                 //产品追踪信息
                 PdStockLog prodLog = new PdStockLog();
                 //需要收费的产品集合
-                if(PdConstant.CHARGE_FLAG_0.equals(pdDosage.getHyCharged())
+                if (PdConstant.CHARGE_FLAG_0.equals(pdDosage.getHyCharged())
                         && PdConstant.CHARGE_FLAG_0.equals(pdd.getIsCharge())
-                        && !"".equals(pdd.getChargeCode())){
+                        && !"".equals(pdd.getChargeCode())) {
                     pdd.setHyCharged(PdConstant.CHARGE_FLAG_0);
                     prodLog.setLogType(PdConstant.STOCK_LOG_TYPE_6);
                     chargeArray.add(pdd);
-                }else{
+                } else {
                     //不收费的产品集合
                     pdd.setHyCharged(PdConstant.CHARGE_FLAG_1);
                     prodLog.setLogType(PdConstant.STOCK_LOG_TYPE_3);
@@ -171,7 +172,7 @@ public class PdDosageServiceImpl extends ServiceImpl<PdDosageMapper, PdDosage> i
                 prodLog.setProductId(pdd.getProductId());
                 prodLog.setProductNum(pdd.getDosageCount());
                 prodLog.setInFrom(pdDosage.getDepartName());
-                prodLog.setOutTo("病人:"+pdDosage.getPatientInfo()!=null?pdDosage.getPatientInfo():"");
+                prodLog.setOutTo("病人:" + pdDosage.getPatientInfo() != null ? pdDosage.getPatientInfo() : "");
                 prodLog.setPatientInfo(pdDosage.getPatientDetailInfo());
                 prodLog.setInvoiceNo(pdDosage.getDosageNo());
                 prodLog.setChargeDeptName(pdDosage.getExeDeptName());
@@ -183,13 +184,13 @@ public class PdDosageServiceImpl extends ServiceImpl<PdDosageMapper, PdDosage> i
             } else {
                 //收费调用接口
                 if (PdConstant.CHARGE_FLAG_0.equals(pdDosage.getHyCharged())
-                        &&chargeArray.size()>0){
+                        && chargeArray.size() > 0) {
                     //TODO 是计费切有收费代码的产品才会发往his系统
                     throw new JeecgBootException("没有配置收费接口");
                 }
-                if(!tempArray.isEmpty())
+                if (!tempArray.isEmpty())
                     pdDosageDetailService.saveBatch(tempArray);
-                if(!logList.isEmpty())
+                if (!logList.isEmpty())
                     pdStockLogService.saveBatch(logList);
                 LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
                 //保存用量
@@ -202,82 +203,86 @@ public class PdDosageServiceImpl extends ServiceImpl<PdDosageMapper, PdDosage> i
                 this.save(pdDosage);
                 //扣减当前库房的库存
 
-                pdProductStockTotalService.updateUseStock(sysUser.getCurrentDepartId(),afterDealList);
+                pdProductStockTotalService.updateUseStock(sysUser.getCurrentDepartId(), detailList);
             }
         }
     }
 
     /**
      * 分页查询使用列表
+     *
      * @param page
      * @param pdDosage
      * @return
      */
     @Override
     public IPage<PdDosage> queryList(Page<PdDosage> page, PdDosage pdDosage) {
-        return pdDosageMapper.selectListByPage(page,pdDosage);
+        return pdDosageMapper.selectListByPage(page, pdDosage);
     }
 
     //合并相同的用量
-    private List<PdDosageDetail> dealRepeatData(final List<PdDosageDetail> list){
-        List<PdDosageDetail> tempArray = new ArrayList<PdDosageDetail>();
-        Set<String> pids = new HashSet<String>();
-        if(list != null && list.size() > 0){
-            for(PdDosageDetail temp : list){
-                String expdate = DateUtils.date2Str(temp.getExpDate(),DateUtils.yyMMdd.get());
-                if (temp == null || StringUtils.isEmpty(temp.getProductId()) || StringUtils.isEmpty(temp.getProductBarCode())
-                || StringUtils.isEmpty(temp.getBatchNo()) || StringUtils.isEmpty(expdate)) {
-                    continue;
-                }
-                StringBuilder sb = new StringBuilder();
-                sb.append(temp.getProductId()).append(temp.getProductBarCode()).append(temp.getProductBarCode()).append(temp.getBatchNo());
-                if(pids.contains(sb.toString())){
-                    continue;
-                }
-                BigDecimal dosageTotal = new BigDecimal(0);
-                for(PdDosageDetail tp : list){
-                    if ( tp != null) {
-                        String tExpdate = DateUtils.date2Str(tp.getExpDate(),DateUtils.yyMMdd.get());
-                        if(temp.getBatchNo().equals(tp.getBatchNo())
-                                && expdate.equals(tExpdate)
-                                && temp.getProductBarCode().equals(tp.getProductBarCode())
-                                && temp.getProductId().equals(tp.getProductId())){
-                            pids.add(sb.toString());
-                            BigDecimal dosageCount = new BigDecimal(tp.getDosageCount());
-                            dosageTotal = dosageCount.add(dosageTotal);
-                        }
-                    }
-                }
-                temp.setDosageCount(dosageTotal.doubleValue());
-                tempArray.add(temp);
-            }
-        }
-        return tempArray;
-    }
+//    private List<PdDosageDetail> dealRepeatData(final List<PdDosageDetail> list){
+//        List<PdDosageDetail> tempArray = new ArrayList<PdDosageDetail>();
+//        Set<String> pids = new HashSet<String>();
+//        if(list != null && list.size() > 0){
+//            for(PdDosageDetail temp : list){
+//                String expdate = DateUtils.date2Str(temp.getExpDate(),DateUtils.yyMMdd.get());
+//                if (temp == null || StringUtils.isEmpty(temp.getProductId()) || StringUtils.isEmpty(temp.getProductBarCode())
+//                || StringUtils.isEmpty(temp.getBatchNo()) || StringUtils.isEmpty(expdate)) {
+//                    continue;
+//                }
+//                StringBuilder sb = new StringBuilder();
+//                sb.append(temp.getProductId()).append(temp.getProductBarCode()).append(temp.getProductBarCode()).append(temp.getBatchNo());
+//                if(pids.contains(sb.toString())){
+//                    continue;
+//                }
+//                BigDecimal dosageTotal = new BigDecimal(0);
+//                for(PdDosageDetail tp : list){
+//                    if ( tp != null) {
+//                        String tExpdate = DateUtils.date2Str(tp.getExpDate(),DateUtils.yyMMdd.get());
+//                        if(temp.getBatchNo().equals(tp.getBatchNo())
+//                                && expdate.equals(tExpdate)
+//                                && temp.getProductBarCode().equals(tp.getProductBarCode())
+//                                && temp.getProductId().equals(tp.getProductId())){
+//                            pids.add(sb.toString());
+//                            BigDecimal dosageCount = new BigDecimal(tp.getDosageCount());
+//                            dosageTotal = dosageCount.add(dosageTotal);
+//                        }
+//                    }
+//                }
+//                temp.setDosageCount(dosageTotal.doubleValue());
+//                tempArray.add(temp);
+//            }
+//        }
+//        return tempArray;
+//    }
 
     /**
      * 首页查询当日使用量
+     *
      * @param pdDosage
      * @return
      */
     @Override
-	public Map<String,Object> queryPdDosageCount(PdDosage pdDosage) {
-		Map<String,Object> params = pdDosageMapper.queryPdDosageCount(pdDosage);
-		return params;
-	}
+    public Map<String, Object> queryPdDosageCount(PdDosage pdDosage) {
+        Map<String, Object> params = pdDosageMapper.queryPdDosageCount(pdDosage);
+        return params;
+    }
 
     /**
      * 首页查询每周使用量
+     *
      * @param pdDosage
      * @return
      */
-	@Override
-	public List<HashMap> queryPdDosageDateList(PdDosage pdDosage) {
-		return pdDosageMapper.queryPdDosageDateList(pdDosage);
-	}
+    @Override
+    public List<HashMap> queryPdDosageDateList(PdDosage pdDosage) {
+        return pdDosageMapper.queryPdDosageDateList(pdDosage);
+    }
 
     /**
      * 首页查询  根据采购产品类区分统计使用金额
+     *
      * @param pdDosage
      * @return
      */
@@ -288,6 +293,7 @@ public class PdDosageServiceImpl extends ServiceImpl<PdDosageMapper, PdDosage> i
 
     /**
      * 统计查询-用量明细
+     *
      * @param page
      * @param pdDosage
      * @return
@@ -309,6 +315,7 @@ public class PdDosageServiceImpl extends ServiceImpl<PdDosageMapper, PdDosage> i
 
     /**
      * 取消收费
+     *
      * @param pdDosage
      */
     @Override
@@ -316,13 +323,13 @@ public class PdDosageServiceImpl extends ServiceImpl<PdDosageMapper, PdDosage> i
     public void dosageCnclFee(PdDosage pdDosage) {
         LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
         List<PdDosageDetail> detailList = pdDosage.getPdDosageDetails();
-        if(detailList!=null && detailList.size()>0){
+        if (detailList != null && detailList.size() > 0) {
             //产品物流
             List<PdStockLog> logList = new ArrayList<PdStockLog>();
-            for(PdDosageDetail pdd : detailList){
+            for (PdDosageDetail pdd : detailList) {
                 //产品追踪信息
                 PdStockLog prodLog = new PdStockLog();
-                if(pdd.getLeftRefundNum()==0L){
+                if (pdd.getLeftRefundNum() == 0L) {
                     throw new JeecgBootException("参数不正确");
                 }
                 BigDecimal leftRefundNum = new BigDecimal(0);
@@ -335,39 +342,41 @@ public class PdDosageServiceImpl extends ServiceImpl<PdDosageMapper, PdDosage> i
                 prodLog.setProductId(pdd.getProductId());
                 prodLog.setProductNum(pdd.getDosageCount());
                 prodLog.setInFrom(pdDosage.getDepartName());
-                prodLog.setOutTo("病人:"+pdDosage.getPatientInfo()!=null?pdDosage.getPatientInfo():"");
+                prodLog.setOutTo("病人:" + pdDosage.getPatientInfo() != null ? pdDosage.getPatientInfo() : "");
                 prodLog.setPatientInfo(pdDosage.getPatientDetailInfo());
                 prodLog.setInvoiceNo(pdDosage.getDosageNo());
                 prodLog.setChargeDeptName(pdDosage.getExeDeptName());
                 prodLog.setRecordTime(DateUtils.getDate());
                 logList.add(prodLog);
             }
-            if(!logList.isEmpty())
+            if (!logList.isEmpty())
                 pdStockLogService.saveBatch(logList);
             pdDosageDetailService.updateBatchById(detailList);
-            pdProductStockTotalService.updateRetunuseStock(sysUser.getCurrentDepartId(),detailList);
+            pdProductStockTotalService.updateRetunuseStock(sysUser.getCurrentDepartId(), detailList);
         }
     }
 
     /**
      * 收费
+     *
      * @param pdDosage
      */
     @Override
     @Transactional
     public void dosageFee(PdDosage pdDosage) {
         List<PdDosageDetail> detailList = pdDosage.getPdDosageDetails();
-        if(detailList!=null && detailList.size()>0){
-            for(PdDosageDetail pdd : detailList){
+        if (detailList != null && detailList.size() > 0) {
+            for (PdDosageDetail pdd : detailList) {
                 pdd.setHyCharged(PdConstant.CHARGE_FLAG_0);
             }
-              pdDosageDetailService.updateBatchById(detailList);
+            pdDosageDetailService.updateBatchById(detailList);
         }
     }
 
 
     /**
      * 库存回退
+     *
      * @param pdDosage
      */
     @Override
@@ -375,13 +384,13 @@ public class PdDosageServiceImpl extends ServiceImpl<PdDosageMapper, PdDosage> i
     public void dosageReturned(PdDosage pdDosage) {
         LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
         List<PdDosageDetail> detailList = pdDosage.getPdDosageDetails();
-        if(detailList!=null && detailList.size()>0){
+        if (detailList != null && detailList.size() > 0) {
             //产品物流
             List<PdStockLog> logList = new ArrayList<PdStockLog>();
-            for(PdDosageDetail pdd : detailList){
+            for (PdDosageDetail pdd : detailList) {
                 //产品追踪信息
                 PdStockLog prodLog = new PdStockLog();
-                if(pdd.getLeftRefundNum()==0L){
+                if (pdd.getLeftRefundNum() == 0L) {
                     throw new JeecgBootException("参数不正确");
                 }
                 BigDecimal leftRefundNum = new BigDecimal(0);
@@ -394,42 +403,42 @@ public class PdDosageServiceImpl extends ServiceImpl<PdDosageMapper, PdDosage> i
                 prodLog.setProductId(pdd.getProductId());
                 prodLog.setProductNum(pdd.getDosageCount());
                 prodLog.setInFrom(pdDosage.getDepartName());
-                prodLog.setOutTo("病人:"+pdDosage.getPatientInfo()!=null?pdDosage.getPatientInfo():"");
+                prodLog.setOutTo("病人:" + pdDosage.getPatientInfo() != null ? pdDosage.getPatientInfo() : "");
                 prodLog.setPatientInfo(pdDosage.getPatientDetailInfo());
                 prodLog.setInvoiceNo(pdDosage.getDosageNo());
                 prodLog.setChargeDeptName(pdDosage.getExeDeptName());
                 prodLog.setRecordTime(DateUtils.getDate());
                 logList.add(prodLog);
             }
-            if(!logList.isEmpty())
+            if (!logList.isEmpty())
                 pdStockLogService.saveBatch(logList);
             pdDosageDetailService.updateBatchById(detailList);
-            pdProductStockTotalService.updateRetunuseStock(sysUser.getCurrentDepartId(),detailList);
+            pdProductStockTotalService.updateRetunuseStock(sysUser.getCurrentDepartId(), detailList);
         }
     }
 
 
-
     /**
      * 器械使用保存
+     *
      * @param pdDosage
      */
     @Transactional
     @Override
-    public List<PdDosageDetail> newSaveMain(PdDosage pdDosage,String displayFlag) {
+    public List<PdDosageDetail> newSaveMain(PdDosage pdDosage, String displayFlag) {
         List<PdDosageDetail> detailList = pdDosage.getPdDosageDetails();
         pdDosage.setId(UUIDUtil.getUuid());
         //校验数据的合法性
         Iterator<PdDosageDetail> it = detailList.iterator();
-        while(it.hasNext()){
+        while (it.hasNext()) {
             PdDosageDetail child = it.next();
-            if(child.getDosageCount()==null || child.getProductId()==null){
+            if (child.getDosageCount() == null || child.getProductId() == null) {
                 it.remove();
             }
         }
         List<PdDosageDetail> tempArray = new ArrayList<>();
         List<PdDosageDetail> chargeArray = new ArrayList<>();
-        if(detailList != null && detailList.size() > 0) {
+        if (detailList != null && detailList.size() > 0) {
             //总数量
             BigDecimal dosageTotal = new BigDecimal(0);
             //总金额
@@ -437,11 +446,11 @@ public class PdDosageServiceImpl extends ServiceImpl<PdDosageMapper, PdDosage> i
             //产品物流
             List<PdStockLog> logList = new ArrayList<PdStockLog>();
             //数据合并
-            List<PdDosageDetail> afterDealList = dealRepeatData(detailList);
+//            List<PdDosageDetail> afterDealList = dealRepeatData(detailList);
             JSONObject json = new JSONObject();
             int i = 0;
             boolean validFlag = true;
-            for(PdDosageDetail pdd : afterDealList){
+            for (PdDosageDetail pdd : detailList) {
                 //校验不合法数据和大于库存数据
                 PdProductStock pps = new PdProductStock();
                 pps.setId(pdd.getProductStockId());
@@ -450,14 +459,14 @@ public class PdDosageServiceImpl extends ServiceImpl<PdDosageMapper, PdDosage> i
                 //pps.setExpDate(pdd.getExpDate());
                 //pps.setProductBarCode(pdd.getProductBarCode());
                 PdProductStock tempPps = pdProductStockService.getById(pps);
-                if( null == tempPps || pdd.getDosageCount() > tempPps.getStockNum()){
+                if (null == tempPps || pdd.getDosageCount() > tempPps.getStockNum()) {
                     validFlag = false;
                     json.put(String.valueOf(i), pdd);
                     i = i + 1;
                     continue;
                 }
 
-                BigDecimal sprice = pdd.getSellingPrice()==null?new BigDecimal(0):pdd.getSellingPrice();
+                BigDecimal sprice = pdd.getSellingPrice() == null ? new BigDecimal(0) : pdd.getSellingPrice();
                 BigDecimal pdMoney = new BigDecimal(pdd.getDosageCount()).multiply(sprice);
                 BigDecimal dosageCount = new BigDecimal(pdd.getDosageCount());
                 dosageTotal = dosageCount.add(dosageTotal);
@@ -468,13 +477,13 @@ public class PdDosageServiceImpl extends ServiceImpl<PdDosageMapper, PdDosage> i
                 //产品追踪信息
                 PdStockLog prodLog = new PdStockLog();
                 //需要收费的产品集合
-                if(PdConstant.CHARGE_FLAG_0.equals(pdDosage.getHyCharged())
+                if (PdConstant.CHARGE_FLAG_0.equals(pdDosage.getHyCharged())
                         && PdConstant.CHARGE_FLAG_0.equals(pdd.getIsCharge())
-                        && !"".equals(pdd.getChargeCode())){
+                        && !"".equals(pdd.getChargeCode())) {
                     pdd.setHyCharged(PdConstant.CHARGE_FLAG_0);
                     prodLog.setLogType(PdConstant.STOCK_LOG_TYPE_6);
                     chargeArray.add(pdd);
-                }else{
+                } else {
                     //不收费的产品集合
                     pdd.setHyCharged(PdConstant.CHARGE_FLAG_1);
                     prodLog.setLogType(PdConstant.STOCK_LOG_TYPE_3);
@@ -486,7 +495,7 @@ public class PdDosageServiceImpl extends ServiceImpl<PdDosageMapper, PdDosage> i
                 prodLog.setProductId(pdd.getProductId());
                 prodLog.setProductNum(pdd.getDosageCount());
                 prodLog.setInFrom(pdDosage.getDepartName());
-                prodLog.setOutTo("病人:"+pdDosage.getPatientInfo()!=null?pdDosage.getPatientInfo():"");
+                prodLog.setOutTo("病人:" + pdDosage.getPatientInfo() != null ? pdDosage.getPatientInfo() : "");
                 prodLog.setPatientInfo(pdDosage.getPatientDetailInfo());
                 prodLog.setInvoiceNo(pdDosage.getDosageNo());
                 prodLog.setChargeDeptName(pdDosage.getExeDeptName());
@@ -498,16 +507,16 @@ public class PdDosageServiceImpl extends ServiceImpl<PdDosageMapper, PdDosage> i
             } else {
                 //收费调用接口
                 if (PdConstant.CHARGE_FLAG_0.equals(pdDosage.getHyCharged())
-                        &&chargeArray.size()>0){
+                        && chargeArray.size() > 0) {
                     //这样会有问题，一个service实现类中不能存在多个不同数据源的service实现类
                   /*if(StringUtils.isNotEmpty(pdDosage.getInHospitalNo())){
                         exHisZyInfService.saveExHisZyInf(pdDosage,chargeArray);
                     }*/
                     pdDosageDetailService.saveBatch(chargeArray);
                 }
-                if(!tempArray.isEmpty())
+                if (!tempArray.isEmpty())
                     pdDosageDetailService.saveBatch(tempArray);
-                if(!logList.isEmpty())
+                if (!logList.isEmpty())
                     pdStockLogService.saveBatch(logList);
                 LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
                 //保存用量
@@ -519,7 +528,7 @@ public class PdDosageServiceImpl extends ServiceImpl<PdDosageMapper, PdDosage> i
                 pdDosage.setDosageDate(DateUtils.getDate());
                 this.save(pdDosage);
                 //扣减当前库房的库存
-                pdProductStockTotalService.updateUseStock(sysUser.getCurrentDepartId(),afterDealList);
+                pdProductStockTotalService.updateUseStock(sysUser.getCurrentDepartId(), detailList);
             }
         }
         return chargeArray;

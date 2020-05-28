@@ -85,6 +85,7 @@
                 :actionButton="false"
                 :disabled="disableSubmit"
                 @valueChange="valueChange"
+                @selectRowChange="handleSelectRowChange"
                 style="text-overflow: ellipsis;"
               >
                 <!--:maxHeight 大于 600 后就会有BUG 一次性选择9条以上产品，会少显示一条-->
@@ -260,6 +261,7 @@
         totalPrice:'0.0000',
         activeKey: 'pdDosageDetail',
         refKeys: ['pdDosageDetail',],
+        sRowIds:[],//选中行id
         //货区货位二级联动下拉框
         goodsAllocationList:[],
         queryParam:{},
@@ -343,7 +345,7 @@
           departParentId: {rules: [{required: true, message: '请输入所属医院!'},]},
         },
         url: {
-          init:"/pd/pdDosage/initModal",
+          init:"/pd/pdDosageFCZYY/initModal",
           dosageReturned: "/pd/pdDosageFCZYY/dosageReturned",
           add: "/pd/pdDosage/add",
           edit: "/pd/pdDosage/edit",
@@ -370,7 +372,11 @@
           this.$nextTick(() => {
             this.form.setFieldsValue(fieldval);
           })
-          params = { id: this.model.id }
+          if(this.model.dhyCharged){
+            params = { id: this.model.id,dhyCharged: this.model.dhyCharged}
+          }else{
+            params = { id: this.model.id,dhyCharged: "" }
+          }
         }else{
           params = { id: "" }
         }
@@ -386,8 +392,10 @@
                 }else{
                   this.hyCharged = false;
                 }
-                this.totalSum = res.result.totalSum;
-                this.totalPrice = res.result.totalPrice;
+                if(!this.model.dhyCharged){
+                  this.totalSum = res.result.totalSum;
+                  this.totalPrice = res.result.totalPrice;
+                }
                 this.pdDosageDetailTable.dataSource = res.result.pdDosageDetails || [];
                 let fieldval = pick(this.initData,'dosageNo','dosageDate','departName','dosageByName','inHospitalNo','patientInfo','patientDetailInfo','outpatientNumber','operativeNumber','operationName','exeDeptName','exeDeptId','oprDeptName','oprDeptId','surgeonName','surgeonId','sqrtDoctorName','sqrtDoctorId','subordinateWardName','subordinateWardId','remarks','extension1','extension2','subordinateWardName','visitNo');
                 this.form.setFieldsValue(fieldval);
@@ -424,6 +432,7 @@
         this.totalSum = 0;
         this.totalPrice = 0.0000;
         this.visible = false;
+        this.sRowIds = [];
         this.pdDosageDetailTable.dataSource = [];
         this.eachAllTable((item) => {
           item.initialize()
@@ -533,20 +542,27 @@
       },
       // 计算总数量和总价格
       getTotalNumAndPrice(rows){
-        this.$nextTick(() => {
-          if (rows.length <= 0) {
-            let {values} = this.$refs.pdDosageDetail.getValuesSync({validate: false});
-            rows = values;
+        if(this.model.dhyCharged){
+          if(this.sRowIds.length <= 0){
+            this.totalSum = "0";
+            this.totalPrice = "0.0000";
+            return;
           }
-          let totalSum = 0;
-          let totalPrice = 0;
-          rows.forEach((item, idx) => {
-            totalSum = totalSum + Number(item.dosageCount);
-            totalPrice = totalPrice + Number(item.amountMoney);
+
+          this.$nextTick(() => {
+            let {values} = this.$refs.pdDosageDetail.getValuesSync({validate: false});
+            let totalSum = 0;
+            let totalPrice = 0;
+            values.forEach((item, idx) => {
+              if(this.sRowIds.indexOf(item.id)>=0){
+                totalSum = totalSum + Number(item.dosageCount);
+                totalPrice = totalPrice + Number(item.amountMoney);
+              }
+            })
+            this.totalSum = totalSum;
+            this.totalPrice = totalPrice.toFixed(4);
           })
-          this.totalSum = totalSum;
-          this.totalPrice = totalPrice.toFixed(4);
-        })
+        }
       },
       // 表格数据变更
       valueChange(event) {
@@ -576,6 +592,10 @@
             }
           }
         }
+      },
+      handleSelectRowChange(selectedIds){
+        this.sRowIds = selectedIds;
+        this.getTotalNumAndPrice([]);
       },
       //清空扫码框
       clearQueryParam(){
@@ -620,21 +640,27 @@
           }
 
           let formData = this.classifyIntoFormData(allValues);
-          let selectedArrays = this.$refs.pdDosageDetail.selectedRowIds;
-          if(selectedArrays <= 0){
-            this.$message.warning("请勾选需要还回的产品");
+
+          if(this.sRowIds <= 0){
+            this.$message.warning("请勾选需要收费的产品");
             return;
           }
-          //查找出勾选的产品信息
-          let selectedIds = new Array();
-          for(let i =0;i<selectedArrays.length;i++){
-            let selectId = selectedArrays[i].substring(selectedArrays[i].lastIndexOf("-")+1);
-            selectedIds.push(selectId);
-          }
+
+          // let selectedArrays = this.$refs.pdDosageDetail.selectedRowIds;
+          // if(selectedArrays <= 0){
+          //   this.$message.warning("请勾选需要还回的产品");
+          //   return;
+          // }
+          // //查找出勾选的产品信息
+          // let selectedIds = new Array();
+          // for(let i =0;i<selectedArrays.length;i++){
+          //   let selectId = selectedArrays[i].substring(selectedArrays[i].lastIndexOf("-")+1);
+          //   selectedIds.push(selectId);
+          // }
           let list = formData.pdDosageDetails;
           for (let i =0; i <list.length;i++){
             //如果包含
-            if(selectedIds.indexOf(list[i].id)<0){
+            if(this.sRowIds.indexOf(list[i].id)<0){
               list.splice(i--, 1);
               continue;
             }

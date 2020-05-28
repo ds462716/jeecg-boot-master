@@ -20,6 +20,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 /**
@@ -34,15 +35,24 @@ import java.util.List;
 @Slf4j
 public class PdDosageFCZYYController {
     @Autowired
-    private IHisChargeService hisChargeService;
-    @Autowired
     private IPdDosageFCZYYService pdDosageFCZYYService;
     @Autowired
     private IPdDosageService pdDosageService;
-    @Autowired
-    private IExHisZyInfService exHisZyInfService;
 
     private static Logger logger = LoggerFactory.getLogger(PdDosageFCZYYController.class);
+
+
+    /**
+     * 初始化Modal页面
+     *
+     * @param req
+     * @return
+     */
+    @GetMapping(value = "/initModal")
+    public Result<?> initModal(PdDosage pdDosage, HttpServletRequest req) {
+        PdDosage entity = pdDosageFCZYYService.initModal(pdDosage);
+        return Result.ok(entity);
+    }
 
     /**
      * 提交(收费)
@@ -145,7 +155,7 @@ public class PdDosageFCZYYController {
                 }
             }
             pdDosage.setPdDosageDetails(detailList);
-            pdDosageService.dosageFee(pdDosage);
+            pdDosageFCZYYService.dosageFee(pdDosage);
         }
         return Result.ok("操作成功！");
     }

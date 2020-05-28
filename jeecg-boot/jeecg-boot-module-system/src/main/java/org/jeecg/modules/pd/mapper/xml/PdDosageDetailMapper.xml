@@ -39,6 +39,9 @@
             <if test="dosageId != null and dosageId != ''">
                 AND a.dosage_id = #{dosageId}
             </if>
+            <if test="hyCharged != null and hyCharged != ''">
+                AND a.hy_charged = #{hyCharged}
+            </if>
         </where>
         ORDER BY a.update_time desc,a.create_time desc
     </select>

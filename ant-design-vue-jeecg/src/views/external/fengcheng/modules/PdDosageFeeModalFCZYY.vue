@@ -84,6 +84,7 @@
                 :actionButton="false"
                 :disabled="disableSubmit"
                 @valueChange="valueChange"
+                @selectRowChange="handleSelectRowChange"
                 style="text-overflow: ellipsis;"
               >
                 <!--:maxHeight 大于 600 后就会有BUG 一次性选择9条以上产品，会少显示一条-->
@@ -100,6 +101,23 @@
           <a-tabs v-model="activeKey" @change="handleChangeTabs">
             <a-tab-pane tab="收费信息" :key="refKeys[0]"  :forceRender="true">
               <a-form :form="form">
+                <a-row>
+                  <a-col :md="6" :sm="8" v-if="hyCharged">
+                    <a-form-item label="住院号" :labelCol="labelCol" :wrapperCol="wrapperCol">
+                      <a-input autocomplete="off" :disabled="disableSubmit" v-decorator="[ 'medicalRecordNo', validatorRules.medicalRecordNo]"  @keyup.enter.native="selectHis(0)"></a-input>
+                    </a-form-item><!-- 查询条件 -->
+                  </a-col>
+                  <a-col :md="6" :sm="8" v-else="!hyCharged">
+                    <a-form-item label="住院号" :labelCol="labelCol" :wrapperCol="wrapperCol">
+                      <a-input :disabled="disableSubmit" v-decorator="[ 'medicalRecordNo']" @keyup.enter.native="selectHis(0)"></a-input>
+                    </a-form-item><!-- 查询条件 -->
+                  </a-col>
+                  <a-col :md="12" :sm="8">
+                    <a-form-item label="" :labelCol="labelCol" :wrapperCol="wrapperCol" style="text-align: left;padding-left: 15px;">
+                      （提示：按回车键查询患者信息）
+                    </a-form-item>
+                  </a-col>
+                </a-row>
                 <a-row>
                   <a-col :md="6" :sm="8" v-if="hyCharged">
                     <a-form-item label="患者姓名" :labelCol="labelCol" :wrapperCol="wrapperCol">
@@ -208,6 +226,7 @@
     </template>
 
     <pd-choose-product-stock-list-model ref="pdChooseProductStockListModel" @ok="returnProductStockData" ></pd-choose-product-stock-list-model>
+    <pd-choose-dosage-list-model-f-c-z-y-y ref="PdChooseDosageListModel" @ok="modalFormOk"></pd-choose-dosage-list-model-f-c-z-y-y>
   </j-modal>
 </template>
 
@@ -221,6 +240,7 @@
   import {httpAction, deleteAction, getAction} from '@/api/manage'
   import { JEditableTableMixin } from '@/mixins/JEditableTableMixin'
   import PdChooseProductStockListModel from "../../../pd/modules/PdChooseProductStockListModel";
+  import PdChooseDosageListModelFCZYY from "./PdChooseDosageListModelFCZYY";
 
   const VALIDATE_NO_PASSED = Symbol()
   export { FormTypes, VALIDATE_NO_PASSED }
@@ -243,6 +263,7 @@
     name: "PdDosageFeeModalFCZYY",
     mixins: [JEditableTableMixin],
     components: {
+      PdChooseDosageListModelFCZYY,
       PdChooseProductStockListModel,
     },
     data () {
@@ -259,6 +280,7 @@
         totalPrice:'0.0000',
         activeKey: 'pdDosageDetail',
         refKeys: ['pdDosageDetail',],
+        sRowIds:[],//选中行id
         //货区货位二级联动下拉框
         goodsAllocationList:[],
         queryParam:{},
@@ -342,12 +364,13 @@
           departParentId: {rules: [{required: true, message: '请输入所属医院!'},]},
         },
         url: {
-          init:"/pd/pdDosage/initModal",
+          init:"/pd/pdDosageFCZYY/initModal",
           dosageCnclFee: "/pd/pdDosageFCZYY/dosageCnclFee",//取消收费
           dosageFee: "/pd/pdDosageFCZYY/dosageFee",//收费
           add: "/pd/pdDosage/add",
           edit: "/pd/pdDosage/edit",
           departList:"/pd/pdDepart/getSysDepartList",
+          queryPatientInfoList:"/pd/pdDosageFCZYY/queryPatientInfoList",
         }
       }
     },
@@ -376,7 +399,7 @@
           this.$nextTick(() => {
             this.form.setFieldsValue(fieldval);
           })
-          params = { id: this.model.id }
+          params = { id: this.model.id,dhyCharged:"1" } //0已收费1未收费2已退费
         }else{
           params = { id: "" }
         }
@@ -392,8 +415,8 @@
                 }else{
                   this.hyCharged = false;
                 }
-                this.totalSum = res.result.totalSum;
-                this.totalPrice = res.result.totalPrice;
+                // this.totalSum = res.result.totalSum;
+                // this.totalPrice = res.result.totalPrice;
                 this.pdDosageDetailTable.dataSource = res.result.pdDosageDetails || [];
                 let fieldval = pick(this.initData,'dosageNo','dosageDate','departName','dosageByName','inHospitalNo','patientInfo','patientDetailInfo','outpatientNumber','operativeNumber','operationName','exeDeptName','exeDeptId','oprDeptName','oprDeptId','surgeonName','surgeonId','sqrtDoctorName','sqrtDoctorId','subordinateWardName','subordinateWardId','remarks','extension1','extension2','subordinateWardName','visitNo');
                 this.form.setFieldsValue(fieldval);
@@ -430,6 +453,7 @@
         this.totalSum = 0;
         this.totalPrice = 0.0000;
         this.visible = false;
+        this.sRowIds = [];
         this.pdDosageDetailTable.dataSource = [];
         this.eachAllTable((item) => {
           item.initialize()
@@ -437,6 +461,48 @@
       },
       handleCancel () {
         this.close()
+      },
+
+      selectHis(num){//查詢患者信息   num:0：住院患者查詢   1：門診患者查詢
+        let  medicalRecordNo='';
+        let  outpatientNumber='';
+        // if(num=='0'){
+        medicalRecordNo=this.form.getFieldValue('medicalRecordNo');
+        if(medicalRecordNo=="" || medicalRecordNo==null){
+          this.$message.error("请输入住院号！");
+          return;
+        }
+        // }else{
+        // outpatientNumber=this.form.getFieldValue('outpatientNumber');
+        //   if(outpatientNumber=="" || outpatientNumber==null){
+        //     this.$message.error("请输入门诊号！");
+        //   return;
+        // }
+        // }
+        // let  formData={medicalRecordNo:medicalRecordNo, outpatientNumber:outpatientNumber,prjType:num};
+
+        this.confirmLoading = true;
+        let  formData={medicalRecordNo:medicalRecordNo};
+        getAction(this.url.queryPatientInfoList,formData).then((res)=>{
+          if (res.success) {
+            if(res.result.length==1){
+              res.result[0].patientDetailInfo="姓名:"+res.result[0].patientInfo+",性别:"+res.result[0].fsfXb+",住院号:"+res.result[0].inHospitalNo
+                +",就诊流水号:"+res.result[0].visitNo+",项目:"+res.result[0].operationName;
+              let fieldval = pick(res.result[0],'inHospitalNo','patientInfo','operativeNumber','operationName','outpatientNumber','medicalRecordNo','sqrtDoctorId','oprDeptId','oprDeptName','exeDeptId','exeDeptName','surgeonName','patientDetailInfo','hospitalizationsNum','remarks','extension1','extension2','subordinateWardName','visitNo');
+              this.$nextTick(() => {
+                this.form.setFieldsValue(fieldval);
+              });
+            }else{
+              this.$refs.PdChooseDosageListModel.width = 1550;
+              this.$refs.PdChooseDosageListModel.show(res.result);
+            }
+          } else {
+            this.$message.error(res.message);
+          }
+        }).finally(() => {
+          this.confirmLoading = false
+        })
+
       },
       // 扫码查询
       searchQuery(num) {
@@ -528,6 +594,12 @@
       choosePackageList() {
 
       },
+      modalFormOk (formData) { //选择患者信息确定后返回所选择的数据
+        formData.patientDetailInfo="姓名:"+formData.patientInfo+",性别:"+formData.fsfXb+",住院号:"+formData.inHospitalNo
+          +",就诊流水号:"+formData.visitNo+",项目:"+formData.operationName;
+        let fieldval = pick(formData,'inHospitalNo','patientInfo','operativeNumber','operationName','outpatientNumber','medicalRecordNo','sqrtDoctorId','oprDeptId','oprDeptName','exeDeptId','exeDeptName','surgeonName','patientDetailInfo','hospitalizationsNum','remarks','extension1','extension2','subordinateWardName','visitNo');
+        this.form.setFieldsValue(fieldval);
+      },
       //删除行
       handleConfirmDelete() {
         if(this.$refs.pdDosageDetail.selectedRowIds.length > 0){
@@ -539,16 +611,21 @@
       },
       // 计算总数量和总价格
       getTotalNumAndPrice(rows){
+        if(this.sRowIds.length <= 0){
+          this.totalSum = "0";
+          this.totalPrice = "0.0000";
+          return;
+        }
+
         this.$nextTick(() => {
-          if (rows.length <= 0) {
-            let {values} = this.$refs.pdDosageDetail.getValuesSync({validate: false});
-            rows = values;
-          }
+          let {values} = this.$refs.pdDosageDetail.getValuesSync({validate: false});
           let totalSum = 0;
           let totalPrice = 0;
-          rows.forEach((item, idx) => {
-            totalSum = totalSum + Number(item.dosageCount);
-            totalPrice = totalPrice + Number(item.amountMoney);
+          values.forEach((item, idx) => {
+            if(this.sRowIds.indexOf(item.id)>=0){
+              totalSum = totalSum + Number(item.dosageCount);
+              totalPrice = totalPrice + Number(item.amountMoney);
+            }
           })
           this.totalSum = totalSum;
           this.totalPrice = totalPrice.toFixed(4);
@@ -582,6 +659,10 @@
             }
           }
         }
+      },
+      handleSelectRowChange(selectedIds){
+        this.sRowIds = selectedIds;
+        this.getTotalNumAndPrice([]);
       },
       //清空扫码框
       clearQueryParam(){
@@ -626,21 +707,27 @@
           }
 
           let formData = this.classifyIntoFormData(allValues);
-          let selectedArrays = this.$refs.pdDosageDetail.selectedRowIds;
-          if(selectedArrays <= 0){
+
+          if(this.sRowIds <= 0){
             this.$message.warning("请勾选需要收费的产品");
             return;
           }
-          //查找出勾选的产品信息
-          let selectedIds = new Array();
-          for(let i =0;i<selectedArrays.length;i++){
-            let selectId = selectedArrays[i].substring(selectedArrays[i].lastIndexOf("-")+1);
-            selectedIds.push(selectId);
-          }
+
+          // let selectedArrays = this.$refs.pdDosageDetail.selectedRowIds;
+          // if(selectedArrays <= 0){
+          //   this.$message.warning("请勾选需要收费的产品");
+          //   return;
+          // }
+          // //查找出勾选的产品信息
+          // let selectedIds = new Array();
+          // for(let i =0;i<selectedArrays.length;i++){
+          //   let selectId = selectedArrays[i].substring(selectedArrays[i].lastIndexOf("-")+1);
+          //   selectedIds.push(selectId);
+          // }
           let list = formData.pdDosageDetails;
           for (let i =0; i <list.length;i++){
             //如果包含
-            if(selectedIds.indexOf(list[i].id)<0){
+            if(this.sRowIds.indexOf(list[i].id)<0){
               list.splice(i--, 1);
               continue;
             }

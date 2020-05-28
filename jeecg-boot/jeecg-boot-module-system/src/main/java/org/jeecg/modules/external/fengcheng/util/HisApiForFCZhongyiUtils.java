@@ -12,6 +12,7 @@ import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.pd.entity.PdDosage;
 import org.jeecg.modules.pd.entity.PdDosageDetail;
+import org.jeecg.modules.pd.util.HttpUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,18 +57,18 @@ public class HisApiForFCZhongyiUtils {
             JSONArray array = new JSONArray();
             for(PdDosageDetail detail : dosageDetailList){
                 JSONObject item = new JSONObject();
-                item.put("bby01",detail.getChargeCode());
-                item.put("vaj25",detail.getDosageCount());
-                item.put("vaj38",detail.getAmountMoney());
-                item.put("bck01d",pdDosage.getOprDeptId());
+                item.put("bby01",detail.getChargeCode()); //收费项目代码
+                item.put("vaj25",detail.getDosageCount().toString());//数量
+                item.put("vaj38",detail.getAmountMoney()==null?"0":detail.getAmountMoney().toString());//金额
+                item.put("bck01d",pdDosage.getOprDeptId());//住院科室编码
                 item.put("prodNo",detail.getProductId()); //产品ID
                 array.add(item);
             }
 
             JSONObject requestJson = new JSONObject();
-            requestJson.put("vaa07",pdDosage.getVisitNo());
-            requestJson.put("vak08",pdDosage.getTotalPrice());
-            requestJson.put("bce02b", sysUser.getRealname());
+            requestJson.put("vaa07",pdDosage.getVisitNo()); //患者流水号
+            requestJson.put("vak08",pdDosage.getTotalPrice()==null?"0":pdDosage.getTotalPrice().toString());//应付金额
+            requestJson.put("bce02b", sysUser.getUsername()); //开单人(HIS系统工号)
             requestJson.put("Item", array);
 
             // TODO
@@ -121,16 +122,16 @@ public class HisApiForFCZhongyiUtils {
                 JSONObject item = new JSONObject();
                 item.put("vaj01",detail.getHisChargeItemId());
                 item.put("bby01",detail.getChargeCode());
-                item.put("vaj25",detail.getDosageCount());
-                item.put("vaj38",detail.getAmountMoney());
+                item.put("vaj25",detail.getDosageCount().toString());
+                item.put("vaj38",detail.getAmountMoney()==null?"0":detail.getAmountMoney().toString());
                 item.put("bck01d",pdDosage.getOprDeptId());
                 array.add(item);
             }
 
             JSONObject requestJson = new JSONObject();
             requestJson.put("vaa07",pdDosage.getVisitNo());
-            requestJson.put("vak08",pdDosage.getTotalPrice());
-            requestJson.put("bce02b", sysUser.getRealname());
+            requestJson.put("vak08",pdDosage.getTotalPrice()==null?"0":pdDosage.getTotalPrice().toString());
+            requestJson.put("bce02b", sysUser.getUsername());//开单人(HIS系统工号)
             requestJson.put("vai01", dosageDetailList.get(0).getHisChargeId());
             requestJson.put("Item", array);
 
@@ -169,12 +170,26 @@ public class HisApiForFCZhongyiUtils {
     public static JSONObject queryHisChargeCode(String SFCODE,String SFNAME) {
         JSONObject returnJson = new JSONObject();
         JSONObject requestJson = new JSONObject();
+        if(oConvertUtils.isEmpty(SFCODE)){
+            SFCODE = "";
+        }
+        if(oConvertUtils.isEmpty(SFNAME)){
+            SFNAME = "";
+        }
         requestJson.put("SFCODE",SFCODE);
         requestJson.put("SFNAME",SFNAME);
 
         // TODO
-//        returnJson = HttpUtil.httpPost(HIS_DEFAULT_NAME_SPACE + HIS_CHARGE_CODE_URL, requestJson.toJSONString());
-        returnJson = getTestChargeCodeJson(); // 测试数据
+        returnJson = HttpUtil.httpPost(HIS_DEFAULT_NAME_SPACE + HIS_CHARGE_CODE_URL, requestJson.toJSONString());
+//        returnJson = getTestChargeCodeJson(); // 测试数据
+
+        if(returnJson == null){
+            returnJson = new JSONObject();
+            logger.error("HIS查询项目收费代码信息失败，返回null");
+            returnJson.put("statusCode", "-200");
+            returnJson.put("msg", "HIS查询项目收费代码信息失败，返回null");
+            return returnJson;
+        }
 
         if (!PdConstant.SUCCESS_0.equals(returnJson.getString("code"))) {
             logger.error("HIS查询项目收费代码信息失败，返回msg:"+returnJson.getString("msg"));
