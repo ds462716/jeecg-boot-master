@@ -45,6 +45,11 @@
 
           <template v-if="toggleSearchStatus">
             <a-col :md="6" :sm="8">
+              <a-form-item label="使用状态">
+                <j-dict-select-tag v-model="queryParam.nestatStatus" dictCode="nestat_status"/>
+              </a-form-item>
+            </a-col>
+            <a-col :md="6" :sm="8">
               <a-form-item label="规格">
                 <a-input placeholder="请输入规格" v-model="queryParam.spec"></a-input>
               </a-form-item>
@@ -173,6 +178,7 @@
   import { getAction ,deleteAction } from '@/api/manage'
   import { filterObj } from '@/utils/util';
   import PdProductStockQueryPrint from './PdProductStockQueryPrint'
+  import {initDictOptions, filterMultiDictText} from '@/components/dict/JDictSelectUtil'
 
   export default {
     name: "PdProductStockQueryList",
@@ -225,6 +231,23 @@
             title:'产品编号',
             align:"center",
             dataIndex: 'number'
+          },
+          {
+            title:'产品类型',
+            align:"center",
+            dataIndex: 'productFlagName'
+          },
+          {
+            title:'使用状态',
+            align:"center",
+            dataIndex: 'nestatStatus',
+            customRender:(text)=>{
+              if(!text){
+                return ''
+              }else{
+                return filterMultiDictText(this.dictOptions['nestatStatus'], text+"")
+              }
+            }
           },
           {
             title:'产品条码',
@@ -301,8 +324,9 @@
           deleteCode:"/pd/pdProductStockUniqueCode/deleteCode",
         },
         dictOptions:{
+          nestatStatus:[],
         },
-        tableScroll:{x :13*147+50},
+        tableScroll:{x :13*157+50},
       }
     },
 
@@ -509,6 +533,13 @@
             });
           }
         }
+      },
+      initDictConfig() { //静态字典值加载
+        initDictOptions('nestat_status').then((res) => {
+          if (res.success) {
+            this.$set(this.dictOptions, 'nestatStatus', res.result)
+          }
+        })
       },
     },
   }
