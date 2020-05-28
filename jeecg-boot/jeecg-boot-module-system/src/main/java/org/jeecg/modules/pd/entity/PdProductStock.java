@@ -226,4 +226,8 @@ public class PdProductStock extends BaseEntity {
 	@TableField(exist = false)
 	private List<String> stockIdList;
 
+
+	@TableField(exist = false)
+	private  String menuType;//菜单页面类型  1:检验用量扣减菜单
+
 }

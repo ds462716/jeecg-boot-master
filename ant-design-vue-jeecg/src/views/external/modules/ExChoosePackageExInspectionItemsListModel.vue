@@ -23,7 +23,17 @@
                 <a-input placeholder="请输入检验项目名称" v-model="queryParam.name"></a-input>
               </a-form-item>
             </a-col>
+            <a-col :md="5" :sm="8">
+              <a-form-item label="检验科室">
+                <a-input placeholder="请输入检验科室名称" v-model="queryParam.testDepartName"></a-input>
+              </a-form-item>
+            </a-col>
              <template v-if="toggleSearchStatus">
+               <a-col :md="5" :sm="8">
+                 <a-form-item label="扣减类型">
+                   <j-dict-select-tag v-model="queryParam.deductuinType" dictCode="deductuin_type"/>
+                  </a-form-item>
+               </a-col>
                <a-col :md="5" :sm="8">
                 <a-form-item label="产品编号">
                   <a-input placeholder="请输入产品编号" v-model="queryParam.number"></a-input>
@@ -125,6 +135,16 @@
           },
           { title:'检验项目编号', align:"center", dataIndex: 'code' },
           { title:'检验项目名称', align:"center", dataIndex: 'name' },
+          { title:'检验科室', align:"center", dataIndex: 'testDepartName' },
+          { title:'扣减类型', align:"center", dataIndex: 'deductuinType',
+            customRender:(text)=>{
+              if(!text){
+                return ''
+              }else{
+                return filterMultiDictText(this.dictOptions['deductuinType'], text+"")
+              }
+            }
+          },
           { title:'创建时间', align:"center", dataIndex: 'createTime',
             customRender:function (text) {
               return !text?"":(text.length>10?text.substr(0,10):text)
@@ -170,6 +190,7 @@
           chooseDetailList:"/pd/pdUsePackage/queryPdUsePackageDetailByMainId",
         },
         dictOptions:{
+          deductuinType:[],
         },
         popModal: {
           title: '选择检验项目',
@@ -233,7 +254,11 @@
 
       },
       initDictConfig(){ //静态字典值加载
-
+        initDictOptions('deductuin_type').then((res) => {
+          if (res.success) {
+            this.$set(this.dictOptions, 'deductuinType', res.result)
+          }
+        })
       },
 
       getQueryParams() {

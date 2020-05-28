@@ -708,7 +708,7 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
                                             Double specNum = psii.getSpecNum();
                                             Double newSpecNum = specNum - count;
                                             if (specNum >= count) { //如果大于或等于要扣减的规格库存用量
-                                                if (newSpecNum > 0.00) { //如果扣完后规格数量大于0，则继续扣库存明细表规格数量
+                                                if(newSpecNum==0.00 || newSpecNum>0.00){ //如果扣完后规格数量大于0，则继续扣库存明细表规格数量
                                                     //更新明细库存
                                                     psii.setSpecNum(newSpecNum);
                                                     pdProductStockMapper.updateById(psii);
@@ -795,7 +795,7 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
                            Double specNum= productStocks_i.getSpecNum();//使用中的规格库存数量
                                    if(specNum>=count){ //如果大于或等于要扣减的规格库存用量
                                      Double newSpecNum= specNum - count;
-                                     if(newSpecNum>0.00){ //如果扣完后规格数量大于0，则继续扣库存明细表规格数量
+                                     if(newSpecNum==0.00 || newSpecNum>0.00){ //如果扣完后规格数量大于0，则继续扣库存明细表规格数量
                                          //更新明细库存
                                          productStocks_i.setSpecNum(newSpecNum);
                                          pdProductStockMapper.updateById(productStocks_i);
@@ -910,7 +910,7 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
                                    Double specNum =  psii.getSpecNum();
                                    Double newSpecNum= specNum - count;
                                    if(specNum>=count){ //如果大于或等于要扣减的规格库存用量
-                                           if(newSpecNum>0.00){ //如果扣完后规格数量大于0，则继续扣库存明细表规格数量
+                                       if(newSpecNum==0.00 || newSpecNum>0.00){ //如果扣完后规格数量大于0，则继续扣库存明细表规格数量
                                                //更新明细库存
                                                psii.setSpecNum(newSpecNum);
                                                pdProductStockMapper.updateById(psii);

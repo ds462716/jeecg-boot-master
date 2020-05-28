@@ -739,7 +739,7 @@
       },
       // 选择产品 新增行
       chooseProductList() {
-        this.$refs.pdChooseProductStockListModel.show({nestatStatus:"0"});
+        this.$refs.pdChooseProductStockListModel.show({"menuType":"1"});
       },
       // 表格数据变更
       valueChange(event) {

@@ -390,7 +390,9 @@
         if(params && params.productIdList){
           this.productIdList = params.productIdList;
         }
-
+        if(params && params.menuType){
+          this.menuType = params.menuType;
+        }
         this.loadData(1);
         this.visible = true;
       },
@@ -444,6 +446,9 @@
         }
         if(this.productIdList){
           params.productIds = this.productIdList.join(",");
+        }
+        if(this.menuType){
+          params.menuType = this.menuType;
         }
         this.loading = true;
         getAction(this.url.list, params).then((res) => {
