@@ -573,18 +573,24 @@ public class PdProductServiceImpl extends ServiceImpl<PdProductMapper, PdProduct
                 List<PdProductStock> pds = pdProductStockService.selectList(ps);
                 if(pds!=null && pds.size()>0){
                     PdProductStock newPdProductStock = pds.get(0);
-                    newPdProductStock.setRefBarCode(Barcode);
-                    PdProductStock productStock_i= pdProductStockTotalService.insertProdStock(newPdProductStock);
-                    //开瓶记录数据插入
-                    PdBottleInf bottleInf=new PdBottleInf();
-                    bottleInf.setBoottleBy(sysUser.getRealname());//开瓶操作人
-                    bottleInf.setBoottleDate(new Date());//开瓶时间
-                    bottleInf.setRefBarCode(Barcode);//试剂对应条码
-                    bottleInf.setStockId(productStock_i.getId());//对应库存明细ID
-                    bottleInf.setRemarks("");//备注
-                    bottleInf.setDepartId(sysUser.getCurrentDepartId());//所属部门
-                    bottleInf.setDepartParentId(sysUser.getDepartParentId());//所属机构
-                    pdBottleInfMapper.insert(bottleInf);
+                    String productFlag= newPdProductStock.getProductFlag();
+                    if(PdConstant.PRODUCT_FLAG_0.equals(productFlag)){
+                        result.setCode(MessageConstant.ICODE_STATE_500);
+                        result.setMessage("只能试剂开瓶");
+                    }else {
+                        newPdProductStock.setRefBarCode(Barcode);
+                        PdProductStock productStock_i = pdProductStockTotalService.insertProdStock(newPdProductStock);
+                        //开瓶记录数据插入
+                        PdBottleInf bottleInf = new PdBottleInf();
+                        bottleInf.setBoottleBy(sysUser.getRealname());//开瓶操作人
+                        bottleInf.setBoottleDate(new Date());//开瓶时间
+                        bottleInf.setRefBarCode(Barcode);//试剂对应条码
+                        bottleInf.setStockId(productStock_i.getId());//对应库存明细ID
+                        bottleInf.setRemarks("");//备注
+                        bottleInf.setDepartId(sysUser.getCurrentDepartId());//所属部门
+                        bottleInf.setDepartParentId(sysUser.getDepartParentId());//所属机构
+                        pdBottleInfMapper.insert(bottleInf);
+                    }
                 }
             }else{
                 result.setCode(MessageConstant.ICODE_STATE_500);
@@ -632,6 +638,12 @@ public class PdProductServiceImpl extends ServiceImpl<PdProductMapper, PdProduct
                     inf.setCloseDate(new Date());
                     inf.setCloseBy(sysUser.getRealname());
                     pdBottleInfMapper.updateById(inf);
+
+                //批量更新条码状态
+                PdProductStockUniqueCode productStockUniqueCode=new PdProductStockUniqueCode();
+                productStockUniqueCode.setId(Barcode);
+                productStockUniqueCode.setCodeState(PdConstant.CODE_PRINT_STATE_2);
+                pdProductStockUniqueCodeService.updateById(productStockUniqueCode);
             }else{
                 result.setCode(MessageConstant.ICODE_STATE_500);
                 result.setMessage("没有扫描到记录，该产品可能已退货和已用完");
@@ -1196,7 +1208,7 @@ public class PdProductServiceImpl extends ServiceImpl<PdProductMapper, PdProduct
     }
     /**
      * 校验是否计费和是否紧急产品
-     * @param pdProduct
+     * @param str
      * @return
      */
     private boolean checksStr(String str){

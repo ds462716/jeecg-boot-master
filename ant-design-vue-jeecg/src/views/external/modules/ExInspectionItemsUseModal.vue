@@ -495,7 +495,7 @@
                 return;
               }
             }else{
-              if(Number(item.productNum) > Number(item.specNum)){
+              if((Number(item.productNum) > Number(item.specNum)) && Number(item.specNum) !=0){
                 this.$message.error("["+item.productName+"]用量不能大于规格数量！");
                 return;
               }
@@ -701,7 +701,7 @@
                           return;
                         }
                       }else{
-                        if(Number(item.productNum) + 1 > Number(item.specNum)){
+                        if((Number(item.productNum) + 1 > Number(item.specNum))  && Number(item.specNum) !=0){
                           //清空扫码框
                           this.clearQueryParam();
                           this.$message.error("["+item.productName+"]用量不能大于规格数量！");
@@ -758,7 +758,7 @@
                     return;
                   }
                 }else{
-                  if(item.id == row.id && Number(value) > Number(item.specNum)){
+                  if(item.id == row.id && ((Number(value) > Number(item.specNum) && Number(item.specNum)!=0))){
                     this.$message.error("["+row.productName+"]用量不能大于规格数量！");
                     // 产品数量变更 计算每条产品的价格
                     let outTotalPrice = (Number(row.sellingPrice) * Number(item.stockNum)).toFixed(4);

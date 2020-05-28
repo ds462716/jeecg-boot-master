@@ -708,14 +708,14 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
                                             Double specNum = psii.getSpecNum();
                                             Double newSpecNum = specNum - count;
                                             if (specNum >= count) { //如果大于或等于要扣减的规格库存用量
-                                                if(newSpecNum==0.00 || newSpecNum>0.00){ //如果扣完后规格数量大于0，则继续扣库存明细表规格数量
+                                                if(newSpecNum>=0.00){ //如果扣完后规格数量大于0，则继续扣库存明细表规格数量
                                                     //更新明细库存
                                                     psii.setSpecNum(newSpecNum);
                                                     pdProductStockMapper.updateById(psii);
                                                 }
                                                 // 更新开瓶记录表数量
                                                 PdBottleInf pdBottleInf = new PdBottleInf();
-                                                pdBottleInf.setId(psii.getRefBarCode());
+                                                pdBottleInf.setRefBarCode(psii.getRefBarCode());
                                                 pdBottleInf.setSpecNum(count);
                                                 pdBottleInfMapper.updateSpecNum(pdBottleInf);
                                             } else {
@@ -724,7 +724,7 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
                                                 pdProductStockMapper.updateById(psii);
                                                 // 更新开瓶记录表数量
                                                 PdBottleInf pdBottleInf = new PdBottleInf();
-                                                pdBottleInf.setId(psii.getRefBarCode());
+                                                pdBottleInf.setRefBarCode(psii.getRefBarCode());
                                                 pdBottleInf.setSpecNum(specNum);
                                                 pdBottleInfMapper.updateSpecNum(pdBottleInf);
                                             }
@@ -793,21 +793,23 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
                         try{
                             PdProductStockTotal productStockTotal = stockTotals.get(0);
                            Double specNum= productStocks_i.getSpecNum();//使用中的规格库存数量
-                                   if(specNum>=count){ //如果大于或等于要扣减的规格库存用量
+                                  // if(specNum>=count){ //如果大于或等于要扣减的规格库存用量
                                      Double newSpecNum= specNum - count;
-                                     if(newSpecNum==0.00 || newSpecNum>0.00){ //如果扣完后规格数量大于0，则继续扣库存明细表规格数量
+                                     if(newSpecNum>=0.00){ //如果扣完后规格数量大于0，则继续扣库存明细表规格数量
                                          //更新明细库存
                                          productStocks_i.setSpecNum(newSpecNum);
-                                         pdProductStockMapper.updateById(productStocks_i);
+                                        }else{
+                                         productStocks_i.setSpecNum(0.00);
                                         }
+                                      pdProductStockMapper.updateById(productStocks_i);
                                      // 更新开瓶记录表数量
                                        PdBottleInf pdBottleInf=new PdBottleInf();
                                        pdBottleInf.setRefBarCode(productStocks_i.getRefBarCode());
                                        pdBottleInf.setSpecNum(count);
                                        pdBottleInfMapper.updateSpecNum(pdBottleInf);
-                                   }else{
-                                       throw new RuntimeException("扣减库存失败, ["+productStock.getProductName()+"]库存规格数量不足");
-                                   }
+                                   //}else{
+                                      // throw new RuntimeException("扣减库存失败, ["+productStock.getProductName()+"]库存规格数量不足");
+                                   //}
                         }catch (Exception e){
                             throw new RuntimeException("扣减库存失败,"+e.getMessage());
                         }
@@ -910,14 +912,14 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
                                    Double specNum =  psii.getSpecNum();
                                    Double newSpecNum= specNum - count;
                                    if(specNum>=count){ //如果大于或等于要扣减的规格库存用量
-                                       if(newSpecNum==0.00 || newSpecNum>0.00){ //如果扣完后规格数量大于0，则继续扣库存明细表规格数量
+                                       if( newSpecNum>=0.00){ //如果扣完后规格数量大于0，则继续扣库存明细表规格数量
                                                //更新明细库存
                                                psii.setSpecNum(newSpecNum);
                                                pdProductStockMapper.updateById(psii);
-                                           }
+                                            }
                                            // 更新开瓶记录表数量
                                            PdBottleInf pdBottleInf=new PdBottleInf();
-                                           pdBottleInf.setId(psii.getRefBarCode());
+                                           pdBottleInf.setRefBarCode(psii.getRefBarCode());
                                            pdBottleInf.setSpecNum(count);
                                            pdBottleInfMapper.updateSpecNum(pdBottleInf);
                                        psii.setPackageId(packageId);
@@ -929,7 +931,7 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
                                          pdProductStockMapper.updateById(psii);
                                        // 更新开瓶记录表数量
                                        PdBottleInf pdBottleInf=new PdBottleInf();
-                                       pdBottleInf.setId(psii.getRefBarCode());
+                                       pdBottleInf.setRefBarCode(psii.getRefBarCode());
                                        pdBottleInf.setSpecNum(specNum);
                                        pdBottleInfMapper.updateSpecNum(pdBottleInf);
                                        psii.setPackageId(packageId);

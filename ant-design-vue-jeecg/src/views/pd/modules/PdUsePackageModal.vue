@@ -361,11 +361,11 @@
           }*/
 
           let { values } = this.$refs.pdUsePackageDetail.getValuesSync({ validate: false });
-          for(let row of values){
-            if(row.specQuantity &&Number(row.count) > Number(row.specQuantity)){
-              this.$message.error("["+row.productName+"]试剂用量不能大于规格数量！");
+          for(let row of values) {
+            if (row.specQuantity && Number(row.count) > Number(row.specQuantity)) {
+              this.$message.error("[" + row.productName + "]试剂用量不能大于规格数量！");
               return;
-            }
+          }
             if(row.count <= 0){
               this.$message.error("产品["+row.productName+"]数量必须大于0！");
               return;
