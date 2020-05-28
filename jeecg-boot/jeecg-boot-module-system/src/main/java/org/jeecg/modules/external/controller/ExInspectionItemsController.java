@@ -218,7 +218,7 @@ public class ExInspectionItemsController extends JeecgController<ExInspectionIte
 			 return Result.error("扣減用量失敗:检验项目未配置");
 		 }
 	 	 exInspectionItemsService.updateById(items);
-		 return Result.ok("扣减成功!");
+		 return Result.ok("操作成功!");
 	 }
 
 
