@@ -96,4 +96,7 @@ public class PdRejected extends BaseEntity {
     private String queryExpDateStart;
     @TableField(exist = false)
     private String queryExpDateEnd;
+
+    private String rejectedType;//退货类型，唯一码退货和普通码退货
+
 }

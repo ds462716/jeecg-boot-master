@@ -597,3 +597,14 @@ ADD COLUMN `spec_num` double(32,4) DEFAULT NULL COMMENT '使用规格数量';
 -- add by mcb 2020年5月28日10:30:23 增加扣减类型
 ALTER TABLE `pd_use_package`
 ADD COLUMN `deductuin_type` varchar(4) CHARACTER SET utf8 COLLATE utf8_general_ci NULL COMMENT '扣减类型' AFTER `test_depart_id`;
+
+-- add by zxh 2020年5月28日09:06:43 退货新增唯一码出库
+ALTER TABLE `pd_rejected`
+ADD COLUMN `rejected_type`  varchar(1) NULL COMMENT '退货类型' AFTER `rejected_no`;
+
+-- add by zxh 2020年5月28日09:06:43 退货新增唯一码出库
+ALTER TABLE `pd_rejected_detail`
+ADD COLUMN `ref_bar_code`  varchar(64) NULL COMMENT 'REF唯一码' AFTER `product_bar_code`;
+INSERT INTO `sys_dict` VALUES ('1265848731045318657', '退货类型', 'rejected_type', '', '0', 'admin', '2020-05-28 11:33:50', null, '2020-05-28 11:33:50', '0');
+INSERT INTO `sys_dict_item` VALUES ('1265848860359905282', '1265848731045318657', '唯一码退货', '0', '', '1', '1', 'admin', '2020-05-28 11:34:21', null, '2020-05-28 11:34:21');
+INSERT INTO `sys_dict_item` VALUES ('1265848887836790785', '1265848731045318657', '普通码退货', '1', '', '1', '1', 'admin', '2020-05-28 11:34:28', null, '2020-05-28 11:34:28');

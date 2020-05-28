@@ -634,10 +634,50 @@ public class PdProductServiceImpl extends ServiceImpl<PdProductMapper, PdProduct
                     pdBottleInfMapper.updateById(inf);
             }else{
                 result.setCode(MessageConstant.ICODE_STATE_500);
-                result.setMessage("没有扫描到记录，该试剂可能已退货和已用完");
+                result.setMessage("没有扫描到记录，该产品可能已退货和已用完");
             }
         }
         return result;
+    }
+
+    /**
+     * 唯一码扫码
+     * @param barcode
+     * @param result
+     * @return
+     */
+    @Override
+    public Result<PdProductStock> uniqueScanCodeUrl(String barcode, Result<PdProductStock> result) {
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        LambdaQueryWrapper<PdProductStockUniqueCode> query = new LambdaQueryWrapper<PdProductStockUniqueCode>()
+                .eq(PdProductStockUniqueCode::getId, barcode)
+                .eq(PdProductStockUniqueCode::getCodeState,PdConstant.CODE_PRINT_STATE_0)//正常状态不包括已退货和已用完的
+               /* .eq(PdProductStockUniqueCode::getDepartId,sysUser.getCurrentDepartId())*/;//当前科室下的
+        //查询状态是正常状态且是当前科室下的
+        PdProductStockUniqueCode pdProductStockUniqueCode = pdProductStockUniqueCodeService.getOne(query);
+        if(pdProductStockUniqueCode!=null){
+            PdProductStock ps = new PdProductStock();
+            ps.setId(pdProductStockUniqueCode.getProductStockId());
+            ps.setDepartId(sysUser.getCurrentDepartId());
+            //查询该条码是否是试剂且未使用
+            List<PdProductStock> pds = pdProductStockService.selectList(ps);
+            if(pds!=null && pds.size()>0){
+                ps = pds.get(0);
+                ps.setRefBarCode(barcode);
+                result.setResult(ps);
+                result.setCode(MessageConstant.ICODE_STATE_200);
+                result.setMessage(MessageConstant.PACKAGE_CODE_MESSAGE_2);
+                return result;
+            }else{
+                result.setCode(MessageConstant.ICODE_STATE_500);
+                result.setMessage("没有扫描到记录，该产品不属于当前科室");
+                return result;
+            }
+        }else{
+            result.setCode(MessageConstant.ICODE_STATE_500);
+            result.setMessage("没有扫描到记录，该产品可能不存在、或已退货和已用完");
+            return result;
+        }
     }
 
 

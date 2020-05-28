@@ -219,7 +219,7 @@ public class PdDosageServiceImpl extends ServiceImpl<PdDosageMapper, PdDosage> i
     }
 
     //合并相同的用量
-    private List<PdDosageDetail> dealRepeatData(final List<PdDosageDetail> list){
+    public List<PdDosageDetail> dealRepeatData(final List<PdDosageDetail> list){
         List<PdDosageDetail> tempArray = new ArrayList<PdDosageDetail>();
         Set<String> pids = new HashSet<String>();
         if(list != null && list.size() > 0){

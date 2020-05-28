@@ -35,6 +35,11 @@
             </a-form-item>
           </a-col>
           <template v-if="toggleSearchStatus">
+            <a-col :md="6" :sm="8">
+              <a-form-item label="退货类型">
+                <j-dict-select-tag-expand v-model="queryParam.rejectedType" dictCode="rejected_type" placeholder="请选择退货类型"/>
+              </a-form-item>
+            </a-col>
           </template>
           <a-col :md="6" :sm="8">
             <span style="float: right;overflow: hidden;" class="table-page-search-submitButtons">
@@ -55,6 +60,7 @@
     <!-- 操作按钮区域 -->
     <div class="table-operator">
       <a-button @click="handleAdd" type="primary" v-show="isDisabledAuth('stock:form:addRejected')" icon="plus">新增</a-button>
+      <a-button @click="handleUniqueAdd" type="primary" v-show="isDisabledAuth('stock:form:addRejected')" icon="plus">唯一码退货</a-button>
       <!--<a-button type="primary" icon="download" @click="handleExportXls('pd_rejected')">导出</a-button>-->
     </div>
 
@@ -81,6 +87,7 @@
       </a-table>
     </div>
     <pdRejected-modal ref="modalForm" @ok="modalFormOk"></pdRejected-modal>
+    <pd-Unique-Rejected-modal ref="modalUniqueForm" @ok="modalFormOk"></pd-Unique-Rejected-modal>
   </a-card>
 </template>
 
@@ -88,15 +95,20 @@
 
   import { JeecgListMixin } from '@/mixins/JeecgListMixin'
   import PdRejectedModal from './modules/PdRejectedModal'
+  import PdUniqueRejectedModal from './modules/PdUniqueRejectedModal'
   import { filterObj } from '@/utils/util';
   import { httpAction,getAction } from '@/api/manage'
   import { disabledAuthFilter } from "@/utils/authFilter"
+  import {initDictOptions, filterMultiDictText} from '@/components/dict/JDictSelectUtil'
+  import JDictSelectTagExpand from "@/components/dict/JDictSelectTagExpand"
 
   export default {
     name: "PdRejectedList",
     mixins:[JeecgListMixin],
     components: {
-      PdRejectedModal
+      PdRejectedModal,
+      PdUniqueRejectedModal,
+      JDictSelectTagExpand
     },
     data () {
       return {
@@ -131,6 +143,18 @@
             dataIndex: 'rejectedDate'
           },
           {
+            title:'退货类型',
+            align:"center",
+            dataIndex: 'rejectedType',
+            customRender:(text)=>{
+              if(!text){
+                return ''
+              }else{
+                return filterMultiDictText(this.dictOptions['rejectedType'], text+"")
+              }
+            }
+          },
+          {
             title:'科室',
             align:"center",
             dataIndex: 'departName'
@@ -160,7 +184,9 @@
           // importExcelUrl: "pd/pdRejected/importExcel",
           querySupplier:"/pd/pdSupplier/getSupplierList",
         },
-        dictOptions:{},
+        dictOptions:{
+          rejectedType:[],
+        },
       }
     },
     computed: {
@@ -170,6 +196,11 @@
     },
     methods: {
       initDictConfig(){
+        initDictOptions('rejected_type').then((res) => {
+          if (res.success) {
+            this.$set(this.dictOptions, 'rejectedType', res.result)
+          }
+        });
       },
       /**
        * 校验权限
@@ -225,6 +256,23 @@
         })
       },
       //----------------供应商查询end
+      handleUniqueAdd(){
+        this.$refs.modalUniqueForm.add();
+        this.$refs.modalUniqueForm.title = "唯一码退货";
+        this.$refs.modalUniqueForm.disableSubmit = false;
+      },
+
+      handleDetail:function(record){
+        if(record.rejectedType=="0"){
+          this.$refs.modalUniqueForm.edit(record);
+          this.$refs.modalUniqueForm.title="详情";
+          this.$refs.modalUniqueForm.disableSubmit = true;
+        }else{
+          this.$refs.modalForm.edit(record);
+          this.$refs.modalForm.title="详情";
+          this.$refs.modalForm.disableSubmit = true;
+        }
+      },
     }
   }
 </script>

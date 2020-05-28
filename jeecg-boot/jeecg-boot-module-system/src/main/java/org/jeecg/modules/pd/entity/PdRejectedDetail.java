@@ -124,4 +124,7 @@ public class PdRejectedDetail extends BaseEntity {
     private String queryExpDateStart;
     @TableField(exist = false)
     private String queryExpDateEnd;
+
+    private String refBarCode;//唯一码
+
 }

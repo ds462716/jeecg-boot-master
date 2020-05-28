@@ -20,6 +20,9 @@
             <if test="entity.supplierId != null and entity.supplierId != ''">
                 AND a.supplier_id = #{entity.supplierId}
             </if>
+            <if test="entity.rejectedType != null and entity.rejectedType != ''">
+                AND a.rejected_type = #{entity.rejectedType}
+            </if>
             <if test="entity.departId != null and entity.departId != ''">
                 AND a.depart_id = #{entity.departId}
             </if>

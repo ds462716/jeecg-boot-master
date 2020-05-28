@@ -282,5 +282,8 @@ public interface PdConstant {
 	public final static String CODE_PRINT_STATE_1 = "1";//已退货
 	public final static String CODE_PRINT_STATE_2 = "2";//已用完
 
+	//退货类型
+	public final static String REJECTED_TYPE_0 = "0";//唯一码退货
+	public final static String REJECTED_TYPE_1 = "1";//普通码退货
 
 }

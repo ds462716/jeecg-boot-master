@@ -36,4 +36,5 @@ public interface IPdRejectedService extends IService<PdRejected> {
      */
     IPage<PdRejected> queryList(Page<PdRejected> pageList, PdRejected pdRejected);
 
+    void uniqueSubmit(PdRejected pdRejected, List<PdRejectedDetail> pdRejectedDetailList);
 }
