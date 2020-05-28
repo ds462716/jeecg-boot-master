@@ -143,6 +143,11 @@
             dataIndex: 'rejectedDate'
           },
           {
+            title:'退货总数',
+            align:"center",
+            dataIndex: 'totalSum'
+          },
+          {
             title:'退货类型',
             align:"center",
             dataIndex: 'rejectedType',
@@ -267,10 +272,13 @@
           this.$refs.modalUniqueForm.edit(record);
           this.$refs.modalUniqueForm.title="详情";
           this.$refs.modalUniqueForm.disableSubmit = true;
+          this.$refs.modalUniqueForm.totalSum = record.totalSum;
         }else{
+          console.log(record)
           this.$refs.modalForm.edit(record);
           this.$refs.modalForm.title="详情";
           this.$refs.modalForm.disableSubmit = true;
+          this.$refs.modalForm.totalSum = record.totalSum;
         }
       },
     }

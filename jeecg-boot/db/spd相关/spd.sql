@@ -611,3 +611,7 @@ INSERT INTO `sys_dict_item` VALUES ('1265848887836790785', '1265848731045318657'
 
 -- add by jiangxz 2020年5月27日21:06:24 丰城中医院收费代码
 INSERT INTO `sys_permission`(`id`, `parent_id`, `name`, `url`, `component`, `component_name`, `redirect`, `menu_type`, `business_type`, `perms`, `perms_type`, `sort_no`, `always_show`, `icon`, `is_route`, `is_leaf`, `keep_alive`, `hidden`, `description`, `create_by`, `create_time`, `update_by`, `update_time`, `del_flag`, `rule_flag`, `status`, `internal_or_external`) VALUES ('1265628850267561985', '1210107255254798338', '丰城中医院收费代码', '/external/fengcheng/HisChargeListFCZYY', 'external/fengcheng/HisChargeListFCZYY', NULL, NULL, 1, '0', NULL, '1', 10.00, 0, NULL, 1, 1, 0, 0, NULL, 'admin', '2020-05-27 21:00:07', 'admin', '2020-05-27 21:07:37', 0, 0, '1', 0);
+
+-- add by zxh 2020年5月28日09:06:43 退货新增唯一码出库
+ALTER TABLE `pd_rejected`
+ADD COLUMN `total_sum`  double(11,4) NULL COMMENT '总数量' AFTER `rejected_date`;

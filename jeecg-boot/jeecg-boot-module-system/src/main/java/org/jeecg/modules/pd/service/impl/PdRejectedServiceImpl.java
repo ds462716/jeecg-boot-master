@@ -13,6 +13,7 @@ import org.jeecg.modules.pd.mapper.PdRejectedDetailMapper;
 import org.jeecg.modules.pd.mapper.PdRejectedMapper;
 import org.jeecg.modules.pd.mapper.PdSupplierMapper;
 import org.jeecg.modules.pd.service.*;
+import org.jeecg.modules.pd.util.UUIDUtil;
 import org.jeecg.modules.system.entity.SysDepart;
 import org.jeecg.modules.system.mapper.SysDepartMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,13 +60,19 @@ public class PdRejectedServiceImpl extends ServiceImpl<PdRejectedMapper, PdRejec
         pdRejected.setDepartId(sysUser.getCurrentDepartId());
         pdRejected.setDepartParentId(sysUser.getDepartParentId());
         pdRejected.setRejectedType(PdConstant.REJECTED_TYPE_1);//普通码退货
-        pdRejectedMapper.insert(pdRejected);
+        pdRejected.setId(UUIDUtil.getUuid());//普通码退货
 
         if(CollectionUtils.isNotEmpty(pdRejectedDetailList)) {
+            //总数量
+            BigDecimal totalSum = new BigDecimal(0);
             for (PdRejectedDetail detail : pdRejectedDetailList) {
                 detail.setId(null);//初始化ID (从前端传过来会自带页面列表行的ID)
                 detail.setRejectedId(pdRejected.getId());
+                BigDecimal count = new BigDecimal(detail.getRejectedCount());
+                totalSum = count.add(totalSum);
             }
+            pdRejected.setTotalSum(totalSum.doubleValue());
+            pdRejectedMapper.insert(pdRejected);
             pdRejectedDetailService.saveBatch(pdRejectedDetailList);
 
             // 处理退货库存
@@ -95,11 +102,13 @@ public class PdRejectedServiceImpl extends ServiceImpl<PdRejectedMapper, PdRejec
         pdRejected.setDepartId(sysUser.getCurrentDepartId());
         pdRejected.setDepartParentId(sysUser.getDepartParentId());
         pdRejected.setRejectedType(PdConstant.REJECTED_TYPE_0);//唯一码退货
-        pdRejectedMapper.insert(pdRejected);
+        pdRejected.setId(UUIDUtil.getUuid());//普通码退货
 
         if(CollectionUtils.isNotEmpty(pdRejectedDetailList)) {
             //批量修改条码状态作废条码
             List<PdProductStockUniqueCode> productStockUniqueCodes = new ArrayList<>();
+            //总数量
+            BigDecimal totalSum = new BigDecimal(0);
             for (PdRejectedDetail detail : pdRejectedDetailList) {
                 detail.setId(null);//初始化ID (从前端传过来会自带页面列表行的ID)
                 detail.setRejectedId(pdRejected.getId());
@@ -107,7 +116,11 @@ public class PdRejectedServiceImpl extends ServiceImpl<PdRejectedMapper, PdRejec
                 pdProductStockUniqueCode.setId(detail.getRefBarCode());
                 pdProductStockUniqueCode.setCodeState(PdConstant.CODE_PRINT_STATE_1);//已退货状态
                 productStockUniqueCodes.add(pdProductStockUniqueCode);
+                BigDecimal count = new BigDecimal(detail.getRejectedCount());
+                totalSum = count.add(totalSum);
             }
+            pdRejected.setTotalSum(totalSum.doubleValue());
+            pdRejectedMapper.insert(pdRejected);
             //批量保存退货详情
             pdRejectedDetailService.saveBatch(pdRejectedDetailList);
             //批量更新条码状态

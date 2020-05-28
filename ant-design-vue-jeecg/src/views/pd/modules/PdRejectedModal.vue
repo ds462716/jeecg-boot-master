@@ -305,7 +305,6 @@
           if (res.success) {
             this.$nextTick(() => {
               if(this.model.id){ //详情页
-
                 this.pdRejectedDetailTable.dataSource = res.result.pdRejectedDetailList || [];
               }else{  // 新增页
                 this.form.setFieldsValue({rejectedNo:res.result.rejectedNo}); // 退货单号
