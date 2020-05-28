@@ -254,7 +254,7 @@
         this.$emit('close')
       },
       getAllTable() {
-        let values = this.tableKeys.map(key => getRefPromise(this, key))
+        let values = this.tableKeys.map(key => getRefPromise(this, key));
         return Promise.all(values)
       },
       add() {
@@ -272,7 +272,7 @@
           //初始化供应商，用于回显供应商
           this.supplierHandleSearch();
 
-          let fieldval = pick(this.model,'rejectedNo','supplierId','remarks')
+          let fieldval = pick(this.model,'rejectedNo','supplierId','remarks');
           this.$nextTick(() => {
             this.form.setFieldsValue(fieldval);
           })
@@ -347,16 +347,16 @@
       },
       // 保存 提交 修改 请求函数
       request(formData) {
-        let url = this.url.submit, method = 'post'
+        let url = this.url.submit, method = 'post';
         if (this.model.id) {
-          url = this.url.edit
+          url = this.url.edit;
           method = 'put'
         }
-        this.confirmLoading = true
+        this.confirmLoading = true;
         httpAction(url, formData, method).then((res) => {
           if (res.success) {
-            this.$message.success(res.message)
-            this.$emit('ok')
+            this.$message.success(res.message);
+            this.$emit('ok');
             this.close()
           } else {
             this.$message.warning(res.message)
@@ -367,7 +367,7 @@
       },
       /** 整理成formData */
       classifyIntoFormData(allValues) {
-        let main = Object.assign(this.model, allValues.formValue)
+        let main = Object.assign(this.model, allValues.formValue);
 
         return {
           ...main, // 展开
