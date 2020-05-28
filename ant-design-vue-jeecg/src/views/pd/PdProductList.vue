@@ -208,6 +208,11 @@
   import PdProductModal from './modules/PdProductModal'
   import {initDictOptions, filterMultiDictText} from '@/components/dict/JDictSelectUtil'
   import { getAction } from  '@/api/manage'
+  import { httpAction } from '@/api/manage'
+  import { validateDuplicateValue } from '@/utils/util'
+  import pick from 'lodash.pick'
+  import JDictSelectTagExpand from "@/components/dict/JDictSelectTagExpand"
+
 
   let timeout;
   let currentValue;
@@ -240,10 +245,6 @@
     timeout = setTimeout(fake, 0);
   }
 
-  import { httpAction } from '@/api/manage'
-  import { validateDuplicateValue } from '@/utils/util'
-  import pick from 'lodash.pick'
-  import JDictSelectTagExpand from "@/components/dict/JDictSelectTagExpand"
 
   export default {
     name: "PdProductList",

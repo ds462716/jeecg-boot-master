@@ -347,7 +347,26 @@ public class PdProductController extends JeecgController<PdProduct, IPdProductSe
 	}
 
 	 /**
-	  *
+	  * 唯一码扫码
+	  * @param Barcode
+	  * @param req
+	  * @return
+	  */
+	 @PostMapping(value = "uniqueScanCodeUrl")
+	 public Result<?> uniqueScanCodeUrl(String Barcode) {
+		 Result<PdProductStock> result = new Result<>();
+		 try{
+			 result = pdProductService.uniqueScanCodeUrl(Barcode,result);
+		 }catch(Exception e){
+			 log.error(e.getMessage(), e);
+			 result.setCode(500);
+			 result.setMessage("条码格式不正确");
+		 }
+		 return result;
+	 }
+
+	 /**
+	  * 开瓶
 	  * @param Barcode
 	  * @return
 	  */

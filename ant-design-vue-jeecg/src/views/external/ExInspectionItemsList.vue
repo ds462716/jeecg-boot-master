@@ -228,6 +228,8 @@
     },
     methods: {
       loadData(arg) {
+        this.selectedRowKeys = [];
+        this.selectionRows = [];
         //加载数据 若传入参数1则加载第一页的内容
         if (arg === 1) {
           this.ipagination.current = 1;
@@ -266,7 +268,7 @@
         formDataAll.append("ids",ids);
         httpAction(this.url.batchUsePackageDetail,formDataAll,"post").then((res)=>{
           if(res.success){
-            this.$message.success(res.message)
+            this.$message.success(res.message);
             this.loadData();
           }else{
             this.$message.warning(res.message)

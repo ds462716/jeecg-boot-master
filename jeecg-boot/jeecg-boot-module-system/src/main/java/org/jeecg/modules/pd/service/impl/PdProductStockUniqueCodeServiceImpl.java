@@ -1,10 +1,8 @@
 package org.jeecg.modules.pd.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.PdConstant;
-import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.modules.pd.entity.PdProductStock;
 import org.jeecg.modules.pd.entity.PdProductStockUniqueCode;
 import org.jeecg.modules.pd.mapper.PdProductStockUniqueCodeMapper;
@@ -47,14 +45,12 @@ public class PdProductStockUniqueCodeServiceImpl extends ServiceImpl<PdProductSt
         if(pdProductStocks!=null && pdProductStocks.size()>0){
             pdProductStock = pdProductStocks.get(0);
             LambdaQueryWrapper<PdProductStockUniqueCode> query = new LambdaQueryWrapper<>();
-            LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
             query.eq(PdProductStockUniqueCode::getProductStockId, pdProductStock.getId());
             query.eq(PdProductStockUniqueCode::getPrintType, PdConstant.CODE_PRINT_TYPE_0);//唯一码
             //如果存在区间则只查询区间内的
             if(pdProductStockUniqueCode.getStartOrder()!=null && pdProductStockUniqueCode.getEndOrder()!=null){
                 query.between(PdProductStockUniqueCode::getUniqueCodeOrder,pdProductStockUniqueCode.getStartOrder(),pdProductStockUniqueCode.getEndOrder());
             }
-            query.eq(PdProductStockUniqueCode::getDepartParentId, sysUser.getDepartParentId());
             pdProductStockUniqueCodeList = this.list(query);
             if(pdProductStockUniqueCodeList!=null && pdProductStockUniqueCodeList.size()>0){
                 //重复打条码
@@ -66,7 +62,6 @@ public class PdProductStockUniqueCodeServiceImpl extends ServiceImpl<PdProductSt
             }else{
                 //判断是否已经打印了普通码
                 LambdaQueryWrapper<PdProductStockUniqueCode> wyquery = new LambdaQueryWrapper<>();
-                wyquery.eq(PdProductStockUniqueCode::getDepartParentId, sysUser.getDepartParentId());
                 wyquery.eq(PdProductStockUniqueCode::getProductStockId, pdProductStock.getId());
                 wyquery.eq(PdProductStockUniqueCode::getPrintType, PdConstant.CODE_PRINT_TYPE_1);//唯一码
                 List<PdProductStockUniqueCode> wypsucs = this.list(wyquery);
@@ -97,7 +92,6 @@ public class PdProductStockUniqueCodeServiceImpl extends ServiceImpl<PdProductSt
                         LambdaQueryWrapper<PdProductStockUniqueCode> queryQ = new LambdaQueryWrapper<>();
                         queryQ.between(PdProductStockUniqueCode::getUniqueCodeOrder,pdProductStockUniqueCode.getStartOrder(),pdProductStockUniqueCode.getEndOrder());
                         queryQ.eq(PdProductStockUniqueCode::getProductStockId, pdProductStock.getId());
-                        queryQ.eq(PdProductStockUniqueCode::getDepartParentId, sysUser.getDepartParentId());
                         pdProductStockUniqueCodeList = this.list(queryQ);
                         if(pdProductStockUniqueCodeList!=null && pdProductStockUniqueCodeList.size()>0){
                             //重复打条码
@@ -140,12 +134,10 @@ public class PdProductStockUniqueCodeServiceImpl extends ServiceImpl<PdProductSt
         List<PdProductStockUniqueCode> pdProductStockUniqueCodeList = new ArrayList<>();
         boolean flag = true;
         if(pdProductStocks!=null && pdProductStocks.size()>0){
-            LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
             //判断是否全部通过
             for(PdProductStock ps :pdProductStocks){
                 //查询是否已经存在
                 LambdaQueryWrapper<PdProductStockUniqueCode> query = new LambdaQueryWrapper<>();
-                query.eq(PdProductStockUniqueCode::getDepartParentId, sysUser.getDepartParentId());
                 query.eq(PdProductStockUniqueCode::getProductStockId, ps.getId());
                 query.eq(PdProductStockUniqueCode::getPrintType, PdConstant.CODE_PRINT_TYPE_1);//不唯一码
                 PdProductStockUniqueCode psucs = this.getOne(query);
@@ -158,7 +150,6 @@ public class PdProductStockUniqueCodeServiceImpl extends ServiceImpl<PdProductSt
                 }else{
                     //判断是否已经打印了唯一码
                     LambdaQueryWrapper<PdProductStockUniqueCode> wyquery = new LambdaQueryWrapper<>();
-                    wyquery.eq(PdProductStockUniqueCode::getDepartParentId, sysUser.getDepartParentId());
                     wyquery.eq(PdProductStockUniqueCode::getProductStockId, ps.getId());
                     wyquery.eq(PdProductStockUniqueCode::getPrintType, PdConstant.CODE_PRINT_TYPE_0);//唯一码
                     List<PdProductStockUniqueCode> wypsucs = this.list(wyquery);

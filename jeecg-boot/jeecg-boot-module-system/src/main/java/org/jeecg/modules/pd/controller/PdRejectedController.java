@@ -129,6 +129,19 @@ public class PdRejectedController extends JeecgController<PdRejected, IPdRejecte
     }
 
     /**
+     * 唯一码保存
+     * @param pdRejected
+     * @return
+     */
+    @PostMapping(value = "/uniqueSubmit")
+    @RequiresPermissions("stock:form:addRejected")
+    public Result<?> uniqueSubmit(@RequestBody PdRejected pdRejected) {
+        pdRejectedService.uniqueSubmit(pdRejected, pdRejected.getPdRejectedDetailList());
+        return Result.ok("添加成功！");
+    }
+
+
+    /**
      * 编辑
      *
      * @param pdRejected
