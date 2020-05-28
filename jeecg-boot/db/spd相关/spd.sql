@@ -608,3 +608,6 @@ ADD COLUMN `ref_bar_code`  varchar(64) NULL COMMENT 'REF唯一码' AFTER `produc
 INSERT INTO `sys_dict` VALUES ('1265848731045318657', '退货类型', 'rejected_type', '', '0', 'admin', '2020-05-28 11:33:50', null, '2020-05-28 11:33:50', '0');
 INSERT INTO `sys_dict_item` VALUES ('1265848860359905282', '1265848731045318657', '唯一码退货', '0', '', '1', '1', 'admin', '2020-05-28 11:34:21', null, '2020-05-28 11:34:21');
 INSERT INTO `sys_dict_item` VALUES ('1265848887836790785', '1265848731045318657', '普通码退货', '1', '', '1', '1', 'admin', '2020-05-28 11:34:28', null, '2020-05-28 11:34:28');
+
+-- add by jiangxz 2020年5月27日21:06:24 丰城中医院收费代码
+INSERT INTO `sys_permission`(`id`, `parent_id`, `name`, `url`, `component`, `component_name`, `redirect`, `menu_type`, `business_type`, `perms`, `perms_type`, `sort_no`, `always_show`, `icon`, `is_route`, `is_leaf`, `keep_alive`, `hidden`, `description`, `create_by`, `create_time`, `update_by`, `update_time`, `del_flag`, `rule_flag`, `status`, `internal_or_external`) VALUES ('1265628850267561985', '1210107255254798338', '丰城中医院收费代码', '/external/fengcheng/HisChargeListFCZYY', 'external/fengcheng/HisChargeListFCZYY', NULL, NULL, 1, '0', NULL, '1', 10.00, 0, NULL, 1, 1, 0, 0, NULL, 'admin', '2020-05-27 21:00:07', 'admin', '2020-05-27 21:07:37', 0, 0, '1', 0);
