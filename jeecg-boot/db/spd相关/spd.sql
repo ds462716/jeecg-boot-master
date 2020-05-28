@@ -597,3 +597,6 @@ ADD COLUMN `spec_num` double(32,4) DEFAULT NULL COMMENT '使用规格数量';
 -- add by mcb 2020年5月28日10:30:23 增加扣减类型
 ALTER TABLE `pd_use_package`
 ADD COLUMN `deductuin_type` varchar(4) CHARACTER SET utf8 COLLATE utf8_general_ci NULL COMMENT '扣减类型' AFTER `test_depart_id`;
+
+-- add by jiangxz 2020年5月27日21:06:24 丰城中医院收费代码
+INSERT INTO `sys_permission`(`id`, `parent_id`, `name`, `url`, `component`, `component_name`, `redirect`, `menu_type`, `business_type`, `perms`, `perms_type`, `sort_no`, `always_show`, `icon`, `is_route`, `is_leaf`, `keep_alive`, `hidden`, `description`, `create_by`, `create_time`, `update_by`, `update_time`, `del_flag`, `rule_flag`, `status`, `internal_or_external`) VALUES ('1265628850267561985', '1210107255254798338', '丰城中医院收费代码', '/external/fengcheng/HisChargeListFCZYY', 'external/fengcheng/HisChargeListFCZYY', NULL, NULL, 1, '0', NULL, '1', 10.00, 0, NULL, 1, 1, 0, 0, NULL, 'admin', '2020-05-27 21:00:07', 'admin', '2020-05-27 21:07:37', 0, 0, '1', 0);
