@@ -21,7 +21,7 @@
           </a-col>
           <a-col :md="6" :sm="8">
             <a-form-item label="项目类别">
-              <a-input placeholder="请输入项目类别" v-model="queryParam.fsfXmlb"></a-input>
+              <a-input placeholder="请输入费用类别" v-model="queryParam.fsfXmlb"></a-input>
             </a-form-item>
           </a-col>
           <a-col :md="6" :sm="8">

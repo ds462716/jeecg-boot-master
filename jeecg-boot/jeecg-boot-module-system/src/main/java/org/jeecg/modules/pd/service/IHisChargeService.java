@@ -1,5 +1,6 @@
 package org.jeecg.modules.pd.service;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.jeecg.modules.external.entity.ExInspectionItems;
@@ -24,7 +25,7 @@ public interface IHisChargeService extends IService<HisChargeInf> {
      * @param hisChargeInf
      * @return
      */
-    Page<HisChargeInf> selectList(Page<HisChargeInf> pageList, HisChargeInf hisChargeInf);
+    IPage<HisChargeInf> selectList(Page<HisChargeInf> pageList, HisChargeInf hisChargeInf);
 
    /*查询his系统收费项目基础信息*/
 	List<HisChargeInf> selectByHisCharge();
