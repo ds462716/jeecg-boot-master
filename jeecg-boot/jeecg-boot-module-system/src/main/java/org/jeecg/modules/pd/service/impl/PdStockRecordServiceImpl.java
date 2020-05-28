@@ -266,10 +266,10 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
                     detail.setImportNo(pdStockRecord.getAllocationNo());
                 }
 
-                if (oConvertUtils.isEmpty(outType)) {
-                    // 从供货商入库 则生成REF码
-                    detail.setRefBarCode(SnowUtils.bigKey());
-                }
+//                if (oConvertUtils.isEmpty(outType)) {
+//                    // 从供货商入库 则生成REF码
+//                    detail.setRefBarCode(SnowUtils.bigKey());
+//                }
                 pdStockRecordDetailMapper.insert(detail);
                 // 修改产品进价
                 if(allowEditPrice == PdConstant.ON_OFF_ALLOW_EDIT_PRICE_1){

@@ -146,7 +146,7 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
             productStock.setSupplierId(stockRecordDetail.getSupplierId());
             productStock.setSpecQuantity(stockRecordDetail.getSpecQuantity());
             productStock.setSpecUnitId(stockRecordDetail.getSpecUnitId());
-            productStock.setRefBarCode(stockRecordDetail.getRefBarCode());
+//            productStock.setRefBarCode(stockRecordDetail.getRefBarCode());
             productStock.setSpecNum(stockRecordDetail.getSpecQuantity() == null ? 0D : stockRecordDetail.getSpecQuantity() * stockRecordDetail.getProductNum());// 库存规格数量= 产品规格数量* 入库数量
             productStockService.save(productStock);
 //			}else{//存在，则增加库存数量
@@ -557,7 +557,7 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
             pdproductStock.setNestatStatus(productStock.getNestatStatus());
             pdproductStock.setSpecQuantity(productStock.getSpecQuantity());
             pdproductStock.setSpecUnitId(productStock.getSpecUnitId());
-            pdproductStock.setRefBarCode(SnowUtils.bigKey());
+//            pdproductStock.setRefBarCode(SnowUtils.bigKey());
             productStockService.save(pdproductStock);
             //更新老货位上的库存数量
             PdProductStock pdProductStock_1 = new PdProductStock();

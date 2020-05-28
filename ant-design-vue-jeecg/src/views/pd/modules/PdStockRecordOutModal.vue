@@ -558,7 +558,7 @@
             { title: '规格数量', key: 'specQuantity', type: FormTypes.hidden },
             { title: '注册证号', key: 'registration', type: FormTypes.hidden },
             { title: '生产厂家', key: 'venderName', type: FormTypes.hidden },
-            { title: 'refBarCode', key: 'refBarCode', type: FormTypes.hidden },
+            // { title: 'refBarCode', key: 'refBarCode', type: FormTypes.hidden },
           ]
         },
         url: {
@@ -1251,7 +1251,7 @@
           outHuoweiName:row.huoweiName,
           outHuoweiCode:row.huoweiCode,
           registration:row.registration,
-          refBarCode:row.refBarCode,
+          // refBarCode:row.refBarCode,
           venderName:row.venderName,
           inHuoweiCode:"",
           supplierId:row.supplierId,
