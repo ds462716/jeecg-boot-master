@@ -590,8 +590,10 @@ CREATE TABLE `pd_product_stock_unique_code` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+ -- add by mcb 2020年5月28日10:30:23 增加使用规格数量
+ ALTER TABLE `pd_bottle_inf`
+ADD COLUMN `spec_num` double(32,4) DEFAULT NULL COMMENT '使用规格数量';
 
-
--- add by mcb 2020年5月26日16:30:23 增加扣减类型
+-- add by mcb 2020年5月28日10:30:23 增加扣减类型
 ALTER TABLE `pd_use_package`
 ADD COLUMN `deductuin_type` varchar(4) CHARACTER SET utf8 COLLATE utf8_general_ci NULL COMMENT '扣减类型' AFTER `test_depart_id`;
