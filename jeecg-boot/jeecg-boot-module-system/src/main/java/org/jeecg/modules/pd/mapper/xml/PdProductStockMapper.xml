@@ -173,9 +173,6 @@
 			<if test="spec != null and spec != ''">
 				AND c.spec LIKE concat('%',#{spec},'%')
 			</if>
-			<if test="nestatStatus != null and nestatStatus != ''">
-				AND a.nestat_status=#{nestatStatus}
-			</if>
 			<if test="version != null and version != ''">
 				AND c.version   LIKE concat('%',#{version},'%')
 			</if>
