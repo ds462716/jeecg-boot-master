@@ -20,7 +20,8 @@
         a.depart_id,
         a.test_depart_id,
         d.depart_name as "testDepartName",
-        a.depart_parent_id
+        a.depart_parent_id,
+        a.deductuin_type
         FROM pd_use_package a
         left join pd_use_package_detail b on a.id=b.package_id   AND b.del_flag='0'
         left join pd_product c on c.id=b.product_id and c.del_flag='0'
@@ -55,6 +56,9 @@
             </if>
             <if test="entity.departId != null and entity.departId != ''">
                 AND a.depart_id = #{entity.departId}
+            </if>
+            <if test="entity.deductuinType != null and entity.deductuinType != ''">
+                AND a.deductuin_type = #{entity.deductuinType}
             </if>
             <if test="entity.idList != null and entity.idList.size() > 0">
                 AND a.id IN

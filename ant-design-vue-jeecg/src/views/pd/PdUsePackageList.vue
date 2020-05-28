@@ -14,7 +14,11 @@
               <a-input placeholder="检验项目名称\拼音码\五笔码\自定义码" v-model="queryParam.name"></a-input>
             </a-form-item>
           </a-col>
-
+          <a-col :md="6" :sm="8">
+            <a-form-item label="扣减类型">
+              <j-dict-select-tag v-model="queryParam.deductuinType" dictCode="deductuin_type"/>
+            </a-form-item>
+          </a-col>
           <a-col :md="6" :sm="8">
             <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
               <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
@@ -113,6 +117,7 @@
 
   import { JeecgListMixin } from '@/mixins/JeecgListMixin'
   import PdUsePackageModal from './modules/PdUsePackageModal'
+  import {initDictOptions, filterMultiDictText} from '@/components/dict/JDictSelectUtil'
 
   export default {
     name: "PdUsePackageList",
@@ -149,6 +154,18 @@
             title:'检验科室',
             align:"center",
             dataIndex: 'testDepartName'
+          },
+          {
+            title:'扣减类型',
+            align:"center",
+            dataIndex: 'deductuinType',
+            customRender:(text)=>{
+              if(!text){
+                return ''
+              }else{
+                return filterMultiDictText(this.dictOptions['deductuinType'], text+"")
+              }
+            }
           },
           /*{
             title:'产品总数',
@@ -190,7 +207,8 @@
           importExcelUrl: "pd/pdUsePackage/importExcel",
         },
         dictOptions:{
-        },
+          deductuinType:[],
+         },
 
       }
     },
@@ -201,6 +219,11 @@
     },
     methods: {
       initDictConfig(){
+        initDictOptions('deductuin_type').then((res) => {
+          if (res.success) {
+            this.$set(this.dictOptions, 'deductuinType', res.result)
+          }
+        })
       },
       /**
        * 点击行选中checkbox

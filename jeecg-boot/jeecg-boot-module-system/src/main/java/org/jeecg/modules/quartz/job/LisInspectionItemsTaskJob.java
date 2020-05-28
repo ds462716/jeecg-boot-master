@@ -67,11 +67,15 @@ public class LisInspectionItemsTaskJob implements Job {
                     query.eq(PdUsePackage::getCode, items.getTestItemCode());
                     query.eq(PdUsePackage::getName,items.getTestItemName());
                     PdUsePackage pdUsePackage = pdUsePackageService.getOne(query);
-                    String testDpeartId=pdUsePackage.getTestDepartId();//检验科室ID
                     //不存在或沒有配置檢驗用量明細
                     if(pdUsePackage!=null){
+                        String testDpeartId=pdUsePackage.getTestDepartId();//检验科室ID
+                        String deductuinType=pdUsePackage.getDeductuinType();//扣减类型
                         if(StringUtils.isEmpty(testDpeartId)){
                             items.setRemarks("未配置检验科室");
+                            items.setAcceptStatus(PdConstant.ACCEPT_STATUS_2);// 0：已扣减  1：未配置检验用量  2:未扣减
+                        } else if(PdConstant.DEDUCTUIN_TYPE_1.equals(deductuinType)) {
+                            items.setRemarks("用量不固定，需人工扣减");
                             items.setAcceptStatus(PdConstant.ACCEPT_STATUS_2);// 0：已扣减  1：未配置检验用量  2:未扣减
                         }else {
                             items.setPackageId(pdUsePackage.getId());
@@ -89,7 +93,6 @@ public class LisInspectionItemsTaskJob implements Job {
                                     items.setAcceptStatus(PdConstant.ACCEPT_STATUS_2);
                                 }
                             } else {
-                                // list.remove(items);
                                 items.setRemarks("检验项目用量未配置:"+items.getRemarks());
                                 items.setAcceptStatus(PdConstant.ACCEPT_STATUS_1);// 0：已扣减  1：未配置检验用量  2:未扣减
                             }

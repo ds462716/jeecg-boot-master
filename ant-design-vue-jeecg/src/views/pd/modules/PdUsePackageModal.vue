@@ -47,8 +47,14 @@
               >
               </a-tree-select>
             </a-form-item>
-
-
+          </a-col>
+          <a-col :lg="12">
+            <a-form-item label="扣减类型" :labelCol="labelCol" :wrapperCol="wrapperCol">
+              <a-select     v-decorator="[ 'deductuinType', validatorRules.deductuinType]" placeholder="请选择扣减类型">
+                <a-select-option value="0">自动扣减</a-select-option>
+                <a-select-option value="1">人工扣减</a-select-option>
+              </a-select>
+            </a-form-item>
           </a-col>
           <a-col :span="12">
             <a-form-item label="拼音简码" :labelCol="labelCol" :wrapperCol="wrapperCol">
@@ -162,7 +168,8 @@
           py:{},
           wb:{},
           zdy:{},
-          remarks:{}
+          remarks:{},
+          deductuinType:{rules: []}
         },
         refKeys: ['pdUsePackageDetail', ],
         tableKeys:['pdUsePackageDetail', ],
@@ -197,7 +204,6 @@
               align:"center",
               width:"200px",
               key: 'spec'
-
             },
             {
               title: '单位',
@@ -284,7 +290,7 @@
       /** 调用完edit()方法之后会自动调用此方法 */
       editAfter() {
         this.loadTree();
-        let fieldval = pick(this.model,'code','name','py','wb','zdy','remarks');
+        let fieldval = pick(this.model,'code','name','py','wb','zdy','remarks','deductuinType');
         this.$nextTick(() => {
           this.form.setFieldsValue(fieldval);
           this.totalSum = this.model.sum;
@@ -317,7 +323,7 @@
         this.$message.error(msg)
       },
       popupCallback(row){
-        this.form.setFieldsValue(pick(row,'code','name','py','wb','zdy','remarks'))
+        this.form.setFieldsValue(pick(row,'code','name','py','wb','zdy','remarks','deductuinType'))
       },
       pinyinTran(e){
         let val = e.target.value;

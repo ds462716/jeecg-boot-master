@@ -53,6 +53,8 @@ public class PdUsePackage extends BaseEntity {
     private String sysOrgCode;
     /**检验科室ID*/
     private String testDepartId;
+    /**扣减类型*/
+    private String deductuinType;
 
     /**
      * 所属部门

@@ -589,3 +589,9 @@ CREATE TABLE `pd_product_stock_unique_code` (
   `del_flag` varchar(1) NOT NULL COMMENT '删除标识',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+
+-- add by mcb 2020年5月26日16:30:23 增加扣减类型
+ALTER TABLE `pd_use_package`
+ADD COLUMN `deductuin_type` varchar(4) CHARACTER SET utf8 COLLATE utf8_general_ci NULL COMMENT '扣减类型' AFTER `test_depart_id`;
