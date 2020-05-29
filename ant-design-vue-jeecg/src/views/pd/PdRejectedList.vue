@@ -113,7 +113,7 @@
     data () {
       return {
         description: 'pd_rejected管理页面',
-
+        loading:false,
         //供应商下拉列表 start
         supplierValue: undefined,
         notFoundContent:"未找到内容",

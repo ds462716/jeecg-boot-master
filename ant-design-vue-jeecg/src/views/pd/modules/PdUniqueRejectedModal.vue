@@ -169,7 +169,7 @@
 
         disableSubmit:false,
         title: '这里是标题',
-
+        loading:false,
         initData:{},
         queryParam:{},
 
