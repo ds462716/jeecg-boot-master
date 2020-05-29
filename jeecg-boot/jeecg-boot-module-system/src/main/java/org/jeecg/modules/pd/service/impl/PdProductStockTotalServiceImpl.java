@@ -147,6 +147,9 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
             productStock.setSpecUnitId(stockRecordDetail.getSpecUnitId());
 //            productStock.setRefBarCode(stockRecordDetail.getRefBarCode());
             productStock.setSpecNum(stockRecordDetail.getSpecQuantity() == null ? 0D : stockRecordDetail.getSpecQuantity() * stockRecordDetail.getProductNum());// 库存规格数量= 产品规格数量* 入库数量
+            if(PdConstant.CODE_PRINT_TYPE_1.equals(stockRecordDetail.getBarCodeType())){
+                productStock.setBarCodeType(stockRecordDetail.getBarCodeType());
+            }
             productStockService.save(productStock);
 //			}else{//存在，则增加库存数量
 //				PdProductStock productStock = i_productStocks.get(0);

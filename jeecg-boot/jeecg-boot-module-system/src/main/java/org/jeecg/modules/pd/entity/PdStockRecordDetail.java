@@ -34,7 +34,7 @@ public class PdStockRecordDetail extends BaseEntity {
 	private String productId;
 	/**产品条码*/
 	private String productBarCode;
-	private String refBarCode;// REF条型码
+	private String refBarCode;// REF条码(在出入库明细中已作废)
 	/**采购订单号*/
 	private String orderNo;
 	/**合并采购订单号*/
@@ -100,6 +100,8 @@ public class PdStockRecordDetail extends BaseEntity {
 	private String departParentId;
 	/**产品库存ID*/
 	private String productStockId;
+	/**条码类型**/
+	private String barCodeType;
 
     /*不是明细表字段*/
 	@TableField(exist = false)

@@ -31,7 +31,8 @@
 		a.spec_unit_id,
 		a.spec_quantity,
         a.registration,
- 		a.ref_bar_code
+ 		a.ref_bar_code,
+ 		a.bar_code_type
 	</sql>
 
 	<sql id="PdStockRecordDetailJoins">

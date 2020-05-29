@@ -254,6 +254,9 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
                 allowEditPrice = pdOnOff.getValue();
             }
             for (PdStockRecordDetail detail : newDetailList) {
+
+                PdProductStock stock = pdProductStockService.getById(detail.getProductStockId());
+
                 detail.setId(null);//初始化ID (从前端传过来会自带页面列表行的ID)
                 detail.setRecordId(pdStockRecord.getId());//外键设置
                 detail.setDelFlag(PdConstant.DEL_FLAG_0);
@@ -266,6 +269,9 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
                     detail.setImportNo(pdStockRecord.getAllocationNo());
                 }
 
+                if (oConvertUtils.isNotEmpty(outType)) {
+                    detail.setBarCodeType(stock.getBarCodeType());
+                }
 //                if (oConvertUtils.isEmpty(outType)) {
 //                    // 从供货商入库 则生成REF码
 //                    detail.setRefBarCode(SnowUtils.bigKey());
@@ -595,7 +601,8 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
             query.setId(recordId);
             PdStockRecord inRecord = this.getOne(query);
             PdStockRecordDetail queryDetail = new PdStockRecordDetail();
-            queryDetail.setRecordId(pdStockRecord.getId());
+//            queryDetail.setRecordId(pdStockRecord.getId());
+            queryDetail.setRecordId(recordId);
             List<PdStockRecordDetail> inRecordDetailList = pdStockRecordDetailMapper.selectByMainId(queryDetail);
             inRecord.setPdStockRecordDetailList(inRecordDetailList);
 
