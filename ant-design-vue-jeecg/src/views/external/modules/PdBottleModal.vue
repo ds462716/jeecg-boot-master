@@ -22,8 +22,8 @@
                     </a-form-item>
                   </a-col>-->
                   <a-col :md="12" :sm="8">
-                    <a-form-item label="二级条码" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                      <a-input ref="productBarCodeInput" v-focus placeholder="请输入二级条码" v-model="queryParam.productBarCode" @keyup.enter.native="searchQuery()"></a-input>
+                    <a-form-item label="唯一码编号" :labelCol="labelCol" :wrapperCol="wrapperCol">
+                      <a-input ref="productBarCodeInput" v-focus placeholder="请输入唯一码编号" v-model="queryParam.productBarCode" @keyup.enter.native="searchQuery()"></a-input>
                     </a-form-item>
                   </a-col>
                   <a-col :md="12" :sm="8">

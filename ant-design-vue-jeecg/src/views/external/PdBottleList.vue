@@ -104,7 +104,7 @@
             dataIndex: 'productName'
           },
           {
-            title:'开瓶对应条码',
+            title:'唯一码编号',
             align:"center",
             dataIndex: 'refBarCode'
           },
