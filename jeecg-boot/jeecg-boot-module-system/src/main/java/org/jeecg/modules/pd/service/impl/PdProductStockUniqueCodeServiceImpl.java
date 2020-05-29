@@ -46,7 +46,7 @@ public class PdProductStockUniqueCodeServiceImpl extends ServiceImpl<PdProductSt
             pdProductStock = pdProductStocks.get(0);
             LambdaQueryWrapper<PdProductStockUniqueCode> query = new LambdaQueryWrapper<>();
             query.eq(PdProductStockUniqueCode::getProductStockId, pdProductStock.getId());
-            query.eq(PdProductStockUniqueCode::getPrintType, PdConstant.CODE_PRINT_TYPE_0);//唯一码
+            query.eq(PdProductStockUniqueCode::getPrintType, PdConstant.CODE_PRINT_TYPE_1);//唯一码
             //如果存在区间则只查询区间内的
             if(pdProductStockUniqueCode.getStartOrder()!=null && pdProductStockUniqueCode.getEndOrder()!=null){
                 query.between(PdProductStockUniqueCode::getUniqueCodeOrder,pdProductStockUniqueCode.getStartOrder(),pdProductStockUniqueCode.getEndOrder());
@@ -63,7 +63,7 @@ public class PdProductStockUniqueCodeServiceImpl extends ServiceImpl<PdProductSt
                 //判断是否已经打印了普通码
                 LambdaQueryWrapper<PdProductStockUniqueCode> wyquery = new LambdaQueryWrapper<>();
                 wyquery.eq(PdProductStockUniqueCode::getProductStockId, pdProductStock.getId());
-                wyquery.eq(PdProductStockUniqueCode::getPrintType, PdConstant.CODE_PRINT_TYPE_1);//唯一码
+                wyquery.eq(PdProductStockUniqueCode::getPrintType, PdConstant.CODE_PRINT_TYPE_0);//普通码
                 List<PdProductStockUniqueCode> wypsucs = this.list(wyquery);
                 if(wypsucs!=null && wypsucs.size()>0){
                     result.setResult(new ArrayList<>());
@@ -78,7 +78,7 @@ public class PdProductStockUniqueCodeServiceImpl extends ServiceImpl<PdProductSt
                         PdProductStockUniqueCode psc = new PdProductStockUniqueCode();
                         psc.setId(SnowUtils.onlyBigKey(i));
                         psc.setProductStockId(pdProductStock.getId());
-                        psc.setPrintType(PdConstant.CODE_PRINT_TYPE_0);//唯一码
+                        psc.setPrintType(PdConstant.CODE_PRINT_TYPE_1);//唯一码
                         psc.setCodeState(PdConstant.CODE_PRINT_STATE_0);//正常状态
                         psc.setUniqueCodeOrder(i);
                         psc.setProductName(pdProductStock.getProductName());
@@ -87,6 +87,11 @@ public class PdProductStockUniqueCodeServiceImpl extends ServiceImpl<PdProductSt
                         pdProductStockUniqueCodeList.add(psc);
                     }
                     this.saveBatch(pdProductStockUniqueCodeList);
+                    PdProductStock ps = new PdProductStock();
+                    ps.setId(pdProductStockUniqueCode.getProductStockId());
+                    ps.setBarCodeType(PdConstant.CODE_PRINT_TYPE_1);
+                    //更新库存表的条码状态
+                    pdProductStockService.updateStockBarCodeType(ps);
                     //如果存在区间则只查询区间内的
                     if(pdProductStockUniqueCode.getStartOrder()!=null && pdProductStockUniqueCode.getEndOrder()!=null){
                         LambdaQueryWrapper<PdProductStockUniqueCode> queryQ = new LambdaQueryWrapper<>();
@@ -139,7 +144,7 @@ public class PdProductStockUniqueCodeServiceImpl extends ServiceImpl<PdProductSt
                 //查询是否已经存在
                 LambdaQueryWrapper<PdProductStockUniqueCode> query = new LambdaQueryWrapper<>();
                 query.eq(PdProductStockUniqueCode::getProductStockId, ps.getId());
-                query.eq(PdProductStockUniqueCode::getPrintType, PdConstant.CODE_PRINT_TYPE_1);//不唯一码
+                query.eq(PdProductStockUniqueCode::getPrintType, PdConstant.CODE_PRINT_TYPE_0);//普通码
                 PdProductStockUniqueCode psucs = this.getOne(query);
                 if(psucs!=null){
                     //重复打条码
@@ -151,7 +156,7 @@ public class PdProductStockUniqueCodeServiceImpl extends ServiceImpl<PdProductSt
                     //判断是否已经打印了唯一码
                     LambdaQueryWrapper<PdProductStockUniqueCode> wyquery = new LambdaQueryWrapper<>();
                     wyquery.eq(PdProductStockUniqueCode::getProductStockId, ps.getId());
-                    wyquery.eq(PdProductStockUniqueCode::getPrintType, PdConstant.CODE_PRINT_TYPE_0);//唯一码
+                    wyquery.eq(PdProductStockUniqueCode::getPrintType, PdConstant.CODE_PRINT_TYPE_1);//唯一码
                     List<PdProductStockUniqueCode> wypsucs = this.list(wyquery);
                     if(wypsucs!=null && wypsucs.size()>0){
                         flag = false;
@@ -162,7 +167,7 @@ public class PdProductStockUniqueCodeServiceImpl extends ServiceImpl<PdProductSt
                         PdProductStockUniqueCode psc = new PdProductStockUniqueCode();
                         psc.setId(SnowUtils.onlyBigKey(1));
                         psc.setProductStockId(ps.getId());
-                        psc.setPrintType(PdConstant.CODE_PRINT_TYPE_1);//唯一码
+                        psc.setPrintType(PdConstant.CODE_PRINT_TYPE_0);//普通码
                         psc.setCodeState(PdConstant.CODE_PRINT_STATE_0);//正常状态
                         psc.setUniqueCodeOrder(1);
                         psc.setProductName(ps.getProductName());
@@ -191,7 +196,7 @@ public class PdProductStockUniqueCodeServiceImpl extends ServiceImpl<PdProductSt
     }
 
     /**
-     * 生成条码
+     * 清除条码
      * @param id
      */
     @Transactional
@@ -201,5 +206,11 @@ public class PdProductStockUniqueCodeServiceImpl extends ServiceImpl<PdProductSt
         // 封装查询条件parentId为主键,
         query.eq(PdProductStockUniqueCode::getProductStockId, id);
         this.remove(query);
+        //更新库存明细表的状态
+        PdProductStock ps = new PdProductStock();
+        ps.setId(id);
+        ps.setBarCodeType(PdConstant.CODE_PRINT_TYPE_0);
+        //更新库存表的条码状态
+        pdProductStockService.updateStockBarCodeType(ps);
     }
 }

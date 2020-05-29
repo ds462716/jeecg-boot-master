@@ -190,7 +190,7 @@
 				AND c.vender_id = #{venderId}
 			</if>
 			<if test="productBarCode != null and productBarCode != ''">
-				AND (a.product_bar_code = #{productBarCode}  or a.ref_bar_code = #{productBarCode})
+				AND (a.product_bar_code = #{productBarCode}  or a.id = (select b.product_stock_id from pd_product_stock_unique_code b where b.id = #{productBarCode}))
 			</if>
 			<if test="batchNo != null and batchNo != ''">
 			AND a.batch_no LIKE concat('%',#{batchNo},'%')
@@ -254,7 +254,7 @@
 			</if>
 			<!-- 检验用量扣减用   只查询普通耗材和使用中的试剂产品-->
 			<if test="menuType != null and menuType != ''">
-				 AND   a.nestat_status='0'  or c.product_flag='0'
+				 AND   (a.nestat_status='0'  or c.product_flag='0')
 			</if>
  			order by  exp_status  desc,create_time desc
 		</where>

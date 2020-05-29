@@ -274,8 +274,8 @@ public interface PdConstant {
 	public final static String DEDUCTUIN_TYPE_1="1";//人工扣减
 
 	//生成条码的类型
-	public final static String CODE_PRINT_TYPE_0 = "0";//唯一码
-	public final static String CODE_PRINT_TYPE_1 = "1";//批量打印的码
+	public final static String CODE_PRINT_TYPE_0 = "0";//批量打印的码
+	public final static String CODE_PRINT_TYPE_1 = "1";//唯一码
 
 	//生成条码的状态
 	public final static String CODE_PRINT_STATE_0 = "0";//正常状态
