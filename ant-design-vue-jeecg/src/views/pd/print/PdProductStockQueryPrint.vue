@@ -7,7 +7,7 @@
     :closable="false"
   >
     <div class="no-print" style="text-align: right">
-      <a-button v-print="'#printContent'" ghost type="primary">打印</a-button>
+      <a-button v-print="'#printContent'" @click="savePintRecord()" ghost type="primary">打印</a-button>
     </div>
     <section  id="printContent">
       <div v-for="(item, index) in printData.length" style="page-break-after:always;width: 400px;">
@@ -164,6 +164,10 @@
         }, 1500)
 
       },
+      //报存打印日志
+      savePintRecord(){
+
+      }
 
     },
 
