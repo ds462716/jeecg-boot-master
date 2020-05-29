@@ -238,7 +238,7 @@ public class PdDosageFCZYYServiceImpl extends ServiceImpl<PdDosageMapper, PdDosa
                         String hisChargeId = obj.getString("vai01");//计费单据id
                         String hisChargeItemId = obj.getString("vaj01");//计费单据明细id (退费用)
                         for(PdDosageDetail pdd : chargeArray){
-                            if(pdd.getProductId().equals(prodNo)){
+                            if(pdd.getProductStockId().equals(prodNo)){
                                 pdd.setHisChargeId(hisChargeId);
                                 pdd.setHisChargeItemId(hisChargeItemId);
                             }

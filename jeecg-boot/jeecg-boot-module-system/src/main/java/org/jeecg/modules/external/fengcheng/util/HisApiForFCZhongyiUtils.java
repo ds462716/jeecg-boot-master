@@ -61,7 +61,7 @@ public class HisApiForFCZhongyiUtils {
                 item.put("vaj25",detail.getDosageCount().toString());//数量
                 item.put("vaj38",detail.getAmountMoney()==null?"0":detail.getAmountMoney().toString());//金额
                 item.put("bck01d",pdDosage.getOprDeptId());//住院科室编码
-                item.put("prodNo",detail.getProductId()); //产品ID
+                item.put("prodNo",detail.getProductStockId()); // 库存id
                 array.add(item);
             }
 
@@ -72,8 +72,8 @@ public class HisApiForFCZhongyiUtils {
             requestJson.put("Item", array);
 
             // TODO
-//            returnJson = HttpUtil.httpPost(HIS_DEFAULT_NAME_SPACE + HIS_CHARGE_URL, requestJson.toJSONString());
-            returnJson = getTestChargeJson(pdDosage,dosageDetailList);
+            returnJson = HttpUtil.httpPost(HIS_DEFAULT_NAME_SPACE + HIS_CHARGE_URL, requestJson.toJSONString());
+//            returnJson = getTestChargeJson(pdDosage,dosageDetailList);
 
             if (!PdConstant.SUCCESS_0.equals(returnJson.getString("code"))) {
                 logger.error("HIS计费失败，返回msg:"+returnJson.getString("msg"));
@@ -136,8 +136,8 @@ public class HisApiForFCZhongyiUtils {
             requestJson.put("Item", array);
 
             // TODO
-//            returnJson = HttpUtil.httpPost(HIS_DEFAULT_NAME_SPACE + HIS_REFUND_URL, requestJson.toJSONString());
-            returnJson = getTestRefundJson(pdDosage,dosageDetailList);
+            returnJson = HttpUtil.httpPost(HIS_DEFAULT_NAME_SPACE + HIS_REFUND_URL, requestJson.toJSONString());
+//            returnJson = getTestRefundJson(pdDosage,dosageDetailList);
 
             if (!PdConstant.SUCCESS_0.equals(returnJson.getString("code"))) {
                 logger.error("HIS退费失败，返回msg:"+returnJson.getString("msg"));
@@ -219,8 +219,8 @@ public class HisApiForFCZhongyiUtils {
 
         try{
             // TODO
-//            returnJson = HttpUtil.httpPost(HIS_DEFAULT_NAME_SPACE + HIS_PATIENT_URL, requestJson.toJSONString());
-            returnJson = getTestPatientJson(); // 测试数据
+            returnJson = HttpUtil.httpPost(HIS_DEFAULT_NAME_SPACE + HIS_PATIENT_URL, requestJson.toJSONString());
+//            returnJson = getTestPatientJson(); // 测试数据
 
             if (!PdConstant.SUCCESS_0.equals(returnJson.getString("code"))) {
                 logger.error("HIS查询病人信息失败，返回msg:"+returnJson.getString("msg"));

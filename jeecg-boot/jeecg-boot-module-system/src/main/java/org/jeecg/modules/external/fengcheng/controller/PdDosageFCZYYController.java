@@ -148,7 +148,7 @@ public class PdDosageFCZYYController {
                 String hisChargeId = obj.getString("vai01");//计费单据id
                 String hisChargeItemId = obj.getString("vaj01");//计费单据明细id (退费用)
                 for(PdDosageDetail pdd : detailList){
-                    if(pdd.getProductId().equals(prodNo)){
+                    if(pdd.getProductStockId().equals(prodNo)){
                         pdd.setHisChargeId(hisChargeId);
                         pdd.setHisChargeItemId(hisChargeItemId);
                     }

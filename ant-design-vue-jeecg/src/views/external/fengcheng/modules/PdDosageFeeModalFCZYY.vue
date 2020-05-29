@@ -410,11 +410,11 @@
               if(this.model.id){
                 // 新增页
                 this.initData = res.result;
-                if(res.result.hyCharged==0){
+                // if(res.result.hyCharged==0){
                   this.hyCharged = true;
-                }else{
-                  this.hyCharged = false;
-                }
+                // }else{
+                //   this.hyCharged = false;
+                // }
                 // this.totalSum = res.result.totalSum;
                 // this.totalPrice = res.result.totalPrice;
                 this.pdDosageDetailTable.dataSource = res.result.pdDosageDetails || [];

@@ -345,6 +345,9 @@
 		FROM pd_product_stock a
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="id != null and id != ''">
+				AND a.id = #{id}
+			</if>
 			<if test="departId != null and departId != ''">
 				AND a.depart_id = #{departId}
 			</if>
