@@ -89,6 +89,7 @@
                 :actionButton="false"
                 :disabled="disableSubmit"
                 @valueChange="valueChange"
+                @selectRowChange="handleSelectRowChange"
                 style="text-overflow: ellipsis;"
               >
                 <!--:maxHeight 大于 600 后就会有BUG 一次性选择9条以上产品，会少显示一条-->
@@ -335,6 +336,7 @@
         hyCharged: true,
         totalSum:'0',
         totalPrice:'0.0000',
+        sRowIds:[],//选中行id
         activeKey: 'pdDosageDetail',
         refKeys: ['pdDosageDetail',],
         //货区货位二级联动下拉框
@@ -532,6 +534,7 @@
         this.$emit('close');
         this.totalSum = 0;
         this.totalPrice = 0.0000;
+        this.sRowIds = [];
         this.visible = false;
         this.pdDosageDetailTable.dataSource = [];
         this.eachAllTable((item) => {
@@ -540,6 +543,11 @@
       },
       handleCancel () {
         this.close()
+      },
+
+      handleSelectRowChange(selectedIds){
+        this.sRowIds = selectedIds;
+        this.getTotalNumAndPrice([]);
       },
       // 扫码查询
       searchQuery(num) {
@@ -642,6 +650,11 @@
       },
       // 计算总数量和总价格
       getTotalNumAndPrice(rows){
+        if(this.sRowIds.length <= 0){
+          this.totalSum = "0";
+          this.totalPrice = "0.0000";
+          return;
+        }
         this.$nextTick(() => {
           if (rows.length <= 0) {
             let {values} = this.$refs.pdDosageDetail.getValuesSync({validate: false});

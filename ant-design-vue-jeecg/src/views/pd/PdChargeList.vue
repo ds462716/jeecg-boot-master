@@ -143,6 +143,11 @@
             align:"center",
             dataIndex: 'departName'
           },
+          {
+            title:'同步时间',
+            align:"center",
+            dataIndex: 'createTime'
+          },
           /*{
             title: '操作',
             dataIndex: 'action',
