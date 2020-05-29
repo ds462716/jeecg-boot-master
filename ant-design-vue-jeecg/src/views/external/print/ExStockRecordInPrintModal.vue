@@ -195,7 +195,7 @@
     components: {
 
     },
-    name: 'PdStockRecordInPrintModal',
+    name: 'ExStockRecordInPrintModal',
     props:{
       reBizCode:{
         type: String,

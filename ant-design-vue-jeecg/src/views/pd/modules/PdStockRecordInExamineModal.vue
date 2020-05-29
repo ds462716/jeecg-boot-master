@@ -184,7 +184,7 @@
     </template>
 
     <pd-stock-record-in-print-modal ref="pdStockRecordInPrintModal"></pd-stock-record-in-print-modal>
-
+    <ex-stock-record-in-print-modal ref="exStockRecordInPrintModal"></ex-stock-record-in-print-modal>
   </j-modal>
 
 
@@ -201,8 +201,8 @@
   import JDictSelectTagExpand from "@/components/dict/JDictSelectTagExpand"
   import ATextarea from "ant-design-vue/es/input/TextArea";
   import {scanCode} from '@/utils/barcode'
-  //import PdStockRecordInPrintModal from '../print/PdStockRecordInPrintModal'
-  import PdStockRecordInPrintModal from "../../external/print/ExStockRecordInPrintModal";
+  import PdStockRecordInPrintModal from '../print/PdStockRecordInPrintModal'
+  import ExStockRecordInPrintModal from "../../external/print/ExStockRecordInPrintModal";
 
 
   const VALIDATE_NO_PASSED = Symbol()
@@ -226,6 +226,7 @@
     name: 'PdStockRecordInExamineModal',
     mixins: [JEditableTableMixin],
     components: {
+      ExStockRecordInPrintModal,
       PdStockRecordInPrintModal,
       ATextarea,
       JDate,
@@ -264,6 +265,7 @@
         goodsAllocationList:[],
         huoquOptions:[],
         huoweiOptions:[],
+        hospitalCode:"",
 
         // 新增时子表默认添加几行空数据
         addDefaultRowNum: 0,
@@ -411,6 +413,7 @@
               }
 
               this.stockInText = res.result.stockInText;
+              this.hospitalCode = res.result.hospitalCode;
               this.goodsAllocationList = res.result.goodsAllocationList;
               this.pdStockRecordDetailTable.columns.forEach((item, idx) => {
                 if(item.key === "inHuoweiCode"){
@@ -438,8 +441,17 @@
           if(!res.result.auditDate){
             res.result.auditDate = res.result.submitDate;
           }
-          this.$refs.pdStockRecordInPrintModal.show(res.result);
-          this.$refs.pdStockRecordInPrintModal.title = this.stockInText + "入库单";
+
+          if(this.hospitalCode == "FCZYY"){
+            this.$refs.pdStockRecordInPrintModal.show(res.result);
+            this.$refs.pdStockRecordInPrintModal.title = this.stockInText + "入库单";
+          }else if(this.hospitalCode == "GZSLYY"){
+            this.$refs.exStockRecordInPrintModal.show(res.result);
+            this.$refs.exStockRecordInPrintModal.title = this.stockInText + "入库单";
+          }else{
+            this.$refs.pdStockRecordInPrintModal.show(res.result);
+            this.$refs.pdStockRecordInPrintModal.title = this.stockInText + "入库单";
+          }
         })
       },
       /** 关闭按钮 **/

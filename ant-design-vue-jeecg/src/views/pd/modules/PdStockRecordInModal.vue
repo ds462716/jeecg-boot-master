@@ -228,7 +228,7 @@
     <pd-choose-purchase-order-list-model  ref="pdChoosePurchaseOrderListModel" @ok="returnPurchaseOrderData" ></pd-choose-purchase-order-list-model>
     <pd-choose-product-list-model  ref="pdChooseProductListModel" @ok="returnProductData" ></pd-choose-product-list-model>
     <pd-stock-record-in-print-modal ref="pdStockRecordInPrintModal" ></pd-stock-record-in-print-modal>
-
+    <ex-stock-record-in-print-modal ref="exStockRecordInPrintModal" ></ex-stock-record-in-print-modal>
   </j-modal>
 </template>
 
@@ -245,8 +245,8 @@
   import JDictSelectTagExpand from "@/components/dict/JDictSelectTagExpand"
   import ATextarea from "ant-design-vue/es/input/TextArea";
   import {scanCode} from '@/utils/barcode'
-  //import PdStockRecordInPrintModal from "../print/PdStockRecordInPrintModal";
-  import PdStockRecordInPrintModal from "../../external/print/ExStockRecordInPrintModal";
+  import PdStockRecordInPrintModal from "../print/PdStockRecordInPrintModal";
+  import ExStockRecordInPrintModal from "../../external/print/ExStockRecordInPrintModal";
 
 
   const VALIDATE_NO_PASSED = Symbol()
@@ -270,6 +270,7 @@
     name: 'PdStockRecordInModal',
     mixins: [JEditableTableMixin],
     components: {
+      ExStockRecordInPrintModal,
       PdStockRecordInPrintModal,
       ATextarea,
       PdChooseProductListModel,
@@ -322,6 +323,7 @@
         goodsAllocationList:[],
         huoquOptions:[],
         huoweiOptions:[],
+        hospitalCode:"",
 
         // 新增时子表默认添加几行空数据
         addDefaultRowNum: 0,
@@ -547,6 +549,7 @@
               //   this.allowEditPrice = "0";
               // }
               this.goodsAllocationList = res.result.goodsAllocationList;
+              this.hospitalCode = res.result.hospitalCode;
               //开关-是否需要入库审批  1-是；0-否
               // if(res.result.allowStockInAudit == "0" && this.disableSubmit == false){
               //   this.showSubmitAndPrint = true;
@@ -609,8 +612,16 @@
           if(!res.result.auditDate){
             res.result.auditDate = res.result.submitDate;
           }
-          this.$refs.pdStockRecordInPrintModal.show(res.result);
-          this.$refs.pdStockRecordInPrintModal.title = this.stockInText + "入库单";
+          if(this.hospitalCode == "FCZYY"){
+            this.$refs.pdStockRecordInPrintModal.show(res.result);
+            this.$refs.pdStockRecordInPrintModal.title = this.stockInText + "入库单";
+          }else if(this.hospitalCode == "GZSLYY"){
+            this.$refs.exStockRecordInPrintModal.show(res.result);
+            this.$refs.exStockRecordInPrintModal.title = this.stockInText + "入库单";
+          }else{
+            this.$refs.pdStockRecordInPrintModal.show(res.result);
+            this.$refs.pdStockRecordInPrintModal.title = this.stockInText + "入库单";
+          }
         })
       },
       /** 关闭按钮点击事件 */

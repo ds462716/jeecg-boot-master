@@ -144,6 +144,11 @@ public class PdDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart>
     }
 
     @Override
+    public List<SysUser> findUserList(Map<String, Object> parMap) {
+        return userMapper.findAllUserList(parMap);
+    }
+
+    @Override
     public List<SysDepart> selectList(SysDepart sysDepart) {
         return sysDepartMapper.selectDepartList(sysDepart);
     }

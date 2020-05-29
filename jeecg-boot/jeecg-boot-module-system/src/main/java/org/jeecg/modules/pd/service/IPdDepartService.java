@@ -29,6 +29,8 @@ public interface IPdDepartService extends IService<SysDepart> {
 
     IPage<SysUser> findUserList(Page<SysUser> page, Map<String, Object> parMap);
 
+    List<SysUser> findUserList(Map<String, Object> parMap);
+
     List<SysDepart> selectList(SysDepart sysDepart);
 
     List<SysUserDepart> queryUserDepart(LambdaQueryWrapper<SysUserDepart> eq);

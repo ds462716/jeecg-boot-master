@@ -178,8 +178,8 @@ jeecg :
     minio_name: ??
     minio_pass: ??
     bucketName: ??
-  #医院代码-丰城中医院
-  hospital_code: "FCZYY"
+  hospital_code: "FCZYY"  #医院代码-丰城中医院
+#  hospital_code: "GZSLYY"  #医院代码-赣州市立医院
 #Mybatis输出sql日志
 logging:
   level:

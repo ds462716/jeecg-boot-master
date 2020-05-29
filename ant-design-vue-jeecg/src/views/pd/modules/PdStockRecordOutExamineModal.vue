@@ -44,7 +44,6 @@
                     showSearch
                     placeholder="请选择入库库房"
                     disabled
-                    :supplierId="departValue"
                     :defaultActiveFirstOption="false"
                     :showArrow="true"
                     :filterOption="false"
@@ -58,6 +57,22 @@
               <a-col :span="6">
                 <a-form-item label="出库类型" :labelCol="labelCol" :wrapperCol="wrapperCol">
                   <j-dict-select-tag-expand disabled type="list" v-decorator="['outType', validatorRules.outType]" :trigger-change="true" dictCode="out_type" placeholder="请选择出库类型"/>
+                </a-form-item>
+              </a-col>
+              <a-col :span="6">
+                <a-form-item label="领用人" :labelCol="labelCol" :wrapperCol="wrapperCol">
+                  <a-select
+                    showSearch
+                    placeholder="请选择领用人"
+                    disabled
+                    :defaultActiveFirstOption="false"
+                    :showArrow="true"
+                    :filterOption="false"
+                    :notFoundContent="notFoundContent"
+                    v-decorator="[ 'applyBy', validatorRules.applyBy]"
+                  >
+                    <a-select-option v-for="d in userList" :key="d.id" :text="d.realname" >{{d.realname}}</a-select-option>
+                  </a-select>
                 </a-form-item>
               </a-col>
             </a-row>
@@ -188,7 +203,7 @@
     </template>
 
     <pd-stock-record-out-print-modal ref="pdStockRecordOutPrintModal"></pd-stock-record-out-print-modal>
-
+    <ex-stock-record-out-print-modal ref="exStockRecordOutPrintModal"></ex-stock-record-out-print-modal>
   </j-modal>
 </template>
 
@@ -202,8 +217,8 @@
   import JDictSelectTagExpand from "@/components/dict/JDictSelectTagExpand"
   import ATextarea from "ant-design-vue/es/input/TextArea";
   import {stockScanCode} from '@/utils/barcode'
-  //import PdStockRecordOutPrintModal from "../print/PdStockRecordOutPrintModal";
-  import PdStockRecordOutPrintModal from "../../external/print/ExStockRecordOutPrintModal";
+  import PdStockRecordOutPrintModal from "../print/PdStockRecordOutPrintModal";
+  import ExStockRecordOutPrintModal from "../../external/print/ExStockRecordOutPrintModal";
 
 
   const VALIDATE_NO_PASSED = Symbol()
@@ -213,6 +228,7 @@
     name: 'PdStockRecordOutModal',
     mixins: [JEditableTableMixin],
     components: {
+      ExStockRecordOutPrintModal,
       PdStockRecordOutPrintModal,
       ATextarea,
       JDate,
@@ -240,7 +256,9 @@
         departValue: undefined,
         notFoundContent:"未找到内容",
         departList:[],
+        userList:[],
         //部门下拉列表 end
+        hospitalCode:"",
 
         orderTableTitle:"",
         showOrderTable:false,
@@ -462,6 +480,7 @@
         url: {
           init:"/pd/pdStockRecordOut/initModal",
           audit: "/pd/pdStockRecordOut/audit",
+          userList:"/pd/pdDepart/queryUserByDepartParentId",
           departList:"/pd/pdDepart/getSysDepartList",
           queryById: "/pd/pdStockRecordOut/queryById",
         },
@@ -507,8 +526,9 @@
         // this.loading = true;
         this.popModal.title="出库审核";
         this.departHandleSearch();  // 初始化部门列表 用于数据回显
+        this.userHandleSearch();
 
-        let fieldval = pick(this.model,'recordNo','outType','submitByName','submitDate','inDepartId','outDepartName','remarks','refuseReason');
+        let fieldval = pick(this.model,'recordNo','outType','submitByName','submitDate','inDepartId','outDepartName','remarks','refuseReason','applyBy');
 
         let params = { id: this.model.id };
 
@@ -547,7 +567,7 @@
                   this.pdOrderDetailTable.dataSource = pdApplyDetailList;
                 }
                 this.stockOutText = res.result.stockOutText;
-
+                this.hospitalCode = res.result.hospitalCode;
                 //货区货位 下拉框
                 this.goodsAllocationList = res.result.goodsAllocationList;
                 this.pdStockRecordDetailTable.columns.forEach((item, idx) => {
@@ -588,8 +608,16 @@
           if(!res.result.auditDate){
             res.result.auditDate = res.result.submitDate;
           }
-          this.$refs.pdStockRecordOutPrintModal.show(res.result);
-          this.$refs.pdStockRecordOutPrintModal.title = this.stockOutText + "出库单";
+          if(this.hospitalCode == "FCZYY"){
+            this.$refs.pdStockRecordOutPrintModal.show(res.result);
+            this.$refs.pdStockRecordOutPrintModal.title = this.stockOutText + "出库单";
+          }else if(this.hospitalCode == "GZSLYY"){
+            this.$refs.exStockRecordOutPrintModal.show(res.result);
+            this.$refs.exStockRecordOutPrintModal.title = this.stockOutText + "出库单";
+          }else{
+            this.$refs.pdStockRecordOutPrintModal.show(res.result);
+            this.$refs.pdStockRecordOutPrintModal.title = this.stockOutText + "出库单";
+          }
         })
       },
       /** 关闭按钮点击事件 */
@@ -694,7 +722,7 @@
         this.$message.error(msg)
       },
       popupCallback(row){
-        this.form.setFieldsValue(pick(row,'recordNo','outType','submitByName','submitDate','inDepartId','outDepartName','remarks','refuseReason'))
+        this.form.setFieldsValue(pick(row,'recordNo','outType','submitByName','submitDate','inDepartId','outDepartName','remarks','refuseReason','applyBy'))
       },
       // 部门下拉框搜索
       departHandleSearch(value){
@@ -703,6 +731,14 @@
             this.cmsFailed(res.message);
           }
           this.departList = res.result;
+        })
+      },
+      userHandleSearch(value){
+        getAction(this.url.userList,{realname:value}).then((res)=>{
+          if (!res.success) {
+            this.cmsFailed(res.message);
+          }
+          this.userList = res.result;
         })
       },
       // 计算总数量和总价格

@@ -111,6 +111,8 @@ public class PdStockRecord extends BaseEntity {
     /**退货单状态*/
     @Excel(name = "退货单状态", width = 15)
     private String returnStatus;
+    /**领用人**/
+    private String applyBy;
     /**扩展1*/
     @Excel(name = "扩展1", width = 15)
     private String extend1;
@@ -244,4 +246,6 @@ public class PdStockRecord extends BaseEntity {
     /** 查询日期结束 **/
     @TableField(exist = false)
     private String queryDateEnd;
+    @TableField(exist = false)
+    private String hospitalCode;
 }

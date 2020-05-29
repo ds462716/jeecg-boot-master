@@ -170,7 +170,7 @@
     componens: {
 
     },
-    name: 'PdStockRecordOutPrintModal',
+    name: 'ExStockRecordOutPrintModal',
     props:{
       reBizCode:{
         type: String,

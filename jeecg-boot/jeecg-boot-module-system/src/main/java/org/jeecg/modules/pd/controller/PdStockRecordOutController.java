@@ -32,6 +32,7 @@ import org.jeecgframework.poi.excel.entity.ImportParams;
 import org.jeecgframework.poi.excel.view.JeecgEntityExcelView;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
@@ -77,6 +78,8 @@ public class PdStockRecordOutController {
     @Autowired
     private PushMsgUtil pushMsgUtil;
 
+    @Value("${jeecg.hospital_code}")
+    private String hospitalCode;
     /**
      * 初始化Modal页面
      *
@@ -86,6 +89,7 @@ public class PdStockRecordOutController {
     @GetMapping(value = "/initModal")
     public Result<?> initModal(@RequestParam(name = "id") String id, HttpServletRequest req) {
         PdStockRecord pdStockRecord = pdStockRecordService.initOutModal(id);
+        pdStockRecord.setHospitalCode(hospitalCode);
         return Result.ok(pdStockRecord);
     }
 

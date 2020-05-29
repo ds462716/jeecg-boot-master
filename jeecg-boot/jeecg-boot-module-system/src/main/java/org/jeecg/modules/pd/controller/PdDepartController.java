@@ -298,6 +298,34 @@ public class PdDepartController extends JeecgController<PdDepartConfig, IPdDepar
         return result;
     }
 
+
+    /**
+     * 根据部门id查询用户信息
+     *
+     * @return
+     */
+    @RequestMapping(value = "/queryUserByDepartParentId", method = RequestMethod.GET)
+    public Result<List<SysUser>> queryUserByDepartParentId(SysUser user) {
+        Result<List<SysUser>> result = new Result<>();
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+
+        Map<String,Object> parMap = new HashMap<>();
+        parMap.put("DEL_FLAG_NORMAL",PdConstant.DEL_FLAG_0);
+        parMap.put("deptParentId",sysUser.getDepartParentId());
+        parMap.put("realname",user.getRealname());
+        List<SysUser> userList = pdDepartService.findUserList(parMap);
+
+        try {
+            result.setSuccess(true);
+            result.setResult(userList);
+            return result;
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            result.setSuccess(false);
+            return result;
+        }
+    }
+
     /**
 	  * 查询院内所有科室 ，parentFlag传0包括当前科室，不传 则不包括当前科室不分页列表查询
 	  *

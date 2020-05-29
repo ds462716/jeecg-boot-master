@@ -75,6 +75,26 @@
                   </a-select>
                 </a-form-item>
               </a-col>
+              <a-col :span="6">
+                <a-form-item label="领用人" :labelCol="labelCol" :wrapperCol="wrapperCol">
+                  <a-select
+                    showSearch
+                    placeholder="请选择领用人"
+                    :disabled="disableSubmit"
+                    :defaultActiveFirstOption="false"
+                    :showArrow="true"
+                    :filterOption="false"
+                    :allowClear="true"
+                    @search="userHandleSearch"
+                    @change="userHandleChange"
+                    @focus="userHandleSearch"
+                    :notFoundContent="notFoundContent"
+                    v-decorator="[ 'applyBy', validatorRules.applyBy]"
+                  >
+                    <a-select-option v-for="d in userList" :key="d.id" :text="d.realname" >{{d.realname}}</a-select-option>
+                  </a-select>
+                </a-form-item>
+              </a-col>
             </a-row>
           </a-form>
 
@@ -262,6 +282,7 @@
     <pd-choose-allocation-list-model ref="pdChooseAllocationListModel" @ok="returnAllocationData" ></pd-choose-allocation-list-model>
     <pd-choose-product-stock-list-model ref="pdChooseProductStockListModel" @ok="returnProductStockData" ></pd-choose-product-stock-list-model>
     <pd-stock-record-out-print-modal ref="pdStockRecordOutPrintModal"></pd-stock-record-out-print-modal>
+    <ex-stock-record-out-print-modal ref="exStockRecordOutPrintModal"></ex-stock-record-out-print-modal>
     <pd-choose-package-record-list-model ref="pdChoosePackageRecordListModel" @ok="returnPackageRecordData" ></pd-choose-package-record-list-model>
   </j-modal>
 </template>
@@ -280,9 +301,9 @@
   import PdChooseProductStockListModel from "./PdChooseProductStockListModel";
   import PdChooseApplyOrderListModel from "./PdChooseApplyOrderListModel";
   import PdChooseAllocationListModel from "./PdChooseAllocationListModel";
-  import PdStockRecordOutPrintModal from "../../external/print/ExStockRecordOutPrintModal";
-  //import PdStockRecordOutPrintModal from "../print/PdStockRecordOutPrintModal";
+  import PdStockRecordOutPrintModal from "../print/PdStockRecordOutPrintModal";
   import PdChoosePackageRecordListModel from "./PdChoosePackageRecordListModel";
+  import ExStockRecordOutPrintModal from "../../external/print/ExStockRecordOutPrintModal";
 
   const VALIDATE_NO_PASSED = Symbol()
   export { FormTypes, VALIDATE_NO_PASSED }
@@ -291,6 +312,7 @@
     name: 'PdStockRecordOutModal',
     mixins: [JEditableTableMixin],
     components: {
+      ExStockRecordOutPrintModal,
       PdChoosePackageRecordListModel,
       PdStockRecordOutPrintModal,
       PdChooseAllocationListModel,
@@ -334,6 +356,13 @@
         departList:[],
         inDepartName:"",
         //部门下拉列表 end
+        //用户拉列表 start
+        // userValue: undefined,
+        // notFoundContent:"未找到内容",
+        userList:[],
+        //用户下拉列表 end
+
+        hospitalCode:"",
 
         orderTableTitle:"",
         showApplyBtn:false,
@@ -366,6 +395,7 @@
           remarks:{},
           outDepartId:{},
           inDepartId:{rules: [{required: true, message: '请选择入库库房!'}]},
+          applyBy:{},
 
         },
         refKeys: ['pdStockRecordDetail',],
@@ -570,6 +600,7 @@
           // edit: "/pd/pdStockRecordOut/edit",
           // querySupplier:"/pd/pdSupplier/getSupplierList",
           departList:"/pd/pdDepart/getSysDepartList",
+          userList:"/pd/pdDepart/queryUserByDepartParentId",
           huoweiList:"/pd/pdGoodsAllocation/getOptions",
           getApplyOrder:"/pd/pdApplyOrder/getOne",
           getAllocationOrder:"/pd/pdAllocationRecord/getOne",
@@ -659,6 +690,7 @@
         this.showPackageBtn = false;
 
         this.departHandleSearch();  // 初始化部门列表 用于数据回显
+        this.userHandleSearch();
         let params = {};
         if(this.model.id){
           if(this.model.auditStatus == "1" && this.model.submitStatus == "2"){
@@ -673,7 +705,7 @@
           }
           this.popModal.title="出库明细";
           let fieldval = pick(this.model,'recordNo','outType','submitBy','submitByName','submitDate','applyNo','allocationNo',
-            'inDepartId','outDepartId','outDepartName','remarks','refuseReason')
+            'inDepartId','outDepartId','outDepartName','remarks','refuseReason','applyBy')
           this.$nextTick(() => {
             this.applyNo = this.model.applyNo;
             this.allocationNo = this.model.allocationNo;
@@ -743,7 +775,7 @@
                 this.initData = res.result;
                 this.submitDateStr = res.result.submitDateStr;
                 let fieldval = pick(this.initData,'recordNo','outType','submitBy','submitByName','submitDate','applyNo','allocationNo',
-                  'inDepartId','outDepartId','outDepartName','remarks','refuseReason');
+                  'inDepartId','outDepartId','outDepartName','remarks','refuseReason','applyBy');
                 this.form.setFieldsValue(fieldval);
                 this.form.setFieldsValue({outType:"2"}); //	1-申领出库; 2-科室出库; 3-调拨出库
                 //获取光标
@@ -777,7 +809,7 @@
                   }
                 }
               }
-
+              this.hospitalCode = res.result.hospitalCode;
               this.allowEditPrice = res.result.allowEditPrice;
               if(this.disableSubmit){
                 this.allowEditPrice = "0";
@@ -847,8 +879,16 @@
           if(!res.result.auditDate){
             res.result.auditDate = res.result.submitDate;
           }
-          this.$refs.pdStockRecordOutPrintModal.show(res.result);
-          this.$refs.pdStockRecordOutPrintModal.title = this.stockOutText + "出库单";
+          if(this.hospitalCode == "FCZYY"){
+            this.$refs.pdStockRecordOutPrintModal.show(res.result);
+            this.$refs.pdStockRecordOutPrintModal.title = this.stockOutText + "出库单";
+          }else if(this.hospitalCode == "GZSLYY"){
+            this.$refs.exStockRecordOutPrintModal.show(res.result);
+            this.$refs.exStockRecordOutPrintModal.title = this.stockOutText + "出库单";
+          }else{
+            this.$refs.pdStockRecordOutPrintModal.show(res.result);
+            this.$refs.pdStockRecordOutPrintModal.title = this.stockOutText + "出库单";
+          }
         })
       },
       /**撤回**/
@@ -957,7 +997,7 @@
       },
       popupCallback(row){
         this.form.setFieldsValue(pick(row,'recordNo','outType','submitBy','submitByName','submitDate','applyNo','allocationNo',
-          'inDepartId','outDepartId','outDepartName','remarks','refuseReason'))
+          'inDepartId','outDepartId','outDepartName','remarks','refuseReason','applyBy'))
       },
       // 部门下拉框搜索
       departHandleSearch(value){
@@ -997,6 +1037,16 @@
             }
           })
         })
+      },
+      userHandleSearch(value){
+        getAction(this.url.userList,{realname:value}).then((res)=>{
+          if (!res.success) {
+            this.cmsFailed(res.message);
+          }
+          this.userList = res.result;
+        })
+      },
+      userHandleChange(value,option){
       },
       //删除行
       handleConfirmDelete() {
