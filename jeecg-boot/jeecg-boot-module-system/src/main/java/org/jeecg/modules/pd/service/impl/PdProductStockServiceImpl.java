@@ -44,6 +44,17 @@ public class PdProductStockServiceImpl extends ServiceImpl<PdProductStockMapper,
 		return page.setRecords(pdProductStockMapper.selectList(productStock));
 	}
 
+	/**
+	 * 查询列表---试剂查询
+	 * @param page
+	 * @param productStock
+	 * @return
+	 */
+	@Override
+	public Page<PdProductStock> queryProductStockList(Page<PdProductStock> page, PdProductStock productStock) {
+		return page.setRecords(pdProductStockMapper.queryProductStockList(productStock));
+	}
+
 	@Override
 	public List<PdProductStock> selectByMainId(String mainId) {
 		return pdProductStockMapper.selectByMainId(mainId);

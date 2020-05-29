@@ -25,6 +25,8 @@ public interface IPdProductStockService extends IService<PdProductStock> {
 	 */
 	Page<PdProductStock> selectList(Page<PdProductStock> pageList, PdProductStock productStock);
 
+	Page<PdProductStock> queryProductStockList(Page<PdProductStock> pageList, PdProductStock productStock);
+
 	public List<PdProductStock> selectByMainId(String mainId);
 
     List<PdProductStock> selectList(PdProductStock pdProductStock);

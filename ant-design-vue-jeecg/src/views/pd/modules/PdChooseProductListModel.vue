@@ -361,6 +361,9 @@
         if(params && params.stockDepartId){
           this.stockDepartId = params.stockDepartId;
         }
+        if(params && params.productFlag){
+          this.productFlag = params.productFlag;
+        }
         this.loadData(1);
         this.visible = true;
       },
@@ -392,6 +395,9 @@
         }
         if(this.stockDepartId){
           params.stockDepartId = this.stockDepartId;
+        }
+        if(this.productFlag){
+          params.productFlag = this.productFlag;
         }
         this.loading = true;
         getAction(this.url.list, params).then((res) => {
