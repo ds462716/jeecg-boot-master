@@ -176,8 +176,11 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
     }
 
     private String saveInStockRecord(PdStockRecord pdStockRecord, List<PdStockRecordDetail> pdStockRecordDetailList, String outType) {
+
+        List<PdStockRecordDetail> newDetailList = new ArrayList<>();
+
         if (oConvertUtils.isNotEmpty(outType)) {
-            // 调拨出库 或 申领出库 自动生成入库单
+            // 调拨出库 或 申领出库 自动生成入库单 （出库入库）
             if (PdConstant.OUT_TYPE_3.equals(outType)) {
                 pdStockRecord.setInType(PdConstant.IN_TYPE_3);
             } else {
@@ -193,54 +196,55 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
             pdStockRecord.setAuditDate(date);
             pdStockRecord.setUpdateTime(date);
             pdStockRecord.setCreateTime(date);
-        }
-        pdStockRecordMapper.insert(pdStockRecord);
+            newDetailList = pdStockRecordDetailList;
+        }else{
+            // 供应商入库
+            if (CollectionUtils.isNotEmpty(pdStockRecordDetailList)) {
+                Set<String> setIds = new HashSet<>();
+                //相同产品合并
+                for (PdStockRecordDetail main : pdStockRecordDetailList) {
+                    String expDate = DateUtils.date2Str(main.getExpDate(), DateUtils.yyMMdd.get());
 
-        List<PdStockRecordDetail> newDetailList = new ArrayList<>();
-        Set<String> setIds = new HashSet<>();
-
-        if (CollectionUtils.isNotEmpty(pdStockRecordDetailList)) {
-            //相同产品合并
-            for (PdStockRecordDetail main : pdStockRecordDetailList) {
-                String expDate = DateUtils.date2Str(main.getExpDate(), DateUtils.yyMMdd.get());
-
-                // 1. 如果产品ID、批号、效期一样，则赋值条码
-                if(oConvertUtils.isEmpty(main.getProductBarCode())){
-                    for (PdStockRecordDetail entity : pdStockRecordDetailList) {
-                        if(main.getProductId().equals(entity.getProductId()) && main.getBatchNo().equals(entity.getBatchNo()) && main.getExpDate().equals(entity.getExpDate())
-                                && oConvertUtils.isNotEmpty(entity.getProductBarCode())){
-                            main.setProductBarCode(entity.getProductBarCode());
-                            break;
+                    // 1. 如果产品ID、批号、效期一样，则赋值条码
+                    if(oConvertUtils.isEmpty(main.getProductBarCode())){
+                        for (PdStockRecordDetail entity : pdStockRecordDetailList) {
+                            if(main.getProductId().equals(entity.getProductId()) && main.getBatchNo().equals(entity.getBatchNo()) && main.getExpDate().equals(entity.getExpDate())
+                                    && oConvertUtils.isNotEmpty(entity.getProductBarCode())){
+                                main.setProductBarCode(entity.getProductBarCode());
+                                break;
+                            }
                         }
                     }
-                }
 
-                // 2. 如果第1步没有赋值到条码，则自动拼条码
-                if(oConvertUtils.isEmpty(main.getProductBarCode())){
-                    main.setProductBarCode("01" + main.getProductNumber() + "17" + expDate + "10" + main.getBatchNo());
-                }
+                    // 2. 如果第1步没有赋值到条码，则自动拼条码
+                    if(oConvertUtils.isEmpty(main.getProductBarCode())){
+                        main.setProductBarCode("01" + main.getProductNumber() + "17" + expDate + "10" + main.getBatchNo());
+                    }
 
-                StringBuilder setId = new StringBuilder();
-                setId.append(main.getProductId()).append(main.getBatchNo()).append(main.getExpDate()).append(main.getInHuoweiCode());
-                Double productNum = 0D;
-                String mainHuoweCode = main.getInHuoweiCode() == null ? "" : main.getInHuoweiCode();
-                // 3.合并数量
-                if(setIds.add(setId.toString())){
-                    for (PdStockRecordDetail entity : pdStockRecordDetailList) {
-                        String entityHuoweCode = entity.getInHuoweiCode() == null ? "" : entity.getInHuoweiCode();
-                        if(main.getProductId().equals(entity.getProductId()) && main.getBatchNo().equals(entity.getBatchNo())
-                                && main.getExpDate().equals(entity.getExpDate()) && mainHuoweCode.equals(entityHuoweCode)){
-                            productNum = productNum + entity.getProductNum();
+                    StringBuilder setId = new StringBuilder();
+                    setId.append(main.getProductId()).append(main.getBatchNo()).append(main.getExpDate()).append(main.getInHuoweiCode());
+                    Double productNum = 0D;
+                    String mainHuoweCode = main.getInHuoweiCode() == null ? "" : main.getInHuoweiCode();
+                    // 3.合并数量
+                    if(setIds.add(setId.toString())){
+                        for (PdStockRecordDetail entity : pdStockRecordDetailList) {
+                            String entityHuoweCode = entity.getInHuoweiCode() == null ? "" : entity.getInHuoweiCode();
+                            if(main.getProductId().equals(entity.getProductId()) && main.getBatchNo().equals(entity.getBatchNo())
+                                    && main.getExpDate().equals(entity.getExpDate()) && mainHuoweCode.equals(entityHuoweCode)){
+                                productNum = productNum + entity.getProductNum();
+                            }
                         }
+                        if(oConvertUtils.isNotEmpty(pdStockRecord.getSupplierId()) && oConvertUtils.isEmpty(main.getSupplierId())){
+                            main.setSupplierId(pdStockRecord.getSupplierId());
+                        }
+                        main.setProductNum(productNum);
+                        newDetailList.add(main);
                     }
-                    if(oConvertUtils.isNotEmpty(pdStockRecord.getSupplierId()) && oConvertUtils.isEmpty(main.getSupplierId())){
-                        main.setSupplierId(pdStockRecord.getSupplierId());
-                    }
-                    main.setProductNum(productNum);
-                    newDetailList.add(main);
                 }
             }
         }
+
+        pdStockRecordMapper.insert(pdStockRecord);
 
         if(CollectionUtils.isNotEmpty(newDetailList)){
             //开关-是否允许出入库时可修改进价和出价
