@@ -55,6 +55,7 @@
 		<if test="departName != null and departName != ''">
 			AND b.fsf_ksmc LIKE concat('%',#{departName},'%')
 		</if>
+		ORDER by a.create_time desc
 	</select>
 
 

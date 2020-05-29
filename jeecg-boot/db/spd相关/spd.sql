@@ -615,3 +615,8 @@ INSERT INTO `sys_permission`(`id`, `parent_id`, `name`, `url`, `component`, `com
 -- add by zxh 2020年5月28日09:06:43 退货新增唯一码出库
 ALTER TABLE `pd_rejected`
 ADD COLUMN `total_sum`  double(11,4) NULL COMMENT '总数量' AFTER `rejected_date`;
+
+
+-- add by mcb 2020年5月29日09:06:43 库存明细表增加条码类型字段
+ ALTER TABLE `pd_product_stock`
+ADD COLUMN `bar_code_type` varchar(4) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT 0 COMMENT '条码类型  0：普通条码   1：唯一码' AFTER `ref_bar_code`;

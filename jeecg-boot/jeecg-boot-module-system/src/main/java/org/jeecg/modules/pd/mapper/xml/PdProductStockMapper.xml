@@ -29,7 +29,8 @@
 		a.spec_unit_id,
 		a.spec_quantity,
  		a.del_flag,
- 		a.ref_bar_code
+ 		a.ref_bar_code,
+ 		a.bar_code_type
 	</sql>
 
 	<sql id="pdProductStockJoins">
@@ -227,6 +228,9 @@
 			<if test="departParentId != null and departParentId != ''">
 				AND a.depart_parent_id = #{departParentId}
 			</if>
+			<if test="barCodeType != null and barCodeType != ''">
+				AND a.bar_code_type = #{barCodeType}
+			</if>
 			<if test="allocationNo != null and allocationNo != ''">
 				AND j.allocation_no = #{allocationNo}
 			</if>
@@ -279,6 +283,9 @@
 			</if>
 			<if test="refBarCode != null and refBarCode != ''">
 				AND a.ref_bar_code = #{refBarCode}
+			</if>
+			<if test="barCodeType != null and barCodeType != ''">
+				AND a.bar_code_type = #{barCodeType}
 			</if>
 		</where>
 
@@ -355,6 +362,9 @@
 			</if>
 			<if test="nestatStatus != null and nestatStatus != ''">
 				AND a.nestat_status = #{nestatStatus}
+			</if>
+			<if test="barCodeType != null and barCodeType != ''">
+				AND a.bar_code_type = #{barCodeType}
 			</if>
 		</where>
 		FOR UPDATE
@@ -632,6 +642,9 @@
 					#{item}
 				</foreach>
 			</if>
+			<if test="barCodeType != null and barCodeType != ''">
+				AND a.bar_code_type = #{barCodeType}
+			</if>
 			order by  exp_status  desc,create_time desc
 		</where>
 	</select>
@@ -648,6 +661,13 @@
 			stock_num = #{stockNum},
 			spec_num = #{specNum},
 			nestat_status = #{nestatStatus}
+		WHERE id= #{id}
+	</update>
+
+  <!-- 修改条码类型 -->
+	<update id="updateStockBarCodeType">
+		UPDATE pd_product_stock SET
+			bar_code_type = #{barCodeType}
 		WHERE id= #{id}
 	</update>
 
@@ -668,6 +688,9 @@
 			</if>
 			<if test="nestatStatus != null and nestatStatus != ''">
 				AND a.nestat_status = #{nestatStatus}
+			</if>
+			<if test="barCodeType != null and barCodeType != ''">
+				AND a.bar_code_type = #{barCodeType}
 			</if>
 		</where>
 		ORDER BY   exp_date  FOR UPDATE

@@ -100,4 +100,11 @@ public class PdProductStockServiceImpl extends ServiceImpl<PdProductStockMapper,
 		return page.setRecords(pdProductStockMapper.queryList(productStock));
 	}
 
+
+	@Override
+	@Transactional
+	public void updateStockBarCodeType(PdProductStock productStock) {
+		pdProductStockMapper.updateStockBarCodeType(productStock);
+	}
+
 }

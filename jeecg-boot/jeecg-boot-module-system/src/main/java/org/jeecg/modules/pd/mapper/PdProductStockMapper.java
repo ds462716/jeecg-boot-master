@@ -73,7 +73,11 @@ public interface PdProductStockMapper extends BaseMapper<PdProductStock> {
 	 */
 	public void updateStockSpecNum(PdProductStock pdProductStock);
 
-
+	/**
+	 * 修改条码类型
+	 * @param pdProductStock
+	 */
+	public void updateStockBarCodeType(PdProductStock pdProductStock);
 
 	/**
 	 * 库存明细查询,根据有效期排序查询

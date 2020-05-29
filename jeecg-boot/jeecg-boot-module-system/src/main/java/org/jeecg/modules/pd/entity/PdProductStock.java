@@ -91,6 +91,8 @@ public class PdProductStock extends BaseEntity {
 	private String remarks;
 	/** 消息发送状态，近效期1，已过期2，初始值为0 */
 	private String msgSendState;
+	/**条码类型*/
+	private String barCodeType;  //0:普通条码   1:唯一码
 	/**是否永存*/
 	@Excel(name = "是否永存", width = 15)
 	private String isLong;
