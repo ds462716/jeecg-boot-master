@@ -393,7 +393,7 @@
       },
       // 新增行
       handleConfirmAdd() {
-        this.$refs.pdChooseProductListModel.show();
+        this.$refs.pdChooseProductListModel.show({productFlag:"1"});//只查詢试剂耗材
       },
       // 产品数量变更
       valueChange(event) {

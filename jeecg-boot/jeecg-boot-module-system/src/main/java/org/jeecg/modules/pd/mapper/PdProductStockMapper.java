@@ -20,6 +20,10 @@ public interface PdProductStockMapper extends BaseMapper<PdProductStock> {
 
 	List<PdProductStock> selectList(PdProductStockTotalPage stockTotalPage);
 
+	/*试剂查询专用*/
+	List<PdProductStock> queryProductStockList(PdProductStock pdProductStock);
+
+
 	public boolean deleteByMainId(@Param("mainId") String mainId);
     
 	public List<PdProductStock> selectByMainId(@Param("mainId") String mainId);

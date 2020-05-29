@@ -698,4 +698,111 @@
 		</where>
 		ORDER BY   exp_date  FOR UPDATE
 	</select>
+
+
+
+
+	<!-- 列表查询  试剂库存查询用 -->
+	<select id="queryProductStockList" resultType="org.jeecg.modules.pd.entity.PdProductStock">
+		SELECT
+		<include refid="pdProductStockColumns"/>,
+		<include refid="pdUnitColumns"/>,
+		<include refid="pdProductColumns"/>,
+		<include refid="pdVenderColumns"/>,
+		<include refid="pdSupplierColumns"/>,
+		<include refid="sysDepartColumns"/>,
+		<include refid="pdGoodsAllocationColumns"/>
+		FROM pd_product_stock a
+		<include refid="pdProductStockJoins"/>
+		<include refid="pdProductJoins"/>
+		<include refid="pdUnitJoins"/>
+		<include refid="pdVenderJoins"/>
+		<include refid="pdSupplierJoins"/>
+		<include refid="sysDepartJoins"/>
+		<include refid="pdGoodsAllocation"/>
+		<where>
+			a.del_flag =#{DEL_FLAG_NORMAL} AND a.stock_num > 0
+			<if test="id != null and id != ''">
+				AND a.id = #{id}
+			</if>
+			<if test="productId != null and productId != ''">
+				AND a.product_id = #{productId}
+			</if>
+			<if test="departId != null and departId != ''">
+				AND a.depart_id = #{departId}
+			</if>
+			<if test="number != null and number != ''">
+				AND c.number LIKE concat('%',#{number},'%')
+			</if>
+			<if test="productName != null and productName != ''">
+				AND (
+				c.name LIKE concat('%',#{productName},'%')
+				or c.py LIKE concat('%',#{productName},'%')
+				or c.wb LIKE concat('%',#{productName},'%')
+				or c.bname LIKE concat('%',#{productName},'%')
+				or c.bpy LIKE concat('%',#{productName},'%')
+				or c.bwb LIKE concat('%',#{productName},'%')
+				or c.zdy LIKE concat('%',#{productName},'%')
+				)
+			</if>
+			<if test="spec != null and spec != ''">
+				AND c.spec LIKE concat('%',#{spec},'%')
+			</if>
+			<if test="version != null and version != ''">
+				AND c.version   LIKE concat('%',#{version},'%')
+			</if>
+			<if test="registration != null and registration != ''">
+				AND c.registration LIKE concat('%',#{registration},'%')
+			</if>
+			<if test="chargeCode != null and chargeCode != ''">
+				AND c.charge_code LIKE concat('%',#{chargeCode},'%')
+			</if>
+			<if test="productFlag != null and productFlag != ''">
+				AND c.product_flag = #{productFlag}
+			</if>
+			<if test="venderId != null and venderId != ''">
+				AND c.vender_id = #{venderId}
+			</if>
+			<if test="batchNo != null and batchNo != ''">
+				AND a.batch_no LIKE concat('%',#{batchNo},'%')
+			</if>
+			<if test="expStatus != null and expStatus != ''">
+				AND a.exp_status = #{expStatus}
+			</if>
+			<if test="isLong != null and isLong != ''">
+				AND a.is_long = #{isLong}
+			</if>
+			<if test="supplierId != null and supplierId != ''">
+				AND a.supplier_id = #{supplierId}
+			</if>
+			<if test="huoweiCode != null and huoweiCode != ''">
+				AND a.huowei_code = #{huoweiCode}
+			</if>
+			<if test="refBarCode != null and refBarCode != ''">
+				AND a.ref_bar_code = #{refBarCode}
+			</if>
+			<if test="queryDateStart != null and queryDateStart != ''">
+				AND a.exp_date &gt;= #{queryDateStart}
+			</if>
+			<if test="queryDateEnd != null and queryDateEnd != ''">
+				AND a.exp_date &lt;= #{queryDateEnd}
+			</if>
+			<if test="nestatStatus != null and nestatStatus != ''">
+				AND a.nestat_status = #{nestatStatus}
+			</if>
+			<if test="departParentId != null and departParentId != ''">
+				AND a.depart_parent_id = #{departParentId}
+			</if>
+			<if test="barCodeType != null and barCodeType != ''">
+				AND a.bar_code_type = #{barCodeType}
+			</if>
+			<if test="departIdList != null and departIdList.size() > 0">
+				AND a.depart_id IN
+				<foreach collection="departIdList" item="item" separator="," open="(" close=")">
+					#{item}
+				</foreach>
+			</if>
+			order by  a.exp_status  desc,a.create_time desc
+		</where>
+	</select>
 </mapper>

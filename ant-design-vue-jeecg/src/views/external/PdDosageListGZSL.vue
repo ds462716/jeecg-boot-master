@@ -103,6 +103,7 @@
     <pdDosageReturned-modal ref="pdDosageReturnedForm" @ok="modalFormOk"></pdDosageReturned-modal>
     <pd-dosage-fee-modal ref="pdDosageFeeForm" @ok="modalFormOk"></pd-dosage-fee-modal>
     <pd-dosage-cncl-fee-modal  ref="pdDosageCnclFeeForm" @ok="modalFormOk"></pd-dosage-cncl-fee-modal>
+    <pd-dosage-list-modal ref="pdDosageListModal" @ok="modalFormOk"></pd-dosage-list-modal>
   </a-card>
 </template>
 
@@ -110,6 +111,7 @@
 
   import { JeecgListMixin } from '@/mixins/JeecgListMixin'
   import PdDosageModal from '../pd/modules/NewPdDosageModal'
+  import PdDosageListModal from '../pd/modules/NewPdDosageListModal'
   import PdDosageReturnedModal from '../pd/modules/PdDosageReturnedModal'
   import PdDosageFeeModal from '../pd/modules/PdDosageFeeModal'
   import PdDosageCnclFeeModal from '../pd/modules/PdDosageCnclFeeModal'
@@ -122,7 +124,8 @@
       PdDosageModal,
       PdDosageReturnedModal,
       PdDosageFeeModal,
-      PdDosageCnclFeeModal
+      PdDosageCnclFeeModal,
+      PdDosageListModal
     },
     data () {
       return {
@@ -246,9 +249,9 @@
         this.$refs.pdDosageReturnedForm.disableSubmit = false;
       },
       handleDetail(record){//新增
-        this.$refs.pdDosageReturnedForm.edit(record);
-        this.$refs.pdDosageReturnedForm.title="详情";
-        this.$refs.pdDosageReturnedForm.disableSubmit = true;
+        this.$refs.pdDosageListModal.edit(record);
+        this.$refs.pdDosageListModal.title="详情";
+        this.$refs.pdDosageListModal.disableSubmit = true;
       }
     }
   }
