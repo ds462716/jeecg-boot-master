@@ -85,7 +85,7 @@
               <j-editable-table
                 bordered
                 :ref="refKeys[0]"
-                :loading="pdRejectedDetailTable.loading"
+                :loading="loading"
                 :columns="pdRejectedDetailTable.columns"
                 :dataSource="pdRejectedDetailTable.dataSource"
                 :maxHeight="500"
