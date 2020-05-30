@@ -214,6 +214,9 @@
 		<if test="parMap.realname != null and parMap.realname != ''">
 			and a.realname like concat('%',#{parMap.realname},'%')
 		</if>
+		<if test="parMap.currentDepartId != null and parMap.currentDepartId != ''">
+			and a.id in (select s.user_id from sys_user_depart s where s.dep_id = #{parMap.currentDepartId})
+		</if>
 	</select>
 
 

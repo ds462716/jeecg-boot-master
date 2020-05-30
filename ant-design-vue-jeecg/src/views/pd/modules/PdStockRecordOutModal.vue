@@ -689,10 +689,11 @@
         this.showPackageTable = false;
         this.showPackageBtn = false;
 
-        this.departHandleSearch();  // 初始化部门列表 用于数据回显
-        this.userHandleSearch();
         let params = {};
         if(this.model.id){
+          this.departHandleSearch();  // 初始化部门列表 用于数据回显
+          this.userHandleSearch();
+
           if(this.model.auditStatus == "1" && this.model.submitStatus == "2"){
             this.showCancelBtn = true;
           }
@@ -1015,6 +1016,8 @@
         this.form.setFieldsValue({applyNo:""});
         this.form.setFieldsValue({allocationNo:""});
         this.pdOrderDetailTable.dataSource = [];
+        this.userList = [];//清空领用人list
+        this.form.setFieldsValue({applyBy:""});//清空领用人
         if(option){
           this.inDepartName = option.data.attrs.text;
         }
@@ -1039,7 +1042,13 @@
         })
       },
       userHandleSearch(value){
-        getAction(this.url.userList,{realname:value}).then((res)=>{
+        if(!this.checkInDepart()) {
+          this.$message.error("请选择入库科室！");
+          return;
+        }
+
+        let inDepartId = this.form.getFieldValue("inDepartId");
+        getAction(this.url.userList,{realname:value,currentDepartId:inDepartId}).then((res)=>{
           if (!res.success) {
             this.cmsFailed(res.message);
           }
@@ -1138,15 +1147,34 @@
             this.$message.error("请先导入申领单！");
             return;
           }
-          this.$refs.pdChooseProductStockListModel.show({applyNo:this.applyNo,nestatStatus:"1"});
+          if(this.hospitalCode == "FCZYY"){
+            this.$refs.pdChooseProductStockListModel.show({applyNo:this.applyNo,nestatStatus:"1",barCodeType:"0"});
+          }else if(this.hospitalCode == "GZSLYY"){
+            this.$refs.pdChooseProductStockListModel.show({applyNo:this.applyNo,nestatStatus:"1",barCodeType:"0",productFlag:"0"});//赣州市立医院，普通出库 禁止不能查询试剂
+          }else{
+            this.$refs.pdChooseProductStockListModel.show({applyNo:this.applyNo,nestatStatus:"1",barCodeType:"0"});
+          }
         }else if(outType == "2"){
-          this.$refs.pdChooseProductStockListModel.show({nestatStatus:"1"});
+          if(this.hospitalCode == "FCZYY"){
+            this.$refs.pdChooseProductStockListModel.show({nestatStatus:"1",barCodeType:"0"});
+          }else if(this.hospitalCode == "GZSLYY"){
+            this.$refs.pdChooseProductStockListModel.show({nestatStatus:"1",barCodeType:"0",productFlag:"0"}); //赣州市立医院，普通出库 禁止不能查询试剂
+          }else{
+            this.$refs.pdChooseProductStockListModel.show({nestatStatus:"1",barCodeType:"0"});
+          }
         }else if(outType == "3"){  //调拨单
           if(!this.allocationNo){
             this.$message.error("请先导入调拨单！");
             return;
           }
-          this.$refs.pdChooseProductStockListModel.show({allocationNo:this.allocationNo,nestatStatus:"1"});
+          if(this.hospitalCode == "FCZYY"){
+            this.$refs.pdChooseProductStockListModel.show({allocationNo:this.allocationNo,nestatStatus:"1",barCodeType:"0"});
+          }else if(this.hospitalCode == "GZSLYY"){
+            this.$refs.pdChooseProductStockListModel.show({allocationNo:this.allocationNo,nestatStatus:"1",barCodeType:"0",productFlag:"0"});//赣州市立医院，普通出库 禁止查询试剂
+          }else{
+            this.$refs.pdChooseProductStockListModel.show({allocationNo:this.allocationNo,nestatStatus:"1",barCodeType:"0"});
+          }
+
         }else{
           this.$message.error("请选择出库类型！");
           return;

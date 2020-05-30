@@ -313,6 +313,7 @@ public class PdDepartController extends JeecgController<PdDepartConfig, IPdDepar
         parMap.put("DEL_FLAG_NORMAL",PdConstant.DEL_FLAG_0);
         parMap.put("deptParentId",sysUser.getDepartParentId());
         parMap.put("realname",user.getRealname());
+        parMap.put("currentDepartId",user.getCurrentDepartId());
         List<SysUser> userList = pdDepartService.findUserList(parMap);
 
         try {
