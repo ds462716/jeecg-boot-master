@@ -2,7 +2,6 @@ package org.jeecg.modules.pd.service.impl;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import org.jeecg.common.constant.PdConstant;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.pd.entity.PdProductStock;
 import org.jeecg.modules.pd.mapper.PdProductStockMapper;
@@ -40,7 +39,7 @@ public class PdProductStockServiceImpl extends ServiceImpl<PdProductStockMapper,
 		if(oConvertUtils.isNotEmpty(productStock.getProductIds())){
 			productStock.setProductIdList(Arrays.asList(productStock.getProductIds().split(",")));
 		}
-		productStock.setBarCodeType(PdConstant.CODE_PRINT_TYPE_0);//批量打印的条码类型
+		//productStock.setBarCodeType(PdConstant.CODE_PRINT_TYPE_0);//批量打印的条码类型
 		return page.setRecords(pdProductStockMapper.selectList(productStock));
 	}
 
