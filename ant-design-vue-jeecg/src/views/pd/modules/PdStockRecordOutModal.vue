@@ -691,8 +691,6 @@
 
         let params = {};
         if(this.model.id){
-          this.departHandleSearch();  // 初始化部门列表 用于数据回显
-          this.userHandleSearch();
 
           if(this.model.auditStatus == "1" && this.model.submitStatus == "2"){
             this.showCancelBtn = true;
@@ -711,6 +709,8 @@
             this.applyNo = this.model.applyNo;
             this.allocationNo = this.model.allocationNo;
             this.form.setFieldsValue(fieldval);
+            this.departHandleSearch();  // 初始化部门列表 用于数据回显
+            this.userHandleSearch();
           })
           params = { id: this.model.id }
         }else{

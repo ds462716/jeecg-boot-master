@@ -565,7 +565,7 @@
           loading: false,
           dataSource: [],
           columns: [
-            // { title: '唯一码', key: 'refBarCode', type: FormTypes.normal, width:"180px" },
+            { title: '唯一码', key: 'refBarCode', type: FormTypes.normal, width:"180px" }, //用于单条
             { title: '产品名称', key: 'productName', type: FormTypes.normal,width:"220px" },
             { title: '产品编号', key: 'productNumber', width:"160px" },
             { title: '产品条码', key: 'productBarCode', type: FormTypes.input, disabled:true, width:"200px" },
@@ -594,9 +594,8 @@
             { title: '规格数量', key: 'specQuantity', type: FormTypes.hidden },
             { title: '注册证号', key: 'registration', type: FormTypes.hidden },
             { title: '生产厂家', key: 'venderName', type: FormTypes.hidden },
-            { title: '唯一码', key: 'refBarCode', type: FormTypes.input, disabled:true },
+            // { title: '唯一码', key: 'refBarCode', type: FormTypes.input, disabled:true }, // 用于合并
             { title: 'barCodeType', key: 'barCodeType', type: FormTypes.hidden},
-            // { title: 'refBarCode', key: 'refBarCode', type: FormTypes.hidden },
           ]
         },
         url: {
@@ -697,11 +696,9 @@
         this.showPackageCard = false;
         this.showPackageTable = false;
         this.showPackageBtn = false;
-
-        this.departHandleSearch();  // 初始化部门列表 用于数据回显
-        this.userHandleSearch();
         let params = {};
         if(this.model.id){
+
           if(this.model.auditStatus == "1" && this.model.submitStatus == "2"){
             this.showCancelBtn = true;
           }
@@ -719,6 +716,8 @@
             this.applyNo = this.model.applyNo;
             this.allocationNo = this.model.allocationNo;
             this.form.setFieldsValue(fieldval);
+            this.departHandleSearch();  // 初始化部门列表 用于数据回显
+            this.userHandleSearch();
           })
           params = { id: this.model.id }
         }else{
@@ -1025,6 +1024,8 @@
         this.form.setFieldsValue({applyNo:""});
         this.form.setFieldsValue({allocationNo:""});
         this.pdOrderDetailTable.dataSource = [];
+        this.userList = [];//清空领用人list
+        this.form.setFieldsValue({applyBy:""});//清空领用人
         if(option){
           this.inDepartName = option.data.attrs.text;
         }
@@ -1049,7 +1050,12 @@
         })
       },
       userHandleSearch(value){
-        getAction(this.url.userList,{realname:value}).then((res)=>{
+        if(!this.checkInDepart()) {
+          this.$message.error("请选择入库科室！");
+          return;
+        }
+        let inDepartId = this.form.getFieldValue("inDepartId");
+        getAction(this.url.userList,{realname:value,currentDepartId:inDepartId}).then((res)=>{
           if (!res.success) {
             this.cmsFailed(res.message);
           }
@@ -1312,8 +1318,8 @@
           outHuoweiName:row.huoweiName,
           outHuoweiCode:row.huoweiCode,
           registration:row.registration,
-          // refBarCode:row.refBarCode,
-          refBarCode:this.refBarCode,
+          refBarCode:row.refBarCode,//用于单条
+          // refBarCode:this.refBarCode,//用于合并
           barCodeType:row.barCodeType,
           venderName:row.venderName,
           inHuoweiCode:"",
@@ -1431,39 +1437,49 @@
 
               let { values } = this.$refs.pdStockRecordDetail.getValuesSync({ validate: false });
               let isAddRow = true;// 是否增加一行
-              // 循环表格数据
-              if(values.length > 0) { //表格有数据
+              // 用于合并
+              // if(values.length > 0) { //表格有数据
+              //   for(let item of values){
+              //     let codes = item.refBarCode.split(",");
+              //     if(codes.indexOf(productNumber) >= 0){
+              //       this.clearQueryParam();
+              //       this.$message.error("列表中已存在该唯一码！");
+              //       return;
+              //     }
+              //   }
+              //
+              //   for(let item of values){
+              //     if(pdProductStock.id == item.productStockId){// 库存明细ID一致，就+1
+              //       isAddRow = false;
+              //       if(Number(item.productNum) + 1 > Number(item.stockNum)){
+              //         //清空扫码框
+              //         this.clearQueryParam();
+              //         this.$message.error("["+item.productName+"]出库数量不能大于库存数量！");
+              //         return;
+              //       }
+              //
+              //       let productNum = Number(item.productNum) + 1;
+              //       let outTotalPrice = (Number(item.sellingPrice) * Number(productNum)).toFixed(4);
+              //       let codes = item.refBarCode+","+productNumber;
+              //       this.$refs.pdStockRecordDetail.setValues([{rowKey: item.id, values: {
+              //           productNum: productNum,outTotalPrice: outTotalPrice,refBarCode: codes}}]);
+              //       // 计算总数量和总价格
+              //       this.getTotalNumAndPrice([]);
+              //       break;
+              //     }
+              //   }
+              // }
+
+              //用于单条
+              if(values.length > 0) {
                 for(let item of values){
-                  let codes = item.refBarCode.split(",");
-                  if(codes.indexOf(productNumber) >= 0){
+                  if(productNumber == item.refBarCode){
                     this.clearQueryParam();
                     this.$message.error("列表中已存在该唯一码！");
                     return;
                   }
                 }
-
-                for(let item of values){
-                  if(pdProductStock.id == item.productStockId){// 库存明细ID一致，就+1
-                    isAddRow = false;
-                    if(Number(item.productNum) + 1 > Number(item.stockNum)){
-                      //清空扫码框
-                      this.clearQueryParam();
-                      this.$message.error("["+item.productName+"]出库数量不能大于库存数量！");
-                      return;
-                    }
-
-                    let productNum = Number(item.productNum) + 1;
-                    let outTotalPrice = (Number(item.sellingPrice) * Number(productNum)).toFixed(4);
-                    let codes = item.refBarCode+","+productNumber;
-                    this.$refs.pdStockRecordDetail.setValues([{rowKey: item.id, values: {
-                        productNum: productNum,outTotalPrice: outTotalPrice,refBarCode: codes}}]);
-                    // 计算总数量和总价格
-                    this.getTotalNumAndPrice([]);
-                    break;
-                  }
-                }
               }
-
               if(isAddRow){
                 this.refBarCode = productNumber;
                 this.pdStockRecordDetailTable.dataSource = values;
