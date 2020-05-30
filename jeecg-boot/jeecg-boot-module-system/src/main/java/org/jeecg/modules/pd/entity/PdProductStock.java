@@ -228,6 +228,9 @@ public class PdProductStock extends BaseEntity {
 	@TableField(exist = false)
 	private List<String> stockIdList;
 
+	/*是否过滤库存为0的数据  有值则过滤**/
+	@TableField(exist = false)
+	private String filterType;
 
 	@TableField(exist = false)
 	private  String menuType;//菜单页面类型  1:检验用量扣减菜单

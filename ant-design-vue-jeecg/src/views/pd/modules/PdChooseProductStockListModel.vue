@@ -390,6 +390,9 @@
         if(params && params.productIdList){
           this.productIdList = params.productIdList;
         }
+        if(params && params.barCodeType){
+          this.barCodeType = params.barCodeType;
+        }
         if(params && params.menuType){
           this.menuType = params.menuType;
         }
@@ -449,6 +452,9 @@
         }
         if(this.menuType){
           params.menuType = this.menuType;
+        }
+        if(this.barCodeType){
+          params.barCodeType = this.barCodeType;
         }
         this.loading = true;
         getAction(this.url.list, params).then((res) => {
