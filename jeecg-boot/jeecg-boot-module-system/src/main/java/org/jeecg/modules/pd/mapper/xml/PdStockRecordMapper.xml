@@ -41,7 +41,8 @@
         a.depart_id,
         a.depart_parent_id,
         a.format,
-        a.apply_by
+        a.apply_by,
+        a.bar_code_type
 	</sql>
 
 

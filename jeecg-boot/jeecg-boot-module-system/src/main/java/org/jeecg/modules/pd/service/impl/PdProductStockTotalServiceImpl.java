@@ -7,6 +7,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.constant.PdConstant;
 import org.jeecg.common.system.vo.LoginUser;
+import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.external.entity.PdBottleInf;
 import org.jeecg.modules.external.mapper.PdBottleInfMapper;
 import org.jeecg.modules.external.service.IExDeductuinDosageService;
@@ -14,6 +15,7 @@ import org.jeecg.modules.pd.entity.*;
 import org.jeecg.modules.pd.mapper.PdProductMapper;
 import org.jeecg.modules.pd.mapper.PdProductStockMapper;
 import org.jeecg.modules.pd.mapper.PdProductStockTotalMapper;
+import org.jeecg.modules.pd.mapper.PdProductStockUniqueCodeMapper;
 import org.jeecg.modules.pd.service.*;
 import org.jeecg.modules.pd.vo.PdProductStockTotalPage;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,7 +52,10 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
     private IExDeductuinDosageService exDeductuinDosageService;
     @Autowired
     private PdBottleInfMapper pdBottleInfMapper;
-
+    @Autowired
+    private PdProductStockUniqueCodeMapper pdProductStockUniqueCodeMapper;
+    @Autowired
+    private IPdProductStockUniqueCodeService pdProductStockUniqueCodeService;
     /**
      * 查询列表
      *
@@ -151,6 +156,18 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
                 productStock.setBarCodeType(stockRecordDetail.getBarCodeType());
             }
             productStockService.save(productStock);
+            if(PdConstant.CODE_PRINT_TYPE_1.equals(pdStockRecord.getBarCodeType())){
+                // 唯一码入库，更新条码表库存id
+                if(oConvertUtils.isNotEmpty(stockRecordDetail.getRefBarCode())){
+                    List<String> refBarCodeList = Arrays.asList(stockRecordDetail.getRefBarCode().split(","));
+                    for(String refBarCode : refBarCodeList){
+                        PdProductStockUniqueCode code = new PdProductStockUniqueCode();
+                        code.setId(refBarCode);
+                        code.setProductStockId(productStock.getId());
+                        pdProductStockUniqueCodeMapper.updateById(code);
+                    }
+                }
+            }
 //			}else{//存在，则增加库存数量
 //				PdProductStock productStock = i_productStocks.get(0);
 //				productStock.setStockNum(productNum + productStock.getStockNum());

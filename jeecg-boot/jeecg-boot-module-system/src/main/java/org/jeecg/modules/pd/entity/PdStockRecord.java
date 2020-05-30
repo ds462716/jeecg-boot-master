@@ -144,6 +144,7 @@ public class PdStockRecord extends BaseEntity {
     /**所属部门*/
     private String departId;
     private String departParentId;
+    private String barCodeType;
 
     // pd_stock_record表外字段 ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
     @ExcelCollection(name="出入库明细表")

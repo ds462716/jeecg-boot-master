@@ -624,6 +624,11 @@ ADD COLUMN `bar_code_type` varchar(4) CHARACTER SET utf8 COLLATE utf8_general_ci
 -- add by jiangxz 2020年5月29日17:27:39 出库增加领用人
 ALTER TABLE `pd_stock_record`
 ADD COLUMN `apply_by` varchar(64) NULL COMMENT '领用人' AFTER `return_status`;
-
- ALTER TABLE `pd_stock_record_detail`
+-- add by jiangxz 2020年5月30日13:48:53 出库增加唯一码
+ALTER TABLE `pd_stock_record_detail`
 ADD COLUMN `bar_code_type` varchar(4) NULL COMMENT '条码类型  0：普通条码   1：唯一码' AFTER `product_stock_id`;
+ALTER TABLE `pd_stock_record_detail`
+MODIFY COLUMN `ref_bar_code` varchar(6400) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT 'REF条码' AFTER `product_bar_code`;
+ALTER TABLE `pd_stock_record`
+ADD COLUMN `bar_code_type` varchar(4) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT '0' COMMENT '条码类型  0：普通条码   1：唯一码' AFTER `depart_id`;
+

@@ -259,7 +259,7 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
             }
             for (PdStockRecordDetail detail : newDetailList) {
 
-                PdProductStock stock = pdProductStockService.getById(detail.getProductStockId());
+//                PdProductStock stock = pdProductStockService.getById(detail.getProductStockId());
 
                 detail.setId(null);//初始化ID (从前端传过来会自带页面列表行的ID)
                 detail.setRecordId(pdStockRecord.getId());//外键设置
@@ -271,10 +271,6 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
                     detail.setImportNo(pdStockRecord.getApplyNo());
                 } else if (PdConstant.OUT_TYPE_3.equals(outType)) {
                     detail.setImportNo(pdStockRecord.getAllocationNo());
-                }
-
-                if (oConvertUtils.isNotEmpty(outType)) {
-                    detail.setBarCodeType(stock.getBarCodeType());
                 }
 //                if (oConvertUtils.isEmpty(outType)) {
 //                    // 从供货商入库 则生成REF码

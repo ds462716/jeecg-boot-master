@@ -398,7 +398,7 @@
         if(values.length > 0){
           values.forEach((value, idx) => {
             if(row.refBarCode == value.refBarCode){
-              this.$message.error("该唯一码已存在！");
+              this.$message.error("列表中已存在该唯一码！");
               flag = false;
             }
           });

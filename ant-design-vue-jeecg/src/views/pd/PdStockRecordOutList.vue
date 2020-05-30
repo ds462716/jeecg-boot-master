@@ -65,7 +65,8 @@
     
     <!-- 操作按钮区域 -->
     <div class="table-operator">
-      <a-button @click="handleAdd" type="primary" icon="plus">新增</a-button>
+      <a-button @click="handleAdd" type="primary" icon="plus">新增出库</a-button>
+      <a-button @click="handleUniqueAdd" type="primary" icon="plus">唯一码出库</a-button>
       <!--<a-button type="primary" icon="download" @click="handleExportXls('出库记录表')">导出</a-button>-->
     </div>
 
@@ -110,6 +111,7 @@
     </div>
 
     <pd-stock-record-out-modal ref="modalForm" @ok="modalFormOk"></pd-stock-record-out-modal>
+    <pd-unique-stock-record-out-modal ref="uniqueModalForm" @ok="modalFormOk"></pd-unique-stock-record-out-modal>
   </a-card>
 </template>
 
@@ -120,11 +122,13 @@
   import {getAction} from '@/api/manage'
   import {initDictOptions, filterMultiDictText} from '@/components/dict/JDictSelectUtil'
   import PdStockRecordOutModal from "./modules/PdStockRecordOutModal";
+  import PdUniqueStockRecordOutModal from "./modules/PdUniqueStockRecordOutModal";
 
   export default {
     name: "PdStockRecordOutList",
     mixins:[JeecgListMixin],
     components: {
+      PdUniqueStockRecordOutModal,
       PdStockRecordOutModal,
     },
     data () {
@@ -251,27 +255,52 @@
       // },
 
       handleEdit: function (record) {
-        this.$refs.modalForm.edit(record);
-        this.$refs.modalForm.title = "编辑";
-        this.$refs.modalForm.disableSubmit = false;
-        this.$refs.modalForm.disableSubmit2 = false;
-        if(record.applyNo){
-          this.$refs.modalForm.showApplyBtn = true;
-          this.$refs.modalForm.showAllocationBtn = false;
-        }
-        if(record.allocationNo){
-          this.$refs.modalForm.showApplyBtn = false;
-          this.$refs.modalForm.showAllocationBtn = true;
+        if(record.barCodeType == "1"){
+          this.$refs.uniqueModalForm.edit(record);
+          this.$refs.uniqueModalForm.title = "编辑";
+          this.$refs.uniqueModalForm.disableSubmit = false;
+          this.$refs.uniqueModalForm.disableSubmit2 = false;
+          if(record.applyNo){
+            this.$refs.uniqueModalForm.showApplyBtn = true;
+            this.$refs.uniqueModalForm.showAllocationBtn = false;
+          }
+          if(record.allocationNo){
+            this.$refs.uniqueModalForm.showApplyBtn = false;
+            this.$refs.uniqueModalForm.showAllocationBtn = true;
+          }
+        }else{
+          this.$refs.modalForm.edit(record);
+          this.$refs.modalForm.title = "编辑";
+          this.$refs.modalForm.disableSubmit = false;
+          this.$refs.modalForm.disableSubmit2 = false;
+          if(record.applyNo){
+            this.$refs.modalForm.showApplyBtn = true;
+            this.$refs.modalForm.showAllocationBtn = false;
+          }
+          if(record.allocationNo){
+            this.$refs.modalForm.showApplyBtn = false;
+            this.$refs.modalForm.showAllocationBtn = true;
+          }
         }
       },
 
       handleDetail:function(record){
-        this.$refs.modalForm.edit(record);
-        this.$refs.modalForm.title="详情";
-        this.$refs.modalForm.disableSubmit = true;
-        this.$refs.modalForm.disableSubmit2 = true;
-        this.$refs.modalForm.showApplyBtn = false;
-        this.$refs.modalForm.showAllocationBtn = false;
+        if(record.barCodeType == "1"){
+          // 唯一码
+          this.$refs.uniqueModalForm.edit(record);
+          this.$refs.uniqueModalForm.title="详情";
+          this.$refs.uniqueModalForm.disableSubmit = true;
+          this.$refs.uniqueModalForm.disableSubmit2 = true;
+          this.$refs.uniqueModalForm.showApplyBtn = false;
+          this.$refs.uniqueModalForm.showAllocationBtn = false;
+        }else{
+          this.$refs.modalForm.edit(record);
+          this.$refs.modalForm.title="详情";
+          this.$refs.modalForm.disableSubmit = true;
+          this.$refs.modalForm.disableSubmit2 = true;
+          this.$refs.modalForm.showApplyBtn = false;
+          this.$refs.modalForm.showAllocationBtn = false;
+        }
       },
 
       initDictConfig(){ //静态字典值加载
@@ -317,7 +346,11 @@
         delete param.queryDate; //范围参数不传递后台，传后台会报错
         return filterObj(param);
       },
-       
+      handleUniqueAdd(){
+        this.$refs.uniqueModalForm.add();
+        this.$refs.uniqueModalForm.title = "唯一码出库";
+        this.$refs.uniqueModalForm.disableSubmit = false;
+      },
     }
   }
 </script>

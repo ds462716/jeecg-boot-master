@@ -59,7 +59,7 @@
     
     <!-- 操作按钮区域 -->
     <div class="table-operator">
-      <a-button @click="handleAdd" type="primary" v-show="isDisabledAuth('stock:form:addRejected')" icon="plus">新增</a-button>
+      <a-button @click="handleAdd" type="primary" v-show="isDisabledAuth('stock:form:addRejected')" icon="plus">新增退货</a-button>
       <a-button @click="handleUniqueAdd" type="primary" v-show="isDisabledAuth('stock:form:addRejected')" icon="plus">唯一码退货</a-button>
       <!--<a-button type="primary" icon="download" @click="handleExportXls('pd_rejected')">导出</a-button>-->
     </div>

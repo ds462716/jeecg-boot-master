@@ -124,8 +124,8 @@
     <!-- 操作按钮区域 -->
     <div class="table-operator">
       <a-button type="primary" icon="plus" @click="batchPrint()">批量打印</a-button>
-      <a-button type="primary" icon="plus" :loading="confirmLoading" @click="onlyPrint()">打印唯一码</a-button>
-      <a-button type="primary" icon="delete" @click="handleDelete">清除条码</a-button>
+      <a-button type="primary" icon="plus" :loading="confirmLoading" @click="onlyPrint()" style="margin-left: 8px">打印唯一码</a-button>
+      <a-button type="primary" icon="delete" @click="handleDelete" style="margin-left: 8px">清除条码</a-button>
     </div>
     <!-- table区域-begin -->
     <div>
