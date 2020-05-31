@@ -632,3 +632,8 @@ MODIFY COLUMN `ref_bar_code` varchar(6400) CHARACTER SET utf8 COLLATE utf8_gener
 ALTER TABLE `pd_stock_record`
 ADD COLUMN `bar_code_type` varchar(4) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT '0' COMMENT '条码类型  0：普通条码   1：唯一码' AFTER `depart_id`;
 
+-- add by zxh 2020年5月31日12:39:35 器械使用加入唯一码
+ALTER TABLE `pd_dosage`
+ADD COLUMN `dosage_type`  varchar(1) NULL COMMENT '使用类型，0唯一码使用和1普通码使用' AFTER `admission_date`;
+ALTER TABLE `pd_dosage_detail`
+ADD COLUMN `ref_bar_code`  varchar(64) NULL COMMENT '唯一码' AFTER `del_flag`
