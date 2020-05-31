@@ -31,6 +31,8 @@ public interface IPdProductStockService extends IService<PdProductStock> {
 
     List<PdProductStock> selectList(PdProductStock pdProductStock);
 
+    List<PdProductStock> queryProductStockList(PdProductStock pdProductStock);
+
 	/**
 	 * 获取一条记录
 	 * @param pdProductStock

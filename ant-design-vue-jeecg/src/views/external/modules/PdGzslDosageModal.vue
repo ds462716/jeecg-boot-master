@@ -48,13 +48,8 @@
               <a-form v-show="!disableSubmit">
                 <a-row>
                   <a-col :md="6" :sm="8">
-                    <a-form-item label="产品编号" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                      <a-input ref="productNumberInput" v-focus placeholder="请输入产品编号" v-model="queryParam.productNumber" @keyup.enter.native="searchQuery(0)"></a-input>
-                    </a-form-item>
-                  </a-col>
-                  <a-col :md="6" :sm="8">
-                    <a-form-item label="二级条码" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                      <a-input ref="productBarCodeInput" placeholder="请输入二级条码" v-model="queryParam.productBarCode" @keyup.enter.native="searchQuery(1)"></a-input>
+                    <a-form-item label="唯一码编号" :labelCol="labelCol" :wrapperCol="wrapperCol">
+                      <a-input ref="productNumberInput" v-focus placeholder="请输入唯一码编号" v-model="queryParam.productNumber" @keyup.enter.native="searchQuery(0)"></a-input>
                     </a-form-item>
                   </a-col>
                   <a-col :md="12" :sm="8">
@@ -66,8 +61,8 @@
               </a-form>
 
               <div style="margin-bottom: 8px;" v-show="!disableSubmit">
-                <a-button type="primary" icon="plus" @click="chooseProductList">选择产品</a-button>
-                <a-button type="primary" icon="plus" @click="choosePackageList" style="margin-left: 8px">选择定数包</a-button>
+               <!-- <a-button type="primary" icon="plus" @click="chooseProductList">选择产品</a-button>
+                <a-button type="primary" icon="plus" @click="choosePackageList" style="margin-left: 8px">选择定数包</a-button>-->
                 <a-popconfirm style="margin-left: 8px"
                               :title="`确定要删除吗?`"
                               @confirm="handleConfirmDelete">
@@ -86,9 +81,7 @@
                 :rowNumber="true"
                 :rowSelection="true"
                 :actionButton="false"
-                :rowClassName="setdataCss"
                 :disabled="disableSubmit"
-                @valueChange="valueChange"
                 @selectRowChange="handleSelectRowChange"
                 style="text-overflow: ellipsis;"
               >
@@ -123,18 +116,18 @@
                        </a-select>
                      </a-form-item>
                    </a-col>-->
-                 <!-- <a-col :md="16" :sm="8">
-                     <a-form-item  label="项目类别" :labelCol="{span: 3}" :wrapperCol="{span: 20}">
-                      <template>
-                        <a-radio-group   :disabled="disableSubmit" v-decorator="['prjType',validatorRules.prjType]" placeholder="项目类别">
-                          <a-radio value="0">手术项目</a-radio>
-                          <a-radio value="1">检查项目</a-radio>
-                          <a-radio value="2">检验项目</a-radio>
-                        </a-radio-group>
-                      </template>
-                      </a-form-item>
-                  </a-col>
-                </a-row>-->
+                <!-- <a-col :md="16" :sm="8">
+                    <a-form-item  label="项目类别" :labelCol="{span: 3}" :wrapperCol="{span: 20}">
+                     <template>
+                       <a-radio-group   :disabled="disableSubmit" v-decorator="['prjType',validatorRules.prjType]" placeholder="项目类别">
+                         <a-radio value="0">手术项目</a-radio>
+                         <a-radio value="1">检查项目</a-radio>
+                         <a-radio value="2">检验项目</a-radio>
+                       </a-radio-group>
+                     </template>
+                     </a-form-item>
+                 </a-col>
+               </a-row>-->
                 <a-row>
                   <a-col :md="6" :sm="8" v-if="hyCharged">
                     <a-form-item label="病历号" :labelCol="labelCol" :wrapperCol="wrapperCol">
@@ -228,7 +221,6 @@
       <a-button @click="submitBtn" v-show="!disableSubmit" type="primary" :loading="confirmLoading" style="margin-right: 15px;">提  交</a-button>
     </template>
 
-    <pd-choose-product-stock-list-model ref="pdChooseProductStockListModel" @ok="returnProductStockData" ></pd-choose-product-stock-list-model>
     <pd-choose-dosage-list-model   ref="PdChooseDosageListModel" @ok="modalFormOk"></pd-choose-dosage-list-model>
   </j-modal>
 </template>
@@ -242,8 +234,8 @@
   import {stockScanCode} from '@/utils/barcode'
   import {httpAction, deleteAction, getAction} from '@/api/manage'
   import { JEditableTableMixin } from '@/mixins/JEditableTableMixin'
-  import PdChooseProductStockListModel from "./PdChooseProductStockListModel"
-  import PdChooseDosageListModel from "./PdChooseDosageListModel"
+  import PdChooseDosageListModel from "../../pd/modules/PdChooseDosageListModel"
+  import {uniqueScanCode} from '@/utils/barcode'
 
   const VALIDATE_NO_PASSED = Symbol()
   export { FormTypes, VALIDATE_NO_PASSED }
@@ -263,10 +255,9 @@
   })
 
   export default {
-    name: "NewPdDosageModal",
+    name: "PdGzslDosageModal",
     mixins: [JEditableTableMixin],
     components: {
-      PdChooseProductStockListModel,
       PdChooseDosageListModel,
     },
     data () {
@@ -278,7 +269,6 @@
         lockScroll: false,
         fullscreen: true,
         switchFullscreen: false,
-        hospitalCode:"",//医院标识
         hyCharged: true,
         totalSum:'0',
         totalPrice:'0.0000',
@@ -295,6 +285,7 @@
           columns: [
             { title: '库存明细ID', key: 'productStockId', type: FormTypes.hidden },
             { title: '产品ID', key: 'productId', type: FormTypes.hidden },
+            { title: '唯一码', key: 'refBarCode', type: FormTypes.normal, width:"250px" },
             { title: '产品名称', key: 'productName', type: FormTypes.normal,width:"220px" },
             { title: '产品编号', key: 'productNumber', width:"200px" },
             { title: '产品条码', key: 'productBarCode', type: FormTypes.input, disabled:true, width:"200px" },
@@ -305,7 +296,7 @@
             /*{ title: '入库单价', key: 'purchasePrice', width:"80px" },*/
             { title: '出库单价', key: 'sellingPrice', width:"80px" },
             {
-              title: '用量数量', key: 'dosageCount', type: FormTypes.input, width:"80px",
+              title: '用量数量', key: 'dosageCount', type: FormTypes.input, disabled:true, width:"80px",
               placeholder: '${title}', defaultValue: '1',
               validateRules: [{ required: true, message: '${title}不能为空' },{ pattern: '^-?\\d+\\.?\\d*$',message: '${title}的格式不正确' }]
             },
@@ -367,7 +358,7 @@
         },
         url: {
           init:"/pd/pdDosage/initModal",
-          submit: "/pd/newPdDosage/submit",
+          submit: "/pd/newPdDosage/uniqueSubmit",
           add: "/pd/pdDosage/add",
           edit: "/pd/pdDosage/edit",
           departList:"/pd/pdDepart/getSysDepartList",
@@ -378,9 +369,6 @@
     created () {
     },
     methods: {
-      setdataCss(record,index) {
-        return "validity1";
-      },
       add () {
         this.edit({});
       },
@@ -431,7 +419,6 @@
                 //获取光标
                 this.$refs['productNumberInput'].focus();
               }
-              this.hospitalCode = res.result.hospitalCode;
             })
           }
           if(res.code===510){
@@ -468,26 +455,26 @@
       selectHis(num){//查詢病人信息   num:0：住院病人查詢   1：門診病人查詢
         let  medicalRecordNo='';
         let  outpatientNumber='';
-            if(num=='0'){
-              medicalRecordNo=this.form.getFieldValue('medicalRecordNo');
-            if(medicalRecordNo=="" || medicalRecordNo==null){
-              this.$message.error("请输入病历号！");
-              return;
-             }
-            }else{
-            outpatientNumber=this.form.getFieldValue('outpatientNumber');
-             if(outpatientNumber=="" || outpatientNumber==null){
-               this.$message.error("请输入门诊号！");
-               return;
-             }
-           }
+        if(num=='0'){
+          medicalRecordNo=this.form.getFieldValue('medicalRecordNo');
+          if(medicalRecordNo=="" || medicalRecordNo==null){
+            this.$message.error("请输入病历号！");
+            return;
+          }
+        }else{
+          outpatientNumber=this.form.getFieldValue('outpatientNumber');
+          if(outpatientNumber=="" || outpatientNumber==null){
+            this.$message.error("请输入门诊号！");
+            return;
+          }
+        }
         let  formData={medicalRecordNo:medicalRecordNo,
-                      outpatientNumber:outpatientNumber,prjType:num};
+          outpatientNumber:outpatientNumber,prjType:num};
         getAction(this.url.queryPatientInfoList,formData).then((res)=>{
           if (res.success) {
             if(res.result.length==1){
               res.result[0].patientDetailInfo="姓名:"+res.result[0].patientInfo+",性别:"+res.result[0].fsfXb+",出生日期:"+res.result[0].fsfCsrq;
-             let fieldval = pick(res.result[0],'inHospitalNo','patientInfo','operativeNumber','operationName','outpatientNumber','medicalRecordNo','sqrtDoctorId','oprDeptId','oprDeptName','exeDeptId','exeDeptName','surgeonName','surgeonId','patientDetailInfo','hospitalizationsNum','remarks','extension1','extension2');
+              let fieldval = pick(res.result[0],'inHospitalNo','patientInfo','operativeNumber','operationName','outpatientNumber','medicalRecordNo','sqrtDoctorId','oprDeptId','oprDeptName','exeDeptId','exeDeptName','surgeonName','surgeonId','patientDetailInfo','hospitalizationsNum','remarks','extension1','extension2');
               this.form.setFieldsValue(fieldval);
             }else{
               this.$refs.PdChooseDosageListModel.width = 1550;
@@ -506,33 +493,22 @@
         let fieldval = pick(formData,'inHospitalNo','patientInfo','operativeNumber','operationName','outpatientNumber','medicalRecordNo','sqrtDoctorId','oprDeptId','oprDeptName','exeDeptId','exeDeptName','surgeonName','surgeonId','patientDetailInfo','hospitalizationsNum','remarks','extension1','extension2');
         this.form.setFieldsValue(fieldval);
       },
+
       // 扫码查询
       searchQuery(num) {
-        let that = this;
         let productNumber = this.queryParam.productNumber;
         if(!productNumber){
           //清空扫码框
           this.clearQueryParam();
-          this.$message.error("请输入产品编号！");
-          this.$refs.productNumberInput.focus();
+          this.$message.error("请输入唯一码编号！");
           return;
         }
-
         if(num == 0){       //产品编号扫码
-          // 焦点条码输入框
-          this.$refs.productBarCodeInput.focus();
-
-        }else if(num == 1){ //条码扫码
-          let productBarCode = this.queryParam.productBarCode;
-          if(!productBarCode){
-            this.$message.error("请输入二级条码！");
-            return;
-          }
           //解析条码
-          stockScanCode(productNumber,productBarCode,"0","1").then((res) => {
+          uniqueScanCode(productNumber).then((res) => {
             if(res.code == "200" || res.code == "203"){
-              let pdProductStockList = res.result;
-              if(!pdProductStockList){
+              let pdProductStock = res.result;
+              if(!pdProductStock){
                 //清空扫码框
                 this.clearQueryParam();
                 this.$message.error("条码解析失败，请校验条码是否正确！");
@@ -540,39 +516,11 @@
               }
               // 循环表格数据
               let { values } = this.$refs.pdDosageDetail.getValuesSync({ validate: false });
-              for(let pdProductStock of pdProductStockList){
-                let isAddRow = true;// 是否增加一行
-                if(values.length > 0) { //表格有数据
-                  for(let item of values){
-                    if(pdProductStock.id == item.productStockId){// 库存明细ID一致，就+1
-                      isAddRow = false;
-                      if(Number(item.dosageCount) + 1 > Number(item.stockNum)){
-                        //清空扫码框
-                        this.clearQueryParam();
-                        this.$message.error("["+item.productName+"]出库数量不能大于库存数量！");
-                        return;
-                      }
-
-                      let dosageCount = Number(item.dosageCount) + 1;
-                      let amountMoney = (Number(item.sellingPrice) * Number(dosageCount)).toFixed(4);
-
-                      this.$refs.pdDosageDetail.setValues([{rowKey: item.id, values: {
-                          dosageCount: dosageCount,amountMoney: amountMoney }}]);
-                      // 计算总数量和总价格
-                      this.getTotalNumAndPrice([]);
-                      break;
-                    }
-                  }
-                }
-                if(isAddRow){
-                  this.pdDosageDetailTable.dataSource = values;
-                  //条码新增一行
-                  this.addrowsByScanCode(pdProductStock);
-                  // 计算总数量和总价格
-                  this.getTotalNumAndPrice(values);
-                }
-              }
-
+              this.pdDosageDetailTable.dataSource = values;
+              //条码新增一行
+              this.addrowsByScanCode(pdProductStock);
+              // 计算总数量和总价格
+              this.getTotalNumAndPrice(values);
               if(res.code == "203"){ // 近效期提醒
                 this.$message.error(result.message);
               }
@@ -583,24 +531,10 @@
             }
             //清空扫码框
             this.clearQueryParam();
-          })
+          });
         }
       },
-      // 选择产品 新增行
-      chooseProductList() {
-        this.$refs.pdChooseProductStockListModel.width = 1550;
-        if(this.hospitalCode == "FCZYY"){
-          this.$refs.pdChooseProductStockListModel.show({nestatStatus:"1",barCodeType:"0"});
-        }else if(this.hospitalCode == "GZSLYY"){
-          this.$refs.pdChooseProductStockListModel.show({nestatStatus:"1",barCodeType:"0",productFlag:"0"}); //赣州市立医院，普通出库 禁止不能查询试剂
-        }else{
-          this.$refs.pdChooseProductStockListModel.show({nestatStatus:"1",barCodeType:"0"});
-        }
-      },
-      // 选择定数包
-      choosePackageList() {
 
-      },
       //删除行
       handleConfirmDelete() {
         if(this.$refs.pdDosageDetail.selectedRowIds.length > 0){
@@ -610,23 +544,6 @@
           this.$message.error("请选择需要删除的数据！")
         }
       },
-    /*  // 计算总数量和总价格
-      getTotalNumAndPrice(rows){
-        this.$nextTick(() => {
-          if (rows.length <= 0) {
-            let {values} = this.$refs.pdDosageDetail.getValuesSync({validate: false});
-            rows = values;
-          }
-          let totalSum = 0;
-          let totalPrice = 0;
-          rows.forEach((item, idx) => {
-            totalSum = totalSum + Number(item.dosageCount);
-            totalPrice = totalPrice + Number(item.amountMoney);
-          })
-          this.totalSum = totalSum;
-          this.totalPrice = totalPrice.toFixed(4);
-        })
-      },*/
 
       // 计算总数量和总价格
       getTotalNumAndPrice(rows){
@@ -650,35 +567,6 @@
           this.totalPrice = totalPrice.toFixed(4);
         })
       },
-      // 表格数据变更
-      valueChange(event) {
-        if(event){
-          const { type, row, column, value, target } = event;
-          if (type === FormTypes.select) {
-
-          }else if(type === FormTypes.input){
-            if(column.key === "dosageCount"){
-              let { values } = target.getValuesSync({ validate: false });
-              for(let item of values){
-                if(item.id == row.id && Number(value) > Number(item.stockNum)){
-                  this.$message.error("["+row.productName+"]使用数量不能大于库存数量！");
-                  // 产品数量变更 计算每条产品的价格
-                  let amountMoney = (Number(row.sellingPrice) * Number(item.stockNum)).toFixed(4);
-                  target.setValues([{rowKey: row.id, values: { amountMoney: amountMoney, dosageCount: item.stockNum }}])
-                  // 计算总数量和总价格
-                  this.getTotalNumAndPrice([]);
-                  return;
-                }
-              }
-              // 产品数量变更 计算每条产品的价格
-              let amountMoney = (Number(row.sellingPrice) * Number(value)).toFixed(4);
-              target.setValues([{rowKey: row.id, values: { amountMoney: amountMoney }}])
-              // 计算总数量和总价格
-              this.getTotalNumAndPrice([]);
-            }
-          }
-        }
-      },
 
       handleSelectRowChange(selectedIds){
         this.sRowIds = selectedIds;
@@ -692,8 +580,23 @@
       },
       // 扫码 调用 新增一行
       addrowsByScanCode(row){
+        let { values } = this.$refs.pdDosageDetail.getValuesSync({ validate: false });
+        //判断是否已经存在唯一码值 存在不新加
+        let flag = true;
+        if(values.length > 0){
+          values.forEach((value, idx) => {
+            if(row.refBarCode == value.refBarCode){
+              this.$message.error("列表中已存在该唯一码！");
+              flag = false;
+            }
+          });
+        }
+        if(!flag){
+          return ;
+        }
         let data = {
           productStockId:row.id,
+          refBarCode:row.refBarCode,
           productId: row.productId,
           productName: row.productName,
           productNumber:row.number,
@@ -810,47 +713,9 @@
         this.visible = false;
         this.$emit('close');
       },
-      // 选择产品后返回
-      returnProductStockData(data) {
-        let rows = [];
-        let { values } = this.$refs.pdDosageDetail.getValuesSync({ validate: false });
-        if(values.length > 0){
-          // 如果列表中有相同产品则不加行
-          data.forEach((item, idx) => {
-            let bool = true;
-            values.forEach((value, idx) => {
-              if(item.id == value.productStockId){
-                bool = false;
-              }
-            })
-            if(bool){
-              rows.push(item)
-            }
-          })
-        }else{
-          rows = data;
-        }
 
-        rows.forEach((item, idx) => {
-          // j-editable-table表格（可能是BUG）：values变更 不会同步变更到dataSource，新增行时需要手动赋值到dataSource
-          this.pdDosageDetailTable.dataSource = values;
-          this.addrowsByScanCode(item);
-        })
-        // 计算总数量和总价格
-        this.getTotalNumAndPrice(values);
-      },
     }
   }
 </script>
 <style scoped>
-  .validity0{
-    border:1px solid #ccc;
-  }
-  .validity1{
-    border:2px solid #FF3333;
-  }
-
-  .validity2{
-    border:2px solid #FFFFCC;
-  }
 </style>

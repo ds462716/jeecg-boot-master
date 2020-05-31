@@ -286,4 +286,8 @@ public interface PdConstant {
 	public final static String REJECTED_TYPE_0 = "0";//唯一码退货
 	public final static String REJECTED_TYPE_1 = "1";//普通码退货
 
+	//使用类型
+	public final static String DOSAGE_TYPE_0 = "0";//唯一码使用
+	public final static String DOSAGE_TYPE_1 = "1";//普通码使用
+
 }

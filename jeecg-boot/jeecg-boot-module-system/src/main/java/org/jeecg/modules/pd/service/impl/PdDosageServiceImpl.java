@@ -517,6 +517,119 @@ public class PdDosageServiceImpl extends ServiceImpl<PdDosageMapper, PdDosage> i
                 pdDosage.setTotalPrice(moneyTotal);
                 pdDosage.setDosageBy(sysUser.getId());
                 pdDosage.setDosageDate(DateUtils.getDate());
+                pdDosage.setDosageType(PdConstant.DOSAGE_TYPE_1);//普通码使用
+                this.save(pdDosage);
+                //扣减当前库房的库存
+                pdProductStockTotalService.updateUseStock(sysUser.getCurrentDepartId(),detailList);
+            }
+        }
+        return chargeArray;
+    }
+
+    @Transactional
+    @Override
+    public List<PdDosageDetail> uniqueSubmit(PdDosage pdDosage,String displayFlag) {
+        List<PdDosageDetail> detailList = pdDosage.getPdDosageDetails();
+        pdDosage.setId(UUIDUtil.getUuid());
+        //校验数据的合法性
+        Iterator<PdDosageDetail> it = detailList.iterator();
+        while(it.hasNext()){
+            PdDosageDetail child = it.next();
+            if(child.getDosageCount()==null || child.getProductId()==null){
+                it.remove();
+            }
+        }
+        List<PdDosageDetail> tempArray = new ArrayList<>();
+        List<PdDosageDetail> chargeArray = new ArrayList<>();
+        if(detailList != null && detailList.size() > 0) {
+            //总数量
+            BigDecimal dosageTotal = new BigDecimal(0);
+            //总金额
+            BigDecimal moneyTotal = new BigDecimal(0);
+            //产品物流
+            List<PdStockLog> logList = new ArrayList<PdStockLog>();
+            //数据合并
+//            List<PdDosageDetail> afterDealList = dealRepeatData(detailList);
+            JSONObject json = new JSONObject();
+            int i = 0;
+            boolean validFlag = true;
+            for(PdDosageDetail pdd : detailList){
+                //校验不合法数据和大于库存数据
+                PdProductStock pps = new PdProductStock();
+                pps.setId(pdd.getProductStockId());
+                //pps.setBatchNo(pdd.getBatchNo());
+                //pps.setProductId(pdd.getProductId());
+                //pps.setExpDate(pdd.getExpDate());
+                //pps.setProductBarCode(pdd.getProductBarCode());
+                PdProductStock tempPps = pdProductStockService.getById(pps);
+                if( null == tempPps || pdd.getDosageCount() > tempPps.getStockNum()){
+                    validFlag = false;
+                    json.put(String.valueOf(i), pdd);
+                    i = i + 1;
+                    continue;
+                }
+
+                BigDecimal sprice = pdd.getSellingPrice()==null?new BigDecimal(0):pdd.getSellingPrice();
+                BigDecimal pdMoney = new BigDecimal(pdd.getDosageCount()).multiply(sprice);
+                BigDecimal dosageCount = new BigDecimal(pdd.getDosageCount());
+                dosageTotal = dosageCount.add(dosageTotal);
+                moneyTotal = pdMoney.add(moneyTotal);
+                pdd.setDosageId(pdDosage.getId());
+                pdd.setAmountMoney(pdMoney);
+                pdd.setLeftRefundNum(pdd.getDosageCount());
+                //产品追踪信息
+                PdStockLog prodLog = new PdStockLog();
+                //需要收费的产品集合
+                if(PdConstant.CHARGE_FLAG_0.equals(pdDosage.getHyCharged())
+                        && PdConstant.CHARGE_FLAG_0.equals(pdd.getIsCharge())
+                        && !"".equals(pdd.getChargeCode())){
+                    pdd.setHyCharged(PdConstant.CHARGE_FLAG_0);
+                    prodLog.setLogType(PdConstant.STOCK_LOG_TYPE_6);
+                    chargeArray.add(pdd);
+                }else{
+                    //不收费的产品集合
+                    pdd.setHyCharged(PdConstant.CHARGE_FLAG_1);
+                    prodLog.setLogType(PdConstant.STOCK_LOG_TYPE_3);
+                    tempArray.add(pdd);
+                }
+                prodLog.setBatchNo(pdd.getBatchNo());
+                prodLog.setProductBarCode(pdd.getProductBarCode());
+                prodLog.setExpDate(pdd.getExpDate());
+                prodLog.setProductId(pdd.getProductId());
+                prodLog.setProductNum(pdd.getDosageCount());
+                prodLog.setInFrom(pdDosage.getDepartName());
+                prodLog.setOutTo("病人:"+pdDosage.getPatientInfo()!=null?pdDosage.getPatientInfo():"");
+                prodLog.setPatientInfo(pdDosage.getPatientDetailInfo());
+                prodLog.setInvoiceNo(pdDosage.getDosageNo());
+                prodLog.setChargeDeptName(pdDosage.getExeDeptName());
+                prodLog.setRecordTime(DateUtils.getDate());
+                logList.add(prodLog);
+            }
+            if (!validFlag) {//数据校验没通过
+                throw new JeecgBootException("数据校验失败");
+            } else {
+                //收费调用接口
+                if (PdConstant.CHARGE_FLAG_0.equals(pdDosage.getHyCharged())
+                        &&chargeArray.size()>0){
+                    //这样会有问题，一个service实现类中不能存在多个不同数据源的service实现类
+                  /*if(StringUtils.isNotEmpty(pdDosage.getInHospitalNo())){
+                        exHisZyInfService.saveExHisZyInf(pdDosage,chargeArray);
+                    }*/
+                    pdDosageDetailService.saveBatch(chargeArray);
+                }
+                if(!tempArray.isEmpty())
+                    pdDosageDetailService.saveBatch(tempArray);
+                if(!logList.isEmpty())
+                    pdStockLogService.saveBatch(logList);
+                LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+                //保存用量
+                pdDosage.setDisplayFlag(displayFlag);//是否有收费接口标识，0有1没有
+                pdDosage.setTotalSum(dosageTotal.doubleValue());
+                pdDosage.setUpdateTime(DateUtils.getDate());
+                pdDosage.setTotalPrice(moneyTotal);
+                pdDosage.setDosageBy(sysUser.getId());
+                pdDosage.setDosageDate(DateUtils.getDate());
+                pdDosage.setDosageType(PdConstant.DOSAGE_TYPE_0);//唯一码使用
                 this.save(pdDosage);
                 //扣减当前库房的库存
                 pdProductStockTotalService.updateUseStock(sysUser.getCurrentDepartId(),detailList);

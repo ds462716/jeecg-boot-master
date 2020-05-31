@@ -433,6 +433,19 @@
       },
       batchPrint(){
         if(this.selectionRows.length>0){
+          let stockObjs = this.selectionRows;
+          let flag = true;
+          for(let item of stockObjs){
+            if(item.productFlag=="1"){
+              //如果是试剂不让批量打印
+              flag = false;
+              break;
+            }
+          }
+          if(!flag){
+            this.$message.error("勾选的内容包含试剂，试剂只能打印唯一码!");
+            return ;
+          }
           this.$refs.printModalForm.init(this.selectionRows);
         }else{
           this.$message.error("请选择需要打印的内容!")

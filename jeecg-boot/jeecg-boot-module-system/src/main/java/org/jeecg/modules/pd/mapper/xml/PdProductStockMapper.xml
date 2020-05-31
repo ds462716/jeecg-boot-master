@@ -763,6 +763,9 @@
 			<if test="venderId != null and venderId != ''">
 				AND c.vender_id = #{venderId}
 			</if>
+			<if test="productBarCode != null and productBarCode != ''">
+				AND (a.product_bar_code = #{productBarCode}  or a.id = (select b.product_stock_id from pd_product_stock_unique_code b where b.id = #{productBarCode}))
+			</if>
 			<if test="batchNo != null and batchNo != ''">
 				AND a.batch_no LIKE concat('%',#{batchNo},'%')
 			</if>

@@ -118,6 +118,7 @@ public class PdDosageController extends JeecgController<PdDosage, IPdDosageServi
 	 @GetMapping(value = "/initModal")
 	 public Result<?> initModal(@RequestParam(name = "id") String id, HttpServletRequest req) {
 		 PdDosage pdDosage = pdDosageService.initModal(id);
+		 pdDosage.setHospitalCode(hospitalCode);
 		 return Result.ok(pdDosage);
 	 }
 

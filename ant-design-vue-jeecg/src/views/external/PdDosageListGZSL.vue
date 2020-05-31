@@ -38,6 +38,7 @@
     <!-- 操作按钮区域 -->
     <div class="table-operator">
       <a-button @click="handleAdd" type="primary" icon="plus">新增</a-button>
+      <a-button @click="handleUniqueAdd" type="primary" icon="plus">唯一码使用</a-button>
       <!--<a-button type="primary" icon="download" @click="handleExportXls('用量表')">导出</a-button>-->
       <!--<a-dropdown v-if="selectedRowKeys.length > 0">
         <a-menu slot="overlay">
@@ -100,6 +101,7 @@
     </div>
 
     <pdDosage-modal ref="modalForm" @ok="modalFormOk"></pdDosage-modal>
+    <pd-gzsl-dosage-modal ref="modalUniqueForm" @ok="modalFormOk"></pd-gzsl-dosage-modal>
     <pdDosageReturned-modal ref="pdDosageReturnedForm" @ok="modalFormOk"></pdDosageReturned-modal>
     <pd-dosage-fee-modal ref="pdDosageFeeForm" @ok="modalFormOk"></pd-dosage-fee-modal>
     <pd-dosage-cncl-fee-modal  ref="pdDosageCnclFeeForm" @ok="modalFormOk"></pd-dosage-cncl-fee-modal>
@@ -111,6 +113,7 @@
 
   import { JeecgListMixin } from '@/mixins/JeecgListMixin'
   import PdDosageModal from '../pd/modules/NewPdDosageModal'
+  import PdGzslDosageModal from './modules/PdGzslDosageModal'
   import PdDosageListModal from '../pd/modules/NewPdDosageListModal'
   import PdDosageReturnedModal from '../pd/modules/PdDosageReturnedModal'
   import PdDosageFeeModal from '../pd/modules/PdDosageFeeModal'
@@ -125,7 +128,8 @@
       PdDosageReturnedModal,
       PdDosageFeeModal,
       PdDosageCnclFeeModal,
-      PdDosageListModal
+      PdDosageListModal,
+      PdGzslDosageModal
     },
     data () {
       return {
@@ -249,10 +253,22 @@
         this.$refs.pdDosageReturnedForm.disableSubmit = false;
       },
       handleDetail(record){//新增
-        this.$refs.pdDosageListModal.edit(record);
-        this.$refs.pdDosageListModal.title="详情";
-        this.$refs.pdDosageListModal.disableSubmit = true;
-      }
+        if(record.dosageType=="0"){
+          this.$refs.modalUniqueForm.edit(record);
+          this.$refs.modalUniqueForm.title="详情";
+          this.$refs.modalUniqueForm.disableSubmit = true;
+        }else{
+          this.$refs.pdDosageListModal.edit(record);
+          this.$refs.pdDosageListModal.title="详情";
+          this.$refs.pdDosageListModal.disableSubmit = true;
+        }
+      },
+      //唯一码使用
+      handleUniqueAdd(){
+        this.$refs.modalUniqueForm.add();
+        this.$refs.modalUniqueForm.title = "唯一码使用";
+        this.$refs.modalUniqueForm.disableSubmit = false;
+      },
     }
   }
 </script>

@@ -274,7 +274,6 @@
           this.$refs.modalUniqueForm.disableSubmit = true;
           this.$refs.modalUniqueForm.totalSum = record.totalSum;
         }else{
-          console.log(record)
           this.$refs.modalForm.edit(record);
           this.$refs.modalForm.title="详情";
           this.$refs.modalForm.disableSubmit = true;

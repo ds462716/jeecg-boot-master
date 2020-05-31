@@ -176,4 +176,6 @@ public class PdDosageDetail extends BaseEntity {
     public void setHyChargedText(String hyChargedText) {
         this.hyChargedText = hyChargedText;
     }
+
+    private String refBarCode;//唯一码
 }
