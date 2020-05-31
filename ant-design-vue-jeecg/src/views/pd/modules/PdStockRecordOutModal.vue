@@ -124,7 +124,7 @@
         </a-card>
 
         <!-- 定数包区域 -->
-        <a-card style="margin-bottom: 10px;" v-show="showPackageCard">
+        <a-card style="margin-bottom: 10px;" v-show="false"> <!-- v-show="showPackageCard" -->
           <a-tabs v-model="activeKey">
             <a-tab-pane tab="定数包明细" :key="refKeys[0]" :forceRender="true">
               <a-form v-show="!disableSubmit">
