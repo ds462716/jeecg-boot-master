@@ -332,7 +332,8 @@ public class PdProductServiceImpl extends ServiceImpl<PdProductMapper, PdProduct
                 pdProductStock.setDepartId(sysUser.getCurrentDepartId());
                 pdProductStock.setNestatStatus(nestatStatus);
                 pdProductStock.setBarCodeType(PdConstant.CODE_PRINT_TYPE_0);//批量打印的条码类型
-                pdProductStocks = pdProductStockService.selectList(pdProductStock);
+                pdProductStock.setProductFlag(PdConstant.PRODUCT_FLAG_0);//只查询耗材
+                pdProductStocks = pdProductStockService.queryProductStockList(pdProductStock);
                 //有库存直接返回
                 if (pdProductStocks != null && pdProductStocks.size() > 0) {
                     result.setCode(MessageConstant.ICODE_STATE_200);
@@ -363,8 +364,9 @@ public class PdProductServiceImpl extends ServiceImpl<PdProductMapper, PdProduct
                                 pdProductStock.setProductFlag(productFlag);
                                 pdProductStock.setNestatStatus(nestatStatus);
                                 pdProductStock.setBarCodeType(PdConstant.CODE_PRINT_TYPE_0);//批量打印的条码类型
+                                pdProductStock.setProductFlag(PdConstant.PRODUCT_FLAG_0);//只查询耗材
                                 //根据条件查询库存
-                                pdProductStocks = pdProductStockService.selectList(pdProductStock);
+                                pdProductStocks = pdProductStockService.queryProductStockList(pdProductStock);
                                 if (pdProductStocks != null && pdProductStocks.size() > 0) {
                                     result.setCode(MessageConstant.ICODE_STATE_200);
                                     result.setMessage(MessageConstant.CODE_MESSAGE_2);
@@ -389,8 +391,9 @@ public class PdProductServiceImpl extends ServiceImpl<PdProductMapper, PdProduct
                                     pdProductStock.setProductFlag(productFlag);
                                     pdProductStock.setNestatStatus(nestatStatus);
                                     pdProductStock.setBarCodeType(PdConstant.CODE_PRINT_TYPE_0);//批量打印的条码类型
+                                    pdProductStock.setProductFlag(PdConstant.PRODUCT_FLAG_0);//只查询耗材
                                     //根据条件查询库存
-                                    pdProductStocks = pdProductStockService.selectList(pdProductStock);
+                                    pdProductStocks = pdProductStockService.queryProductStockList(pdProductStock);
                                     if (pdProductStocks != null && pdProductStocks.size() > 0) {
                                         result.setCode(MessageConstant.ICODE_STATE_200);
                                         result.setMessage(MessageConstant.CODE_MESSAGE_2);
@@ -519,8 +522,9 @@ public class PdProductServiceImpl extends ServiceImpl<PdProductMapper, PdProduct
                         pdProductStock.setProductFlag(productFlag);
                         pdProductStock.setNestatStatus(nestatStatus);
                         pdProductStock.setBarCodeType(PdConstant.CODE_PRINT_TYPE_0);//批量打印的条码类型
+                        pdProductStock.setProductFlag(PdConstant.PRODUCT_FLAG_0);//只查询耗材
                         //根据条件查询库存
-                        pdProductStocks = pdProductStockService.selectList(pdProductStock);
+                        pdProductStocks = pdProductStockService.queryProductStockList(pdProductStock);
                     }else {
                         //没有绑定扫码规则
                         result.setCode(MessageConstant.ICODE_STATE_500);
@@ -678,7 +682,7 @@ public class PdProductServiceImpl extends ServiceImpl<PdProductMapper, PdProduct
             ps.setBarCodeType(PdConstant.CODE_PRINT_TYPE_1);
             ps.setDepartId(sysUser.getCurrentDepartId());
             //查询该条码是否是试剂且未使用
-            List<PdProductStock> pds = pdProductStockService.selectList(ps);
+            List<PdProductStock> pds = pdProductStockService.queryProductStockList(ps);
             if(pds!=null && pds.size()>0){
                 ps = pds.get(0);
                 ps.setRefBarCode(barcode);

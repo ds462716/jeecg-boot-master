@@ -2,6 +2,7 @@ package org.jeecg.modules.pd.service.impl;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.jeecg.common.constant.PdConstant;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.pd.entity.PdProductStock;
 import org.jeecg.modules.pd.mapper.PdProductStockMapper;
@@ -44,14 +45,29 @@ public class PdProductStockServiceImpl extends ServiceImpl<PdProductStockMapper,
 	}
 
 	/**
-	 * 查询列表---试剂查询
+	 * 以前查询库存的方法
+	 * 该方法只查询耗材  过滤试剂，且只能查非唯一码类型
 	 * @param page
 	 * @param productStock
 	 * @return
 	 */
 	@Override
 	public Page<PdProductStock> queryProductStockList(Page<PdProductStock> page, PdProductStock productStock) {
+		if(oConvertUtils.isNotEmpty(productStock.getProductIds())){
+			productStock.setProductIdList(Arrays.asList(productStock.getProductIds().split(",")));
+		}
 		return page.setRecords(pdProductStockMapper.queryProductStockList(productStock));
+	}
+
+	/**
+	 * 以前查询库存的方法
+	 * 该方法只查询耗材  过滤试剂，且只能查非唯一码类型
+	 * @param pdProductStock
+	 * @return
+	 */
+	@Override
+	public List<PdProductStock> queryProductStockList(PdProductStock pdProductStock) {
+		return pdProductStockMapper.queryProductStockList(pdProductStock);
 	}
 
 	@Override
@@ -68,6 +84,7 @@ public class PdProductStockServiceImpl extends ServiceImpl<PdProductStockMapper,
 	public List<PdProductStock> selectList(PdProductStock pdProductStock) {
 		return pdProductStockMapper.selectList(pdProductStock);
 	}
+
 
 
 	@Override
