@@ -113,7 +113,7 @@
 
   import { JeecgListMixin } from '@/mixins/JeecgListMixin'
   import PdDosageModal from '../pd/modules/NewPdDosageModal'
-  import PdGzslDosageModal from './modules/PdGzslDosageModal'
+  import PdGzslDosageModal from './modules/PdDosageModalRefGZSL'
   import PdDosageListModal from '../pd/modules/NewPdDosageListModal'
   import PdDosageReturnedModal from '../pd/modules/PdDosageReturnedModal'
   import PdDosageFeeModal from '../pd/modules/PdDosageFeeModal'

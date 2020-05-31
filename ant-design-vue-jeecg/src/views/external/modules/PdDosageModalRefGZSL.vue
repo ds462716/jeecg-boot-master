@@ -255,7 +255,7 @@
   })
 
   export default {
-    name: "PdGzslDosageModal",
+    name: "PdDosageModalRefGZSL",
     mixins: [JEditableTableMixin],
     components: {
       PdChooseDosageListModel,
