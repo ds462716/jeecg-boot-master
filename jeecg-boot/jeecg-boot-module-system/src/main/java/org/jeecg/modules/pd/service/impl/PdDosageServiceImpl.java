@@ -520,7 +520,7 @@ public class PdDosageServiceImpl extends ServiceImpl<PdDosageMapper, PdDosage> i
                 pdDosage.setDosageType(PdConstant.DOSAGE_TYPE_1);//普通码使用
                 this.save(pdDosage);
                 //扣减当前库房的库存
-                //pdProductStockTotalService.updateUseStock(sysUser.getCurrentDepartId(),detailList);
+                pdProductStockTotalService.updateUseStock(sysUser.getCurrentDepartId(),detailList);
             }
         }
         return chargeArray;

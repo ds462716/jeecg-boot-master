@@ -253,9 +253,15 @@
         this.$refs.pdDosageReturnedForm.disableSubmit = false;
       },
       handleDetail(record){//新增
-        this.$refs.pdDosageListModal.edit(record);
-        this.$refs.pdDosageListModal.title="详情";
-        this.$refs.pdDosageListModal.disableSubmit = true;
+        if(record.dosageType=="0"){
+          this.$refs.modalUniqueForm.edit(record);
+          this.$refs.modalUniqueForm.title="详情";
+          this.$refs.modalUniqueForm.disableSubmit = true;
+        }else{
+          this.$refs.pdDosageListModal.edit(record);
+          this.$refs.pdDosageListModal.title="详情";
+          this.$refs.pdDosageListModal.disableSubmit = true;
+        }
       },
       //唯一码使用
       handleUniqueAdd(){

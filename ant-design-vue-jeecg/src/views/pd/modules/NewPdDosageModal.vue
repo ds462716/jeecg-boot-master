@@ -239,7 +239,6 @@
   import pick from 'lodash.pick'
   import { validateDuplicateValue } from '@/utils/util'
   import { FormTypes,getRefPromise,validateFormAndTables } from '@/utils/JEditableTableUtil'
-  import ATextarea from "ant-design-vue/es/input/TextArea";
   import {stockScanCode} from '@/utils/barcode'
   import {httpAction, deleteAction, getAction} from '@/api/manage'
   import { JEditableTableMixin } from '@/mixins/JEditableTableMixin'
@@ -279,6 +278,7 @@
         lockScroll: false,
         fullscreen: true,
         switchFullscreen: false,
+        hospitalCode:"",//医院标识
         hyCharged: true,
         totalSum:'0',
         totalPrice:'0.0000',
@@ -431,6 +431,7 @@
                 //获取光标
                 this.$refs['productNumberInput'].focus();
               }
+              this.hospitalCode = res.result.hospitalCode;
             })
           }
           if(res.code===510){
@@ -588,7 +589,13 @@
       // 选择产品 新增行
       chooseProductList() {
         this.$refs.pdChooseProductStockListModel.width = 1550;
-        this.$refs.pdChooseProductStockListModel.show({productFlag:"0",nestatStatus:'1'});
+        if(this.hospitalCode == "FCZYY"){
+          this.$refs.pdChooseProductStockListModel.show({nestatStatus:"1",barCodeType:"0"});
+        }else if(this.hospitalCode == "GZSLYY"){
+          this.$refs.pdChooseProductStockListModel.show({nestatStatus:"1",barCodeType:"0",productFlag:"0"}); //赣州市立医院，普通出库 禁止不能查询试剂
+        }else{
+          this.$refs.pdChooseProductStockListModel.show({nestatStatus:"1",barCodeType:"0"});
+        }
       },
       // 选择定数包
       choosePackageList() {

@@ -40,7 +40,8 @@
         a.sqrt_doctor_id,
         a.exe_dept_name,
         a.del_flag,
-        a.visit_no
+        a.visit_no,
+        a.dosage_type
 	</sql>
 
     <!-- 产品 -->
