@@ -57,6 +57,27 @@ public class NewPdDosageController {
     }
 
 
+    /**
+     * 提交
+     *
+     * @param pdDosage
+     * @return
+     */
+    @PostMapping(value = "/uniqueSubmit")
+    public Result<?> uniqueSubmit(@RequestBody PdDosage pdDosage) {
+        List<PdDosageDetail> list= pdDosageService.uniqueSubmit(pdDosage, PdConstant.IS_CHARGE_FLAG_0);
+        //数据推送到HIS中间表
+        if(CollectionUtils.isNotEmpty(list)){
+            if(StringUtils.isNotEmpty(pdDosage.getInHospitalNo())){//住院
+                exHisZyInfService.saveExHisZyInf(pdDosage, list,PdConstant.IS_CHARGE_TYPE_1);
+            }else{//门诊
+                exHisZyInfService.saveExHisMzInf(pdDosage, list,PdConstant.IS_CHARGE_TYPE_1);
+            }
+        }
+        return Result.ok("添加成功！");
+    }
+
+
 
 
     /**

@@ -47,4 +47,6 @@ public interface IPdDosageService extends IService<PdDosage> {
 
     /*市立医院用*/
     List<PdDosageDetail> newSaveMain(PdDosage pdDosage, String displayFlag);
+
+    List<PdDosageDetail> uniqueSubmit(PdDosage pdDosage, String isChargeFlag0);
 }

@@ -17,8 +17,8 @@
           <a-form :form="form">
             <a-row>
               <a-col :md="6" :sm="8">
-                <a-form-item label="退货编号" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                  <a-input disabled v-decorator="[ 'rejectedNo', {}]" placeholder="请输入退货编号"></a-input>
+                <a-form-item label="退货单号" :labelCol="labelCol" :wrapperCol="wrapperCol">
+                  <a-input disabled v-decorator="[ 'rejectedNo', {}]" placeholder="请输入退货单号"></a-input>
                 </a-form-item>
               </a-col>
               <a-col :span="6">
