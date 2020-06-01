@@ -307,6 +307,9 @@
         <if test="departId != null and departId != ''">
             AND b.depart_id = #{departId}
         </if>
+		<if test="inDepartId != null and inDepartId != ''">
+			AND b.in_depart_id = #{inDepartId}
+		</if>
         <if test="departParentId != null and departParentId != ''">
             AND b.depart_parent_id = #{departParentId}
         </if>

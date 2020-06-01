@@ -135,8 +135,8 @@ public class IndexChartController {
           //统计入库单数量
         PdStockRecordDetail recordDetail = new PdStockRecordDetail();
         recordDetail.setRecordType(PdConstant.RECODE_TYPE_1); //入库
-        recordDetail.setDepartId(null);//当前部门
-        recordDetail.setDepartIdList(departList); //部门范围
+        recordDetail.setInDepartId(sysUser.getCurrentDepartId());
+       // recordDetail.setDepartIdList(departList); //部门范围
         recordDetail.setDepartParentId(sysUser.getDepartParentId());
         recordDetail.setAuditStatus(PdConstant.AUDIT_STATE_2); // 审核通过
         recordDetail.setAuditDate(new Date());// 查询当前日期
