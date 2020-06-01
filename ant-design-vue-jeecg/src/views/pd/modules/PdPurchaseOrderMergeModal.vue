@@ -68,7 +68,7 @@
       </div>
      </a-spin>
     <template slot="footer">
-      <a-button @click="handleCancel" type="primary" style="margin-right: 15px;">关  闭</a-button>
+      <a-button @click="handleCancel" type="margin-right: 15px;" style="margin-right: 15px;">关  闭</a-button>
      </template>
   </j-modal>
 </template>
