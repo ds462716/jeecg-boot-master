@@ -19,6 +19,7 @@ import org.jeecg.modules.pd.entity.*;
 import org.jeecg.modules.pd.mapper.*;
 import org.jeecg.modules.pd.service.*;
 import org.jeecg.modules.pd.util.BarCodeUtil;
+import org.jeecg.modules.pd.util.JmUtil;
 import org.jeecg.modules.pd.util.UUIDUtil;
 import org.jeecg.modules.pd.vo.PdProductPage;
 import org.jeecg.modules.pd.vo.PdProductReagents;
@@ -887,6 +888,15 @@ public class PdProductServiceImpl extends ServiceImpl<PdProductMapper, PdProduct
                         message = "导入失败,第"+(i+1)+"行产品名称不能为空";
                         bl = false;
                         break;
+                    }else{
+                        if(oConvertUtils.isEmpty(ps.getPy())){
+                            //生成拼音简码
+                            ps.setPy(JmUtil.getAllFirstLetter(ps.getName()));
+                        }
+                        if(oConvertUtils.isEmpty(ps.getWb())){
+                            //生成五笔简码
+                            ps.setWb(JmUtil.getWBCode(ps.getName()));
+                        }
                     }
                     //产品单位转换成id
                     if(oConvertUtils.isNotEmpty(ps.getUnitName())){

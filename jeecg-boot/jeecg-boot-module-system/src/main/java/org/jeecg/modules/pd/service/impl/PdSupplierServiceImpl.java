@@ -14,6 +14,7 @@ import org.jeecg.modules.pd.entity.PdSupplier;
 import org.jeecg.modules.pd.mapper.PdSupplierMapper;
 import org.jeecg.modules.pd.service.IPdProductService;
 import org.jeecg.modules.pd.service.IPdSupplierService;
+import org.jeecg.modules.pd.util.JmUtil;
 import org.jeecgframework.poi.excel.ExcelImportUtil;
 import org.jeecgframework.poi.excel.entity.ImportParams;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -153,6 +154,14 @@ public class PdSupplierServiceImpl extends ServiceImpl<PdSupplierMapper, PdSuppl
                 for(PdSupplier ps :list){
                     if(oConvertUtils.isNotEmpty(ps.getName())){
                         if(checkName(pdSuppliers,ps)){
+                            if(oConvertUtils.isEmpty(ps.getPy())){
+                                //生成拼音简码
+                                ps.setPy(JmUtil.getAllFirstLetter(ps.getName()));
+                            }
+                            if(oConvertUtils.isEmpty(ps.getWb())){
+                                //生成五笔简码
+                                ps.setWb(JmUtil.getWBCode(ps.getName()));
+                            }
                             pdSuppliers.add(ps);
                         }else{
                             message = "导入失败,第"+(i+1)+"行名称不能重复";
