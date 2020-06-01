@@ -54,6 +54,10 @@
     </div>
 
     </a-spin>
+
+    <template slot="footer">
+      <a-button @click="close" style="margin-right: 15px;">关  闭</a-button>
+    </template>
   </a-modal>
 </template>
 
