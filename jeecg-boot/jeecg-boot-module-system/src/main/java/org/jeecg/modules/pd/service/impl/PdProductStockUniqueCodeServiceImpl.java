@@ -167,7 +167,7 @@ public class PdProductStockUniqueCodeServiceImpl extends ServiceImpl<PdProductSt
                     //第一次打印条码
                     if(ps.getStockNum()>0){
                         PdProductStockUniqueCode psc = new PdProductStockUniqueCode();
-                        psc.setId(SnowUtils.onlyBigKey(1));
+                        psc.setId(SnowUtils.onlyBigKey(0));//为了看条码立马能区别是唯一码还是普通条码
                         psc.setProductStockId(ps.getId());
                         psc.setPrintType(PdConstant.CODE_PRINT_TYPE_0);//普通码
                         psc.setCodeState(PdConstant.CODE_PRINT_STATE_0);//正常状态
