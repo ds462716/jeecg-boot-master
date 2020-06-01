@@ -434,7 +434,7 @@
           this.$message.error("请选择供应商！");
           return;
         }
-        this.$refs.pdChooseProductStockListModel.show({supplierId:supplierId,nestatStatus:"1"});
+        this.$refs.pdChooseProductStockListModel.show({supplierId:supplierId,nestatStatus:"1",barCodeType:"0"});
       },
       // 选择产品后返回
       returnProductStockData(data) {
