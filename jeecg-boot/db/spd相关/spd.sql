@@ -657,3 +657,9 @@ ADD COLUMN `close_remarks` varchar(4) CHARACTER SET utf8 COLLATE utf8_general_ci
 
  INSERT INTO `sys_dict_item` VALUES ('1267365811555860482', '1267365735160807425', '已用完', '0', '', 1, 1, 'admin', '2020-06-01 16:02:11', NULL, '2020-06-01 16:02:11');
  INSERT INTO `sys_dict_item` VALUES ('1267365853700227074', '1267365735160807425', '已过期', '1', '', 2, 1, 'admin', '2020-06-01 16:02:21', NULL, '2020-06-01 16:02:21');
+
+-- add by zxh 2020年6月1日17:20:19  用户加入简码
+ALTER TABLE `sys_user`
+ADD COLUMN `py`  varchar(64) NULL COMMENT '拼音简码' AFTER `realname`,
+ADD COLUMN `wb`  varchar(64) NULL COMMENT '五笔简码' AFTER `py`,
+ADD COLUMN `zdy`  varchar(64) NULL COMMENT '自定义码' AFTER `wb`;

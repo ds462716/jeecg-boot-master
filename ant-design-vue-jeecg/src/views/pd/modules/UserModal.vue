@@ -37,9 +37,17 @@
         </template>
 
         <a-form-item label="用户姓名" :labelCol="labelCol" :wrapperCol="wrapperCol" >
-          <a-input :disabled="disableSubmit" placeholder="请输入用户姓名" autocomplete="off" v-decorator="[ 'realname', validatorRules.realname]" />
+          <a-input :disabled="disableSubmit" placeholder="请输入用户姓名" @change="pinyinTran" autocomplete="off" v-decorator="[ 'realname', validatorRules.realname]" />
         </a-form-item>
-
+        <a-form-item label="拼音简码" :labelCol="labelCol" :wrapperCol="wrapperCol">
+          <a-input :disabled="disableSubmit" autocomplete="off" v-decorator="[ 'py', validatorRules.py]" ></a-input>
+        </a-form-item>
+        <a-form-item label="五笔简码" :labelCol="labelCol" :wrapperCol="wrapperCol">
+          <a-input :disabled="disableSubmit" autocomplete="off" v-decorator="[ 'wb', validatorRules.wb]" ></a-input>
+        </a-form-item>
+        <a-form-item label="自定义码" :labelCol="labelCol" :wrapperCol="wrapperCol">
+          <a-input :disabled="disableSubmit" autocomplete="off" v-decorator="[ 'zdy', validatorRules.zdy]" ></a-input>
+        </a-form-item>
         <a-form-item label="工号" :labelCol="labelCol" :wrapperCol="wrapperCol">
           <a-input :disabled="disableSubmit" placeholder="请输入工号" autocomplete="off" v-decorator="[ 'workNo',validatorRules.workNo]" />
         </a-form-item>
@@ -125,6 +133,7 @@
   import { disabledAuthFilter } from "@/utils/authFilter"
   import {duplicateCheck } from '@/api/api'
   import JImageUpload from '../../../components/jeecg/JImageUpload'
+  import { makeWb } from '@/utils/wubi'
 
   export default {
     name: "UserModal",
@@ -292,7 +301,7 @@
         that.visible = true;
         that.model = Object.assign({}, record);
         that.$nextTick(() => {
-          that.form.setFieldsValue(pick(this.model,'username','sex','realname','email','phone','workNo','telephone','post'))
+          that.form.setFieldsValue(pick(this.model,'username','sex','realname','py','wb','zdy','email','phone','workNo','telephone','post'))
         });
       },
 
@@ -496,6 +505,16 @@
         }else{
           this.drawerWidth = 700;
         }
+      },
+      pinyinTran(e){
+        let val = e.target.value;
+        let pinyin = require('js-pinyin');
+        pinyin.setOptions({checkPolyphone: false, charCase: 0});
+        //let py = pinyin.getFullChars(val);//获取全拼
+        let py = pinyin.getCamelChars(val);//获取简码
+        this.form.setFieldsValue({py:py});
+        let wb = makeWb(val);
+        this.form.setFieldsValue({wb:wb});//获取五笔简码
       },
     }
   }
