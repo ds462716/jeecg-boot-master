@@ -119,6 +119,45 @@ public class PdStockRecordInController {
         return Result.ok(pageList);
     }
 
+
+    @GetMapping(value = "/queryUniqueDetailPageList")
+    public Result<?> queryUniqueDetailPageList(PdStockRecord pdStockRecord,
+                                   @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
+                                   @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
+                                   HttpServletRequest req) {
+        Page<PdStockRecordDetail> page = new Page<PdStockRecordDetail>(pageNo, pageSize);
+        pdStockRecord.setRecordType(PdConstant.RECODE_TYPE_1);
+
+        if(oConvertUtils.isNotEmpty(pdStockRecord.getId())){
+            pdStockRecord = pdStockRecordService.getById(pdStockRecord.getId());
+            if(PdConstant.CODE_PRINT_TYPE_1.equals(pdStockRecord.getBarCodeType())){
+
+                PdStockRecordDetail pdStockRecordDetail = new PdStockRecordDetail();
+                pdStockRecordDetail.setRecordId(pdStockRecord.getId());
+                List<PdStockRecordDetail> pdStockRecordDetailList = pdStockRecordDetailService.selectByMainId(pdStockRecordDetail);
+                List<PdStockRecordDetail> uniqueList = new ArrayList<>();
+
+                int i = 0;
+                for (PdStockRecordDetail item : pdStockRecordDetailList) {
+                    //唯一码 拆分，用于唯一码列表显示
+                    List<String> refBarCodeList = Arrays.asList(item.getRefBarCode().split(","));
+                    for(String refBarCode : refBarCodeList){
+                        i += 1;
+                        PdStockRecordDetail unique = new PdStockRecordDetail();
+                        BeanUtils.copyProperties(item, unique);
+                        unique.setRefBarCode(refBarCode);
+                        unique.setProductNum(1D);
+                        unique.setId(i+"");
+                        uniqueList.add(unique);
+                    }
+                }
+                page = page.setRecords(uniqueList);
+            }
+        }
+
+        return Result.ok(page);
+    }
+
     /**
      * 分页列表查询
      *

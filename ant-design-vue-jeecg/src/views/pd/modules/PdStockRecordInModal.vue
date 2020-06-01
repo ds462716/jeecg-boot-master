@@ -102,7 +102,7 @@
 
         <!-- 产品列表区域 -->
         <a-card style="margin-bottom: 10px;">
-          <a-tabs v-model="activeKey" @change="handleChangeTabs">
+          <a-tabs v-model="activeKey" @change="handleChangeTabs"> <!-- @change="handleChangeTabs" -->
             <a-tab-pane tab="产品明细" :key="refKeys[0]" :forceRender="true">
               <a-form v-show="!disableSubmit">
                 <a-row>
@@ -156,6 +156,22 @@
                   <span style="font-weight: bold;font-size: large;padding-right: 5%">总数量：{{ totalSum }}</span>
                   <span style="font-weight: bold;font-size: large">总金额：{{ inTotalPrice }}</span>
               </a-row>
+            </a-tab-pane>
+
+            <a-tab-pane tab="唯一码明细" :key="refKeys[1]" :forceRender="true">
+              <a-table
+                size="middle"
+                bordered
+                rowKey="id"
+                :pagination="ipagination"
+                :columns="pdStockRecordDetailUnique.columns"
+                :dataSource="pdStockRecordDetailUnique.dataSource"
+                :loading="pdStockRecordDetailUnique.loading"
+                @change="handleTableChange">
+                <template slot="htmlSlot" slot-scope="text">
+                  <div v-html="text"></div>
+                </template>
+              </a-table>
             </a-tab-pane>
           </a-tabs>
         </a-card>
@@ -325,6 +341,19 @@
         huoweiOptions:[],
         hospitalCode:"",
 
+        //分页参数
+        ipagination:{
+          current: 1,
+          pageSize: 10,
+          pageSizeOptions: ['10', '20', '30'],
+          showTotal: (total, range) => {
+            return range[0] + "-" + range[1] + " 共" + total + "条"
+          },
+          showQuickJumper: true,
+          showSizeChanger: true,
+          total: 0
+        },
+
         // 新增时子表默认添加几行空数据
         addDefaultRowNum: 0,
         validatorRules: {
@@ -345,8 +374,8 @@
           inDepartId:{},
           supplierId:{rules: [{required: true, message: '请选择供应商!'}]},
         },
-        refKeys: ['pdStockRecordDetail',],
-        tableKeys:['pdStockRecordDetail', ],
+        refKeys: ['pdStockRecordDetail','pdStockRecordDetailUnique'],
+        tableKeys:['pdStockRecordDetail','pdStockRecordDetailUnique' ],
         activeKey: 'pdStockRecordDetail',
         // 申购订单明细表
         pdPurchaseOrderDetailTable: {
@@ -421,6 +450,26 @@
             { title: '注册证号', key: 'registration', type: FormTypes.hidden },
           ]
         },
+        pdStockRecordDetailUnique: {
+          loading: false,
+          dataSource: [],
+          columns: [
+            { title: '唯一码', align:"center", dataIndex: 'refBarCode' },
+            { title: '产品名称', align:"center", dataIndex: 'productName' },
+            { title: '产品编码', align:"center", dataIndex: 'productNumber' },
+            { title: '产品条码', align:"center", dataIndex: 'productBarCode' },
+            { title: '规格', align:"center", dataIndex: 'spec' },
+            { title: '单位', align:"center", dataIndex: 'unitName' },
+            { title: '生产日期', align:"center", dataIndex: 'produceDate' },
+            { title:'有效期', align:"center", dataIndex: 'expDate' },
+            { title: '批号', align:"center", dataIndex: 'batchNo' },
+            { title: '入库单价', align:"center", dataIndex: 'purchasePrice' },
+            { title: '数量', align:"center", dataIndex: 'productNum' },
+            // { title: '金额', align:"center", dataIndex: 'inTotalPrice' },
+            { title: '货位', align:"center", dataIndex: 'inHuoweiCode' },
+            // { title: '合并申购单号', align:"center", dataIndex: 'mergeOrderNo' },
+          ],
+        },
         url: {
           init:"/pd/pdStockRecordIn/initModal",
           getOnOff:"/pd/pdStockRecordIn/getOnOff",
@@ -431,7 +480,8 @@
           querySupplier:"/pd/pdSupplier/getSupplierList",
           querySupplierById:"/pd/pdSupplier/queryById",
           pdStockRecordDetail: {
-            list: "/pd/pdStockRecordIn/queryPdStockRecordDetailByMainId"
+            list: "/pd/pdStockRecordIn/queryPdStockRecordDetailByMainId",
+            uniqueList: "/pd/pdStockRecordIn/queryUniqueDetailPageList"
           },
           pdPurchaseDetail: {
             list: "/pd/pdPurchaseOrder/queryPdPurchaseDetail"
@@ -515,6 +565,7 @@
               if(this.model.id){
                 this.pdPurchaseOrderDetailTable.dataSource = res.result.pdPurchaseOrderMergeDetail || [];
                 this.pdStockRecordDetailTable.dataSource = res.result.pdStockRecordDetailList || [];
+                this.pdStockRecordDetailUnique.dataSource = res.result.pdStockRecordDetailUniqueList || [];
                 this.totalSum = res.result.totalSum;
                 this.inTotalPrice = res.result.inTotalPrice.toString();
                 this.showOrderTable = false;
@@ -594,6 +645,43 @@
           }
           // this.loading = false;
         })
+      },
+      loadUniqueData(pageNo){
+        var params = {};//查询条件
+        params.id = this.model.id;
+        if(pageNo == 1){
+          this.ipagination.current = 1;
+        }
+        params.pageNo = this.ipagination.current;
+        params.pageSize = this.ipagination.pageSize;
+
+        this.pdStockRecordDetailUnique.loading = true;
+        getAction(this.url.pdStockRecordDetail.uniqueList, params).then((res) => {
+          if (res.success) {
+            this.pdStockRecordDetailUnique.dataSource = res.result.records;
+            this.ipagination.total = res.result.total;
+          }
+          if(res.code===510){
+            this.$message.warning(res.message)
+          }
+          this.pdStockRecordDetailUnique.loading = false;
+        })
+
+      },
+      handleChangeTabs(){
+        if(this.pdStockRecordDetailUnique.dataSource.length <= 0){
+          this.loadUniqueData(1);
+        }
+      },
+      handleTableChange(pagination, filters, sorter) {
+        //分页、排序、筛选变化时触发
+        //TODO 筛选
+        if (Object.keys(sorter).length > 0) {
+          this.isorter.column = sorter.field;
+          this.isorter.order = "ascend" == sorter.order ? "asc" : "desc"
+        }
+        this.ipagination = pagination;
+        this.loadUniqueData();
       },
       /** 关闭按钮 **/
       closeBtn(){

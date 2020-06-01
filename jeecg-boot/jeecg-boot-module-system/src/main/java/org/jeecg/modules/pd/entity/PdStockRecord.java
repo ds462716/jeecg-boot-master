@@ -150,6 +150,9 @@ public class PdStockRecord extends BaseEntity {
     @ExcelCollection(name="出入库明细表")
     @TableField(exist = false)
     private List<PdStockRecordDetail> pdStockRecordDetailList;
+    // 唯一码列表
+    @TableField(exist = false)
+    private List<PdStockRecordDetail> pdStockRecordDetailUniqueList;
     // 采购订单明细
     @TableField(exist = false)
     private List<PdPurchaseOrderMergeDetail> pdPurchaseOrderMergeDetail;

@@ -196,7 +196,32 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
             pdStockRecord.setAuditDate(date);
             pdStockRecord.setUpdateTime(date);
             pdStockRecord.setCreateTime(date);
-            newDetailList = pdStockRecordDetailList;
+
+            if(PdConstant.CODE_PRINT_TYPE_1.equals(pdStockRecord.getBarCodeType())){
+                // 唯一码出库入库，需要合并入库明细
+                Set<String> setIds = new HashSet<>();
+                for (PdStockRecordDetail main : pdStockRecordDetailList) {
+                    Double productNum = 0D;
+                    StringBuilder setId = new StringBuilder();
+                    setId.append(main.getProductStockId());
+                    if(setIds.add(setId.toString())){
+                        List<String> refBarCodes = new ArrayList<>();
+                        for (PdStockRecordDetail entity : pdStockRecordDetailList) {
+                            if(main.getProductStockId().equals(entity.getProductStockId())){
+                                refBarCodes.add(entity.getRefBarCode());
+                                productNum = productNum + entity.getProductNum();
+                            }
+                        }
+                        main.setProductNum(productNum);
+                        main.setRefBarCode(String.join(",", refBarCodes));// 合并后记录唯一码（用于入库后更新条码表）
+                        newDetailList.add(main);
+                    }
+                }
+            }else{
+                // 非唯一码出库入库，不需要合并入库明细
+                newDetailList = pdStockRecordDetailList;
+            }
+
         }else{
             // 供应商入库
             if (CollectionUtils.isNotEmpty(pdStockRecordDetailList)) {
@@ -664,16 +689,32 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
             PdStockRecordDetail pdStockRecordDetail = new PdStockRecordDetail();
             pdStockRecordDetail.setRecordId(id);
             List<PdStockRecordDetail> pdStockRecordDetailList = pdStockRecordDetailService.selectByMainId(pdStockRecordDetail);
+//            List<PdStockRecordDetail> uniqueList = new ArrayList<>();
             BigDecimal totalPrice = new BigDecimal(0);//总金额	@TableField(exist = false)
             Double totalSum = new Double(0);//总数量
+//            int i = 0;
             for (PdStockRecordDetail item : pdStockRecordDetailList) {
                 totalSum = totalSum + item.getProductNum();
                 BigDecimal purchasePrice = item.getPurchasePrice() == null ? new BigDecimal(0) : item.getPurchasePrice();
                 totalPrice = totalPrice.add(purchasePrice.multiply(BigDecimal.valueOf(item.getProductNum())).setScale(4, BigDecimal.ROUND_HALF_UP));
+//                if(PdConstant.CODE_PRINT_TYPE_1.equals(pdStockRecord.getBarCodeType())){
+//                    //唯一码 拆分，用于唯一码列表显示
+//                    List<String> refBarCodeList = Arrays.asList(item.getRefBarCode().split(","));
+//                    for(String refBarCode : refBarCodeList){
+//                        i += 1;
+//                        PdStockRecordDetail unique = new PdStockRecordDetail();
+//                        BeanUtils.copyProperties(item, unique);
+//                        unique.setRefBarCode(refBarCode);
+//                        unique.setProductNum(1D);
+//                        unique.setId(i+"");
+//                        uniqueList.add(unique);
+//                    }
+//                }
             }
             pdStockRecord.setTotalSum(totalSum);
             pdStockRecord.setInTotalPrice(totalPrice);
             pdStockRecord.setPdStockRecordDetailList(pdStockRecordDetailList);
+//            pdStockRecord.setPdStockRecordDetailUniqueList(uniqueList);
 
             if (StringUtils.isNotEmpty(pdStockRecord.getMergeOrderNo())) {
                 //查订单列表
@@ -700,7 +741,6 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
             pdStockRecord.setInType(PdConstant.IN_TYPE_1);
 
         }
-
 
         //库区库位下拉框
         pdStockRecord.setGoodsAllocationList(goodsAllocationList);
