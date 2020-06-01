@@ -15,7 +15,6 @@ import org.jeecg.modules.pd.service.IPdUsePackageDetailService;
 import org.jeecg.modules.pd.service.IPdUsePackageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -58,7 +57,6 @@ public class ExInspectionItemsServiceImpl extends ServiceImpl<ExInspectionItemsM
         return exInspectionItemsMapper.selectListIds();
     }
 
-    @Transactional
     @Override
     public void batchUsePackageDetail(String ids) {
         String[] idList = ids.split(",");
@@ -88,7 +86,7 @@ public class ExInspectionItemsServiceImpl extends ServiceImpl<ExInspectionItemsM
                             items.setAcceptStatus(PdConstant.ACCEPT_STATUS_0);//已扣减
                         } catch (Exception e) {
                             e.getMessage();
-                            log.error("扣減用量失敗:" + e.getMessage());
+                             log.error("扣減用量失敗:" + e.getMessage());
                             items.setRemarks(e.getMessage());
                             items.setAcceptStatus(PdConstant.ACCEPT_STATUS_2);
                         }
