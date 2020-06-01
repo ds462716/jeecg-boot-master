@@ -636,4 +636,14 @@ ADD COLUMN `bar_code_type` varchar(4) CHARACTER SET utf8 COLLATE utf8_general_ci
 ALTER TABLE `pd_dosage`
 ADD COLUMN `dosage_type`  varchar(1) NULL COMMENT '使用类型，0唯一码使用和1普通码使用' AFTER `admission_date`;
 ALTER TABLE `pd_dosage_detail`
-ADD COLUMN `ref_bar_code`  varchar(64) NULL COMMENT '唯一码' AFTER `del_flag`
+ADD COLUMN `ref_bar_code`  varchar(64) NULL COMMENT '唯一码' AFTER `del_flag`;
+
+-- add by zxh 2020年6月1日09:58:09 加入字典
+INSERT INTO `sys_dict` VALUES ('1267269964379004929', '条码类型', 'bar_code_type', '', '0', 'admin', '2020-06-01 09:41:19', null, '2020-06-01 09:41:19', '0');
+INSERT INTO `sys_dict` VALUES ('1267270214661513218', '条码状态', 'bar_code_state', '', '0', 'admin', '2020-06-01 09:42:19', null, '2020-06-01 09:42:19', '0');
+
+INSERT INTO `sys_dict_item` VALUES ('1267270074752114689', '1267269964379004929', '唯一码', '1', '', '1', '1', 'admin', '2020-06-01 09:41:45', 'admin', '2020-06-01 09:49:49');
+INSERT INTO `sys_dict_item` VALUES ('1267270125310255106', '1267269964379004929', '非唯一码', '0', '', '1', '1', 'admin', '2020-06-01 09:41:57', 'admin', '2020-06-01 09:49:53');
+INSERT INTO `sys_dict_item` VALUES ('1267270272794566658', '1267270214661513218', '正常', '0', '', '1', '1', 'admin', '2020-06-01 09:42:32', null, '2020-06-01 09:42:32');
+INSERT INTO `sys_dict_item` VALUES ('1267270302767063041', '1267270214661513218', '已退货', '1', '', '1', '1', 'admin', '2020-06-01 09:42:40', null, '2020-06-01 09:42:40');
+INSERT INTO `sys_dict_item` VALUES ('1267270329421864961', '1267270214661513218', '已用完', '2', '', '1', '1', 'admin', '2020-06-01 09:42:46', null, '2020-06-01 09:42:46');

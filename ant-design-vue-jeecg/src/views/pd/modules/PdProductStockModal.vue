@@ -1,11 +1,15 @@
 <template>
-  <a-modal
-    :title="title"
-    :width="1500"
+  <j-modal
     :visible="visible"
-    :confirmLoading="confirmLoading"
+    :width="1200"
+    :title="title"
+    :lockScroll="lockScroll"
+    :fullscreen="fullscreen"
+    :switchFullscreen="switchFullscreen"
+    :maskClosable=disableSubmit
     @cancel="handleCancel"
-    cancelText="关闭">
+
+  >
     <template slot="footer">
       <a-button type="primary" @click="handleCancel">返回</a-button>
     </template>
@@ -104,7 +108,17 @@
          <span slot="action" slot-scope="text, record">
           <a  @click="yiHuoWei(record)">移库</a>
          <a-divider type="vertical"/>
-        <a v-bind:disabled="record.produceDate!=null" @click="handleEdit(record)">修改</a>
+           <a-dropdown>
+            <a class="ant-dropdown-link">更多 <a-icon type="down" /></a>
+            <a-menu slot="overlay">
+              <a-menu-item v-show="record.produceDate==null">
+               <a @click="handleEdit(record)">修改</a>
+              </a-menu-item>
+              <a-menu-item>
+                <a @click="findBarCodeDetail(record)">查看赋码</a>
+              </a-menu-item>
+            </a-menu>
+          </a-dropdown>
          </span>
       </a-table>
       </div>
@@ -115,7 +129,11 @@
      <pd-stock-huo-wei-modal ref="PdStockHuoWeiModal" @ok="modalFormOk"></pd-stock-huo-wei-modal>
      <!--規格數量清零-->
      <pd-product-stock-spec-modal ref="modalForm1" @ok="modalFormOk"></pd-product-stock-spec-modal>
-  </a-modal>
+    <!--查看唯一码-->
+     <pd-product-stock-unique-code-modal ref="modalUniqueForm1" @ok="modalFormOk"></pd-product-stock-unique-code-modal>
+
+
+  </j-modal>
 </template>
 
 <script>
@@ -129,6 +147,7 @@
   import PdProductStockSpecModal from './PdProductStockSpecModal'
   import JDate from "../../../components/jeecg/JDate";
   import { disabledAuthFilter } from "@/utils/authFilter"
+  import PdProductStockUniqueCodeModal from "./PdProductStockUniqueCodeModal";
 
   const VALIDATE_NO_PASSED = Symbol()
   export { FormTypes, VALIDATE_NO_PASSED }
@@ -136,6 +155,7 @@
     name: "PdProductStockModel",
     mixins:[JeecgListMixin],
     components: {
+      PdProductStockUniqueCodeModal,
       JDate,
       PdUpdateStockModal,
       PdStockHuoWeiModal,
@@ -154,6 +174,9 @@
           jCount:{},//近效期数量
         },
         confirmLoading: false,
+        lockScroll: false,
+        fullscreen: true,
+        switchFullscreen: false,
         disableSubmit:false,
         labelCol: {
           xs: { span: 24 },
@@ -287,7 +310,7 @@
           nestatStatus:[],
           isLong:[],
         },
-        tableScroll:{x :13*147+50},
+        tableScroll:{ x: 1300 },
       }
     },
     created () {
@@ -419,6 +442,13 @@
        */
       isDisabledAuth(code){
         return !disabledAuthFilter(code);
+      },
+
+      //如果是唯一码查询唯一码的详细内容
+      findBarCodeDetail(record){
+        this.$refs.modalUniqueForm1.show(record);
+        this.$refs.modalUniqueForm1.title = "查看赋码";
+        this.$refs.modalUniqueForm1.disableSubmit = false;
       },
     }
   }

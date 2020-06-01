@@ -70,9 +70,10 @@ public class PdProductStockUniqueCodeController extends JeecgController<PdProduc
 								   @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
 								   @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
 								   HttpServletRequest req) {
-		QueryWrapper<PdProductStockUniqueCode> queryWrapper = QueryGenerator.initQueryWrapper(pdProductStockUniqueCode, req.getParameterMap());
-		Page<PdProductStockUniqueCode> page = new Page<PdProductStockUniqueCode>(pageNo, pageSize);
-		IPage<PdProductStockUniqueCode> pageList = pdProductStockUniqueCodeService.page(page, queryWrapper);
+		Page<PdProductStockUniqueCode> page = new Page<>(pageNo,pageSize);
+		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		pdProductStockUniqueCode.setDepartParentId(sysUser.getDepartParentId());
+		IPage<PdProductStockUniqueCode> pageList =pdProductStockUniqueCodeService.selectList(page,pdProductStockUniqueCode);//
 		return Result.ok(pageList);
 	}
 	

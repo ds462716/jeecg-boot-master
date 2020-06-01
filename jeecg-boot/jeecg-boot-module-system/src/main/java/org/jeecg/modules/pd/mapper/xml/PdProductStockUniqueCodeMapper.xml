@@ -2,4 +2,26 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.jeecg.modules.pd.mapper.PdProductStockUniqueCodeMapper">
 
+    <select id="selectListByPage" resultType="org.jeecg.modules.pd.entity.PdProductStockUniqueCode" >
+        SELECT
+        *
+        FROM pd_product_stock_unique_code a
+        <where>
+            a.del_flag = #{entity.DEL_FLAG_NORMAL}
+        </where>
+        <if test="entity.id != null and entity.id != ''">
+            AND a.id = #{entity.id}
+        </if>
+        <if test="entity.productStockId != null and entity.productStockId != ''">
+            AND a.product_stock_id = #{entity.productStockId}
+        </if>
+        <if test="entity.printType != null and entity.printType != ''">
+            AND a.print_type = #{entity.printType}
+        </if>
+        <if test="entity.codeState != null and entity.codeState != ''">
+            AND a.code_state = #{entity.codeState}
+        </if>
+        ORDER BY a.unique_code_order asc
+    </select>
+
 </mapper>

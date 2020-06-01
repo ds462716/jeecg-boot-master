@@ -2,6 +2,7 @@ package org.jeecg.modules.pd.mapper;
 
 import java.util.List;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Param;
 import org.jeecg.modules.pd.entity.PdProductStockUniqueCode;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
@@ -14,4 +15,5 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  */
 public interface PdProductStockUniqueCodeMapper extends BaseMapper<PdProductStockUniqueCode> {
 
+    Page<PdProductStockUniqueCode> selectListByPage(Page<PdProductStockUniqueCode> page, @Param("entity") PdProductStockUniqueCode entity);
 }

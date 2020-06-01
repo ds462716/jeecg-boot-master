@@ -1,6 +1,8 @@
 package org.jeecg.modules.pd.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.PdConstant;
 import org.jeecg.modules.pd.entity.PdProductStock;
@@ -212,5 +214,10 @@ public class PdProductStockUniqueCodeServiceImpl extends ServiceImpl<PdProductSt
         ps.setBarCodeType(PdConstant.CODE_PRINT_TYPE_0);
         //更新库存表的条码状态
         pdProductStockService.updateStockBarCodeType(ps);
+    }
+
+    @Override
+    public Page<PdProductStockUniqueCode> selectList(Page<PdProductStockUniqueCode> page, PdProductStockUniqueCode pdProductStockUniqueCode) {
+        return baseMapper.selectListByPage(page,pdProductStockUniqueCode);
     }
 }

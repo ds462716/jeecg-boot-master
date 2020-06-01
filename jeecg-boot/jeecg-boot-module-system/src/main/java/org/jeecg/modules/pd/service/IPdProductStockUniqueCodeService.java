@@ -1,5 +1,7 @@
 package org.jeecg.modules.pd.service;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.modules.pd.entity.PdProductStock;
 import org.jeecg.modules.pd.entity.PdProductStockUniqueCode;
@@ -20,4 +22,6 @@ public interface IPdProductStockUniqueCodeService extends IService<PdProductStoc
     Result<List<PdProductStockUniqueCode>> batchCodeGeneration(List<String> asList);
 
     void deleteCode(String id);
+
+    IPage<PdProductStockUniqueCode> selectList(Page<PdProductStockUniqueCode> page, PdProductStockUniqueCode pdProductStockUniqueCode);
 }
