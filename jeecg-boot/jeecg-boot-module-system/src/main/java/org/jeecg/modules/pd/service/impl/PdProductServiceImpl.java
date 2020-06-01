@@ -667,7 +667,7 @@ public class PdProductServiceImpl extends ServiceImpl<PdProductMapper, PdProduct
      * @return
      */
     @Override
-    public Result<PdProductStock> uniqueScanCodeUrl(String barcode, Result<PdProductStock> result) {
+    public Result<PdProductStock> uniqueScanCodeUrl(String barcode,String  productFlag, Result<PdProductStock> result) {
         LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
         LambdaQueryWrapper<PdProductStockUniqueCode> query = new LambdaQueryWrapper<PdProductStockUniqueCode>()
                 .eq(PdProductStockUniqueCode::getId, barcode)
@@ -680,6 +680,7 @@ public class PdProductServiceImpl extends ServiceImpl<PdProductMapper, PdProduct
             PdProductStock ps = new PdProductStock();
             ps.setId(pdProductStockUniqueCode.getProductStockId());
             ps.setBarCodeType(PdConstant.CODE_PRINT_TYPE_1);
+            ps.setProductFlag(productFlag);
             ps.setDepartId(sysUser.getCurrentDepartId());
             //查询该条码是否是试剂且未使用
             List<PdProductStock> pds = pdProductStockService.queryProductStockList(ps);

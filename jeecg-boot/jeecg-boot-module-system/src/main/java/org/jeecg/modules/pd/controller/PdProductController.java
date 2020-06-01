@@ -353,10 +353,10 @@ public class PdProductController extends JeecgController<PdProduct, IPdProductSe
 	  * @return
 	  */
 	 @PostMapping(value = "uniqueScanCodeUrl")
-	 public Result<?> uniqueScanCodeUrl(String Barcode) {
+	 public Result<?> uniqueScanCodeUrl(String Barcode,String productFlag) {
 		 Result<PdProductStock> result = new Result<>();
 		 try{
-			 result = pdProductService.uniqueScanCodeUrl(Barcode,result);
+			 result = pdProductService.uniqueScanCodeUrl(Barcode,productFlag!=null?productFlag:"",result);
 		 }catch(Exception e){
 			 log.error(e.getMessage(), e);
 			 result.setCode(500);

@@ -455,7 +455,7 @@
         }
         if(num == 0){       //产品编号扫码
           //解析条码
-          uniqueScanCode(productNumber).then((res) => {
+          uniqueScanCode(productNumber,"").then((res) => {
             if(res.code == "200" || res.code == "203"){
               let result = res.result;
               if(!result){

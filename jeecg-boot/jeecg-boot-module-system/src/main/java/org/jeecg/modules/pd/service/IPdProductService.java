@@ -56,7 +56,7 @@ public interface IPdProductService extends IService<PdProduct> {
 
     Result<List<PdProductStock>> openingQuotation(String barcode, Result<List<PdProductStock>> result);
 
-    Result<PdProductStock> uniqueScanCodeUrl(String barcode, Result<PdProductStock> result);
+    Result<PdProductStock> uniqueScanCodeUrl(String barcode, String productFlag,Result<PdProductStock> result);
 
     Result<List<PdProductStock>> closeIngQuotation(String barcode, Result<List<PdProductStock>> result);
 
