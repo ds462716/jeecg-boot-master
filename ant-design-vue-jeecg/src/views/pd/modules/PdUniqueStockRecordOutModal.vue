@@ -696,6 +696,12 @@
         this.showPackageCard = false;
         this.showPackageTable = false;
         this.showPackageBtn = false;
+
+        this.$nextTick(() => {
+          this.departHandleSearch();  // 初始化部门列表 用于数据回显
+          this.userHandleSearch();
+        })
+
         let params = {};
         if(this.model.id){
 
