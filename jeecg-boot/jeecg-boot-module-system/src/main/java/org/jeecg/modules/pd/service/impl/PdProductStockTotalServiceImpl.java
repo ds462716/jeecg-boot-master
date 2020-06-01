@@ -150,12 +150,16 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
             productStock.setSupplierId(stockRecordDetail.getSupplierId());
             productStock.setSpecQuantity(stockRecordDetail.getSpecQuantity());
             productStock.setSpecUnitId(stockRecordDetail.getSpecUnitId());
-//            productStock.setRefBarCode(stockRecordDetail.getRefBarCode());
             productStock.setSpecNum(stockRecordDetail.getSpecQuantity() == null ? 0D : stockRecordDetail.getSpecQuantity() * stockRecordDetail.getProductNum());// 库存规格数量= 产品规格数量* 入库数量
             if(PdConstant.CODE_PRINT_TYPE_1.equals(stockRecordDetail.getBarCodeType())){
+                // 唯一码入库
                 productStock.setBarCodeType(stockRecordDetail.getBarCodeType());
+            }else{
+                // 批量码入库
+                productStock.setRefBarCode(stockRecordDetail.getRefBarCode());
             }
             productStockService.save(productStock);
+
             if(PdConstant.CODE_PRINT_TYPE_1.equals(pdStockRecord.getBarCodeType())){
                 // 唯一码入库，更新条码表库存id
                 if(oConvertUtils.isNotEmpty(stockRecordDetail.getRefBarCode())){

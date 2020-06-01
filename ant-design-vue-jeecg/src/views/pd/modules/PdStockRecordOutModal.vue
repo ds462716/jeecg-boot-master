@@ -579,7 +579,7 @@
             { title: '出库货位', key: 'outHuoweiName', width:"100px" },
             { title: '生产日期', key: 'produceDate',  },
             { title: '入库货位', key: 'inHuoweiCode', type: FormTypes.select, width:"150px", options: [],allowSearch:true, placeholder: '${title}' },
-
+            { title: '批量码', key: 'refBarCode' },
             { title: '库存明细ID', key: 'productStockId', type: FormTypes.hidden },
             { title: '产品ID', key: 'productId', type: FormTypes.hidden },
             { title: '出库货位编号', key: 'outHuoweiCode', type: FormTypes.hidden },
@@ -588,7 +588,6 @@
             { title: '规格数量', key: 'specQuantity', type: FormTypes.hidden },
             { title: '注册证号', key: 'registration', type: FormTypes.hidden },
             { title: '生产厂家', key: 'venderName', type: FormTypes.hidden },
-            // { title: 'refBarCode', key: 'refBarCode', type: FormTypes.hidden },
           ]
         },
         url: {
@@ -690,8 +689,7 @@
         this.showPackageBtn = false;
 
         this.$nextTick(() => {
-          this.departHandleSearch();  // 初始化部门列表 用于数据回显
-          this.userHandleSearch();
+          this.departHandleSearch();  // 初始化部门列表 用于详情页(有id）、申领出库(无id)、调拨出库(无id)数据回显
         })
 
         let params = {};
@@ -714,8 +712,7 @@
             this.applyNo = this.model.applyNo;
             this.allocationNo = this.model.allocationNo;
             this.form.setFieldsValue(fieldval);
-            this.departHandleSearch();  // 初始化部门列表 用于数据回显
-            this.userHandleSearch();
+            this.userHandleSearch(); //初始化申领人，用于详情页回显
           })
           params = { id: this.model.id }
         }else{
@@ -1334,7 +1331,7 @@
           outHuoweiName:row.huoweiName,
           outHuoweiCode:row.huoweiCode,
           registration:row.registration,
-          // refBarCode:row.refBarCode,
+          refBarCode:row.refBarCode,
           venderName:row.venderName,
           inHuoweiCode:"",
           supplierId:row.supplierId,

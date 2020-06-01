@@ -698,8 +698,7 @@
         this.showPackageBtn = false;
 
         this.$nextTick(() => {
-          this.departHandleSearch();  // 初始化部门列表 用于数据回显
-          this.userHandleSearch();
+          this.departHandleSearch();  // 初始化部门列表 用于详情页(有id）、申领出库(无id)、调拨出库(无id)数据回显
         })
 
         let params = {};
@@ -722,8 +721,7 @@
             this.applyNo = this.model.applyNo;
             this.allocationNo = this.model.allocationNo;
             this.form.setFieldsValue(fieldval);
-            this.departHandleSearch();  // 初始化部门列表 用于数据回显
-            this.userHandleSearch();
+            this.userHandleSearch();//初始化申领人，用于详情页回显
           })
           params = { id: this.model.id }
         }else{
