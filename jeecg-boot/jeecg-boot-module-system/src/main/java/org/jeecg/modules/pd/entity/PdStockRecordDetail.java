@@ -1,14 +1,12 @@
 package org.jeecg.modules.pd.entity;
 
-import java.io.Serializable;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import lombok.Data;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.jeecgframework.poi.excel.annotation.Excel;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -124,6 +122,8 @@ public class PdStockRecordDetail extends BaseEntity {
 //	private String supplierId;//供应商ID
 	@TableField(exist = false)
 	private String supplierName;//供应商名称
+	@TableField(exist = false)
+	private String inDepartId;//入库科室Id
 	@TableField(exist = false)
 	private String inDepartName;//入库科室名称
 	@TableField(exist = false)
