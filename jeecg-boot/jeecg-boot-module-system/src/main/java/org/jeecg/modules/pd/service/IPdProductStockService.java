@@ -66,4 +66,6 @@ public interface IPdProductStockService extends IService<PdProductStock> {
 	 * 更新条码类型
 	 */
 	public void updateStockBarCodeType(PdProductStock productStock);
+
+    List<PdProductStock> queryUniqueProductStockList(PdProductStock ps);
 }

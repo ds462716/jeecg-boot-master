@@ -139,6 +139,8 @@ public class PdProductStockUniqueCodeServiceImpl extends ServiceImpl<PdProductSt
         pdProductStock.setStockIdList(asList);
         List<PdProductStock> pdProductStocks = pdProductStockService.selectList(pdProductStock);
         List<PdProductStockUniqueCode> pdProductStockUniqueCodeList = new ArrayList<>();
+        //更新refBarCode
+        List<PdProductStock> pdProductStockList = new ArrayList<>();
         boolean flag = true;
         if(pdProductStocks!=null && pdProductStocks.size()>0){
             //判断是否全部通过
@@ -177,6 +179,13 @@ public class PdProductStockUniqueCodeServiceImpl extends ServiceImpl<PdProductSt
                         psc.setBatchNo(ps.getBatchNo());
                         this.save(psc);
                         pdProductStockUniqueCodeList.add(psc);
+                        //生成条码后把打印的条码值更新到库存明细表（pd_product_stock）的ref_bar_code中
+                        //更新库存明细表的状态
+                        PdProductStock productStock = new PdProductStock();
+                        productStock.setId(ps.getId());
+                        productStock.setRefBarCode(psc.getId());
+                        //更新库存表的条码状态
+                        pdProductStockList.add(productStock);
                     }else{
                         result.setResult(new ArrayList<>());
                         result.setCode(500);
@@ -184,6 +193,10 @@ public class PdProductStockUniqueCodeServiceImpl extends ServiceImpl<PdProductSt
                         return result;
                     }
                 }
+            }
+            //生成条码后把打印的条码值更新到库存明细表（pd_product_stock）的ref_bar_code中
+            if(pdProductStockList!=null && pdProductStockList.size()>0){
+                pdProductStockService.updateBatchById(pdProductStockList);
             }
         }
         if(!flag){

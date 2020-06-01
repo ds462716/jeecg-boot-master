@@ -89,4 +89,6 @@ public interface PdProductStockMapper extends BaseMapper<PdProductStock> {
 	 * @param pdProductStock
 	 */
 	public List<PdProductStock> selectOrExpDate(PdProductStock pdProductStock);
+
+	List<PdProductStock> queryUniqueProductStockList(PdProductStock pdProductStock);
 }

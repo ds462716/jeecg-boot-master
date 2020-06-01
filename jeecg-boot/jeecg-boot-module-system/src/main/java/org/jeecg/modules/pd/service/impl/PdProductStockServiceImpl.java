@@ -70,6 +70,17 @@ public class PdProductStockServiceImpl extends ServiceImpl<PdProductStockMapper,
 		return pdProductStockMapper.queryProductStockList(pdProductStock);
 	}
 
+	/**
+	 * 唯一码扫码
+	 * @param pdProductStock
+	 * @return
+	 */
+	@Override
+	public List<PdProductStock> queryUniqueProductStockList(PdProductStock pdProductStock) {
+		return pdProductStockMapper.queryUniqueProductStockList(pdProductStock);
+	}
+
+
 	@Override
 	public List<PdProductStock> selectByMainId(String mainId) {
 		return pdProductStockMapper.selectByMainId(mainId);

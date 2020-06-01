@@ -683,7 +683,7 @@ public class PdProductServiceImpl extends ServiceImpl<PdProductMapper, PdProduct
             ps.setProductFlag(productFlag);
             ps.setDepartId(sysUser.getCurrentDepartId());
             //查询该条码是否是试剂且未使用
-            List<PdProductStock> pds = pdProductStockService.queryProductStockList(ps);
+            List<PdProductStock> pds = pdProductStockService.queryUniqueProductStockList(ps);
             if(pds!=null && pds.size()>0){
                 ps = pds.get(0);
                 ps.setRefBarCode(barcode);
