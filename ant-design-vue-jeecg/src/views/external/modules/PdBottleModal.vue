@@ -16,11 +16,11 @@
              <a-tab-pane tab="" :key="refKeys[0]"  :forceRender="true">
               <a-form v-show="!disableSubmit">
                 <a-row>
-                   <!--<a-col :md="12" :sm="8">
-                    <a-form-item label="试剂产品编号" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                      <a-input ref="productNumberInput" v-focus placeholder="请输入试剂产品编号" v-model="queryParam.productNumber" @keyup.enter.native="searchQuery(0)"></a-input>
-                    </a-form-item>
-                  </a-col>-->
+                   <a-col :md="6" :sm="8"  v-show="this.model.bottleType==2">
+                    <a-form-item label="闭瓶原因" :labelCol="labelCol" :wrapperCol="wrapperCol">
+                      <j-dict-select-tag v-model="queryParam.closeRemarks" dictCode="close_remarks"/>
+                     </a-form-item>
+                  </a-col>
                   <a-col :md="12" :sm="8">
                     <a-form-item label="唯一码编号" :labelCol="labelCol" :wrapperCol="wrapperCol">
                       <a-input ref="productBarCodeInput" v-focus placeholder="请输入唯一码编号" v-model="queryParam.productBarCode" @keyup.enter.native="searchQuery()"></a-input>
@@ -54,8 +54,7 @@
   import { FormTypes,getRefPromise,validateFormAndTables } from '@/utils/JEditableTableUtil'
    import {openingQuotation,closeQuotation} from '@/utils/barcode'
    import { JEditableTableMixin } from '@/mixins/JEditableTableMixin'
-
-  const VALIDATE_NO_PASSED = Symbol()
+   const VALIDATE_NO_PASSED = Symbol()
   export { FormTypes, VALIDATE_NO_PASSED }
 
   // 自定义焦点事件
@@ -76,7 +75,7 @@
     name: "PdBottleModal",
     mixins: [JEditableTableMixin],
     components: {
-    },
+     },
     data () {
       return {
         width:1200,
@@ -122,6 +121,7 @@
           remarks: {rules: []},
           departId: {rules: []},
           departParentId: {rules: []},
+          closeRemarks:{rules: []},
         },
         url: {
           submit: "/pd/pdBottleInf/submitPdBottleInf",
@@ -140,6 +140,7 @@
 
       edit (bottleType) {
         this.model.bottleType = bottleType;
+        this.queryParam = {};
         this.form.resetFields();
         this.visible = true;
       },
@@ -179,10 +180,18 @@
             this.$message.error("请输入二级条码！");
             return;
           }
+
           if(this.model.bottleType=='1'){ //扫码开瓶
             this.openingQuot(productBarCode);
-          }else{                           //闭瓶扫码
-            this.openingClose(productBarCode);
+          }else{  //闭瓶扫码
+            let closeRemarks = this.queryParam.closeRemarks;
+            if(!closeRemarks){
+              this.$message.error("请选择闭瓶原因！");
+              //清空扫码框
+              this.clearQueryParam();
+              return;
+            }
+            this.openingClose(productBarCode,closeRemarks);
           }
       },
 
@@ -200,9 +209,9 @@
     })
       },
       //解析条码(闭瓶)
-      openingClose(productBarCode){
+      openingClose(productBarCode,closeRemarks){
         let that = this;
-        closeQuotation(productBarCode).then((res) => {
+        closeQuotation(productBarCode,closeRemarks).then((res) => {
           if(res.code ==200){
             that.$message.success("闭瓶完成");
           }else{

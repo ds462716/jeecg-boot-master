@@ -63,9 +63,9 @@ public class PdBottleInf extends BaseEntity {
     @ApiModelProperty(value = "开瓶操作人")
     private String boottleBy;
 	/**开瓶时间*/
-	@Excel(name = "开瓶时间", width = 15, format = "yyyy-MM-dd")
-	@JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd")
-    @DateTimeFormat(pattern="yyyy-MM-dd")
+    @Excel(name = "开瓶时间", width = 20, format = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd HH:mm:ss")
+    @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
     @ApiModelProperty(value = "开瓶时间")
     private Date boottleDate;
 	/**试剂对应条码*/
@@ -81,9 +81,9 @@ public class PdBottleInf extends BaseEntity {
     @ApiModelProperty(value = "使用規格數量")
     private Double specNum;
 	/**闭瓶时间*/
-	@Excel(name = "闭瓶时间", width = 15, format = "yyyy-MM-dd")
-	@JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd")
-    @DateTimeFormat(pattern="yyyy-MM-dd")
+    @Excel(name = "闭瓶时间", width = 20, format = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd HH:mm:ss")
+    @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
     @ApiModelProperty(value = "闭瓶时间")
     private Date closeDate;
 	/**闭瓶操作人*/
@@ -94,6 +94,10 @@ public class PdBottleInf extends BaseEntity {
 	@Excel(name = "备注", width = 15)
     @ApiModelProperty(value = "备注")
     private String remarks;
+    /**闭瓶原因*/
+    @Excel(name = "闭瓶原因", width = 15)
+    @ApiModelProperty(value = "闭瓶原因")
+    private String closeRemarks;
 	/**所属部门*/
 	@Excel(name = "所属部门", width = 15)
     @ApiModelProperty(value = "所属部门")
@@ -115,4 +119,16 @@ public class PdBottleInf extends BaseEntity {
     private String departName;
     @TableField(exist = false)
     private String unitName;
+
+    /*多个部门集合*/
+    @TableField(exist = false)
+    private List<String> departIdList;
+
+    /*产品规格数量*/
+    @TableField(exist = false)
+    private String specQuantity;
+
+    @TableField(exist = false)
+    private String departIds; //批量查询用
+
 }

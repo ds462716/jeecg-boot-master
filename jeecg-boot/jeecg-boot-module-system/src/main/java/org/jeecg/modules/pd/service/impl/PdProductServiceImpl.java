@@ -616,7 +616,7 @@ public class PdProductServiceImpl extends ServiceImpl<PdProductMapper, PdProduct
      * @return
      */
     @Override
-    public Result<List<PdProductStock>> closeIngQuotation(String Barcode,Result<List<PdProductStock>> result) {
+    public Result<List<PdProductStock>> closeIngQuotation(String Barcode,String closeRemarks,Result<List<PdProductStock>> result) {
         result.setCode(MessageConstant.ICODE_STATE_200);
         PdProductStock pdProductStock = new PdProductStock();
         pdProductStock.setRefBarCode(Barcode);
@@ -645,6 +645,7 @@ public class PdProductServiceImpl extends ServiceImpl<PdProductMapper, PdProduct
                     PdBottleInf inf=pdBottleInfMapper.getOne(bottleInf);
                     inf.setCloseDate(new Date());
                     inf.setCloseBy(sysUser.getRealname());
+                    inf.setCloseRemarks(closeRemarks);
                     pdBottleInfMapper.updateById(inf);
 
                 //批量更新条码状态

@@ -8,8 +8,11 @@ import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.system.base.controller.JeecgController;
 import org.jeecg.common.system.vo.LoginUser;
+import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.external.entity.PdBottleInf;
 import org.jeecg.modules.external.service.IPdBottleInfService;
+import org.jeecg.modules.pd.service.IPdDepartService;
+import org.jeecg.modules.system.entity.SysDepart;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
@@ -17,6 +20,7 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * @Description: 开闭瓶记录表
@@ -31,7 +35,8 @@ import java.util.Arrays;
 public class PdBottleInfController extends JeecgController<PdBottleInf, IPdBottleInfService> {
 	@Autowired
 	private IPdBottleInfService pdBottleInfService;
-	
+	@Autowired
+	private IPdDepartService pdDepartService;
 	/**
 	 * 分页列表查询
 	 *
@@ -47,6 +52,14 @@ public class PdBottleInfController extends JeecgController<PdBottleInf, IPdBottl
 								   @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
 								   HttpServletRequest req) {
 		Page<PdBottleInf> page = new Page<PdBottleInf>(pageNo, pageSize);
+		if(oConvertUtils.isNotEmpty(pdBottleInf.getDepartIds()) && !"undefined".equals(pdBottleInf.getDepartIds())) {
+			pdBottleInf.setDepartIdList(Arrays.asList(pdBottleInf.getDepartIds().split(",")));
+		}else{
+			//查询科室下所有下级科室的ID
+			SysDepart sysDepart=new SysDepart();
+			List<String> departList=pdDepartService.selectListDepart(sysDepart);
+			pdBottleInf.setDepartIdList(departList);
+		}
 		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
 		pdBottleInf.setDepartParentId(sysUser.getDepartParentId());
 		IPage<PdBottleInf> pageList = pdBottleInfService.selectList(page, pdBottleInf);

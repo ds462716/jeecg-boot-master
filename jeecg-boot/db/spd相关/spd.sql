@@ -647,3 +647,13 @@ INSERT INTO `sys_dict_item` VALUES ('1267270125310255106', '1267269964379004929'
 INSERT INTO `sys_dict_item` VALUES ('1267270272794566658', '1267270214661513218', '正常', '0', '', '1', '1', 'admin', '2020-06-01 09:42:32', null, '2020-06-01 09:42:32');
 INSERT INTO `sys_dict_item` VALUES ('1267270302767063041', '1267270214661513218', '已退货', '1', '', '1', '1', 'admin', '2020-06-01 09:42:40', null, '2020-06-01 09:42:40');
 INSERT INTO `sys_dict_item` VALUES ('1267270329421864961', '1267270214661513218', '已用完', '2', '', '1', '1', 'admin', '2020-06-01 09:42:46', null, '2020-06-01 09:42:46');
+
+-- add by mcb 2020年6月1日16:58:09 开闭瓶记录表增加字段
+ALTER TABLE `pd_bottle_inf`
+ADD COLUMN `close_remarks` varchar(4) CHARACTER SET utf8 COLLATE utf8_general_ci NULL COMMENT '闭瓶原因' AFTER `spec_num`;
+
+-- add by mcb 2020年6月1日16:58:09 加入字典
+ INSERT INTO `sys_dict` VALUES ('1267365735160807425', '闭瓶原因', 'close_remarks', '0:已用完    1:已过期', 0, 'admin', '2020-06-01 16:01:52', NULL, '2020-06-01 16:01:52', 0);
+
+ INSERT INTO `sys_dict_item` VALUES ('1267365811555860482', '1267365735160807425', '已用完', '0', '', 1, 1, 'admin', '2020-06-01 16:02:11', NULL, '2020-06-01 16:02:11');
+ INSERT INTO `sys_dict_item` VALUES ('1267365853700227074', '1267365735160807425', '已过期', '1', '', 2, 1, 'admin', '2020-06-01 16:02:21', NULL, '2020-06-01 16:02:21');
