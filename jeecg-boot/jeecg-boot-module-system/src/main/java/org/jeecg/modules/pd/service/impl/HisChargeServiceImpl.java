@@ -1,6 +1,7 @@
 package org.jeecg.modules.pd.service.impl;
 
 import com.baomidou.dynamic.datasource.annotation.DS;
+import com.baomidou.mybatisplus.core.toolkit.ObjectUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.apache.commons.collections.MapUtils;
@@ -52,9 +53,22 @@ public class HisChargeServiceImpl extends ServiceImpl<HisChargeMapper, HisCharge
 	@Transactional
 	public void saveMain(List<HisChargeInf> list) {
 		if (list != null && list.size() > 0) {
-			hisChargeMapper.deleteChargeInf();
+			//hisChargeMapper.deleteChargeInf();
 			 for(HisChargeInf inf:list){
-				 hisChargeMapper.insert(inf);
+			 	 String fsfXmBh=inf.getFsfXmbh();//项目编号
+				 HisChargeInf chargeInf=hisChargeMapper.selectByHisChargeInf(fsfXmBh);
+				if(ObjectUtils.isNotEmpty(chargeInf)){
+					chargeInf.setFsfXmmc(inf.getFsfXmmc());
+					chargeInf.setFsfSpec(inf.getFsfSpec());
+					chargeInf.setFsfJe(inf.getFsfJe());
+					chargeInf.setFsfKs(inf.getFsfKs());
+					chargeInf.setFsfKsbh(inf.getFsfKsbh());
+					chargeInf.setFsfXmlb(inf.getFsfXmlb());
+					chargeInf.setFsfXmgg(inf.getFsfXmgg());
+					hisChargeMapper.updateById(chargeInf);
+				}else {
+					hisChargeMapper.insert(inf);
+				}
 			 }
 		}
 	}

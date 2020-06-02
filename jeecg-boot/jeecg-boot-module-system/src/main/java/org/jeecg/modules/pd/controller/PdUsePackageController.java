@@ -105,6 +105,9 @@ public class PdUsePackageController {
        Page<PdUsePackage> page = new Page<>(pageNo, pageSize);
        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
        pdUsePackage.setDepartParentId(sysUser.getDepartParentId());
+       if(oConvertUtils.isNotEmpty(pdUsePackage.getDepartIds()) && !"undefined".equals(pdUsePackage.getDepartIds())) {
+           pdUsePackage.setDepartIdList(Arrays.asList(pdUsePackage.getDepartIds().split(",")));
+       }
        IPage<PdUsePackage> pageList = pdUsePackageService.queryList(page, pdUsePackage);
        return Result.ok(pageList);
    }

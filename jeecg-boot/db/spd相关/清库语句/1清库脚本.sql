@@ -11,7 +11,6 @@ TRUNCATE TABLE pd_purchase_detail;                  -- 采购明细表
 TRUNCATE TABLE pd_purchase_order_merge;             -- 采购合并信息表
 TRUNCATE TABLE pd_purchase_order_merge_detail;      -- 采购合并明细表
 
-
 TRUNCATE TABLE pd_stock_record;        -- 出入库记录
 TRUNCATE TABLE pd_stock_record_detail; -- 出入库记录明细
 TRUNCATE TABLE pd_stock_log;           -- 库存日志
@@ -78,9 +77,16 @@ INSERT INTO `sys_user_depart` (`ID`, `user_id`, `dep_id`) VALUES ('1234724038464
 
 
 
-
-
-
+-- mcb  2020-06-02 更新
+TRUNCATE TABLE ex_inspection_items;                  -- 检验项目明细表
+TRUNCATE TABLE ex_inspection_items_use;              -- 检验用量手动扣减主表
+TRUNCATE TABLE ex_inspection_items_use_detail;       -- 检验用量手动扣减明细表
+TRUNCATE TABLE ex_his_charge_inf;                    -- HIS收费项目信息表
+TRUNCATE TABLE ex_his_user_inf;                      -- HIS系统用户表
+TRUNCATE TABLE ex_his_depart_inf;                    -- HIS系统部门表
+TRUNCATE TABLE pd_bottle_inf;                        -- 开瓶闭瓶记录表
+TRUNCATE TABLE pd_use_package;                       -- 检验项目用量主表
+TRUNCATE TABLE pd_use_package_detail;                -- 检验项目用量明细表
 
 
 

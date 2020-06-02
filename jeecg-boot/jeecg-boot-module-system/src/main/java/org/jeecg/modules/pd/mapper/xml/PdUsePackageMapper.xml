@@ -69,6 +69,12 @@
                     #{item}
                 </foreach>
             </if>
+            <if test="entity.departIdList != null and entity.departIdList.size() > 0">
+                and a.test_depart_id IN
+                <foreach collection="entity.departIdList" item="item" separator="," open="(" close=")">
+                    #{item}
+                </foreach>
+            </if>
         </where>
         ORDER BY a.update_time desc
     </select>
