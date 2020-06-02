@@ -71,9 +71,11 @@ public class HisApiForFCZhongyiUtils {
             requestJson.put("bce02b", sysUser.getUsername()); //开单人(HIS系统工号)
             requestJson.put("Item", array);
 
+            logger.info("HIS收费请求参数========="+requestJson.toJSONString());
             // TODO
             returnJson = HttpUtil.httpPost(HIS_DEFAULT_NAME_SPACE + HIS_CHARGE_URL, requestJson.toJSONString());
 //            returnJson = getTestChargeJson(pdDosage,dosageDetailList);
+            logger.info("HIS收费返回参数========="+returnJson.toJSONString());
 
             if (!PdConstant.SUCCESS_0.equals(returnJson.getString("code"))) {
                 logger.error("HIS计费失败，返回msg:"+returnJson.getString("msg"));
@@ -135,9 +137,11 @@ public class HisApiForFCZhongyiUtils {
             requestJson.put("vai01", dosageDetailList.get(0).getHisChargeId());
             requestJson.put("Item", array);
 
+            logger.info("HIS退费请求参数========="+requestJson.toJSONString());
             // TODO
             returnJson = HttpUtil.httpPost(HIS_DEFAULT_NAME_SPACE + HIS_REFUND_URL, requestJson.toJSONString());
 //            returnJson = getTestRefundJson(pdDosage,dosageDetailList);
+            logger.info("HIS退费返回求参数========="+returnJson.toJSONString());
 
             if (!PdConstant.SUCCESS_0.equals(returnJson.getString("code"))) {
                 logger.error("HIS退费失败，返回msg:"+returnJson.getString("msg"));

@@ -158,7 +158,7 @@
               </a-row>
             </a-tab-pane>
 
-            <a-tab-pane tab="唯一码明细" :key="refKeys[1]" :forceRender="true">
+            <a-tab-pane tab="唯一码明细" :forceRender="true">
               <a-table
                 size="middle"
                 bordered
@@ -374,8 +374,8 @@
           inDepartId:{},
           supplierId:{rules: [{required: true, message: '请选择供应商!'}]},
         },
-        refKeys: ['pdStockRecordDetail','pdStockRecordDetailUnique'],
-        tableKeys:['pdStockRecordDetail','pdStockRecordDetailUnique' ],
+        refKeys: ['pdStockRecordDetail',],
+        tableKeys:['pdStockRecordDetail',],
         activeKey: 'pdStockRecordDetail',
         // 申购订单明细表
         pdPurchaseOrderDetailTable: {
