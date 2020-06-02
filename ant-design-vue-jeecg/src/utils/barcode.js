@@ -55,11 +55,12 @@ export async function closeQuotation(Barcode,closeRemarks){
  * @param Barcode
  * @returns {Promise<*>}
  */
-export async function uniqueScanCode(Barcode,productFlag){
+export async function uniqueScanCode(Barcode,productFlag,nestatStatus){
   //封装查询参数
   let formData = new URLSearchParams();
   formData.append("Barcode",Barcode);
   formData.append("productFlag",productFlag);
+  formData.append("nestatStatus",nestatStatus);
   let res = await httpAction(uniqueScanCodeUrl,formData,"post");
   return res;
 }

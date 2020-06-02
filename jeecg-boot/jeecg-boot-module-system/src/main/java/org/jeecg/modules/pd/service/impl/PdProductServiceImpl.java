@@ -706,7 +706,7 @@ public class PdProductServiceImpl extends ServiceImpl<PdProductMapper, PdProduct
      * @return
      */
     @Override
-    public Result<PdProductStock> uniqueScanCodeUrl(String Barcode,String  productFlag, Result<PdProductStock> result) {
+    public Result<PdProductStock> uniqueScanCodeUrl(String Barcode,String  productFlag,String nestatStatus,Result<PdProductStock> result) {
         if(Barcode!=null){
             Barcode = BarCodeUtil.trimStr(Barcode.toUpperCase());
             if(!"".equals(Barcode)){
@@ -723,6 +723,7 @@ public class PdProductServiceImpl extends ServiceImpl<PdProductMapper, PdProduct
                     ps.setId(pdProductStockUniqueCode.getProductStockId());
                     ps.setBarCodeType(PdConstant.CODE_PRINT_TYPE_1);
                     ps.setProductFlag(productFlag);
+                    ps.setNestatStatus(nestatStatus);//状态
                     ps.setDepartId(sysUser.getCurrentDepartId());
                     //查询该条码是否是试剂且未使用
                     List<PdProductStock> pds = pdProductStockService.queryUniqueProductStockList(ps);
@@ -734,11 +735,11 @@ public class PdProductServiceImpl extends ServiceImpl<PdProductMapper, PdProduct
                         result.setMessage(MessageConstant.PACKAGE_CODE_MESSAGE_2);
                     }else{
                         result.setCode(MessageConstant.ICODE_STATE_500);
-                        result.setMessage("没有扫描到记录，该产品不属于当前科室");
+                        result.setMessage("没有扫描到记录，该产品不属于当前科室或正在使用中");
                     }
                 }else{
                     result.setCode(MessageConstant.ICODE_STATE_500);
-                    result.setMessage("没有扫描到记录，该产品可能不存在、或已退货和已用完");
+                    result.setMessage("没有扫描到记录，该产品可能不存在、已使用或已退货和已用完");
                 }
             }else{
                 result.setCode(MessageConstant.ICODE_STATE_500);
