@@ -123,7 +123,7 @@
     <!-- 查询区域-END -->
     <!-- 操作按钮区域 -->
     <div class="table-operator">
-      <a-button type="primary" icon="plus" @click="batchPrint()">批量打印</a-button>
+      <a-button type="primary" icon="plus" @click="batchPrint()">打印批次码</a-button>
       <a-button type="primary" icon="plus" :loading="confirmLoading" @click="onlyPrint()" style="margin-left: 8px">打印唯一码</a-button>
       <a-button type="primary" icon="delete" @click="handleDelete" style="margin-left: 8px">清除条码</a-button>
     </div>
