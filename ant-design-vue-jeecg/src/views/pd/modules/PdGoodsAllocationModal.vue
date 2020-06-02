@@ -11,7 +11,7 @@
     <a-spin :spinning="confirmLoading" style="margin-bottom: 70px">
       <a-form :form="form">
         <a-form-item label="部门名称" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input disabled v-decorator="['departName', {} ]" placeholder="请输入机构/部门名称"/>
+          <a-input disabled v-decorator="['departName', {} ]" autocomplete="off" placeholder="请输入机构/部门名称"/>
         </a-form-item>
         <a-form-item label="部门ID" :labelCol="labelCol" :wrapperCol="wrapperCol" v-show="false">
           <a-input v-decorator="['departId', {} ]" v-show="false"/>
@@ -32,13 +32,13 @@
           </template>
         </a-form-item>
         <a-form-item :label="title2+'名称'" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input :disabled="disableSubmit" v-decorator="['name', validatorRules.name ]" @change="pinyinTran" placeholder="请输入名称"/>
+          <a-input :disabled="disableSubmit" autocomplete="off" v-decorator="['name', validatorRules.name ]" @change="pinyinTran" placeholder="请输入名称"/>
         </a-form-item>
         <a-form-item label="编号标识" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input disabled v-decorator="['subCode', {} ]" placeholder="编号标识" />
+          <a-input disabled v-decorator="['subCode', {} ]"  placeholder="编号标识" />
         </a-form-item>
         <a-form-item label="编号后缀" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input :disabled="disableSubmit" v-decorator="['codeSuffix', validatorRules.codeSuffix ]" @change="getCode" placeholder="请输入编号后缀" />
+          <a-input :disabled="disableSubmit" autocomplete="off" v-decorator="['codeSuffix', validatorRules.codeSuffix ]" @change="getCode" placeholder="请输入编号后缀" />
         </a-form-item>
         <a-form-item :label="title2+'编号'" :labelCol="labelCol" :wrapperCol="wrapperCol">
           <a-input disabled v-decorator="[ 'code', validatorRules.code]" placeholder="请输入编号"></a-input>
@@ -48,20 +48,20 @@
           <a-input-number :disabled="disableSubmit" v-decorator="[ 'subNum', validatorRules.subNum]" placeholder="存放数量" :min="0" style="width: 100%"/>
         </a-form-item>
         <a-form-item label="地址" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input :disabled="disableSubmit" v-decorator="[ 'address', validatorRules.address]" placeholder="请输入地址"></a-input>
+          <a-input :disabled="disableSubmit" autocomplete="off" v-decorator="[ 'address', validatorRules.address]" placeholder="请输入地址"></a-input>
         </a-form-item>
 
         <a-form-item label="面积（㎡）" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input-number :disabled="disableSubmit" v-decorator="[ 'area', validatorRules.area]" placeholder="请输入面积" style="width: 100%"/>
+          <a-input-number :disabled="disableSubmit" autocomplete="off" v-decorator="[ 'area', validatorRules.area]" placeholder="请输入面积" style="width: 100%"/>
         </a-form-item>
         <a-form-item label="容积（m³）" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input-number :disabled="disableSubmit" v-decorator="[ 'volume', validatorRules.volume]" placeholder="请输入容积" style="width: 100%"/>
+          <a-input-number :disabled="disableSubmit" autocomplete="off" v-decorator="[ 'volume', validatorRules.volume]" placeholder="请输入容积" style="width: 100%"/>
         </a-form-item>
         <a-form-item label="联系人" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input :disabled="disableSubmit" v-decorator="[ 'contacts', validatorRules.contacts]" placeholder="请输入联系人"></a-input>
+          <a-input :disabled="disableSubmit" autocomplete="off" v-decorator="[ 'contacts', validatorRules.contacts]" placeholder="请输入联系人"></a-input>
         </a-form-item>
         <a-form-item label="联系方式" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input :disabled="disableSubmit" v-decorator="[ 'contactsPhone', validatorRules.contactsPhone]" placeholder="请输入联系方式"></a-input>
+          <a-input :disabled="disableSubmit" autocomplete="off" v-decorator="[ 'contactsPhone', validatorRules.contactsPhone]" placeholder="请输入联系方式"></a-input>
         </a-form-item>
         <a-form-item label="状态" :labelCol="labelCol" :wrapperCol="wrapperCol">
           <template>
@@ -76,16 +76,16 @@
           </template>
         </a-form-item>
         <a-form-item label="拼音码" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input :disabled="disableSubmit" v-decorator="[ 'py', validatorRules.py]" placeholder="请输入拼音码"></a-input>
+          <a-input :disabled="disableSubmit" autocomplete="off" v-decorator="[ 'py', validatorRules.py]" placeholder="请输入拼音码"></a-input>
         </a-form-item>
         <a-form-item label="五笔码" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input :disabled="disableSubmit" v-decorator="[ 'wb', validatorRules.wb]" placeholder="请输入五笔码"></a-input>
+          <a-input :disabled="disableSubmit" autocomplete="off" v-decorator="[ 'wb', validatorRules.wb]" placeholder="请输入五笔码"></a-input>
         </a-form-item>
         <a-form-item label="自定义码" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input :disabled="disableSubmit" v-decorator="[ 'zdy', validatorRules.zdy]" placeholder="请输入自定义码"></a-input>
+          <a-input :disabled="disableSubmit" autocomplete="off" v-decorator="[ 'zdy', validatorRules.zdy]" placeholder="请输入自定义码"></a-input>
         </a-form-item>
         <a-form-item label="备注" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input :disabled="disableSubmit" v-decorator="[ 'remarks', validatorRules.remarks]" placeholder="请输入备注"></a-input>
+          <a-input :disabled="disableSubmit" autocomplete="off" v-decorator="[ 'remarks', validatorRules.remarks]" placeholder="请输入备注"></a-input>
         </a-form-item>
       </a-form>
     </a-spin>
