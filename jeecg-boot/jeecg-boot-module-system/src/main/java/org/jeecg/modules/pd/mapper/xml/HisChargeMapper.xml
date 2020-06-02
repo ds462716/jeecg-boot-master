@@ -28,6 +28,12 @@
 		select  * from v_spd_his_sf_xm
 	</select>
 
+	<!--查询HIS系统收费项目基础信息-->
+	<select id="selectByHisChargeInf" resultType="org.jeecg.modules.pd.entity.HisChargeInf">
+		select  * from ex_his_charge_inf  where fsf_xmbh=#{fsfXmbh}
+	</select>
+
+
     <!--删除所有收费项目基础信息-->
 	<delete id="deleteChargeInf">
 		DELETE 	FROM  ex_his_charge_inf
@@ -82,7 +88,7 @@
 		<if test="entity.fsfXmlb != null and entity.fsfXmlb != ''">
 			AND a.fsf_xmlb LIKE concat('%',#{entity.fsfXmlb},'%')
 		</if>
-		order by a.fsf_xmbh desc
+		order by a.create_time desc,a.fsf_xmbh desc
 	</select>
 
 

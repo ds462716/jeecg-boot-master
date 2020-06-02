@@ -23,6 +23,8 @@ public interface HisChargeMapper extends BaseMapper<HisChargeInf> {
 
 	List<HisChargeInf> selectByHisCharge();
 
+	HisChargeInf  selectByHisChargeInf(String fsfXmbh);
+
 	void deleteChargeInf();
 
 	List<HisDepartInf> selectHisDepart();
