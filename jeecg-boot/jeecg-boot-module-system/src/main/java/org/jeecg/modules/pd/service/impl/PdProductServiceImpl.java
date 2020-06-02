@@ -610,6 +610,11 @@ public class PdProductServiceImpl extends ServiceImpl<PdProductMapper, PdProduct
                                 bottleInf.setDepartId(sysUser.getCurrentDepartId());//所属部门
                                 bottleInf.setDepartParentId(sysUser.getDepartParentId());//所属机构
                                 pdBottleInfMapper.insert(bottleInf);
+                                //批新条码表信息
+                                PdProductStockUniqueCode productStockUniqueCode = new PdProductStockUniqueCode();
+                                productStockUniqueCode.setId(Barcode);
+                                productStockUniqueCode.setProductStockId(productStock_i.getId());
+                                pdProductStockUniqueCodeService.updateById(productStockUniqueCode);
                             }
                         }
                     }else{
@@ -701,7 +706,7 @@ public class PdProductServiceImpl extends ServiceImpl<PdProductMapper, PdProduct
 
     /**
      * 唯一码扫码
-     * @param barcode
+     * @param Barcode
      * @param result
      * @return
      */
