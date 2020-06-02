@@ -632,6 +632,7 @@ public class PdProductServiceImpl extends ServiceImpl<PdProductMapper, PdProduct
         if(CollectionUtils.isEmpty(pdProductStocks)){
             result.setCode(MessageConstant.ICODE_STATE_500);
             result.setMessage("该试剂未开瓶或已闭瓶");
+
         }else{
             LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
             LambdaQueryWrapper<PdProductStockUniqueCode> query = new LambdaQueryWrapper<PdProductStockUniqueCode>()
