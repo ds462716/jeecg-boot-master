@@ -32,8 +32,8 @@ TRUNCATE TABLE pd_package_record_detail;-- 定数包打包记录明细表
 TRUNCATE TABLE pd_goods_allocation;    -- 货区货位
 TRUNCATE TABLE pd_rejected;            -- 退货
 TRUNCATE TABLE pd_rejected_detail;     -- 退货明细
-TRUNCATE TABLE pd_storeroom_patrol;    --巡查表
-TRUNCATE TABLE pd_storeroom_patrol_detail;--巡查明细表
+TRUNCATE TABLE pd_storeroom_patrol;     -- 巡查表
+TRUNCATE TABLE pd_storeroom_patrol_detail;   -- 巡查明细表
 
 
 TRUNCATE TABLE pd_product;-- 产品表
