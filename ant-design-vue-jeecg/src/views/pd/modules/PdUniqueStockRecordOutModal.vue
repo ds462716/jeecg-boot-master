@@ -1509,7 +1509,7 @@
       // 定数包扫码
       searchQueryPackage(num){
         let that = this;
-        let packageBarCode = this.packageQueryParam.packageBarCode.trim();
+        let packageBarCode = this.packageQueryParam.packageBarCode;
         if(!packageBarCode){
           this.$message.error("请输入定数包条码！");
           return;
