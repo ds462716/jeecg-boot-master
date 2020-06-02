@@ -560,7 +560,7 @@ public class PdProductServiceImpl extends ServiceImpl<PdProductMapper, PdProduct
         //查询该条码是否开瓶
         pdProductStock.setProductFlag(PdConstant.PRODUCT_FLAG_1);//试剂
         pdProductStock.setNestatStatus(PdConstant.STOCK_NESTAT_STATUS_0);//使用中
-        List<PdProductStock> pdProductStocks = pdProductStockService.selectList(pdProductStock);
+        List<PdProductStock> pdProductStocks = pdProductStockService.queryProductStockList(pdProductStock);
         if(pdProductStocks!=null && pdProductStocks.size()>0){
             result.setCode(MessageConstant.ICODE_STATE_500);
             result.setMessage("该试剂已被使用");
@@ -579,11 +579,15 @@ public class PdProductServiceImpl extends ServiceImpl<PdProductMapper, PdProduct
                 ps.setProductFlag(PdConstant.PRODUCT_FLAG_1);//试剂
                 ps.setNestatStatus(PdConstant.STOCK_NESTAT_STATUS_1);//未使用
                 //查询该条码是否是试剂且未使用
-                List<PdProductStock> pds = pdProductStockService.selectList(ps);
+                List<PdProductStock> pds = pdProductStockService.queryProductStockList(ps);
                 if(pds!=null && pds.size()>0){
                     PdProductStock newPdProductStock = pds.get(0);
                     String productFlag= newPdProductStock.getProductFlag();
-                    if(PdConstant.PRODUCT_FLAG_0.equals(productFlag)){
+                    String departId= newPdProductStock.getDepartId();
+                    if(!departId.equals(sysUser.getCurrentDepartId())){
+                        result.setCode(MessageConstant.ICODE_STATE_500);
+                        result.setMessage("该试剂不在当前部门库存中，请确认在开瓶");
+                    }else if(PdConstant.PRODUCT_FLAG_0.equals(productFlag)){
                         result.setCode(MessageConstant.ICODE_STATE_500);
                         result.setMessage("只能试剂开瓶");
                     }else {
@@ -624,7 +628,7 @@ public class PdProductServiceImpl extends ServiceImpl<PdProductMapper, PdProduct
         //查询该条码是否已开瓶
         pdProductStock.setProductFlag(PdConstant.PRODUCT_FLAG_1);//试剂
         pdProductStock.setNestatStatus(PdConstant.STOCK_NESTAT_STATUS_0);//使用中
-        List<PdProductStock> pdProductStocks = pdProductStockService.selectList(pdProductStock);
+        List<PdProductStock> pdProductStocks = pdProductStockService.queryProductStockList(pdProductStock);
         if(CollectionUtils.isEmpty(pdProductStocks)){
             result.setCode(MessageConstant.ICODE_STATE_500);
             result.setMessage("该试剂未开瓶或已闭瓶");
@@ -638,22 +642,28 @@ public class PdProductServiceImpl extends ServiceImpl<PdProductMapper, PdProduct
             PdProductStockUniqueCode pdProductStockUniqueCode = pdProductStockUniqueCodeService.getOne(query);
             if(pdProductStockUniqueCode!=null){
                     PdProductStock newPdProductStock = pdProductStocks.get(0);
-                    newPdProductStock.setRefBarCode(Barcode);
-                    PdProductStock productStock_i= pdProductStockTotalService.closeProdStock(newPdProductStock);
-                    //开闭瓶记录数据更新闭瓶时间及操作人
-                    PdBottleInf bottleInf=new PdBottleInf();
-                     bottleInf.setRefBarCode(Barcode);
-                    PdBottleInf inf=pdBottleInfMapper.getOne(bottleInf);
-                    inf.setCloseDate(new Date());
-                    inf.setCloseBy(sysUser.getRealname());
-                    inf.setCloseRemarks(closeRemarks);
-                    pdBottleInfMapper.updateById(inf);
+                    String departId=newPdProductStock.getDepartId();
+                    if(!departId.equals(sysUser.getCurrentDepartId())){
+                        result.setCode(MessageConstant.ICODE_STATE_500);
+                        result.setMessage("该试剂不在当前部门库存中，请确认在闭瓶");
+                    }else{
+                        newPdProductStock.setRefBarCode(Barcode);
+                        PdProductStock productStock_i = pdProductStockTotalService.closeProdStock(newPdProductStock);
+                        //开闭瓶记录数据更新闭瓶时间及操作人
+                        PdBottleInf bottleInf = new PdBottleInf();
+                        bottleInf.setRefBarCode(Barcode);
+                        PdBottleInf inf = pdBottleInfMapper.getOne(bottleInf);
+                        inf.setCloseDate(new Date());
+                        inf.setCloseBy(sysUser.getRealname());
+                        inf.setCloseRemarks(closeRemarks);
+                        pdBottleInfMapper.updateById(inf);
 
-                //批量更新条码状态
-                PdProductStockUniqueCode productStockUniqueCode=new PdProductStockUniqueCode();
-                productStockUniqueCode.setId(Barcode);
-                productStockUniqueCode.setCodeState(PdConstant.CODE_PRINT_STATE_2);
-                pdProductStockUniqueCodeService.updateById(productStockUniqueCode);
+                        //批量更新条码状态
+                        PdProductStockUniqueCode productStockUniqueCode = new PdProductStockUniqueCode();
+                        productStockUniqueCode.setId(Barcode);
+                        productStockUniqueCode.setCodeState(PdConstant.CODE_PRINT_STATE_2);
+                        pdProductStockUniqueCodeService.updateById(productStockUniqueCode);
+                    }
             }else{
                 result.setCode(MessageConstant.ICODE_STATE_500);
                 result.setMessage("没有扫描到记录，该产品可能已退货和已用完");
