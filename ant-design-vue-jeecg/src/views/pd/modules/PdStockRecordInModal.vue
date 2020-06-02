@@ -158,7 +158,7 @@
               </a-row>
             </a-tab-pane>
 
-            <a-tab-pane tab="唯一码明细" :forceRender="true">
+            <a-tab-pane tab="唯一码明细" :forceRender="true" v-if="showUniqueTab">
               <a-table
                 size="middle"
                 bordered
@@ -329,6 +329,7 @@
         supplierData: [],
         //供应商下拉列表 end
         showOrderTable:false,
+        showUniqueTab:false,
         // orderNo:"",
         mergeOrderNo:"",
         totalSum:'0',
@@ -466,7 +467,7 @@
             { title: '入库单价', align:"center", dataIndex: 'purchasePrice' },
             { title: '数量', align:"center", dataIndex: 'productNum' },
             // { title: '金额', align:"center", dataIndex: 'inTotalPrice' },
-            { title: '货位', align:"center", dataIndex: 'inHuoweiCode' },
+            // { title: '货位', align:"center", dataIndex: 'inHuoweiCode' },
             // { title: '合并申购单号', align:"center", dataIndex: 'mergeOrderNo' },
           ],
         },
@@ -535,28 +536,30 @@
         this.supplierHandleSearch();
 
         let params = {};
-          if(this.model.id){
-            if(this.model.auditStatus == "1" && this.model.submitStatus == "2"){
-              this.showCancelBtn = true;
-            }
-            // if(this.model.auditStatus == "2"){ // 审核完可打印
-            if(this.model.submitStatus == "2"){ // 提交完可打印
-              this.showPrintBtn = true;
-            }
-            if(this.model.auditStatus == "2" || this.model.auditStatus == "3"){
-              this.showRefuseReason = true;
-            }
+        if(this.model.id){
+          if(this.model.auditStatus == "1" && this.model.submitStatus == "2"){
+            this.showCancelBtn = true;
+          }
+          // if(this.model.auditStatus == "2"){ // 审核完可打印
+          if(this.model.submitStatus == "2"){ // 提交完可打印
+            this.showPrintBtn = true;
+          }
+          if(this.model.auditStatus == "2" || this.model.auditStatus == "3"){
+            this.showRefuseReason = true;
+          }
 
-            this.popModal.title="入库明细";
+          this.popModal.title="入库明细";
           let fieldval = pick(this.model,'recordNo','mergeOrderNo','inType','submitBy','submitByName','submitDate','remarks','inDepartId','supplierId',
             'testResult','storageResult','temperature','humidity','remarks','refuseReason','format')
           this.$nextTick(() => {
             this.form.setFieldsValue(fieldval);
           })
-          params = { id: this.model.id }
+          params = { id: this.model.id };
+          this.showUniqueTab = true;
         }else{
           this.popModal.title="新增入库";
-          params = { id: "" }
+          params = { id: "" };
+          this.showUniqueTab = false;
         }
         this.pdStockRecordDetailTable.loading = true;
         getAction(this.url.init, params).then((res) => {

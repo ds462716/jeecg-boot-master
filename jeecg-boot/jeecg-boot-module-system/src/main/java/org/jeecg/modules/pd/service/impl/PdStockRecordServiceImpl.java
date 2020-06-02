@@ -203,11 +203,13 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
                 for (PdStockRecordDetail main : pdStockRecordDetailList) {
                     Double productNum = 0D;
                     StringBuilder setId = new StringBuilder();
-                    setId.append(main.getProductStockId());
+                    setId.append(main.getProductStockId()).append(main.getInHuoweiCode());
+                    String mainHuoweCode = main.getInHuoweiCode() == null ? "" : main.getInHuoweiCode();
                     if(setIds.add(setId.toString())){
                         List<String> refBarCodes = new ArrayList<>();
                         for (PdStockRecordDetail entity : pdStockRecordDetailList) {
-                            if(main.getProductStockId().equals(entity.getProductStockId())){
+                            String entityHuoweCode = entity.getInHuoweiCode() == null ? "" : entity.getInHuoweiCode();
+                            if(main.getProductStockId().equals(entity.getProductStockId()) && mainHuoweCode.equals(entityHuoweCode)){
                                 refBarCodes.add(entity.getRefBarCode());
                                 productNum = productNum + entity.getProductNum();
                             }
