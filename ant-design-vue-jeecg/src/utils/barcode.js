@@ -53,6 +53,8 @@ export async function closeQuotation(Barcode,closeRemarks){
 /**
  * 唯一码扫码
  * @param Barcode
+ * @param productFlag 产品类型0耗材1试剂
+ * @param nestatStatus 1未使用""查未使用和以使用
  * @returns {Promise<*>}
  */
 export async function uniqueScanCode(Barcode,productFlag,nestatStatus){
