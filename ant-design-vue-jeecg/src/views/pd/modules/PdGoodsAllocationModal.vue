@@ -32,7 +32,7 @@
           </template>
         </a-form-item>
         <a-form-item :label="title2+'名称'" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input :disabled="disableSubmit" v-decorator="['name', validatorRules.name ]" @change="pinyinTran" placeholder="请输入名称"/>
+          <a-input :disabled="disableSubmit" autocomplete="off" v-decorator="['name', validatorRules.name ]" @change="pinyinTran" placeholder="请输入名称"/>
         </a-form-item>
         <a-form-item label="编号标识" :labelCol="labelCol" :wrapperCol="wrapperCol">
           <a-input disabled v-decorator="['subCode', {} ]"  placeholder="编号标识" />
