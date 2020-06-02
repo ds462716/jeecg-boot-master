@@ -10,6 +10,17 @@ TRUNCATE TABLE pd_purchase_order;                   -- 采购信息表
 TRUNCATE TABLE pd_purchase_detail;                  -- 采购明细表
 TRUNCATE TABLE pd_purchase_order_merge;             -- 采购合并信息表
 TRUNCATE TABLE pd_purchase_order_merge_detail;      -- 采购合并明细表
+TRUNCATE TABLE pd_bottle_inf;                        -- 开瓶闭瓶记录表
+TRUNCATE TABLE pd_auto_order_inf;                    -- 自动补货表
+TRUNCATE TABLE pd_use_package;                       -- 检验项目用量主表
+TRUNCATE TABLE pd_use_package_detail;                -- 检验项目用量明细表
+TRUNCATE TABLE ex_inspection_items;                  -- 检验项目明细表
+TRUNCATE TABLE ex_inspection_items_use;              -- 检验用量手动扣减主表
+TRUNCATE TABLE ex_inspection_items_use_detail;       -- 检验用量手动扣减明细表
+TRUNCATE TABLE ex_his_charge_inf;                    -- HIS收费项目信息表
+TRUNCATE TABLE ex_his_user_inf;                      -- HIS系统用户表
+TRUNCATE TABLE ex_his_depart_inf;                    -- HIS系统部门表
+
 
 TRUNCATE TABLE pd_stock_record;        -- 出入库记录
 TRUNCATE TABLE pd_stock_record_detail; -- 出入库记录明细
@@ -38,12 +49,13 @@ TRUNCATE TABLE pd_encoding_rule_detail;-- 产品编码规则详情表
 TRUNCATE TABLE pd_encoding_identifier;-- 应用标识符表
 TRUNCATE TABLE pd_dosage;-- 器械使用表
 TRUNCATE TABLE pd_dosage_detail;-- 器械使用详情表
-TRUNCATE TABLE pd_use_package;-- 检验包表
-TRUNCATE TABLE pd_use_package_detail;-- 检验包详情表
 TRUNCATE TABLE pd_product_stock_unique_code;-- 条码表
 
 --不用清理的表
 -- pd_on_off 开关表
+--作废
+--ex_deductuin_dosage
+--pd_spec_log
 
 
 
@@ -74,20 +86,6 @@ INSERT INTO `sys_user_role` VALUES ('1234724028754960386', 'e9ca23d68d884d4ebb19
 INSERT INTO `sys_depart` (`id`, `parent_id`, `depart_name`, `depart_name_en`, `depart_name_abbr`, `depart_order`, `description`, `org_category`, `org_type`, `org_code`, `mobile`, `fax`, `address`, `memo`, `status`, `del_flag`, `create_by`, `create_time`, `update_by`, `update_time`, `py`, `wb`, `zdy`, `depart_id`, `depart_parent_id`, `depart_type`) VALUES ('c6d7cb4deeac411cb3384b1b31278596', '', '吉水妇幼保健院', NULL, NULL, 0, NULL, '1', '1', 'A01', NULL, NULL, NULL, NULL, NULL, '0', 'admin', '2019-2-11 14:21:51', 'admin', '2020-1-8 13:50:20', NULL, NULL, NULL, 'c6d7cb4deeac411cb3384b1b31278596', 'c6d7cb4deeac411cb3384b1b31278596', '0');
 -- 插入admin部门关联表
 INSERT INTO `sys_user_depart` (`ID`, `user_id`, `dep_id`) VALUES ('1234724038464774146', 'e9ca23d68d884d4ebb19d07889727dae', 'c6d7cb4deeac411cb3384b1b31278596');
-
-
-
--- mcb  2020-06-02 更新
-TRUNCATE TABLE ex_inspection_items;                  -- 检验项目明细表
-TRUNCATE TABLE ex_inspection_items_use;              -- 检验用量手动扣减主表
-TRUNCATE TABLE ex_inspection_items_use_detail;       -- 检验用量手动扣减明细表
-TRUNCATE TABLE ex_his_charge_inf;                    -- HIS收费项目信息表
-TRUNCATE TABLE ex_his_user_inf;                      -- HIS系统用户表
-TRUNCATE TABLE ex_his_depart_inf;                    -- HIS系统部门表
-TRUNCATE TABLE pd_bottle_inf;                        -- 开瓶闭瓶记录表
-TRUNCATE TABLE pd_use_package;                       -- 检验项目用量主表
-TRUNCATE TABLE pd_use_package_detail;                -- 检验项目用量明细表
-
 
 
 
