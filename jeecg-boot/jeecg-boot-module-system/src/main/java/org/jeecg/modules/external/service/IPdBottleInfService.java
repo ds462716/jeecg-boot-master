@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.jeecg.modules.external.entity.PdBottleInf;
 
+import java.util.List;
+
 /**
  * @Description: 开闭瓶记录表
  * @Author: mcb
@@ -13,5 +15,7 @@ import org.jeecg.modules.external.entity.PdBottleInf;
 public interface IPdBottleInfService extends IService<PdBottleInf> {
 
     public Page<PdBottleInf> selectList(Page<PdBottleInf> page, PdBottleInf pdBottleInf);
+
+    public List<PdBottleInf> selectList(PdBottleInf pdBottleInf);
 
 }

@@ -665,3 +665,6 @@ ADD COLUMN `wb`  varchar(64) NULL COMMENT '五笔简码' AFTER `py`,
 ADD COLUMN `zdy`  varchar(64) NULL COMMENT '自定义码' AFTER `wb`;
 -- add by zxh 2020年6月2日10:36:56  删除无用的表
 DROP TABLE `pd_allocation_detail_copy`
+
+-- add by zxh 2020年6月2日18:09:25  细节优化
+update sys_dict_item set item_text = '批次码' where id = '1267270125310255106';

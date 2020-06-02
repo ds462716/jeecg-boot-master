@@ -5,6 +5,8 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Param;
 import org.jeecg.modules.external.entity.PdBottleInf;
 
+import java.util.List;
+
 /**
  * @Description: 开闭瓶记录表
  * @Author: jiangxz
@@ -14,6 +16,8 @@ import org.jeecg.modules.external.entity.PdBottleInf;
 public interface PdBottleInfMapper extends BaseMapper<PdBottleInf> {
 
     Page<PdBottleInf> selectList(Page<PdBottleInf> page, @Param("entity") PdBottleInf entity);
+
+    List<PdBottleInf> selectList(@Param("entity") PdBottleInf entity);
     /**
      * 获取一条记录
      * @param pdBottleInf

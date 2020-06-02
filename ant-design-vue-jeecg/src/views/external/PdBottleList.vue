@@ -57,7 +57,8 @@
     <!-- 操作按钮区域 -->
     <div class="table-operator">
       <a-button @click="handleBottle" type="primary" icon="plus">开瓶</a-button>
-      <a-button @click="handleClose" type="primary" icon="download"  >闭瓶</a-button>
+      <a-button @click="handleClose" type="primary" icon="delete"  >闭瓶</a-button>
+      <a-button type="primary" icon="download" @click="handleExportXls('试剂用量明细')">导出</a-button>
     </div>
     <!-- table区域-begin -->
     <div>
@@ -89,7 +90,6 @@
   import { deleteAction, getAction,downFile } from '@/api/manage'
   import { filterObj } from '@/utils/util';
   import {initDictOptions, filterMultiDictText} from '@/components/dict/JDictSelectUtil'
-
 
   export default {
     name: "PdBottleList",
@@ -182,6 +182,7 @@
         url: {
           list: "/pd/pdBottleInf/list",
           queryDepart: "/pd/pdDepart/queryListTree",
+          exportXlsUrl: "/pd/pdBottleInf/exportXls",
         },
         dictOptions:{
           closeRemarks:[],
@@ -256,6 +257,41 @@
       modalFormOk(){
         this.loadData();
       },
+
+      /**重写导出方法**/
+      handleExportXls(fileName){
+        if(!fileName || typeof fileName != "string"){
+          fileName = "导出文件"
+        }
+        fileName = fileName + "_" + new Date().toLocaleString();
+        let param = this.getQueryParams();//查询条件
+        if(this.selectedRowKeys && this.selectedRowKeys.length>0){
+          param['selections'] = this.selectedRowKeys.join(",")
+        }
+        console.log("导出参数",param)
+        downFile(this.url.exportXlsUrl,param).then((data)=>{
+          if (!data) {
+            this.$message.warning("文件下载失败")
+            return
+          }
+          if (typeof window.navigator.msSaveBlob !== 'undefined') {
+            window.navigator.msSaveBlob(new Blob([data],{type: 'application/vnd.ms-excel'}), fileName+'.xls')
+          }else{
+            let url = window.URL.createObjectURL(new Blob([data],{type: 'application/vnd.ms-excel'}))
+            let link = document.createElement('a')
+            link.style.display = 'none'
+            link.href = url
+            link.setAttribute('download', fileName+'.xls')
+            document.body.appendChild(link)
+            link.click()
+            document.body.removeChild(link); //下载完成移除元素
+            window.URL.revokeObjectURL(url); //释放掉blob对象
+          }
+        })
+      },
+
+
+
       initDictConfig(){
         initDictOptions('close_remarks').then((res) => {
           if (res.success) {

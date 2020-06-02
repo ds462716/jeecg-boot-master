@@ -35,31 +35,25 @@ public class PdBottleInf extends BaseEntity {
     @ApiModelProperty(value = "主键")
     private String id;
 	/**创建人*/
-	@Excel(name = "创建人", width = 15)
     @ApiModelProperty(value = "创建人")
     private String createBy;
 	/**创建日期*/
-	@Excel(name = "创建日期", width = 20, format = "yyyy-MM-dd HH:mm:ss")
 	@JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd HH:mm:ss")
     @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
     @ApiModelProperty(value = "创建日期")
     private Date createTime;
 	/**更新人*/
-	@Excel(name = "更新人", width = 15)
     @ApiModelProperty(value = "更新人")
     private String updateBy;
 	/**更新日期*/
-	@Excel(name = "更新日期", width = 20, format = "yyyy-MM-dd HH:mm:ss")
 	@JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd HH:mm:ss")
     @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
     @ApiModelProperty(value = "更新日期")
     private Date updateTime;
 	/**所属部门*/
-	@Excel(name = "所属部门", width = 15)
     @ApiModelProperty(value = "所属部门")
     private String sysOrgCode;
 	/**开瓶操作人*/
-	@Excel(name = "开瓶操作人", width = 15)
     @ApiModelProperty(value = "开瓶操作人")
     private String boottleBy;
 	/**开瓶时间*/
@@ -99,24 +93,24 @@ public class PdBottleInf extends BaseEntity {
     @ApiModelProperty(value = "闭瓶原因")
     private String closeRemarks;
 	/**所属部门*/
-	@Excel(name = "所属部门", width = 15)
     @ApiModelProperty(value = "所属部门")
     private String departId;
 	/**所属机构*/
 	@Excel(name = "所属机构", width = 15)
     @ApiModelProperty(value = "所属机构")
     private String departParentId;
-
+    @Excel(name = "操作类型", width = 15)
     @TableField(exist = false)
     private String bottleType;//操作类型   1：开瓶   2：闭瓶
-
     @TableField(exist = false)
     private List<PdProductStock> pdProductStockList;
-
+    @Excel(name = "产品名称", width = 15)
     @TableField(exist = false)
     private String productName;
+    @Excel(name = "所属部门", width = 15)
     @TableField(exist = false)
     private String departName;
+    @Excel(name = "单位名称", width = 15)
     @TableField(exist = false)
     private String unitName;
 
@@ -125,6 +119,7 @@ public class PdBottleInf extends BaseEntity {
     private List<String> departIdList;
 
     /*产品规格数量*/
+    @Excel(name = "产品规格数量", width = 15)
     @TableField(exist = false)
     private String specQuantity;
 

@@ -13,6 +13,9 @@ import org.jeecg.modules.external.entity.PdBottleInf;
 import org.jeecg.modules.external.service.IPdBottleInfService;
 import org.jeecg.modules.pd.service.IPdDepartService;
 import org.jeecg.modules.system.entity.SysDepart;
+import org.jeecgframework.poi.excel.def.NormalExcelConstants;
+import org.jeecgframework.poi.excel.entity.ExportParams;
+import org.jeecgframework.poi.excel.view.JeecgEntityExcelView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
@@ -137,7 +140,30 @@ public class PdBottleInfController extends JeecgController<PdBottleInf, IPdBottl
     */
     @RequestMapping(value = "/exportXls")
     public ModelAndView exportXls(HttpServletRequest request, PdBottleInf pdBottleInf) {
-        return super.exportXls(request, pdBottleInf, PdBottleInf.class, "开闭瓶记录表");
+		// Step.1 组装查询条件查询数据
+		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		//Step.2 获取导出数据
+		if(oConvertUtils.isNotEmpty(pdBottleInf.getDepartIds()) && !"undefined".equals(pdBottleInf.getDepartIds())) {
+			pdBottleInf.setDepartIdList(Arrays.asList(pdBottleInf.getDepartIds().split(",")));
+		}else{
+			//查询科室下所有下级科室的ID
+			SysDepart sysDepart=new SysDepart();
+			List<String> departList=pdDepartService.selectListDepart(sysDepart);
+			pdBottleInf.setDepartIdList(departList);
+		}
+		pdBottleInf.setDepartParentId(sysUser.getDepartParentId());
+		List<PdBottleInf> bottleInfList=pdBottleInfService.selectList(pdBottleInf);
+		// Step.3 AutoPoi 导出Excel
+		ModelAndView mv = new ModelAndView(new JeecgEntityExcelView());
+		mv.addObject(NormalExcelConstants.FILE_NAME, "试剂用量明细");
+		mv.addObject(NormalExcelConstants.CLASS, PdBottleInf.class);
+		mv.addObject(NormalExcelConstants.PARAMS, new ExportParams("试剂用量明细", "导出人:"+sysUser.getRealname(), "试剂用量明细数据"));
+		mv.addObject(NormalExcelConstants.DATA_LIST, bottleInfList);
+		return mv;
+
+
+
+        //return super.exportXls(request, pdBottleInf, PdBottleInf.class, "开闭瓶记录表");
     }
 
     /**

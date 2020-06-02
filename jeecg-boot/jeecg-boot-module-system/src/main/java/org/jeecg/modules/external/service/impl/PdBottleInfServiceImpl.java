@@ -8,6 +8,8 @@ import org.jeecg.modules.external.service.IPdBottleInfService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 /**
  * @Description: 开闭瓶记录表
  * @Author: jiangxz
@@ -23,6 +25,11 @@ public class PdBottleInfServiceImpl extends ServiceImpl<PdBottleInfMapper, PdBot
     @Override
     public Page<PdBottleInf> selectList(Page<PdBottleInf> page, PdBottleInf pdBottleInf) {
         return pdBottleInfMapper.selectList(page,pdBottleInf);
+    }
+
+    @Override
+    public List<PdBottleInf> selectList(PdBottleInf pdBottleInf) {
+        return pdBottleInfMapper.selectList(pdBottleInf);
     }
 
 }

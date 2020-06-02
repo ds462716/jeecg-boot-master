@@ -53,13 +53,16 @@ export async function closeQuotation(Barcode,closeRemarks){
 /**
  * 唯一码扫码
  * @param Barcode
+ * @param productFlag 产品类型0耗材1试剂
+ * @param nestatStatus 1未使用""查未使用和以使用
  * @returns {Promise<*>}
  */
-export async function uniqueScanCode(Barcode,productFlag){
+export async function uniqueScanCode(Barcode,productFlag,nestatStatus){
   //封装查询参数
   let formData = new URLSearchParams();
   formData.append("Barcode",Barcode);
   formData.append("productFlag",productFlag);
+  formData.append("nestatStatus",nestatStatus);
   let res = await httpAction(uniqueScanCodeUrl,formData,"post");
   return res;
 }
