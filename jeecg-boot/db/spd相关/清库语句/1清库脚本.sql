@@ -22,6 +22,9 @@ TRUNCATE TABLE pd_package_record_detail;-- 定数包打包记录明细表
 TRUNCATE TABLE pd_goods_allocation;    -- 货区货位
 TRUNCATE TABLE pd_rejected;            -- 退货
 TRUNCATE TABLE pd_rejected_detail;     -- 退货明细
+TRUNCATE TABLE pd_storeroom_patrol;    --巡查表
+TRUNCATE TABLE pd_storeroom_patrol_detail;--巡查明细表
+
 
 TRUNCATE TABLE pd_product;-- 产品表
 TRUNCATE TABLE pd_product_rule;-- 产品关联编码规则表
@@ -37,7 +40,7 @@ TRUNCATE TABLE pd_encoding_identifier;-- 应用标识符表
 TRUNCATE TABLE pd_dosage;-- 器械使用表
 TRUNCATE TABLE pd_dosage_detail;-- 器械使用详情表
 TRUNCATE TABLE pd_use_package;-- 检验包表
-TRUNCATE TABLE pd_use_package_detail;-- 检验包表
+TRUNCATE TABLE pd_use_package_detail;-- 检验包详情表
 TRUNCATE TABLE pd_product_stock_unique_code;-- 条码表
 
 --不用清理的表

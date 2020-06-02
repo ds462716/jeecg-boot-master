@@ -663,3 +663,5 @@ ALTER TABLE `sys_user`
 ADD COLUMN `py`  varchar(64) NULL COMMENT '拼音简码' AFTER `realname`,
 ADD COLUMN `wb`  varchar(64) NULL COMMENT '五笔简码' AFTER `py`,
 ADD COLUMN `zdy`  varchar(64) NULL COMMENT '自定义码' AFTER `wb`;
+-- add by zxh 2020年6月2日10:36:56  删除无用的表
+DROP TABLE `pd_allocation_detail_copy`
