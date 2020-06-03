@@ -12,8 +12,8 @@ TRUNCATE TABLE pd_purchase_order_merge;             -- 采购合并信息表
 TRUNCATE TABLE pd_purchase_order_merge_detail;      -- 采购合并明细表
 TRUNCATE TABLE pd_bottle_inf;                        -- 开瓶闭瓶记录表
 TRUNCATE TABLE pd_auto_order_inf;                    -- 自动补货表
-TRUNCATE TABLE pd_use_package;                       -- 检验项目用量主表
-TRUNCATE TABLE pd_use_package_detail;                -- 检验项目用量明细表
+-- TRUNCATE TABLE pd_use_package;                       -- 检验项目用量主表
+-- TRUNCATE TABLE pd_use_package_detail;                -- 检验项目用量明细表
 TRUNCATE TABLE ex_inspection_items;                  -- 检验项目明细表
 TRUNCATE TABLE ex_inspection_items_use;              -- 检验用量手动扣减主表
 TRUNCATE TABLE ex_inspection_items_use_detail;       -- 检验用量手动扣减明细表
