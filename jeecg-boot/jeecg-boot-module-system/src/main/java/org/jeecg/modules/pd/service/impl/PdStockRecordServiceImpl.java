@@ -245,7 +245,7 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
 
                     // 2. 如果第1步没有赋值到条码，则自动拼条码
                     if(oConvertUtils.isEmpty(main.getProductBarCode())){
-                        main.setProductBarCode("01" + main.getProductNumber() + "17" + expDate + "10" + main.getBatchNo());
+                        main.setProductBarCode("01" + main.getProductNumber().trim() + "17" + expDate + "10" + main.getBatchNo()==null?"":main.getBatchNo().trim());
                     }
 
                     StringBuilder setId = new StringBuilder();

@@ -65,7 +65,7 @@
     
     <!-- 操作按钮区域 -->
     <div class="table-operator">
-      <a-button @click="handleAdd" type="primary" icon="plus">新增出库</a-button>
+      <a-button @click="handleAdd" type="primary" icon="plus">批次出库</a-button>
       <a-button @click="handleUniqueAdd" type="primary" icon="plus">唯一码出库</a-button>
       <!--<a-button type="primary" icon="download" @click="handleExportXls('出库记录表')">导出</a-button>-->
     </div>
