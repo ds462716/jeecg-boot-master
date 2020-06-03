@@ -52,6 +52,8 @@ public class PdUsePackageDetail extends BaseEntity {
 	/**所属部门*/
 	@Excel(name = "所属部门", width = 15)
 	private String sysOrgCode;
+	@Excel(name = "试剂使用类型", width = 15)
+	private String useType;
 
 	/**
 	 * 所属部门

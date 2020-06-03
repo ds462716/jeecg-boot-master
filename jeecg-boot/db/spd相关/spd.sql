@@ -670,3 +670,17 @@ DROP TABLE `pd_allocation_detail_copy`
 update sys_dict_item set item_text = '批次码' where id = '1267270125310255106';
 
 UPDATE sys_dict_item SET item_text = '批次码退货' WHERE id='1265848887836790785';
+
+ -- add by mcb 2020年6月3日14:09:25 静态值优化并增加静态值
+ update sys_dict set dict_name='扣减类型',description='0:自动扣减   1:人工扣减  2:无需扣减'  where id='1264129484446199809';
+ INSERT INTO `sys_dict_item` VALUES ('1268018852806234114', '1264129484446199809', '无需扣减', '2', '', 3, 1, 'admin', '2020-06-03 11:17:08', NULL, '2020-06-03 11:17:08');
+ update sys_dict set description='0:已扣减  1：未配置检验项目  2：未扣减  3：未配置试剂用量'  where id='1262211106076762114';
+ update sys_dict_item set item_text='未配置检验项目'  where id='1262211261735772161';
+ INSERT INTO `sys_dict_item` VALUES ('1268019744573984769', '1262211106076762114', '未配置试剂用量', '3', '', 4, 1, 'admin', '2020-06-03 11:20:40', NULL, '2020-06-03 11:20:40');
+ INSERT INTO `sys_dict`VALUES ('1268073662989438977', '试剂使用类型', 'use_type', '1:住院使用    2：门诊使用', 0, 'admin', '2020-06-03 14:54:56', NULL, '2020-06-03 14:54:56', 0);
+ INSERT INTO `sys_dict_item` VALUES ('1268073778156638210', '1268073662989438977', '住院使用', '1', '', 1, 1, 'admin', '2020-06-03 14:55:23', NULL, '2020-06-03 14:55:23');
+ INSERT INTO `sys_dict_item`VALUES ('1268073803850944514', '1268073662989438977', '门诊使用', '2', '', 1, 1, 'admin', '2020-06-03 14:55:29', NULL, '2020-06-03 14:55:29');
+
+ -- add by mcb 2020年6月3日14:09:25 添加试剂使用类型
+ALTER TABLE `pd_use_package_detail`
+ADD COLUMN `use_type` varchar(4) CHARACTER SET utf8 COLLATE utf8_general_ci NULL COMMENT '试剂使用类型  默认空，1：住院   2：门诊' AFTER `depart_id`;

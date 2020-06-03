@@ -73,33 +73,36 @@ public class LisInspectionItemsTaskJob implements Job {
                         String deductuinType=pdUsePackage.getDeductuinType();//扣减类型
                         if(StringUtils.isEmpty(testDpeartId)){
                             items.setRemarks("未配置检验科室");
-                            items.setAcceptStatus(PdConstant.ACCEPT_STATUS_2);// 0：已扣减  1：未配置检验用量  2:未扣减
+                            items.setAcceptStatus(PdConstant.ACCEPT_STATUS_2);// 0:已扣减  1：无检验项目  2：未扣减  3：无试剂用量
                         } else if(PdConstant.DEDUCTUIN_TYPE_1.equals(deductuinType)) {
-                            items.setRemarks("用量不固定，需人工扣减");
-                            items.setAcceptStatus(PdConstant.ACCEPT_STATUS_2);// 0：已扣减  1：未配置检验用量  2:未扣减
-                        }else {
-                            items.setPackageId(pdUsePackage.getId());
-                            PdUsePackageDetail detail = new PdUsePackageDetail();
-                            detail.setPackageId(pdUsePackage.getId());
-                            List<PdUsePackageDetail> pdUsePackageDetails = pdUsePackageDetailService.queryPdUsePackageList(detail);
-                            if (pdUsePackageDetails != null && pdUsePackageDetails.size() > 0) {
-                                try {
-                                    pdProductStockTotalService.lisUpdateUseStock(testDpeartId, pdUsePackageDetails);
-                                    items.setAcceptStatus(PdConstant.ACCEPT_STATUS_0);//已扣减
-                                } catch (Exception e) {
-                                    e.getMessage();
-                                    log.error("扣減用量失敗:" + e.getMessage());
-                                    items.setRemarks(e.getMessage());
-                                    items.setAcceptStatus(PdConstant.ACCEPT_STATUS_2);
+                            items.setRemarks("需人工扣减:"+pdUsePackage.getRemarks());
+                            items.setAcceptStatus(PdConstant.ACCEPT_STATUS_2);// 0:已扣减  1：无检验项目  2：未扣减  3：无试剂用量
+                        }else if(PdConstant.DEDUCTUIN_TYPE_2.equals(deductuinType)) {
+                            items.setRemarks("无需扣减:"+pdUsePackage.getRemarks());
+                            items.setAcceptStatus(PdConstant.ACCEPT_STATUS_2);// 0:已扣减  1：无检验项目  2：未扣减  3：无试剂用量
+                        }else{
+                                items.setPackageId(pdUsePackage.getId());
+                                PdUsePackageDetail detail = new PdUsePackageDetail();
+                                detail.setPackageId(pdUsePackage.getId());
+                                List<PdUsePackageDetail> pdUsePackageDetails = pdUsePackageDetailService.queryPdUsePackageList(detail);
+                                if (pdUsePackageDetails != null && pdUsePackageDetails.size() > 0) {
+                                    try {
+                                        pdProductStockTotalService.lisUpdateUseStock(items,testDpeartId, pdUsePackageDetails);
+                                        items.setAcceptStatus(PdConstant.ACCEPT_STATUS_0);//已扣减
+                                    } catch (Exception e) {
+                                        e.getMessage();
+                                        log.error("扣減用量失敗:" + e.getMessage());
+                                        items.setRemarks(e.getMessage());
+                                        items.setAcceptStatus(PdConstant.ACCEPT_STATUS_2);//2：未扣减
+                                    }
+                                } else {
+                                    items.setRemarks("检验项目用量未配置:"+pdUsePackage.getRemarks());
+                                    items.setAcceptStatus(PdConstant.ACCEPT_STATUS_3);// 0:已扣减  1：无检验项目  2：未扣减  3：无试剂用量
                                 }
-                            } else {
-                                items.setRemarks("检验项目用量未配置:"+items.getRemarks());
-                                items.setAcceptStatus(PdConstant.ACCEPT_STATUS_1);// 0：已扣减  1：未配置检验用量  2:未扣减
                             }
-                        }
                     }else{
                         items.setRemarks("检验项目未配置");
-                        items.setAcceptStatus(PdConstant.ACCEPT_STATUS_1);// 0：已扣减  1：未配置检验用量  2:未扣减
+                        items.setAcceptStatus(PdConstant.ACCEPT_STATUS_1);//0:已扣减  1：无检验项目  2：未扣减  3：无试剂用量
                     }
                 }
                 exInspectionItemsService.saveBatch(list);

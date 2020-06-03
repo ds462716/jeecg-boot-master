@@ -28,7 +28,7 @@
                 <a-input placeholder="请输入规格" v-model="queryParam.spec"></a-input>
               </a-form-item>
             </a-col>
-            <a-col :md="5" :sm="8">
+            <a-col :md="5" :sm="8" v-if="productFlag">
               <a-form-item label="是否试剂">
                 <j-dict-select-tag-expand type="list" v-model="queryParam.productFlag" dictCode="yn" placeholder="请选择"/>
               </a-form-item>

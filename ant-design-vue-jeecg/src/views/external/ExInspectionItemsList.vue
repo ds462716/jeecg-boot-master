@@ -18,8 +18,9 @@
             <a-form-item label="扣减状态">
                 <a-select v-model="queryParam.acceptStatus" :allowClear="true" placeholder="请选择扣减状态">
                   <a-select-option value="0">已扣减</a-select-option>
-                  <a-select-option value="1">未配置检验用量</a-select-option>
+                  <a-select-option value="1">未配置检验項目</a-select-option>
                   <a-select-option value="2">未扣减</a-select-option>
+                  <a-select-option value="3">未配置试剂用量</a-select-option>
                 </a-select>
             </a-form-item>
           </a-col>

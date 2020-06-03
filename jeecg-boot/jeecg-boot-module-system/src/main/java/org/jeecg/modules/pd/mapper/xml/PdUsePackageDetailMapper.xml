@@ -42,6 +42,7 @@
 		 a.package_id,
 		 a.count,
 		 a.product_id,
+		 a.use_type,
 		 b.code,
 		 b.name,
 		 c.number as "number",
