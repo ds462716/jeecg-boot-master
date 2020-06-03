@@ -229,33 +229,33 @@
             dataIndex: 'chargeCode'
           },
           {
-            title: '注册证',
-            align:"center",
-            dataIndex: 'registration'
-          },
-          {
             title: '进价',
             align:"center",
-            colSpan: 0,
             dataIndex: 'purchasePrice',
-            customRender: (value, row, index) => {
-              const obj = {
-                attrs: {colSpan:0},
-              };
-              return obj;
-            },
+            // colSpan: 0,
+            // customRender: (value, row, index) => {
+            //   const obj = {
+            //     attrs: {colSpan:0},
+            //   };
+            //   return obj;
+            // },
           },
           {
             title: '出价',
             align:"center",
-            colSpan: 0,
             dataIndex: 'sellingPrice',
-            customRender: (value, row, index) => {
-              const obj = {
-                attrs: {colSpan:0},
-              };
-              return obj;
-            },
+            // colSpan: 0,
+            // customRender: (value, row, index) => {
+            //   const obj = {
+            //     attrs: {colSpan:0},
+            //   };
+            //   return obj;
+            // },
+          },
+          {
+            title: '注册证',
+            align:"center",
+            dataIndex: 'registration'
           },
           {
             title: '证照过期标志',
