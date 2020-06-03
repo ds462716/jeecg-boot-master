@@ -26,7 +26,7 @@
           </a-col>
           <a-col :md="6" :sm="8">
             <a-form-item label="盘点完成状态">
-              <a-select v-model="queryParam.checkStatus" placeholder="请选择盘点完成状态">
+              <a-select v-model="queryParam.checkStatus" :allowClear="true" placeholder="请选择盘点完成状态">
                 <a-select-option value="0">临时保存</a-select-option>
                 <a-select-option value="1">盘点完成</a-select-option>
               </a-select>

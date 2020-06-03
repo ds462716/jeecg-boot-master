@@ -34,6 +34,7 @@
                     placeholder="请选巡查库房"
                     :disabled="disableSubmit"
                     :defaultActiveFirstOption="false"
+                    :allowClear="true"
                     :showArrow="true"
                     :filterOption="false"
                     @search="departHandleSearch"

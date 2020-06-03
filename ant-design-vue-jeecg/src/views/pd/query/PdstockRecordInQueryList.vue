@@ -17,6 +17,7 @@
                 placeholder="请选择入库库房"
                 :supplierId="departValue"
                 :defaultActiveFirstOption="false"
+                :allowClear="true"
                 :showArrow="true"
                 :filterOption="false"
                 @search="departHandleSearch"
@@ -72,7 +73,7 @@
             </a-col>
             <a-col :md="6" :sm="8">
               <a-form-item label="入库类型">
-                <j-dict-select-tag v-model="queryParam.inType" dictCode="in_type"/>
+                <j-dict-select-tag-expand v-model="queryParam.inType" dictCode="in_type"/>
               </a-form-item>
             </a-col>
             <a-col :md="6" :sm="8">
@@ -161,12 +162,13 @@
   import { filterObj } from '@/utils/util';
   import { JeecgListMixin} from '@/mixins/JeecgListMixin'
   import {initDictOptions, filterMultiDictText} from '@/components/dict/JDictSelectUtil'
+  import JDictSelectTagExpand from "@/components/dict/JDictSelectTagExpand"
 
   export default {
     name: "PdstockRecordInQueryList",
     mixins:[JeecgListMixin],
     components: {
-
+      JDictSelectTagExpand
     },
     data () {
       return {

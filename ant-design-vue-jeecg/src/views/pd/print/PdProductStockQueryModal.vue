@@ -46,7 +46,7 @@
           <template v-if="toggleSearchStatus">
             <a-col :md="6" :sm="8">
               <a-form-item label="使用状态">
-                <j-dict-select-tag v-model="queryParam.nestatStatus" dictCode="nestat_status"/>
+                <j-dict-select-tag-expand v-model="queryParam.nestatStatus" dictCode="nestat_status"/>
               </a-form-item>
             </a-col>
             <a-col :md="6" :sm="8">
@@ -179,12 +179,14 @@
   import { filterObj } from '@/utils/util';
   import PdProductStockQueryPrint from './PdProductStockQueryPrint'
   import {initDictOptions, filterMultiDictText} from '@/components/dict/JDictSelectUtil'
+  import JDictSelectTagExpand from "@/components/dict/JDictSelectTagExpand"
 
   export default {
     name: "PdProductStockQueryList",
     mixins:[JeecgListMixin],
     components: {
-      PdProductStockQueryPrint
+      PdProductStockQueryPrint,
+      JDictSelectTagExpand
     },
     data () {
       return {

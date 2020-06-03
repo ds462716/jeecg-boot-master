@@ -16,7 +16,7 @@
           </a-col>
           <a-col :md="6" :sm="8">
             <a-form-item label="状态">
-              <j-dict-select-tag v-model="queryParam.status" dictCode="package_record_status"/>
+              <j-dict-select-tag-expand v-model="queryParam.status" dictCode="package_record_status"/>
             </a-form-item>
           </a-col>
           <template v-if="toggleSearchStatus">
@@ -113,12 +113,14 @@
   import {httpAction, deleteAction, getAction} from '@/api/manage'
   import { filterObj } from '@/utils/util';
   import PdPackageRecordModal from "./modules/PdPackageRecordModal";
+  import JDictSelectTagExpand from "@/components/dict/JDictSelectTagExpand"
 
   export default {
     name: "PdPackageRecordList",
     mixins:[JeecgListMixin],
     components: {
-      PdPackageRecordModal
+      PdPackageRecordModal,
+      JDictSelectTagExpand
     },
     data () {
       return {
