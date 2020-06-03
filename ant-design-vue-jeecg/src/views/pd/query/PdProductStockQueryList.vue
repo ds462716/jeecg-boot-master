@@ -187,7 +187,7 @@
           {
             title:'货位',
             align:"center",
-            dataIndex: 'huoweiCode'
+            dataIndex: 'huoweiName'
           },
           {
             title:'产品名称',
