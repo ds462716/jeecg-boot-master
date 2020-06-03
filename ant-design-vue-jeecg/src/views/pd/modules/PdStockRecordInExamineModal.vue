@@ -357,6 +357,7 @@
           audit: "/pd/pdStockRecordIn/audit",
           querySupplier:"/pd/pdSupplier/getSupplierList",
           queryById: "/pd/pdStockRecordIn/queryById",
+          getOnOff:"/pd/pdStockRecordIn/getOnOff",
         },
         popModal: {
           title: '这里是标题',
@@ -427,6 +428,32 @@
           }
           // this.loading = false;
           this.pdStockRecordDetailTable.loading = false;
+        })
+
+        getAction(this.url.getOnOff, params).then((res) => {
+          if (res.success) {
+            this.$nextTick(() => {
+
+              this.stockInText = res.result.stockInText;
+              this.allowInMoreOrder = res.result.allowInMoreOrder;
+              this.allowNotOrderProduct = res.result.allowNotOrderProduct;
+              this.allowSupplier = res.result.allowSupplier;
+              this.allowEditPrice = res.result.allowEditPrice;
+              this.allowStockInExpProduct = res.result.allowStockInExpProduct;
+              this.allowStockInExpSupplier = res.result.allowStockInExpSupplier;
+              if(this.disableSubmit){
+                this.allowEditPrice = "0";
+              }
+              //开关-是否需要入库审批  1-是；0-否
+              if(res.result.allowStockInAudit == "0" && this.disableSubmit == false){
+                this.showSubmitAndPrint = true;
+              }
+            })
+          }
+          if(res.code==510){
+            this.$message.warning(res.message)
+          }
+          // this.loading = false;
         })
       },
       /**打印按钮**/
