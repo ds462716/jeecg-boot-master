@@ -18,7 +18,7 @@
                 <a-row>
                    <a-col :md="6" :sm="8"  v-show="this.model.bottleType==2">
                     <a-form-item label="闭瓶原因" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                      <j-dict-select-tag v-model="queryParam.closeRemarks" dictCode="close_remarks"/>
+                      <j-dict-select-tag-expand v-model="queryParam.closeRemarks" dictCode="close_remarks"/>
                      </a-form-item>
                   </a-col>
                   <a-col :md="12" :sm="8">
@@ -54,6 +54,8 @@
   import { FormTypes,getRefPromise,validateFormAndTables } from '@/utils/JEditableTableUtil'
    import {openingQuotation,closeQuotation} from '@/utils/barcode'
    import { JEditableTableMixin } from '@/mixins/JEditableTableMixin'
+  import JDictSelectTagExpand from "@/components/dict/JDictSelectTagExpand"
+
    const VALIDATE_NO_PASSED = Symbol()
   export { FormTypes, VALIDATE_NO_PASSED }
 
@@ -75,6 +77,7 @@
     name: "PdBottleModal",
     mixins: [JEditableTableMixin],
     components: {
+      JDictSelectTagExpand
      },
     data () {
       return {
