@@ -9,11 +9,15 @@
         a.*,
         c.name as "productName",
         b.spec_quantity as "specQuantity",
+        b.batch_no as "batchNo",
+        b.exp_date as "expDate",
+        e.name as "unitName",
         d.depart_name as "departName"
         from pd_bottle_inf a
         left join pd_product_stock b on a.stock_id=b.id
         left join pd_product c on c.id=b.product_id  and c.del_flag=#{entity.DEL_FLAG_NORMAL}
         left join sys_depart d on d.id=a.depart_id and d.del_flag=#{entity.DEL_FLAG_NORMAL}
+        LEFT JOIN pd_unit e ON b.spec_unit_id = e.id and e.del_flag=#{entity.DEL_FLAG_NORMAL}
          where  a.del_flag=#{entity.DEL_FLAG_NORMAL}
         <if test="entity.productName != null and entity.productName != ''">
             AND (c.name LIKE concat('%',#{entity.productName},'%')
@@ -26,7 +30,7 @@
             )
         </if>
         <if test="entity.boottleBy != null and entity.boottleBy != ''">
-            AND a.boottle_by = #{entity.boottleBy}
+            AND a.boottle_by  LIKE concat('%',#{entity.boottleBy},'%')
         </if>
         <if test="entity.departId != null and entity.departId != ''">
             AND a.depart_id = #{entity.departId}
