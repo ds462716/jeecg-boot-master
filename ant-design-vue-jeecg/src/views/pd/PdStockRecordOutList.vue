@@ -30,17 +30,17 @@
           </a-col>
           <a-col :md="6" :sm="8">
             <a-form-item label="出库类型">
-              <j-dict-select-tag v-model="queryParam.outType" dictCode="out_type"/>
+              <j-dict-select-tag-expand v-model="queryParam.outType" dictCode="out_type"/>
             </a-form-item>
           </a-col>
           <a-col :md="6" :sm="8">
             <a-form-item label="提交状态">
-              <j-dict-select-tag v-model="queryParam.submitStatus" dictCode="submit_status"/>
+              <j-dict-select-tag-expand v-model="queryParam.submitStatus" dictCode="submit_status"/>
             </a-form-item>
           </a-col>
           <a-col :md="6" :sm="8">
             <a-form-item label="审核状态">
-              <j-dict-select-tag v-model="queryParam.auditStatus" dictCode="audit_status"/>
+              <j-dict-select-tag-expand v-model="queryParam.auditStatus" dictCode="audit_status"/>
             </a-form-item>
           </a-col>
           <a-col :md="6" :sm="8">
@@ -123,6 +123,7 @@
   import {initDictOptions, filterMultiDictText} from '@/components/dict/JDictSelectUtil'
   import PdStockRecordOutModal from "./modules/PdStockRecordOutModal";
   import PdUniqueStockRecordOutModal from "./modules/PdUniqueStockRecordOutModal";
+  import JDictSelectTagExpand from "@/components/dict/JDictSelectTagExpand"
 
   export default {
     name: "PdStockRecordOutList",
@@ -130,6 +131,7 @@
     components: {
       PdUniqueStockRecordOutModal,
       PdStockRecordOutModal,
+      JDictSelectTagExpand
     },
     data () {
       return {
