@@ -54,6 +54,7 @@ public class PdBottleInf extends BaseEntity {
     @ApiModelProperty(value = "所属部门")
     private String sysOrgCode;
 	/**开瓶操作人*/
+    @Excel(name = "开瓶操作人", width = 15)
     @ApiModelProperty(value = "开瓶操作人")
     private String boottleBy;
 	/**开瓶时间*/
@@ -63,11 +64,10 @@ public class PdBottleInf extends BaseEntity {
     @ApiModelProperty(value = "开瓶时间")
     private Date boottleDate;
 	/**试剂对应条码*/
-	@Excel(name = "试剂对应条码", width = 15)
-    @ApiModelProperty(value = "试剂对应条码")
+	@Excel(name = "试剂对应唯一码", width = 15)
+    @ApiModelProperty(value = "试剂对应唯一码")
     private String refBarCode;
 	/**对应库存明细ID*/
-	@Excel(name = "对应库存明细ID", width = 15)
     @ApiModelProperty(value = "对应库存明细ID")
     private String stockId;
     /**使用規格數量*/
@@ -85,21 +85,18 @@ public class PdBottleInf extends BaseEntity {
     @ApiModelProperty(value = "闭瓶操作人")
     private String closeBy;
 	/**备注*/
-	@Excel(name = "备注", width = 15)
     @ApiModelProperty(value = "备注")
     private String remarks;
     /**闭瓶原因*/
-    @Excel(name = "闭瓶原因", width = 15)
+    @Excel(name = "闭瓶原因  0:已用完  1:已过期", width = 15)
     @ApiModelProperty(value = "闭瓶原因")
     private String closeRemarks;
 	/**所属部门*/
     @ApiModelProperty(value = "所属部门")
     private String departId;
 	/**所属机构*/
-	@Excel(name = "所属机构", width = 15)
     @ApiModelProperty(value = "所属机构")
     private String departParentId;
-    @Excel(name = "操作类型", width = 15)
     @TableField(exist = false)
     private String bottleType;//操作类型   1：开瓶   2：闭瓶
     @TableField(exist = false)
@@ -113,15 +110,24 @@ public class PdBottleInf extends BaseEntity {
     @Excel(name = "单位名称", width = 15)
     @TableField(exist = false)
     private String unitName;
-
-    /*多个部门集合*/
-    @TableField(exist = false)
-    private List<String> departIdList;
-
     /*产品规格数量*/
     @Excel(name = "产品规格数量", width = 15)
     @TableField(exist = false)
     private String specQuantity;
+    /**批次号*/
+    @Excel(name = "批次号", width = 15)
+    @TableField(exist = false)
+    private String batchNo;
+    /**有效期*/
+    @Excel(name = "有效期", width = 15, format = "yyyy-MM-dd")
+    @JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd")
+    @DateTimeFormat(pattern="yyyy-MM-dd")
+    @TableField(exist = false)
+    private Date expDate;
+
+    /*多个部门集合*/
+    @TableField(exist = false)
+    private List<String> departIdList;
 
     @TableField(exist = false)
     private String departIds; //批量查询用

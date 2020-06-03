@@ -30,9 +30,9 @@
               <a-input placeholder="请输入产品名称" v-model="queryParam.productName"></a-input>
             </a-form-item>
           </a-col>
-          <a-col :md="5" :sm="8">
+          <a-col :md="6" :sm="8">
             <a-form-item label="是否试剂">
-              <j-dict-select-tag type="list" v-model="queryParam.productFlag" dictCode="yn" placeholder="请选择"/>
+              <j-dict-select-tag-expand type="list" v-model="queryParam.productFlag" dictCode="yn" placeholder="请选择"/>
             </a-form-item>
           </a-col>
           <template :md="6" v-if="toggleSearchStatus">
@@ -53,12 +53,12 @@
             </a-col>
             <a-col :md="6" :sm="8">
               <a-form-item label="是否久存">
-                <j-dict-select-tag v-model="queryParam.isLong" dictCode="pd_isLong"/>
+                <j-dict-select-tag-expand v-model="queryParam.isLong" dictCode="pd_isLong"/>
               </a-form-item>
             </a-col>
             <a-col :md="6" :sm="8">
               <a-form-item label="是否过期">
-                <j-dict-select-tag v-model="queryParam.expStatus" dictCode="exp_status"/>
+                <j-dict-select-tag-expand v-model="queryParam.expStatus" dictCode="exp_status"/>
               </a-form-item>
             </a-col>
           </template>
@@ -137,6 +137,7 @@
   import { getAction } from '@/api/manage'
   import {initDictOptions, filterMultiDictText} from '@/components/dict/JDictSelectUtil'
   import { filterObj } from '@/utils/util';
+  import JDictSelectTagExpand from "@/components/dict/JDictSelectTagExpand"
 
 
   export default {
@@ -145,7 +146,8 @@
     components: {
       PdProductStockTotalModal,
       PdProductStockModal,
-      PdStockRecordDetailInfoModal
+      PdStockRecordDetailInfoModal,
+      JDictSelectTagExpand
     },
     data () {
       return {

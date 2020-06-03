@@ -668,3 +668,5 @@ DROP TABLE `pd_allocation_detail_copy`
 
 -- add by zxh 2020年6月2日18:09:25  细节优化
 update sys_dict_item set item_text = '批次码' where id = '1267270125310255106';
+
+UPDATE sys_dict_item SET item_text = '批次码退货' WHERE id='1265848887836790785';

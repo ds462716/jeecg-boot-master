@@ -42,16 +42,17 @@
               <a-range-picker @change="rejectedDateChange" v-model="queryParam.queryDate"/>
             </a-form-item>
           </a-col>
+          <a-col :md="6" :sm="8">
+            <a-form-item label="审核状态">
+              <j-dict-select-tag-expand v-model="queryParam.auditStatus" dictCode="audit_status"/>
+            </a-form-item>
+          </a-col>
           <template v-if="toggleSearchStatus">
-            <a-col :md="6" :sm="8">
-              <a-form-item label="审核状态">
-                <a-select v-model="queryParam.auditStatus" placeholder="请选择审核状态">
-                  <a-select-option value="1">待审核</a-select-option>
-                  <a-select-option value="2">审核通过</a-select-option>
-                  <a-select-option value="3">已驳回</a-select-option>
-                </a-select>
+            <!--<a-col :md="6" :sm="8">
+              <a-form-item label="提交状态">
+                <j-dict-select-tag-expand v-model="queryParam.submitStatus" dictCode="submit_status"/>
               </a-form-item>
-            </a-col>
+            </a-col>-->
           </template>
           <a-col :md="6" :sm="8">
             <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
@@ -103,6 +104,7 @@
   import {initDictOptions, filterMultiDictText} from '@/components/dict/JDictSelectUtil'
   import PdAllocationExamineModal from './modules/NewPdAllocationExamineModal'
   import {getAction } from '@/api/manage'
+  import JDictSelectTagExpand from "@/components/dict/JDictSelectTagExpand"
 
   let timeout;
   let currentValue;
@@ -137,7 +139,9 @@
   export default {
     name: "PdAllocationExamineList",
     mixins:[JeecgListMixin],
-    components: {PdAllocationExamineModal
+    components: {
+      PdAllocationExamineModal,
+      JDictSelectTagExpand
     },
     data () {
       return {

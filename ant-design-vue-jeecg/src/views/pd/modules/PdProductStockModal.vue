@@ -35,7 +35,7 @@
             </a-col>
             <a-col :md="6" :sm="8">
               <a-form-item label="使用状态">
-                <j-dict-select-tag v-model="queryParam.nestatStatus" dictCode="nestat_status"/>
+                <j-dict-select-tag-expand v-model="queryParam.nestatStatus" dictCode="nestat_status"/>
               </a-form-item>
             </a-col>
             <template :md="6" v-if="toggleSearchStatus">
@@ -51,12 +51,12 @@
               </a-col>
               <a-col :md="6" :sm="8">
                 <a-form-item label="是否久存">
-                  <j-dict-select-tag v-model="queryParam.isLong" dictCode="pd_isLong"/>
+                  <j-dict-select-tag-expand v-model="queryParam.isLong" dictCode="pd_isLong"/>
                 </a-form-item>
               </a-col>
               <a-col :md="6" :sm="8">
               <a-form-item label="是否过期">
-                <j-dict-select-tag v-model="queryParam.expStatus" dictCode="exp_status"/>
+                <j-dict-select-tag-expand v-model="queryParam.expStatus" dictCode="exp_status"/>
               </a-form-item>
             </a-col>
               <a-col :md="6" :sm="8">
@@ -148,6 +148,7 @@
   import JDate from "../../../components/jeecg/JDate";
   import { disabledAuthFilter } from "@/utils/authFilter"
   import PdProductStockUniqueCodeModal from "./PdProductStockUniqueCodeModal";
+  import JDictSelectTagExpand from "@/components/dict/JDictSelectTagExpand"
 
   const VALIDATE_NO_PASSED = Symbol()
   export { FormTypes, VALIDATE_NO_PASSED }
@@ -159,7 +160,8 @@
       JDate,
       PdUpdateStockModal,
       PdStockHuoWeiModal,
-      PdProductStockSpecModal
+      PdProductStockSpecModal,
+      JDictSelectTagExpand
     },
     data () {
       return {
@@ -226,7 +228,7 @@
           {
             title:'货位',
             align:"center",
-            dataIndex: 'huoweiCode'
+            dataIndex: 'huoweiName'
           },
           {
             title:'单位',

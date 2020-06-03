@@ -27,7 +27,7 @@
           </a-col>
           <a-col :md="6" :sm="8">
             <a-form-item label="开瓶操作人">
-              <a-input placeholder="请输入操作人名称" v-model="queryParam.productName"></a-input>
+              <a-input placeholder="请输入操作人名称" v-model="queryParam.boottleBy"></a-input>
             </a-form-item>
           </a-col>
           <a-col :md="6" :sm="8">
@@ -76,6 +76,7 @@
         :dataSource="dataSource"
         :pagination="ipagination"
         :loading="loading"
+        :scroll="tableScroll"
         :rowSelection="{fixed:true,selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
         @change="handleTableChange">
       </a-table>
@@ -135,10 +136,20 @@
             align:"center",
             dataIndex: 'refBarCode'
           },
-          {
+          /*{
             title:'库存明细ID',
             align:"center",
             dataIndex: 'stockId'
+          },*/
+          {
+            title:'批次号',
+            align:"center",
+            dataIndex: 'batchNo'
+          },
+          {
+            title:'有效期',
+            align:"center",
+            dataIndex: 'expDate'
           },
           {
             title:'使用数量',
@@ -149,6 +160,11 @@
             title:'规格数量',
             align:"center",
             dataIndex: 'specQuantity'
+          },
+          {
+            title:'规格单位',
+            align:"center",
+            dataIndex: 'unitName'
           },
           {
             title:'闭瓶时间',
@@ -187,6 +203,7 @@
         dictOptions:{
           closeRemarks:[],
         },
+        tableScroll:{x :1500},
       }
     },
     computed: {

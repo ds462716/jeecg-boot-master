@@ -3,7 +3,7 @@
     <a-radio v-for="(item, key) in dictOptions" :key="key" :value="item.value">{{ item.text }}</a-radio>
   </a-radio-group>
 
-  <a-select v-else-if="tagType=='select'" :getPopupContainer = "(target) => target.parentNode" :placeholder="placeholder" :disabled="disabled" :value="value" @change="handleInput">
+  <a-select v-else-if="tagType=='select'" :allowClear="true" :getPopupContainer = "(target) => target.parentNode" :placeholder="placeholder" :disabled="disabled" :value="value" @change="handleInput">
     <a-select-option v-for="(item, key) in dictOptions" :key="key" :value="item.value">
       <span style="display: inline-block;width: 100%" :title=" item.text || item.label ">
         {{ item.text || item.label }}
