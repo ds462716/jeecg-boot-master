@@ -16,6 +16,7 @@
                 placeholder="请选择巡查科室"
                 :supplierId="departValue"
                 :defaultActiveFirstOption="false"
+                :allowClear="true"
                 :showArrow="true"
                 :filterOption="false"
                 @search="departHandleSearch"

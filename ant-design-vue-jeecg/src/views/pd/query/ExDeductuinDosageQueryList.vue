@@ -37,7 +37,7 @@
               </a-col>
           <a-col :md="6" :sm="8">
             <a-form-item label="扣减类型">
-              <j-dict-select-tag v-model="queryParam.deductuinType" dictCode="deductuin_type"/>
+              <j-dict-select-tag-expand v-model="queryParam.deductuinType" dictCode="deductuin_type"/>
             </a-form-item>
           </a-col>
 
@@ -90,11 +90,13 @@
   import { JeecgListMixin } from '@/mixins/JeecgListMixin'
   import { getAction } from '@/api/manage'
   import {initDictOptions, filterMultiDictText} from '@/components/dict/JDictSelectUtil'
+  import JDictSelectTagExpand from "@/components/dict/JDictSelectTagExpand"
 
   export default {
     name: "ExDeductuinDosageQueryList",
     mixins:[JeecgListMixin],
     components: {
+      JDictSelectTagExpand
      },
     data () {
       return {

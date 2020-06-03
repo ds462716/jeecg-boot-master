@@ -11,6 +11,7 @@
                 placeholder="请选择入库库房"
                 :supplierId="departValue"
                 :defaultActiveFirstOption="false"
+                :allowClear="true"
                 :showArrow="true"
                 :filterOption="false"
                 @search="departHandleSearch"
