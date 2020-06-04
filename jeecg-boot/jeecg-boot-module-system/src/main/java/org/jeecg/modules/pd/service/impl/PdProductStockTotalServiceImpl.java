@@ -592,7 +592,7 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
             pdProductStock_1.setStockNum(stockNum - ykStockNum);
             pdProductStock_1.setId(productStock.getId());
             pdProductStock_1.setSpecNum(productStock.getSpecQuantity() == null ? 0D : productStock.getSpecQuantity()    * pdProductStock_1.getStockNum());// 库存规格数量= 产品规格数量* 入库数量
-            productStockService.updateProductStock(pdProductStock_1);
+            pdProductStockMapper.updateStockNum(pdProductStock_1);
         } else { //如果修改后的货位已经有耗材存在，则在新货位上增加数量,之前货位的数量减去移库的数量
             PdProductStock stock = i_productStocks.get(0);
             if (!stock.getId().equals(productStock.getId())) {
@@ -604,7 +604,7 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
                 pdProductStock_2.setStockNum(stockNum - ykStockNum);
                 pdProductStock_2.setId(productStock.getId());
                 pdProductStock_2.setSpecNum(productStock.getSpecQuantity() == null ? 0D : productStock.getSpecQuantity()    * pdProductStock_2.getStockNum());// 库存规格数量= 产品规格数量* 入库数量
-                pdProductStockMapper.updateProductStock(pdProductStock_2);
+                pdProductStockMapper.updateStockNum(pdProductStock_2);
             }
         }
         return PdConstant.TRUE;
