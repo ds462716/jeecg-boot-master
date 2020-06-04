@@ -212,12 +212,14 @@
       },
 
       handleOk (type) { //审核提交
+        const that = this;
         this.model.auditStatus='2';//审核通过
         this.model.submitStatus='2';//已提交
         if(type=="no"){
           this.model.auditStatus='3';//拒绝
           this.model.submitStatus='1';//待提交
         }
+        that.confirmLoading = true;
         this.form.validateFields((err, values) => {
           if(type=="no"){
             if(values.refuseReason==null || values.refuseReason==''){
@@ -227,11 +229,9 @@
           }
           this.model.refuseReason= values.refuseReason;
           if (!err) {
-            const that = this;
             this.model.orderNos=this.model.orderNo;
             this.model.oprtSource="1";
             let formData = Object.assign(this.model, values);
-            that.confirmLoading = true;
             httpAction(this.url.edit, formData, 'put').then((res) => {
               if (res.success) {
                 that.$message.success("操作成功");
@@ -242,6 +242,7 @@
               } else {
                 that.$message.warning(res.message);
               }
+
             }).finally(() => {
               that.confirmLoading = false;
               that.close();
