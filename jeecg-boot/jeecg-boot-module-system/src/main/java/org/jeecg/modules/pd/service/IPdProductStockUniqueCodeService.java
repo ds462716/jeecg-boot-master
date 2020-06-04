@@ -24,4 +24,6 @@ public interface IPdProductStockUniqueCodeService extends IService<PdProductStoc
     void deleteCode(String id);
 
     IPage<PdProductStockUniqueCode> selectList(Page<PdProductStockUniqueCode> page, PdProductStockUniqueCode pdProductStockUniqueCode);
+
+    List<PdProductStockUniqueCode> selectList(PdProductStockUniqueCode pdProductStockUniqueCode);
 }

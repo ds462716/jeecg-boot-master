@@ -16,4 +16,6 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 public interface PdProductStockUniqueCodeMapper extends BaseMapper<PdProductStockUniqueCode> {
 
     Page<PdProductStockUniqueCode> selectListByPage(Page<PdProductStockUniqueCode> page, @Param("entity") PdProductStockUniqueCode entity);
+
+    List<PdProductStockUniqueCode> selectList(PdProductStockUniqueCode pdProductStockUniqueCode);
 }

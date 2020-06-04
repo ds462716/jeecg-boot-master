@@ -233,4 +233,9 @@ public class PdProductStockUniqueCodeServiceImpl extends ServiceImpl<PdProductSt
     public Page<PdProductStockUniqueCode> selectList(Page<PdProductStockUniqueCode> page, PdProductStockUniqueCode pdProductStockUniqueCode) {
         return baseMapper.selectListByPage(page,pdProductStockUniqueCode);
     }
+
+    @Override
+    public List<PdProductStockUniqueCode> selectList(PdProductStockUniqueCode pdProductStockUniqueCode) {
+        return baseMapper.selectList(pdProductStockUniqueCode);
+    }
 }
