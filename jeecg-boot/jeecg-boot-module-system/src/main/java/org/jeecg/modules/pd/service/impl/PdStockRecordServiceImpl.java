@@ -58,6 +58,8 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
     @Autowired
     private PdPackageRecordMapper pdPackageRecordMapper;
     @Autowired
+    private IPdProductStockUniqueCodeService pdProductStockUniqueCodeService;
+    @Autowired
     private IPdProductStockTotalService pdProductStockTotalService;
     @Autowired
     private IPdProductStockService pdProductStockService;
@@ -563,12 +565,46 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
 
             Set<String> packageRecordIdSet = new HashSet<>();
 
-            // 0.更新申领单或调拨单 发货数量
             if (CollectionUtils.isNotEmpty(pdStockRecordDetailList)) {
+
+                //0.0校验唯一码是否已被出库 TODO
+                boolean bool = true;
+                List<String> message = new ArrayList<>();
+                for (PdStockRecordDetail entity : pdStockRecordDetailList) {
+                    if (PdConstant.CODE_PRINT_TYPE_1.equals(pdStockRecord.getBarCodeType())) {
+                        PdProductStockUniqueCode code = new PdProductStockUniqueCode();
+                        code.setId(entity.getRefBarCode());
+                        code.setProductStockId(entity.getProductStockId());
+                        List<PdProductStockUniqueCode> codeList = pdProductStockUniqueCodeService.selectList(code);
+                        if (codeList == null || codeList.size() <= 0) {
+                            bool = false;
+                            message.add(entity.getRefBarCode());
+                        }
+                    }
+                }
+                if(!bool){
+                    result.put("code", PdConstant.FAIL_500);
+                    result.put("message", "唯一码[" + String.join(",", message) + "]已被出库，不能再次出库！");
+                    return result;
+                }
+
                 Double arrivalApplyCount = 0D;
                 Double arrivalAllocationCount = 0D;
                 for (PdStockRecordDetail entity : pdStockRecordDetailList) {
-                    //更新申领单发货数量
+//                    //0.0校验唯一码是否已被出库 TODO
+//                    if(PdConstant.CODE_PRINT_TYPE_1.equals(pdStockRecord.getBarCodeType())){
+//                        PdProductStockUniqueCode code = new PdProductStockUniqueCode();
+//                        code.setId(entity.getRefBarCode());
+//                        code.setProductStockId(entity.getProductStockId());
+//                        List<PdProductStockUniqueCode> codeList = pdProductStockUniqueCodeService.selectList(code);
+//                        if(codeList == null || codeList.size() <= 0){
+//                            result.put("code", PdConstant.FAIL_500);
+//                            result.put("message", "唯一码["+entity.getRefBarCode()+"]，产品名称["+entity.getProductName()+"]已被出库，不能再次出库！");
+//                            return result;
+//                        }
+//                    }
+
+                    //0.1更新申领单发货数量
                     if (oConvertUtils.isNotEmpty(pdStockRecord.getApplyNo())) {
                         PdApplyDetail pdApplyDetail = new PdApplyDetail();
                         pdApplyDetail.setProductId(entity.getProductId());
@@ -578,7 +614,7 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
                         arrivalApplyCount = arrivalApplyCount + entity.getProductNum();
                     }
 
-                    //更新调拨单发货数量
+                    //0.2更新调拨单发货数量
                     if (oConvertUtils.isNotEmpty(pdStockRecord.getAllocationNo())) {
                         PdAllocationDetail pdAllocationDetail = new PdAllocationDetail();
                         pdAllocationDetail.setProductId(entity.getProductId());
@@ -588,13 +624,13 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
                         arrivalAllocationCount = arrivalAllocationCount + entity.getProductNum();
                     }
 
-                    // 取定数包打包记录ID
+                    //0.3取定数包打包记录ID
                     if(oConvertUtils.isNotEmpty(entity.getPackageRecordId())){
                         packageRecordIdSet.add(entity.getPackageRecordId());
                     }
                 }
 
-                //更新申领单发货总数量
+                //0.4更新申领单发货总数量
                 if (oConvertUtils.isNotEmpty(pdStockRecord.getApplyNo())) {
                     PdApplyOrder pdApplyOrder = new PdApplyOrder();
                     pdApplyOrder.setApplyNo(pdStockRecord.getApplyNo());
@@ -602,7 +638,7 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
                     pdApplyOrderMapper.additionArrivalCount(pdApplyOrder);
                 }
 
-                //更新调拨单发货总数量
+                //0.5更新调拨单发货总数量
                 if (oConvertUtils.isNotEmpty(pdStockRecord.getAllocationNo())) {
                     PdAllocationRecord pdAllocationRecord = new PdAllocationRecord();
                     pdAllocationRecord.setAllocationNo(pdStockRecord.getAllocationNo());
