@@ -731,7 +731,7 @@
 
           let selectedArrays = this.$refs.pdDosageDetail.selectedRowIds;
           if(selectedArrays <= 0){
-            this.$message.warning("请勾选需要退费的产品");
+            this.$message.warning("请勾选需要使用的产品");
             return;
           }
           //查找出勾选的产品信息

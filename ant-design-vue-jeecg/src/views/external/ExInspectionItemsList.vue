@@ -41,7 +41,7 @@
     
     <!-- 操作按钮区域 -->
      <div class="table-operator">
-       <a-button @click="batchUsePackageDetail" type="primary" icon="edit">批量扣减</a-button>
+       <a-button @click="batchUsePackageDetail" :loading="loading" type="primary" icon="edit">批量扣减</a-button>
       <!-- <a-dropdown v-if="selectedRowKeys.length > 0">
         <a-menu slot="overlay">
         </a-menu>
@@ -71,10 +71,9 @@
         @change="handleTableChange">
 
         <span slot="action" slot-scope="text, record">
-          <a @click="editUsePackageDetail(record)" v-bind:disabled="record.acceptStatus=='0'">重新扣减</a>&nbsp;&nbsp;&nbsp;
+          <a @click="editUsePackageDetail(record)" :loading="loading" v-bind:disabled="record.acceptStatus=='0'">重新扣减</a>&nbsp;&nbsp;&nbsp;
          <a  @click="queryUsePackageDetail(record)">查看检验包详情</a>
         </span>
-
       </a-table>
     </div>
 
@@ -256,6 +255,7 @@
       },
       //批量扣减
       batchUsePackageDetail:function() {
+        this.loading = true;
         if (this.selectedRowKeys.length <= 0) {
           this.$message.warning('请勾选需要扣减的记录！');
           return;
@@ -274,6 +274,7 @@
           }else{
             this.$message.warning(res.message)
           }
+          this.loading = false;
         })
 
       },
@@ -281,6 +282,7 @@
 
       //重新扣减
       editUsePackageDetail: function (record) {
+        this.loading = true;
         httpAction(this.url.editUsePackage,record,"post").then((res)=>{
           if(res.success){
             this.$message.success(res.message)
@@ -288,6 +290,7 @@
           }else{
             this.$message.warning(res.message)
           }
+          this.loading = false;
         })
       },
       //查询检验包详情
