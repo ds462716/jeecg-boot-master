@@ -185,6 +185,7 @@
       close () {
         this.$emit('close');
         this.visible = false;
+        this.goodsCode = "";
       },
       pinyinTran(e){
         let val = e.target.value;
@@ -225,6 +226,7 @@
       },
       handleOk () {
         const that = this;
+        this.goodsCode = this.form.getFieldValue("subCode")+this.form.getFieldValue("codeSuffix");
         // 触发表单验证
         this.form.validateFields((err, values) => {
           if (!err) {
