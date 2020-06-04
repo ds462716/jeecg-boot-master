@@ -684,3 +684,19 @@ UPDATE sys_dict_item SET item_text = '批次码退货' WHERE id='126584888783679
  -- add by mcb 2020年6月3日14:09:25 添加试剂使用类型
 ALTER TABLE `pd_use_package_detail`
 ADD COLUMN `use_type` varchar(4) CHARACTER SET utf8 COLLATE utf8_general_ci NULL COMMENT '试剂使用类型  默认空，1：住院   2：门诊' AFTER `depart_id`;
+
+-- add by zxh 防止业务部重复提交   添加试剂使用类型
+ALTER TABLE `pd_rejected` DROP INDEX `number`
+alter table pd_purchase_order add unique(order_no);
+alter table pd_stock_record add unique(record_no);
+alter table pd_rejected add unique(rejected_no);
+alter table pd_package add unique(package_code);
+alter table pd_package_record add unique(package_bar_code);
+alter table pd_apply_order add unique(apply_no);
+alter table pd_allocation_record add unique(allocation_no);
+alter table pd_product_stock_check add unique(check_no);
+alter table pd_purchase_order_merge add unique(merge_order_no);
+alter table pd_use_package add unique(code);
+alter table pd_dosage add unique(dosage_no);
+
+
