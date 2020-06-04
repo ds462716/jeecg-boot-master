@@ -236,6 +236,6 @@ public class PdProductStockUniqueCodeServiceImpl extends ServiceImpl<PdProductSt
 
     @Override
     public List<PdProductStockUniqueCode> selectList(PdProductStockUniqueCode pdProductStockUniqueCode) {
-        return baseMapper.selectList(pdProductStockUniqueCode);
+        return baseMapper.selectListOne(pdProductStockUniqueCode);
     }
 }

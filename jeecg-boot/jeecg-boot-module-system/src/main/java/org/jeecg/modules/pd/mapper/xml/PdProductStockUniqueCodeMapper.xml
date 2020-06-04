@@ -25,7 +25,7 @@
     </select>
 
 
-    <select id="selectList"  resultType="org.jeecg.modules.pd.entity.PdProductStockUniqueCode">
+    <select id="selectListOne"  resultType="org.jeecg.modules.pd.entity.PdProductStockUniqueCode">
         SELECT
         *
         FROM pd_product_stock_unique_code a

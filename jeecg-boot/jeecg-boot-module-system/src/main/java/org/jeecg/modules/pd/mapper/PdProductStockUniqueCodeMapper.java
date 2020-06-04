@@ -17,5 +17,5 @@ public interface PdProductStockUniqueCodeMapper extends BaseMapper<PdProductStoc
 
     Page<PdProductStockUniqueCode> selectListByPage(Page<PdProductStockUniqueCode> page, @Param("entity") PdProductStockUniqueCode entity);
 
-    List<PdProductStockUniqueCode> selectList(PdProductStockUniqueCode pdProductStockUniqueCode);
+    List<PdProductStockUniqueCode> selectListOne(PdProductStockUniqueCode pdProductStockUniqueCode);
 }
