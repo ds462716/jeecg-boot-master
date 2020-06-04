@@ -296,6 +296,7 @@ public interface PdConstant {
 	public final static String DOSAGE_TYPE_1 = "1";//普通码使用
 
 	//试剂使用类型
+	public final static String USE_TYPE_0="0";//通用
 	public final static String USE_TYPE_1="1";//住院使用
 	public final static String USE_TYPE_2="2";//门诊使用
 
