@@ -699,4 +699,9 @@ alter table pd_purchase_order_merge add unique(merge_order_no);
 alter table pd_use_package add unique(code);
 alter table pd_dosage add unique(dosage_no);
 
-
+-- add 2020年6月4日14:09:25 by mcb 字段設置為自增
+ALTER TABLE `pd_dosage_detail`
+MODIFY COLUMN `id` int(64) NOT NULL AUTO_INCREMENT FIRST;
+-- add 2020年6月4日14:09:25 by mcb 字段設置為默認0
+ALTER TABLE `jeecg-boot`.`pd_bottle_inf`
+MODIFY COLUMN `spec_num` double(20, 4) UNSIGNED ZEROFILL NULL DEFAULT 0 COMMENT '实际使用规格数量' AFTER `del_flag`;
