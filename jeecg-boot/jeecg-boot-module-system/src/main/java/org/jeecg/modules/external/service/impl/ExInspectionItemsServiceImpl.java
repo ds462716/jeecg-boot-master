@@ -81,7 +81,7 @@ public class ExInspectionItemsServiceImpl extends ServiceImpl<ExInspectionItemsM
                     List<PdUsePackageDetail> pdUsePackageDetails = pdUsePackageDetailService.queryPdUsePackageList(detail);
                     if (pdUsePackageDetails != null && pdUsePackageDetails.size() > 0) {
                         try {
-                            pdProductStockTotalService.lisUpdateUseStock(testDpeartId, pdUsePackageDetails);
+                            pdProductStockTotalService.lisUpdateUseStock(items,testDpeartId, pdUsePackageDetails);
                             items.setRemarks("");
                             items.setAcceptStatus(PdConstant.ACCEPT_STATUS_0);//已扣减
                         } catch (Exception e) {
@@ -92,7 +92,7 @@ public class ExInspectionItemsServiceImpl extends ServiceImpl<ExInspectionItemsM
                         }
                     } else {
                         items.setRemarks("检验项目用量未配置:"+pdUsePackage.getRemarks());
-                        items.setAcceptStatus(PdConstant.ACCEPT_STATUS_1);// 0：已扣减  1：未配置检验用量  2:未扣减
+                        items.setAcceptStatus(PdConstant.ACCEPT_STATUS_3);// 0：已扣减  1：未配置检验用量  2:未扣减
                     }
                 }
             }else{

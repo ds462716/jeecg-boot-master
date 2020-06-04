@@ -303,7 +303,7 @@
         dictOptions:{
             nestatStatus:[],
         },
-        tableScroll:{x :13*147+50},
+        tableScroll:{x :3000},
       }
     },
     computed: {

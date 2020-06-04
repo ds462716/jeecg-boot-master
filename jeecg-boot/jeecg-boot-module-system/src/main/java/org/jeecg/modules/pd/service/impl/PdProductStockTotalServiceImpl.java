@@ -8,6 +8,7 @@ import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.constant.PdConstant;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.oConvertUtils;
+import org.jeecg.modules.external.entity.ExInspectionItems;
 import org.jeecg.modules.external.entity.PdBottleInf;
 import org.jeecg.modules.external.mapper.PdBottleInfMapper;
 import org.jeecg.modules.external.service.IExDeductuinDosageService;
@@ -683,13 +684,21 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
      */
     @Transactional
     @Override
-    public String lisUpdateUseStock(String testDepartment,List<PdUsePackageDetail> detailList) {
+    public String lisUpdateUseStock(ExInspectionItems item, String departId,List<PdUsePackageDetail> detailList) {
         //HisDepartInf hisDepartInf=hisDepartService.queryHisDepart(testDepartment);
-        String departId=testDepartment;//
                        for(PdUsePackageDetail detail:detailList) {
                            String productId = detail.getProductId();//产品ID
                            String productFlag = detail.getProductFlag();
                            Double count = detail.getCount();//配置的使用量
+                           String  useType=detail.getUseType();//试剂使用类型
+                           String patientType=item.getPatientType();//病人类型
+                           if(StringUtils.isNotEmpty(useType) && StringUtils.isNotEmpty(patientType)){
+                               if(PdConstant.USE_TYPE_1.equals(useType) && !PdConstant.PATIENT_TYPE_1.equals(patientType)) {//住院病人
+                                  continue;
+                               }else if(PdConstant.USE_TYPE_2.equals(useType) && !PdConstant.PATIENT_TYPE_2.equals(patientType)){//门诊病人
+                                   continue;
+                               }
+                           }
                            PdProductStockTotal stockTotal = new PdProductStockTotal();
                            stockTotal.setDepartId(departId);
                            stockTotal.setProductId(productId);
@@ -731,7 +740,6 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
                                if (CollectionUtils.isEmpty(productStocks_i)) {
                                    throw new RuntimeException("扣减库存失败，根据产品[" + detail.getProductName() + "]获取不到已开瓶的库存明细信息");
                                }else{
-
                                    for(int i=0;i<productStocks_i.size();i++){
                                       int size= productStocks_i.size();
                                        PdProductStock  psii= productStocks_i.get(i);
@@ -770,47 +778,11 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
                                                }
                                            }
                                        }
-                                   }
-                                        /*for(PdProductStock psii :productStocks_i ) {
-                                            Double specNum = psii.getSpecNum();
-                                                if (specNum >= count) {   //如果大于或等于要扣减的规格库存用量
-                                                    Double newSpecNum = specNum - count;
-                                                    if (newSpecNum >= 0.00) { //如果扣完后规格数量大于0，则继续扣库存明细表规格数量
-                                                        //更新明细库存
-                                                        psii.setSpecNum(newSpecNum);
-                                                        pdProductStockMapper.updateById(psii);
-                                                    }
-                                                    // 更新开瓶记录表数量
-                                                    PdBottleInf pdBottleInf = new PdBottleInf();
-                                                    pdBottleInf.setRefBarCode(psii.getRefBarCode());
-                                                    pdBottleInf.setSpecNum(count);
-                                                    pdBottleInfMapper.updateSpecNum(pdBottleInf);
-                                                    break;
-                                                } else {
-                                                    PdBottleInf pdBottleInf = new PdBottleInf();
-                                                    pdBottleInf.setRefBarCode(psii.getRefBarCode());
-                                                    if (specNum > 0.00) {
-                                                        count = count - specNum;
-                                                        psii.setSpecNum(0.00);
-                                                        pdProductStockMapper.updateById(psii);
-                                                        // 更新开瓶记录表数量
-                                                        pdBottleInf.setSpecNum(specNum);
-                                                        pdBottleInfMapper.updateSpecNum(pdBottleInf);
-                                                    } else {
-                                                        // 更新开瓶记录表数量
-                                                        pdBottleInf.setSpecNum(count);
-                                                        pdBottleInfMapper.updateSpecNum(pdBottleInf);
-                                                        break;
-                                                    }
-                                                }
-                                        }*/
-
-
-
-
+                                    }
                                   }
-                             }
-                       }
+                                }
+
+                           }
         return PdConstant.TRUE;
     }
 
@@ -1004,6 +976,7 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
                                        psii.setPackageId(packageId);
                                        psii.setProductNum(count);
                                        productStockList.add(psii);
+                                       break;
                                        }else{
                                          count=count-specNum;
                                          psii.setSpecNum(0.00);

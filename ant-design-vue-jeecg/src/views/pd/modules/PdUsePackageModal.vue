@@ -24,11 +24,6 @@
               <a-input :disabled="disableSubmit" v-decorator="[ 'name', validatorRules.name]"  autocomplete="off" @change="pinyinTran" placeholder="请输入检验项目名称"></a-input>
             </a-form-item>
           </a-col>
-          <!--<a-col :span="12">-->
-            <!--<a-form-item label="产品总数" :labelCol="labelCol" :wrapperCol="wrapperCol">-->
-              <!--<a-input-number v-decorator="[ 'sum', validatorRules.sum]" placeholder="0" disabled="disabled" style="width: 100%"/>-->
-            <!--</a-form-item>-->
-          <!--</a-col>-->
           <a-col :span="12">
             <a-form-item
               label="检验科室名称"
@@ -50,9 +45,10 @@
           </a-col>
           <a-col :lg="12">
             <a-form-item label="扣减类型" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-select     v-decorator="[ 'deductuinType', validatorRules.deductuinType]" placeholder="请选择扣减类型">
+             <a-select     v-decorator="[ 'deductuinType', validatorRules.deductuinType]" placeholder="请选择扣减类型">
                 <a-select-option value="0">自动扣减</a-select-option>
                 <a-select-option value="1">人工扣减</a-select-option>
+                <a-select-option value="2">无需扣减</a-select-option>
               </a-select>
             </a-form-item>
           </a-col>
@@ -104,6 +100,7 @@
             :actionButton="false"
             :disabled="disableSubmit"
             @valueChange="valueChange"
+            @change="usePackagedandleChange"
             style="text-overflow: ellipsis;"
           />
           <!--<a-row style="margin-top:10px;text-align: right;padding-right: 5%">
@@ -135,6 +132,8 @@
   import {httpAction, deleteAction, getAction} from '@/api/manage'
   import PdChooseProductListModel from "./PdChooseProductListModel"
   import {queryPdDepartTreeList} from '@/api/api'
+  import {initDictOptions, filterMultiDictText} from '@/components/dict/JDictSelectUtil'
+
   export default {
     name: 'PdUsePackageModal',
     mixins: [JEditableTableMixin],
@@ -255,6 +254,16 @@
               defaultValue: '',
               validateRules: [{ required: true, message: '${title}不能为空' },{pattern: '^(([1-9]{1}\\d*)|([0]{1}))(\\.(\\d){1,4})?$',message: '${title}的格式不正确' }]
             },
+
+            { title: '使用类型',
+              key: 'useType',
+              type: FormTypes.select,
+              width:"150px",
+              options: [],
+              allowSearch:true,
+              placeholder: '${title}'
+            },
+
           ]
         },
         url: {
@@ -289,6 +298,7 @@
       },
       /** 调用完edit()方法之后会自动调用此方法 */
       editAfter() {
+        this.usePackagedandleChange();
         this.loadTree();
         let fieldval = pick(this.model,'code','name','py','wb','zdy','remarks','deductuinType');
         this.$nextTick(() => {
@@ -467,7 +477,8 @@
           supplierName: row.supplierName,
           productFlag:row.productFlag,
           productFlagName:row.productFlag==0?"耗材":"试剂",
-          count: 1
+          count: 1,
+          options:this.options
         }
         this.pdUsePackageDetailTable.dataSource.push(data);
         this.$refs.pdUsePackageDetail.add();
@@ -487,6 +498,17 @@
             }
           }
         });
+      },
+      usePackagedandleChange(){ //试剂使用类型
+        initDictOptions('use_type').then((res) => {
+          if (res.success) {
+            this.pdUsePackageDetailTable.columns.forEach((item, idx) => {
+              if(item.key === "useType"){
+                item.options = res.result;
+              }
+            })
+          }
+        })
       },
     }
   }

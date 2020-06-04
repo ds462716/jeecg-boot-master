@@ -265,13 +265,14 @@ public interface PdConstant {
 
 	//试剂扣减状态
 	public final static String ACCEPT_STATUS_0="0";//已扣减
-	public final static String ACCEPT_STATUS_1="1";//未配置检验用量
+	public final static String ACCEPT_STATUS_1="1";//未配置检验项目
 	public final static String ACCEPT_STATUS_2="2";//未扣减
-
+	public final static String ACCEPT_STATUS_3="3";//未配置试剂用量
 
 	//试剂扣减类型
 	public final static String DEDUCTUIN_TYPE_0="0";//自动扣减
 	public final static String DEDUCTUIN_TYPE_1="1";//人工扣减
+	public final static String DEDUCTUIN_TYPE_2="2";//无需扣减
 
 	//生成条码的类型
 	public final static String CODE_PRINT_TYPE_0 = "0";//批量打印的码
@@ -289,5 +290,13 @@ public interface PdConstant {
 	//使用类型
 	public final static String DOSAGE_TYPE_0 = "0";//唯一码使用
 	public final static String DOSAGE_TYPE_1 = "1";//普通码使用
+
+	//试剂使用类型
+	public final static String USE_TYPE_1="1";//住院使用
+	public final static String USE_TYPE_2="2";//门诊使用
+
+	//病人类型
+	public final static String PATIENT_TYPE_1="住院";//住院病人
+	public final static String PATIENT_TYPE_2="门诊";//门诊病人
 
 }
