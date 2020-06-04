@@ -567,7 +567,7 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
 
             if (CollectionUtils.isNotEmpty(pdStockRecordDetailList)) {
 
-                //0.0校验唯一码是否已被出库 TODO
+                //0.0校验唯一码是否已被出库
                 boolean bool = true;
                 List<String> message = new ArrayList<>();
                 for (PdStockRecordDetail entity : pdStockRecordDetailList) {
@@ -591,19 +591,6 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
                 Double arrivalApplyCount = 0D;
                 Double arrivalAllocationCount = 0D;
                 for (PdStockRecordDetail entity : pdStockRecordDetailList) {
-//                    //0.0校验唯一码是否已被出库 TODO
-//                    if(PdConstant.CODE_PRINT_TYPE_1.equals(pdStockRecord.getBarCodeType())){
-//                        PdProductStockUniqueCode code = new PdProductStockUniqueCode();
-//                        code.setId(entity.getRefBarCode());
-//                        code.setProductStockId(entity.getProductStockId());
-//                        List<PdProductStockUniqueCode> codeList = pdProductStockUniqueCodeService.selectList(code);
-//                        if(codeList == null || codeList.size() <= 0){
-//                            result.put("code", PdConstant.FAIL_500);
-//                            result.put("message", "唯一码["+entity.getRefBarCode()+"]，产品名称["+entity.getProductName()+"]已被出库，不能再次出库！");
-//                            return result;
-//                        }
-//                    }
-
                     //0.1更新申领单发货数量
                     if (oConvertUtils.isNotEmpty(pdStockRecord.getApplyNo())) {
                         PdApplyDetail pdApplyDetail = new PdApplyDetail();
