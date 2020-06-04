@@ -209,12 +209,14 @@ public class ExInspectionItemsController extends JeecgController<ExInspectionIte
 				 } else {
 					 items.setRemarks("检验用量未配置:"+pdUsePackage.getRemarks());
 					 items.setAcceptStatus(PdConstant.ACCEPT_STATUS_3);// 0：已扣减  1：未配置检验用量  2:未扣减
+					 exInspectionItemsService.updateById(items);
 					 return Result.error("扣減用量失敗:检验项目用量未配置");
 				 }
 			 }
 		 }else{
 			 items.setRemarks("检验项目未配置");
 			 items.setAcceptStatus(PdConstant.ACCEPT_STATUS_1);// 0：已扣减  1：未配置检验用量  2:未扣减
+			 exInspectionItemsService.updateById(items);
 			 return Result.error("扣減用量失敗:检验项目未配置");
 		 }
 	 	 exInspectionItemsService.updateById(items);
