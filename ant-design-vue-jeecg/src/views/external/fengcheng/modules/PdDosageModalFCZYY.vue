@@ -93,7 +93,8 @@
               </j-editable-table>
               <a-row style="margin-top:10px;text-align: right;padding-right: 5%">
                 <span style="font-weight: bold;font-size: large;padding-right: 5%">总数量：{{ totalSum }}</span>
-                <span style="font-weight: bold;font-size: large">总金额：{{ totalPrice }}</span>
+                <span style="font-weight: bold;font-size: large;padding-right: 5%">总金额：{{ totalPrice }}</span>
+                <span style="font-weight: bold;font-size: large">计费总金额：{{ jfTotalPrice }}</span>
               </a-row>
             </a-tab-pane>
           </a-tabs>
@@ -289,6 +290,7 @@
         hyCharged: true,
         totalSum:'0',
         totalPrice:'0.0000',
+        jfTotalPrice:'0.0000',
         activeKey: 'pdDosageDetail',
         refKeys: ['pdDosageDetail',],
         sRowIds:[],//选中行id
@@ -423,6 +425,7 @@
                 }
                 this.totalSum = res.result.totalSum;
                 this.totalPrice = res.result.totalPrice;
+                this.jfTotalPrice = res.result.jfTotalPrice;
                 this.pdDosageDetailTable.dataSource = res.result.pdDosageDetails || [];
                 let fieldval = pick(this.initData,'dosageNo','dosageDate','departName','outHuoweiCode','dosageByName','inHospitalNo','patientInfo','operativeNumber','operationName','outpatientNumber','medicalRecordNo','sqrtDoctorId','oprDeptId','oprDeptName','exeDeptId','exeDeptName','surgeonName','patientDetailInfo','hospitalizationsNum','remarks','extension1','extension2','subordinateWardName','visitNo');
                 this.form.setFieldsValue(fieldval);
@@ -624,6 +627,7 @@
         if(this.sRowIds.length <= 0){
           this.totalSum = "0";
           this.totalPrice = "0.0000";
+          this.jfTotalPrice = "0.0000";
           return;
         }
 
@@ -631,14 +635,19 @@
           let {values} = this.$refs.pdDosageDetail.getValuesSync({validate: false});
           let totalSum = 0;
           let totalPrice = 0;
+          let jfTotalPrice = 0;
           values.forEach((item, idx) => {
             if(this.sRowIds.indexOf(item.id)>=0){
               totalSum = totalSum + Number(item.dosageCount);
               totalPrice = totalPrice + Number(item.amountMoney);
+              if(item.isCharge == "0"){
+                jfTotalPrice = jfTotalPrice + Number(item.amountMoney);
+              }
             }
           })
           this.totalSum = totalSum;
           this.totalPrice = totalPrice.toFixed(4);
+          this.jfTotalPrice = jfTotalPrice.toFixed(4);
         })
       },
       // 表格数据变更

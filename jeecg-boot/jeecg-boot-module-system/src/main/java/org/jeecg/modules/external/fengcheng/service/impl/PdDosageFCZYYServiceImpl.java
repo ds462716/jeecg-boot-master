@@ -74,6 +74,14 @@ public class PdDosageFCZYYServiceImpl extends ServiceImpl<PdDosageMapper, PdDosa
             List<PdDosageDetail> pdDosageDetails = pdDosageDetailService.selectList(pdDosageDetail);
             pdDosage.setPdDosageDetails(pdDosageDetails);
 
+            BigDecimal jfTotalPrice = new BigDecimal(0);
+            for (PdDosageDetail item : pdDosageDetails) {
+                if(PdConstant.IS_CHARGE_0.equals(item.getIsCharge())){
+                    jfTotalPrice = jfTotalPrice.add(item.getAmountMoney());
+                }
+            }
+            pdDosage.setJfTotalPrice(jfTotalPrice);
+
         } else {  // 新增页面
             pdDosage.setDepartId(sysDepart.getId());
             pdDosage.setDepartName(sysDepart.getDepartName());

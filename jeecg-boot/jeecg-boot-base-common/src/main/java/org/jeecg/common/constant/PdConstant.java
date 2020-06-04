@@ -227,6 +227,10 @@ public interface PdConstant {
 	public final static String CATEGORY_TYPE_0 = "0";
 	public final static String CATEGORY_TYPE_1 = "1";
 
+	// 产品是否计费
+	public final static String  IS_CHARGE_0 ="0";//计费
+	public final static String  IS_CHARGE_1 ="1";//补计费
+
 
 	//产品属性类型
 	public final static String PROD_ATTR_1 = "1";//产品

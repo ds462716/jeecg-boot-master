@@ -237,6 +237,9 @@ public class PdDosage extends BaseEntity {
     @TableField(exist = false)
     private String departIds;
 
+
+    @TableField(exist = false)
+    private BigDecimal jfTotalPrice;//计费总金额
     //冗余
     /*不是明细表字段*/
     @TableField(exist = false)
