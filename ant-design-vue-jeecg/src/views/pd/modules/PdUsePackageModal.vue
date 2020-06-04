@@ -380,6 +380,10 @@
               this.$message.error("产品["+row.productName+"]数量必须大于0！");
               return;
             }
+            if(row.useType=='' || row.useType==null){
+              this.$message.error("产品["+row.productName+"]请选择使用类型！");
+              return;
+            }
           }
 
           // 发起请求
