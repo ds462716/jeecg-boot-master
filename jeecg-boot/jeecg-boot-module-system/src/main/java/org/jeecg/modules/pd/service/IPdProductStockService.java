@@ -44,7 +44,7 @@ public interface IPdProductStockService extends IService<PdProductStock> {
 	 */
 	public void updateProductStock(PdProductStock productStock);
 
-	List<PdProductStock> getByOriginalProduct(PdProductStock pdProductStock);
+	Page<PdProductStock> getByOriginalProduct(Page<PdProductStock> pageList, PdProductStock pdProductStock);
 
     /**
      * 首页查询库存总数量

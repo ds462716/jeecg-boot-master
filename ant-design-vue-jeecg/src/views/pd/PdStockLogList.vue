@@ -67,8 +67,8 @@
         rowKey="id"
         :columns="columns"
         :dataSource="dataSource"
+        :pagination="ipagination"
         :loading="loading"
-        :pagination="false"
         :customRow="onClickRow"
         :rowSelection="{fixed:false,type:'radio',selectedRowKeys:selectedRowKeys, onChange: onSelectChange}"
         @change="handleTableChange">
@@ -95,6 +95,7 @@
   import { getByOriginalProduct } from '@/api/api'
   import { httpAction } from '@/api/manage'
   import {initDictOptions, filterMultiDictText} from '@/components/dict/JDictSelectUtil'
+  import { getAction } from  '@/api/manage'
 
   export default {
     name: "PdStockLogList",
@@ -166,10 +167,9 @@
             dataIndex: 'registration'
           },
         ],
-        dataSource :[],
         // 表头
         url: {
-          list: "/pd/pdStocklog/getByOriginalProduct",
+          list: "/pd/pdStockLog/getByOriginalProduct",
           getProdFlowInfo: "/pd/pdStockLog/getProdFlowInfo",
         },
         dictOptions:{
@@ -181,19 +181,20 @@
 
     },
     methods: {
-      loadData(flag) {
-        this.dataSource = [];
-        if(flag){
-          this.loading = true;
-          getByOriginalProduct(this.queryParam).then((res) => {
-            if (res.success) {
-              this.dataSource = res.result
-              this.loading = false;
-            }
-          })
-        }else{
-          this.loading = false;
+      loadData(arg) {
+        //加载数据 若传入参数1则加载第一页的内容
+        if (arg === 1) {
+          this.ipagination.current = 1;
         }
+        let params = this.getQueryParams();//查询条件
+        this.loading = true;
+        getAction(this.url.list, params).then((res) => {
+          if (res.success) {
+            this.dataSource = res.result.records;
+            this.ipagination.total = res.result.total;
+          }
+          this.loading = false;
+        })
       },
       /**
        * 点击行选中checkbox

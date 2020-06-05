@@ -408,39 +408,39 @@
         LEFT JOIN pd_dosage_detail p ON a.product_id = p.product_id   AND a.product_bar_code = p.product_bar_code AND a.batch_no = p.batch_no
         LEFT JOIN pd_dosage s ON p.dosage_id = s.id
         <where>
-            1 = 1
-            <if test="departId != null and departId != ''">
-                AND a.depart_id = #{departId}
+			a.del_flag = #{entity.DEL_FLAG_NORMAL}
+            <if test="entity.departId != null and entity.departId != ''">
+                AND a.depart_id = #{entity.departId}
             </if>
-            <if test="departParentId != null and departParentId != ''">
-                AND a.depart_parent_id = #{departParentId}
+            <if test="entity.departParentId != null and entity.departParentId != ''">
+                AND a.depart_parent_id = #{entity.departParentId}
             </if>
-            <if test="number != null and number != ''">
-                AND c.number LIKE concat('%',#{number},'%')
+            <if test="entity.number != null and entity.number != ''">
+                AND c.number LIKE concat('%',#{entity.number},'%')
             </if>
-            <if test="batchNo != null and batchNo != ''">
-                AND a.batch_no = #{batchNo}
+            <if test="entity.batchNo != null and entity.batchNo != ''">
+                AND a.batch_no = #{entity.batchNo}
             </if>
-			<if test="nestatStatus != null and nestatStatus != ''">
-				AND a.nestat_status = #{nestatStatus}
+			<if test="entity.nestatStatus != null and entity.nestatStatus != ''">
+				AND a.nestat_status = #{entity.nestatStatus}
 			</if>
-            <if test="version != null and version != ''">
-                AND c.version = #{version}
+            <if test="entity.version != null and entity.version != ''">
+                AND c.version = #{entity.version}
             </if>
-            <if test="spec != null and spec != ''">
-                AND c.spec = #{spec}
+            <if test="entity.spec != null and entity.spec != ''">
+                AND c.spec = #{entity.spec}
             </if>
-            <if test="productName != null and productName != ''">
-                AND c.name LIKE CONCAT('%', #{productName}, '%')
+            <if test="entity.productName != null and entity.productName != ''">
+                AND c.name LIKE CONCAT('%', #{entity.productName}, '%')
             </if>
-			<if test="registration != null and registration != ''">
-				AND c.registration LIKE concat('%',#{registration},'%')
+			<if test="entity.registration != null and entity.registration != ''">
+				AND c.registration LIKE concat('%',#{entity.registration},'%')
 			</if>
-			<if test="productFlag != null and productFlag != ''">
-				AND c.product_flag LIKE concat('%',#{productFlag},'%')
+			<if test="entity.productFlag != null and entity.productFlag != ''">
+				AND c.product_flag LIKE concat('%',#{entity.productFlag},'%')
 			</if>
-            <if test="inHospitalNo != null and inHospitalNo != ''">
-                AND s.in_hospital_no LIKE CONCAT('%', #{inHospitalNo}, '%')
+            <if test="entity.inHospitalNo != null and entity.inHospitalNo != ''">
+                AND s.in_hospital_no LIKE CONCAT('%', #{entity.inHospitalNo}, '%')
             </if>
         </where>
 		group  by a.product_id,a.product_bar_code,a.batch_no,a.exp_date

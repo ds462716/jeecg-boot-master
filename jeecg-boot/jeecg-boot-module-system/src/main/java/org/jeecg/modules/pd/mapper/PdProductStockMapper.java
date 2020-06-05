@@ -1,6 +1,7 @@
 package org.jeecg.modules.pd.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Param;
 import org.jeecg.modules.pd.entity.PdProductStock;
 import org.jeecg.modules.pd.vo.PdProductStockTotalPage;
@@ -54,7 +55,7 @@ public interface PdProductStockMapper extends BaseMapper<PdProductStock> {
 	 * @param pdProductStock
 	 * @return
 	 */
-	public List<PdProductStock> getByOriginalProduct(PdProductStock pdProductStock);
+	Page<PdProductStock> getByOriginalProduct(Page<PdProductStock> page, @Param("entity") PdProductStock pdProductStock);
 
 	/*获取总库存数量及当日入库存数量*/
 	Map<String,Object> queryProductStockCount(PdProductStock pdProductStock);

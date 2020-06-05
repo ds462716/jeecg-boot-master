@@ -87,8 +87,13 @@ public class LisInspectionItemsTaskJob implements Job {
                                 List<PdUsePackageDetail> pdUsePackageDetails = pdUsePackageDetailService.queryPdUsePackageList(detail);
                                 if (pdUsePackageDetails != null && pdUsePackageDetails.size() > 0) {
                                     try {
-                                        pdProductStockTotalService.lisUpdateUseStock(items,testDpeartId, pdUsePackageDetails);
-                                        items.setAcceptStatus(PdConstant.ACCEPT_STATUS_0);//已扣减
+                                        String bool= pdProductStockTotalService.lisUpdateUseStock(items,testDpeartId, pdUsePackageDetails);
+                                        if(!"true".equals(bool)){
+                                            items.setRemarks(items.getPatientType()+"病人用量未配置");
+                                            items.setAcceptStatus(PdConstant.ACCEPT_STATUS_2);//未扣减
+                                        }else{
+                                            items.setAcceptStatus(PdConstant.ACCEPT_STATUS_0);//已扣减
+                                        }
                                     } catch (Exception e) {
                                         e.getMessage();
                                         log.error("扣減用量失敗:" + e.getMessage());

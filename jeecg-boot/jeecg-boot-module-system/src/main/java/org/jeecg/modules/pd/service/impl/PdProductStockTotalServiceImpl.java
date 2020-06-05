@@ -686,19 +686,21 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
     @Override
     public String lisUpdateUseStock(ExInspectionItems item, String departId,List<PdUsePackageDetail> detailList) {
         //HisDepartInf hisDepartInf=hisDepartService.queryHisDepart(testDepartment);
+        String bool=PdConstant.FALSE;
                        for(PdUsePackageDetail detail:detailList) {
                            String productId = detail.getProductId();//产品ID
                            String productFlag = detail.getProductFlag();
                            Double count = detail.getCount();//配置的使用量
                            String  useType=detail.getUseType();//试剂使用类型
                            String patientType=item.getPatientType();//病人类型
-                           if(StringUtils.isNotEmpty(useType) && StringUtils.isNotEmpty(patientType)){
+                           if(!PdConstant.USE_TYPE_0.equals(useType)){
                                if(PdConstant.USE_TYPE_1.equals(useType) && !PdConstant.PATIENT_TYPE_1.equals(patientType)) {//住院病人
                                   continue;
                                }else if(PdConstant.USE_TYPE_2.equals(useType) && !PdConstant.PATIENT_TYPE_2.equals(patientType)){//门诊病人
                                    continue;
                                }
                            }
+                           bool=PdConstant.TRUE;
                            PdProductStockTotal stockTotal = new PdProductStockTotal();
                            stockTotal.setDepartId(departId);
                            stockTotal.setProductId(productId);
@@ -781,9 +783,8 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
                                     }
                                   }
                                 }
-
-                           }
-        return PdConstant.TRUE;
+                             }
+        return bool;
     }
 
   /*

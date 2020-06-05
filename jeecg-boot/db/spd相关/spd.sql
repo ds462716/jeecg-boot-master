@@ -705,3 +705,5 @@ MODIFY COLUMN `id` int(64) NOT NULL AUTO_INCREMENT FIRST;
 -- add 2020年6月4日14:09:25 by mcb 字段設置為默認0
 ALTER TABLE `jeecg-boot`.`pd_bottle_inf`
 MODIFY COLUMN `spec_num` double(20, 4) UNSIGNED ZEROFILL NULL DEFAULT 0 COMMENT '实际使用规格数量' AFTER `del_flag`;
+-- add 2020年6月4日14:20:25 by mcb 增加试剂使用类型  通用
+INSERT INTO `sys_dict_item` VALUES ('1268514157836136449', '1268073662989438977', '通用', '0', '', 1, 1, 'admin', '2020-06-04 20:05:18', NULL, '2020-06-04 20:05:18');

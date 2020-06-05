@@ -93,11 +93,11 @@ public class PdStockLogController extends JeecgController<PdStockLog, IPdStockLo
 									@RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
 									@RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
 									HttpServletRequest req) {
+		 Page<PdProductStock> page = new Page<>(pageNo,pageSize);
 		 LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
 		 pdProductStock.setDepartParentId(sysUser.getDepartParentId());
-		 pdProductStock.setProductFlag(PdConstant.PRODUCT_FLAG_0);
-		 List<PdProductStock> pdProductStocks  = pdProductStockService.getByOriginalProduct(pdProductStock);
-		 return Result.ok(pdProductStocks);
+		 Page<PdProductStock> pageList =pdProductStockService.getByOriginalProduct(page,pdProductStock);
+		 return Result.ok(pageList);
 	 }
 
 	 /**
