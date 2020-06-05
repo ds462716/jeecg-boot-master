@@ -116,8 +116,8 @@ public class PdProductStockServiceImpl extends ServiceImpl<PdProductStockMapper,
 	 * @return
 	 */
 	@Override
-	public List<PdProductStock> getByOriginalProduct(PdProductStock pdProductStock){
-		return pdProductStockMapper.getByOriginalProduct(pdProductStock);
+	public Page<PdProductStock> getByOriginalProduct(Page<PdProductStock> page, PdProductStock pdProductStock){
+		return pdProductStockMapper.getByOriginalProduct(page,pdProductStock);
 	}
 
 	@Override
