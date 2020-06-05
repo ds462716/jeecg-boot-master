@@ -247,7 +247,7 @@
           xs: { span: 24 },
           sm: { span: 8 },
         },
-        title:"操作",
+        title:"出库单",
         visible: false,
         record:{},
         outTypeList:{},

@@ -203,6 +203,7 @@
     </template>
 
     <pd-stock-record-out-print-modal ref="pdStockRecordOutPrintModal"></pd-stock-record-out-print-modal>
+    <pd-stock-record-out-print-modal-f-c-z-y-y ref="pdStockRecordOutPrintModalFCZYY"></pd-stock-record-out-print-modal-f-c-z-y-y>
     <ex-stock-record-out-print-modal ref="exStockRecordOutPrintModal"></ex-stock-record-out-print-modal>
   </j-modal>
 </template>
@@ -219,6 +220,7 @@
   import {stockScanCode} from '@/utils/barcode'
   import PdStockRecordOutPrintModal from "../print/PdStockRecordOutPrintModal";
   import ExStockRecordOutPrintModal from "../../external/print/ExStockRecordOutPrintModal";
+  import PdStockRecordOutPrintModalFCZYY from "../../external/fengcheng/print/PdStockRecordOutPrintModalFCZYY";
 
 
   const VALIDATE_NO_PASSED = Symbol()
@@ -228,6 +230,7 @@
     name: 'PdStockRecordOutModal',
     mixins: [JEditableTableMixin],
     components: {
+      PdStockRecordOutPrintModalFCZYY,
       ExStockRecordOutPrintModal,
       PdStockRecordOutPrintModal,
       ATextarea,
@@ -610,8 +613,8 @@
             res.result.auditDate = res.result.submitDate;
           }
           if(this.hospitalCode == "FCZYY"){
-            this.$refs.pdStockRecordOutPrintModal.show(res.result);
-            this.$refs.pdStockRecordOutPrintModal.title = this.stockOutText + "出库单";
+            this.$refs.pdStockRecordOutPrintModalFCZYY.show(res.result);
+            this.$refs.pdStockRecordOutPrintModalFCZYY.title = this.stockOutText + "出库单";
           }else if(this.hospitalCode == "GZSLYY"){
             this.$refs.exStockRecordOutPrintModal.show(res.result);
             this.$refs.exStockRecordOutPrintModal.title = this.stockOutText + "出库单";
