@@ -664,7 +664,7 @@ ADD COLUMN `py`  varchar(64) NULL COMMENT '拼音简码' AFTER `realname`,
 ADD COLUMN `wb`  varchar(64) NULL COMMENT '五笔简码' AFTER `py`,
 ADD COLUMN `zdy`  varchar(64) NULL COMMENT '自定义码' AFTER `wb`;
 -- add by zxh 2020年6月2日10:36:56  删除无用的表
-DROP TABLE `pd_allocation_detail_copy`
+DROP TABLE `pd_allocation_detail_copy`;
 
 -- add by zxh 2020年6月2日18:09:25  细节优化
 update sys_dict_item set item_text = '批次码' where id = '1267270125310255106';
@@ -686,7 +686,7 @@ ALTER TABLE `pd_use_package_detail`
 ADD COLUMN `use_type` varchar(4) CHARACTER SET utf8 COLLATE utf8_general_ci NULL COMMENT '试剂使用类型  默认空，1：住院   2：门诊' AFTER `depart_id`;
 
 -- add by zxh 防止业务部重复提交   添加试剂使用类型
-ALTER TABLE `pd_rejected` DROP INDEX `number`
+ALTER TABLE `pd_rejected` DROP INDEX `number`;
 alter table pd_purchase_order add unique(order_no);
 alter table pd_stock_record add unique(record_no);
 alter table pd_rejected add unique(rejected_no);
@@ -703,7 +703,7 @@ alter table pd_dosage add unique(dosage_no);
 ALTER TABLE `pd_dosage_detail`
 MODIFY COLUMN `id` int(64) NOT NULL AUTO_INCREMENT FIRST;
 -- add 2020年6月4日14:09:25 by mcb 字段設置為默認0
-ALTER TABLE `jeecg-boot`.`pd_bottle_inf`
+ALTER TABLE `pd_bottle_inf`
 MODIFY COLUMN `spec_num` double(20, 4) UNSIGNED ZEROFILL NULL DEFAULT 0 COMMENT '实际使用规格数量' AFTER `del_flag`;
 -- add 2020年6月4日14:20:25 by mcb 增加试剂使用类型  通用
 INSERT INTO `sys_dict_item` VALUES ('1268514157836136449', '1268073662989438977', '通用', '0', '', 1, 1, 'admin', '2020-06-04 20:05:18', NULL, '2020-06-04 20:05:18');
