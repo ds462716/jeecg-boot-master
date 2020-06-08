@@ -215,14 +215,16 @@ public class PdProductStockUniqueCodeServiceImpl extends ServiceImpl<PdProductSt
         //查询是否已经存在
         LambdaQueryWrapper<PdProductStock> query = new LambdaQueryWrapper<>();
         query.eq(PdProductStock::getId,id);
+        query.eq(PdProductStock::getNestatStatus,PdConstant.STOCK_NESTAT_STATUS_1);
         PdProductStock psk = pdProductStockService.getOne(query);
-        //如果是唯一码清除
-        if(PdConstant.CODE_PRINT_TYPE_1.equals(psk.getBarCodeType())){
-            LambdaQueryWrapper<PdProductStockUniqueCode> queryC = new LambdaQueryWrapper<>();
-            // 封装查询条件parentId为主键,
-            queryC.eq(PdProductStockUniqueCode::getProductStockId, id);
-            this.remove(queryC);
-        }/*else{
+        if(!oConvertUtils.isEmpty(psk)){
+            //如果是唯一码清除
+            if(PdConstant.CODE_PRINT_TYPE_1.equals(psk.getBarCodeType())){
+                LambdaQueryWrapper<PdProductStockUniqueCode> queryC = new LambdaQueryWrapper<>();
+                // 封装查询条件parentId为主键,
+                queryC.eq(PdProductStockUniqueCode::getProductStockId, id);
+                this.remove(queryC);
+            }/*else{
             //不需要校验直接清除生成新条码
             if(!oConvertUtils.isEmpty(psk.getRefBarCode())){
                 //查询条码是不是已经被使用
@@ -234,14 +236,17 @@ public class PdProductStockUniqueCodeServiceImpl extends ServiceImpl<PdProductSt
                 }
             }
         }*/
-        //更新库存明细表的状态
-        PdProductStock ps = new PdProductStock();
-        ps.setId(id);
-        ps.setBarCodeType(PdConstant.CODE_PRINT_TYPE_0);
-        ps.setRefBarCode("");//清空库存表中的条码
-        //更新库存表的条码状态
-        pdProductStockService.updateStockBarCodeType(ps);
-        return Result.ok("清除成功");
+            //更新库存明细表的状态
+            PdProductStock ps = new PdProductStock();
+            ps.setId(id);
+            ps.setBarCodeType(PdConstant.CODE_PRINT_TYPE_0);
+            ps.setRefBarCode("");//清空库存表中的条码
+            //更新库存表的条码状态
+            //pdProductStockService.updateStockBarCodeType(ps);
+            return Result.ok("清除成功");
+        }else{
+            return Result.error("该产品已使用或者已用完");
+        }
     }
 
     @Override

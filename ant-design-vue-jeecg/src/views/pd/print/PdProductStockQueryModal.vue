@@ -337,6 +337,25 @@
     },
 
     methods: {
+      loadData(arg) {
+        //加载数据 若传入参数1则加载第一页的内容
+        if (arg === 1) {
+          this.ipagination.current = 1;
+        }
+        let params = this.getQueryParams();//查询条件
+        //查询产品
+        params.nestatStatus = "1";//只查未使用的数据
+        this.loading = true;
+        getAction(this.url.list, params).then((res) => {
+          if (res.success) {
+            this.dataSource = res.result.records;
+            this.ipagination.total = res.result.total;
+          }
+          this.loading = false;
+        })
+      },
+
+
      //科室查询start
       departHandleSearch(value) {
         getAction(this.url.queryDepart,{departName:value}).then((res)=>{
