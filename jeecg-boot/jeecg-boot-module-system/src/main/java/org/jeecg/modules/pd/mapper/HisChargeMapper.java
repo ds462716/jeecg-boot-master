@@ -39,5 +39,7 @@ public interface HisChargeMapper extends BaseMapper<HisChargeInf> {
 
 	List<PdDosage> queryPatientInfoMZ(PdDosage pdDosage);
 
-	List<ExInspectionItems> selectExjianYan(ExInspectionItems exInspectionItems);
+	List<ExInspectionItems> selectExjianYanHis(ExInspectionItems exInspectionItems);
+
+	List<ExInspectionItems> selectExjianYanLis(ExInspectionItems exInspectionItems);
 }

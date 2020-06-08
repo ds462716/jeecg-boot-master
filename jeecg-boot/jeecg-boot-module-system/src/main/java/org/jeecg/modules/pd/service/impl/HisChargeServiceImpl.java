@@ -89,11 +89,19 @@ public class HisChargeServiceImpl extends ServiceImpl<HisChargeMapper, HisCharge
 		List list = hisChargeMapper.selectHisUser();
 		return list;
 	}
-	//查询检验项目明细信息
+	//查询检验项目明细信息   his系统
 	@Override
 	@DS("multi-datasource1")
-	public List<ExInspectionItems> selectExjianYan(ExInspectionItems exInspectionItems){
-		List<ExInspectionItems> list=hisChargeMapper.selectExjianYan(exInspectionItems);
+	public List<ExInspectionItems> selectExjianYanHis(ExInspectionItems exInspectionItems){
+		List<ExInspectionItems> list=hisChargeMapper.selectExjianYanHis(exInspectionItems);
+		return list;
+	}
+
+	//查询检验项目信息   lis系统
+	@Override
+	@DS("multi-datasource2")
+	public List<ExInspectionItems> selectExjianYanLis(ExInspectionItems exInspectionItems){
+		List<ExInspectionItems> list=hisChargeMapper.selectExjianYanLis(exInspectionItems);
 		return list;
 	}
 

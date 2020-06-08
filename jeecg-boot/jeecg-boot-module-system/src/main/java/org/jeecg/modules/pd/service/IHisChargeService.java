@@ -42,8 +42,11 @@ public interface IHisChargeService extends IService<HisChargeInf> {
     /*查询his系统病人信息*/
     List<PdDosage> queryPatientInfoList(PdDosage pdDosage);
 
-    //获取检验项目明细
-    public List<ExInspectionItems> selectExjianYan(ExInspectionItems exInspectionItems);
+    //获取检验项目明细--HIS
+    public List<ExInspectionItems> selectExjianYanHis(ExInspectionItems exInspectionItems);
+
+    //获取检验项目明细--LIS
+    public List<ExInspectionItems> selectExjianYanLis(ExInspectionItems exInspectionItems);
 
     /*查询his系统门诊病人退费信息*/
     String  queryMztfList(PdDosage pdDosage);

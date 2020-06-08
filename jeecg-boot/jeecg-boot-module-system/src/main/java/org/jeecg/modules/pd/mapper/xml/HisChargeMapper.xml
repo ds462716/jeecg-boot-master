@@ -162,27 +162,52 @@
 
 
 
-	<!--查询检验項目明細信息-->
-	<select id="selectExjianYan"   resultType="org.jeecg.modules.external.entity.ExInspectionItems">
+	<!--查询检验項目明細信息  LIS系统的-->
+	<select id="selectExjianYanLis"   resultType="org.jeecg.modules.external.entity.ExInspectionItems">
+		select
+		id as "jyId",
+		patientName as "patientName",
+		patientSex as "patientSex",
+		patientAge as "patientAge",
+		cardId as "cardId",
+		barCode as "barCode",
+		receiveDate as "receiveDate",
+		applyDoctor as "applyDoctor",
+		applyDepartment as "applyDepartment",
+		testDepartment as "testDepartment",
+        patientType as "patientType",
+		combinationCode as "testItemCode",
+        combinationName as "testItemName",
+		testDate as "testDate"
+      from  [v_spd_lis_jyxm]   where
+       1=1
+      <if test="queryDateEnd != null and queryDateEnd != ''">
+            AND  testDate >= #{queryDateEnd}
+		</if>
+	</select>
+
+
+	<!--查询检验項目明細信息 HIS系统的-->
+	<select id="selectExjianYanHis"   resultType="org.jeecg.modules.external.entity.ExInspectionItems">
 		select
 		FSF_ID as "jyId",
 		fsf_xm as "patientName",
 		fsf_xb as "patientSex",
 		patientAge as "patientAge",
-		 fsf_zyh as "cardId",
+		fsf_zyh as "cardId",
 		<!--barCode as "barCode",-->
-       <!--REQUESTTIME as "receiveDate",-->
-      fsf_ksdm as "applyDepartment",
-      fsf_jyks as "testDepartment",
-      patientType as "patientType",
-      combinationName as "combinationName",
-      fsf_jyxmbh as "testItemCode",
-      fsf_jymc as "testItemName",
-      fsf_jysj as "testDate"
-      from  [v_spd_his_JYperson]   where
-       1=1
-      <if test="queryDateEnd != null and queryDateEnd != ''">
-            AND  fsf_jysj >= #{queryDateEnd}
+		<!--REQUESTTIME as "receiveDate",-->
+		fsf_ksdm as "applyDepartment",
+		fsf_jyks as "testDepartment",
+		patientType as "patientType",
+		combinationName as "combinationName",
+		fsf_jyxmbh as "testItemCode",
+		fsf_jymc as "testItemName",
+		fsf_jysj as "testDate"
+		from  [v_spd_his_JYperson]   where
+		1=1
+		<if test="queryDateEnd != null and queryDateEnd != ''">
+			AND  fsf_jysj >= #{queryDateEnd}
 		</if>
 	</select>
 </mapper>

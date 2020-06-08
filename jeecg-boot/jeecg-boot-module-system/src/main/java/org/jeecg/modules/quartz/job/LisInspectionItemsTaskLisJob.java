@@ -22,12 +22,12 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * 获取检验项目信息扣减库存定时任务(从HIS系统获取)
+ * 获取检验项目信息扣减库存定时任务(从LIS系统获取)
  *
  * @Author Scott
  */
 @Slf4j
-public class LisInspectionItemsTaskJob implements Job {
+public class LisInspectionItemsTaskLisJob implements Job {
 
     @Autowired
     private IExInspectionItemsService exInspectionItemsService;
@@ -49,7 +49,7 @@ public class LisInspectionItemsTaskJob implements Job {
         log.info("根据检验项目扣减库存任务开始，时间:" + DateUtils.getTimestamp());
         ExInspectionItems item= new ExInspectionItems();
         item.setQueryDateEnd(DateUtils.formatDate(DateUtils.getDayEnd()));//当日结束时间
-        List<ExInspectionItems> list=hisChargeService.selectExjianYanHis(item);
+        List<ExInspectionItems> list=hisChargeService.selectExjianYanLis(item);
         if(list!=null && list.size()>0){
             List<String> jyIds = exInspectionItemsService.selectListIds();
             //增量同步
