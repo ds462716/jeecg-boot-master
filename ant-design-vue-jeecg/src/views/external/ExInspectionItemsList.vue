@@ -24,6 +24,21 @@
                 </a-select>
             </a-form-item>
           </a-col>
+
+          <template v-if="toggleSearchStatus">
+            <a-col :md="6" :sm="8">
+              <a-form-item label="项目名称">
+                <a-input placeholder="请输入项目名称" v-model="queryParam.testItemName"></a-input>
+              </a-form-item>
+            </a-col>
+            <a-col :md="6" :sm="8">
+              <a-form-item label="检验日期">
+                <a-range-picker @change="dateChange" v-model="queryParam.queryDate"/>
+              </a-form-item>
+            </a-col>
+          </template>
+
+
           <a-col :md="6" :sm="8">
             <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
               <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
@@ -89,6 +104,7 @@
   import PdUsePackageModal from '../pd/modules/PdUsePackageModal'
   import {httpAction,getAction} from '@/api/manage'
   import {initDictOptions, filterMultiDictText} from '@/components/dict/JDictSelectUtil'
+  import { filterObj } from '@/utils/util';
 
 
   export default {
@@ -246,6 +262,20 @@
         })
       },
 
+      getQueryParams() {
+        //获取查询条件
+        let sqp = {}
+        if(this.superQueryParams){
+          sqp['superQueryParams']=encodeURI(this.superQueryParams)
+        }
+        var param = Object.assign(sqp, this.queryParam, this.isorter ,this.filters);
+        param.field = this.getQueryField();
+        param.pageNo = this.ipagination.current;
+        param.pageSize = this.ipagination.pageSize;
+        delete param.queryDate; //范围参数不传递后台，传后台会报错
+        return filterObj(param);
+      },
+
       initDictConfig(){ //静态字典值加载
         initDictOptions('accept_status').then((res) => {
           if (res.success) {
@@ -305,6 +335,10 @@
           }
         })
 
+      },
+      dateChange: function (value, dateString) {
+        this.queryParam.queryDateStart=dateString[0];
+        this.queryParam.queryDateEnd=dateString[1];
       },
     }
   }
