@@ -670,7 +670,8 @@
   <!-- 修改条码类型 -->
 	<update id="updateStockBarCodeType">
 		UPDATE pd_product_stock SET
-			bar_code_type = #{barCodeType}
+			bar_code_type = #{barCodeType},
+			ref_bar_code = #{refBarCode}
 		WHERE id= #{id}
 	</update>
 

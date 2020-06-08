@@ -21,9 +21,11 @@ public interface IPdProductStockUniqueCodeService extends IService<PdProductStoc
 
     Result<List<PdProductStockUniqueCode>> batchCodeGeneration(List<String> asList);
 
-    void deleteCode(String id);
+    Result<Object> deleteCode(String id);
 
     IPage<PdProductStockUniqueCode> selectList(Page<PdProductStockUniqueCode> page, PdProductStockUniqueCode pdProductStockUniqueCode);
 
     List<PdProductStockUniqueCode> selectList(PdProductStockUniqueCode pdProductStockUniqueCode);
+
+    List<PdProductStock> selectListByGroup(PdProductStockUniqueCode pdProductStockUniqueCode);
 }

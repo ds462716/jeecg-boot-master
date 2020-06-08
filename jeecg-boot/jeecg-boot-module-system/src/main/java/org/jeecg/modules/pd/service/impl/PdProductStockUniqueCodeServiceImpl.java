@@ -1,10 +1,10 @@
 package org.jeecg.modules.pd.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.PdConstant;
+import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.pd.entity.PdProductStock;
 import org.jeecg.modules.pd.entity.PdProductStockUniqueCode;
 import org.jeecg.modules.pd.mapper.PdProductStockUniqueCodeMapper;
@@ -63,11 +63,7 @@ public class PdProductStockUniqueCodeServiceImpl extends ServiceImpl<PdProductSt
                 }
             }else{
                 //判断是否已经打印了普通码
-                LambdaQueryWrapper<PdProductStockUniqueCode> wyquery = new LambdaQueryWrapper<>();
-                wyquery.eq(PdProductStockUniqueCode::getProductStockId, pdProductStock.getId());
-                wyquery.eq(PdProductStockUniqueCode::getPrintType, PdConstant.CODE_PRINT_TYPE_0);//普通码
-                List<PdProductStockUniqueCode> wypsucs = this.list(wyquery);
-                if(wypsucs!=null && wypsucs.size()>0){
+                if(!oConvertUtils.isEmpty(pdProductStock.getRefBarCode())){
                     result.setResult(new ArrayList<>());
                     result.setCode(202);
                     result.setMessage("已经生成了普通码，不能生成新的条码，如需生成新条码请删除原有条码记录");
@@ -145,12 +141,11 @@ public class PdProductStockUniqueCodeServiceImpl extends ServiceImpl<PdProductSt
         if(pdProductStocks!=null && pdProductStocks.size()>0){
             //判断是否全部通过
             for(PdProductStock ps :pdProductStocks){
-                //查询是否已经存在
-                LambdaQueryWrapper<PdProductStockUniqueCode> query = new LambdaQueryWrapper<>();
-                query.eq(PdProductStockUniqueCode::getProductStockId, ps.getId());
-                query.eq(PdProductStockUniqueCode::getPrintType, PdConstant.CODE_PRINT_TYPE_0);//普通码
-                PdProductStockUniqueCode psucs = this.getOne(query);
-                if(psucs!=null){
+                if(!oConvertUtils.isEmpty(ps.getRefBarCode())){
+                    //查询是否已经存在
+                    LambdaQueryWrapper<PdProductStockUniqueCode> query = new LambdaQueryWrapper<>();
+                    query.eq(PdProductStockUniqueCode::getId, ps.getRefBarCode());
+                    PdProductStockUniqueCode psucs = this.getOne(query);
                     //重复打条码
                     psucs.setProductName(ps.getProductName());
                     psucs.setExpDate(ps.getExpDate());
@@ -216,17 +211,37 @@ public class PdProductStockUniqueCodeServiceImpl extends ServiceImpl<PdProductSt
      */
     @Transactional
     @Override
-    public void deleteCode(String id) {
-        LambdaQueryWrapper<PdProductStockUniqueCode> query = new LambdaQueryWrapper<>();
-        // 封装查询条件parentId为主键,
-        query.eq(PdProductStockUniqueCode::getProductStockId, id);
-        this.remove(query);
+    public Result<Object> deleteCode(String id) {
+        //查询是否已经存在
+        LambdaQueryWrapper<PdProductStock> query = new LambdaQueryWrapper<>();
+        query.eq(PdProductStock::getId,id);
+        PdProductStock psk = pdProductStockService.getOne(query);
+        //如果是唯一码清除
+        if(PdConstant.CODE_PRINT_TYPE_1.equals(psk.getBarCodeType())){
+            LambdaQueryWrapper<PdProductStockUniqueCode> queryC = new LambdaQueryWrapper<>();
+            // 封装查询条件parentId为主键,
+            queryC.eq(PdProductStockUniqueCode::getProductStockId, id);
+            this.remove(queryC);
+        }/*else{
+            //不需要校验直接清除生成新条码
+            if(!oConvertUtils.isEmpty(psk.getRefBarCode())){
+                //查询条码是不是已经被使用
+                PdProductStockUniqueCode pdProductStockUniqueCode = new PdProductStockUniqueCode();
+                pdProductStockUniqueCode.setId(psk.getRefBarCode());
+                List<PdProductStock> pdProductStockUniqueCodes = this.selectListByGroup(pdProductStockUniqueCode);
+                if(pdProductStockUniqueCodes!=null && pdProductStockUniqueCodes.size()>1){
+                    return Result.error("产品已经发往其他科室使用，不能删除。如需删除请全部退回!");
+                }
+            }
+        }*/
         //更新库存明细表的状态
         PdProductStock ps = new PdProductStock();
         ps.setId(id);
         ps.setBarCodeType(PdConstant.CODE_PRINT_TYPE_0);
+        ps.setRefBarCode("");//清空库存表中的条码
         //更新库存表的条码状态
         pdProductStockService.updateStockBarCodeType(ps);
+        return Result.ok("清除成功");
     }
 
     @Override
@@ -237,5 +252,10 @@ public class PdProductStockUniqueCodeServiceImpl extends ServiceImpl<PdProductSt
     @Override
     public List<PdProductStockUniqueCode> selectList(PdProductStockUniqueCode pdProductStockUniqueCode) {
         return baseMapper.selectListOne(pdProductStockUniqueCode);
+    }
+
+    @Override
+    public List<PdProductStock> selectListByGroup(PdProductStockUniqueCode pdProductStockUniqueCode) {
+        return baseMapper.selectListByGroup(pdProductStockUniqueCode);
     }
 }

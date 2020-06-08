@@ -47,4 +47,16 @@
         ORDER BY a.unique_code_order asc
     </select>
 
+    <select id="selectListByGroup"  resultType="org.jeecg.modules.pd.entity.PdProductStock">
+        SELECT
+        *
+        FROM pd_product_stock a
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+        </where>
+        AND a.ref_bar_code = #{id}
+        group by a.depart_id
+    </select>
+
+
 </mapper>

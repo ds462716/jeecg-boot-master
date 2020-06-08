@@ -17,6 +17,7 @@ import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.pd.entity.PdProductStock;
 import org.jeecg.modules.pd.entity.PdProductStockUniqueCode;
+import org.jeecg.modules.pd.service.IPdProductStockService;
 import org.jeecg.modules.pd.service.IPdProductStockUniqueCodeService;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -207,7 +208,7 @@ public class PdProductStockUniqueCodeController extends JeecgController<PdProduc
      @ApiOperation(value="库存关联条码表-批量删除", notes="库存关联条码表-批量删除")
      @DeleteMapping(value = "/deleteCode")
      public Result<?> deleteCode(@RequestParam(name="id",required=true) String id) {
-         this.pdProductStockUniqueCodeService.deleteCode(id);
-         return Result.ok("删除成功!");
+		 Result<Object> resul = pdProductStockUniqueCodeService.deleteCode(id);
+		 return resul;
      }
 }

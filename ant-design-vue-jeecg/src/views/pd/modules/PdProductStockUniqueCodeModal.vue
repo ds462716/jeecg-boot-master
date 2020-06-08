@@ -128,12 +128,12 @@
               }
             }
           },
-          {
+          /*{
             title: '操作',
             dataIndex: 'action',
             align:"center",
             scopedSlots: { customRender: 'action' }
-          }
+          }*/
         ],
         url: {
           list: "/pd/pdProductStockUniqueCode/list",
@@ -174,9 +174,30 @@
         this.visible = false;
       },
       show(record){
-        this.productStockId = record.id;
-        this.visible = true;
-        this.loadData(1);
+        if(record.barCodeType=="0"){
+          this.loading = true;
+          if(record.refBarCode){
+            //解决转移到二级科室条码显示问题
+            this.visible = true;
+            let data = {
+              id:record.refBarCode,
+              uniqueCodeOrder:1,
+              printType:"0",
+              codeState:"0",
+            };
+            let array = new Array();
+            array.push(data);
+            this.dataSource = array;
+            this.ipagination.total = 1;
+            this.loading = false;
+          }else{
+            this.$message.error("请先打印条码!")
+          }
+        }else{
+          this.productStockId = record.id;
+          this.visible = true;
+          this.loadData(1);
+        }
       },
       loadData(arg) {
         if(this.productStockId){
