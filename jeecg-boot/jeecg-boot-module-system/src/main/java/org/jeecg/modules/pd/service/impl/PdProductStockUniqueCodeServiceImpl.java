@@ -242,7 +242,7 @@ public class PdProductStockUniqueCodeServiceImpl extends ServiceImpl<PdProductSt
             ps.setBarCodeType(PdConstant.CODE_PRINT_TYPE_0);
             ps.setRefBarCode("");//清空库存表中的条码
             //更新库存表的条码状态
-            //pdProductStockService.updateStockBarCodeType(ps);
+            pdProductStockService.updateStockBarCodeType(ps);
             return Result.ok("清除成功");
         }else{
             return Result.error("该产品已使用或者已用完");
