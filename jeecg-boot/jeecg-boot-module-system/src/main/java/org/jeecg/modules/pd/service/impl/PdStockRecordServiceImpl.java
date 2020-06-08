@@ -93,6 +93,8 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
     private IPdPackageRecordDetailService pdPackageRecordDetailService;
     @Autowired
     private ISysDepartService sysDepartService;
+    @Autowired
+    private IPdSupplierService pdSupplierService;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -992,9 +994,18 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
             stockLog.setProductNum(psd.getProductNum());
             stockLog.setExpDate(psd.getExpDate());
             if (StringUtils.isNotEmpty(pdStockRecord.getSupplierId())) {
-                stockLog.setInFrom(pdStockRecord.getSupplierName());
+                PdSupplier pdSupplier = pdSupplierService.getById(pdStockRecord.getSupplierId());
+                stockLog.setInFrom(pdSupplier.getName());
             } else {
+                if(oConvertUtils.isEmpty(pdStockRecord.getOutDepartName()) && oConvertUtils.isNotEmpty(pdStockRecord.getOutDepartId())){
+                    SysDepart depart = pdDepartService.getById(pdStockRecord.getOutDepartId());
+                    pdStockRecord.setOutDepartName(depart.getDepartName());
+                }
                 stockLog.setInFrom(pdStockRecord.getOutDepartName());
+            }
+            if(oConvertUtils.isEmpty(pdStockRecord.getInDepartName()) && oConvertUtils.isNotEmpty(pdStockRecord.getInDepartId())){
+                SysDepart depart = pdDepartService.getById(pdStockRecord.getInDepartId());
+                pdStockRecord.setInDepartName(depart.getDepartName());
             }
             stockLog.setOutTo(pdStockRecord.getInDepartName());
             if (oConvertUtils.isNotEmpty(inType)) { // 入库

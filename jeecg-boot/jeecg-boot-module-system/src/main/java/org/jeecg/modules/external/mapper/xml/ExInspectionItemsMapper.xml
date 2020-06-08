@@ -80,11 +80,20 @@
         <if test="entity.patientName != null and entity.patientName != ''">
             AND a.patient_name LIKE concat('%',#{entity.patientName},'%')
         </if>
+        <if test="entity.testItemName != null and entity.testItemName != ''">
+            AND a.test_item_name LIKE concat('%',#{entity.testItemName},'%')
+        </if>
         <if test="entity.testItemCode != null and entity.testItemCode != ''">
             AND a.test_item_code LIKE concat('%',#{entity.testItemCode},'%')
         </if>
         <if test="entity.acceptStatus != null and entity.acceptStatus != ''">
             AND a.accept_status=#{entity.acceptStatus}
+        </if>
+        <if test="entity.queryDateStart != null and entity.queryDateStart != ''">
+            AND a.test_date &gt;= #{entity.queryDateStart}
+        </if>
+        <if test="entity.queryDateEnd != null and entity.queryDateEnd != ''">
+            AND a.test_date &lt;= #{entity.queryDateEnd}
         </if>
         order by a.create_time desc
     </select>

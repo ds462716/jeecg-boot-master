@@ -162,7 +162,9 @@ public class ExInspectionItems{
     @TableField(strategy = FieldStrategy.NOT_EMPTY)
     private String departParentId;
 
-
+    /** 查询日期起始 **/
+    @TableField(exist = false)
+    private String queryDateStart;
     /** 查询日期结束 **/
     @TableField(exist = false)
     private String queryDateEnd;
