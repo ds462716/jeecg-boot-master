@@ -113,7 +113,7 @@ public class PdBottleInf extends BaseEntity {
     /*产品规格数量*/
     @Excel(name = "产品规格数量", width = 15)
     @TableField(exist = false)
-    private String specQuantity;
+    private Double specQuantity;
     /**批次号*/
     @Excel(name = "批次号", width = 15)
     @TableField(exist = false)
