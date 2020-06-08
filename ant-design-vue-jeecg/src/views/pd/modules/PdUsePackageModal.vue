@@ -77,7 +77,7 @@
 
       <!-- 子表单区域 -->
       <a-tabs  v-model="activeKey" @change="handleChangeTabs">
-        <a-tab-pane tab="检验项目明细" :key="refKeys[0]" :forceRender="true">
+        <a-tab-pane tab="检验用量明细" :key="refKeys[0]" :forceRender="true">
           <div style="margin-bottom: 8px;">
             <a-button v-show="!disableSubmit" type="primary" icon="plus" @click="handleConfirmAdd">新增</a-button>
             <span style="padding-left: 8px;"></span>

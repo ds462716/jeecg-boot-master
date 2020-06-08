@@ -158,7 +158,7 @@
         notFoundContent:"未找到内容",
         // 表头
         columns: [
-          {
+          /*{
             title: '#',
             dataIndex: '',
             key:'rowIndex',
@@ -167,7 +167,7 @@
             customRender:function (t,r,index) {
               return parseInt(index)+1;
             }
-          },
+          },*/
           {
             title:'检验项目编号',
             align:"center",
@@ -210,11 +210,11 @@
             align:"center",
             dataIndex: 'wb'
           },
-          {
+         /* {
             title:'自定义码',
             align:"center",
             dataIndex: 'zdy'
-          },
+          },*/
             {
              title:'备注',
               align:"center",
