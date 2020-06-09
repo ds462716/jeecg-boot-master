@@ -3,6 +3,8 @@ package org.jeecg.modules.external.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.jeecg.modules.external.entity.ExLabInstrInf;
 
+import java.util.List;
+
 /**
  * @Description: ex_lab_instr_inf
  * @Author: jiangxz
@@ -11,4 +13,5 @@ import org.jeecg.modules.external.entity.ExLabInstrInf;
  */
 public interface IExLabInstrInfService extends IService<ExLabInstrInf> {
 
+    List<ExLabInstrInf> getExLabInstrInf(ExLabInstrInf exLabInstrInf);
 }

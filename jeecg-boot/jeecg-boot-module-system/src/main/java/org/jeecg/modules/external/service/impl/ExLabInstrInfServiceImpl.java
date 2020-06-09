@@ -7,6 +7,8 @@ import org.springframework.stereotype.Service;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
+import java.util.List;
+
 /**
  * @Description: ex_lab_instr_inf
  * @Author: jiangxz
@@ -16,4 +18,8 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 @Service
 public class ExLabInstrInfServiceImpl extends ServiceImpl<ExLabInstrInfMapper, ExLabInstrInf> implements IExLabInstrInfService {
 
+    @Override
+    public List<ExLabInstrInf> getExLabInstrInf(ExLabInstrInf exLabInstrInf) {
+        return baseMapper.getExLabInstrInf(exLabInstrInf);
+    }
 }

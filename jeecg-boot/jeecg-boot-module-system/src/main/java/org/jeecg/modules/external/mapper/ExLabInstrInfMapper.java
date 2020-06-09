@@ -14,4 +14,5 @@ import org.jeecg.modules.external.entity.ExLabInstrInf;
  */
 public interface ExLabInstrInfMapper extends BaseMapper<ExLabInstrInf> {
 
+    List<ExLabInstrInf> getExLabInstrInf(ExLabInstrInf exLabInstrInf);
 }

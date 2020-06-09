@@ -9,6 +9,7 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import org.jeecg.modules.pd.entity.BaseEntity;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.jeecgframework.poi.excel.annotation.Excel;
 import org.jeecg.common.aspect.annotation.Dict;
@@ -28,7 +29,7 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 @EqualsAndHashCode(callSuper = false)
 @ApiModel(value="ex_lab_instr_inf对象", description="ex_lab_instr_inf")
-public class ExLabInstrInf  {
+public class ExLabInstrInf  extends BaseEntity {
     private static final long serialVersionUID = 1L;
 
 	/**主键*/

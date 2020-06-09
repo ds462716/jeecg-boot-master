@@ -21,6 +21,26 @@
                       <j-dict-select-tag-expand v-model="queryParam.closeRemarks" dictCode="close_remarks"/>
                      </a-form-item>
                   </a-col>
+                  <a-col :md="6" :sm="8"  v-show="this.model.bottleType==1">
+                    <a-form-item label="选择仪器设备" :labelCol="labelCol" :wrapperCol="wrapperCol">
+                      <a-select
+                        showSearch
+                        :instrCode="instrCodeValue"
+                        :defaultActiveFirstOption="false"
+                        :allowClear="true"
+                        :showArrow="true"
+                        :filterOption="false"
+                        v-model="queryParam.instrCode"
+                        @search="instrHandleSearch"
+                        @change="instrHandleChange"
+                        @focus="instrHandleSearch"
+                        :notFoundContent="notFoundContent"
+                        v-decorator="[ 'instrCode', validatorRules.instrCode]"
+                      >
+                        <a-select-option v-for="d in instrData" :key="d.value">{{d.text}}</a-select-option>
+                      </a-select>
+                    </a-form-item>
+                  </a-col>
                   <a-col :md="12" :sm="8">
                     <a-form-item label="唯一码编号" :labelCol="labelCol" :wrapperCol="wrapperCol">
                       <a-input ref="productBarCodeInput" v-focus placeholder="请输入唯一码编号" v-model="queryParam.productBarCode" @keyup.enter.native="searchQuery()"></a-input>
@@ -55,6 +75,7 @@
    import {openingQuotation,closeQuotation} from '@/utils/barcode'
    import { JEditableTableMixin } from '@/mixins/JEditableTableMixin'
   import JDictSelectTagExpand from "@/components/dict/JDictSelectTagExpand"
+  import { getAction } from  '@/api/manage'
 
    const VALIDATE_NO_PASSED = Symbol()
   export { FormTypes, VALIDATE_NO_PASSED }
@@ -73,6 +94,37 @@
     }
   })
 
+  let timeout;
+  let currentValue;
+
+  function fetch(value, callback,url) {
+    if (timeout) {
+      clearTimeout(timeout);
+      timeout = null;
+    }
+    currentValue = value;
+
+    function fake() {
+      getAction(url,{instrName:value}).then((res)=>{
+        if (!res.success) {
+          this.cmsFailed(res.message);
+        }
+        if (currentValue === value) {
+          const result = res.result;
+          const data = [];
+          result.forEach(r => {
+            data.push({
+              value: r.instrCode,
+              text: r.instrName,
+            });
+          });
+          callback(data);
+        }
+      })
+    }
+    timeout = setTimeout(fake, 0);
+  }
+
   export default {
     name: "PdBottleModal",
     mixins: [JEditableTableMixin],
@@ -85,9 +137,12 @@
         visible: false,
         model: {},
         title: '这里是标题',
+        notFoundContent:"未找到内容",
         lockScroll: false,
         fullscreen: true,
         switchFullscreen: false,
+        instrData: [],
+        instrCodeValue: undefined,
         hyCharged: true,
         totalSum:'0',
         totalPrice:'0.0000',
@@ -125,9 +180,13 @@
           departId: {rules: []},
           departParentId: {rules: []},
           closeRemarks:{rules: []},
+          instrCode: {rules: [
+              {required: true, message: '请选择仪器设备!'},
+            ]},
         },
         url: {
           submit: "/pd/pdBottleInf/submitPdBottleInf",
+          queryExLabInstrInf:"/ex/exLabInstrInf/getExLabInstrInf",
         }
       }
     },
@@ -185,6 +244,11 @@
           }
 
           if(this.model.bottleType=='1'){ //扫码开瓶
+            let instrCode = this.queryParam.instrCode;
+            if(!instrCode){
+              this.$message.error("请选择仪器设备！");
+              return;
+            }
             this.openingQuot(productBarCode);
           }else{  //闭瓶扫码
             let closeRemarks = this.queryParam.closeRemarks;
@@ -248,6 +312,15 @@
         this.visible = false;
         this.$emit('close');
       },
+      //组别查询start
+      instrHandleSearch(value) {
+        fetch(value, data => (this.instrData = data),this.url.queryExLabInstrInf);
+      },
+      instrHandleChange(value) {
+        this.instrCodeValue = value;
+        fetch(value, data => (this.instrData = data),this.url.queryExLabInstrInf);
+      },
+      //组别查询end
     }
   }
 </script>

@@ -2,4 +2,29 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.jeecg.modules.external.mapper.ExLabInstrInfMapper">
 
+    <!-- 供应商条件查询 -->
+    <select id="getExLabInstrInf"  resultType="org.jeecg.modules.external.entity.ExLabInstrInf">
+        SELECT
+        *
+        FROM ex_lab_instr_inf a
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+        </where>
+        <if test="instrName != null and instrName != ''">
+            AND (a.instr_name LIKE concat('%',#{instrName},'%')
+            or a.instr_code LIKE concat('%',#{instrName},'%')
+            or a.py LIKE concat('%',#{instrName},'%')
+            or a.wb LIKE concat('%',#{instrName},'%')
+            or a.zdy LIKE concat('%',#{instrName},'%'))
+        </if>
+        <if test="departId != null and departId != ''">
+            AND a.depart_id = #{departId}
+        </if>
+        <if test="departParentId != null and departParentId != ''">
+            AND a.depart_parent_id = #{departParentId}
+        </if>
+        <!-- 为了查询效率 只查询十条记录该方法用于下拉选择 -->
+        ORDER BY a.update_time desc,a.create_time desc
+    </select>
+
 </mapper>

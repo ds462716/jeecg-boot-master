@@ -9,8 +9,11 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.system.query.QueryGenerator;
+import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.external.entity.ExLabInstrInf;
 import org.jeecg.modules.external.service.IExLabInstrInfService;
@@ -37,8 +40,8 @@ import io.swagger.annotations.ApiOperation;
 import org.jeecg.common.aspect.annotation.AutoLog;
 
  /**
- * @Description: ex_lab_instr_inf
- * @Author: jiangxz
+ * @Description: 设备仪器表
+ * @Author: zxh
  * @Date:   2020-06-09
  * @Version: V1.0
  */
@@ -71,7 +74,29 @@ public class ExLabInstrInfController extends JeecgController<ExLabInstrInf, IExL
 		IPage<ExLabInstrInf> pageList = exLabInstrInfService.page(page, queryWrapper);
 		return Result.ok(pageList);
 	}
-	
+
+     /**
+      * 不分页列表查询
+      *
+      * @return
+      */
+     @GetMapping(value = "/getExLabInstrInf")
+     public Result<List<ExLabInstrInf>> getExLabInstrInf(ExLabInstrInf exLabInstrInf) {
+         long start = System.currentTimeMillis();
+         Result<List<ExLabInstrInf>> result = new Result<>();
+         try {
+             LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+             exLabInstrInf.setDepartParentId(sysUser.getDepartParentId());
+             List<ExLabInstrInf> list = exLabInstrInfService.getExLabInstrInf(exLabInstrInf);
+             result.setResult(list);
+             result.setSuccess(true);
+         }catch(Exception e){
+             log.error(e.getMessage(), e);
+         }
+         log.info("======获取产品数据=====耗时:" + (System.currentTimeMillis() - start) + "毫秒");
+         return result;
+     }
+
 	/**
 	 *   添加
 	 *
