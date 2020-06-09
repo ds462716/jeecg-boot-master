@@ -97,6 +97,10 @@ public class PdBottleInf extends BaseEntity {
 	/**所属机构*/
     @ApiModelProperty(value = "所属机构")
     private String departParentId;
+    /**检验仪器代号*/
+    @Excel(name = "检验仪器代号", width = 15)
+    @ApiModelProperty(value = "检验仪器代号")
+    private String instrCode;
     @TableField(exist = false)
     private String bottleType;//操作类型   1：开瓶   2：闭瓶
     @TableField(exist = false)

@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Param;
 import org.jeecg.modules.external.entity.PdBottleInf;
+import org.jeecg.modules.pd.entity.PdProductStock;
 
 import java.util.List;
 
@@ -30,5 +31,11 @@ public interface PdBottleInfMapper extends BaseMapper<PdBottleInf> {
      * @param pdBottleInf
      */
     public void updateSpecNum(PdBottleInf pdBottleInf);
+
+    /**
+     * 根据开瓶信息查询库存明细
+     * @param pdBottleInf
+     */
+    List<PdProductStock> queryProductStock(PdBottleInf pdBottleInf);
 
 }

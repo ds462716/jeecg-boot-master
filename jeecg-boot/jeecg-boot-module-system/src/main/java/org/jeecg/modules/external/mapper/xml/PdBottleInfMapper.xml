@@ -79,4 +79,25 @@
         UPDATE pd_bottle_inf SET spec_num = spec_num+#{specNum}   WHERE ref_bar_code= #{refBarCode}
     </update>
 
+
+    <!-- 根据开瓶信息查询库存明细 -->
+    <select id="queryProductStock"  parameterType="org.jeecg.modules.pd.entity.PdProductStock">
+        select a.* from pd_product_stock a
+        left join pd_bottle_inf b on b.close_remarks is null  and b.stock_id=a.id
+        <where>
+             b.ref_bar_code=a.ref_bar_code
+             and nestat_status='0'
+            <if test="departId != null and departId != ''">
+                AND a.depart_id = #{departId}
+            </if>
+            <if test="refBarCode != null and refBarCode != ''">
+            AND a.ref_bar_code = #{refBarCode}
+            </if>
+            <if test="instrCode != null and instrCode != ''">
+                AND b.instr_code = #{instrCode}
+            </if>
+        </where>
+
+    </select>
+
 </mapper>
