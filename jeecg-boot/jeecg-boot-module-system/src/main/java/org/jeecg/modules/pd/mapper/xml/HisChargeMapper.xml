@@ -166,6 +166,8 @@
 	<select id="selectExjianYanLis"   resultType="org.jeecg.modules.external.entity.ExInspectionItems">
 		select
 		id as "jyId",
+		yqmc as "instrName",
+		yq as "instrCode",
 		patientName as "patientName",
 		patientSex as "patientSex",
 		patientAge as "patientAge",

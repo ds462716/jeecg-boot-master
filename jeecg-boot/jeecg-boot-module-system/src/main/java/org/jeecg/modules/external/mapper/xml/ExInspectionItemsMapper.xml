@@ -34,7 +34,9 @@
         a.depart_id,
         a.depart_parent_id,
         a.remarks,
-        a.package_id
+        a.package_id,
+        a.instr_code,
+        a.instr_name
 	</sql>
 
 

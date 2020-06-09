@@ -708,7 +708,10 @@ MODIFY COLUMN `spec_num` double(20, 4) UNSIGNED ZEROFILL NULL DEFAULT 0 COMMENT 
 -- add 2020年6月4日14:20:25 by mcb 增加试剂使用类型  通用
 INSERT INTO `sys_dict_item` VALUES ('1268514157836136449', '1268073662989438977', '通用', '0', '', 1, 1, 'admin', '2020-06-04 20:05:18', NULL, '2020-06-04 20:05:18');
 
-
+-- add 2020年6月9日10:20:25 by mcb 增加仪器代号及名称字段
+ ALTER TABLE `ex_inspection_items`
+ADD COLUMN `instr_code` varchar(32) CHARACTER SET utf8 COLLATE utf8_general_ci NULL COMMENT '所属仪器代号' AFTER `package_id`,
+ADD COLUMN `instr_name` varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NULL COMMENT '所属仪器名称' AFTER `instr_code`;
 -- add 2020年6月9日10:20:25 by mcb 开瓶记录表增加仪器代号字段
  ALTER TABLE `pd_bottle_inf`
 ADD COLUMN `instr_code` varchar(32) CHARACTER SET utf8 COLLATE utf8_general_ci NULL COMMENT '使用仪器设备代号' AFTER `close_remarks`;

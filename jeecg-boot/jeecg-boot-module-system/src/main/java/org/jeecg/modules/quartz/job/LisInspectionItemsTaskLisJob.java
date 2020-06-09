@@ -65,7 +65,7 @@ public class LisInspectionItemsTaskLisJob implements Job {
                 for(ExInspectionItems items :list){
                     LambdaQueryWrapper<PdUsePackage> query = new LambdaQueryWrapper<>();
                     query.eq(PdUsePackage::getCode, items.getTestItemCode());
-                    query.eq(PdUsePackage::getName,items.getTestItemName());
+                    //query.eq(PdUsePackage::getName,items.getTestItemName());
                     PdUsePackage pdUsePackage = pdUsePackageService.getOne(query);
                     //不存在或沒有配置檢驗用量明細
                     if(pdUsePackage!=null){

@@ -136,4 +136,10 @@ public class PdBottleInf extends BaseEntity {
     @TableField(exist = false)
     private String departIds; //批量查询用
 
+    @TableField(exist = false)
+    private String productId; //产品id
+    @TableField(exist = false)
+    private String nestatStatus; //产品使用状态
+
+
 }

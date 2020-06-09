@@ -144,7 +144,14 @@ public class ExInspectionItems{
 	@Excel(name = "所属部门", width = 15)
     @ApiModelProperty(value = "所属部门")
     private String sysOrgCode;
-
+    /**所属仪器代号*/
+    @Excel(name = "所属仪器代号", width = 15)
+    @ApiModelProperty(value = "所属仪器代号")
+    private String instrCode;
+    /**所属仪器名称*/
+    @Excel(name = "所属仪器名称", width = 15)
+    @ApiModelProperty(value = "所属仪器名称")
+    private String instrName;
     /**检验项目ID*/
     private String packageId;
     /**备注*/
