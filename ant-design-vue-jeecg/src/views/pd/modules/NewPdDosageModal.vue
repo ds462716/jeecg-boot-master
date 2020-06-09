@@ -530,12 +530,19 @@
           }
           //解析条码
           stockScanCode(productNumber,productBarCode,"0","1").then((res) => {
+            console.log(res)
             if(res.code == "200" || res.code == "203"){
               let pdProductStockList = res.result;
               if(!pdProductStockList){
                 //清空扫码框
                 this.clearQueryParam();
                 this.$message.error("条码解析失败，请校验条码是否正确！");
+                return;
+              }
+              if(pdProductStockList.length <= 0){
+                //清空扫码框
+                this.clearQueryParam();
+                this.$message.error("库存中没有该产品！");
                 return;
               }
               // 循环表格数据

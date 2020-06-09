@@ -103,6 +103,7 @@
     <pdDosage-modal ref="modalForm" @ok="modalFormOk"></pdDosage-modal>
     <pd-gzsl-dosage-modal ref="modalUniqueForm" @ok="modalFormOk"></pd-gzsl-dosage-modal>
     <pdDosageReturned-modal ref="pdDosageReturnedForm" @ok="modalFormOk"></pdDosageReturned-modal>
+    <pd-gzsl-returned-dosage-modal ref="uniqueReturnedModal" @ok="modalFormOk"></pd-gzsl-returned-dosage-modal>
     <pd-dosage-fee-modal ref="pdDosageFeeForm" @ok="modalFormOk"></pd-dosage-fee-modal>
     <pd-dosage-cncl-fee-modal  ref="pdDosageCnclFeeForm" @ok="modalFormOk"></pd-dosage-cncl-fee-modal>
     <pd-dosage-list-modal ref="pdDosageListModal" @ok="modalFormOk"></pd-dosage-list-modal>
@@ -114,6 +115,7 @@
   import { JeecgListMixin } from '@/mixins/JeecgListMixin'
   import PdDosageModal from '../pd/modules/NewPdDosageModal'
   import PdGzslDosageModal from './modules/PdDosageModalRefGZSL'
+  import PdGzslReturnedDosageModal from './modules/PdDosageUniqueReturnedModalGZSL'
   import PdDosageListModal from '../pd/modules/NewPdDosageListModal'
   import PdDosageReturnedModal from '../pd/modules/PdDosageReturnedModal'
   import PdDosageFeeModal from '../pd/modules/PdDosageFeeModal'
@@ -129,7 +131,8 @@
       PdDosageFeeModal,
       PdDosageCnclFeeModal,
       PdDosageListModal,
-      PdGzslDosageModal
+      PdGzslDosageModal,
+      PdGzslReturnedDosageModal
     },
     data () {
       return {
@@ -248,12 +251,21 @@
       },
 
       inventoryReturned(record){//库存还回
-        this.$refs.pdDosageReturnedForm.edit(record);
-        this.$refs.pdDosageReturnedForm.title="库存还回";
-        this.$refs.pdDosageReturnedForm.disableSubmit = false;
+        if(record.dosageType=="0"){
+          //唯一码还回
+          this.$refs.uniqueReturnedModal.edit(record);
+          this.$refs.uniqueReturnedModal.title="库存还回";
+          this.$refs.uniqueReturnedModal.disableSubmit = true;
+        }else{
+          this.$refs.pdDosageReturnedForm.edit(record);
+          this.$refs.pdDosageReturnedForm.title="库存还回";
+          this.$refs.pdDosageReturnedForm.disableSubmit = false;
+        }
+
       },
       handleDetail(record){//新增
         if(record.dosageType=="0"){
+          //唯一码使用
           this.$refs.modalUniqueForm.edit(record);
           this.$refs.modalUniqueForm.title="详情";
           this.$refs.modalUniqueForm.disableSubmit = true;
