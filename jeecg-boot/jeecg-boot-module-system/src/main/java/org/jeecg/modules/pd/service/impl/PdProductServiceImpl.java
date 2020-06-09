@@ -553,10 +553,10 @@ public class PdProductServiceImpl extends ServiceImpl<PdProductMapper, PdProduct
      * @return
      */
     @Override
-    public Result<List<PdProductStock>> openingQuotation(String Barcode,Result<List<PdProductStock>> result) {
-        if(Barcode!=null){
+    public Result<List<PdProductStock>> openingQuotation(String Barcode,String instrCode, Result<List<PdProductStock>> result) {
+        if(Barcode!=null || instrCode!=null){
             Barcode = BarCodeUtil.trimStr(Barcode.toUpperCase());
-            if(!"".equals(Barcode)){
+            if(!"".equals(Barcode) || !"".equals(instrCode)){
                 result.setCode(MessageConstant.ICODE_STATE_200);
                 PdProductStock pdProductStock = new PdProductStock();
                 pdProductStock.setRefBarCode(Barcode);
@@ -605,6 +605,7 @@ public class PdProductServiceImpl extends ServiceImpl<PdProductMapper, PdProduct
                                 bottleInf.setRemarks("");//备注
                                 bottleInf.setDepartId(sysUser.getCurrentDepartId());//所属部门
                                 bottleInf.setDepartParentId(sysUser.getDepartParentId());//所属机构
+                                bottleInf.setInstrCode(instrCode);//仪器设备code
                                 pdBottleInfMapper.insert(bottleInf);
                                 //批新条码表信息
                                 PdProductStockUniqueCode productStockUniqueCode = new PdProductStockUniqueCode();

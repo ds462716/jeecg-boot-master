@@ -54,7 +54,7 @@ public interface IPdProductService extends IService<PdProduct> {
 
     Result<Object> importExcelReagents(Map<String, MultipartFile> fileMap);
 
-    Result<List<PdProductStock>> openingQuotation(String barcode, Result<List<PdProductStock>> result);
+    Result<List<PdProductStock>> openingQuotation(String barcode,String instrCode, Result<List<PdProductStock>> result);
 
     Result<PdProductStock> uniqueScanCodeUrl(String barcode, String productFlag,String nestatStatus,Result<PdProductStock> result);
 

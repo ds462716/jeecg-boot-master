@@ -249,7 +249,7 @@
               this.$message.error("请选择仪器设备！");
               return;
             }
-            this.openingQuot(productBarCode);
+            this.openingQuot(productBarCode,instrCode);
           }else{  //闭瓶扫码
             let closeRemarks = this.queryParam.closeRemarks;
             if(!closeRemarks){
@@ -263,9 +263,9 @@
       },
 
      //解析条码(开瓶)
-      openingQuot(productBarCode){
+      openingQuot(productBarCode,instrCode){
         let that = this;
-      openingQuotation(productBarCode).then((res) => {
+      openingQuotation(productBarCode,instrCode).then((res) => {
       if(res.code ==200){
         that.$message.success("开瓶完成");
       }else{

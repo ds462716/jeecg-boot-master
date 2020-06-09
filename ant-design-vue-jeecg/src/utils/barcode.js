@@ -27,10 +27,11 @@ export async function scanCode(Barcode1, Barcode2){
  * @param Barcode
  * @returns {Promise<*>}
  */
-export async function openingQuotation(Barcode){
+export async function openingQuotation(Barcode,instrCode){
   //封装查询参数
   let formData = new URLSearchParams();
   formData.append("Barcode",Barcode);
+  formData.append("instrCode",instrCode);
   let res = await httpAction(openingUrl,formData,"post");
   return res;
 }
