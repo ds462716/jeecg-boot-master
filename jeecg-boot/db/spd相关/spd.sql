@@ -715,3 +715,6 @@ ADD COLUMN `instr_name` varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci N
 -- add 2020年6月9日10:20:25 by mcb 开瓶记录表增加仪器代号字段
  ALTER TABLE `pd_bottle_inf`
 ADD COLUMN `instr_code` varchar(32) CHARACTER SET utf8 COLLATE utf8_general_ci NULL COMMENT '使用仪器设备代号' AFTER `close_remarks`;
+
+-- add 2020年6月9日14:20:25 by mcb 定时任务 从lis系统获取检验数据
+ INSERT INTO `sys_quartz_job` VALUES ('1270238046440267778', 'admin', '2020-06-09 14:15:25', 0, 'admin', '2020-06-09 14:16:19', 'org.jeecg.modules.quartz.job.LisInspectionItemsTaskLisJob', '59 1/10 * * * ? *', NULL, '获取检验项目扣减库存用量定时任务(lis系统获取数据)', -1);
