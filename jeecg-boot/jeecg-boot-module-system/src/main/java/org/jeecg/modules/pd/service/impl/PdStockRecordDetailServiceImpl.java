@@ -3,6 +3,7 @@ package org.jeecg.modules.pd.service.impl;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import org.jeecg.common.constant.PdConstant;
 import org.jeecg.modules.pd.entity.PdPurchaseOrder;
 import org.jeecg.modules.pd.entity.PdStockRecordDetail;
 import org.jeecg.modules.pd.mapper.PdStockRecordDetailMapper;
@@ -68,5 +69,11 @@ public class PdStockRecordDetailServiceImpl extends ServiceImpl<PdStockRecordDet
 	@Override
 	public Map<String, Object> queryStockRecordCount(PdStockRecordDetail detail) {
 		return pdStockRecordDetailMapper.queryStockRecordCount(detail);
+	}
+
+	@Override
+	public List<PdStockRecordDetail> selectListForRefBarCodeCheck(PdStockRecordDetail pdStockRecordDetail) {
+		pdStockRecordDetail.setAuditStatus(PdConstant.AUDIT_STATE_1);
+		return pdStockRecordDetailMapper.selectList(pdStockRecordDetail);
 	}
 }

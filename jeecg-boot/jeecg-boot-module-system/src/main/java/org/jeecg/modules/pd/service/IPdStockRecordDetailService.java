@@ -35,4 +35,6 @@ public interface IPdStockRecordDetailService extends IService<PdStockRecordDetai
 	 * @return
 	 */
 	Map<String,Object> queryStockRecordCount(PdStockRecordDetail detail);
+
+	List<PdStockRecordDetail> selectListForRefBarCodeCheck(PdStockRecordDetail pdStockRecordDetail);
 }
