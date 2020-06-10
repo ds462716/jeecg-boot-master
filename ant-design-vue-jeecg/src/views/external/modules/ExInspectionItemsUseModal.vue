@@ -46,52 +46,6 @@
         </a-form>
       </a-card>
 
-      <!-- 检验项目包区域 -->
-      <a-card style="margin-bottom: 10px;" >
-        <a-tabs v-model="activeKey">
-          <a-tab-pane tab="检验项目包明细" :key="refKeys[0]"  :forceRender="true">
-            <div style="margin-bottom: 8px;" v-show="showPackageTable">
-              <a-button type="primary" icon="plus" @click="choosePackageList">选择检验项目</a-button>
-              <a-popconfirm style="margin-left: 8px"
-                            :title="`确定要删除吗?`"
-                            @confirm="handleConfirmDelete">
-                <a-button type="primary" icon="minus">删除</a-button>
-                <span class="gap"></span>
-              </a-popconfirm>
-            </div>
-            <div class="ant-alert ant-alert-info"  v-show="showPackageTable" style="margin-bottom: 16px;">
-              <i class="anticon anticon-info-circle ant-alert-icon"></i> 已选择 <a style="font-weight: 600">{{ pdPackageTable.selectedRowKeys.length }}</a>项
-              <a style="margin-left: 24px" @click="onClearSelected">清空</a>
-            </div>
-            <a-table
-              v-show="showPackageTable"
-              ref="table"
-              bordered
-              rowKey="id"
-              :pagination="false"
-              :columns="pdPackageTable.columns"
-              :dataSource="pdPackageTable.dataSource"
-              :loading="pdPackageTable.loading"
-              :customRow="onClickRow"
-              :rowSelection="{selectedRowKeys: pdPackageTable.selectedRowKeys,onChange: onSelectChange}"
-            >
-            </a-table>
-
-            <a-table
-              v-show="!showPackageTable"
-              ref="table"
-              bordered
-              rowKey="id"
-              :pagination="false"
-              :columns="pdPackageStockTable.columns"
-              :dataSource="pdPackageStockTable.dataSource"
-              :loading="pdPackageStockTable.loading"
-            >
-            </a-table>
-          </a-tab-pane>
-        </a-tabs>
-      </a-card>
-
         <!-- 产品列表区域 -->
         <a-card style="margin-bottom: 10px;">
           <a-tabs v-model="activeKey">
@@ -142,6 +96,52 @@
               >
               </j-editable-table>
 
+            </a-tab-pane>
+          </a-tabs>
+        </a-card>
+
+        <!-- 检验项目包区域 -->
+        <a-card style="margin-bottom: 10px;" >
+          <a-tabs v-model="activeKey">
+            <a-tab-pane tab="检验项目包明细" :key="refKeys[0]"  :forceRender="true">
+              <div style="margin-bottom: 8px;" v-show="showPackageTable">
+                <a-button type="primary" icon="plus" @click="choosePackageList">选择检验项目</a-button>
+                <a-popconfirm style="margin-left: 8px"
+                              :title="`确定要删除吗?`"
+                              @confirm="handleConfirmDelete">
+                  <a-button type="primary" icon="minus">删除</a-button>
+                  <span class="gap"></span>
+                </a-popconfirm>
+              </div>
+              <div class="ant-alert ant-alert-info"  v-show="showPackageTable" style="margin-bottom: 16px;">
+                <i class="anticon anticon-info-circle ant-alert-icon"></i> 已选择 <a style="font-weight: 600">{{ pdPackageTable.selectedRowKeys.length }}</a>项
+                <a style="margin-left: 24px" @click="onClearSelected">清空</a>
+              </div>
+              <a-table
+                v-show="showPackageTable"
+                ref="table"
+                bordered
+                rowKey="id"
+                :pagination="false"
+                :columns="pdPackageTable.columns"
+                :dataSource="pdPackageTable.dataSource"
+                :loading="pdPackageTable.loading"
+                :customRow="onClickRow"
+                :rowSelection="{selectedRowKeys: pdPackageTable.selectedRowKeys,onChange: onSelectChange}"
+              >
+              </a-table>
+
+              <a-table
+                v-show="!showPackageTable"
+                ref="table"
+                bordered
+                rowKey="id"
+                :pagination="false"
+                :columns="pdPackageStockTable.columns"
+                :dataSource="pdPackageStockTable.dataSource"
+                :loading="pdPackageStockTable.loading"
+              >
+              </a-table>
             </a-tab-pane>
           </a-tabs>
         </a-card>
@@ -543,7 +543,12 @@
       },
       // 选择检验项目包
       choosePackageList() {
-        this.$refs.exChoosePackageExInspectionItemsListModel.show();
+        let itemType = this.form.getFieldValue("itemType");
+        if(itemType){
+          this.$refs.exChoosePackageExInspectionItemsListModel.show();
+        }else{
+          this.$message.warning("请先选择检验类型");
+        }
       },
       //检验项目选中事件
       onSelectChange(selectedRowKeys, selectionRows) {
@@ -650,6 +655,11 @@
       },
       // 扫码查询
       searchQuery(num) {
+        let itemType = this.form.getFieldValue("itemType");
+        if(!itemType){
+          this.$message.warning("请先选择检验类型");
+          return;
+        }
         let productNumber = this.queryParam.productNumber;
         if(!productNumber){
           //清空扫码框
@@ -657,7 +667,6 @@
           this.$message.error("请输入产品编号！");
           return;
         }
-
         if(num == 0){       //产品编号扫码
           // 焦点条码输入框
           this.$refs.productBarCodeInput.focus();
@@ -669,7 +678,7 @@
             return;
           }
           //解析条码
-          stockScanCode(productNumber,productBarCode,"","").then((res) => {
+          stockScanCode(productNumber,productBarCode,"1","0","1").then((res) => {
             if(res.code == "200" || res.code == "203"){
               let pdProductStockList = res.result;
               if(!pdProductStockList){
@@ -739,7 +748,14 @@
       },
       // 选择产品 新增行
       chooseProductList() {
-        this.$refs.pdChooseProductStockListModel.show({"menuType":"1"});
+        let itemType = this.form.getFieldValue("itemType");
+        if(itemType){
+          //查询使用中的且是唯一码的试剂
+          this.$refs.pdChooseProductStockListModel.show({"menuType":"1",nestatStatus:"0",barCodeType:"1",productFlag:"1"});
+        }else{
+          this.$message.warning("请先选择检验类型");
+        }
+
       },
       // 表格数据变更
       valueChange(event) {

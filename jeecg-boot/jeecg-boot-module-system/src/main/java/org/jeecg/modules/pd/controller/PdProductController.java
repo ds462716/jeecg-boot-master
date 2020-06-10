@@ -409,11 +409,14 @@ public class PdProductController extends JeecgController<PdProduct, IPdProductSe
 	  * @return
 	  */
 	 @PostMapping(value = "stockScanCode")
-	 public Result<List<PdProductStock>> stockScanCode(String Barcode1,String Barcode2,String productFlag,String nestatStatus,
+	 public Result<List<PdProductStock>> stockScanCode(String Barcode1,String Barcode2,String productFlag,String nestatStatus,String barCodeType,
 													   HttpServletRequest req) {
 		 Result<List<PdProductStock>> result = new Result<List<PdProductStock>>();
 		 try{
-			 result = pdProductService.getStocks(Barcode1,Barcode2,productFlag!=null?productFlag:"",nestatStatus!=null?nestatStatus:"",result);
+			 result = pdProductService.getStocks(Barcode1,Barcode2,
+					 productFlag!=null?productFlag:"",
+					 nestatStatus!=null?nestatStatus:"",
+					 barCodeType!=null?barCodeType:"",result);
 		 }catch(Exception e){
 			 log.error(e.getMessage(), e);
              result.setCode(500);

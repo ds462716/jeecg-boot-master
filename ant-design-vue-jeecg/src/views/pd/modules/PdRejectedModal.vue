@@ -551,7 +551,7 @@
             return;
           }
           //解析条码
-          stockScanCode(productNumber,productBarCode,"","1").then((res) => {
+          stockScanCode(productNumber,productBarCode,"","1","0").then((res) => {
             if(res.code == "200" || res.code == "203"){
               let result = res.result;
               if(!result){
