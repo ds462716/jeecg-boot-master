@@ -23,9 +23,8 @@
     
     <!-- 操作按钮区域 -->
     <div class="table-operator">
-      <a-button @click="sysUpdate" type="primary" v-show="isDisabledAuth('instr:form:sysUpdate')"  :loading="confirmLoading" icon="plus">同步更新</a-button>
+      <a-button @click="sysUpdate" type="primary"    :loading="confirmLoading" icon="plus">同步更新</a-button>
     </div>
-
     <!-- table区域-begin -->
     <div>
       <div class="ant-alert ant-alert-info" style="margin-bottom: 16px;">
