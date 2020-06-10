@@ -77,13 +77,14 @@ export async function uniqueScanCode(Barcode,productFlag,nestatStatus){
  * @param that
  * @returns {Promise<*>}
  */
-export async function stockScanCode(Barcode1, Barcode2,productFlag,nestatStatus){
+export async function stockScanCode(Barcode1, Barcode2,productFlag,nestatStatus,barCodeType){
   //封装查询参数
   let formData = new URLSearchParams();
   formData.append("Barcode1",Barcode1);
   formData.append("Barcode2",Barcode2);
   formData.append("productFlag",productFlag);
   formData.append("nestatStatus",nestatStatus);
+  formData.append("barCodeType",barCodeType);
   let res = await httpAction(stockUrl,formData,"post");
   return res;
 }

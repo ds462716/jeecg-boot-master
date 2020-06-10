@@ -312,7 +312,7 @@ public class PdProductServiceImpl extends ServiceImpl<PdProductMapper, PdProduct
      * @return
      */
     @Override
-    public Result<List<PdProductStock>> getStocks(String Barcode1,String Barcode2,String productFlag,String nestatStatus, Result<List<PdProductStock>> result) {
+    public Result<List<PdProductStock>> getStocks(String Barcode1,String Barcode2,String productFlag,String nestatStatus,String barCodeType, Result<List<PdProductStock>> result) {
         try{
             List<PdProductStock> pdProductStocks = new ArrayList<>();
             //去空格转为大写
@@ -335,7 +335,7 @@ public class PdProductServiceImpl extends ServiceImpl<PdProductMapper, PdProduct
                     pdProductStock.setProductFlag(productFlag);
                     pdProductStock.setDepartId(sysUser.getCurrentDepartId());
                     pdProductStock.setNestatStatus(nestatStatus);
-                    pdProductStock.setBarCodeType(PdConstant.CODE_PRINT_TYPE_0);//批量打印的条码类型
+                    pdProductStock.setBarCodeType(barCodeType);//批量打印的条码类型
                     pdProductStocks = pdProductStockService.queryProductStockList(pdProductStock);
                     //有库存直接返回
                     if (pdProductStocks != null && pdProductStocks.size() > 0) {
@@ -366,7 +366,7 @@ public class PdProductServiceImpl extends ServiceImpl<PdProductMapper, PdProduct
                                     pdProductStock.setDepartId(sysUser.getCurrentDepartId());
                                     pdProductStock.setProductFlag(productFlag);
                                     pdProductStock.setNestatStatus(nestatStatus);
-                                    pdProductStock.setBarCodeType(PdConstant.CODE_PRINT_TYPE_0);//批量打印的条码类型
+                                    pdProductStock.setBarCodeType(barCodeType);//批量打印的条码类型
                                     //根据条件查询库存
                                     pdProductStocks = pdProductStockService.queryProductStockList(pdProductStock);
                                     if (pdProductStocks != null && pdProductStocks.size() > 0) {
@@ -392,7 +392,7 @@ public class PdProductServiceImpl extends ServiceImpl<PdProductMapper, PdProduct
                                         pdProductStock.setDepartId(sysUser.getCurrentDepartId());
                                         pdProductStock.setProductFlag(productFlag);
                                         pdProductStock.setNestatStatus(nestatStatus);
-                                        pdProductStock.setBarCodeType(PdConstant.CODE_PRINT_TYPE_0);//批量打印的条码类型
+                                        pdProductStock.setBarCodeType(barCodeType);//批量打印的条码类型
                                         //根据条件查询库存
                                         pdProductStocks = pdProductStockService.queryProductStockList(pdProductStock);
                                         if (pdProductStocks != null && pdProductStocks.size() > 0) {
@@ -522,7 +522,7 @@ public class PdProductServiceImpl extends ServiceImpl<PdProductMapper, PdProduct
                             pdProductStock.setDepartId(sysUser.getCurrentDepartId());
                             pdProductStock.setProductFlag(productFlag);
                             pdProductStock.setNestatStatus(nestatStatus);
-                            pdProductStock.setBarCodeType(PdConstant.CODE_PRINT_TYPE_0);//批量打印的条码类型
+                            pdProductStock.setBarCodeType(barCodeType);//批量打印的条码类型
                             //根据条件查询库存
                             pdProductStocks = pdProductStockService.queryProductStockList(pdProductStock);
                         }else {

@@ -30,7 +30,7 @@ public interface IPdProductService extends IService<PdProduct> {
 
     Result<Map>  getScanCode(String Barcode1, String Barcode2, Result<Map> result);
 
-    Result<List<PdProductStock>> getStocks(String productBarCode, String Barcode2, String productFlag,String nestatStatus,Result<List<PdProductStock>> result);
+    Result<List<PdProductStock>> getStocks(String productBarCode, String Barcode2, String productFlag,String barCodeType,String nestatStatus,Result<List<PdProductStock>> result);
 
     void editChargeCodeBatch(String ids, String chargeCode);
 

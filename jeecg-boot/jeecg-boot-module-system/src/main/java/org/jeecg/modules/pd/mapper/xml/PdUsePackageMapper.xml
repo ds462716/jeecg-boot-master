@@ -88,7 +88,6 @@
         <where>
             a.del_flag = #{DEL_FLAG_NORMAL}
             and a.code = #{code}
-            /*and a.name = #{name}*/
             <if test="id != null and id != ''">
                 AND a.id != #{id}
             </if>
