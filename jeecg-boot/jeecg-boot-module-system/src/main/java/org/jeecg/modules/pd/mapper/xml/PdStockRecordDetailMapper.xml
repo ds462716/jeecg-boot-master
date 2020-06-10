@@ -303,7 +303,7 @@
 
 	<select id="selectListForRefBarCodeCheck" resultType="org.jeecg.modules.pd.entity.PdStockRecordDetail">
 		SELECT
-		<include refid="PdStockRecordDetailColumns"/>,
+		<include refid="PdStockRecordDetailColumns"/>
 		FROM pd_stock_record_detail a
 		<include refid="PdStockRecordDetailJoins"/>
 		<include refid="PdStockRecordJoins"/>

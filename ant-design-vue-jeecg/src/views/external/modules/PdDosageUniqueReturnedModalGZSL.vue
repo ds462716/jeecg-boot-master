@@ -281,6 +281,7 @@
           columns: [
             { title: '库存明细ID', key: 'productStockId', type: FormTypes.hidden },
             { title: '产品ID', key: 'productId', type: FormTypes.hidden },
+            { title: '唯一码', key: 'refBarCode', type: FormTypes.normal, width:"250px" },
             { title: '产品名称', key: 'productName', type: FormTypes.normal,width:"220px" },
             { title: '产品编号', key: 'productNumber', width:"200px" },
             { title: '产品条码', key: 'productBarCode', type: FormTypes.input, disabled:true, width:"200px" },
@@ -291,13 +292,12 @@
             /*{ title: '入库单价', key: 'purchasePrice', width:"80px" },*/
             { title: '出库单价', key: 'sellingPrice', width:"80px" },
             {
-              title: '用量数量', key: 'dosageCount', type: FormTypes.input,disabled:true, width:"80px",
+              title: '用量数量', key: 'dosageCount', type: FormTypes.input, disabled:true, width:"80px",
               placeholder: '${title}', defaultValue: '1',
               validateRules: [{ required: true, message: '${title}不能为空' },{ pattern: '^-?\\d+\\.?\\d*$',message: '${title}的格式不正确' }]
             },
             { title: '用量金额', key: 'amountMoney', type: FormTypes.input, disabled:true, width:"100px" },
-            { title: '实际使用数量', key: 'leftRefundNum', width:"80px" },
-            { title: '收费状态', key: 'hyChargedText', width:"80px" },
+            { title: '库存数量', key: 'stockNum', width:"80px" },
             { title: '收费项目代码', key: 'chargeCode', width:"80px" },
             { title: '是否计费', key: 'isCharge',type: FormTypes.hidden},
             { title: '是否计费', key: 'isChargeText', width:"80px"},
@@ -621,6 +621,7 @@
       // 扫码 调用 新增一行
       addrowsByScanCode(row){
         let data = {
+          refBarCode:row.refBarCode,
           productStockId:row.id,
           productId: row.productId,
           productName: row.productName,
