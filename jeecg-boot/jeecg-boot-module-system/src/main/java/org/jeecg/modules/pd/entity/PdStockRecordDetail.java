@@ -194,6 +194,8 @@ public class PdStockRecordDetail extends BaseEntity {
 	private String outDepartIds; //批量查询用
 	@TableField(exist = false)
 	private List<String> outDepartIdList;
+	@TableField(exist = false)
+	private List<String> productStockIdList;
 
 	@TableField(exist = false)
 	@JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd")

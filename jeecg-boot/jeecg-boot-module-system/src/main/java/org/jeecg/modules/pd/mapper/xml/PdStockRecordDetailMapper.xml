@@ -301,6 +301,31 @@
 		</where>
 	</select>
 
+	<select id="selectListForRefBarCodeCheck" resultType="org.jeecg.modules.pd.entity.PdStockRecordDetail">
+		SELECT
+		<include refid="PdStockRecordDetailColumns"/>,
+		FROM pd_stock_record_detail a
+		<include refid="PdStockRecordDetailJoins"/>
+		<include refid="PdStockRecordJoins"/>
+		<where>
+			a.del_flag =#{entity.DEL_FLAG_NORMAL}
+			AND (g.audit_status = '1' or g.submit_status = '1' or g.submit_status = '3' )
+			<if test="entity.productStockId != null and entity.productStockId != ''">
+				AND a.product_stock_id = #{entity.productStockId}
+			</if>
+			<if test="entity.refBarCode != null and entity.refBarCode != ''">
+				AND a.ref_bar_code LIKE concat('%',#{entity.refBarCode},'%')
+			</if>
+			<if test='entity.productStockIdList != null and entity.productStockIdList.size() > 0'>
+				AND a.product_stock_id in
+				<foreach item="id" collection="entity.productStockIdList" open="(" separator="," close=")">
+					#{id}
+				</foreach>
+			</if>
+			ORDER BY create_time desc
+		</where>
+	</select>
+
     <!-- 统计入库数量——首页展示用 -->
     <select id="queryStockRecordCount" resultType="java.util.Map"  parameterType="org.jeecg.modules.pd.entity.PdStockRecordDetail">
         SELECT

@@ -73,7 +73,6 @@ public class PdStockRecordDetailServiceImpl extends ServiceImpl<PdStockRecordDet
 
 	@Override
 	public List<PdStockRecordDetail> selectListForRefBarCodeCheck(PdStockRecordDetail pdStockRecordDetail) {
-		pdStockRecordDetail.setAuditStatus(PdConstant.AUDIT_STATE_1);
-		return pdStockRecordDetailMapper.selectList(pdStockRecordDetail);
+		return pdStockRecordDetailMapper.selectListForRefBarCodeCheck(pdStockRecordDetail);
 	}
 }

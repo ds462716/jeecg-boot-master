@@ -30,6 +30,8 @@ public interface PdStockRecordDetailMapper extends BaseMapper<PdStockRecordDetai
 
 	public List<PdStockRecordDetail> selectList(@Param("entity") PdStockRecordDetail pdStockRecordDetail);
 
+	public List<PdStockRecordDetail> selectListForRefBarCodeCheck(@Param("entity") PdStockRecordDetail pdStockRecordDetail);
+
 	IPage<PdStockRecordDetail> selectList(Page<PdStockRecordDetail> page, @Param("entity") PdStockRecordDetail pdStockRecordDetail);
 
 
