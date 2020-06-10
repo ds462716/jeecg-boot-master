@@ -1,5 +1,6 @@
 package org.jeecg.modules.external.service;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.jeecg.modules.external.entity.ExLabInstrInf;
 
@@ -13,5 +14,9 @@ import java.util.List;
  */
 public interface IExLabInstrInfService extends IService<ExLabInstrInf> {
 
+    public Page<ExLabInstrInf> selectList(Page<ExLabInstrInf> page, ExLabInstrInf exLabInstrInf);
+
     List<ExLabInstrInf> getExLabInstrInf(ExLabInstrInf exLabInstrInf);
+
+    public void synUpdateInstrInf(List<ExLabInstrInf> labInstrInfList);
 }

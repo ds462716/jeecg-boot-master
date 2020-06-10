@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.apache.commons.collections.MapUtils;
 import org.jeecg.modules.external.entity.ExInspectionItems;
+import org.jeecg.modules.external.entity.ExLabInstrInf;
 import org.jeecg.modules.pd.entity.*;
 import org.jeecg.modules.pd.mapper.HisChargeMapper;
 import org.jeecg.modules.pd.service.IHisChargeService;
@@ -136,5 +137,12 @@ public class HisChargeServiceImpl extends ServiceImpl<HisChargeMapper, HisCharge
 		}
 		return prodNames;
 
+	}
+
+	//查询HIS系统用戶信息
+	@Override
+	@DS("multi-datasource2")
+	public List<ExLabInstrInf> selectExLabInstrInf() {
+		return hisChargeMapper.selectExLabInstrInf();
 	}
 }

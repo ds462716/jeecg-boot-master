@@ -127,6 +127,11 @@
             dataIndex: 'boottleDate'
           },
           {
+            title:'所属仪器',
+            align:"center",
+            dataIndex: 'instrName'
+          },
+          {
             title:'产品名称',
             align:"center",
             dataIndex: 'productName'

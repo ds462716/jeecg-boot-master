@@ -212,4 +212,14 @@
 			AND  fsf_jysj >= #{queryDateEnd}
 		</if>
 	</select>
+
+
+
+    <!--查询LIS系统检验仪器设备信息-->
+    <select id="selectExLabInstrInf" parameterType="java.lang.String" resultType="org.jeecg.modules.external.entity.ExLabInstrInf">
+		 select
+      a.yq as "instrCode",
+      a.yqmc as "instrName"
+       from lab_instr a
+	</select>
 </mapper>

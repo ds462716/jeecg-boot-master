@@ -252,10 +252,6 @@
 					#{id}
 				</foreach>
 			</if>
-			<!-- 检验用量扣减用   只查询普通耗材和使用中的试剂产品-->
-			<if test="menuType != null and menuType != ''">
-				 AND   (a.nestat_status='0'  or c.product_flag='0')
-			</if>
  			order by  exp_status  desc,create_time desc
 		</where>
 	</select>
