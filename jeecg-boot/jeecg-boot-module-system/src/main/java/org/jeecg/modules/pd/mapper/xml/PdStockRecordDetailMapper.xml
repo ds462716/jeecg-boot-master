@@ -187,8 +187,8 @@
 			<if test="entity.batchNo != null and entity.batchNo != ''">
 				AND a.batch_no LIKE concat('%',#{entity.batchNo},'%')
 			</if>
-			<if test="entity.productsSockid != null and entity.productsSockid != ''">
-				AND a.product_stock_id = #{entity.batchNo}
+			<if test="entity.productStockId != null and entity.productStockId != ''">
+				AND a.product_stock_id = #{entity.productStockId}
 			</if>
 			<if test="entity.refBarCode != null and entity.refBarCode != ''">
 				AND a.ref_bar_code LIKE concat('%',#{entity.refBarCode},'%')
