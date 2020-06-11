@@ -48,6 +48,9 @@ public class PdProductStockUniqueCode extends BaseEntity{
 	@Excel(name = "打印类型0唯一码打印，1批量打印", width = 15)
     @ApiModelProperty(value = "打印类型0唯一码打印，1批量打印")
     private String printType;
+    @Excel(name = "打印次数", width = 15)
+    @ApiModelProperty(value = "打印次数")
+    private Integer printNum;
 	/**所属部门*/
 	@Excel(name = "所属部门", width = 15)
     @ApiModelProperty(value = "所属部门")

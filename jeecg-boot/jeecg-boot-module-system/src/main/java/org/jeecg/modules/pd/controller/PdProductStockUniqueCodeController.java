@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
+import org.jeecg.common.constant.PdConstant;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.oConvertUtils;
@@ -74,9 +75,25 @@ public class PdProductStockUniqueCodeController extends JeecgController<PdProduc
 		Page<PdProductStockUniqueCode> page = new Page<>(pageNo,pageSize);
 		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
 		pdProductStockUniqueCode.setDepartParentId(sysUser.getDepartParentId());
+		//因为打了批量码以后该条码并不清除所以只查唯一码
+		pdProductStockUniqueCode.setPrintType(PdConstant.CODE_PRINT_TYPE_1);
 		IPage<PdProductStockUniqueCode> pageList =pdProductStockUniqueCodeService.selectList(page,pdProductStockUniqueCode);//
 		return Result.ok(pageList);
 	}
+
+	 @AutoLog(value = "库存关联条码表-分页列表查询")
+	 @ApiOperation(value="库存关联条码表-分页列表查询", notes="库存关联条码表-分页列表查询")
+	 @GetMapping(value = "/findList")
+	 public Result<?> findList(PdProductStockUniqueCode pdProductStockUniqueCode,
+									@RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
+									@RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
+									HttpServletRequest req) {
+		 Page<PdProductStockUniqueCode> page = new Page<>(pageNo,pageSize);
+		 LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		 pdProductStockUniqueCode.setDepartParentId(sysUser.getDepartParentId());
+		 IPage<PdProductStockUniqueCode> pageList =pdProductStockUniqueCodeService.findList(page,pdProductStockUniqueCode);//
+		 return Result.ok(pageList);
+	 }
 	
 	/**
 	 *   添加
@@ -91,6 +108,14 @@ public class PdProductStockUniqueCodeController extends JeecgController<PdProduc
 		pdProductStockUniqueCodeService.save(pdProductStockUniqueCode);
 		return Result.ok("添加成功！");
 	}
+
+	 @AutoLog(value = "批量修改打印次数")
+	 @ApiOperation(value="批量修改打印次数", notes="批量修改打印次数")
+	 @PostMapping(value = "/updatePrintNum")
+	 public Result<?> updatePrintNum(@RequestBody List<PdProductStockUniqueCode> pdProductStockUniqueCodes) {
+		 pdProductStockUniqueCodeService.updatePrintNum(pdProductStockUniqueCodes);
+		 return Result.ok("添加成功！");
+	 }
 	
 	/**
 	 *  编辑

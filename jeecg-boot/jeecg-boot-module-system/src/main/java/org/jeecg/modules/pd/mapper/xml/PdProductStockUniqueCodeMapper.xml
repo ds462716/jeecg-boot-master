@@ -21,6 +21,9 @@
         <if test="entity.codeState != null and entity.codeState != ''">
             AND a.code_state = #{entity.codeState}
         </if>
+        <if test="entity.uniqueCodeOrder != null and entity.uniqueCodeOrder != ''">
+            AND a.unique_code_order = #{entity.uniqueCodeOrder}
+        </if>
         ORDER BY a.unique_code_order asc
     </select>
 
@@ -58,5 +61,18 @@
         group by a.depart_id
     </select>
 
+    <!-- 批量更新 -->
+    <update id="updatePrintNum">
+        UPDATE pd_product_stock_unique_code
+        <set>
+            print_num = print_num+1
+        </set>
+        <where>
+            id IN
+            <foreach collection="list" index="index" item="id" separator=","  open="(" close=")">
+                #{id,jdbcType=VARCHAR}
+            </foreach>
+        </where>
+    </update>
 
 </mapper>

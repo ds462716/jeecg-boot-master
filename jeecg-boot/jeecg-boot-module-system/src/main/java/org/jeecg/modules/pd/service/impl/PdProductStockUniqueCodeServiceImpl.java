@@ -1,6 +1,7 @@
 package org.jeecg.modules.pd.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.PdConstant;
@@ -295,5 +296,55 @@ public class PdProductStockUniqueCodeServiceImpl extends ServiceImpl<PdProductSt
     @Override
     public List<PdProductStock> selectListByGroup(PdProductStockUniqueCode pdProductStockUniqueCode) {
         return baseMapper.selectListByGroup(pdProductStockUniqueCode);
+    }
+
+    /**
+     * 批量更新条码打印次数
+     * @param pdProductStockUniqueCodes
+     */
+    @Override
+    public void updatePrintNum(List<PdProductStockUniqueCode> pdProductStockUniqueCodes) {
+        if(pdProductStockUniqueCodes!=null && pdProductStockUniqueCodes.size()>0){
+            List<String> ids = new ArrayList<>();
+            for(PdProductStockUniqueCode pdProductStockUniqueCode :pdProductStockUniqueCodes){
+                ids.add(pdProductStockUniqueCode.getId());
+            }
+            baseMapper.updatePrintNum(ids);
+        }
+    }
+
+    @Override
+    public Page<PdProductStockUniqueCode> findList(Page<PdProductStockUniqueCode> page, PdProductStockUniqueCode pdProductStockUniqueCode) {
+        Page<PdProductStockUniqueCode> p = new Page<>();
+        //查询是否已经存在
+        PdProductStock pdProductStock = new PdProductStock();
+        pdProductStock.setId(pdProductStockUniqueCode.getProductStockId());
+        List<PdProductStock> pdProductStocks = pdProductStockService.selectList(pdProductStock);
+        if(pdProductStocks!=null && pdProductStocks.size()>0){
+            PdProductStock psk = pdProductStocks.get(0);
+            if(PdConstant.CODE_PRINT_TYPE_1.equals(psk.getBarCodeType())){
+                pdProductStockUniqueCode.setPrintType(PdConstant.CODE_PRINT_TYPE_1);
+                return baseMapper.selectListByPage(page,pdProductStockUniqueCode);
+            }else{
+                if(psk.getRefBarCode()!=null && !"".equals(psk.getRefBarCode())){
+                    List<PdProductStockUniqueCode> pdProductStockUniqueCodes = new ArrayList<>();
+                    LambdaQueryWrapper<PdProductStockUniqueCode> query1 = new LambdaQueryWrapper<>();
+                    query1.eq(PdProductStockUniqueCode::getId,psk.getRefBarCode());
+                    PdProductStockUniqueCode pskq = this.getOne(query1);
+                    if(pskq!=null){
+                        pskq.setProductName(pdProductStock.getProductName());
+                        pskq.setExpDate(pdProductStock.getExpDate());
+                        pskq.setBatchNo(pdProductStock.getBatchNo());
+                        pdProductStockUniqueCodes.add(pskq);
+                        p.setRecords(pdProductStockUniqueCodes);
+                        p.setTotal(1);
+                        return p;
+                    }
+                }
+            }
+        }
+        p.setRecords(new ArrayList<>());
+        p.setTotal(0);
+        return p;
     }
 }

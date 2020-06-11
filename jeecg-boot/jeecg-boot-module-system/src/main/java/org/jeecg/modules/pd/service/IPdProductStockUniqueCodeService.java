@@ -28,4 +28,8 @@ public interface IPdProductStockUniqueCodeService extends IService<PdProductStoc
     List<PdProductStockUniqueCode> selectList(PdProductStockUniqueCode pdProductStockUniqueCode);
 
     List<PdProductStock> selectListByGroup(PdProductStockUniqueCode pdProductStockUniqueCode);
+
+    void updatePrintNum(List<PdProductStockUniqueCode> pdProductStockUniqueCodes);
+
+    IPage<PdProductStockUniqueCode> findList(Page<PdProductStockUniqueCode> page, PdProductStockUniqueCode pdProductStockUniqueCode);
 }

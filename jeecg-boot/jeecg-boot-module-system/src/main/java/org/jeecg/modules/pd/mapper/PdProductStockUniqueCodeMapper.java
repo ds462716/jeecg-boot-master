@@ -21,4 +21,6 @@ public interface PdProductStockUniqueCodeMapper extends BaseMapper<PdProductStoc
     List<PdProductStockUniqueCode> selectListOne(PdProductStockUniqueCode pdProductStockUniqueCode);
 
     List<PdProductStock> selectListByGroup(PdProductStockUniqueCode pdProductStockUniqueCode);
+
+    void updatePrintNum(List<String> ids);
 }

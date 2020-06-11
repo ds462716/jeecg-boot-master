@@ -92,4 +92,6 @@ public interface PdProductStockMapper extends BaseMapper<PdProductStock> {
 	public List<PdProductStock> selectOrExpDate(PdProductStock pdProductStock);
 
 	List<PdProductStock> queryUniqueProductStockList(PdProductStock pdProductStock);
+
+	Page<PdProductStock> queryPrintList(Page<PdProductStock> page, @Param("entity") PdProductStock entity);
 }

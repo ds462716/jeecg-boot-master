@@ -68,4 +68,6 @@ public interface IPdProductStockService extends IService<PdProductStock> {
 	public void updateStockBarCodeType(PdProductStock productStock);
 
     List<PdProductStock> queryUniqueProductStockList(PdProductStock ps);
+
+    Page<PdProductStock> queryPrintList(Page<PdProductStock> page, PdProductStock productStock);
 }

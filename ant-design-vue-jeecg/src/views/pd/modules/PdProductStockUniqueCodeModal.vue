@@ -22,6 +22,11 @@
               <j-dict-select-tag-expand v-model="queryParam.codeState" dictCode="bar_code_state" placeholder="请选择状态"/>
             </a-form-item>
           </a-col>
+          <a-col :md="6" :sm="8">
+            <a-form-item label="序号">
+              <a-input placeholder="请输入序号" v-model="queryParam.uniqueCodeOrder"></a-input>
+            </a-form-item>
+          </a-col>
           <a-col :md="6" :sm="8" >
             <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
               <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
@@ -128,6 +133,11 @@
               }
             }
           },
+          {
+            title:'打印次数',
+            align:"center",
+            dataIndex: 'printNum'
+          },
           /*{
             title: '操作',
             dataIndex: 'action',
@@ -136,7 +146,7 @@
           }*/
         ],
         url: {
-          list: "/pd/pdProductStockUniqueCode/list",
+          list: "/pd/pdProductStockUniqueCode/findList",
           delete: "/pd/pdProductStockUniqueCode/delete",
           deleteBatch: "/pd/pdProductStockUniqueCode/deleteBatch",
           exportXlsUrl: "/pd/pdProductStockUniqueCode/exportXls",
@@ -174,33 +184,13 @@
         this.visible = false;
       },
       show(record){
-        if(record.barCodeType=="0"){
-          this.loading = true;
-          if(record.refBarCode){
-            //解决转移到二级科室条码显示问题
-            this.visible = true;
-            let data = {
-              id:record.refBarCode,
-              uniqueCodeOrder:1,
-              printType:"0",
-              codeState:"0",
-            };
-            let array = new Array();
-            array.push(data);
-            this.dataSource = array;
-            this.ipagination.total = 1;
-            this.loading = false;
-          }else{
-            this.$message.error("请先打印条码!")
-          }
-        }else{
-          this.productStockId = record.id;
-          this.visible = true;
-          this.loadData(1);
-        }
+        this.productStockId = record.id;
+        this.visible = true;
+        this.loadData(1);
       },
       loadData(arg) {
         if(this.productStockId){
+          this.dataSource = [];
           this.loading = true;
           //加载数据 若传入参数1则加载第一页的内容
           if (arg === 1) {

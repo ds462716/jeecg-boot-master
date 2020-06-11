@@ -235,4 +235,9 @@ public class PdProductStock extends BaseEntity {
 	@TableField(exist = false)
 	private  String menuType;//菜单页面类型  1:检验用量扣减菜单
 
+	@TableField(exist = false)
+	private  String printNum;//普通打印的次数
+
+	@TableField(exist = false)
+	private  String printNumFlag;//查询从未打印过的库存
 }

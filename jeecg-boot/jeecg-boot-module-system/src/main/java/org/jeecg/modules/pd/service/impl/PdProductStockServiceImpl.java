@@ -80,6 +80,11 @@ public class PdProductStockServiceImpl extends ServiceImpl<PdProductStockMapper,
 		return pdProductStockMapper.queryUniqueProductStockList(pdProductStock);
 	}
 
+	@Override
+	public Page<PdProductStock> queryPrintList(Page<PdProductStock> page, PdProductStock productStock) {
+		return baseMapper.queryPrintList(page,productStock);
+	}
+
 
 	@Override
 	public List<PdProductStock> selectByMainId(String mainId) {

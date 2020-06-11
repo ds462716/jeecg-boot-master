@@ -44,6 +44,14 @@
               </a-form-item>
             </a-col>
             <a-col :md="6" :sm="8">
+              <a-form-item label="打印次数限制">
+                <a-select  v-model="queryParam.printNumFlag"placeholder="请选择打印次数限制">
+                  <a-select-option value="">不限制</a-select-option>
+                  <a-select-option value="1">未打印</a-select-option>
+                </a-select>
+              </a-form-item>
+            </a-col>
+            <a-col :md="6" :sm="8">
               <a-form-item label="产品编号">
                 <a-input placeholder="请输入产品编号" v-model="queryParam.number"></a-input>
               </a-form-item>
@@ -130,6 +138,7 @@
       <a-button type="primary" icon="plus" @click="batchPrint()">打印批次码</a-button>
       <a-button type="primary" icon="plus" :loading="confirmLoading" @click="onlyPrint()" style="margin-left: 8px">打印唯一码</a-button>
       <a-button type="primary" icon="delete" @click="handleDelete" style="margin-left: 8px">清除条码</a-button>
+      <a-button type="primary" icon="delete" @click="findBarCodeDetail" style="margin-left: 8px">查看赋码</a-button>
     </div>
     <!-- table区域-begin -->
     <div>
@@ -156,6 +165,9 @@
       </a-table>
     </div>
     <pdProduct-stock-query-print ref="printModalForm" ></pdProduct-stock-query-print>
+
+    <!--查看唯一码-->
+    <pd-product-stock-unique-code-modal ref="modalUniqueForm1" @ok="modalFormOk"></pd-product-stock-unique-code-modal>
     <a-modal :visible="orderVisible"  :maskClosable="false"  :confirmLoading="confirmLoading"
              @ok="handleOk" :width="900" @cancel="handleCancel">
       <a-form :form="form">
@@ -184,13 +196,15 @@
   import PdProductStockQueryPrint from './PdProductStockQueryPrint'
   import {initDictOptions, filterMultiDictText} from '@/components/dict/JDictSelectUtil'
   import JDictSelectTagExpand from "@/components/dict/JDictSelectTagExpand"
+  import PdProductStockUniqueCodeModal from "../modules/PdProductStockUniqueCodeModal";
 
   export default {
-    name: "PdProductStockQueryList",
+    name: "PdProductStockQueryModal",
     mixins:[JeecgListMixin],
     components: {
       PdProductStockQueryPrint,
-      JDictSelectTagExpand
+      JDictSelectTagExpand,
+      PdProductStockUniqueCodeModal
     },
     data () {
       return {
@@ -237,6 +251,18 @@
             title:'产品编号',
             align:"center",
             dataIndex: 'number'
+          },
+          {
+            title:'条码类型',
+            align:"center",
+            dataIndex: 'barCodeType',
+            customRender:(text)=>{
+              if(!text){
+                return ''
+              }else{
+                return filterMultiDictText(this.dictOptions['barCodeType'], text+"")
+              }
+            }
           },
           {
             title:'产品类型',
@@ -322,7 +348,7 @@
           }
         ],
         url: {
-          list: "/pd/pdProductStockTotal/queryList",
+          list: "/pd/pdProductStockTotal/queryPrintList",
           exportXlsUrl: "/pd/pdProductStockTotal/exportXls",
           queryDepart: "/pd/pdDepart/queryListTree",
           querySupplier:"/pd/pdSupplier/getSupplierList",
@@ -331,6 +357,7 @@
         },
         dictOptions:{
           nestatStatus:[],
+          barCodeType:[],
         },
         tableScroll:{x :13*157+50},
       }
@@ -472,6 +499,8 @@
             return ;
           }
           this.$refs.printModalForm.init(this.selectionRows);
+          this.loadData();
+          this.onClearSelected();
         }else{
           this.$message.error("请选择需要打印的内容!")
         }
@@ -484,6 +513,8 @@
               this.orderVisible = true;
             }else{
               this.$refs.printModalForm.onlyInit(stockObj,"","");
+              this.loadData();
+              this.onClearSelected();
             }
           }else{
             this.$message.error("只能勾选一条进行打印!")
@@ -577,7 +608,27 @@
           if (res.success) {
             this.$set(this.dictOptions, 'nestatStatus', res.result)
           }
+        });
+        initDictOptions('bar_code_type').then((res) => {
+          if (res.success) {
+            this.$set(this.dictOptions, 'barCodeType', res.result)
+          }
         })
+      },
+      //如果是唯一码查询唯一码的详细内容
+      findBarCodeDetail(record){
+        if(this.selectionRows.length>0){
+          if(this.selectionRows.length==1){
+            let stockObj = this.selectionRows[0];
+            this.$refs.modalUniqueForm1.show(stockObj);
+            this.$refs.modalUniqueForm1.title = "查看赋码";
+            this.$refs.modalUniqueForm1.disableSubmit = false;
+          }else{
+            this.$message.error("只能勾选一条进行查看!")
+          }
+        }else{
+          this.$message.error("请选择需要查看的内容!")
+        }
       },
     },
   }

@@ -55,6 +55,7 @@
         url: {
           uniqueCodeGeneration: "/pd/pdProductStockUniqueCode/uniqueCodeGeneration",
           batchCodeGeneration: "/pd/pdProductStockUniqueCode/batchCodeGeneration",
+          updatePrintNum: "/pd/pdProductStockUniqueCode/updatePrintNum",
         },
       }
     },
@@ -166,7 +167,12 @@
       },
       //报存打印日志
       savePintRecord(){
+        if(this.printData.length>0){
+          let that = this;
+          httpAction(this.url.updatePrintNum,this.printData,"post").then((res)=>{
 
+          })
+        }
       }
 
     },

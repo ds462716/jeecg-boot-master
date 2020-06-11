@@ -743,3 +743,8 @@ CREATE TABLE `ex_lab_instr_inf` (
 
 -- add 2020年6月9日15:20:25 by mcb 增加检验仪器管理菜单
  INSERT INTO `sys_permission` VALUES ('1270262138543468545', '1255448486688649218', '检验仪器管理', '/external/ExLabInstrInf', 'external/ExLabInstrInfList', NULL, NULL, 1, '0', NULL, '1', 7.00, 0, NULL, 1, 1, 0, 0, NULL, 'admin', '2020-06-09 15:51:09', NULL, '2020-06-09 15:51:09', 0, 0, '1', 0);
+
+
+-- add 2020年6月11日10:04:43 by zxh 打印次数
+ALTER TABLE `pd_product_stock_unique_code`
+ADD COLUMN `print_num`  int(11) NULL DEFAULT 0 COMMENT '打印次数' AFTER `code_state`;

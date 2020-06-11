@@ -350,6 +350,34 @@ public class PdProductStockTotalController {
 		 return Result.ok(page);
 	 }
 
+	/**
+	 * 条码打印查询库存
+	 * @param productStock
+	 * @param pageNo
+	 * @param pageSize
+	 * @param req
+	 * @return
+	 */
+	@GetMapping(value = "/queryPrintList")
+	public Result<?> queryPrintList(PdProductStock productStock,
+							   @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
+							   @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
+							   HttpServletRequest req) {
+		Page<PdProductStock> page = new Page<PdProductStock>(pageNo, pageSize);
+		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		if(oConvertUtils.isNotEmpty(productStock.getDepartIds()) && !"undefined".equals(productStock.getDepartIds())) {
+			productStock.setDepartIdList(Arrays.asList(productStock.getDepartIds().split(",")));
+		}else{
+			//查询科室下所有下级科室的ID
+			SysDepart sysDepart=new SysDepart();
+			List<String> departList=pdDepartService.selectListDepart(sysDepart);
+			productStock.setDepartIdList(departList);
+		}
+		page = pdProductStockService.queryPrintList(page,productStock);
+		return Result.ok(page);
+	}
+
+
 
 
 	 /**
