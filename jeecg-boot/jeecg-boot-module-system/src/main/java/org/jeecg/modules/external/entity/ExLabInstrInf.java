@@ -1,22 +1,19 @@
 package org.jeecg.modules.external.entity;
 
-import java.io.Serializable;
-import java.io.UnsupportedEncodingException;
-import java.util.Date;
-import java.math.BigDecimal;
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import lombok.Data;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import org.jeecg.modules.pd.entity.BaseEntity;
-import org.springframework.format.annotation.DateTimeFormat;
-import org.jeecgframework.poi.excel.annotation.Excel;
-import org.jeecg.common.aspect.annotation.Dict;
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
+import org.jeecg.modules.pd.entity.BaseEntity;
+import org.jeecgframework.poi.excel.annotation.Excel;
+import org.springframework.format.annotation.DateTimeFormat;
+
+import java.util.Date;
 
 /**
  * @Description: ex_lab_instr_inf
@@ -28,7 +25,6 @@ import lombok.experimental.Accessors;
 @TableName("ex_lab_instr_inf")
 @Accessors(chain = true)
 @EqualsAndHashCode(callSuper = false)
-@ApiModel(value="ex_lab_instr_inf对象", description="ex_lab_instr_inf")
 public class ExLabInstrInf  extends BaseEntity {
     private static final long serialVersionUID = 1L;
 
@@ -73,9 +69,9 @@ public class ExLabInstrInf  extends BaseEntity {
     @ApiModelProperty(value = "使用状态")
     private String status;
 	/**创建时间*/
-	@Excel(name = "创建时间", width = 15, format = "yyyy-MM-dd")
-	@JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd")
-    @DateTimeFormat(pattern="yyyy-MM-dd")
+	@Excel(name = "创建时间", width = 15, format = "yyyy-MM-dd  HH:mm:ss")
+	@JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd  HH:mm:ss")
+    @DateTimeFormat(pattern="yyyy-MM-dd  HH:mm:ss")
     @ApiModelProperty(value = "创建时间")
     private Date createTime;
 	/**创建人*/
@@ -100,4 +96,10 @@ public class ExLabInstrInf  extends BaseEntity {
 	@Excel(name = "所属机构", width = 15)
     @ApiModelProperty(value = "所属机构")
     private String departParentId;
+    /**所属科室名称*/
+    @TableField(exist = false)
+    private String departName;
+    /**检验室名称*/
+    @TableField(exist = false)
+    private String testDepartName;
 }

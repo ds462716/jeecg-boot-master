@@ -12,12 +12,14 @@
         b.batch_no as "batchNo",
         b.exp_date as "expDate",
         e.name as "unitName",
-        d.depart_name as "departName"
+        d.depart_name as "departName",
+        f.instr_name as "instrName"
         from pd_bottle_inf a
         left join pd_product_stock b on a.stock_id=b.id
         left join pd_product c on c.id=b.product_id  and c.del_flag=#{entity.DEL_FLAG_NORMAL}
         left join sys_depart d on d.id=a.depart_id and d.del_flag=#{entity.DEL_FLAG_NORMAL}
         LEFT JOIN pd_unit e ON b.spec_unit_id = e.id and e.del_flag=#{entity.DEL_FLAG_NORMAL}
+        LEFT JOIN ex_lab_instr_inf f on f.instr_code=a.instr_code
          where  a.del_flag=#{entity.DEL_FLAG_NORMAL}
         <if test="entity.productName != null and entity.productName != ''">
             AND (c.name LIKE concat('%',#{entity.productName},'%')

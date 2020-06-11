@@ -285,7 +285,6 @@
       },
       //批量扣减
       batchUsePackageDetail:function() {
-        this.loading = true;
         if (this.selectedRowKeys.length <= 0) {
           this.$message.warning('请勾选需要扣减的记录！');
           return;
@@ -295,6 +294,7 @@
             ids += this.selectedRowKeys[a] + ",";
           }
         }
+        this.loading = true;
         let formDataAll = new FormData();
         formDataAll.append("ids",ids);
         httpAction(this.url.batchUsePackageDetail,formDataAll,"post").then((res)=>{

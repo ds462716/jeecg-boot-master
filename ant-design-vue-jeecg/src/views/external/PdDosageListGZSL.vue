@@ -255,7 +255,7 @@
           //唯一码还回
           this.$refs.uniqueReturnedModal.edit(record);
           this.$refs.uniqueReturnedModal.title="库存还回";
-          this.$refs.uniqueReturnedModal.disableSubmit = true;
+          this.$refs.uniqueReturnedModal.disableSubmit = false;
         }else{
           this.$refs.pdDosageReturnedForm.edit(record);
           this.$refs.pdDosageReturnedForm.title="库存还回";

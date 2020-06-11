@@ -686,6 +686,7 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
     @Override
     public String lisUpdateUseStock(ExInspectionItems item, String departId,List<PdUsePackageDetail> detailList) {
         //HisDepartInf hisDepartInf=hisDepartService.queryHisDepart(testDepartment);
+        String instrCode=item.getInstrCode();//检验仪器代号
         String bool=PdConstant.FALSE;
                        for(PdUsePackageDetail detail:detailList) {
                            String productId = detail.getProductId();//产品ID
@@ -733,12 +734,25 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
                                pdProductStockMapper.updateStockNum(productStock_i);
                            } else { //试剂
                                //4：否则是试剂
-                               //4.1 查询扣減科室下库存明细(先查询使用中的)，根据有效期排序
-                               PdProductStock pproductStockq = new PdProductStock();
-                               pproductStockq.setDepartId(departId);
-                               pproductStockq.setProductId(productId);
-                               pproductStockq.setNestatStatus(PdConstant.STOCK_NESTAT_STATUS_0);
-                               List<PdProductStock> productStocks_i = pdProductStockMapper.selectOrExpDate(pproductStockq);
+                               //先获取该仪器下已开瓶的试剂，如果不存在，则查询扣减科室下库存明细
+                               List<PdProductStock>  productStocks_i=null;
+                              if(StringUtils.isNotEmpty(instrCode)){
+                               PdBottleInf bottleInf = new PdBottleInf();
+                               bottleInf.setInstrCode(instrCode);
+                               bottleInf.setDepartId(departId);
+                               bottleInf.setProductId(productId);
+                               bottleInf.setNestatStatus(PdConstant.STOCK_NESTAT_STATUS_0);
+                                 productStocks_i=  pdBottleInfMapper.queryProductStock(bottleInf);
+                              }
+                               if(CollectionUtils.isEmpty(productStocks_i)){
+                                   //4.1 查询扣減科室下库存明细(先查询使用中的)，根据有效期排序
+                                   PdProductStock pproductStockq = new PdProductStock();
+                                   pproductStockq.setDepartId(departId);
+                                   pproductStockq.setProductId(productId);
+                                   pproductStockq.setNestatStatus(PdConstant.STOCK_NESTAT_STATUS_0);
+                                    productStocks_i = pdProductStockMapper.selectOrExpDate(pproductStockq);
+
+                               }
                                if (CollectionUtils.isEmpty(productStocks_i)) {
                                    throw new RuntimeException("扣减库存失败，根据产品[" + detail.getProductName() + "]获取不到已开瓶的库存明细信息");
                                }else{

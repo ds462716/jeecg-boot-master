@@ -590,9 +590,6 @@ public class PdProductServiceImpl extends ServiceImpl<PdProductMapper, PdProduct
                             if(!departId.equals(sysUser.getCurrentDepartId())){
                                 result.setCode(MessageConstant.ICODE_STATE_500);
                                 result.setMessage("该试剂不在当前部门库存中，请确认在开瓶");
-                            }else if(PdConstant.PRODUCT_FLAG_0.equals(productFlag)){
-                                result.setCode(MessageConstant.ICODE_STATE_500);
-                                result.setMessage("只能试剂开瓶");
                             }else {
                                 newPdProductStock.setRefBarCode(Barcode);
                                 PdProductStock productStock_i = pdProductStockTotalService.insertProdStock(newPdProductStock);
@@ -613,6 +610,9 @@ public class PdProductServiceImpl extends ServiceImpl<PdProductMapper, PdProduct
                                 productStockUniqueCode.setProductStockId(productStock_i.getId());
                                 pdProductStockUniqueCodeService.updateById(productStockUniqueCode);
                             }
+                        }else{
+                            result.setCode(MessageConstant.ICODE_STATE_500);
+                            result.setMessage("没有扫描到记录,请确认是否是试剂");
                         }
                     }else{
                         result.setCode(MessageConstant.ICODE_STATE_500);

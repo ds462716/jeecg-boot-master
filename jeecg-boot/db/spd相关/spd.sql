@@ -718,3 +718,28 @@ ADD COLUMN `instr_code` varchar(32) CHARACTER SET utf8 COLLATE utf8_general_ci N
 
 -- add 2020年6月9日14:20:25 by mcb 定时任务 从lis系统获取检验数据
  INSERT INTO `sys_quartz_job` VALUES ('1270238046440267778', 'admin', '2020-06-09 14:15:25', 0, 'admin', '2020-06-09 14:16:19', 'org.jeecg.modules.quartz.job.LisInspectionItemsTaskLisJob', '59 1/10 * * * ? *', NULL, '获取检验项目扣减库存用量定时任务(lis系统获取数据)', -1);
+
+-- add 2020年6月9日14:20:25 by mcb 增加检验仪器设备信息表
+CREATE TABLE `ex_lab_instr_inf` (
+  `id` varchar(64) NOT NULL COMMENT '主键',
+  `instr_code` varchar(64) DEFAULT NULL COMMENT '设备代号',
+  `instr_name` varchar(64) DEFAULT NULL COMMENT '设备名称',
+  `py` varchar(64) DEFAULT NULL COMMENT '拼音简码',
+  `wb` varchar(64) DEFAULT NULL COMMENT '五笔简码',
+  `zdy` varchar(64) DEFAULT NULL COMMENT '自定义简码',
+  `remarks` varchar(255) DEFAULT NULL COMMENT '备注',
+  `depart_id` varchar(64) DEFAULT NULL COMMENT '所属科室',
+  `test_depart_id` varchar(64) DEFAULT NULL COMMENT '所在检验室',
+  `status` varchar(1) DEFAULT NULL COMMENT '使用状态',
+  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+  `create_by` varchar(50) DEFAULT NULL COMMENT '创建人',
+  `update_time` datetime DEFAULT NULL COMMENT '更新日期',
+  `update_by` varchar(50) DEFAULT NULL COMMENT '更新人',
+  `sys_org_code` varchar(64) DEFAULT NULL COMMENT '部门',
+  `depart_parent_id` varchar(64) DEFAULT NULL COMMENT '所属机构',
+  `del_flag` varchar(1) DEFAULT NULL COMMENT '删除标识',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='zxh-赣州-实验室设备表';
+
+-- add 2020年6月9日15:20:25 by mcb 增加检验仪器管理菜单
+ INSERT INTO `sys_permission` VALUES ('1270262138543468545', '1255448486688649218', '检验仪器管理', '/external/ExLabInstrInf', 'external/ExLabInstrInfList', NULL, NULL, 1, '0', NULL, '1', 7.00, 0, NULL, 1, 1, 0, 0, NULL, 'admin', '2020-06-09 15:51:09', NULL, '2020-06-09 15:51:09', 0, 0, '1', 0);

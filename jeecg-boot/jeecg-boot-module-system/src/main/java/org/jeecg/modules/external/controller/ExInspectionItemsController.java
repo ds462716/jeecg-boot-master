@@ -181,7 +181,7 @@ public class ExInspectionItemsController extends JeecgController<ExInspectionIte
 	 public Result<?> editUsePackage(@RequestBody ExInspectionItems items) {
 		 LambdaQueryWrapper<PdUsePackage> query = new LambdaQueryWrapper<>();
 		 query.eq(PdUsePackage::getCode, items.getTestItemCode());
-		 query.eq(PdUsePackage::getName,items.getTestItemName());
+		 /*query.eq(PdUsePackage::getName,items.getTestItemName());*/
 		 PdUsePackage pdUsePackage = pdUsePackageService.getOne(query);
 		 String testDpeartId=pdUsePackage.getTestDepartId();
 		 //不存在或沒有配置檢驗用量明細

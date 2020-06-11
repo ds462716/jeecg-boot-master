@@ -1,43 +1,26 @@
 package org.jeecg.modules.external.controller;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.apache.shiro.SecurityUtils;
-import org.jeecg.common.api.vo.Result;
-import org.jeecg.common.system.query.QueryGenerator;
-import org.jeecg.common.system.vo.LoginUser;
-import org.jeecg.common.util.oConvertUtils;
-import org.jeecg.modules.external.entity.ExLabInstrInf;
-import org.jeecg.modules.external.service.IExLabInstrInfService;
-
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import lombok.extern.slf4j.Slf4j;
-
-import org.jeecgframework.poi.excel.ExcelImportUtil;
-import org.jeecgframework.poi.excel.def.NormalExcelConstants;
-import org.jeecgframework.poi.excel.entity.ExportParams;
-import org.jeecgframework.poi.excel.entity.ImportParams;
-import org.jeecgframework.poi.excel.view.JeecgEntityExcelView;
-import org.jeecg.common.system.base.controller.JeecgController;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.MultipartHttpServletRequest;
-import org.springframework.web.servlet.ModelAndView;
-import com.alibaba.fastjson.JSON;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.shiro.SecurityUtils;
+import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.aspect.annotation.AutoLog;
+import org.jeecg.common.system.base.controller.JeecgController;
+import org.jeecg.common.system.vo.LoginUser;
+import org.jeecg.modules.external.entity.ExLabInstrInf;
+import org.jeecg.modules.external.service.IExLabInstrInfService;
+import org.jeecg.modules.pd.service.IHisChargeService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.Arrays;
+import java.util.List;
 
  /**
  * @Description: 设备仪器表
@@ -52,6 +35,8 @@ import org.jeecg.common.aspect.annotation.AutoLog;
 public class ExLabInstrInfController extends JeecgController<ExLabInstrInf, IExLabInstrInfService> {
 	@Autowired
 	private IExLabInstrInfService exLabInstrInfService;
+	 @Autowired
+	 private IHisChargeService hisChargeService;
 	
 	/**
 	 * 分页列表查询
@@ -69,9 +54,8 @@ public class ExLabInstrInfController extends JeecgController<ExLabInstrInf, IExL
 								   @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
 								   @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
 								   HttpServletRequest req) {
-		QueryWrapper<ExLabInstrInf> queryWrapper = QueryGenerator.initQueryWrapper(exLabInstrInf, req.getParameterMap());
 		Page<ExLabInstrInf> page = new Page<ExLabInstrInf>(pageNo, pageSize);
-		IPage<ExLabInstrInf> pageList = exLabInstrInfService.page(page, queryWrapper);
+		IPage<ExLabInstrInf> pageList = exLabInstrInfService.selectList(page, exLabInstrInf);
 		return Result.ok(pageList);
 	}
 
@@ -86,6 +70,7 @@ public class ExLabInstrInfController extends JeecgController<ExLabInstrInf, IExL
          Result<List<ExLabInstrInf>> result = new Result<>();
          try {
              LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+			 exLabInstrInf.setTestDepartId(sysUser.getCurrentDepartId());
              exLabInstrInf.setDepartParentId(sysUser.getDepartParentId());
              List<ExLabInstrInf> list = exLabInstrInfService.getExLabInstrInf(exLabInstrInf);
              result.setResult(list);
@@ -192,5 +177,18 @@ public class ExLabInstrInfController extends JeecgController<ExLabInstrInf, IExL
     public Result<?> importExcel(HttpServletRequest request, HttpServletResponse response) {
         return super.importExcel(request, response, ExLabInstrInf.class);
     }
+
+
+	 /**
+	  *   同步更新设备仪器信息
+	  * @param exLabInstrInf
+	  * @return
+	  */
+	 @PostMapping(value = "/synUpdateInstrInf")
+	 public Result<?> synUpdateDeptOrUser(@RequestBody ExLabInstrInf exLabInstrInf) {
+		  List<ExLabInstrInf> labInstrInfList= hisChargeService.selectExLabInstrInf();//查询HIS科室信息
+		   exLabInstrInfService.synUpdateInstrInf(labInstrInfList);
+		 return Result.ok("操作成功！");
+	 }
 
 }

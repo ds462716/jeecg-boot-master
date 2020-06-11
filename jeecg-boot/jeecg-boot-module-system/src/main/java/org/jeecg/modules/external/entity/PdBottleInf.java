@@ -140,6 +140,9 @@ public class PdBottleInf extends BaseEntity {
     private String productId; //产品id
     @TableField(exist = false)
     private String nestatStatus; //产品使用状态
+    /**检验仪器名称*/
+    @TableField(exist = false)
+    private String instrName;
 
 
 }

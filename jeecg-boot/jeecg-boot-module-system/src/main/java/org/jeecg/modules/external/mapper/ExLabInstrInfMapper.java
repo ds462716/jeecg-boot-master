@@ -1,10 +1,9 @@
 package org.jeecg.modules.external.mapper;
 
-import java.util.List;
-
-import org.apache.ibatis.annotations.Param;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.jeecg.modules.external.entity.ExLabInstrInf;
+
+import java.util.List;
 
 /**
  * @Description: ex_lab_instr_inf
@@ -14,5 +13,14 @@ import org.jeecg.modules.external.entity.ExLabInstrInf;
  */
 public interface ExLabInstrInfMapper extends BaseMapper<ExLabInstrInf> {
 
+    List<ExLabInstrInf> selectList(ExLabInstrInf exLabInstrInf);
+
     List<ExLabInstrInf> getExLabInstrInf(ExLabInstrInf exLabInstrInf);
+
+    /**
+     * 获取一条记录
+     * @param exLabInstrInf
+     * @return
+     */
+    ExLabInstrInf getOne(ExLabInstrInf exLabInstrInf);
 }
