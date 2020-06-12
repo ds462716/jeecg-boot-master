@@ -81,7 +81,10 @@ public class ExInspectionItemsServiceImpl extends ServiceImpl<ExInspectionItemsM
                     List<PdUsePackageDetail> pdUsePackageDetails = pdUsePackageDetailService.queryPdUsePackageList(detail);
                     if (pdUsePackageDetails != null && pdUsePackageDetails.size() > 0) {
                         try {
-                         String bool= pdProductStockTotalService.lisUpdateUseStock(items,testDpeartId, pdUsePackageDetails);
+                         //HIS系统过来的
+                         //String bool= pdProductStockTotalService.lisUpdateUseStock(items,testDpeartId, pdUsePackageDetails);
+                         //LIS系统过来的
+                         String bool= pdProductStockTotalService.lisUpdateUseStockLis(items,testDpeartId, pdUsePackageDetails);
                             if(!PdConstant.TRUE.equals(bool)){
                                 items.setRemarks(items.getPatientType()+"病人用量未配置");
                                 items.setAcceptStatus(PdConstant.ACCEPT_STATUS_2);//未扣减

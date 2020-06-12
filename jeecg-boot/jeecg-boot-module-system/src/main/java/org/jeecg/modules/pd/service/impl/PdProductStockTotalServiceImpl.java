@@ -785,7 +785,9 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
                                        }
                                     }
                                   }
-                                }
+                                }else{
+                               throw new RuntimeException("不是试剂类产品，无法扣减用量");
+                               }
                              }
         return bool;
     }
