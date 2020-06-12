@@ -69,9 +69,9 @@ public class ExInspectionItemsServiceImpl extends ServiceImpl<ExInspectionItemsM
             query.eq(PdUsePackage::getCode, items.getTestItemCode());
             /*query.eq(PdUsePackage::getName,items.getTestItemName());*/
             PdUsePackage pdUsePackage = pdUsePackageService.getOne(query);
-            String testDpeartId=pdUsePackage.getTestDepartId();
             //不存在或沒有配置檢驗用量明細
             if(pdUsePackage!=null){
+                String testDpeartId=pdUsePackage.getTestDepartId();
                 if(StringUtils.isEmpty(testDpeartId)){
                     items.setRemarks("未配置检验科室");
                     items.setAcceptStatus(PdConstant.ACCEPT_STATUS_2);// 0：已扣减  1：未配置检验用量  2:未扣减
