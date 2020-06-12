@@ -50,6 +50,7 @@
          c.spec as spec,
          c.version as version,
          c.spec_quantity as specQuantity,
+		 c.product_flag as "productFlag",
 		 sb.`name` AS "specUnitName",
          d.name as unitName
           FROM

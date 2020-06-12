@@ -814,6 +814,12 @@
 			<if test="barCodeType != null and barCodeType != ''">
 				AND a.bar_code_type = #{barCodeType}
 			</if>
+			<if test="departIdList != null and departIdList.size() > 0">
+				AND a.depart_id IN
+				<foreach collection="departIdList" item="item" separator="," open="(" close=")">
+					#{item}
+				</foreach>
+			</if>
 		</where>
 		ORDER BY   exp_date  FOR UPDATE
 	</select>

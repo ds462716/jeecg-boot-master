@@ -98,6 +98,12 @@
             <if test="instrCode != null and instrCode != ''">
                 AND b.instr_code = #{instrCode}
             </if>
+            <if test="departIdList != null and departIdList.size() > 0">
+                AND a.depart_id IN
+                <foreach collection="departIdList" item="item" separator="," open="(" close=")">
+                    #{item}
+                </foreach>
+            </if>
         </where>
 
     </select>
