@@ -748,3 +748,7 @@ CREATE TABLE `ex_lab_instr_inf` (
 -- add 2020年6月11日10:04:43 by zxh 打印次数
 ALTER TABLE `pd_product_stock_unique_code`
 ADD COLUMN `print_num`  int(11) NULL DEFAULT 0 COMMENT '打印次数' AFTER `code_state`;
+
+-- add 2020年6月12日14:34:37 by zxh 检验包库房多选
+ALTER TABLE `pd_use_package`
+MODIFY COLUMN `test_depart_id`  varchar(6400) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '检验科室ID' AFTER `depart_id`;

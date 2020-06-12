@@ -15,8 +15,10 @@ import org.jeecg.modules.pd.entity.PdUsePackage;
 import org.jeecg.modules.pd.entity.PdUsePackageDetail;
 import org.jeecg.modules.pd.mapper.PdUsePackageDetailMapper;
 import org.jeecg.modules.pd.mapper.PdUsePackageMapper;
+import org.jeecg.modules.pd.service.IPdDepartService;
 import org.jeecg.modules.pd.service.IPdUsePackageDetailService;
 import org.jeecg.modules.pd.service.IPdUsePackageService;
+import org.jeecg.modules.system.entity.SysDepart;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,6 +27,8 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * @Description: 检验项目
@@ -52,6 +56,9 @@ public class PdUsePackageServiceImpl extends ServiceImpl<PdUsePackageMapper, PdU
 
 	@Autowired
 	private ExInspectionItemsMapper exInspectionItemsMapper;
+
+	@Autowired
+	private IPdDepartService pdDepartService;
 
 	
 	@Override
@@ -110,7 +117,29 @@ public class PdUsePackageServiceImpl extends ServiceImpl<PdUsePackageMapper, PdU
 
 	@Override
 	public Page<PdUsePackage> queryList(Page<PdUsePackage> page, PdUsePackage pdUsePackage) {
-		return pdUsePackageMapper.queryList(page,pdUsePackage);
+		Page<PdUsePackage> pg = pdUsePackageMapper.queryList(page,pdUsePackage);
+		List<PdUsePackage> pdUsePackages = pg.getRecords();
+		if(pdUsePackages!=null && pdUsePackages.size()>0){
+			//查询所有部门
+			List<SysDepart> sysDeparts = pdDepartService.selectListTree(new SysDepart());
+			//将部门转换成map
+			Map<String, String> map = sysDeparts.stream().collect(Collectors.toMap(SysDepart::getId, SysDepart::getDepartName, (key1, key2) -> key2));
+			//拼接成部门名称列表用
+			for(PdUsePackage entity :pdUsePackages){
+				List<String> ids = Arrays.asList(entity.getTestDepartId().split(","));
+				if(ids!=null && ids.size()>0){
+					String testDepartNames = "";
+					for(String idKey:ids){
+						testDepartNames+=map.get(idKey)+",";
+					}
+					if(testDepartNames.endsWith(",")){
+						testDepartNames = testDepartNames.substring(0,testDepartNames.length()-1);
+					}
+					entity.setTestDepartNames(testDepartNames);
+				}
+			}
+		}
+		return pg;
 	}
 
 	@Override

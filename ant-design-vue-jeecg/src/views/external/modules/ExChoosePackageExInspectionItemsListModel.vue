@@ -135,7 +135,7 @@
           },
           { title:'检验项目编号', align:"center", dataIndex: 'code' },
           { title:'检验项目名称', align:"center", dataIndex: 'name' },
-          { title:'检验科室', align:"center", dataIndex: 'testDepartName' },
+          { title:'检验科室', align:"center", dataIndex: 'testDepartNames' },
           { title:'扣减类型', align:"center", dataIndex: 'deductuinType',
             customRender:(text)=>{
               if(!text){

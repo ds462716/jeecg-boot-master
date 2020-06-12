@@ -181,7 +181,7 @@
           {
             title:'检验科室',
             align:"center",
-            dataIndex: 'testDepartName'
+            dataIndex: 'testDepartNames'
           },
           {
             title:'扣减类型',

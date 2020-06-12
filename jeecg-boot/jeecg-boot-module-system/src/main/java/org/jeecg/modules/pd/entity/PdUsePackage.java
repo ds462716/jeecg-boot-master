@@ -91,4 +91,8 @@ public class PdUsePackage extends BaseEntity {
     /*多个部门集合*/
     @TableField(exist = false)
     private List<String> departIdList;
+
+    /**检验科室名称*/
+    @TableField(exist = false)
+    private String testDepartNames;
 }
