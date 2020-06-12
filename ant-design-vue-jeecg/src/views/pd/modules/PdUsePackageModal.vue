@@ -24,23 +24,25 @@
               <a-input :disabled="disableSubmit" v-decorator="[ 'name', validatorRules.name]"  autocomplete="off" @change="pinyinTran" placeholder="请输入检验项目名称"></a-input>
             </a-form-item>
           </a-col>
-          <a-col :span="12">
-            <a-form-item
-              label="检验科室名称"
-              :labelCol="labelCol"
-              :wrapperCol="wrapperCol"
-              :validate-status="validateStatus"
-              :hasFeedback="true"
-              :required="true">
-              <a-tree-select
-                style="width:100%"
-                :dropdownStyle="{ maxHeight: '200px', overflow: 'auto' }"
-                :treeData="treeData"
-                v-model="model.testDepartId"
-                placeholder="请选择检验科室"
-                :disabled="disableSubmit"
+          <a-col  :span="12">
+            <a-form-item label="科室" :labelCol="labelCol" :wrapperCol="wrapperCol">
+              <a-select
+                mode="multiple"
+                showSearch
+                :departId="departValue"
+                :defaultActiveFirstOption="false"
+                :allowClear="true"
+                :showArrow="true"
+                :filterOption="false"
+                @search="departHandleSearch"
+                @focus="departHandleSearch"
+                :notFoundContent="notFoundContent"
+                v-decorator="[ 'departIdList', validatorRules.departIdList]"
+                placeholder="请选择科室"
               >
-              </a-tree-select>
+                <a-select-option v-for="d in departData" :key="d.id">{{d.departName}}</a-select-option>
+              </a-select>
+
             </a-form-item>
           </a-col>
           <a-col :lg="12">
@@ -143,6 +145,9 @@
     data() {
       return {
         totalSum:'0',
+        departData: [],
+        departValue: undefined,
+        notFoundContent:"未找到内容",
         treeData:[],
         validateStatus:"",
         disableSubmit:false,
@@ -163,6 +168,7 @@
         validatorRules: {
           code: { rules: [{ required: true, message: '请输入检验项目编号!' }] },
           name: { rules: [{ required: true, message: '请输入检验项目名称!' }] },
+          departIdList: { rules: [{ required: true, message: '请选择科室!' }] },
           sum:{},
           py:{},
           wb:{},
@@ -267,6 +273,7 @@
           ]
         },
         url: {
+          queryDepart: "/pd/pdDepart/queryListTree",
           add: "/pd/pdUsePackage/add",
           init: "/pd/pdUsePackage/initModal",
           edit: "/pd/pdUsePackage/edit",
@@ -298,8 +305,9 @@
       },
       /** 调用完edit()方法之后会自动调用此方法 */
       editAfter() {
+        this.confirmLoading = true;
         this.usePackagedandleChange();
-        this.loadTree();
+        //this.loadTree();
         let fieldval = pick(this.model,'code','name','py','wb','zdy','remarks','deductuinType');
         this.$nextTick(() => {
           this.form.setFieldsValue(fieldval);
@@ -308,6 +316,8 @@
           if (this.model.id) {
             let params = { id: this.model.id }
             this.requestSubTableData(this.url.pdUsePackageDetail.list, params, this.pdUsePackageDetailTable)
+            let departIds = this.model.testDepartId.split(",");
+            this.form.setFieldsValue({departIdList:departIds});
           }else{
             /*getAction(this.url.init, {id:""}).then((res) => {
               if (res.success) {
@@ -317,7 +327,9 @@
               }
             })*/
           }
-
+          setTimeout(() => {
+            this.confirmLoading = false
+          }, 500)
         })
       },
       /** 整理成formData */
@@ -388,6 +400,7 @@
 
           // 发起请求
           formData.sum = this.totalSum;
+          formData.testDepartId=this.model.departIdList.join(",");
           return this.request(formData)
         }).catch(e => {
           if (e.error === VALIDATE_NO_PASSED) {
@@ -514,6 +527,16 @@
           }
         })
       },
+      //科室查询start
+      departHandleSearch(value) {
+        getAction(this.url.queryDepart,{departName:value}).then((res)=>{
+          if (!res.success) {
+            this.cmsFailed(res.message);
+          }
+          this.departData = res.result;
+        })
+      },
+      //科室查询end
     }
   }
 </script>
