@@ -83,7 +83,7 @@
 
 
     <!-- 根据开瓶信息查询库存明细 -->
-    <select id="queryProductStock"  parameterType="org.jeecg.modules.pd.entity.PdProductStock">
+    <select id="queryProductStock" resultType="org.jeecg.modules.pd.entity.PdProductStock"  parameterType="org.jeecg.modules.pd.entity.PdProductStock">
         select a.* from pd_product_stock a
         left join pd_bottle_inf b on b.close_remarks is null  and b.stock_id=a.id
         <where>

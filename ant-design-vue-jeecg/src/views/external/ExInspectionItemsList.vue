@@ -139,12 +139,12 @@
             align:"center",
             dataIndex: 'cardId'
           },
-         /* {
+         {
             title:'条形码',
             align:"center",
             dataIndex: 'barCode'
           },
-          {
+          /*{
             title:'申请医生',
             align:"center",
             dataIndex: 'applyDoctorName'
@@ -152,8 +152,13 @@
           {
             title:'申请科室',
             align:"center",
-            dataIndex: 'applyDepartmentName'
+            dataIndex: 'applyDepartment'
           },
+          /*{
+           title:'检验科室',
+           align:"center",
+           dataIndex: 'applyDepartmentName'
+         },*/
           {
             title:'检验科室',
             align:"center",
@@ -180,11 +185,11 @@
               return !text?"":(text.length>10?text.substr(0,10):text)
             }
           },
-          {
+          /*{
             title:'项目组合名称',
             align:"center",
             dataIndex: 'combinationName'
-          },
+          },*/
           {
             title:'检查项目名称',
             align:"center",
