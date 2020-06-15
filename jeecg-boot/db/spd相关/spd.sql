@@ -752,3 +752,7 @@ ADD COLUMN `print_num`  int(11) NULL DEFAULT 0 COMMENT '打印次数' AFTER `cod
 -- add 2020年6月12日14:34:37 by zxh 检验包库房多选
 ALTER TABLE `pd_use_package`
 MODIFY COLUMN `test_depart_id`  varchar(6400) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '检验科室ID' AFTER `depart_id`;
+
+-- add 2020年6月15日14:34:37 by mcb 增加静态字典
+update sys_dict set description='0:已用完    1:已过期  2:试剂迁移'   where id='1267365735160807425';
+INSERT INTO `sys_dict_item` VALUES ('1272348561698361346', '1267365735160807425', '试剂迁移', '2', '', 3, 1, 'admin', '2020-06-15 10:01:51', NULL, '2020-06-15 10:01:51');
