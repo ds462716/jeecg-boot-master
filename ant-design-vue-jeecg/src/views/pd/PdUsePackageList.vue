@@ -6,8 +6,7 @@
         <a-row :gutter="24">
           <a-col :span="6">
             <a-form-item label="检验科室">
-              <!--<a-input placeholder="请选择科室" v-model="queryParam.deptName"></a-input>-->
-              <a-select
+              <!--<a-select
                 mode="multiple"
                 showSearch
                 :departId="departValue"
@@ -19,6 +18,21 @@
                 @focus="departHandleSearch"
                 :notFoundContent="notFoundContent"
                 v-model="queryParam.departIds"
+                placeholder="请选择科室"
+              >
+                <a-select-option v-for="d in departData" :key="d.id">{{d.departName}}</a-select-option>
+              </a-select>-->
+              <a-select
+                showSearch
+                :departId="departValue"
+                :defaultActiveFirstOption="false"
+                :allowClear="true"
+                :showArrow="true"
+                :filterOption="false"
+                @search="departHandleSearch"
+                @focus="departHandleSearch"
+                :notFoundContent="notFoundContent"
+                v-model="queryParam.testDepartId"
                 placeholder="请选择科室"
               >
                 <a-select-option v-for="d in departData" :key="d.id">{{d.departName}}</a-select-option>
@@ -284,7 +298,7 @@
         param.field = this.getQueryField();
         param.pageNo = this.ipagination.current;
         param.pageSize = this.ipagination.pageSize;
-        param.departIds = this.queryParam.departIds+"";
+        param.testDepartId = this.queryParam.testDepartId;
         return filterObj(param);
       },
 

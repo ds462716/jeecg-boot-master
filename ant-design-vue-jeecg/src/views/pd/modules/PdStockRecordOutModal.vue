@@ -220,7 +220,7 @@
                 :loading="pdStockRecordDetailTable.loading"
                 :columns="pdStockRecordDetailTable.columns"
                 :dataSource="pdStockRecordDetailTable.dataSource"
-                :maxHeight="650"
+                :maxHeight="850"
                 :rowNumber="true"
                 :rowSelection="true"
                 :actionButton="false"

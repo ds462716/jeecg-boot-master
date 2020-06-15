@@ -102,4 +102,7 @@ public class ExLabInstrInf  extends BaseEntity {
     /**检验室名称*/
     @TableField(exist = false)
     private String testDepartName;
+    /**查询类别   0:查询所有   1或null：查询当前科室下仪器*/
+    @TableField(exist = false)
+    private String queryType;
 }

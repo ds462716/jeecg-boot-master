@@ -63,6 +63,9 @@
             <if test="entity.testDepartName != null and entity.testDepartName != ''">
                 AND d.depart_name  LIKE concat('%',#{entity.testDepartName},'%')
             </if>
+            <if test="entity.testDepartId != null and entity.testDepartId != ''">
+                AND a.test_depart_id  LIKE concat('%',#{entity.testDepartId},'%')
+            </if>
             <if test="entity.idList != null and entity.idList.size() > 0">
                 AND a.id IN
                 <foreach collection="entity.idList" item="item" separator="," open="(" close=")">

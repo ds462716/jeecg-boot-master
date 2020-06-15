@@ -37,6 +37,18 @@
         <if test="entity.departId != null and entity.departId != ''">
             AND a.depart_id = #{entity.departId}
         </if>
+        <if test="entity.closeRemarks != null and entity.closeRemarks != ''">
+            AND a.close_remarks = #{entity.closeRemarks}
+        </if>
+        <if test="entity.instrCode != null and entity.instrCode != ''">
+            AND a.instr_code = #{entity.instrCode}
+        </if>
+        <if test="entity.instrName != null and entity.instrName != ''">
+            AND f.instr_name = #{entity.instrName}
+        </if>
+        <if test="entity.refBarCode != null and entity.refBarCode != ''">
+            AND a.ref_bar_code   LIKE concat('%',#{entity.refBarCode},'%')
+        </if>
         <if test="entity.departParentId != null and entity.departParentId != ''">
             AND a.depart_parent_id = #{entity.departParentId}
         </if>

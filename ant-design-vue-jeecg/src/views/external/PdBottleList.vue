@@ -36,7 +36,35 @@
             </a-form-item>
           </a-col>
           <template v-if="toggleSearchStatus">
-
+            <a-col :md="6" :sm="8">
+            <a-form-item label="唯一码编号">
+              <a-input placeholder="请输入唯一码编号" v-model="queryParam.refBarCode"></a-input>
+            </a-form-item>
+          </a-col>
+            <a-col :md="6" :sm="8">
+              <a-form-item label="闭瓶原因">
+                <j-dict-select-tag placeholder="请选择闭瓶原因"  v-model="queryParam.closeRemarks" dictCode="close_remarks"/>
+              </a-form-item>
+            </a-col>
+            <a-col :md="6" :sm="8">
+              <a-form-item label="所属仪器">
+                <a-select
+                  showSearch
+                  :departId="instrValue"
+                  :defaultActiveFirstOption="false"
+                  :allowClear="true"
+                  :showArrow="true"
+                  :filterOption="false"
+                  @search="instrHandleSearch"
+                  @focus="instrHandleSearch"
+                  :notFoundContent="notFoundContent"
+                  v-model="queryParam.instrCode"
+                  placeholder="请选择仪器"
+                >
+                  <a-select-option v-for="d in instrData" :key="d.instrCode">{{d.instrName}}</a-select-option>
+                </a-select>
+              </a-form-item>
+            </a-col>
           </template>
           <a-col :md="6" :sm="8" >
             <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
@@ -103,6 +131,8 @@
         description: '开闭瓶管理页面',
         departData: [],
         departValue: undefined,
+        instrData: [],
+        instrValue: undefined,
         notFoundContent:"未找到内容",
         // 表头
         columns: [
@@ -204,6 +234,7 @@
           list: "/pd/pdBottleInf/list",
           queryDepart: "/pd/pdDepart/queryListTree",
           exportXlsUrl: "/pd/pdBottleInf/exportXls",
+          queryExLabInstrInf:"/ex/exLabInstrInf/getExLabInstrInf",
         },
         dictOptions:{
           closeRemarks:[],
@@ -275,6 +306,17 @@
         })
       },
       //科室查询end
+
+      //仪器查询start
+      instrHandleSearch(value) {
+        getAction(this.url.queryExLabInstrInf,{queryType:"0",instrName:value}).then((res)=>{
+          if (!res.success) {
+            this.cmsFailed(res.message);
+          }
+          this.instrData = res.result;
+        })
+      },
+      //仪器查询end
 
       modalFormOk(){
         this.loadData();

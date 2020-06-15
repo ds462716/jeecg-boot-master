@@ -459,8 +459,8 @@
           columns: [
             { title: '库存明细ID', key: 'productStockId', type: FormTypes.hidden },
             { title: '产品ID', key: 'productId', type: FormTypes.hidden },
-            { title: '产品名称', key: 'productName', type: FormTypes.normal,width:"220px" },
-            { title: '产品编号', key: 'productNumber', width:"160px" },
+            { title: '产品名称', key: 'productName', type: FormTypes.normal,width:"320px" },
+            { title: '产品编号', key: 'productNumber', width:"170px" },
             { title: '产品条码', key: 'productBarCode', type: FormTypes.input, disabled:true, width:"200px" },
             { title: '规格', key: 'spec', width:"150px" },
             { title: '批号', key: 'batchNo', width:"100px" },

@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.aspect.annotation.AutoLog;
@@ -70,8 +71,10 @@ public class ExLabInstrInfController extends JeecgController<ExLabInstrInf, IExL
          Result<List<ExLabInstrInf>> result = new Result<>();
          try {
              LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
-			 exLabInstrInf.setTestDepartId(sysUser.getCurrentDepartId());
-             exLabInstrInf.setDepartParentId(sysUser.getDepartParentId());
+             if(StringUtils.isEmpty(exLabInstrInf.getQueryType()) || "1".equals(exLabInstrInf.getQueryType())){
+              exLabInstrInf.setTestDepartId(sysUser.getCurrentDepartId());
+              }
+			 exLabInstrInf.setDepartParentId(sysUser.getDepartParentId());
              List<ExLabInstrInf> list = exLabInstrInfService.getExLabInstrInf(exLabInstrInf);
              result.setResult(list);
              result.setSuccess(true);

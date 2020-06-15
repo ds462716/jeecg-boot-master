@@ -224,7 +224,7 @@
                 :loading="pdStockRecordDetailTable.loading"
                 :columns="pdStockRecordDetailTable.columns"
                 :dataSource="pdStockRecordDetailTable.dataSource"
-                :maxHeight="650"
+                :maxHeight="500"
                 :rowNumber="true"
                 :rowSelection="true"
                 :actionButton="false"
@@ -569,13 +569,13 @@
           dataSource: [],
           columns: [
             { title: '唯一码', key: 'refBarCode', type: FormTypes.normal, width:"160px" }, //用于单条
-            { title: '产品名称', key: 'productName', type: FormTypes.normal,width:"220px" },
+            { title: '产品名称', key: 'productName', type: FormTypes.normal,width:"320px" },
             { title: '产品编号', key: 'productNumber', width:"200px" },
             { title: '产品条码', key: 'productBarCode', type: FormTypes.input, disabled:true, width:"200px" },
             { title: '规格', key: 'spec', width:"150px" },
             { title: '批号', key: 'batchNo', width:"100px" },
             { title: '单位', key: 'unitName', width:"60px" },
-            { title: '有效期', key: 'expDate', width:"100px" },
+            { title: '有效期', key: 'expDate', width:"150px" },
             { title: '入库单价', key: 'purchasePrice', width:"90px" },
             { title: '出库单价', key: 'sellingPrice', type: FormTypes.input, disabled:true, width:"90px" },
             {
@@ -621,6 +621,7 @@
           //   list: "/pd/pdPurchaseOrder/queryPdPurchaseDetail"
           // },
         },
+        tableScroll:{x :10*200+30},
         popModal: {
           title: '这里是标题',
           visible: false,
