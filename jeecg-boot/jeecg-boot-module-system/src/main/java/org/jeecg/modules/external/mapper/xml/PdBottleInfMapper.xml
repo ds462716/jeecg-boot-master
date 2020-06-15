@@ -46,7 +46,7 @@
                 #{item}
             </foreach>
         </if>
-       ORDER BY a.CREATE_TIME DESC
+       ORDER BY  a.close_remarks , a.CREATE_TIME DESC
     </select>
 
 
@@ -71,6 +71,9 @@
             <if test="refBarCode != null and refBarCode != ''">
                 AND a.ref_bar_code = #{refBarCode}
             </if>
+            <if test="filterType != null and filterType != ''">
+                AND a.close_remarks  is null
+            </if>
         </where>
 
     </select>
@@ -78,7 +81,12 @@
 
     <!-- 更新使用規格數量 -->
     <update id="updateSpecNum">
-        UPDATE pd_bottle_inf SET spec_num = spec_num+#{specNum}   WHERE ref_bar_code= #{refBarCode}
+        UPDATE pd_bottle_inf
+        SET spec_num = spec_num+#{specNum}
+        WHERE ref_bar_code= #{refBarCode}
+        <if test="filterType != null and filterType != ''">
+            AND  close_remarks  is null
+        </if>
     </update>
 
 

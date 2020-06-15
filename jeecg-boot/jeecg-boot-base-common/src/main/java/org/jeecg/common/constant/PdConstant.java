@@ -304,4 +304,8 @@ public interface PdConstant {
 	public final static String PATIENT_TYPE_1="住院";//住院病人
 	public final static String PATIENT_TYPE_2="门诊";//门诊病人
 
+	//闭瓶原因
+	public final static String CLOSE_REMARKS_0 = "0";//已用完
+	public final static String CLOSE_REMARKS_1 = "1";//已过期
+	public final static String CLOSE_REMARKS_2 = "2";//试剂迁移
 }

@@ -316,8 +316,11 @@
           if (this.model.id) {
             let params = { id: this.model.id }
             this.requestSubTableData(this.url.pdUsePackageDetail.list, params, this.pdUsePackageDetailTable)
-            let departIds = this.model.testDepartId.split(",");
-            this.form.setFieldsValue({departIdList:departIds});
+            let testDepartId=this.model.testDepartId;
+            if(testDepartId != null && testDepartId != ""){
+              let departIds = this.model.testDepartId.split(",");
+              this.form.setFieldsValue({departIdList:departIds});
+              }
           }else{
             /*getAction(this.url.init, {id:""}).then((res) => {
               if (res.success) {

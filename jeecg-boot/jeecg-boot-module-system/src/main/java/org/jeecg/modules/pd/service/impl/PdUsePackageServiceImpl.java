@@ -3,6 +3,7 @@ package org.jeecg.modules.pd.service.impl;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
@@ -126,16 +127,19 @@ public class PdUsePackageServiceImpl extends ServiceImpl<PdUsePackageMapper, PdU
 			Map<String, String> map = sysDeparts.stream().collect(Collectors.toMap(SysDepart::getId, SysDepart::getDepartName, (key1, key2) -> key2));
 			//拼接成部门名称列表用
 			for(PdUsePackage entity :pdUsePackages){
-				List<String> ids = Arrays.asList(entity.getTestDepartId().split(","));
-				if(ids!=null && ids.size()>0){
-					String testDepartNames = "";
-					for(String idKey:ids){
-						testDepartNames+=map.get(idKey)+",";
+				String testDepartId=entity.getTestDepartId();
+				if(StringUtils.isNotEmpty(testDepartId)){
+					List<String> ids = Arrays.asList(entity.getTestDepartId().split(","));
+					if(ids!=null && ids.size()>0){
+						String testDepartNames = "";
+						for(String idKey:ids){
+							testDepartNames+=map.get(idKey)+",";
+						}
+						if(testDepartNames.endsWith(",")){
+							testDepartNames = testDepartNames.substring(0,testDepartNames.length()-1);
+						}
+						entity.setTestDepartNames(testDepartNames);
 					}
-					if(testDepartNames.endsWith(",")){
-						testDepartNames = testDepartNames.substring(0,testDepartNames.length()-1);
-					}
-					entity.setTestDepartNames(testDepartNames);
 				}
 			}
 		}

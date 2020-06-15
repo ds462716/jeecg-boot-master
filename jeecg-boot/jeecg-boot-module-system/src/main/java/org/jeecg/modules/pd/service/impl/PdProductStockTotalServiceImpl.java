@@ -763,11 +763,13 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
                                                PdBottleInf pdBottleInf = new PdBottleInf();
                                                pdBottleInf.setRefBarCode(psii.getRefBarCode());
                                                pdBottleInf.setSpecNum(count);
+                                               pdBottleInf.setFilterType("0");//传值就过滤已闭瓶的数据
                                                pdBottleInfMapper.updateSpecNum(pdBottleInf);
                                                break;
                                            } else {
                                                PdBottleInf pdBottleInf = new PdBottleInf();
                                                pdBottleInf.setRefBarCode(psii.getRefBarCode());
+                                               pdBottleInf.setFilterType("0");//传值就过滤已闭瓶的数据
                                                if (specNum > 0.00) {
                                                    count = count - specNum;
                                                    psii.setSpecNum(0.00);
@@ -893,11 +895,13 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
                                 PdBottleInf pdBottleInf = new PdBottleInf();
                                 pdBottleInf.setRefBarCode(psii.getRefBarCode());
                                 pdBottleInf.setSpecNum(count);
+                                pdBottleInf.setFilterType("0");//传值就过滤已闭瓶的数据
                                 pdBottleInfMapper.updateSpecNum(pdBottleInf);
                                 break;
                             } else {
                                 PdBottleInf pdBottleInf = new PdBottleInf();
                                 pdBottleInf.setRefBarCode(psii.getRefBarCode());
+                                pdBottleInf.setFilterType("0");//传值就过滤已闭瓶的数据
                                 if (specNum > 0.00) {
                                     count = count - specNum;
                                     psii.setSpecNum(0.00);
@@ -996,6 +1000,7 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
                                        PdBottleInf pdBottleInf=new PdBottleInf();
                                        pdBottleInf.setRefBarCode(productStocks_i.getRefBarCode());
                                        pdBottleInf.setSpecNum(count);
+                                       pdBottleInf.setFilterType("0");//传值就过滤已闭瓶的数据
                                        pdBottleInfMapper.updateSpecNum(pdBottleInf);
                                    //}else{
                                       // throw new RuntimeException("扣减库存失败, ["+productStock.getProductName()+"]库存规格数量不足");
@@ -1111,6 +1116,7 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
                                            PdBottleInf pdBottleInf=new PdBottleInf();
                                            pdBottleInf.setRefBarCode(psii.getRefBarCode());
                                            pdBottleInf.setSpecNum(count);
+                                           pdBottleInf.setFilterType("0");//传值就过滤已闭瓶的数据
                                            pdBottleInfMapper.updateSpecNum(pdBottleInf);
                                        psii.setPackageId(packageId);
                                        psii.setProductNum(count);
@@ -1124,6 +1130,7 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
                                        PdBottleInf pdBottleInf=new PdBottleInf();
                                        pdBottleInf.setRefBarCode(psii.getRefBarCode());
                                        pdBottleInf.setSpecNum(specNum);
+                                       pdBottleInf.setFilterType("0");//传值就过滤已闭瓶的数据
                                        pdBottleInfMapper.updateSpecNum(pdBottleInf);
                                        psii.setPackageId(packageId);
                                        psii.setProductNum(count);

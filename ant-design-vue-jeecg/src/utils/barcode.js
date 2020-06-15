@@ -42,11 +42,12 @@ export async function openingQuotation(Barcode,instrCode){
  * @param Barcode
  * @returns {Promise<*>}
  */
-export async function closeQuotation(Barcode,closeRemarks){
+export async function closeQuotation(Barcode,closeRemarks,instrCode){
   //封装查询参数
   let formData = new URLSearchParams();
   formData.append("Barcode",Barcode);
   formData.append("closeRemarks",closeRemarks);
+  formData.append("instrCode",instrCode);
   let res = await httpAction(closeIngUrl,formData,"post");
   return res;
 }

@@ -143,6 +143,8 @@ public class PdBottleInf extends BaseEntity {
     /**检验仪器名称*/
     @TableField(exist = false)
     private String instrName;
-
+    /*是否过滤已闭瓶的数据  有值则过滤**/
+    @TableField(exist = false)
+    private String filterType;
 
 }

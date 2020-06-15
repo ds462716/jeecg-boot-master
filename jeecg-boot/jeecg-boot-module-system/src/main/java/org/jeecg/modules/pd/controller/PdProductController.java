@@ -389,10 +389,10 @@ public class PdProductController extends JeecgController<PdProduct, IPdProductSe
 	  * @return
 	  */
 	 @PostMapping(value = "closeIngQuotation")
-	 public Result<?> closeIngQuotation(String Barcode,String closeRemarks) {
+	 public Result<?> closeIngQuotation(String Barcode,String closeRemarks,String instrCode) {
 		 Result<List<PdProductStock>> result = new Result<>();
 		 try{
-			 result = pdProductService.closeIngQuotation(Barcode,closeRemarks,result);
+			 result = pdProductService.closeIngQuotation(Barcode,closeRemarks,instrCode,result);
 		 }catch(Exception e){
 			 log.error(e.getMessage(), e);
 			 result.setCode(500);

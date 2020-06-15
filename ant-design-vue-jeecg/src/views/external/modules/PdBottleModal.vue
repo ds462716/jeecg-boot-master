@@ -21,8 +21,8 @@
                       <j-dict-select-tag-expand v-model="queryParam.closeRemarks" dictCode="close_remarks"/>
                      </a-form-item>
                   </a-col>
-                  <a-col :md="6" :sm="8"  v-show="this.model.bottleType==1">
-                    <a-form-item label="选择仪器设备" :labelCol="labelCol" :wrapperCol="wrapperCol">
+                  <a-col :md="6" :sm="8"  v-show="this.model.bottleType==1 || queryParam.closeRemarks==2">
+                    <a-form-item label="选择仪器" :labelCol="labelCol" :wrapperCol="wrapperCol">
                       <a-select
                         showSearch
                         :instrCode="instrCodeValue"
@@ -252,13 +252,20 @@
             this.openingQuot(productBarCode,instrCode);
           }else{  //闭瓶扫码
             let closeRemarks = this.queryParam.closeRemarks;
+            let instrCode ="";
             if(!closeRemarks){
               this.$message.error("请选择闭瓶原因！");
               //清空扫码框
               this.clearQueryParam();
               return;
+            }else if(closeRemarks=='2'){
+                instrCode = this.queryParam.instrCode;
+              if(!instrCode){
+                this.$message.error("请选择试剂需要迁移的仪器！");
+                return;
+              }
             }
-            this.openingClose(productBarCode,closeRemarks);
+            this.openingClose(productBarCode,closeRemarks,instrCode);
           }
       },
 
@@ -276,9 +283,9 @@
     })
       },
       //解析条码(闭瓶)
-      openingClose(productBarCode,closeRemarks){
+      openingClose(productBarCode,closeRemarks,instrCode){
         let that = this;
-        closeQuotation(productBarCode,closeRemarks).then((res) => {
+        closeQuotation(productBarCode,closeRemarks,instrCode).then((res) => {
           if(res.code ==200){
             that.$message.success("闭瓶完成");
           }else{

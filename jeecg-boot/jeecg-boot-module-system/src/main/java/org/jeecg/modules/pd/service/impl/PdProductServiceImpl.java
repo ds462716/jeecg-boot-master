@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
@@ -638,7 +639,7 @@ public class PdProductServiceImpl extends ServiceImpl<PdProductMapper, PdProduct
      * @return
      */
     @Override
-    public Result<List<PdProductStock>> closeIngQuotation(String Barcode,String closeRemarks,Result<List<PdProductStock>> result) {
+    public Result<List<PdProductStock>> closeIngQuotation(String Barcode,String closeRemarks,String instrCode,Result<List<PdProductStock>> result) {
         if(Barcode!=null){
             Barcode = BarCodeUtil.trimStr(Barcode.toUpperCase());
             if(!"".equals(Barcode)){
@@ -652,7 +653,6 @@ public class PdProductServiceImpl extends ServiceImpl<PdProductMapper, PdProduct
                 if(CollectionUtils.isEmpty(pdProductStocks)){
                     result.setCode(MessageConstant.ICODE_STATE_500);
                     result.setMessage("该试剂未开瓶或已闭瓶");
-
                 }else{
                     LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
                     LambdaQueryWrapper<PdProductStockUniqueCode> query = new LambdaQueryWrapper<PdProductStockUniqueCode>()
@@ -668,22 +668,48 @@ public class PdProductServiceImpl extends ServiceImpl<PdProductMapper, PdProduct
                             result.setCode(MessageConstant.ICODE_STATE_500);
                             result.setMessage("该试剂不在当前部门库存中，请确认在闭瓶");
                         }else{
-                            newPdProductStock.setRefBarCode(Barcode);
-                            PdProductStock productStock_i = pdProductStockTotalService.closeProdStock(newPdProductStock);
-                            //开闭瓶记录数据更新闭瓶时间及操作人
-                            PdBottleInf bottleInf = new PdBottleInf();
-                            bottleInf.setRefBarCode(Barcode);
-                            PdBottleInf inf = pdBottleInfMapper.getOne(bottleInf);
-                            inf.setCloseDate(new Date());
-                            inf.setCloseBy(sysUser.getRealname());
-                            inf.setCloseRemarks(closeRemarks);
-                            pdBottleInfMapper.updateById(inf);
-
-                            //批量更新条码状态
-                            PdProductStockUniqueCode productStockUniqueCode = new PdProductStockUniqueCode();
-                            productStockUniqueCode.setId(Barcode);
-                            productStockUniqueCode.setCodeState(PdConstant.CODE_PRINT_STATE_2);
-                            pdProductStockUniqueCodeService.updateById(productStockUniqueCode);
+                            if(PdConstant.CLOSE_REMARKS_2.equals(closeRemarks)){//如果是试剂迁移设备使用
+                                //开闭瓶记录数据更新闭瓶时间及操作人
+                                PdBottleInf bottleInf = new PdBottleInf();
+                                bottleInf.setRefBarCode(Barcode);
+                                bottleInf.setFilterType("1");
+                                PdBottleInf inf = pdBottleInfMapper.getOne(bottleInf);
+                                if(StringUtils.isNotEmpty(inf.getInstrCode()) && inf.getInstrCode().equals(instrCode)){
+                                    result.setCode(MessageConstant.ICODE_STATE_500);
+                                    result.setMessage("该试剂已在当前仪器中使用，不需要迁移仪器");
+                                }else {
+                                    inf.setCloseDate(new Date());
+                                    inf.setCloseBy(sysUser.getRealname());
+                                    inf.setCloseRemarks(closeRemarks);
+                                    pdBottleInfMapper.updateById(inf);
+                                    //新增一条开瓶记录数据；
+                                    PdBottleInf newBottleInf = new PdBottleInf();
+                                    newBottleInf.setBoottleBy(sysUser.getRealname());
+                                    newBottleInf.setBoottleDate(new Date());
+                                    newBottleInf.setInstrCode(instrCode);
+                                    newBottleInf.setRefBarCode(inf.getRefBarCode());
+                                    newBottleInf.setStockId(inf.getStockId());
+                                    newBottleInf.setSpecNum(inf.getSpecNum());
+                                    pdBottleInfMapper.insert(newBottleInf);
+                                }
+                            }else {
+                                newPdProductStock.setRefBarCode(Barcode);
+                                PdProductStock productStock_i = pdProductStockTotalService.closeProdStock(newPdProductStock);
+                                //开闭瓶记录数据更新闭瓶时间及操作人
+                                PdBottleInf bottleInf = new PdBottleInf();
+                                bottleInf.setRefBarCode(Barcode);
+                                bottleInf.setFilterType("1");
+                                PdBottleInf inf = pdBottleInfMapper.getOne(bottleInf);
+                                inf.setCloseDate(new Date());
+                                inf.setCloseBy(sysUser.getRealname());
+                                inf.setCloseRemarks(closeRemarks);
+                                pdBottleInfMapper.updateById(inf);
+                                //批量更新条码状态
+                                PdProductStockUniqueCode productStockUniqueCode = new PdProductStockUniqueCode();
+                                productStockUniqueCode.setId(Barcode);
+                                productStockUniqueCode.setCodeState(PdConstant.CODE_PRINT_STATE_2);
+                                pdProductStockUniqueCodeService.updateById(productStockUniqueCode);
+                            }
                         }
                     }else{
                         result.setCode(MessageConstant.ICODE_STATE_500);
