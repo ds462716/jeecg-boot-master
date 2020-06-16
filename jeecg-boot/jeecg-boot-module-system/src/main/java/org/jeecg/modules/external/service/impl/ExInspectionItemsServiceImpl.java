@@ -72,9 +72,16 @@ public class ExInspectionItemsServiceImpl extends ServiceImpl<ExInspectionItemsM
             //不存在或沒有配置檢驗用量明細
             if(pdUsePackage!=null){
                 String testDpeartId=pdUsePackage.getTestDepartId();
+                String deductuinType=pdUsePackage.getDeductuinType();
                 if(StringUtils.isEmpty(testDpeartId)){
                     items.setRemarks("未配置检验科室");
                     items.setAcceptStatus(PdConstant.ACCEPT_STATUS_2);// 0：已扣减  1：未配置检验用量  2:未扣减
+                }else if (PdConstant.DEDUCTUIN_TYPE_1.equals(deductuinType)) {
+                    items.setRemarks("需人工扣减:" + pdUsePackage.getRemarks());
+                    items.setAcceptStatus(PdConstant.ACCEPT_STATUS_2);// 0:已扣减  1：无检验项目  2：未扣减  3：无试剂用量
+                } else if (PdConstant.DEDUCTUIN_TYPE_2.equals(deductuinType)) {
+                    items.setRemarks("无需扣减:" + pdUsePackage.getRemarks());
+                    items.setAcceptStatus(PdConstant.ACCEPT_STATUS_2);// 0:已扣减  1：无检验项目  2：未扣减  3：无试剂用量
                 }else {
                     PdUsePackageDetail detail = new PdUsePackageDetail();
                     detail.setPackageId(pdUsePackage.getId());
