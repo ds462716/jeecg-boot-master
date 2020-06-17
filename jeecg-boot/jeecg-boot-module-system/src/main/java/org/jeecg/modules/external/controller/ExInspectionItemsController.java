@@ -224,8 +224,10 @@ public class ExInspectionItemsController extends JeecgController<ExInspectionIte
 							 items.setRemarks(msg);
 							 items.setAcceptStatus(PdConstant.ACCEPT_STATUS_2);//未扣减
 						 }else if("500".equals(code)) {
+							 items.setRemarks(" ");
 							 items.setAcceptStatus(PdConstant.ACCEPT_STATUS_4);//部分扣减
 						 }else{
+							 items.setRemarks(" ");
 							 items.setAcceptStatus(PdConstant.ACCEPT_STATUS_0);//已扣减
 						 }
 					 } catch (Exception e) {

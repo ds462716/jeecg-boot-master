@@ -848,7 +848,7 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
                 }
                 if (CollectionUtils.isEmpty(productStocks_i)) {
                    String remarks= "根据产品[" + detail.getProductName() + "]获取不到已开瓶的库存明细信息";
-                    this.saveExInspectionInf(item,productId,"1",remarks);
+                    this.saveExInspectionInf(item,detail,productId,"1",remarks);
                     map.put("code","500");
                     //throw new RuntimeException("扣减库存失败，根据产品[" + detail.getProductName() + "]获取不到已开瓶的库存明细信息");
                 }else{
@@ -872,7 +872,7 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
                                 pdBottleInf.setSpecNum(count);
                                 pdBottleInf.setFilterType("0");//传值就过滤已闭瓶的数据
                                 pdBottleInfMapper.updateSpecNum(pdBottleInf);
-                                this.saveExInspectionInf(item,productId,"0",null);
+                                this.saveExInspectionInf(item,detail,productId,"0",null);
                                 bool=PdConstant.TRUE;
                                 break;
                             } else {
@@ -886,13 +886,13 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
                                     // 更新开瓶记录表数量
                                     pdBottleInf.setSpecNum(specNum);
                                     pdBottleInfMapper.updateSpecNum(pdBottleInf);
-                                    this.saveExInspectionInf(item,productId,"0",null);
+                                    this.saveExInspectionInf(item,detail,productId,"0",null);
                                     bool=PdConstant.TRUE;
                                 } else {
                                     // 更新开瓶记录表数量
                                     pdBottleInf.setSpecNum(count);
                                     pdBottleInfMapper.updateSpecNum(pdBottleInf);
-                                    this.saveExInspectionInf(item,productId,"0",null);
+                                    this.saveExInspectionInf(item,detail,productId,"0",null);
                                     bool=PdConstant.TRUE;
                                     break;
                                 }
@@ -917,15 +917,16 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
     /**
      * 记录每个检验项目的扣减用量明细
      * @param item
-     * @param productId
      * @param status
      * @param remarks
      */
-    public void saveExInspectionInf(ExInspectionItems item,String productId,String status,String remarks){
+    public void saveExInspectionInf(ExInspectionItems item,PdUsePackageDetail detail,String productId,String status,String remarks){
     ExInspectionInf exInspectionInf=new ExInspectionInf();
     exInspectionInf.setCode(item.getTestItemCode());
     exInspectionInf.setJyId(item.getJyId());
     exInspectionInf.setProductId(productId);
+    exInspectionInf.setDepartParentId(detail.getDepartParentId());
+    exInspectionInf.setDepartId(detail.getDepartId());
     exInspectionInf.setStatus(status);//0:已扣减   1:未扣减
     exInspectionInf.setRemarks(remarks);
     exInspectionInfService.save(exInspectionInf);

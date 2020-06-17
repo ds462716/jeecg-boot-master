@@ -43,6 +43,8 @@
 		 a.count,
 		 a.product_id,
 		 a.use_type,
+		 a.depart_parent_id,
+		 a.depart_id,
 		 b.code,
 		 b.name,
 		 c.number as "number",
