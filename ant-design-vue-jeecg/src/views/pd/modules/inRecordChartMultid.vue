@@ -124,7 +124,6 @@
       data() {
 
         const dv = new DataSet.View().source(this.dataSource)
-        alert(dv);
         dv.transform({
           type: 'fold',
           fields: this.fields,
