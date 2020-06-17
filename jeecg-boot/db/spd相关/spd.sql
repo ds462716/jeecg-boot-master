@@ -756,3 +756,25 @@ MODIFY COLUMN `test_depart_id`  varchar(6400) CHARACTER SET utf8 COLLATE utf8_ge
 -- add 2020年6月15日14:34:37 by mcb 增加静态字典
 update sys_dict set description='0:已用完    1:已过期  2:试剂迁移'   where id='1267365735160807425';
 INSERT INTO `sys_dict_item` VALUES ('1272348561698361346', '1267365735160807425', '试剂迁移', '2', '', 3, 1, 'admin', '2020-06-15 10:01:51', NULL, '2020-06-15 10:01:51');
+
+-- add 2020年6月17日14:34:37 by mcb 增加未扣减用量记录表
+CREATE TABLE `ex_inspection_inf` (
+  `id` varchar(36) NOT NULL,
+  `code` varchar(32) DEFAULT NULL COMMENT '检验项目编号',
+  `jy_id` varchar(100) DEFAULT NULL COMMENT '检验序列ID',
+ `product_id` varchar(64) DEFAULT NULL COMMENT '产品ID',
+  `status` varchar(64) DEFAULT NULL COMMENT '扣减状态',
+ `remarks` varchar(500) DEFAULT NULL COMMENT '备注',
+  `create_by` varchar(50) DEFAULT NULL COMMENT '创建人',
+  `create_time` datetime DEFAULT NULL COMMENT '创建日期',
+  `update_by` varchar(50) DEFAULT NULL COMMENT '更新人',
+  `update_time` datetime DEFAULT NULL COMMENT '更新日期',
+  `sys_org_code` varchar(64) DEFAULT NULL COMMENT '所属部门',
+  `depart_parent_id` varchar(64) NOT NULL COMMENT '所属父部门',
+  `depart_id` varchar(64) NOT NULL COMMENT '所属部门',
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
+
+
+update sys_dict set description='0:已扣减  1：未配置检验项目  2：未扣减  3：未配置试剂用量  4：部分扣减'  where id='1262211106076762114';
+INSERT INTO `sys_dict_item` VALUES ('1273218429156864002', '1262211106076762114', '部分扣减', '4', '', 4, 1, 'admin', '2020-06-17 19:38:23', NULL, '2020-06-17 19:38:23');
