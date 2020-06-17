@@ -297,4 +297,6 @@ public class PdDosage extends BaseEntity {
     private String dosageType;//使用类型，0唯一码使用和1普通码使用
     @TableField(exist = false)
     private String hospitalCode;//医院标识
+    @TableField(exist = false)
+    private String type;//住院标识（1：是  2：否）
 }

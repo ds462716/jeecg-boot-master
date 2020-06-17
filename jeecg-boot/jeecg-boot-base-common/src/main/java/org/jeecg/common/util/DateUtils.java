@@ -213,6 +213,27 @@ public class DateUtils extends PropertyEditorSupport {
     }
 
     /**
+     * 格式化时间 例：yyyyMMdd转为yyyy-MM-dd  added by jiangxz 20200615
+     * @param date        需要转换的日期
+     * @param currformat  当前日期格式
+     * @param toFormat    需要转换的格式
+     * @return
+     */
+    public static String dateformat(String date, String currformat, String toFormat) {
+        SimpleDateFormat cformat = new SimpleDateFormat(currformat);
+        Date cdate = null;
+        String tdate = null;
+        try {
+            cdate = cformat.parse(date);
+            SimpleDateFormat tformat = new SimpleDateFormat(toFormat);
+            tdate = tformat.format(cdate);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return tdate;
+    }
+
+    /**
      * 日期转换为字符串
      *
      * @param date     日期
