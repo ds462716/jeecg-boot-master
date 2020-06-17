@@ -54,14 +54,27 @@
               <j-dict-select-tag-expand v-model="queryParam.deductuinType" dictCode="deductuin_type"/>
             </a-form-item>
           </a-col>
+
+          <template v-if="toggleSearchStatus">
+            <a-col :md="6" :sm="8">
+              <a-form-item label="产品名称">
+                <a-input placeholder="请输入名称\拼音码\五笔码\自定义码" v-model="queryParam.productName"></a-input>
+              </a-form-item>
+            </a-col>
+            <a-col :md="6" :sm="8">
+              <a-form-item label="产品编号">
+                <a-input placeholder="请输入编号" v-model="queryParam.number"></a-input>
+              </a-form-item>
+            </a-col>
+          </template>
           <a-col :md="6" :sm="8">
             <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
               <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
               <a-button type="primary" @click="searchReset" icon="reload" style="margin-left: 8px">重置</a-button>
-              <!--<a @click="handleToggleSearch" style="margin-left: 8px">-->
-                <!--{{ toggleSearchStatus ? '收起' : '展开' }}-->
-                <!--<a-icon :type="toggleSearchStatus ? 'up' : 'down'"/>-->
-              <!--</a>-->
+             <a @click="handleToggleSearch" style="margin-left: 8px">
+               {{ toggleSearchStatus ? '收起' : '展开' }}-->
+                <a-icon :type="toggleSearchStatus ? 'up' : 'down'"/>
+              </a>
             </span>
           </a-col>
 

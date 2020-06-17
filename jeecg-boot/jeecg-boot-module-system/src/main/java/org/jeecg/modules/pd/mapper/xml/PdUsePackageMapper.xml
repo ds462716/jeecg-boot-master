@@ -36,13 +36,13 @@
             </if>
             <if test="entity.productName != null and entity.productName != ''">
                 AND (
-                c.name LIKE concat('%',#{productName},'%')
-                or c.py LIKE concat('%',#{productName},'%')
-                or c.wb LIKE concat('%',#{productName},'%')
-                or c.bname LIKE concat('%',#{productName},'%')
-                or c.bpy LIKE concat('%',#{productName},'%')
-                or c.bwb LIKE concat('%',#{productName},'%')
-                or c.zdy LIKE concat('%',#{productName},'%')
+                c.name LIKE concat('%',#{entity.productName},'%')
+                or c.py LIKE concat('%',#{entity.productName},'%')
+                or c.wb LIKE concat('%',#{entity.productName},'%')
+                or c.bname LIKE concat('%',#{entity.productName},'%')
+                or c.bpy LIKE concat('%',#{entity.productName},'%')
+                or c.bwb LIKE concat('%',#{entity.productName},'%')
+                or c.zdy LIKE concat('%',#{entity.productName},'%')
                 )
             </if>
             <if test="entity.number != null and entity.number != ''">
