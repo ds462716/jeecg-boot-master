@@ -13,6 +13,7 @@ import org.jeecg.common.constant.PdConstant;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.pd.service.IPdDepartService;
+import org.jeecg.modules.pd.util.JmUtil;
 import org.jeecg.modules.pd.util.UUIDUtil;
 import org.jeecg.modules.system.entity.*;
 import org.jeecg.modules.system.mapper.SysDepartMapper;
@@ -460,5 +461,26 @@ public class PdDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart>
         }else{
             return Result.error("粘贴失败，复制部门没有权限！");
         }
+    }
+
+    /**
+     * 一键生成部门的拼音简码自定义码
+     * @return
+     */
+    @Cacheable(value = CacheConstant.SYS_DEPARTS_CACHE)
+    @Override
+    public Result<Object> generatePyWb() {
+        LambdaQueryWrapper<SysDepart> query = new LambdaQueryWrapper<>();
+        List<SysDepart> list = this.list(query);
+        if(list!=null && list.size()>0){
+            for(SysDepart sysDepart :list){
+                //生成拼音简码
+                sysDepart.setPy(JmUtil.getAllFirstLetter(sysDepart.getDepartName()));
+                //生成五笔简码
+                sysDepart.setWb(JmUtil.getWBCode(sysDepart.getDepartName()));
+            }
+            this.updateBatchById(list);
+        }
+        return Result.ok("生成简码成功");
     }
 }

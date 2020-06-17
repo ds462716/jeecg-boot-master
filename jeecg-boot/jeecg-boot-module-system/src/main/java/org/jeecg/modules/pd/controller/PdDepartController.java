@@ -471,4 +471,21 @@ public class PdDepartController extends JeecgController<PdDepartConfig, IPdDepar
         }
         return result;
     }
+
+    /**
+     * 一键生成部门表的拼音简码和自定义码
+     * http://localhost:3000/jeecg-boot/pd/pdDepart/generatePyWb?_t=1592379417
+     */
+    @PostMapping(value = "generatePyWb")
+    public Result<Object> generatePyWb() {
+        Result<Object> result = new Result<>();
+        try{
+            result = pdDepartService.generatePyWb();
+        }catch(Exception e){
+            log.error(e.getMessage(), e);
+            result.setCode(500);
+            result.setMessage("粘贴失败");
+        }
+        return result;
+    }
 }

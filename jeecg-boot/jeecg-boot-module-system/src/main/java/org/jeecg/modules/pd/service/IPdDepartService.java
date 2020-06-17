@@ -50,4 +50,6 @@ public interface IPdDepartService extends IService<SysDepart> {
     List<String> selectListDepart(SysDepart sysDepart);
 
     Result<Object> copyPermission(String copyId, String pasteId, Result<Object> result);
+
+    Result<Object> generatePyWb();
 }
