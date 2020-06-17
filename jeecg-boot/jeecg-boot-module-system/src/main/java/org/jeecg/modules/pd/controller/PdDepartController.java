@@ -475,6 +475,7 @@ public class PdDepartController extends JeecgController<PdDepartConfig, IPdDepar
     /**
      * 一键生成部门表的拼音简码和自定义码
      * http://localhost:3000/jeecg-boot/pd/pdDepart/generatePyWb?_t=1592379417
+     * 调用以后需要随便找个部门更新下
      */
     @PostMapping(value = "generatePyWb")
     public Result<Object> generatePyWb() {
