@@ -44,7 +44,7 @@
         left join pd_use_package_detail a  on a.product_Id=d.product_id
         left join pd_use_package b  on b.id=a.package_id and d.code=b.code and b.del_flag='0'
         left join pd_product c  on c.id=a.product_id and c.del_flag='0'
-        left join pd_unit e on e.id=c.unit_id and e.del_flag='0'
+        left join pd_unit e on e.id=c.spec_unit_id and e.del_flag='0'
         where  a.del_flag='0'
         <if test="entity.code != null and entity.code != ''">
             AND b.code=#{entity.code}

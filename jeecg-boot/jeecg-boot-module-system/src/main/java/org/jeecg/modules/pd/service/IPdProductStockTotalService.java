@@ -122,7 +122,7 @@ public interface IPdProductStockTotalService extends IService<PdProductStockTota
      * @param detailList
      * @return
      */
-    public String lisUpdateUseStockLis(ExInspectionItems items,String testDpeartId, List<PdUsePackageDetail> detailList);
+    public Map<String,Object> lisUpdateUseStockLis(ExInspectionItems items,String testDpeartId, List<PdUsePackageDetail> detailList);
 
     /**
      * 检验项目手动扣减库存方法(检验包)

@@ -119,23 +119,35 @@
             dataIndex: 'unitName'
           },
           {
-            title:'扣减用量',
+            title:'需扣减用量',
             align:"center",
             dataIndex: 'count'
           },
           {
             title:'扣减状态',
             align:"center",
-            dataIndex: 'status'
+            dataIndex: 'status',
+            customRender:(text)=>{
+              if(!text){
+                return ''
+              }else{
+                return filterMultiDictText(this.dictOptions['status'], text+"")
+              }
+            }
+          },
+          {
+            title:'备注',
+            align:"center",
+            dataIndex: 'remarks'
           },
         ],
         url: {
           list: "/external/exInspectionInf/list",
         },
         dictOptions:{
-          recordType:[],
+          status:[],
         },
-        tableScroll:{x :1000},
+        tableScroll:{x :1300},
       }
     },
     created () {
@@ -152,6 +164,9 @@
         }
         var params = this.getQueryParams();//查询条件
         params.code=this.model.testItemCode;
+        if(this.model.testItemCode=="" || this.model.testItemCode==null){
+          return;
+        }
         params.jyId=this.model.jyId;
         this.loading = true;
         getAction(this.url.list, params).then((res) => {
@@ -192,9 +207,9 @@
 
 
       initDictConfig(){ //静态字典值加载
-        initDictOptions('stock_record_type').then((res) => { //出入库类型
+        initDictOptions('inspection_status').then((res) => { //
           if (res.success) {
-            this.$set(this.dictOptions, 'recordType', res.result)
+            this.$set(this.dictOptions, 'status', res.result)
           }
         })
 

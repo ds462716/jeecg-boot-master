@@ -3,15 +3,18 @@ package org.jeecg.modules.pd.service.impl;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.constant.PdConstant;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.oConvertUtils;
+import org.jeecg.modules.external.entity.ExInspectionInf;
 import org.jeecg.modules.external.entity.ExInspectionItems;
 import org.jeecg.modules.external.entity.PdBottleInf;
 import org.jeecg.modules.external.mapper.PdBottleInfMapper;
 import org.jeecg.modules.external.service.IExDeductuinDosageService;
+import org.jeecg.modules.external.service.IExInspectionInfService;
 import org.jeecg.modules.pd.entity.*;
 import org.jeecg.modules.pd.mapper.PdProductMapper;
 import org.jeecg.modules.pd.mapper.PdProductStockMapper;
@@ -56,7 +59,7 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
     @Autowired
     private PdProductStockUniqueCodeMapper pdProductStockUniqueCodeMapper;
     @Autowired
-    private IPdProductStockUniqueCodeService pdProductStockUniqueCodeService;
+    private IExInspectionInfService exInspectionInfService;
     /**
      * 查询列表
      *
@@ -801,10 +804,12 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
      */
     @Transactional
     @Override
-    public String lisUpdateUseStockLis(ExInspectionItems item, String departId,List<PdUsePackageDetail> detailList) {
+    public Map<String,Object> lisUpdateUseStockLis(ExInspectionItems item, String departId,List<PdUsePackageDetail> detailList) {
+        Map<String,Object> map=new HashMap<>();
         String instrCode=item.getInstrCode();//检验仪器代号
         List<String> departIds=Arrays.asList(departId.split(","));
         String bool=PdConstant.FALSE;
+        map.put("code","400");
         for(PdUsePackageDetail detail:detailList) {
             String productId = detail.getProductId();//产品ID
             String productFlag = detail.getProductFlag();
@@ -818,7 +823,7 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
                     continue;
                 }
             }
-            bool=PdConstant.TRUE;
+            map.put("code","200");
            if(PdConstant.PRODUCT_FLAG_1.equals(productFlag)){ //试剂
                 //4：否则是试剂
                 //先获取该仪器下已开瓶的试剂，如果不存在，则查询扣减科室下库存明细
@@ -842,7 +847,10 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
                     productStocks_i = pdProductStockMapper.selectOrExpDate(pproductStockq);
                 }
                 if (CollectionUtils.isEmpty(productStocks_i)) {
-                    throw new RuntimeException("扣减库存失败，根据产品[" + detail.getProductName() + "]获取不到已开瓶的库存明细信息");
+                   String remarks= "根据产品[" + detail.getProductName() + "]获取不到已开瓶的库存明细信息";
+                    this.saveExInspectionInf(item,productId,"1",remarks);
+                    map.put("code","500");
+                    //throw new RuntimeException("扣减库存失败，根据产品[" + detail.getProductName() + "]获取不到已开瓶的库存明细信息");
                 }else{
                     for(int i=0;i<productStocks_i.size();i++){
                         int size= productStocks_i.size();
@@ -864,6 +872,8 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
                                 pdBottleInf.setSpecNum(count);
                                 pdBottleInf.setFilterType("0");//传值就过滤已闭瓶的数据
                                 pdBottleInfMapper.updateSpecNum(pdBottleInf);
+                                this.saveExInspectionInf(item,productId,"0",null);
+                                bool=PdConstant.TRUE;
                                 break;
                             } else {
                                 PdBottleInf pdBottleInf = new PdBottleInf();
@@ -876,10 +886,14 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
                                     // 更新开瓶记录表数量
                                     pdBottleInf.setSpecNum(specNum);
                                     pdBottleInfMapper.updateSpecNum(pdBottleInf);
+                                    this.saveExInspectionInf(item,productId,"0",null);
+                                    bool=PdConstant.TRUE;
                                 } else {
                                     // 更新开瓶记录表数量
                                     pdBottleInf.setSpecNum(count);
                                     pdBottleInfMapper.updateSpecNum(pdBottleInf);
+                                    this.saveExInspectionInf(item,productId,"0",null);
+                                    bool=PdConstant.TRUE;
                                     break;
                                 }
                             }
@@ -890,10 +904,32 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
                throw new RuntimeException("不是试剂类产品，无法扣减用量");
            }
         }
-        return bool;
+        String code=MapUtils.getString(map,"code");
+        if("500".equals(code) && PdConstant.TRUE.equals(bool)){//说明是4：部分扣减
+            map.put("code","500");
+        }else if("500".equals(code) && PdConstant.FALSE.equals(bool)){//说明是未扣减
+            map.put("code","300");
+            map.put("msg","获取不到已开瓶的产品信息");
+        }
+        return map;
     }
 
-
+    /**
+     * 记录每个检验项目的扣减用量明细
+     * @param item
+     * @param productId
+     * @param status
+     * @param remarks
+     */
+    public void saveExInspectionInf(ExInspectionItems item,String productId,String status,String remarks){
+    ExInspectionInf exInspectionInf=new ExInspectionInf();
+    exInspectionInf.setCode(item.getTestItemCode());
+    exInspectionInf.setJyId(item.getJyId());
+    exInspectionInf.setProductId(productId);
+    exInspectionInf.setStatus(status);//0:已扣减   1:未扣减
+    exInspectionInf.setRemarks(remarks);
+    exInspectionInfService.save(exInspectionInf);
+}
 
 
   /*
