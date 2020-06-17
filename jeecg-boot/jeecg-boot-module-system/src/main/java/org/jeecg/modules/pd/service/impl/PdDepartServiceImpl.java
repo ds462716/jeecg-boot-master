@@ -11,6 +11,7 @@ import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.CacheConstant;
 import org.jeecg.common.constant.PdConstant;
 import org.jeecg.common.system.vo.LoginUser;
+import org.jeecg.common.util.PasswordUtil;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.pd.service.IPdDepartService;
 import org.jeecg.modules.pd.util.JmUtil;
@@ -37,6 +38,9 @@ public class PdDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart>
 
     @Autowired
     private SysUserMapper userMapper;
+
+    @Autowired
+    private ISysUserService sysUserService;
 
     @Autowired
     private ISysDepartRolePermissionService sysDepartRolePermissionService;
@@ -480,6 +484,31 @@ public class PdDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart>
                 sysDepart.setWb(JmUtil.getWBCode(sysDepart.getDepartName()));
             }
             this.updateBatchById(list);
+        }
+        return Result.ok("生成简码成功");
+    }
+
+    /**
+     * 一键设置密码123生成用户的简码
+     * @return
+     */
+    @Override
+    public Result<Object> generateUserPyWb() {
+        LambdaQueryWrapper<SysUser> query = new LambdaQueryWrapper<>();
+        List<SysUser> list = sysUserService.list(query);
+        if(list!=null && list.size()>0){
+            for(SysUser sysUser :list){
+                //生成拼音简码
+                sysUser.setPy(JmUtil.getAllFirstLetter(sysUser.getRealname()));
+                //生成五笔简码
+                sysUser.setWb(JmUtil.getWBCode(sysUser.getRealname()));
+                String salt = oConvertUtils.randomGen(8);
+                sysUser.setSalt(salt);
+                String password = "123";
+                String passwordEncode = PasswordUtil.encrypt(sysUser.getUsername(), password, salt);
+                sysUser.setPassword(passwordEncode);
+            }
+            sysUserService.updateBatchById(list);
         }
         return Result.ok("生成简码成功");
     }
