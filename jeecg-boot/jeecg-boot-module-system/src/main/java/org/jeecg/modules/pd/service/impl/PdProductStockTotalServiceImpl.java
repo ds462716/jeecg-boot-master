@@ -823,7 +823,6 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
                     continue;
                 }
             }
-            map.put("code","200");
            if(PdConstant.PRODUCT_FLAG_1.equals(productFlag)){ //试剂
                 //4：否则是试剂
                 //先获取该仪器下已开瓶的试剂，如果不存在，则查询扣减科室下库存明细
