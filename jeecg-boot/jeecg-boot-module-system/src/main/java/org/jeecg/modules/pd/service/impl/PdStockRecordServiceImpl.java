@@ -15,7 +15,6 @@ import org.jeecg.modules.message.util.PushMsgUtil;
 import org.jeecg.modules.pd.entity.*;
 import org.jeecg.modules.pd.mapper.*;
 import org.jeecg.modules.pd.service.*;
-import org.jeecg.modules.pd.util.SnowUtils;
 import org.jeecg.modules.pd.util.UUIDUtil;
 import org.jeecg.modules.pd.vo.PdGoodsAllocationPage;
 import org.jeecg.modules.system.entity.SysDepart;
@@ -1028,6 +1027,11 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
         return pageList.setRecords(pdStockRecordMapper.selectTransferList(pdStockRecord));
     }
 
+    @Override
+    public Page<PdStockRecord> stockRecordReportQuery(Page<PdStockRecord> pageList, PdStockRecord pdStockRecord) {
+        return pageList.setRecords(pdStockRecordMapper.stockRecordReportQuery(pdStockRecord));
+    }
+
     /**
      * 消息推送
      * @param stockRecord
@@ -1061,5 +1065,10 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
             return pushMsgUtil.newSendMessage(map);
         }
         return false;
+    }
+
+    @Override
+    public List<HashMap> queryRecordView(PdStockRecord stockRecord) {
+        return pdStockRecordMapper.queryRecordView(stockRecord);
     }
 }

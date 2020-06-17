@@ -1,17 +1,14 @@
 package org.jeecg.modules.pd.controller;
 
 import com.alibaba.fastjson.JSON;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.PdConstant;
-import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.DateUtils;
 import org.jeecg.common.util.oConvertUtils;
@@ -19,31 +16,24 @@ import org.jeecg.modules.message.util.PushMsgUtil;
 import org.jeecg.modules.pd.entity.PdStockRecord;
 import org.jeecg.modules.pd.entity.PdStockRecordDetail;
 import org.jeecg.modules.pd.service.*;
+import org.jeecg.modules.pd.vo.PdPurchaseOrderPage;
 import org.jeecg.modules.pd.vo.PdStockRecordInPage;
 import org.jeecg.modules.system.entity.SysDepart;
-import org.jeecg.modules.system.entity.SysPermission;
 import org.jeecg.modules.system.service.ISysDepartService;
 import org.jeecg.modules.system.service.ISysDictService;
 import org.jeecg.modules.system.service.ISysPermissionService;
-import org.jeecgframework.poi.excel.ExcelImportUtil;
 import org.jeecgframework.poi.excel.def.NormalExcelConstants;
 import org.jeecgframework.poi.excel.entity.ExportParams;
-import org.jeecgframework.poi.excel.entity.ImportParams;
 import org.jeecgframework.poi.excel.view.JeecgEntityExcelView;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * @Description: 出入库记录表
@@ -455,6 +445,39 @@ public class PdStockRecordInController {
         Page<PdStockRecord> page = new Page<PdStockRecord>(pageNo, pageSize);
         page = pdStockRecordService.selectTransferList(page, stockRecord);
         return Result.ok(page);
+    }
+
+
+
+    /**
+     * 入库统计报表  mcb  --20200616 用于统计查询  入库统计报表
+     */
+    @GetMapping(value = "stockRecordReportQuery")
+    public Result<?> stockRecordReportQuery(PdStockRecord stockRecord,
+                                            @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
+                                            @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize) {
+        stockRecord.setRecordType(PdConstant.RECODE_TYPE_1);
+        stockRecord.setAuditStatus(PdConstant.AUDIT_STATE_2);//只查已通过的明细
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        stockRecord.setDepartParentId(sysUser.getDepartParentId());
+        Page<PdStockRecord> page = new Page<PdStockRecord>(pageNo, pageSize);
+        page = pdStockRecordService.stockRecordReportQuery(page, stockRecord);
+        return Result.ok(page);
+    }
+
+    /**
+     * 入库统计视图  mcb  --20200617 用于统计查询  入库统计报表视图
+     */
+    @GetMapping(value = "queryRecordView")
+    public Result<?> queryRecordView(PdStockRecord stockRecord){
+        Map map=new HashMap();
+        List<HashMap> orderDate=new  ArrayList<HashMap>();//根据月份数
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        stockRecord.setDepartParentId(sysUser.getDepartParentId());
+        //根据日期统计每日的采购量
+        orderDate=pdStockRecordService.queryRecordView(stockRecord);
+        map.put("orderDate",orderDate);
+        return Result.ok(map);
     }
 
 }

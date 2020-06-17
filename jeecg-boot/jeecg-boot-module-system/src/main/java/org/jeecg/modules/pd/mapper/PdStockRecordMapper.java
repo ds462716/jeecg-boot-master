@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Param;
 import org.jeecg.modules.pd.entity.PdStockRecord;
 
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -35,6 +36,12 @@ public interface PdStockRecordMapper extends BaseMapper<PdStockRecord> {
      * @return
      */
     List<PdStockRecord> selectTransferList(PdStockRecord pdStockRecord);
+    /**
+     * 入库统计报表
+     * @param pdStockRecord
+     * @return
+     */
+    List<PdStockRecord> stockRecordReportQuery(PdStockRecord pdStockRecord);
 
     boolean deleteById(@Param("id") String id);
 
@@ -44,4 +51,7 @@ public interface PdStockRecordMapper extends BaseMapper<PdStockRecord> {
      * @return
      */
     boolean deleteByDelFlag(PdStockRecord pdStockRecord);
+
+    /*入库统计报表  根据产品查看每月入库量及金额*/
+    List<HashMap> queryRecordView(PdStockRecord pdStockRecord);
 }

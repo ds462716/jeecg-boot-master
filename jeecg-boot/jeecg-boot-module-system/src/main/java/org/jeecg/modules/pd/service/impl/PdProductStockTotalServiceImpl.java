@@ -819,38 +819,6 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
                 }
             }
             bool=PdConstant.TRUE;
-            //PdProductStockTotal stockTotal = new PdProductStockTotal();
-            //stockTotal.setDepartId(departId);
-            //stockTotal.setProductId(productId);
-            //List<PdProductStockTotal> stockTotals = pdProductStockTotalMapper.findForUpdate(stockTotal);
-                          /* if (CollectionUtils.isEmpty(stockTotals)) {
-                               throw new RuntimeException("扣减总库存失败,根据产品ID：[" + productId + "]获取不到库存信息");
-                           }*/
-           /* if (PdConstant.PRODUCT_FLAG_0.equals(productFlag)) { //普通耗材
-                //扣减总库存
-                PdProductStockTotal productStockTotal = stockTotals.get(0);
-                Double stockNum_i = productStockTotal.getStockNum();
-                Double newStockNum = stockNum_i - count;
-                productStockTotal.setStockNum(newStockNum);
-                pdProductStockTotalMapper.updateStockNum(productStockTotal);
-                //扣减明细库存
-                PdProductStock stock = new PdProductStock();
-                stock.setDepartId(departId);
-                stock.setProductId(productId);
-                List<PdProductStock> stocks = pdProductStockMapper.selectOrExpDate(stock);
-                if (CollectionUtils.isEmpty(stocks)) {
-                    throw new RuntimeException("扣减库存失败,根据产品ID：[" + productId + "]获取不到库存信息");
-                }
-                PdProductStock productStock_i = stocks.get(0);
-                Double num = productStock_i.getStockNum() - count;
-                if (num < 0) {
-                    throw new RuntimeException("扣减库存失败，[" + productStock_i.getProductName() + "]库存数量不足");
-                }
-                productStock_i.setStockNum(num);
-                productStock_i.setSpecNum(productStock_i.getSpecQuantity() == null ? 0D : productStock_i.getSpecQuantity() * productStock_i.getStockNum());// 库存规格数量= 产品规格数量* 入库数量
-                pdProductStockMapper.updateStockNum(productStock_i);
-            } else {*/
-
            if(PdConstant.PRODUCT_FLAG_1.equals(productFlag)){ //试剂
                 //4：否则是试剂
                 //先获取该仪器下已开瓶的试剂，如果不存在，则查询扣减科室下库存明细
@@ -872,7 +840,6 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
                     pproductStockq.setProductId(productId);
                     pproductStockq.setNestatStatus(PdConstant.STOCK_NESTAT_STATUS_0);
                     productStocks_i = pdProductStockMapper.selectOrExpDate(pproductStockq);
-
                 }
                 if (CollectionUtils.isEmpty(productStocks_i)) {
                     throw new RuntimeException("扣减库存失败，根据产品[" + detail.getProductName() + "]获取不到已开瓶的库存明细信息");
