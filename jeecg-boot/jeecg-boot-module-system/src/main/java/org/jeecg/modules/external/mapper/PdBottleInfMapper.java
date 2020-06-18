@@ -38,4 +38,6 @@ public interface PdBottleInfMapper extends BaseMapper<PdBottleInf> {
      */
     List<PdProductStock> queryProductStock(PdBottleInf pdBottleInf);
 
+    Page<PdBottleInf> bottleInfReportQuery(Page<PdBottleInf> page, @Param("entity") PdBottleInf entity);
+
 }

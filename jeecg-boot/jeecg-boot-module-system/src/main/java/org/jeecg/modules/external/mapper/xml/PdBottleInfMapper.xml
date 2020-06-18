@@ -131,4 +131,43 @@
 
     </select>
 
+
+    <select id="bottleInfReportQuery"  resultType="org.jeecg.modules.external.entity.PdBottleInf">
+
+	select
+	    c.id as "productId",
+	    c.number as  "number",
+	    c.name as "productName",
+		b.spec_quantity as "specQuantity",
+		count(*) as "num",
+		d.name as "specUnitName",
+        e.name as "unitName",
+		c.selling_price as "totalPrice"
+	from pd_bottle_inf a
+	left join pd_product_stock b on a.stock_id=b.id
+	left join pd_product c on c.id=b.product_id
+	left join pd_unit d  on d.id=c.spec_unit_id
+    left join pd_unit e  on e.id=c.unit_id
+	where close_remarks is not null
+        <if test="entity.productName != null and entity.productName != ''">
+            AND (c.name LIKE concat('%',#{entity.productName},'%')
+            or c.py LIKE concat('%',#{entity.productName},'%')
+            or c.wb LIKE concat('%',#{entity.productName},'%')
+            or c.zdy LIKE concat('%',#{entity.productName},'%')
+            or c.bname LIKE concat('%',#{entity.productName},'%')
+            or c.bpy LIKE concat('%',#{entity.productName},'%')
+            or c.bwb LIKE concat('%',#{entity.productName},'%')
+            )
+        </if>
+        <if test="entity.departParentId != null and entity.departParentId != ''">
+            AND a.depart_parent_id = #{entity.departParentId}
+        </if>
+        <if test="entity.number != null and entity.number != ''">
+            AND c.number   LIKE concat('%',#{entity.number},'%')
+        </if>
+	GROUP BY productId
+
+
+    </select>
+
 </mapper>

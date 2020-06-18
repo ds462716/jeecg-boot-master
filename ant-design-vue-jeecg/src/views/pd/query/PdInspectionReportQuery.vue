@@ -61,7 +61,7 @@
 
 
   export default {
-    name: "PdStockRecordReportQuery",
+    name: "PdInspectionReportQuery",
     mixins:[JeecgListMixin],
     components: {
      inRecordChartMultid,
@@ -69,7 +69,7 @@
     },
     data () {
       return {
-        description: '入库统计报表',
+        description: '试剂消耗报表',
         // 表头
         columns: [
           {
@@ -83,52 +83,46 @@
             }
           },
           {
-            title:'产品编号',
+            title:'试剂编号',
             align:"center",
-            width:'150px',
+            width:'200px',
             dataIndex: 'number'
           },
           {
-            title:'产品名称',
+            title:'试剂名称',
             align:"center",
-            width:'350px',
+            width:'450px',
             dataIndex: 'productName'
           },
           {
-            title:'规格',
+            title:'规格数量',
             align:"center",
             width:'100px',
-            dataIndex: 'spec'
+            dataIndex: 'specQuantity'
           },
           {
-            title:'入库总数量',
+            title:'规格单位',
             align:"center",
-            width:'80px',
-            dataIndex: 'totalSum'
+            width:'100px',
+            dataIndex: 'specUnitName'
+          },
+          {
+            title:'消耗总数量',
+            align:"center",
+            width:'120px',
+            dataIndex: 'num'
           },
           {
             title:'单位',
             align:"center",
-            width:'50px',
+            width:'100px',
             dataIndex: 'unitName'
           },
           {
-            title:'入库总金额',
+            title:'消耗总金额',
             align:"center",
             width:'90px',
-            dataIndex: 'inTotalPrice'
-          },
-          {
-            title:'生产厂家',
-            align:"center",
-            width:'250px',
-            dataIndex: 'venderName'
-          },
-          {
-            title:'供应商',
-            align:"center",
-            width:'250px',
-            dataIndex: 'supplierName'
+            dataIndex: 'totalPrice'
           },
           {
             title: '操作',
@@ -138,7 +132,7 @@
           }
         ],
         url: {
-          list: "/pd/pdStockRecordIn/stockRecordReportQuery",
+          list: "/pd/pdBottleInf/bottleInfReportQuery",
           exportXlsUrl: "/pd/pdStockRecordIn/exportXls",
         },
         dictOptions:{

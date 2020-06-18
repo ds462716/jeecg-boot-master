@@ -18,4 +18,7 @@ public interface IPdBottleInfService extends IService<PdBottleInf> {
 
     public List<PdBottleInf> selectList(PdBottleInf pdBottleInf);
 
+    public Page<PdBottleInf> bottleInfReportQuery(Page<PdBottleInf> page, PdBottleInf pdBottleInf);
+
+
 }
