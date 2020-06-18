@@ -792,3 +792,25 @@ ADD COLUMN `out_doctor_name` varchar(64) NULL COMMENT '门诊医生姓名' AFTER
 ALTER TABLE `jeecg-boot`.`pd_dosage`
 ADD COLUMN `out_dept_id` varchar(64) NULL COMMENT '门诊科室id' AFTER `surgeon_name`,
 ADD COLUMN `out_dept_name` varchar(64) NULL COMMENT '门诊科室名称' AFTER `out_dept_id`;
+
+-- add 2020年6月18日14:34:37 by mcb 增加入库统计报表
+INSERT INTO `sys_permission` VALUES ('1273431811606933506', '1218785597982052353', '入库统计报表', '/pd/query/PdStockRecordReport', 'pd/query/PdStockRecordReportQuery', NULL, NULL, 1, '0', NULL, '1', 1.00, 0, NULL, 1, 1, 0, 0, NULL, 'admin', '2020-06-18 09:46:18', NULL, '2020-06-18 09:46:18', 0, 0, '1', 0);
+
+-- 月份表
+CREATE TABLE `xnumber` (
+  `month` date DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+INSERT INTO `xnumber`(`month`) VALUES ('2020-06-01');
+INSERT INTO `xnumber`(`month`) VALUES ('2020-01-01');
+INSERT INTO `xnumber`(`month`) VALUES ('2020-02-01');
+INSERT INTO `xnumber`(`month`) VALUES ('2020-03-01');
+INSERT INTO `xnumber`(`month`) VALUES ('2020-04-01');
+INSERT INTO `xnumber`(`month`) VALUES ('2020-05-01');
+INSERT INTO `xnumber`(`month`) VALUES ('2020-07-01');
+INSERT INTO `xnumber`(`month`) VALUES ('2020-08-01');
+INSERT INTO `xnumber`(`month`) VALUES ('2020-09-01');
+INSERT INTO `xnumber`(`month`) VALUES ('2020-10-01');
+INSERT INTO `xnumber`(`month`) VALUES ('2020-11-01');
+INSERT INTO `xnumber`(`month`) VALUES ('2020-12-01');
+INSERT INTO `xnumber`(`month`) VALUES ('2021-01-01');

@@ -307,6 +307,7 @@
       editAfter() {
         this.confirmLoading = true;
         this.usePackagedandleChange();
+        this.departHandleSearch();
         //this.loadTree();
         let fieldval = pick(this.model,'code','name','py','wb','zdy','remarks','deductuinType');
         this.$nextTick(() => {

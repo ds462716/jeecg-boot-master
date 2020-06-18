@@ -6,8 +6,10 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.StringUtils;
 import org.jeecg.common.constant.PdConstant;
+import org.jeecg.modules.external.entity.ExInspectionInf;
 import org.jeecg.modules.external.entity.ExInspectionItems;
 import org.jeecg.modules.external.mapper.ExInspectionItemsMapper;
+import org.jeecg.modules.external.service.IExInspectionInfService;
 import org.jeecg.modules.external.service.IExInspectionItemsService;
 import org.jeecg.modules.pd.entity.PdUsePackage;
 import org.jeecg.modules.pd.entity.PdUsePackageDetail;
@@ -37,7 +39,8 @@ public class ExInspectionItemsServiceImpl extends ServiceImpl<ExInspectionItemsM
     private IPdUsePackageDetailService pdUsePackageDetailService;
     @Autowired
     private IPdProductStockTotalService pdProductStockTotalService;
-
+    @Autowired
+    private IExInspectionInfService exInspectionInfService;
     /**
      * 查询列表
      * @param page
@@ -85,9 +88,13 @@ public class ExInspectionItemsServiceImpl extends ServiceImpl<ExInspectionItemsM
                     items.setRemarks("无需扣减:" + pdUsePackage.getRemarks());
                     items.setAcceptStatus(PdConstant.ACCEPT_STATUS_2);// 0:已扣减  1：无检验项目  2：未扣减  3：无试剂用量
                 }else {
-                    PdUsePackageDetail detail = new PdUsePackageDetail();
+                    /*PdUsePackageDetail detail = new PdUsePackageDetail();
                     detail.setPackageId(pdUsePackage.getId());
-                    List<PdUsePackageDetail> pdUsePackageDetails = pdUsePackageDetailService.queryPdUsePackageList(detail);
+                    List<PdUsePackageDetail> pdUsePackageDetails = pdUsePackageDetailService.queryPdUsePackageList(detail);*/
+                    ExInspectionInf inspectionInf=new ExInspectionInf();
+                    inspectionInf.setCode(items.getTestItemCode());
+                    inspectionInf.setStatus("1");
+                    List<PdUsePackageDetail> pdUsePackageDetails = exInspectionInfService.queryPdUsePackageList(inspectionInf);
                     if (pdUsePackageDetails != null && pdUsePackageDetails.size() > 0) {
                         try {
                          //HIS系统过来的

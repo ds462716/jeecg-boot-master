@@ -14,7 +14,9 @@ import org.jeecg.common.aspect.annotation.AutoLog;
 import org.jeecg.common.constant.PdConstant;
 import org.jeecg.common.system.base.controller.JeecgController;
 import org.jeecg.common.system.vo.LoginUser;
+import org.jeecg.modules.external.entity.ExInspectionInf;
 import org.jeecg.modules.external.entity.ExInspectionItems;
+import org.jeecg.modules.external.service.IExInspectionInfService;
 import org.jeecg.modules.external.service.IExInspectionItemsService;
 import org.jeecg.modules.pd.entity.PdUsePackage;
 import org.jeecg.modules.pd.entity.PdUsePackageDetail;
@@ -44,7 +46,8 @@ import java.util.Map;
 public class ExInspectionItemsController extends JeecgController<ExInspectionItems, IExInspectionItemsService> {
 	@Autowired
 	private IExInspectionItemsService exInspectionItemsService;
-
+	@Autowired
+	private IExInspectionInfService exInspectionInfService;
 	@Autowired
 	private IPdUsePackageService pdUsePackageService;
 
@@ -205,9 +208,13 @@ public class ExInspectionItemsController extends JeecgController<ExInspectionIte
 				 exInspectionItemsService.updateById(items);
 				 return Result.error("无需扣减:" + pdUsePackage.getRemarks());
 			 }else {
-				 PdUsePackageDetail detail = new PdUsePackageDetail();
+				/* PdUsePackageDetail detail = new PdUsePackageDetail();
 				 detail.setPackageId(pdUsePackage.getId());
-				 List<PdUsePackageDetail> pdUsePackageDetails = pdUsePackageDetailService.queryPdUsePackageList(detail);
+				 List<PdUsePackageDetail> pdUsePackageDetails = pdUsePackageDetailService.queryPdUsePackageList(detail);*/
+				 ExInspectionInf inspectionInf=new ExInspectionInf();
+				 inspectionInf.setCode(items.getTestItemCode());
+				 inspectionInf.setStatus("1");
+				 List<PdUsePackageDetail> pdUsePackageDetails = exInspectionInfService.queryPdUsePackageList(inspectionInf);
 				 if (pdUsePackageDetails != null && pdUsePackageDetails.size() > 0) {
 					 try {
 						 //HIS系统过来的

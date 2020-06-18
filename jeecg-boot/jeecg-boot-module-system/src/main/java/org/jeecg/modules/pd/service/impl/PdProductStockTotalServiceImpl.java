@@ -1,5 +1,6 @@
 package org.jeecg.modules.pd.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.apache.commons.collections.CollectionUtils;
@@ -920,15 +921,26 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
      * @param remarks
      */
     public void saveExInspectionInf(ExInspectionItems item,PdUsePackageDetail detail,String productId,String status,String remarks){
-    ExInspectionInf exInspectionInf=new ExInspectionInf();
-    exInspectionInf.setCode(item.getTestItemCode());
-    exInspectionInf.setJyId(item.getJyId());
-    exInspectionInf.setProductId(productId);
-    exInspectionInf.setDepartParentId(detail.getDepartParentId());
-    exInspectionInf.setDepartId(detail.getDepartId());
-    exInspectionInf.setStatus(status);//0:已扣减   1:未扣减
-    exInspectionInf.setRemarks(remarks);
-    exInspectionInfService.save(exInspectionInf);
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("product_id", productId);
+        queryWrapper.eq("jy_id", item.getJyId());
+        queryWrapper.eq("code", item.getTestItemCode());
+        ExInspectionInf inspectionInf  = exInspectionInfService.getOne(queryWrapper);
+        if(inspectionInf==null || inspectionInf.getId()==null){
+            ExInspectionInf exInspectionInf=new ExInspectionInf();
+            exInspectionInf.setCode(item.getTestItemCode());
+            exInspectionInf.setJyId(item.getJyId());
+            exInspectionInf.setProductId(productId);
+            exInspectionInf.setDepartParentId(detail.getDepartParentId());
+            exInspectionInf.setDepartId(detail.getDepartId());
+            exInspectionInf.setStatus(status);//0:已扣减   1:未扣减
+            exInspectionInf.setRemarks(remarks);
+            exInspectionInfService.save(exInspectionInf);
+        }else{
+            inspectionInf.setStatus(status);//0:已扣减   1:未扣减
+            inspectionInf.setRemarks(remarks);
+            exInspectionInfService.updateById(inspectionInf);
+        }
 }
 
 

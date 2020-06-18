@@ -113,11 +113,9 @@ public class PdUsePackageController {
    }
 
     @GetMapping(value = "/queryUsePackageDetail")
-    public Result<?> queryUsePackageDetail(@RequestParam(name="testItemCode",required=true) String testItemCode,
-                                           @RequestParam(name="testItemName",required=true) String testItemName) {
+    public Result<?> queryUsePackageDetail(@RequestParam(name="testItemCode",required=true) String testItemCode) {
         LambdaQueryWrapper<PdUsePackage> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(PdUsePackage::getCode, testItemCode);
-        queryWrapper.eq(PdUsePackage::getName, testItemName);
         PdUsePackage pdUsePackage = pdUsePackageService.getOne(queryWrapper);
         if(pdUsePackage==null) {
             return Result.error("未找到对应数据");

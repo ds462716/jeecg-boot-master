@@ -334,7 +334,7 @@
       },
       //查询检验包详情
       queryUsePackageDetail: function (record) {
-        getAction(this.url.queryUsePackageDetail, {testItemName:record.testItemName,testItemCode:record.testItemCode}).then((res) => {
+        getAction(this.url.queryUsePackageDetail, {testItemCode:record.testItemCode}).then((res) => {
           if (res.success) {
             this.$refs.pdUsePackageModal.edit(res.result);
             this.$refs.pdUsePackageModal.title = "详情";

@@ -72,4 +72,28 @@
 
     </select>
 
+
+    <select id="queryPdUsePackageList"  resultType="org.jeecg.modules.pd.entity.PdUsePackageDetail">
+	select
+        b.*,
+        d.number as "number",
+        d.name as "productName",
+        d.spec as spec,
+        d.version as version,
+        d.spec_quantity as specQuantity,
+        d.product_flag as "productFlag"
+        from ex_inspection_inf a
+      left join pd_use_package_detail  b on  b.product_id=a.product_id
+      left join pd_use_package c on b.package_id=c.id  and a.code=c.code
+      left join pd_product d on d.id=a.product_id and d.id=b.product_id
+      where   1=1
+        <if test="code != null and code != ''">
+            AND a.code=#{code}
+        </if>
+        <if test="status != null and status != ''">
+            AND a.status=#{status}
+        </if>
+        group by a.product_id
+    </select>
+
 </mapper>

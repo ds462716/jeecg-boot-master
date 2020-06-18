@@ -261,7 +261,7 @@
 
 
     <select id="queryRecordView" resultType="java.util.Map" >
-    select substr(a.create_time,1,7) as "type",
+    <!--select substr(a.create_time,1,7) as "type",
     sum(a.product_num * a.purchase_price) as "金额"
      from pd_stock_record_detail a
      left join pd_stock_record b on a.record_id=b.id and  b.del_flag='0'
@@ -272,6 +272,23 @@
         <if test="productId != null and productId != ''">
             and  a.product_id=#{productId}
         </if>
-         group by substr(create_time,1,7)
+         group by substr(create_time,1,7)-->
+        select c.type as "type", sum(c.y) as "金额"  from(
+        SELECT  DATE_FORMAT(x.Month, '%Y-%m') as "type" ,"0"   as "y" FROM   XNumber x
+        where  DATE_SUB(CURDATE(), INTERVAL 1 Month) >= substr(x.Month,1,7)
+        and substr(x.Month,1,7) &lt;=substr(CURDATE(),1,7)
+        UNION ALL
+        SELECT  DATE_FORMAT(a.create_time, '%Y-%m') AS "type",a.product_num * a.purchase_price   AS "y"
+        FROM pd_stock_record_detail a
+        left join pd_stock_record b on a.record_id=b.id and  b.del_flag='0'
+        where   b.record_type ='1' AND b.audit_status ='2'
+        AND substr(a.create_time,1,7) &lt;=substr(CURDATE(),1,7)
+        <if test="productId != null and productId != ''">
+            and  a.product_id=#{productId}
+        </if>
+        ) c
+        GROUP BY type;
+
+
     </select>
 </mapper>
