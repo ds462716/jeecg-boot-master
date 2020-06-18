@@ -784,3 +784,8 @@ INSERT INTO `sys_dict` VALUES ('1273248327095300098', '扣减状态', 'inspectio
 
 INSERT INTO `sys_dict_item` VALUES ('1273248420057853954', '1273248327095300098', '已扣减', '0', '', 1, 1, 'admin', '2020-06-17 21:37:34', 'admin', '2020-06-17 21:37:43');
 INSERT INTO `sys_dict_item` VALUES ('1273248493483339778', '1273248327095300098', '未扣减', '1', '', 2, 1, 'admin', '2020-06-17 21:37:51', NULL, '2020-06-17 21:37:51');
+
+-- add by jiangxz 2020年6月18日11:27:01
+ALTER TABLE `jeecg-boot`.`pd_dosage`
+ADD COLUMN `out_doctor_id` varchar(64) NULL COMMENT '门诊医生id' AFTER `surgeon_name`,
+ADD COLUMN `out_doctor_name` varchar(64) NULL COMMENT '门诊医生姓名' AFTER `out_doctor_id`;
