@@ -115,7 +115,10 @@
             <if test="refBarCode != null and refBarCode != ''">
             AND a.ref_bar_code = #{refBarCode}
             </if>
-            <if test="instrCode != null and instrCode != ''">
+            <if test="productId != null and productId != ''">
+                AND a.product_id = #{productId}
+            </if>
+             <if test="instrCode != null and instrCode != ''">
                 AND b.instr_code = #{instrCode}
             </if>
             <if test="departIdList != null and departIdList.size() > 0">

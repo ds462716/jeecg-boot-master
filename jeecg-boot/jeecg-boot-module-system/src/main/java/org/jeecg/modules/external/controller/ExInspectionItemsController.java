@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
@@ -28,6 +29,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Description: 检查项目表
@@ -195,9 +197,13 @@ public class ExInspectionItemsController extends JeecgController<ExInspectionIte
 			 }else if (PdConstant.DEDUCTUIN_TYPE_1.equals(deductuinType)) {
 				 items.setRemarks("需人工扣减:" + pdUsePackage.getRemarks());
 				 items.setAcceptStatus(PdConstant.ACCEPT_STATUS_2);// 0:已扣减  1：无检验项目  2：未扣减  3：无试剂用量
+				 exInspectionItemsService.updateById(items);
+				 return Result.error("需人工扣减:" + pdUsePackage.getRemarks());
 			 } else if (PdConstant.DEDUCTUIN_TYPE_2.equals(deductuinType)) {
 				 items.setRemarks("无需扣减:" + pdUsePackage.getRemarks());
 				 items.setAcceptStatus(PdConstant.ACCEPT_STATUS_2);// 0:已扣减  1：无检验项目  2：未扣减  3：无试剂用量
+				 exInspectionItemsService.updateById(items);
+				 return Result.error("无需扣减:" + pdUsePackage.getRemarks());
 			 }else {
 				 PdUsePackageDetail detail = new PdUsePackageDetail();
 				 detail.setPackageId(pdUsePackage.getId());
@@ -207,14 +213,21 @@ public class ExInspectionItemsController extends JeecgController<ExInspectionIte
 						 //HIS系统过来的
 						//String bool= pdProductStockTotalService.lisUpdateUseStock(items,testDpeartId,pdUsePackageDetails);
 						 //LIS系统过来的
-						String bool= pdProductStockTotalService.lisUpdateUseStockLis(items,testDpeartId, pdUsePackageDetails);
-						 if(!PdConstant.TRUE.equals(bool)){
-							 items.setRemarks(items.getPatientType()+"病人用量未配置");
+						//String bool= pdProductStockTotalService.lisUpdateUseStockLis(items,testDpeartId, pdUsePackageDetails);
+						 Map map = pdProductStockTotalService.lisUpdateUseStockLis(items, testDpeartId, pdUsePackageDetails);
+						 String code= MapUtils.getString(map,"code");
+						 String msg=MapUtils.getString(map,"msg");
+						 if ("400".equals(code)) {
+							 items.setRemarks(items.getPatientType() + "病人用量未配置");
 							 items.setAcceptStatus(PdConstant.ACCEPT_STATUS_2);//未扣减
-							 exInspectionItemsService.updateById(items);
-							 return Result.error("扣減用量失敗:"+items.getPatientType()+"病人用量未配置");
+						 } else if("300".equals(code)) {
+							 items.setRemarks(msg);
+							 items.setAcceptStatus(PdConstant.ACCEPT_STATUS_2);//未扣减
+						 }else if("500".equals(code)) {
+							 items.setRemarks(" ");
+							 items.setAcceptStatus(PdConstant.ACCEPT_STATUS_4);//部分扣减
 						 }else{
-							 items.setRemarks("");
+							 items.setRemarks(" ");
 							 items.setAcceptStatus(PdConstant.ACCEPT_STATUS_0);//已扣减
 						 }
 					 } catch (Exception e) {

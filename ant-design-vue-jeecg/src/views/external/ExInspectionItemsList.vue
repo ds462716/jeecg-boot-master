@@ -21,6 +21,7 @@
                   <a-select-option value="1">未配置检验項目</a-select-option>
                   <a-select-option value="2">未扣减</a-select-option>
                   <a-select-option value="3">未配置试剂用量</a-select-option>
+                  <a-select-option value="4">部分扣减</a-select-option>
                 </a-select>
             </a-form-item>
           </a-col>
@@ -87,21 +88,23 @@
 
         <span slot="action" slot-scope="text, record">
           <a @click="editUsePackageDetail(record)" :loading="loading" v-bind:disabled="record.acceptStatus=='0'">重新扣减</a>&nbsp;&nbsp;&nbsp;
-         <a  @click="queryUsePackageDetail(record)">查看检验包详情</a>
+         <a  @click="queryUsePackageDetail(record)">查看配置用量</a>&nbsp;&nbsp;&nbsp;
+          <a  @click="queryExInspection(record)">查看扣减明细</a>
         </span>
       </a-table>
     </div>
 
     <exInspectionItems-modal ref="modalForm" @ok="modalFormOk"></exInspectionItems-modal>
     <pdUsePackage-modal ref="pdUsePackageModal" @ok="modalFormOk"></pdUsePackage-modal>
+    <ex-inspection-inf-modal ref="exInspectionInfModal" @ok="modalFormOk" ></ex-inspection-inf-modal>
   </a-card>
 </template>
-
 <script>
 
   import { JeecgListMixin } from '@/mixins/JeecgListMixin'
   import ExInspectionItemsModal from './modules/ExInspectionItemsModal'
   import PdUsePackageModal from '../pd/modules/PdUsePackageModal'
+  import ExInspectionInfModal from './modules/ExInspectionInfModal'
   import {httpAction,getAction} from '@/api/manage'
   import {initDictOptions, filterMultiDictText} from '@/components/dict/JDictSelectUtil'
   import { filterObj } from '@/utils/util';
@@ -112,7 +115,8 @@
     mixins:[JeecgListMixin],
     components: {
       ExInspectionItemsModal,
-      PdUsePackageModal
+      PdUsePackageModal,
+      ExInspectionInfModal
     },
     data () {
       return {
@@ -222,7 +226,7 @@
             dataIndex: 'action',
             align:"center",
             fixed:"right",
-            width:140,
+            width:200,
             scopedSlots: { customRender: 'action' }
           }
         ],
@@ -340,6 +344,13 @@
           }
         })
 
+      },
+
+      //查询扣减详情
+      queryExInspection: function (record) {
+            this.$refs.exInspectionInfModal.edit(record);
+            this.$refs.exInspectionInfModal.title = "扣减详情";
+            this.$refs.exInspectionInfModal.disableSubmit = true;
       },
       dateChange: function (value, dateString) {
         this.queryParam.queryDateStart=dateString[0];

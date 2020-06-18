@@ -2,11 +2,13 @@ package org.jeecg.modules.pd.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import org.jeecg.modules.pd.entity.PdStockRecordDetail;
-import org.jeecg.modules.pd.entity.PdStockRecord;
 import com.baomidou.mybatisplus.extension.service.IService;
+import org.jeecg.modules.pd.entity.PdStockRecord;
+import org.jeecg.modules.pd.entity.PdStockRecordDetail;
+
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -105,5 +107,21 @@ public interface IPdStockRecordService extends IService<PdStockRecord> {
 	 * @return
 	 */
 	Page<PdStockRecord> selectTransferList(Page<PdStockRecord> pageList, PdStockRecord pdStockRecord);
+
+
+	/**
+	 * 入库统计报表分页查询列表
+	 * @param pageList
+	 * @param pdStockRecord
+	 * @return
+	 */
+	Page<PdStockRecord> stockRecordReportQuery(Page<PdStockRecord> pageList, PdStockRecord pdStockRecord);
+
+	/**
+	 * 入库统计报表 --根据产品id查看每月入库金额，并已图形化展示页面
+	 * @param stockRecord
+	 * @return
+	 */
+	List<HashMap> queryRecordView(PdStockRecord stockRecord);
 
 }

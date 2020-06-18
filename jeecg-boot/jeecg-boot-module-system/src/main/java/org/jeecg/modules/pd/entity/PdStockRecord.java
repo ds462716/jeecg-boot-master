@@ -214,6 +214,9 @@ public class PdStockRecord extends BaseEntity {
     /** 供应商名称 **/
     @TableField(exist = false)
     private String supplierName;
+    /** 生产厂家名称 **/
+    @TableField(exist = false)
+    private String venderName;
     /** 申请人姓名 **/
     @TableField(exist = false)
     private String submitByName;
@@ -229,9 +232,13 @@ public class PdStockRecord extends BaseEntity {
     @TableField(exist = false)
     private String productName;//产品名称
     @TableField(exist = false)
+    private String productId;//产品id
+    @TableField(exist = false)
     private String number;//产品编号
     @TableField(exist = false)
     private String spec;//产品规格
+    @TableField(exist = false)
+    private String unitName;//单位
     @TableField(exist = false)
     private String version;//产品型号
     @TableField(exist = false)

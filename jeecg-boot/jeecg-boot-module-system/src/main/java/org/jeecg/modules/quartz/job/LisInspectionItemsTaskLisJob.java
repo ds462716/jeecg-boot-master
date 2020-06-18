@@ -2,6 +2,7 @@ package org.jeecg.modules.quartz.job;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.StringUtils;
 import org.jeecg.common.constant.PdConstant;
 import org.jeecg.common.util.DateUtils;
@@ -20,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 获取检验项目信息扣减库存定时任务(从LIS系统获取)
@@ -91,11 +93,21 @@ public class LisInspectionItemsTaskLisJob implements Job {
                                 List<PdUsePackageDetail> pdUsePackageDetails = pdUsePackageDetailService.queryPdUsePackageList(detail);
                                 if (pdUsePackageDetails != null && pdUsePackageDetails.size() > 0) {
                                     try {
-                                        String bool = pdProductStockTotalService.lisUpdateUseStockLis(items, testDpeartId, pdUsePackageDetails);
-                                        if (!"true".equals(bool)) {
+                                       // String bool = pdProductStockTotalService.lisUpdateUseStockLis(items, testDpeartId, pdUsePackageDetails);
+                                         Map map = pdProductStockTotalService.lisUpdateUseStockLis(items, testDpeartId, pdUsePackageDetails);
+                                        String code=MapUtils.getString(map,"code");
+                                        String msg=MapUtils.getString(map,"msg");
+                                        if ("400".equals(code)) {
                                             items.setRemarks(items.getPatientType() + "病人用量未配置");
                                             items.setAcceptStatus(PdConstant.ACCEPT_STATUS_2);//未扣减
-                                        } else {
+                                        } else if("300".equals(code)) {
+                                            items.setRemarks(msg);
+                                            items.setAcceptStatus(PdConstant.ACCEPT_STATUS_2);//未扣减
+                                        }else if("500".equals(code)) {
+                                            items.setRemarks(" ");
+                                            items.setAcceptStatus(PdConstant.ACCEPT_STATUS_4);//部分扣减
+                                        }else{
+                                            items.setRemarks(" ");
                                             items.setAcceptStatus(PdConstant.ACCEPT_STATUS_0);//已扣减
                                         }
                                     } catch (Exception e) {

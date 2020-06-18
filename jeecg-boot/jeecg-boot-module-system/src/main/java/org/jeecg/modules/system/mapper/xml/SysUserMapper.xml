@@ -173,9 +173,9 @@
 		<where>
 			a.del_flag = #{parMap.DEL_FLAG_NORMAL}
 		</where>
-		<if test="parMap.name != null and parMap.name != ''">
+		<!--<if test="parMap.name != null and parMap.name != ''">
 			and a.realname like concat('%',#{parMap.name},'%')
-		</if>
+		</if>-->
 		<if test="parMap.username != null and parMap.username != ''">
 			and a.username like concat('%',#{parMap.username},'%')
 		</if>
@@ -183,7 +183,11 @@
 			and a.sex = #{parMap.sex}
 		</if>
 		<if test="parMap.realname != null and parMap.realname != ''">
-			and a.realname like concat('%',#{parMap.realname},'%')
+			and (a.realname like concat('%',#{parMap.realname},'%')
+			or a.py LIKE concat('%',#{parMap.realname},'%')
+			or a.wb LIKE concat('%',#{parMap.realname},'%')
+			or a.zdy LIKE concat('%',#{parMap.realname},'%')
+			)
 		</if>
 		<if test="parMap.phone != null and parMap.phone != ''">
 			and a.phone like concat('%',#{parMap.phone},'%')

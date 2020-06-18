@@ -271,7 +271,7 @@ public class PdDepartController extends JeecgController<PdDepartConfig, IPdDepar
         user.setDepartParentId(sysUser.getDepartParentId());
         Map<String,Object> parMap = new HashMap<>();
         parMap.put("DEL_FLAG_NORMAL",PdConstant.DEL_FLAG_0);
-        parMap.put("name",user.getRealname()==null?"":user.getRealname());
+        //parMap.put("name",user.getRealname()==null?"":user.getRealname());
         parMap.put("username",user.getUsername()==null?"":user.getUsername());
         parMap.put("sex",user.getSex()==null?"":user.getSex());
         parMap.put("realname",user.getRealname()==null?"":user.getRealname());
@@ -489,4 +489,23 @@ public class PdDepartController extends JeecgController<PdDepartConfig, IPdDepar
         }
         return result;
     }
+    /**
+     * 一键生成用户表的拼音简码和自定义码
+     * http://localhost:3000/jeecg-boot/pd/pdDepart/generateUserPyWb?_t=1592379417
+     */
+    @PostMapping(value = "generateUserPyWb")
+    public Result<Object> generateUserPyWb() {
+        Result<Object> result = new Result<>();
+        try{
+            result = pdDepartService.generateUserPyWb();
+        }catch(Exception e){
+            log.error(e.getMessage(), e);
+            result.setCode(500);
+            result.setMessage("粘贴失败");
+        }
+        return result;
+    }
+
+
+
 }

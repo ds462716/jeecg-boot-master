@@ -52,4 +52,6 @@ public interface IPdDepartService extends IService<SysDepart> {
     Result<Object> copyPermission(String copyId, String pasteId, Result<Object> result);
 
     Result<Object> generatePyWb();
+
+    Result<Object> generateUserPyWb();
 }
