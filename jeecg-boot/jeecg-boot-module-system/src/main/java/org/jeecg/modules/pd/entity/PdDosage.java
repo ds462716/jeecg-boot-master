@@ -186,8 +186,18 @@ public class PdDosage extends BaseEntity {
     @Excel(name = "手术名称", width = 15)
     @ApiModelProperty(value = "手术名称")
     private String operationName;
+
+    /**
+     * 扩展字段1
+     * 在丰城人民医院用作：手术或检查项目科室(仅做记录) add by jiangxz 2020年6月18日16:28:59
+     */
     private String  extension1;//扩展字段1
+    /**
+     * 扩展字段2
+     * 在丰城人民医院用作：门诊收费id(仅做记录) add by jiangxz 2020年6月18日16:28:59
+     */
     private String  extension2;//扩展字段2
+
 
     private String visitNo;//就诊流水号（丰城中医院）
 
@@ -299,4 +309,6 @@ public class PdDosage extends BaseEntity {
     private String hospitalCode;//医院标识
     @TableField(exist = false)
     private String type;//住院标识（1：是  2：否）
+    @TableField(exist = false)
+    private String token;// 用于HIS收费防重复提交
 }

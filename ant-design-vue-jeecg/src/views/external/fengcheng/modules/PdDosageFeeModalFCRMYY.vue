@@ -184,6 +184,10 @@
                 </a-row>
                 <a-row>
                   <a-col :md="6" :sm="8" v-show="false">
+                    <!--token 防重复提交-->
+                    <a-form-item>
+                      <a-input type="hidden" v-decorator="[ 'token']"></a-input>
+                    </a-form-item>
                     <!--床位号-->
                     <a-form-item >
                       <a-input type="hidden" v-decorator="[ 'bedNumber']"></a-input>
@@ -448,14 +452,14 @@
                 // this.totalPrice = res.result.totalPrice;
                 // this.jfTotalPrice = res.result.jfTotalPrice;
                 this.pdDosageDetailTable.dataSource = res.result.pdDosageDetails || [];
-                let fieldval = pick(this.initData,'dosageNo','dosageDate','departName','dosageByName','inHospitalNo','patientInfo','patientDetailInfo','outpatientNumber','operativeNumber','operationName','exeDeptName','exeDeptId','oprDeptName','oprDeptId','surgeonName','surgeonId','sqrtDoctorName','sqrtDoctorId','subordinateWardName','subordinateWardId','remarks','extension1','extension2','subordinateWardName','visitNo','bedNumber','surgeonId','subordinateWardId');
+                let fieldval = pick(this.initData,'dosageNo','dosageDate','departName','dosageByName','inHospitalNo','patientInfo','patientDetailInfo','outpatientNumber','operativeNumber','operationName','exeDeptName','exeDeptId','oprDeptName','oprDeptId','surgeonName','surgeonId','sqrtDoctorName','sqrtDoctorId','subordinateWardName','subordinateWardId','remarks','extension1','extension2','subordinateWardName','visitNo','bedNumber','token');
                 this.form.setFieldsValue(fieldval);
                 this.goodsAllocationList = res.result.goodsAllocationList;
                 //获取光标
                 this.$refs['productNumberInput'].focus();
               }else{  // 新增页
                 this.initData = res.result;
-                let fieldval = pick(this.initData,'dosageNo','dosageDate','departName','dosageByName','inHospitalNo','patientInfo','patientDetailInfo','outpatientNumber','operativeNumber','operationName','exeDeptName','exeDeptId','oprDeptName','oprDeptId','surgeonName','surgeonId','sqrtDoctorName','sqrtDoctorId','subordinateWardName','subordinateWardId','remarks','extension1','extension2','subordinateWardName','visitNo','bedNumber','surgeonId','subordinateWardId');
+                let fieldval = pick(this.initData,'dosageNo','dosageDate','departName','dosageByName','inHospitalNo','patientInfo','patientDetailInfo','outpatientNumber','operativeNumber','operationName','exeDeptName','exeDeptId','oprDeptName','oprDeptId','surgeonName','surgeonId','sqrtDoctorName','sqrtDoctorId','subordinateWardName','subordinateWardId','remarks','extension1','extension2','subordinateWardName','visitNo','bedNumber','token');
                 this.form.setFieldsValue(fieldval);
                 this.goodsAllocationList = res.result.goodsAllocationList;
                 //获取光标

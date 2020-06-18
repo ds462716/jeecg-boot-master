@@ -819,6 +819,11 @@ public class PdProductServiceImpl extends ServiceImpl<PdProductMapper, PdProduct
         return pdProductMapper.selectListByCTs(map);
     }
 
+    @Override
+    public List<PdProduct> selectListByChargeCode(PdProduct entity) {
+        return pdProductMapper.selectListByChargeCode(entity);
+    }
+
 
     @Transactional(rollbackFor = Exception.class)
     @Override

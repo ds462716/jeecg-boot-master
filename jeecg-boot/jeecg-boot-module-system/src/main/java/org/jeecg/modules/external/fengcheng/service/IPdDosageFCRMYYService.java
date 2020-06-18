@@ -25,6 +25,14 @@ public interface IPdDosageFCRMYYService extends IService<PdDosage> {
 
     List<PdDosageDetail> saveMain(PdDosage pdDosage, String displayFlag);
 
+    /**
+     * 门诊自动生成用量单
+     * @param pdDosage
+     * @param displayFlag
+     * @return
+     */
+    List<PdDosageDetail> saveMainMZ(PdDosage pdDosage, String displayFlag);
+
     void dosageReturned(PdDosage pdDosage);
 
     void dosageFee(PdDosage pdDosage);

@@ -57,6 +57,7 @@ public class PdDosageFCRMYYServiceImpl extends ServiceImpl<PdDosageMapper, PdDos
 
     @Override
     public PdDosage initModal(PdDosage param) {
+        String token = UUIDUtil.getUuid(); // 用于收费防重复提交
         LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
         SysDepart sysDepart = pdDepartService.getById(sysUser.getCurrentDepartId());
         PdDosage pdDosage = new PdDosage();
@@ -102,6 +103,7 @@ public class PdDosageFCRMYYServiceImpl extends ServiceImpl<PdDosageMapper, PdDos
             //库区库位下拉框
             pdDosage.setGoodsAllocationList(goodsAllocationList);
         }
+        pdDosage.setToken(token);
         return pdDosage;
     }
 
@@ -185,10 +187,6 @@ public class PdDosageFCRMYYServiceImpl extends ServiceImpl<PdDosageMapper, PdDos
                 //校验不合法数据和大于库存数据
                 PdProductStock pps = new PdProductStock();
                 pps.setId(pdd.getProductStockId());
-                //pps.setBatchNo(pdd.getBatchNo());
-                //pps.setProductId(pdd.getProductId());
-                //pps.setExpDate(pdd.getExpDate());
-                //pps.setProductBarCode(pdd.getProductBarCode());
                 PdProductStock tempPps = pdProductStockService.getById(pps);
                 if( null == tempPps || pdd.getDosageCount() > tempPps.getStockNum()){
                     validFlag = false;
@@ -266,6 +264,105 @@ public class PdDosageFCRMYYServiceImpl extends ServiceImpl<PdDosageMapper, PdDos
             }
         }
         return chargeArray;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public List<PdDosageDetail> saveMainMZ(PdDosage pdDosage, String displayFlag) {
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        List<PdDosageDetail> detailList = pdDosage.getPdDosageDetails();
+        pdDosage.setId(UUIDUtil.getUuid());
+        //校验数据的合法性
+        Iterator<PdDosageDetail> it = detailList.iterator();
+        while(it.hasNext()){
+            PdDosageDetail child = it.next();
+            if(child.getDosageCount()==null || child.getProductId()==null){
+                it.remove();
+            }
+        }
+        List<PdDosageDetail> tempArray = new ArrayList<>();
+        if(detailList != null && detailList.size() > 0) {
+            //总数量
+            BigDecimal dosageTotal = new BigDecimal(0);
+            //总金额
+            BigDecimal moneyTotal = new BigDecimal(0);
+            //产品物流
+            List<PdStockLog> logList = new ArrayList<PdStockLog>();
+            JSONObject json = new JSONObject();
+            int i = 0;
+            boolean validFlag = true;
+            for(PdDosageDetail pdd : detailList){
+                //校验不合法数据和大于库存数据
+                PdProductStock pps = new PdProductStock();
+                pps.setId(pdd.getProductStockId());
+                PdProductStock tempPps = pdProductStockService.getById(pps);
+                if( null == tempPps || pdd.getDosageCount() > tempPps.getStockNum()){
+                    validFlag = false;
+                    json.put(String.valueOf(i), pdd);
+                    i = i + 1;
+                    continue;
+                }
+
+                BigDecimal sprice = pdd.getSellingPrice()==null?new BigDecimal(0):pdd.getSellingPrice();
+                BigDecimal pdMoney = new BigDecimal(pdd.getDosageCount()).multiply(sprice);
+                BigDecimal dosageCount = new BigDecimal(pdd.getDosageCount());
+                dosageTotal = dosageCount.add(dosageTotal);
+                moneyTotal = pdMoney.add(moneyTotal);
+                pdd.setDosageId(pdDosage.getId());
+                pdd.setAmountMoney(pdMoney);
+                pdd.setLeftRefundNum(pdd.getDosageCount());
+                //产品追踪信息
+                PdStockLog prodLog = new PdStockLog();
+                String str = "";
+                if(PdConstant.CHARGE_FLAG_0.equals(pdd.getHyCharged())){
+                    //收费
+//                    pdd.setHyCharged(PdConstant.CHARGE_FLAG_0);
+                    prodLog.setLogType(PdConstant.STOCK_LOG_TYPE_6);
+                    str = "(门诊收费)";
+                }else{
+                    //退费
+                    prodLog.setLogType(PdConstant.STOCK_LOG_TYPE_3);
+                    str = "(门诊退费)";
+                }
+                tempArray.add(pdd);
+
+                SysDepart sysDepart = pdDepartService.getById(sysUser.getCurrentDepartId());
+                prodLog.setBatchNo(pdd.getBatchNo());
+                prodLog.setProductBarCode(pdd.getProductBarCode());
+                prodLog.setExpDate(pdd.getExpDate());
+                prodLog.setProductId(pdd.getProductId());
+                prodLog.setProductNum(pdd.getDosageCount());
+                prodLog.setInFrom(sysDepart.getDepartName()+str);
+                prodLog.setOutTo("病人:"+pdDosage.getPatientInfo()!=null?pdDosage.getPatientInfo():"");
+                prodLog.setPatientInfo(pdDosage.getPatientDetailInfo());
+                prodLog.setInvoiceNo(pdDosage.getDosageNo());
+                prodLog.setChargeDeptName(pdDosage.getExeDeptName());
+                prodLog.setRecordTime(DateUtils.getDate());
+                logList.add(prodLog);
+            }
+            if (!validFlag) {//数据校验没通过
+                throw new JeecgBootException("数据校验失败");
+            } else {
+                pdDosage.setDisplayFlag(displayFlag);//是否有收费接口标识，0有1没有
+                pdDosage.setTotalSum(dosageTotal.doubleValue());
+                pdDosage.setUpdateTime(DateUtils.getDate());
+                pdDosage.setTotalPrice(moneyTotal);
+                pdDosage.setDosageBy(sysUser.getId());
+                pdDosage.setDosageDate(DateUtils.getDate());
+
+                if(!tempArray.isEmpty()){
+                    pdDosageDetailService.saveBatch(tempArray);
+                }
+                if(!logList.isEmpty()){
+                    pdStockLogService.saveBatch(logList);
+                }
+                //保存用量
+                this.save(pdDosage);
+                //扣减当前库房的库存 TODO
+//                pdProductStockTotalService.updateUseStock(sysUser.getCurrentDepartId(),detailList);
+            }
+        }
+        return tempArray;
     }
 
     @Override

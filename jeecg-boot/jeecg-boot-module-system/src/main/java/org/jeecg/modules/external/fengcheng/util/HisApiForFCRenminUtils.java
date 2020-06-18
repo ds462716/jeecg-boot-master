@@ -76,16 +76,18 @@ public class HisApiForFCRenminUtils {
         requestJson.put("hitaionNo",pdDosage.getInHospitalNo()); // 住院编号
         requestJson.put("operNo",pdDosage.getOperativeNumber()); // 手术编号
         requestJson.put("chargeType","1");                       // 0：正常退费；1：正常收费；2：补计费；
-        requestJson.put("operatorName",sysUser.getRealname());   // 操作人
+        requestJson.put("operatorName",sysUser.getUsername());   // 操作人（HIS工号）
         requestJson.put("operatorTime", DateUtils.now());        // 操作时间
-        requestJson.put("remark",pdDosage.getRemarks());         // 备注
-        requestJson.put("Token",pdDosage.getId());                             // 防重复提交标识
+        requestJson.put("remark",pdDosage.getRemarks() == null ? "" : pdDosage.getRemarks());         // 备注
+        requestJson.put("Token",pdDosage.getToken());                             // 防重复提交标识
         requestJson.put("docturId",pdDosage.getSurgeonId());
         requestJson.put("departId",pdDosage.getOprDeptId());
         requestJson.put("data", array);
 
         String[] pars = {"businessType","inJson"}; // 参数名称
         String[] vals = {charge_interface,requestJson.toJSONString()};        //参数值
+
+        logger.info("webservice.asmx========收费入参========"+requestJson.toJSONString());
 
         try {
             result = getJsonDataFromWebservice(url, method, namespace, tns, pars, vals);
@@ -144,16 +146,18 @@ public class HisApiForFCRenminUtils {
         requestJson.put("hitaionNo",pdDosage.getInHospitalNo()); // 住院编号
         requestJson.put("operNo",pdDosage.getOperativeNumber()); // 手术编号
         requestJson.put("chargeType","0");                       // 0：正常退费；1：正常收费；2：补计费；
-        requestJson.put("operatorName",sysUser.getRealname());   // 操作人
+        requestJson.put("operatorName",sysUser.getUsername());   // 操作人（HIS工号）
         requestJson.put("operatorTime", DateUtils.now());        // 操作时间
-        requestJson.put("remark",pdDosage.getRemarks());         // 备注
-        requestJson.put("Token",pdDosage.getId());               // 防重复提交标识
+        requestJson.put("remark",pdDosage.getRemarks() == null ? "" : pdDosage.getRemarks());         // 备注
+        requestJson.put("Token",pdDosage.getToken());               // 防重复提交标识
         requestJson.put("docturId",pdDosage.getSurgeonId());
         requestJson.put("departId",pdDosage.getOprDeptId());
         requestJson.put("data", array);
 
         String[] pars = {"businessType","inJson"}; // 参数名称
         String[] vals = {charge_interface,requestJson.toJSONString()};        //参数值
+
+        logger.info("webservice.asmx========退费入参========"+requestJson.toJSONString());
 
         try {
             result = getJsonDataFromWebservice(url, method, namespace, tns, pars, vals);

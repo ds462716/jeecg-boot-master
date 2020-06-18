@@ -376,7 +376,7 @@
           departParentId: {rules: [{required: true, message: '请输入所属医院!'},]},
         },
         url: {
-          init:"/pd/pdDosage/initModal",
+          init:"/pd/pdDosageFCZYY/initModal",
           add: "/pd/pdDosage/add",
           edit: "/pd/pdDosage/edit",
           departList:"/pd/pdDepart/getSysDepartList",

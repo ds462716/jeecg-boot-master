@@ -9,6 +9,7 @@ import org.jeecg.common.exception.JeecgBootException;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.DateUtils;
 import org.jeecg.common.util.oConvertUtils;
+import org.jeecg.modules.external.fengcheng.entity.HisSpdChargeDetailFC;
 import org.jeecg.modules.external.fengcheng.entity.HisSpdChargeFC;
 import org.jeecg.modules.external.fengcheng.mapper.HisSpdChargeFCMapper;
 import org.jeecg.modules.external.fengcheng.service.IHisSpdChargeFCService;
@@ -33,7 +34,7 @@ import java.util.List;
 
 /**
  * @author jiangxz
- * @description 丰城中医院计费
+ * @description 丰城中医院、人民医院 门诊计费
  * @date 2020-5-26
  */
 @Service
@@ -53,8 +54,19 @@ public class HisSpdChargeFCServiceImpl extends ServiceImpl<HisSpdChargeFCMapper,
     private IPdProductStockTotalService pdProductStockTotalService;
     @Autowired
     private PdDosageMapper pdDosageMapper;
+    @Autowired
+    private HisSpdChargeFCMapper hisSpdChargeFCMapper;
 
     private static Logger logger = LoggerFactory.getLogger(HisSpdChargeFCServiceImpl.class);
 
 
+    @Override
+    public List<PdDosage> selectList(PdDosage pdDosage) {
+        return hisSpdChargeFCMapper.selectList(pdDosage);
+    }
+
+    @Override
+    public List<PdDosageDetail> selectDetailList(PdDosageDetail detail) {
+        return hisSpdChargeFCMapper.selectDetailList(detail);
+    }
 }

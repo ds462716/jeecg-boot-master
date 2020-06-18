@@ -609,25 +609,20 @@
         order by a.create_time desc, a.update_time desc
     </select>
 
-    <!-- 产品分类删除校验 -->
-    <select id="selectListByCTs" resultType="org.jeecg.modules.pd.entity.PdCategory">
+    <!-- 根据收费代码查询产品，精确查询 -->
+    <select id="selectListByChargeCode" resultType="org.jeecg.modules.pd.entity.PdProduct" parameterType="org.jeecg.modules.pd.entity.PdProduct">
         select
         *
         from pd_product a
         <where>
-            a.del_flag = #{parMap.DEL_FLAG_NORMAL}
+            a.del_flag = #{entity.DEL_FLAG_NORMAL}
+            <if test="entity.chargeCode != null and entity.chargeCode != ''">
+                AND a.charge_code = #{entity.chargeCode}
+            </if>
         </where>
-        <if test="parMap.ids != null and parMap.ids != ''">
-           and (
-            a.category_one in  ( ${parMap.ids} )
-            OR a.category_two in  ( ${parMap.ids} )
-            )
-        </if>
-        <if test="parMap.departParentId != null and parMap.departParentId != ''">
-            and a.depart_parent_id = #{parMap.departParentId}
-        </if>
     </select>
-
+    <select id="selectListByCT" resultType="org.jeecg.modules.pd.entity.PdProduct" parameterType="org.jeecg.modules.pd.entity.PdProduct">
+    </select>
     <!--  修改有效期标识 -->
     <update id="updateValidityFlag">
 		UPDATE pd_product SET

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.external.fengcheng.mapper.HisSpdChargeFCMapper">
+
+	<!-- 列表查询 org.jeecg.modules.external.fengcheng.entity.HisSpdChargeFC-->
+	<select id="selectList" resultType="org.jeecg.modules.pd.entity.PdDosage" parameterType="org.jeecg.modules.pd.entity.PdDosage">
+		select
+			a.id as extension2,
+			a.oper_no as operative_number,
+			a.blng_dptm_no as subordinate_ward_id,
+			a.blng_dptm_name as subordinate_ward_name,
+			a.blng_no as out_dept_id,
+			a.blng_bame as out_dept_name,
+			a.project_name as operation_name,
+			a.depart_name as extension1,
+			a.create_date as operation_time,
+			a.doctor_code as surgeon_id,
+			a.doctor_name as surgeon_name,
+			a.c_doctor_code as out_doctor_id,
+			a.c_doctor_name as out_doctor_name,
+			a.patient_name as patient_info,
+			a.outpat_code as outpatient_number,
+			a.hitaion_no as in_hospital_no,
+			a.bed_code as bed_number,
+			a.dosage_date as dosage_date,
+			a.total_sum as total_sum,
+			a.total_price as total_price
+		from
+			his_spd_charge a
+	</select>
+
+	<!-- 列表查询 -->
+	<select id="selectDetailList" resultType="org.jeecg.modules.pd.entity.PdDosageDetail" parameterType="org.jeecg.modules.pd.entity.PdDosageDetail">
+		select
+			a.id as his_charge_item_id,
+			a.charge_id as his_charge_id,
+			a.charge_code as charge_code,
+			a.prod_num as dosage_count,
+			a.price as selling_price
+		from
+			his_spd_charge_detail a
+		<where>
+			1=1
+			<if test="entity.hisChargeId != null and entity.hisChargeId != ''">
+				and a.charge_id = #{entity.hisChargeId}
+			</if>
+		</where>
+	</select>
+
+</mapper>

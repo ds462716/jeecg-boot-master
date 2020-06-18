@@ -42,6 +42,8 @@ public interface IPdProductService extends IService<PdProduct> {
 
     List<PdProduct> selectListByCTs(Map<String,Object> map);
 
+    List<PdProduct> selectListByChargeCode(PdProduct entity);
+
     Result<Object> importExcel(Map<String, MultipartFile> fileMap);
 
     Result<Object> deleteV(String id);
