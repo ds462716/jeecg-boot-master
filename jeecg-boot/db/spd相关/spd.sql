@@ -789,3 +789,6 @@ INSERT INTO `sys_dict_item` VALUES ('1273248493483339778', '1273248327095300098'
 ALTER TABLE `jeecg-boot`.`pd_dosage`
 ADD COLUMN `out_doctor_id` varchar(64) NULL COMMENT '门诊医生id' AFTER `surgeon_name`,
 ADD COLUMN `out_doctor_name` varchar(64) NULL COMMENT '门诊医生姓名' AFTER `out_doctor_id`;
+ALTER TABLE `jeecg-boot`.`pd_dosage`
+ADD COLUMN `out_dept_id` varchar(64) NULL COMMENT '门诊科室id' AFTER `surgeon_name`,
+ADD COLUMN `out_dept_name` varchar(64) NULL COMMENT '门诊科室名称' AFTER `out_dept_id`;
