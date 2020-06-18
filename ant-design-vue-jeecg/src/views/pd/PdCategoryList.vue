@@ -158,11 +158,13 @@
     },
     methods: {
       loadData() {
-        this.dataSource = []
+        this.dataSource = [];
+        this.loading = true;
         getCategoryList().then((res) => {
           if (res.success) {
-            this.dataSource = res.result
+            this.dataSource = res.result;
           }
+          this.loading = false;
         })
       },
       initDictConfig(){
