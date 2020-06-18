@@ -85,6 +85,9 @@
         <if test="entity.testItemName != null and entity.testItemName != ''">
             AND a.test_item_name LIKE concat('%',#{entity.testItemName},'%')
         </if>
+        <if test="entity.barCode != null and entity.barCode != ''">
+            AND a.bar_code LIKE concat('%',#{entity.barCode},'%')
+        </if>
         <if test="entity.testItemCode != null and entity.testItemCode != ''">
             AND a.test_item_code LIKE concat('%',#{entity.testItemCode},'%')
         </if>
@@ -95,7 +98,7 @@
             AND a.test_date &gt;= #{entity.queryDateStart}
         </if>
         <if test="entity.queryDateEnd != null and entity.queryDateEnd != ''">
-            AND a.test_date &lt;= #{entity.queryDateEnd}
+            AND substr(a.test_date,1,11) &lt;= #{entity.queryDateEnd}
         </if>
         order by a.create_time desc
     </select>

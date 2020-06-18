@@ -37,6 +37,11 @@
                 <a-range-picker @change="dateChange" v-model="queryParam.queryDate"/>
               </a-form-item>
             </a-col>
+            <a-col :md="6" :sm="8">
+              <a-form-item label="条形码">
+                <a-input placeholder="请输入条形码" v-model="queryParam.barCode"></a-input>
+              </a-form-item>
+            </a-col>
           </template>
 
 
@@ -148,21 +153,13 @@
             align:"center",
             dataIndex: 'barCode'
           },
-          /*{
-            title:'申请医生',
-            align:"center",
-            dataIndex: 'applyDoctorName'
-          },*/
+
           {
             title:'申请科室',
             align:"center",
             dataIndex: 'applyDepartment'
           },
-          /*{
-           title:'检验科室',
-           align:"center",
-           dataIndex: 'applyDepartmentName'
-         },*/
+
           {
             title:'检验科室',
             align:"center",
@@ -173,14 +170,7 @@
             align:"center",
             dataIndex: 'patientType'
           },
-          /*{
-            title:'接收日期',
-            align:"center",
-            dataIndex: 'receiveDate',
-            customRender:function (text) {
-              return !text?"":(text.length>10?text.substr(0,10):text)
-            }
-          },*/
+
           {
             title:'检验日期',
             align:"center",
@@ -189,11 +179,6 @@
               return !text?"":(text.length>10?text.substr(0,10):text)
             }
           },
-          /*{
-            title:'项目组合名称',
-            align:"center",
-            dataIndex: 'combinationName'
-          },*/
           {
             title:'检查项目名称',
             align:"center",
