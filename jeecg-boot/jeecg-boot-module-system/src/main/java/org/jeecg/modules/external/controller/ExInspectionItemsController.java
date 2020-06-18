@@ -30,6 +30,7 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -186,7 +187,6 @@ public class ExInspectionItemsController extends JeecgController<ExInspectionIte
 	 public Result<?> editUsePackage(@RequestBody ExInspectionItems items) {
 		 LambdaQueryWrapper<PdUsePackage> query = new LambdaQueryWrapper<>();
 		 query.eq(PdUsePackage::getCode, items.getTestItemCode());
-		 /*query.eq(PdUsePackage::getName,items.getTestItemName());*/
 		 PdUsePackage pdUsePackage = pdUsePackageService.getOne(query);
 		 //不存在或沒有配置檢驗用量明細
 		 if(pdUsePackage!=null){
@@ -208,20 +208,23 @@ public class ExInspectionItemsController extends JeecgController<ExInspectionIte
 				 exInspectionItemsService.updateById(items);
 				 return Result.error("无需扣减:" + pdUsePackage.getRemarks());
 			 }else {
-				/* PdUsePackageDetail detail = new PdUsePackageDetail();
-				 detail.setPackageId(pdUsePackage.getId());
-				 List<PdUsePackageDetail> pdUsePackageDetails = pdUsePackageDetailService.queryPdUsePackageList(detail);*/
 				 ExInspectionInf inspectionInf=new ExInspectionInf();
 				 inspectionInf.setCode(items.getTestItemCode());
-				 inspectionInf.setStatus("1");
+				 inspectionInf.setJyId(items.getJyId());
 				 List<PdUsePackageDetail> pdUsePackageDetails = exInspectionInfService.queryPdUsePackageList(inspectionInf);
 				 if (pdUsePackageDetails != null && pdUsePackageDetails.size() > 0) {
 					 try {
-						 //HIS系统过来的
-						//String bool= pdProductStockTotalService.lisUpdateUseStock(items,testDpeartId,pdUsePackageDetails);
-						 //LIS系统过来的
-						//String bool= pdProductStockTotalService.lisUpdateUseStockLis(items,testDpeartId, pdUsePackageDetails);
-						 Map map = pdProductStockTotalService.lisUpdateUseStockLis(items, testDpeartId, pdUsePackageDetails);
+						String bool=PdConstant.TRUE;
+						 Iterator<PdUsePackageDetail> it = pdUsePackageDetails.iterator();
+						 while(it.hasNext()){ // remove掉已经扣减的试剂
+							 PdUsePackageDetail detail= it.next();
+							 String status=detail.getStatus();
+							 if(StringUtils.isNotEmpty(status) && "0".equals(status)){
+								 bool=PdConstant.FALSE;
+								 it.remove();
+							 }
+						 }
+						 Map map = pdProductStockTotalService.lisUpdateUseStock(items, testDpeartId, pdUsePackageDetails);
 						 String code= MapUtils.getString(map,"code");
 						 String msg=MapUtils.getString(map,"msg");
 						 if ("400".equals(code)) {
@@ -229,7 +232,11 @@ public class ExInspectionItemsController extends JeecgController<ExInspectionIte
 							 items.setAcceptStatus(PdConstant.ACCEPT_STATUS_2);//未扣减
 						 } else if("300".equals(code)) {
 							 items.setRemarks(msg);
-							 items.setAcceptStatus(PdConstant.ACCEPT_STATUS_2);//未扣减
+							 if(bool.equals(PdConstant.FALSE)) {
+								 items.setAcceptStatus(PdConstant.ACCEPT_STATUS_4);//部分扣减
+							 }else{
+								 items.setAcceptStatus(PdConstant.ACCEPT_STATUS_2);//未扣减
+							 }
 						 }else if("500".equals(code)) {
 							 items.setRemarks(" ");
 							 items.setAcceptStatus(PdConstant.ACCEPT_STATUS_4);//部分扣减

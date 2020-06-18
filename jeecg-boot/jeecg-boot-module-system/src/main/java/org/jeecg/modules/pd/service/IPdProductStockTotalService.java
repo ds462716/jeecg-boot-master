@@ -111,11 +111,11 @@ public interface IPdProductStockTotalService extends IService<PdProductStockTota
     public String updateStockSpecNum(PdProductStock productStock);
 
     /**
-     *试剂耗材产品更新库存用量信息(根据HIS系统收费检验项目数据)
+     *试剂耗材产品更新库存用量信息(重新扣减及批量扣减调用)
      * @param detailList
      * @return
      */
-    public String lisUpdateUseStock(ExInspectionItems items,String testDpeartId, List<PdUsePackageDetail> detailList);
+    public Map<String,Object> lisUpdateUseStock(ExInspectionItems items,String testDpeartId, List<PdUsePackageDetail> detailList);
 
     /**
      *试剂耗材产品更新库存用量信息(根据LIS系统检验项目数据)
