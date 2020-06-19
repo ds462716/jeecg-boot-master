@@ -7,16 +7,21 @@
     :confirmLoading="confirmLoading"
     @ok="handleOk"
     @cancel="handleCancel"
-    :footer="null">
+    :footer="null"
+    >
 
+
+    <template slot="footer">
+      <a-button type="primary" @click="handleCancel">返回</a-button>
+    </template>
     <div :style="{ padding: '0 0 32px 32px' }">
       <h4 :style="{ marginBottom: '20px' }">{{ title }}</h4>
       <v-chart :force-fit="true" :height="height" :data="data" :scale="scale" :onClick="handleClick">
         <v-tooltip/>
         <v-axis/>
         <v-legend/>
-        <v-line position="type*金额" color="x"/>
-        <v-point position="type*金额" color="x" :size="4" :v-style="style" :shape="'circle'"/>
+        <v-line position="type*数量" color="x"/>
+        <v-point position="type*数量" color="x" :size="4" :v-style="style" :shape="'circle'"/>
       </v-chart>
     </div>
   </a-modal>
@@ -31,30 +36,18 @@
   import {queryPdDepartTreeList} from '@/api/api'
   import { DataSet } from '@antv/data-set'
   export default {
-    name: "inRecordChartMultid",
+    name: "inspectionChartMultid",
     components: {
       JDictSelectTag,
     },
     props: {
       title: {
         type: String,
-        default: '赣州市立医院 ——入库数据'
+        default: '赣州市立医院 ——试剂消耗数据'
       },
       dataSource: {
         type: Array,
         default: () => [
-          /*{ type: 'Jan', jeecg: 7.0, jeebt: 3.9 },
-          { type: 'Feb', jeecg: 6.9, jeebt: 4.2 },
-          { type: 'Mar', jeecg: 9.5, jeebt: 5.7 },
-          { type: 'Apr', jeecg: 14.5, jeebt: 8.5 },
-          { type: 'May', jeecg: 18.4, jeebt: 11.9 },
-          { type: 'Jun', jeecg: 21.5, jeebt: 15.2 },
-          { type: 'Jul', jeecg: 25.2, jeebt: 17.0 },
-          { type: 'Aug', jeecg: 26.5, jeebt: 16.6 },
-          { type: 'Sep', jeecg: 23.3, jeebt: 14.2 },
-          { type: 'Oct', jeecg: 18.3, jeebt: 10.3 },
-          { type: 'Nov', jeecg: 13.9, jeebt: 6.6 },
-          { type: 'Dec', jeecg: 9.6, jeebt: 4.8 }*/
           { type: 'Jan', y: 7.0},
           { type: 'Feb', y: 6.9},
           { type: 'Mar', y: 9.5},
@@ -71,7 +64,7 @@
       },
       fields: {
         type: Array,
-        default: () => ['金额']
+        default: () => ['数量']
       },
       // 别名，需要的格式：[{field:'name',alias:'姓名'}, {field:'sex',alias:'性别'}]
       aliases:{
@@ -114,7 +107,7 @@
         validatorRules: {
         },
         url: {
-          queryView: "/pd/pdStockRecordIn/queryRecordView",
+          queryView: "/pd/pdBottleInf/queryRecordView",
         }
       }
     },
@@ -128,7 +121,7 @@
           type: 'fold',
           fields: this.fields,
           key: 'x',
-          value: '金额'
+          value: '数量'
         })
         let rows =  dv.rows
         // 替换别名

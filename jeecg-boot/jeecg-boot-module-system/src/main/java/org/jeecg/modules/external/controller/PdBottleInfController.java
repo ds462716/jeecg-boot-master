@@ -200,7 +200,7 @@ public class PdBottleInfController extends JeecgController<PdBottleInf, IPdBottl
 		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
 		pdBottleInf.setDepartParentId(sysUser.getDepartParentId());
 		//根据日期统计每日的采购量
-		//orderDate=pdStockRecordService.queryRecordView(pdBottleInf);
+		 orderDate=pdBottleInfService.queryRecordView(pdBottleInf);
 		map.put("orderDate",orderDate);
 		return Result.ok(map);
 	}

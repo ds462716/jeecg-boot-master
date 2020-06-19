@@ -703,7 +703,7 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
             if(!PdConstant.USE_TYPE_0.equals(useType)){
                 if(PdConstant.USE_TYPE_1.equals(useType) && !PdConstant.PATIENT_TYPE_1.equals(patientType)) {//住院病人
                     continue;
-                }else if(PdConstant.USE_TYPE_2.equals(useType) && !PdConstant.PATIENT_TYPE_2.equals(patientType)){//门诊病人
+                }else if(PdConstant.USE_TYPE_2.equals(useType) && PdConstant.PATIENT_TYPE_1.equals(patientType)){
                     continue;
                 }
             }

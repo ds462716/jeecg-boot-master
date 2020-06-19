@@ -814,3 +814,6 @@ INSERT INTO `xnumber`(`month`) VALUES ('2020-10-01');
 INSERT INTO `xnumber`(`month`) VALUES ('2020-11-01');
 INSERT INTO `xnumber`(`month`) VALUES ('2020-12-01');
 INSERT INTO `xnumber`(`month`) VALUES ('2021-01-01');
+
+-- add 2020年6月19日10:34:37 by mcb 增加试剂消耗报表
+INSERT INTO `sys_permission`  VALUES ('1273795402101075969', '1218785597982052353', '试剂消耗报表', '/pd/query/PdInspectionReport', 'pd/query/PdInspectionReportQuery', NULL, NULL, 1, '0', NULL, '1', 1.00, 0, NULL, 1, 1, 0, 0, NULL, 'admin', '2020-06-19 09:51:04', NULL, '2020-06-19 09:51:04', 0, 0, '1', 0);

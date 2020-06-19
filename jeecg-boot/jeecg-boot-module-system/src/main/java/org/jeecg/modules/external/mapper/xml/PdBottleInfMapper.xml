@@ -170,4 +170,34 @@
 
     </select>
 
+
+    <select id="queryRecordView" resultType="java.util.Map" >
+    select
+    c.createTime as "type",
+    sum(c.sum) as "数量"
+    from(
+        SELECT
+        DATE_FORMAT(x.Month, '%Y-%m') as "createTime",
+        "0"  as "sum"
+        FROM   XNumber x
+        where  DATE_SUB(CURDATE(), INTERVAL 1 Month) >= substr(x.Month,1,7)
+        and substr(x.Month,1,7) &lt;=substr(CURDATE(),1,7)
+    UNION ALL
+   SELECT
+        DATE_FORMAT(a.create_time, '%Y-%m') as "createTime",
+       "1" as "sum"
+   FROM pd_bottle_inf a
+   LEFT JOIN pd_product_stock b ON a.stock_id = b.id
+   LEFT JOIN pd_product c ON c.id = b.product_id
+   LEFT JOIN pd_unit d ON d.id = c.spec_unit_id
+   LEFT JOIN pd_unit e ON e.id = c.unit_id WHERE close_remarks IS NOT NULL
+        <if test="departParentId != null and  departParentId != ''">
+            AND a.depart_parent_id = #{ departParentId}
+        </if>
+        <if test="productId != null and  productId != ''">
+            AND b.product_Id = #{productId}
+        </if>
+       ) c
+        GROUP BY  type
+     </select>
 </mapper>

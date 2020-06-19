@@ -180,6 +180,11 @@
             }
           },
           {
+            title:'检验仪器',
+            align:"center",
+            dataIndex: 'instrName'
+          },
+          {
             title:'检查项目名称',
             align:"center",
             dataIndex: 'testItemName'

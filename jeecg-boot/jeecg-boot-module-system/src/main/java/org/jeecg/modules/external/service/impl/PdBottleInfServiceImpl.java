@@ -8,6 +8,7 @@ import org.jeecg.modules.external.service.IPdBottleInfService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -37,6 +38,10 @@ public class PdBottleInfServiceImpl extends ServiceImpl<PdBottleInfMapper, PdBot
         return pdBottleInfMapper.bottleInfReportQuery(page,pdBottleInf);
     }
 
+    @Override
+    public List<HashMap> queryRecordView(PdBottleInf pdBottleInf) {
+        return pdBottleInfMapper.queryRecordView(pdBottleInf);
+    }
 }
 
 

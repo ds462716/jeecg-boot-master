@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Param;
 import org.jeecg.modules.external.entity.PdBottleInf;
 import org.jeecg.modules.pd.entity.PdProductStock;
 
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -39,5 +40,6 @@ public interface PdBottleInfMapper extends BaseMapper<PdBottleInf> {
     List<PdProductStock> queryProductStock(PdBottleInf pdBottleInf);
 
     Page<PdBottleInf> bottleInfReportQuery(Page<PdBottleInf> page, @Param("entity") PdBottleInf entity);
-
+    /*试剂消耗报表  根据产品查看每月消耗数量*/
+    List<HashMap> queryRecordView(PdBottleInf pdBottleInf);
 }

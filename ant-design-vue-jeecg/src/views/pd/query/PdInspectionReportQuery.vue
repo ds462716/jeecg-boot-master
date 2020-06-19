@@ -47,7 +47,7 @@
         </span>
       </a-table>
     </div>
-    <in-record-chart-multid ref="modalForm" @ok="modalFormOk"></in-record-chart-multid>
+    <inspection-chart-multid ref="modalForm" @ok="modalFormOk"></inspection-chart-multid>
   </a-card>
 </template>
 <script>
@@ -57,14 +57,14 @@
   import { JeecgListMixin} from '@/mixins/JeecgListMixin'
   import {initDictOptions, filterMultiDictText} from '@/components/dict/JDictSelectUtil'
   import JDictSelectTagExpand from "@/components/dict/JDictSelectTagExpand"
-  import inRecordChartMultid from '../modules/inRecordChartMultid'
+  import inspectionChartMultid from '../modules/inspectionChartMultid'
 
 
   export default {
     name: "PdInspectionReportQuery",
     mixins:[JeecgListMixin],
     components: {
-     inRecordChartMultid,
+      inspectionChartMultid,
       JDictSelectTagExpand
     },
     data () {
