@@ -817,3 +817,10 @@ INSERT INTO `xnumber`(`month`) VALUES ('2021-01-01');
 
 -- add 2020年6月19日10:34:37 by mcb 增加试剂消耗报表
 INSERT INTO `sys_permission`  VALUES ('1273795402101075969', '1218785597982052353', '试剂消耗报表', '/pd/query/PdInspectionReport', 'pd/query/PdInspectionReportQuery', NULL, NULL, 1, '0', NULL, '1', 1.00, 0, NULL, 1, 1, 0, 0, NULL, 'admin', '2020-06-19 09:51:04', NULL, '2020-06-19 09:51:04', 0, 0, '1', 0);
+
+-- add 2020年6月20日10:34:37 by mcb 增加字段
+ALTER TABLE `ex_inspection_inf`
+MODIFY COLUMN `depart_parent_id` varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NULL COMMENT '所属父部门' AFTER `sys_org_code`,
+MODIFY COLUMN `depart_id` varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NULL COMMENT '所属部门' AFTER `depart_parent_id`,
+ADD COLUMN `stock_id` varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NULL COMMENT '库存明细ID' AFTER `depart_id`,
+ADD COLUMN `ref_bar_code` varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NULL COMMENT '唯一码编号' AFTER `stock_id`;

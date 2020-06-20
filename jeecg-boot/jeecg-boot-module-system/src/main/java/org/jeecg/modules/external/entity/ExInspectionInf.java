@@ -66,6 +66,12 @@ public class ExInspectionInf {
     /**产品ID*/
     @Excel(name = "产品ID", width = 15)
     private String productId;
+    /**唯一码编号*/
+    @Excel(name = "唯一码编号", width = 15)
+    private String refBarCode;
+    /**库存明细ID*/
+    @Excel(name = "库存明细ID", width = 15)
+    private String stockId;
     /**
      * 所属部门
      */

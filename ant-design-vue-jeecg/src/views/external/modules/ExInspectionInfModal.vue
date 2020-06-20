@@ -104,14 +104,14 @@
             dataIndex: 'number'
           },
           {
+            title:'唯一码',
+            align:"center",
+            dataIndex: 'refBarCode'
+          },
+          {
             title:'规格',
             align:"center",
             dataIndex: 'spec'
-          },
-          {
-            title:'型号',
-            align:"center",
-            dataIndex: 'version'
           },
           {
             title:'单位',

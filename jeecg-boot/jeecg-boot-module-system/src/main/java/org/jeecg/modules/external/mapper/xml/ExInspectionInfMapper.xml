@@ -15,7 +15,9 @@
         d.depart_id,
         d.depart_parent_id,
         d.remarks,
-        d.status
+        d.status,
+        d.stock_id,
+        d.ref_bar_code
 	</sql>
 
 
