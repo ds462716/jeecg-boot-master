@@ -196,12 +196,16 @@ public class PdBottleInfController extends JeecgController<PdBottleInf, IPdBottl
 	@GetMapping(value = "queryRecordView")
 	public Result<?> queryRecordView(PdBottleInf pdBottleInf){
 		Map map=new HashMap();
-		List<HashMap> orderDate=new ArrayList<HashMap>();//根据月份数
+		List<HashMap> orderMoney=new ArrayList<HashMap>();//金额
+		List<HashMap> orderCount=new ArrayList<HashMap>();//数量
 		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
 		pdBottleInf.setDepartParentId(sysUser.getDepartParentId());
-		//根据日期统计每日的采购量
-		 orderDate=pdBottleInfService.queryRecordView(pdBottleInf);
-		map.put("orderDate",orderDate);
+		//根据产品按月统计试剂消耗金额
+		orderMoney=pdBottleInfService.queryRecordViewMoney(pdBottleInf);
+		//根据产品按月统计试剂消耗数量
+		orderCount=pdBottleInfService.queryRecordViewCount(pdBottleInf);
+		map.put("orderMoney",orderMoney);
+		map.put("orderCount",orderCount);
 		return Result.ok(map);
 	}
 }

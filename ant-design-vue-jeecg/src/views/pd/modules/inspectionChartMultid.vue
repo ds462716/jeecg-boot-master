@@ -7,16 +7,23 @@
     :confirmLoading="confirmLoading"
     @ok="handleOk"
     @cancel="handleCancel"
-    :footer="null"
-    >
+    :footer="null">
 
-
-    <template slot="footer">
-      <a-button type="primary" @click="handleCancel">返回</a-button>
-    </template>
     <div :style="{ padding: '0 0 32px 32px' }">
-      <h4 :style="{ marginBottom: '20px' }">{{ title }}</h4>
-      <v-chart :force-fit="true" :height="height" :data="data" :scale="scale" :onClick="handleClick">
+      <h4 :style="{ marginBottom: '20px' }">{{ title1 }}</h4>
+      <v-chart :force-fit="true" :height="height" :data="data1" :scale="scale" :onClick="handleClick">
+        <v-tooltip/>
+        <v-axis/>
+        <v-legend/>
+        <v-line position="type*金额" color="x"/>
+        <v-point position="type*金额" color="x" :size="4" :v-style="style" :shape="'circle'"/>
+      </v-chart>
+    </div>
+
+
+    <div :style="{ padding: '0 0 32px 32px' }">
+      <h4 :style="{ marginBottom: '20px' }">{{ title2 }}</h4>
+      <v-chart :force-fit="true" :height="height" :data="data2" :scale="scale" :onClick="handleClick">
         <v-tooltip/>
         <v-axis/>
         <v-legend/>
@@ -36,33 +43,32 @@
   import {queryPdDepartTreeList} from '@/api/api'
   import { DataSet } from '@antv/data-set'
   export default {
-    name: "inspectionChartMultid",
+    name: "inRecordChartMultid",
     components: {
       JDictSelectTag,
     },
     props: {
-      title: {
+      title1: {
         type: String,
-        default: '赣州市立医院 ——试剂消耗数据'
+        default: '赣州市立医院 ——金额统计'
       },
-      dataSource: {
+      title2: {
+        type: String,
+        default: '赣州市立医院 ——数量统计'
+      },
+      dataSource1: {
         type: Array,
-        default: () => [
-          { type: 'Jan', y: 7.0},
-          { type: 'Feb', y: 6.9},
-          { type: 'Mar', y: 9.5},
-          { type: 'Apr', y: 14.5},
-          { type: 'May', y: 18.4},
-          { type: 'Jun', y: 21.5},
-          { type: 'Jul', y: 25.2},
-          { type: 'Aug', y: 26.5},
-          { type: 'Sep', y: 23.3},
-          { type: 'Oct', y: 18.3},
-          { type: 'Nov', y: 13.9},
-          { type: 'Dec', y: 9.6}
-        ]
+        default: () => []
       },
-      fields: {
+      dataSource2: {
+        type: Array,
+        default: () => []
+      },
+      fields1: {
+        type: Array,
+        default: () => ['金额']
+      },
+      fields2: {
         type: Array,
         default: () => ['数量']
       },
@@ -114,12 +120,32 @@
     created () {
     },
     computed: {
-      data() {
+      data1() {
 
-        const dv = new DataSet.View().source(this.dataSource)
+        const dv = new DataSet.View().source(this.dataSource1)
         dv.transform({
           type: 'fold',
-          fields: this.fields,
+          fields: this.fields1,
+          key: 'x',
+          value: '金额'
+        })
+        let rows =  dv.rows
+        // 替换别名
+        rows.forEach(row => {
+          for (let item of this.aliases) {
+            if (item.field === row.x) {
+              row.x = item.alias
+              break
+            }
+          }
+        })
+        return rows
+      },
+      data2() {
+        const dv = new DataSet.View().source(this.dataSource2)
+        dv.transform({
+          type: 'fold',
+          fields: this.fields2,
           key: 'x',
           value: '数量'
         })
@@ -155,7 +181,8 @@
         this.loading = true;
         getAction(this.url.queryView, params).then((res) => {
           if (res.success) {
-            this.dataSource = res.result.orderDate;
+            this.dataSource1 = res.result.orderMoney;
+            this.dataSource2 = res.result.orderCount;
           }else{
             this.$message.warning(res.message)
           }

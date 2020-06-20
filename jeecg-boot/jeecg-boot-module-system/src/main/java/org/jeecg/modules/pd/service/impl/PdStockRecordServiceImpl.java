@@ -1068,7 +1068,11 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
     }
 
     @Override
-    public List<HashMap> queryRecordView(PdStockRecord stockRecord) {
-        return pdStockRecordMapper.queryRecordView(stockRecord);
+    public List<HashMap> queryRecordViewMoney(PdStockRecord stockRecord) {
+        return pdStockRecordMapper.queryRecordViewMoney(stockRecord);
+    }
+    @Override
+    public List<HashMap> queryRecordViewCount(PdStockRecord stockRecord) {
+        return pdStockRecordMapper.queryRecordViewCount(stockRecord);
     }
 }

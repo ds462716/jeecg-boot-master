@@ -10,13 +10,25 @@
     :footer="null">
 
     <div :style="{ padding: '0 0 32px 32px' }">
-      <h4 :style="{ marginBottom: '20px' }">{{ title }}</h4>
-      <v-chart :force-fit="true" :height="height" :data="data" :scale="scale" :onClick="handleClick">
+      <h4 :style="{ marginBottom: '20px' }">{{ title1 }}</h4>
+      <v-chart :force-fit="true" :height="height" :data="data1" :scale="scale" :onClick="handleClick">
         <v-tooltip/>
         <v-axis/>
         <v-legend/>
         <v-line position="type*金额" color="x"/>
         <v-point position="type*金额" color="x" :size="4" :v-style="style" :shape="'circle'"/>
+      </v-chart>
+    </div>
+
+
+    <div :style="{ padding: '0 0 32px 32px' }">
+      <h4 :style="{ marginBottom: '20px' }">{{ title2 }}</h4>
+      <v-chart :force-fit="true" :height="height" :data="data2" :scale="scale" :onClick="handleClick">
+        <v-tooltip/>
+        <v-axis/>
+        <v-legend/>
+        <v-line position="type*数量" color="x"/>
+        <v-point position="type*数量" color="x" :size="4" :v-style="style" :shape="'circle'"/>
       </v-chart>
     </div>
   </a-modal>
@@ -36,42 +48,29 @@
       JDictSelectTag,
     },
     props: {
-      title: {
+      title1: {
         type: String,
-        default: '赣州市立医院 ——入库数据'
+        default: '赣州市立医院 ——金额统计'
       },
-      dataSource: {
+      title2: {
+        type: String,
+        default: '赣州市立医院 ——数量统计'
+      },
+      dataSource1: {
         type: Array,
-        default: () => [
-          /*{ type: 'Jan', jeecg: 7.0, jeebt: 3.9 },
-          { type: 'Feb', jeecg: 6.9, jeebt: 4.2 },
-          { type: 'Mar', jeecg: 9.5, jeebt: 5.7 },
-          { type: 'Apr', jeecg: 14.5, jeebt: 8.5 },
-          { type: 'May', jeecg: 18.4, jeebt: 11.9 },
-          { type: 'Jun', jeecg: 21.5, jeebt: 15.2 },
-          { type: 'Jul', jeecg: 25.2, jeebt: 17.0 },
-          { type: 'Aug', jeecg: 26.5, jeebt: 16.6 },
-          { type: 'Sep', jeecg: 23.3, jeebt: 14.2 },
-          { type: 'Oct', jeecg: 18.3, jeebt: 10.3 },
-          { type: 'Nov', jeecg: 13.9, jeebt: 6.6 },
-          { type: 'Dec', jeecg: 9.6, jeebt: 4.8 }*/
-          { type: 'Jan', y: 7.0},
-          { type: 'Feb', y: 6.9},
-          { type: 'Mar', y: 9.5},
-          { type: 'Apr', y: 14.5},
-          { type: 'May', y: 18.4},
-          { type: 'Jun', y: 21.5},
-          { type: 'Jul', y: 25.2},
-          { type: 'Aug', y: 26.5},
-          { type: 'Sep', y: 23.3},
-          { type: 'Oct', y: 18.3},
-          { type: 'Nov', y: 13.9},
-          { type: 'Dec', y: 9.6}
-        ]
+        default: () => []
       },
-      fields: {
+      dataSource2: {
+        type: Array,
+        default: () => []
+      },
+      fields1: {
         type: Array,
         default: () => ['金额']
+      },
+      fields2: {
+        type: Array,
+        default: () => ['数量']
       },
       // 别名，需要的格式：[{field:'name',alias:'姓名'}, {field:'sex',alias:'性别'}]
       aliases:{
@@ -121,14 +120,34 @@
     created () {
     },
     computed: {
-      data() {
+      data1() {
 
-        const dv = new DataSet.View().source(this.dataSource)
+        const dv = new DataSet.View().source(this.dataSource1)
         dv.transform({
           type: 'fold',
-          fields: this.fields,
+          fields: this.fields1,
           key: 'x',
           value: '金额'
+        })
+        let rows =  dv.rows
+        // 替换别名
+        rows.forEach(row => {
+          for (let item of this.aliases) {
+            if (item.field === row.x) {
+              row.x = item.alias
+              break
+            }
+          }
+        })
+        return rows
+      },
+      data2() {
+        const dv = new DataSet.View().source(this.dataSource2)
+        dv.transform({
+          type: 'fold',
+          fields: this.fields2,
+          key: 'x',
+          value: '数量'
         })
         let rows =  dv.rows
         // 替换别名
@@ -162,7 +181,8 @@
         this.loading = true;
         getAction(this.url.queryView, params).then((res) => {
           if (res.success) {
-            this.dataSource = res.result.orderDate;
+            this.dataSource1 = res.result.orderMoney;
+            this.dataSource2 = res.result.orderCount;
           }else{
             this.$message.warning(res.message)
           }

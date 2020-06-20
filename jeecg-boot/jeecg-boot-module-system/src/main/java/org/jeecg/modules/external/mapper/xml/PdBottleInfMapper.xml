@@ -142,9 +142,10 @@
 		count(*) as "num",
 		d.name as "specUnitName",
         e.name as "unitName",
-		c.selling_price as "totalPrice"
+		f.selling_price * count(*) as "totalPrice"
 	from pd_bottle_inf a
 	left join pd_product_stock b on a.stock_id=b.id
+    left join pd_stock_record_detail f on f.id=b.record_detail_id
 	left join pd_product c on c.id=b.product_id
 	left join pd_unit d  on d.id=c.spec_unit_id
     left join pd_unit e  on e.id=c.unit_id
@@ -171,7 +172,7 @@
     </select>
 
 
-    <select id="queryRecordView" resultType="java.util.Map" >
+    <select id="queryRecordViewCount" resultType="java.util.Map" >
     select
     c.createTime as "type",
     sum(c.sum) as "数量"
@@ -200,4 +201,36 @@
        ) c
         GROUP BY  type
      </select>
+
+
+    <select id="queryRecordViewMoney" resultType="java.util.Map" >
+        select
+        c.createTime as "type",
+        sum(c.y) as "金额"
+        from(
+        SELECT
+        DATE_FORMAT(x.Month, '%Y-%m') as "createTime",
+        "0"  as "y"
+        FROM   XNumber x
+        where  DATE_SUB(CURDATE(), INTERVAL 1 Month) >= substr(x.Month,1,7)
+        and substr(x.Month,1,7) &lt;=substr(CURDATE(),1,7)
+        UNION ALL
+        SELECT
+        DATE_FORMAT(a.create_time, '%Y-%m') as "createTime",
+        f.selling_price as "y"
+        FROM pd_bottle_inf a
+        LEFT JOIN pd_product_stock b ON a.stock_id = b.id
+        left join pd_stock_record_detail f on f.id=b.record_detail_id
+        LEFT JOIN pd_product c ON c.id = b.product_id
+        LEFT JOIN pd_unit d ON d.id = c.spec_unit_id
+        LEFT JOIN pd_unit e ON e.id = c.unit_id WHERE close_remarks IS NOT NULL
+        <if test="departParentId != null and  departParentId != ''">
+            AND a.depart_parent_id = #{ departParentId}
+        </if>
+        <if test="productId != null and  productId != ''">
+            AND b.product_Id = #{productId}
+        </if>
+        ) c
+        GROUP BY  type
+    </select>
 </mapper>

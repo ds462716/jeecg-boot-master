@@ -22,6 +22,8 @@ public interface IPdBottleInfService extends IService<PdBottleInf> {
     public Page<PdBottleInf> bottleInfReportQuery(Page<PdBottleInf> page, PdBottleInf pdBottleInf);
 
 
-    public List<HashMap> queryRecordView(PdBottleInf pdBottleInf);
+    public List<HashMap> queryRecordViewMoney(PdBottleInf pdBottleInf);
+
+    public List<HashMap> queryRecordViewCount(PdBottleInf pdBottleInf);
 
 }

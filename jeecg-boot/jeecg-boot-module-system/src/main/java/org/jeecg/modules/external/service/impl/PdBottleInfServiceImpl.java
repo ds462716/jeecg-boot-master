@@ -39,8 +39,13 @@ public class PdBottleInfServiceImpl extends ServiceImpl<PdBottleInfMapper, PdBot
     }
 
     @Override
-    public List<HashMap> queryRecordView(PdBottleInf pdBottleInf) {
-        return pdBottleInfMapper.queryRecordView(pdBottleInf);
+    public List<HashMap> queryRecordViewMoney(PdBottleInf pdBottleInf) {
+        return pdBottleInfMapper.queryRecordViewMoney(pdBottleInf);
+    }
+
+    @Override
+    public List<HashMap> queryRecordViewCount(PdBottleInf pdBottleInf) {
+        return pdBottleInfMapper.queryRecordViewCount(pdBottleInf);
     }
 }
 
