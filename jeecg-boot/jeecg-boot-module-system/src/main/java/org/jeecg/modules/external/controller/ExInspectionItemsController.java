@@ -186,7 +186,11 @@ public class ExInspectionItemsController extends JeecgController<ExInspectionIte
 	 @PostMapping(value = "/editUsePackage")
 	 public Result<?> editUsePackage(@RequestBody ExInspectionItems items) {
 		 LambdaQueryWrapper<PdUsePackage> query = new LambdaQueryWrapper<>();
-		 query.eq(PdUsePackage::getCode, items.getTestItemCode());
+		 String testItemCode=items.getTestItemCode();
+		 if(StringUtils.isEmpty(testItemCode)){
+			 return Result.error("检验项目代号为空，无法扣减");
+		 }
+		 query.eq(PdUsePackage::getCode, testItemCode);
 		 PdUsePackage pdUsePackage = pdUsePackageService.getOne(query);
 		 //不存在或沒有配置檢驗用量明細
 		 if(pdUsePackage!=null){

@@ -69,7 +69,10 @@ public class ExInspectionItemsServiceImpl extends ServiceImpl<ExInspectionItemsM
         for(int i = 0 ; i < idList.length ; i ++){
             ExInspectionItems items=  exInspectionItemsMapper.selectById(idList[i]);
             if(PdConstant.ACCEPT_STATUS_0.equals(items.getAcceptStatus())){
-                 break;
+                break;
+            }
+            if(StringUtils.isEmpty(items.getTestItemCode())){
+                break;
             }
             LambdaQueryWrapper<PdUsePackage> query = new LambdaQueryWrapper<>();
             query.eq(PdUsePackage::getCode, items.getTestItemCode());
