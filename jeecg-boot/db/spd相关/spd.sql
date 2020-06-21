@@ -824,3 +824,9 @@ MODIFY COLUMN `depart_parent_id` varchar(64) CHARACTER SET utf8 COLLATE utf8_gen
 MODIFY COLUMN `depart_id` varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NULL COMMENT '所属部门' AFTER `depart_parent_id`,
 ADD COLUMN `stock_id` varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NULL COMMENT '库存明细ID' AFTER `depart_id`,
 ADD COLUMN `ref_bar_code` varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NULL COMMENT '唯一码编号' AFTER `stock_id`;
+
+
+-- add 2020年6月21日15:20:25 by mcb 增加索引
+CREATE INDEX test_item_code ON ex_inspection_items (test_item_code);
+CREATE INDEX code ON pd_use_package (code);
+CREATE INDEX ref_bar_code ON ex_inspection_inf (ref_bar_code);
