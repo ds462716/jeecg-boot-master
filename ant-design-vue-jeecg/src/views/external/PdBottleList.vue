@@ -105,17 +105,22 @@
         :pagination="ipagination"
         :loading="loading"
         :scroll="tableScroll"
-        :rowSelection="{fixed:true,selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
+        :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
         @change="handleTableChange">
+        <span slot="action" slot-scope="text, record">
+          <a @click="handleDetail(record)">扣减明细查看</a>
+        </span>
       </a-table>
     </div>
     <pd-bottle-modal ref="pdBottleModal" @ok="modalFormOk"></pd-bottle-modal>
+    <ex-inspection-modal ref="exInspectionModal" @ok="modalFormOk"></ex-inspection-modal>
   </a-card>
 </template>
 <script>
 
   import { JeecgListMixin } from '@/mixins/JeecgListMixin'
   import pdBottleModal from './modules/PdBottleModal'
+  import exInspectionModal from './modules/ExInspectionModal'
   import { deleteAction, getAction,downFile } from '@/api/manage'
   import { filterObj } from '@/utils/util';
   import {initDictOptions, filterMultiDictText} from '@/components/dict/JDictSelectUtil'
@@ -125,6 +130,7 @@
     mixins:[JeecgListMixin],
     components: {
       pdBottleModal,
+      exInspectionModal
     },
     data () {
       return {
@@ -229,6 +235,14 @@
             align:"center",
             dataIndex: 'departName'
           },
+          {
+            title: '操作',
+            dataIndex: 'action',
+            align:"center",
+            fixed:"right",
+            width:80,
+            scopedSlots: { customRender: 'action' }
+          }
         ],
         url: {
           list: "/pd/pdBottleInf/list",
@@ -239,7 +253,7 @@
         dictOptions:{
           closeRemarks:[],
         },
-        tableScroll:{x :1500},
+        tableScroll:{x :1700},
       }
     },
     computed: {
@@ -296,6 +310,15 @@
         this.$refs.pdBottleModal.title = "闭瓶";
         this.$refs.pdBottleModal.disableSubmit = false;
       },
+
+
+      handleDetail(record){  //查看使用病人明细
+          this.$refs.exInspectionModal.edit(record);
+          this.$refs.exInspectionModal.title="使用详情";
+          this.$refs.exInspectionModal.disableSubmit = true;
+
+      },
+
       //科室查询start
       departHandleSearch(value) {
         getAction(this.url.queryDepart,{departName:value}).then((res)=>{

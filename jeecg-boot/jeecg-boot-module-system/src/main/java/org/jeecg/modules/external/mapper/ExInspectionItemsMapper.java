@@ -21,4 +21,6 @@ public interface ExInspectionItemsMapper extends BaseMapper<ExInspectionItems> {
 
     Page<ExInspectionItems> selectListByPage(Page<ExInspectionItems> page, @Param("entity") ExInspectionItems entity);
 
+    Page<ExInspectionItems> patientListPage(Page<ExInspectionItems> page, @Param("entity") ExInspectionItems entity);
+
 }

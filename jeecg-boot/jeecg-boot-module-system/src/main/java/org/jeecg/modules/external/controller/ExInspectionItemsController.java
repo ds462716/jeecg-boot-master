@@ -292,4 +292,25 @@ public class ExInspectionItemsController extends JeecgController<ExInspectionIte
 		return Result.ok("操作完成!");
 	}
 
+
+
+	/**
+	 * 查詢试剂使用用量病人明细分页列表查询
+	 *
+	 * @param exInspectionItems
+	 * @param pageNo
+	 * @param pageSize
+	 * @param req
+	 * @return
+	 */
+	@GetMapping(value = "/patientList")
+	public Result<?> patientList(ExInspectionItems exInspectionItems,
+								   @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
+								   @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
+								   HttpServletRequest req) {
+		Page<ExInspectionItems> page = new Page<ExInspectionItems>(pageNo, pageSize);
+		IPage<ExInspectionItems> pageList = exInspectionItemsService.patientList(page, exInspectionItems);
+		return Result.ok(pageList);
+	}
+
 }

@@ -146,4 +146,15 @@ public class ExInspectionItemsServiceImpl extends ServiceImpl<ExInspectionItemsM
             exInspectionItemsMapper.updateById(items);
       }
     }
+
+    /**
+     * 查询列表
+     * @param page
+     * @param exInspectionItems
+     * @return
+     */
+    @Override
+    public Page<ExInspectionItems> patientList(Page<ExInspectionItems> page, ExInspectionItems exInspectionItems) {
+        return exInspectionItemsMapper.patientListPage(page,exInspectionItems);
+    }
 }

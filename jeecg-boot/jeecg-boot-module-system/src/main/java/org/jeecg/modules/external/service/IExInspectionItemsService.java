@@ -28,4 +28,7 @@ public interface IExInspectionItemsService extends IService<ExInspectionItems> {
     List<String> selectListIds();
 
     void batchUsePackageDetail(String ids);
+
+    IPage<ExInspectionItems> patientList(Page<ExInspectionItems> pageList, ExInspectionItems exInspectionItems);
+
 }
