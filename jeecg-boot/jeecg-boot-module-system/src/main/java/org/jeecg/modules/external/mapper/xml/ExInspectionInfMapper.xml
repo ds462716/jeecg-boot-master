@@ -15,7 +15,9 @@
         d.depart_id,
         d.depart_parent_id,
         d.remarks,
-        d.status
+        d.status,
+        d.stock_id,
+        d.ref_bar_code
 	</sql>
 
 
@@ -70,6 +72,31 @@
             )
         </if>
 
+    </select>
+
+
+    <select id="queryPdUsePackageList"  resultType="org.jeecg.modules.pd.entity.PdUsePackageDetail">
+        SELECT  a.*,
+        d.number as "number",
+        d.name as "productName",
+        d.spec as spec,
+        d.id as "productId",
+        d.version as version,
+        d.spec_quantity as specQuantity,
+        d.product_flag as "productFlag",
+        c.status as "status"
+        FROM pd_use_package_detail a
+        left join pd_use_package b on a.package_id=b.id
+        left join ex_inspection_inf c on  b.code=c.code and c.product_id=a.product_id
+        <if test="jyId != null and jyId != ''">
+            AND c.jy_id=#{jyId}
+        </if>
+        left join pd_product d on d.id=a.product_id
+        where    a.del_flag='0'
+        <if test="code != null and code != ''">
+            AND b.code=#{code}
+        </if>
+        GROUP BY   productId
     </select>
 
 </mapper>

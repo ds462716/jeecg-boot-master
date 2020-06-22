@@ -28,7 +28,8 @@
     <!-- 查询区域-END -->
     <!-- 操作按钮区域 -->
     <div class="table-operator">
-     </div>
+      <a-button type="primary" icon="download" @click="handleExportXls('入库报表')">导出</a-button>
+    </div>
     <!-- table区域-begin -->
     <div>
       <a-table
@@ -91,7 +92,7 @@
           {
             title:'产品名称',
             align:"center",
-            width:'250px',
+            width:'350px',
             dataIndex: 'productName'
           },
           {
@@ -124,12 +125,12 @@
             width:'250px',
             dataIndex: 'venderName'
           },
-          {
+         /* {
             title:'供应商',
             align:"center",
             width:'250px',
             dataIndex: 'supplierName'
-          },
+          },*/
           {
             title: '操作',
             dataIndex: 'action',

@@ -22,8 +22,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 /**
  * @Description: 开闭瓶记录表
@@ -178,4 +177,35 @@ public class PdBottleInfController extends JeecgController<PdBottleInf, IPdBottl
         return super.importExcel(request, response, PdBottleInf.class);
     }
 
+	/**
+	 * 试剂消耗报表  mcb  --20200616 用于统计查询  试剂消耗报表
+	 */
+	@GetMapping(value = "bottleInfReportQuery")
+	public Result<?> bottleInfReportQuery(PdBottleInf pdBottleInf,
+											@RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
+											@RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize) {
+		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		pdBottleInf.setDepartParentId(sysUser.getDepartParentId());
+		Page<PdBottleInf> page = new Page<PdBottleInf>(pageNo, pageSize);
+		page = pdBottleInfService.bottleInfReportQuery(page, pdBottleInf);
+		return Result.ok(page);
+	}
+	/**
+	 * 入库统计视图  mcb  --20200617 用于统计查询  入库统计报表视图
+	 */
+	@GetMapping(value = "queryRecordView")
+	public Result<?> queryRecordView(PdBottleInf pdBottleInf){
+		Map map=new HashMap();
+		List<HashMap> orderMoney=new ArrayList<HashMap>();//金额
+		List<HashMap> orderCount=new ArrayList<HashMap>();//数量
+		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		pdBottleInf.setDepartParentId(sysUser.getDepartParentId());
+		//根据产品按月统计试剂消耗金额
+		orderMoney=pdBottleInfService.queryRecordViewMoney(pdBottleInf);
+		//根据产品按月统计试剂消耗数量
+		orderCount=pdBottleInfService.queryRecordViewCount(pdBottleInf);
+		map.put("orderMoney",orderMoney);
+		map.put("orderCount",orderCount);
+		return Result.ok(map);
+	}
 }

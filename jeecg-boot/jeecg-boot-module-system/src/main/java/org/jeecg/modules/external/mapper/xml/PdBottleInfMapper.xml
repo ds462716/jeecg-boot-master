@@ -131,4 +131,106 @@
 
     </select>
 
+
+    <select id="bottleInfReportQuery"  resultType="org.jeecg.modules.external.entity.PdBottleInf">
+
+	select
+	    c.id as "productId",
+	    c.number as  "number",
+	    c.name as "productName",
+		b.spec_quantity as "specQuantity",
+		count(*) as "num",
+		d.name as "specUnitName",
+        e.name as "unitName",
+		f.selling_price * count(*) as "totalPrice"
+	from pd_bottle_inf a
+	left join pd_product_stock b on a.stock_id=b.id
+    left join pd_stock_record_detail f on f.id=b.record_detail_id
+	left join pd_product c on c.id=b.product_id
+	left join pd_unit d  on d.id=c.spec_unit_id
+    left join pd_unit e  on e.id=c.unit_id
+	where close_remarks is not null
+        <if test="entity.productName != null and entity.productName != ''">
+            AND (c.name LIKE concat('%',#{entity.productName},'%')
+            or c.py LIKE concat('%',#{entity.productName},'%')
+            or c.wb LIKE concat('%',#{entity.productName},'%')
+            or c.zdy LIKE concat('%',#{entity.productName},'%')
+            or c.bname LIKE concat('%',#{entity.productName},'%')
+            or c.bpy LIKE concat('%',#{entity.productName},'%')
+            or c.bwb LIKE concat('%',#{entity.productName},'%')
+            )
+        </if>
+        <if test="entity.departParentId != null and entity.departParentId != ''">
+            AND a.depart_parent_id = #{entity.departParentId}
+        </if>
+        <if test="entity.number != null and entity.number != ''">
+            AND c.number   LIKE concat('%',#{entity.number},'%')
+        </if>
+	GROUP BY productId
+
+
+    </select>
+
+
+    <select id="queryRecordViewCount" resultType="java.util.Map" >
+    select
+    c.createTime as "type",
+    sum(c.sum) as "数量"
+    from(
+        SELECT
+        DATE_FORMAT(x.Month, '%Y-%m') as "createTime",
+        "0"  as "sum"
+        FROM   XNumber x
+        where  DATE_SUB(CURDATE(), INTERVAL 1 Month) >= substr(x.Month,1,7)
+        and substr(x.Month,1,7) &lt;=substr(CURDATE(),1,7)
+    UNION ALL
+   SELECT
+        DATE_FORMAT(a.create_time, '%Y-%m') as "createTime",
+       "1" as "sum"
+   FROM pd_bottle_inf a
+   LEFT JOIN pd_product_stock b ON a.stock_id = b.id
+   LEFT JOIN pd_product c ON c.id = b.product_id
+   LEFT JOIN pd_unit d ON d.id = c.spec_unit_id
+   LEFT JOIN pd_unit e ON e.id = c.unit_id WHERE close_remarks IS NOT NULL
+        <if test="departParentId != null and  departParentId != ''">
+            AND a.depart_parent_id = #{ departParentId}
+        </if>
+        <if test="productId != null and  productId != ''">
+            AND b.product_Id = #{productId}
+        </if>
+       ) c
+        GROUP BY  type
+     </select>
+
+
+    <select id="queryRecordViewMoney" resultType="java.util.Map" >
+        select
+        c.createTime as "type",
+        sum(c.y) as "金额"
+        from(
+        SELECT
+        DATE_FORMAT(x.Month, '%Y-%m') as "createTime",
+        "0"  as "y"
+        FROM   XNumber x
+        where  DATE_SUB(CURDATE(), INTERVAL 1 Month) >= substr(x.Month,1,7)
+        and substr(x.Month,1,7) &lt;=substr(CURDATE(),1,7)
+        UNION ALL
+        SELECT
+        DATE_FORMAT(a.create_time, '%Y-%m') as "createTime",
+        f.selling_price as "y"
+        FROM pd_bottle_inf a
+        LEFT JOIN pd_product_stock b ON a.stock_id = b.id
+        left join pd_stock_record_detail f on f.id=b.record_detail_id
+        LEFT JOIN pd_product c ON c.id = b.product_id
+        LEFT JOIN pd_unit d ON d.id = c.spec_unit_id
+        LEFT JOIN pd_unit e ON e.id = c.unit_id WHERE close_remarks IS NOT NULL
+        <if test="departParentId != null and  departParentId != ''">
+            AND a.depart_parent_id = #{ departParentId}
+        </if>
+        <if test="productId != null and  productId != ''">
+            AND b.product_Id = #{productId}
+        </if>
+        ) c
+        GROUP BY  type
+    </select>
 </mapper>

@@ -52,6 +52,9 @@ public interface PdStockRecordMapper extends BaseMapper<PdStockRecord> {
      */
     boolean deleteByDelFlag(PdStockRecord pdStockRecord);
 
-    /*入库统计报表  根据产品查看每月入库量及金额*/
-    List<HashMap> queryRecordView(PdStockRecord pdStockRecord);
+    /*入库统计报表  根据产品按月统计入库金额*/
+    List<HashMap> queryRecordViewMoney(PdStockRecord pdStockRecord);
+
+    /*入库统计报表  根据产品按月统计入库数量*/
+    List<HashMap> queryRecordViewCount(PdStockRecord pdStockRecord);
 }

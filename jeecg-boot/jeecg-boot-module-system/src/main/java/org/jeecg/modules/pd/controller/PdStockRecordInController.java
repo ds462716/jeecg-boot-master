@@ -16,7 +16,6 @@ import org.jeecg.modules.message.util.PushMsgUtil;
 import org.jeecg.modules.pd.entity.PdStockRecord;
 import org.jeecg.modules.pd.entity.PdStockRecordDetail;
 import org.jeecg.modules.pd.service.*;
-import org.jeecg.modules.pd.vo.PdPurchaseOrderPage;
 import org.jeecg.modules.pd.vo.PdStockRecordInPage;
 import org.jeecg.modules.system.entity.SysDepart;
 import org.jeecg.modules.system.service.ISysDepartService;
@@ -366,7 +365,7 @@ public class PdStockRecordInController {
      * 导出excel
      *
      * @param request
-     * @param pdStockRecord
+     * @param pdStockRecordDetail
      */
     @RequestMapping(value = "/exportXls")
     public ModelAndView exportXls(HttpServletRequest request, PdStockRecordDetail pdStockRecordDetail) {
@@ -471,12 +470,16 @@ public class PdStockRecordInController {
     @GetMapping(value = "queryRecordView")
     public Result<?> queryRecordView(PdStockRecord stockRecord){
         Map map=new HashMap();
-        List<HashMap> orderDate=new  ArrayList<HashMap>();//根据月份数
+        List<HashMap> orderMoney=new  ArrayList<HashMap>();//金额
+        List<HashMap> orderCount=new  ArrayList<HashMap>();//数量
         LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
         stockRecord.setDepartParentId(sysUser.getDepartParentId());
-        //根据日期统计每日的采购量
-        orderDate=pdStockRecordService.queryRecordView(stockRecord);
-        map.put("orderDate",orderDate);
+        //根据产品按月统计入库金额
+        orderMoney=pdStockRecordService.queryRecordViewMoney(stockRecord);
+        //根据产品按月统计入库数量
+        orderCount=pdStockRecordService.queryRecordViewCount(stockRecord);
+        map.put("orderMoney",orderMoney);
+        map.put("orderCount",orderCount);
         return Result.ok(map);
     }
 

@@ -5,8 +5,11 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.jeecg.modules.external.entity.ExInspectionInf;
 import org.jeecg.modules.external.mapper.ExInspectionInfMapper;
 import org.jeecg.modules.external.service.IExInspectionInfService;
+import org.jeecg.modules.pd.entity.PdUsePackageDetail;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 /**
  * @Description: 检查项目表
@@ -31,7 +34,10 @@ public class ExInspectionInfServiceImpl extends ServiceImpl<ExInspectionInfMappe
             return exInspectionInfMapper.selectListByPage(page,exInspectionInf);
     }
 
-
+    @Override
+    public List<PdUsePackageDetail> queryPdUsePackageList(ExInspectionInf exInspectionInf) {
+        return exInspectionInfMapper.queryPdUsePackageList(exInspectionInf);
+    }
 
 
 }

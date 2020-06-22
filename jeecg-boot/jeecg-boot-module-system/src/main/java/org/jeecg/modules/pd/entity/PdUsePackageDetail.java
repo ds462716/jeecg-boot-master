@@ -110,6 +110,9 @@ public class PdUsePackageDetail extends BaseEntity {
 	//产品类型
 	@TableField(exist = false)
 	private String productFlagName;
+	//试剂扣减状态
+	@TableField(exist = false)
+	private String status;
 
 
 

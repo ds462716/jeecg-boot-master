@@ -105,11 +105,17 @@
     <pd-dosage-fee-modal ref="pdDosageFeeForm" @ok="modalFormOk"></pd-dosage-fee-modal>
     <pd-dosage-cncl-fee-modal  ref="pdDosageCnclFeeForm" @ok="modalFormOk"></pd-dosage-cncl-fee-modal>
 
+    <!-- 丰城中医院收费模组 -->
     <pd-dosage-modal-f-c-z-y-y ref="pdDosageModalFCZYY" @ok="modalFormOk"></pd-dosage-modal-f-c-z-y-y>
     <pd-dosage-returned-modal-f-c-z-y-y ref="pdDosageReturnedModalFCZYY" @ok="modalFormOk"></pd-dosage-returned-modal-f-c-z-y-y>
     <pd-dosage-fee-modal-f-c-z-y-y ref="pdDosageFeeModalFCZYY" @ok="modalFormOk"></pd-dosage-fee-modal-f-c-z-y-y>
     <pd-dosage-cncl-fee-modal-f-c-z-z-y ref="pdDosageCnclFeeModalFCZZY" @ok="modalFormOk"></pd-dosage-cncl-fee-modal-f-c-z-z-y>
 
+    <!-- 丰城人民医院收费模组 -->
+    <pd-dosage-modal-f-c-r-m-y-y ref="pdDosageModalFCRMYY" @ok="modalFormOk"></pd-dosage-modal-f-c-r-m-y-y>
+    <pd-dosage-returned-modal-f-c-r-m-y-y ref="pdDosageReturnedModalFCRMYY" @ok="modalFormOk"></pd-dosage-returned-modal-f-c-r-m-y-y>
+    <pd-dosage-fee-modal-f-c-r-m-y-y ref="pdDosageFeeModalFCRMYY" @ok="modalFormOk"></pd-dosage-fee-modal-f-c-r-m-y-y>
+    <pd-dosage-cncl-fee-modal-f-c-r-m-y-y ref="pdDosageCnclFeeModalFCRMYY" @ok="modalFormOk"></pd-dosage-cncl-fee-modal-f-c-r-m-y-y>
   </a-card>
 </template>
 
@@ -125,11 +131,19 @@
   import PdDosageCnclFeeModal from '../pd/modules/PdDosageCnclFeeModal'
   import PdDosageFeeModalFCZYY from "../external/fengcheng/modules/PdDosageFeeModalFCZYY";
   import PdDosageCnclFeeModalFCZZY from "../external/fengcheng/modules/PdDosageCnclFeeModalFCZZY";
+  import PdDosageModalFCRMYY from "../external/fengcheng/modules/PdDosageModalFCRMYY";
+  import PdDosageReturnedModalFCRMYY from "../external/fengcheng/modules/PdDosageReturnedModalFCRMYY";
+  import PdDosageFeeModalFCRMYY from "../external/fengcheng/modules/PdDosageFeeModalFCRMYY";
+  import PdDosageCnclFeeModalFCRMYY from "../external/fengcheng/modules/PdDosageCnclFeeModalFCRMYY";
 
   export default {
     name: "PdDosageList",
     mixins:[JeecgListMixin],
     components: {
+      PdDosageCnclFeeModalFCRMYY,
+      PdDosageFeeModalFCRMYY,
+      PdDosageReturnedModalFCRMYY,
+      PdDosageModalFCRMYY,
       PdDosageCnclFeeModalFCZZY,
       PdDosageFeeModalFCZYY,
       PdDosageReturnedModalFCZYY,
@@ -246,6 +260,10 @@
           this.$refs.pdDosageModalFCZYY.add();
           this.$refs.pdDosageModalFCZYY.title = "新增";
           this.$refs.pdDosageModalFCZYY.disableSubmit = false;
+        }else if(this.hospitalCode=="FCRMYY"){ // 丰城市人民医院
+          this.$refs.pdDosageModalFCRMYY.add();
+          this.$refs.pdDosageModalFCRMYY.title = "新增";
+          this.$refs.pdDosageModalFCRMYY.disableSubmit = false;
         }else{
           this.$refs.modalForm.add();
           this.$refs.modalForm.title = "新增";
@@ -258,6 +276,10 @@
           this.$refs.pdDosageFeeModalFCZYY.edit(record);
           this.$refs.pdDosageFeeModalFCZYY.title="收费";
           this.$refs.pdDosageFeeModalFCZYY.disableSubmit = false;
+        }else if(this.hospitalCode=="FCRMYY"){ // 丰城市人民医院
+          this.$refs.pdDosageFeeModalFCRMYY.edit(record);
+          this.$refs.pdDosageFeeModalFCRMYY.title="收费";
+          this.$refs.pdDosageFeeModalFCRMYY.disableSubmit = false;
         }else{
           this.$refs.pdDosageFeeForm.edit(record);
           this.$refs.pdDosageFeeForm.title="收费";
@@ -270,6 +292,10 @@
           this.$refs.pdDosageCnclFeeModalFCZZY.edit(record);
           this.$refs.pdDosageCnclFeeModalFCZZY.title="取消收费";
           this.$refs.pdDosageCnclFeeModalFCZZY.disableSubmit = false;
+        }else if(this.hospitalCode=="FCRMYY"){ // 丰城市人民医院
+          this.$refs.pdDosageCnclFeeModalFCRMYY.edit(record);
+          this.$refs.pdDosageCnclFeeModalFCRMYY.title="取消收费";
+          this.$refs.pdDosageCnclFeeModalFCRMYY.disableSubmit = false;
         }else{
           this.$refs.pdDosageCnclFeeForm.edit(record);
           this.$refs.pdDosageCnclFeeForm.title="取消收费";
@@ -283,6 +309,11 @@
           this.$refs.pdDosageReturnedModalFCZYY.edit(record);
           this.$refs.pdDosageReturnedModalFCZYY.title = "库存还回";
           this.$refs.pdDosageReturnedModalFCZYY.disableSubmit = false;
+        }else if(this.hospitalCode=="FCRMYY"){ // 丰城市人民医院
+          record.dhyCharged = "1";
+          this.$refs.pdDosageReturnedModalFCRMYY.edit(record);
+          this.$refs.pdDosageReturnedModalFCRMYY.title = "库存还回";
+          this.$refs.pdDosageReturnedModalFCRMYY.disableSubmit = false;
         }else{
           this.$refs.pdDosageReturnedForm.edit(record);
           this.$refs.pdDosageReturnedForm.title="库存还回";
@@ -296,6 +327,11 @@
           this.$refs.pdDosageReturnedModalFCZYY.edit(record);
           this.$refs.pdDosageReturnedModalFCZYY.title = "详情";
           this.$refs.pdDosageReturnedModalFCZYY.disableSubmit = true;
+        }else if(this.hospitalCode=="FCRMYY"){ // 丰城市人民医院
+          record.dhyCharged = "";
+          this.$refs.pdDosageReturnedModalFCRMYY.edit(record);
+          this.$refs.pdDosageReturnedModalFCRMYY.title = "详情";
+          this.$refs.pdDosageReturnedModalFCRMYY.disableSubmit = true;
         }else{
           this.$refs.pdDosageReturnedForm.edit(record);
           this.$refs.pdDosageReturnedForm.title="详情";

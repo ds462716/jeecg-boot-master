@@ -4,6 +4,9 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.jeecg.modules.external.entity.ExInspectionInf;
+import org.jeecg.modules.pd.entity.PdUsePackageDetail;
+
+import java.util.List;
 
 /**
  * @Description: 检查项目表
@@ -22,5 +25,5 @@ public interface IExInspectionInfService extends IService<ExInspectionInf> {
     IPage<ExInspectionInf> selectList(Page<ExInspectionInf> pageList, ExInspectionInf exInspectionInf);
 
 
-
+    List<PdUsePackageDetail> queryPdUsePackageList(ExInspectionInf exInspectionInf);
 }

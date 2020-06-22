@@ -14,6 +14,7 @@ import org.jeecg.modules.pd.entity.PdProductStock;
 import org.jeecgframework.poi.excel.annotation.Excel;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -108,6 +109,10 @@ public class PdBottleInf extends BaseEntity {
     @Excel(name = "产品名称", width = 15)
     @TableField(exist = false)
     private String productName;
+    @TableField(exist = false)
+    private String number;//产品编号
+    @TableField(exist = false)
+    private String productId;//产品ID
     @Excel(name = "所属部门", width = 15)
     @TableField(exist = false)
     private String departName;
@@ -137,7 +142,11 @@ public class PdBottleInf extends BaseEntity {
     private String departIds; //批量查询用
 
     @TableField(exist = false)
-    private String productId; //产品id
+    private Double num; //使用数量
+    @TableField(exist = false)
+    private String specUnitName; //规格单位名称
+    @TableField(exist = false)
+    private BigDecimal totalPrice;//使用总金额
     @TableField(exist = false)
     private String nestatStatus; //产品使用状态
     /**检验仪器名称*/

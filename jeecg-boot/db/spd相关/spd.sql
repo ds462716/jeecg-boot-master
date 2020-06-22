@@ -784,3 +784,49 @@ INSERT INTO `sys_dict` VALUES ('1273248327095300098', '扣减状态', 'inspectio
 
 INSERT INTO `sys_dict_item` VALUES ('1273248420057853954', '1273248327095300098', '已扣减', '0', '', 1, 1, 'admin', '2020-06-17 21:37:34', 'admin', '2020-06-17 21:37:43');
 INSERT INTO `sys_dict_item` VALUES ('1273248493483339778', '1273248327095300098', '未扣减', '1', '', 2, 1, 'admin', '2020-06-17 21:37:51', NULL, '2020-06-17 21:37:51');
+
+-- add by jiangxz 2020年6月18日11:27:01
+ALTER TABLE `jeecg-boot`.`pd_dosage`
+ADD COLUMN `out_doctor_id` varchar(64) NULL COMMENT '门诊医生id' AFTER `surgeon_name`,
+ADD COLUMN `out_doctor_name` varchar(64) NULL COMMENT '门诊医生姓名' AFTER `out_doctor_id`;
+ALTER TABLE `jeecg-boot`.`pd_dosage`
+ADD COLUMN `out_dept_id` varchar(64) NULL COMMENT '门诊科室id' AFTER `surgeon_name`,
+ADD COLUMN `out_dept_name` varchar(64) NULL COMMENT '门诊科室名称' AFTER `out_dept_id`;
+
+-- add 2020年6月18日14:34:37 by mcb 增加入库统计报表
+INSERT INTO `sys_permission` VALUES ('1273431811606933506', '1218785597982052353', '入库统计报表', '/pd/query/PdStockRecordReport', 'pd/query/PdStockRecordReportQuery', NULL, NULL, 1, '0', NULL, '1', 1.00, 0, NULL, 1, 1, 0, 0, NULL, 'admin', '2020-06-18 09:46:18', NULL, '2020-06-18 09:46:18', 0, 0, '1', 0);
+
+-- 月份表
+CREATE TABLE `xnumber` (
+  `month` date DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+INSERT INTO `xnumber`(`month`) VALUES ('2020-06-01');
+INSERT INTO `xnumber`(`month`) VALUES ('2020-01-01');
+INSERT INTO `xnumber`(`month`) VALUES ('2020-02-01');
+INSERT INTO `xnumber`(`month`) VALUES ('2020-03-01');
+INSERT INTO `xnumber`(`month`) VALUES ('2020-04-01');
+INSERT INTO `xnumber`(`month`) VALUES ('2020-05-01');
+INSERT INTO `xnumber`(`month`) VALUES ('2020-07-01');
+INSERT INTO `xnumber`(`month`) VALUES ('2020-08-01');
+INSERT INTO `xnumber`(`month`) VALUES ('2020-09-01');
+INSERT INTO `xnumber`(`month`) VALUES ('2020-10-01');
+INSERT INTO `xnumber`(`month`) VALUES ('2020-11-01');
+INSERT INTO `xnumber`(`month`) VALUES ('2020-12-01');
+INSERT INTO `xnumber`(`month`) VALUES ('2021-01-01');
+
+-- add 2020年6月19日10:34:37 by mcb 增加试剂消耗报表
+INSERT INTO `sys_permission`  VALUES ('1273795402101075969', '1218785597982052353', '试剂消耗报表', '/pd/query/PdInspectionReport', 'pd/query/PdInspectionReportQuery', NULL, NULL, 1, '0', NULL, '1', 1.00, 0, NULL, 1, 1, 0, 0, NULL, 'admin', '2020-06-19 09:51:04', NULL, '2020-06-19 09:51:04', 0, 0, '1', 0);
+
+-- add 2020年6月20日10:34:37 by mcb 增加字段
+ALTER TABLE `ex_inspection_inf`
+MODIFY COLUMN `depart_parent_id` varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NULL COMMENT '所属父部门' AFTER `sys_org_code`,
+MODIFY COLUMN `depart_id` varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NULL COMMENT '所属部门' AFTER `depart_parent_id`,
+ADD COLUMN `stock_id` varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NULL COMMENT '库存明细ID' AFTER `depart_id`,
+ADD COLUMN `ref_bar_code` varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NULL COMMENT '唯一码编号' AFTER `stock_id`;
+
+
+-- add 2020年6月21日15:20:25 by mcb 增加索引
+CREATE INDEX test_item_code ON ex_inspection_items (test_item_code);
+CREATE INDEX code ON pd_use_package (code);
+CREATE INDEX ref_bar_code ON ex_inspection_inf (ref_bar_code);

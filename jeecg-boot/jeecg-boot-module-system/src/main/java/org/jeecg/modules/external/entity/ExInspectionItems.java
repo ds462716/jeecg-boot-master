@@ -175,6 +175,12 @@ public class ExInspectionItems{
     /** 查询日期结束 **/
     @TableField(exist = false)
     private String queryDateEnd;
+    /** 唯一码 **/
+    @TableField(exist = false)
+    private String refBarCode;
+    /** 试剂扣减用量 **/
+    @TableField(exist = false)
+    private Double count;
 
 
 }

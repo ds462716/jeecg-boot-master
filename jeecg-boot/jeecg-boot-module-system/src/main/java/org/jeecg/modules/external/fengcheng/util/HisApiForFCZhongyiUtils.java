@@ -72,7 +72,6 @@ public class HisApiForFCZhongyiUtils {
             requestJson.put("Item", array);
 
             logger.info("HIS收费请求参数========="+requestJson.toJSONString());
-            // TODO
             returnJson = HttpUtil.httpPost(HIS_DEFAULT_NAME_SPACE + HIS_CHARGE_URL, requestJson.toJSONString());
 //            returnJson = getTestChargeJson(pdDosage,dosageDetailList);
             logger.info("HIS收费返回参数========="+returnJson.toJSONString());
@@ -138,7 +137,6 @@ public class HisApiForFCZhongyiUtils {
             requestJson.put("Item", array);
 
             logger.info("HIS退费请求参数========="+requestJson.toJSONString());
-            // TODO
             returnJson = HttpUtil.httpPost(HIS_DEFAULT_NAME_SPACE + HIS_REFUND_URL, requestJson.toJSONString());
 //            returnJson = getTestRefundJson(pdDosage,dosageDetailList);
             logger.info("HIS退费返回求参数========="+returnJson.toJSONString());
@@ -157,9 +155,6 @@ public class HisApiForFCZhongyiUtils {
             returnJson.put("msg","调用HIS退费接口JSON转换返回信息出现错误！");
             logger.error("******调用HIS退费接口JSON转换返回信息出现错误！******");
         }
-
-
-        JSONObject requestJson = new JSONObject();
 
         return returnJson;
     }
@@ -183,7 +178,6 @@ public class HisApiForFCZhongyiUtils {
         requestJson.put("SFCODE",SFCODE);
         requestJson.put("SFNAME",SFNAME);
 
-        // TODO
         returnJson = HttpUtil.httpPost(HIS_DEFAULT_NAME_SPACE + HIS_CHARGE_CODE_URL, requestJson.toJSONString());
 //        returnJson = getTestChargeCodeJson(); // 测试数据
 
@@ -222,7 +216,6 @@ public class HisApiForFCZhongyiUtils {
         requestJson.put("hitaionNo",hitaionNo);
 
         try{
-            // TODO
             returnJson = HttpUtil.httpPost(HIS_DEFAULT_NAME_SPACE + HIS_PATIENT_URL, requestJson.toJSONString());
 //            returnJson = getTestPatientJson(); // 测试数据
 
@@ -243,137 +236,137 @@ public class HisApiForFCZhongyiUtils {
         return returnJson;
     }
 
-    /**
-     * 收费测试
-     * @return
-     */
-    public static JSONObject getTestChargeJson(PdDosage pdDosage,List<PdDosageDetail> dosageDetailList){
+//    /**
+//     * 收费测试
+//     * @return
+//     */
+//    public static JSONObject getTestChargeJson(PdDosage pdDosage,List<PdDosageDetail> dosageDetailList){
+//
+//        JSONArray array = new JSONArray();
+//        for(PdDosageDetail detail : dosageDetailList){
+//            JSONObject item = new JSONObject();
+//            item.put("vaa07",pdDosage.getVisitNo());// 就诊流水号
+//            item.put("vai01","10325748");// 计费单据id
+//            item.put("vaj01","33118756");// 计费单据明细ID（退费入参需要）
+//            item.put("prodNo",detail.getProductId());// 产品ID
+//            array.add(item);
+//        }
+//
+//        JSONObject json = new JSONObject();
+//        json.put("code","0");
+//        json.put("msg","成功");
+//        json.put("data",array);
+//
+//        return json;
+//    }
+//
+//    /**
+//     * 退费测试
+//     * @param pdDosage
+//     * @param dosageDetailList
+//     * @return
+//     */
+//    public static JSONObject getTestRefundJson(PdDosage pdDosage,List<PdDosageDetail> dosageDetailList){
+//
+//        JSONObject json = new JSONObject();
+//        json.put("code","0");
+//        json.put("msg","成功");
+//        return json;
+//    }
+//
+//
+//    /**
+//     * 收费代码测试
+//     * @return
+//     */
+//    public static JSONObject getTestChargeCodeJson(){
+//        JSONArray data = new JSONArray();
+//        JSONObject entity1 = new JSONObject();
+//        entity1.put("SFCODE","111111");                   //His患者就诊流水号
+//        entity1.put("SFNO","123123");                        //手术编号（如果没有手术，可为空）
+//        entity1.put("SFNAME","CT增强1");
+////        HisChargeCode entity2 = new HisChargeCode();
+//        JSONObject entity2 = new JSONObject();
+//        entity2.put("SFCODE","22222");                   //His患者就诊流水号
+//        entity2.put("SFNO","1qazxsw2");                        //手术编号（如果没有手术，可为空）
+//        entity2.put("SFNAME","CT增强2");
+//        data.add(entity1);
+//        data.add(entity2);
+//
+//        JSONObject json = new JSONObject();
+//        json.put("code","0");
+//        json.put("msg","成功");
+//        json.put("data", JSON.toJSONString(data));
+//        return json;
+//    }
+//
+//    /**
+//     * 病人测试
+//     * @return
+//     */
+//    public static JSONObject getTestPatientJson(){
+//        JSONArray jsonArray = new JSONArray();
+//        JSONObject hisPatient = new JSONObject();
+//        hisPatient.put("vaa07","116326");                   //1His患者就诊流水号
+//        hisPatient.put("operNo","");                        //1手术编号（如果没有手术，可为空）
+//        hisPatient.put("blngDptmNo","01000424");            //1所属病区编码
+//        hisPatient.put("blngDptmName","妇产二科病区");       //1所属病区
+//        hisPatient.put("blngNo","040004");                  //1所属科室编码
+//        hisPatient.put("blngName","妇产科");                //1所属科室
+//        hisPatient.put("type","1");                        //住院标识（1：是  2：否）
+//        hisPatient.put("projectName","项目名称项目名称项目名称项目名称项目名称");                  //1项目名称
+//        hisPatient.put("departName","");   //手术或检查项目科室（如果没有手术，则是检查项目科室）
+//        hisPatient.put("createDate","2018-11-01 10:12:28");//1登记日期
+//        hisPatient.put("doctorCode","9216");               //1申请医生编码
+//        hisPatient.put("doctorName","熊清文");             //1申请医生姓名
+//        hisPatient.put("outpatCode","");                   //1门诊号
+//        hisPatient.put("sex","女");                        // 1
+//        hisPatient.put("patientName","陈婧");             //1病人姓名
+//        hisPatient.put("hitaionNo","201814572");          //1住院号（如果不是住院，可为空）
+//        hisPatient.put("bedCode","09");                   //1床位号（如果没有，可为空）
+//
+////        JSONObject hisPatient2 = new JSONObject();
+////        hisPatient2.put("vaa07","1163261");                   //His患者就诊流水号
+////        hisPatient2.put("operNo","1");                        //手术编号（如果没有手术，可为空）
+////        hisPatient2.put("blngDptmNo","010004241");            //所属病区编码
+////        hisPatient2.put("blngDptmName","妇产二科病区1");       //所属病区
+////        hisPatient2.put("blngNo","0400041");                  //所属科室编码
+////        hisPatient2.put("blngName","妇产科1");                //所属科室
+////        hisPatient2.put("type","11");                        //住院标识（1：是  2：否）
+////        hisPatient2.put("projectName","1");                  //项目名称
+////        hisPatient2.put("departName","1");                   //手术或检查项目科室（如果没有手术，则是检查项目科室）
+////        hisPatient2.put("createDate","2018-11-01 10:12:28");//登记日期
+////        hisPatient2.put("doctorCode","92161");               //申请医生编码
+////        hisPatient2.put("doctorName","熊清文1");             //申请医生姓名
+////        hisPatient2.put("outpatCode","1");                   //门诊号
+////        hisPatient2.put("sex","女");
+////        hisPatient2.put("patientName","陈婧1");             //病人姓名
+////        hisPatient2.put("hitaionNo","2018145721");          //住院号（如果不是住院，可为空）
+////        hisPatient2.put("bedCode","091");                   //床位号（如果没有，可为空）
+//
+//        jsonArray.add(hisPatient);
+////        jsonArray.add(hisPatient2);
+//
+//        JSONObject json = new JSONObject();
+//        json.put("code","0");
+//        json.put("msg","成功");
+//        json.put("data",jsonArray);
+//
+//        return json;
+//    }
 
-        JSONArray array = new JSONArray();
-        for(PdDosageDetail detail : dosageDetailList){
-            JSONObject item = new JSONObject();
-            item.put("vaa07",pdDosage.getVisitNo());// 就诊流水号
-            item.put("vai01","10325748");// 计费单据id
-            item.put("vaj01","33118756");// 计费单据明细ID（退费入参需要）
-            item.put("prodNo",detail.getProductId());// 产品ID
-            array.add(item);
-        }
-
-        JSONObject json = new JSONObject();
-        json.put("code","0");
-        json.put("msg","成功");
-        json.put("data",array);
-
-        return json;
-    }
-
-    /**
-     * 退费测试
-     * @param pdDosage
-     * @param dosageDetailList
-     * @return
-     */
-    public static JSONObject getTestRefundJson(PdDosage pdDosage,List<PdDosageDetail> dosageDetailList){
-
-        JSONObject json = new JSONObject();
-        json.put("code","0");
-        json.put("msg","成功");
-        return json;
-    }
-
-
-    /**
-     * 收费代码测试
-     * @return
-     */
-    public static JSONObject getTestChargeCodeJson(){
-        JSONArray data = new JSONArray();
-        JSONObject entity1 = new JSONObject();
-        entity1.put("SFCODE","111111");                   //His患者就诊流水号
-        entity1.put("SFNO","123123");                        //手术编号（如果没有手术，可为空）
-        entity1.put("SFNAME","CT增强1");
-//        HisChargeCode entity2 = new HisChargeCode();
-        JSONObject entity2 = new JSONObject();
-        entity2.put("SFCODE","22222");                   //His患者就诊流水号
-        entity2.put("SFNO","1qazxsw2");                        //手术编号（如果没有手术，可为空）
-        entity2.put("SFNAME","CT增强2");
-        data.add(entity1);
-        data.add(entity2);
-
-        JSONObject json = new JSONObject();
-        json.put("code","0");
-        json.put("msg","成功");
-        json.put("data", JSON.toJSONString(data));
-        return json;
-    }
-
-    /**
-     * 病人测试
-     * @return
-     */
-    public static JSONObject getTestPatientJson(){
-        JSONArray jsonArray = new JSONArray();
-        JSONObject hisPatient = new JSONObject();
-        hisPatient.put("vaa07","116326");                   //1His患者就诊流水号
-        hisPatient.put("operNo","");                        //1手术编号（如果没有手术，可为空）
-        hisPatient.put("blngDptmNo","01000424");            //1所属病区编码
-        hisPatient.put("blngDptmName","妇产二科病区");       //1所属病区
-        hisPatient.put("blngNo","040004");                  //1所属科室编码
-        hisPatient.put("blngName","妇产科");                //1所属科室
-        hisPatient.put("type","1");                        //住院标识（1：是  2：否）
-        hisPatient.put("projectName","项目名称项目名称项目名称项目名称项目名称");                  //1项目名称
-        hisPatient.put("departName","");   //手术或检查项目科室（如果没有手术，则是检查项目科室）
-        hisPatient.put("createDate","2018-11-01 10:12:28");//1登记日期
-        hisPatient.put("doctorCode","9216");               //1申请医生编码
-        hisPatient.put("doctorName","熊清文");             //1申请医生姓名
-        hisPatient.put("outpatCode","");                   //1门诊号
-        hisPatient.put("sex","女");                        // 1
-        hisPatient.put("patientName","陈婧");             //1病人姓名
-        hisPatient.put("hitaionNo","201814572");          //1住院号（如果不是住院，可为空）
-        hisPatient.put("bedCode","09");                   //1床位号（如果没有，可为空）
-
-//        JSONObject hisPatient2 = new JSONObject();
-//        hisPatient2.put("vaa07","1163261");                   //His患者就诊流水号
-//        hisPatient2.put("operNo","1");                        //手术编号（如果没有手术，可为空）
-//        hisPatient2.put("blngDptmNo","010004241");            //所属病区编码
-//        hisPatient2.put("blngDptmName","妇产二科病区1");       //所属病区
-//        hisPatient2.put("blngNo","0400041");                  //所属科室编码
-//        hisPatient2.put("blngName","妇产科1");                //所属科室
-//        hisPatient2.put("type","11");                        //住院标识（1：是  2：否）
-//        hisPatient2.put("projectName","1");                  //项目名称
-//        hisPatient2.put("departName","1");                   //手术或检查项目科室（如果没有手术，则是检查项目科室）
-//        hisPatient2.put("createDate","2018-11-01 10:12:28");//登记日期
-//        hisPatient2.put("doctorCode","92161");               //申请医生编码
-//        hisPatient2.put("doctorName","熊清文1");             //申请医生姓名
-//        hisPatient2.put("outpatCode","1");                   //门诊号
-//        hisPatient2.put("sex","女");
-//        hisPatient2.put("patientName","陈婧1");             //病人姓名
-//        hisPatient2.put("hitaionNo","2018145721");          //住院号（如果不是住院，可为空）
-//        hisPatient2.put("bedCode","091");                   //床位号（如果没有，可为空）
-
-        jsonArray.add(hisPatient);
-//        jsonArray.add(hisPatient2);
-
-        JSONObject json = new JSONObject();
-        json.put("code","0");
-        json.put("msg","成功");
-        json.put("data",jsonArray);
-
-        return json;
-    }
-
-    public static void main(String[] args) {
-        JSONObject json = getTestPatientJson();
-        System.out.println("json = " + json);
-        System.out.println("code = " + json.get("code"));
-        System.out.println("msg = " + json.get("msg"));
-
-
-        JSONArray jsonArray = json.getJSONArray("data");
-
-//        HisPatient bean = (HisPatient) JSONObject.parseObject(jsonArray.getJSONObject(0).toJSONString(), HisPatient.class);
-
-//        List<HisChargeCode> hisChargeCodeList = JSONArray.parseArray(jsonArray.toJSONString(),HisChargeCode.class);
-        System.out.println("json = " + json.get("data"));
-    }
+//    public static void main(String[] args) {
+//        JSONObject json = getTestPatientJson();
+//        System.out.println("json = " + json);
+//        System.out.println("code = " + json.get("code"));
+//        System.out.println("msg = " + json.get("msg"));
+//
+//
+//        JSONArray jsonArray = json.getJSONArray("data");
+//
+////        HisPatient bean = (HisPatient) JSONObject.parseObject(jsonArray.getJSONObject(0).toJSONString(), HisPatient.class);
+//
+////        List<HisChargeCode> hisChargeCodeList = JSONArray.parseArray(jsonArray.toJSONString(),HisChargeCode.class);
+//        System.out.println("json = " + json.get("data"));
+//    }
 }

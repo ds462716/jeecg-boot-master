@@ -30,6 +30,8 @@ public interface PdProductMapper extends BaseMapper<PdProduct> {
 
     List<PdProduct> selectListByCTs(@Param("parMap")Map<String,Object> map);
 
+    List<PdProduct> selectListByChargeCode(@Param("entity") PdProduct entity);
+
     void updateValidityFlag(PdProduct pdProduct);
 
     Page<PdProduct> selectListByPage(Page<PdProduct> page, @Param("entity") PdProduct entity);

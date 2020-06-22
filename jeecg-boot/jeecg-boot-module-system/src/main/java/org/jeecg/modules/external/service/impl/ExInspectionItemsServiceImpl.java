@@ -6,8 +6,10 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.StringUtils;
 import org.jeecg.common.constant.PdConstant;
+import org.jeecg.modules.external.entity.ExInspectionInf;
 import org.jeecg.modules.external.entity.ExInspectionItems;
 import org.jeecg.modules.external.mapper.ExInspectionItemsMapper;
+import org.jeecg.modules.external.service.IExInspectionInfService;
 import org.jeecg.modules.external.service.IExInspectionItemsService;
 import org.jeecg.modules.pd.entity.PdUsePackage;
 import org.jeecg.modules.pd.entity.PdUsePackageDetail;
@@ -17,6 +19,7 @@ import org.jeecg.modules.pd.service.IPdUsePackageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -37,7 +40,8 @@ public class ExInspectionItemsServiceImpl extends ServiceImpl<ExInspectionItemsM
     private IPdUsePackageDetailService pdUsePackageDetailService;
     @Autowired
     private IPdProductStockTotalService pdProductStockTotalService;
-
+    @Autowired
+    private IExInspectionInfService exInspectionInfService;
     /**
      * 查询列表
      * @param page
@@ -65,7 +69,10 @@ public class ExInspectionItemsServiceImpl extends ServiceImpl<ExInspectionItemsM
         for(int i = 0 ; i < idList.length ; i ++){
             ExInspectionItems items=  exInspectionItemsMapper.selectById(idList[i]);
             if(PdConstant.ACCEPT_STATUS_0.equals(items.getAcceptStatus())){
-                 break;
+                break;
+            }
+            if(StringUtils.isEmpty(items.getTestItemCode())){
+                break;
             }
             LambdaQueryWrapper<PdUsePackage> query = new LambdaQueryWrapper<>();
             query.eq(PdUsePackage::getCode, items.getTestItemCode());
@@ -85,16 +92,23 @@ public class ExInspectionItemsServiceImpl extends ServiceImpl<ExInspectionItemsM
                     items.setRemarks("无需扣减:" + pdUsePackage.getRemarks());
                     items.setAcceptStatus(PdConstant.ACCEPT_STATUS_2);// 0:已扣减  1：无检验项目  2：未扣减  3：无试剂用量
                 }else {
-                    PdUsePackageDetail detail = new PdUsePackageDetail();
-                    detail.setPackageId(pdUsePackage.getId());
-                    List<PdUsePackageDetail> pdUsePackageDetails = pdUsePackageDetailService.queryPdUsePackageList(detail);
+                    ExInspectionInf inspectionInf=new ExInspectionInf();
+                    inspectionInf.setCode(items.getTestItemCode());
+                    inspectionInf.setJyId(items.getJyId());
+                    List<PdUsePackageDetail> pdUsePackageDetails = exInspectionInfService.queryPdUsePackageList(inspectionInf);
                     if (pdUsePackageDetails != null && pdUsePackageDetails.size() > 0) {
                         try {
-                         //HIS系统过来的
-                         //String bool= pdProductStockTotalService.lisUpdateUseStock(items,testDpeartId, pdUsePackageDetails);
-                         //LIS系统过来的
-                         //String bool= pdProductStockTotalService.lisUpdateUseStockLis(items,testDpeartId, pdUsePackageDetails);
-                            Map map = pdProductStockTotalService.lisUpdateUseStockLis(items, testDpeartId, pdUsePackageDetails);
+                            String bool=PdConstant.TRUE;
+                            Iterator<PdUsePackageDetail> it = pdUsePackageDetails.iterator();
+                            while(it.hasNext()){ // remove掉已经扣减的试剂
+                                PdUsePackageDetail detail= it.next();
+                                String status=detail.getStatus();
+                                if(StringUtils.isNotEmpty(status) && "0".equals(status)){
+                                    bool=PdConstant.FALSE;
+                                    it.remove();
+                                }
+                            }
+                            Map map = pdProductStockTotalService.lisUpdateUseStock(items, testDpeartId, pdUsePackageDetails);
                             String code= MapUtils.getString(map,"code");
                             String msg=MapUtils.getString(map,"msg");
                             if ("400".equals(code)) {
@@ -102,7 +116,11 @@ public class ExInspectionItemsServiceImpl extends ServiceImpl<ExInspectionItemsM
                                 items.setAcceptStatus(PdConstant.ACCEPT_STATUS_2);//未扣减
                             } else if("300".equals(code)) {
                                 items.setRemarks(msg);
-                                items.setAcceptStatus(PdConstant.ACCEPT_STATUS_2);//未扣减
+                                if(bool.equals(PdConstant.FALSE)) {
+                                    items.setAcceptStatus(PdConstant.ACCEPT_STATUS_4);//部分扣减
+                                }else{
+                                    items.setAcceptStatus(PdConstant.ACCEPT_STATUS_2);//未扣减
+                                }
                             }else if("500".equals(code)) {
                                 items.setRemarks(" ");
                                 items.setAcceptStatus(PdConstant.ACCEPT_STATUS_4);//部分扣减
@@ -127,5 +145,16 @@ public class ExInspectionItemsServiceImpl extends ServiceImpl<ExInspectionItemsM
             }
             exInspectionItemsMapper.updateById(items);
       }
+    }
+
+    /**
+     * 查询列表
+     * @param page
+     * @param exInspectionItems
+     * @return
+     */
+    @Override
+    public Page<ExInspectionItems> patientList(Page<ExInspectionItems> page, ExInspectionItems exInspectionItems) {
+        return exInspectionItemsMapper.patientListPage(page,exInspectionItems);
     }
 }
