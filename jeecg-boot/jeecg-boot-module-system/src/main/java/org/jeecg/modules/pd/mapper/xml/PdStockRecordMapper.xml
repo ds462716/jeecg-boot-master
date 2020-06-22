@@ -222,6 +222,8 @@
         left join pd_supplier d on b.supplier_id=d.id  and d.del_flag=#{DEL_FLAG_NORMAL}
         left join pd_unit e on b.unit_id=e.id
 		where a.del_flag=#{DEL_FLAG_NORMAL}
+        and   a.create_time > DATE_SUB(CURDATE(), INTERVAL 1 YEAR)
+        and substr(a.create_time,1,7) &lt;=substr(CURDATE(),1,7)
         <if test="departParentId != null and departParentId != ''">
             AND f.depart_parent_id = #{departParentId}
         </if>
@@ -280,15 +282,23 @@
 
     <!-- 按月统计金额-->
     <select id="queryRecordViewMoney" resultType="java.util.Map" >
-        select c.type as "type", ROUND(sum(c.y),2) as "金额" from(
-        SELECT  DATE_FORMAT(x.Month, '%Y-%m') as "type" ,"0"   as "y" FROM   XNumber x
-        where  DATE_SUB(CURDATE(), INTERVAL 1 Month) >= substr(x.Month,1,7)
+        select
+        c.type as "type",
+        ROUND(sum(c.y),2) as "金额"
+        from(
+        SELECT  DATE_FORMAT(x.Month, '%Y-%m') as "type" ,
+        "0"   as "y"
+        FROM   XNumber x
+        where  x.Month > DATE_SUB(CURDATE(), INTERVAL 1 YEAR)
         and substr(x.Month,1,7) &lt;=substr(CURDATE(),1,7)
         UNION ALL
-        SELECT  DATE_FORMAT(a.create_time, '%Y-%m') AS "type",a.product_num * a.purchase_price   AS "y"
+        SELECT  DATE_FORMAT(a.create_time, '%Y-%m') AS "type",
+        a.product_num * a.purchase_price   AS "y"
         FROM pd_stock_record_detail a
         left join pd_stock_record b on a.record_id=b.id and  b.del_flag='0'
-        where   b.record_type ='1' AND b.audit_status ='2'
+        where   b.record_type ='1'
+        AND b.audit_status ='2'
+        AND a.create_time > DATE_SUB(CURDATE(), INTERVAL 1 YEAR)
         AND substr(a.create_time,1,7) &lt;=substr(CURDATE(),1,7)
         <if test="productId != null and productId != ''">
             and  a.product_id=#{productId}
@@ -300,15 +310,23 @@
 
     <!-- 按月统计数量-->
     <select id="queryRecordViewCount" resultType="java.util.Map" >
-        select c.type as "type", ROUND(sum(c.y),2) as "数量" from(
-        SELECT  DATE_FORMAT(x.Month, '%Y-%m') as "type" ,"0"   as "y" FROM   XNumber x
-        where  DATE_SUB(CURDATE(), INTERVAL 1 Month) >= substr(x.Month,1,7)
+        select
+        c.type as "type",
+        ROUND(sum(c.y),2) as "数量"
+        from(
+        SELECT  DATE_FORMAT(x.Month, '%Y-%m') as "type" ,
+        "0"   as "y"
+        FROM   XNumber x
+        where  x.Month > DATE_SUB(CURDATE(), INTERVAL 1 YEAR)
         and substr(x.Month,1,7) &lt;=substr(CURDATE(),1,7)
         UNION ALL
         SELECT  DATE_FORMAT(a.create_time, '%Y-%m') AS "type",a.product_num    AS "y"
         FROM pd_stock_record_detail a
         left join pd_stock_record b on a.record_id=b.id and  b.del_flag='0'
-        where   b.record_type ='1' AND b.audit_status ='2'
+        where
+        b.record_type ='1'
+        AND b.audit_status ='2'
+        AND a.create_time > DATE_SUB(CURDATE(), INTERVAL 1 YEAR)
         AND substr(a.create_time,1,7) &lt;=substr(CURDATE(),1,7)
         <if test="productId != null and productId != ''">
             and  a.product_id=#{productId}
