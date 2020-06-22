@@ -835,3 +835,8 @@ CREATE INDEX ref_bar_code ON ex_inspection_inf (ref_bar_code);
 ALTER TABLE `ex_his_charge_inf`
 ADD COLUMN `py` varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '拼音简码' AFTER `fsf_je`,
 ADD COLUMN `wb` varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '五笔简码' AFTER `py`;
+
+-- add by jiangxz 2020年6月22日14:48:43 his产品信息同步表增加所属部门
+ALTER TABLE `ex_his_charge_inf`
+ADD COLUMN `depart_id` varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NULL COMMENT '所属部门' AFTER `wb`,
+ADD COLUMN `depart_parent_id` varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NULL COMMENT '所属部门的顶级部门' AFTER `depart_id`;
