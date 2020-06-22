@@ -9,7 +9,33 @@
             <a-input placeholder="请选输入品名称" v-model="queryParam.productName"></a-input>
           </a-form-item>
         </a-col>
+          <a-col :md="6" :sm="8">
+            <a-form-item label="产品编号">
+              <a-input placeholder="请输入编号" v-model="queryParam.number"></a-input>
+            </a-form-item>
+          </a-col>
+          <a-col :md="6" :sm="8">
+            <a-form-item label="生产厂家">
+              <a-select
+                showSearch
+                :venderId="venderValue"
+                placeholder="请选择生产厂家"
+                :defaultActiveFirstOption="false"
+                :allowClear="true"
+                :showArrow="true"
+                :filterOption="false"
+                @search="venderHandleSearch"
+                @change="venderHandleChange"
+                @focus="venderHandleSearch"
+                :notFoundContent="notFoundContent"
+                v-model="queryParam.venderId"
+              >
+                <a-select-option v-for="d in venderData" :key="d.value">{{d.text}}</a-select-option>
+              </a-select>
+            </a-form-item>
+          </a-col>
           <template v-if="toggleSearchStatus">
+
           </template>
 
           <a-col :md="6" :sm="8">
@@ -28,7 +54,8 @@
     <!-- 查询区域-END -->
     <!-- 操作按钮区域 -->
     <div class="table-operator">
-     </div>
+      <a-button type="primary" icon="download" @click="handleExportXls('试剂消耗报表')">导出</a-button>
+    </div>
     <!-- table区域-begin -->
     <div>
       <a-table
@@ -70,6 +97,9 @@
     data () {
       return {
         description: '试剂消耗报表',
+        notFoundContent:"未找到内容",
+        venderValue: undefined,
+        venderData: [],
         // 表头
         columns: [
           {
@@ -97,19 +127,19 @@
           {
             title:'规格数量',
             align:"center",
-            width:'100px',
+            width:'80px',
             dataIndex: 'specQuantity'
           },
           {
             title:'规格单位',
             align:"center",
-            width:'100px',
+            width:'80px',
             dataIndex: 'specUnitName'
           },
           {
             title:'消耗总数量',
             align:"center",
-            width:'120px',
+            width:'100px',
             dataIndex: 'num'
           },
           {
@@ -125,6 +155,11 @@
             dataIndex: 'totalPrice'
           },
           {
+            title:'生产厂家',
+            align:"center",
+            dataIndex: 'venderName'
+          },
+          {
             title: '操作',
             dataIndex: 'action',
             align:"center",
@@ -133,7 +168,8 @@
         ],
         url: {
           list: "/pd/pdBottleInf/bottleInfReportQuery",
-          exportXlsUrl: "/pd/pdStockRecordIn/exportXls",
+          exportXlsUrl: "/pd/pdBottleInf/ReportQueryExportXls",
+          queryVender:"/pd/pdVender/getVenderList",
         },
         dictOptions:{
 
@@ -150,7 +186,37 @@
       initDictConfig(){ //静态字典值加载
 
       },
+      //生产厂家查询start
+      venderHandleSearch(value) {
+        this.getList(value,this.url.queryVender,"2");
+      },
+      venderHandleChange(value) {
+        this.venderValue = value;
+        this.getList(value,this.url.queryVender,"2");
+      },
+      //生产厂家查询end
 
+      //生产厂家查询end
+      getList(value,url,flag){
+        getAction(url,{name:value}).then((res)=>{
+          if (!res.success) {
+            this.cmsFailed(res.message);
+          }
+          const result = res.result;
+          const data = [];
+          result.forEach(r => {
+            data.push({
+              value: r.id,
+              text: r.name,
+            });
+          });
+          if(flag == "1"){
+            this.supplierData = data;
+          }else if(flag == "2"){
+            this.venderData = data;
+          }
+        })
+      },
 
       getQueryParams() {
         //获取查询条件

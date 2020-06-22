@@ -123,6 +123,10 @@ public class PdBottleInf extends BaseEntity {
     @Excel(name = "产品规格数量", width = 15)
     @TableField(exist = false)
     private Double specQuantity;
+    @TableField(exist = false)
+    private String venderName; //生产厂家
+    @TableField(exist = false)
+    private String venderId; //生产厂家Id
     /**批次号*/
     @Excel(name = "批次号", width = 15)
     @TableField(exist = false)
