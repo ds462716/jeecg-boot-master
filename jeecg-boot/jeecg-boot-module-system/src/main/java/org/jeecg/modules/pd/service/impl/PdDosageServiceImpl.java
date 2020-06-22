@@ -646,4 +646,14 @@ public class PdDosageServiceImpl extends ServiceImpl<PdDosageMapper, PdDosage> i
         return chargeArray;
     }
 
+
+    /**
+     * 唯一码用量退回
+     * @param pdDosage
+     */
+    @Override
+    public void uniqueDosageReturned(PdDosage pdDosage) {
+        System.out.println(pdDosage.getPatientInfo());
+    }
+
 }
