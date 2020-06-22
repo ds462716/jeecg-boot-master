@@ -168,6 +168,9 @@
         <if test="entity.venderId != null and entity.venderId != ''">
             AND c.vender_id = #{entity.venderId}
         </if>
+        <if test="entity.supplierId != null and entity.supplierId != ''">
+            AND c.supplier_id = #{entity.supplierId}
+        </if>
         <if test="entity.departParentId != null and entity.departParentId != ''">
             AND a.depart_parent_id = #{entity.departParentId}
         </if>

@@ -242,6 +242,9 @@
         <if test="number != null and number != ''">
             AND b.number LIKE concat('%',#{number},'%')
         </if>
+        <if test="supplierId != null and supplierId != ''">
+            AND b.supplier_id = #{supplierId}
+        </if>
         <if test="spec != null and spec != ''">
             AND b.spec LIKE concat('%',#{spec},'%')
         </if>
