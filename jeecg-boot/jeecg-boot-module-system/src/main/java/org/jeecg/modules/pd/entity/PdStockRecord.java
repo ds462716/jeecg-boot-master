@@ -217,6 +217,9 @@ public class PdStockRecord extends BaseEntity {
     /** 生产厂家名称 **/
     @TableField(exist = false)
     private String venderName;
+    /** 生产厂家Id **/
+    @TableField(exist = false)
+    private String venderId;
     /** 申请人姓名 **/
     @TableField(exist = false)
     private String submitByName;
@@ -251,6 +254,8 @@ public class PdStockRecord extends BaseEntity {
     private Date expDate;//有效期
     @TableField(exist = false)
     private String productNum;//产品数量
+    @TableField(exist = false)
+    private String productFlag;//产品类型
     /** 查询日期起始 **/
     @TableField(exist = false)
     private String queryDateStart;
@@ -259,4 +264,10 @@ public class PdStockRecord extends BaseEntity {
     private String queryDateEnd;
     @TableField(exist = false)
     private String hospitalCode;
+    /**产品类型名称or普通产品，0产品，1试剂*/
+    @TableField(exist = false)
+    private String productFlagName;
+    /**注册证*/
+    @TableField(exist = false)
+    private String registration;
 }

@@ -77,7 +77,12 @@ public class NewPdDosageController {
         return Result.ok("添加成功！");
     }
 
-
+    @PostMapping(value = "/uniqueDosageReturned")
+    public Result<?> uniqueDosageReturned(@RequestBody PdDosage pdDosage) {
+        //不收费
+        pdDosageService.uniqueDosageReturned(pdDosage);
+        return Result.ok("退回成功！");
+    }
 
 
     /**

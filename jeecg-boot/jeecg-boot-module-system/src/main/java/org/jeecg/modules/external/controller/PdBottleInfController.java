@@ -1,5 +1,6 @@
 package org.jeecg.modules.external.controller;
 
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.annotations.Api;
@@ -11,6 +12,7 @@ import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.external.entity.PdBottleInf;
 import org.jeecg.modules.external.service.IPdBottleInfService;
+import org.jeecg.modules.external.vo.PdBottleInfExlce;
 import org.jeecg.modules.pd.service.IPdDepartService;
 import org.jeecg.modules.system.entity.SysDepart;
 import org.jeecgframework.poi.excel.def.NormalExcelConstants;
@@ -159,10 +161,6 @@ public class PdBottleInfController extends JeecgController<PdBottleInf, IPdBottl
 		mv.addObject(NormalExcelConstants.PARAMS, new ExportParams("试剂用量明细", "导出人:"+sysUser.getRealname(), "试剂用量明细数据"));
 		mv.addObject(NormalExcelConstants.DATA_LIST, bottleInfList);
 		return mv;
-
-
-
-        //return super.exportXls(request, pdBottleInf, PdBottleInf.class, "开闭瓶记录表");
     }
 
     /**
@@ -207,5 +205,27 @@ public class PdBottleInfController extends JeecgController<PdBottleInf, IPdBottl
 		map.put("orderMoney",orderMoney);
 		map.put("orderCount",orderCount);
 		return Result.ok(map);
+	}
+
+
+	/**
+	 * 导出excel(试剂消耗统计报表导出)
+	 *
+	 * @param request
+	 * @param pdBottleInf
+	 */
+	@RequestMapping(value = "/ReportQueryExportXls")
+	public ModelAndView ReportQueryExportXls(HttpServletRequest request, PdBottleInf pdBottleInf) {
+		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		pdBottleInf.setDepartParentId(sysUser.getDepartParentId());
+		 List<PdBottleInf> detailList =  pdBottleInfService.bottleInfReportQuery(pdBottleInf);
+		List<PdBottleInfExlce> exportList = JSON.parseArray(JSON.toJSONString(detailList), PdBottleInfExlce.class);
+		// Step.4 AutoPoi 导出Excel
+		ModelAndView mv = new ModelAndView(new JeecgEntityExcelView());
+		mv.addObject(NormalExcelConstants.FILE_NAME, "试剂消耗报表");
+		mv.addObject(NormalExcelConstants.CLASS, PdBottleInfExlce.class);
+		mv.addObject(NormalExcelConstants.PARAMS, new ExportParams("试剂消耗报表数据", "导出人:" + sysUser.getRealname(), "试剂消耗报表"));
+		mv.addObject(NormalExcelConstants.DATA_LIST, exportList);
+		return mv;
 	}
 }

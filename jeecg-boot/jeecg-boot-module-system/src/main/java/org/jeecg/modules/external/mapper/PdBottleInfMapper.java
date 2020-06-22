@@ -45,4 +45,7 @@ public interface PdBottleInfMapper extends BaseMapper<PdBottleInf> {
 
     /*试剂消耗报表  根据产品查看每月消耗金额*/
     List<HashMap> queryRecordViewMoney(PdBottleInf pdBottleInf);
+
+    List<PdBottleInf> bottleInfReportQuery(@Param("entity") PdBottleInf entity);
+
 }

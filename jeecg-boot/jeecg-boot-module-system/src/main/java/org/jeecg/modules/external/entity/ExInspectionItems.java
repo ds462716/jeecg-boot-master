@@ -181,6 +181,14 @@ public class ExInspectionItems{
     /** 试剂扣减用量 **/
     @TableField(exist = false)
     private Double count;
+    /** 试剂扣减时间 **/
+    @TableField(exist = false)
+    @Excel(name = "试剂扣减时间", width = 20, format = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd HH:mm:ss")
+    @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
+    @ApiModelProperty(value = "试剂扣减时间")
+    private Double inspectionTime;
+
 
 
 }

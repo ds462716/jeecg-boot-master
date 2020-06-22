@@ -16,6 +16,7 @@ import org.jeecg.modules.message.util.PushMsgUtil;
 import org.jeecg.modules.pd.entity.PdStockRecord;
 import org.jeecg.modules.pd.entity.PdStockRecordDetail;
 import org.jeecg.modules.pd.service.*;
+import org.jeecg.modules.pd.vo.PdStockRecordInExcle;
 import org.jeecg.modules.pd.vo.PdStockRecordInPage;
 import org.jeecg.modules.system.entity.SysDepart;
 import org.jeecg.modules.system.service.ISysDepartService;
@@ -483,4 +484,27 @@ public class PdStockRecordInController {
         return Result.ok(map);
     }
 
+
+    /**
+     * 导出excel(入库统计报表导出)
+     *
+     * @param request
+     * @param pdStockRecord
+     */
+    @RequestMapping(value = "/ReportQueryExportXls")
+    public ModelAndView ReportQueryExportXls(HttpServletRequest request, PdStockRecord pdStockRecord) {
+        pdStockRecord.setRecordType(PdConstant.RECODE_TYPE_1);
+        pdStockRecord.setAuditStatus(PdConstant.AUDIT_STATE_2);//只查已通过的明细
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        pdStockRecord.setDepartParentId(sysUser.getDepartParentId());
+        List<PdStockRecord> detailList =  pdStockRecordService.stockRecordReportQuery(pdStockRecord);
+        List<PdStockRecordInExcle> exportList = JSON.parseArray(JSON.toJSONString(detailList), PdStockRecordInExcle.class);
+        // Step.4 AutoPoi 导出Excel
+        ModelAndView mv = new ModelAndView(new JeecgEntityExcelView());
+        mv.addObject(NormalExcelConstants.FILE_NAME, "入库统计报表");
+        mv.addObject(NormalExcelConstants.CLASS, PdStockRecordInExcle.class);
+        mv.addObject(NormalExcelConstants.PARAMS, new ExportParams("入库统计报表数据", "导出人:" + sysUser.getRealname(), "入库统计报表"));
+        mv.addObject(NormalExcelConstants.DATA_LIST, exportList);
+        return mv;
+    }
 }

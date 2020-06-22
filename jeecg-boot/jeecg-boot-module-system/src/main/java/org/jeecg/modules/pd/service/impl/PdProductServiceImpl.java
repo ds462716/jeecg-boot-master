@@ -931,6 +931,7 @@ public class PdProductServiceImpl extends ServiceImpl<PdProductMapper, PdProduct
         PdVenderMapper venderDao = sqlsession.getMapper(PdVenderMapper.class);
         PdSupplierMapper supplierDao = sqlsession.getMapper(PdSupplierMapper.class);
         PdUnitMapper unitDao = sqlsession.getMapper(PdUnitMapper.class);
+        //PdCategoryMapper pdCategoryDao = sqlsession.getMapper(PdCategoryMapper.class);
         LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
         List<PdProduct> list = new ArrayList<>();
         boolean bl = true;
@@ -1083,6 +1084,24 @@ public class PdProductServiceImpl extends ServiceImpl<PdProductMapper, PdProduct
                         bl = false;
                         break;
                     }
+                    //一级分类
+                   /* if(ps.getCategoryOneName()!=null && !"".equals(ps.getCategoryOneName())){
+                        LambdaQueryWrapper<PdCategory> query = new LambdaQueryWrapper<PdCategory>()
+                                .eq(PdCategory::getName, ps.getCategoryOneName());
+                        PdCategory pdCategory = pdCategoryDao.selectOne(query);
+                        if(pdCategory!=null ){
+                            ps.setCategoryOne(pdCategory.getId());
+                        }
+                    }
+                    //二级分类
+                    if(ps.getCategoryTwoName()!=null && !"".equals(ps.getCategoryTwoName())){
+                        LambdaQueryWrapper<PdCategory> query = new LambdaQueryWrapper<PdCategory>()
+                                .eq(PdCategory::getName, ps.getCategoryTwoName());
+                        PdCategory pdCategory = pdCategoryDao.selectOne(query);
+                        if(pdCategory!=null ){
+                            ps.setCategoryTwo(pdCategory.getId());
+                        }
+                    }*/
                     ps.setValidityFlag(PdConstant.PD_STATE_0);
                     i ++;
                 }

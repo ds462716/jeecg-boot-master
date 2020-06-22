@@ -28,10 +28,7 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -59,6 +56,10 @@ public class PdDepartController extends JeecgController<PdDepartConfig, IPdDepar
 
     @Autowired
     private ISysDepartService sysDepartService;
+
+    @Autowired
+    private ISysDepartRoleUserService sysDepartRoleUserService;
+
 
     /**
      * 查询数据 查出所有部门,并以树结构数据格式响应给前端
@@ -506,6 +507,30 @@ public class PdDepartController extends JeecgController<PdDepartConfig, IPdDepar
         return result;
     }
 
-
+    @RequestMapping(value = "/saveDepartUserBatch", method = RequestMethod.DELETE)
+    public Result<SysUserDepart> saveDepartUserBatch(
+            @RequestParam(name="departRoleId") String departRoleId,
+            @RequestParam(name="userIds",required=true) String userIds) {
+        Result<SysUserDepart> result = new Result<SysUserDepart>();
+        try {
+            LambdaQueryWrapper<SysDepartRoleUser> query = new LambdaQueryWrapper<>();
+            query.eq(SysDepartRoleUser::getDroleId, departRoleId);
+            sysDepartRoleUserService.remove(query);
+            List<String> ids = Arrays.asList(userIds.split(","));
+            List<SysDepartRoleUser> sysDepartRoleUsers = new ArrayList<>();
+            for(String id :ids){
+                SysDepartRoleUser sysDepartRoleUser = new SysDepartRoleUser();
+                sysDepartRoleUser.setUserId(id);
+                sysDepartRoleUser.setDroleId(departRoleId);
+                sysDepartRoleUsers.add(sysDepartRoleUser);
+            }
+            sysDepartRoleUserService.saveBatch(sysDepartRoleUsers);
+            result.success("成功!");
+        }catch(Exception e) {
+            log.error(e.getMessage(), e);
+            result.error500("失败！");
+        }
+        return result;
+    }
 
 }

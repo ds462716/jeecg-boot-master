@@ -6,10 +6,50 @@
         <a-row :gutter="24">
         <a-col :md="6" :sm="8">
           <a-form-item label="产品名称">
-            <a-input placeholder="请选输入品名称" v-model="queryParam.productName"></a-input>
+            <a-input placeholder="请输入产品名称" v-model="queryParam.productName"></a-input>
           </a-form-item>
         </a-col>
+            <a-col :md="6" :sm="8">
+              <a-form-item label="产品编号">
+                <a-input placeholder="请输入编号" v-model="queryParam.number"></a-input>
+              </a-form-item>
+            </a-col>
+              <a-col :md="6" :sm="8">
+                <a-form-item label="规格">
+                  <a-input placeholder="请输入规格" v-model="queryParam.spec"></a-input>
+                </a-form-item>
+              </a-col>
           <template v-if="toggleSearchStatus">
+            <a-col :md="6" :sm="8">
+              <a-form-item label="是否试剂">
+                <j-dict-select-tag-expand type="list" v-model="queryParam.productFlag" dictCode="yn" placeholder="请选择"/>
+              </a-form-item>
+            </a-col>
+            <a-col :md="6" :sm="8">
+              <a-form-item label="注册证">
+                <a-input placeholder="请输入注册证" v-model="queryParam.registration"></a-input>
+              </a-form-item>
+            </a-col>
+            <a-col :md="6" :sm="8">
+              <a-form-item label="生产厂家">
+                <a-select
+                  showSearch
+                  :venderId="venderValue"
+                  placeholder="请选择生产厂家"
+                  :defaultActiveFirstOption="false"
+                  :allowClear="true"
+                  :showArrow="true"
+                  :filterOption="false"
+                  @search="venderHandleSearch"
+                  @change="venderHandleChange"
+                  @focus="venderHandleSearch"
+                  :notFoundContent="notFoundContent"
+                  v-model="queryParam.venderId"
+                >
+                  <a-select-option v-for="d in venderData" :key="d.value">{{d.text}}</a-select-option>
+                </a-select>
+              </a-form-item>
+            </a-col>
           </template>
 
           <a-col :md="6" :sm="8">
@@ -60,7 +100,6 @@
   import JDictSelectTagExpand from "@/components/dict/JDictSelectTagExpand"
   import inRecordChartMultid from '../modules/inRecordChartMultid'
 
-
   export default {
     name: "PdStockRecordReportQuery",
     mixins:[JeecgListMixin],
@@ -71,6 +110,9 @@
     data () {
       return {
         description: '入库统计报表',
+        notFoundContent:"未找到内容",
+        venderValue: undefined,
+        venderData: [],
         // 表头
         columns: [
           {
@@ -92,7 +134,7 @@
           {
             title:'产品名称',
             align:"center",
-            width:'350px',
+            width:'420px',
             dataIndex: 'productName'
           },
           {
@@ -102,9 +144,15 @@
             dataIndex: 'spec'
           },
           {
+            title:'产品类型',
+            align:"center",
+            width:'100px',
+            dataIndex: 'productFlagName'
+          },
+          {
             title:'入库总数量',
             align:"center",
-            width:'80px',
+            width:'100px',
             dataIndex: 'totalSum'
           },
           {
@@ -116,13 +164,13 @@
           {
             title:'入库总金额',
             align:"center",
-            width:'90px',
+            width:'120px',
             dataIndex: 'inTotalPrice'
           },
           {
             title:'生产厂家',
             align:"center",
-            width:'250px',
+            width:'300px',
             dataIndex: 'venderName'
           },
          /* {
@@ -140,7 +188,8 @@
         ],
         url: {
           list: "/pd/pdStockRecordIn/stockRecordReportQuery",
-          exportXlsUrl: "/pd/pdStockRecordIn/exportXls",
+          exportXlsUrl: "/pd/pdStockRecordIn/ReportQueryExportXls",
+          queryVender:"/pd/pdVender/getVenderList",
         },
         dictOptions:{
 
@@ -157,7 +206,37 @@
       initDictConfig(){ //静态字典值加载
 
       },
+      //生产厂家查询start
+      venderHandleSearch(value) {
+        this.getList(value,this.url.queryVender,"2");
+      },
+      venderHandleChange(value) {
+        this.venderValue = value;
+        this.getList(value,this.url.queryVender,"2");
+      },
+      //生产厂家查询end
 
+      //生产厂家查询end
+      getList(value,url,flag){
+        getAction(url,{name:value}).then((res)=>{
+          if (!res.success) {
+            this.cmsFailed(res.message);
+          }
+          const result = res.result;
+          const data = [];
+          result.forEach(r => {
+            data.push({
+              value: r.id,
+              text: r.name,
+            });
+          });
+          if(flag == "1"){
+            this.supplierData = data;
+          }else if(flag == "2"){
+            this.venderData = data;
+          }
+        })
+      },
 
       getQueryParams() {
         //获取查询条件
