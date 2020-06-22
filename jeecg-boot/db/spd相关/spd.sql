@@ -830,3 +830,8 @@ ADD COLUMN `ref_bar_code` varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci
 CREATE INDEX test_item_code ON ex_inspection_items (test_item_code);
 CREATE INDEX code ON pd_use_package (code);
 CREATE INDEX ref_bar_code ON ex_inspection_inf (ref_bar_code);
+
+-- add by jiangxz 2020年6月22日09:18:53 his产品信息同步表增加拼音简码和五笔简码
+ALTER TABLE `ex_his_charge_inf`
+ADD COLUMN `py` varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '拼音简码' AFTER `fsf_je`,
+ADD COLUMN `wb` varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '五笔简码' AFTER `py`;
