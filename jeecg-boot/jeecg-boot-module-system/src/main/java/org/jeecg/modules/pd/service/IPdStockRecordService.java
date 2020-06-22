@@ -118,6 +118,13 @@ public interface IPdStockRecordService extends IService<PdStockRecord> {
 	Page<PdStockRecord> stockRecordReportQuery(Page<PdStockRecord> pageList, PdStockRecord pdStockRecord);
 
 	/**
+	 * 入库统计报表查询列表(不分页)
+	 * @param pdStockRecord
+	 * @return
+	 */
+	List<PdStockRecord> stockRecordReportQuery( PdStockRecord pdStockRecord);
+
+	/**
 	 * 入库统计报表 --根据产品按月统计入库金额
 	 * @param stockRecord
 	 * @return

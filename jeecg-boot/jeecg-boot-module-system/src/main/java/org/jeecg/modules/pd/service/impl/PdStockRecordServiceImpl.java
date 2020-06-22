@@ -1032,6 +1032,11 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
         return pageList.setRecords(pdStockRecordMapper.stockRecordReportQuery(pdStockRecord));
     }
 
+    @Override
+    public List<PdStockRecord> stockRecordReportQuery(PdStockRecord pdStockRecord) {
+        return  pdStockRecordMapper.stockRecordReportQuery(pdStockRecord);
+    }
+
     /**
      * 消息推送
      * @param stockRecord

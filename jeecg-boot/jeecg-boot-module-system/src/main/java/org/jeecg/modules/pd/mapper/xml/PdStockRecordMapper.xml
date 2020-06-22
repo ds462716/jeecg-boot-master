@@ -206,6 +206,10 @@
       b.number as "number",
       b.name as "productName",
       b.spec as "spec",
+        case
+        when b.product_flag = '0' then "耗材"
+        when b.product_flag = '1' then "试剂"
+        end as "productFlagName",
       sum(a.product_num) as "totalSum",
 		sum(a.purchase_price *  a.product_num)  as "inTotalPrice",
 		c.name  as "venderName",
@@ -232,6 +236,21 @@
             or b.bwb LIKE concat('%',#{productName},'%')
             or b.zdy LIKE concat('%',#{productName},'%')
             )
+        </if>
+        <if test="number != null and number != ''">
+            AND b.number LIKE concat('%',#{number},'%')
+        </if>
+        <if test="spec != null and spec != ''">
+            AND b.spec LIKE concat('%',#{spec},'%')
+        </if>
+        <if test="productFlag != null and productFlag != ''">
+            AND b.product_flag = #{productFlag}
+        </if>
+        <if test="venderId != null and venderId != ''">
+            AND b.vender_id = #{venderId}
+        </if>
+        <if test="registration != null and registration != ''">
+            AND b.registration LIKE concat('%',#{registration},'%')
         </if>
         <if test="recordType != null and recordType != ''">
             AND f.record_type = #{recordType}

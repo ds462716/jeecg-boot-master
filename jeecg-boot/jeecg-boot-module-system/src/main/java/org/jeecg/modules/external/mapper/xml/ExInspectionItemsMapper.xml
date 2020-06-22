@@ -109,6 +109,7 @@
         SELECT
         DISTINCT
         <include refid="exInspectionItemsColumns"/>,
+        b.update_time as "inspectionTime",
          d.count as "count"
         from  ex_inspection_inf b
         left join ex_inspection_items a on a.jy_id=b.jy_id and b.code=a.test_item_code
@@ -119,10 +120,13 @@
             AND  b.ref_bar_code = #{entity.refBarCode}
         </if>
         <if test="entity.patientName != null and entity.patientName != ''">
-            AND b.patient_name LIKE concat('%',#{entity.patientName},'%')
+            AND a.patient_name LIKE concat('%',#{entity.patientName},'%')
+        </if>
+        <if test="entity.cardId != null and entity.cardId != ''">
+            AND a.card_id LIKE concat('%',#{entity.cardId},'%')
         </if>
         <if test="entity.barCode != null and entity.barCode != ''">
-            AND b.bar_code LIKE concat('%',#{entity.barCode},'%')
+            AND a.bar_code LIKE concat('%',#{entity.barCode},'%')
         </if>
         order by b.create_time desc
     </select>

@@ -22,6 +22,11 @@
                 <a-input placeholder="请输入条形码" v-model="queryParam.barCode"></a-input>
               </a-form-item>
             </a-col>
+            <a-col :md="6" :sm="8">
+              <a-form-item label="就诊卡号">
+                <a-input placeholder="请输入就诊卡号" v-model="queryParam.cardId"></a-input>
+              </a-form-item>
+            </a-col>
             <template v-if="toggleSearchStatus">
 
             </template>
@@ -127,6 +132,11 @@
             title: '检验项目名称',
             align:"center",
             dataIndex: 'testItemName'
+          },
+          {
+            title:'扣减时间',
+            align:"center",
+            dataIndex: 'inspectionTime'
           },
           {
             title: '扣减用量',
