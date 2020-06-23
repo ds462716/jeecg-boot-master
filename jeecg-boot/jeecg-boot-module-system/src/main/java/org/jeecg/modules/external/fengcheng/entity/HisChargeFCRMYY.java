@@ -17,4 +17,5 @@ public class HisChargeFCRMYY extends BaseEntity {
     private String proName; //收费项目名称
     private String price;   //价格
     private String spec;    //规格
+    private String pyCode;  //输入码 （拼音简码）
 }

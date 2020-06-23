@@ -21,7 +21,9 @@
 		a.fsf_ksbh,
 		a.fsf_ks,
 		a.fsf_xmlb,
-		a.fsf_je
+		a.fsf_je,
+		a.py,
+		a.wb
 	</sql>
     <!--查询HIS系统收费项目基础信息-->
 	<select id="selectByHisCharge" parameterType="java.lang.String" resultType="org.jeecg.modules.pd.entity.HisChargeInf">
@@ -213,8 +215,6 @@
 		</if>
 	</select>
 
-
-
     <!--查询LIS系统检验仪器设备信息-->
     <select id="selectExLabInstrInf" parameterType="java.lang.String" resultType="org.jeecg.modules.external.entity.ExLabInstrInf">
 		 select
@@ -222,4 +222,8 @@
       a.yqmc as "instrName"
        from lab_instr a
 	</select>
+
+	<delete id="deleteByDepartParentId" parameterType="java.lang.String">
+		DELETE FROM ex_his_charge_inf WHERE depart_parent_id = #{departParentId}
+	</delete>
 </mapper>

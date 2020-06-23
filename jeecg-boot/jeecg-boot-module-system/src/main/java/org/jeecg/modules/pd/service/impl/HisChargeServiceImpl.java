@@ -145,4 +145,9 @@ public class HisChargeServiceImpl extends ServiceImpl<HisChargeMapper, HisCharge
 	public List<ExLabInstrInf> selectExLabInstrInf() {
 		return hisChargeMapper.selectExLabInstrInf();
 	}
+
+	@Override
+	public boolean deleteByDepartParentId(String departParentId) {
+		return hisChargeMapper.deleteByDepartParentId(departParentId);
+	}
 }

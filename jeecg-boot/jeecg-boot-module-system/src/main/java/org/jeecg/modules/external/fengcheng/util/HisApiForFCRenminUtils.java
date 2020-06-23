@@ -197,8 +197,15 @@ public class HisApiForFCRenminUtils {
         String result = null;
         JSONObject returnJson = new JSONObject();
         JSONObject requestJson = new JSONObject();
-        requestJson.put("chargeCode",hisCharge.getChargeCode() == null ? "" : hisCharge.getChargeCode().trim()); // 收费代码
-        requestJson.put("proName",hisCharge.getProName() == null ? "" : hisCharge.getProName().trim());   // 项目名称
+        if(hisCharge != null){
+            requestJson.put("chargeCode",hisCharge.getChargeCode() == null ? "" : hisCharge.getChargeCode().trim()); // 收费代码
+            requestJson.put("proName",hisCharge.getProName() == null ? "" : hisCharge.getProName().trim());   // 项目名称
+            requestJson.put("pyCode",hisCharge.getPyCode() == null ? "" : hisCharge.getPyCode().trim());   // 输入码
+        }else{
+            requestJson.put("chargeCode",""); // 收费代码
+            requestJson.put("proName","");   // 项目名称
+            requestJson.put("pyCode","");   // 输入码
+        }
 
         String[] pars = {"businessType","inJson"};                              // 参数名称
         String[] vals = {charge_code_interface,requestJson.toJSONString()};     //参数值

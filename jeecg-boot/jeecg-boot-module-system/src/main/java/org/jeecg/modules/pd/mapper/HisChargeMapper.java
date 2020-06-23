@@ -31,6 +31,8 @@ public interface HisChargeMapper extends BaseMapper<HisChargeInf> {
 
 	void deleteChargeInf();
 
+	public boolean deleteByDepartParentId(@Param("departParentId") String departParentId);
+
 	List<HisDepartInf> selectHisDepart();
 
 	List<HisUserInf> selectHisUser();

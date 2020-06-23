@@ -6,6 +6,7 @@ import lombok.Data;
 import org.jeecgframework.poi.excel.annotation.Excel;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -327,4 +328,14 @@ public class PdProduct  extends BaseEntity {
 	 * jde编码
 	 */
 	private String jdeCode;
+
+	@TableField(exist = false)
+	private BigDecimal fsfJe;//HIS价格
+	@TableField(exist = false)
+	private BigDecimal priceDifference;//价格差
+	@TableField(exist = false)
+	private String fsfXmmc;//HIS项目名称
+	@TableField(exist = false)
+	private String hisChargeCodeSynFlag;//0-全部；1-已对照；2-未对照
+
 }

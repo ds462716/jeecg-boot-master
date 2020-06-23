@@ -55,5 +55,5 @@ public interface IHisChargeService extends IService<HisChargeInf> {
    /*查询LIS系统仪器设备信息*/
     List<ExLabInstrInf> selectExLabInstrInf();
 
-
+    boolean deleteByDepartParentId(String departParentId);
 }

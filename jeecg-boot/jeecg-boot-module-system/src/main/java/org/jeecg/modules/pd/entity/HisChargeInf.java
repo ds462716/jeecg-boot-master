@@ -55,6 +55,10 @@ public class HisChargeInf extends BaseEntity {
     private String fsfKs;//收费科室名称
     private String fsfXmlb;//收费类别标识
     private BigDecimal fsfJe;//收费金额
+    private String py;//拼音码
+    private String wb;//五笔码
     @TableField(exist = false)
     private String departName;//科室名称
+    @TableField(exist = false)
+    private BigDecimal priceDifference; //价格差
 }
