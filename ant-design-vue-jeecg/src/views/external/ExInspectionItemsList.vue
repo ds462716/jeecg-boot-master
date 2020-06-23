@@ -42,6 +42,25 @@
                 <a-input placeholder="请输入条形码" v-model="queryParam.barCode"></a-input>
               </a-form-item>
             </a-col>
+            <a-col :md="6" :sm="8">
+              <a-form-item label="所属仪器">
+                <a-select
+                  showSearch
+                  :departId="instrValue"
+                  :defaultActiveFirstOption="false"
+                  :allowClear="true"
+                  :showArrow="true"
+                  :filterOption="false"
+                  @search="instrHandleSearch"
+                  @focus="instrHandleSearch"
+                  :notFoundContent="notFoundContent"
+                  v-model="queryParam.instrCode"
+                  placeholder="请选择仪器"
+                >
+                  <a-select-option v-for="d in instrData" :key="d.instrCode">{{d.instrName}}</a-select-option>
+                </a-select>
+              </a-form-item>
+            </a-col>
           </template>
 
 
@@ -126,6 +145,9 @@
     data () {
       return {
         description: '检查项目表管理页面',
+        instrData: [],
+        instrValue: undefined,
+        notFoundContent:"未找到内容",
         // 表头
         columns: [
           {
@@ -229,6 +251,7 @@
           importExcelUrl: "external/exInspectionItems/importExcel",
           editUsePackage:"/external/exInspectionItems/editUsePackage",
           batchUsePackageDetail:"/external/exInspectionItems/batchUsePackageDetail",
+          queryExLabInstrInf:"/ex/exLabInstrInf/getExLabInstrInf",
         },
         dictOptions:{
           acceptStatus:[],
@@ -282,6 +305,17 @@
           }
         })
       },
+
+      //仪器查询start
+      instrHandleSearch(value) {
+        getAction(this.url.queryExLabInstrInf,{queryType:"0",instrName:value}).then((res)=>{
+          if (!res.success) {
+            this.cmsFailed(res.message);
+          }
+          this.instrData = res.result;
+        })
+      },
+      //仪器查询end
       //批量扣减
       batchUsePackageDetail:function() {
         if (this.selectedRowKeys.length <= 0) {
