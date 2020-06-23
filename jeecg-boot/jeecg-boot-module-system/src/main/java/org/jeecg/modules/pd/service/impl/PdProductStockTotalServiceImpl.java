@@ -938,11 +938,11 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
             exInspectionInf.setDepartParentId(detail.getDepartParentId());
             exInspectionInf.setDepartId(detail.getDepartId());
             exInspectionInf.setStatus(status);//0:已扣减   1:未扣减
-            exInspectionInf.setRemarks(remarks);
+            exInspectionInf.setRemarks(status =="0" ? " " : remarks);
             exInspectionInfService.save(exInspectionInf);
         }else{
             inspectionInf.setStatus(status);//0:已扣减   1:未扣减
-            inspectionInf.setRemarks(remarks);
+            inspectionInf.setRemarks(status =="0" ? " " : remarks);
             inspectionInf.setRefBarCode(stock.getRefBarCode());
             inspectionInf.setStockId(stock.getId());
             exInspectionInfService.updateById(inspectionInf);
