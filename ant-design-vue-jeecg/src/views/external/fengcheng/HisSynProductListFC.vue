@@ -317,7 +317,7 @@
           }
         ],
         url: {
-          list: "/pd/pdProduct/list",
+          list: "/pd/pdProduct/listForHisCharge",
           delete: "/pd/pdProduct/delete",
           deleteBatch: "/pd/pdProduct/deleteBatch",
           exportXlsUrl: "/pd/pdProduct/exportXls",

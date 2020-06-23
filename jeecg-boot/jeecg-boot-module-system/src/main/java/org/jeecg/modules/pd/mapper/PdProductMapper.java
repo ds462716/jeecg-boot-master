@@ -35,4 +35,7 @@ public interface PdProductMapper extends BaseMapper<PdProduct> {
     void updateValidityFlag(PdProduct pdProduct);
 
     Page<PdProduct> selectListByPage(Page<PdProduct> page, @Param("entity") PdProduct entity);
+
+    Page<PdProduct> selectListForHisChargeByPage(Page<PdProduct> page, @Param("entity") PdProduct entity);
+
 }

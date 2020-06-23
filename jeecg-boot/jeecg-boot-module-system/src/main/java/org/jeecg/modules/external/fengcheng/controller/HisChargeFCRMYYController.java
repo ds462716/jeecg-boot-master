@@ -2,6 +2,8 @@ package org.jeecg.modules.external.fengcheng.controller;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.shiro.SecurityUtils;
@@ -15,10 +17,7 @@ import org.jeecg.modules.external.fengcheng.util.HisApiForFCRenminUtils;
 import org.jeecg.modules.pd.entity.HisChargeInf;
 import org.jeecg.modules.pd.service.IHisChargeService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
@@ -39,13 +38,27 @@ public class HisChargeFCRMYYController {
     @Autowired
     private IHisChargeService hisChargeService;
 
+
+    @GetMapping(value = "/hisProductList")
+    public Result<?> hisProductList(HisChargeInf inf,
+                                    @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
+                                    @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,HttpServletRequest req) {
+        Page<HisChargeInf> page = new Page<HisChargeInf>(pageNo, pageSize);
+
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        inf.setDepartParentId(sysUser.getDepartParentId());
+
+        IPage<HisChargeInf> pageList = hisChargeService.selectList(page, inf);
+        return Result.ok(pageList);
+    }
+
     /**
      * 查询HIS收费代码列表
      * @param hisCharge
      * @param req
      * @return
      */
-    @GetMapping(value = "/list")
+    @GetMapping(value = "/hisChargeCodeList")
     public Result<?> hisChargeCodeList(HisChargeFCRMYY hisCharge, HttpServletRequest req) {
 
         if(hisCharge == null){

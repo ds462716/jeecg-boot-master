@@ -82,7 +82,9 @@
 			AND a.fsf_xmbh LIKE concat('%',#{entity.fsfXmbh},'%')
 		</if>
 		<if test="entity.fsfXmmc != null and entity.fsfXmmc != ''">
-			AND a.fsf_xmmc LIKE concat('%',#{entity.fsfXmmc},'%')
+			AND (a.fsf_xmmc LIKE concat('%',#{entity.fsfXmmc},'%')
+				or a.py LIKE concat('%',#{entity.fsfXmmc},'%')
+			)
 		</if>
 		<if test="entity.departName != null and entity.departName != ''">
 			AND b.fsf_ksmc LIKE concat('%',#{entity.departName},'%')
