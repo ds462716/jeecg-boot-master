@@ -2,6 +2,7 @@ package org.jeecg.modules.pd.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.apache.commons.collections.CollectionUtils;
@@ -93,6 +94,11 @@ public class PdProductServiceImpl extends ServiceImpl<PdProductMapper, PdProduct
     @Override
     public Page<PdProduct> selectList(Page<PdProduct> page, PdProduct pdProduct) {
         return pdProductMapper.selectListByPage(page,pdProduct);
+    }
+
+    @Override
+    public IPage<PdProduct> selectListForHisChargeByPage(Page<PdProduct> page, PdProduct pdProduct) {
+        return pdProductMapper.selectListForHisChargeByPage(page,pdProduct);
     }
 
     /**

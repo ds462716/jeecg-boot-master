@@ -348,8 +348,7 @@
         <include refid="pdSupplierColumns"/>,
         <include refid="pdVenderColumns"/>,
         <include refid="pdGroupColumns"/>,
-        <include refid="pdRuleColumns"/>,
-        <include refid="pdHisChargeInfColumns"/>
+        <include refid="pdRuleColumns"/>
         FROM pd_product a
         <include refid="pdUnitJoins"/>
         <include refid="pdCategoryJoins"/>
@@ -357,7 +356,6 @@
         <include refid="pdVenderJoins"/>
         <include refid="pdGroupJoins"/>
         <include refid="pdRuleJoins"/>
-        <include refid="pdHisChargeInfJoins"/>
         <where>
             a.del_flag = #{entity.DEL_FLAG_NORMAL}
         </where>
@@ -407,15 +405,77 @@
         <if test="departParentId != null and departParentId != ''">
             AND a.depart_parent_id = #{entity.departParentId}
         </if>
-        <if test="entity.hisChargeCodeSynFlag != null and entity.hisChargeCodeSynFlag == '1'">
-            AND (a.charge_code is not null and a.charge_code &lt;&gt; '')
-        </if>
-        <if test="entity.hisChargeCodeSynFlag != null and entity.hisChargeCodeSynFlag == '2'">
-            AND (a.charge_code is null or a.charge_code = '')
-        </if>
         ORDER BY a.update_time desc,a.create_time desc
     </select>
     <select id="selectListByPage" resultMap="resultMap" parameterType="org.jeecg.modules.pd.entity.PdProduct">
+        SELECT
+        <include refid="pdProductColumns"/>,
+        <include refid="pdUnitColumns"/>,
+        <include refid="pdCategoryColumns"/>,
+        <include refid="pdSupplierColumns"/>,
+        <include refid="pdVenderColumns"/>,
+        <include refid="pdGroupColumns"/>,
+        <include refid="pdRuleColumns"/>
+        FROM pd_product a
+        <include refid="pdUnitJoins"/>
+        <include refid="pdCategoryJoins"/>
+        <include refid="pdSupplierJoins"/>
+        <include refid="pdVenderJoins"/>
+        <include refid="pdGroupJoins"/>
+        <include refid="pdRuleJoins"/>
+        <where>
+            a.del_flag = #{entity.DEL_FLAG_NORMAL}
+        </where>
+        <if test="entity.name != null and entity.name != ''">
+            AND (a.name LIKE concat('%',#{entity.name},'%')
+            or a.py LIKE concat('%',#{entity.name},'%')
+            or a.wb LIKE concat('%',#{entity.name},'%')
+            or a.zdy LIKE concat('%',#{entity.name},'%')
+            or a.bname LIKE concat('%',#{entity.name},'%')
+            or a.bpy LIKE concat('%',#{entity.name},'%')
+            or a.bwb LIKE concat('%',#{entity.name},'%')
+            )
+        </if>
+        <if test="entity.number != null and entity.number != ''">
+            AND a.number LIKE concat('%',#{entity.number},'%')
+        </if>
+        <if test="entity.registration != null and entity.registration != ''">
+            AND a.registration LIKE concat('%',#{entity.registration},'%')
+        </if>
+        <if test="entity.chargeCode != null and entity.chargeCode != ''">
+            AND a.charge_code LIKE concat('%',#{entity.chargeCode},'%')
+        </if>
+        <if test="entity.venderId != null and entity.venderId != ''">
+            AND a.vender_id = #{entity.venderId}
+        </if>
+        <if test="entity.supplierId != null and entity.supplierId != ''">
+            AND a.supplier_id = #{entity.supplierId}
+        </if>
+        <if test="entity.spec != null and entity.spec != ''">
+            AND a.spec LIKE concat('%',#{entity.spec},'%')
+        </if>
+        <if test="entity.version != null and entity.version != ''">
+            AND a.version LIKE concat('%',#{entity.version},'%')
+        </if>
+        <if test="entity.validityFlag != null and entity.validityFlag != ''">
+            AND a.validity_flag = #{entity.validityFlag}
+        </if>
+        <if test="entity.productFlag != null and entity.productFlag != ''">
+            AND a.product_flag = #{entity.productFlag}
+        </if>
+        <if test="entity.deviceClassification != null and entity.deviceClassification != ''">
+            AND a.device_classification = #{entity.deviceClassification}
+        </if>
+        <if test="entity.departId != null and entity.departId != ''">
+            AND a.depart_id = #{entity.departId}
+        </if>
+        <if test="entity.departParentId != null and entity.departParentId != ''">
+            AND a.depart_parent_id = #{entity.departParentId}
+        </if>
+        ORDER BY a.update_time desc,a.create_time desc
+    </select>
+
+    <select id="selectListForHisChargeByPage" resultMap="resultMap" parameterType="org.jeecg.modules.pd.entity.PdProduct">
         SELECT
         <include refid="pdProductColumns"/>,
         <include refid="pdUnitColumns"/>,
