@@ -65,6 +65,14 @@ public class PdProductController extends JeecgController<PdProduct, IPdProductSe
         return Result.ok(pageList);
     }
 
+    /**
+     * 关联ex_his_charge_inf表的分页查询
+     * @param pdProduct
+     * @param pageNo
+     * @param pageSize
+     * @param req
+     * @return
+     */
     @GetMapping(value = "/listForHisCharge")
     public Result<?> queryPageListForHisCharge(PdProduct pdProduct,
                                                @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
