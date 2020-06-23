@@ -20,10 +20,7 @@
         <a-form-item label="所属科室" :labelCol="labelCol" :wrapperCol="wrapperCol">
           <a-input :disabled="true" autocomplete="off" v-decorator="[ 'departName', validatorRules.departName]" ></a-input>
         </a-form-item>
-        <!--<a-form-item label="关联科室名称" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input :disabled="disableSubmit" autocomplete="off" v-decorator="[ 'departName', validatorRules.departName]" ></a-input>
-        </a-form-item>-->
-        <a-form-item
+        <!--<a-form-item
           label="关联实验室名称"
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
@@ -39,10 +36,25 @@
             :disabled="disableSubmit"
            >
           </a-tree-select>
-        </a-form-item>
-
-
-
+        </a-form-item>-->
+          <a-form-item label="关联实验室名称" :labelCol="labelCol" :wrapperCol="wrapperCol">
+            <a-select
+              mode="multiple"
+              showSearch
+              :departId="departValue"
+              :defaultActiveFirstOption="false"
+              :allowClear="true"
+              :showArrow="true"
+              :filterOption="false"
+              @search="departHandleSearch"
+              @focus="departHandleSearch"
+              :notFoundContent="notFoundContent"
+              v-decorator="[ 'departIdList', validatorRules.departIdList]"
+              placeholder="请选择科室"
+            >
+              <a-select-option v-for="d in departData" :key="d.id">{{d.departName}}</a-select-option>
+            </a-select>
+          </a-form-item>
       </a-form>
     </a-spin>
     <div class="drawer-bootom-button" >
@@ -56,12 +68,11 @@
 
 <script>
 
-  import { httpAction } from '@/api/manage'
+  import { httpAction,getAction } from '@/api/manage'
   import pick from 'lodash.pick'
   import { validateDuplicateValue } from '@/utils/util'
   import JDictSelectTag from "@/components/dict/JDictSelectTag"
   import {queryPdDepartTreeList} from '@/api/api'
-
   export default {
     name: "ExLabInstrInfModal",
     components: {
@@ -76,6 +87,9 @@
         model: {},
         localCategoryType:0,
         show:true,//根据菜单类型，动态显示隐藏表单元素
+        departData: [],
+        departValue: undefined,
+        notFoundContent:"未找到内容",
         treeData:[],
         validateStatus:"",
         disableSubmit:false,
@@ -90,15 +104,17 @@
         },
         confirmLoading: false,
         validatorRules: {
-          departName: {rules: [
+          /*departName: {rules: [
               {required: true, message: '请选择关联实验室!'},
-            ]},
+            ]},*/
+          departIdList: { rules: [{ required: true, message: '请选择科室!' }] },
           fsfKsbh:{},
           fsfKsmc:{},
           fsfKsjm:{},
         },
         url: {
           edit: "/ex/exLabInstrInf/edit",
+          queryDepart: "/pd/pdDepart/queryListTree",
         }
       }
     },
@@ -113,9 +129,15 @@
         this.form.resetFields();
         this.model = Object.assign({}, record);
         this.visible = true;
-        this.loadTree();
+        this.departHandleSearch();
         this.$nextTick(() => {
           this.form.setFieldsValue(pick(this.model,'departName','instrCode','instrName','testDepartName'));
+          let testDepartId=this.model.testDepartId;
+          if(testDepartId != null && testDepartId != ""){
+            let departIds = this.model.testDepartId.split(",");
+            this.form.setFieldsValue({departIdList:departIds});
+          }
+
           //获取光标
           let input = this.$refs['inputFocus'];
           input.focus()
@@ -136,6 +158,7 @@
                that.$message.error("请选择关联实验室！");
               return;
             }
+            formData.testDepartId=this.model.departIdList.join(",");
             httpAction(this.url.edit,formData,"put").then((res)=>{
               if(res.success){
                 that.$message.success(res.message);
@@ -151,6 +174,16 @@
 
         })
       },
+      //科室查询start
+      departHandleSearch(value) {
+        getAction(this.url.queryDepart,{departName:value}).then((res)=>{
+          if (!res.success) {
+            this.cmsFailed(res.message);
+          }
+          this.departData = res.result;
+        })
+      },
+      //科室查询end
       handleCancel () {
         this.close()
       },
@@ -161,28 +194,6 @@
         this.localCategoryType=e.target.value
         this.show = true;
       },
-    /*  handleParentIdChange(value){
-        if(!value){
-          this.validateStatus="error"
-        }else{
-          this.validateStatus="success"
-        }
-      },*/
-      loadTree(){
-        let that = this;
-        queryPdDepartTreeList().then((res)=>{
-          if(res.success){
-            that.treeData = [];
-            let treeList = res.result.treeList
-            for(let a=0;a<treeList.length;a++){
-              let temp = treeList[a];
-              temp.isLeaf = temp.leaf;
-              that.treeData.push(temp);
-            }
-          }
-        });
-      },
-
       // 根据屏幕变化,设置抽屉尺寸
       resetScreenSize(){
         let screenWidth = document.body.clientWidth;

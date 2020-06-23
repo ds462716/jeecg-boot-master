@@ -840,3 +840,6 @@ ADD COLUMN `wb` varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFA
 ALTER TABLE `ex_his_charge_inf`
 ADD COLUMN `depart_id` varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NULL COMMENT '所属部门' AFTER `wb`,
 ADD COLUMN `depart_parent_id` varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NULL COMMENT '所属部门的顶级部门' AFTER `depart_id`;
+-- add by mcb 2020年6月23日14:48:43 增加字段长度
+ALTER TABLE `jeecg-boot`.`ex_lab_instr_inf`
+MODIFY COLUMN `test_depart_id` varchar(500) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '所在检验室' AFTER `depart_id`;
