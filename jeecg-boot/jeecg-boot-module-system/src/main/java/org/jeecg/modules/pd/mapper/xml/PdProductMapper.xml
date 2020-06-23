@@ -548,7 +548,7 @@
         <if test='entity.hisChargeCodeSynFlag != null and entity.hisChargeCodeSynFlag == "2"'>
             AND (a.charge_code is null or a.charge_code = '')
         </if>
-        ORDER BY a.update_time desc,a.create_time desc
+        ORDER BY a.create_time desc
     </select>
 
     <!-- 用于产品弹出框 -->

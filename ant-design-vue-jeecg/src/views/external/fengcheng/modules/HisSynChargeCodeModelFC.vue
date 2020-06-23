@@ -10,9 +10,9 @@
     cancelText="关闭"
   >
     <a-spin :spinning="confirmLoading">
-      <div style="background:#ECECEC; padding:10px">
+      <div style="background:#ECECEC; padding:5px">
         <a-form :form="form">
-          <a-card style="margin-bottom: 10px">
+          <a-card style="margin-bottom: 5px">
             <a-row :gutter="24">
               <a-col :md="8" :sm="8" v-show="false">
                 <a-form-item label="id" :labelCol="labelCol" :wrapperCol="wrapperCol">
