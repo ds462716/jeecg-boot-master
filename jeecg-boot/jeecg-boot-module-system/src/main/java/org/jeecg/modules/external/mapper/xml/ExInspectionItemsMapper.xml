@@ -100,6 +100,9 @@
         <if test="entity.queryDateEnd != null and entity.queryDateEnd != ''">
             AND substr(a.test_date,1,11) &lt;= #{entity.queryDateEnd}
         </if>
+        <if test="entity.instrCode != null and entity.instrCode != ''">
+            AND a.instr_code=#{entity.instrCode}
+        </if>
         order by a.create_time desc
     </select>
 
@@ -127,6 +130,9 @@
         </if>
         <if test="entity.barCode != null and entity.barCode != ''">
             AND a.bar_code LIKE concat('%',#{entity.barCode},'%')
+        </if>
+        <if test="entity.instrCode != null and entity.instrCode != ''">
+            AND a.instr_code=#{entity.instrCode}
         </if>
         order by b.create_time desc
     </select>
