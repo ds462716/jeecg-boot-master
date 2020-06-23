@@ -269,5 +269,21 @@ public class PdCategoryController extends JeecgController<PdCategory, IPdCategor
     public Result<?> importExcel(HttpServletRequest request, HttpServletResponse response) {
         return super.importExcel(request, response, PdCategory.class);
     }
-
+	 /**
+	  * 一键生成单位的拼音简码自定义码
+	  * http://localhost:3000/jeecg-boot/pd/pdDepart/generateUnitPyWb?_t=1592379417
+	  * @return
+	  */
+	 @PostMapping(value = "generateUnitPyWb")
+	 public Result<Object> generateUnitPyWb() {
+		 Result<Object> result = new Result<>();
+		 try{
+			 result = pdCategoryService.generateUnitPyWb();
+		 }catch(Exception e){
+			 log.error(e.getMessage(), e);
+			 result.setCode(500);
+			 result.setMessage("粘贴失败");
+		 }
+		 return result;
+	 }
 }
