@@ -35,7 +35,27 @@
             </a-form-item>
           </a-col>
           <template v-if="toggleSearchStatus">
-
+            <a-col :md="6" :sm="8">
+              <a-form-item label="供应商">
+                <a-select
+                  ref="supplierSelect"
+                  showSearch
+                  :supplierId="supplierValue"
+                  placeholder="请选择供应商"
+                  :defaultActiveFirstOption="false"
+                  :showArrow="true"
+                  :allowClear="true"
+                  :filterOption="false"
+                  @search="supplierHandleSearch"
+                  @change="supplierHandleChange"
+                  @focus="supplierHandleSearch"
+                  :notFoundContent="notFoundContent"
+                  v-model="queryParam.supplierId"
+                >
+                  <a-select-option v-for="d in supplierData" :key="d.value">{{d.text}}</a-select-option>
+                </a-select>
+              </a-form-item>
+            </a-col>
           </template>
 
           <a-col :md="6" :sm="8">
@@ -100,6 +120,8 @@
         notFoundContent:"未找到内容",
         venderValue: undefined,
         venderData: [],
+        supplierValue: undefined,
+        supplierData: [],
         // 表头
         columns: [
           {
@@ -170,6 +192,7 @@
           list: "/pd/pdBottleInf/bottleInfReportQuery",
           exportXlsUrl: "/pd/pdBottleInf/ReportQueryExportXls",
           queryVender:"/pd/pdVender/getVenderList",
+          querySupplier:"/pd/pdSupplier/getSupplierList",
         },
         dictOptions:{
 
@@ -196,7 +219,14 @@
       },
       //生产厂家查询end
 
-      //生产厂家查询end
+      //供应商查询start
+      supplierHandleSearch(value) {
+        this.getList(value,this.url.querySupplier,"1");
+      },
+      supplierHandleChange(value) {
+        this.supplierValue = value;
+        this.getList(value,this.url.querySupplier,"1");
+      },
       getList(value,url,flag){
         getAction(url,{name:value}).then((res)=>{
           if (!res.success) {

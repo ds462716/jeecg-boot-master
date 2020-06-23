@@ -10,7 +10,7 @@
     :footer="null">
 
     <div :style="{ padding: '0 0 32px 32px' }">
-      <h4 :style="{ marginBottom: '20px' }">{{ title1 }}</h4>
+      <h4 :style="{ marginBottom: '20px' }">{{this.model.productName+title1 }}</h4>
       <v-chart :force-fit="true" :height="height" :data="data1" :scale="scale" :onClick="handleClick">
         <v-tooltip/>
         <v-axis/>
@@ -22,7 +22,7 @@
 
 
     <div :style="{ padding: '0 0 32px 32px' }">
-      <h4 :style="{ marginBottom: '20px' }">{{ title2 }}</h4>
+      <h4 :style="{ marginBottom: '20px' }">{{this.model.productName+title2 }}</h4>
       <v-chart :force-fit="true" :height="height" :data="data2" :scale="scale" :onClick="handleClick">
         <v-tooltip/>
         <v-axis/>
@@ -48,13 +48,14 @@
       JDictSelectTag,
     },
     props: {
-      title1: {
+       title1: {
         type: String,
-        default: '赣州市立医院 ——金额统计'
+        default: "——金额统计(元)"
       },
+
       title2: {
         type: String,
-        default: '赣州市立医院 ——数量统计'
+        default:  '——数量统计'
       },
       dataSource1: {
         type: Array,

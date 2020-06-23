@@ -6,9 +6,23 @@
         <a-row :gutter="24">
           <a-col :md="6" :sm="8">
             <a-form-item label="检验仪器名称">
-              <a-input placeholder="请输入仪器名称" v-model="queryParam.departName"></a-input>
+              <a-select
+                showSearch
+                :departId="instrValue"
+                :defaultActiveFirstOption="false"
+                :allowClear="true"
+                :showArrow="true"
+                :filterOption="false"
+                @search="instrHandleSearch"
+                @focus="instrHandleSearch"
+                :notFoundContent="notFoundContent"
+                v-model="queryParam.instrCode"
+                placeholder="请选择仪器"
+              >
+                <a-select-option v-for="d in instrData" :key="d.instrCode">{{d.instrName}}</a-select-option>
+              </a-select>
             </a-form-item>
-          </a-col>
+          </a-col
           <a-col :md="6" :sm="8">
             <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
               <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
@@ -72,6 +86,9 @@
       return {
         description: '检验仪器管理页面',
         confirmLoading: false,
+        instrData: [],
+        instrValue: undefined,
+        notFoundContent:"未找到内容",
         // 表头
         columns: [
           {
@@ -119,6 +136,7 @@
         url: {
           list: "/ex/exLabInstrInf/list",
           synUpdate: "/ex/exLabInstrInf/synUpdateInstrInf",
+          queryExLabInstrInf:"/ex/exLabInstrInf/getExLabInstrInf",
          },
         dictOptions:{
         },
@@ -132,6 +150,17 @@
       isDisabledAuth(code){
         return !disabledAuthFilter(code);
       },
+
+      //仪器查询start
+      instrHandleSearch(value) {
+        getAction(this.url.queryExLabInstrInf,{queryType:"0",instrName:value}).then((res)=>{
+          if (!res.success) {
+            this.cmsFailed(res.message);
+          }
+          this.instrData = res.result;
+        })
+      },
+      //仪器查询end
       loadData(arg) {
         //加载数据 若传入参数1则加载第一页的内容
         if (arg === 1) {

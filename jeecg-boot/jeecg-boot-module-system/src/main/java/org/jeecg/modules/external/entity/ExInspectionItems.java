@@ -187,7 +187,7 @@ public class ExInspectionItems{
     @JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd HH:mm:ss")
     @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
     @ApiModelProperty(value = "试剂扣减时间")
-    private Double inspectionTime;
+    private Date inspectionTime;
 
 
 

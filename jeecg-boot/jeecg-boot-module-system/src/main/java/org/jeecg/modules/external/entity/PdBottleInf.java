@@ -127,6 +127,8 @@ public class PdBottleInf extends BaseEntity {
     private String venderName; //生产厂家
     @TableField(exist = false)
     private String venderId; //生产厂家Id
+    @TableField(exist = false)
+    private String supplierId; //供应商ID
     /**批次号*/
     @Excel(name = "批次号", width = 15)
     @TableField(exist = false)

@@ -153,6 +153,8 @@
     left join pd_unit e  on e.id=c.unit_id and e.del_flag="0"
     left join pd_vender g on c.vender_id=g.id  and g.del_flag="0"
         where close_remarks is not null
+        and   a.create_time > DATE_SUB(CURDATE(), INTERVAL 1 YEAR)
+        and substr(a.create_time,1,7) &lt;=substr(CURDATE(),1,7)
         <if test="entity.productName != null and entity.productName != ''">
             AND (c.name LIKE concat('%',#{entity.productName},'%')
             or c.py LIKE concat('%',#{entity.productName},'%')
@@ -165,6 +167,9 @@
         </if>
         <if test="entity.venderId != null and entity.venderId != ''">
             AND c.vender_id = #{entity.venderId}
+        </if>
+        <if test="entity.supplierId != null and entity.supplierId != ''">
+            AND c.supplier_id = #{entity.supplierId}
         </if>
         <if test="entity.departParentId != null and entity.departParentId != ''">
             AND a.depart_parent_id = #{entity.departParentId}
@@ -186,7 +191,7 @@
         DATE_FORMAT(x.Month, '%Y-%m') as "createTime",
         "0"  as "sum"
         FROM   XNumber x
-        where  DATE_SUB(CURDATE(), INTERVAL 1 Month) >= substr(x.Month,1,7)
+        where  x.Month > DATE_SUB(CURDATE(), INTERVAL 1 YEAR)
         and substr(x.Month,1,7) &lt;=substr(CURDATE(),1,7)
     UNION ALL
    SELECT
@@ -196,7 +201,10 @@
    LEFT JOIN pd_product_stock b ON a.stock_id = b.id
    LEFT JOIN pd_product c ON c.id = b.product_id
    LEFT JOIN pd_unit d ON d.id = c.spec_unit_id
-   LEFT JOIN pd_unit e ON e.id = c.unit_id WHERE close_remarks IS NOT NULL
+   LEFT JOIN pd_unit e ON e.id = c.unit_id
+        WHERE close_remarks IS NOT NULL
+        and   a.create_time > DATE_SUB(CURDATE(), INTERVAL 1 YEAR)
+        and substr(a.create_time,1,7) &lt;=substr(CURDATE(),1,7)
         <if test="departParentId != null and  departParentId != ''">
             AND a.depart_parent_id = #{ departParentId}
         </if>
@@ -217,7 +225,7 @@
         DATE_FORMAT(x.Month, '%Y-%m') as "createTime",
         "0"  as "y"
         FROM   XNumber x
-        where  DATE_SUB(CURDATE(), INTERVAL 1 Month) >= substr(x.Month,1,7)
+        where   x.Month > DATE_SUB(CURDATE(), INTERVAL 1 YEAR)
         and substr(x.Month,1,7) &lt;=substr(CURDATE(),1,7)
         UNION ALL
         SELECT
@@ -228,7 +236,10 @@
         left join pd_stock_record_detail f on f.id=b.record_detail_id
         LEFT JOIN pd_product c ON c.id = b.product_id
         LEFT JOIN pd_unit d ON d.id = c.spec_unit_id
-        LEFT JOIN pd_unit e ON e.id = c.unit_id WHERE close_remarks IS NOT NULL
+        LEFT JOIN pd_unit e ON e.id = c.unit_id
+        WHERE close_remarks IS NOT NULL
+        and   a.create_time > DATE_SUB(CURDATE(), INTERVAL 1 YEAR)
+        and substr(a.create_time,1,7) &lt;=substr(CURDATE(),1,7)
         <if test="departParentId != null and  departParentId != ''">
             AND a.depart_parent_id = #{ departParentId}
         </if>
