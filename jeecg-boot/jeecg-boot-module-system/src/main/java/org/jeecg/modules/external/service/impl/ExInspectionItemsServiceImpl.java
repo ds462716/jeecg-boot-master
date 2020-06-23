@@ -108,22 +108,27 @@ public class ExInspectionItemsServiceImpl extends ServiceImpl<ExInspectionItemsM
                                     it.remove();
                                 }
                             }
-                            Map map = pdProductStockTotalService.lisUpdateUseStock(items, testDpeartId, pdUsePackageDetails);
-                            String code= MapUtils.getString(map,"code");
-                            String msg=MapUtils.getString(map,"msg");
-                            if ("400".equals(code)) {
-                                items.setRemarks(items.getPatientType() + "病人用量未配置");
-                                items.setAcceptStatus(PdConstant.ACCEPT_STATUS_2);//未扣减
-                            } else if("300".equals(code)) {
-                                items.setRemarks(msg);
-                                if(bool.equals(PdConstant.FALSE)) {
-                                    items.setAcceptStatus(PdConstant.ACCEPT_STATUS_4);//部分扣减
-                                }else{
+                            if(pdUsePackageDetails.size()>0) {
+                                Map map = pdProductStockTotalService.lisUpdateUseStock(items, testDpeartId, pdUsePackageDetails);
+                                String code = MapUtils.getString(map, "code");
+                                String msg = MapUtils.getString(map, "msg");
+                                if ("400".equals(code)) {
+                                    items.setRemarks(items.getPatientType() + "病人用量未配置");
                                     items.setAcceptStatus(PdConstant.ACCEPT_STATUS_2);//未扣减
+                                } else if ("300".equals(code)) {
+                                    items.setRemarks(msg);
+                                    if (bool.equals(PdConstant.FALSE)) {
+                                        items.setAcceptStatus(PdConstant.ACCEPT_STATUS_4);//部分扣减
+                                    } else {
+                                        items.setAcceptStatus(PdConstant.ACCEPT_STATUS_2);//未扣减
+                                    }
+                                } else if ("500".equals(code)) {
+                                    items.setRemarks(" ");
+                                    items.setAcceptStatus(PdConstant.ACCEPT_STATUS_4);//部分扣减
+                                } else {
+                                    items.setRemarks(" ");
+                                    items.setAcceptStatus(PdConstant.ACCEPT_STATUS_0);//已扣减
                                 }
-                            }else if("500".equals(code)) {
-                                items.setRemarks(" ");
-                                items.setAcceptStatus(PdConstant.ACCEPT_STATUS_4);//部分扣减
                             }else{
                                 items.setRemarks(" ");
                                 items.setAcceptStatus(PdConstant.ACCEPT_STATUS_0);//已扣减

@@ -228,6 +228,7 @@ public class ExInspectionItemsController extends JeecgController<ExInspectionIte
 								 it.remove();
 							 }
 						 }
+						 if(pdUsePackageDetails.size()>0){
 						 Map map = pdProductStockTotalService.lisUpdateUseStock(items, testDpeartId, pdUsePackageDetails);
 						 String code= MapUtils.getString(map,"code");
 						 String msg=MapUtils.getString(map,"msg");
@@ -244,6 +245,10 @@ public class ExInspectionItemsController extends JeecgController<ExInspectionIte
 						 }else if("500".equals(code)) {
 							 items.setRemarks(" ");
 							 items.setAcceptStatus(PdConstant.ACCEPT_STATUS_4);//部分扣减
+						 }else{
+							 items.setRemarks(" ");
+							 items.setAcceptStatus(PdConstant.ACCEPT_STATUS_0);//已扣减
+						 }
 						 }else{
 							 items.setRemarks(" ");
 							 items.setAcceptStatus(PdConstant.ACCEPT_STATUS_0);//已扣减
