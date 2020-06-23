@@ -14,6 +14,7 @@ import org.jeecgframework.poi.excel.annotation.Excel;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * @Description: ex_lab_instr_inf
@@ -105,4 +106,10 @@ public class ExLabInstrInf  extends BaseEntity {
     /**查询类别   0:查询所有   1或null：查询当前科室下仪器*/
     @TableField(exist = false)
     private String queryType;
+    /*多个部门集合*/
+    @TableField(exist = false)
+    private List<String> departIdList;
+    /**检验科室名称*/
+    @TableField(exist = false)
+    private String testDepartNames;
 }

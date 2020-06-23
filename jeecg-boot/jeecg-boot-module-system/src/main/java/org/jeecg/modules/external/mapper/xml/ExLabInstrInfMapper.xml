@@ -39,7 +39,7 @@
             AND a.depart_id = #{departId}
         </if>
         <if test="testDepartId != null and testDepartId != ''">
-            AND a.test_depart_id = #{testDepartId}
+            AND a.test_depart_id like  concat('%',#{testDepartId},'%')
         </if>
         <if test="departParentId != null and departParentId != ''">
             AND a.depart_parent_id = #{departParentId}

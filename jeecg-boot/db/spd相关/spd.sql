@@ -841,5 +841,9 @@ ALTER TABLE `ex_his_charge_inf`
 ADD COLUMN `depart_id` varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NULL COMMENT '所属部门' AFTER `wb`,
 ADD COLUMN `depart_parent_id` varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NULL COMMENT '所属部门的顶级部门' AFTER `depart_id`;
 
+-- add by mcb 2020年6月23日14:48:43 增加字段长度
+ALTER TABLE `jeecg-boot`.`ex_lab_instr_inf`
+MODIFY COLUMN `test_depart_id` varchar(500) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '所在检验室' AFTER `depart_id`;
+
 -- add by jiangxz 2020年6月23日16:40:10 产品价格对照(丰城人民医院)
 INSERT INTO `sys_permission` (`id`, `parent_id`, `name`, `url`, `component`, `component_name`, `redirect`, `menu_type`, `business_type`, `perms`, `perms_type`, `sort_no`, `always_show`, `icon`, `is_route`, `is_leaf`, `keep_alive`, `hidden`, `description`, `create_by`, `create_time`, `update_by`, `update_time`, `del_flag`, `rule_flag`, `status`, `internal_or_external`) VALUES ('1274893655943897090', '1210107255254798338', '产品价格对照(丰城人民医院)', '/external/fengcheng/HisSynProductListFC', 'external/fengcheng/HisSynProductListFC', NULL, NULL, 1, '0', NULL, '1', 1.50, 0, NULL, 1, 1, 0, 0, NULL, 'admin', '2020-06-22 10:35:09', 'admin', '2020-06-22 10:35:30', 0, 0, '1', 0);

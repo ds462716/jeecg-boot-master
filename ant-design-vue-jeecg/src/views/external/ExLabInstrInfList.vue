@@ -119,7 +119,7 @@
           {
             title:'检验室名称',
             align:"center",
-            dataIndex: 'testDepartName'
+            dataIndex: 'testDepartNames'
           },
           {
             title:'同步时间',
