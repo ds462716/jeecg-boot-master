@@ -24,8 +24,8 @@
               </a-form-item>
             </a-col>
             <a-col :md="5" :sm="8">
-              <a-form-item label="规格">
-                <a-input placeholder="请输入规格" v-model="queryParam.spec"></a-input>
+              <a-form-item label="注册证">
+                <a-input placeholder="请输入注册证" v-model="queryParam.registration"></a-input>
               </a-form-item>
             </a-col>
             <a-col :md="5" :sm="8">
@@ -35,8 +35,8 @@
             </a-col>
             <template v-if="toggleSearchStatus">
               <a-col :md="5" :sm="8">
-                <a-form-item label="注册证">
-                  <a-input placeholder="请输入注册证" v-model="queryParam.registration"></a-input>
+                <a-form-item label="规格">
+                  <a-input placeholder="请输入规格" v-model="queryParam.spec"></a-input>
                 </a-form-item>
               </a-col>
               <a-col :md="5" :sm="8">
