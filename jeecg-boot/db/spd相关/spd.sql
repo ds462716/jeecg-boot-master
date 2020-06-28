@@ -862,3 +862,6 @@ INSERT INTO `sys_dict_item` VALUES ('1277141766169251842', '1277141705347649538'
 ALTER TABLE `pd_supplier`
 ADD COLUMN `status`  varchar(1) NULL COMMENT '停用启用状态0启用1停用' AFTER `depart_parent_id`;
 update pd_supplier set `status` = '0';
+ALTER TABLE `pd_group`
+ADD COLUMN `status`  varchar(1) NULL COMMENT '停用启用状态0启用1停用' AFTER `depart_parent_id`;
+update pd_group set `status` = '0';

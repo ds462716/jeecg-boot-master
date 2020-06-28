@@ -1,5 +1,6 @@
 package org.jeecg.modules.pd.controller;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -10,8 +11,10 @@ import java.net.URLDecoder;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.alibaba.fastjson.JSONObject;
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
+import org.jeecg.common.constant.PdConstant;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.oConvertUtils;
@@ -82,6 +85,7 @@ public class PdGroupController extends JeecgController<PdGroup, IPdGroupService>
 		 try {
 			 LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
 			 pdGroup.setDepartParentId(sysUser.getDepartParentId());
+			 pdGroup.setStatus(PdConstant.DISABLE_ENABLE_STATUS_0);//只查启用
 			 List<PdGroup> list = pdGroupService.selectList(pdGroup);
 			 result.setResult(list);
 			 result.setSuccess(true);
@@ -189,4 +193,36 @@ public class PdGroupController extends JeecgController<PdGroup, IPdGroupService>
         return super.importExcel(request, response, PdGroup.class);
     }
 
+	 /**
+	  * 批量停用和启用status 0启用1停用
+	  * @param jsonObject
+	  * @return
+	  */
+	 @RequestMapping(value = "/batchDisable", method = RequestMethod.POST)
+	 public Result<PdGroup> batchDisable(@RequestBody JSONObject jsonObject) {
+		 Result<PdGroup> result = new Result<>();
+		 try {
+			 String ids = jsonObject.getString("ids");
+			 String status = jsonObject.getString("status");
+			 String[] arr = ids.split(",");
+			 List<PdGroup> pdGroups= new ArrayList<>();
+			 for (String id : arr) {
+				 if(oConvertUtils.isNotEmpty(id)) {
+					 PdGroup pdGroup = new PdGroup();
+					 pdGroup.setId(id);
+					 pdGroup.setStatus(status);
+					 pdGroups.add(pdGroup);
+				 }
+			 }
+			 if(pdGroups!=null && pdGroups.size()>0){
+				 pdGroupService.updateBatchById(pdGroups);
+			 }
+		 } catch (Exception e) {
+			 log.error(e.getMessage(), e);
+			 result.error500("操作失败"+e.getMessage());
+		 }
+		 result.success("操作成功!");
+		 return result;
+
+	 }
 }

@@ -289,7 +289,7 @@
           });
           that.$confirm({
             title: "确认操作",
-            content: "是否" + (status == 0 ? "启用" : "停用") + "选中生产厂家?",
+            content: "是否" + (status == 0 ? "启用" : "停用") + "选中供应商?",
             onOk: function () {
               postAction(that.url.batchDisable, {ids: ids, status: status}).then((res) => {
                 if (res.success) {
