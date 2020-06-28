@@ -9,6 +9,16 @@
               <a-input placeholder="请输入单位名称" v-model="queryParam.name"></a-input>
             </a-form-item>
           </a-col>
+          <a-col :md="6" :sm="8">
+            <a-form-item label="单位类型">
+              <j-dict-select-tag-expand v-model="queryParam.unitType" dictCode="unit_type" placeholder="请选择单位类型"/>
+            </a-form-item>
+          </a-col>
+          <a-col :md="6" :sm="8">
+            <a-form-item label="状态">
+              <j-dict-select-tag-expand v-model="queryParam.status" dictCode="disable_enable_status" placeholder="请选择状态"/>
+            </a-form-item>
+          </a-col>
           <a-col :md="6" :sm="8" >
             <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
               <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
@@ -35,6 +45,8 @@
       <a-dropdown v-if="selectedRowKeys.length > 0">
         <a-menu slot="overlay">
           <a-menu-item key="1" @click="batchDel"><a-icon type="delete"/>删除</a-menu-item>
+          <a-menu-item key="2" @click="batchDisable('1')"><a-icon type="lock" />停用</a-menu-item>
+          <a-menu-item key="3" @click="batchDisable('0')"><a-icon type="unlock" />启用</a-menu-item>
         </a-menu>
         <a-button style="margin-left: 8px"> 批量操作 <a-icon type="down" /></a-button>
       </a-dropdown>
@@ -108,13 +120,16 @@
 
   import { JeecgListMixin } from '@/mixins/JeecgListMixin'
   import PdUnitModal from './modules/PdUnitModal'
+  import {postAction} from '@/api/manage'
+  import JDictSelectTagExpand from "@/components/dict/JDictSelectTagExpand"
   import {initDictOptions, filterMultiDictText} from '@/components/dict/JDictSelectUtil'
 
   export default {
     name: "PdUnitList",
     mixins:[JeecgListMixin],
     components: {
-      PdUnitModal
+      PdUnitModal,
+      JDictSelectTagExpand
     },
     data () {
       return {
@@ -165,6 +180,18 @@
             dataIndex: 'zdy'
           },
           {
+            title:'状态',
+            align:"center",
+            dataIndex: 'status',
+            customRender:(text)=>{
+              if(!text){
+                return ''
+              }else{
+                return filterMultiDictText(this.dictOptions['status'], text+"")
+              }
+            }
+          },
+          {
             title:'备注',
             align:"center",
             dataIndex: 'remarks'
@@ -182,9 +209,11 @@
           deleteBatch: "/pd/pdUnit/deleteBatch",
           exportXlsUrl: "/pd/pdUnit/exportXls",
           importExcelUrl: "pd/pdUnit/importExcel",
+          batchDisable: "pd/pdUnit/batchDisable",
         },
         dictOptions:{
           unitType:[],
+          status:[]
         },
       }
     },
@@ -198,6 +227,11 @@
         initDictOptions('unit_type').then((res) => {
           if (res.success) {
             this.$set(this.dictOptions, 'unitType', res.result)
+          }
+        }),
+        initDictOptions('disable_enable_status').then((res) => {
+          if (res.success) {
+            this.$set(this.dictOptions, 'status', res.result)
           }
         })
       },
@@ -234,7 +268,39 @@
             }
           }
         }
-      }
+      },
+      /**
+       * 批量启用或停用
+       * @param status
+       * @returns {boolean}
+       */
+      batchDisable(status) {
+        if (this.selectedRowKeys.length <= 0) {
+          this.$message.warning('请选择一条记录！');
+          return false;
+        } else {
+          let ids = "";
+          let that = this;
+          that.selectedRowKeys.forEach(function (val) {
+            ids += val + ",";
+          });
+          that.$confirm({
+            title: "确认操作",
+            content: "是否" + (status == 0 ? "启用" : "停用") + "选中单位?",
+            onOk: function () {
+              postAction(that.url.batchDisable, {ids: ids, status: status}).then((res) => {
+                if (res.success) {
+                  that.$message.success(res.message);
+                  that.loadData();
+                  that.onClearSelected();
+                } else {
+                  that.$message.warning(res.message);
+                }
+              });
+            }
+          });
+        }
+      },
        
     }
   }

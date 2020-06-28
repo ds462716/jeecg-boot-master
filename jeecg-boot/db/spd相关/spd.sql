@@ -865,3 +865,6 @@ update pd_supplier set `status` = '0';
 ALTER TABLE `pd_group`
 ADD COLUMN `status`  varchar(1) NULL COMMENT '停用启用状态0启用1停用' AFTER `depart_parent_id`;
 update pd_group set `status` = '0';
+ALTER TABLE `pd_unit`
+ADD COLUMN `status`  varchar(1) NULL COMMENT '停用启用状态0启用1停用' AFTER `depart_parent_id`;
+update pd_unit set `status` = '0';
