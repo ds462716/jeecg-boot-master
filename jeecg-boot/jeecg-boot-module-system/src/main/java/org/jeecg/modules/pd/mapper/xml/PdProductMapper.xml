@@ -108,6 +108,7 @@
         <result column="device_classification" property="deviceClassification" jdbcType="VARCHAR"/>
         <result column="validity_flag" property="validityFlag" jdbcType="VARCHAR"/>
         <result column="product_flag" property="productFlag" jdbcType="VARCHAR"/>
+        <result column="del_flag" property="delFlag" jdbcType="VARCHAR"/>
         <result column="fsfJe" property="fsfJe" jdbcType="DECIMAL"/>
         <result column="priceDifference" property="priceDifference" jdbcType="DECIMAL"/>
         <result column="fsfXmmc" property="fsfXmmc" jdbcType="VARCHAR"/>
@@ -357,56 +358,57 @@
         <include refid="pdGroupJoins"/>
         <include refid="pdRuleJoins"/>
         <where>
-            a.del_flag = #{entity.DEL_FLAG_NORMAL}
+            a.del_flag = #{DEL_FLAG_NORMAL}
         </where>
         <if test="name != null and name != ''">
-            AND (a.name LIKE concat('%',#{entity.name},'%')
-            or a.py LIKE concat('%',#{entity.name},'%')
-            or a.wb LIKE concat('%',#{entity.name},'%')
-            or a.zdy LIKE concat('%',#{entity.name},'%')
-            or a.bname LIKE concat('%',#{entity.name},'%')
-            or a.bpy LIKE concat('%',#{entity.name},'%')
-            or a.bwb LIKE concat('%',#{entity.name},'%')
+            AND (a.name LIKE concat('%',#{name},'%')
+            or a.py LIKE concat('%',#{name},'%')
+            or a.wb LIKE concat('%',#{name},'%')
+            or a.zdy LIKE concat('%',#{name},'%')
+            or a.bname LIKE concat('%',#{name},'%')
+            or a.bpy LIKE concat('%',#{name},'%')
+            or a.bwb LIKE concat('%',#{name},'%')
             )
         </if>
         <if test="number != null and number != ''">
-            AND a.number LIKE concat('%',#{entity.number},'%')
+            AND a.number LIKE concat('%',#{number},'%')
         </if>
         <if test="registration != null and registration != ''">
-            AND a.registration LIKE concat('%',#{entity.registration},'%')
+            AND a.registration LIKE concat('%',#{registration},'%')
         </if>
         <if test="chargeCode != null and chargeCode != ''">
-            AND a.charge_code LIKE concat('%',#{entity.chargeCode},'%')
+            AND a.charge_code LIKE concat('%',#{chargeCode},'%')
         </if>
         <if test="venderId != null and venderId != ''">
-            AND a.vender_id = #{entity.venderId}
+            AND a.vender_id = #{venderId}
         </if>
         <if test="supplierId != null and supplierId != ''">
-            AND a.supplier_id = #{entity.supplierId}
+            AND a.supplier_id = #{supplierId}
         </if>
         <if test="spec != null and spec != ''">
-            AND a.spec LIKE concat('%',#{entity.spec},'%')
+            AND a.spec LIKE concat('%',#{spec},'%')
         </if>
         <if test="version != null and version != ''">
-            AND a.version LIKE concat('%',#{entity.version},'%')
+            AND a.version LIKE concat('%',#{version},'%')
         </if>
         <if test="validityFlag != null and validityFlag != ''">
-            AND a.validity_flag = #{entity.validityFlag}
+            AND a.validity_flag = #{validityFlag}
         </if>
         <if test="productFlag != null and productFlag != ''">
-            AND a.product_flag = #{entity.productFlag}
+            AND a.product_flag = #{productFlag}
         </if>
         <if test="deviceClassification != null and deviceClassification != ''">
-            AND a.device_classification = #{entity.deviceClassification}
+            AND a.device_classification = #{deviceClassification}
         </if>
         <if test="departId != null and departId != ''">
-            AND a.depart_id = #{entity.departId}
+            AND a.depart_id = #{departId}
         </if>
         <if test="departParentId != null and departParentId != ''">
-            AND a.depart_parent_id = #{entity.departParentId}
+            AND a.depart_parent_id = #{departParentId}
         </if>
         ORDER BY a.update_time desc,a.create_time desc
     </select>
+
     <select id="selectListByPage" resultMap="resultMap" parameterType="org.jeecg.modules.pd.entity.PdProduct">
         SELECT
         <include refid="pdProductColumns"/>,

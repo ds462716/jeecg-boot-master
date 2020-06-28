@@ -20,7 +20,7 @@ public interface PdProductMapper extends BaseMapper<PdProduct> {
 
     Page<PdProductPage> chooseProductList(Page<PdProductPage> page, @Param("entity") PdProduct entity);
 
-    List<PdProduct> selectList(@Param("entity") PdProduct pdProduct);
+    List<PdProduct> selectList(PdProduct pdProduct);
 
     void updateChargeCode(PdProduct pdProduct);
 
