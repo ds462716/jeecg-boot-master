@@ -11,7 +11,12 @@
           </a-col>
           <a-col :md="6" :sm="8">
             <a-form-item label="状态">
-              <a-select placeholder="状态" :allowClear="true" v-model="queryParam.validityFlag" >
+              <j-dict-select-tag-expand v-model="queryParam.status" dictCode="disable_enable_status" placeholder="请选择状态"/>
+            </a-form-item>
+          </a-col>
+          <a-col :md="6" :sm="8">
+            <a-form-item label="过期状态">
+              <a-select placeholder="过期状态" :allowClear="true" v-model="queryParam.validityFlag" >
                 <a-select-option value="0">正常</a-select-option>
                 <a-select-option value="1">已过期</a-select-option>
                 <a-select-option value="2">近效期</a-select-option>
@@ -44,6 +49,8 @@
       <a-dropdown v-if="selectedRowKeys.length > 0">
         <a-menu slot="overlay">
           <a-menu-item key="1" @click="batchDel"><a-icon type="delete"/>删除</a-menu-item>
+          <a-menu-item key="2" @click="batchDisable('1')"><a-icon type="lock" />停用</a-menu-item>
+          <a-menu-item key="3" @click="batchDisable('0')"><a-icon type="unlock" />启用</a-menu-item>
         </a-menu>
         <a-button style="margin-left: 8px"> 批量操作 <a-icon type="down" /></a-button>
       </a-dropdown>
@@ -121,12 +128,16 @@
 
   import { JeecgListMixin } from '@/mixins/JeecgListMixin'
   import PdVenderModal from './modules/PdVenderModal'
+  import {postAction} from '@/api/manage'
+  import JDictSelectTagExpand from "@/components/dict/JDictSelectTagExpand"
+  import {initDictOptions, filterMultiDictText} from '@/components/dict/JDictSelectUtil'
 
   export default {
     name: "PdVenderList",
     mixins:[JeecgListMixin],
     components: {
-      PdVenderModal
+      PdVenderModal,
+      JDictSelectTagExpand
     },
     data () {
       return {
@@ -164,6 +175,18 @@
             dataIndex: 'zdy'
           },
           {
+            title:'状态',
+            align:"center",
+            dataIndex: 'status',
+            customRender:(text)=>{
+              if(!text){
+                return ''
+              }else{
+                return filterMultiDictText(this.dictOptions['status'], text+"")
+              }
+            }
+          },
+          {
             title:'创建日期',
             align:"center",
             dataIndex: 'createTime'
@@ -191,8 +214,10 @@
           deleteBatch: "/pd/pdVender/deleteBatch",
           exportXlsUrl: "/pd/pdVender/exportXls",
           importExcelUrl: "pd/pdVender/importExcel",
+          batchDisable: "pd/pdVender/batchDisable",
         },
         dictOptions:{
+          status:[],
         },
       }
     },
@@ -203,6 +228,11 @@
     },
     methods: {
       initDictConfig(){
+        initDictOptions('disable_enable_status').then((res) => {
+          if (res.success) {
+            this.$set(this.dictOptions, 'status', res.result)
+          }
+        })
       },
       setdataCss(record,index) {
         let validityFlag = record.validityFlag;
@@ -241,7 +271,39 @@
             }
           }
         }
-      }
+      },
+      /**
+       * 批量启用或停用
+       * @param status
+       * @returns {boolean}
+       */
+      batchDisable(status) {
+        if (this.selectedRowKeys.length <= 0) {
+          this.$message.warning('请选择一条记录！');
+          return false;
+        } else {
+          let ids = "";
+          let that = this;
+          that.selectedRowKeys.forEach(function (val) {
+            ids += val + ",";
+          });
+          that.$confirm({
+            title: "确认操作",
+            content: "是否" + (status == 0 ? "启用" : "停用") + "选中生产厂家?",
+            onOk: function () {
+              postAction(that.url.batchDisable, {ids: ids, status: status}).then((res) => {
+                if (res.success) {
+                  that.$message.success(res.message);
+                  that.loadData();
+                  that.onClearSelected();
+                } else {
+                  that.$message.warning(res.message);
+                }
+              });
+            }
+          });
+        }
+      },
     }
   }
 </script>

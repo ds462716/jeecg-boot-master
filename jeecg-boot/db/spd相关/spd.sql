@@ -851,3 +851,14 @@ INSERT INTO `sys_permission` (`id`, `parent_id`, `name`, `url`, `component`, `co
 -- add by jiangxz 2020年6月24日 14:03:03 发票菜单
 INSERT INTO `sys_permission`(`id`, `parent_id`, `name`, `url`, `component`, `component_name`, `redirect`, `menu_type`, `business_type`, `perms`, `perms_type`, `sort_no`, `always_show`, `icon`, `is_route`, `is_leaf`, `keep_alive`, `hidden`, `description`, `create_by`, `create_time`, `update_by`, `update_time`, `del_flag`, `rule_flag`, `status`, `internal_or_external`) VALUES ('1275352623019450370', '1275351703808368642', '发票维护', '/pd/PdInvoiceAddList', 'pd/PdInvoiceAddList', NULL, NULL, 1, '0', NULL, '1', 1.00, 0, NULL, 1, 1, 0, 0, NULL, 'admin', '2020-06-23 16:58:55', NULL, '2020-06-23 16:58:55', 0, 0, '1', 0);
 INSERT INTO `sys_permission`(`id`, `parent_id`, `name`, `url`, `component`, `component_name`, `redirect`, `menu_type`, `business_type`, `perms`, `perms_type`, `sort_no`, `always_show`, `icon`, `is_route`, `is_leaf`, `keep_alive`, `hidden`, `description`, `create_by`, `create_time`, `update_by`, `update_time`, `del_flag`, `rule_flag`, `status`, `internal_or_external`) VALUES ('1275351703808368642', '', '发票管理', '/invoice', 'layouts/RouteView', NULL, NULL, 0, '0', NULL, '1', 3.41, 0, 'money-collect', 1, 0, 0, 0, NULL, 'admin', '2020-06-23 16:55:16', 'admin', '2020-06-23 16:56:05', 0, 0, '1', 0);
+
+-- add by zxh 2020年6月28日15:11:20 停用启用状态
+ALTER TABLE `pd_vender`
+ADD COLUMN `status`  varchar(1) NULL COMMENT '停用启用状态0启用1停用' AFTER `depart_parent_id`;
+update pd_vender set `status` = '0';
+INSERT INTO `sys_dict` VALUES ('1277141705347649538', '停用启用状态', 'disable_enable_status', '', '0', 'admin', '2020-06-28 15:28:05', null, '2020-06-28 15:28:05', '0');
+INSERT INTO `sys_dict_item` VALUES ('1277141750193147905', '1277141705347649538', '停用', '1', '', '1', '1', 'admin', '2020-06-28 15:28:16', null, '2020-06-28 15:28:16');
+INSERT INTO `sys_dict_item` VALUES ('1277141766169251842', '1277141705347649538', '启用', '0', '', '1', '1', 'admin', '2020-06-28 15:28:20', null, '2020-06-28 15:28:20');
+ALTER TABLE `pd_supplier`
+ADD COLUMN `status`  varchar(1) NULL COMMENT '停用启用状态0启用1停用' AFTER `depart_parent_id`;
+update pd_supplier set `status` = '0';
