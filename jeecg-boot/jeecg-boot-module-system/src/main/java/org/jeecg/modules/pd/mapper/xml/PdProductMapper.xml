@@ -453,6 +453,15 @@
         <if test="entity.supplierId != null and entity.supplierId != ''">
             AND a.supplier_id = #{entity.supplierId}
         </if>
+        <if test="entity.categoryOne != null and entity.categoryOne != ''">
+            AND a.category_one = #{entity.categoryOne}
+        </if>
+        <if test="entity.categoryTwo != null and entity.categoryTwo != ''">
+            AND a.category_two = #{entity.categoryTwo}
+        </if>
+        <if test="entity.groupId != null and entity.groupId != ''">
+            AND a.group_id = #{entity.groupId}
+        </if>
         <if test="entity.spec != null and entity.spec != ''">
             AND a.spec LIKE concat('%',#{entity.spec},'%')
         </if>

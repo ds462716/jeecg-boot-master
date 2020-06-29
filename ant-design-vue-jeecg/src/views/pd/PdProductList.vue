@@ -89,6 +89,66 @@
                 <j-dict-select-tag-expand v-model="queryParam.deviceClassification" dictCode="device_classification" placeholder="请选择器械分类"/>
               </a-form-item>
             </a-col>
+            <a-col :md="6" :sm="8">
+              <a-form-item label="一级分类">
+                <a-select
+                  showSearch
+                  :categoryOne="categoryOneValue"
+                  placeholder="请选择一级分类"
+                  :defaultActiveFirstOption="false"
+                  :allowClear="true"
+                  :showArrow="true"
+                  :filterOption="false"
+                  @search="categoryOneHandleSearch"
+                  @change="categoryOneHandleChange"
+                  @focus="categoryOneHandleSearch"
+                  :notFoundContent="notFoundContent"
+                  v-model="queryParam.categoryOne"
+                >
+                  <a-select-option v-for="d in categoryOneData" :key="d.value">{{d.text}}</a-select-option>
+                </a-select>
+              </a-form-item>
+            </a-col>
+            <a-col :md="6" :sm="8">
+              <a-form-item label="二级分类" :labelCol="labelCol" :wrapperCol="wrapperCol">
+                <a-select
+                  showSearch
+                  :categoryTwo="categoryTwoValue"
+                  placeholder="请选择二级分类"
+                  :defaultActiveFirstOption="false"
+                  :allowClear="true"
+                  :showArrow="true"
+                  :filterOption="false"
+                  @search="categoryTwoHandleSearch"
+                  @change="categoryTwoHandleChange"
+                  @focus="categoryTwoHandleSearch"
+                  :notFoundContent="notFoundContent"
+                  v-model="queryParam.categoryTwo"
+                >
+                  <a-select-option v-for="d in categoryTwoData" :key="d.value">{{d.text}}</a-select-option>
+                </a-select>
+              </a-form-item>
+            </a-col>
+            <a-col :md="6" :sm="8">
+              <a-form-item label="产品组别" :labelCol="labelCol" :wrapperCol="wrapperCol">
+                <a-select
+                  showSearch
+                  :groupId="groupValue"
+                  placeholder="请选择产品组别"
+                  :defaultActiveFirstOption="false"
+                  :allowClear="true"
+                  :showArrow="true"
+                  :filterOption="false"
+                  @search="groupHandleSearch"
+                  @change="groupHandleChange"
+                  @focus="groupHandleSearch"
+                  :notFoundContent="notFoundContent"
+                  v-model="queryParam.groupId"
+                >
+                  <a-select-option v-for="d in groupData" :key="d.value">{{d.text}}</a-select-option>
+                </a-select>
+              </a-form-item>
+            </a-col>
           </template>
           <a-col :md="6" :sm="8" >
             <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
@@ -261,6 +321,12 @@
         venderValue: undefined,
         supplierData: [],
         supplierValue: undefined,
+        groupData: [],
+        groupValue: undefined,
+        categoryOneData: [],
+        categoryOneValue: undefined,
+        categoryTwoData: [],
+        categoryTwoValue: undefined,
         chargeCodeVisible:false,
         confirmLoading: false,
         copyRecord:"",
@@ -365,6 +431,9 @@
           importExcelUrl: "pd/pdProduct/importExcel",
           queryVender:"/pd/pdVender/getVenderList",
           querySupplier:"/pd/pdSupplier/getSupplierList",
+          queryGroup:"/pd/pdGroup/getGroupList",
+          queryCategoryOne:"/pd/pdCategory/getCategoryOneList?type=0",
+          queryCategoryTwo:"/pd/pdCategory/getCategoryOneList?type=1",
           editChargeCodeBatch:"/pd/pdProduct/editChargeCodeBatch",
         },
         dictOptions:{
@@ -424,6 +493,43 @@
         this.supplierValue = value;
         fetch(value, data => (this.supplierData = data),this.url.querySupplier);
       },
+      //供应商查询end
+      //组别查询start
+      groupHandleSearch(value) {
+        fetch(value, data => (this.groupData = data),this.url.queryGroup);
+      },
+      groupHandleChange(value) {
+        this.groupValue = value;
+        fetch(value, data => (this.groupData = data),this.url.queryGroup);
+      },
+      //组别查询end
+      //一级分类查询start
+      categoryOneHandleSearch(value) {
+        fetch(value, data => (this.categoryOneData = data),this.url.queryCategoryOne);
+      },
+      categoryOneHandleChange(value) {
+        this.categoryOneValue = value;
+        fetch(value, data => (this.categoryOneData = data),this.url.queryCategoryOne);
+        this.queryParam.categoryTwo="";
+      },
+      //一级分类查询end
+      //二级分类查询start
+      categoryTwoHandleSearch(value) {
+        let categoryOne = this.categoryOneValue;
+        if(!categoryOne){
+          categoryOne = "";
+        }
+        fetch(value, data => (this.categoryTwoData = data),this.url.queryCategoryTwo+"&parentId="+categoryOne);
+      },
+      categoryTwoHandleChange(value) {
+        let categoryOne = this.categoryOneValue;
+        if(!categoryOne){
+          categoryOne = "";
+        }
+        this.categoryTwoValue = value;
+        fetch(value, data => (this.categoryTwoData = data),this.url.queryCategoryTwo+"&parentId="+categoryOne);
+      },
+      //一级分类查询end
       //批量修改收费代码点击事件
       handleChargeCode(){
         this.form.resetFields();
