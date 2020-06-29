@@ -53,6 +53,27 @@ public class HisChargeFCRMYYController {
     }
 
     /**
+     * 查询his打包项目列表
+     * @param inf
+     * @param pageNo
+     * @param pageSize
+     * @param req
+     * @return
+     */
+    @GetMapping(value = "/hisPackageList")
+    public Result<?> hisPackageList(HisChargeInf inf,
+                                    @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
+                                    @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,HttpServletRequest req) {
+        Page<HisChargeInf> page = new Page<HisChargeInf>(pageNo, pageSize);
+
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        inf.setDepartParentId(sysUser.getDepartParentId());
+        inf.setFsfSpec("打包");
+        IPage<HisChargeInf> pageList = hisChargeService.selectList(page, inf);
+        return Result.ok(pageList);
+    }
+
+    /**
      * 查询HIS收费代码列表
      * @param hisCharge
      * @param req

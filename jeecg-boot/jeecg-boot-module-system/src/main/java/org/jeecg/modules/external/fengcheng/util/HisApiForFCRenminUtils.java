@@ -68,8 +68,8 @@ public class HisApiForFCRenminUtils {
             item.put("chargeCode",detail.getChargeCode()); //收费项目代码
             item.put("prodNo",detail.getProductNumber());  //产品代码
             item.put("prodNum",detail.getDosageCount());//数量
-            item.put("packCode","");  //打包项目代码
-            item.put("packNo","");    //打包的编号
+            item.put("packCode",detail.getHisPackageCode()==null?"":detail.getHisPackageCode());  //打包项目代码
+            item.put("packNo",detail.getHisPackageIndex()==null?"":detail.getHisPackageIndex());    //打包序号
             array.add(item);
         }
 

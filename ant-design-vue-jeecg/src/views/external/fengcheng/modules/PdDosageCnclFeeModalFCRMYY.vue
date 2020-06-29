@@ -289,9 +289,13 @@
           columns: [
             { title: '库存明细ID', key: 'productStockId', type: FormTypes.hidden },
             { title: '产品ID', key: 'productId', type: FormTypes.hidden },
+            { title: '出库货位编号', key: 'outHuoweiCode', type: FormTypes.hidden },
+            { title: '计费id', key: 'hisChargeId', type: FormTypes.hidden },
+            { title: '计费明细id', key: 'hisChargeItemId', type: FormTypes.hidden },
+            { title: '是否计费', key: 'isCharge',type: FormTypes.hidden},
+
             { title: '产品名称', key: 'productName', type: FormTypes.normal,width:"220px" },
             { title: '产品编号', key: 'productNumber', width:"200px" },
-            { title: '产品条码', key: 'productBarCode', type: FormTypes.input, disabled:true, width:"200px" },
             { title: '规格', key: 'spec', width:"200px" },
             { title: '批号', key: 'batchNo', width:"100px" },
             { title: '单位', key: 'unitName', width:"50px" },
@@ -307,12 +311,13 @@
             { title: '实际使用数量', key: 'leftRefundNum', width:"80px" },
             { title: '收费状态', key: 'hyChargedText', width:"80px" },
             { title: '收费项目代码', key: 'chargeCode', width:"80px" },
-            { title: '是否计费', key: 'isCharge',type: FormTypes.hidden},
             { title: '是否计费', key: 'isChargeText', width:"80px"},
+            { title: '打包编码', key: 'hisPackageCode', type: FormTypes.input, disabled:true, width:"120px" },
+            { title: '打包名称', key: 'hisPackageName', type: FormTypes.input, disabled:true, width:"120px" },
+            { title: '打包标识', key: 'hisPackageFlag', type: FormTypes.input, disabled:true, width:"50px" },
+            { title: '产品条码', key: 'productBarCode', type: FormTypes.input, disabled:true, width:"200px" },
             { title: '出库货位', key: 'outHuoweiName', width:"100px" },
-            { title: '出库货位编号', key: 'outHuoweiCode', type: FormTypes.hidden },
-            { title: '计费id', key: 'hisChargeId', type: FormTypes.hidden },
-            { title: '计费明细id', key: 'hisChargeItemId', type: FormTypes.hidden },
+
           ]
         },
         disableSubmit:false,

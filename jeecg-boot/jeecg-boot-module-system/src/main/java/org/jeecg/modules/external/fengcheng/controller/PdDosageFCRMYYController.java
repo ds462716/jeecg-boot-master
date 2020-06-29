@@ -2,11 +2,12 @@ package org.jeecg.modules.external.fengcheng.controller;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections.CollectionUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.PdConstant;
+import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.external.fengcheng.service.IPdDosageFCRMYYService;
 import org.jeecg.modules.external.fengcheng.util.HisApiForFCRenminUtils;
 import org.jeecg.modules.pd.entity.PdDosage;
@@ -18,7 +19,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @Description: 丰城中医院计费controller
@@ -125,14 +129,40 @@ public class PdDosageFCRMYYController {
     public Result<?> dosageFee(@RequestBody PdDosage pdDosage) {
         List<PdDosageDetail> detailList = pdDosage.getPdDosageDetails();
         if (CollectionUtils.isNotEmpty(detailList)) {
+
+            List<PdDosageDetail> newList = new ArrayList<>();
+            Set<String> hisPackageCodeList = new HashSet<>();
+            for(PdDosageDetail pdd : detailList){
+                if(oConvertUtils.isNotEmpty(pdd.getHisPackageCode())){
+                    hisPackageCodeList.add(pdd.getHisPackageCode()+pdd.getHisPackageFlag());
+                }else{
+                    newList.add(pdd);
+                }
+            }
+
+            if(CollectionUtils.isNotEmpty(hisPackageCodeList)){
+                for(String hisPackageCode : hisPackageCodeList){
+                    int index = 0;
+                    List<PdDosageDetail> addList = new ArrayList<>();
+                    for(PdDosageDetail chargeItem : detailList){
+                        if(oConvertUtils.isNotEmpty(chargeItem.getHisPackageCode())
+                                && hisPackageCode.equals(chargeItem.getHisPackageCode()+chargeItem.getHisPackageFlag())){
+                            chargeItem.setHisPackageIndex(index+"");
+                            addList.add(chargeItem);
+                            index = index + 1;
+                        }
+                    }
+                    newList.addAll(addList);
+                }
+            }
             //HIS计费接口
-            JSONObject result = HisApiForFCRenminUtils.exeCharge(pdDosage,detailList);
+            JSONObject result = HisApiForFCRenminUtils.exeCharge(pdDosage,newList);
             if(!PdConstant.SUCCESS_0.equals(result.getString("statusCode"))){
                 logger.error("执行HIS收费接口失败！HIS返回："+result.getString("msg"));
                 return Result.error("执行HIS收费接口失败！HIS返回："+result.getString("msg"));
             }
 
-            pdDosage.setPdDosageDetails(detailList);
+            pdDosage.setPdDosageDetails(newList);
             pdDosageFCRMYYService.dosageFee(pdDosage);
         }
         return Result.ok("操作成功！");

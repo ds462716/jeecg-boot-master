@@ -124,6 +124,11 @@ public class PdDosageDetail extends BaseEntity {
     private String hisChargeId;//His计费ID（丰城中医院）
     private String hisChargeItemId;//His计费明细ID（丰城中医院）
 
+    private String hisPackageCode;// 打包编号
+    private String hisPackageName;// 打包名称
+    private String hisPackageIndex;// 打包序号(打包索引)
+    private String hisPackageFlag;// 打包标识，标识一样，则算同一个包
+
     //冗余
     @TableField(exist = false)
     private String outHuoweiName;//出库货位

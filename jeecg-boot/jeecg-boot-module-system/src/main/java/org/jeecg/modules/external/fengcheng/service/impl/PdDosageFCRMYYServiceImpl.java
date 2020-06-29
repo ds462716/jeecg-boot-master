@@ -3,6 +3,7 @@ package org.jeecg.modules.external.fengcheng.service.impl;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.constant.PdConstant;
 import org.jeecg.common.exception.JeecgBootException;
@@ -25,10 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.unit.DataUnit;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 /**
  * @author jiangxz
@@ -79,11 +77,22 @@ public class PdDosageFCRMYYServiceImpl extends ServiceImpl<PdDosageMapper, PdDos
             pdDosage.setPdDosageDetails(pdDosageDetails);
 
             BigDecimal jfTotalPrice = new BigDecimal(0);
+            List<Integer> hisPackageFlagList = new ArrayList<>();
             for (PdDosageDetail item : pdDosageDetails) {
                 if(PdConstant.IS_CHARGE_0.equals(item.getIsCharge())){
                     jfTotalPrice = jfTotalPrice.add(item.getAmountMoney());
                 }
+                if(oConvertUtils.isNotEmpty(item.getHisPackageFlag())){
+                    hisPackageFlagList.add(Integer.valueOf(item.getHisPackageFlag()));
+                }
             }
+
+            if(CollectionUtils.isNotEmpty(hisPackageFlagList)){
+                pdDosage.setHisPackageFlagMax(Collections.max(hisPackageFlagList));
+            }else{
+                pdDosage.setHisPackageFlagMax(0);
+            }
+
             pdDosage.setJfTotalPrice(jfTotalPrice);
 
         } else {  // 新增页面
@@ -171,6 +180,7 @@ public class PdDosageFCRMYYServiceImpl extends ServiceImpl<PdDosageMapper, PdDos
         }
         List<PdDosageDetail> tempArray = new ArrayList<>();
         List<PdDosageDetail> chargeArray = new ArrayList<>();
+        List<PdDosageDetail> newChargeArray = new ArrayList<>();
         if(detailList != null && detailList.size() > 0) {
             //总数量
             BigDecimal dosageTotal = new BigDecimal(0);
@@ -183,6 +193,7 @@ public class PdDosageFCRMYYServiceImpl extends ServiceImpl<PdDosageMapper, PdDos
             JSONObject json = new JSONObject();
             int i = 0;
             boolean validFlag = true;
+            Set<String> hisPackageCodeList = new HashSet<>();
             for(PdDosageDetail pdd : detailList){
                 //校验不合法数据和大于库存数据
                 PdProductStock pps = new PdProductStock();
@@ -194,7 +205,6 @@ public class PdDosageFCRMYYServiceImpl extends ServiceImpl<PdDosageMapper, PdDos
                     i = i + 1;
                     continue;
                 }
-
                 BigDecimal sprice = pdd.getSellingPrice()==null?new BigDecimal(0):pdd.getSellingPrice();
                 BigDecimal pdMoney = new BigDecimal(pdd.getDosageCount()).multiply(sprice);
                 BigDecimal dosageCount = new BigDecimal(pdd.getDosageCount());
@@ -207,12 +217,20 @@ public class PdDosageFCRMYYServiceImpl extends ServiceImpl<PdDosageMapper, PdDos
                 PdStockLog prodLog = new PdStockLog();
                 //需要收费的产品集合
                 if(PdConstant.CHARGE_FLAG_0.equals(pdDosage.getHyCharged()) && PdConstant.CHARGE_FLAG_0.equals(pdd.getIsCharge()) && !"".equals(pdd.getChargeCode())){
+                    if(oConvertUtils.isNotEmpty(pdd.getHisPackageCode())){
+                        hisPackageCodeList.add(pdd.getHisPackageCode()+pdd.getHisPackageFlag());
+                    }else{
+                        newChargeArray.add(pdd);
+                    }
                     pdd.setHyCharged(PdConstant.CHARGE_FLAG_0);
                     prodLog.setLogType(PdConstant.STOCK_LOG_TYPE_6);
                     chargeArray.add(pdd);
                 }else{
                     //不收费的产品集合
                     pdd.setHyCharged(PdConstant.CHARGE_FLAG_1);
+                    pdd.setHisPackageCode(null);
+                    pdd.setHisPackageName(null);
+                    pdd.setHisPackageIndex(null);
                     prodLog.setLogType(PdConstant.STOCK_LOG_TYPE_3);
                     tempArray.add(pdd);
                 }
@@ -242,14 +260,31 @@ public class PdDosageFCRMYYServiceImpl extends ServiceImpl<PdDosageMapper, PdDos
                 pdDosage.setDosageDate(DateUtils.getDate());
 
                 if (PdConstant.CHARGE_FLAG_0.equals(pdDosage.getHyCharged()) && chargeArray.size() > 0){
+
+                    if(CollectionUtils.isNotEmpty(hisPackageCodeList)){
+                        for(String hisPackageCode : hisPackageCodeList){
+                            int index = 0;
+                            List<PdDosageDetail> addList = new ArrayList<>();
+                            for(PdDosageDetail chargeItem : chargeArray){
+                                if(oConvertUtils.isNotEmpty(chargeItem.getHisPackageCode())
+                                        && hisPackageCode.equals(chargeItem.getHisPackageCode()+chargeItem.getHisPackageFlag())){
+                                    chargeItem.setHisPackageIndex(index+"");
+                                    addList.add(chargeItem);
+                                    index = index + 1;
+                                }
+                            }
+                            newChargeArray.addAll(addList);
+                        }
+                    }
+
                     // 计费接口
-                    JSONObject result = HisApiForFCRenminUtils.exeCharge(pdDosage,chargeArray);
+                    JSONObject result = HisApiForFCRenminUtils.exeCharge(pdDosage,newChargeArray);
                     if(!PdConstant.SUCCESS_0.equals(result.getString("statusCode"))){
                         logger.error("执行HIS收费接口失败！HIS返回："+result.getString("msg"));
                         throw new RuntimeException("执行HIS收费接口失败！HIS返回："+result.getString("msg"));
                     }
 
-                    pdDosageDetailService.saveBatch(chargeArray);
+                    pdDosageDetailService.saveBatch(newChargeArray);
                 }
                 if(!tempArray.isEmpty()){
                     pdDosageDetailService.saveBatch(tempArray);

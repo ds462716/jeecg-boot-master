@@ -311,4 +311,6 @@ public class PdDosage extends BaseEntity {
     private String type;//住院标识（1：是  2：否）
     @TableField(exist = false)
     private String token;// 用于HIS收费防重复提交
+    @TableField(exist = false)
+    private Integer hisPackageFlagMax;
 }

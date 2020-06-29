@@ -62,13 +62,12 @@
                 </a-row>
               </a-form>
 
-              <div style="margin-bottom: 8px;" v-show="false">
-                <a-button type="primary" icon="plus" @click="chooseProductList">选择产品</a-button>
-                <!--<a-button type="primary" icon="plus" @click="choosePackageList" style="margin-left: 8px">选择定数包</a-button>-->
+              <div style="margin-bottom: 8px;">
+                <a-button type="primary" icon="plus" @click="chooseChargePackage" style="margin-left: 24px">打包</a-button>
                 <a-popconfirm style="margin-left: 8px"
-                              :title="`确定要删除吗?`"
-                              @confirm="handleConfirmDelete">
-                  <a-button type="primary" icon="minus">删除</a-button>
+                              :title="`确定要清除吗?`"
+                              @confirm="clearChargePackage">
+                  <a-button type="primary" icon="minus">清除打包</a-button>
                   <span class="gap"></span>
                 </a-popconfirm>
               </div>
@@ -251,6 +250,7 @@
 
     <pd-choose-product-stock-list-model ref="pdChooseProductStockListModel" @ok="returnProductStockData" ></pd-choose-product-stock-list-model>
     <pd-choose-dosage-list-model-f-c-z-y-y ref="PdChooseDosageListModel" @ok="modalFormOk"></pd-choose-dosage-list-model-f-c-z-y-y>
+    <pd-choose-charge-package-modal-f-c-r-m-y-y ref="pdChooseChargePackageModalFCRMYY" @ok="returnChargePackageData"></pd-choose-charge-package-modal-f-c-r-m-y-y>
   </j-modal>
 </template>
 
@@ -265,6 +265,7 @@
   import { JEditableTableMixin } from '@/mixins/JEditableTableMixin'
   import PdChooseProductStockListModel from "../../../pd/modules/PdChooseProductStockListModel";
   import PdChooseDosageListModelFCZYY from "./PdChooseDosageListModelFCZYY";
+  import PdChooseChargePackageModalFCRMYY from "./PdChooseChargePackageModalFCRMYY";
 
   const VALIDATE_NO_PASSED = Symbol()
   export { FormTypes, VALIDATE_NO_PASSED }
@@ -287,6 +288,7 @@
     name: "PdDosageFeeModalFCRMYY",
     mixins: [JEditableTableMixin],
     components: {
+      PdChooseChargePackageModalFCRMYY,
       PdChooseDosageListModelFCZYY,
       PdChooseProductStockListModel,
     },
@@ -306,6 +308,7 @@
         activeKey: 'pdDosageDetail',
         refKeys: ['pdDosageDetail',],
         sRowIds:[],//选中行id
+        hisPackageFlag:0,
         //货区货位二级联动下拉框
         goodsAllocationList:[],
         queryParam:{},
@@ -316,9 +319,11 @@
           columns: [
             { title: '库存明细ID', key: 'productStockId', type: FormTypes.hidden },
             { title: '产品ID', key: 'productId', type: FormTypes.hidden },
+            { title: '是否计费', key: 'isCharge',type: FormTypes.hidden},
+            { title: '出库货位编号', key: 'outHuoweiCode', type: FormTypes.hidden },
+
             { title: '产品名称', key: 'productName', type: FormTypes.normal,width:"220px" },
             { title: '产品编号', key: 'productNumber', width:"200px" },
-            { title: '产品条码', key: 'productBarCode', type: FormTypes.input, disabled:true, width:"200px" },
             { title: '规格', key: 'spec', width:"200px" },
             { title: '批号', key: 'batchNo', width:"100px" },
             { title: '单位', key: 'unitName', width:"50px" },
@@ -331,13 +336,15 @@
               validateRules: [{ required: true, message: '${title}不能为空' },{ pattern: '^-?\\d+\\.?\\d*$',message: '${title}的格式不正确' }]
             },
             { title: '用量金额', key: 'amountMoney', type: FormTypes.input, disabled:true, width:"100px" },
-            { title: '实际使用数量', key: 'leftRefundNum', width:"80px" },
+            // { title: '实际使用数量', key: 'leftRefundNum', width:"80px" },
             { title: '收费状态', key: 'hyChargedText', width:"80px" },
-            { title: '收费项目代码', key: 'chargeCode', width:"80px" },
-            { title: '是否计费', key: 'isCharge',type: FormTypes.hidden},
+            { title: '收费项目代码', key: 'chargeCode', width:"90px" },
             { title: '是否计费', key: 'isChargeText', width:"80px"},
+            { title: '打包编码', key: 'hisPackageCode', type: FormTypes.input, disabled:true, width:"120px" },
+            { title: '打包名称', key: 'hisPackageName', type: FormTypes.input, disabled:true, width:"120px" },
+            { title: '打包标识', key: 'hisPackageFlag', type: FormTypes.input, disabled:true, width:"50px" },
+            { title: '产品条码', key: 'productBarCode', type: FormTypes.input, disabled:true, width:"200px" },
             { title: '出库货位', key: 'outHuoweiName', width:"100px" },
-            { title: '出库货位编号', key: 'outHuoweiCode', type: FormTypes.hidden },
           ]
         },
         disableSubmit:false,
@@ -417,8 +424,6 @@
         this.editAfter();
       },
 
-
-
       /** 调用完edit()方法之后会自动调用此方法 */
       editAfter() {
         this.loadData();
@@ -451,6 +456,7 @@
                 // this.totalSum = res.result.totalSum;
                 // this.totalPrice = res.result.totalPrice;
                 // this.jfTotalPrice = res.result.jfTotalPrice;
+                this.hisPackageFlag = res.result.hisPackageFlagMax;
                 this.pdDosageDetailTable.dataSource = res.result.pdDosageDetails || [];
                 let fieldval = pick(this.initData,'dosageNo','dosageDate','departName','dosageByName','inHospitalNo','patientInfo','patientDetailInfo','outpatientNumber','operativeNumber','operationName','exeDeptName','exeDeptId','oprDeptName','oprDeptId','surgeonName','surgeonId','sqrtDoctorName','sqrtDoctorId','subordinateWardName','subordinateWardId','remarks','extension1','extension2','subordinateWardName','visitNo','bedNumber','token');
                 this.form.setFieldsValue(fieldval);
@@ -490,6 +496,7 @@
         this.visible = false;
         this.sRowIds = [];
         this.pdDosageDetailTable.dataSource = [];
+        this.hisPackageFlag = 0;
         this.eachAllTable((item) => {
           item.initialize()
         })
@@ -644,6 +651,23 @@
           this.$message.error("请选择需要删除的数据！")
         }
       },
+      // 选择收费打包项目
+      chooseChargePackage(){
+        if(this.sRowIds <= 0){
+          this.$message.warning("请先勾选需要打包的产品！");
+          return;
+        }
+        this.$refs.pdChooseChargePackageModalFCRMYY.width = 1550;
+        this.$refs.pdChooseChargePackageModalFCRMYY.show();
+      },
+      // 清除收费打包项目
+      clearChargePackage(){
+        if(this.sRowIds <= 0){
+          this.$message.warning("请先勾选需要清除的产品！");
+          return;
+        }
+
+      },
       // 计算总数量和总价格
       getTotalNumAndPrice(rows){
         if(this.sRowIds.length <= 0){
@@ -754,17 +778,6 @@
             return;
           }
 
-          // let selectedArrays = this.$refs.pdDosageDetail.selectedRowIds;
-          // if(selectedArrays <= 0){
-          //   this.$message.warning("请勾选需要收费的产品");
-          //   return;
-          // }
-          // //查找出勾选的产品信息
-          // let selectedIds = new Array();
-          // for(let i =0;i<selectedArrays.length;i++){
-          //   let selectId = selectedArrays[i].substring(selectedArrays[i].lastIndexOf("-")+1);
-          //   selectedIds.push(selectId);
-          // }
           let list = formData.pdDosageDetails;
           for (let i =0; i <list.length;i++){
             //如果包含
@@ -855,6 +868,19 @@
         })
         // 计算总数量和总价格
         this.getTotalNumAndPrice(values);
+      },
+      // 选择打包项目后返回
+      returnChargePackageData(data){
+        if(data){
+          this.hisPackageFlag = this.hisPackageFlag + 1;
+          let {values} = this.$refs.pdDosageDetail.getValuesSync({validate: false});
+          values.forEach((item, idx) => {
+            if(this.sRowIds.indexOf(item.id)>=0){
+              this.$refs.pdDosageDetail.setValues([{rowKey: item.id, values: { hisPackageCode: data.fsfXmbh, hisPackageName: data.fsfXmmc,hisPackageFlag:this.hisPackageFlag }}]);
+            }
+          })
+          this.$refs.pdDosageDetail.selectedRowIds = [];// 清空选择框
+        }
       },
     }
   }

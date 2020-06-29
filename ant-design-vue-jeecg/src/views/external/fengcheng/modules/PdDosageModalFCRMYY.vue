@@ -71,10 +71,17 @@
                   <a-button type="primary" icon="minus">删除</a-button>
                   <span class="gap"></span>
                 </a-popconfirm>
+
+                <a-button type="primary" icon="plus" @click="chooseChargePackage" style="margin-left: 24px">打包</a-button>
+                <a-popconfirm style="margin-left: 8px"
+                              :title="`确定要清除吗?`"
+                              @confirm="clearChargePackage">
+                  <a-button type="primary" icon="minus">清除打包</a-button>
+                  <span class="gap"></span>
+                </a-popconfirm>
               </div>
 
               <j-editable-table
-                bordered
                 :ref="refKeys[0]"
                 :loading="pdDosageDetailTable.loading"
                 :columns="pdDosageDetailTable.columns"
@@ -259,6 +266,7 @@
 
     <pd-choose-product-stock-list-model ref="pdChooseProductStockListModel" @ok="returnProductStockData" ></pd-choose-product-stock-list-model>
     <pd-choose-dosage-list-model-f-c-r-m-y-y ref="PdChooseDosageListModel" @ok="modalFormOk"></pd-choose-dosage-list-model-f-c-r-m-y-y>
+    <pd-choose-charge-package-modal-f-c-r-m-y-y ref="pdChooseChargePackageModalFCRMYY" @ok="returnChargePackageData" ></pd-choose-charge-package-modal-f-c-r-m-y-y>
   </j-modal>
 </template>
 
@@ -272,8 +280,10 @@
   import {stockScanCode} from '@/utils/barcode'
   import {httpAction, deleteAction, getAction} from '@/api/manage'
   import { JEditableTableMixin } from '@/mixins/JEditableTableMixin'
+  // import JEditableTable from '@/components/jeecg/JEditableTable'
   import PdChooseProductStockListModel from "../../../pd/modules/PdChooseProductStockListModel";
   import PdChooseDosageListModelFCRMYY from "./PdChooseDosageListModelFCRMYY";
+  import PdChooseChargePackageModalFCRMYY from "./PdChooseChargePackageModalFCRMYY";
 
   const VALIDATE_NO_PASSED = Symbol()
   export { FormTypes, VALIDATE_NO_PASSED }
@@ -296,6 +306,7 @@
     name: "PdDosageModalFCRMYY",
     mixins: [JEditableTableMixin],
     components: {
+      PdChooseChargePackageModalFCRMYY,
       PdChooseDosageListModelFCRMYY,
       PdChooseProductStockListModel,
     },
@@ -315,6 +326,7 @@
         activeKey: 'pdDosageDetail',
         refKeys: ['pdDosageDetail',],
         sRowIds:[],//选中行id
+        hisPackageFlag:0,
         //货区货位二级联动下拉框
         goodsAllocationList:[],
         queryParam:{},
@@ -323,11 +335,13 @@
           loading: false,
           dataSource: [],
           columns: [
-            { title: '库存明细ID', key: 'productStockId', type: FormTypes.hidden },
-            { title: '产品ID', key: 'productId', type: FormTypes.hidden },
+            { title: '库存明细ID', key: 'productStockId', type: FormTypes.hidden, width:"80px" },
+            { title: '产品ID', key: 'productId', type: FormTypes.hidden, width:"80px" },
+            { title: '是否计费', key: 'isCharge',type: FormTypes.hidden, width:"80px"},
+            { title: '出库货位编号', key: 'outHuoweiCode', type: FormTypes.hidden, width:"80px" },
+
             { title: '产品名称', key: 'productName', type: FormTypes.normal,width:"220px" },
             { title: '产品编号', key: 'productNumber', width:"200px" },
-            { title: '产品条码', key: 'productBarCode', type: FormTypes.input, disabled:true, width:"200px" },
             { title: '规格', key: 'spec', width:"200px" },
             { title: '批号', key: 'batchNo', width:"100px" },
             { title: '单位', key: 'unitName', width:"50px" },
@@ -341,11 +355,13 @@
             },
             { title: '用量金额', key: 'amountMoney', type: FormTypes.input, disabled:true, width:"100px" },
             { title: '库存数量', key: 'stockNum', width:"80px" },
-            { title: '收费项目代码', key: 'chargeCode', width:"80px" },
-            { title: '是否计费', key: 'isCharge',type: FormTypes.hidden},
+            { title: '收费项目代码', key: 'chargeCode', width:"90px" },
             { title: '是否计费', key: 'isChargeText', width:"80px"},
+            { title: '打包编码', key: 'hisPackageCode', type: FormTypes.input, disabled:true, width:"120px" },
+            { title: '打包名称', key: 'hisPackageName', type: FormTypes.input, disabled:true, width:"120px" },
+            { title: '打包标识', key: 'hisPackageFlag', type: FormTypes.input, disabled:true, width:"50px" },
+            { title: '产品条码', key: 'productBarCode', type: FormTypes.input, disabled:true, width:"200px" },
             { title: '出库货位', key: 'outHuoweiName', width:"100px" },
-            { title: '出库货位编号', key: 'outHuoweiCode', type: FormTypes.hidden },
           ]
         },
         disableSubmit:false,
@@ -495,6 +511,7 @@
         this.visible = false;
         this.sRowIds = [];
         this.pdDosageDetailTable.dataSource = [];
+        this.hisPackageFlag = 0;
         this.eachAllTable((item) => {
           item.initialize()
         })
@@ -656,28 +673,49 @@
           this.$message.error("请选择需要删除的数据！")
         }
       },
-      // 计算总数量和总价格
-      getTotalNumAndPrice(rows){
-        if(this.sRowIds.length <= 0){
-          this.totalSum = "0";
-          this.totalPrice = "0.0000";
-          this.jfTotalPrice = "0.0000";
+      // 选择收费打包项目
+      chooseChargePackage(){
+        if(this.sRowIds <= 0){
+          this.$message.warning("请先勾选需要打包的产品！");
+          return;
+        }
+        this.$refs.pdChooseChargePackageModalFCRMYY.width = 1550;
+        this.$refs.pdChooseChargePackageModalFCRMYY.show();
+      },
+      // 清除收费打包项目
+      clearChargePackage(){
+        if(this.sRowIds <= 0){
+          this.$message.warning("请先勾选需要清除的产品！");
           return;
         }
 
+      },
+      // 计算总数量和总价格
+      getTotalNumAndPrice(rows){
+        // if(this.sRowIds.length <= 0){
+        //   this.totalSum = "0";
+        //   this.totalPrice = "0.0000";
+        //   this.jfTotalPrice = "0.0000";
+        //   return;
+        // }
+
         this.$nextTick(() => {
-          let {values} = this.$refs.pdDosageDetail.getValuesSync({validate: false});
+          if (rows.length <= 0) {
+            let {values} = this.$refs.pdDosageDetail.getValuesSync({validate: false});
+            rows = values;
+          }
+          // let {values} = this.$refs.pdDosageDetail.getValuesSync({validate: false});
           let totalSum = 0;
           let totalPrice = 0;
           let jfTotalPrice = 0;
-          values.forEach((item, idx) => {
-            if(this.sRowIds.indexOf(item.id)>=0){
+          rows.forEach((item, idx) => {
+            // if(this.sRowIds.indexOf(item.id)>=0){
               totalSum = totalSum + Number(item.dosageCount);
               totalPrice = totalPrice + Number(item.amountMoney);
               if(item.isCharge == "0"){
                 jfTotalPrice = jfTotalPrice + Number(item.amountMoney);
               }
-            }
+            // }
           })
           this.totalSum = totalSum;
           this.totalPrice = totalPrice.toFixed(4);
@@ -715,7 +753,7 @@
       },
       handleSelectRowChange(selectedIds){
         this.sRowIds = selectedIds;
-        this.getTotalNumAndPrice([]);
+        // this.getTotalNumAndPrice([]);
       },
       //清空扫码框
       clearQueryParam(){
@@ -761,30 +799,23 @@
 
           let formData = this.classifyIntoFormData(allValues);
 
-
-          // let selectedArrays = this.$refs.pdDosageDetail.selectedRowIds;
-          // if(selectedArrays <= 0){
-          //   this.$message.warning("请勾选需要收费的产品");
+          // modified by jiangxz 2020年6月29日 20:03:01
+          // 1.若用户想打包，勾选了若干产品，然后又不想打包了，直接点了提交，导致只有勾选的产品计了费
+          // 2.由于打包需要勾选复选框，如果提交也要勾选的话，会造成复选框有两种功能，容易混淆
+          // 3.综上，去掉提交需要勾选的条件。若用户不想要某条产品，直接删除就行。
+          // 4.联动修改：去掉需要勾选才计算总数量、总金额
+          // if(this.sRowIds <= 0){
+          //   this.$message.warning("请先勾选需要提交的产品");
           //   return;
-          // }
-          if(this.sRowIds <= 0){
-            this.$message.warning("请先勾选需要提交的产品");
-            return;
-          }
-          //查找出勾选的产品信息
-          // let selectedIds = new Array();
-          // for(let i =0;i<selectedArrays.length;i++){
-          //   let selectId = selectedArrays[i].substring(selectedArrays[i].lastIndexOf("-")+1);
-          //   selectedIds.push(selectId);
           // }
 
           let list = formData.pdDosageDetails;
           for (let i =0; i <list.length;i++){
             // 如果包含
-            if(this.sRowIds.indexOf(list[i].id)<0){
-              list.splice(i--, 1);
-              continue;
-            }
+            // if(this.sRowIds.indexOf(list[i].id)<0){
+            //   list.splice(i--, 1);
+            //   continue;
+            // }
             list[i].id=null;
             if(Number(list[i].dosageCount) > Number(list[i].stockNum)){
               this.$message.error("["+list[i].productName+"]用量数量不能大于库存数量！");
@@ -827,7 +858,8 @@
         }
         this.confirmLoading = true
         //是否收费标识
-        formData.hyCharged=this.hyCharged==true?"0":"1";
+        // formData.hyCharged=this.hyCharged==true?"0":"1";
+        formData.hyCharged="0";
         httpAction(url, formData, method).then((res) => {
           if (res.success) {
             this.$message.success(res.message)
@@ -882,6 +914,19 @@
         })
         // 计算总数量和总价格
         this.getTotalNumAndPrice(values);
+      },
+      // 选择打包项目后返回
+      returnChargePackageData(data){
+        if(data){
+          this.hisPackageFlag = this.hisPackageFlag + 1;
+          let {values} = this.$refs.pdDosageDetail.getValuesSync({validate: false});
+          values.forEach((item, idx) => {
+            if(this.sRowIds.indexOf(item.id)>=0){
+              this.$refs.pdDosageDetail.setValues([{rowKey: item.id, values: { hisPackageCode: data.fsfXmbh, hisPackageName: data.fsfXmmc,hisPackageFlag:this.hisPackageFlag }}]);
+            }
+          })
+          this.$refs.pdDosageDetail.selectedRowIds = [];// 清空选择框
+        }
       },
     }
   }
