@@ -30,6 +30,8 @@
 			b.audit_date AS bill_date,
 			c.id AS product_stock_id,
 			c.stock_num AS stock_num,
+			d.id as id,
+			d.invoice_id as invoice_id,
 			d.remarks AS remarks,
 			e.invoice_no AS invoice_no,
 			e.invoice_code AS invoice_code,
@@ -61,6 +63,6 @@
 			</if>
 
 		</where>
-		ORDER BY a.create_time,b.record_no DESC
+		ORDER BY a.create_time DESC,a.product_id DESC,b.record_no DESC
 	</select>
 </mapper>

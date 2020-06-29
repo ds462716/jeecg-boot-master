@@ -43,7 +43,7 @@
         :loading="loading"
         :scroll="tableScroll"
         :customRow="onClickRow"
-        :rowSelection="{fixed:false,selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
+        :rowSelection="{fixed:false,selectedRowKeys: selectedRowKeys, onSelectAll:onSelectAll,onSelect:onSelect,onChange: onSelectChange}"
         @change="handleTableChange">
         <!--<span slot="action" slot-scope="text, record">-->
           <!--<a @click="handleEdit(record)">发票维护</a>-->
@@ -256,6 +256,7 @@
     },
     methods: {
       initDictConfig(){
+        this.dataSource2 = [];
       },
       handleAddInvoice(){
         if(this.selectedRowKeys.length < 1){
@@ -266,10 +267,44 @@
           this.$message.warning("维护发票不能选择多条记录，只能选择一条记录！");
           return;
         }
-        this.$refs.modalForm.add();
+        let a = this.dataSource2;
+        this.$refs.modalForm.add(this.selectedRowKeys[0]);
         this.$refs.modalForm.title = "维护发票";
         this.$refs.modalForm.disableSubmit = false;
 
+      },
+      onSelectAll(selected, selectedRows, changeRows) {
+        if (selected === true) {
+          for (var a = 0; a < changeRows.length; a++) {
+            this.dataSource2.push(changeRows[a]);
+          }
+        } else {
+          for (var b = 0; b < changeRows.length; b++) {
+            this.dataSource2.splice(this.dataSource2.indexOf(changeRows[b]), 1);
+          }
+        }
+      },
+      onSelect(record, selected) {
+        if (selected === true) {
+          this.dataSource2.push(record);
+        } else {
+          var index = this.dataSource2.indexOf(record);
+          if (index >= 0) {
+            this.dataSource2.splice(this.dataSource2.indexOf(record), 1);
+          }
+
+        }
+      },
+      onSelectChange(selectedRowKeys, selectedRows) {
+        this.selectedRowKeys = selectedRowKeys;
+        this.selectionRows = selectedRows;
+      },
+      onClearSelected() {
+        this.selectedRowKeys = [];
+        this.selectionRows = [];
+      },
+      handleDelete: function (record) {
+        this.dataSource2.splice(this.dataSource2.indexOf(record), 1);
       },
       /**
        * 点击行选中checkbox

@@ -724,7 +724,7 @@
         }
 
         this.pdStockRecordDetailTable.loading = true;
-        getAction(this.url.init, params).then((res) => {
+            getAction(this.url.init, params).then((res) => {
           if (res.success) {
             this.$nextTick(() => {
               // this.departList = res.result.sysDepartList; // 初始化部门列表 用于数据回显
