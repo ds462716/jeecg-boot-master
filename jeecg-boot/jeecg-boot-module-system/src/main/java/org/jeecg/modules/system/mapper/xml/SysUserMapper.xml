@@ -193,7 +193,7 @@
 			and a.phone like concat('%',#{parMap.phone},'%')
 		</if>
 		<if test="parMap.status != null and parMap.status != ''">
-			and a.status = #{parMap.	status}
+			and a.status = #{parMap.status}
 		</if>
 		<if test="parMap.admin != null and parMap.admin != ''">
 			and a.username != #{parMap.admin}

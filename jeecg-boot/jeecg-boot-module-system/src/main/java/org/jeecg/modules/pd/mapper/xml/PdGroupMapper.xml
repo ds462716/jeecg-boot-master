@@ -16,6 +16,9 @@
             or a.wb LIKE concat('%',#{name},'%')
             or a.zdy LIKE concat('%',#{name},'%'))
         </if>
+        <if test="status != null and status != ''">
+            AND a.status = #{status}
+        </if>
         <if test="departId != null and departId != ''">
             AND a.depart_id = #{departId}
         </if>
@@ -41,6 +44,9 @@
         </if>
         <if test="entity.departId != null and entity.departId != ''">
             AND a.depart_id = #{entity.departId}
+        </if>
+        <if test="entity.status != null and entity.status != ''">
+            AND a.status = #{entity.status}
         </if>
         <if test="entity.departParentId != null and entity.departParentId != ''">
             AND a.depart_parent_id = #{entity.departParentId}

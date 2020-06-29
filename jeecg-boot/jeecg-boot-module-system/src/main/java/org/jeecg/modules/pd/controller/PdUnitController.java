@@ -1,5 +1,6 @@
 package org.jeecg.modules.pd.controller;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -10,9 +11,11 @@ import java.net.URLDecoder;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
+import org.jeecg.common.constant.PdConstant;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.oConvertUtils;
@@ -181,6 +184,7 @@ public class PdUnitController extends JeecgController<PdUnit, IPdUnitService> {
 		 try {
 			 LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
 			 pdUnit.setDepartParentId(sysUser.getDepartParentId());
+			 pdUnit.setStatus(PdConstant.DISABLE_ENABLE_STATUS_0);//只查启用
 			 List<PdUnit> list = pdUnitService.queryList(pdUnit);
 			 result.setResult(list);
 			 result.setSuccess(true);
@@ -208,5 +212,38 @@ public class PdUnitController extends JeecgController<PdUnit, IPdUnitService> {
 			 result.setMessage("粘贴失败");
 		 }
 		 return result;
+	 }
+
+	 /**
+	  * 批量停用和启用status 0启用1停用
+	  * @param jsonObject
+	  * @return
+	  */
+	 @RequestMapping(value = "/batchDisable", method = RequestMethod.POST)
+	 public Result<PdUnit> batchDisable(@RequestBody JSONObject jsonObject) {
+		 Result<PdUnit> result = new Result<PdUnit>();
+		 try {
+			 String ids = jsonObject.getString("ids");
+			 String status = jsonObject.getString("status");
+			 String[] arr = ids.split(",");
+			 List<PdUnit> pdUnits= new ArrayList<>();
+			 for (String id : arr) {
+				 if(oConvertUtils.isNotEmpty(id)) {
+					 PdUnit pdUnit = new PdUnit();
+					 pdUnit.setId(id);
+					 pdUnit.setStatus(status);
+					 pdUnits.add(pdUnit);
+				 }
+			 }
+			 if(pdUnits!=null && pdUnits.size()>0){
+				 pdUnitService.updateBatchById(pdUnits);
+			 }
+		 } catch (Exception e) {
+			 log.error(e.getMessage(), e);
+			 result.error500("操作失败"+e.getMessage());
+		 }
+		 result.success("操作成功!");
+		 return result;
+
 	 }
 }

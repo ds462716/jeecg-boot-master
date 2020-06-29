@@ -15,6 +15,7 @@
             a.update_by,
             a.update_time,
             a.remarks,
+            a.status,
             a.del_flag,
             a.sys_org_code
         FROM pd_unit a
@@ -28,6 +29,9 @@
             </if>
             <if test="unitType != null and unitType != ''">
                 AND a.unit_type = #{unitType}
+            </if>
+            <if test="status != null and status != ''">
+                AND a.status = #{status}
             </if>
             <if test="departParentId != null and departParentId != ''">
                 AND a.depart_parent_id = #{departParentId}
@@ -49,6 +53,7 @@
         a.update_by,
         a.update_time,
         a.remarks,
+        a.status,
         a.del_flag,
         a.sys_org_code
         FROM pd_unit a
@@ -62,6 +67,9 @@
             </if>
             <if test="entity.unitType != null and entity.unitType != ''">
                 AND a.unit_type = #{entity.unitType}
+            </if>
+            <if test="entity.status != null and entity.status != ''">
+                AND a.status = #{entity.status}
             </if>
             <if test="entity.departParentId != null and entity.departParentId != ''">
                 AND a.depart_parent_id = #{entity.departParentId}

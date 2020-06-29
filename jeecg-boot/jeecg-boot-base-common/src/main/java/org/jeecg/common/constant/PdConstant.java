@@ -308,4 +308,7 @@ public interface PdConstant {
 	public final static String CLOSE_REMARKS_0 = "0";//已用完
 	public final static String CLOSE_REMARKS_1 = "1";//已过期
 	public final static String CLOSE_REMARKS_2 = "2";//试剂迁移
+
+	public final static String DISABLE_ENABLE_STATUS_0 ="0";//启用
+	public final static String DISABLE_ENABLE_STATUS_1 ="1";//启用
 }
