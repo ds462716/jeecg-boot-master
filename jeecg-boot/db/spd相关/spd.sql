@@ -874,3 +874,15 @@ update pd_category set `status` = '0';
 ALTER TABLE `pd_product`
 ADD COLUMN `status`  varchar(1) NULL COMMENT '停用启用状态0启用1停用' AFTER `depart_parent_id`;
 update pd_product set `status` = '0';
+ALTER TABLE `pd_vender`
+MODIFY COLUMN `status`  varchar(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '0' COMMENT '停用启用状态0启用1停用' AFTER `depart_parent_id`;
+ALTER TABLE `pd_supplier`
+MODIFY COLUMN `status`  varchar(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '0' COMMENT '停用启用状态0启用1停用' AFTER `depart_parent_id`;
+ALTER TABLE `pd_group`
+MODIFY COLUMN `status`  varchar(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '0' COMMENT '停用启用状态0启用1停用' AFTER `depart_parent_id`;
+ALTER TABLE `pd_unit`
+MODIFY COLUMN `status`  varchar(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '0' COMMENT '停用启用状态0启用1停用' AFTER `depart_parent_id`;
+ALTER TABLE `pd_category`
+MODIFY COLUMN `status`  varchar(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '0' COMMENT '停用启用状态0启用1停用' AFTER `depart_parent_id`;
+ALTER TABLE `pd_product`
+MODIFY COLUMN `status`  varchar(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '0' COMMENT '停用启用状态0启用1停用' AFTER `depart_parent_id`;
