@@ -15,7 +15,7 @@
             </a-form-item>
           </a-col>
           <a-col :md="6" :sm="8">
-            <a-form-item label="住院号">
+            <a-form-item label="住院号/门诊号">
               <a-input placeholder="请输入住院号" v-model="queryParam.inHospitalNo"></a-input>
             </a-form-item>
           </a-col>
@@ -24,10 +24,10 @@
             <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
               <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
               <a-button type="primary" @click="searchReset" icon="reload" style="margin-left: 8px">重置</a-button>
-              <a @click="handleToggleSearch" style="margin-left: 8px">
-                {{ toggleSearchStatus ? '收起' : '展开' }}
-                <a-icon :type="toggleSearchStatus ? 'up' : 'down'"/>
-              </a>
+              <!--<a @click="handleToggleSearch" style="margin-left: 8px">-->
+                <!--{{ toggleSearchStatus ? '收起' : '展开' }}-->
+                <!--<a-icon :type="toggleSearchStatus ? 'up' : 'down'"/>-->
+              <!--</a>-->
             </span>
           </a-col>
         </a-row>
@@ -193,6 +193,11 @@
             title:'患者姓名',
             align:"center",
             dataIndex: 'patientInfo'
+          },
+          {
+            title:'门诊号',
+            align:"center",
+            dataIndex: 'outpatientNumber'
           },
           {
             title:'住院号',

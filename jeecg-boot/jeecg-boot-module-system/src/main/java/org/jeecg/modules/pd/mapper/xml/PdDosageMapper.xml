@@ -184,7 +184,7 @@
                 AND a.dosage_no = #{entity.dosageNo}
             </if>
             <if test="entity.inHospitalNo != null and entity.inHospitalNo != ''">
-                AND a.in_hospital_no = #{entity.inHospitalNo}
+                AND (a.in_hospital_no LIKE concat('%', #{entity.inHospitalNo},'%') or a.outpatient_number LIKE concat('%',#{entity.inHospitalNo},'%'))
             </if>
             <if test="entity.dosageBy != null and entity.dosageBy != ''">
                 AND a.dosage_by = #{entity.dosageBy}
