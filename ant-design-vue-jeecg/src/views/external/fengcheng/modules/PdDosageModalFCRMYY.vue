@@ -137,7 +137,7 @@
                   <!--</a-col>-->
                   <a-col :md="24" :sm="8">
                     <a-form-item label="" :labelCol="labelCol" :wrapperCol="wrapperCol" style="text-align: left;padding-left: 15px;">
-                      （提示：按回车键查询患者信息。<span style="color: red;font-weight: bolder">门诊科室只需输入门诊号查询</span>；<span style="color: blue;font-weight: bolder">住院科室须输入住院号查询，若要精确到某场手术，可输入手术编号查询</span>。）
+                      （提示：按回车键查询患者信息。<span style="color: red;font-weight: bolder">门诊科室只需输入门诊号查询</span>；<span style="color: blue;font-weight: bolder">住院科室须输入住院号查询，若要精确到某场手术，可同时输入手术编号查询</span>。）
                     </a-form-item>
                   </a-col>
                 </a-row>
