@@ -445,7 +445,7 @@
       //同步HIS产品
       handleSyn(){
         //console.log("表单提交数据",formData)
-        this.confirmLoading = true;
+        this.loading = true;
         httpAction(this.url.synChargeCode,{},"post").then((res)=>{
           if(res.success){
             this.$message.success(res.message);
@@ -454,7 +454,7 @@
             this.$message.warning(res.message);
           }
         }).finally(() => {
-          this.confirmLoading = false;
+          this.loading = false;
           this.close();
         })
       },

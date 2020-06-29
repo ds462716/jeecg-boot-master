@@ -116,7 +116,7 @@ public class PdDosageFCRMYYServiceImpl extends ServiceImpl<PdDosageMapper, PdDos
                 JSONArray dosageArray = returnJson.getJSONArray("data");
                 // his返回报文最后会带一条空数据，这边把空数据移除
                 for (int i = 0; i < dosageArray.size(); i++){
-                    if(oConvertUtils.isEmpty(dosageArray.getJSONObject(i).getString("hitaionNo"))){
+                    if(oConvertUtils.isEmpty(dosageArray.getJSONObject(i).getString("hitaionNo")) && oConvertUtils.isEmpty(dosageArray.getJSONObject(i).getString("outpatCode"))){
                         dosageArray.remove(i);
                     }
                 }

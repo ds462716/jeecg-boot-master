@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.pd.mapper.PdInvoiceDetailMapper">
+
+	<delete id="deleteByMainId" parameterType="java.lang.String">
+		UPDATE  pd_invoice_detail
+		SET del_flag = '1'
+		WHERE
+			 invoice_id = #{mainId}
+	</delete>
+	
+	<select id="selectByMainId" parameterType="java.lang.String" resultType="org.jeecg.modules.pd.entity.PdInvoiceDetail">
+		SELECT * 
+		FROM  pd_invoice_detail
+		WHERE
+			 invoice_id = #{mainId}
+	</select>
+
+	<select id="selectByStockRecord" parameterType="org.jeecg.modules.pd.entity.PdInvoiceDetail" resultType="org.jeecg.modules.pd.entity.PdInvoiceDetail">
+		SELECT
+			a.id AS bill_detail_id,
+			a.product_id AS product_id,
+			a.product_num AS num,
+			a.purchase_price AS price,
+			a.product_num * IFNULL( a.purchase_price, 0 ) AS money,
+			a.batch_no AS batch_no,
+			a.exp_date AS exp_date,
+			b.record_no AS bill_no,
+			b.id AS bill_id,
+			b.audit_date AS bill_date,
+			c.id AS product_stock_id,
+			c.stock_num AS stock_num,
+			d.remarks AS remarks,
+			e.invoice_no AS invoice_no,
+			e.invoice_code AS invoice_code,
+			e.invoice_data AS invoice_data,
+			f.number AS product_number,
+			f.NAME AS product_name,
+			f.spec AS spec,
+			g.id AS supplier_id,
+			g.NAME AS supplier_name
+		FROM
+			pd_stock_record_detail a
+		LEFT JOIN pd_stock_record b ON b.id = a.record_id
+		LEFT JOIN pd_product_stock c ON a.id = c.record_detail_id
+		LEFT JOIN pd_invoice_detail d ON d.bill_detail_id = a.id
+		LEFT JOIN pd_invoice e ON d.invoice_id = e.id
+		LEFT JOIN pd_product f ON a.product_id = f.id
+		LEFT JOIN pd_supplier g ON a.supplier_id = g.id
+		<where>
+			a.del_flag =#{entity.DEL_FLAG_NORMAL}
+			and b.record_type = '1'
+			<if test="entity.departId != null and entity.departId != ''">
+				AND a.depart_id = #{entity.departId}
+			</if>
+			<if test="entity.departParentId != null and entity.departParentId != ''">
+				AND a.depart_parent_id = #{entity.departParentId}
+			</if>
+			<if test="entity.auditStatus != null and entity.auditStatus != ''">
+				AND b.audit_status = #{entity.auditStatus}
+			</if>
+
+		</where>
+		ORDER BY a.create_time,b.record_no DESC
+	</select>
+</mapper>

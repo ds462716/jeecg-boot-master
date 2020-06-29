@@ -108,13 +108,13 @@
                   <a-col :md="16" :sm="8">
                     <a-form-item label="执行收费" :labelCol="{span: 3}" :wrapperCol="{span: 20}">
                       <a-switch :disabled="disableSubmit" v-model="hyCharged"/>
-                      <span style="color: red">  不选中的情况下，只在当前系统保存患者信息，医院系统中并不记账，此功能只作产品追溯用。</span>
+                      <span style="color: red">（提示：不选中的情况下，只在当前系统保存患者信息，医院系统中并不记账，此功能只作产品追溯用。）</span>
                     </a-form-item>
                   </a-col>
                 </a-row>
                 <a-row>
                   <a-col :md="6" :sm="8" > <!-- v-if="hyCharged" -->
-                    <a-form-item label="住院号" :labelCol="labelCol" :wrapperCol="wrapperCol">
+                    <a-form-item label="住院号/门诊号" :labelCol="labelCol" :wrapperCol="wrapperCol">
                       <a-input autocomplete="off" :disabled="disableSubmit" v-decorator="[ 'qInHospitalNo' ]"  @keyup.enter.native="selectHis(0)"></a-input>
                     </a-form-item><!-- 查询条件 -->
                   </a-col>
@@ -128,9 +128,9 @@
                       <!--<a-input :disabled="disableSubmit" v-decorator="[ 'inHospitalNo']" @keyup.enter.native="selectHis(0)"></a-input>-->
                     <!--</a-form-item>&lt;!&ndash; 查询条件 &ndash;&gt;-->
                   <!--</a-col>-->
-                  <a-col :md="12" :sm="8">
+                  <a-col :md="24" :sm="8">
                     <a-form-item label="" :labelCol="labelCol" :wrapperCol="wrapperCol" style="text-align: left;padding-left: 15px;">
-                      （提示：按回车键查询患者信息）
+                      （提示：按回车键查询患者信息。<span style="color: red;font-weight: bolder">门诊科室只需输入门诊号查询</span>；<span style="color: blue;font-weight: bolder">住院科室须输入住院号查询，若要精确到某场手术，可输入手术编号查询</span>。）
                     </a-form-item>
                   </a-col>
                 </a-row>
@@ -532,7 +532,7 @@
         getAction(this.url.queryPatientInfoList,formData).then((res)=>{
           if (res.success) {
             if(res.result.length==1){
-              res.result[0].patientDetailInfo="姓名:"+res.result[0].patientInfo+",性别:"+res.result[0].fsfXb+",住院号:"+res.result[0].inHospitalNo
+              res.result[0].patientDetailInfo="姓名:"+res.result[0].patientInfo+",性别:"+res.result[0].fsfXb+",门诊号:"+res.result[0].outpatientNumber+",住院号:"+res.result[0].inHospitalNo
                 +",手术编号:"+res.result[0].operativeNumber+",项目:"+res.result[0].operationName;
               let fieldval = pick(res.result[0],'inHospitalNo','patientInfo','operativeNumber','operationName','outpatientNumber','inHospitalNo','sqrtDoctorId','oprDeptId','oprDeptName','exeDeptId','exeDeptName','surgeonName','patientDetailInfo','hospitalizationsNum','remarks','extension1','extension2','subordinateWardName','visitNo','bedNumber','surgeonId','subordinateWardId');
               this.$nextTick(() => {
@@ -553,7 +553,7 @@
 
 
       modalFormOk (formData) { //选择患者信息确定后返回所选择的数据
-        formData.patientDetailInfo="姓名:"+formData.patientInfo+",性别:"+formData.fsfXb+",住院号:"+formData.inHospitalNo
+        formData.patientDetailInfo="姓名:"+formData.patientInfo+",性别:"+formData.fsfXb+",门诊号:"+formData.outpatientNumber+",住院号:"+formData.inHospitalNo
           +",手术编号:"+formData.operativeNumber+",项目:"+formData.operationName;
         let fieldval = pick(formData,'inHospitalNo','patientInfo','operativeNumber','operationName','outpatientNumber','inHospitalNo','sqrtDoctorId','oprDeptId','oprDeptName','exeDeptId','exeDeptName','surgeonName','patientDetailInfo','hospitalizationsNum','remarks','extension1','extension2','subordinateWardName','visitNo','bedNumber','surgeonId','subordinateWardId');
         this.form.setFieldsValue(fieldval);
@@ -768,7 +768,7 @@
           //   return;
           // }
           if(this.sRowIds <= 0){
-            this.$message.warning("请勾选需要收费的产品");
+            this.$message.warning("请先勾选需要提交的产品");
             return;
           }
           //查找出勾选的产品信息
@@ -794,6 +794,13 @@
               this.$message.error("["+list[i].productName+"]用量数量必须大于0！");
               return;
             }
+          }
+
+
+          let hyCharged = formData.hyCharged=this.hyCharged==true?"0":"1";
+          if(!formData.inHospitalNo && hyCharged=="0"){
+            this.$message.error("门诊科室请[不要选中执行收费]");
+            return;
           }
           formData.pdDosageDetails = list;
           return this.request(formData);
