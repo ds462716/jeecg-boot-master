@@ -6,13 +6,14 @@
     <!-- 操作按钮区域 -->
     <div class="table-operator">
       <a-button @click="handleAdd" type="primary" icon="plus">新增</a-button>
-      <a-button
-        @click="batchDel"
-        v-if="selectedRowKeys.length > 0"
-        ghost
-        type="primary"
-        icon="delete">批量删除
-      </a-button>
+      <a-dropdown v-if="selectedRowKeys.length > 0">
+        <a-menu slot="overlay">
+          <a-menu-item key="1" @click="batchDel"><a-icon type="delete"/>删除</a-menu-item>
+          <a-menu-item key="2" @click="batchDisable('1')"><a-icon type="lock" />停用</a-menu-item>
+          <a-menu-item key="3" @click="batchDisable('0')"><a-icon type="unlock" />启用</a-menu-item>
+        </a-menu>
+        <a-button style="margin-left: 8px"> 批量操作 <a-icon type="down" /></a-button>
+      </a-dropdown>
     </div>
 
     <!-- table区域-begin -->
@@ -76,6 +77,7 @@
   import JDictSelectTag from '@/components/dict/JDictSelectTag.vue'
   import {initDictOptions, filterMultiDictText} from '@/components/dict/JDictSelectUtil'
   import { getCategoryList } from '@/api/api'
+  import {postAction} from '@/api/manage'
 
   export default {
     name: "PdCategoryList",
@@ -104,7 +106,7 @@
             dataIndex: 'wb'
           },
           {
-            title:'自定义查询码',
+            title:'自定义码',
             align:"center",
             dataIndex: 'zdy'
           },
@@ -117,6 +119,18 @@
                 return ''
               }else{
                 return filterMultiDictText(this.dictOptions['type'], text+"")
+              }
+            }
+          },
+          {
+            title:'状态',
+            align:"center",
+            dataIndex: 'status',
+            customRender:(text)=>{
+              if(!text){
+                return ''
+              }else{
+                return filterMultiDictText(this.dictOptions['status'], text+"")
               }
             }
           },
@@ -145,9 +159,11 @@
           deleteBatch: "/pd/pdCategory/deleteBatch",
           exportXlsUrl: "/pd/pdCategory/exportXls",
           importExcelUrl: "pd/pdCategory/importExcel",
+          batchDisable: "pd/pdCategory/batchDisable",
         },
         dictOptions:{
-         type:[],
+          type:[],
+          status:[],
         },
       }
     },
@@ -172,7 +188,13 @@
           if (res.success) {
             this.$set(this.dictOptions, 'type', res.result)
           }
+        }),
+        initDictOptions('disable_enable_status').then((res) => {
+          if (res.success) {
+            this.$set(this.dictOptions, 'status', res.result)
+          }
         })
+
       },
       handleAddSub(record) {
         this.$refs.modalForm.title = "添加二级分类";
@@ -213,7 +235,39 @@
             }
           }
         }
-      }
+      },
+      /**
+       * 批量启用或停用
+       * @param status
+       * @returns {boolean}
+       */
+      batchDisable(status) {
+        if (this.selectedRowKeys.length <= 0) {
+          this.$message.warning('请选择一条记录！');
+          return false;
+        } else {
+          let ids = "";
+          let that = this;
+          that.selectedRowKeys.forEach(function (val) {
+            ids += val + ",";
+          });
+          that.$confirm({
+            title: "确认操作",
+            content: "是否" + (status == 0 ? "启用" : "停用") + "选中分类及其子类?",
+            onOk: function () {
+              postAction(that.url.batchDisable, {ids: ids, status: status}).then((res) => {
+                if (res.success) {
+                  that.$message.success(res.message);
+                  that.loadData();
+                  that.onClearSelected();
+                } else {
+                  that.$message.warning(res.message);
+                }
+              });
+            }
+          });
+        }
+      },
        
     }
   }

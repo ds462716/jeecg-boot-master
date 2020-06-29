@@ -2,6 +2,7 @@ package org.jeecg.modules.pd.controller;
 
 import java.util.*;
 
+import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.constant.PdConstant;
@@ -88,6 +89,7 @@ public class PdCategoryController extends JeecgController<PdCategory, IPdCategor
 		 try {
 			 LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
 			 pdCategory.setDepartParentId(sysUser.getDepartParentId());
+			 pdCategory.setStatus(PdConstant.DISABLE_ENABLE_STATUS_0);//只查启用
 			 List<PdCategory> list = pdCategoryService.selectCategoryOneList(pdCategory);
 			 result.setResult(list);
 			 result.setSuccess(true);
@@ -285,5 +287,47 @@ public class PdCategoryController extends JeecgController<PdCategory, IPdCategor
 			 result.setMessage("粘贴失败");
 		 }
 		 return result;
+	 }
+
+	 /**
+	  * 批量停用和启用status 0启用1停用
+	  * @param jsonObject
+	  * @return
+	  */
+	 @RequestMapping(value = "/batchDisable", method = RequestMethod.POST)
+	 public Result<PdCategory> batchDisable(@RequestBody JSONObject jsonObject) {
+		 Result<PdCategory> result = new Result<PdCategory>();
+		 try {
+			 String ids = jsonObject.getString("ids");
+			 String status = jsonObject.getString("status");
+			 String[] arr = ids.split(",");
+			 List<PdCategory> pdCategorys= new ArrayList<>();
+			 for (String id : arr) {
+				 if(oConvertUtils.isNotEmpty(id)) {
+					 PdCategory pdCategory = new PdCategory();
+					 pdCategory.setId(id);
+					 pdCategory.setStatus(status);
+					 pdCategorys.add(pdCategory);
+					 LambdaQueryWrapper<PdCategory> query = new LambdaQueryWrapper<PdCategory>()
+							 .eq(PdCategory::getParentId, id);
+					 List<PdCategory> pdCategoryList = pdCategoryService.list(query);
+					 if(pdCategoryList!=null && pdCategoryList.size()>0){
+					 	for(PdCategory pc :pdCategoryList){
+							pc.setStatus(status);
+						}
+						 pdCategorys.addAll(pdCategoryList);
+					 }
+				 }
+			 }
+			 if(pdCategorys!=null && pdCategorys.size()>0){
+				 pdCategoryService.updateBatchById(pdCategorys);
+			 }
+		 } catch (Exception e) {
+			 log.error(e.getMessage(), e);
+			 result.error500("操作失败"+e.getMessage());
+		 }
+		 result.success("操作成功!");
+		 return result;
+
 	 }
 }
