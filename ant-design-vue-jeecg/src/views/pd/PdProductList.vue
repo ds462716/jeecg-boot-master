@@ -275,9 +275,10 @@
   import PdProductModal from './modules/PdProductModal'
   import {initDictOptions, filterMultiDictText} from '@/components/dict/JDictSelectUtil'
   import { getAction,postAction,httpAction } from  '@/api/manage'
+  import JDictSelectTagExpand from "@/components/dict/JDictSelectTagExpand"
   import { validateDuplicateValue } from '@/utils/util'
   import pick from 'lodash.pick'
-  import JDictSelectTagExpand from "@/components/dict/JDictSelectTagExpand"
+
 
 
   let timeout;
@@ -554,7 +555,7 @@
         this.categoryTwoValue = value;
         fetch(value, data => (this.categoryTwoData = data),this.url.queryCategoryTwo+"&parentId="+categoryOne);
       },
-      //一级分类查询end
+      //二级分类查询end
       //批量修改收费代码点击事件
       handleChargeCode(){
         this.form.resetFields();

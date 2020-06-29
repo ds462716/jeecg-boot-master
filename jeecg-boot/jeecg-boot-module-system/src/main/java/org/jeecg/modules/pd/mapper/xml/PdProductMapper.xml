@@ -468,6 +468,9 @@
         <if test="entity.groupId != null and entity.groupId != ''">
             AND a.group_id = #{entity.groupId}
         </if>
+        <if test="entity.status != null and entity.status != ''">
+            AND a.status = #{entity.status}
+        </if>
         <if test="entity.spec != null and entity.spec != ''">
             AND a.spec LIKE concat('%',#{entity.spec},'%')
         </if>
