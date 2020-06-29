@@ -62,6 +62,8 @@ public interface IPdProductStockService extends IService<PdProductStock> {
 
 	Page<PdProductStock> queryList(Page<PdProductStock> pageList, PdProductStock productStock);
 
+	List<PdProductStock> queryStockList(PdProductStock productStock);
+
 	/**
 	 * 更新条码类型
 	 */

@@ -35,7 +35,6 @@ public class PdProductStockTotal extends BaseEntity {
     @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
     private Date updateTime;
 	/**所属部门*/
-    @Excel(name = "所属部门", width = 15)
     private String sysOrgCode;
 	/**产品id*/
     private String productId;
@@ -74,7 +73,6 @@ public class PdProductStockTotal extends BaseEntity {
 
     /**科室id*/
     @TableField(strategy = FieldStrategy.NOT_EMPTY)
-    @Excel(name = "科室ID", width = 15)
     private String departId;
     /** 所属父部门*/
     @TableField(strategy = FieldStrategy.NOT_EMPTY)
@@ -100,6 +98,9 @@ public class PdProductStockTotal extends BaseEntity {
     @Excel(name = "型号", width = 15)
     @TableField(exist = false)
     private String version;
+    @Excel(name = "批次号", width = 15)
+    @TableField(exist = false)
+    private String batchNo;
     /**生产厂家*/
     @Excel(name = "生产厂家", width = 15)
     @TableField(exist = false)
