@@ -871,3 +871,6 @@ update pd_unit set `status` = '0';
 ALTER TABLE `pd_category`
 ADD COLUMN `status`  varchar(1) NULL COMMENT '停用启用状态0启用1停用' AFTER `depart_parent_id`;
 update pd_category set `status` = '0';
+ALTER TABLE `pd_product`
+ADD COLUMN `status`  varchar(1) NULL COMMENT '停用启用状态0启用1停用' AFTER `depart_parent_id`;
+update pd_product set `status` = '0';

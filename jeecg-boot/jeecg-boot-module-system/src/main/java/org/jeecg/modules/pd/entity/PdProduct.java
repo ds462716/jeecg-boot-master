@@ -338,4 +338,8 @@ public class PdProduct  extends BaseEntity {
 	@TableField(exist = false)
 	private String hisChargeCodeSynFlag;//0-全部；1-已对照；2-未对照
 
+	/**
+	 * 停用或启用0启用，1停用
+	 */
+	private String status;
 }

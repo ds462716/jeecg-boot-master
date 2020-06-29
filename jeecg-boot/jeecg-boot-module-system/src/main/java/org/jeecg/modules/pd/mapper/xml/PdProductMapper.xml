@@ -112,6 +112,7 @@
         <result column="fsfJe" property="fsfJe" jdbcType="DECIMAL"/>
         <result column="priceDifference" property="priceDifference" jdbcType="DECIMAL"/>
         <result column="fsfXmmc" property="fsfXmmc" jdbcType="VARCHAR"/>
+        <result column="status" property="status" jdbcType="VARCHAR"/>
         <collection property="pdProductRules" ofType="String">
             <!--<id column="id" property="id" jdbcType="VARCHAR"/>
             <id column="product_id" property="productId" jdbcType="VARCHAR"/>-->
@@ -226,6 +227,7 @@
         a.device_classification,
         a.validity_flag,
         a.product_flag,
+        a.status,
         a.del_flag
 	</sql>
 
@@ -270,6 +272,7 @@
         a.device_classification,
         a.validity_flag,
         a.product_flag,
+        a.status,
         a.del_flag
     </sql>
 
@@ -381,6 +384,9 @@
         </if>
         <if test="venderId != null and venderId != ''">
             AND a.vender_id = #{venderId}
+        </if>
+        <if test="status != null and status != ''">
+            AND a.status = #{status}
         </if>
         <if test="supplierId != null and supplierId != ''">
             AND a.supplier_id = #{supplierId}
@@ -619,6 +625,9 @@
             </if>
             <if test="entity.chargeCode != null and entity.chargeCode != ''">
                 AND a.charge_code LIKE concat('%',#{entity.chargeCode},'%')
+            </if>
+            <if test="entity.status != null and entity.status != ''">
+                AND a.status = #{entity.status}
             </if>
             <if test="entity.spec != null and entity.spec != ''">
                 AND a.spec LIKE concat('%',#{entity.spec},'%')

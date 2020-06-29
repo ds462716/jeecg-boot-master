@@ -151,6 +151,7 @@ public class PdProductServiceImpl extends ServiceImpl<PdProductMapper, PdProduct
                         PdProduct pdProduct = new PdProduct();
                         pdProduct.setNumber(productNumber);
                         pdProduct.setDepartParentId(sysUser.getDepartParentId());
+                        pdProduct.setStatus(PdConstant.DISABLE_ENABLE_STATUS_0);//只查启用
                         //查询产品是否存在
                         List<PdProduct> pdProducts = pdProductMapper.selectList(pdProduct);
                         if(pdProducts!=null && pdProducts.size()>0){
@@ -175,6 +176,7 @@ public class PdProductServiceImpl extends ServiceImpl<PdProductMapper, PdProduct
                             pdProduct.setNumber(Barcode1);
 
                             pdProduct.setDepartParentId(sysUser.getDepartParentId());
+                            pdProduct.setStatus(PdConstant.DISABLE_ENABLE_STATUS_0);//只查启用
                             //查询产品是否存在
                             List<PdProduct> pdProducts = pdProductMapper.selectList(pdProduct);
                             if(pdProducts!=null && pdProducts.size()>0){
@@ -201,6 +203,7 @@ public class PdProductServiceImpl extends ServiceImpl<PdProductMapper, PdProduct
                 PdProduct pdProduct = new PdProduct();
                 pdProduct.setNumber(productNumber);
                 pdProduct.setDepartParentId(sysUser.getDepartParentId());
+                pdProduct.setStatus(PdConstant.DISABLE_ENABLE_STATUS_0);//只查启用
                 //查询产品是否存在
                 List<PdProduct> pdProducts = pdProductMapper.selectList(pdProduct);
                 if(pdProducts!=null && pdProducts.size()>0){

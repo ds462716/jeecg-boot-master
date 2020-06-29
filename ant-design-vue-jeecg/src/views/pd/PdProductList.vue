@@ -149,6 +149,11 @@
                 </a-select>
               </a-form-item>
             </a-col>
+            <a-col :md="6" :sm="8">
+              <a-form-item label="状态">
+                <j-dict-select-tag-expand v-model="queryParam.status" dictCode="disable_enable_status" placeholder="请选择状态"/>
+              </a-form-item>
+            </a-col>
           </template>
           <a-col :md="6" :sm="8" >
             <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
@@ -176,7 +181,9 @@
       <a-dropdown v-if="selectedRowKeys.length > 0">
         <a-menu slot="overlay">
           <a-menu-item key="1" @click="batchDel"><a-icon type="delete"/>删除</a-menu-item>
-          <a-menu-item key="2" @click="handleChargeCode"><a-icon type="edit"/>批量修改产品收费代码</a-menu-item>
+          <a-menu-item key="2" @click="batchDisable('1')"><a-icon type="lock" />停用</a-menu-item>
+          <a-menu-item key="3" @click="batchDisable('0')"><a-icon type="unlock" />启用</a-menu-item>
+          <a-menu-item key="4" @click="handleChargeCode"><a-icon type="edit"/>批量修改产品收费代码</a-menu-item>
         </a-menu>
         <a-button style="margin-left: 8px"> 批量操作 <a-icon type="down" /></a-button>
       </a-dropdown>
@@ -267,8 +274,7 @@
   import { JeecgListMixin } from '@/mixins/JeecgListMixin'
   import PdProductModal from './modules/PdProductModal'
   import {initDictOptions, filterMultiDictText} from '@/components/dict/JDictSelectUtil'
-  import { getAction } from  '@/api/manage'
-  import { httpAction } from '@/api/manage'
+  import { getAction,postAction,httpAction } from  '@/api/manage'
   import { validateDuplicateValue } from '@/utils/util'
   import pick from 'lodash.pick'
   import JDictSelectTagExpand from "@/components/dict/JDictSelectTagExpand"
@@ -406,6 +412,18 @@
             dataIndex: 'supplierName'
           },
           {
+            title:'状态',
+            align:"center",
+            dataIndex: 'status',
+            customRender:(text)=>{
+              if(!text){
+                return ''
+              }else{
+                return filterMultiDictText(this.dictOptions['status'], text+"")
+              }
+            }
+          },
+          {
             title:'产品收费代码',
             align:"center",
             dataIndex: 'chargeCode'
@@ -435,9 +453,11 @@
           queryCategoryOne:"/pd/pdCategory/getCategoryOneList?type=0",
           queryCategoryTwo:"/pd/pdCategory/getCategoryOneList?type=1",
           editChargeCodeBatch:"/pd/pdProduct/editChargeCodeBatch",
+          batchDisable: "pd/pdProduct/batchDisable",
         },
         dictOptions:{
           isCharge:[],
+          status:[],
         },
       }
     },
@@ -473,6 +493,11 @@
         initDictOptions('device_classification').then((res) => {
           if (res.success) {
             this.$set(this.dictOptions, 'deviceClassification', res.result)
+          }
+        }),
+        initDictOptions('disable_enable_status').then((res) => {
+          if (res.success) {
+            this.$set(this.dictOptions, 'status', res.result)
           }
         })
       },
@@ -659,7 +684,39 @@
             }
           }
         }
-      }
+      },
+      /**
+       * 批量启用或停用
+       * @param status
+       * @returns {boolean}
+       */
+      batchDisable(status) {
+        if (this.selectedRowKeys.length <= 0) {
+          this.$message.warning('请选择一条记录！');
+          return false;
+        } else {
+          let ids = "";
+          let that = this;
+          that.selectedRowKeys.forEach(function (val) {
+            ids += val + ",";
+          });
+          that.$confirm({
+            title: "确认操作",
+            content: "是否" + (status == 0 ? "启用" : "停用") + "选中产品?",
+            onOk: function () {
+              postAction(that.url.batchDisable, {ids: ids, status: status}).then((res) => {
+                if (res.success) {
+                  that.$message.success(res.message);
+                  that.loadData();
+                  that.onClearSelected();
+                } else {
+                  that.$message.warning(res.message);
+                }
+              });
+            }
+          });
+        }
+      },
     }
   }
 </script>

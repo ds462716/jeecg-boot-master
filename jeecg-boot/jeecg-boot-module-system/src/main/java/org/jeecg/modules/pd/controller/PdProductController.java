@@ -1,6 +1,7 @@
 package org.jeecg.modules.pd.controller;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
@@ -28,6 +29,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -410,6 +412,7 @@ public class PdProductController extends JeecgController<PdProduct, IPdProductSe
     }
 
     /**
+     * 闭瓶
      * @param Barcode
      * @return
      */
@@ -600,8 +603,42 @@ public class PdProductController extends JeecgController<PdProduct, IPdProductSe
                                        HttpServletRequest req) {
         Page<PdProductPage> page = new Page<PdProductPage>(pageNo, pageSize);
         LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        pdProduct.setStatus(PdConstant.DISABLE_ENABLE_STATUS_0);//只查启用
         pdProduct.setDepartParentId(sysUser.getDepartParentId());
         IPage<PdProductPage> pageList = pdProductService.chooseProductList(page, pdProduct);
         return Result.ok(pageList);
+    }
+
+    /**
+     * 批量停用和启用status 0启用1停用
+     * @param jsonObject
+     * @return
+     */
+    @RequestMapping(value = "/batchDisable", method = RequestMethod.POST)
+    public Result<PdProduct> batchDisable(@RequestBody JSONObject jsonObject) {
+        Result<PdProduct> result = new Result<PdProduct>();
+        try {
+            String ids = jsonObject.getString("ids");
+            String status = jsonObject.getString("status");
+            String[] arr = ids.split(",");
+            List<PdProduct> pdProducts= new ArrayList<>();
+            for (String id : arr) {
+                if(oConvertUtils.isNotEmpty(id)) {
+                    PdProduct pdProduct = new PdProduct();
+                    pdProduct.setId(id);
+                    pdProduct.setStatus(status);
+                    pdProducts.add(pdProduct);
+                }
+            }
+            if(pdProducts!=null && pdProducts.size()>0){
+                pdProductService.updateBatchById(pdProducts);
+            }
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            result.error500("操作失败"+e.getMessage());
+        }
+        result.success("操作成功!");
+        return result;
+
     }
 }
