@@ -1,5 +1,6 @@
 package org.jeecg.modules.pd.controller;
 
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.ObjectUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -17,6 +18,7 @@ import org.jeecg.modules.pd.entity.PdProductStockTotal;
 import org.jeecg.modules.pd.entity.PdStockRecordDetail;
 import org.jeecg.modules.pd.service.*;
 import org.jeecg.modules.pd.vo.PdGoodsAllocationPage;
+import org.jeecg.modules.pd.vo.PdProductStockExcel;
 import org.jeecg.modules.pd.vo.PdProductStockTotalPage;
 import org.jeecg.modules.system.entity.SysDepart;
 import org.jeecg.modules.system.service.ISysDepartService;
@@ -395,12 +397,43 @@ public class PdProductStockTotalController {
 		 // Step.3 AutoPoi 导出Excel
 		 ModelAndView mv = new ModelAndView(new JeecgEntityExcelView());
 		 mv.addObject(NormalExcelConstants.FILE_NAME, "库存产品列表");
-		 mv.addObject(NormalExcelConstants.CLASS, PdProductStockTotal.class);
+		 mv.addObject(NormalExcelConstants.CLASS, PdProductStockTotalPage.class);
 		 mv.addObject(NormalExcelConstants.PARAMS, new ExportParams("库存列表数据", "导出人:"+sysUser.getRealname(), "库存产品数据"));
 		 mv.addObject(NormalExcelConstants.DATA_LIST, aList);
 		 return mv;
 	 }
 
+
+
+	/**
+	 * 库存明细导出excel
+	 *
+	 * @param request
+	 * @param productStock
+	 */
+	@RequestMapping(value = "/stockExportXls")
+	public ModelAndView stockExportXls(HttpServletRequest request, PdProductStock productStock) {
+		// Step.1 组装查询条件查询数据
+		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		if(oConvertUtils.isNotEmpty(productStock.getDepartIds()) && !"undefined".equals(productStock.getDepartIds())) {
+			productStock.setDepartIdList(Arrays.asList(productStock.getDepartIds().split(",")));
+		}else{
+			//查询科室下所有下级科室的ID
+			SysDepart sysDepart=new SysDepart();
+			List<String> departList=pdDepartService.selectListDepart(sysDepart);
+			productStock.setDepartIdList(departList);
+		}
+		//Step.2 获取导出数据
+		List<PdProductStock> aList =pdProductStockService.queryStockList(productStock);
+		List<PdProductStockExcel> exportList = JSON.parseArray(JSON.toJSONString(aList), PdProductStockExcel.class);
+		// Step.3 AutoPoi 导出Excel
+		ModelAndView mv = new ModelAndView(new JeecgEntityExcelView());
+		mv.addObject(NormalExcelConstants.FILE_NAME, "库存明细列表");
+		mv.addObject(NormalExcelConstants.CLASS, PdProductStockExcel.class);
+		mv.addObject(NormalExcelConstants.PARAMS, new ExportParams("库存明细列表", "导出人:"+sysUser.getRealname(), "库存明细列表"));
+		mv.addObject(NormalExcelConstants.DATA_LIST, exportList);
+		return mv;
+	}
 
 	 /**
 	  * 查询盘点库存明细信息

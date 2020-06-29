@@ -2,7 +2,6 @@ package org.jeecg.modules.pd.service.impl;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import org.jeecg.common.constant.PdConstant;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.pd.entity.PdProductStock;
 import org.jeecg.modules.pd.mapper.PdProductStockMapper;
@@ -143,6 +142,11 @@ public class PdProductStockServiceImpl extends ServiceImpl<PdProductStockMapper,
 	@Override
 	public Page<PdProductStock> queryList(Page<PdProductStock> page, PdProductStock productStock) {
 		return page.setRecords(pdProductStockMapper.queryList(productStock));
+	}
+
+	@Override
+	public List<PdProductStock> queryStockList( PdProductStock productStock) {
+		return  pdProductStockMapper.queryList(productStock);
 	}
 
 

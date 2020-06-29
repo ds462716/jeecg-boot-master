@@ -459,6 +459,7 @@ public class PdStockRecordInController {
         stockRecord.setRecordType(PdConstant.RECODE_TYPE_1);
         stockRecord.setAuditStatus(PdConstant.AUDIT_STATE_2);//只查已通过的明细
         LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        stockRecord.setInDepartId(sysUser.getCurrentDepartId());
         stockRecord.setDepartParentId(sysUser.getDepartParentId());
         Page<PdStockRecord> page = new Page<PdStockRecord>(pageNo, pageSize);
         page = pdStockRecordService.stockRecordReportQuery(page, stockRecord);
