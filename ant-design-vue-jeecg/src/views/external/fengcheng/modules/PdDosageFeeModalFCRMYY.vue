@@ -106,7 +106,7 @@
                 <a-row>
                   <a-col :md="6" :sm="8">
                     <a-form-item label="住院号" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                      <a-input autocomplete="off" :disabled="disableSubmit" v-decorator="[ 'medicalRecordNo', validatorRules.medicalRecordNo]"  @keyup.enter.native="selectHis(0)"></a-input>
+                      <a-input autocomplete="off" :disabled="disableSubmit" v-decorator="[ 'qInHospitalNo' ]"  @keyup.enter.native="selectHis(0)"></a-input>
                     </a-form-item><!-- 查询条件 -->
                   </a-col>
                   <a-col :md="6" :sm="8">
@@ -508,11 +508,17 @@
       selectHis(num){//查詢患者信息   num:0：住院患者查詢   1：門診患者查詢
         let  medicalRecordNo='';
         let  outpatientNumber='';
+        let inHospitalNo = "";
+        let operativeNumber = "";
         // if(num=='0'){
-        medicalRecordNo=this.form.getFieldValue('medicalRecordNo');
-        if(medicalRecordNo=="" || medicalRecordNo==null){
+        inHospitalNo = this.form.getFieldValue('qInHospitalNo');
+        operativeNumber = this.form.getFieldValue('qOperativeNumber');
+        if(inHospitalNo == "" || inHospitalNo == null || inHospitalNo.trim() == ""){
           this.$message.error("请输入住院号！");
           return;
+        }
+        if(!operativeNumber){
+          operativeNumber = "";
         }
         // }else{
         // outpatientNumber=this.form.getFieldValue('outpatientNumber');
@@ -524,7 +530,7 @@
         // let  formData={medicalRecordNo:medicalRecordNo, outpatientNumber:outpatientNumber,prjType:num};
 
         this.confirmLoading = true;
-        let  formData={medicalRecordNo:medicalRecordNo};
+        let  formData={inHospitalNo:inHospitalNo.trim(),operativeNumber:operativeNumber.trim()};
         getAction(this.url.queryPatientInfoList,formData).then((res)=>{
           if (res.success) {
             if(res.result.length==1){
