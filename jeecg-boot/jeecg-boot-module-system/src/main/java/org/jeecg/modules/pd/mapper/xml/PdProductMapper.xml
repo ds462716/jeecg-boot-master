@@ -113,6 +113,7 @@
         <result column="priceDifference" property="priceDifference" jdbcType="DECIMAL"/>
         <result column="fsfXmmc" property="fsfXmmc" jdbcType="VARCHAR"/>
         <result column="status" property="status" jdbcType="VARCHAR"/>
+        <result column="biding_number" property="bidingNumber" jdbcType="VARCHAR"/>
         <collection property="pdProductRules" ofType="String">
             <!--<id column="id" property="id" jdbcType="VARCHAR"/>
             <id column="product_id" property="productId" jdbcType="VARCHAR"/>-->
@@ -228,6 +229,7 @@
         a.validity_flag,
         a.product_flag,
         a.status,
+        a.biding_number,
         a.del_flag
 	</sql>
 
@@ -273,6 +275,7 @@
         a.validity_flag,
         a.product_flag,
         a.status,
+        a.biding_number,
         a.del_flag
     </sql>
 

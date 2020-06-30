@@ -897,3 +897,7 @@ ADD COLUMN `his_package_code` varchar(64) NULL COMMENT 'His打包编号（丰城
 ADD COLUMN `his_package_name` varchar(640) NULL COMMENT 'His打包名称（丰城人民医院）' AFTER `his_package_code`,
 ADD COLUMN `his_package_index` varchar(4) NULL COMMENT 'His打包序号（丰城人民医院）' AFTER `his_package_name`
 ADD COLUMN `his_package_flag` varchar(4) NULL COMMENT 'His打包标志（丰城人民医院）' AFTER `his_package_index`;
+
+-- add by zxh 2020年6月30日14:11:29 赣州市立医院产品列表加入中标号
+ALTER TABLE `pd_product`
+ADD COLUMN `biding_number`  varchar(64) NULL COMMENT '中标号' AFTER `depart_parent_id`;

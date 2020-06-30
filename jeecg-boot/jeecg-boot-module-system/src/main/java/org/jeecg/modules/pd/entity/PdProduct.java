@@ -342,4 +342,9 @@ public class PdProduct  extends BaseEntity {
 	 * 停用或启用0启用，1停用
 	 */
 	private String status;
+
+	/**
+	 * 赣州市立医院中标号
+	 */
+	private String bidingNumber;
 }
