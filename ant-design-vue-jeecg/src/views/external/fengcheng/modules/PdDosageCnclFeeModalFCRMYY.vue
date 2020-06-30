@@ -92,7 +92,7 @@
               <a-row style="margin-top:10px;text-align: right;padding-right: 5%">
                 <span style="font-weight: bold;font-size: large;padding-right: 5%">总数量：{{ totalSum }}</span>
                 <span style="font-weight: bold;font-size: large;padding-right: 5%">总金额：{{ totalPrice }}</span>
-                <span style="font-weight: bold;font-size: large">计费总金额：{{ jfTotalPrice }}</span>
+                <span style="font-weight: bold;font-size: large">退费总金额：{{ jfTotalPrice }}</span>
               </a-row>
             </a-tab-pane>
           </a-tabs>
@@ -396,8 +396,6 @@
         this.editAfter();
       },
 
-
-
       /** 调用完edit()方法之后会自动调用此方法 */
       editAfter() {
         this.loadData();
@@ -684,21 +682,14 @@
             this.$message.warning("请勾选需要收费的产品");
             return;
           }
-          // let selectedArrays = this.$refs.pdDosageDetail.selectedRowIds;
-          // if(selectedArrays <= 0){
-          //   this.$message.warning("请勾选需要退费的产品");
-          //   return;
-          // }
-          // //查找出勾选的产品信息
-          // let selectedIds = new Array();
-          // for(let i =0;i<selectedArrays.length;i++){
-          //   let selectId = selectedArrays[i].substring(selectedArrays[i].lastIndexOf("-")+1);
-          //   selectedIds.push(selectId);
-          // }
+          let otherList = [];
           let list = formData.pdDosageDetails;
           for (let i =0; i <list.length;i++){
             //如果包含
             if(this.sRowIds.indexOf(list[i].id)<0){
+              if(list[i].hisPackageCode){
+                otherList.push(list[i]);
+              }
               list.splice(i--, 1);
               continue;
             }
@@ -713,6 +704,21 @@
               return;
             }
           }
+
+          // 打包产品须一起退
+          if(otherList.length > 0){
+            for(let item of list){
+              if(item.hisPackageCode){
+                for(let ote of otherList){
+                  if(item.hisPackageCode == ote.hisPackageCode && item.hisPackageFlag == ote.hisPackageFlag){
+                    this.$message.warning("打包标识["+item.hisPackageFlag+"]，打包名称["+item.hisPackageName+"]，该包下尚有其他产品未选择，请选择！");
+                    return;
+                  }
+                }
+              }
+            }
+          }
+
           formData.pdDosageDetails = list;
           return this.request(formData);
         }).catch(e => {
