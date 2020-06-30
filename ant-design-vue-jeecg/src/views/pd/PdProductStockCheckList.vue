@@ -85,16 +85,14 @@
         :rowSelection="{fixed:false,selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
         @change="handleTableChange">
          <span slot="action" slot-scope="text, record">
-          <a  @click="handleEdit(record)">编辑</a>
+          <a  @click="handleEdit(record)"  v-bind:disabled="record.checkStatus=='1'">修改</a>
           <a-divider type="vertical" />
-            <a-menu-item>
-                <a href="javascript:;" @click="handleDetail(record)">详情</a>
-              </a-menu-item>
-           <a-divider type="vertical" />
+          <a @click="handleDetail(record)">详情</a>
+          <a-divider type="vertical" />
           <a-dropdown>
-            <a class="ant-dropdown-link" v-bind:disabled="record.checkStatus=='1'">更多 <a-icon type="down" /></a>
+            <a class="ant-dropdown-link"  v-bind:disabled="record.checkStatus=='1'" >更多 <a-icon type="down" /></a>
             <a-menu slot="overlay">
-              <a-menu-item>
+              <a-menu-item v-show="record.checkStatus=='0'">
                 <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.id)">
                   <a>删除</a>
                 </a-popconfirm>
@@ -246,6 +244,21 @@
       }
     },
     methods: {
+      loadData(arg) {
+        //加载数据 若传入参数1则加载第一页的内容
+        if (arg === 1) {
+          this.ipagination.current = 1;
+        }
+        let params = this.getQueryParams();//查询条件
+        this.loading = true;
+        getAction(this.url.list, params).then((res) => {
+          if (res.success) {
+            this.dataSource = res.result.records;
+            this.ipagination.total = res.result.total;
+          }
+          this.loading = false;
+        })
+      },
       //科室查询start
       departHandleSearch(value) {
         fetch(value, data => (this.departData = data),this.url.queryDepart);
