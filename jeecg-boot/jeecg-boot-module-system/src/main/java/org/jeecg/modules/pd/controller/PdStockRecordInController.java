@@ -476,6 +476,7 @@ public class PdStockRecordInController {
         List<HashMap> orderCount=new  ArrayList<HashMap>();//数量
         LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
         stockRecord.setDepartParentId(sysUser.getDepartParentId());
+        stockRecord.setInDepartId(sysUser.getCurrentDepartId());
         //根据产品按月统计入库金额
         orderMoney=pdStockRecordService.queryRecordViewMoney(stockRecord);
         //根据产品按月统计入库数量
@@ -498,6 +499,7 @@ public class PdStockRecordInController {
         pdStockRecord.setAuditStatus(PdConstant.AUDIT_STATE_2);//只查已通过的明细
         LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
         pdStockRecord.setDepartParentId(sysUser.getDepartParentId());
+        pdStockRecord.setInDepartId(sysUser.getCurrentDepartId());
         List<PdStockRecord> detailList =  pdStockRecordService.stockRecordReportQuery(pdStockRecord);
         List<PdStockRecordInExcle> exportList = JSON.parseArray(JSON.toJSONString(detailList), PdStockRecordInExcle.class);
         // Step.4 AutoPoi 导出Excel

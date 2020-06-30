@@ -227,8 +227,8 @@
         <if test="departParentId != null and departParentId != ''">
             AND f.depart_parent_id = #{departParentId}
         </if>
-        <if test="inParentId != null and inParentId != ''">
-            AND f.in_depart_id = #{inParentId}
+        <if test="inDepartId != null and inDepartId != ''">
+            AND f.in_depart_id = #{inDepartId}
         </if>
         <if test="productName != null and productName != ''">
             AND (
@@ -309,6 +309,12 @@
         <if test="productId != null and productId != ''">
             and  a.product_id=#{productId}
         </if>
+        <if test="departParentId != null and departParentId != ''">
+            AND b.depart_parent_id = #{departParentId}
+        </if>
+        <if test="inDepartId != null and inDepartId != ''">
+            AND b.in_depart_id = #{inDepartId}
+        </if>
         ) c
         GROUP BY type;
     </select>
@@ -336,6 +342,12 @@
         AND substr(a.create_time,1,7) &lt;=substr(CURDATE(),1,7)
         <if test="productId != null and productId != ''">
             and  a.product_id=#{productId}
+        </if>
+        <if test="departParentId != null and departParentId != ''">
+            AND b.depart_parent_id = #{departParentId}
+        </if>
+        <if test="inDepartId != null and inDepartId != ''">
+            AND b.in_depart_id = #{inDepartId}
         </if>
         ) c
         GROUP BY type;
