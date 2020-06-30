@@ -95,6 +95,9 @@
 		<if test="entity.fsfSpec != null and entity.fsfSpec != ''">
 			AND a.fsf_spec LIKE concat('%',#{entity.fsfSpec},'%')
 		</if>
+		<if test="entity.fsfSpec == null or entity.fsfSpec == ''">
+			AND a.fsf_spec &lt;&gt; '打包'
+		</if>
 		order by a.create_time desc,a.fsf_xmbh desc
 	</select>
 
