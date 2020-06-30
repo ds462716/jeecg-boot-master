@@ -308,7 +308,6 @@ public class HisApiForFCRenminUtils {
     public static String getJsonDataFromWebservice(String url,String methodStr,String namespace,String tns,String[] pars,String[] vals) throws AxisFault {
         OMElement result = null;
         ServiceClient client = new ServiceClient();
-//            client.setOptions(getClientOptions(action));
         client.setOptions(getClientOptions(namespace+methodStr,url));
         result =  client.sendReceive(getOMMethod(methodStr,namespace,tns,pars,vals));
         logger.info("webservice.asmx========出参========"+result);

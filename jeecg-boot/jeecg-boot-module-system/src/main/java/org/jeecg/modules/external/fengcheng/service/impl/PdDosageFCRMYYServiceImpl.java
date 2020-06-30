@@ -73,6 +73,7 @@ public class PdDosageFCRMYYServiceImpl extends ServiceImpl<PdDosageMapper, PdDos
             PdDosageDetail pdDosageDetail = new PdDosageDetail();
             pdDosageDetail.setDosageId(param.getId());
             pdDosageDetail.setHyCharged(param.getDhyCharged());
+            pdDosageDetail.setIsCharge(param.getIsCharge());
             List<PdDosageDetail> pdDosageDetails = pdDosageDetailService.selectList(pdDosageDetail);
             pdDosage.setPdDosageDetails(pdDosageDetails);
 
@@ -178,9 +179,13 @@ public class PdDosageFCRMYYServiceImpl extends ServiceImpl<PdDosageMapper, PdDos
                 it.remove();
             }
         }
-        List<PdDosageDetail> tempArray = new ArrayList<>();
-        List<PdDosageDetail> chargeArray = new ArrayList<>();
-        List<PdDosageDetail> newChargeArray = new ArrayList<>();
+        List<PdDosageDetail> tempArray = new ArrayList<>();      //不计费产品集合
+        List<PdDosageDetail> saveChargeArray = new ArrayList<>();//所有收费产品集合（保存我们库，不含包）
+        List<PdDosageDetail> hisChargeArray = new ArrayList<>(); //所有收费产品集合（传his接口，含包）
+        List<PdDosageDetail> packageArray = new ArrayList<>();   //打包收费产品集合（不含包）
+        List<PdDosageDetail> newPackageArray = new ArrayList<>();//打包收费产品集合（含包）
+        List<PdDosageDetail> noPackageArray = new ArrayList<>(); //非打包收费产品集合
+
         if(detailList != null && detailList.size() > 0) {
             //总数量
             BigDecimal dosageTotal = new BigDecimal(0);
@@ -218,19 +223,21 @@ public class PdDosageFCRMYYServiceImpl extends ServiceImpl<PdDosageMapper, PdDos
                 //需要收费的产品集合
                 if(PdConstant.CHARGE_FLAG_0.equals(pdDosage.getHyCharged()) && PdConstant.CHARGE_FLAG_0.equals(pdd.getIsCharge()) && !"".equals(pdd.getChargeCode())){
                     if(oConvertUtils.isNotEmpty(pdd.getHisPackageCode())){
-                        hisPackageCodeList.add(pdd.getHisPackageCode()+pdd.getHisPackageFlag());
+                        hisPackageCodeList.add(pdd.getHisPackageCode()+","+pdd.getHisPackageFlag());
+                        packageArray.add(pdd);//打包收费
                     }else{
-                        newChargeArray.add(pdd);
+                        noPackageArray.add(pdd); //非打包收费
                     }
                     pdd.setHyCharged(PdConstant.CHARGE_FLAG_0);
                     prodLog.setLogType(PdConstant.STOCK_LOG_TYPE_6);
-                    chargeArray.add(pdd);
+                    saveChargeArray.add(pdd);
                 }else{
                     //不收费的产品集合
                     pdd.setHyCharged(PdConstant.CHARGE_FLAG_1);
                     pdd.setHisPackageCode(null);
                     pdd.setHisPackageName(null);
                     pdd.setHisPackageIndex(null);
+                    pdd.setHisPackageFlag(null);
                     prodLog.setLogType(PdConstant.STOCK_LOG_TYPE_3);
                     tempArray.add(pdd);
                 }
@@ -259,32 +266,46 @@ public class PdDosageFCRMYYServiceImpl extends ServiceImpl<PdDosageMapper, PdDos
                 pdDosage.setDosageBy(sysUser.getId());
                 pdDosage.setDosageDate(DateUtils.getDate());
 
-                if (PdConstant.CHARGE_FLAG_0.equals(pdDosage.getHyCharged()) && chargeArray.size() > 0){
+                if (PdConstant.CHARGE_FLAG_0.equals(pdDosage.getHyCharged()) && saveChargeArray.size() > 0){
 
                     if(CollectionUtils.isNotEmpty(hisPackageCodeList)){
                         for(String hisPackageCode : hisPackageCodeList){
-                            int index = 0;
-                            List<PdDosageDetail> addList = new ArrayList<>();
-                            for(PdDosageDetail chargeItem : chargeArray){
+                            // 1.包装组套
+                            PdDosageDetail pack = new PdDosageDetail();
+                            String code = hisPackageCode.split(",")[0];
+                            pack.setHisPackageCode(code);
+                            pack.setHisPackageIndex("0"); //套包 固定0
+                            pack.setProductNumber("");
+                            pack.setChargeCode(code);
+                            pack.setDosageCount(1D);//数量固定1
+                            newPackageArray.add(pack);
+
+                            // 2.组装套包下的产品
+                            int index = 1;
+                            for(PdDosageDetail chargeItem : packageArray){
                                 if(oConvertUtils.isNotEmpty(chargeItem.getHisPackageCode())
-                                        && hisPackageCode.equals(chargeItem.getHisPackageCode()+chargeItem.getHisPackageFlag())){
+                                        && hisPackageCode.equals(chargeItem.getHisPackageCode()+","+chargeItem.getHisPackageFlag())){
                                     chargeItem.setHisPackageIndex(index+"");
-                                    addList.add(chargeItem);
+                                    newPackageArray.add(chargeItem);
                                     index = index + 1;
                                 }
                             }
-                            newChargeArray.addAll(addList);
                         }
                     }
 
+                    hisChargeArray.addAll(noPackageArray);
+                    if(CollectionUtils.isNotEmpty(newPackageArray)){
+                        hisChargeArray.addAll(newPackageArray);
+                    }
+
                     // 计费接口
-                    JSONObject result = HisApiForFCRenminUtils.exeCharge(pdDosage,newChargeArray);
+                    JSONObject result = HisApiForFCRenminUtils.exeCharge(pdDosage,hisChargeArray);
                     if(!PdConstant.SUCCESS_0.equals(result.getString("statusCode"))){
                         logger.error("执行HIS收费接口失败！HIS返回："+result.getString("msg"));
                         throw new RuntimeException("执行HIS收费接口失败！HIS返回："+result.getString("msg"));
                     }
 
-                    pdDosageDetailService.saveBatch(newChargeArray);
+                    pdDosageDetailService.saveBatch(saveChargeArray);
                 }
                 if(!tempArray.isEmpty()){
                     pdDosageDetailService.saveBatch(tempArray);
@@ -298,7 +319,7 @@ public class PdDosageFCRMYYServiceImpl extends ServiceImpl<PdDosageMapper, PdDos
                 pdProductStockTotalService.updateUseStock(sysUser.getCurrentDepartId(),detailList);
             }
         }
-        return chargeArray;
+        return saveChargeArray;
     }
 
     @Override

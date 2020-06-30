@@ -42,7 +42,10 @@
             <if test="hyCharged != null and hyCharged != ''">
                 AND a.hy_charged = #{hyCharged}
             </if>
+            <if test="isCharge != null and isCharge != ''">
+                AND b.is_charge = #{isCharge}
+            </if>
         </where>
-        ORDER BY a.update_time desc,a.create_time desc
+        ORDER BY a.update_time desc,a.create_time desc,a.his_package_flag
     </select>
 </mapper>

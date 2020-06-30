@@ -437,7 +437,7 @@
           this.$nextTick(() => {
             this.form.setFieldsValue(fieldval);
           })
-          params = { id: this.model.id,dhyCharged:"1" } //0已收费1未收费2已退费
+          params = { id:this.model.id,isCharge:"0",dhyCharged:"1" } //0已收费1未收费2已退费
         }else{
           params = { id: "" }
         }
@@ -667,6 +667,13 @@
           return;
         }
 
+        let {values} = this.$refs.pdDosageDetail.getValuesSync({validate: false});
+        values.forEach((item, idx) => {
+          if(this.sRowIds.indexOf(item.id)>=0){
+            this.$refs.pdDosageDetail.setValues([{rowKey: item.id, values: { hisPackageCode: "", hisPackageName: "",hisPackageFlag:"" }}]);
+          }
+        })
+        this.$refs.pdDosageDetail.selectedRowIds = [];// 清空选择框
       },
       // 计算总数量和总价格
       getTotalNumAndPrice(rows){

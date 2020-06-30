@@ -689,6 +689,13 @@
           return;
         }
 
+        let {values} = this.$refs.pdDosageDetail.getValuesSync({validate: false});
+        values.forEach((item, idx) => {
+          if(this.sRowIds.indexOf(item.id)>=0){
+            this.$refs.pdDosageDetail.setValues([{rowKey: item.id, values: { hisPackageCode: "", hisPackageName: "",hisPackageFlag:"" }}]);
+          }
+        })
+        this.$refs.pdDosageDetail.selectedRowIds = [];// 清空选择框
       },
       // 计算总数量和总价格
       getTotalNumAndPrice(rows){
@@ -858,8 +865,7 @@
         }
         this.confirmLoading = true
         //是否收费标识
-        // formData.hyCharged=this.hyCharged==true?"0":"1";
-        formData.hyCharged="0";
+        formData.hyCharged=this.hyCharged==true?"0":"1";
         httpAction(url, formData, method).then((res) => {
           if (res.success) {
             this.$message.success(res.message)

@@ -298,6 +298,8 @@ public class PdDosage extends BaseEntity {
     /** 查询日期结束 **/
     @TableField(exist = false)
     private String queryDateEnd;
+    @TableField(exist = false)
+    private String isCharge;
     /**
      * 查询病人信息类别
      */
