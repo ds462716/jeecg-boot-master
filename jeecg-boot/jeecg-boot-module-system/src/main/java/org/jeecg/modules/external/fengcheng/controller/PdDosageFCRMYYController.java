@@ -63,7 +63,7 @@ public class PdDosageFCRMYYController {
     @PostMapping(value = "/submit")
     public Result<?> submit(@RequestBody PdDosage pdDosage) {
         List<PdDosageDetail> list = pdDosageFCRMYYService.saveMain(pdDosage, PdConstant.IS_CHARGE_FLAG_0);
-        return Result.ok("添加成功！");
+        return Result.ok("操作成功！");
     }
 
     /**
@@ -108,14 +108,7 @@ public class PdDosageFCRMYYController {
     public Result<?> dosageCnclFee(@RequestBody PdDosage pdDosage) {
         List<PdDosageDetail> detailList = pdDosage.getPdDosageDetails();
         if (CollectionUtils.isNotEmpty(detailList)) {
-            //HIS退费接口
-            JSONObject result = HisApiForFCRenminUtils.exeRefund(pdDosage,detailList);
-            if(!PdConstant.SUCCESS_0.equals(result.getString("statusCode"))){
-                logger.error("执行HIS退费接口失败！HIS返回："+result.getString("msg"));
-                return Result.error("执行HIS退费接口失败！HIS返回："+result.getString("msg"));
-            }
-
-            pdDosageService.dosageCnclFee(pdDosage);
+            pdDosageFCRMYYService.dosageCnclFee(pdDosage);
         }
         return Result.ok("操作成功！");
     }
@@ -129,61 +122,6 @@ public class PdDosageFCRMYYController {
     public Result<?> dosageFee(@RequestBody PdDosage pdDosage) {
         List<PdDosageDetail> detailList = pdDosage.getPdDosageDetails();
         if (CollectionUtils.isNotEmpty(detailList)) {
-
-            List<PdDosageDetail> saveChargeArray = new ArrayList<>();//所有收费产品集合（保存我们库，不含包）
-            List<PdDosageDetail> hisChargeArray = new ArrayList<>(); //所有收费产品集合（传his接口，含包）
-            List<PdDosageDetail> packageArray = new ArrayList<>();   //打包收费产品集合（不含包）
-            List<PdDosageDetail> newPackageArray = new ArrayList<>();//打包收费产品集合（含包）
-            List<PdDosageDetail> noPackageArray = new ArrayList<>(); //非打包收费产品集合
-
-            Set<String> hisPackageCodeList = new HashSet<>();
-            for(PdDosageDetail pdd : detailList){
-                if(oConvertUtils.isNotEmpty(pdd.getHisPackageCode())){
-                    hisPackageCodeList.add(pdd.getHisPackageCode()+","+pdd.getHisPackageFlag());
-                    packageArray.add(pdd);//打包收费
-                }else{
-                    noPackageArray.add(pdd); //非打包收费
-                }
-                saveChargeArray.add(pdd);
-            }
-
-            if(CollectionUtils.isNotEmpty(hisPackageCodeList)){
-                for(String hisPackageCode : hisPackageCodeList){
-                    // 1.包装组套
-                    PdDosageDetail pack = new PdDosageDetail();
-                    String code = hisPackageCode.split(",")[0];
-                    pack.setHisPackageCode(code);
-                    pack.setHisPackageIndex("0"); //套包 固定0
-                    pack.setProductNumber("");
-                    pack.setChargeCode(code);
-                    pack.setDosageCount(1D);//数量固定1
-                    newPackageArray.add(pack);
-
-                    // 2.组装套包下的产品
-                    int index = 1;
-                    for(PdDosageDetail chargeItem : detailList){
-                        if(oConvertUtils.isNotEmpty(chargeItem.getHisPackageCode())
-                                && hisPackageCode.equals(chargeItem.getHisPackageCode()+","+chargeItem.getHisPackageFlag())){
-                            chargeItem.setHisPackageIndex(index+"");
-                            newPackageArray.add(chargeItem);
-                            index = index + 1;
-                        }
-                    }
-                }
-            }
-
-            hisChargeArray.addAll(noPackageArray);
-            if(CollectionUtils.isNotEmpty(newPackageArray)){
-                hisChargeArray.addAll(newPackageArray);
-            }
-            //HIS计费接口
-            JSONObject result = HisApiForFCRenminUtils.exeCharge(pdDosage,hisChargeArray);
-            if(!PdConstant.SUCCESS_0.equals(result.getString("statusCode"))){
-                logger.error("执行HIS收费接口失败！HIS返回："+result.getString("msg"));
-                return Result.error("执行HIS收费接口失败！HIS返回："+result.getString("msg"));
-            }
-
-            pdDosage.setPdDosageDetails(saveChargeArray);
             pdDosageFCRMYYService.dosageFee(pdDosage);
         }
         return Result.ok("操作成功！");

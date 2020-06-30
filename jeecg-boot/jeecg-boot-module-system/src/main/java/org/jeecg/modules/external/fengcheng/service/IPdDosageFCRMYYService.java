@@ -33,8 +33,22 @@ public interface IPdDosageFCRMYYService extends IService<PdDosage> {
      */
     List<PdDosageDetail> saveMainMZ(PdDosage pdDosage, String displayFlag);
 
+    /**
+     * 库存还回
+     * @param pdDosage
+     */
     void dosageReturned(PdDosage pdDosage);
 
+    /**
+     * 退费
+     * @param pdDosage
+     */
+    void dosageCnclFee(PdDosage pdDosage);
+
+    /**
+     * 补计费
+     * @param pdDosage
+     */
     void dosageFee(PdDosage pdDosage);
 
 }

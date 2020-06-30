@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.shiro.SecurityUtils;
+import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.PdConstant;
 import org.jeecg.common.exception.JeecgBootException;
 import org.jeecg.common.system.vo.LoginUser;
@@ -298,13 +299,6 @@ public class PdDosageFCRMYYServiceImpl extends ServiceImpl<PdDosageMapper, PdDos
                         hisChargeArray.addAll(newPackageArray);
                     }
 
-                    // 计费接口
-                    JSONObject result = HisApiForFCRenminUtils.exeCharge(pdDosage,hisChargeArray);
-                    if(!PdConstant.SUCCESS_0.equals(result.getString("statusCode"))){
-                        logger.error("执行HIS收费接口失败！HIS返回："+result.getString("msg"));
-                        throw new RuntimeException("执行HIS收费接口失败！HIS返回："+result.getString("msg"));
-                    }
-
                     pdDosageDetailService.saveBatch(saveChargeArray);
                 }
                 if(!tempArray.isEmpty()){
@@ -317,6 +311,15 @@ public class PdDosageFCRMYYServiceImpl extends ServiceImpl<PdDosageMapper, PdDos
                 this.save(pdDosage);
                 //扣减当前库房的库存
                 pdProductStockTotalService.updateUseStock(sysUser.getCurrentDepartId(),detailList);
+
+                if(CollectionUtils.isNotEmpty(hisChargeArray)){
+                    // 计费接口
+                    JSONObject result = HisApiForFCRenminUtils.exeCharge(pdDosage,hisChargeArray);
+                    if(!PdConstant.SUCCESS_0.equals(result.getString("statusCode"))){
+                        logger.error("执行HIS收费接口失败！HIS返回："+result.getString("msg"));
+                        throw new RuntimeException("执行HIS收费接口失败！HIS返回："+result.getString("msg"));
+                    }
+                }
             }
         }
         return saveChargeArray;
@@ -422,6 +425,7 @@ public class PdDosageFCRMYYServiceImpl extends ServiceImpl<PdDosageMapper, PdDos
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void dosageReturned(PdDosage pdDosage) {
         LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
         List<PdDosageDetail> detailList = pdDosage.getPdDosageDetails();
@@ -458,9 +462,160 @@ public class PdDosageFCRMYYServiceImpl extends ServiceImpl<PdDosageMapper, PdDos
         }
     }
 
+    /**
+     * 退费
+     * @param pdDosage
+     */
     @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void dosageCnclFee(PdDosage pdDosage) {
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        List<PdDosageDetail> detailList = pdDosage.getPdDosageDetails();
+
+        List<PdDosageDetail> saveChargeArray = new ArrayList<>();//所有收费产品集合（保存我们库，不含包）
+        List<PdDosageDetail> hisChargeArray = new ArrayList<>(); //所有收费产品集合（传his接口，含包）
+        List<PdDosageDetail> packageArray = new ArrayList<>();   //打包收费产品集合（不含包）
+        List<PdDosageDetail> newPackageArray = new ArrayList<>();//打包收费产品集合（含包）
+        List<PdDosageDetail> noPackageArray = new ArrayList<>(); //非打包收费产品集合
+
+        Set<String> hisPackageCodeList = new HashSet<>();
+        for(PdDosageDetail pdd : detailList){
+            if(oConvertUtils.isNotEmpty(pdd.getHisPackageCode())){
+                hisPackageCodeList.add(pdd.getHisPackageCode()+","+pdd.getHisPackageFlag());
+                packageArray.add(pdd);//打包收费
+            }else{
+                noPackageArray.add(pdd); //非打包收费
+            }
+            saveChargeArray.add(pdd);
+        }
+
+        if(CollectionUtils.isNotEmpty(hisPackageCodeList)){
+            for(String hisPackageCode : hisPackageCodeList){
+                // 1.包装组套
+                PdDosageDetail pack = new PdDosageDetail();
+                String code = hisPackageCode.split(",")[0];
+                pack.setHisPackageCode(code);
+                pack.setHisPackageIndex("0"); //套包 固定0
+                pack.setProductNumber("");
+                pack.setChargeCode(code);
+                pack.setDosageCount(1D);//数量固定1
+                newPackageArray.add(pack);
+
+                // 2.组装套包下的产品
+                int index = 1;
+                for(PdDosageDetail chargeItem : detailList){
+                    if(oConvertUtils.isNotEmpty(chargeItem.getHisPackageCode())
+                            && hisPackageCode.equals(chargeItem.getHisPackageCode()+","+chargeItem.getHisPackageFlag())){
+                        chargeItem.setHisPackageIndex(index+"");
+                        newPackageArray.add(chargeItem);
+                        index = index + 1;
+                    }
+                }
+            }
+        }
+
+        hisChargeArray.addAll(noPackageArray);
+        if(CollectionUtils.isNotEmpty(newPackageArray)){
+            hisChargeArray.addAll(newPackageArray);
+        }
+
+        //产品物流
+        List<PdStockLog> logList = new ArrayList<PdStockLog>();
+        for(PdDosageDetail pdd : detailList){
+            //产品追踪信息
+            PdStockLog prodLog = new PdStockLog();
+            if(pdd.getLeftRefundNum()==0L){
+                throw new JeecgBootException("参数不正确");
+            }
+            BigDecimal leftRefundNum = new BigDecimal(0);
+            pdd.setLeftRefundNum(leftRefundNum.doubleValue());
+            pdd.setHyCharged(PdConstant.CHARGE_FLAG_3);
+            prodLog.setLogType(PdConstant.STOCK_LOG_TYPE_10);
+            prodLog.setBatchNo(pdd.getBatchNo());
+            prodLog.setProductBarCode(pdd.getProductBarCode());
+            prodLog.setExpDate(pdd.getExpDate());
+            prodLog.setProductId(pdd.getProductId());
+            prodLog.setProductNum(pdd.getDosageCount());
+            prodLog.setInFrom(pdDosage.getDepartName());
+            prodLog.setOutTo("病人:"+pdDosage.getPatientInfo()!=null?pdDosage.getPatientInfo():"");
+            prodLog.setPatientInfo(pdDosage.getPatientDetailInfo());
+            prodLog.setInvoiceNo(pdDosage.getDosageNo());
+            prodLog.setChargeDeptName(pdDosage.getExeDeptName());
+            prodLog.setRecordTime(DateUtils.getDate());
+            logList.add(prodLog);
+        }
+        if(!logList.isEmpty())
+            pdStockLogService.saveBatch(logList);
+        pdDosageDetailService.updateBatchById(saveChargeArray);
+        pdProductStockTotalService.updateRetunuseStock(sysUser.getCurrentDepartId(),saveChargeArray);
+
+
+        if(CollectionUtils.isNotEmpty(hisChargeArray)) {
+            //HIS退费接口
+            JSONObject result = HisApiForFCRenminUtils.exeRefund(pdDosage, hisChargeArray);
+            if (!PdConstant.SUCCESS_0.equals(result.getString("statusCode"))) {
+                logger.error("执行HIS退费接口失败！HIS返回：" + result.getString("msg"));
+                throw new RuntimeException("执行HIS退费接口失败！HIS返回：" + result.getString("msg"));
+            }
+        }
+    }
+
+    /**
+     * 补计费
+     * @param pdDosage
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
     public void dosageFee(PdDosage pdDosage) {
         List<PdDosageDetail> detailList = pdDosage.getPdDosageDetails();
+
+        List<PdDosageDetail> saveChargeArray = new ArrayList<>();//所有收费产品集合（保存我们库，不含包）
+        List<PdDosageDetail> hisChargeArray = new ArrayList<>(); //所有收费产品集合（传his接口，含包）
+        List<PdDosageDetail> packageArray = new ArrayList<>();   //打包收费产品集合（不含包）
+        List<PdDosageDetail> newPackageArray = new ArrayList<>();//打包收费产品集合（含包）
+        List<PdDosageDetail> noPackageArray = new ArrayList<>(); //非打包收费产品集合
+
+        Set<String> hisPackageCodeList = new HashSet<>();
+        for(PdDosageDetail pdd : detailList){
+            if(oConvertUtils.isNotEmpty(pdd.getHisPackageCode())){
+                hisPackageCodeList.add(pdd.getHisPackageCode()+","+pdd.getHisPackageFlag());
+                packageArray.add(pdd);//打包收费
+            }else{
+                noPackageArray.add(pdd); //非打包收费
+            }
+            pdd.setHyCharged(PdConstant.CHARGE_FLAG_0);
+            saveChargeArray.add(pdd);
+        }
+
+        if(CollectionUtils.isNotEmpty(hisPackageCodeList)){
+            for(String hisPackageCode : hisPackageCodeList){
+                // 1.包装组套
+                PdDosageDetail pack = new PdDosageDetail();
+                String code = hisPackageCode.split(",")[0];
+                pack.setHisPackageCode(code);
+                pack.setHisPackageIndex("0"); //套包 固定0
+                pack.setProductNumber("");
+                pack.setChargeCode(code);
+                pack.setDosageCount(1D);//数量固定1
+                newPackageArray.add(pack);
+
+                // 2.组装套包下的产品
+                int index = 1;
+                for(PdDosageDetail chargeItem : detailList){
+                    if(oConvertUtils.isNotEmpty(chargeItem.getHisPackageCode())
+                            && hisPackageCode.equals(chargeItem.getHisPackageCode()+","+chargeItem.getHisPackageFlag())){
+                        chargeItem.setHisPackageIndex(index+"");
+                        newPackageArray.add(chargeItem);
+                        index = index + 1;
+                    }
+                }
+            }
+        }
+
+        hisChargeArray.addAll(noPackageArray);
+        if(CollectionUtils.isNotEmpty(newPackageArray)){
+            hisChargeArray.addAll(newPackageArray);
+        }
 
         //更新病人信息
         PdDosage update = new PdDosage();
@@ -485,11 +640,17 @@ public class PdDosageFCRMYYServiceImpl extends ServiceImpl<PdDosageMapper, PdDos
         update.setVisitNo(pdDosage.getVisitNo());
         pdDosageMapper.updateById(update);
 
-        if(detailList!=null && detailList.size()>0){
-            for(PdDosageDetail pdd : detailList){
-                pdd.setHyCharged(PdConstant.CHARGE_FLAG_0);
+        if(CollectionUtils.isNotEmpty(saveChargeArray)){
+            pdDosageDetailService.updateBatchById(saveChargeArray);
+        }
+
+        if(CollectionUtils.isNotEmpty(hisChargeArray)){
+            //HIS计费接口
+            JSONObject result = HisApiForFCRenminUtils.exeCharge(pdDosage,hisChargeArray);
+            if(!PdConstant.SUCCESS_0.equals(result.getString("statusCode"))){
+                logger.error("执行HIS收费接口失败！HIS返回："+result.getString("msg"));
+                throw new RuntimeException("执行HIS收费接口失败！HIS返回："+result.getString("msg"));
             }
-            pdDosageDetailService.updateBatchById(detailList);
         }
     }
 
