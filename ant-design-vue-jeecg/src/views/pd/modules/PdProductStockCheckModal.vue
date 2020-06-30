@@ -64,13 +64,10 @@
               <a-input-number disabled="disabled" v-decorator="[ 'profitLossCount', validatorRules.profitLossCount]"  style="width: 100%"/>
             </a-form-item>
           </a-col>
-
-          <a-col :span="12">
-            <a-form-item label="备注" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input :disabled="disableSubmit" v-decorator="[ 'remarks', validatorRules.remarks]" placeholder="请输入备注"></a-input>
-            </a-form-item>
-          </a-col>
         </a-row>
+        <a-form-item label="备注" :labelCol="labelCol" :wrapperCol="wrapperCol">
+          <a-textarea :disabled="disableSubmit" autocomplete="off" v-decorator="[ 'remarks', validatorRules.remarks]"></a-textarea>
+        </a-form-item>
       </a-form>
       </a-card>
         <a-card style="margin-bottom: 10px;">
@@ -106,13 +103,6 @@
         </a-card>
       </div>
     </a-spin>
-   <!-- <div class="drawer-bootom-button" v-show="!disableSubmit">
-      <a-button @click="handleOk('submit')" type="primary" :loading="confirmLoading" style="margin-right: 15px;">盘点完成</a-button>
-      <a-button @click="handleOk('save')" type="primary" :loading="confirmLoading" style="margin-right: 15px;">临时保存</a-button>
-      <a-popconfirm title="确定放弃盘点吗？" @confirm="handleCancel" okText="确定" cancelText="取消">
-        <a-button style="margin-right: 15px;">取消</a-button>
-      </a-popconfirm>
-    </div>-->
     <template slot="footer">
       <a-button @click="closeBtn" style="margin-right: 15px;" v-show="disableSubmit">关  闭</a-button>
       <a-popconfirm title="确定放弃盘点吗？" @confirm="handleCancel" v-show="!disableSubmit" okText="确定" cancelText="取消">
@@ -154,8 +144,14 @@
         fullscreen: true,
         switchFullscreen: false,
         disableSubmit:false,
-        labelCol: {span: 6},
-        wrapperCol: {span: 16},
+        labelCol: {
+          xs: { span: 24 },
+          sm: { span: 5 },
+        },
+        wrapperCol: {
+          xs: { span: 24 },
+          sm: { span: 16 },
+        },
         labelCol2: {span: 3},
         wrapperCol2: {span: 20},
         //盘点科室下拉列表 start
@@ -167,7 +163,9 @@
         addDefaultRowNum: 1,
         validatorRules: {
           checkNo: {rules: []},
-          departId: {rules: []},
+          departId: {rules: [
+              {required: true, message: '请选择盘点科室!'},
+            ]},
           deptName: {rules: []},
           checkDate: {rules: []},
           checkBy: {rules: []},
@@ -277,10 +275,8 @@
         }
       },
 
-      modalFormOk (row) { //选择产品确定后返回所选择的数据
+      modalFormOk (formData) { //选择产品确定后返回所选择的数据
         let data = [];
-        let formData=[];
-        formData[0]=row;
         this.$refs.pdProductStockCheck.getValues((error, values) => {
           formData.forEach((item, idx) => {
             let bool = true;
@@ -363,7 +359,6 @@
         }
         const that = this;
         // 触发表单验证
-        // 触发表单验证
         this.getAllTable().then(tables => {
           /** 一次性验证主表和所有的次表 */
           return validateFormAndTables(this.form, tables)
@@ -414,7 +409,7 @@
       },
       /** 调用完edit()方法之后会自动调用此方法 */
       editAfter() {
-        let fieldval = pick(this.model,'checkNo','deptName','departId','checkDate','checkName','shouldCount','checkCount','profitLossCount','remarks')
+        let fieldval = pick(this.model,'checkNo','departId','checkDate','checkName','shouldCount','checkCount','profitLossCount','remarks');
         this.$nextTick(() => {
           this.form.setFieldsValue(fieldval)
           //初始化盘点科室

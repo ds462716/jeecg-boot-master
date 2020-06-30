@@ -39,7 +39,7 @@ public class PdProductStockCheckServiceImpl extends ServiceImpl<PdProductStockCh
 	 */
 	@Override
 	public Page<PdProductStockCheck> selectList(Page<PdProductStockCheck> page, PdProductStockCheck stockCheck) {
-		return page.setRecords(pdProductStockCheckMapper.selectList(stockCheck));
+		return baseMapper.selectListByPage(page,stockCheck);
 	}
 
 	@Override
