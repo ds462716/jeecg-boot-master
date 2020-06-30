@@ -5,6 +5,27 @@
       <a-form layout="inline" @keyup.enter.native="searchQuery">
         <a-row :gutter="24">
           <a-col :md="6" :sm="8">
+            <a-form-item label="科室">
+              <!--<a-input placeholder="请选择科室" v-model="queryParam.deptName"></a-input>-->
+              <a-select
+                mode="multiple"
+                showSearch
+                :departId="departValue"
+                :defaultActiveFirstOption="false"
+                :allowClear="true"
+                :showArrow="true"
+                :filterOption="false"
+                @search="departHandleSearch"
+                @focus="departHandleSearch"
+                :notFoundContent="notFoundContent"
+                v-model="queryParam.departIds"
+                placeholder="请选择科室"
+              >
+                <a-select-option v-for="d in departData" :key="d.id">{{d.departName}}</a-select-option>
+              </a-select>
+            </a-form-item>
+          </a-col>
+          <a-col :md="6" :sm="8">
             <a-form-item label="检验项目类型">
               <j-dict-select-tag-expand v-model="queryParam.itemType" dictCode="inspection_item_type" placeholder="请选择检验项目类型"/>
             </a-form-item>
@@ -14,11 +35,19 @@
               <a-input placeholder="请输入产品名称" v-model="queryParam.productName"></a-input>
             </a-form-item>
           </a-col>
-          <a-col :md="6" :sm="8">
-            <a-form-item label="提交日期">
-              <a-range-picker @change="dateChange" v-model="queryParam.queryDate"/>
-            </a-form-item>
-          </a-col>
+          <template v-if="toggleSearchStatus">
+            <a-col :md="6" :sm="8">
+              <a-form-item label="操作人">
+                <a-input placeholder="请输入操作人名称" v-model="queryParam.realname"></a-input>
+              </a-form-item>
+            </a-col>
+            <a-col :md="6" :sm="8">
+              <a-form-item label="扣减日期">
+                <a-range-picker @change="dateChange" v-model="queryParam.queryDate"/>
+              </a-form-item>
+            </a-col>
+          </template>
+
           <a-col :md="6" :sm="8" >
             <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
               <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
@@ -115,7 +144,7 @@
   import {initDictOptions, filterMultiDictText} from '@/components/dict/JDictSelectUtil'
   import JDictSelectTagExpand from "@/components/dict/JDictSelectTagExpand"
   import { filterObj } from '@/utils/util';
-
+  import { deleteAction, getAction,downFile } from '@/api/manage'
   export default {
     name: "ExInspectionItemsUseList",
     mixins:[JeecgListMixin],
@@ -126,6 +155,9 @@
     data () {
       return {
         description: '检验项目使用表管理页面',
+        departData: [],
+        departValue: undefined,
+        notFoundContent:"未找到内容",
         // 表头
         columns: [
           {
@@ -150,6 +182,16 @@
               }
             }
           },
+          {
+            title:'扣减科室',
+            align:"center",
+            dataIndex: 'departName'
+          },
+          {
+            title:'操作人',
+            align:"center",
+            dataIndex: 'realname'
+          },
          /* {
             title:'病人姓名',
             align:"center",
@@ -165,15 +207,16 @@
             align:"center",
             dataIndex: 'outpatientNumber'
           },*/
-          {
-            title:'备注',
-            align:"center",
-            dataIndex: 'remarks'
-          },
+
           {
             title:'扣减时间',
             align:"center",
             dataIndex: 'createTime'
+          },
+          {
+            title:'备注',
+            align:"center",
+            dataIndex: 'remarks'
           },
           {
             title: '操作',
@@ -188,6 +231,7 @@
           deleteBatch: "/external/exInspectionItemsUse/deleteBatch",
           exportXlsUrl: "/external/exInspectionItemsUse/exportXls",
           importExcelUrl: "external/exInspectionItemsUse/importExcel",
+          queryDepart: "/pd/pdDepart/queryListTree",
         },
         dictOptions:{
           itemType:[],
@@ -200,6 +244,16 @@
       }
     },
     methods: {
+      //科室查询start
+      departHandleSearch(value) {
+        getAction(this.url.queryDepart,{departName:value}).then((res)=>{
+          if (!res.success) {
+            this.cmsFailed(res.message);
+          }
+          this.departData = res.result;
+        })
+      },
+      //科室查询end
       initDictConfig(){
         initDictOptions('inspection_item_type').then((res) => {
           if (res.success) {
@@ -221,6 +275,7 @@
         param.field = this.getQueryField();
         param.pageNo = this.ipagination.current;
         param.pageSize = this.ipagination.pageSize;
+        param.departIds = this.queryParam.departIds+"";
         delete param.queryDate; //范围参数不传递后台，传后台会报错
         return filterObj(param);
       },

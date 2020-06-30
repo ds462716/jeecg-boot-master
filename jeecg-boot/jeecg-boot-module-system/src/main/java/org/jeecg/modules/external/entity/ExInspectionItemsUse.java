@@ -112,4 +112,16 @@ public class ExInspectionItemsUse  {
 
     @TableField(exist = false)
     private String productName;
+    /*科室名称*/
+    @TableField(exist = false)
+    private String departName;
+    /*操作人名称*/
+    @TableField(exist = false)
+    private String realname;
+    /*多个部门集合*/
+    @TableField(exist = false)
+    private List<String> departIdList;
+
+    @TableField(exist = false)
+    private String departIds; //批量查询用
 }

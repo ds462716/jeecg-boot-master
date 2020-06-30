@@ -5,6 +5,7 @@ import lombok.Data;
 import org.jeecgframework.poi.excel.annotation.Excel;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 /**
@@ -51,6 +52,8 @@ public class PdProductStockExcel{
     private String unitName;
     @Excel(name = "数量", width = 15)
     private Double stockNum;
+    @Excel(name = "产品单价", width = 15)
+    private BigDecimal sellingPrice;
     @Excel(name = "规格单位", width = 15)
     private String specUnitName;//规格单位
     @Excel(name = "规格数量", width = 15)
@@ -76,6 +79,7 @@ public class PdProductStockExcel{
     /**供应商名称*/
     @Excel(name = "供应商名称", width = 15)
     private String supplierName;
+
 
 }
 

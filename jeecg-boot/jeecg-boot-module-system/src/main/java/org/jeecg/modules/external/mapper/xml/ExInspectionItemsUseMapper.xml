@@ -4,10 +4,14 @@
 
     <select id="selectListByPage" resultType="org.jeecg.modules.external.entity.ExInspectionItemsUse">
         SELECT DISTINCT
-        a.*
+        a.*,
+        d.depart_name as "departName",
+        e.realname as "realname"
         FROM ex_inspection_items_use a
         LEFT JOIN ex_inspection_items_use_detail b  on b.ref_id=a.id
-        LEFT JOIN pd_product c  on c.id=b.product_id  and c.del_flag='0'
+        LEFT JOIN pd_product c  on c.id=b.product_id
+        LEFT JOIN sys_depart d on a.depart_id=d.id
+        LEFT JOIN sys_user e on a.create_by=e.username
         <where>
             1 = 1
         </where>
@@ -26,6 +30,9 @@
         <if test="entity.queryDateEnd != null and entity.queryDateEnd != ''">
             AND a.create_time &lt;= #{entity.queryDateEnd}
         </if>
+        <if test="entity.realname != null and entity.realname != ''">
+            AND e.realname LIKE concat('%',#{entity.realname},'%')
+        </if>
         <if test="entity.productName != null and entity.productName != ''">
             AND (
             c.name LIKE concat('%',#{entity.productName},'%')
@@ -36,6 +43,12 @@
             or c.bpy LIKE concat('%',#{entity.productName},'%')
             or c.bwb LIKE concat('%',#{entity.productName},'%')
             )
+        </if>
+        <if test="entity.departIdList != null and entity.departIdList.size() > 0">
+            and a.depart_id IN
+            <foreach collection="entity.departIdList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
         </if>
         ORDER BY a.update_time desc,a.create_time desc
     </select>

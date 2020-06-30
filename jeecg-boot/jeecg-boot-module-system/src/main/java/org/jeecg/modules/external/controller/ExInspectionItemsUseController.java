@@ -1,45 +1,30 @@
 package org.jeecg.modules.external.controller;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
-import org.jeecg.common.system.query.QueryGenerator;
+import org.jeecg.common.aspect.annotation.AutoLog;
+import org.jeecg.common.system.base.controller.JeecgController;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.external.entity.ExInspectionItemsUse;
 import org.jeecg.modules.external.service.IExInspectionItemsUseService;
-
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import lombok.extern.slf4j.Slf4j;
-
-import org.jeecgframework.poi.excel.ExcelImportUtil;
-import org.jeecgframework.poi.excel.def.NormalExcelConstants;
-import org.jeecgframework.poi.excel.entity.ExportParams;
-import org.jeecgframework.poi.excel.entity.ImportParams;
-import org.jeecgframework.poi.excel.view.JeecgEntityExcelView;
-import org.jeecg.common.system.base.controller.JeecgController;
+import org.jeecg.modules.pd.service.IPdDepartService;
+import org.jeecg.modules.system.entity.SysDepart;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
-import com.alibaba.fastjson.JSON;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import org.jeecg.common.aspect.annotation.AutoLog;
 
- /**
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.Arrays;
+import java.util.List;
+
+/**
  * @Description: 检验项目使用表
  * @Author: jiangxz
  * @Date:   2020-05-11
@@ -52,7 +37,8 @@ import org.jeecg.common.aspect.annotation.AutoLog;
 public class ExInspectionItemsUseController extends JeecgController<ExInspectionItemsUse, IExInspectionItemsUseService> {
 	@Autowired
 	private IExInspectionItemsUseService exInspectionItemsUseService;
-	
+	@Autowired
+	private IPdDepartService pdDepartService;
 	/**
 	 * 分页列表查询
 	 *
@@ -62,14 +48,21 @@ public class ExInspectionItemsUseController extends JeecgController<ExInspection
 	 * @param req
 	 * @return
 	 */
-	@AutoLog(value = "检验项目使用表-分页列表查询")
-	@ApiOperation(value="检验项目使用表-分页列表查询", notes="检验项目使用表-分页列表查询")
 	@GetMapping(value = "/list")
 	public Result<?> queryPageList(ExInspectionItemsUse exInspectionItemsUse,
 								   @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
 								   @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
 								   HttpServletRequest req) {
 		Page<ExInspectionItemsUse> page = new Page<ExInspectionItemsUse>(pageNo,pageSize);
+
+		if(oConvertUtils.isNotEmpty(exInspectionItemsUse.getDepartIds()) && !"undefined".equals(exInspectionItemsUse.getDepartIds())) {
+			exInspectionItemsUse.setDepartIdList(Arrays.asList(exInspectionItemsUse.getDepartIds().split(",")));
+		}else{
+			//查询科室下所有下级科室的ID
+			SysDepart sysDepart=new SysDepart();
+			List<String> departList=pdDepartService.selectListDepart(sysDepart);
+			exInspectionItemsUse.setDepartIdList(departList);
+		}
 		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
 		exInspectionItemsUse.setDepartParentId(sysUser.getDepartParentId());
 		IPage<ExInspectionItemsUse> pageList =exInspectionItemsUseService.selectList(page,exInspectionItemsUse);//
