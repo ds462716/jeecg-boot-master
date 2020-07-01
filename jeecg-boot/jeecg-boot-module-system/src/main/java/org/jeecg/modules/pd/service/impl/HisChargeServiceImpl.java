@@ -1,6 +1,7 @@
 package org.jeecg.modules.pd.service.impl;
 
 import com.baomidou.dynamic.datasource.annotation.DS;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.ObjectUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -39,6 +40,16 @@ public class HisChargeServiceImpl extends ServiceImpl<HisChargeMapper, HisCharge
 	public Page<HisChargeInf> selectList(Page<HisChargeInf> page, HisChargeInf hisChargeInf) {
 		return hisChargeMapper.selectListByPage(page,hisChargeInf);
 		//return page.setRecords(hisChargeMapper.selectList(hisChargeInf));
+	}
+
+	@Override
+	public List<HisChargeInf> selectListForFCRMYY(HisChargeInf hisChargeInf) {
+		return hisChargeMapper.selectListForFCRMYY(hisChargeInf);
+	}
+
+	@Override
+	public Page<HisChargeInf> selectListForFCRMYY(Page<HisChargeInf> pageList, HisChargeInf hisChargeInf) {
+		return hisChargeMapper.selectListByPageForFCRMYY(pageList,hisChargeInf);
 	}
 
 

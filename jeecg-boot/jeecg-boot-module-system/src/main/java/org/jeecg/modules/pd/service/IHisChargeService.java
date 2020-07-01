@@ -28,6 +28,10 @@ public interface IHisChargeService extends IService<HisChargeInf> {
      */
     IPage<HisChargeInf> selectList(Page<HisChargeInf> pageList, HisChargeInf hisChargeInf);
 
+    List<HisChargeInf> selectListForFCRMYY(HisChargeInf hisChargeInf);
+
+    IPage<HisChargeInf> selectListForFCRMYY(Page<HisChargeInf> pageList, HisChargeInf hisChargeInf);
+
    /*查询his系统收费项目基础信息*/
 	List<HisChargeInf> selectByHisCharge();
 

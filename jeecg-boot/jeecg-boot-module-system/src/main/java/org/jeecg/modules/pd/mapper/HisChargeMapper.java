@@ -25,6 +25,11 @@ public interface HisChargeMapper extends BaseMapper<HisChargeInf> {
 
 	Page<HisChargeInf> selectListByPage(Page<HisChargeInf> page, @Param("entity") HisChargeInf entity);
 
+	List<HisChargeInf> selectListForFCRMYY(HisChargeInf hisChargeInf);
+
+	Page<HisChargeInf> selectListByPageForFCRMYY(Page<HisChargeInf> page, @Param("entity") HisChargeInf entity);
+
+
 	List<HisChargeInf> selectByHisCharge();
 
 	HisChargeInf  selectByHisChargeInf(String fsfXmbh);

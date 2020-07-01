@@ -11,6 +11,8 @@ import org.jeecgframework.poi.excel.annotation.Excel;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -183,6 +185,7 @@ public class PdInvoiceDetail extends BaseEntity {
 	private Double stockNum;//库存数量
 	@TableField(exist = false)
 	private String auditStatus;//入库单审核状态
-
+	@TableField(exist = false)
+	private List<String> billDetailIdList;//单据明细idList
 
 }

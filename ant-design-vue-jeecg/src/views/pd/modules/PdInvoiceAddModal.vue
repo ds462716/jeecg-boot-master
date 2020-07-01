@@ -62,7 +62,7 @@
               <a-input v-decorator="[ 'billId' ]" ></a-input>
             </a-form-item>
             <a-form-item label="单据明细id" :labelCol="labelCol2" :wrapperCol="wrapperCol2">
-              <a-input v-decorator="[ 'billDetailId' ]" ></a-input>
+              <a-input v-decorator="[ 'billDetailIdList' ]" ></a-input>
             </a-form-item>
           </a-col>
         </a-row>
@@ -118,7 +118,7 @@
         labelCol2: { span: 3 },
         wrapperCol2: { span: 20 },
 
-        billDetailId:"",
+        billDetailIdList:[],
         // 新增时子表默认添加几行空数据
         // addDefaultRowNum: 1,
         validatorRules: {
@@ -154,16 +154,16 @@
       }
     },
     methods: {
-      add(recordDetailId) {
+      add(billDetailIdList) {
         // if(this.model.id){
-        this.billDetailId = recordDetailId;
-          this.edit({});
+        this.billDetailIdList = billDetailIdList;
+          this.edit([]);
         // }else{
         //   getAction(this.url.init, {id:""}).then((res) => {
         //     if (res.success) {
         //         this.initData = res.result;
-        //         this.initData.billDetailId = recordDetailId;
-        //         let fieldval = pick(this.initData,'invoiceRegNo','billDetailId');
+        //         this.initData.billDetailIdList = billDetailIdList;
+        //         let fieldval = pick(this.initData,'invoiceRegNo','billDetailIdList');
         //       this.$nextTick(() => {
         //         this.form.setFieldsValue(fieldval);
         //       })
@@ -172,21 +172,21 @@
         // }
       },
       edit(record) {
-          this.form.resetFields();
-          this.visible = true;
+        this.form.resetFields();
+        this.visible = true;
         if(this.model.id){
           this.model = Object.assign({}, record);
           // this.unitId = record.id;
           this.$nextTick(() => {
-            let fieldval = pick(this.model,'id','invoiceId','billId','billDetailId','invoiceRegNo','invoiceNo','invoiceCode','invoiceData','invoiceMoney','remarks');
+            let fieldval = pick(this.model,'id','invoiceId','billId','billDetailIdList','invoiceRegNo','invoiceNo','invoiceCode','invoiceData','invoiceMoney','remarks');
             this.form.setFieldsValue(fieldval);
           })
         }else{
           getAction(this.url.init, {id:""}).then((res) => {
             if (res.success) {
               this.initData = res.result;
-              this.initData.billDetailId = this.billDetailId;
-              let fieldval = pick(this.initData,'invoiceRegNo','billDetailId');
+              this.initData.billDetailIdList = this.billDetailIdList;
+              let fieldval = pick(this.initData,'invoiceRegNo','billDetailIdList');
               this.$nextTick(() => {
                 this.form.setFieldsValue(fieldval);
               })
@@ -234,7 +234,7 @@
         this.visible = false;
       },
       popupCallback(row) {
-        this.form.setFieldsValue(pick(row, 'id','invoiceId','billId','billDetailId','invoiceRegNo','invoiceNo','invoiceCode','invoiceData','invoiceMoney','remarks'))
+        this.form.setFieldsValue(pick(row, 'id','invoiceId','billId','billDetailIdList','invoiceRegNo','invoiceNo','invoiceCode','invoiceData','invoiceMoney','remarks'))
       },
 
     }

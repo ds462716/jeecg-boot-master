@@ -21,7 +21,7 @@ public interface IPdInvoiceService extends IService<PdInvoice> {
 	 * 添加一对多
 	 * 
 	 */
-	public void saveMain(PdInvoice pdInvoice, List<PdInvoiceDetail> pdInvoiceDetailList) ;
+	public void saveMain(PdInvoice pdInvoice) ;
 	
 	/**
 	 * 修改一对多

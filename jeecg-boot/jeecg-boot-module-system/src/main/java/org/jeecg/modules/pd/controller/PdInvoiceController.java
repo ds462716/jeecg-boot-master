@@ -118,16 +118,14 @@ public class PdInvoiceController {
     /**
      * 添加
      *
-     * @param PdInvoice
+     * @param pdInvoice
      * @return
      */
     @AutoLog(value = "pd_invoice-添加")
     @ApiOperation(value = "pd_invoice-添加", notes = "pd_invoice-添加")
     @PostMapping(value = "/add")
-    public Result<?> add(@RequestBody PdInvoice PdInvoice) {
-        PdInvoice pdInvoice = new PdInvoice();
-        BeanUtils.copyProperties(PdInvoice, pdInvoice);
-        pdInvoiceService.saveMain(pdInvoice, PdInvoice.getPdInvoiceDetailList());
+    public Result<?> add(@RequestBody PdInvoice pdInvoice) {
+        pdInvoiceService.saveMain(pdInvoice);
         return Result.ok("添加成功！");
     }
 
@@ -263,33 +261,33 @@ public class PdInvoiceController {
      */
     @RequestMapping(value = "/importExcel", method = RequestMethod.POST)
     public Result<?> importExcel(HttpServletRequest request, HttpServletResponse response) {
-        MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
-        Map<String, MultipartFile> fileMap = multipartRequest.getFileMap();
-        for (Map.Entry<String, MultipartFile> entity : fileMap.entrySet()) {
-            MultipartFile file = entity.getValue();// 获取上传文件对象
-            ImportParams params = new ImportParams();
-            params.setTitleRows(2);
-            params.setHeadRows(1);
-            params.setNeedSave(true);
-            try {
-                List<PdInvoice> list = ExcelImportUtil.importExcel(file.getInputStream(), PdInvoice.class, params);
-                for (PdInvoice page : list) {
-                    PdInvoice po = new PdInvoice();
-                    BeanUtils.copyProperties(page, po);
-                    pdInvoiceService.saveMain(po, page.getPdInvoiceDetailList());
-                }
-                return Result.ok("文件导入成功！数据行数:" + list.size());
-            } catch (Exception e) {
-                log.error(e.getMessage(), e);
-                return Result.error("文件导入失败:" + e.getMessage());
-            } finally {
-                try {
-                    file.getInputStream().close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
+//        MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
+//        Map<String, MultipartFile> fileMap = multipartRequest.getFileMap();
+//        for (Map.Entry<String, MultipartFile> entity : fileMap.entrySet()) {
+//            MultipartFile file = entity.getValue();// 获取上传文件对象
+//            ImportParams params = new ImportParams();
+//            params.setTitleRows(2);
+//            params.setHeadRows(1);
+//            params.setNeedSave(true);
+//            try {
+//                List<PdInvoice> list = ExcelImportUtil.importExcel(file.getInputStream(), PdInvoice.class, params);
+//                for (PdInvoice page : list) {
+//                    PdInvoice po = new PdInvoice();
+//                    BeanUtils.copyProperties(page, po);
+//                    pdInvoiceService.saveMain(po, page.getPdInvoiceDetailList());
+//                }
+//                return Result.ok("文件导入成功！数据行数:" + list.size());
+//            } catch (Exception e) {
+//                log.error(e.getMessage(), e);
+//                return Result.error("文件导入失败:" + e.getMessage());
+//            } finally {
+//                try {
+//                    file.getInputStream().close();
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//        }
         return Result.ok("文件导入失败！");
     }
 

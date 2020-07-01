@@ -30,9 +30,11 @@
 			b.audit_date AS bill_date,
 			c.id AS product_stock_id,
 			c.stock_num AS stock_num,
-			d.id as id,
-			d.invoice_id as invoice_id,
+			d.id AS id,
+			d.invoice_id AS invoice_id,
+			d.status AS status,
 			d.remarks AS remarks,
+			e.invoice_reg_no AS invoice_reg_no,
 			e.invoice_no AS invoice_no,
 			e.invoice_code AS invoice_code,
 			e.invoice_data AS invoice_data,
@@ -45,8 +47,8 @@
 			pd_stock_record_detail a
 		LEFT JOIN pd_stock_record b ON b.id = a.record_id
 		LEFT JOIN pd_product_stock c ON a.id = c.record_detail_id
-		LEFT JOIN pd_invoice_detail d ON d.bill_detail_id = a.id
-		LEFT JOIN pd_invoice e ON d.invoice_id = e.id
+		LEFT JOIN (select * from pd_invoice_detail where del_flag = '0') d  ON d.bill_detail_id = a.id
+		LEFT JOIN (select * from pd_invoice where del_flag = '0') e ON d.invoice_id = e.id
 		LEFT JOIN pd_product f ON a.product_id = f.id
 		LEFT JOIN pd_supplier g ON a.supplier_id = g.id
 		<where>
@@ -60,6 +62,12 @@
 			</if>
 			<if test="entity.auditStatus != null and entity.auditStatus != ''">
 				AND b.audit_status = #{entity.auditStatus}
+			</if>
+			<if test="entity.billDetailIdList != null and entity.billDetailIdList.size() > 0">
+				and a.id IN
+				<foreach collection="entity.billDetailIdList" item="billDetailId" separator="," open="(" close=")">
+					#{billDetailId}
+				</foreach>
 			</if>
 
 		</where>

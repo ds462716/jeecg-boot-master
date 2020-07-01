@@ -48,7 +48,7 @@ public class HisChargeFCRMYYController {
         LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
         inf.setDepartParentId(sysUser.getDepartParentId());
 
-        IPage<HisChargeInf> pageList = hisChargeService.selectList(page, inf);
+        IPage<HisChargeInf> pageList = hisChargeService.selectListForFCRMYY(page, inf);
         return Result.ok(pageList);
     }
 
@@ -69,7 +69,7 @@ public class HisChargeFCRMYYController {
         LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
         inf.setDepartParentId(sysUser.getDepartParentId());
         inf.setFsfSpec("打包");
-        IPage<HisChargeInf> pageList = hisChargeService.selectList(page, inf);
+        IPage<HisChargeInf> pageList = hisChargeService.selectListForFCRMYY(page, inf);
         return Result.ok(pageList);
     }
 

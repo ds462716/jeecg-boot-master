@@ -124,5 +124,8 @@ public class PdInvoice extends BaseEntity {
     @TableField(exist = false)
     private List<PdInvoiceDetail> pdInvoiceDetailList;
 
+    @TableField(exist = false)
+    private List<String> billDetailIdList;//单据明细idList
+
 
 }

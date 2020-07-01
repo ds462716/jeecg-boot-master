@@ -2,16 +2,21 @@ package org.jeecg.modules.pd.service.impl;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import org.apache.commons.collections.CollectionUtils;
+import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.pd.entity.PdInvoice;
 import org.jeecg.modules.pd.entity.PdInvoiceDetail;
 import org.jeecg.modules.pd.mapper.PdInvoiceDetailMapper;
 import org.jeecg.modules.pd.mapper.PdInvoiceMapper;
+import org.jeecg.modules.pd.service.IPdInvoiceDetailService;
 import org.jeecg.modules.pd.service.IPdInvoiceService;
 import org.springframework.stereotype.Service;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Collection;
 
@@ -28,13 +33,23 @@ public class PdInvoiceServiceImpl extends ServiceImpl<PdInvoiceMapper, PdInvoice
 	private PdInvoiceMapper pdInvoiceMapper;
 	@Autowired
 	private PdInvoiceDetailMapper pdInvoiceDetailMapper;
+	@Autowired
+	private IPdInvoiceDetailService pdInvoiceDetailService;
 	
 	@Override
 	@Transactional
-	public void saveMain(PdInvoice pdInvoice, List<PdInvoiceDetail> pdInvoiceDetailList) {
+	public void saveMain(PdInvoice pdInvoice) {
 		pdInvoiceMapper.insert(pdInvoice);
-		if(pdInvoiceDetailList!=null && pdInvoiceDetailList.size()>0) {
-			for(PdInvoiceDetail entity:pdInvoiceDetailList) {
+		List<String > billDetailIdList = pdInvoice.getBillDetailIdList();
+		if(CollectionUtils.isEmpty(billDetailIdList)){
+			throw new RuntimeException("参数不对，请重新选择明细维护发票！");
+		}
+
+		PdInvoiceDetail detail = new PdInvoiceDetail();
+		detail.setBillDetailIdList(billDetailIdList);
+		List<PdInvoiceDetail> detailList = pdInvoiceDetailService.selectByStockRecord(detail);
+		if(CollectionUtils.isNotEmpty(detailList)) {
+			for(PdInvoiceDetail entity : detailList) {
 				//外键设置
 				entity.setInvoiceId(pdInvoice.getId());
 				pdInvoiceDetailMapper.insert(entity);
