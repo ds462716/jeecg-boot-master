@@ -700,7 +700,7 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
             Double count = detail.getCount();//配置的使用量
             String  useType=detail.getUseType();//试剂使用类型
             String patientType=item.getPatientType();//病人类型
-            if(!PdConstant.USE_TYPE_0.equals(useType)){
+            if(!PdConstant.USE_TYPE_0.equals(useType) && StringUtils.isNotEmpty(patientType)){
                 if(PdConstant.USE_TYPE_1.equals(useType) && !PdConstant.PATIENT_TYPE_1.equals(patientType)) {//住院病人
                     continue;
                 }else if(PdConstant.USE_TYPE_2.equals(useType) && PdConstant.PATIENT_TYPE_1.equals(patientType)){
@@ -816,7 +816,7 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
             Double count = detail.getCount();//配置的使用量
             String  useType=detail.getUseType();//试剂使用类型
             String patientType=item.getPatientType();//病人类型
-            if(!PdConstant.USE_TYPE_0.equals(useType)){
+            if(!PdConstant.USE_TYPE_0.equals(useType) && StringUtils.isNotEmpty(patientType)){
                 if(PdConstant.USE_TYPE_1.equals(useType) && !PdConstant.PATIENT_TYPE_1.equals(patientType)) {//住院病人
                     continue;
                 }else if(PdConstant.USE_TYPE_2.equals(useType) && PdConstant.PATIENT_TYPE_1.equals(patientType)){
