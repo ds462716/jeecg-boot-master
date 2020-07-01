@@ -1,8 +1,9 @@
 package org.jeecg.modules.pd.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.apache.commons.lang3.StringUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.PdConstant;
 import org.jeecg.common.util.oConvertUtils;
@@ -16,10 +17,8 @@ import org.jeecg.modules.pd.service.IPdStockRecordDetailService;
 import org.jeecg.modules.pd.util.SnowUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-
 import org.springframework.transaction.annotation.Transactional;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -346,5 +345,27 @@ public class PdProductStockUniqueCodeServiceImpl extends ServiceImpl<PdProductSt
         p.setRecords(new ArrayList<>());
         p.setTotal(0);
         return p;
+    }
+
+
+    @Override
+    public String queryUniqueCode(PdProductStockUniqueCode pdProductStockUniqueCode) {
+        List<String> strList = new ArrayList<>();
+        String str="";
+        //查询是否已经存在
+        PdProductStock pdProductStock = new PdProductStock();
+        pdProductStock.setId(pdProductStockUniqueCode.getProductStockId());
+        List<PdProductStock> pdProductStocks = pdProductStockService.selectList(pdProductStock);
+        if(pdProductStocks!=null && pdProductStocks.size()>0){
+            PdProductStock psk = pdProductStocks.get(0);
+            if(PdConstant.CODE_PRINT_TYPE_1.equals(psk.getBarCodeType())){
+                pdProductStockUniqueCode.setPrintType(PdConstant.CODE_PRINT_TYPE_1);
+                strList= baseMapper.selectListUniqueCode(pdProductStockUniqueCode);
+                     if(strList!=null && strList.size()>0){
+                         str= StringUtils.join(strList.toArray(), ",");
+                     }
+            }
+        }
+        return str;
     }
 }

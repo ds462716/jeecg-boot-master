@@ -79,6 +79,9 @@ public class PdProductStockExcel{
     /**供应商名称*/
     @Excel(name = "供应商名称", width = 15)
     private String supplierName;
+    /**条码集合*/
+    @Excel(name = "唯一码", width = 15)
+    private String refBarCodes;
 
 
 }

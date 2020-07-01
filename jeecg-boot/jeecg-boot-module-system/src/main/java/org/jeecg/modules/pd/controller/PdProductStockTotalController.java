@@ -12,10 +12,7 @@ import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.PdConstant;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.oConvertUtils;
-import org.jeecg.modules.pd.entity.PdGoodsAllocation;
-import org.jeecg.modules.pd.entity.PdProductStock;
-import org.jeecg.modules.pd.entity.PdProductStockTotal;
-import org.jeecg.modules.pd.entity.PdStockRecordDetail;
+import org.jeecg.modules.pd.entity.*;
 import org.jeecg.modules.pd.service.*;
 import org.jeecg.modules.pd.vo.PdGoodsAllocationPage;
 import org.jeecg.modules.pd.vo.PdProductStockExcel;
@@ -52,12 +49,15 @@ public class PdProductStockTotalController {
 	 private IPdProductStockService pdProductStockService;
 	 @Autowired
 	 private ISysDepartService sysDepartService;
-	@Autowired
-	private IPdDepartService pdDepartService;
+	 @Autowired
+	 private IPdDepartService pdDepartService;
 	 @Autowired
 	 private IPdStockRecordDetailService pdStockRecordDetailService;
-	@Autowired
-	private IPdGoodsAllocationService pdGoodsAllocationService;
+	 @Autowired
+	 private IPdGoodsAllocationService pdGoodsAllocationService;
+	 @Autowired
+	 private IPdProductStockUniqueCodeService productStockUniqueCodeService;
+
 	 /**
 	  * 分页列表查询
 	  *
@@ -425,6 +425,17 @@ public class PdProductStockTotalController {
 		}
 		//Step.2 获取导出数据
 		List<PdProductStock> aList =pdProductStockService.queryStockList(productStock);
+		if(aList !=null && aList.size()>0){
+			for(PdProductStock stock : aList){
+				PdProductStockUniqueCode stockUniqueCode=new PdProductStockUniqueCode();
+				stockUniqueCode.setDepartParentId(sysUser.getDepartParentId());
+				stockUniqueCode.setProductStockId(stock.getId());
+				String uniqueCode=productStockUniqueCodeService.queryUniqueCode(stockUniqueCode);
+				stock.setRefBarCodes(uniqueCode);
+			}
+		}
+
+
 		List<PdProductStockExcel> exportList = JSON.parseArray(JSON.toJSONString(aList), PdProductStockExcel.class);
 		// Step.3 AutoPoi 导出Excel
 		ModelAndView mv = new ModelAndView(new JeecgEntityExcelView());

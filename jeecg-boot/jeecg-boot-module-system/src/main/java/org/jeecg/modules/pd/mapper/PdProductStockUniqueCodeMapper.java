@@ -1,12 +1,12 @@
 package org.jeecg.modules.pd.mapper;
 
-import java.util.List;
-
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Param;
 import org.jeecg.modules.pd.entity.PdProductStock;
 import org.jeecg.modules.pd.entity.PdProductStockUniqueCode;
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+
+import java.util.List;
 
 /**
  * @Description: 库存关联条码表
@@ -23,4 +23,7 @@ public interface PdProductStockUniqueCodeMapper extends BaseMapper<PdProductStoc
     List<PdProductStock> selectListByGroup(PdProductStockUniqueCode pdProductStockUniqueCode);
 
     void updatePrintNum(List<String> ids);
+
+    List<String> selectListUniqueCode(PdProductStockUniqueCode pdProductStockUniqueCode);
+
 }

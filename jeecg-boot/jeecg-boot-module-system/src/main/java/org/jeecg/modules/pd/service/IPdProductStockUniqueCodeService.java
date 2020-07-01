@@ -32,4 +32,8 @@ public interface IPdProductStockUniqueCodeService extends IService<PdProductStoc
     void updatePrintNum(List<PdProductStockUniqueCode> pdProductStockUniqueCodes);
 
     IPage<PdProductStockUniqueCode> findList(Page<PdProductStockUniqueCode> page, PdProductStockUniqueCode pdProductStockUniqueCode);
+
+
+    String queryUniqueCode(PdProductStockUniqueCode pdProductStockUniqueCode);
+
 }

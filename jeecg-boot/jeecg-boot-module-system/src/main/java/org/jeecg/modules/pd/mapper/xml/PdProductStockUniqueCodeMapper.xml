@@ -61,6 +61,30 @@
         group by a.depart_id
     </select>
 
+
+
+    <select id="selectListUniqueCode"  resultType="String">
+        SELECT
+        a.id
+        FROM pd_product_stock_unique_code a
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+        </where>
+        <if test="id != null and id != ''">
+            AND a.id = #{id}
+        </if>
+        <if test="productStockId != null and productStockId != ''">
+            AND a.product_stock_id = #{productStockId}
+        </if>
+        <if test="printType != null and printType != ''">
+            AND a.print_type = #{printType}
+        </if>
+        <if test="codeState != null and codeState != ''">
+            AND a.code_state = #{codeState}
+        </if>
+        ORDER BY a.unique_code_order asc
+    </select>
+
     <!-- 批量更新 -->
     <update id="updatePrintNum">
         UPDATE pd_product_stock_unique_code
