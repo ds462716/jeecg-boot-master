@@ -241,8 +241,8 @@ public class PdProductStock extends BaseEntity {
 	@TableField(exist = false)
 	private  String printNumFlag;//查询从未打印过的库存
 
-
 	/**唯一码集合*/
+	@TableField(exist = false)
 	private String refBarCodes;
 
 
