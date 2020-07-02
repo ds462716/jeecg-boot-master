@@ -12,42 +12,44 @@
     <a-spin :spinning="confirmLoading">
       <a-form :form="form">
         <a-form-item label="检验仪器代号" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input :disabled="true" autocomplete="off" v-decorator="[ 'instrCode', validatorRules.instrCode]" ></a-input>
+          <a-input   :disabled="!disableSubmit" autocomplete="off" v-decorator="[ 'instrCode', validatorRules.instrCode]" ></a-input>
         </a-form-item>
         <a-form-item label="检验仪器名称" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input :disabled="true" autocomplete="off" v-decorator="[ 'instrName', validatorRules.instrName]" ></a-input>
+          <a-input  :disabled="!disableSubmit" autocomplete="off" v-decorator="[ 'instrName', validatorRules.instrName]" ></a-input>
         </a-form-item>
         <a-form-item label="所属科室" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-input :disabled="true" autocomplete="off" v-decorator="[ 'departName', validatorRules.departName]" ></a-input>
+<!--
+          <a-input   :disabled="!disableSubmit" autocomplete="off" v-decorator="[ 'departName', validatorRules.departName]" ></a-input>
+-->
+              <a-select
+                showSearch
+                placeholder="请选择科室"
+                :departId="departValue"
+                :defaultActiveFirstOption="false"
+                :showArrow="true"
+                :filterOption="false"
+                :allowClear="true"
+                @search="departHandleSearch"
+                @focus="departHandleSearch"
+                :disabled="!disableSubmit"
+                :notFoundContent="notFoundContent"
+                v-decorator="[ 'departId', validatorRules.departId]"
+              >
+                <a-select-option v-for="d in departData" :key="d.id">{{d.departName}}</a-select-option>
+              </a-select>
         </a-form-item>
-        <!--<a-form-item
-          label="关联实验室名称"
-          :labelCol="labelCol"
-          :wrapperCol="wrapperCol"
-          :validate-status="validateStatus"
-          :hasFeedback="true"
-          :required="true">
-           <a-tree-select
-            style="width:100%"
-            :dropdownStyle="{ maxHeight: '200px', overflow: 'auto' }"
-            :treeData="treeData"
-            v-model="model.testDepartId"
-            placeholder="请选择关联实验室"
-            :disabled="disableSubmit"
-           >
-          </a-tree-select>
-        </a-form-item>-->
           <a-form-item label="关联实验室名称" :labelCol="labelCol" :wrapperCol="wrapperCol">
             <a-select
               mode="multiple"
               showSearch
-              :departId="departValue"
+              :testDepartId="testDepartValue"
               :defaultActiveFirstOption="false"
               :allowClear="true"
               :showArrow="true"
               :filterOption="false"
               @search="departHandleSearch"
               @focus="departHandleSearch"
+              :disabled="!disableSubmit"
               :notFoundContent="notFoundContent"
               v-decorator="[ 'departIdList', validatorRules.departIdList]"
               placeholder="请选择科室"
@@ -58,9 +60,9 @@
       </a-form>
     </a-spin>
     <div class="drawer-bootom-button" >
-      <a-button @click="close"  style="margin-right: 15px;" v-show="disableSubmit">关  闭</a-button>
-      <a-button v-show="!disableSubmit" type="primary" :loading="confirmLoading" @click="handleOk">确定</a-button>
-      <a-button v-show="!disableSubmit" @click="handleCancel">取消</a-button>
+      <a-button v-show="disableSubmit" @click="close"  style="margin-right: 15px;" >关 闭</a-button>
+      <a-button v-show="disableSubmit" type="primary" :loading="confirmLoading" @click="handleOk">确 定</a-button>
+      <a-button v-show="disableSubmit" @click="handleCancel">取 消</a-button>
     </div>
 
   </a-drawer>
@@ -73,10 +75,11 @@
   import { validateDuplicateValue } from '@/utils/util'
   import JDictSelectTag from "@/components/dict/JDictSelectTag"
   import {queryPdDepartTreeList} from '@/api/api'
+
   export default {
     name: "ExLabInstrInfModal",
     components: {
-      JDictSelectTag,
+      JDictSelectTag
     },
     data () {
       return {
@@ -90,6 +93,7 @@
         departData: [],
         departValue: undefined,
         notFoundContent:"未找到内容",
+        testDepartValue: undefined,
         treeData:[],
         validateStatus:"",
         disableSubmit:false,
@@ -107,12 +111,14 @@
           /*departName: {rules: [
               {required: true, message: '请选择关联实验室!'},
             ]},*/
+          departId: { rules: [{ required: true, message: '请选择科室!' }] },
           departIdList: { rules: [{ required: true, message: '请选择科室!' }] },
           fsfKsbh:{},
           fsfKsmc:{},
           fsfKsjm:{},
         },
         url: {
+          add: "/ex/exLabInstrInf/add",
           edit: "/ex/exLabInstrInf/edit",
           queryDepart: "/pd/pdDepart/queryListTree",
         }
@@ -131,7 +137,7 @@
         this.visible = true;
         this.departHandleSearch();
         this.$nextTick(() => {
-          this.form.setFieldsValue(pick(this.model,'departName','instrCode','instrName','testDepartName'));
+          this.form.setFieldsValue(pick(this.model,'departName','departId','instrCode','instrName','testDepartName'));
           let testDepartId=this.model.testDepartId;
           if(testDepartId != null && testDepartId != ""){
             let departIds = this.model.testDepartId.split(",");
@@ -139,8 +145,8 @@
           }
 
           //获取光标
-          let input = this.$refs['inputFocus'];
-          input.focus()
+          /*let input = this.$refs['inputFocus'];
+          input.focus()*/
         })
       },
       close () {
@@ -153,13 +159,23 @@
         this.form.validateFields((err, values) => {
           if (!err) {
             let formData = Object.assign(this.model, values);
-            that.confirmLoading = true;
+            formData.testDepartId=this.model.departIdList.join(",");
             if ((formData.testDepartId == '') ||  formData.testDepartId==null) {
                that.$message.error("请选择关联实验室！");
               return;
             }
-            formData.testDepartId=this.model.departIdList.join(",");
-            httpAction(this.url.edit,formData,"put").then((res)=>{
+
+            let httpurl = '';
+            let method = '';
+            if (!this.model.id) {
+              httpurl += this.url.add;
+              method = 'post';
+            } else {
+              httpurl += this.url.edit;
+              method = 'put';
+            }
+            that.confirmLoading = true;
+            httpAction(httpurl,formData,method).then((res)=>{
               if(res.success){
                 that.$message.success(res.message);
                 that.$emit('ok');

@@ -22,7 +22,7 @@
                 <a-select-option v-for="d in instrData" :key="d.instrCode">{{d.instrName}}</a-select-option>
               </a-select>
             </a-form-item>
-          </a-col
+          </a-col>
           <a-col :md="6" :sm="8">
             <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
               <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
@@ -38,6 +38,8 @@
     <!-- 操作按钮区域 -->
     <div class="table-operator">
       <a-button @click="sysUpdate" type="primary"    :loading="confirmLoading" icon="plus">同步更新</a-button>
+      &nbsp;&nbsp;
+      <a-button @click="departAdd" type="primary" icon="plus">新增</a-button>
     </div>
     <!-- table区域-begin -->
     <div>
@@ -63,7 +65,20 @@
         </template>
 
         <span slot="action" slot-scope="text, record">
-          <a @click="departEdit(record)">检验室维护</a>
+          <a @click="departUpdate(record)">修改</a>
+           <a-divider type="vertical"/>
+           <a @click="departEdit(record)">详情</a>
+           <a-divider type="vertical"/>
+          <a-dropdown>
+            <a class="ant-dropdown-link">更多 <a-icon type="down" /></a>
+            <a-menu slot="overlay">
+              <a-menu-item>
+                <a-popconfirm title="确定删除吗?"  @confirm="() => handleDelete(record.id)"  >
+                  <a>删除</a>
+                </a-popconfirm>
+              </a-menu-item>
+            </a-menu>
+          </a-dropdown>
         </span>
       </a-table>
     </div>
@@ -135,6 +150,7 @@
         ],
         url: {
           list: "/ex/exLabInstrInf/list",
+          delete: "/ex/exLabInstrInf/delete",
           synUpdate: "/ex/exLabInstrInf/synUpdateInstrInf",
           queryExLabInstrInf:"/ex/exLabInstrInf/getExLabInstrInf",
          },
@@ -193,8 +209,20 @@
 
       },
 
-      departEdit: function (record) {
+      departAdd: function () {  //新增
+        this.$refs.modalForm.title = "新增";
+        this.$refs.modalForm.disableSubmit = true;
+        this.$refs.modalForm.edit();
+      },
+
+
+      departUpdate: function (record) { //修改
         this.$refs.modalForm.title = "编辑";
+        this.$refs.modalForm.disableSubmit = true;
+        this.$refs.modalForm.edit(record);
+      },
+      departEdit: function (record) { //查看
+        this.$refs.modalForm.title = "详情";
         this.$refs.modalForm.disableSubmit = false;
         this.$refs.modalForm.edit(record);
       },

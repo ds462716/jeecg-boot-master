@@ -36,6 +36,7 @@
                 :filterOption="false"
                 @search="departHandleSearch"
                 @focus="departHandleSearch"
+                :disabled="disableSubmit"
                 :notFoundContent="notFoundContent"
                 v-decorator="[ 'departIdList', validatorRules.departIdList]"
                 placeholder="请选择科室"
@@ -47,7 +48,7 @@
           </a-col>
           <a-col :lg="12">
             <a-form-item label="扣减类型" :labelCol="labelCol" :wrapperCol="wrapperCol">
-             <a-select     v-decorator="[ 'deductuinType', validatorRules.deductuinType]" placeholder="请选择扣减类型">
+             <a-select   :disabled="disableSubmit"  v-decorator="[ 'deductuinType', validatorRules.deductuinType]" placeholder="请选择扣减类型">
                 <a-select-option value="0">自动扣减</a-select-option>
                 <a-select-option value="1">人工扣减</a-select-option>
                 <a-select-option value="2">无需扣减</a-select-option>
