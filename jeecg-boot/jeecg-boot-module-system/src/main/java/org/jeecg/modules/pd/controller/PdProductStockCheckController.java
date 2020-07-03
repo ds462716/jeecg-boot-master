@@ -1,5 +1,6 @@
 package org.jeecg.modules.pd.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.ObjectUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -8,6 +9,7 @@ import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.aspect.annotation.AutoLog;
 import org.jeecg.common.constant.PdConstant;
@@ -128,6 +130,21 @@ public class PdProductStockCheckController {
 		return Result.ok("添加成功！");
 	}
 
+	 /**
+	  * 提交
+	  * @param pdProductStockCheck
+	  * @return
+	  */
+	 @PostMapping(value = "/submit")
+	 public Result<?> submit(@RequestBody PdProductStockCheck pdProductStockCheck) {
+
+		 String recordId = pdProductStockCheckService.submit(pdProductStockCheck, pdProductStockCheck.getPdProductStockCheckChildList());
+		 Map<String,Object> result = new HashMap<>();
+		 result.put("recordId",recordId);
+		 result.put("message","提交成功！");
+		 return Result.ok(result);
+	 }
+
 	/**
 	 *  编辑
 	 *
@@ -178,10 +195,14 @@ public class PdProductStockCheckController {
 	 */
 	@GetMapping(value = "/queryById")
 	public Result<?> queryById(@RequestParam(name="id",required=true) String id) {
-		PdProductStockCheck pdProductStockCheck = pdProductStockCheckService.getById(id);
+		PdProductStockCheck ck = new PdProductStockCheck();
+		ck.setId(id);
+		PdProductStockCheck pdProductStockCheck = pdProductStockCheckService.getByOne(ck);
 		if(pdProductStockCheck==null) {
 			return Result.error("未找到对应数据");
 		}
+		List<PdProductStockCheckChild> pdProductStockUniqueCodes = pdProductStockCheckChildService.selectByCheckNo(pdProductStockCheck.getCheckNo());
+		pdProductStockCheck.setPdProductStockCheckChildList(pdProductStockUniqueCodes);
 		return Result.ok(pdProductStockCheck);
 
 	}

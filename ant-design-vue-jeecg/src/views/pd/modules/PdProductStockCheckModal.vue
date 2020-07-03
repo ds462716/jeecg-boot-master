@@ -110,11 +110,13 @@
       </a-popconfirm>
       <a-button @click="handleOk('submit')" v-show="!disableSubmit" type="primary" :loading="confirmLoading" style="margin-right: 15px;">盘点完成</a-button>
       <a-button @click="handleOk('save')" v-show="!disableSubmit" type="primary" :loading="confirmLoading" style="margin-right: 15px;">临时保存</a-button>
+      <a-button @click="handleOk('saveAndPrint')" v-show="!disableSubmit" type="primary" :loading="confirmLoading" style="margin-right: 15px;">临时保存并打印</a-button>
     </template>
 
 
 
     <pd-product-stock-check-add-modal  ref="PdProductStockCheckAddModal" @ok="modalFormOk"></pd-product-stock-check-add-modal>
+    <pd-product-stock-check-print-modal ref="PdProductStockCheckPrintModal" ></pd-product-stock-check-print-modal>
   </j-modal>
 </template>
 
@@ -123,10 +125,11 @@
   import pick from 'lodash.pick'
   import { FormTypes,getRefPromise,validateFormAndTables} from '@/utils/JEditableTableUtil'
   import { JEditableTableMixin } from '@/mixins/JEditableTableMixin'
-  import { validateDuplicateValue } from '@/utils/util'
+  import { validateDuplicateValue,isRealNum } from '@/utils/util'
   import JDate from '@/components/jeecg/JDate'
   import { httpAction,getAction,downFile,inArray} from '@/api/manage'
   import PdProductStockCheckAddModal from './PdCheckProductListModel'
+  import PdProductStockCheckPrintModal from '../print/PdProductStockCheckPrintModal'
 
   const VALIDATE_NO_PASSED = Symbol()
   export { FormTypes, VALIDATE_NO_PASSED }
@@ -134,7 +137,8 @@
     name: 'PdProductStockCheckModal',
     mixins: [JEditableTableMixin],
     components: {
-      JDate,PdProductStockCheckAddModal
+      JDate,PdProductStockCheckAddModal,
+      PdProductStockCheckPrintModal
     },
     data() {
       return {
@@ -195,19 +199,20 @@
             {title: '理论数量', key: 'stockNum',width:"120px"},
             {title: '盘点数量', key: 'checkNum', type: FormTypes.input, width:"120px",
               placeholder: '${title}', defaultValue: '1',
-              validateRules: [{ required: true, message: '${title}不能为空' },
+              validateRules: [/*{ required: true, message: '${title}不能为空' },*/
                 { pattern: '^(?:[1-9][0-9]*(?:\\.[0-9]+)?|0\\.(?!0+$)[0-9]+)$',message: '${title}的格式不正确' }]
             },
             {title: '盘盈盘亏', key: 'profitLossCount',width:"100px" }
           ]
         },
         url: {
-          add: "/pd/pdProductStockCheck/add",
+          add: "/pd/pdProductStockCheck/submit",
           edit: "/pd/pdProductStockCheck/edit",
           querySysDepartList:"/pd/pdDepart/getSysDepartList",
           pdProductStockCheckChild: {
             list: '/pd/pdProductStockCheck/queryPdProductStockCheckChild'
           },
+          queryById:"/pd/pdProductStockCheck/queryById",
         },
       }
     },
@@ -327,7 +332,11 @@
             if(column.key === "checkNum"){
               // 盘点数量变更
              let profitCount= parseFloat(row.checkNum)-parseFloat(row.stockNum);
+             if(isRealNum(profitCount)){
                target.setValues([{rowKey: row.id, values: {checkNum :row.checkNum,profitLossCount :profitCount.toFixed(2)}}]);
+             }else{
+               target.setValues([{rowKey: row.id, values: {checkNum :row.checkNum,profitLossCount :""}}]);
+             }
               // 计算盘盈盘亏数量
               this.getTotalNumAndPrice();
             }
@@ -343,7 +352,11 @@
           values.forEach((item, idx) => {
             if(item.checkNum!=null && item.checkNum!=''){
               checkCount+=parseFloat(item.stockNum);
-              profitLossCount+=parseFloat(item.profitLossCount);
+              if(isRealNum(item.profitLossCount)){
+                profitLossCount+=parseFloat(item.profitLossCount);
+              }else{
+                profitLossCount = 0;
+              }
             }
           })
            this.model.profitLossCount = profitLossCount.toFixed(2);
@@ -355,7 +368,7 @@
       handleOk (submitType) { //提交
         this.model.checkStatus = '0';
         if (submitType == "submit") {
-           this.model.checkStatus = '1';
+          this.model.checkStatus = '1';
         }
         const that = this;
         // 触发表单验证
@@ -366,29 +379,52 @@
           if (typeof this.classifyIntoFormData !== 'function') {
             throw this.throwNotFunction('classifyIntoFormData')
           }
+          this.confirmLoading = true;
           let formData = this.classifyIntoFormData(allValues)
           // 发起请求
           let pdProductStockCheckChildList = formData.pdProductStockCheckChildList;
           if (pdProductStockCheckChildList.length > 0) {
+            //临时保存不校验，盘点完成才校验
+            if (submitType == "submit") {
+              let bo = true;
+              let index = 1;
+              for(let item of pdProductStockCheckChildList){
+                if(!item.checkNum){
+                  bo = false;
+                  break;
+                }
+                index++
+              }
+              if(!bo){
+                this.$message.error("第"+index+"行数量填写错误请检查！");
+                return bo;
+              }
+            }
+
             let httpurl = '';
             let method = '';
             if (!this.model.id) {
               httpurl += this.url.add;
               method = 'post';
             } else {
-              httpurl += this.url.edit;
-              method = 'put';
+              httpurl += this.url.add;
+              method = 'post';
             }
             httpAction(httpurl, formData, method).then((res) => {
               if (res.success) {
+                this.model.id = res.result.recordId;
                 that.$message.success(res.message);
                 that.$emit('ok');
+                that.close();
+                //临时保存并打印
+                if(submitType == "saveAndPrint"){
+                  this.printBtn(); //通过并打印
+                }
               } else {
                 that.$message.warning(res.message);
               }
             }).finally(() => {
               that.confirmLoading = false;
-              that.close();
             })
           } else {
             that.$message.error("请选择需要盘点的产品");
@@ -441,6 +477,18 @@
         this.visible = false;
         this.$emit('close');
         this.disableSubmit = false;
+      },
+      /**打印按钮**/
+      printBtn(){
+        let recordId = this.model.id;
+        if(!recordId){
+          this.$message.warning("参数不正确，请重新打印！");
+          return;
+        }
+        getAction(this.url.queryById, {id:this.model.id}).then((res) => {
+          this.$refs.PdProductStockCheckPrintModal.show(res.result);
+          this.$refs.PdProductStockCheckPrintModal.title = "盘点单";
+        })
       },
     }
   }

@@ -19,4 +19,8 @@ public interface PdProductStockCheckMapper extends BaseMapper<PdProductStockChec
     List<PdProductStockCheck> selectList(PdProductStockCheck stockCheck);
 
     Page<PdProductStockCheck> selectListByPage(Page<PdProductStockCheck> page, @Param("entity") PdProductStockCheck entity);
+
+    void deleteByMainId(String id);
+
+    PdProductStockCheck getByOne(PdProductStockCheck pdProductStockCheck);
 }

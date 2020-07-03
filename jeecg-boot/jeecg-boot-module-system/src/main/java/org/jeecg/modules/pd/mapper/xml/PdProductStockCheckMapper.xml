@@ -74,6 +74,40 @@
         </where>
     </select>
 
+    <select id="getByOne" resultType="org.jeecg.modules.pd.entity.PdProductStockCheck">
+        SELECT
+        <include refid="PdProductStockCheckColumns"/>,
+        <include refid="pdSysUserColumns"/>,
+        <include refid="sysDepartColumns"/>
+        FROM pd_product_stock_check a
+        <include refid="PdProductStockCheckJoins"/>
+        <include refid="pdSysUserJoins"/>
+        <include refid="sysDepartJoins"/>
+        <where>
+            a.del_flag =#{DEL_FLAG_NORMAL}
+            <if test="id != null and id != ''">
+                AND a.id = #{id}
+            </if>
+            <if test="checkNo != null and checkNo != ''">
+                AND a.check_no = #{checkNo}
+            </if>
+            <if test="departId != null and departId != ''">
+                AND a.depart_id = #{departId}
+            </if>
+            <if test="departParentId != null and departParentId != ''">
+                AND a.depart_parent_id = #{departParentId}
+            </if>
+            <if test="departIdList != null and departIdList.size() > 0">
+                and a.depart_id IN
+                <foreach collection="departIdList" item="item" separator="," open="(" close=")">
+                    #{item}
+                </foreach>
+            </if>
+            order by create_time desc
+        </where>
+    </select>
+
+
     <!-- 分页列表查询 -->
     <select id="selectListByPage" resultType="org.jeecg.modules.pd.entity.PdProductStockCheck">
         SELECT
@@ -107,5 +141,9 @@
             order by create_time desc
         </where>
     </select>
+
+
+    <delete id="deleteByMainId" parameterType="java.lang.String">
+		DELETE 	FROM  pd_product_stock_check 	WHERE	 check_no = #{mainId} 	</delete>
 
 </mapper>

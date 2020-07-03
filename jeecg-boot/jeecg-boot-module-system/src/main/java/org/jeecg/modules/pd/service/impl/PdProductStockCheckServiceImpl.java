@@ -3,10 +3,12 @@ package org.jeecg.modules.pd.service.impl;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.apache.ibatis.session.SqlSession;
+import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.pd.entity.PdProductStockCheck;
 import org.jeecg.modules.pd.entity.PdProductStockCheckChild;
 import org.jeecg.modules.pd.mapper.PdProductStockCheckChildMapper;
 import org.jeecg.modules.pd.mapper.PdProductStockCheckMapper;
+import org.jeecg.modules.pd.service.IPdProductStockCheckChildService;
 import org.jeecg.modules.pd.service.IPdProductStockCheckService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -29,6 +31,9 @@ public class PdProductStockCheckServiceImpl extends ServiceImpl<PdProductStockCh
 	private PdProductStockCheckMapper pdProductStockCheckMapper;
 	@Autowired
 	private PdProductStockCheckChildMapper pdProductStockCheckChildMapper;
+
+	@Autowired
+	private IPdProductStockCheckChildService pdProductStockCheckChildService;
 	@Autowired
 	private SqlSession sqlSession;
 	/**
@@ -80,7 +85,7 @@ public class PdProductStockCheckServiceImpl extends ServiceImpl<PdProductStockCh
 	@Transactional
 	public void delMain(String id) {
 		pdProductStockCheckChildMapper.deleteByMainId(id);
-		pdProductStockCheckMapper.deleteById(id);
+		pdProductStockCheckMapper.deleteByMainId(id);
 	}
 
 	@Override
@@ -95,5 +100,28 @@ public class PdProductStockCheckServiceImpl extends ServiceImpl<PdProductStockCh
 			//pdProductStockCheckMapper.deleteById(id);
 		}
 	}
-	
+
+	@Transactional
+	@Override
+	public String submit(PdProductStockCheck pdProductStockCheck, List<PdProductStockCheckChild> pdProductStockCheckChildList) {
+		// 修改前先删除数据
+		if (oConvertUtils.isNotEmpty(pdProductStockCheck.getId())) {
+			this.delMain(pdProductStockCheck.getCheckNo());
+		}
+		pdProductStockCheckMapper.insert(pdProductStockCheck);
+		if(pdProductStockCheckChildList!=null && pdProductStockCheckChildList.size()>0) {
+			for(PdProductStockCheckChild entity:pdProductStockCheckChildList) {
+				//外键设置
+				entity.setCheckNo(pdProductStockCheck.getCheckNo());
+			}
+			pdProductStockCheckChildService.saveBatch(pdProductStockCheckChildList);
+		}
+		return pdProductStockCheck.getId();
+	}
+
+	@Override
+	public PdProductStockCheck getByOne(PdProductStockCheck pdProductStockCheck) {
+		return baseMapper.getByOne(pdProductStockCheck);
+	}
+
 }
