@@ -213,4 +213,14 @@ public class PdStockRecordDetail extends BaseEntity {
 	@TableField(exist = false)
 	private String productRegistration; //产品表中的注册证
 
+	@TableField(exist = false)
+	private String invoiceNo; // 发票号
+	@TableField(exist = false)
+	private String invoiceCode; //发票代码
+	@TableField(exist = false)
+	@JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd")
+	@DateTimeFormat(pattern="yyyy-MM-dd")
+	private Date invoiceData; //发票日期
+
+
 }

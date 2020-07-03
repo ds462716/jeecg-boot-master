@@ -152,6 +152,9 @@
         :loading="loading"
         :scroll="tableScroll"
         @change="handleTableChange">
+        <template slot="ellipsisText" slot-scope="text">
+          <j-ellipsis :value="text" :length="textMaxLength"></j-ellipsis>
+        </template>
       </a-table>
     </div>
   </a-card>
@@ -163,17 +166,19 @@
   import { JeecgListMixin} from '@/mixins/JeecgListMixin'
   import {initDictOptions, filterMultiDictText} from '@/components/dict/JDictSelectUtil'
   import JDictSelectTagExpand from "@/components/dict/JDictSelectTagExpand"
+  import JEllipsis from '@/components/jeecg/JEllipsis'
 
   export default {
     name: "PdstockRecordInQueryList",
     mixins:[JeecgListMixin],
     components: {
-      JDictSelectTagExpand
+      JDictSelectTagExpand,JEllipsis
     },
     data () {
       return {
         description: '入库明细查询',
 
+        textMaxLength:15,
         notFoundContent:"未找到内容",
         supplierValue: undefined,
         supplierData: [],
@@ -272,10 +277,16 @@
             }
           },
           {
-            title:'数量',
+            title:'入库数量',
             align:"center",
             width:'90px',
             dataIndex: 'productNum'
+          },
+          {
+            title:'库存数量',
+            align:"center",
+            width:'90px',
+            dataIndex: 'stockNum'
           },
           {
             title:'单位',
@@ -312,6 +323,29 @@
             align:"center",
             width:'250px',
             dataIndex: 'registration'
+          },
+          {
+            title:'发票号',
+            align:"center",
+            width:'150px',
+            scopedSlots: {customRender: "ellipsisText"},
+            dataIndex: 'invoiceNo'
+          },
+          {
+            title:'发票代码',
+            align:"center",
+            width:'150px',
+            scopedSlots: {customRender: "ellipsisText"},
+            dataIndex: 'invoiceCode'
+          },
+          {
+            title:'发票日期',
+            align:"center",
+            width:'90px',
+            dataIndex: 'invoiceData',
+            customRender:function (text) {
+              return !text?"":(text.length>10?text.substr(0,10):text)
+            }
           },
           {
             title:'备注',
@@ -355,7 +389,7 @@
         dictOptions:{
           inType:[],
         },
-        tableScroll:{x :3500},
+        tableScroll:{x :3800},
       }
     },
     computed: {

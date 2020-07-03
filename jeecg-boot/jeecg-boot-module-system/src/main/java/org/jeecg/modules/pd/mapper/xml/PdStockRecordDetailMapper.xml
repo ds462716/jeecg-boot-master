@@ -109,12 +109,30 @@
         LEFT JOIN pd_product_stock j ON j.id = a.product_stock_id
     </sql>
 
+	<sql id="pdProductStockColumns2">
+        jj.stock_num as stockNum
+	</sql>
+	<sql id="pdProductStockJoins2">
+        LEFT JOIN pd_product_stock jj ON jj.record_detail_id = a.id
+    </sql>
+
 	<!-- 货位 -->
 	<sql id="pdGoodsAllocationColumns">
         k.name as outHuoweiName
 	</sql>
 	<sql id="pdGoodsAllocationJoins">
         LEFT JOIN pd_goods_allocation k ON k.code = a.out_huowei_code
+    </sql>
+
+
+	<sql id="pdInvoiceColumns">
+        m.invoice_no as invoiceNo,
+        m.invoice_code as invoiceCode,
+        m.invoice_data as invoiceData
+	</sql>
+	<sql id="pdInvoiceJoins">
+        LEFT JOIN pd_invoice_detail l ON l.bill_detail_id = a.id
+        LEFT JOIN pd_invoice m ON m.id = l.invoice_id
     </sql>
 
 	<delete id="deleteByMainId" parameterType="java.lang.String">
@@ -164,7 +182,9 @@
 		<include refid="pdVenderColumns"/>,
 		<include refid="PdStockRecordColumns"/>,
 		<include refid="pdSupplierColumns"/>,
-		<include refid="pdSysUserColumns"/>
+		<include refid="pdSysUserColumns"/>,
+		<include refid="pdInvoiceColumns"/>,
+		<include refid="pdProductStockColumns2"/>
 		FROM pd_stock_record_detail a
 		<include refid="PdStockRecordDetailJoins"/>
 		<include refid="PdStockRecordJoins"/>
@@ -173,6 +193,8 @@
 		<include refid="pdVenderJoins"/>
 		<include refid="pdSupplierJoins"/>
 		<include refid="pdSysUserJoins"/>
+		<include refid="pdInvoiceJoins"/>
+		<include refid="pdProductStockJoins2"/>
  		<where>
 			a.del_flag =#{entity.DEL_FLAG_NORMAL}
 			<if test="entity.id != null and entity.id != ''">
