@@ -47,4 +47,8 @@ public interface IPdProductStockCheckService extends IService<PdProductStockChec
 	 * 批量删除一对多
 	 */
 	public void delBatchMain(Collection<? extends Serializable> idList);
+
+    String submit(PdProductStockCheck pdProductStockCheck, List<PdProductStockCheckChild> pdProductStockCheckChildList);
+
+	PdProductStockCheck getByOne(PdProductStockCheck pdProductStockCheck);
 }

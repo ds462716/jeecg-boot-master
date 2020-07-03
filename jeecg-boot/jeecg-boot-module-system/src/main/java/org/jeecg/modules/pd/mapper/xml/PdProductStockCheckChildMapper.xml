@@ -36,6 +36,22 @@
         LEFT JOIN pd_product_stock d  on d.id=a.stock_id
     </sql>
 
+    <!-- 供应商 -->
+    <sql id="pdSupplierColumns">
+      e.`name` AS "supplierName"
+    </sql>
+    <sql id="pdSupplierJoins">
+      left join pd_supplier e on d.supplier_id = e.id
+    </sql>
+
+    <!-- 生产厂家 -->
+    <sql id="pdVenderColumns">
+      f.`name` AS "venderName"
+    </sql>
+    <sql id="pdVenderJoins">
+      left join pd_vender f on c.vender_id = f.id
+    </sql>
+
 	<!--产品-->
 	<sql id="pdProductColumns">
 		c.id as "productId",
@@ -65,11 +81,15 @@
 		<include refid="pdProductStockCheckChildColumns"/>,
         <include refid="pdProductStockColumns"/>,
         <include refid="pdProductColumns"/>,
-		<include refid="pdUnitColumns"/>
+		<include refid="pdUnitColumns"/>,
+		<include refid="pdVenderColumns"/>,
+		<include refid="pdSupplierColumns"/>
  		FROM  pd_product_stock_check_child a
         <include refid="pdProductStockJoins"/>
 		<include refid="pdProductJoins"/>
 		<include refid="pdUnitJoins"/>
+		<include refid="pdVenderJoins"/>
+		<include refid="pdSupplierJoins"/>
  		WHERE a.check_no = #{checkNo}
 		ORDER BY a.create_time DESC
 	</select>

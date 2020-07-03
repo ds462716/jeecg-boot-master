@@ -86,6 +86,13 @@ public class PdProductStockCheckChild extends BaseEntity {
 	private String unitName;//单位名称
 
 	@TableField(exist = false)
+	@Excel(name = "生产厂家", width = 15)
+	private String venderName;//生产厂家
+	@TableField(exist = false)
+	@Excel(name = "供应商", width = 15)
+	private String supplierName;//供应商
+
+	@TableField(exist = false)
 	@Excel(name = "理论产品数量", width = 15)
 	private Double stockNum;//理论产品数量
 	@TableField(exist = false)
