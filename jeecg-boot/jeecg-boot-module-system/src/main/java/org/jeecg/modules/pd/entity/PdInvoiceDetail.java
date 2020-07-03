@@ -121,6 +121,8 @@ public class PdInvoiceDetail extends BaseEntity {
 	private String invoiceNo;//发票号
 	@TableField(exist = false)
 	private String invoiceCode;//发票代码
+	@JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd")
+	@DateTimeFormat(pattern="yyyy-MM-dd")
 	@TableField(exist = false)
 	private Date invoiceData;//发票日期
 	@TableField(exist = false)
@@ -158,6 +160,10 @@ public class PdInvoiceDetail extends BaseEntity {
 	@TableField(exist = false)
 	private String version;//产品型号
 	@TableField(exist = false)
+	private String registration; //注册证
+	@TableField(exist = false)
+	private String unitId;//单位ID
+	@TableField(exist = false)
 	private String unitName;//单位名称
 	@TableField(exist = false)
 	private String venderId;//生产厂家ID
@@ -185,7 +191,21 @@ public class PdInvoiceDetail extends BaseEntity {
 	private Double stockNum;//库存数量
 	@TableField(exist = false)
 	private String auditStatus;//入库单审核状态
+
+	@TableField(exist = false)
+	private String recordNo;//出入库单号
+	@TableField(exist = false)
+	private String queryDateStart;
+	@TableField(exist = false)
+	private String queryDateEnd;
+	@TableField(exist = false)
+	private String queryExpDateStart;
+	@TableField(exist = false)
+	private String queryExpDateEnd;
+
 	@TableField(exist = false)
 	private List<String> billDetailIdList;//单据明细idList
+	@TableField(exist = false)
+	private List<String> idList;//发票明细idList
 
 }

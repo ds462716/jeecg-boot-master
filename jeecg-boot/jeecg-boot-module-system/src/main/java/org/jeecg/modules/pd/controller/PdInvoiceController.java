@@ -3,10 +3,7 @@ package org.jeecg.modules.pd.controller;
 import java.io.UnsupportedEncodingException;
 import java.io.IOException;
 import java.net.URLDecoder;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
@@ -30,6 +27,7 @@ import org.jeecg.modules.pd.service.IPdInvoiceService;
 import org.jeecg.modules.pd.service.IPdInvoiceDetailService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.multipart.MultipartFile;
@@ -59,6 +57,9 @@ public class PdInvoiceController {
     @Autowired
     private IPdInvoiceDetailService pdInvoiceDetailService;
 
+    @Value("${jeecg.hospital_code}")
+    private String hospitalCode;
+
     /**
      * 初始化Modal页面
      * @param id
@@ -69,6 +70,7 @@ public class PdInvoiceController {
     public Result<?> initModal(@RequestParam(name = "id") String id, HttpServletRequest req) {
         PdInvoice pdInvoice = new PdInvoice();
         pdInvoice.setInvoiceRegNo(UUIDUtil.generateOrderNoByType(PdConstant.ORDER_NO_FIRST_LETTER_FP));
+        pdInvoice.setHospitalCode(this.hospitalCode);
         return Result.ok(pdInvoice);
     }
 
@@ -88,9 +90,14 @@ public class PdInvoiceController {
                                                 @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
                                                 @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
                                                 HttpServletRequest req) {
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        Map<String,Object> resluMap = new HashMap<>();
         Page<PdInvoiceDetail> page = new Page<PdInvoiceDetail>(pageNo, pageSize);
         IPage<PdInvoiceDetail> pageList = pdInvoiceDetailService.selectByStockRecord(page, pdInvoiceDetail);
-        return Result.ok(pageList);
+        resluMap.put("pageList",pageList);
+        resluMap.put("hospitalCode",this.hospitalCode);
+        resluMap.put("userName",sysUser.getRealname());
+        return Result.ok(resluMap);
     }
 
     /**
@@ -147,6 +154,27 @@ public class PdInvoiceController {
         }
         pdInvoiceService.updateMain(pdInvoice, PdInvoice.getPdInvoiceDetailList());
         return Result.ok("编辑成功!");
+    }
+
+    /**
+     * 发票完成
+     * @param pdInvoiceDetail
+     * @return
+     */
+    @PutMapping(value = "/completeInvoice")
+    public Result<?> completeInvoice(@RequestBody PdInvoiceDetail pdInvoiceDetail) {
+        List<String> idList = pdInvoiceDetail.getIdList();
+        for(String id : idList){
+            PdInvoiceDetail detail = pdInvoiceDetailService.getById(id);
+            if (detail == null) {
+                return Result.error("未找到对应数据");
+            }
+            PdInvoiceDetail update = new PdInvoiceDetail();
+            update.setId(id);
+            update.setStatus(PdConstant.INVOICE_STATUS_2);
+            pdInvoiceDetailService.updateById(update);
+        }
+        return Result.ok("操作成功!");
     }
 
     /**

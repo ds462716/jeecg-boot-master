@@ -9,17 +9,6 @@
     @cancel="handleCancel"
     cancelText="关闭">
 
-
-    <!--<a-modal-->
-      <!--:title="title"-->
-      <!--:width="width"-->
-      <!--:visible="visible"-->
-      <!--:confirmLoading="confirmLoading"-->
-      <!--@ok="handleOk"-->
-      <!--@cancel="handleCancel"-->
-      <!--:maskClosable=disableSubmit-->
-      <!--cancelText="关闭">-->
-
     <a-spin :spinning="confirmLoading">
       <!-- 主表单区域 -->
       <a-form :form="form">
@@ -68,21 +57,6 @@
         </a-row>
       </a-form>
 
-      <!-- 子表单区域 -->
-      <!--<a-tabs v-model="activeKey" @change="handleChangeTabs">-->
-      <!--<a-tab-pane tab="pd_invoice_detail" :key="refKeys[0]" :forceRender="true">-->
-      <!--<j-editable-table-->
-      <!--:ref="refKeys[0]"-->
-      <!--:loading="pdInvoiceDetailTable.loading"-->
-      <!--:columns="pdInvoiceDetailTable.columns"-->
-      <!--:dataSource="pdInvoiceDetailTable.dataSource"-->
-      <!--:maxHeight="300"-->
-      <!--:rowNumber="true"-->
-      <!--:rowSelection="true"-->
-      <!--:actionButton="true"/>-->
-      <!--</a-tab-pane>-->
-      <!--</a-tabs>-->
-
     </a-spin>
   </a-modal>
 </template>
@@ -90,8 +64,6 @@
 <script>
 
   import pick from 'lodash.pick'
-  // import { FormTypes,getRefPromise } from '@/utils/JEditableTableUtil'
-  // import { JEditableTableMixin } from '@/mixins/JEditableTableMixin'
   import {validateDuplicateValue} from '@/utils/util'
   import JDate from '@/components/jeecg/JDate'
   import {httpAction, getAction} from '@/api/manage'
@@ -99,7 +71,6 @@
 
   export default {
     name: 'PdInvoiceAddModal',
-    // mixins: [JEditableTableMixin],
     components: {
       JDate,
     },
@@ -158,18 +129,6 @@
         // if(this.model.id){
         this.billDetailIdList = billDetailIdList;
           this.edit([]);
-        // }else{
-        //   getAction(this.url.init, {id:""}).then((res) => {
-        //     if (res.success) {
-        //         this.initData = res.result;
-        //         this.initData.billDetailIdList = billDetailIdList;
-        //         let fieldval = pick(this.initData,'invoiceRegNo','billDetailIdList');
-        //       this.$nextTick(() => {
-        //         this.form.setFieldsValue(fieldval);
-        //       })
-        //     }
-        //   })
-        // }
       },
       edit(record) {
         this.form.resetFields();

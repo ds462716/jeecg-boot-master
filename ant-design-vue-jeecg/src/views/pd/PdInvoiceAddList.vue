@@ -4,6 +4,115 @@
     <div class="table-page-search-wrapper">
       <a-form layout="inline" @keyup.enter.native="searchQuery">
         <a-row :gutter="24">
+          <a-col :md="6" :sm="8">
+            <a-form-item label="入库单号">
+              <a-input placeholder="请输入单号" v-model="queryParam.recordNo"></a-input>
+            </a-form-item>
+          </a-col>
+          <a-col :md="6" :sm="8">
+            <a-form-item label="供应商">
+              <a-select
+                ref="supplierSelect"
+                showSearch
+                :supplierId="supplierValue"
+                placeholder="请选择供应商"
+                :defaultActiveFirstOption="false"
+                :showArrow="true"
+                :allowClear="true"
+                :filterOption="false"
+                @search="supplierHandleSearch"
+                @change="supplierHandleChange"
+                @focus="supplierHandleSearch"
+                :notFoundContent="notFoundContent"
+                v-model="queryParam.supplierId"
+              >
+                <a-select-option v-for="d in supplierData" :key="d.value">{{d.text}}</a-select-option>
+              </a-select>
+            </a-form-item>
+          </a-col>
+          <a-col :md="6" :sm="8">
+            <a-form-item label="产品名称">
+              <a-input placeholder="请选输入品名称" v-model="queryParam.productName"></a-input>
+            </a-form-item>
+          </a-col>
+
+          <a-col :md="6" :sm="8">
+            <a-form-item label="产品编号">
+              <a-input placeholder="请输入产品编号" v-model="queryParam.productNumber"></a-input>
+            </a-form-item>
+          </a-col>
+          <a-col :md="6" :sm="8">
+            <a-form-item label="入库日期">
+              <a-range-picker @change="inDateChange" v-model="queryParam.queryInDate"/>
+            </a-form-item>
+          </a-col>
+          <!--<a-col :md="6" :sm="8">-->
+            <!--<a-form-item label="有效期">-->
+              <!--<a-range-picker @change="expDateChange" v-model="queryParam.queryExpDate"/>-->
+            <!--</a-form-item>-->
+          <!--</a-col>-->
+          <!--<a-col :md="6" :sm="8">-->
+            <!--<a-form-item label="注册证">-->
+              <!--<a-input placeholder="请输入注册证" v-model="queryParam.registration"></a-input>-->
+            <!--</a-form-item>-->
+          <!--</a-col>-->
+          <a-col :md="6" :sm="8">
+            <a-form-item label="规格">
+              <a-input placeholder="请输入规格" v-model="queryParam.spec"></a-input>
+            </a-form-item>
+          </a-col>
+          <!--<a-col :md="6" :sm="8">-->
+            <!--<a-form-item label="型号">-->
+              <!--<a-input placeholder="请输入型号" v-model="queryParam.version"></a-input>-->
+            <!--</a-form-item>-->
+          <!--</a-col>-->
+          <a-col :md="6" :sm="8">
+            <a-form-item label="批号">
+              <a-input placeholder="请输入批号" v-model="queryParam.batchNo"></a-input>
+            </a-form-item>
+          </a-col>
+          <a-col :md="6" :sm="8">
+            <a-form-item label="生产厂家">
+              <a-select
+                showSearch
+                :venderId="venderValue"
+                placeholder="请选择生产厂家"
+                :defaultActiveFirstOption="false"
+                :allowClear="true"
+                :showArrow="true"
+                :filterOption="false"
+                @search="venderHandleSearch"
+                @change="venderHandleChange"
+                @focus="venderHandleSearch"
+                :notFoundContent="notFoundContent"
+                v-model="queryParam.venderId"
+              >
+                <a-select-option v-for="d in venderData" :key="d.value">{{d.text}}</a-select-option>
+              </a-select>
+            </a-form-item>
+          </a-col>
+          <a-col :md="6" :sm="8">
+            <a-form-item label="是否完成">
+              <a-select  default-value="1" v-model="queryParam.status" >
+                <a-select-option value="1">未完成</a-select-option>
+                <a-select-option value="2">已完成</a-select-option>
+              </a-select>
+            </a-form-item>
+          </a-col>
+
+          <!--<template v-if="toggleSearchStatus"> -->
+          <!--</template>-->
+
+          <a-col :md="6" :sm="8">
+            <span style="float: right;overflow: hidden;" class="table-page-search-submitButtons">
+              <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
+              <a-button type="primary" @click="searchReset" icon="reload" style="margin-left: 8px">重置</a-button>
+              <!--<a @click="handleToggleSearch" style="margin-left: 8px">-->
+                <!--{{ toggleSearchStatus ? '收起' : '展开' }}-->
+                <!--<a-icon :type="toggleSearchStatus ? 'up' : 'down'"/>-->
+              <!--</a>-->
+            </span>
+          </a-col>
 
         </a-row>
       </a-form>
@@ -12,9 +121,11 @@
     
     <!-- 操作按钮区域 -->
     <div class="table-operator">
-      <!--<a-button @click="handleAdd" type="primary" icon="plus">新增</a-button>-->
       <a-button @click="handleAddInvoice" type="primary" icon="plus">维护发票</a-button>
-      <a-button @click="handleEditInvoice" type="primary" icon="plus">修改</a-button>
+      <!--<a-button @click="handleEditInvoice" type="primary" icon="plus">修改</a-button>-->
+      <!--<a-popconfirm title="确定完成？" @confirm="handleCompleteInvoice" okText="确定" cancelText="取消">-->
+        <!--<a-button type="primary" icon="check">完成</a-button>-->
+      <!--</a-popconfirm>-->
       <a-button @click="handleCompleteInvoice" type="primary" icon="check">完成</a-button>
       <a-button @click="handlePrintInvoice" type="primary" icon="printer">打印</a-button>
 
@@ -58,6 +169,7 @@
     </div>
 
     <pd-invoice-add-modal ref="modalForm" @ok="modalFormOk"></pd-invoice-add-modal>
+    <pd-stock-record-in-invoice-print-modal ref="pdStockRecordInInvoicePrintModal"></pd-stock-record-in-invoice-print-modal>
   </a-card>
 </template>
 
@@ -66,19 +178,38 @@
   import { JeecgListMixin } from '@/mixins/JeecgListMixin'
   import PdInvoiceAddModal from './modules/PdInvoiceAddModal'
   import JEllipsis from '@/components/jeecg/JEllipsis'
+  import {httpAction, getAction} from '@/api/manage'
+  import { filterObj } from '@/utils/util';
+  import {initDictOptions, filterMultiDictText} from '@/components/dict/JDictSelectUtil'
+  import JDictSelectTagExpand from "@/components/dict/JDictSelectTagExpand"
+  import PdStockRecordInInvoicePrintModal from "./print/PdStockRecordInInvoicePrintModal";
+
 
   export default {
     name: "PdInvoiceAddList",
     mixins:[JeecgListMixin],
     components: {
-      PdInvoiceAddModal,JEllipsis
+      PdStockRecordInInvoicePrintModal,
+      PdInvoiceAddModal,JEllipsis,JDictSelectTagExpand
     },
     data () {
       return {
         description: 'pd_invoice管理页面',
-        tableScroll:{x :2500},
+        tableScroll:{x :2700},
         textMaxLength:20,
         dataSource2:[],
+        hospitalCode:"",
+        userName:"",
+
+        notFoundContent:"未找到内容",
+        supplierValue: undefined,
+        supplierData: [],
+
+        venderValue: undefined,
+        venderData: [],
+
+        departValue: undefined,
+        departList:[],
         // 表头
         columns: [
           {
@@ -169,6 +300,12 @@
             dataIndex: 'spec'
           },
           {
+            title:'单位',
+            align:"center",
+            width:50,
+            dataIndex: 'unitName'
+          },
+          {
             title:'采购价',
             align:"center",
             width:80,
@@ -203,6 +340,12 @@
             align:"center",
             width:90,
             dataIndex: 'expDate'
+          },
+          {
+            title:'生产厂家',
+            align:"center",
+            width:200,
+            dataIndex: 'venderName'
           },
           {
             title:'备注',
@@ -273,8 +416,12 @@
           list: "/pd/pdInvoice/listByStockRecord",
           delete: "/pd/pdInvoice/delete",
           deleteBatch: "/pd/pdInvoice/deleteBatch",
+          completeInvoice:"/pd/pdInvoice/completeInvoice",
           exportXlsUrl: "/pd/pdInvoice/exportXls",
           importExcelUrl: "pd/pdInvoice/importExcel",
+          querySupplier:"/pd/pdSupplier/getSupplierList",
+          queryVender:"/pd/pdVender/getVenderList",
+          departList: "/pd/pdDepart/queryListTree",
         },
         dictOptions:{},
       }
@@ -284,6 +431,30 @@
     methods: {
       initDictConfig(){
         this.dataSource2 = [];
+      },
+      loadData(arg) {
+        if(!this.url.list){
+          this.$message.error("请设置url.list属性!")
+          return
+        }
+        //加载数据 若传入参数1则加载第一页的内容
+        if (arg === 1) {
+          this.ipagination.current = 1;
+        }
+        var params = this.getQueryParams();//查询条件
+        this.loading = true;
+        getAction(this.url.list, params).then((res) => {
+          if (res.success) {
+            this.dataSource = res.result.pageList.records;
+            this.ipagination.total = res.result.pageList.total;
+            this.hospitalCode = res.result.hospitalCode;
+            this.userName = res.result.userName;
+          }
+          if(res.code===510){
+            this.$message.warning(res.message)
+          }
+          this.loading = false;
+        })
       },
       //维护发票
       handleAddInvoice(){
@@ -302,33 +473,60 @@
         this.$refs.modalForm.disableSubmit = false;
       },
       //修改发票
-      handleEditInvoice(){
-        if(this.selectedRowKeys.length < 1){
-          this.$message.warning("至少选择一条发票！");
-          return;
-        }
-        for(let item of this.dataSource2){
-          if(!item.id){
-            this.$message.warning("请选择已维护发票的入库明细！");
-            return;
-          }
-          for(let item2 of this.dataSource2){
-            if(item.invoiceRegNo != item2.invoiceRegNo){
-              this.$message.warning("只能选择登记号相同的发票修改！");
-              return;
-            }
-          }
-        }
-        this.$refs.modalForm.edit(this.dataSource2);
-        this.$refs.modalForm.title = "修改发票";
-        this.$refs.modalForm.disableSubmit = false;
-      },
+      // handleEditInvoice(){
+      //   if(this.selectedRowKeys.length < 1){
+      //     this.$message.warning("至少选择一条发票！");
+      //     return;
+      //   }
+      //   for(let item of this.dataSource2){
+      //     if(!item.id){
+      //       this.$message.warning("请选择已维护发票的入库明细！");
+      //       return;
+      //     }
+      //     for(let item2 of this.dataSource2){
+      //       if(item.invoiceRegNo != item2.invoiceRegNo){
+      //         this.$message.warning("只能选择登记号相同的发票修改！");
+      //         return;
+      //       }
+      //     }
+      //   }
+      //   this.$refs.modalForm.edit(this.dataSource2);
+      //   this.$refs.modalForm.title = "修改发票";
+      //   this.$refs.modalForm.disableSubmit = false;
+      // },
       // 完成
       handleCompleteInvoice(){
         if(this.selectedRowKeys.length < 1){
           this.$message.warning("至少选择一条记录！");
           return;
         }
+        let idList = [];
+        for(let item of this.dataSource2){
+          if(!item.id){
+            this.$message.warning("请选择已维护发票的入库明细！");
+            return;
+          }
+          idList.push(item.id);
+        }
+
+        var that = this;
+        this.$confirm({
+          title: "确认完成",
+          content: "是否确定完成选中数据?",
+          onOk: function () {
+            that.loading = true;
+            httpAction(that.url.completeInvoice,{idList: idList},"put").then((res)=>{
+              if(res.success){
+                that.$message.success(res.message);
+                that.loadData();
+              }else{
+                that.$message.warning(res.message);
+              }
+            }).finally(() => {
+              that.loading = false;
+            })
+          }
+        });
 
       },
       // 打印
@@ -337,8 +535,30 @@
           this.$message.warning("至少选择一条记录！");
           return;
         }
-
+        for(let item of this.dataSource2){
+          if(!item.id){
+            this.$message.warning("请选择已维护发票的入库明细！");
+            return;
+          }
+        }
+        let title = ""
+        // if(this.hospitalCode == "FCZYY"){
+        //   title = "丰城市中医院";
+        // }
+        switch(this.hospitalCode) {
+          case "FCZYY":
+            title = "丰城市中医院";
+            break;
+          case "FCRMYY":
+            title = "丰城市人民医院";
+            break;
+          default:
+            title = "";
+        }
+        this.$refs.pdStockRecordInInvoicePrintModal.show(this.dataSource2,this.userName);
+        this.$refs.pdStockRecordInInvoicePrintModal.title = title+"发票信息";
       },
+
       onSelectAll(selected, selectedRows, changeRows) {
         if (selected === true) {
           for (var a = 0; a < changeRows.length; a++) {
@@ -407,6 +627,78 @@
             }
           }
         }
+      },
+
+      //↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓查询条件相关↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓//
+      // 部门下拉框搜索
+      departHandleSearch(value){
+        getAction(this.url.departList,{departName:value}).then((res)=>{
+          if (!res.success) {
+            this.cmsFailed(res.message);
+          }
+          this.departList = res.result;
+        })
+      },
+      //供应商查询start
+      supplierHandleSearch(value) {
+        this.getList(value,this.url.querySupplier,"1");
+      },
+      supplierHandleChange(value) {
+        this.supplierValue = value;
+        this.getList(value,this.url.querySupplier,"1");
+      },
+      //供应商查询end
+      //生产厂家查询start
+      venderHandleSearch(value) {
+        this.getList(value,this.url.queryVender,"2");
+      },
+      venderHandleChange(value) {
+        this.venderValue = value;
+        this.getList(value,this.url.queryVender,"2");
+      },
+      //生产厂家查询end
+      getList(value,url,flag){
+        getAction(url,{name:value}).then((res)=>{
+          if (!res.success) {
+            this.cmsFailed(res.message);
+          }
+          const result = res.result;
+          const data = [];
+          result.forEach(r => {
+            data.push({
+              value: r.id,
+              text: r.name,
+            });
+          });
+          if(flag == "1"){
+            this.supplierData = data;
+          }else if(flag == "2"){
+            this.venderData = data;
+          }
+        })
+      },
+      expDateChange: function (value, dateString) {
+        this.queryParam.queryExpDateStart=dateString[0];
+        this.queryParam.queryExpDateEnd=dateString[1];
+      },
+      inDateChange: function (value, dateString) {
+        this.queryParam.queryDateStart=dateString[0];
+        this.queryParam.queryDateEnd=dateString[1];
+      },
+      getQueryParams() {
+        //获取查询条件
+        let sqp = {}
+        if(this.superQueryParams){
+          sqp['superQueryParams']=encodeURI(this.superQueryParams)
+        }
+        var param = Object.assign(sqp, this.queryParam, this.isorter ,this.filters);
+        param.field = this.getQueryField();
+        param.pageNo = this.ipagination.current;
+        param.pageSize = this.ipagination.pageSize;
+        param.inDepartIds = this.queryParam.inDepartIds+"";
+        delete param.queryExpDate; //范围参数不传递后台，传后台会报错
+        delete param.queryInDate;
+        return filterObj(param);
       },
     }
   }
