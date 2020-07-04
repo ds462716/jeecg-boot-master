@@ -162,6 +162,9 @@
         :customRow="onClickRow"
         :rowSelection="{fixed:false,selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
         >
+        <template slot="ellipsisText" slot-scope="text">
+          <j-ellipsis :value="text" :length="textMaxLength"></j-ellipsis>
+        </template>
       </a-table>
     </div>
     <pdProduct-stock-query-print ref="printModalForm" ></pdProduct-stock-query-print>
@@ -197,6 +200,7 @@
   import {initDictOptions, filterMultiDictText} from '@/components/dict/JDictSelectUtil'
   import JDictSelectTagExpand from "@/components/dict/JDictSelectTagExpand"
   import PdProductStockUniqueCodeModal from "../modules/PdProductStockUniqueCodeModal";
+  import JEllipsis from '@/components/jeecg/JEllipsis'
 
   export default {
     name: "PdProductStockQueryModal",
@@ -204,7 +208,8 @@
     components: {
       PdProductStockQueryPrint,
       JDictSelectTagExpand,
-      PdProductStockUniqueCodeModal
+      PdProductStockUniqueCodeModal,
+      JEllipsis
     },
     data () {
       return {
@@ -218,6 +223,7 @@
         previewVisible:false,
         confirmLoading: false,
         venderValue: undefined,
+        textMaxLength:20,
         startOrder: "",
         endOrder: "",
         form: this.$form.createForm(this),
@@ -237,14 +243,15 @@
             align:"center",
             dataIndex: 'deptName'
           },
-          {
+          /*{
             title:'货位',
             align:"center",
             dataIndex: 'huoweiName'
-          },
+          },*/
           {
             title:'产品名称',
             align:"center",
+            scopedSlots: {customRender: "ellipsisText"},
             dataIndex: 'productName'
           },
           {
@@ -284,11 +291,13 @@
           {
             title:'产品条码',
             align:"center",
+            scopedSlots: {customRender: "ellipsisText"},
             dataIndex: 'productBarCode'
           },
           {
             title:'规格',
             align:"center",
+            scopedSlots: {customRender: "ellipsisText"},
             dataIndex: 'spec'
           },
           {
@@ -331,19 +340,17 @@
             align:"center",
             dataIndex: 'registration'
           },
-          {
-            title:'JDE编号',
-            align:"center",
-            dataIndex: 'jdeCode'
-          },
+
           {
             title:'生产厂家',
             align:"center",
+            scopedSlots: {customRender: "ellipsisText"},
             dataIndex: 'venderName'
           },
           {
             title:'供应商',
             align:"center",
+            scopedSlots: {customRender: "ellipsisText"},
             dataIndex: 'supplierName'
           }
         ],

@@ -50,6 +50,10 @@
         :loading="loading"
         :scroll="tableScroll"
         @change="handleTableChange">
+
+        <template slot="ellipsisText" slot-scope="text">
+          <j-ellipsis :value="text" :length="textMaxLength"></j-ellipsis>
+        </template>
       </a-table>
     </a-spin>
   </a-modal>
@@ -58,10 +62,12 @@
   import { httpAction,getAction } from '@/api/manage'
   import { JeecgListMixin } from '@/mixins/JeecgListMixin'
   import {initDictOptions, filterMultiDictText} from '@/components/dict/JDictSelectUtil'
+  import JEllipsis from '@/components/jeecg/JEllipsis'
   export default {
     name: "ExInspectionInfModal",
     mixins:[JeecgListMixin],
     components: {
+      JEllipsis
     },
     data () {
       return {
@@ -73,6 +79,7 @@
         supplierSelecDisabled:false,
         width:1200,
         visible: false,
+        textMaxLength:20,
         model:{},
         validatorRules: {
           productTotNum:{},//入库总数量
@@ -96,6 +103,7 @@
           {
             title:'产品名称',
             align:"center",
+            scopedSlots: {customRender: "ellipsisText"},
             dataIndex: 'productName'
           },
           {
@@ -111,6 +119,7 @@
           {
             title:'规格',
             align:"center",
+            scopedSlots: {customRender: "ellipsisText"},
             dataIndex: 'spec'
           },
           {
@@ -126,6 +135,7 @@
           {
             title:'扣减状态',
             align:"center",
+            width:100,
             dataIndex: 'status',
             customRender:(text)=>{
               if(!text){
@@ -138,6 +148,7 @@
           {
             title:'备注',
             align:"center",
+            scopedSlots: {customRender: "ellipsisText"},
             dataIndex: 'remarks'
           },
         ],

@@ -107,8 +107,12 @@
         :loading="loading"
         :scroll="tableScroll"
         :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
-        
         @change="handleTableChange">
+
+        <template slot="ellipsisText" slot-scope="text">
+          <j-ellipsis :value="text" :length="textMaxLength"></j-ellipsis>
+        </template>
+
 
         <span slot="action" slot-scope="text, record">
           <a @click="editUsePackageDetail(record)" :loading="loading" v-bind:disabled="record.acceptStatus=='0'">重新扣减</a>&nbsp;&nbsp;&nbsp;
@@ -132,7 +136,7 @@
   import {httpAction,getAction} from '@/api/manage'
   import {initDictOptions, filterMultiDictText} from '@/components/dict/JDictSelectUtil'
   import { filterObj } from '@/utils/util';
-
+  import JEllipsis from '@/components/jeecg/JEllipsis'
 
   export default {
     name: "ExInspectionItemsList",
@@ -140,7 +144,8 @@
     components: {
       ExInspectionItemsModal,
       PdUsePackageModal,
-      ExInspectionInfModal
+      ExInspectionInfModal,
+      JEllipsis
     },
     data () {
       return {
@@ -148,6 +153,7 @@
         instrData: [],
         instrValue: undefined,
         notFoundContent:"未找到内容",
+        textMaxLength:20,
         // 表头
         columns: [
           {
@@ -158,11 +164,13 @@
           {
             title:'患者性别',
             align:"center",
+            width:60,
             dataIndex: 'patientSex'
           },
           {
             title:'患者年龄',
             align:"center",
+            width:60,
             dataIndex: 'patientAge'
           },
           {
@@ -190,12 +198,14 @@
           {
             title:'患者类型',
             align:"center",
+            width:60,
             dataIndex: 'patientType'
           },
 
           {
             title:'检验日期',
             align:"center",
+            width:110,
             dataIndex: 'testDate',
             customRender:function (text) {
               return !text?"":(text.length>10?text.substr(0,10):text)
@@ -231,6 +241,7 @@
             {
            title:'备注',
            align:"center",
+           scopedSlots: {customRender: "ellipsisText"},
            dataIndex: 'remarks'
          },
           {

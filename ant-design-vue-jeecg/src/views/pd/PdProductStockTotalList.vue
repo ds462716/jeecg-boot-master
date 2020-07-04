@@ -113,6 +113,10 @@
         :rowSelection="{fixed:false,selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
         @change="handleTableChange">
 
+        <template slot="ellipsisText" slot-scope="text">
+          <j-ellipsis :value="text" :length="textMaxLength"></j-ellipsis>
+        </template>
+
         <span slot="action" slot-scope="text, record">
           <a @click="handleEdit(record)">库存明细</a>&nbsp;&nbsp;&nbsp;
          <a  @click="handleRecordEdit(record)">出入库明细</a>
@@ -138,6 +142,7 @@
   import {initDictOptions, filterMultiDictText} from '@/components/dict/JDictSelectUtil'
   import { filterObj } from '@/utils/util';
   import JDictSelectTagExpand from "@/components/dict/JDictSelectTagExpand"
+  import JEllipsis from '@/components/jeecg/JEllipsis'
 
 
   export default {
@@ -147,7 +152,8 @@
       PdProductStockTotalModal,
       PdProductStockModal,
       PdStockRecordDetailInfoModal,
-      JDictSelectTagExpand
+      JDictSelectTagExpand,
+      JEllipsis
     },
     data () {
       return {
@@ -162,6 +168,7 @@
         departData: [],
         departValue: undefined,
         notFoundContent:"未找到内容",
+        textMaxLength:20,
         // 表头
         columns: [
           /*{
@@ -182,6 +189,7 @@
           {
             title:'产品名称',
             align:"center",
+            scopedSlots: {customRender: "ellipsisText"},
             dataIndex: 'productName'
           },
           {
@@ -197,13 +205,14 @@
           {
             title:'规格',
             align:"center",
+            scopedSlots: {customRender: "ellipsisText"},
             dataIndex: 'spec'
           },
-          {
+          /*{
             title:'型号',
             align:"center",
             dataIndex: 'version'
-          },
+          },*/
           {
             title:'单位',
             align:"center",
