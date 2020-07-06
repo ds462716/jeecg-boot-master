@@ -1,5 +1,6 @@
 <template>
   <a-modal
+    style="top: 20px;"
     :title="title"
     :width="width"
     :visible="visible"
