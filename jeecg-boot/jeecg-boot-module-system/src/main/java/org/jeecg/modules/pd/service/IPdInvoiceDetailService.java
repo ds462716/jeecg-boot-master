@@ -30,4 +30,19 @@ public interface IPdInvoiceDetailService extends IService<PdInvoiceDetail> {
 	 * @return
 	 */
 	List<PdInvoiceDetail> selectByStockRecord(PdInvoiceDetail pdInvoiceDetail);
+
+	/**
+	 * 发票明细查询
+	 * @param page
+	 * @param pdInvoiceDetail
+	 * @return
+	 */
+	IPage<PdInvoiceDetail> selectInvoiceDetailList(Page<PdInvoiceDetail> page, PdInvoiceDetail pdInvoiceDetail);
+
+	/**
+	 * 发票明细查询
+	 * @param pdInvoiceDetail
+	 * @return
+	 */
+	List<PdInvoiceDetail> selectInvoiceDetailList(PdInvoiceDetail pdInvoiceDetail);
 }

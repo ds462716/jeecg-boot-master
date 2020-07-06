@@ -28,7 +28,7 @@ public interface IPdInvoiceService extends IService<PdInvoice> {
 	 * 
 	 */
 	public void updateMain(PdInvoice pdInvoice, List<PdInvoiceDetail> pdInvoiceDetailList);
-	
+
 	/**
 	 * 删除一对多
 	 */

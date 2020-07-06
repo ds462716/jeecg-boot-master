@@ -3,6 +3,7 @@ package org.jeecg.modules.pd.service.impl;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.commons.collections.CollectionUtils;
+import org.jeecg.common.constant.PdConstant;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.pd.entity.PdInvoice;
 import org.jeecg.modules.pd.entity.PdInvoiceDetail;
@@ -78,6 +79,14 @@ public class PdInvoiceServiceImpl extends ServiceImpl<PdInvoiceMapper, PdInvoice
 	@Override
 	@Transactional
 	public void delMain(String id) {
+		List<PdInvoiceDetail> detailList = pdInvoiceDetailMapper.selectByMainId(id);
+		for(PdInvoiceDetail detail : detailList){
+			if(PdConstant.INVOICE_STATUS_2.equals(detail.getStatus())){
+				PdInvoice pdInvoice = pdInvoiceMapper.selectById(id);
+				throw new RuntimeException("该发票登记号["+pdInvoice.getInvoiceRegNo()+"]下有已完成的明细，不能删除");
+			}
+		}
+
 		pdInvoiceDetailMapper.deleteByMainId(id);
 		pdInvoiceMapper.deleteById(id);
 	}

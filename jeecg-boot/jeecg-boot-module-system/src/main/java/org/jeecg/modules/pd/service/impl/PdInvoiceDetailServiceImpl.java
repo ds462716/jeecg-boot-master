@@ -42,4 +42,18 @@ public class PdInvoiceDetailServiceImpl extends ServiceImpl<PdInvoiceDetailMappe
 		pdInvoiceDetail.setDepartParentId(sysUser.getDepartParentId());
 		return pdInvoiceDetailMapper.selectByStockRecord(pdInvoiceDetail);
 	}
+
+	@Override
+	public IPage<PdInvoiceDetail> selectInvoiceDetailList(Page<PdInvoiceDetail> page, PdInvoiceDetail pdInvoiceDetail) {
+		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		pdInvoiceDetail.setDepartParentId(sysUser.getDepartParentId());
+		return pdInvoiceDetailMapper.selectInvoiceDetailList(page,pdInvoiceDetail);
+	}
+
+	@Override
+	public List<PdInvoiceDetail> selectInvoiceDetailList(PdInvoiceDetail pdInvoiceDetail) {
+		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		pdInvoiceDetail.setDepartParentId(sysUser.getDepartParentId());
+		return pdInvoiceDetailMapper.selectInvoiceDetailList(pdInvoiceDetail);
+	}
 }

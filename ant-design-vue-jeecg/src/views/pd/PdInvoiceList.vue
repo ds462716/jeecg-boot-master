@@ -6,7 +6,7 @@
         <a-row :gutter="24">
           <a-col :md="6" :sm="8">
             <a-form-item label="入库单号">
-              <a-input placeholder="请输入单号" v-model="queryParam.recordNo"></a-input>
+              <a-input placeholder="请输入单号" v-model="queryParam.billNo"></a-input>
             </a-form-item>
           </a-col>
           <a-col :md="6" :sm="8">
@@ -31,86 +31,106 @@
             </a-form-item>
           </a-col>
           <a-col :md="6" :sm="8">
-            <a-form-item label="产品名称">
-              <a-input placeholder="请选输入品名称" v-model="queryParam.productName"></a-input>
-            </a-form-item>
-          </a-col>
-
-          <a-col :md="6" :sm="8">
-            <a-form-item label="产品编号">
-              <a-input placeholder="请输入产品编号" v-model="queryParam.productNumber"></a-input>
-            </a-form-item>
-          </a-col>
-          <a-col :md="6" :sm="8">
             <a-form-item label="入库日期">
               <a-range-picker @change="inDateChange" v-model="queryParam.queryInDate"/>
             </a-form-item>
           </a-col>
-          <!--<a-col :md="6" :sm="8">-->
-            <!--<a-form-item label="有效期">-->
-              <!--<a-range-picker @change="expDateChange" v-model="queryParam.queryExpDate"/>-->
-            <!--</a-form-item>-->
-          <!--</a-col>-->
-          <!--<a-col :md="6" :sm="8">-->
-            <!--<a-form-item label="注册证">-->
-              <!--<a-input placeholder="请输入注册证" v-model="queryParam.registration"></a-input>-->
-            <!--</a-form-item>-->
-          <!--</a-col>-->
-          <a-col :md="6" :sm="8">
-            <a-form-item label="规格">
-              <a-input placeholder="请输入规格" v-model="queryParam.spec"></a-input>
-            </a-form-item>
-          </a-col>
-          <!--<a-col :md="6" :sm="8">-->
-            <!--<a-form-item label="型号">-->
-              <!--<a-input placeholder="请输入型号" v-model="queryParam.version"></a-input>-->
-            <!--</a-form-item>-->
-          <!--</a-col>-->
-          <a-col :md="6" :sm="8">
-            <a-form-item label="批号">
-              <a-input placeholder="请输入批号" v-model="queryParam.batchNo"></a-input>
-            </a-form-item>
-          </a-col>
-          <a-col :md="6" :sm="8">
-            <a-form-item label="生产厂家">
-              <a-select
-                showSearch
-                :venderId="venderValue"
-                placeholder="请选择生产厂家"
-                :defaultActiveFirstOption="false"
-                :allowClear="true"
-                :showArrow="true"
-                :filterOption="false"
-                @search="venderHandleSearch"
-                @change="venderHandleChange"
-                @focus="venderHandleSearch"
-                :notFoundContent="notFoundContent"
-                v-model="queryParam.venderId"
-              >
-                <a-select-option v-for="d in venderData" :key="d.value">{{d.text}}</a-select-option>
-              </a-select>
-            </a-form-item>
-          </a-col>
-          <a-col :md="6" :sm="8">
-            <a-form-item label="是否完成">
-              <a-select  default-value="1" v-model="queryParam.status" >
-                <a-select-option value="1">未完成</a-select-option>
-                <a-select-option value="2">已完成</a-select-option>
-              </a-select>
-            </a-form-item>
-          </a-col>
 
-          <!--<template v-if="toggleSearchStatus"> -->
-          <!--</template>-->
+          <template v-if="toggleSearchStatus">
+            <a-col :md="6" :sm="8">
+              <a-form-item label="登记号">
+                <a-input placeholder="请输入登记号" v-model="queryParam.invoiceRegNo"></a-input>
+              </a-form-item>
+            </a-col>
+            <a-col :md="6" :sm="8">
+              <a-form-item label="发票号">
+                <a-input placeholder="请输入发票号" v-model="queryParam.invoiceNo"></a-input>
+              </a-form-item>
+            </a-col>
+            <a-col :md="6" :sm="8">
+              <a-form-item label="发票代码">
+                <a-input placeholder="请输入发票代码" v-model="queryParam.invoiceCode"></a-input>
+              </a-form-item>
+            </a-col>
+            <a-col :md="6" :sm="8">
+              <a-form-item label="发票日期">
+                <a-range-picker @change="invoiceDateChange" v-model="queryParam.queryInvoiceDate"/>
+              </a-form-item>
+            </a-col>
+            <a-col :md="6" :sm="8">
+              <a-form-item label="产品名称">
+                <a-input placeholder="请选输入品名称" v-model="queryParam.productName"></a-input>
+              </a-form-item>
+            </a-col>
+
+            <a-col :md="6" :sm="8">
+              <a-form-item label="产品编号">
+                <a-input placeholder="请输入产品编号" v-model="queryParam.productNumber"></a-input>
+              </a-form-item>
+            </a-col>
+            <!--<a-col :md="6" :sm="8">-->
+              <!--<a-form-item label="有效期">-->
+                <!--<a-range-picker @change="expDateChange" v-model="queryParam.queryExpDate"/>-->
+              <!--</a-form-item>-->
+            <!--</a-col>-->
+            <!--<a-col :md="6" :sm="8">-->
+              <!--<a-form-item label="注册证">-->
+                <!--<a-input placeholder="请输入注册证" v-model="queryParam.registration"></a-input>-->
+              <!--</a-form-item>-->
+            <!--</a-col>-->
+            <a-col :md="6" :sm="8">
+              <a-form-item label="规格">
+                <a-input placeholder="请输入规格" v-model="queryParam.spec"></a-input>
+              </a-form-item>
+            </a-col>
+            <!--<a-col :md="6" :sm="8">-->
+              <!--<a-form-item label="型号">-->
+                <!--<a-input placeholder="请输入型号" v-model="queryParam.version"></a-input>-->
+              <!--</a-form-item>-->
+            <!--</a-col>-->
+            <a-col :md="6" :sm="8">
+              <a-form-item label="批号">
+                <a-input placeholder="请输入批号" v-model="queryParam.batchNo"></a-input>
+              </a-form-item>
+            </a-col>
+            <a-col :md="6" :sm="8">
+              <a-form-item label="生产厂家">
+                <a-select
+                  showSearch
+                  :venderId="venderValue"
+                  placeholder="请选择生产厂家"
+                  :defaultActiveFirstOption="false"
+                  :allowClear="true"
+                  :showArrow="true"
+                  :filterOption="false"
+                  @search="venderHandleSearch"
+                  @change="venderHandleChange"
+                  @focus="venderHandleSearch"
+                  :notFoundContent="notFoundContent"
+                  v-model="queryParam.venderId"
+                >
+                  <a-select-option v-for="d in venderData" :key="d.value">{{d.text}}</a-select-option>
+                </a-select>
+              </a-form-item>
+            </a-col>
+            <a-col :md="6" :sm="8">
+              <a-form-item label="是否完成">
+                <a-select  default-value="1" v-model="queryParam.status" >
+                  <a-select-option value="1">未完成</a-select-option>
+                  <a-select-option value="2">已完成</a-select-option>
+                </a-select>
+              </a-form-item>
+            </a-col>
+          </template>
 
           <a-col :md="6" :sm="8">
-            <span style="float: right;overflow: hidden;" class="table-page-search-submitButtons">
+            <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
               <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
               <a-button type="primary" @click="searchReset" icon="reload" style="margin-left: 8px">重置</a-button>
-              <!--<a @click="handleToggleSearch" style="margin-left: 8px">-->
-                <!--{{ toggleSearchStatus ? '收起' : '展开' }}-->
-                <!--<a-icon :type="toggleSearchStatus ? 'up' : 'down'"/>-->
-              <!--</a>-->
+              <a @click="handleToggleSearch" style="margin-left: 8px">
+                {{ toggleSearchStatus ? '收起' : '展开' }}
+                <a-icon :type="toggleSearchStatus ? 'up' : 'down'"/>
+              </a>
             </span>
           </a-col>
 
@@ -122,17 +142,8 @@
     <!-- 操作按钮区域 -->
     <div class="table-operator">
       <a-button @click="handleAddInvoice" type="primary" icon="plus">维护发票</a-button>
-      <!--<a-button @click="handleEditInvoice" type="primary" icon="edit">修改</a-button>-->
-      <!--<a-button @click="handleDeleteInvoice" type="primary" icon="delete">删除</a-button>-->
       <a-button @click="handleCompleteInvoice" type="primary" icon="check">完成</a-button>
-      <a-button @click="handlePrintInvoice" type="primary" icon="printer">打印</a-button>
-
-      <!--<a-dropdown v-if="selectedRowKeys.length > 0">-->
-        <!--<a-menu slot="overlay">-->
-          <!--<a-menu-item key="1" @click="batchDel"><a-icon type="delete"/>删除</a-menu-item>-->
-        <!--</a-menu>-->
-        <!--<a-button style="margin-left: 8px"> 批量操作 <a-icon type="down" /></a-button>-->
-      <!--</a-dropdown>-->
+      <a-button @click="handleExportXls('发票明细表')" type="primary" icon="download" >导出</a-button>
     </div>
 
     <!-- table区域-begin -->
@@ -155,20 +166,9 @@
         :customRow="onClickRow"
         :rowSelection="{fixed:false,selectedRowKeys: selectedRowKeys, onSelectAll:onSelectAll,onSelect:onSelect,onChange: onSelectChange}"
         @change="handleTableChange">
-        <span slot="action" slot-scope="text, record">
-          <a @click="handleEditInvoice(record)">修改</a>
-          <a-divider type="vertical" />
-          <a href="javascript:;" @click="handleDetail(record)">详情</a>
-           <a-divider type="vertical" />
-           <a-dropdown>
-            <a class="ant-dropdown-link" >更多 <a-icon type="down" /></a>
-            <a-menu slot="overlay">
-              <a-menu-item>
-                <a @click="handleDeleteInvoice(record)">删除</a>
-              </a-menu-item>
-            </a-menu>
-          </a-dropdown>
-        </span>
+        <!--<span slot="action" slot-scope="text, record">-->
+          <!--<a @click="handleEdit(record)">发票维护</a>-->
+        <!--</span>-->
 
         <template slot="ellipsisText" slot-scope="text">
           <j-ellipsis :value="text" :length="textMaxLength"></j-ellipsis>
@@ -187,7 +187,7 @@
   import { JeecgListMixin } from '@/mixins/JeecgListMixin'
   import PdInvoiceAddModal from './modules/PdInvoiceAddModal'
   import JEllipsis from '@/components/jeecg/JEllipsis'
-  import {httpAction, deleteAction, getAction} from '@/api/manage'
+  import {httpAction, getAction} from '@/api/manage'
   import { filterObj } from '@/utils/util';
   import {initDictOptions, filterMultiDictText} from '@/components/dict/JDictSelectUtil'
   import JDictSelectTagExpand from "@/components/dict/JDictSelectTagExpand"
@@ -195,7 +195,7 @@
 
 
   export default {
-    name: "PdInvoiceAddList",
+    name: "PdInvoiceList",
     mixins:[JeecgListMixin],
     components: {
       PdStockRecordInInvoicePrintModal,
@@ -259,11 +259,6 @@
             customRender:function (text) {
               return !text?"":(text.length>10?text.substr(0,10):text)
             }
-          },
-          {
-            title:'发票金额',
-            align:"center",
-            dataIndex: 'invoiceMoney'
           },
           {
             title:'状态',
@@ -366,17 +361,68 @@
             align:"center",
             dataIndex: 'remarks'
           },
-          {
-            title: '操作',
-            dataIndex: 'action',
-            align:"center",
-            fixed: 'right',
-            width: 150,
-            scopedSlots: { customRender: 'action' },
-          }
+          // {
+          //   title:'发票金额',
+          //   align:"center",
+          //   dataIndex: 'invoiceMoney'
+          // },
+          // {
+          //   title:'回款金额',
+          //   align:"center",
+          //   dataIndex: 'returnMoney'
+          // },
+          // {
+          //   title:'回款日期',
+          //   align:"center",
+          //   dataIndex: 'returnData',
+          //   customRender:function (text) {
+          //     return !text?"":(text.length>10?text.substr(0,10):text)
+          //   }
+          // },
+          // {
+          //   title:'发票类型；1-入库单发票；2-出库单发票',
+          //   align:"center",
+          //   dataIndex: 'invoiceType'
+          // },
+          // {
+          //   title:'支付状态：1-已支付；2-未支付',
+          //   align:"center",
+          //   dataIndex: 'payStatus'
+          // },
+          // {
+          //   title:'发票状态：1-未完成；2-已完成',
+          //   align:"center",
+          //   dataIndex: 'invoiceStatus'
+          // },
+          // {
+          //   title:'单据登记人（入库单创建人）',
+          //   align:"center",
+          //   dataIndex: 'billBy'
+          // },
+          // {
+          //   title:'创建人',
+          //   align:"center",
+          //   dataIndex: 'createBy'
+          // },
+          // {
+          //   title:'创建日期',
+          //   align:"center",
+          //   dataIndex: 'createTime',
+          //   customRender:function (text) {
+          //     return !text?"":(text.length>10?text.substr(0,10):text)
+          //   }
+          // },
+          // {
+          //   title: '操作',
+          //   dataIndex: 'action',
+          //   align:"center",
+          //   fixed: 'right',
+          //   width: 100,
+          //   scopedSlots: { customRender: 'action' },
+          // }
         ],
         url: {
-          list: "/pd/pdInvoice/listByStockRecord",
+          list: "/pd/pdInvoice/queryInvoiceDetailPageList",
           delete: "/pd/pdInvoice/delete",
           deleteBatch: "/pd/pdInvoice/deleteBatch",
           completeInvoice:"/pd/pdInvoice/completeInvoice",
@@ -420,7 +466,7 @@
         })
       },
       //维护发票
-      handleAddInvoice(){
+      handleExportInvoice(){
         if(this.selectedRowKeys.length < 1){
           this.$message.warning("至少选择一条入库明细！");
           return;
@@ -435,116 +481,6 @@
         this.$refs.modalForm.title = "维护发票";
         this.$refs.modalForm.disableSubmit = false;
       },
-      // 修改发票
-      handleEditInvoice(record){
-        // if(this.selectedRowKeys.length < 1){
-        //   this.$message.warning("请选择一条发票修改！");
-        //   return;
-        // }
-        // if(this.selectedRowKeys.length > 1){
-        //   this.$message.warning("只能选择一条发票修改！");
-        //   return;
-        // }
-        // for(let item of this.dataSource2){
-        //   if(!item.id){
-        //     this.$message.warning("请选择已维护发票的入库明细！");
-        //     return;
-        //   }
-        // }
-        var that = this;
-        this.$confirm({
-          title: "确认修改",
-          content: "相同登记号的发票会一起修改，是否确定修改?",
-          onOk: function () {
-            that.$refs.modalForm.edit(record);
-            that.$refs.modalForm.title = "修改发票";
-            that.$refs.modalForm.disableSubmit = false;
-          }
-        });
-      },
-      //删除
-      handleDeleteInvoice(record){
-        var that = this;
-        this.$confirm({
-          title: "确认修改",
-          content: "相同登记号的发票会一起删除，是否确定删除?",
-          onOk: function () {
-            deleteAction(that.url.delete, {id: record.invoiceId}).then((res) => {
-              if (res.success) {
-                that.$message.success(res.message);
-                that.loadData();
-              } else {
-                that.$message.warning(res.message);
-              }
-            });
-          }
-        });
-      },
-      // 完成
-      handleCompleteInvoice(){
-        if(this.selectedRowKeys.length < 1){
-          this.$message.warning("至少选择一条记录！");
-          return;
-        }
-        let idList = [];
-        for(let item of this.dataSource2){
-          if(!item.id){
-            this.$message.warning("请选择已维护发票的入库明细！");
-            return;
-          }
-          idList.push(item.id);
-        }
-
-        var that = this;
-        this.$confirm({
-          title: "确认完成",
-          content: "是否确定完成选中数据?",
-          onOk: function () {
-            that.loading = true;
-            httpAction(that.url.completeInvoice,{idList: idList},"put").then((res)=>{
-              if(res.success){
-                that.$message.success(res.message);
-                that.loadData();
-              }else{
-                that.$message.warning(res.message);
-              }
-            }).finally(() => {
-              that.loading = false;
-            })
-          }
-        });
-
-      },
-      // 打印
-      handlePrintInvoice(){
-        if(this.selectedRowKeys.length < 1){
-          this.$message.warning("至少选择一条记录！");
-          return;
-        }
-        for(let item of this.dataSource2){
-          if(!item.id){
-            this.$message.warning("请选择已维护发票的入库明细！");
-            return;
-          }
-        }
-        let title = ""
-        // if(this.hospitalCode == "FCZYY"){
-        //   title = "丰城市中医院";
-        // }
-        switch(this.hospitalCode) {
-          case "FCZYY":
-            title = "丰城市中医院";
-            break;
-          case "FCRMYY":
-            title = "丰城市人民医院";
-            break;
-          default:
-            title = "";
-        }
-        this.$refs.pdStockRecordInInvoicePrintModal.show(this.dataSource2,this.userName);
-        this.$refs.pdStockRecordInInvoicePrintModal.title = title+"发票信息";
-      },
-
       onSelectAll(selected, selectedRows, changeRows) {
         if (selected === true) {
           for (var a = 0; a < changeRows.length; a++) {
@@ -671,6 +607,10 @@
         this.queryParam.queryDateStart=dateString[0];
         this.queryParam.queryDateEnd=dateString[1];
       },
+      invoiceDateChange: function (value, dateString) {
+        this.queryParam.queryInvoiceDateStart=dateString[0];
+        this.queryParam.queryInvoiceDateEnd=dateString[1];
+      },
       getQueryParams() {
         //获取查询条件
         let sqp = {}
@@ -684,6 +624,7 @@
         param.inDepartIds = this.queryParam.inDepartIds+"";
         delete param.queryExpDate; //范围参数不传递后台，传后台会报错
         delete param.queryInDate;
+        delete param.queryInvoiceDate;
         return filterObj(param);
       },
     }

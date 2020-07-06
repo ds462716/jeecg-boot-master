@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.jeecg.common.constant.PdConstant;
 import org.jeecg.modules.pd.util.UUIDUtil;
+import org.jeecg.modules.pd.vo.PdInvoiceDetailPage;
 import org.jeecgframework.poi.excel.ExcelImportUtil;
 import org.jeecgframework.poi.excel.def.NormalExcelConstants;
 import org.jeecgframework.poi.excel.entity.ExportParams;
@@ -101,6 +102,30 @@ public class PdInvoiceController {
     }
 
     /**
+     * 分页查询发票明细
+     * @param pdInvoiceDetail
+     * @param pageNo
+     * @param pageSize
+     * @param req
+     * @return
+     */
+    @GetMapping(value = "/queryInvoiceDetailPageList")
+    public Result<?> queryInvoiceDetailPageList(PdInvoiceDetail pdInvoiceDetail,
+                                                @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
+                                                @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
+                                                HttpServletRequest req) {
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        Map<String,Object> resluMap = new HashMap<>();
+        Page<PdInvoiceDetail> page = new Page<PdInvoiceDetail>(pageNo, pageSize);
+        IPage<PdInvoiceDetail> pageList = pdInvoiceDetailService.selectInvoiceDetailList(page, pdInvoiceDetail);
+        resluMap.put("pageList",pageList);
+        resluMap.put("hospitalCode",this.hospitalCode);
+        resluMap.put("userName",sysUser.getRealname());
+        return Result.ok(resluMap);
+    }
+
+
+    /**
      * 分页列表查询
      *
      * @param pdInvoice
@@ -139,20 +164,31 @@ public class PdInvoiceController {
     /**
      * 编辑
      *
-     * @param PdInvoice
      * @return
      */
     @AutoLog(value = "pd_invoice-编辑")
     @ApiOperation(value = "pd_invoice-编辑", notes = "pd_invoice-编辑")
     @PutMapping(value = "/edit")
-    public Result<?> edit(@RequestBody PdInvoice PdInvoice) {
-        PdInvoice pdInvoice = new PdInvoice();
-        BeanUtils.copyProperties(PdInvoice, pdInvoice);
-        PdInvoice pdInvoiceEntity = pdInvoiceService.getById(pdInvoice.getId());
-        if (pdInvoiceEntity == null) {
-            return Result.error("未找到对应数据");
+    public Result<?> edit(@RequestBody PdInvoice pdInvoice) {
+
+        if(pdInvoice == null || oConvertUtils.isEmpty(pdInvoice.getInvoiceId())){
+            return Result.error("参数有误，请刷新页面重新操作！");
         }
-        pdInvoiceService.updateMain(pdInvoice, PdInvoice.getPdInvoiceDetailList());
+        PdInvoice pdInvoiceEntity = pdInvoiceService.getById(pdInvoice.getInvoiceId());
+        if (pdInvoiceEntity == null) {
+            return Result.error("未找到对应数据，请刷新页面重新操作！");
+        }
+
+        List<PdInvoiceDetail> detailList = pdInvoiceDetailService.selectByMainId(pdInvoiceEntity.getId());
+        for(PdInvoiceDetail detail : detailList){
+            if(PdConstant.INVOICE_STATUS_2.equals(detail.getStatus())){
+                PdInvoice invoice = pdInvoiceService.getById(pdInvoiceEntity.getId());
+                return Result.error("该发票登记号["+invoice.getInvoiceRegNo()+"]下有已完成的明细，不能修改");
+            }
+        }
+
+        pdInvoice.setId(pdInvoiceEntity.getId());
+        pdInvoiceService.updateById(pdInvoice);
         return Result.ok("编辑成功!");
     }
 
@@ -187,6 +223,9 @@ public class PdInvoiceController {
     @ApiOperation(value = "pd_invoice-通过id删除", notes = "pd_invoice-通过id删除")
     @DeleteMapping(value = "/delete")
     public Result<?> delete(@RequestParam(name = "id", required = true) String id) {
+        if(oConvertUtils.isEmpty(id)){
+            return Result.error("参数有误，请刷新页面重新操作！");
+        }
         pdInvoiceService.delMain(id);
         return Result.ok("删除成功!");
     }
@@ -241,41 +280,47 @@ public class PdInvoiceController {
      * 导出excel
      *
      * @param request
-     * @param pdInvoice
+     * @param pdInvoiceDetail
      */
     @RequestMapping(value = "/exportXls")
-    public ModelAndView exportXls(HttpServletRequest request, PdInvoice pdInvoice) {
+    public ModelAndView exportXls(HttpServletRequest request, PdInvoiceDetail pdInvoiceDetail) {
         // Step.1 组装查询条件查询数据
-        QueryWrapper<PdInvoice> queryWrapper = QueryGenerator.initQueryWrapper(pdInvoice, request.getParameterMap());
+//        QueryWrapper<PdInvoiceDetail> queryWrapper = QueryGenerator.initQueryWrapper(pdInvoiceDetail, request.getParameterMap());
         LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
 
         //Step.2 获取导出数据
-        List<PdInvoice> queryList = pdInvoiceService.list(queryWrapper);
+//        List<PdInvoice> queryList = pdInvoiceService.list(queryWrapper);
+        List<PdInvoiceDetail> queryList = pdInvoiceDetailService.selectInvoiceDetailList(pdInvoiceDetail);
         // 过滤选中数据
         String selections = request.getParameter("selections");
-        List<PdInvoice> pdInvoiceList = new ArrayList<PdInvoice>();
+        List<PdInvoiceDetail> pdInvoiceDetailList = new ArrayList<PdInvoiceDetail>();
         if (oConvertUtils.isEmpty(selections)) {
-            pdInvoiceList = queryList;
+            pdInvoiceDetailList = queryList;
         } else {
             List<String> selectionList = Arrays.asList(selections.split(","));
-            pdInvoiceList = queryList.stream().filter(item -> selectionList.contains(item.getId())).collect(Collectors.toList());
+            pdInvoiceDetailList = queryList.stream().filter(item -> selectionList.contains(item.getId())).collect(Collectors.toList());
         }
 
         // Step.3 组装pageList
-        List<PdInvoice> pageList = new ArrayList<PdInvoice>();
-        for (PdInvoice main : pdInvoiceList) {
-            PdInvoice vo = new PdInvoice();
+        List<PdInvoiceDetailPage> pageList = new ArrayList<PdInvoiceDetailPage>();
+        for (PdInvoiceDetail main : pdInvoiceDetailList) {
+            PdInvoiceDetailPage vo = new PdInvoiceDetailPage();
             BeanUtils.copyProperties(main, vo);
-            List<PdInvoiceDetail> pdInvoiceDetailList = pdInvoiceDetailService.selectByMainId(main.getId());
-            vo.setPdInvoiceDetailList(pdInvoiceDetailList);
+
+            if(PdConstant.INVOICE_STATUS_1.equals(vo.getStatus())){
+                vo.setStatus("未完成");
+            }else if(PdConstant.INVOICE_STATUS_2.equals(vo.getStatus())){
+                vo.setStatus("已完成");
+            }
+
             pageList.add(vo);
         }
 
         // Step.4 AutoPoi 导出Excel
         ModelAndView mv = new ModelAndView(new JeecgEntityExcelView());
-        mv.addObject(NormalExcelConstants.FILE_NAME, "pd_invoice列表");
-        mv.addObject(NormalExcelConstants.CLASS, PdInvoice.class);
-        mv.addObject(NormalExcelConstants.PARAMS, new ExportParams("pd_invoice数据", "导出人:" + sysUser.getRealname(), "pd_invoice"));
+        mv.addObject(NormalExcelConstants.FILE_NAME, "发票明细表");
+        mv.addObject(NormalExcelConstants.CLASS, PdInvoiceDetailPage.class);
+        mv.addObject(NormalExcelConstants.PARAMS, new ExportParams("发票明细表", "导出人:" + sysUser.getRealname(), "发票明细表"));
         mv.addObject(NormalExcelConstants.DATA_LIST, pageList);
         return mv;
     }

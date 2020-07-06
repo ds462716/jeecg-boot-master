@@ -3,7 +3,7 @@
     :title="title"
     :width="width"
     :visible="visible"
-    :maskClosable="false"
+    :maskClosable=disableSubmit
     :confirmLoading="confirmLoading"
     @ok="handleOk"
     @cancel="handleCancel"
@@ -20,44 +20,52 @@
           </a-col>
           <a-col :span="24">
             <a-form-item label="发票号" :labelCol="labelCol2" :wrapperCol="wrapperCol2">
-              <a-input v-decorator="[ 'invoiceNo', validatorRules.invoiceNo]" placeholder="请输入发票号"></a-input>
+              <a-input :disabled="disableSubmit" v-decorator="[ 'invoiceNo', validatorRules.invoiceNo]" placeholder="请输入发票号"></a-input>
             </a-form-item>
           </a-col>
           <a-col :span="24">
             <a-form-item label="发票代码" :labelCol="labelCol2" :wrapperCol="wrapperCol2">
-              <a-input v-decorator="[ 'invoiceCode', validatorRules.invoiceCode]" placeholder="请输入发票代码"></a-input>
+              <a-input :disabled="disableSubmit" v-decorator="[ 'invoiceCode', validatorRules.invoiceCode]" placeholder="请输入发票代码"></a-input>
             </a-form-item>
           </a-col>
           <a-col :span="12">
             <a-form-item label="发票日期" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <j-date placeholder="请选择发票日期" v-decorator="[ 'invoiceData', validatorRules.invoiceData]"
-                      :trigger-change="true" style="width: 100%"/>
+              <j-date :disabled="disableSubmit" placeholder="请选择发票日期" v-decorator="[ 'invoiceData', validatorRules.invoiceData]" :trigger-change="true" style="width: 100%"/>
             </a-form-item>
           </a-col>
           <a-col :span="12">
             <a-form-item label="发票金额" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input-number v-decorator="[ 'invoiceMoney', validatorRules.invoiceMoney]" placeholder="请输入发票金额"
-                              style="width: 100%"/>
+              <a-input-number :disabled="disableSubmit" v-decorator="[ 'invoiceMoney', validatorRules.invoiceMoney]" placeholder="请输入发票金额" style="width: 100%"/>
             </a-form-item>
           </a-col>
           <a-col :span="24">
+            <a-form-item label="备注" :labelCol="labelCol2" :wrapperCol="wrapperCol2" style="text-align: left">
+              <a-textarea :disabled="disableSubmit" v-decorator="[ 'remarks', validatorRules.remarks]" placeholder="请输入备注"></a-textarea>
+            </a-form-item>
+          </a-col>
+          <a-col :span="24" v-show="false">
             <a-form-item label="发票明细id" :labelCol="labelCol2" :wrapperCol="wrapperCol2">
-              <a-input v-decorator="[ 'id' ]" ></a-input>
+              <a-input :disabled="disableSubmit" v-decorator="[ 'id' ]" ></a-input>
             </a-form-item>
             <a-form-item label="发票id" :labelCol="labelCol2" :wrapperCol="wrapperCol2">
-              <a-input v-decorator="[ 'invoiceId' ]" ></a-input>
+              <a-input :disabled="disableSubmit" v-decorator="[ 'invoiceId' ]" ></a-input>
             </a-form-item>
             <a-form-item label="单据id" :labelCol="labelCol2" :wrapperCol="wrapperCol2">
-              <a-input v-decorator="[ 'billId' ]" ></a-input>
+              <a-input :disabled="disableSubmit" v-decorator="[ 'billId' ]" ></a-input>
             </a-form-item>
             <a-form-item label="单据明细id" :labelCol="labelCol2" :wrapperCol="wrapperCol2">
-              <a-input v-decorator="[ 'billDetailIdList' ]" ></a-input>
+              <a-input :disabled="disableSubmit" v-decorator="[ 'billDetailIdList' ]" ></a-input>
             </a-form-item>
           </a-col>
         </a-row>
       </a-form>
-
     </a-spin>
+
+    <template slot="footer">
+      <a-button @click="close" style="margin-right: 15px;">关  闭</a-button>
+      <a-button @click="handleOk" v-show="!disableSubmit" type="primary" :loading="confirmLoading" style="margin-right: 15px;">确定</a-button>
+    </template>
+
   </a-modal>
 </template>
 
@@ -94,7 +102,7 @@
         // addDefaultRowNum: 1,
         validatorRules: {
           invoiceRegNo: {rules: []},
-          invoiceNo: {rules: []},
+          invoiceNo: {rules: [{required: true, message: '请输入发票号!'},]},
           invoiceCode: {rules: []},
           invoiceData: {rules: []},
           invoiceMoney: {rules: []},
@@ -105,14 +113,6 @@
           invoiceStatus: {rules: []},
           billBy: {rules: []},
           remarks: {rules: []},
-          delFlag: {rules: [{required: true, message: '请输入删除标识，0-正常；1-删除!'},]},
-          createBy: {rules: []},
-          createTime: {rules: []},
-          updateBy: {rules: []},
-          updateTime: {rules: []},
-          sysOrgCode: {rules: []},
-          departParentId: {rules: [{required: true, message: '请输入所属父部门!'},]},
-          departId: {rules: [{required: true, message: '请输入所属部门!'},]},
         },
         url: {
           init:"/pd/pdInvoice/initModal",
@@ -128,16 +128,15 @@
       add(billDetailIdList) {
         // if(this.model.id){
         this.billDetailIdList = billDetailIdList;
-          this.edit([]);
+          this.edit({});
       },
       edit(record) {
         this.form.resetFields();
         this.visible = true;
+        this.model = Object.assign({}, record);
         if(this.model.id){
-          this.model = Object.assign({}, record);
-          // this.unitId = record.id;
           this.$nextTick(() => {
-            let fieldval = pick(this.model,'id','invoiceId','billId','billDetailIdList','invoiceRegNo','invoiceNo','invoiceCode','invoiceData','invoiceMoney','remarks');
+            let fieldval = pick(this.model,'id','invoiceId','billId','billDetailIdList','invoiceRegNo','invoiceNo','invoiceNo','invoiceCode','invoiceData','invoiceMoney','remarks');
             this.form.setFieldsValue(fieldval);
           })
         }else{
@@ -201,4 +200,10 @@
 </script>
 
 <style scoped>
+  .drawer-bootom-button {
+    width: 100%;
+    text-align: right;
+    background: #fff;
+    margin-top:10px;
+  }
 </style>

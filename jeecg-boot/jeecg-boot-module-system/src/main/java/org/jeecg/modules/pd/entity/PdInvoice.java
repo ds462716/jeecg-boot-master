@@ -1,6 +1,7 @@
 package org.jeecg.modules.pd.entity;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -53,11 +54,11 @@ public class PdInvoice extends BaseEntity {
 	/**发票金额*/
 	@Excel(name = "发票金额", width = 15)
     @ApiModelProperty(value = "发票金额")
-    private java.math.BigDecimal invoiceMoney;
+    private BigDecimal invoiceMoney;
 	/**回款金额*/
 	@Excel(name = "回款金额", width = 15)
     @ApiModelProperty(value = "回款金额")
-    private java.math.BigDecimal returnMoney;
+    private BigDecimal returnMoney;
 	/**回款日期*/
 	@Excel(name = "回款日期", width = 15, format = "yyyy-MM-dd")
 	@JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd")
@@ -124,6 +125,10 @@ public class PdInvoice extends BaseEntity {
     @TableField(exist = false)
     private List<PdInvoiceDetail> pdInvoiceDetailList;
 
+    @TableField(exist = false)
+    private String invoiceId;//发票id
+    @TableField(exist = false)
+    private String billId;//单据id
     @TableField(exist = false)
     private List<String> billDetailIdList;//单据明细idList
 

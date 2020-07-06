@@ -20,8 +20,33 @@ public interface PdInvoiceDetailMapper extends BaseMapper<PdInvoiceDetail> {
     
 	public List<PdInvoiceDetail> selectByMainId(@Param("mainId") String mainId);
 
+	/**
+	 * 可维护发票的入库明细-分页
+	 * @param pdInvoiceDetail
+	 * @return
+	 */
 	IPage<PdInvoiceDetail> selectByStockRecord(Page<PdInvoiceDetail> page, @Param("entity") PdInvoiceDetail pdInvoiceDetail);
 
+	/**
+	 * 可维护发票的入库明细
+	 * @param pdInvoiceDetail
+	 * @return
+	 */
 	List<PdInvoiceDetail> selectByStockRecord(@Param("entity") PdInvoiceDetail pdInvoiceDetail);
+
+	/**
+	 * 发票明细查询-分页
+	 * @param page
+	 * @param pdInvoiceDetail
+	 * @return
+	 */
+	IPage<PdInvoiceDetail> selectInvoiceDetailList(Page<PdInvoiceDetail> page, @Param("entity") PdInvoiceDetail pdInvoiceDetail);
+
+	/**
+	 * 发票明细查询
+	 * @param pdInvoiceDetail
+	 * @return
+	 */
+	List<PdInvoiceDetail> selectInvoiceDetailList(@Param("entity") PdInvoiceDetail pdInvoiceDetail);
 
 }
