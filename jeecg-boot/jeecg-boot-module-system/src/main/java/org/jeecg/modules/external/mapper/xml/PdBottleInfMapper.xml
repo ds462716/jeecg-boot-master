@@ -155,6 +155,7 @@
         where close_remarks is not null
         and   a.create_time > DATE_SUB(CURDATE(), INTERVAL 1 YEAR)
         and substr(a.create_time,1,7) &lt;=substr(CURDATE(),1,7)
+        and a.close_remarks !='2'
         <if test="entity.productName != null and entity.productName != ''">
             AND (c.name LIKE concat('%',#{entity.productName},'%')
             or c.py LIKE concat('%',#{entity.productName},'%')
@@ -205,6 +206,7 @@
         WHERE close_remarks IS NOT NULL
         and   a.create_time > DATE_SUB(CURDATE(), INTERVAL 1 YEAR)
         and substr(a.create_time,1,7) &lt;=substr(CURDATE(),1,7)
+        and a.close_remarks !='2'
         <if test="departParentId != null and  departParentId != ''">
             AND a.depart_parent_id = #{ departParentId}
         </if>
@@ -240,6 +242,7 @@
         WHERE close_remarks IS NOT NULL
         and   a.create_time > DATE_SUB(CURDATE(), INTERVAL 1 YEAR)
         and substr(a.create_time,1,7) &lt;=substr(CURDATE(),1,7)
+        and a.close_remarks !='2'
         <if test="departParentId != null and  departParentId != ''">
             AND a.depart_parent_id = #{ departParentId}
         </if>
