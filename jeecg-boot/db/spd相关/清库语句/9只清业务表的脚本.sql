@@ -51,6 +51,9 @@ TRUNCATE TABLE pd_dosage;-- 器械使用表
 TRUNCATE TABLE pd_dosage_detail;-- 器械使用详情表
 TRUNCATE TABLE pd_product_stock_unique_code;-- 条码表
 
+TRUNCATE TABLE pd_invoice;--发票表
+TRUNCATE TABLE pd_invoice_detail;--发票明细表
+
 TRUNCATE TABLE sys_log;-- 系统日志表
 TRUNCATE TABLE sys_data_log;-- 系统数据库操作日志表
 TRUNCATE TABLE sys_announcement;-- 消息通知表

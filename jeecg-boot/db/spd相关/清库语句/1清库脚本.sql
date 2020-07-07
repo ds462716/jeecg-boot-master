@@ -51,6 +51,9 @@ TRUNCATE TABLE pd_dosage;-- 器械使用表
 TRUNCATE TABLE pd_dosage_detail;-- 器械使用详情表
 TRUNCATE TABLE pd_product_stock_unique_code;-- 条码表
 
+TRUNCATE TABLE pd_invoice;--发票表
+TRUNCATE TABLE pd_invoice_detail;--发票明细表
+
 -- 不用清理的表
 -- pd_on_off 开关表
 -- 作废
