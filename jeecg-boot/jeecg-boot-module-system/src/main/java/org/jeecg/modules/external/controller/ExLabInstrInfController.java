@@ -14,6 +14,8 @@ import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.modules.external.entity.ExLabInstrInf;
 import org.jeecg.modules.external.service.IExLabInstrInfService;
 import org.jeecg.modules.pd.service.IHisChargeService;
+import org.jeecg.modules.pd.service.IPdDepartService;
+import org.jeecg.modules.system.entity.SysDepart;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
@@ -34,10 +36,12 @@ import java.util.List;
 @RequestMapping("/ex/exLabInstrInf")
 @Slf4j
 public class ExLabInstrInfController extends JeecgController<ExLabInstrInf, IExLabInstrInfService> {
-	@Autowired
-	private IExLabInstrInfService exLabInstrInfService;
+	 @Autowired
+	 private IExLabInstrInfService exLabInstrInfService;
 	 @Autowired
 	 private IHisChargeService hisChargeService;
+	 @Autowired
+	 private IPdDepartService pdDepartService;
 	
 	/**
 	 * 分页列表查询
@@ -56,6 +60,14 @@ public class ExLabInstrInfController extends JeecgController<ExLabInstrInf, IExL
 								   @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
 								   HttpServletRequest req) {
 		Page<ExLabInstrInf> page = new Page<ExLabInstrInf>(pageNo, pageSize);
+		if(StringUtils.isEmpty(exLabInstrInf.getDepartId())){
+			//查询科室下所有下级科室的ID
+			SysDepart sysDepart=new SysDepart();
+			List<String> departList=pdDepartService.selectListDepart(sysDepart);
+			exLabInstrInf.setDepartIdList(departList);
+		}
+		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		exLabInstrInf.setDepartParentId(sysUser.getDepartParentId());
 		IPage<ExLabInstrInf> pageList = exLabInstrInfService.selectList(page, exLabInstrInf);
 		return Result.ok(pageList);
 	}

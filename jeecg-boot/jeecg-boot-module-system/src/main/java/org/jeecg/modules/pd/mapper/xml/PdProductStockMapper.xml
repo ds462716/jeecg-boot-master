@@ -767,7 +767,7 @@
 			<if test="entity.printNumFlag != null and entity.printNumFlag != ''">
 				AND (suc.print_num = 0 or suc.print_num='' or suc.print_num is null)
 			</if>
-			order by  exp_status  desc,create_time desc
+			order by a.create_time desc,a.id desc
 		</where>
 	</select>
 

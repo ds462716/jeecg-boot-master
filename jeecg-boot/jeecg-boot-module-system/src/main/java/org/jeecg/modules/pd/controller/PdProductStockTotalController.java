@@ -348,6 +348,7 @@ public class PdProductStockTotalController {
 			 List<String> departList=pdDepartService.selectListDepart(sysDepart);
 			 productStock.setDepartIdList(departList);
 		 }
+		 productStock.setDepartParentId(sysUser.getDepartParentId());
 		 page = pdProductStockService.queryList(page,productStock);
 		 return Result.ok(page);
 	 }
@@ -375,6 +376,7 @@ public class PdProductStockTotalController {
 			List<String> departList=pdDepartService.selectListDepart(sysDepart);
 			productStock.setDepartIdList(departList);
 		}
+		productStock.setDepartParentId(sysUser.getDepartParentId());
 		page = pdProductStockService.queryPrintList(page,productStock);
 		return Result.ok(page);
 	}
