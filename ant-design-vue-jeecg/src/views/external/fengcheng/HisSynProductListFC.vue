@@ -24,11 +24,11 @@
             </a-form-item>
           </a-col>
           <template v-if="toggleSearchStatus">
-            <a-col :md="6" :sm="8">
-              <a-form-item label="注册证">
-                <a-input placeholder="请输入注册证" v-model="queryParam.registration"></a-input>
-              </a-form-item>
-            </a-col>
+            <!--<a-col :md="6" :sm="8">-->
+              <!--<a-form-item label="注册证">-->
+                <!--<a-input placeholder="请输入注册证" v-model="queryParam.registration"></a-input>-->
+              <!--</a-form-item>-->
+            <!--</a-col>-->
             <a-col :md="6" :sm="8">
               <a-form-item label="收费代码">
                 <a-input placeholder="请输入收费代码" v-model="queryParam.chargeCode"></a-input>
@@ -54,50 +54,90 @@
                 </a-select>
               </a-form-item>
             </a-col>
-            <a-col :md="6" :sm="8">
-              <a-form-item label="供应商">
-                <a-select
-                  showSearch
-                  :supplierId="supplierValue"
-                  placeholder="请选择供应商"
-                  :defaultActiveFirstOption="false"
-                  :allowClear="true"
-                  :showArrow="true"
-                  :filterOption="false"
-                  @search="supplierHandleSearch"
-                  @change="supplierHandleChange"
-                  @focus="supplierHandleSearch"
-                  :notFoundContent="notFoundContent"
-                  v-model="queryParam.supplierId"
-                >
-                  <a-select-option v-for="d in supplierData" :key="d.value">{{d.text}}</a-select-option>
-                </a-select>
-              </a-form-item>
-            </a-col>
+            <!--<a-col :md="6" :sm="8">-->
+              <!--<a-form-item label="供应商">-->
+                <!--<a-select-->
+                  <!--showSearch-->
+                  <!--:supplierId="supplierValue"-->
+                  <!--placeholder="请选择供应商"-->
+                  <!--:defaultActiveFirstOption="false"-->
+                  <!--:allowClear="true"-->
+                  <!--:showArrow="true"-->
+                  <!--:filterOption="false"-->
+                  <!--@search="supplierHandleSearch"-->
+                  <!--@change="supplierHandleChange"-->
+                  <!--@focus="supplierHandleSearch"-->
+                  <!--:notFoundContent="notFoundContent"-->
+                  <!--v-model="queryParam.supplierId"-->
+                <!--&gt;-->
+                  <!--<a-select-option v-for="d in supplierData" :key="d.value">{{d.text}}</a-select-option>-->
+                <!--</a-select>-->
+              <!--</a-form-item>-->
+            <!--</a-col>-->
             <a-col :md="6" :sm="8">
               <a-form-item label="规格">
                 <a-input placeholder="请输入规格" v-model="queryParam.spec"></a-input>
               </a-form-item>
             </a-col>
             <a-col :md="6" :sm="8">
-              <a-form-item label="型号">
-                <a-input placeholder="请输入型号" v-model="queryParam.version"></a-input>
-              </a-form-item>
-            </a-col>
-            <a-col :md="6" :sm="8">
-              <a-form-item label="过期状态">
-                <a-select placeholder="状态" :allowClear="true" v-model="queryParam.validityFlag" >
-                  <a-select-option value="0">正常</a-select-option>
-                  <a-select-option value="1">已过期</a-select-option>
-                  <a-select-option value="2">近效期</a-select-option>
+              <a-form-item label="一级分类">
+                <a-select
+                  showSearch
+                  :categoryOne="categoryOneValue"
+                  placeholder="请选择一级分类"
+                  :defaultActiveFirstOption="false"
+                  :allowClear="true"
+                  :showArrow="true"
+                  :filterOption="false"
+                  @search="categoryOneHandleSearch"
+                  @change="categoryOneHandleChange"
+                  @focus="categoryOneHandleSearch"
+                  :notFoundContent="notFoundContent"
+                  v-model="queryParam.categoryOne"
+                >
+                  <a-select-option v-for="d in categoryOneData" :key="d.value">{{d.text}}</a-select-option>
                 </a-select>
               </a-form-item>
             </a-col>
             <a-col :md="6" :sm="8">
-              <a-form-item label="器械分类">
-                <j-dict-select-tag-expand v-model="queryParam.deviceClassification" dictCode="device_classification" placeholder="请选择器械分类"/>
+              <a-form-item label="二级分类" :labelCol="labelCol" :wrapperCol="wrapperCol">
+                <a-select
+                  showSearch
+                  :categoryTwo="categoryTwoValue"
+                  placeholder="请选择二级分类"
+                  :defaultActiveFirstOption="false"
+                  :allowClear="true"
+                  :showArrow="true"
+                  :filterOption="false"
+                  @search="categoryTwoHandleSearch"
+                  @change="categoryTwoHandleChange"
+                  @focus="categoryTwoHandleSearch"
+                  :notFoundContent="notFoundContent"
+                  v-model="queryParam.categoryTwo"
+                >
+                  <a-select-option v-for="d in categoryTwoData" :key="d.value">{{d.text}}</a-select-option>
+                </a-select>
               </a-form-item>
             </a-col>
+            <!--<a-col :md="6" :sm="8">-->
+              <!--<a-form-item label="型号">-->
+                <!--<a-input placeholder="请输入型号" v-model="queryParam.version"></a-input>-->
+              <!--</a-form-item>-->
+            <!--</a-col>-->
+            <!--<a-col :md="6" :sm="8">-->
+              <!--<a-form-item label="过期状态">-->
+                <!--<a-select placeholder="状态" :allowClear="true" v-model="queryParam.validityFlag" >-->
+                  <!--<a-select-option value="0">正常</a-select-option>-->
+                  <!--<a-select-option value="1">已过期</a-select-option>-->
+                  <!--<a-select-option value="2">近效期</a-select-option>-->
+                <!--</a-select>-->
+              <!--</a-form-item>-->
+            <!--</a-col>-->
+            <!--<a-col :md="6" :sm="8">-->
+              <!--<a-form-item label="器械分类">-->
+                <!--<j-dict-select-tag-expand v-model="queryParam.deviceClassification" dictCode="device_classification" placeholder="请选择器械分类"/>-->
+              <!--</a-form-item>-->
+            <!--</a-col>-->
           </template>
           <a-col :md="6" :sm="8" >
             <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
@@ -117,6 +157,7 @@
     <!-- 操作按钮区域 -->
     <div class="table-operator">
       <a-button @click="handleSyn" type="primary" icon="reload">同步</a-button>
+      <a-button @click="handleExportXls('产品价格对照表')" type="primary" icon="download" >导出</a-button>
     </div>
 
     <!-- table区域-begin -->
@@ -146,16 +187,6 @@
     </div>
 
     <his-syn-charge-code-model-f-c ref="modalForm" @ok="modalFormOk"></his-syn-charge-code-model-f-c>
-    <!--<a-modal :visible="chargeCodeVisible"  :maskClosable="false"  :confirmLoading="confirmLoading"-->
-             <!--@ok="handleOk" :width="900" @cancel="handleCancel">-->
-      <!--<a-form :form="form">-->
-        <!--<a-col :md="6" :sm="8">-->
-          <!--<a-form-item label="型号">-->
-            <!--<a-input placeholder="产品编号" v-model="productInfo.number"></a-input>-->
-          <!--</a-form-item>-->
-        <!--</a-col>-->
-      <!--</a-form>-->
-    <!--</a-modal>-->
 
   </a-card>
 </template>
@@ -219,6 +250,10 @@
         venderValue: undefined,
         supplierData: [],
         supplierValue: undefined,
+        categoryOneData: [],
+        categoryOneValue: undefined,
+        categoryTwoData: [],
+        categoryTwoValue: undefined,
         chargeCodeVisible:false,
         confirmLoading: false,
         copyRecord:"",
@@ -318,14 +353,12 @@
         ],
         url: {
           list: "/pd/pdProduct/listForHisCharge",
-          delete: "/pd/pdProduct/delete",
-          deleteBatch: "/pd/pdProduct/deleteBatch",
-          exportXlsUrl: "/pd/pdProduct/exportXls",
-          importExcelUrl: "pd/pdProduct/importExcel",
+          exportXlsUrl: "/pd/hisChargeFCRMYY/exportXls",
           queryVender:"/pd/pdVender/getVenderList",
           querySupplier:"/pd/pdSupplier/getSupplierList",
-          editChargeCodeBatch:"/pd/pdProduct/editChargeCodeBatch",
           synChargeCode:"/pd/hisChargeFCRMYY/synChargeCode",
+          queryCategoryOne:"/pd/pdCategory/getCategoryOneList?type=0",
+          queryCategoryTwo:"/pd/pdCategory/getCategoryOneList?type=1",
         },
         dictOptions:{
           isCharge:[],
@@ -385,6 +418,33 @@
         fetch(value, data => (this.supplierData = data),this.url.querySupplier);
       },
       //供应商查询end
+      //一级分类查询start
+      categoryOneHandleSearch(value) {
+        fetch(value, data => (this.categoryOneData = data),this.url.queryCategoryOne);
+      },
+      categoryOneHandleChange(value) {
+        this.categoryOneValue = value;
+        fetch(value, data => (this.categoryOneData = data),this.url.queryCategoryOne);
+        this.queryParam.categoryTwo="";
+      },
+      //一级分类查询end
+      //二级分类查询start
+      categoryTwoHandleSearch(value) {
+        let categoryOne = this.categoryOneValue;
+        if(!categoryOne){
+          categoryOne = "";
+        }
+        fetch(value, data => (this.categoryTwoData = data),this.url.queryCategoryTwo+"&parentId="+categoryOne);
+      },
+      categoryTwoHandleChange(value) {
+        let categoryOne = this.categoryOneValue;
+        if(!categoryOne){
+          categoryOne = "";
+        }
+        this.categoryTwoValue = value;
+        fetch(value, data => (this.categoryTwoData = data),this.url.queryCategoryTwo+"&parentId="+categoryOne);
+      },
+      //二级分类查询end
       //批量修改收费代码点击事件
       handleChargeCode(){
         this.form.resetFields();
@@ -401,46 +461,6 @@
       close () {
         this.$emit('close');
         this.chargeCodeVisible = false;
-      },
-      //产品收费代码提交
-      handleOk(){
-        const that = this;
-        // 触发表单验证
-        that.form.validateFields((err, values) => {
-          if (!err) {
-            that.confirmLoading = true;
-            let httpurl = that.url.editChargeCodeBatch;
-            let method = 'post';
-            let formData = Object.assign(that.model, values);
-            if (that.selectedRowKeys.length <= 0) {
-              that.$message.warning('请选择一条记录！');
-              return;
-            } else {
-              let ids = "";
-              for (let a = 0; a < that.selectedRowKeys.length; a++) {
-                ids += that.selectedRowKeys[a] + ",";
-              }
-              let formDataAll = new FormData();
-              formDataAll.append("ids",ids);
-              for (let obj in formData) {
-                formDataAll.append(obj, formData[obj]?formData[obj]:"");
-              }
-              //console.log("表单提交数据",formData)
-              httpAction(httpurl,formDataAll,method).then((res)=>{
-                if(res.success){
-                  that.$message.success(res.message);
-                  that.$emit('ok');
-                  this.loadData();
-                }else{
-                  that.$message.warning(res.message);
-                }
-              }).finally(() => {
-                that.confirmLoading = false;
-                that.close();
-              })
-            }
-          }
-        })
       },
       //同步HIS产品
       handleSyn(){

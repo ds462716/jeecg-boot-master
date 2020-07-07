@@ -37,11 +37,11 @@
           </a-col>
 
           <template v-if="toggleSearchStatus">
-            <a-col :md="6" :sm="8">
-              <a-form-item label="登记号">
-                <a-input placeholder="请输入登记号" v-model="queryParam.invoiceRegNo"></a-input>
-              </a-form-item>
-            </a-col>
+            <!--<a-col :md="6" :sm="8">-->
+              <!--<a-form-item label="登记号">-->
+                <!--<a-input placeholder="请输入登记号" v-model="queryParam.invoiceRegNo"></a-input>-->
+              <!--</a-form-item>-->
+            <!--</a-col>-->
             <a-col :md="6" :sm="8">
               <a-form-item label="发票号">
                 <a-input placeholder="请输入发票号" v-model="queryParam.invoiceNo"></a-input>
@@ -141,8 +141,7 @@
     
     <!-- 操作按钮区域 -->
     <div class="table-operator">
-      <a-button @click="handleAddInvoice" type="primary" icon="plus">维护发票</a-button>
-      <a-button @click="handleCompleteInvoice" type="primary" icon="check">完成</a-button>
+      <a-button @click="handlePrintInvoice" type="primary" icon="printer">打印</a-button>
       <a-button @click="handleExportXls('发票明细表')" type="primary" icon="download" >导出</a-button>
     </div>
 
@@ -209,6 +208,7 @@
         dataSource2:[],
         hospitalCode:"",
         userName:"",
+        departName:"",
 
         notFoundContent:"未找到内容",
         supplierValue: undefined,
@@ -231,12 +231,12 @@
               return parseInt(index)+1;
             }
           },
-          {
-            title:'登记号',
-            align:"center",
-            width:100,
-            dataIndex: 'invoiceRegNo'
-          },
+          // {
+          //   title:'登记号',
+          //   align:"center",
+          //   width:100,
+          //   dataIndex: 'invoiceRegNo'
+          // },
           {
             title:'发票号',
             align:"center",
@@ -458,28 +458,13 @@
             this.ipagination.total = res.result.pageList.total;
             this.hospitalCode = res.result.hospitalCode;
             this.userName = res.result.userName;
+            this.departName = res.result.departName;
           }
           if(res.code===510){
             this.$message.warning(res.message)
           }
           this.loading = false;
         })
-      },
-      //维护发票
-      handleExportInvoice(){
-        if(this.selectedRowKeys.length < 1){
-          this.$message.warning("至少选择一条入库明细！");
-          return;
-        }
-        for(let item of this.dataSource2){
-          if(item.id){
-            this.$message.warning("请选择未维护发票的入库明细！");
-            return;
-          }
-        }
-        this.$refs.modalForm.add(this.selectedRowKeys);
-        this.$refs.modalForm.title = "维护发票";
-        this.$refs.modalForm.disableSubmit = false;
       },
       onSelectAll(selected, selectedRows, changeRows) {
         if (selected === true) {
@@ -549,6 +534,36 @@
             }
           }
         }
+      },
+
+      // 打印
+      handlePrintInvoice(){
+        if(this.selectedRowKeys.length < 1){
+          this.$message.warning("至少选择一条记录！");
+          return;
+        }
+        for(let item of this.dataSource2){
+          if(!item.id){
+            this.$message.warning("请选择已维护发票的入库明细！");
+            return;
+          }
+        }
+        let title = ""
+        // if(this.hospitalCode == "FCZYY"){
+        //   title = "丰城市中医院";
+        // }
+        switch(this.hospitalCode) {
+          case "FCZYY":
+            title = "丰城市中医院";
+            break;
+          case "FCRMYY":
+            title = "丰城市人民医院";
+            break;
+          default:
+            title = "";
+        }
+        this.$refs.pdStockRecordInInvoicePrintModal.show(this.dataSource2,this.userName,this.departName);
+        this.$refs.pdStockRecordInInvoicePrintModal.title = title+"供货商验收明细";
       },
 
       //↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓查询条件相关↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓//

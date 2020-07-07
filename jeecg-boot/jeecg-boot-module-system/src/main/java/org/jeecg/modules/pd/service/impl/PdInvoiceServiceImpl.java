@@ -11,6 +11,7 @@ import org.jeecg.modules.pd.mapper.PdInvoiceDetailMapper;
 import org.jeecg.modules.pd.mapper.PdInvoiceMapper;
 import org.jeecg.modules.pd.service.IPdInvoiceDetailService;
 import org.jeecg.modules.pd.service.IPdInvoiceService;
+import org.jeecg.modules.pd.util.UUIDUtil;
 import org.springframework.stereotype.Service;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,11 +37,15 @@ public class PdInvoiceServiceImpl extends ServiceImpl<PdInvoiceMapper, PdInvoice
 	private PdInvoiceDetailMapper pdInvoiceDetailMapper;
 	@Autowired
 	private IPdInvoiceDetailService pdInvoiceDetailService;
-	
+
+	/**
+	 * 此处修改为 一对一关系 modified by jiangxz 2020年7月7日 16:27:41
+	 * @param pdInvoice
+	 */
 	@Override
 	@Transactional
 	public void saveMain(PdInvoice pdInvoice) {
-		pdInvoiceMapper.insert(pdInvoice);
+//		pdInvoiceMapper.insert(pdInvoice);  此处修改为 一对一关系 modified by jiangxz 2020年7月7日 16:27:41
 		List<String > billDetailIdList = pdInvoice.getBillDetailIdList();
 		if(CollectionUtils.isEmpty(billDetailIdList)){
 			throw new RuntimeException("参数不对，请重新选择明细维护发票！");
@@ -51,6 +56,9 @@ public class PdInvoiceServiceImpl extends ServiceImpl<PdInvoiceMapper, PdInvoice
 		List<PdInvoiceDetail> detailList = pdInvoiceDetailService.selectByStockRecord(detail);
 		if(CollectionUtils.isNotEmpty(detailList)) {
 			for(PdInvoiceDetail entity : detailList) {
+				pdInvoice.setId(null);
+				pdInvoice.setInvoiceRegNo(UUIDUtil.generateOrderNoByType(PdConstant.ORDER_NO_FIRST_LETTER_FP));
+				pdInvoiceMapper.insert(pdInvoice);
 				//外键设置
 				entity.setInvoiceId(pdInvoice.getId());
 				pdInvoiceDetailMapper.insert(entity);

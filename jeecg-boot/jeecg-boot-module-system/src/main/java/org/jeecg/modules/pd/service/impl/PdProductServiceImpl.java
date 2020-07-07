@@ -96,9 +96,25 @@ public class PdProductServiceImpl extends ServiceImpl<PdProductMapper, PdProduct
         return pdProductMapper.selectListByPage(page,pdProduct);
     }
 
+    /**
+     * 关联ex_his_charge_inf表的查询
+     * @param pdProduct
+     * @return
+     */
+    @Override
+    public List<PdProduct> selectListForHisCharge(PdProduct pdProduct) {
+        return pdProductMapper.selectListForHisCharge(pdProduct);
+    }
+
+    /**
+     * 关联ex_his_charge_inf表的分页查询
+     * @param page
+     * @param pdProduct
+     * @return
+     */
     @Override
     public IPage<PdProduct> selectListForHisChargeByPage(Page<PdProduct> page, PdProduct pdProduct) {
-        return pdProductMapper.selectListForHisChargeByPage(page,pdProduct);
+        return pdProductMapper.selectListForHisCharge(page,pdProduct);
     }
 
     /**

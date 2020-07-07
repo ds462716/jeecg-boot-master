@@ -13,7 +13,7 @@
       <!-- 主表单区域 -->
       <a-form :form="form">
         <a-row>
-          <a-col :span="12">
+          <a-col :span="12" v-show="false">
             <a-form-item label="发票登记号" :labelCol="labelCol" :wrapperCol="wrapperCol">
               <a-input v-decorator="[ 'invoiceRegNo', validatorRules.invoiceRegNo]" placeholder="请输入发票登记号" disabled ></a-input>
             </a-form-item>

@@ -1,8 +1,5 @@
 package org.jeecg.modules.pd.controller;
 
-import java.io.UnsupportedEncodingException;
-import java.io.IOException;
-import java.net.URLDecoder;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -12,6 +9,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.jeecg.common.constant.PdConstant;
 import org.jeecg.modules.pd.util.UUIDUtil;
 import org.jeecg.modules.pd.vo.PdInvoiceDetailPage;
+import org.jeecg.modules.system.entity.SysDepart;
+import org.jeecg.modules.system.service.ISysDepartService;
 import org.jeecgframework.poi.excel.ExcelImportUtil;
 import org.jeecgframework.poi.excel.def.NormalExcelConstants;
 import org.jeecgframework.poi.excel.entity.ExportParams;
@@ -57,6 +56,8 @@ public class PdInvoiceController {
     private IPdInvoiceService pdInvoiceService;
     @Autowired
     private IPdInvoiceDetailService pdInvoiceDetailService;
+    @Autowired
+    private ISysDepartService sysDepartService;
 
     @Value("${jeecg.hospital_code}")
     private String hospitalCode;
@@ -70,7 +71,7 @@ public class PdInvoiceController {
     @GetMapping(value = "/initModal")
     public Result<?> initModal(@RequestParam(name = "id") String id, HttpServletRequest req) {
         PdInvoice pdInvoice = new PdInvoice();
-        pdInvoice.setInvoiceRegNo(UUIDUtil.generateOrderNoByType(PdConstant.ORDER_NO_FIRST_LETTER_FP));
+//        pdInvoice.setInvoiceRegNo(UUIDUtil.generateOrderNoByType(PdConstant.ORDER_NO_FIRST_LETTER_FP));
         pdInvoice.setHospitalCode(this.hospitalCode);
         return Result.ok(pdInvoice);
     }
@@ -95,9 +96,13 @@ public class PdInvoiceController {
         Map<String,Object> resluMap = new HashMap<>();
         Page<PdInvoiceDetail> page = new Page<PdInvoiceDetail>(pageNo, pageSize);
         IPage<PdInvoiceDetail> pageList = pdInvoiceDetailService.selectByStockRecord(page, pdInvoiceDetail);
+
+        SysDepart depart = sysDepartService.getById(sysUser.getCurrentDepartId());
+
         resluMap.put("pageList",pageList);
         resluMap.put("hospitalCode",this.hospitalCode);
         resluMap.put("userName",sysUser.getRealname());
+        resluMap.put("departName",depart.getDepartName());
         return Result.ok(resluMap);
     }
 
@@ -118,9 +123,11 @@ public class PdInvoiceController {
         Map<String,Object> resluMap = new HashMap<>();
         Page<PdInvoiceDetail> page = new Page<PdInvoiceDetail>(pageNo, pageSize);
         IPage<PdInvoiceDetail> pageList = pdInvoiceDetailService.selectInvoiceDetailList(page, pdInvoiceDetail);
+        SysDepart depart = sysDepartService.getById(sysUser.getCurrentDepartId());
         resluMap.put("pageList",pageList);
         resluMap.put("hospitalCode",this.hospitalCode);
         resluMap.put("userName",sysUser.getRealname());
+        resluMap.put("departName",depart.getDepartName());
         return Result.ok(resluMap);
     }
 
@@ -180,15 +187,24 @@ public class PdInvoiceController {
         }
 
         List<PdInvoiceDetail> detailList = pdInvoiceDetailService.selectByMainId(pdInvoiceEntity.getId());
-        for(PdInvoiceDetail detail : detailList){
-            if(PdConstant.INVOICE_STATUS_2.equals(detail.getStatus())){
-                PdInvoice invoice = pdInvoiceService.getById(pdInvoiceEntity.getId());
-                return Result.error("该发票登记号["+invoice.getInvoiceRegNo()+"]下有已完成的明细，不能修改");
-            }
-        }
+        List<PdInvoiceDetail> updateDetailList = new ArrayList<>();
+        //        for(PdInvoiceDetail detail : detailList){
+//            if(PdConstant.INVOICE_STATUS_2.equals(detail.getStatus())){
+//                PdInvoice invoice = pdInvoiceService.getById(pdInvoiceEntity.getId());
+//                return Result.error("该发票登记号["+invoice.getInvoiceRegNo()+"]下有已完成的明细，不能修改");
+//            }
+//        }
 
         pdInvoice.setId(pdInvoiceEntity.getId());
         pdInvoiceService.updateById(pdInvoice);
+
+        for(PdInvoiceDetail detail:detailList){
+            PdInvoiceDetail updateDetail = new PdInvoiceDetail();
+            updateDetail.setId(detail.getId());
+            updateDetail.setStatus(PdConstant.INVOICE_STATUS_1);
+            updateDetailList.add(updateDetail);
+        }
+        pdInvoiceDetailService.updateBatchById(updateDetailList);
         return Result.ok("编辑成功!");
     }
 

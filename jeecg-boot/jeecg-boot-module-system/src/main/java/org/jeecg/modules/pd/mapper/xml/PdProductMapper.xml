@@ -498,7 +498,7 @@
         ORDER BY a.update_time desc,a.create_time desc
     </select>
 
-    <select id="selectListForHisChargeByPage" resultMap="resultMap" parameterType="org.jeecg.modules.pd.entity.PdProduct">
+    <select id="selectListForHisCharge" resultMap="resultMap" parameterType="org.jeecg.modules.pd.entity.PdProduct">
         SELECT
         <include refid="pdProductColumns"/>,
         <include refid="pdUnitColumns"/>,
@@ -564,6 +564,12 @@
         </if>
         <if test="entity.departParentId != null and entity.departParentId != ''">
             AND a.depart_parent_id = #{entity.departParentId}
+        </if>
+        <if test="entity.categoryOne != null and entity.categoryOne != ''">
+            AND a.category_one = #{entity.categoryOne}
+        </if>
+        <if test="entity.categoryTwo != null and entity.categoryTwo != ''">
+            AND a.category_two = #{entity.categoryTwo}
         </if>
         <if test='entity.hisChargeCodeSynFlag != null and entity.hisChargeCodeSynFlag == "1"'>
             AND (a.charge_code is not null and a.charge_code &lt;&gt; '')

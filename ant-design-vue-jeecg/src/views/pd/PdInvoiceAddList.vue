@@ -156,15 +156,15 @@
         :rowSelection="{fixed:false,selectedRowKeys: selectedRowKeys, onSelectAll:onSelectAll,onSelect:onSelect,onChange: onSelectChange}"
         @change="handleTableChange">
         <span slot="action" slot-scope="text, record">
-          <a @click="handleEditInvoice(record)">修改</a>
+          <a @click="handleEditInvoice(record)" v-bind:disabled="!record.invoiceNo">修改</a>
           <a-divider type="vertical" />
-          <a href="javascript:;" @click="handleDetail(record)">详情</a>
+          <a href="javascript:;" @click="handleDetail(record)" v-bind:disabled="!record.invoiceNo">详情</a>
            <a-divider type="vertical" />
            <a-dropdown>
-            <a class="ant-dropdown-link" >更多 <a-icon type="down" /></a>
+            <a class="ant-dropdown-link"  v-bind:disabled="!record.invoiceNo" >更多 <a-icon type="down" /></a>
             <a-menu slot="overlay">
               <a-menu-item>
-                <a @click="handleDeleteInvoice(record)">删除</a>
+                <a @click="handleDeleteInvoice(record)" v-bind:disabled="!record.invoiceNo">删除</a>
               </a-menu-item>
             </a-menu>
           </a-dropdown>
@@ -209,6 +209,7 @@
         dataSource2:[],
         hospitalCode:"",
         userName:"",
+        departName:"",
 
         notFoundContent:"未找到内容",
         supplierValue: undefined,
@@ -231,12 +232,12 @@
               return parseInt(index)+1;
             }
           },
-          {
-            title:'登记号',
-            align:"center",
-            width:100,
-            dataIndex: 'invoiceRegNo'
-          },
+          // {
+          //   title:'登记号',
+          //   align:"center",
+          //   width:100,
+          //   dataIndex: 'invoiceRegNo'
+          // },
           {
             title:'发票号',
             align:"center",
@@ -263,6 +264,7 @@
           {
             title:'发票金额',
             align:"center",
+            width:90,
             dataIndex: 'invoiceMoney'
           },
           {
@@ -400,6 +402,8 @@
           this.$message.error("请设置url.list属性!")
           return
         }
+
+        this.onClearSelected();
         //加载数据 若传入参数1则加载第一页的内容
         if (arg === 1) {
           this.ipagination.current = 1;
@@ -412,6 +416,7 @@
             this.ipagination.total = res.result.pageList.total;
             this.hospitalCode = res.result.hospitalCode;
             this.userName = res.result.userName;
+            this.departName = res.result.departName;
           }
           if(res.code===510){
             this.$message.warning(res.message)
@@ -437,42 +442,28 @@
       },
       // 修改发票
       handleEditInvoice(record){
-        // if(this.selectedRowKeys.length < 1){
-        //   this.$message.warning("请选择一条发票修改！");
-        //   return;
-        // }
-        // if(this.selectedRowKeys.length > 1){
-        //   this.$message.warning("只能选择一条发票修改！");
-        //   return;
-        // }
-        // for(let item of this.dataSource2){
-        //   if(!item.id){
-        //     this.$message.warning("请选择已维护发票的入库明细！");
-        //     return;
-        //   }
-        // }
         var that = this;
-        this.$confirm({
-          title: "确认修改",
-          content: "相同登记号的发票会一起修改，是否确定修改?",
-          onOk: function () {
+        // this.$confirm({
+        //   title: "确认修改",
+        //   content: "相同登记号的发票会一起修改，是否确定修改?",
+        //   onOk: function () {
             that.$refs.modalForm.edit(record);
             that.$refs.modalForm.title = "修改发票";
             that.$refs.modalForm.disableSubmit = false;
-          }
-        });
+        //   }
+        // });
       },
       //删除
       handleDeleteInvoice(record){
         var that = this;
         this.$confirm({
-          title: "确认修改",
-          content: "相同登记号的发票会一起删除，是否确定删除?",
+          title: "确认删除",
+          content: "是否确定删除?",
           onOk: function () {
             deleteAction(that.url.delete, {id: record.invoiceId}).then((res) => {
+              that.loadData();
               if (res.success) {
                 that.$message.success(res.message);
-                that.loadData();
               } else {
                 that.$message.warning(res.message);
               }
@@ -541,8 +532,8 @@
           default:
             title = "";
         }
-        this.$refs.pdStockRecordInInvoicePrintModal.show(this.dataSource2,this.userName);
-        this.$refs.pdStockRecordInInvoicePrintModal.title = title+"发票信息";
+        this.$refs.pdStockRecordInInvoicePrintModal.show(this.dataSource2,this.userName,this.departName);
+        this.$refs.pdStockRecordInInvoicePrintModal.title = title+"供货商验收明细";
       },
 
       onSelectAll(selected, selectedRows, changeRows) {
@@ -572,6 +563,7 @@
         this.selectionRows = selectedRows;
       },
       onClearSelected() {
+        this.dataSource2 = [];
         this.selectedRowKeys = [];
         this.selectionRows = [];
       },

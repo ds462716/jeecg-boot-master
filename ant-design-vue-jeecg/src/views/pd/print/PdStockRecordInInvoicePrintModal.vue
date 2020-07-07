@@ -20,21 +20,24 @@
       <a-col :md="24" :sm="24">
         <div class="sign" style="text-align: left;height: inherit">
 
-          <!--<a-col :span="24">-->
-          <!--</a-col>-->
+          <a-col :span="24">
+            <span style="margin-left: 3%">
+              打印人：
+            </span>
+            <a-input style="width: 20%;text-align: left" disabled v-model="userName"/>
+            <span style="margin-left: 3%">
+              科室：
+            </span>
+            <a-input style="width: 20%;text-align: left" disabled v-model="departName"/>
+            <span style="margin-left: 3%">
+              打印日期：
+            </span>
+            <a-input style="width: 20%;text-align: left" disabled v-model="nowDate"/>
+          </a-col>
           <a-col :span="24" style="margin-top: 5px">
             <a-form :form="form">
               <table width="100%" id="contentTable" class="tableStyle" style="border: 1px black">
                 <tr>
-                  <th style="border: 1px solid #000000;text-align: center;padding: 3px 3px;width:15%">
-                    发票号
-                  </th>
-                  <th style="border: 1px solid #000000;text-align: center;padding: 3px 3px;width:8%">
-                    发票代码
-                  </th>
-                  <th style="border: 1px solid #000000;text-align: center;padding: 3px 3px;width:6%">
-                    发票日期
-                  </th>
                   <th style="border: 1px solid #000000;text-align: center;padding: 3px 3px;width:6%">
                     入库日期
                   </th>
@@ -54,28 +57,28 @@
                     单位
                   </th>
                   <th style="border: 1px solid #000000;text-align: center;padding: 3px 3px;width:5%">
-                    采购单价
+                    入库数量
                   </th>
                   <th style="border: 1px solid #000000;text-align: center;padding: 3px 3px;width:5%">
-                    入库数量
+                    单价
                   </th>
                   <th style="border: 1px solid #000000;text-align: center;padding: 3px 3px;width:5%">
                     金额
                   </th>
-                  <th style="border: 1px solid #000000;text-align: center;padding: 3px 3px;width:5%">
-                    批号
+                  <th style="border: 1px solid #000000;text-align: center;padding: 3px 3px;width:15%">
+                    发票号
                   </th>
+                  <!--<th style="border: 1px solid #000000;text-align: center;padding: 3px 3px;width:8%">-->
+                  <!--发票代码-->
+                  <!--</th>-->
+                  <th style="border: 1px solid #000000;text-align: center;padding: 3px 3px;width:6%">
+                    发票日期
+                  </th>
+                  <!--<th style="border: 1px solid #000000;text-align: center;padding: 3px 3px;width:5%">-->
+                    <!--批号-->
+                  <!--</th>-->
                 </tr>
                 <tr v-for="(item, index) in dataSource">
-                  <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: xx-small">
-                    {{ item.invoiceNo }}
-                  </td>
-                  <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: xx-small">
-                    {{ item.invoiceCode }}
-                  </td>
-                  <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: xx-small">
-                    {{ item.invoiceData }}
-                  </td>
                   <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: xx-small">
                     {{ item.billDate }}
                   </td>
@@ -95,20 +98,29 @@
                     {{ item.unitName }}
                   </td>
                   <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: xx-small">
-                    {{ item.price }}
+                    {{ item.num }}
                   </td>
                   <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: xx-small">
-                    {{ item.num }}
+                    {{ item.price }}
                   </td>
                   <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: xx-small">
                     {{ item.money }}
                   </td>
                   <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: xx-small">
-                    {{ item.batchNo }}
+                    {{ item.invoiceNo }}
                   </td>
+                  <!--<td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: xx-small">-->
+                  <!--{{ item.invoiceCode }}-->
+                  <!--</td>-->
+                  <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: xx-small">
+                    {{ item.invoiceData }}
+                  </td>
+                  <!--<td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: xx-small">-->
+                    <!--{{ item.batchNo }}-->
+                  <!--</td>-->
                 </tr>
                 <tr>
-                  <td  colspan="9" style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: small">
+                  <td  colspan="5" style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: small">
                   </td>
                   <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: small">
                     合计
@@ -117,9 +129,11 @@
                     {{ totalSum }}
                   </td>
                   <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: small">
-                    {{ inTotalPrice }}
                   </td>
                   <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: small">
+                    {{ inTotalPrice }}
+                  </td>
+                  <td colspan="2" style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: small">
                   </td>
                 </tr>
               </table>
@@ -135,12 +149,12 @@
             <!--</span>-->
           <!--</a-col>-->
 
-          <a-col :span="24" style="margin-top: 5px">
-            <span style="margin-left: 3%">
-              打印人签字：
-            </span>
-            <a-input style="width: 10%;text-align: left"  v-model="userName"/>
-          </a-col>
+          <!--<a-col :span="24" style="margin-top: 5px">-->
+            <!--<span style="margin-left: 3%">-->
+              <!--打印人签字：-->
+            <!--</span>-->
+            <!--<a-input style="width: 10%;text-align: left"  v-model="userName"/>-->
+          <!--</a-col>-->
         </div>
       </a-col>
     </section>
@@ -150,6 +164,7 @@
 <script>
 
   import { httpAction } from '@/api/manage'
+  import moment from 'dayjs'
 
   export default {
     components: {
@@ -173,6 +188,8 @@
         totalSum:0,
         inTotalPrice:0,
         userName:"",
+        departName:"",
+        nowDate:"",
         columns: [
           { title: '发票号', dataIndex: 'invoiceNo', align:"center", width:"15%" },
           { title: '发票代码', dataIndex: 'invoiceCode',align:"center", width:"10%"},
@@ -219,16 +236,19 @@
       handleCancel () {
         this.close()
       },
-      show(record,userName){
+      show(record,userName,departName){
         this.visible = true;
         this.dataSource = record;
         this.userName = userName;
+        this.departName = departName;
         for(let item of record){
           this.totalSum += Number(item.num);
           this.inTotalPrice += Number(item.money);
           // totalSum:0,
           // inTotalPrice:0,
         }
+
+        this.nowDate = moment(new Date()).format('YYYY-MM-DD');
       },
       printBtn(){
         this.form.validateFields((err, values) => {

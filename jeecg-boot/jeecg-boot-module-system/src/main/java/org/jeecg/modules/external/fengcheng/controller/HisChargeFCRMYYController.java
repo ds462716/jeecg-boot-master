@@ -14,15 +14,25 @@ import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.external.fengcheng.entity.HisChargeFCRMYY;
 import org.jeecg.modules.external.fengcheng.entity.HisChargeFCZYY;
 import org.jeecg.modules.external.fengcheng.util.HisApiForFCRenminUtils;
+import org.jeecg.modules.external.fengcheng.vo.SynProductChargePage;
 import org.jeecg.modules.pd.entity.HisChargeInf;
+import org.jeecg.modules.pd.entity.PdProduct;
 import org.jeecg.modules.pd.service.IHisChargeService;
+import org.jeecg.modules.pd.service.IPdProductService;
+import org.jeecgframework.poi.excel.def.NormalExcelConstants;
+import org.jeecgframework.poi.excel.entity.ExportParams;
+import org.jeecgframework.poi.excel.view.JeecgEntityExcelView;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
 * @Description: HIS系统收费项目基础信息
@@ -37,6 +47,8 @@ public class HisChargeFCRMYYController {
 
     @Autowired
     private IHisChargeService hisChargeService;
+    @Autowired
+    private IPdProductService pdProductService;
 
 
     @GetMapping(value = "/hisProductList")
@@ -159,6 +171,67 @@ public class HisChargeFCRMYYController {
         }
     }
 
+
+    /**
+     * 关联ex_his_charge_inf表的分页查询
+     * @param pdProduct
+     * @param pageNo
+     * @param pageSize
+     * @param req
+     * @return
+     */
+    @GetMapping(value = "/listForHisCharge")
+    public Result<?> queryPageListForHisCharge(PdProduct pdProduct,
+                                               @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
+                                               @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
+                                               HttpServletRequest req) {
+        Page<PdProduct> page = new Page<PdProduct>(pageNo, pageSize);
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        pdProduct.setDepartParentId(sysUser.getDepartParentId());
+        IPage<PdProduct> pageList = pdProductService.selectListForHisChargeByPage(page, pdProduct);//
+        return Result.ok(pageList);
+    }
+
+    /**
+     * 导出excel
+     *
+     * @param request
+     * @param pdProduct
+     */
+    @RequestMapping(value = "/exportXls")
+    public ModelAndView exportXls(HttpServletRequest request, PdProduct pdProduct) {
+        // Step.1 组装查询条件查询数据
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        pdProduct.setDepartParentId(sysUser.getDepartParentId());
+        List<PdProduct> queryList = pdProductService.selectListForHisCharge(pdProduct);
+
+        //Step.2 获取导出数据
+        // 过滤选中数据
+        String selections = request.getParameter("selections");
+        List<PdProduct> pdProductList = new ArrayList<PdProduct>();
+        if (oConvertUtils.isEmpty(selections)) {
+            pdProductList = queryList;
+        } else {
+            List<String> selectionList = Arrays.asList(selections.split(","));
+            pdProductList = queryList.stream().filter(item -> selectionList.contains(item.getId())).collect(Collectors.toList());
+        }
+
+        // Step.3 组装pageList
+        List<SynProductChargePage> pageList = new ArrayList<SynProductChargePage>();
+        for (PdProduct main : pdProductList) {
+            SynProductChargePage vo = new SynProductChargePage();
+            BeanUtils.copyProperties(main, vo);
+            pageList.add(vo);
+        }
+
+        // Step.4 AutoPoi 导出Excel
+        ModelAndView mv = new ModelAndView(new JeecgEntityExcelView());
+        mv.addObject(NormalExcelConstants.FILE_NAME, "产品价格对照表");
+        mv.addObject(NormalExcelConstants.CLASS, SynProductChargePage.class);
+        mv.addObject(NormalExcelConstants.PARAMS, new ExportParams("产品价格对照表", "导出人:" + sysUser.getRealname(), "产品价格对照表"));
+        mv.addObject(NormalExcelConstants.DATA_LIST, pageList);
+        return mv;
+    }
 
 
 }
