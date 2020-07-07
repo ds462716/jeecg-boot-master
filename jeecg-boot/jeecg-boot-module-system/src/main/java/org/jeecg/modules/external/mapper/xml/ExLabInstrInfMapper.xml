@@ -54,12 +54,6 @@
         <if test="departParentId != null and departParentId != ''">
             AND a.depart_parent_id = #{departParentId}
         </if>
-        <if test="departIdList != null and departIdList.size() > 0">
-            AND a.depart_id IN
-            <foreach collection="departIdList" item="item" separator="," open="(" close=")">
-                #{item}
-            </foreach>
-        </if>
         <!-- 为了查询效率 只查询十条记录该方法用于下拉选择 -->
         ORDER BY a.update_time desc,a.create_time desc
     </select>

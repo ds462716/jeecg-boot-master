@@ -86,14 +86,6 @@ public class ExLabInstrInfController extends JeecgController<ExLabInstrInf, IExL
              if(StringUtils.isEmpty(exLabInstrInf.getQueryType()) || "1".equals(exLabInstrInf.getQueryType())){
               exLabInstrInf.setTestDepartId(sysUser.getCurrentDepartId());
               }
-
-			 if(StringUtils.isEmpty(exLabInstrInf.getDepartId())){
-				 //查询科室下所有下级科室的ID
-				 SysDepart sysDepart=new SysDepart();
-				 List<String> departList=pdDepartService.selectListDepart(sysDepart);
-				 exLabInstrInf.setDepartIdList(departList);
-			 }
-
 			 exLabInstrInf.setDepartParentId(sysUser.getDepartParentId());
              List<ExLabInstrInf> list = exLabInstrInfService.getExLabInstrInf(exLabInstrInf);
              result.setResult(list);
