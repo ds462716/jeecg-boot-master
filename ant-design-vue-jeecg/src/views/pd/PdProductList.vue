@@ -718,6 +718,11 @@
           });
         }
       },
+      //展开收起回显bug优化
+      handleToggleSearch(){
+        this.queryParam = {};
+        this.toggleSearchStatus = !this.toggleSearchStatus;
+      },
     }
   }
 </script>
