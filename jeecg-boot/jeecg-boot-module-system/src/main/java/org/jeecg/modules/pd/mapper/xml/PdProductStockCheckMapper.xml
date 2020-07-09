@@ -126,6 +126,9 @@
             <if test="entity.checkNo != null and entity.checkNo != ''">
                 AND a.check_no = #{entity.checkNo}
             </if>
+            <if test="entity.checkStatus != null and entity.checkStatus != ''">
+                AND a.check_status = #{entity.checkStatus}
+            </if>
             <if test="entity.departId != null and entity.departId != ''">
                 AND a.depart_id = #{entity.departId}
             </if>

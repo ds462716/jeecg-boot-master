@@ -397,6 +397,7 @@
               }
               if(!bo){
                 this.$message.error("第"+index+"行数量填写错误请检查！");
+                this.confirmLoading = false;
                 return bo;
               }
             }
