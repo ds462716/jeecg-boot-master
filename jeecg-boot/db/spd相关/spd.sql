@@ -959,3 +959,6 @@ CREATE TABLE `pd_invoice_detail`  (
 
 -- add by jiangxz 2020年7月3日 15:38:48 发票查询菜单
 INSERT INTO `sys_permission`(`id`, `parent_id`, `name`, `url`, `component`, `component_name`, `redirect`, `menu_type`, `business_type`, `perms`, `perms_type`, `sort_no`, `always_show`, `icon`, `is_route`, `is_leaf`, `keep_alive`, `hidden`, `description`, `create_by`, `create_time`, `update_by`, `update_time`, `del_flag`, `rule_flag`, `status`, `internal_or_external`) VALUES ('1278966303141355522', '1275351703808368642', '发票查询', '/pd/PdInvoiceList', 'pd/PdInvoiceList', NULL, NULL, 1, '0', NULL, '1', 2.00, 0, NULL, 1, 1, 0, 0, NULL, 'admin', '2020-07-03 16:18:23', NULL, '2020-07-03 16:18:23', 0, 0, '1', 0);
+
+-- add by jiangxz 2020年7月9日 15:08:33 退货出库菜单
+INSERT INTO `sys_permission`(`id`, `parent_id`, `name`, `url`, `component`, `component_name`, `redirect`, `menu_type`, `business_type`, `perms`, `perms_type`, `sort_no`, `always_show`, `icon`, `is_route`, `is_leaf`, `keep_alive`, `hidden`, `description`, `create_by`, `create_time`, `update_by`, `update_time`, `del_flag`, `rule_flag`, `status`, `internal_or_external`) VALUES ('1281122507485487106', '1239452985569804289', '退货出库', '/pd/PdReturnList', 'pd/PdReturnList', NULL, NULL, 1, '0', NULL, '1', 0.50, 0, NULL, 1, 1, 0, 0, NULL, 'admin', '2020-07-09 15:06:23', NULL, '2020-07-09 15:06:23', 0, 0, '1', 0);

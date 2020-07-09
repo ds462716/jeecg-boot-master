@@ -205,9 +205,10 @@
         :dataSource="dataSource"
         :pagination="ipagination"
         :loading="loading"
+        :scroll="tableScroll"
         :rowClassName="setdataCss"
         :customRow="onClickRow"
-        :rowSelection="{fixed:false,selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
+        :rowSelection="{fixed:true,selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
         
         @change="handleTableChange">
 
@@ -344,6 +345,7 @@
           xs: { span: 24 },
           sm: { span: 16 },
         },
+        tableScroll:{x :2400},
         validatorRules: {
           chargeCodeT: {rules: [
               {required: true, message: '请输入产品收费代码!'},
@@ -355,46 +357,62 @@
             title:'试剂编号',
             align:"center",
             width:120,
+            fixed: 'left',
             dataIndex: 'number'
           },
           {
             title:'试剂名称',
             align:"center",
+            width:220,
+            fixed: 'left',
             dataIndex: 'name'
           },
           {
             title:'规格',
             align:"center",
+            width:170,
             dataIndex: 'spec'
           },
           {
             title:'型号',
             align:"center",
+            width:120,
             dataIndex: 'version'
           },
           {
             title:'单位',
             align:"center",
+            width:50,
             dataIndex: 'unitName'
           },
           {
             title:'二级分类',
             align:"center",
+            width:150,
             dataIndex: 'categoryTwoName'
           },
           {
             title:'产品组别',
             align:"center",
+            width:100,
             dataIndex: 'groupName'
           },
           {
             title:'生产厂家',
             align:"center",
+            width:220,
             dataIndex: 'venderName'
+          },
+          {
+            title:'供应商',
+            align:"center",
+            width:220,
+            dataIndex: 'supplierName'
           },
           {
             title:'是否计费',
             align:"center",
+            width:50,
             dataIndex: 'isCharge',
             customRender:(text)=>{
               if(!text){
@@ -405,13 +423,27 @@
             }
           },
           {
-            title:'供应商',
+            title:'进价',
             align:"center",
-            dataIndex: 'supplierName'
+            width:90,
+            dataIndex: 'purchasePrice'
+          },
+          {
+            title:'出价',
+            align:"center",
+            width:90,
+            dataIndex: 'sellingPrice'
+          },
+          {
+            title:'产品收费代码',
+            align:"center",
+            width:110,
+            dataIndex: 'chargeCode'
           },
           {
             title:'状态',
             align:"center",
+            width:50,
             dataIndex: 'status',
             customRender:(text)=>{
               if(!text){
@@ -422,11 +454,6 @@
             }
           },
           {
-            title:'产品收费代码',
-            align:"center",
-            dataIndex: 'chargeCode'
-          },
-          {
             title:'注册证',
             align:"center",
             dataIndex: 'registration'
@@ -435,6 +462,7 @@
             title: '操作',
             dataIndex: 'action',
             align:"center",
+            fixed: 'right',
             width:120,
             scopedSlots: { customRender: 'action' }
           }
