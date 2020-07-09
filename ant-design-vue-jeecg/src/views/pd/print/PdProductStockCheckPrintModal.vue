@@ -101,6 +101,16 @@
         fullscreen: true,
         switchFullscreen: false,
         columns: [
+          {
+            title: '#',
+            dataIndex: '',
+            key:'id',
+            width:60,
+            align:"center",
+            customRender:function (t,r,index) {
+              return parseInt(index)+1;
+            }
+          },
           {title: '产品编号',  align:"center", dataIndex: 'number'},
           {title: '产品名称', align:"center", dataIndex: 'productName'},
           {title: '规格', align:"center",  dataIndex: 'spec'},
@@ -138,7 +148,6 @@
         this.close()
       },
       show(record){
-        console.log(record)
         this.visible = true;
         this.record = record;
         this.dataSource = record.pdProductStockCheckChildList;

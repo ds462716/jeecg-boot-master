@@ -379,7 +379,6 @@
           if (typeof this.classifyIntoFormData !== 'function') {
             throw this.throwNotFunction('classifyIntoFormData')
           }
-          this.confirmLoading = true;
           let formData = this.classifyIntoFormData(allValues)
           // 发起请求
           let pdProductStockCheckChildList = formData.pdProductStockCheckChildList;
@@ -410,6 +409,7 @@
               httpurl += this.url.add;
               method = 'post';
             }
+            this.confirmLoading = true;
             httpAction(httpurl, formData, method).then((res) => {
               if (res.success) {
                 this.model.id = res.result.recordId;

@@ -231,6 +231,7 @@
     methods: {
       close () {
         this.selectedRowKeys = [];
+        this.dataSource2 = [];
         this.selectionRows = [];
         this.queryParam = {};
         this.dataSource=[];
