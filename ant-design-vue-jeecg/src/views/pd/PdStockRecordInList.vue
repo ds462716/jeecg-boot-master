@@ -112,8 +112,6 @@
     </div>
 
     <pd-stock-record-in-modal ref="modalForm" @ok="modalFormOk"></pd-stock-record-in-modal>
-    <pd-stock-record-in-invoice-print-modal ref="pdStockRecordInInvoicePrintModal"></pd-stock-record-in-invoice-print-modal>
-
   </a-card>
 </template>
 
@@ -131,7 +129,6 @@
     name: "PdStockRecordInList",
     mixins:[JeecgListMixin],
     components: {
-      PdStockRecordInInvoicePrintModal,
       PdStockRecordInModal,
       JDictSelectTagExpand
     },
