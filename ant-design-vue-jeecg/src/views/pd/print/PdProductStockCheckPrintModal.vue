@@ -119,7 +119,7 @@
           {title: '供应商', align:"center",dataIndex: 'supplierName'},
           {title: '生产厂家', align:"center", dataIndex: 'venderName'},
           {title: '理论数量', align:"center", dataIndex: 'stockNum'},
-          {title: '盘点数量', align:"center", dataIndex: 'orderNum'},
+          {title: '盘点数量', align:"center", dataIndex: 'checkNum'},
         ],
         dataSource: [],
         labelCol: {

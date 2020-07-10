@@ -163,6 +163,8 @@ public interface PdConstant {
 	public final static String STOCK_LOG_TYPE_8 = "8";//定数包打包
 	public final static String STOCK_LOG_TYPE_9 = "9";//定数包拆包
 	public final static String STOCK_LOG_TYPE_10 = "10";//执行退费
+	public final static String STOCK_LOG_TYPE_11 = "11";//盘盈入库
+	public final static String STOCK_LOG_TYPE_12 = "12";//盘亏出库
 
 
 	//生产厂家及供应商证照到期消息提醒发送状态

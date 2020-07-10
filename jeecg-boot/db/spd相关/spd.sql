@@ -960,5 +960,21 @@ CREATE TABLE `pd_invoice_detail`  (
 -- add by jiangxz 2020年7月3日 15:38:48 发票查询菜单
 INSERT INTO `sys_permission`(`id`, `parent_id`, `name`, `url`, `component`, `component_name`, `redirect`, `menu_type`, `business_type`, `perms`, `perms_type`, `sort_no`, `always_show`, `icon`, `is_route`, `is_leaf`, `keep_alive`, `hidden`, `description`, `create_by`, `create_time`, `update_by`, `update_time`, `del_flag`, `rule_flag`, `status`, `internal_or_external`) VALUES ('1278966303141355522', '1275351703808368642', '发票查询', '/pd/PdInvoiceList', 'pd/PdInvoiceList', NULL, NULL, 1, '0', NULL, '1', 2.00, 0, NULL, 1, 1, 0, 0, NULL, 'admin', '2020-07-03 16:18:23', NULL, '2020-07-03 16:18:23', 0, 0, '1', 0);
 
+-- add by zxh 2020年7月9日15:47:25 盘点优化
+ALTER TABLE `pd_product_stock_check_child`
+ADD COLUMN `product_id`  varchar(64) NULL AFTER `check_no`,
+ADD COLUMN `product_bar_code`  varchar(64) NULL COMMENT '产品条码' AFTER `product_id`,
+ADD COLUMN `batch_no`  varchar(64) NULL COMMENT '批次' AFTER `product_bar_code`,
+ADD COLUMN `exp_date`  datetime NULL COMMENT '有效期' AFTER `batch_no`,
+ADD COLUMN `out_huowei_code`  varchar(255) NULL COMMENT '出库货位编号' AFTER `exp_date`;
+
+
 -- add by jiangxz 2020年7月9日 15:08:33 退货出库菜单
 INSERT INTO `sys_permission`(`id`, `parent_id`, `name`, `url`, `component`, `component_name`, `redirect`, `menu_type`, `business_type`, `perms`, `perms_type`, `sort_no`, `always_show`, `icon`, `is_route`, `is_leaf`, `keep_alive`, `hidden`, `description`, `create_by`, `create_time`, `update_by`, `update_time`, `del_flag`, `rule_flag`, `status`, `internal_or_external`) VALUES ('1281122507485487106', '1239452985569804289', '退货出库', '/pd/PdReturnList', 'pd/PdReturnList', NULL, NULL, 1, '0', NULL, '1', 0.50, 0, NULL, 1, 1, 0, 0, NULL, 'admin', '2020-07-09 15:06:23', NULL, '2020-07-09 15:06:23', 0, 0, '1', 0);
+
+-- add by zxh 2020年7月10日10:57:40 盘点优化
+ALTER TABLE `pd_product_stock_check`
+ADD COLUMN `audit_by`  varchar(64) NULL COMMENT '审核人' AFTER `check_status`,
+ADD COLUMN `audit_date`  datetime NULL COMMENT '审核时间' AFTER `audit_by`,
+ADD COLUMN `audit_status`  varchar(1) NULL COMMENT '审核状态 1-待审核； 2-审核通过； 3-已拒绝' AFTER `audit_date`,
+ADD COLUMN `refuse_reason`  longtext NULL COMMENT '驳回原因' AFTER `audit_status`;

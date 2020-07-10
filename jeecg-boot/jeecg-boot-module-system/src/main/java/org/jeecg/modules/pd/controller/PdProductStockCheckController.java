@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -92,6 +93,17 @@ public class PdProductStockCheckController {
 		return Result.ok(page);
 	}
 
+	 /**
+	  * 初始化Modal页面
+	  *
+	  * @param req
+	  * @return
+	  */
+	 @GetMapping(value = "/initModal")
+	 public Result<?> initModal(@RequestParam(name = "id") String id, HttpServletRequest req) {
+		 PdProductStockCheck pdProductStockCheck = pdProductStockCheckService.initModal(id);
+		 return Result.ok(pdProductStockCheck);
+	 }
 
 	 /**
 	  * 新增初始化操作
@@ -116,19 +128,32 @@ public class PdProductStockCheckController {
 		 result.setSuccess(true);
 		 return result;
 	 }
-	/**
-	 *   添加
-	 *
-	 * @param pdProductStockCheck
-	 * @return
-	 */
-	@AutoLog(value = "盘点记录表-添加")
-	@ApiOperation(value="盘点记录表-添加", notes="盘点记录表-添加")
-	@PostMapping(value = "/add")
-	public Result<?> add(@RequestBody PdProductStockCheck pdProductStockCheck) {
-		pdProductStockCheckService.saveMain(pdProductStockCheck, pdProductStockCheck.getPdProductStockCheckChildList());
-		return Result.ok("添加成功！");
-	}
+	 /**
+	  * 保存
+	  * @param pdProductStockCheck
+	  * @return
+	  */
+	 @PostMapping(value = "/add")
+	 public Result<?> add(@RequestBody PdProductStockCheck pdProductStockCheck) {
+		 if(oConvertUtils.isEmpty(pdProductStockCheck.getId())){
+			 List<PdProductStockCheck> list = pdProductStockCheckService.queryList(pdProductStockCheck);
+			 if(CollectionUtils.isNotEmpty(list)){
+				 return Result.error("盘点单已被保存或提交，不能保存草稿！");
+			 }
+		 }else{
+			 PdProductStockCheck entity = pdProductStockCheckService.getById(pdProductStockCheck.getId());
+			 if(entity != null && PdConstant.SUBMIT_STATE_2.equals(entity.getCheckStatus())){
+				 return Result.error("盘点单已被提交，不能保存草稿！");
+			 }
+		 }
+
+		 String recordId = pdProductStockCheckService.saveMainOne(pdProductStockCheck, pdProductStockCheck.getPdProductStockCheckChildList());
+
+		 Map<String,Object> result = new HashMap<>();
+		 result.put("recordId",recordId);
+		 result.put("message","保存成功！");
+		 return Result.ok(result);
+	 }
 
 	 /**
 	  * 提交

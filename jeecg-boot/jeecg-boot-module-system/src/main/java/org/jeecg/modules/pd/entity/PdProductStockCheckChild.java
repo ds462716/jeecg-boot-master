@@ -32,6 +32,24 @@ public class PdProductStockCheckChild extends BaseEntity {
 	/**盘点编号*/
 	@ApiModelProperty(value = "盘点编号")
 	private String checkNo;
+	/**产品id*/
+	@Excel(name = "产品id", width = 15)
+	@ApiModelProperty(value = "产品id")
+	private String productId;
+	/**产品条码*/
+	@Excel(name = "产品条码", width = 15)
+	@ApiModelProperty(value = "产品条码")
+	private String productBarCode;
+	/**产品批号*/
+	@Excel(name = "产品批号", width = 15)
+	@ApiModelProperty(value = "产品批号")
+	private String batchNo;
+	/**产品有效期*/
+	@Excel(name = "产品有效期", width = 15, format = "yyyy-MM-dd")
+	@JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd")
+	@DateTimeFormat(pattern="yyyy-MM-dd")
+	@ApiModelProperty(value = "产品有效期")
+	private Date expDate;
 	/**库存明细id*/
 	@Excel(name = "库存明细id", width = 15)
 	@ApiModelProperty(value = "库存明细id")
@@ -95,12 +113,7 @@ public class PdProductStockCheckChild extends BaseEntity {
 	@TableField(exist = false)
 	@Excel(name = "理论产品数量", width = 15)
 	private Double stockNum;//理论产品数量
-	@TableField(exist = false)
-	@Excel(name = "批次号", width = 15)
-	private String batchNo;//批次号
-	@TableField(exist = false)
-	@Excel(name = "产品有效期", width = 15)
-	@JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd")
-	@DateTimeFormat(pattern="yyyy-MM-dd")
-	private Date expDate;//产品有效期
+
+
+
 }

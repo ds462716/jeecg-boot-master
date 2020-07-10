@@ -50,5 +50,11 @@ public interface IPdProductStockCheckService extends IService<PdProductStockChec
 
     String submit(PdProductStockCheck pdProductStockCheck, List<PdProductStockCheckChild> pdProductStockCheckChildList);
 
+	String saveMainOne(PdProductStockCheck pdProductStockCheck, List<PdProductStockCheckChild> pdProductStockCheckChildList);
+
 	PdProductStockCheck getByOne(PdProductStockCheck pdProductStockCheck);
+
+	List<PdProductStockCheck> queryList(PdProductStockCheck pdProductStockCheck);
+
+	PdProductStockCheck initModal(String id);
 }

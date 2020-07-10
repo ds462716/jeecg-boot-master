@@ -86,4 +86,31 @@ public class PdProductStockCheck extends BaseEntity {
 	/*多个部门集合*/
 	@TableField(exist = false)
 	private List<String> departIdList;
+
+	/**审核人*/
+	@Excel(name = "审核人", width = 15)
+	private String auditBy;
+	/**审核人*/
+	@TableField(exist = false)
+	@Excel(name = "审核人", width = 15)
+	private String auditByName;
+	@TableField(exist = false)
+	@Excel(name = "审核人", width = 15)
+	private String submitByName;
+
+	/**审核时间*/
+	@Excel(name = "审核时间", width = 15, format = "yyyy-MM-dd")
+	@JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd")
+	@DateTimeFormat(pattern="yyyy-MM-dd")
+	private Date auditDate;
+	/**审核状态  审核状态 1-待审核； 2-审核通过； 3-已拒绝**/
+	@Excel(name = "审核状态", width = 15)
+	private String auditStatus;
+	/**驳回原因*/
+	@Excel(name = "驳回原因", width = 15)
+	private String refuseReason;
+	@TableField(exist = false)
+	private String submitDateStr;
+
+
 }

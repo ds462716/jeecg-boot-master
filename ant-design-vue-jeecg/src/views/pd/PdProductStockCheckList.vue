@@ -84,16 +84,17 @@
         :customRow="onClickRow"
         :rowSelection="{fixed:false,selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
         @change="handleTableChange">
-         <span slot="action" slot-scope="text, record">
-          <a  @click="handleEdit(record)"  v-bind:disabled="record.checkStatus=='1'">修改</a>
-          <a-divider type="vertical" />
+          <span slot="action" slot-scope="text, record">
+          <a @click="handleEdit(record)" v-bind:disabled="record.checkStatus=='2'">修改</a>
+          <a-divider type="vertical"/>
           <a @click="handleDetail(record)">详情</a>
+
           <a-divider type="vertical" />
           <a-dropdown>
-            <a class="ant-dropdown-link"  v-bind:disabled="record.checkStatus=='1'" >更多 <a-icon type="down" /></a>
+            <a class="ant-dropdown-link" v-bind:disabled="record.checkStatus=='2'" >更多 <a-icon type="down" /></a>
             <a-menu slot="overlay">
-              <a-menu-item v-show="record.checkStatus=='0'">
-                <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.id)">
+              <a-menu-item v-show="record.checkStatus=='1' || record.checkStatus=='3'"> <!--待提交、已撤回-->
+                <a-popconfirm title="确定删除吗?"  @confirm="() => handleDelete(record.id)"  >
                   <a>删除</a>
                 </a-popconfirm>
               </a-menu-item>
@@ -309,7 +310,7 @@
         }
       },
       initDictConfig(){
-        initDictOptions('check_status').then((res) => {
+        initDictOptions('submit_status').then((res) => {
           if (res.success) {
             this.$set(this.dictOptions, 'checkStatus', res.result)
           }

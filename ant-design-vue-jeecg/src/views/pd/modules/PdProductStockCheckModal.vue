@@ -68,8 +68,20 @@
         <a-form-item label="备注" :labelCol="labelCol" :wrapperCol="wrapperCol">
           <a-textarea :disabled="disableSubmit" autocomplete="off" v-decorator="[ 'remarks', validatorRules.remarks]"></a-textarea>
         </a-form-item>
+        <a-form-item v-show="false" label="盘点人">
+          <a-input v-show="false" v-decorator="[ 'checkBy', {}]"></a-input>
+        </a-form-item>
       </a-form>
       </a-card>
+        <a-card style="margin-top: 10px;" v-show="showRefuseReason">
+          <a-form :form="form">
+            <a-col :span="12">
+              <a-form-item label="审批意见" :labelCol="labelCol2" :wrapperCol="wrapperCol2" style="text-align: left">
+                <a-textarea disabled v-decorator="[ 'refuseReason', validatorRules.refuseReason]" placeholder="请输入审批意见"></a-textarea>
+              </a-form-item>
+            </a-col>
+          </a-form>
+        </a-card>
         <a-card style="margin-bottom: 10px;">
       <!-- 子表单区域 -->
       <a-tabs v-model="activeKey" @change="handleChangeTabs">
@@ -108,9 +120,14 @@
       <a-popconfirm title="确定放弃盘点吗？" @confirm="handleCancel" v-show="!disableSubmit" okText="确定" cancelText="取消">
         <a-button style="margin-right: 15px;">取  消</a-button>
       </a-popconfirm>
-      <a-button @click="handleOk('submit')" v-show="!disableSubmit" type="primary" :loading="confirmLoading" style="margin-right: 15px;">盘点完成</a-button>
-      <a-button @click="handleOk('save')" v-show="!disableSubmit" type="primary" :loading="confirmLoading" style="margin-right: 15px;">临时保存</a-button>
-      <a-button @click="handleOk('saveAndPrint')" v-show="!disableSubmit" type="primary" :loading="confirmLoading" style="margin-right: 15px;">临时保存并打印</a-button>
+      <a-popconfirm title="确定撤回？" @confirm="cancelBtn" v-show="showCancelBtn" okText="确定" cancelText="取消">
+        <a-button style="margin-right: 15px;" :loading="confirmLoading" type="danger">撤  回</a-button>
+      </a-popconfirm>
+      <a-button @click="printBtn()" style="margin-right: 15px;" type="primary" v-show="disableSubmit">打  印</a-button>
+      <a-button @click="saveBtn('save')" v-show="!disableSubmit" type="primary" :loading="confirmLoading" style="margin-right: 15px;">保存草稿</a-button>
+      <a-button @click="submitBtn('submit')" v-show="!disableSubmit" type="primary" :loading="confirmLoading" style="margin-right: 15px;">盘点完成</a-button>
+
+      <a-button @click="saveBtn('saveAndPrint')" v-show="!disableSubmit" type="primary" :loading="confirmLoading" style="margin-right: 15px;">保存草稿并打印</a-button>
     </template>
 
 
@@ -148,6 +165,9 @@
         fullscreen: true,
         switchFullscreen: false,
         disableSubmit:false,
+        showCancelBtn:false,
+        showPrintBtn:false,
+        showRefuseReason:false,
         labelCol: {
           xs: { span: 24 },
           sm: { span: 5 },
@@ -206,34 +226,20 @@
           ]
         },
         url: {
-          add: "/pd/pdProductStockCheck/submit",
+          init:"/pd/pdProductStockCheck/initModal",
+          submit: "/pd/pdProductStockCheck/submit",
+          add: "/pd/pdProductStockCheck/add",
           edit: "/pd/pdProductStockCheck/edit",
           querySysDepartList:"/pd/pdDepart/getSysDepartList",
           pdProductStockCheckChild: {
             list: '/pd/pdProductStockCheck/queryPdProductStockCheckChild'
           },
           queryById:"/pd/pdProductStockCheck/queryById",
+          cancel: "/pd/pdProductStockCheck/cancel",
         },
       }
     },
     methods: {
-      add () {//初始化新增
-        this.pdProductStockCheckTable.dataSource = [];
-        this.edit({});
-        this.checkInfo();
-      },
-
-      checkInfo() { //新增页面初始化
-        getAction("/pd/pdProductStockCheck/checkInfo",{}).then((res)=>{
-          if (res.success) {
-            this.model = res.result;
-            this.$nextTick(() => {
-             this.form.setFieldsValue(pick(this.model,'checkNo','deptName','checkDate','checkName','shouldCount','checkCount','profitLossCount','remarks'))
-            })
-          }
-        })
-      },
-
       //-----------------盘点科室查询start
       sysDeptHandleSearch(value) {
         fetch(value, data => (this.deptData = data),this.url.querySysDepartList);
@@ -365,11 +371,15 @@
         })
       },
 
-      handleOk (submitType) { //提交
-        this.model.checkStatus = '0';
-        if (submitType == "submit") {
-          this.model.checkStatus = '1';
-        }
+      /** 保存草稿 **/
+      saveBtn(flag) {
+        this.request(this.url.add,"post",flag);
+      },
+      /** 提交 **/
+      submitBtn(flag) {
+        this.request(this.url.submit,"post",flag);
+      },
+      request(url, method,flag) {
         const that = this;
         // 触发表单验证
         this.getAllTable().then(tables => {
@@ -384,7 +394,7 @@
           let pdProductStockCheckChildList = formData.pdProductStockCheckChildList;
           if (pdProductStockCheckChildList.length > 0) {
             //临时保存不校验，盘点完成才校验
-            if (submitType == "submit") {
+            if (flag == "submit") {
               let bo = true;
               let index = 1;
               for(let item of pdProductStockCheckChildList){
@@ -399,25 +409,15 @@
                 return bo;
               }
             }
-
-            let httpurl = '';
-            let method = '';
-            if (!this.model.id) {
-              httpurl += this.url.add;
-              method = 'post';
-            } else {
-              httpurl += this.url.add;
-              method = 'post';
-            }
             this.confirmLoading = true;
-            httpAction(httpurl, formData, method).then((res) => {
+            httpAction(url, formData, method).then((res) => {
               if (res.success) {
                 this.model.id = res.result.recordId;
                 that.$message.success(res.message);
                 that.$emit('ok');
                 that.close();
                 //临时保存并打印
-                if(submitType == "saveAndPrint"){
+                if(flag == "saveAndPrint"){
                   this.printBtn(); //通过并打印
                 }
               } else {
@@ -443,19 +443,70 @@
         let values = this.tableKeys.map(key => getRefPromise(this, key))
         return Promise.all(values)
       },
+
+      add () {//初始化新增
+        this.pdProductStockCheckTable.dataSource = [];
+        this.edit({});
+      },
+
+      checkInfo() { //新增页面初始化
+        getAction("/pd/pdProductStockCheck/checkInfo",{}).then((res)=>{
+          if (res.success) {
+            this.model = res.result;
+            this.$nextTick(() => {
+              this.form.setFieldsValue(pick(this.model,'checkNo','deptName','checkDate','checkName','shouldCount','checkCount','profitLossCount','remarks'))
+            })
+          }
+        })
+      },
+
       /** 调用完edit()方法之后会自动调用此方法 */
       editAfter() {
-        let fieldval = pick(this.model,'checkNo','departId','checkDate','checkName','shouldCount','checkCount','profitLossCount','remarks');
+        this.loadData();
+      },
+      loadData(){
+        this.showCancelBtn = false;
+        this.showPrintBtn = false;
+        this.showRefuseReason = false;
         this.$nextTick(() => {
-          this.form.setFieldsValue(fieldval)
           //初始化盘点科室
           this.sysDeptHandleSearch();
         })
+        let params = {};
         // 加载子表数据
         if (this.model.id) {
-          let params = { checkNo: this.model.checkNo }
-          this.requestSubTableData(this.url.pdProductStockCheckChild.list, params, this.pdProductStockCheckTable)
+          if(this.model.auditStatus == "1" && this.model.submitStatus == "2"){
+            this.showCancelBtn = true;
+          }
+          if(this.model.submitStatus == "2"){ // 提交完可打印
+            this.showPrintBtn = true;
+          }
+          if(this.model.auditStatus == "2" || this.model.auditStatus == "3"){
+            this.showRefuseReason = true;
+          }
+          let fieldval = pick(this.model,'checkNo','departId','checkDate','checkName','checkBy','refuseReason','shouldCount','checkCount','profitLossCount','remarks');
+          this.$nextTick(() => {
+            this.form.setFieldsValue(fieldval);
+          })
+          params = { id: this.model.id }
+        }else{
+          params = { id: "" }
         }
+        this.pdProductStockCheckTable.loading = true;
+        getAction(this.url.init, params).then((res) => {
+          if (res.success) {
+            this.$nextTick(() => {
+              if(this.model.id){ //详情页
+                this.pdProductStockCheckTable.dataSource = res.result.pdProductStockCheckChildList || [];
+              }else{
+                this.initData = res.result;
+                let fieldval = pick(this.initData,'checkNo','departId','checkDate','checkName','checkBy','refuseReason','shouldCount','checkCount','profitLossCount','remarks');
+                this.form.setFieldsValue(fieldval);
+              }
+            })
+          }
+          this.pdProductStockCheckTable.loading = false;
+        })
       },
       /** 整理成formData */
       classifyIntoFormData(allValues) {
@@ -489,6 +540,25 @@
           this.$refs.PdProductStockCheckPrintModal.show(res.result);
           this.$refs.PdProductStockCheckPrintModal.title = "盘点单";
         })
+      },
+      /**撤回**/
+      cancelBtn(){
+        if(this.model.auditStatus == "1" && this.model.submitStatus == "2"){
+          this.confirmLoading = true
+          httpAction(this.url.cancel, {id:this.model.id}, 'put').then((res) => {
+            if (res.success) {
+              this.$message.success(res.message)
+              this.$emit('ok')
+              this.close()
+            } else {
+              this.$message.warning(res.message)
+            }
+          }).finally(() => {
+            this.confirmLoading = false
+          })
+        }else{
+          this.$message.warning("当前盘点单状态已被审批或已撤回，不能撤回！"); //当前盘点单状态非已提交、待审核状态，不能撤回！
+        }
       },
     }
   }
