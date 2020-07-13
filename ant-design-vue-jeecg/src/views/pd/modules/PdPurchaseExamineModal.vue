@@ -35,16 +35,16 @@
                   <a-input disabled="disabled" v-decorator="[ 'deptName', validatorRules.deptName]" ></a-input>
                 </a-form-item>
               </a-col>
-             <!-- <a-col :span="12">
-                <a-form-item label="申购总数量" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                  <a-input-number disabled="disabled" v-decorator="[ 'totalNum', validatorRules.totalNum]"  style="width: 100%"/>
+              <a-col :span="12">
+                <a-form-item label="申购类型" :labelCol="labelCol" :wrapperCol="wrapperCol">
+                  <j-dict-select-tag-expand  disabled="disabled"  v-decorator="['purchaseType',validatorRules.purchaseType]"   dictCode="purchase_type" :trigger-change="true"  placeholder="请选择类型"/>
                 </a-form-item>
               </a-col>
-              <a-col :span="12">
-                <a-form-item label="申购总金额" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                  <a-input-number disabled="disabled" v-decorator="[ 'totalPrice', validatorRules.totalPrice]"  style="width: 100%"/>
-                </a-form-item>
-              </a-col>-->
+              <!-- <a-col :span="12">
+                 <a-form-item label="申购总金额" :labelCol="labelCol" :wrapperCol="wrapperCol">
+                   <a-input-number disabled="disabled" v-decorator="[ 'totalPrice', validatorRules.totalPrice]"  style="width: 100%"/>
+                 </a-form-item>
+               </a-col>-->
             </a-row>
           </a-form>
         </a-card>
@@ -110,6 +110,7 @@
   import JDictSelectTag from "@/components/dict/JDictSelectTag"
   import PdApplyStockRecordOutModal from './PdStockRecordOutModal'
   import PdPurchaseOrderPrintModal from '../print/PdPurchaseOrderPrintModal'
+  import JDictSelectTagExpand from "@/components/dict/JDictSelectTagExpand"
 
   export default {
     name: 'PdApplyOrderModal',
@@ -118,7 +119,8 @@
       JDate,
       JDictSelectTag,
       PdApplyStockRecordOutModal,
-      PdPurchaseOrderPrintModal
+      PdPurchaseOrderPrintModal,
+      JDictSelectTagExpand
        },
     data() {
       return {
@@ -139,7 +141,8 @@
           totalNum: {},
           realName: {},
           remarks: {},
-          refuseReason: {}
+          refuseReason: {},
+          purchaseType: {},
         },
         refKeys: ['pdPurchaseDetail',],
         tableKeys: ['pdPurchaseDetail',],
@@ -253,7 +256,7 @@
       },
       /** 调用完edit()方法之后会自动调用此方法 */
       editAfter() {
-        let fieldval = pick(this.model,'orderNo','purchaseName','orderDate','deptName','auditStatus','submitStatus','refuseReason')
+        let fieldval = pick(this.model,'orderNo','purchaseName','purchaseType','orderDate','deptName','auditStatus','submitStatus','refuseReason')
         this.$nextTick(() => {
           this.form.setFieldsValue(fieldval)
         })
@@ -277,7 +280,7 @@
         this.$message.error(msg)
       },
       popupCallback(row){
-        this.form.setFieldsValue(pick(row,'orderNo','purchaseName','orderDate','deptName','auditStatus','submitStatus','refuseReason'))
+        this.form.setFieldsValue(pick(row,'orderNo','purchaseName','purchaseType','orderDate','deptName','auditStatus','submitStatus','refuseReason'))
       },
       /** 关闭按钮 **/
       closeBtn(){

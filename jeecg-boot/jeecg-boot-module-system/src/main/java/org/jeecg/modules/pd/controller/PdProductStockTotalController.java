@@ -350,6 +350,16 @@ public class PdProductStockTotalController {
 		 }
 		 productStock.setDepartParentId(sysUser.getDepartParentId());
 		 page = pdProductStockService.queryList(page,productStock);
+		List<PdProductStock> aList= page.getRecords();
+		 if(aList !=null && aList.size()>0){
+			 for(PdProductStock stock : aList){
+				 PdProductStockUniqueCode stockUniqueCode=new PdProductStockUniqueCode();
+				 stockUniqueCode.setDepartParentId(sysUser.getDepartParentId());
+				 stockUniqueCode.setProductStockId(stock.getId());
+				 String uniqueCode=productStockUniqueCodeService.queryUniqueCode(stockUniqueCode);
+				 stock.setRefBarCodes(uniqueCode);
+			 }
+		 }
 		 return Result.ok(page);
 	 }
 

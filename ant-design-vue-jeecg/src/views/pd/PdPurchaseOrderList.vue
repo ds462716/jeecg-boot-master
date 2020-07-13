@@ -24,7 +24,11 @@
             </a-form-item>
           </a-col>
           <template :md="6" v-if="toggleSearchStatus">
-
+            <a-col :md="6" :sm="8">
+              <a-form-item label="申购类型">
+                <j-dict-select-tag-expand v-model="queryParam.purchaseType" dictCode="purchase_type"/>
+              </a-form-item>
+            </a-col>
           </template>
           <a-col :md="6" :sm="8">
             <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
@@ -103,12 +107,14 @@
   import { filterObj } from '@/utils/util';
   import PdPurchaseOrderModal from './modules/PdPurchaseOrderModal'
   import {initDictOptions, filterMultiDictText} from '@/components/dict/JDictSelectUtil'
+  import JDictSelectTagExpand from "@/components/dict/JDictSelectTagExpand"
 
   export default {
     name: "PdPurchaseOrderList",
     mixins:[JeecgListMixin],
     components: {
-      PdPurchaseOrderModal
+      PdPurchaseOrderModal,
+      JDictSelectTagExpand
     },
     data () {
       return {
@@ -134,6 +140,18 @@
             title:'申购人',
             align:"center",
             dataIndex: 'purchaseName'
+          },
+          {
+            title:'申购类型',
+            align:"center",
+            dataIndex: 'purchaseType',
+            customRender:(text)=>{
+              if(!text){
+                return ''
+              }else{
+                return filterMultiDictText(this.dictOptions['purchaseType'], text+"")
+              }
+            }
           },
           {
             title:'申购日期',
@@ -196,8 +214,9 @@
           deleteBatch: "/pd/pdPurchaseOrder/deleteBatch"
         },
         dictOptions:{
+          purchaseType:[],
           auditStatus:[],
-         submitStatus:[],
+          submitStatus:[],
         },
 
       }
@@ -266,6 +285,11 @@
         return filterObj(param);
       },
       initDictConfig(){ //静态字典值加载
+        initDictOptions('purchase_type').then((res) => {
+          if (res.success) {
+            this.$set(this.dictOptions, 'purchaseType', res.result)
+          }
+        })
         initDictOptions('audit_status').then((res) => {
           if (res.success) {
             this.$set(this.dictOptions, 'auditStatus', res.result)

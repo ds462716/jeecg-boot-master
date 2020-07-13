@@ -17,7 +17,7 @@
         </a-form-item>
       <a-form-item  v-if="model.type=='Down'"  label="自动补货量"    :labelCol="labelCol" :wrapperCol="wrapperCol">
         <a-input  style="width:100%;" ref="inputFocus" v-decorator="[ 'autoNum', validatorRules.autoNum]" placeholder="请输入值"></a-input>
-        <span style="color: red">  补货数量为空或为0时,不会自动补货。</span>
+        <span style="color: red;height:20%;">补货数量为空或为0时,不会自动补货。</span>
       </a-form-item>
     </a-form>
   </a-spin>

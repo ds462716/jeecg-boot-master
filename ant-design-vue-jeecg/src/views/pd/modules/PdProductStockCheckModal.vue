@@ -210,7 +210,7 @@
           columns: [
              {title: '库存明细ID', key: 'stockId', type: FormTypes.hidden},
             {title: '产品id', key: 'productId',type: FormTypes.hidden},
-            {title: '产品名称', key: 'productName',width:"200px"},
+            {title: '产品名称', key: 'productName',width:"400px"},
             {title: '产品编号', key: 'number',width:"200px"},
             {title: '产品规格', key: 'spec',width:"200px"},
             {title: '产品批号', key: 'batchNo',width:"200px"},
