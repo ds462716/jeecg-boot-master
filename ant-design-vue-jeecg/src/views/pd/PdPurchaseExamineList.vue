@@ -34,17 +34,21 @@
               <a-range-picker @change="rejectedDateChange" v-model="queryParam.queryDate"/>
             </a-form-item>
           </a-col>
-          <a-col :md="6" :sm="8">
-            <a-form-item label="审核状态">
-              <a-select v-model="queryParam.auditStatus" :allowClear="true" placeholder="请选择审核状态">
-                <a-select-option value="1">待审核</a-select-option>
-                <a-select-option value="2">审核通过</a-select-option>
-                <a-select-option value="3">已驳回</a-select-option>
-              </a-select>
-            </a-form-item>
-          </a-col>
           <template v-if="toggleSearchStatus">
-
+            <a-col :md="6" :sm="8">
+              <a-form-item label="审核状态">
+                <a-select v-model="queryParam.auditStatus" :allowClear="true" placeholder="请选择审核状态">
+                  <a-select-option value="1">待审核</a-select-option>
+                  <a-select-option value="2">审核通过</a-select-option>
+                  <a-select-option value="3">已驳回</a-select-option>
+                </a-select>
+              </a-form-item>
+            </a-col>
+            <a-col :md="6" :sm="8">
+              <a-form-item label="申购类型">
+                <j-dict-select-tag-expand v-model="queryParam.purchaseType" dictCode="purchase_type"/>
+              </a-form-item>
+            </a-col>
           </template>
           <a-col :md="6" :sm="8">
             <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
@@ -114,6 +118,7 @@
   import PdPurchaseExamineModal from './modules/PdPurchaseExamineModal'
   import JDictSelectTag from '@/components/dict/JDictSelectTag.vue'
   import {initDictOptions, filterMultiDictText} from '@/components/dict/JDictSelectUtil'
+  import JDictSelectTagExpand from "@/components/dict/JDictSelectTagExpand"
 
   let timeout;
   let currentValue;
@@ -150,7 +155,8 @@
     mixins:[JeecgListMixin],
     components: {
       JDictSelectTag,
-      PdPurchaseExamineModal
+      PdPurchaseExamineModal,
+      JDictSelectTagExpand
     },
     data () {
       return {
@@ -179,6 +185,18 @@
             title:'申购人名称',
             align:"center",
             dataIndex: 'purchaseName'
+          },
+          {
+            title:'申购类型',
+            align:"center",
+            dataIndex: 'purchaseType',
+            customRender:(text)=>{
+              if(!text){
+                return ''
+              }else{
+                return filterMultiDictText(this.dictOptions['purchaseType'], text+"")
+              }
+            }
           },
           {
             title:'申购日期',
@@ -231,6 +249,7 @@
           queryDepart: "/pd/pdDepart/queryListTree",
         },
         dictOptions:{
+          purchaseType:[],
           auditStatus:[],
          },
       }
@@ -332,7 +351,12 @@
           if (res.success) {
             this.$set(this.dictOptions, 'auditStatus', res.result)
           }
-        })
+        }),
+          initDictOptions('purchase_type').then((res) => {
+            if (res.success) {
+              this.$set(this.dictOptions, 'purchaseType', res.result)
+            }
+          })
       },
 
      /* onSelect(record, selected){

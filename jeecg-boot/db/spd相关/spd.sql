@@ -986,3 +986,13 @@ INSERT INTO `sys_permission`(`id`, `parent_id`, `name`, `url`, `component`, `com
 -- add by jiangxz 2020年7月13日 09:33:35  退货出入库数据字典
 INSERT INTO `sys_dict_item`(`id`, `dict_id`, `item_text`, `item_value`, `description`, `sort_order`, `status`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES ('1282487608692166657', '1234370083990302722', '退货出库', '4', '退货出库', 4, 1, 'admin', '2020-07-13 09:30:48', NULL, '2020-07-13 09:30:48');
 INSERT INTO `sys_dict_item`(`id`, `dict_id`, `item_text`, `item_value`, `description`, `sort_order`, `status`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES ('1282487499732537346', '1228134724517425154', '退货入库', '2', '退货入库', 2, 1, 'admin', '2020-07-13 09:30:22', NULL, '2020-07-13 09:30:22');
+
+
+-- add by mcb 2020年7月13日10:57:40 申购类型
+ALTER TABLE `pd_purchase_order`
+ADD COLUMN `purchase_type` varchar(4) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL AFTER `merge_order_no`;
+
+-- add by mcb 2020年7月13日10:57:40 申购类型静态值
+ INSERT INTO  `sys_dict`   VALUES ('1282490556941041665', '申购类型', 'purchase_type', '1:计划外申购    2：计划内申购', 0, 'admin', '2020-07-13 09:42:31', NULL, '2020-07-13 09:42:31', 0);
+ INSERT INTO  `sys_dict_item`  VALUES ('1282490630039371778', '1282490556941041665', '计划外申购', '1', '', 1, 1, 'admin', '2020-07-13 09:42:48', NULL, '2020-07-13 09:42:48');
+ INSERT INTO  `sys_dict_item`  VALUES ('1282490671776890881', '1282490556941041665', '计划内申购', '2', '', 2, 1, 'admin', '2020-07-13 09:42:58', NULL, '2020-07-13 09:42:58');

@@ -64,6 +64,16 @@
               </a-form-item>
             </a-col>
             <a-col :md="6" :sm="8">
+              <a-form-item label="中标号">
+                <a-input placeholder="中标号" v-model="queryParam.bidingNumber"></a-input>
+              </a-form-item>
+            </a-col>
+            <a-col :md="6" :sm="8">
+              <a-form-item label="收费代码">
+                <a-input placeholder="收费代码" v-model="queryParam.chargeCode"></a-input>
+              </a-form-item>
+            </a-col>
+            <a-col :md="6" :sm="8">
               <a-form-item label="供应商">
                 <a-select
                   ref="supplierSelect"
@@ -139,6 +149,9 @@
         :scroll="tableScroll"
         @change="handleTableChange"
         >
+        <template slot="ellipsisText" slot-scope="text">
+          <j-ellipsis :value="text" :length="textMaxLength"></j-ellipsis>
+        </template>
       </a-table>
     </div>
   </a-card>
@@ -150,12 +163,13 @@
   import { filterObj } from '@/utils/util'
   import {initDictOptions, filterMultiDictText} from '@/components/dict/JDictSelectUtil'
   import JDictSelectTagExpand from "@/components/dict/JDictSelectTagExpand"
-
+  import JEllipsis from '@/components/jeecg/JEllipsis'
   export default {
     name: "PdProductStockQueryList",
     mixins:[JeecgListMixin],
     components: {
-      JDictSelectTagExpand
+      JDictSelectTagExpand,
+      JEllipsis
     },
     data () {
       return {
@@ -165,9 +179,9 @@
         notFoundContent:"未找到内容",
         supplierValue: undefined,
         supplierData: [],
-
         venderValue: undefined,
         venderData: [],
+        textMaxLength:20,
         // 表头
         columns: [
           /*{
@@ -244,6 +258,22 @@
             title:'库存规格数量',
             align:"center",
             dataIndex: 'specNum'
+          },
+          {
+            title:'中标号',
+            align:"center",
+            dataIndex: 'bidingNumber'
+          },
+          {
+            title:'HIS收费代码',
+            align:"center",
+            dataIndex: 'chargeCode'
+          },
+          {
+            title:'唯一码',
+            align:"center",
+            scopedSlots: {customRender: "ellipsisText"},
+            dataIndex: 'refBarCodes'
           },
           {
             title:'使用状态',

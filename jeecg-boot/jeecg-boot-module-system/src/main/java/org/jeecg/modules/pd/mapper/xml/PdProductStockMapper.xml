@@ -57,6 +57,7 @@
         c.purchase_price as "purchasePrice",
         c.selling_price as "sellingPrice",
         c.charge_code  as "chargeCode",
+        c.biding_number  as "bidingNumber",
         c.is_charge  as "isCharge",
         c.jde_code as "jdeCode",
         c.product_flag as "productFlag",
@@ -574,6 +575,9 @@
 			</if>
 			<if test="productFlag != null and productFlag != ''">
 				AND c.product_flag = #{productFlag}
+			</if>
+			<if test="bidingNumber != null and bidingNumber != ''">
+				AND c.biding_number LIKE concat('%',#{bidingNumber},'%')
 			</if>
 			<if test="productName != null and productName != ''">
 				AND c.name LIKE concat('%',#{productName},'%')

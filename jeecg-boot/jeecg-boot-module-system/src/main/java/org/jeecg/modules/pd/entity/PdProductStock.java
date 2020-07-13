@@ -183,7 +183,9 @@ public class PdProductStock extends BaseEntity {
 	/** 产品收费代码 **/
 	@TableField(exist = false)
 	private String chargeCode;
-
+	/** 中标号 **/
+	@TableField(exist = false)
+	private String bidingNumber;
 	/** 是否计费 **/
 	@TableField(exist = false)
 	private String isCharge;

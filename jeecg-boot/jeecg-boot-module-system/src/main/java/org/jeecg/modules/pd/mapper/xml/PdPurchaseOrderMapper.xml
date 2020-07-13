@@ -21,6 +21,7 @@
 		a.sys_org_code,
 		a.merge_order_no,
 		a.remarks,
+		a.purchase_type,
 		a.del_flag
 	</sql>
 
@@ -74,6 +75,9 @@
             </if>
             <if test="departId != null and departId != ''">
                 AND a.depart_id = #{departId}
+            </if>
+            <if test="purchaseType != null and purchaseType != ''">
+                AND  a.purchase_type  = #{purchaseType}
             </if>
             <if test="departParentId != null and departParentId != ''">
                 AND a.depart_parent_id = #{departParentId}
