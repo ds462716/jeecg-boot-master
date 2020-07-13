@@ -19,6 +19,7 @@ public class CxfConfig {
 
     /**
      * 注入servlet  bean name不能dispatcherServlet 否则会覆盖dispatcherServlet
+     * http://localhost:3000/jeecg-boot/webservice/webservice?wsdl
      * @return
      */
     @Bean(name = "cxfServlet")
