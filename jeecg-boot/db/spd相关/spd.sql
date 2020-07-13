@@ -981,3 +981,5 @@ ADD COLUMN `refuse_reason`  longtext NULL COMMENT '驳回原因' AFTER `audit_st
 
 -- add by jiangxz 2020年7月13日 08:49:43  修改退货出库菜单
 update sys_permission set url = '/pd/PdStockRecordReturnList',component = 'pd/PdStockRecordReturnList' where id = '1281122507485487106'
+-- add by jiangxz 2020年7月13日 08:58:21  退货出库审核菜单
+INSERT INTO `sys_permission`(`id`, `parent_id`, `name`, `url`, `component`, `component_name`, `redirect`, `menu_type`, `business_type`, `perms`, `perms_type`, `sort_no`, `always_show`, `icon`, `is_route`, `is_leaf`, `keep_alive`, `hidden`, `description`, `create_by`, `create_time`, `update_by`, `update_time`, `del_flag`, `rule_flag`, `status`, `internal_or_external`) VALUES ('1282479127557779458', '1239452985569804289', '退货出库审核', '/pd/PdStockRecordReturnExamineList', 'pd/PdStockRecordReturnExamineList', NULL, NULL, 1, '0', NULL, '1', 0.60, 0, NULL, 1, 1, 0, 0, NULL, 'admin', '2020-07-13 08:57:06', 'admin', '2020-07-13 08:57:15', 0, 0, '1', 0);
