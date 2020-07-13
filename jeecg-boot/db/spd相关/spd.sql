@@ -978,3 +978,6 @@ ADD COLUMN `audit_by`  varchar(64) NULL COMMENT '审核人' AFTER `check_status`
 ADD COLUMN `audit_date`  datetime NULL COMMENT '审核时间' AFTER `audit_by`,
 ADD COLUMN `audit_status`  varchar(1) NULL COMMENT '审核状态 1-待审核； 2-审核通过； 3-已拒绝' AFTER `audit_date`,
 ADD COLUMN `refuse_reason`  longtext NULL COMMENT '驳回原因' AFTER `audit_status`;
+
+-- add by jiangxz 2020年7月13日 08:49:43  修改退货出库菜单
+update sys_permission set url = '/pd/PdStockRecordReturnList',component = 'pd/PdStockRecordReturnList' where id = '1281122507485487106'
