@@ -1044,7 +1044,7 @@ CREATE TABLE `h_user_finger_face` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- add by mcb 2020年7月14日 08:51:02
---RFID数据绑定表
+-- RFID数据绑定表
 CREATE TABLE `h_rfid_info` (
   `id` varchar(64) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL COMMENT '主键ID',
   `rfId` varchar(64) NOT NULL COMMENT 'rfid数据',
@@ -1067,7 +1067,7 @@ CREATE TABLE `h_rfid_info` (
 
 
 -- add by mcb 2020年7月14日 08:51:02
---RFID标签与柜子关系表
+-- RFID标签与柜子关系表
 CREATE TABLE `h_forcer_rfid` (
   `id` varchar(64) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL COMMENT '序列id',
   `rfId` varchar(64) NOT NULL COMMENT 'rfid数据',
