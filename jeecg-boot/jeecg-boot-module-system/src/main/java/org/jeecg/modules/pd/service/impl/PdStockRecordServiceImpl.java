@@ -993,7 +993,8 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
 
         LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
         SysDepart sysDepart = pdDepartService.getById(sysUser.getCurrentDepartId());
-        SysDepart firstDepart = pdDepartService.getById(sysUser.getFirstDepartId());
+
+        SysDepart firstDepart = sysDepartService.getFirstById(sysUser.getCurrentDepartId());//pdDepartService.getById(sysUser.getFirstDepartId());
 
         //部门列表
         SysDepart query = new SysDepart();
