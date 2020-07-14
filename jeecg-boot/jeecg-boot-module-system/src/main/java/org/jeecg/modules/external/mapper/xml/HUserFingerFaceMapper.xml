@@ -7,7 +7,7 @@
 
 
     <!-- 人脸/指纹信息查询 -->
-    <select id="queryHuserFingerFaceList" resultType="org.jeecg.modules.external.entity.HuserFingerFace">
+    <select id="queryHuserFingerFaceList" resultType="org.jeecg.modules.external.entity.HUserFingerFace">
         SELECT
         a.id AS "id",
         a.userId AS "userId",
