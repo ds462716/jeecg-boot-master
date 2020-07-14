@@ -315,18 +315,18 @@ public class HisApiForFCRenminUtils {
         return element.getText();
     }
 
-    public static void main(String[] args) {
-
-        //查询病人信息
-//        PdDosage pd = new PdDosage();
-//        JSONObject object1 = queryHisPatientInfo(pd);
-//        pd.setInHospitalNo("1668289");
-
-        //查询项目收费代码
-        HisChargeFCRMYY hisCharge = new HisChargeFCRMYY();
-        hisCharge.setChargeCode("120400002c");
-        hisCharge.setProName("血球五项采血管");
-        JSONObject object2 = queryHisChargeCode(hisCharge);
-
-    }
+//    public static void main(String[] args) {
+//
+//        //查询病人信息
+////        PdDosage pd = new PdDosage();
+////        JSONObject object1 = queryHisPatientInfo(pd);
+////        pd.setInHospitalNo("1668289");
+//
+//        //查询项目收费代码
+//        HisChargeFCRMYY hisCharge = new HisChargeFCRMYY();
+//        hisCharge.setChargeCode("120400002c");
+//        hisCharge.setProName("血球五项采血管");
+//        JSONObject object2 = queryHisChargeCode(hisCharge);
+//
+//    }
 }

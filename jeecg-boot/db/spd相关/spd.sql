@@ -996,3 +996,8 @@ ADD COLUMN `purchase_type` varchar(4) CHARACTER SET utf8 COLLATE utf8_general_ci
  INSERT INTO  `sys_dict`   VALUES ('1282490556941041665', '申购类型', 'purchase_type', '1:计划外申购    2：计划内申购', 0, 'admin', '2020-07-13 09:42:31', NULL, '2020-07-13 09:42:31', 0);
  INSERT INTO  `sys_dict_item`  VALUES ('1282490630039371778', '1282490556941041665', '计划外申购', '1', '', 1, 1, 'admin', '2020-07-13 09:42:48', NULL, '2020-07-13 09:42:48');
  INSERT INTO  `sys_dict_item`  VALUES ('1282490671776890881', '1282490556941041665', '计划内申购', '2', '', 2, 1, 'admin', '2020-07-13 09:42:58', NULL, '2020-07-13 09:42:58');
+
+-- add by jiangxz 2020年7月14日 08:51:02
+ALTER TABLE `jeecg-boot`.`pd_stock_record`
+MODIFY COLUMN `out_type` varchar(1) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '出库类型 : 1-申领出库; 2-科室出库; 3-调拨出库; 4-退货出库' AFTER `record_type`;
+

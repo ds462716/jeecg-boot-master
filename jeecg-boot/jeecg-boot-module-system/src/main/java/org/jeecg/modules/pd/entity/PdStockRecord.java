@@ -270,4 +270,12 @@ public class PdStockRecord extends BaseEntity {
     /**注册证*/
     @TableField(exist = false)
     private String registration;
+
+    @TableField(exist = false)
+    private String departType;//部门类型，1：1级库房，2二级库房
+
+    @TableField(exist = false)
+    private String onlyReturn;//只查退货出库
+    @TableField(exist = false)
+    private String exceptReturn;//除了退货出库
 }

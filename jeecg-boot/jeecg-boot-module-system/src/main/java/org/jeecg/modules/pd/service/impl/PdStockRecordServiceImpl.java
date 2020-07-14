@@ -417,7 +417,21 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
         if(PdConstant.RECODE_TYPE_1.equals(recodeType)){
             pdStockRecord.setInDepartId(sysUser.getCurrentDepartId());
         }else if(PdConstant.RECODE_TYPE_2.equals(recodeType)){
-            pdStockRecord.setOutDepartId(sysUser.getCurrentDepartId());
+            if(oConvertUtils.isEmpty(pdStockRecord.getOnlyReturn())){
+                // 查非退货出库列表
+                pdStockRecord.setOutDepartId(sysUser.getCurrentDepartId());
+            }else{
+                // 查退货出库列表
+                if(PdConstant.DEPART_TYPE_1.equals(sysUser.getDepartType())){
+                    //一级科室查所有科室
+                    if(oConvertUtils.isEmpty(pdStockRecord.getOutDepartId())){
+                        pdStockRecord.setOutDepartId(null);
+                    }
+                }else{
+                    //非一级科室 查询当前科室
+                    pdStockRecord.setOutDepartId(sysUser.getCurrentDepartId());
+                }
+            }
         }
         return pdStockRecordMapper.selectList(pageList,pdStockRecord);
     }
@@ -942,6 +956,103 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
             pdStockRecord.setSubmitBy(sysUser.getId());
             pdStockRecord.setSubmitByName(sysUser.getRealname());
         }
+
+        PdOnOff query2 = new PdOnOff();
+        query2.setDepartParentId(sysUser.getDepartParentId());
+        //开关-是否需要出库审批   1-是；0-否
+        query2.setCode(PdConstant.ON_OFF_STOCK_OUT_AUDIT);
+        PdOnOff stockOutAudit = pdOnOffService.getOne(query2);
+        if (stockOutAudit != null && stockOutAudit.getValue() != null) {
+            // 自动审批
+            pdStockRecord.setAllowStockOutAudit(stockOutAudit.getValue().toString());
+        }
+
+        //关-是否允许出入库时可修改进价和出价
+        query2.setCode(PdConstant.ON_OFF_ALLOW_EDIT_PRICE);
+        PdOnOff allowEditPrice = pdOnOffService.getOne(query2);
+        if (allowEditPrice != null && allowEditPrice.getValue() != null) {
+            pdStockRecord.setAllowEditPrice(allowEditPrice.getValue().toString());
+        }
+
+        //开关-是否显示入库单抬头   1-是；0-否
+        query2.setCode(PdConstant.ON_OFF_STOCK_OUT_TEXT);
+        query2.setValue(PdConstant.ON_OFF_STOCK_OUT_TEXT_1);
+        PdOnOff stockOutText = pdOnOffService.getOne(query2);
+        if (stockOutText != null) {
+            pdStockRecord.setStockOutText(stockOutText.getDescription());
+        }else{
+            pdStockRecord.setStockOutText("");
+        }
+
+        return pdStockRecord;
+    }
+
+    @Override
+    public PdStockRecord initReturnModal(String id) {
+        PdStockRecord pdStockRecord = new PdStockRecord();
+
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        SysDepart sysDepart = pdDepartService.getById(sysUser.getCurrentDepartId());
+        SysDepart firstDepart = pdDepartService.getById(sysUser.getFirstDepartId());
+
+        //部门列表
+        SysDepart query = new SysDepart();
+        query.setDepartParentId(sysUser.getDepartParentId());
+        query.setDepartId(sysUser.getCurrentDepartId());
+
+        if (oConvertUtils.isNotEmpty(id)) { // 查看页面
+            pdStockRecord = this.getById(id);
+
+            if(oConvertUtils.isEmpty(pdStockRecord.getAuditBy())){
+                pdStockRecord.setAuditByName(sysUser.getRealname());
+            }
+
+            //查出库单明细
+            PdStockRecordDetail pdStockRecordDetail = new PdStockRecordDetail();
+            pdStockRecordDetail.setRecordId(id);
+            List<PdStockRecordDetail> pdStockRecordDetailList = pdStockRecordDetailService.selectByMainId(pdStockRecordDetail);
+            BigDecimal inTotalPrice = new BigDecimal(0);//总金额
+            BigDecimal outTotalPrice = new BigDecimal(0);//总金额
+            Double totalSum = new Double(0);//总数量
+            for (PdStockRecordDetail item : pdStockRecordDetailList) {
+                totalSum = totalSum + item.getProductNum();
+                BigDecimal sellingPrice = item.getSellingPrice() == null ? new BigDecimal(0) : item.getSellingPrice();
+                BigDecimal purchasePrice = item.getPurchasePrice() == null ? new BigDecimal(0) : item.getPurchasePrice();
+                outTotalPrice = outTotalPrice.add(sellingPrice.multiply(BigDecimal.valueOf(item.getProductNum())).setScale(4, BigDecimal.ROUND_HALF_UP));
+                inTotalPrice = inTotalPrice.add(purchasePrice.multiply(BigDecimal.valueOf(item.getProductNum())).setScale(4, BigDecimal.ROUND_HALF_UP));
+            }
+
+            pdStockRecord.setTotalSum(totalSum);
+            pdStockRecord.setInTotalPrice(inTotalPrice);
+            pdStockRecord.setOutTotalPrice(outTotalPrice);
+            pdStockRecord.setPdStockRecordDetailList(pdStockRecordDetailList);
+
+            //库区库位下拉框
+            PdGoodsAllocation pdGoodsAllocation = new PdGoodsAllocation();
+            pdGoodsAllocation.setDepartId(pdStockRecord.getInDepartId());
+            pdGoodsAllocation.setAreaType(PdConstant.GOODS_ALLCATION_AREA_TYPE_2);
+            List<PdGoodsAllocationPage> goodsAllocationList = pdGoodsAllocationService.getOptionsForSelect(pdGoodsAllocation);
+            pdStockRecord.setGoodsAllocationList(goodsAllocationList);
+        } else {  // 新增页面
+            //退货出库科室（当前科室） 当前科室是则器械科不传值
+            if(!PdConstant.DEPART_TYPE_1.equals(sysDepart.getDepartType())){
+                pdStockRecord.setOutDepartId(sysDepart.getId());
+                pdStockRecord.setOutDepartName(sysDepart.getDepartName());
+            }
+            //退货入库科室（器械科）
+            pdStockRecord.setInDepartId(firstDepart.getId());
+            pdStockRecord.setInDepartName(firstDepart.getDepartName());
+            //获取出库单号
+            pdStockRecord.setRecordNo(UUIDUtil.generateOrderNoByType(PdConstant.ORDER_NO_FIRST_LETTER_THCK));
+            //获取当前日期
+            pdStockRecord.setSubmitDateStr(DateUtils.formatDate());
+            pdStockRecord.setSubmitDate(DateUtils.getDate());
+            //登录人姓名
+            pdStockRecord.setSubmitBy(sysUser.getId());
+            pdStockRecord.setSubmitByName(sysUser.getRealname());
+        }
+
+        pdStockRecord.setDepartType(sysDepart.getDepartType());//部门类型，1：1级库房，2二级库房
 
         PdOnOff query2 = new PdOnOff();
         query2.setDepartParentId(sysUser.getDepartParentId());

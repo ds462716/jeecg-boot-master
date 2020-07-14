@@ -1,7 +1,6 @@
 package org.jeecg.modules.pd.controller;
 
 import com.alibaba.fastjson.JSON;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
@@ -9,41 +8,30 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.PdConstant;
-import org.jeecg.common.system.query.QueryGenerator;
-import org.jeecg.common.system.vo.DictModel;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.DateUtils;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.message.util.PushMsgUtil;
-import org.jeecg.modules.pd.entity.*;
+import org.jeecg.modules.pd.entity.PdProductStock;
+import org.jeecg.modules.pd.entity.PdStockRecord;
+import org.jeecg.modules.pd.entity.PdStockRecordDetail;
 import org.jeecg.modules.pd.service.*;
-import org.jeecg.modules.pd.util.UUIDUtil;
-import org.jeecg.modules.pd.vo.PdGoodsAllocationPage;
 import org.jeecg.modules.pd.vo.PdStockRecordOutPage;
 import org.jeecg.modules.system.entity.SysDepart;
-import org.jeecg.modules.system.entity.SysPermission;
 import org.jeecg.modules.system.service.ISysDepartService;
 import org.jeecg.modules.system.service.ISysDictService;
 import org.jeecg.modules.system.service.ISysPermissionService;
-import org.jeecgframework.poi.excel.ExcelImportUtil;
 import org.jeecgframework.poi.excel.def.NormalExcelConstants;
 import org.jeecgframework.poi.excel.entity.ExportParams;
-import org.jeecgframework.poi.excel.entity.ImportParams;
 import org.jeecgframework.poi.excel.view.JeecgEntityExcelView;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * @Description: 出入库记录表
@@ -52,9 +40,9 @@ import java.util.stream.Collectors;
  * @Version: V1.0
  */
 @RestController
-@RequestMapping("/pd/pdStockRecordOut")
+@RequestMapping("/pd/pdStockRecordReturn")
 @Slf4j
-public class PdStockRecordOutController {
+public class PdStockRecordReturnController {
     @Autowired
     private IPdStockRecordService pdStockRecordService;
     @Autowired
@@ -88,7 +76,7 @@ public class PdStockRecordOutController {
      */
     @GetMapping(value = "/initModal")
     public Result<?> initModal(@RequestParam(name = "id") String id, HttpServletRequest req) {
-        PdStockRecord pdStockRecord = pdStockRecordService.initOutModal(id);
+        PdStockRecord pdStockRecord = pdStockRecordService.initReturnModal(id);
         pdStockRecord.setHospitalCode(hospitalCode);
         return Result.ok(pdStockRecord);
     }
@@ -109,7 +97,7 @@ public class PdStockRecordOutController {
                                    HttpServletRequest req) {
         Page<PdStockRecord> page = new Page<PdStockRecord>(pageNo, pageSize);
         pdStockRecord.setRecordType(PdConstant.RECODE_TYPE_2);
-        pdStockRecord.setExceptReturn("1");//查询 除了退货出库之外的出库类型
+        pdStockRecord.setOnlyReturn("1");//只查退货出库
         IPage<PdStockRecord> pageList = pdStockRecordService.queryList(page, pdStockRecord, PdConstant.RECODE_TYPE_2);
         return Result.ok(pageList);
     }
@@ -131,7 +119,7 @@ public class PdStockRecordOutController {
         Page<PdStockRecord> page = new Page<PdStockRecord>(pageNo, pageSize);
         pdStockRecord.setRecordType(PdConstant.RECODE_TYPE_2);
         pdStockRecord.setSubmitStatus(PdConstant.SUBMIT_STATE_2); //已提交状态
-        pdStockRecord.setExceptReturn("1");//查询 除了退货出库之外的出库类型
+        pdStockRecord.setOnlyReturn("1");//只查退货出库
         IPage<PdStockRecord> pageList = pdStockRecordService.queryList(page, pdStockRecord, PdConstant.RECODE_TYPE_2);
         return Result.ok(pageList);
     }
@@ -139,21 +127,21 @@ public class PdStockRecordOutController {
     /**
      * 保存
      *
-     * @param PdStockRecord
+     * @param pdStockRecord
      * @return
      */
     @PostMapping(value = "/add")
     public Result<?> add(@RequestBody PdStockRecord pdStockRecord) {
         if(oConvertUtils.isEmpty(pdStockRecord.getId())){
-            pdStockRecord.setExceptReturn("1");//查询 除了退货出库之外的出库类型
+            pdStockRecord.setOnlyReturn("1");//只查退货出库
             List<PdStockRecord> list = pdStockRecordService.queryList(pdStockRecord,PdConstant.RECODE_TYPE_2);
             if(CollectionUtils.isNotEmpty(list)){
-                return Result.error("出库单已被保存或提交，不能保存草稿！");
+                return Result.error("退货出库单已被保存或提交，不能保存草稿！");
             }
         }else{
             PdStockRecord entity = pdStockRecordService.getById(pdStockRecord.getId());
             if(entity != null && PdConstant.SUBMIT_STATE_2.equals(entity.getSubmitStatus())){
-                return Result.error("出库单已被提交，不能保存草稿！");
+                return Result.error("退货出库单已被提交，不能保存草稿！");
             }
         }
 
@@ -168,7 +156,7 @@ public class PdStockRecordOutController {
     /**
      * 提交
      *
-     * @param PdStockRecord
+     * @param pdStockRecord
      * @return
      */
     @PostMapping(value = "/submit")
@@ -176,7 +164,7 @@ public class PdStockRecordOutController {
         if (oConvertUtils.isNotEmpty(pdStockRecord.getId())) {
             PdStockRecord entity = pdStockRecordService.getById(pdStockRecord.getId());
             if(entity != null && PdConstant.SUBMIT_STATE_2.equals(entity.getSubmitStatus())){
-                return Result.error("出库单已被提交，不能再次提交！");
+                return Result.error("退货出库单已被提交，不能再次提交！");
             }
         }
         String recordId = pdStockRecordService.submit(pdStockRecord, pdStockRecord.getPdStockRecordDetailList(), PdConstant.RECODE_TYPE_2);
@@ -189,7 +177,7 @@ public class PdStockRecordOutController {
     /**
      * 审批
      *
-     * @param PdStockRecord
+     * @param pdStockRecord
      * @return
      */
     @PostMapping(value = "/audit")
@@ -198,8 +186,12 @@ public class PdStockRecordOutController {
         if (entity == null) {
             return Result.error("未找到对应数据");
         }
+
+        if(!PdConstant.SUBMIT_STATE_2.equals(entity.getSubmitStatus())){
+            return Result.error("退货出库单未提交，不能审批！");
+        }
         if(PdConstant.AUDIT_STATE_2.equals(entity.getAuditStatus()) || PdConstant.AUDIT_STATE_3.equals(entity.getAuditStatus())){
-            return Result.error("出库单已被审批，不能再次审批！");
+            return Result.error("退货出库单已被审批，不能再次审批！");
         }
         Map<String,String> result = pdStockRecordService.audit(pdStockRecord,entity, PdConstant.RECODE_TYPE_2);
         if(PdConstant.SUCCESS_200.equals(result.get("code"))) {
@@ -224,7 +216,7 @@ public class PdStockRecordOutController {
             pdStockRecordService.updateStatus(pdStockRecord);
             return Result.ok("撤回成功!");
         }else{
-            return Result.error("当前出库单状态已被审批或已撤回，不能撤回！");
+            return Result.error("当前退货出库单状态已被审批或已撤回，不能撤回！");
         }
     }
 
@@ -276,7 +268,7 @@ public class PdStockRecordOutController {
             pdStockRecordService.delMainByDelFlag(id);
             return Result.ok("删除成功!");
         }else{
-            return Result.error("当前出库单状态非待提交或已撤回状态，不能删除！");
+            return Result.error("当前退货出库单状态非待提交或已撤回状态，不能删除！");
         }
     }
 
@@ -373,9 +365,9 @@ public class PdStockRecordOutController {
 
         // Step.4 AutoPoi 导出Excel
         ModelAndView mv = new ModelAndView(new JeecgEntityExcelView());
-        mv.addObject(NormalExcelConstants.FILE_NAME, "出库记录表");
+        mv.addObject(NormalExcelConstants.FILE_NAME, "退货出库记录表");
         mv.addObject(NormalExcelConstants.CLASS, PdStockRecordOutPage.class);
-        mv.addObject(NormalExcelConstants.PARAMS, new ExportParams("出库记录表数据", "导出人:" + sysUser.getRealname(), "出库记录表"));
+        mv.addObject(NormalExcelConstants.PARAMS, new ExportParams("退货出库记录表数据", "导出人:" + sysUser.getRealname(), "退货出库记录表"));
         mv.addObject(NormalExcelConstants.DATA_LIST, exportList);
         return mv;
     }

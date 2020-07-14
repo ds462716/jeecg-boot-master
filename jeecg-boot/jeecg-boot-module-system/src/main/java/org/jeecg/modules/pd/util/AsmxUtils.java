@@ -65,22 +65,22 @@ public class AsmxUtils {
         return element.getText();
     }
 
-    public static void main(String[] args) {
-//        String action  = "http://WebXml.com.cn/getWeather";
-        String url = "http://ws.webxml.com.cn/WebServices/WeatherWS.asmx";
-        String methodStr = "getWeather";
-        String namespace = "http://WebXml.com.cn/";
-        String tns = "xsd";
-        String[] pars = {"theCityCode"}; // 参数名称
-        String[] vals = {"2013"};        //参数值
-        String result = null;
-        try {
-            result = getJsonDataFromWebservice(url, methodStr, namespace, tns, pars, vals);
-        } catch (AxisFault axisFault) {
-            logger.error("webservice.asmx========调用异常========"+axisFault.getMessage());
-            axisFault.printStackTrace();
-        }
-        System.out.println("result===================="+result);
-    }
+//    public static void main(String[] args) {
+////        String action  = "http://WebXml.com.cn/getWeather";
+//        String url = "http://ws.webxml.com.cn/WebServices/WeatherWS.asmx";
+//        String methodStr = "getWeather";
+//        String namespace = "http://WebXml.com.cn/";
+//        String tns = "xsd";
+//        String[] pars = {"theCityCode"}; // 参数名称
+//        String[] vals = {"2013"};        //参数值
+//        String result = null;
+//        try {
+//            result = getJsonDataFromWebservice(url, methodStr, namespace, tns, pars, vals);
+//        } catch (AxisFault axisFault) {
+//            logger.error("webservice.asmx========调用异常========"+axisFault.getMessage());
+//            axisFault.printStackTrace();
+//        }
+//        System.out.println("result===================="+result);
+//    }
 
 }

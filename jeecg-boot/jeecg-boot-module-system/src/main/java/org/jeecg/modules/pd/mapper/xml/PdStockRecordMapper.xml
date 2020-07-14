@@ -73,6 +73,12 @@
             <if test="entity.outType != null and entity.outType != ''">
                 AND a.out_type = #{entity.outType}
             </if>
+            <if test="entity.onlyReturn != null and entity.onlyReturn != ''">
+                AND a.out_type = '4'
+            </if>
+            <if test="entity.exceptReturn != null and entity.exceptReturn != ''">
+                AND a.out_type &lt;&gt; '4'
+            </if>
             <if test="entity.inType != null and entity.inType != ''">
                 AND a.in_type = #{entity.inType}
             </if>

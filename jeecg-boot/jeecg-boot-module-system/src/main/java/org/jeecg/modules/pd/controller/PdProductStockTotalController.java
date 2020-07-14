@@ -350,16 +350,6 @@ public class PdProductStockTotalController {
 		 }
 		 productStock.setDepartParentId(sysUser.getDepartParentId());
 		 page = pdProductStockService.queryList(page,productStock);
-		List<PdProductStock> aList= page.getRecords();
-		 if(aList !=null && aList.size()>0){
-			 for(PdProductStock stock : aList){
-				 PdProductStockUniqueCode stockUniqueCode=new PdProductStockUniqueCode();
-				 stockUniqueCode.setDepartParentId(sysUser.getDepartParentId());
-				 stockUniqueCode.setProductStockId(stock.getId());
-				 String uniqueCode=productStockUniqueCodeService.queryUniqueCode(stockUniqueCode);
-				 stock.setRefBarCodes(uniqueCode);
-			 }
-		 }
 		 return Result.ok(page);
 	 }
 
@@ -568,7 +558,11 @@ public class PdProductStockTotalController {
 											HttpServletRequest req) {
 		Page<PdProductStock> page = new Page<PdProductStock>(pageNo, pageSize);
 		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
-		productStock.setDepartId(sysUser.getCurrentDepartId());
+		if(oConvertUtils.isNotEmpty(productStock.getDepartId())){
+			productStock.setDepartId(productStock.getDepartId());
+		}else{
+			productStock.setDepartId(sysUser.getCurrentDepartId());
+		}
 		productStock.setDepartParentId(sysUser.getDepartParentId());
 //		productStock.setNestatStatus(PdConstant.STOCK_NESTAT_STATUS_1);
 		page = pdProductStockService.selectList(page,productStock);

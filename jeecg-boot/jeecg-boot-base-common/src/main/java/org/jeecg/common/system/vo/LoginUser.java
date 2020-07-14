@@ -109,6 +109,11 @@ public class LoginUser {
 	private String departParentId;
 
 	/**
+	 * 当前部门的一级部门
+	 */
+	private String firstDepartId;
+
+	/**
 	 * 当前登录的部门类型
 	 */
 	private String departType;

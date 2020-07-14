@@ -180,6 +180,7 @@
         applyNo:"",
         allocationNo:"",
         supplierId:"", //供应商ID
+        departId:"",//部门id
 
         productFlagDisabled:false,
         productFlag:"", //0-器械；1-试剂
@@ -355,6 +356,7 @@
         this.applyNo = "";
         this.allocationNo = "";
         this.supplierId = "";
+        this.departId="";
         // this.loadData(1);
         this.$emit('close');
         this.visible = false;
@@ -395,6 +397,9 @@
         }
         if(params && params.menuType){
           this.menuType = params.menuType;
+        }
+        if(params && params.departId){
+          this.departId = params.departId;
         }
         this.loadData(1);
         this.visible = true;
@@ -455,6 +460,9 @@
         }
         if(this.barCodeType){
           params.barCodeType = this.barCodeType;
+        }
+        if(this.departId){
+          params.departId = this.departId;
         }
         this.loading = true;
         getAction(this.url.list, params).then((res) => {

@@ -101,6 +101,13 @@ public interface IPdStockRecordService extends IService<PdStockRecord> {
 	PdStockRecord initOutModal(String id);
 
 	/**
+	 * 退货出库初始化页面
+	 * @param id
+	 * @return
+	 */
+	PdStockRecord initReturnModal(String id);
+
+	/**
 	 * 调入明细分页查询列表
 	 * @param pageList
 	 * @param pdStockRecord

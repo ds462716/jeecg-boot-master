@@ -8,6 +8,7 @@ import org.jeecg.common.constant.CacheConstant;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.util.FillRuleUtil;
 import org.jeecg.common.util.YouBianCodeUtil;
+import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.system.entity.SysDepart;
 import org.jeecg.modules.system.mapper.SysDepartMapper;
 import org.jeecg.modules.system.model.DepartIdModel;
@@ -379,6 +380,22 @@ public class SysDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart
 	@Override
 	public SysDepart queryDepartByOrgCode(String orgCode) {
 		return sysDepartMapper.queryDepartByOrgCode(orgCode);
+	}
+
+	/**
+	 * 获取当前科室的一级科室，如果本身是一级科室则返回本身
+	 * @param id
+	 * @return
+	 */
+	@Override
+	public SysDepart getFirstById(String id) {
+		SysDepart sysDepart =  this.getById(id);
+		String departType = sysDepart.getDepartType();
+		if("1".equals(departType)){
+			return sysDepart;
+		}else{
+			return this.getFirstById(sysDepart.getParentId());
+		}
 	}
 
 }
