@@ -512,4 +512,10 @@ public class PdDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart>
         }
         return Result.ok("生成简码成功");
     }
+
+
+    @Override
+    public List<Map<String,Object>>  findDepartList(SysDepart sysDepart) {
+      return  sysDepartMapper.findDepartList(sysDepart);
+    }
 }

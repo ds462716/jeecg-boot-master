@@ -1045,4 +1045,50 @@
 		</where>
 	</select>
 
+
+
+
+	<select id="queryPdProductStockList" resultType="java.util.Map">
+		SELECT
+		a.id AS "id",
+		a.depart_id AS "kfId",
+		a.product_id AS "productId",
+		b.number AS "productNo",
+		b.name AS "productName",
+		a.product_bar_code AS "productBarCode",
+		a.batch_no AS "batchNo",
+		b.version  AS "productVersion",
+		b.spec AS "productSpec",
+		b.purchase_price AS "pruPrice",
+		b.unit_id AS "unit",
+		b.product_flag AS "productType",
+		d.name AS "venderName",
+		a.stock_num AS "stockNum",
+		date_format(a.exp_date, "%Y-%m-%d") AS "validDate"
+		FROM pd_product_stock a
+		LEFT JOIN pd_product b ON a.product_id = b.id
+		LEFT JOIN sys_depart c ON c.id = a.depart_id
+		LEFT JOIN pd_vender	d ON d.id = b.vender_id
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL} AND a.stock_num > 0
+			<if test="departId != null and departId != ''">
+				AND a.depart_id = #{departId}
+			</if>
+			<if test="productNo != null and productNo != ''">
+				AND b.number = #{productNo}
+			</if>
+			<if test="batchNo != null and batchNo != ''">
+				AND a.batch_no LIKE CONCAT('%', #{batchNo}, '%')
+			</if>
+			<if test="version != null and version != ''">
+				AND b.version LIKE CONCAT('%', #{version}, '%')
+			</if>
+			<if test="productName != null and productName != ''">
+				AND b.name LIKE CONCAT('%', #{productName}, '%')
+			</if>
+			<if test="productSpec != null and productSpec != ''">
+				AND b.spec = #{productSpec}
+			</if>
+		</where>
+	</select>
 </mapper>

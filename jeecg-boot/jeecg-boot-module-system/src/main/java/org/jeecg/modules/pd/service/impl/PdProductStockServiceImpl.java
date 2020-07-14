@@ -156,4 +156,8 @@ public class PdProductStockServiceImpl extends ServiceImpl<PdProductStockMapper,
 		pdProductStockMapper.updateStockBarCodeType(productStock);
 	}
 
+	public List<Map<String, Object>> queryPdProductStockList(PdProductStock productStock){
+		return pdProductStockMapper.queryPdProductStockList(productStock);
+	}
+
 }

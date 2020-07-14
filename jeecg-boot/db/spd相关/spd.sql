@@ -1001,3 +1001,83 @@ ADD COLUMN `purchase_type` varchar(4) CHARACTER SET utf8 COLLATE utf8_general_ci
 ALTER TABLE `jeecg-boot`.`pd_stock_record`
 MODIFY COLUMN `out_type` varchar(1) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '出库类型 : 1-申领出库; 2-科室出库; 3-调拨出库; 4-退货出库' AFTER `record_type`;
 
+-- add by mcb 2020年7月14日 08:51:02
+-- 智能柜终端注册表
+ CREATE TABLE `h_forcer_info` (
+  `id` varchar(64) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL COMMENT '序列ID',
+  `forcerNo` varchar(64) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL COMMENT '柜子编号',
+  `forcerName` varchar(64) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL COMMENT '柜子名称',
+  `isDisable` varchar(4) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL COMMENT '启用状态  0:未启用  1：已启用',
+  `userId` varchar(64) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT NULL COMMENT '审核人',
+  `macAddress` varchar(200) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL COMMENT '设备地址',
+  `linkMan` varchar(100) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT NULL COMMENT '联系人',
+  `linkPhone` varchar(50) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT NULL COMMENT '联系电话',
+  `kfId` varchar(64) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL COMMENT '管理库房',
+  `sjkfId` varchar(64) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL COMMENT '上级库房',
+  `del_flag` varchar(4) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL COMMENT '删除标识',
+  `create_by` varchar(50) CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL COMMENT '创建人',
+  `create_time` datetime(0) NULL DEFAULT NULL COMMENT '创建日期',
+  `update_by` varchar(50) CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL COMMENT '更新人',
+  `update_time` datetime(0) NULL DEFAULT NULL COMMENT '更新日期',
+  `sys_org_code` varchar(64) CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL COMMENT '所属部门CODE',
+  `depart_parent_id` varchar(64) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL COMMENT '所属父部门',
+  `depart_id` varchar(64) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL COMMENT '所属部门'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+-- add by mcb 2020年7月14日 08:51:02
+-- 人脸与指纹信息表
+CREATE TABLE `h_user_finger_face` (
+  `id` varchar(64) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL COMMENT '主键id',
+  `userId` varchar(64) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL COMMENT '用户id',
+  `isDisable` varchar(4) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL COMMENT '是否启用 0：未启用 1：已启用',
+  `image` longblob NOT NULL COMMENT '人脸或指纹图片',
+  `type` varchar(4) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL COMMENT '类型   0：指纹信息    1：人脸信息',
+  `del_flag` varchar(4) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL COMMENT '删除标识',
+  `create_by` varchar(50) CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL COMMENT '创建人',
+  `create_time` datetime(0) NULL DEFAULT NULL COMMENT '创建日期',
+  `update_by` varchar(50) CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL COMMENT '更新人',
+  `update_time` datetime(0) NULL DEFAULT NULL COMMENT '更新日期',
+  `sys_org_code` varchar(64) CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL COMMENT '所属部门CODE',
+  `depart_parent_id` varchar(64) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL COMMENT '所属父部门',
+  `depart_id` varchar(64) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL COMMENT '所属部门'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- add by mcb 2020年7月14日 08:51:02
+-- RFID数据绑定表
+CREATE TABLE `h_rfid_info` (
+  `id` varchar(64) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL COMMENT '主键ID',
+  `rfId` varchar(64) NOT NULL COMMENT 'rfid数据',
+  `productNo` varchar(64) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL COMMENT '产品编号',
+  `productId` varchar(64) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL COMMENT '产品ID',
+  `isDisable` varchar(4) NOT NULL COMMENT '启用标识   0：未启用   1：已启用',
+  `userId` varchar(64) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT NULL COMMENT '用户id',
+  `rkmxId` varchar(64) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT NULL COMMENT '对应的rkmxid',
+  `batchNo` varchar(64) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT NULL COMMENT '批号',
+  `validDate` datetime(0) DEFAULT NULL COMMENT '有效期',
+  `del_flag` varchar(4) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL COMMENT '删除标识',
+  `create_by` varchar(50) CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL COMMENT '创建人',
+  `create_time` datetime(0) NULL DEFAULT NULL COMMENT '创建日期',
+  `update_by` varchar(50) CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL COMMENT '更新人',
+  `update_time` datetime(0) NULL DEFAULT NULL COMMENT '更新日期',
+  `sys_org_code` varchar(64) CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL COMMENT '所属部门',
+  `depart_parent_id` varchar(64) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL COMMENT '所属父部门'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+
+-- add by mcb 2020年7月14日 08:51:02
+-- RFID标签与柜子关系表
+CREATE TABLE `h_forcer_rfid` (
+  `id` varchar(64) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL COMMENT '序列id',
+  `rfId` varchar(64) NOT NULL COMMENT 'rfid数据',
+  `forcerId` varchar(64) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL COMMENT '柜子id',
+  `forcerNumber` varchar(64) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT NULL COMMENT '单个柜子标识',
+  `del_flag` varchar(4) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL COMMENT '删除标识',
+  `create_by` varchar(50) CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL COMMENT '创建人',
+  `create_time` datetime(0) NULL DEFAULT NULL COMMENT '创建日期',
+  `update_by` varchar(50) CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL COMMENT '更新人',
+  `update_time` datetime(0) NULL DEFAULT NULL COMMENT '更新日期',
+  `sys_org_code` varchar(64) CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL COMMENT '所属部门',
+  `depart_parent_id` varchar(64) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL COMMENT '所属父部门'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;

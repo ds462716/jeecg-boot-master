@@ -72,4 +72,8 @@ public interface IPdProductStockService extends IService<PdProductStock> {
     List<PdProductStock> queryUniqueProductStockList(PdProductStock ps);
 
     Page<PdProductStock> queryPrintList(Page<PdProductStock> page, PdProductStock productStock);
+
+
+	public List<Map<String, Object>> queryPdProductStockList(PdProductStock productStock);
+
 }

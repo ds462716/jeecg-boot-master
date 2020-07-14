@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.external.mapper.HUserFingerFaceMapper">
+
+
+
+
+
+    <!-- 人脸/指纹信息查询 -->
+    <select id="queryHuserFingerFaceList" resultType="org.jeecg.modules.external.entity.HUserFingerFace">
+        SELECT
+        a.id AS "id",
+        a.userId AS "userId",
+        a.isDisable AS "isDisable",
+        a.create_time AS "createDate",
+        a.image  AS "image",
+        a.type  AS "type"
+        from h_user_finger_face a
+        <where>
+            1 = 1
+            <if test="userId != null and userId != ''">
+                AND a.userId=#{userId}
+            </if>
+            <if test="type != null and type != ''">
+                AND a.type=#{type}
+            </if>
+        </where>
+    </select>
+
+
+
+</mapper>

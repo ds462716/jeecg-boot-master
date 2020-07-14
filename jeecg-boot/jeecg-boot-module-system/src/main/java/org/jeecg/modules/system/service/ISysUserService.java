@@ -1,20 +1,19 @@
 package org.jeecg.modules.system.service;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-
+import com.baomidou.mybatisplus.extension.service.IService;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.system.vo.SysUserCacheInfo;
+import org.jeecg.modules.system.entity.SysDepart;
 import org.jeecg.modules.system.entity.SysUser;
-
-import com.baomidou.mybatisplus.extension.service.IService;
 import org.jeecg.modules.system.model.SysUserSysDepartModel;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * <p>
@@ -220,4 +219,6 @@ public interface ISysUserService extends IService<SysUser> {
 	 * @return
 	 */
 	List<String> getUserIdByRoleCode(String roleCode);
+
+	List<SysDepart> queryUserDeparts(String userId);
 }

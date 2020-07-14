@@ -1,12 +1,10 @@
 package org.jeecg.modules.system.service.impl;
 
-import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.CacheConstant;
@@ -27,7 +25,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -390,5 +387,9 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 	}
 
 
-
+	//根据用户ID获取多个部门集合
+	@Override
+	public List<SysDepart> queryUserDeparts(String userId) {
+		return sysDepartMapper.queryUserDeparts(userId);
+	}
 }

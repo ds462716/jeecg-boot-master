@@ -1192,4 +1192,14 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
     public List<HashMap> queryRecordViewCount(PdStockRecord stockRecord) {
         return pdStockRecordMapper.queryRecordViewCount(stockRecord);
     }
+
+    /**
+     * 入库明细非分页--耗材柜接口查询用
+     * @param pdStockRecord
+     * @return
+     */
+    @Override
+    public List<Map<String,Object>> findOutQueryList(PdStockRecord pdStockRecord) {
+        return pdStockRecordMapper.findOutQueryList(pdStockRecord);
+    }
 }
