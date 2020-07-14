@@ -145,7 +145,9 @@ public class ShiroRealm extends AuthorizingRealm {
 				//赋值最顶级部门id（医院id）
 				loginUser.setDepartParentId(sysDepart.getDepartParentId());
 				//赋值当前部门的一级部门
-				loginUser.setFirstDepartId(firstDepart.getId());
+				if(firstDepart!=null && StringUtils.isNotEmpty(firstDepart.getId())){
+					loginUser.setFirstDepartId(firstDepart.getId());
+				}
 			}
 		}
 		return loginUser;

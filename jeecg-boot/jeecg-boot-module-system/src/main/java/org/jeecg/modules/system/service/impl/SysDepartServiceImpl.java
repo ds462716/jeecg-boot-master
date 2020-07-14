@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import io.netty.util.internal.StringUtil;
+import org.apache.commons.lang.StringUtils;
 import org.jeecg.common.constant.CacheConstant;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.util.FillRuleUtil;
@@ -389,7 +390,13 @@ public class SysDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart
 	 */
 	@Override
 	public SysDepart getFirstById(String id) {
+		if(StringUtils.isEmpty(id)){
+			return null;
+		}
 		SysDepart sysDepart =  this.getById(id);
+		if(sysDepart == null){
+			return null;
+		}
 		String departType = sysDepart.getDepartType();
 		if("1".equals(departType)){
 			return sysDepart;
