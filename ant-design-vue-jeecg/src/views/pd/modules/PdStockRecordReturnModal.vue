@@ -23,7 +23,7 @@
               </a-col>
               <a-col :span="6">
                 <a-form-item label="退货出库日期" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                  <j-date disabled placeholder="请选择出库日期" v-decorator="[ 'submitDate', validatorRules.submitDate]" :trigger-change="true" style="width: 100%"/>
+                  <j-date disabled placeholder="请选择退货出库日期" v-decorator="[ 'submitDate', validatorRules.submitDate]" :trigger-change="true" style="width: 100%"/>
                 </a-form-item>
               </a-col>
               <a-col :span="6">
@@ -515,7 +515,7 @@
           if(!res.result.auditDate){
             res.result.auditDate = res.result.submitDate;
           }
-          if(this.hospitalCode == "FCZYY"){
+          if(this.hospitalCode == "FCZYY" || this.hospitalCode == "FCRMYY"){
             this.$refs.pdStockRecordOutPrintModalFCZYY.show(res.result);
             this.$refs.pdStockRecordOutPrintModalFCZYY.title = this.stockOutText + "退货出库单";
           }else if(this.hospitalCode == "GZSLYY"){

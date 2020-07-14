@@ -612,7 +612,7 @@
           if(!res.result.auditDate){
             res.result.auditDate = res.result.submitDate;
           }
-          if(this.hospitalCode == "FCZYY"){
+          if(this.hospitalCode == "FCZYY" || this.hospitalCode == "FCRMYY"){
             this.$refs.pdStockRecordOutPrintModalFCZYY.show(res.result);
             this.$refs.pdStockRecordOutPrintModalFCZYY.title = this.stockOutText + "出库单";
           }else if(this.hospitalCode == "GZSLYY"){

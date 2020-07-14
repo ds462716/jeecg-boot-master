@@ -596,7 +596,7 @@
       // 选择产品 新增行
       chooseProductList() {
         this.$refs.pdChooseProductStockListModel.width = 1550;
-        if(this.hospitalCode == "FCZYY"){
+        if(this.hospitalCode == "FCZYY" || this.hospitalCode == "FCRMYY"){
           this.$refs.pdChooseProductStockListModel.show({nestatStatus:"1",barCodeType:"0"});
         }else if(this.hospitalCode == "GZSLYY"){
           this.$refs.pdChooseProductStockListModel.show({nestatStatus:"1",barCodeType:"0",productFlag:"0"}); //赣州市立医院，普通出库 禁止不能查询试剂

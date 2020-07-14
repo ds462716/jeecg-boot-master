@@ -190,11 +190,11 @@
               库管员：
             </span>
             <a-input style="width: 10%;text-align: left" />
-            <span style="margin-left: 3%">
+            <span style="margin-left: 3%" v-show="showApplyBy">
               <!--客户收货人签字：-->
               领用人：
             </span>
-            <a-input style="width: 10%;text-align: left" />
+            <a-input style="width: 10%;text-align: left"  v-show="showApplyBy"/>
           </a-col>
         </div>
       </a-col>
@@ -225,6 +225,7 @@
         lockScroll: false,
         fullscreen: true,
         switchFullscreen: false,
+        showApplyBy:true,
         columns: [
           { title: '产品名称', dataIndex: 'productName', align:"center", width:"16%" },
           { title: '生产厂家', dataIndex: 'venderName', align:"center",},
@@ -282,6 +283,10 @@
         this.visible = true;
         this.dataSource = record.pdStockRecordDetailList;
         this.record = record;
+        this.showApplyBy = true;
+        if(this.record.outType == "4"){
+          this.showApplyBy = false;
+        }
 
         for (let item of this.dataSource){
           let registration = item.productRegistration.replace(/；/g, ";")

@@ -703,7 +703,7 @@
           if(!res.result.auditDate){
             res.result.auditDate = res.result.submitDate;
           }
-          if(this.hospitalCode == "FCZYY"){
+          if(this.hospitalCode == "FCZYY" || this.hospitalCode == "FCRMYY"){
             this.$refs.pdStockRecordInPrintModal.show(res.result);
             this.$refs.pdStockRecordInPrintModal.title = this.stockInText + "入库单";
           }else if(this.hospitalCode == "GZSLYY"){

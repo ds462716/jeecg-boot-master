@@ -890,7 +890,7 @@
           if(!res.result.auditDate){
             res.result.auditDate = res.result.submitDate;
           }
-          if(this.hospitalCode == "FCZYY"){
+          if(this.hospitalCode == "FCZYY" || this.hospitalCode == "FCRMYY"){
             this.$refs.pdStockRecordOutPrintModalFCZYY.show(res.result);
             this.$refs.pdStockRecordOutPrintModalFCZYY.title = this.stockOutText + "出库单";
           }else if(this.hospitalCode == "GZSLYY"){
@@ -1157,7 +1157,7 @@
             this.$message.error("请先导入申领单！");
             return;
           }
-          if(this.hospitalCode == "FCZYY"){
+          if(this.hospitalCode == "FCZYY" || this.hospitalCode == "FCRMYY"){
             this.$refs.pdChooseProductStockListModel.show({applyNo:this.applyNo,nestatStatus:"1",barCodeType:"0"});
           }else if(this.hospitalCode == "GZSLYY"){
             this.$refs.pdChooseProductStockListModel.show({applyNo:this.applyNo,nestatStatus:"1",barCodeType:"0",productFlag:"0"});//赣州市立医院，普通出库 禁止不能查询试剂
@@ -1165,7 +1165,7 @@
             this.$refs.pdChooseProductStockListModel.show({applyNo:this.applyNo,nestatStatus:"1",barCodeType:"0"});
           }
         }else if(outType == "2"){
-          if(this.hospitalCode == "FCZYY"){
+          if(this.hospitalCode == "FCZYY" || this.hospitalCode == "FCRMYY"){
             this.$refs.pdChooseProductStockListModel.show({nestatStatus:"1",barCodeType:"0"});
           }else if(this.hospitalCode == "GZSLYY"){
             this.$refs.pdChooseProductStockListModel.show({nestatStatus:"1",barCodeType:"0",productFlag:"0"}); //赣州市立医院，普通出库 禁止不能查询试剂
@@ -1177,7 +1177,7 @@
             this.$message.error("请先导入调拨单！");
             return;
           }
-          if(this.hospitalCode == "FCZYY"){
+          if(this.hospitalCode == "FCZYY" || this.hospitalCode == "FCRMYY"){
             this.$refs.pdChooseProductStockListModel.show({allocationNo:this.allocationNo,nestatStatus:"1",barCodeType:"0"});
           }else if(this.hospitalCode == "GZSLYY"){
             this.$refs.pdChooseProductStockListModel.show({allocationNo:this.allocationNo,nestatStatus:"1",barCodeType:"0",productFlag:"0"});//赣州市立医院，普通出库 禁止查询试剂
