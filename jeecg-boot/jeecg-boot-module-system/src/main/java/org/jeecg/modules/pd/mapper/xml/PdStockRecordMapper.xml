@@ -358,4 +358,44 @@
         ) c
         GROUP BY type;
     </select>
+
+
+    <!-- 统计入库查询    耗材柜接口查询用 -->
+    <select id="findOutQueryList" resultType="java.util.Map">
+        SELECT
+        a.id AS "id",
+        a.in_depart_id AS "kfId",
+        pp.id AS "productId",
+        pp.number AS "productNo",
+        pp.name AS "productName",
+        pp.spec AS "productSpec",
+        pp.version AS "productVersion",
+        pp.unit_id AS "unit",
+        pp.product_flag AS "productType",
+        vd.name AS "venderName",
+        pp.purchase_price AS "pruPrice",
+        srp.product_num AS "stockNum",
+        srp.batch_no AS "batchNo",
+        srp.exp_date AS "validDate"
+        FROM pd_stock_record a
+        left join pd_stock_record_detail srp ON a.id = srp.record_id
+        left join pd_product pp on srp.product_id = pp.id
+        LEFT JOIN pd_supplier su on pp.supplier_id = su.id
+        LEFT JOIN pd_vender vd on pp.vender_id = vd.id
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+            <if test="storeroomId != null and storeroomId != ''">
+                AND a.in_depart_id = #{storeroomId}
+            </if>
+            <if test="recordNo != null and recordNo != ''">
+                AND a.record_no = #{recordNo}
+            </if>
+            <if test="recordType != null and recordType != ''">
+                AND a.record_type = #{recordType}
+            </if>
+            <if test="auditStatus != null and auditStatus != ''">
+                AND a.audit_status = #{auditStatus}
+            </if>
+        </where>
+    </select>
 </mapper>

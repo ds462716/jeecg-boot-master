@@ -8,6 +8,7 @@ import org.jeecg.modules.pd.entity.PdStockRecord;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Description: 出入库记录表
@@ -57,4 +58,6 @@ public interface PdStockRecordMapper extends BaseMapper<PdStockRecord> {
 
     /*入库统计报表  根据产品按月统计入库数量*/
     List<HashMap> queryRecordViewCount(PdStockRecord pdStockRecord);
+
+    public List<Map<String,Object>> findOutQueryList(PdStockRecord pdStockRecord);
 }

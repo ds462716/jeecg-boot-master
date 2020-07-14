@@ -54,4 +54,7 @@ public interface IPdDepartService extends IService<SysDepart> {
     Result<Object> generatePyWb();
 
     Result<Object> generateUserPyWb();
+
+    List<Map<String,Object>> findDepartList(SysDepart sysDepart);
+
 }

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.external.mapper.HforcerInfoMapper">
+
+    <sql id="HForcerInfoColumns">
+		     a.id as "id",
+			 a.forcerNo as "forcerNo",
+			 a.forcerName as "forcerName",
+			 a.isDisable as "isDisable",
+			 a.userId as "userId",
+			 a.create_time AS "createDate",
+			 a.macAddress as "macAddress",
+			 a.linkMan as "linkMan",
+			 a.linkPhone as "linkPhone",
+			 a.kfId as "kfId",
+			 a.sjkfId as "sjkfId"
+	</sql>
+
+
+
+    <select id="selectList"  resultType="org.jeecg.modules.external.entity.HForcerInfo">
+
+
+
+    </select>
+
+
+    <!-- 耗材柜注册信息查询 -->
+    <select id="queryConsumables" resultType="org.jeecg.modules.external.entity.HForcerInfo">
+        SELECT
+        <include refid="HForcerInfoColumns"/>
+        FROM h_forcer_info a
+        <where>
+            1 = 1
+            <if test="macAddress != null and macAddress != ''">
+                AND a.macAddress=#{macAddress}
+            </if>
+        </where>
+    </select>
+</mapper>

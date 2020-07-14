@@ -114,4 +114,24 @@
         </if>
     </select>
 
+
+    <!-- 智能柜用   获取库房列表信息 -->
+    <select id="findDepartList" resultType="java.util.Map">
+        SELECT
+        a.id AS "kfId",
+        a.org_code AS "kfNo",
+        a.depart_name AS "kfName",
+        a.depart_type AS "storeroomType"
+        FROM sys_depart a
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+        </where>
+        <if test="id != null and id != ''">
+            AND a.id = #{id}
+        </if>
+        <if test="departName != null and departName != ''">
+            AND a.depart_name LIKE CONCAT('%', #{departName}, '%')
+        </if>
+    </select>
+
 </mapper>

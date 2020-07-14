@@ -94,4 +94,8 @@ public interface PdProductStockMapper extends BaseMapper<PdProductStock> {
 	List<PdProductStock> queryUniqueProductStockList(PdProductStock pdProductStock);
 
 	Page<PdProductStock> queryPrintList(Page<PdProductStock> page, @Param("entity") PdProductStock entity);
+
+	List<Map<String, Object>> queryPdProductStockList(PdProductStock productStock);
+
+
 }
