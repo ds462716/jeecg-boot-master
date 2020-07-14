@@ -1027,12 +1027,6 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
             pdStockRecord.setOutTotalPrice(outTotalPrice);
             pdStockRecord.setPdStockRecordDetailList(pdStockRecordDetailList);
 
-            //库区库位下拉框
-            PdGoodsAllocation pdGoodsAllocation = new PdGoodsAllocation();
-            pdGoodsAllocation.setDepartId(pdStockRecord.getInDepartId());
-            pdGoodsAllocation.setAreaType(PdConstant.GOODS_ALLCATION_AREA_TYPE_2);
-            List<PdGoodsAllocationPage> goodsAllocationList = pdGoodsAllocationService.getOptionsForSelect(pdGoodsAllocation);
-            pdStockRecord.setGoodsAllocationList(goodsAllocationList);
         } else {  // 新增页面
             //退货出库科室（当前科室） 当前科室是则器械科不传值
             if(!PdConstant.DEPART_TYPE_1.equals(sysDepart.getDepartType())){
@@ -1053,6 +1047,13 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
         }
 
         pdStockRecord.setDepartType(sysDepart.getDepartType());//部门类型，1：1级库房，2二级库房
+
+        //库区库位下拉框
+        PdGoodsAllocation pdGoodsAllocation = new PdGoodsAllocation();
+        pdGoodsAllocation.setDepartId(firstDepart.getId());
+        pdGoodsAllocation.setAreaType(PdConstant.GOODS_ALLCATION_AREA_TYPE_2);
+        List<PdGoodsAllocationPage> goodsAllocationList = pdGoodsAllocationService.getOptionsForSelect(pdGoodsAllocation);
+        pdStockRecord.setGoodsAllocationList(goodsAllocationList);
 
         PdOnOff query2 = new PdOnOff();
         query2.setDepartParentId(sysUser.getDepartParentId());

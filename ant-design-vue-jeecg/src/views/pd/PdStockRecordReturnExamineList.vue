@@ -10,10 +10,10 @@
             </a-form-item>
           </a-col>
           <a-col :span="6">
-            <a-form-item label="入库库房">
+            <a-form-item label="出库库房">
               <a-select
                 showSearch
-                placeholder="请选择入库库房"
+                placeholder="请选择出库库房"
                 :supplierId="departValue"
                 :defaultActiveFirstOption="false"
                 :allowClear="true"
@@ -22,13 +22,13 @@
                 @search="departHandleSearch"
                 @focus="departHandleSearch"
                 :notFoundContent="notFoundContent"
-                v-model="queryParam.inDepartId"
+                v-model="queryParam.outDepartId"
               >
                 <a-select-option v-for="d in departList" :key="d.id">{{d.departName}}</a-select-option>
               </a-select>
             </a-form-item>
           </a-col>
-          <a-col :md="6" :sm="8">
+          <a-col :md="6" :sm="8" v-show="false">
             <a-form-item label="出库类型">
               <j-dict-select-tag-expand v-model="queryParam.outType" dictCode="out_type"/>
             </a-form-item>

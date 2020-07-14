@@ -447,13 +447,6 @@
               // this.departList = res.result.sysDepartList; // 初始化部门列表 用于数据回显
               if(this.model.id){ //详情页
                 this.pdStockRecordDetailTable.dataSource = res.result.pdStockRecordDetailList || [];
-                //货区货位 下拉框
-                this.goodsAllocationList = res.result.goodsAllocationList;
-                this.pdStockRecordDetailTable.columns.forEach((item, idx) => {
-                  if(item.key === "inHuoweiCode"){
-                    item.options = this.goodsAllocationList;
-                  }
-                })
 
                 this.totalSum = res.result.totalSum;
                 this.outTotalPrice = res.result.outTotalPrice.toString();
@@ -473,6 +466,14 @@
                   this.disableOutDepart = false;
                 }
               }
+              //货区货位 下拉框
+              this.goodsAllocationList = res.result.goodsAllocationList;
+              this.pdStockRecordDetailTable.columns.forEach((item, idx) => {
+                if(item.key === "inHuoweiCode"){
+                  item.options = this.goodsAllocationList;
+                }
+              })
+
               this.hospitalCode = res.result.hospitalCode;
               this.allowEditPrice = res.result.allowEditPrice;
               if(this.disableSubmit){

@@ -28,7 +28,7 @@
               </a-select>
             </a-form-item>
           </a-col>
-          <a-col :md="6" :sm="8">
+          <a-col :md="6" :sm="8" v-show="false">
             <a-form-item label="出库类型">
               <j-dict-select-tag-expand v-model="queryParam.outType" dictCode="out_type"/>
             </a-form-item>
