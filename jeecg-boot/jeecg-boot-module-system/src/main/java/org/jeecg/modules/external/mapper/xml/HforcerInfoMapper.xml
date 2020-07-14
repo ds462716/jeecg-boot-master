@@ -4,16 +4,16 @@
 
     <sql id="HForcerInfoColumns">
 		     a.id as "id",
-			 a.forcerNo as "forcerNo",
-			 a.forcerName as "forcerName",
-			 a.isDisable as "isDisable",
-			 a.userId as "userId",
-			 a.create_time AS "createDate",
-			 a.macAddress as "macAddress",
-			 a.linkMan as "linkMan",
-			 a.linkPhone as "linkPhone",
-			 a.kfId as "kfId",
-			 a.sjkfId as "sjkfId"
+			 a.forcer_no as "forcerNo",
+			 a.forcer_name as "forcerName",
+			 a.is_disable as "isDisable",
+			 a.user_id as "userId",
+			 a.create_time AS "createTime",
+			 a.mac_address as "macAddress",
+			 a.link_man as "linkMan",
+			 a.link_phone as "linkPhone",
+			 a.kf_id as "kfid",
+			 a.sjkf_id as "sjkfId"
 	</sql>
 
 
@@ -33,7 +33,7 @@
         <where>
             1 = 1
             <if test="macAddress != null and macAddress != ''">
-                AND a.macAddress=#{macAddress}
+                AND a.mac_address=#{macAddress}
             </if>
         </where>
     </select>

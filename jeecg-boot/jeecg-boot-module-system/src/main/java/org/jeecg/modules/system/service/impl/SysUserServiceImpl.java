@@ -392,4 +392,10 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 	public List<SysDepart> queryUserDeparts(String userId) {
 		return sysDepartMapper.queryUserDeparts(userId);
 	}
+
+	//根据用户名或用户id获取用户信息
+	@Override
+	public  SysUser  getUser(SysUser user) {
+		return userMapper.getUser(user);
+	}
 }

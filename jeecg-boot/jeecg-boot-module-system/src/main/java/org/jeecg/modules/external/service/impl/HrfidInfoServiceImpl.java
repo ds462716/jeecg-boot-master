@@ -48,7 +48,7 @@ public class HrfidInfoServiceImpl extends ServiceImpl<HRfidInfoMapper, HRfidInfo
             if (!StringUtils.isEmpty(validDate)) {
                 rfid.setValidDate(DateUtils.str2Date(validDate,new SimpleDateFormat("yyyy-MM-dd")));//有效期
             }
-            super.save(rfid);
+            rfidInfoMapper.insert(rfid);
         }
     }
 

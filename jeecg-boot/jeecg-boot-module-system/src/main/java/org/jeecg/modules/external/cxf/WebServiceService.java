@@ -98,4 +98,18 @@ public interface WebServiceService {
      */
     public String sendOutboundOrderToSpd(@WebParam(name = "outboundOrder") String str);
 
+
+
+    /**
+     * 试剂出入库接口
+     * @param str
+     * @return
+     */
+    public String reagentOutToInRecord(@WebParam(name = "outToInRecord") String str);
+    /**
+     * 根据唯一码获取产品信息
+     * @param str
+     * @return
+     */
+    public String sendRefBarCode(@WebParam(name = "queryProduct") String str);
 }

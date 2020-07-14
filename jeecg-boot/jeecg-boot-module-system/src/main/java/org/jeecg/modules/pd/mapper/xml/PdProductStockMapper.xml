@@ -1074,8 +1074,8 @@
 			<if test="departId != null and departId != ''">
 				AND a.depart_id = #{departId}
 			</if>
-			<if test="productNo != null and productNo != ''">
-				AND b.number = #{productNo}
+			<if test="number != null and number != ''">
+				AND b.number = #{number}
 			</if>
 			<if test="batchNo != null and batchNo != ''">
 				AND a.batch_no LIKE CONCAT('%', #{batchNo}, '%')
@@ -1086,8 +1086,8 @@
 			<if test="productName != null and productName != ''">
 				AND b.name LIKE CONCAT('%', #{productName}, '%')
 			</if>
-			<if test="productSpec != null and productSpec != ''">
-				AND b.spec = #{productSpec}
+			<if test="spec != null and spec != ''">
+				AND b.spec = #{spec}
 			</if>
 		</where>
 	</select>

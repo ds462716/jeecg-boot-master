@@ -50,7 +50,7 @@ public class HforcerInfoServiceImpl extends ServiceImpl<HforcerInfoMapper, HForc
         hForcer.setMacAddress(MapUtils.getString(map,"macAddress"));//设备地址
         hForcer.setKfId(MapUtils.getString(map,"kfId"));//管理库房id
         hForcer.setSjkfId(MapUtils.getString(map,"sjkfId"));//上一级库房id
-        super.save(hForcer);
+        hforcerInfoMapper.insert(hForcer);
     }
 
     /**

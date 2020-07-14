@@ -1081,3 +1081,50 @@ CREATE TABLE `h_forcer_rfid` (
   `sys_org_code` varchar(64) CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL COMMENT '所属部门',
   `depart_parent_id` varchar(64) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL COMMENT '所属父部门'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+ALTER TABLE `h_forcer_info`
+CHANGE COLUMN `forcerNo` `forcer_no` varchar(64) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL COMMENT '柜子编号' AFTER `id`,
+CHANGE COLUMN `forcerName` `forcer_name` varchar(64) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL COMMENT '柜子名称' AFTER `forcer_no`,
+CHANGE COLUMN `isDisable` `is_disable` varchar(4) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL COMMENT '启用状态  0:未启用  1：已启用' AFTER `forcer_name`,
+CHANGE COLUMN `userId` `user_id` varchar(64) CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL COMMENT '审核人' AFTER `is_disable`,
+CHANGE COLUMN `macAddress` `mac_address` varchar(200) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL COMMENT '设备地址' AFTER `user_id`,
+CHANGE COLUMN `linkMan` `link_man` varchar(100) CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL COMMENT '联系人' AFTER `mac_address`,
+CHANGE COLUMN `linkPhone` `link_phone` varchar(50) CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL COMMENT '联系电话' AFTER `link_man`,
+CHANGE COLUMN `kfId` `kf_id` varchar(64) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL COMMENT '管理库房' AFTER `link_phone`,
+CHANGE COLUMN `sjkfId` `sjkf_id` varchar(64) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL COMMENT '上级库房' AFTER `kf_id`;
+
+ALTER TABLE `h_forcer_info`
+MODIFY COLUMN `depart_parent_id` varchar(64) CHARACTER SET utf8 COLLATE utf8_bin NULL COMMENT '所属父部门' AFTER `sys_org_code`,
+MODIFY COLUMN `depart_id` varchar(64) CHARACTER SET utf8 COLLATE utf8_bin NULL COMMENT '所属部门' AFTER `depart_parent_id`;
+
+
+
+
+ALTER TABLE `h_user_finger_face`
+CHANGE COLUMN `userId` `user_id` varchar(64) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL COMMENT '用户id' AFTER `id`,
+CHANGE COLUMN `isDisable` `is_disable` varchar(4) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL COMMENT '是否启用 0：未启用 1：已启用' AFTER `user_id`,
+MODIFY COLUMN `del_flag` varchar(4) CHARACTER SET utf8 COLLATE utf8_bin NULL COMMENT '删除标识' AFTER `type`,
+MODIFY COLUMN `depart_parent_id` varchar(64) CHARACTER SET utf8 COLLATE utf8_bin NULL COMMENT '所属父部门' AFTER `sys_org_code`,
+MODIFY COLUMN `depart_id` varchar(64) CHARACTER SET utf8 COLLATE utf8_bin NULL COMMENT '所属部门' AFTER `depart_parent_id`;
+
+
+ALTER TABLE `h_rfid_info`
+CHANGE COLUMN `rfId` `rf_id` varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT 'rfid数据' AFTER `id`,
+CHANGE COLUMN `productNo` `product_no` varchar(64) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL COMMENT '产品编号' AFTER `rf_id`,
+CHANGE COLUMN `productId` `product_id` varchar(64) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL COMMENT '产品ID' AFTER `product_no`,
+CHANGE COLUMN `isDisable` `is_disable` varchar(4) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '启用标识   0：未启用   1：已启用' AFTER `product_id`,
+CHANGE COLUMN `userId` `user_id` varchar(64) CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL COMMENT '用户id' AFTER `is_disable`,
+CHANGE COLUMN `rkmxId` `rkmx_id` varchar(64) CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL COMMENT '对应的rkmxid' AFTER `user_id`,
+CHANGE COLUMN `batchNo` `batch_no` varchar(64) CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL COMMENT '批号' AFTER `rkmx_id`,
+CHANGE COLUMN `validDate` `valid_date` datetime(0) NULL DEFAULT NULL COMMENT '有效期' AFTER `batch_no`,
+MODIFY COLUMN `del_flag` varchar(4) CHARACTER SET utf8 COLLATE utf8_bin NULL COMMENT '删除标识' AFTER `valid_date`,
+MODIFY COLUMN `depart_parent_id` varchar(64) CHARACTER SET utf8 COLLATE utf8_bin NULL COMMENT '所属父部门' AFTER `sys_org_code`;
+
+
+ ALTER TABLE `h_forcer_rfid`
+CHANGE COLUMN `rfId` `rf_id` varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT 'rfid数据' AFTER `id`,
+CHANGE COLUMN `forcerId` `forcer_id` varchar(64) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL COMMENT '柜子id' AFTER `rf_id`,
+CHANGE COLUMN `forcerNumber` `forcer_number` varchar(64) CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL COMMENT '单个柜子标识' AFTER `forcer_id`,
+MODIFY COLUMN `del_flag` varchar(4) CHARACTER SET utf8 COLLATE utf8_bin NULL COMMENT '删除标识' AFTER `forcer_number`,
+MODIFY COLUMN `depart_parent_id` varchar(64) CHARACTER SET utf8 COLLATE utf8_bin NULL COMMENT '所属父部门' AFTER `sys_org_code`;

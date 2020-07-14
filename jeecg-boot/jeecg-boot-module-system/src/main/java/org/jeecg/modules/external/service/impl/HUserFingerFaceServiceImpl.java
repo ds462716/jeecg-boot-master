@@ -48,7 +48,7 @@ public class HUserFingerFaceServiceImpl extends ServiceImpl<HUserFingerFaceMappe
             hForcer.setImage(face.getImage());
             hForcer.setType(face.getType());
             hForcer.setIsDisable("1");
-            super.save(hForcer);
+            userFingerFaceMapper.insert(hForcer);
         }
     }
 }

@@ -558,7 +558,15 @@ public class WebServiceServiceImpl implements WebServiceService {
             if (map != null && !MapUtils.isEmpty(map)) {
                 String userId = MapUtils.getString(map, "userId");
                 String loginName = MapUtils.getString(map, "userName");
-                SysUser sysUser = sysUserService.getById(userId);
+                if (userId == null && loginName== null) {
+                    retMap.put("result",PdConstant.FAIL_1);
+                    retMap.put("message", "参数异常");
+                    return JSON.toJSONString(retMap);
+                }
+                SysUser user=new SysUser();
+                user.setId(userId);
+                user.setUsername(loginName);
+                SysUser sysUser = sysUserService.getUser(user);
                 if (sysUser == null || sysUser.getUsername() == null) {
                     retMap.put("result",PdConstant.FAIL_1);
                     retMap.put("message", "根据用户id获取不到有效的用户信息");
@@ -700,6 +708,8 @@ public class WebServiceServiceImpl implements WebServiceService {
         }
     }
 
+
+
     /**
      * 获取入库单信息接口
      *
@@ -825,6 +835,90 @@ public class WebServiceServiceImpl implements WebServiceService {
             retMap.put("result",PdConstant.FAIL_1);
             retMap.put("message", "失败，日志：" + e.getMessage());
             //TODO 日志记录
+            return JSON.toJSONString(retMap);
+        }
+    }
+
+
+    /**
+     * 根据唯一码获取产品信息接口
+     *
+     * @param str
+     * @return
+     */
+    @Override
+    public String sendRefBarCode(String str) {
+        Map<String, Object> retMap = new HashMap<String, Object>();
+        if (str == null || "".equals(str.trim())) {
+            retMap.put("result",PdConstant.FAIL_1);
+            retMap.put("message", "查询条件为空");
+            return JSON.toJSONString(retMap);
+        }
+        try {
+            System.out.println("#######根据唯一码获取产品信息接口报文："+str);
+            Map<Object, Object> map = (Map<Object, Object>) JSONObject.parse(str);
+            if (map != null && !MapUtils.isEmpty(map)) {
+                String kfId = MapUtils.getString(map, "kfId");//库房ID
+                String uniqueCode = MapUtils.getString(map, "uniqueCode");//唯一码
+
+
+
+
+
+                retMap.put("param", "");
+                retMap.put("result", PdConstant.SUCCESS_0);
+                retMap.put("message", "成功");
+            } else {
+                retMap.put("result",PdConstant.FAIL_1);
+                retMap.put("message", "查询条件不能为空");
+            }
+            return JSON.toJSONString(retMap);
+        } catch (Exception e) {
+            e.printStackTrace();
+            retMap.put("result",PdConstant.FAIL_1);
+            retMap.put("message", "查询失败，日志：" + e.getMessage());
+            return JSON.toJSONString(retMap);
+        }
+    }
+
+    /**
+     * 试剂出入库接口
+     *
+     * @param str
+     * @return
+     */
+    @Override
+    public String reagentOutToInRecord(String str) {
+        Map<String, Object> retMap = new HashMap<String, Object>();
+        if (str == null || "".equals(str.trim())) {
+            retMap.put("result",PdConstant.FAIL_1);
+            retMap.put("message", "参数为空");
+            return JSON.toJSONString(retMap);
+        }
+        try {
+            System.out.println("#######试剂出入库接口报文："+str);
+            Map<Object, Object> map = (Map<Object, Object>) JSONObject.parse(str);
+            if (map != null && !MapUtils.isEmpty(map)) {
+                String outDepartId = MapUtils.getString(map, "ckkf");//出库库房ID
+                String inDepartId = MapUtils.getString(map, "rkkf");//入库库房ID
+                String operator = MapUtils.getString(map, "operator");//操作人
+                String type = MapUtils.getString(map, "type");//操作类型  0:入库；1:出库；
+
+
+
+
+
+                retMap.put("result", PdConstant.SUCCESS_0);
+                retMap.put("message", "成功");
+            } else {
+                retMap.put("result",PdConstant.FAIL_1);
+                retMap.put("message", "参数不能为空");
+            }
+            return JSON.toJSONString(retMap);
+        } catch (Exception e) {
+            e.printStackTrace();
+            retMap.put("result",PdConstant.FAIL_1);
+            retMap.put("message", "操作失败，日志：" + e.getMessage());
             return JSON.toJSONString(retMap);
         }
     }

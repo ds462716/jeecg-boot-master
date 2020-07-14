@@ -267,4 +267,18 @@
 		AND a.del_flag = '0'
 	</select>
 
+
+
+	<select id="getUser" resultType="org.jeecg.modules.system.entity.SysUser">
+		SELECT
+		*
+		FROM sys_user a
+		WHERE a.del_flag ='0'
+		<if test="id != null and id != ''">
+			AND a.id = #{id}
+		</if>
+		<if test="username != null and username != ''">
+			AND a.username = #{username}
+		</if>
+	</select>
 </mapper>

@@ -21,7 +21,7 @@ import java.util.Date;
  * @Version: V1.0
  */
 @Data
-@TableName("h_forcer_inf")
+@TableName("h_forcer_info")
 @Accessors(chain = true)
 @EqualsAndHashCode(callSuper = false)
 public class HForcerInfo extends BaseEntity {

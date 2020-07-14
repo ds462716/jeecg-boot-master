@@ -6,23 +6,23 @@
     <select id="queryHforcerRfidList" resultType="java.util.Map">
         SELECT
         rfid.id AS "id",
-        rfid.rfid AS "rfId",
-        rfid.forcerId AS "forcerId",
-        rfid.forcerNumber AS "forcerNumber"
+        rfid.rf_id AS "rfId",
+        rfid.forcer_id AS "forcerId",
+        rfid.forcer_number AS "forcerNumber"
         from h_forcer_rfid rfid
         <where>
             1=1
             <if test="forcerId != null and forcerId != ''">
-                AND rfid.forcerId=#{forcerId}
+                AND rfid.forcer_id=#{forcerId}
             </if>
             <if test="forcerNumber != null and forcerNumber != ''">
-                AND rfid.forcerNumber=#{forcerNumber}
+                AND rfid.forcer_number=#{forcerNumber}
             </if>
         </where>
     </select>
 
     <delete id="deleteByforcerId" parameterType="java.lang.String">
-		DELETE FROM h_forcer_rfid WHERE forcerId = #{forcerId}
+		DELETE FROM h_forcer_rfid WHERE forcer_id = #{forcerId}
 	</delete>
 
 </mapper>

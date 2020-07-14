@@ -221,4 +221,10 @@ public interface ISysUserService extends IService<SysUser> {
 	List<String> getUserIdByRoleCode(String roleCode);
 
 	List<SysDepart> queryUserDeparts(String userId);
+
+
+	/**
+	 * 根据用户名或用户id获取用户信息
+	 */
+	public SysUser getUser(SysUser user);
 }
