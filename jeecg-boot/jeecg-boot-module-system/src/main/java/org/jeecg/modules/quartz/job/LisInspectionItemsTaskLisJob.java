@@ -50,7 +50,7 @@ public class LisInspectionItemsTaskLisJob implements Job {
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
         log.info("根据检验项目扣减库存任务开始，时间:" + DateUtils.getTimestamp());
         ExInspectionItems item= new ExInspectionItems();
-        item.setQueryDateEnd(DateUtils.formatDate(DateUtils.getDayEnd()));//当日结束时间
+        //item.setQueryDateEnd(DateUtils.formatDate(DateUtils.getDayEnd()));//当日结束时间
         List<ExInspectionItems> list=hisChargeService.selectExjianYanLis(item);
         if(list!=null && list.size()>0){
             List<String> jyIds = exInspectionItemsService.selectListIds();

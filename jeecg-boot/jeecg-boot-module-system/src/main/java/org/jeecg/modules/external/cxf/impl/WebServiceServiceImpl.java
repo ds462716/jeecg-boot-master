@@ -860,12 +860,13 @@ public class WebServiceServiceImpl implements WebServiceService {
             if (map != null && !MapUtils.isEmpty(map)) {
                 String kfId = MapUtils.getString(map, "kfId");//库房ID
                 String uniqueCode = MapUtils.getString(map, "uniqueCode");//唯一码
-
-
-
-
-
-                retMap.put("param", "");
+                PdProductStock productStock=new PdProductStock();
+                productStock.setProductFlag(PdConstant.PRODUCT_FLAG_1);
+                productStock.setRefBarCode(uniqueCode);
+                productStock.setDepartId(kfId);
+                productStock.setNestatStatus(PdConstant.STOCK_NESTAT_STATUS_1);
+                List<PdProductStock> stock= pdProductStockService.queryUniqueProductStockList(productStock);
+                retMap.put("param", stock);
                 retMap.put("result", PdConstant.SUCCESS_0);
                 retMap.put("message", "成功");
             } else {
