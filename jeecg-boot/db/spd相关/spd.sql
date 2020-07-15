@@ -1024,7 +1024,6 @@ MODIFY COLUMN `out_type` varchar(1) CHARACTER SET utf8 COLLATE utf8_general_ci N
   `depart_id` varchar(64) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL COMMENT '所属部门'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-
 -- add by mcb 2020年7月14日 08:51:02
 -- 人脸与指纹信息表
 CREATE TABLE `h_user_finger_face` (
@@ -1064,8 +1063,6 @@ CREATE TABLE `h_rfid_info` (
   `depart_parent_id` varchar(64) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL COMMENT '所属父部门'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-
-
 -- add by mcb 2020年7月14日 08:51:02
 -- RFID标签与柜子关系表
 CREATE TABLE `h_forcer_rfid` (
@@ -1082,7 +1079,6 @@ CREATE TABLE `h_forcer_rfid` (
   `depart_parent_id` varchar(64) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL COMMENT '所属父部门'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-
 ALTER TABLE `h_forcer_info`
 CHANGE COLUMN `forcerNo` `forcer_no` varchar(64) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL COMMENT '柜子编号' AFTER `id`,
 CHANGE COLUMN `forcerName` `forcer_name` varchar(64) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL COMMENT '柜子名称' AFTER `forcer_no`,
@@ -1098,16 +1094,12 @@ ALTER TABLE `h_forcer_info`
 MODIFY COLUMN `depart_parent_id` varchar(64) CHARACTER SET utf8 COLLATE utf8_bin NULL COMMENT '所属父部门' AFTER `sys_org_code`,
 MODIFY COLUMN `depart_id` varchar(64) CHARACTER SET utf8 COLLATE utf8_bin NULL COMMENT '所属部门' AFTER `depart_parent_id`;
 
-
-
-
 ALTER TABLE `h_user_finger_face`
 CHANGE COLUMN `userId` `user_id` varchar(64) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL COMMENT '用户id' AFTER `id`,
 CHANGE COLUMN `isDisable` `is_disable` varchar(4) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL COMMENT '是否启用 0：未启用 1：已启用' AFTER `user_id`,
 MODIFY COLUMN `del_flag` varchar(4) CHARACTER SET utf8 COLLATE utf8_bin NULL COMMENT '删除标识' AFTER `type`,
 MODIFY COLUMN `depart_parent_id` varchar(64) CHARACTER SET utf8 COLLATE utf8_bin NULL COMMENT '所属父部门' AFTER `sys_org_code`,
 MODIFY COLUMN `depart_id` varchar(64) CHARACTER SET utf8 COLLATE utf8_bin NULL COMMENT '所属部门' AFTER `depart_parent_id`;
-
 
 ALTER TABLE `h_rfid_info`
 CHANGE COLUMN `rfId` `rf_id` varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT 'rfid数据' AFTER `id`,
@@ -1121,10 +1113,14 @@ CHANGE COLUMN `validDate` `valid_date` datetime(0) NULL DEFAULT NULL COMMENT '�
 MODIFY COLUMN `del_flag` varchar(4) CHARACTER SET utf8 COLLATE utf8_bin NULL COMMENT '删除标识' AFTER `valid_date`,
 MODIFY COLUMN `depart_parent_id` varchar(64) CHARACTER SET utf8 COLLATE utf8_bin NULL COMMENT '所属父部门' AFTER `sys_org_code`;
 
-
  ALTER TABLE `h_forcer_rfid`
 CHANGE COLUMN `rfId` `rf_id` varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT 'rfid数据' AFTER `id`,
 CHANGE COLUMN `forcerId` `forcer_id` varchar(64) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL COMMENT '柜子id' AFTER `rf_id`,
 CHANGE COLUMN `forcerNumber` `forcer_number` varchar(64) CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL COMMENT '单个柜子标识' AFTER `forcer_id`,
 MODIFY COLUMN `del_flag` varchar(4) CHARACTER SET utf8 COLLATE utf8_bin NULL COMMENT '删除标识' AFTER `forcer_number`,
 MODIFY COLUMN `depart_parent_id` varchar(64) CHARACTER SET utf8 COLLATE utf8_bin NULL COMMENT '所属父部门' AFTER `sys_org_code`;
+
+-- 产品编号打印按钮权限 add by jiangxz 2020年7月15日 10:15:54
+INSERT INTO `sys_permission`(`id`, `parent_id`, `name`, `url`, `component`, `component_name`, `redirect`, `menu_type`, `business_type`, `perms`, `perms_type`, `sort_no`, `always_show`, `icon`, `is_route`, `is_leaf`, `keep_alive`, `hidden`, `description`, `create_by`, `create_time`, `update_by`, `update_time`, `del_flag`, `rule_flag`, `status`, `internal_or_external`) VALUES ('1283217282049179650', '1227074338542592001', '打印产品编号按钮', NULL, NULL, NULL, NULL, 2, '0', 'product:printProductNumber', '2', 1.00, 0, NULL, 1, 1, 0, 0, NULL, 'admin', '2020-07-15 09:50:16', NULL, '2020-07-15 09:50:16', 0, 0, '1', 0);
+INSERT INTO `sys_permission`(`id`, `parent_id`, `name`, `url`, `component`, `component_name`, `redirect`, `menu_type`, `business_type`, `perms`, `perms_type`, `sort_no`, `always_show`, `icon`, `is_route`, `is_leaf`, `keep_alive`, `hidden`, `description`, `create_by`, `create_time`, `update_by`, `update_time`, `del_flag`, `rule_flag`, `status`, `internal_or_external`) VALUES ('1283217085512482817', '1218803853975425025', '出库审核打印产品编号按钮', NULL, NULL, NULL, NULL, 2, '0', 'outstock:printProductNumber', '2', 1.00, 0, NULL, 1, 1, 0, 0, NULL, 'admin', '2020-07-15 09:49:29', NULL, '2020-07-15 09:49:29', 0, 0, '1', 0);
+INSERT INTO `sys_permission`(`id`, `parent_id`, `name`, `url`, `component`, `component_name`, `redirect`, `menu_type`, `business_type`, `perms`, `perms_type`, `sort_no`, `always_show`, `icon`, `is_route`, `is_leaf`, `keep_alive`, `hidden`, `description`, `create_by`, `create_time`, `update_by`, `update_time`, `del_flag`, `rule_flag`, `status`, `internal_or_external`) VALUES ('1283216905509732353', '1218803434842820609', '入库审核打印产品编号按钮', NULL, NULL, NULL, NULL, 2, '0', 'instock:printProductNumber', '2', 1.00, 0, NULL, 1, 1, 0, 0, NULL, 'admin', '2020-07-15 09:48:46', 'admin', '2020-07-15 09:49:41', 0, 0, '1', 0);
