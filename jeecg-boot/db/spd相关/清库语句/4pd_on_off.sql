@@ -31,3 +31,8 @@ INSERT INTO `pd_on_off` (`id`, `name`, `code`, `description`, `remarks`, `value`
 INSERT INTO `pd_on_off` (`id`, `name`, `code`, `description`, `remarks`, `value`, `create_by`, `create_time`, `update_by`, `update_time`, `depart_id`, `depart_parent_id`, `del_flag`, `sys_org_code`) VALUES ('2', '是否允许入库量大于订单量', 'on_off_allow_in_more_order', '', '1-允许；0-不允许', 1, NULL, NULL, NULL, NULL, NULL, NULL, '0', NULL);
 INSERT INTO `pd_on_off` (`id`, `name`, `code`, `description`, `remarks`, `value`, `create_by`, `create_time`, `update_by`, `update_time`, `depart_id`, `depart_parent_id`, `del_flag`, `sys_org_code`) VALUES ('10', '是否允许入库证照过期的供应商', 'on_off_stock_in_exp_supplier', '目前只做了提醒，没有限制死必须不能入库', '1-允许；0-不允许', 0, NULL, NULL, NULL, NULL, NULL, NULL, '0', NULL);
 INSERT INTO `pd_on_off` (`id`, `name`, `code`, `description`, `remarks`, `value`, `create_by`, `create_time`, `update_by`, `update_time`, `depart_id`, `depart_parent_id`, `del_flag`, `sys_org_code`) VALUES ('1', '是否允许入库非订单产品', 'on_off_allow_not_order_product', '', '1-允许；0-不允许', 1, NULL, NULL, NULL, NULL, NULL, NULL, '0', NULL);
+INSERT INTO `pd_on_off` (`id`, `name`, `code`, `description`, `remarks`, `value`, `create_by`, `create_time`, `update_by`, `update_time`, `depart_id`, `depart_parent_id`, `del_flag`, `sys_org_code`) VALUES ('11', '是否显示二级条码框（入库、出库、退货）', 'on_off_show_s_barcode', '用于只扫产品编号，不扫二级条码的情况', '1-显示；0-不显示', 1, NULL, NULL, NULL, NULL, NULL, NULL, '0', NULL);
+
+-- *******************************************************
+-- 注意：部署后 需要点一次“系统管理-开关配置”菜单，来初始化菜单
+-- *******************************************************

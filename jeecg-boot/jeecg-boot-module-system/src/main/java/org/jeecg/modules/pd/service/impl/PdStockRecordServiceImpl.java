@@ -849,6 +849,13 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
             pdStockRecord.setAllowStockInExpSupplier(stockInExpSupplier.getValue().toString());
         }
 
+        //开关-是否显示二级条码框（入库、出库、退货）   1-显示；0-不显示
+        query.setCode(PdConstant.ON_OFF_SHOW_S_BARCODE);
+        PdOnOff showSBarcode = pdOnOffService.getOne(query);
+        if (showSBarcode != null && showSBarcode.getValue() != null) {
+            pdStockRecord.setShowSBarcode(showSBarcode.getValue().toString());
+        }
+
         //开关-是否显示入库单抬头   1-是；0-否
         query.setCode(PdConstant.ON_OFF_STOCK_IN_TEXT);
         query.setValue(PdConstant.ON_OFF_STOCK_IN_TEXT_1);
@@ -974,6 +981,13 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
             pdStockRecord.setAllowEditPrice(allowEditPrice.getValue().toString());
         }
 
+        //开关-是否显示二级条码框（入库、出库、退货）   1-显示；0-不显示
+        query2.setCode(PdConstant.ON_OFF_SHOW_S_BARCODE);
+        PdOnOff showSBarcode = pdOnOffService.getOne(query2);
+        if (showSBarcode != null && showSBarcode.getValue() != null) {
+            pdStockRecord.setShowSBarcode(showSBarcode.getValue().toString());
+        }
+
         //开关-是否显示入库单抬头   1-是；0-否
         query2.setCode(PdConstant.ON_OFF_STOCK_OUT_TEXT);
         query2.setValue(PdConstant.ON_OFF_STOCK_OUT_TEXT_1);
@@ -1071,6 +1085,13 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
         PdOnOff allowEditPrice = pdOnOffService.getOne(query2);
         if (allowEditPrice != null && allowEditPrice.getValue() != null) {
             pdStockRecord.setAllowEditPrice(allowEditPrice.getValue().toString());
+        }
+
+        //开关-是否显示二级条码框（入库、出库、退货）   1-显示；0-不显示
+        query2.setCode(PdConstant.ON_OFF_SHOW_S_BARCODE);
+        PdOnOff showSBarcode = pdOnOffService.getOne(query2);
+        if (showSBarcode != null && showSBarcode.getValue() != null) {
+            pdStockRecord.setShowSBarcode(showSBarcode.getValue().toString());
         }
 
         //开关-是否显示入库单抬头   1-是；0-否

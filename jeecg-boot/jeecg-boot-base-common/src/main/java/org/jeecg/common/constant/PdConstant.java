@@ -121,6 +121,8 @@ public interface PdConstant {
 	public final static String ON_OFF_STOCK_IN_EXP_PRODUCT = "on_off_stock_in_exp_product";
 	/**开关-是否允许入库证照过期的供应商**/
 	public final static String ON_OFF_STOCK_IN_EXP_SUPPLIER = "on_off_stock_in_exp_supplier";
+	/**开关-是否显示二级条码框（入库、出库、退货）**/
+	public final static String ON_OFF_SHOW_S_BARCODE = "on_off_show_s_barcode";
 
 
 	//系统消息提醒模板CODE

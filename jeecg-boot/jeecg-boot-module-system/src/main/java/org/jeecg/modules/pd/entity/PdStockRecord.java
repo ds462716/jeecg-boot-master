@@ -199,6 +199,9 @@ public class PdStockRecord extends BaseEntity {
     /**开关-是否允许入库证照过期的供应商**/
     @TableField(exist = false)
     private String allowStockInExpSupplier;
+    /**开关-是否显示二级条码框（入库、出库、退货）**/
+    @TableField(exist = false)
+    private String showSBarcode;
     /**出库单抬头**/
     @TableField(exist = false)
     private String stockOutText;

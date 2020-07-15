@@ -47,7 +47,19 @@
           <a-tabs v-model="activeKey" @change="handleChangeTabs">
             <a-tab-pane tab="产品明细" :key="refKeys[0]"  :forceRender="true">
               <a-form v-show="!disableSubmit">
-                <a-row>
+                <a-row v-if="!showSBarcode">
+                  <a-col :md="6" :sm="8">
+                    <a-form-item label="产品编号" :labelCol="labelCol" :wrapperCol="wrapperCol">
+                      <a-input ref="productNumberInput" v-focus placeholder="请输入产品编号" v-model="queryParam.productNumber" @keyup.enter.native="onlyNumbersearchQuery"></a-input>
+                    </a-form-item>
+                  </a-col>
+                  <a-col :md="12" :sm="8">
+                    <a-form-item label="" :labelCol="labelCol" :wrapperCol="wrapperCol" style="text-align: left;padding-left: 15px;">
+                      提示：按<span style="color: red">Ctrl+Alt</span>键快速定位到扫码输入框
+                    </a-form-item>
+                  </a-col>
+                </a-row>
+                <a-row v-if="showSBarcode">
                   <a-col :md="6" :sm="8">
                     <a-form-item label="产品编号" :labelCol="labelCol" :wrapperCol="wrapperCol">
                       <a-input ref="productNumberInput" v-focus placeholder="请输入产品编号" v-model="queryParam.productNumber" @keyup.enter.native="searchQuery(0)"></a-input>
@@ -272,6 +284,8 @@
         totalPrice:'0.0000',
         activeKey: 'pdDosageDetail',
         refKeys: ['pdDosageDetail',],
+        showSBarcode:false,           //开关-是否显示二级条码框（入库、出库、退货） 1-显示；0-不显示
+
         //货区货位二级联动下拉框
         goodsAllocationList:[],
         queryParam:{},
@@ -439,6 +453,12 @@
                 let fieldval = pick(this.initData,'dosageNo','dosageDate','departName','outHuoweiCode','dosageByName','inHospitalNo','patientInfo','patientDetailInfo','outpatientNumber','operativeNumber','exeDeptName','exeDeptId','oprDeptName','oprDeptId','surgeonName','surgeonId','sqrtDoctorName','sqrtDoctorId','subordinateWardName','subordinateWardId','remarks');
                 this.form.setFieldsValue(fieldval);
                 this.goodsAllocationList = res.result.goodsAllocationList;
+                //开关-是否显示二级条码框（入库、出库、退货） 1-显示；0-不显示
+                if(res.result.showSBarcode && res.result.showSBarcode == "0"){
+                  this.showSBarcode = false;
+                }else{
+                  this.showSBarcode = true;
+                }
                 //获取光标
                 this.$refs['productNumberInput'].focus();
               }
@@ -471,6 +491,17 @@
       },
       handleCancel () {
         this.close()
+      },
+      // 只扫产品编号查询
+      onlyNumbersearchQuery(){
+        let productNumber = this.queryParam.productNumber;
+        if(!productNumber){
+          this.$message.error("请输入产品编号！");
+          this.$refs.productNumberInput.focus();
+          return;
+        }
+        this.queryParam.productBarCode = productNumber;
+        this.searchQuery(1);
       },
       // 扫码查询
       searchQuery(num) {

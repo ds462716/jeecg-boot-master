@@ -315,4 +315,7 @@ public class PdDosage extends BaseEntity {
     private String token;// 用于HIS收费防重复提交
     @TableField(exist = false)
     private Integer hisPackageFlagMax;
+    /**开关-是否显示二级条码框（入库、出库、退货）**/
+    @TableField(exist = false)
+    private String showSBarcode;
 }

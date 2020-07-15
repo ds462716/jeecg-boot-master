@@ -23,4 +23,15 @@
             </if>
         </where>
     </select>
+
+    <select id="selectOriginalList" resultType="org.jeecg.modules.pd.entity.PdOnOff" parameterType="org.jeecg.modules.pd.entity.PdOnOff">
+        SELECT
+        a.*
+        FROM
+        pd_on_off a
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+        AND (a.depart_parent_id is null or a.depart_parent_id='')
+        </where>
+    </select>
 </mapper>

@@ -178,6 +178,7 @@
         <a-button type="primary" icon="import">导入</a-button>
       </a-upload>
       <a-button type="primary" icon="copy" @click="copy()">复制</a-button>
+      <a-button type="primary" icon="printer" @click="printNumber" v-show="isDisabledAuth('product:printProductNumber')">打印编号</a-button>
       <a-dropdown v-if="selectedRowKeys.length > 0">
         <a-menu slot="overlay">
           <a-menu-item key="1" @click="batchDel"><a-icon type="delete"/>删除</a-menu-item>
@@ -255,6 +256,7 @@
     </div>
 
     <pdProduct-modal ref="modalForm" @ok="modalFormOk"></pdProduct-modal>
+    <pd-product-number-print ref="printModalForm"></pd-product-number-print>
     <a-modal :visible="chargeCodeVisible"  :maskClosable="false"  :confirmLoading="confirmLoading"
              @ok="handleOk" :width="900" @cancel="handleCancel">
       <a-form :form="form">
@@ -279,7 +281,8 @@
   import JDictSelectTagExpand from "@/components/dict/JDictSelectTagExpand"
   import { validateDuplicateValue } from '@/utils/util'
   import pick from 'lodash.pick'
-
+  import PdProductNumberPrint from "./print/PdProductNumberPrint";
+  import { disabledAuthFilter } from "@/utils/authFilter"
 
 
   let timeout;
@@ -318,6 +321,7 @@
     name: "PdProductList",
     mixins:[JeecgListMixin],
     components: {
+      PdProductNumberPrint,
       PdProductModal,
       JDictSelectTagExpand
     },
@@ -750,6 +754,22 @@
       handleToggleSearch(){
         this.queryParam = {};
         this.toggleSearchStatus = !this.toggleSearchStatus;
+      },
+      //产品编号打印，add by jiangxz 2020年7月14日 14:19:59
+      printNumber(){
+        if(this.selectionRows.length>0){
+          this.$refs.printModalForm.init(this.selectionRows);
+        }else{
+          this.$message.error("请选择需要打印的产品!")
+        }
+      },
+      /**
+       * 校验权限
+       * @param code
+       * @returns {boolean|*}
+       */
+      isDisabledAuth(code){
+        return !disabledAuthFilter(code);
       },
     }
   }

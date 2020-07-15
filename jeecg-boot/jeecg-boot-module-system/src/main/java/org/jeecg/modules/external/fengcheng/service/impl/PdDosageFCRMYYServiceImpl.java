@@ -51,6 +51,8 @@ public class PdDosageFCRMYYServiceImpl extends ServiceImpl<PdDosageMapper, PdDos
     private IPdProductStockTotalService pdProductStockTotalService;
     @Autowired
     private PdDosageMapper pdDosageMapper;
+    @Autowired
+    private IPdOnOffService pdOnOffService;
 
     private static Logger logger = LoggerFactory.getLogger(PdDosageFCRMYYServiceImpl.class);
 
@@ -113,6 +115,15 @@ public class PdDosageFCRMYYServiceImpl extends ServiceImpl<PdDosageMapper, PdDos
             List<PdGoodsAllocationPage> goodsAllocationList = pdGoodsAllocationService.getOptionsForSelect(pdGoodsAllocation);
             //库区库位下拉框
             pdDosage.setGoodsAllocationList(goodsAllocationList);
+        }
+
+        PdOnOff query = new PdOnOff();
+        //开关-是否显示二级条码框（入库、出库、退货）   1-显示；0-不显示
+        query.setCode(PdConstant.ON_OFF_SHOW_S_BARCODE);
+        query.setDepartParentId(sysUser.getDepartParentId());
+        PdOnOff showSBarcode = pdOnOffService.getOne(query);
+        if (showSBarcode != null && showSBarcode.getValue() != null) {
+            pdDosage.setShowSBarcode(showSBarcode.getValue().toString());
         }
         pdDosage.setToken(token);
         return pdDosage;

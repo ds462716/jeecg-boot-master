@@ -139,7 +139,9 @@
         <a-card style="margin-bottom: 10px;">
           <a-tabs v-model="activeKey" @change="handleChangeTabs">
             <a-tab-pane tab="产品明细" :key="refKeys[0]" :forceRender="true">
-
+              <div style="margin-bottom: 8px;"> <!-- v-show="disableSubmit" -->
+                <a-button type="primary" icon="printer" @click="printNumber" v-show="isDisabledAuth('outstock:printProductNumber')">打印编号</a-button>
+              </div>
               <j-editable-table
                 bordered
                 :ref="refKeys[0]"
@@ -152,6 +154,7 @@
                 :actionButton="false"
                 :disabled="disableSubmit"
                 disabled
+                @selectRowChange="handleSelectRowChange"
                 style="text-overflow: ellipsis;"
               >
                 <!--:maxHeight 大于 600 后就会有BUG 一次性选择9条以上产品，会少显示一条-->
@@ -205,6 +208,7 @@
     <pd-stock-record-out-print-modal ref="pdStockRecordOutPrintModal"></pd-stock-record-out-print-modal>
     <pd-stock-record-out-print-modal-f-c-z-y-y ref="pdStockRecordOutPrintModalFCZYY"></pd-stock-record-out-print-modal-f-c-z-y-y>
     <ex-stock-record-out-print-modal ref="exStockRecordOutPrintModal"></ex-stock-record-out-print-modal>
+    <pd-product-number-print ref="printModalForm"></pd-product-number-print>
   </j-modal>
 </template>
 
@@ -221,7 +225,8 @@
   import PdStockRecordOutPrintModal from "../print/PdStockRecordOutPrintModal";
   import ExStockRecordOutPrintModal from "../../external/print/ExStockRecordOutPrintModal";
   import PdStockRecordOutPrintModalFCZYY from "../../external/fengcheng/print/PdStockRecordOutPrintModalFCZYY";
-
+  import PdProductNumberPrint from "../print/PdProductNumberPrint";
+  import { disabledAuthFilter } from "@/utils/authFilter"
 
   const VALIDATE_NO_PASSED = Symbol()
   export { FormTypes, VALIDATE_NO_PASSED }
@@ -230,6 +235,7 @@
     name: 'PdStockRecordOutModal',
     mixins: [JEditableTableMixin],
     components: {
+      PdProductNumberPrint,
       PdStockRecordOutPrintModalFCZYY,
       ExStockRecordOutPrintModal,
       PdStockRecordOutPrintModal,
@@ -280,6 +286,8 @@
         goodsAllocationList:[],
         huoquOptions:[],
         huoweiOptions:[],
+
+        sRowIds:[],//选中行id
 
         // 新增时子表默认添加几行空数据
         addDefaultRowNum: 0,
@@ -624,6 +632,33 @@
           }
         })
       },
+      //产品编号打印，add by jiangxz 2020年7月15日 09:39:53
+      printNumber(){
+        if(this.sRowIds.length > 0){
+          let dataSource = this.pdStockRecordDetailTable.dataSource;
+          let printData = [];
+          for(let item of dataSource){
+            if(this.sRowIds.indexOf(item.id)>=0){
+              let data = {};
+              data.number = item.productNumber;
+              data.name = item.productName;
+              data.spec = item.spec;
+              printData.push(data);
+            }
+          }
+          if(printData.length > 0){
+            this.$refs.printModalForm.init(printData);
+          }else{
+            this.$message.error("选择产品数据有误，请刷新页面后重新选择打印！")
+          }
+        }else{
+          this.$message.error("请选择需要打印的产品！")
+        }
+
+      },
+      handleSelectRowChange(selectedIds){
+        this.sRowIds = selectedIds;
+      },
       /** 关闭按钮点击事件 */
       handleCancel() {
         this.$emit('ok');
@@ -772,6 +807,14 @@
           this.totalSum = totalSum;
           this.outTotalPrice = outTotalPrice.toFixed(4);
         })
+      },
+      /**
+       * 校验权限
+       * @param code
+       * @returns {boolean|*}
+       */
+      isDisabledAuth(code){
+        return !disabledAuthFilter(code);
       },
     },
   }

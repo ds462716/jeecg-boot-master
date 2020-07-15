@@ -17,8 +17,10 @@ import org.jeecg.common.constant.PdConstant;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.oConvertUtils;
+import org.jeecg.modules.pd.entity.PdOnOff;
 import org.jeecg.modules.pd.entity.PdRejected;
 import org.jeecg.modules.pd.entity.PdRejectedDetail;
+import org.jeecg.modules.pd.service.IPdOnOffService;
 import org.jeecg.modules.pd.service.IPdRejectedDetailService;
 import org.jeecg.modules.pd.service.IPdRejectedService;
 
@@ -62,6 +64,8 @@ public class PdRejectedController extends JeecgController<PdRejected, IPdRejecte
     private IPdRejectedService pdRejectedService;
     @Autowired
     private IPdRejectedDetailService pdRejectedDetailService;
+    @Autowired
+    private IPdOnOffService pdOnOffService;
 
     /**
      * 初始化Modal页面
@@ -73,6 +77,7 @@ public class PdRejectedController extends JeecgController<PdRejected, IPdRejecte
     public Result<?> initModal(@RequestParam(name = "id") String id, HttpServletRequest req) {
         PdRejected pdRejected = new PdRejected();
 
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
         //获取退货单号
         pdRejected.setRejectedNo(UUIDUtil.generateOrderNoByType(PdConstant.ORDER_NO_FIRST_LETTER_TH));
         if (oConvertUtils.isNotEmpty(id)) {
@@ -80,6 +85,15 @@ public class PdRejectedController extends JeecgController<PdRejected, IPdRejecte
             pdRejectedDetail.setRejectedId(id);
             List<PdRejectedDetail> pdRejectedDetailList = pdRejectedDetailService.selectByMainId(pdRejectedDetail);
             pdRejected.setPdRejectedDetailList(pdRejectedDetailList);
+        }
+
+        PdOnOff query = new PdOnOff();
+        //开关-是否显示二级条码框（入库、出库、退货）   1-显示；0-不显示
+        query.setCode(PdConstant.ON_OFF_SHOW_S_BARCODE);
+        query.setDepartParentId(sysUser.getDepartParentId());
+        PdOnOff showSBarcode = pdOnOffService.getOne(query);
+        if (showSBarcode != null && showSBarcode.getValue() != null) {
+            pdRejected.setShowSBarcode(showSBarcode.getValue().toString());
         }
 
         return Result.ok(pdRejected);
