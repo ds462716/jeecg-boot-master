@@ -53,6 +53,7 @@ public interface PdConstant {
 	/** 出入库类型  add by jiangxz 20200219 **/
 	public static final String RECODE_TYPE_1 = "1"; //入库
 	public static final String RECODE_TYPE_2 = "2"; //出库
+	public static final String RECODE_TYPE_3 = "3"; //初始化库存
 
 	/**入库类型 add by jiangxz 20200214*/
 	public static final String IN_TYPE_1 = "1";//正常入库
@@ -79,6 +80,7 @@ public interface PdConstant {
 	public final static String ORDER_NO_FIRST_LETTER_PD = "PD";//盘点单
 	public final static String ORDER_NO_FIRST_LETTER_DSB = "DSB";//定数包
 	public final static String ORDER_NO_FIRST_LETTER_FP = "FP";//发票
+	public final static String ORDER_NO_FIRST_LETTER_CSKC = "CSKC";//初始化库存
 
 	//是否过期
 	public final static String PD_STATE="pd_state";
@@ -168,6 +170,7 @@ public interface PdConstant {
 	public final static String STOCK_LOG_TYPE_10 = "10";//执行退费
 	public final static String STOCK_LOG_TYPE_11 = "11";//盘盈入库
 	public final static String STOCK_LOG_TYPE_12 = "12";//盘亏出库
+	public final static String STOCK_LOG_TYPE_13 = "13";//初始化库存
 
 
 	//生产厂家及供应商证照到期消息提醒发送状态

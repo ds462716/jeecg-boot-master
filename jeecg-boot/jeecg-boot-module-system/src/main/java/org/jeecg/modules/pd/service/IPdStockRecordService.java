@@ -88,17 +88,18 @@ public interface IPdStockRecordService extends IService<PdStockRecord> {
 	PdStockRecord initInModal(String id);
 
 	/**
-	 * 获取开关
-	 * @return
-	 */
-	PdStockRecord getOnOff();
-
-	/**
 	 * 初始化出库页面
 	 * @param id
 	 * @return
 	 */
 	PdStockRecord initOutModal(String id);
+
+	/**
+	 * 初始化 库存初始化页面
+	 * @param id
+	 * @return
+	 */
+	PdStockRecord initInitModal(String id);
 
 	/**
 	 * 退货出库初始化页面
@@ -149,4 +150,10 @@ public interface IPdStockRecordService extends IService<PdStockRecord> {
 	 * @return
 	 */
 	public List<Map<String,Object>> findOutQueryList(PdStockRecord pdStockRecord);
+
+	/**
+	 * 获取开关
+	 * @return
+	 */
+	PdStockRecord getOnOff();
 }

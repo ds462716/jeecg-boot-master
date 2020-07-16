@@ -65,6 +65,8 @@
             <a-menu slot="overlay">
               <a-menu-item>
                 <a @click="handlePerssion(record)">授权</a>
+              </a-menu-item>
+              <a-menu-item>
                 <a @click="addDepartUser(record)">绑定用户</a>
               </a-menu-item>
               <a-menu-item>

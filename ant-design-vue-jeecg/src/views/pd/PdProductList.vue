@@ -393,28 +393,10 @@
             dataIndex: 'unitName'
           },
           {
-            title:'二级分类',
+            title:'进价',
             align:"center",
-            width:150,
-            dataIndex: 'categoryTwoName'
-          },
-          {
-            title:'产品组别',
-            align:"center",
-            width:100,
-            dataIndex: 'groupName'
-          },
-          {
-            title:'生产厂家',
-            align:"center",
-            width:220,
-            dataIndex: 'venderName'
-          },
-          {
-            title:'供应商',
-            align:"center",
-            width:220,
-            dataIndex: 'supplierName'
+            width:90,
+            dataIndex: 'purchasePrice'
           },
           {
             title:'是否计费',
@@ -430,10 +412,28 @@
             }
           },
           {
-            title:'进价',
+            title:'生产厂家',
             align:"center",
-            width:90,
-            dataIndex: 'purchasePrice'
+            width:220,
+            dataIndex: 'venderName'
+          },
+          {
+            title:'供应商',
+            align:"center",
+            width:220,
+            dataIndex: 'supplierName'
+          },
+          {
+            title:'二级分类',
+            align:"center",
+            width:150,
+            dataIndex: 'categoryTwoName'
+          },
+          {
+            title:'产品组别',
+            align:"center",
+            width:100,
+            dataIndex: 'groupName'
           },
           {
             title:'出价',
