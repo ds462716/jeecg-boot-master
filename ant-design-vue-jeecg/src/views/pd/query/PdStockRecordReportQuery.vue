@@ -71,8 +71,12 @@
                 </a-select>
               </a-form-item>
             </a-col>
+            <a-col :md="6" :sm="8">
+              <a-form-item label="入库日期">
+                <a-range-picker @change="dateChange" v-model="queryParam.queryDate"/>
+              </a-form-item>
+            </a-col>
           </template>
-
           <a-col :md="6" :sm="8">
             <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
               <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
@@ -104,6 +108,11 @@
         :pagination="ipagination"
         :loading="loading"
          @change="handleTableChange">
+
+        <template slot="ellipsisText" slot-scope="text">
+          <j-ellipsis :value="text" :length="textMaxLength"></j-ellipsis>
+        </template>
+
         <span slot="action" slot-scope="text, record">
           <a @click="queryDetail(record)">图表查看</a>
         </span>
@@ -120,13 +129,16 @@
   import {initDictOptions, filterMultiDictText} from '@/components/dict/JDictSelectUtil'
   import JDictSelectTagExpand from "@/components/dict/JDictSelectTagExpand"
   import inRecordChartMultid from '../modules/inRecordChartMultid'
-
+  import JEllipsis from '@/components/jeecg/JEllipsis'
+  import ARadioGroup from "ant-design-vue/es/radio/Group";
   export default {
     name: "PdStockRecordReportQuery",
     mixins:[JeecgListMixin],
     components: {
+      ARadioGroup,
      inRecordChartMultid,
-      JDictSelectTagExpand
+      JDictSelectTagExpand,
+      JEllipsis
     },
     data () {
       return {
@@ -136,6 +148,7 @@
         venderData: [],
         supplierValue: undefined,
         supplierData: [],
+        textMaxLength:20,
         // 表头
         columns: [
           {
@@ -157,7 +170,8 @@
           {
             title:'产品名称',
             align:"center",
-            width:'420px',
+            width:'400px',
+            scopedSlots: {customRender: "ellipsisText"},
             dataIndex: 'productName'
           },
           {
@@ -193,7 +207,8 @@
           {
             title:'生产厂家',
             align:"center",
-            width:'300px',
+            width:'200px',
+            scopedSlots: {customRender: "ellipsisText"},
             dataIndex: 'venderName'
           },
          /* {
@@ -268,7 +283,10 @@
           }
         })
       },
-
+      dateChange: function (value, dateString) {
+        this.queryParam.queryDateStart=dateString[0];
+        this.queryParam.queryDateEnd=dateString[1];
+      },
       getQueryParams() {
         //获取查询条件
         let sqp = {}
@@ -279,6 +297,7 @@
         param.field = this.getQueryField();
         param.pageNo = this.ipagination.current;
         param.pageSize = this.ipagination.pageSize;
+        delete param.queryDate; //范围参数不传递后台，传后台会报错
         return filterObj(param);
       },
       /**重写导出方法**/
@@ -316,6 +335,28 @@
       queryDetail(record){
           this.$refs.modalForm.edit(record);
           this.$refs.modalForm.disableSubmit = false;
+      },
+
+      loadData(arg) {
+        if(!this.url.list){
+          this.$message.error("请设置url.list属性!")
+          return
+        }
+        //加载数据 若传入参数1则加载第一页的内容
+        if (arg === 1) {
+          this.ipagination.current = 1;
+        }
+        var params = this.getQueryParams();//查询条件
+        this.loading = true;
+        getAction(this.url.list, params).then((res) => {
+          if (res.success) {
+            this.dataSource = res.result.records;
+          }
+          if(res.code===510){
+            this.$message.warning(res.message)
+          }
+          this.loading = false;
+        })
       },
     }
   }

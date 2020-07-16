@@ -246,6 +246,9 @@ public class PdProductStock extends BaseEntity {
 	/**唯一码集合*/
 	@TableField(exist = false)
 	private String refBarCodes;
+	/**一级分类*/
+	@TableField(exist = false)
+	private String categoryOne;
 
 
 }

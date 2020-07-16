@@ -665,6 +665,9 @@
             <if test="entity.departParentId != null and entity.departParentId != ''">
                 AND a.depart_parent_id = #{entity.departParentId}
             </if>
+            <if test="entity.bidingNumber != null and entity.bidingNumber != ''">
+                AND a.biding_number  LIKE concat('%',#{entity.bidingNumber},'%')
+            </if>
         </where>
         ORDER BY a.update_time desc,a.create_time desc
     </select>

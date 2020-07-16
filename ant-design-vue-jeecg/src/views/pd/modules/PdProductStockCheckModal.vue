@@ -220,7 +220,7 @@
             {title: '盘点数量', key: 'checkNum', type: FormTypes.input, width:"120px",
               placeholder: '${title}', defaultValue: '1',
               validateRules: [/*{ required: true, message: '${title}不能为空' },*/
-                { pattern: '^(?:[1-9][0-9]*(?:\\.[0-9]+)?|0\\.(?!0+$)[0-9]+)$',message: '${title}的格式不正确' }]
+                { pattern: '^(?:[0-9][0-9]*(?:\\.[0-9]+)?|0\\.(?!0+$)[0-9]+)$',message: '${title}的格式不正确' }]
             },
             {title: '盘盈盘亏', key: 'profitLossCount',width:"100px" }
           ]

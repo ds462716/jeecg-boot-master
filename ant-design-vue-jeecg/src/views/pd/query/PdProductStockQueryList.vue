@@ -114,6 +114,26 @@
                 </a-select>
               </a-form-item>
             </a-col>
+            <a-col :md="6" :sm="8">
+              <a-form-item label="一级分类">
+                <a-select
+                  showSearch
+                  :categoryOne="categoryOneValue"
+                  placeholder="请选择一级分类"
+                  :defaultActiveFirstOption="false"
+                  :allowClear="true"
+                  :showArrow="true"
+                  :filterOption="false"
+                  @search="categoryOneHandleSearch"
+                  @change="categoryOneHandleChange"
+                  @focus="categoryOneHandleSearch"
+                  :notFoundContent="notFoundContent"
+                  v-model="queryParam.categoryOne"
+                >
+                  <a-select-option v-for="d in categoryOneData" :key="d.value">{{d.text}}</a-select-option>
+                </a-select>
+              </a-form-item>
+            </a-col>
           </template>
           <a-col :md="6" :sm="8">
             <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
@@ -181,19 +201,22 @@
         supplierData: [],
         venderValue: undefined,
         venderData: [],
+        categoryOneData: [],
+        categoryOneValue: undefined,
         textMaxLength:20,
         // 表头
         columns: [
-          /*{
-            title: '序号',
-            dataIndex: '',
-            key:'rowIndex',
-            width:60,
+          {
+            title:'产品名称',
             align:"center",
-            customRender:function (t,r,index) {
-              return parseInt(index)+1;
-            }
-          },*/
+            scopedSlots: {customRender: "ellipsisText"},
+            dataIndex: 'productName'
+          },
+          {
+            title:'产品编号',
+            align:"center",
+            dataIndex: 'number'
+          },
           {
             title:'所属科室',
             align:"center",
@@ -204,16 +227,11 @@
             align:"center",
             dataIndex: 'huoweiName'
           },
-          {
-            title:'产品名称',
+          /*{
+            title:'一级分类',
             align:"center",
-            dataIndex: 'productName'
-          },
-          {
-            title:'产品编号',
-            align:"center",
-            dataIndex: 'number'
-          },
+            dataIndex: 'categoryOne'
+          },*/
           {
             title:'产品类型',
             align:"center",
@@ -222,6 +240,7 @@
           {
             title:'产品条码',
             align:"center",
+            scopedSlots: {customRender: "ellipsisText"},
             dataIndex: 'productBarCode'
           },
           {
@@ -305,6 +324,7 @@
           {
             title:'注册证号',
             align:"center",
+            scopedSlots: {customRender: "ellipsisText"},
             dataIndex: 'registration'
           },
           {
@@ -315,11 +335,13 @@
           {
             title:'生产厂家',
             align:"center",
+            scopedSlots: {customRender: "ellipsisText"},
             dataIndex: 'venderName'
           },
           {
             title:'供应商',
             align:"center",
+            scopedSlots: {customRender: "ellipsisText"},
             dataIndex: 'supplierName'
           }
         ],
@@ -329,6 +351,7 @@
           queryDepart: "/pd/pdDepart/queryListTree",
           querySupplier:"/pd/pdSupplier/getSupplierList",
           queryVender:"/pd/pdVender/getVenderList",
+          queryCategoryOne:"/pd/pdCategory/getCategoryOneList?type=0",
         },
         dictOptions:{
             nestatStatus:[],
@@ -371,6 +394,16 @@
         this.getList(value,this.url.queryVender,"2");
       },
       //生产厂家查询end
+
+      //一级分类查询start
+      categoryOneHandleSearch(value) {
+        this.getList(value,this.url.queryCategoryOne,"3");
+      },
+      categoryOneHandleChange(value) {
+        this.categoryOneValue = value;
+        this.getList(value,this.url.queryCategoryOne,"3");
+      },
+      //一级分类查询end
       getList(value,url,flag){
         getAction(url,{name:value}).then((res)=>{
           if (!res.success) {
@@ -388,6 +421,8 @@
             this.supplierData = data;
           }else if(flag == "2"){
             this.venderData = data;
+          }else if(flag == "3"){
+            this.categoryOneData = data;
           }
         })
       },

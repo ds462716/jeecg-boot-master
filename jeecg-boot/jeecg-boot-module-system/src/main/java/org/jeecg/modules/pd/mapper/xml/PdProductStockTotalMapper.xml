@@ -127,11 +127,17 @@
             <if test="productFlag != null and productFlag != ''">
                 AND c.product_flag =#{productFlag}
             </if>
+            <if test="bidingNumber != null and bidingNumber != ''">
+                AND c.biding_number LIKE concat('%',#{bidingNumber},'%')
+            </if>
             <if test="spec != null and spec != ''">
                 AND c.spec   LIKE concat('%',#{spec},'%')
             </if>
             <if test="version != null and version != ''">
                 AND c.version   LIKE concat('%',#{version},'%')
+            </if>
+            <if test="categoryOne != null and categoryOne != ''">
+                AND c.category_one = #{categoryOne}
             </if>
             <if test="departId != null and departId != ''">
                 AND  a.depart_id = #{departId}
