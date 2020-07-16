@@ -221,7 +221,7 @@
     <select id="queryRecordViewMoney" resultType="java.util.Map" >
         select
         c.createTime as "type",
-        sum(c.y) as "金额"
+        ROUND(sum(c.y),2) as "金额"
         from(
         SELECT
         DATE_FORMAT(x.Month, '%Y-%m') as "createTime",
