@@ -50,21 +50,7 @@ public class PdStockRecordReturnController {
     @Autowired
     private IPdProductStockService pdProductStockService;
     @Autowired
-    private ISysDepartService sysDepartService;
-    @Autowired
-    private IPdGoodsAllocationService pdGoodsAllocationService;
-    @Autowired
-    private ISysDictService sysDictService;
-    @Autowired
-    private IPdSupplierService pdSupplierService;
-    @Autowired
-    private IPdPurchaseDetailService pdPurchaseDetailService;
-    @Autowired
     private IPdDepartService pdDepartService;
-    @Autowired
-    private ISysPermissionService sysPermissionService;
-    @Autowired
-    private PushMsgUtil pushMsgUtil;
 
     @Value("${jeecg.hospital_code}")
     private String hospitalCode;
@@ -342,7 +328,7 @@ public class PdStockRecordReturnController {
      * 导出excel
      *
      * @param request
-     * @param pdStockRecord
+     * @param pdStockRecordDetail
      */
     @RequestMapping(value = "/exportXls")
     public ModelAndView exportXls(HttpServletRequest request, PdStockRecordDetail pdStockRecordDetail) {

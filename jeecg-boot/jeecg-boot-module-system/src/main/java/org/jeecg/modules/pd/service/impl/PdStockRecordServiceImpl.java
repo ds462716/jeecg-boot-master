@@ -204,6 +204,8 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
             // 调拨出库 或 申领出库 自动生成入库单 （出库入库）
             if (PdConstant.OUT_TYPE_3.equals(outType)) {
                 pdStockRecord.setInType(PdConstant.IN_TYPE_3);
+            } else if(PdConstant.OUT_TYPE_4.equals(outType)){
+                pdStockRecord.setInType(PdConstant.IN_TYPE_2);
             } else {
                 pdStockRecord.setInType(PdConstant.IN_TYPE_1);
             }

@@ -64,6 +64,7 @@ public interface PdConstant {
 	public static final String OUT_TYPE_1 = "1";//正常出库
 	public static final String OUT_TYPE_2 = "2";//科室出库
 	public static final String OUT_TYPE_3 = "3";//调拨出库
+	public static final String OUT_TYPE_4 = "4";//退货出库
 
 	/***编码规则*/
 	//各种类型单号首字母
