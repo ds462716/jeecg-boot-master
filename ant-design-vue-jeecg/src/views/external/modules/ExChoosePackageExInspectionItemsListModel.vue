@@ -304,6 +304,7 @@
       onClearSelected() {
         this.selectedRowKeys = [];
         this.selectionRows = [];
+        this.dataSource2 = [];
       },
       handleDelete: function (record) {
         this.dataSource2.splice(this.dataSource2.indexOf(record), 1);
