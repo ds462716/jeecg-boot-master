@@ -61,6 +61,31 @@
                 <j-dict-select-tag-expand v-model="queryParam.expStatus" dictCode="exp_status"/>
               </a-form-item>
             </a-col>
+            <a-col :md="6" :sm="8">
+              <a-form-item label="一级分类">
+                <a-select
+                  showSearch
+                  :categoryOne="categoryOneValue"
+                  placeholder="请选择一级分类"
+                  :defaultActiveFirstOption="false"
+                  :allowClear="true"
+                  :showArrow="true"
+                  :filterOption="false"
+                  @search="categoryOneHandleSearch"
+                  @change="categoryOneHandleChange"
+                  @focus="categoryOneHandleSearch"
+                  :notFoundContent="notFoundContent"
+                  v-model="queryParam.categoryOne"
+                >
+                  <a-select-option v-for="d in categoryOneData" :key="d.value">{{d.text}}</a-select-option>
+                </a-select>
+              </a-form-item>
+            </a-col>
+            <a-col :md="6" :sm="8">
+              <a-form-item label="中标号">
+                <a-input placeholder="请输中标号" v-model="queryParam.bidingNumber"></a-input>
+              </a-form-item>
+            </a-col>
           </template>
           <a-col :md="6" :sm="8">
             <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
@@ -168,6 +193,8 @@
         departData: [],
         departValue: undefined,
         notFoundContent:"未找到内容",
+        categoryOneData: [],
+        categoryOneValue: undefined,
         textMaxLength:20,
         // 表头
         columns: [
@@ -276,6 +303,7 @@
           list: "/pd/pdProductStockTotal/list",
           exportXlsUrl: "/pd/pdProductStockTotal/exportXls",
           queryDepart: "/pd/pdDepart/queryListTree",
+          queryCategoryOne:"/pd/pdCategory/getCategoryOneList?type=0",
         },
         dictOptions:{
           expStatus:[],
@@ -397,7 +425,34 @@
         })
       },
       //科室查询end
+      //一级分类查询start
+      categoryOneHandleSearch(value) {
+        this.getList(value,this.url.queryCategoryOne);
+      },
+      categoryOneHandleChange(value) {
+        this.categoryOneValue = value;
+        this.getList(value,this.url.queryCategoryOne);
+      },
+      //一级分类查询end
 
+      getList(value,url){
+        getAction(url,{name:value}).then((res)=>{
+          if (!res.success) {
+            this.cmsFailed(res.message);
+          }
+          const result = res.result;
+          const data = [];
+          result.forEach(r => {
+            data.push({
+              value: r.id,
+              text: r.name,
+            });
+          });
+
+            this.categoryOneData = data;
+
+        })
+      },
       getQueryParams() {
         //获取查询条件
         let sqp = {}

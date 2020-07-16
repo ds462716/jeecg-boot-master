@@ -45,6 +45,11 @@
                 </a-form-item>
               </a-col>
               <a-col :md="5" :sm="8">
+                <a-form-item label="中标号">
+                  <a-input placeholder="请输入中标号" v-model="queryParam.bidingNumber"></a-input>
+                </a-form-item>
+              </a-col>
+              <a-col :md="5" :sm="8">
                 <a-form-item label="供应商">
                   <a-select
                     ref="supplierSelect"

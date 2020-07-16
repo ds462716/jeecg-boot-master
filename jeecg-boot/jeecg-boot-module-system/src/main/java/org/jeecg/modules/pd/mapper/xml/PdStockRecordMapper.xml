@@ -272,6 +272,12 @@
         <if test="auditStatus != null and auditStatus != ''">
             AND f.audit_status = #{auditStatus}
         </if>
+        <if test="queryDateStart != null and queryDateStart != ''">
+            AND a.create_time &gt;= #{queryDateStart}
+        </if>
+        <if test="queryDateEnd != null and queryDateEnd != ''">
+            AND a.create_time &lt;= #{queryDateEnd}
+        </if>
 		 GROUP BY  b.number
     </select>
 
@@ -321,6 +327,12 @@
         <if test="inDepartId != null and inDepartId != ''">
             AND b.in_depart_id = #{inDepartId}
         </if>
+        <if test="queryDateStart != null and queryDateStart != ''">
+            AND a.create_time &gt;= #{queryDateStart}
+        </if>
+        <if test="queryDateEnd != null and queryDateEnd != ''">
+            AND a.create_time &lt;= #{queryDateEnd}
+        </if>
         ) c
         GROUP BY type;
     </select>
@@ -354,6 +366,12 @@
         </if>
         <if test="inDepartId != null and inDepartId != ''">
             AND b.in_depart_id = #{inDepartId}
+        </if>
+        <if test="queryDateStart != null and queryDateStart != ''">
+            AND a.create_time &gt;= #{queryDateStart}
+        </if>
+        <if test="queryDateEnd != null and queryDateEnd != ''">
+            AND a.create_time &lt;= #{queryDateEnd}
         </if>
         ) c
         GROUP BY type;

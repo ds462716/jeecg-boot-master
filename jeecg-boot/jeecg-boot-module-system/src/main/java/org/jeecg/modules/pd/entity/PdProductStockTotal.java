@@ -119,7 +119,11 @@ public class PdProductStockTotal extends BaseEntity {
     @TableField(exist = false)
     private BigDecimal purchasePrice;
 
+    @TableField(exist = false)
+    private String categoryOne;
 
+    @TableField(exist = false)
+    private String bidingNumber;
 }
 
 
