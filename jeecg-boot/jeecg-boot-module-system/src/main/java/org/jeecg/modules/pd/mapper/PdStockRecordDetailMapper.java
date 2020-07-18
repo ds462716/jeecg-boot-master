@@ -49,4 +49,9 @@ public interface PdStockRecordDetailMapper extends BaseMapper<PdStockRecordDetai
 
 	public List<PdStockRecordDetail> chooseStockRecordDetailList(PdStockRecord pdStockRecord);
 
+	IPage<PdStockRecordDetail> selectStockRecordList(Page<PdStockRecordDetail> page, @Param("entity") PdStockRecordDetail pdStockRecordDetail);
+
+	public List<PdStockRecordDetail> selectStockRecordList(@Param("entity") PdStockRecordDetail pdStockRecordDetail);
+
+
 }

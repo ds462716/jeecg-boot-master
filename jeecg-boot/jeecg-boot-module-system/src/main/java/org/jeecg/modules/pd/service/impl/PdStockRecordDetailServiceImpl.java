@@ -76,4 +76,20 @@ public class PdStockRecordDetailServiceImpl extends ServiceImpl<PdStockRecordDet
 	public List<PdStockRecordDetail> chooseStockRecordDetailList(PdStockRecord pdStockRecord) {
 		return pdStockRecordDetailMapper.chooseStockRecordDetailList(pdStockRecord);
 	}
+
+	/**
+	 * 分页查询列表  库存管理  查询出入库明细
+	 * @param page
+	 * @param pdStockRecordDetail
+	 * @return
+	 */
+	@Override
+	public IPage<PdStockRecordDetail> selectStockRecordListPage(Page<PdStockRecordDetail> page, PdStockRecordDetail pdStockRecordDetail) {
+		return pdStockRecordDetailMapper.selectStockRecordList(page, pdStockRecordDetail);
+	}
+
+	@Override
+	public List<PdStockRecordDetail> selectStockRecordList( PdStockRecordDetail pdStockRecordDetail) {
+		return pdStockRecordDetailMapper.selectStockRecordList(pdStockRecordDetail);
+	}
 }

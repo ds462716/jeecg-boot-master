@@ -41,4 +41,14 @@ public interface IPdStockRecordDetailService extends IService<PdStockRecordDetai
 
 	List<PdStockRecordDetail> chooseStockRecordDetailList(PdStockRecord pdStockRecord);
 
+	/**
+	 * 库存管理  查询出入库明细
+	 * @param pageList
+	 * @param pdStockRecordDetail
+	 * @return
+	 */
+	IPage<PdStockRecordDetail> selectStockRecordListPage(Page<PdStockRecordDetail> pageList, PdStockRecordDetail pdStockRecordDetail);
+
+	List<PdStockRecordDetail> selectStockRecordList(PdStockRecordDetail pdStockRecordDetail);
+
 }

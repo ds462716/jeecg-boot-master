@@ -296,20 +296,20 @@ public class PdProductStockTotalController {
 		 pdStockRecordDetail.setVenderId(stockTotalPage.getVenderId());
 		 LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
 		 pdStockRecordDetail.setDepartParentId(sysUser.getDepartParentId());
-		 IPage<PdStockRecordDetail> pageList = pdStockRecordDetailService.selectList(page,pdStockRecordDetail);
+		 IPage<PdStockRecordDetail> pageList = pdStockRecordDetailService.selectStockRecordListPage(page,pdStockRecordDetail);
 		 Double productTotNum = 0.00;//入库总数量
 		 Double productOutTotNum = 0.00;//出库总数量
 		 BigDecimal inPrice = new BigDecimal(0);//入库总金额
 		 BigDecimal outPrice = new BigDecimal(0);//出库总金额
-		 List<PdStockRecordDetail> list = pdStockRecordDetailService.queryPdStockRecordDetail(pdStockRecordDetail);
+		 List<PdStockRecordDetail> list = pdStockRecordDetailService.selectStockRecordList(pdStockRecordDetail);
 		 if(CollectionUtils.isNotEmpty(list) && list.size() > 0){
 			   for (PdStockRecordDetail item : list) {
-				   outPrice=outPrice.add(item.getOutTotalPrice());
-				   inPrice=inPrice.add(item.getInTotalPrice());
 				   if(PdConstant.RECODE_TYPE_1.equals(item.getRecordType())){//入库
+					   inPrice=inPrice.add(item.getInTotalPrice());
 					   productTotNum+=item.getProductNum();
 				   }else if(PdConstant.RECODE_TYPE_2.equals(item.getRecordType())){//出库
 					   productOutTotNum+=item.getProductNum();
+					   outPrice=outPrice.add(item.getOutTotalPrice());
 				   }
 			  }
 		 }
