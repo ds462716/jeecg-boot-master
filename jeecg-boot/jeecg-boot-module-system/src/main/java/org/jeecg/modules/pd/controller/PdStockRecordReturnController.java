@@ -11,16 +11,15 @@ import org.jeecg.common.constant.PdConstant;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.DateUtils;
 import org.jeecg.common.util.oConvertUtils;
-import org.jeecg.modules.message.util.PushMsgUtil;
 import org.jeecg.modules.pd.entity.PdProductStock;
 import org.jeecg.modules.pd.entity.PdStockRecord;
 import org.jeecg.modules.pd.entity.PdStockRecordDetail;
-import org.jeecg.modules.pd.service.*;
+import org.jeecg.modules.pd.service.IPdDepartService;
+import org.jeecg.modules.pd.service.IPdProductStockService;
+import org.jeecg.modules.pd.service.IPdStockRecordDetailService;
+import org.jeecg.modules.pd.service.IPdStockRecordService;
 import org.jeecg.modules.pd.vo.PdStockRecordOutPage;
 import org.jeecg.modules.system.entity.SysDepart;
-import org.jeecg.modules.system.service.ISysDepartService;
-import org.jeecg.modules.system.service.ISysDictService;
-import org.jeecg.modules.system.service.ISysPermissionService;
 import org.jeecgframework.poi.excel.def.NormalExcelConstants;
 import org.jeecgframework.poi.excel.entity.ExportParams;
 import org.jeecgframework.poi.excel.view.JeecgEntityExcelView;
@@ -400,5 +399,24 @@ public class PdStockRecordReturnController {
         }
         IPage<PdStockRecordDetail> pageList = pdStockRecordDetailService.selectList(page, pdStockRecordDetail);
         return Result.ok(pageList);
+    }
+
+
+
+    /**
+     * 自动补货查询库存明细(根据科室领用量查询)
+     * @param stockRecord
+     * @return
+     */
+    @GetMapping(value = "/chooseStockRecordDetailList")
+    public Result<?> chooseStockTotalList(PdStockRecord stockRecord) {
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        stockRecord.setDepartId(sysUser.getCurrentDepartId());
+        stockRecord.setOutDepartId(sysUser.getCurrentDepartId());
+        stockRecord.setDepartParentId(sysUser.getDepartParentId());
+        stockRecord.setAuditStatus(PdConstant.AUDIT_STATE_2);
+        stockRecord.setProductFlag(PdConstant.PRODUCT_FLAG_0);//只查产品
+        List<PdStockRecordDetail>  list=pdStockRecordDetailService.chooseStockRecordDetailList(stockRecord);
+        return Result.ok(list);
     }
 }

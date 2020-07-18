@@ -113,7 +113,13 @@ public class PdStockRecordDetail extends BaseEntity {
 	@TableField(exist = false)
 	private String version;//产品型号
 	@TableField(exist = false)
+	private String chargeCode;//收费代号
+	@TableField(exist = false)
 	private String unitName;//单位名称
+	@TableField(exist = false)
+	private String bidingNumber;//中标号
+	@TableField(exist = false)
+	private Double autoNum;//自动补货数量
 	@TableField(exist = false)
 	private String venderId;//生产厂家ID
 	@TableField(exist = false)
@@ -221,6 +227,10 @@ public class PdStockRecordDetail extends BaseEntity {
 	@JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd")
 	@DateTimeFormat(pattern="yyyy-MM-dd")
 	private Date invoiceData; //发票日期
-
+	/**试剂产品or普通产品，0产品，1试剂*/
+	@TableField(exist = false)
+	private String productFlag;
+	@TableField(exist = false)
+	private String productFlagName;
 
 }

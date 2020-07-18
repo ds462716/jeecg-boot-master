@@ -22,6 +22,7 @@
 		a.merge_order_no,
 		a.remarks,
 		a.purchase_type,
+		a.rep_type,
 		a.del_flag
 	</sql>
 

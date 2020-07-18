@@ -39,13 +39,14 @@
                  <j-dict-select-tag-expand  :disabled="disableSubmit"   v-decorator="['purchaseType',validatorRules.purchaseType]"   dictCode="purchase_type" :trigger-change="true"  placeholder="请选择类型"/>
                 </a-form-item>
           </a-col>
-          <!--<a-col :span="12">
-            <a-form-item label="申购总金额" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input-number disabled="disabled" v-decorator="[ 'totalPrice', validatorRules.totalPrice]" style="width: 100%"/>
+          <a-col :span="12">
+            <a-form-item label="补货类型" :labelCol="labelCol" :wrapperCol="wrapperCol">
+              <j-dict-select-tag-expand  :disabled="disableSubmit"   v-decorator="['repType',validatorRules.repType]"   dictCode="rep_type" :trigger-change="true"  placeholder="请选择类型"/>
             </a-form-item>
-          </a-col>-->
+          </a-col>
         </a-row>
-        <pd-purchase-detail-add-modal  ref="PdPurchaseDetailAddModal" @ok="modalFormOk"></pd-purchase-detail-add-modal>
+        <pd-choose-stock-list-model ref="pdChooseStockListModel" @ok="modalFormOk"></pd-choose-stock-list-model>
+        <pd-choose-apply-list-model ref="pdChooseApplyListModel" @ok="modalFormOk"></pd-choose-apply-list-model>
       </a-form>
         </a-card>
         <a-card style="margin-bottom: 10px;">
@@ -107,7 +108,7 @@
       <a-button @click="handleOk('submit')" v-show="!disableSubmit" type="primary" :loading="confirmLoading" style="margin-right: 15px;">提  交</a-button>
     </template>
   </j-modal>
-</template>
+  </template>
 <script>
 
   import pick from 'lodash.pick'
@@ -115,12 +116,17 @@
   import { JEditableTableMixin } from '@/mixins/JEditableTableMixin'
   import JDate from '@/components/jeecg/JDate'
   import { FormTypes,getRefPromise,validateFormAndTables } from '@/utils/JEditableTableUtil'
-  import PdPurchaseDetailAddModal from './PdChooseProductListModel'
+  import pdChooseStockListModel from './PdChooseStockListModel'
+  import pdChooseApplyListModel from './PdChooseApplyListModel'
   import JDictSelectTagExpand from "@/components/dict/JDictSelectTagExpand"
   export default {
-    name: 'PdPurchaseOrderModal',
+    name: 'PdPurchaseRepModal',
     mixins: [JEditableTableMixin],
-    components: {JDate,PdPurchaseDetailAddModal,JDictSelectTagExpand},
+    components: {
+      JDate,
+      pdChooseStockListModel,
+      pdChooseApplyListModel,
+      JDictSelectTagExpand},
     data() {
       return {
         model:{},
@@ -145,6 +151,9 @@
           refuseReason:{},
           purchaseType: {rules: [
               {required: true, message: '请选择申购类型'},
+            ]},
+          repType: {rules: [
+              {required: true, message: '请选择补货类型'},
             ]},
         },
         refKeys: ['pdPurchaseDetail', ],
@@ -227,7 +236,7 @@
           if (res.success) {
               this.model = res.result;
             this.$nextTick(() => {
-              this.form.setFieldsValue(pick(this.model,'orderNo','purchaseName','orderDate','purchaseType','deptName','refuseReason'))
+              this.form.setFieldsValue(pick(this.model,'orderNo','purchaseName','orderDate','purchaseType','deptName','refuseReason','repType'))
             })
           }
         })
@@ -271,9 +280,18 @@
 
       //选择产品
       choice() {
-        this.$refs.PdPurchaseDetailAddModal
-          .show({stockDepartId:this.model.departId});
-        this.$refs.PdPurchaseDetailAddModal.title = "选择产品";
+        let repType = this.form.getFieldValue("repType");
+        if(repType==null){
+          this.$message.warning("请先选择补货类型")
+          return
+        }
+        if(repType=="1"){ //根据库存上下限补货
+          this.$refs.pdChooseStockListModel.show({});
+          this.$refs.pdChooseStockListModel.title = "选择产品";
+        }else{ //根据上月领用量补货
+           this.$refs.pdChooseApplyListModel.show({});
+           this.$refs.pdChooseApplyListModel.title = "选择产品";
+        }
       },
 
       handleConfirmDelete() {
@@ -318,13 +336,13 @@
           number: row.number,
           productName: row.productName,
           spec:row.spec,
-          bidingNumber:row.bidingNumber,
           purchasePrice: row.purchasePrice,
-          orderNum: 1.00,//默认1
+          bidingNumber:row.bidingNumber,
+          orderNum: row.autoNum,
           version: row.version,
           stockNum: row.stockNum,
           unitName:row.unitName,
-          orderMoney:row.purchasePrice * 1,
+          orderMoney:row.purchasePrice * row.autoNum,
           venderName:row.venderName,
           supplierId:row.supplierId,
           supplierName:row.supplierName
@@ -393,7 +411,7 @@
       },
       /** 调用完edit()方法之后会自动调用此方法 */
       editAfter() {
-        let fieldval = pick(this.model,'orderNo','purchaseName','orderDate','deptName','purchaseType','auditStatus','submitStatus','refuseReason')
+        let fieldval = pick(this.model,'orderNo','purchaseName','orderDate','deptName','purchaseType','auditStatus','submitStatus','refuseReason','repType')
         this.$nextTick(() => {
           this.form.setFieldsValue(fieldval)
         })
@@ -416,7 +434,7 @@
         this.$message.error(msg)
       },
       popupCallback(row){
-        this.form.setFieldsValue(pick(row,'orderNo','purchaseName','orderDate','deptName','purchaseType','auditStatus','submitStatus','refuseReason'))
+        this.form.setFieldsValue(pick(row,'orderNo','purchaseName','orderDate','deptName','purchaseType','auditStatus','submitStatus','refuseReason','repType'))
       },
     }
   }

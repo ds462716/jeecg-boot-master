@@ -288,4 +288,84 @@
 			stock_num = stock_num+#{stockNum}
 		WHERE id = #{id}
 	</update>
+
+
+
+
+    <!-- 采购补货选择库存使用-->
+    <select id="chooseStockTotalList" resultType="org.jeecg.modules.pd.vo.PdProductStockTotalPage">
+	select
+    b.id as "productId",
+	b.number as "number",
+    b.name as "productName",
+	b.product_flag as "productFlag",
+    case
+     when b.product_flag = '0' then "耗材"
+     when b.product_flag = '1' then "试剂"
+     end as "productFlagName",
+	b.spec as "spec",
+	b.version as "version",
+	c.name as "unitName",
+	a.stock_num as "stockNum",
+	a.limit_up as "limitUp",
+	a.limit_down as "limitDown",
+	d.name as "supplierName",
+	IFNULL(a.limit_down -a.stock_num ,0) as "autoNum",
+	e.name as "venderName",
+	b.charge_code as "chargeCode",
+	b.purchase_price as "purchasePrice",
+	b.selling_price as "sellingPrice",
+	b.registration as "registration"
+    from pd_product_stock_total a
+	left join pd_product  b on a.product_id=b.id
+	left join pd_unit c on c.id=b.unit_id
+	left join pd_supplier d on d.id=b.supplier_id
+	left join pd_vender e on e.id=b.vender_id
+        <where>     a.limit_down>0
+        <if test="departId != null and departId != ''">
+            AND  a.depart_id = #{departId}
+        </if>
+        <if test="departParentId != null and departParentId != ''">
+            AND a.depart_parent_id = #{departParentId}
+        </if>
+            <if test="productFlag != null and productFlag != ''">
+                AND b.product_flag = #{productFlag}
+            </if>
+            <if test="status != null and status != ''">
+                AND b.status = #{status}
+            </if>
+            <if test="productName != null and productName != ''">
+                AND (
+                b.name LIKE concat('%',#{productName},'%')
+                or b.py LIKE concat('%',#{productName},'%')
+                or b.wb LIKE concat('%',#{productName},'%')
+                or b.bname LIKE concat('%',#{productName},'%')
+                or b.bpy LIKE concat('%',#{productName},'%')
+                or b.bwb LIKE concat('%',#{productName},'%')
+                or b.zdy LIKE concat('%',#{productName},'%')
+                )
+            </if>
+            <if test="number != null and number != ''">
+                AND b.number  LIKE concat('%',#{number},'%')
+            </if>
+            <if test="bidingNumber != null and bidingNumber != ''">
+                AND b.biding_number LIKE concat('%',#{bidingNumber},'%')
+            </if>
+            <if test="spec != null and spec != ''">
+                AND b.spec   LIKE concat('%',#{spec},'%')
+            </if>
+            <if test="registration != null and registration != ''">
+                AND b.registration   LIKE concat('%',#{registration},'%')
+            </if>
+            <if test="chargeCode != null and chargeCode != ''">
+                AND b.charge_code   LIKE concat('%',#{chargeCode},'%')
+            </if>
+            <if test="supplierId != null and supplierId != ''">
+                AND b.supplier_id  =#{supplierId}
+            </if>
+            <if test="venderId != null and venderId != ''">
+                AND b.vender_id  =#{venderId}
+            </if>
+        </where>
+    </select>
 </mapper>

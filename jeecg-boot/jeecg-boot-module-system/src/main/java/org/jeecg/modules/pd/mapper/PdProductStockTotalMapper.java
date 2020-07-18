@@ -43,4 +43,6 @@ public interface PdProductStockTotalMapper extends BaseMapper<PdProductStockTota
      */
     List<PdProductStockTotalPage> findListForAutoNum(PdProductStockTotal stockTotal);
 
+    List<PdProductStockTotalPage> chooseStockTotalList(PdProductStockTotalPage stockTotal);
+
 }

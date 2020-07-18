@@ -16,6 +16,7 @@
 		<result column="validity_flag" property="validityFlag" jdbcType="VARCHAR"/>
 		<result column="remarks" property="remarks" jdbcType="VARCHAR"/>
 		<result column="status" property="status" jdbcType="VARCHAR"/>
+		<result column="supplier_type" property="supplierType" jdbcType="VARCHAR"/>
 		<result column="del_flag" property="delFlag" jdbcType="VARCHAR"/>
 	</resultMap>
 
@@ -92,6 +93,7 @@
 		a.sys_org_code,
 		a.validity_flag,
 		a.msg_send_state,
+		a.supplier_type,
 		a.remarks,
 		a.status,
 		a.del_flag
@@ -113,6 +115,7 @@
 		a.msg_send_state,
 		a.remarks,
 		a.status,
+		a.supplier_type,
 		a.del_flag
 	</sql>
 
@@ -165,6 +168,9 @@
 		<if test="departParentId != null and departParentId != ''">
 			AND a.depart_parent_id = #{departParentId}
 		</if>
+		<if test="supplierType != null and supplierType != ''">
+			AND a.supplier_type = #{supplierType}
+		</if>
 		<!-- 为了查询效率 只查询十条记录该方法用于下拉选择 -->
 		ORDER BY a.update_time desc,a.create_time desc
 	</select>
@@ -195,6 +201,9 @@
 		</if>
 		<if test="entity.departParentId != null and entity.departParentId != ''">
 			AND a.depart_parent_id = #{entity.departParentId}
+		</if>
+		<if test="entity.supplierType != null and entity.supplierType != ''">
+			AND a.supplier_type = #{entity.supplierType}
 		</if>
 		<!-- 为了查询效率 只查询十条记录该方法用于下拉选择 -->
 		ORDER BY a.update_time desc,a.create_time desc

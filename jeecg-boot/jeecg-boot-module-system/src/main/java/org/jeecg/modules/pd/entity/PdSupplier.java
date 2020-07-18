@@ -35,6 +35,9 @@ public class PdSupplier extends BaseEntity {
 	/**自定义码*/
 	@Excel(name = "自定义码", width = 15)
     private String zdy;
+	/**供应商类别*/
+	@Excel(name = "供应商类别", width = 15)
+	private String supplierType;
 	/**证照名称0*/
 	private String licenceName0;
 	/**证照号码0*/

@@ -401,4 +401,85 @@
 		WHERE out_huowei_code= #{oldOutHuoweiCode}
 	</update>
 
+
+    <!--采购补货查询  根据上月领用量统计查询-->
+	<select id="chooseStockRecordDetailList" resultType="org.jeecg.modules.pd.entity.PdStockRecordDetail">
+	select
+	a.product_id as "productId",
+	c.number as "number",
+	c.name as "productName",
+	c.product_flag as "productFlag",
+	case
+	  when c.product_flag = '0' then "耗材"
+	  when c.product_flag = '1' then "试剂"
+	  end as "productFlagName",
+	c.spec as "spec",
+	c.biding_number as "bidingNumber",
+	d.name as "unitName",
+	g.stock_num as "stockNum",
+	sum(a.product_num) as "productNum",
+	sum(a.product_num) as "autoNum",
+	e.name as "supplierName",
+	f.name as "venderName",
+	c.charge_code as "chargeCode",
+	c.purchase_price as "purchasePrice",
+	c.selling_price as "sellingPrice",
+	c.registration as "registration"
+	from pd_stock_record_detail a
+    left join pd_stock_record b	on a.record_id=b.id
+    left join pd_product c	on c.id=a.product_id
+    left join pd_product_stock_total g on g.product_id=a.product_id and g.depart_id=#{departId}
+    left join pd_unit d on d.id=c.unit_id
+    left join pd_supplier e on e.id=c.supplier_id
+    left join pd_vender f on f.id=c.vender_id
+ 	 where   PERIOD_DIFF( date_format( now( ) , '%Y%m' ) , date_format( b.submit_date, '%Y%m' ) ) =1
+		<if test="auditStatus != null and auditStatus != ''">
+			AND b.audit_status = #{auditStatus}
+		</if>
+		<if test="productFlag != null and productFlag != ''">
+			AND c.product_flag = #{productFlag}
+		</if>
+		<if test="recordType != null and recordType != ''">
+			AND b.record_type = #{recordType}
+		</if>
+		<if test="departParentId != null and departParentId != ''">
+			AND b.depart_parent_id = #{departParentId}
+		</if>
+		<if test="outDepartId != null and outDepartId != ''">
+			AND b.out_depart_id = #{outDepartId}
+		</if>
+		<if test="productName != null and productName != ''">
+			AND (
+			b.name LIKE concat('%',#{productName},'%')
+			or c.py LIKE concat('%',#{productName},'%')
+			or c.wb LIKE concat('%',#{productName},'%')
+			or c.bname LIKE concat('%',#{productName},'%')
+			or c.bpy LIKE concat('%',#{productName},'%')
+			or c.bwb LIKE concat('%',#{productName},'%')
+			or c.zdy LIKE concat('%',#{productName},'%')
+			)
+		</if>
+		<if test="number != null and number != ''">
+			AND c.number  LIKE concat('%',#{number},'%')
+		</if>
+		<if test="bidingNumber != null and bidingNumber != ''">
+			AND c.biding_number LIKE concat('%',#{bidingNumber},'%')
+		</if>
+		<if test="spec != null and spec != ''">
+			AND c.spec   LIKE concat('%',#{spec},'%')
+		</if>
+		<if test="registration != null and registration != ''">
+			AND c.registration   LIKE concat('%',#{registration},'%')
+		</if>
+		<if test="chargeCode != null and chargeCode != ''">
+			AND c.charge_code   LIKE concat('%',#{chargeCode},'%')
+		</if>
+		<if test="supplierId != null and supplierId != ''">
+			AND c.supplier_id  =#{supplierId}
+		</if>
+		<if test="venderId != null and venderId != ''">
+			AND c.vender_id  =#{venderId}
+		</if>
+     GROUP BY a.product_id
+	</select>
 </mapper>

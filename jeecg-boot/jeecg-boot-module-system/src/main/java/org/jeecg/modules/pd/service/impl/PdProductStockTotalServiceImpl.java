@@ -1246,4 +1246,10 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
 
         return stock;
     }
+
+
+    @Override
+    public List<PdProductStockTotalPage> chooseStockTotalList(PdProductStockTotalPage stockTotal) {
+        return pdProductStockTotalMapper.chooseStockTotalList(stockTotal);
+    }
 }

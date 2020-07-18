@@ -1,13 +1,14 @@
 package org.jeecg.modules.pd.mapper;
 
-import java.util.List;
-import java.util.Map;
-
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import org.jeecg.modules.pd.entity.PdStockRecordDetail;
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Param;
+import org.jeecg.modules.pd.entity.PdStockRecord;
+import org.jeecg.modules.pd.entity.PdStockRecordDetail;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * @Description: 出入库明细表
@@ -45,4 +46,7 @@ public interface PdStockRecordDetailMapper extends BaseMapper<PdStockRecordDetai
 	 * @return
 	 */
 	Map<String,Object> queryStockRecordCount(PdStockRecordDetail detail);
+
+	public List<PdStockRecordDetail> chooseStockRecordDetailList(PdStockRecord pdStockRecord);
+
 }

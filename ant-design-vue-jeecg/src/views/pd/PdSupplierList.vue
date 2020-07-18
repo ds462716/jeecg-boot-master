@@ -160,6 +160,18 @@
             dataIndex: 'name'
           },
           {
+            title:'分类',
+            align:"center",
+            dataIndex: 'supplierType',
+            customRender:(text)=>{
+              if(!text){
+                return ''
+              }else{
+                return filterMultiDictText(this.dictOptions['supplierType'], text+"")
+              }
+            }
+          },
+          {
             title:'拼音简码',
             align:"center",
             dataIndex: 'py'
@@ -186,7 +198,7 @@
               }
             }
           },
-          {
+          /*{
             title:'创建日期',
             align:"center",
             dataIndex: 'createTime'
@@ -195,7 +207,7 @@
             title:'更新日期',
             align:"center",
             dataIndex: 'updateTime'
-          },
+          },*/
           {
             title:'备注',
             align:"center",
@@ -218,6 +230,7 @@
         },
         dictOptions:{
           status:[],
+          supplierType:[]
         },
       }
     },
@@ -232,7 +245,12 @@
           if (res.success) {
             this.$set(this.dictOptions, 'status', res.result)
           }
-        })
+        }),
+          initDictOptions('supplier_type').then((res) => {
+            if (res.success) {
+              this.$set(this.dictOptions, 'supplierType', res.result)
+            }
+          })
       },
       setdataCss(record,index) {
         let validityFlag = record.validityFlag;

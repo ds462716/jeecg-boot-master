@@ -2,9 +2,10 @@ package org.jeecg.modules.pd.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import org.jeecg.modules.pd.entity.PdPurchaseOrder;
-import org.jeecg.modules.pd.entity.PdStockRecordDetail;
 import com.baomidou.mybatisplus.extension.service.IService;
+import org.jeecg.modules.pd.entity.PdStockRecord;
+import org.jeecg.modules.pd.entity.PdStockRecordDetail;
+
 import java.util.List;
 import java.util.Map;
 
@@ -37,4 +38,7 @@ public interface IPdStockRecordDetailService extends IService<PdStockRecordDetai
 	Map<String,Object> queryStockRecordCount(PdStockRecordDetail detail);
 
 	List<PdStockRecordDetail> selectListForRefBarCodeCheck(PdStockRecordDetail pdStockRecordDetail);
+
+	List<PdStockRecordDetail> chooseStockRecordDetailList(PdStockRecord pdStockRecord);
+
 }

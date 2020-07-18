@@ -1,21 +1,17 @@
 package org.jeecg.modules.pd.service.impl;
 
-import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import org.jeecg.common.constant.PdConstant;
-import org.jeecg.modules.pd.entity.PdPurchaseOrder;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.jeecg.modules.pd.entity.PdStockRecord;
 import org.jeecg.modules.pd.entity.PdStockRecordDetail;
 import org.jeecg.modules.pd.mapper.PdStockRecordDetailMapper;
 import org.jeecg.modules.pd.service.IPdStockRecordDetailService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
-
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * @Description: 出入库明细表
@@ -74,5 +70,10 @@ public class PdStockRecordDetailServiceImpl extends ServiceImpl<PdStockRecordDet
 	@Override
 	public List<PdStockRecordDetail> selectListForRefBarCodeCheck(PdStockRecordDetail pdStockRecordDetail) {
 		return pdStockRecordDetailMapper.selectListForRefBarCodeCheck(pdStockRecordDetail);
+	}
+
+	@Override
+	public List<PdStockRecordDetail> chooseStockRecordDetailList(PdStockRecord pdStockRecord) {
+		return pdStockRecordDetailMapper.chooseStockRecordDetailList(pdStockRecord);
 	}
 }

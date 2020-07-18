@@ -49,12 +49,14 @@
     <!-- 操作按钮区域 -->
     <div class="table-operator">
       <a-button @click="handleAdd" type="primary" icon="plus">新增</a-button>
-       <!--<a-dropdown v-if="selectedRowKeys.length > 0">
-        <a-menu slot="overlay">
-          <a-menu-item key="1" @click="batchDel"><a-icon type="delete"/>删除</a-menu-item>
-        </a-menu>
-        <a-button style="margin-left: 8px"> 批量操作 <a-icon type="down" /></a-button>
-      </a-dropdown>-->
+      <a-divider type="vertical" />
+      <a-button @click="automaticRep()" type="primary" v-show="isDisabledAuth('purchase:form:autoAdd')" icon="plus">自动生成采购计划</a-button>
+      <!--<a-dropdown v-if="selectedRowKeys.length > 0">
+       <a-menu slot="overlay">
+         <a-menu-item key="1" @click="batchDel"><a-icon type="delete"/>删除</a-menu-item>
+       </a-menu>
+       <a-button style="margin-left: 8px"> 批量操作 <a-icon type="down" /></a-button>
+     </a-dropdown>-->
     </div>
 
     <!-- table区域-begin -->
@@ -97,6 +99,7 @@
     </div>
 
     <pdPurchaseOrder-modal ref="modalForm" @ok="modalFormOk"></pdPurchaseOrder-modal>
+    <pd-purchase-rep-modal ref="modalForm1" @ok="modalFormOk"></pd-purchase-rep-modal>
   </a-card>
 </template>
 
@@ -108,13 +111,15 @@
   import PdPurchaseOrderModal from './modules/PdPurchaseOrderModal'
   import {initDictOptions, filterMultiDictText} from '@/components/dict/JDictSelectUtil'
   import JDictSelectTagExpand from "@/components/dict/JDictSelectTagExpand"
-
+  import PdPurchaseRepModal from './modules/PdPurchaseRepModal'
+  import { disabledAuthFilter } from "@/utils/authFilter"
   export default {
     name: "PdPurchaseOrderList",
     mixins:[JeecgListMixin],
     components: {
       PdPurchaseOrderModal,
-      JDictSelectTagExpand
+      JDictSelectTagExpand,
+      PdPurchaseRepModal
     },
     data () {
       return {
@@ -222,9 +227,7 @@
       }
     },
     computed: {
-      /*importExcelUrl: function(){
-        return `${window._CONFIG['domianURL']}/${this.url.importExcelUrl}`;
-      }*/
+
     },
     methods: {
       /*batchDel: function () { //批量删除
@@ -284,6 +287,39 @@
         delete param.queryDate; //范围参数不传递后台，传后台会报错
         return filterObj(param);
       },
+
+
+      automaticRep() { //自动补货
+        this.$refs.modalForm1.add();
+        this.$refs.modalForm1.title = "自动生成采购计划";
+        this.$refs.modalForm1.disableSubmit = false;
+      },
+
+      handleEdit: function (record) { //编辑
+        if(record.repType){
+          this.$refs.modalForm1.edit(record);
+          this.$refs.modalForm1.title = "编辑";
+          this.$refs.modalForm1.disableSubmit = false;
+        }else{
+          this.$refs.modalForm.edit(record);
+          this.$refs.modalForm.title = "编辑";
+          this.$refs.modalForm.disableSubmit = false;
+        }
+      },
+
+      handleDetail:function(record){  //详情
+        if(record.repType){
+          this.$refs.modalForm1.edit(record);
+          this.$refs.modalForm1.title="详情";
+          this.$refs.modalForm1.disableSubmit = true;
+        }else{
+          this.$refs.modalForm.edit(record);
+          this.$refs.modalForm.title="详情";
+          this.$refs.modalForm.disableSubmit = true;
+        }
+      },
+
+
       initDictConfig(){ //静态字典值加载
         initDictOptions('purchase_type').then((res) => {
           if (res.success) {
@@ -329,7 +365,15 @@
             }
           }
         }
-      }
+      },
+      /**
+       * 校验权限
+       * @param code
+       * @returns {boolean|*}
+       */
+      isDisabledAuth(code){
+        return !disabledAuthFilter(code);
+      },
        
     }
   }

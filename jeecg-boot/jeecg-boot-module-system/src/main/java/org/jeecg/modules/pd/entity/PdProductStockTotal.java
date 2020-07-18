@@ -124,6 +124,20 @@ public class PdProductStockTotal extends BaseEntity {
 
     @TableField(exist = false)
     private String bidingNumber;
+
+    @TableField(exist = false)
+    private String chargeCode;
+
+    @TableField(exist = false)
+    private String sellingPrice;
+
+    @TableField(exist = false)
+    private String registration;
+
+    /*产品启动状态*/
+    @TableField(exist = false)
+    private String status;
+
 }
 
 
