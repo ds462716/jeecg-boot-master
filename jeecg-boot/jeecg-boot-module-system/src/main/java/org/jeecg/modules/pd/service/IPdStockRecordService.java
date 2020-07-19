@@ -156,4 +156,8 @@ public interface IPdStockRecordService extends IService<PdStockRecord> {
 	 * @return
 	 */
 	PdStockRecord getOnOff();
+
+
+	IPage<PdStockRecord> querySupplierCountPageList(Page<PdStockRecord> pageList, PdStockRecord pdStockRecord);
+
 }

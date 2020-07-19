@@ -60,4 +60,11 @@ public interface PdStockRecordMapper extends BaseMapper<PdStockRecord> {
     List<HashMap> queryRecordViewCount(PdStockRecord pdStockRecord);
 
     public List<Map<String,Object>> findOutQueryList(PdStockRecord pdStockRecord);
+
+
+    IPage<PdStockRecord> querySupplierCountPageList(Page<PdStockRecord> page, @Param("entity") PdStockRecord pdStockRecord);
+
+    //根据供应商及产品ID统计出库数量及金额
+     PdStockRecord  queryApplyPriceList(PdStockRecord pdStockRecord);
+
 }

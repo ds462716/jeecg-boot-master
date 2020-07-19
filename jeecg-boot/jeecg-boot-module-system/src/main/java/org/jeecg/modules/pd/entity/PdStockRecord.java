@@ -281,4 +281,21 @@ public class PdStockRecord extends BaseEntity {
     private String onlyReturn;//只查退货出库
     @TableField(exist = false)
     private String exceptReturn;//除了退货出库
+
+
+    @TableField(exist = false)
+    private Double stockNum; //库存数量
+
+    @TableField(exist = false)
+    private BigDecimal stockPrice; //库存总金额
+
+    @TableField(exist = false)
+    private BigDecimal purchasePrice; //产品单价
+    @TableField(exist = false)
+    private String bidingNumber; //中标号
+    @TableField(exist = false)
+    private String categoryOne; //一级分类
+
+    @TableField(exist = false)
+    private Double outProductNum; //出库数量
 }

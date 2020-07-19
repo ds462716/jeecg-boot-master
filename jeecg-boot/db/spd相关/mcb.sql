@@ -19,3 +19,6 @@ INSERT INTO `sys_dict_item`VALUES ('1284072389556133889', '1284072131916816385',
 INSERT INTO `sys_dict_item` VALUES ('1284072432501612546', '1284072131916816385', '未分配', '5', '', 6, 1, 'admin', '2020-07-17 18:28:19', NULL, '2020-07-17 18:28:19');
 -- 2020年7月18日 12:52:59  增加按钮权限
  INSERT INTO `sys_permission`VALUES ('1284313794308251650', '1218787201875513345', '自动生成采购计划按钮', NULL, NULL, NULL, NULL, 2, '0', 'purchase:form:autoAdd', '2', 1.00, 0, NULL, 1, 1, 0, 0, NULL, 'admin', '2020-07-18 10:27:25', NULL, '2020-07-18 10:27:25', 0, 0, '1', 0);
+
+-- 2020年7月19日 12:52:59  增加菜单
+ INSERT INTO `sys_permission` VALUES ('1284699679533076481', '1218785597982052353', '供应商用量明细', '/pd/query/PdSupplierCountQuery', 'pd/query/PdSupplierCountQueryList', NULL, NULL, 1, '0', NULL, '1', 11.00, 0, NULL, 1, 1, 0, 0, NULL, 'admin', '2020-07-19 12:00:47', NULL, '2020-07-19 12:00:47', 0, 0, '1', 0);

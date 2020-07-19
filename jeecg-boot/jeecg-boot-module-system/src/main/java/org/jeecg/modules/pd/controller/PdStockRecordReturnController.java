@@ -419,4 +419,25 @@ public class PdStockRecordReturnController {
         List<PdStockRecordDetail>  list=pdStockRecordDetailService.chooseStockRecordDetailList(stockRecord);
         return Result.ok(list);
     }
+
+
+
+    /**
+     * 供应商产品领用明细（供应商用量查询）-- 分页列表查询
+     *
+     * @param pdStockRecord
+     * @param pageNo
+     * @param pageSize
+     * @param req
+     * @return
+     */
+    @GetMapping(value = "/querySupplierCountList")
+    public Result<?> querySupplierCountPageList(PdStockRecord pdStockRecord,
+                                   @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
+                                   @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
+                                   HttpServletRequest req) {
+        Page<PdStockRecord> page = new Page<PdStockRecord>(pageNo, pageSize);
+        IPage<PdStockRecord> pageList = pdStockRecordService.querySupplierCountPageList(page, pdStockRecord);
+        return Result.ok(pageList);
+    }
 }
