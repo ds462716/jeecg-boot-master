@@ -59,7 +59,11 @@
                 <a-input placeholder="中标号" v-model="queryParam.bidingNumber"></a-input>
               </a-form-item>
             </a-col>
-
+            <a-col :md="6" :sm="8">
+              <a-form-item label="入库日期">
+                <a-range-picker @change="inDateChange" v-model="queryParam.queryInDate"/>
+              </a-form-item>
+            </a-col>
             <a-col :md="6" :sm="8">
               <a-form-item label="供应商">
                 <a-select
@@ -302,6 +306,13 @@
       }
     },
     methods: {
+      inDateChange: function (value, dateString) {
+        this.queryParam.queryDateStart=dateString[0];
+        this.queryParam.queryDateEnd=dateString[1];
+      },
+
+
+
      //科室查询start
       departHandleSearch(value) {
         getAction(this.url.queryDepart,{departName:value}).then((res)=>{
@@ -376,6 +387,7 @@
         param.pageNo = this.ipagination.current;
         param.pageSize = this.ipagination.pageSize;
         param.departIds = this.queryParam.departIds+"";
+        delete param.queryInDate;
         return filterObj(param);
       },
 

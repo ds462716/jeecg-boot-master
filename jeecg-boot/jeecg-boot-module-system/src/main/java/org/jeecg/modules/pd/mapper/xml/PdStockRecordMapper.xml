@@ -504,6 +504,12 @@
         <if test="entity.venderId != null and entity.venderId != ''">
             AND c.vender_id =#{entity.venderId}
         </if>
+        <if test="entity.queryDateStart != null and entity.queryDateStart != ''">
+            AND b.submit_date &gt;= #{entity.queryDateStart}
+        </if>
+        <if test="entity.queryDateEnd != null and entity.queryDateEnd != ''">
+            AND b.submit_date &lt;= #{entity.queryDateEnd}
+        </if>
 	GROUP BY a.supplier_id,c.id
     order by d.id desc
     </select>
