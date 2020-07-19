@@ -103,7 +103,7 @@
         <if test="entity.instrCode != null and entity.instrCode != ''">
             AND a.instr_code=#{entity.instrCode}
         </if>
-        order by a.create_time desc
+        order by a.test_date desc
     </select>
 
 
