@@ -157,7 +157,9 @@ public interface IPdStockRecordService extends IService<PdStockRecord> {
 	 */
 	PdStockRecord getOnOff();
 
-
+	//供应商入库用量--分页
 	IPage<PdStockRecord> querySupplierCountPageList(Page<PdStockRecord> pageList, PdStockRecord pdStockRecord);
+    //供应商入库用量  不分页（导出用）
+	List<PdStockRecord> querySupplierCountList(PdStockRecord pdStockRecord);
 
 }

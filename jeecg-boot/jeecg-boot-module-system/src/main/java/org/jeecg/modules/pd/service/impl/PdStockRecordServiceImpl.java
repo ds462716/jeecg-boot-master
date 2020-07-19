@@ -1483,7 +1483,32 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
             }
         }
         return recordList;
+    }
 
+
+    @Override
+    public List<PdStockRecord> querySupplierCountList(PdStockRecord pdStockRecord) {
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        pdStockRecord.setDepartParentId(sysUser.getDepartParentId());
+        pdStockRecord.setDepartId(sysUser.getCurrentDepartId());
+        pdStockRecord.setInDepartId(sysUser.getCurrentDepartId());
+        pdStockRecord.setRecordType(PdConstant.RECODE_TYPE_1);
+        pdStockRecord.setAuditStatus(PdConstant.AUDIT_STATE_2);
+        List<PdStockRecord> list= pdStockRecordMapper.querySupplierCountPageList(pdStockRecord);
+        if(CollectionUtils.isNotEmpty(list)){
+            for(PdStockRecord record : list){
+                PdStockRecord stockRecord=new PdStockRecord();
+                stockRecord.setProductId(record.getProductId());
+                stockRecord.setSupplierId(record.getSupplierId());
+                stockRecord.setRecordType(PdConstant.RECODE_TYPE_2);
+                stockRecord.setOutDepartId(sysUser.getCurrentDepartId());
+                stockRecord.setOutType(PdConstant.OUT_TYPE_2);
+                PdStockRecord record1= pdStockRecordMapper.queryApplyPriceList(stockRecord);
+                record.setOutTotalPrice(record1.getOutTotalPrice());
+                record.setOutProductNum(record1.getOutProductNum());
+            }
+        }
+        return list;
     }
 
 }

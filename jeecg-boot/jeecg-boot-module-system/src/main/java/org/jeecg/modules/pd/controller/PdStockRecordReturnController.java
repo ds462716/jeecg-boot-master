@@ -19,6 +19,7 @@ import org.jeecg.modules.pd.service.IPdProductStockService;
 import org.jeecg.modules.pd.service.IPdStockRecordDetailService;
 import org.jeecg.modules.pd.service.IPdStockRecordService;
 import org.jeecg.modules.pd.vo.PdStockRecordOutPage;
+import org.jeecg.modules.pd.vo.PdSupplierRecordExcel;
 import org.jeecg.modules.system.entity.SysDepart;
 import org.jeecgframework.poi.excel.def.NormalExcelConstants;
 import org.jeecgframework.poi.excel.entity.ExportParams;
@@ -439,5 +440,28 @@ public class PdStockRecordReturnController {
         Page<PdStockRecord> page = new Page<PdStockRecord>(pageNo, pageSize);
         IPage<PdStockRecord> pageList = pdStockRecordService.querySupplierCountPageList(page, pdStockRecord);
         return Result.ok(pageList);
+    }
+
+
+
+
+    /**
+     * 供应商入库用量明细导出excel
+     *
+     * @param request
+     * @param pdStockRecord
+     */
+    @RequestMapping(value = "/supplierExportXls")
+    public ModelAndView supplierExportXls(HttpServletRequest request, PdStockRecord pdStockRecord) {
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        List<PdStockRecord> recordList =  pdStockRecordService.querySupplierCountList(pdStockRecord);
+        List<PdSupplierRecordExcel> exportList = JSON.parseArray(JSON.toJSONString(recordList), PdSupplierRecordExcel.class);
+        // Step.4 AutoPoi 导出Excel
+        ModelAndView mv = new ModelAndView(new JeecgEntityExcelView());
+        mv.addObject(NormalExcelConstants.FILE_NAME, "供应商入库用量明细");
+        mv.addObject(NormalExcelConstants.CLASS, PdSupplierRecordExcel.class);
+        mv.addObject(NormalExcelConstants.PARAMS, new ExportParams("供应商入库用量明细数据", "导出人:" + sysUser.getRealname(), "供应商入库用量明细"));
+        mv.addObject(NormalExcelConstants.DATA_LIST, exportList);
+        return mv;
     }
 }

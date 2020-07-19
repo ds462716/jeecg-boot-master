@@ -288,7 +288,7 @@
         ],
         url: {
           list: "/pd/pdStockRecordReturn/querySupplierCountList",
-          exportXlsUrl: "/pd/pdProductStockTotal/stockExportXls",
+          exportXlsUrl: "/pd/pdStockRecordReturn/supplierExportXls",
           queryDepart: "/pd/pdDepart/queryListTree",
           querySupplier:"/pd/pdSupplier/getSupplierList",
           queryVender:"/pd/pdVender/getVenderList",
