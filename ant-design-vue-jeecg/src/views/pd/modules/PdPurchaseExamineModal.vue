@@ -155,7 +155,7 @@
              {title: '产品编号', width: "200px",  key: 'number'},
              {title: '产品名称', width: "240px", key: 'productName'},
              {title: '规格', width: "200px",  key: 'spec'},
-             {title: '型号', width: "200px",  key: 'version'},
+             {title: '中标号', width: "200px",  key: 'bidingNumber'},
              {title: '单位', width: "50px",  key: 'unitName'},
              {title: '库存数量',  key: 'stockNum'},
              {title: '申购数量',  key: 'orderNum'},

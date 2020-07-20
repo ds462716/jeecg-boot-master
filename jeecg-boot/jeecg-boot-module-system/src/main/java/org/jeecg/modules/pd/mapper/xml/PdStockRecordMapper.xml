@@ -211,6 +211,7 @@
       b.id as "productId",
       b.number as "number",
       b.name as "productName",
+      b.biding_number as "bidingNumber",
       b.spec as "spec",
         case
         when b.product_flag = '0' then "耗材"

@@ -147,6 +147,12 @@
             dataIndex: 'productName'
           },
           {
+            title:'中标号',
+            align:"center",
+            width:'80px',
+            dataIndex: 'bidingNumber'
+          },
+          {
             title:'规格数量',
             align:"center",
             width:'80px',
