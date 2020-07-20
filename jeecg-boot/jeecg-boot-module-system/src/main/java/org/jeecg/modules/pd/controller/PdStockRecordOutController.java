@@ -360,7 +360,6 @@ public class PdStockRecordOutController {
         pdStockRecordDetail.setAuditStatus(PdConstant.AUDIT_STATE_2);
         LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
         pdStockRecordDetail.setDepartParentId(sysUser.getDepartParentId());
-        pdStockRecordDetail.setNestatStatus(PdConstant.STOCK_NESTAT_STATUS_1);
 
         if(oConvertUtils.isNotEmpty(pdStockRecordDetail.getInDepartIds()) && !"undefined".equals(pdStockRecordDetail.getInDepartIds())){
             pdStockRecordDetail.setInDepartIdList(Arrays.asList(pdStockRecordDetail.getInDepartIds().split(",")));
@@ -403,7 +402,6 @@ public class PdStockRecordOutController {
         pdStockRecordDetail.setAuditStatus(PdConstant.AUDIT_STATE_2);
         LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
         pdStockRecordDetail.setDepartParentId(sysUser.getDepartParentId());
-        pdStockRecordDetail.setNestatStatus(PdConstant.STOCK_NESTAT_STATUS_1);
 
         if(oConvertUtils.isNotEmpty(pdStockRecordDetail.getOutDepartIds()) && !"undefined".equals(pdStockRecordDetail.getOutDepartIds())){
             pdStockRecordDetail.setOutDepartIdList(Arrays.asList(pdStockRecordDetail.getOutDepartIds().split(",")));

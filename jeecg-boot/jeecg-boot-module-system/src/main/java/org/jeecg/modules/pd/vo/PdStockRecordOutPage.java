@@ -66,6 +66,8 @@ public class PdStockRecordOutPage {
 	private String venderName;//生产厂家名称
 	@Excel(name = "供应商", width = 15)
 	private String supplierName;//供应商名称
+	@Excel(name = "配送商", width = 15)
+	private String distributorName;//配送商名称
 	@Excel(name = "注册证号", width = 15)
 	private String registration;//注册证号
 	@Excel(name = "备注", width = 15)

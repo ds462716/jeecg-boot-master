@@ -325,6 +325,12 @@
             dataIndex: 'supplierName'
           },
           {
+            title:'配送商',
+            align:"center",
+            width:'250px',
+            dataIndex: 'distributorName'
+          },
+          {
             title:'注册证号',
             align:"center",
             width:'250px',

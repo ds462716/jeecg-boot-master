@@ -86,6 +86,9 @@ public class PdStockRecord extends BaseEntity {
     /**供应商ID*/
     @Excel(name = "供应商ID", width = 15)
     private String supplierId;
+    /**供应商ID*/
+    @Excel(name = "配送商ID", width = 15)
+    private String distributorId;
     /**操作人*/
     @Excel(name = "操作人", width = 15)
     private String submitBy;
@@ -217,6 +220,9 @@ public class PdStockRecord extends BaseEntity {
     /** 供应商名称 **/
     @TableField(exist = false)
     private String supplierName;
+    /** 配送商名称 **/
+    @TableField(exist = false)
+    private String distributorName;
     /** 生产厂家名称 **/
     @TableField(exist = false)
     private String venderName;

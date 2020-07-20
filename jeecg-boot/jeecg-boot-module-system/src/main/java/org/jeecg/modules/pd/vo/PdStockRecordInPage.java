@@ -1,15 +1,8 @@
 package org.jeecg.modules.pd.vo;
 
 import java.math.BigDecimal;
-import java.util.List;
-
-import com.baomidou.mybatisplus.annotation.TableField;
-import org.jeecg.modules.pd.entity.PdStockRecord;
-import org.jeecg.modules.pd.entity.PdStockRecordDetail;
 import lombok.Data;
 import org.jeecgframework.poi.excel.annotation.Excel;
-import org.jeecgframework.poi.excel.annotation.ExcelEntity;
-import org.jeecgframework.poi.excel.annotation.ExcelCollection;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import org.springframework.format.annotation.DateTimeFormat;
 import java.util.Date;
@@ -66,6 +59,8 @@ public class PdStockRecordInPage {
 	private String venderName;//生产厂家名称
 	@Excel(name = "供应商", width = 15)
 	private String supplierName;//供应商名称
+	@Excel(name = "配送商", width = 15)
+	private String distributorName;//配送商名称
 	@Excel(name = "注册证号", width = 15)
 	private String registration;//注册证号
 	@Excel(name = "备注", width = 15)

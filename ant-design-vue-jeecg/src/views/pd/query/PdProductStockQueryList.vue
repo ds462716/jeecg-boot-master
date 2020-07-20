@@ -343,6 +343,12 @@
             align:"center",
             scopedSlots: {customRender: "ellipsisText"},
             dataIndex: 'supplierName'
+          },
+          {
+            title:'配送商',
+            align:"center",
+            scopedSlots: {customRender: "ellipsisText"},
+            dataIndex: 'distributorName'
           }
         ],
         url: {

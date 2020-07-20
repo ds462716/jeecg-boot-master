@@ -87,6 +87,7 @@ public class PdProductStock extends BaseEntity {
 	private String expStatus;
 	/**供应商ID*/
 	private String supplierId;
+	private String distributorId;//配送商ID
 	/**备注*/
 	private String remarks;
 	/** 消息发送状态，近效期1，已过期2，初始值为0 */
@@ -144,6 +145,9 @@ public class PdProductStock extends BaseEntity {
 	@Excel(name = "供应商名称", width = 15)
 	@TableField(exist = false)
 	private String supplierName;
+	@Excel(name = "配送商名称", width = 15)
+	@TableField(exist = false)
+	private String distributorName;//配送商名称
 	/**科室名称*/
 	@Excel(name = "科室名称", width = 15)
 	@TableField(exist = false)

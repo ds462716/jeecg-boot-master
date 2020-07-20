@@ -330,6 +330,7 @@
             { title: '产品ID', key: 'productId', type: FormTypes.hidden },
             { title: '出库货位编号', key: 'outHuoweiCode', type: FormTypes.hidden },
             { title: '供应商id', key: 'supplierId', type: FormTypes.hidden },
+            { title: '配送商id', key: 'distributorId', type: FormTypes.hidden },
             { title: '规格单位ID', key: 'specUnitId', type: FormTypes.hidden },
             { title: '规格数量', key: 'specQuantity', type: FormTypes.hidden },
             { title: '注册证号', key: 'registration', type: FormTypes.hidden },
@@ -763,6 +764,7 @@
           venderName:row.venderName,
           inHuoweiCode:"",
           supplierId:row.supplierId,
+          distributorId:row.distributorId,
           produceDate:row.produceDate
         }
         this.pdStockRecordDetailTable.dataSource.push(data);
