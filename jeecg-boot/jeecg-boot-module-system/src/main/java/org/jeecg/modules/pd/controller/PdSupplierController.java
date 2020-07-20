@@ -95,25 +95,13 @@ public class PdSupplierController extends JeecgController<PdSupplier, IPdSupplie
     }
 
     /**
-     * 供应商大屏跳转
-     * @param modelAndView
-     * @return
-     */
-    @RequestMapping("/跳转")
-    public ModelAndView index1(ModelAndView modelAndView) {
-        modelAndView.setViewName("/bigscreen/template1/index");
-        return modelAndView;
-    }
-
-    /**
      * 查询供应商以树节点的形式展示
      * @return
      */
     @RequestMapping(value = "/queryTreeList", method = RequestMethod.GET)
-    public Result<List<PdSupplierTreeModel>> queryTreeList() {
+    public Result<List<PdSupplierTreeModel>> queryTreeList(PdSupplier pdSupplier) {
         Result<List<PdSupplierTreeModel>> result = new Result<>();
         try {
-            PdSupplier pdSupplier = new PdSupplier();
             List<PdSupplierTreeModel> list = pdSupplierService.queryTreeList(pdSupplier);
             result.setResult(list);
             result.setSuccess(true);

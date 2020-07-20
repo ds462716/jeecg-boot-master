@@ -3,6 +3,17 @@
       <a-col :md="4" :sm="12">
         <a-card :bordered="false" style="height:1200px;overflow-x: scroll;white-space: nowrap;">
           <div>
+            <a-select placeholder="供应商类别" style="width:100%;margin-top: 10px" @change="supplierChange"  :allowClear="true" >
+              <a-select-option value="0">0类</a-select-option>
+              <a-select-option value="1">I类</a-select-option>
+              <a-select-option value="2">II类</a-select-option>
+              <a-select-option value="3">III类</a-select-option>
+              <a-select-option value="4">无证</a-select-option>
+              <a-select-option value="5">未分配</a-select-option>
+            </a-select>
+          </div>
+          <div>
+            <a-input-search @search="onSearch" style="width:100%;margin-top: 10px" placeholder="请输入供应商名称"/>
             <a-tree
               v-if="treeData.length>0"
               :treeData="treeData"
@@ -17,6 +28,74 @@
       </a-col>
       <a-col :md="20" :sm="12">
         <a-card :bordered="true">
+          <!-- 查询区域 -->
+          <div class="table-page-search-wrapper">
+            <a-form layout="inline" @keyup.enter.native="searchQuery">
+              <a-row :gutter="24">
+              <a-col :md="6" :sm="8">
+                <a-form-item label="产品名称">
+                  <a-input placeholder="请输入产品名称" v-model="queryParam.name"></a-input>
+                </a-form-item>
+              </a-col>
+              <a-col :md="6" :sm="8">
+                <a-form-item label="产品编号">
+                  <a-input placeholder="请输入产品编号" v-model="queryParam.number"></a-input>
+                </a-form-item>
+              </a-col>
+              <a-col :md="6" :sm="8">
+                <a-form-item label="注册证">
+                  <a-input placeholder="请输入注册证" v-model="queryParam.registration"></a-input>
+                </a-form-item>
+              </a-col>
+              <template v-if="toggleSearchStatus">
+                <a-col :md="6" :sm="8">
+                  <a-form-item label="收费代码">
+                    <a-input placeholder="请输入收费代码" v-model="queryParam.chargeCode"></a-input>
+                  </a-form-item>
+                </a-col>
+                <a-col :md="6" :sm="8">
+                  <a-form-item label="规格">
+                    <a-input placeholder="请输入规格" v-model="queryParam.spec"></a-input>
+                  </a-form-item>
+                </a-col>
+                <a-col :md="6" :sm="8">
+                  <a-form-item label="型号">
+                    <a-input placeholder="请输入型号" v-model="queryParam.version"></a-input>
+                  </a-form-item>
+                </a-col>
+                <a-col :md="6" :sm="8">
+                  <a-form-item label="过期状态">
+                    <a-select placeholder="过期状态" :allowClear="true" v-model="queryParam.validityFlag" >
+                      <a-select-option value="0">正常</a-select-option>
+                      <a-select-option value="1">已过期</a-select-option>
+                      <a-select-option value="2">近效期</a-select-option>
+                    </a-select>
+                  </a-form-item>
+                </a-col>
+                <a-col :md="6" :sm="8">
+                  <a-form-item label="器械分类">
+                    <j-dict-select-tag-expand v-model="queryParam.deviceClassification" dictCode="device_classification" placeholder="请选择器械分类"/>
+                  </a-form-item>
+                </a-col>
+                <a-col :md="6" :sm="8">
+                  <a-form-item label="状态">
+                    <j-dict-select-tag-expand v-model="queryParam.status" dictCode="disable_enable_status" placeholder="请选择状态"/>
+                  </a-form-item>
+                </a-col>
+              </template>
+                <a-col :md="6" :sm="8" >
+            <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
+              <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
+              <a-button type="primary" @click="searchReset" icon="reload" style="margin-left: 8px">重置</a-button>
+              <a @click="handleToggleSearch" style="margin-left: 8px">
+                {{ toggleSearchStatus ? '收起' : '展开' }}
+                <a-icon :type="toggleSearchStatus ? 'up' : 'down'"/>
+              </a>
+            </span>
+                </a-col>
+              </a-row>
+            </a-form>
+          </div>
           <div>
             <a-table
               ref="table"
@@ -76,6 +155,7 @@
   import {initDictOptions, filterMultiDictText} from '@/components/dict/JDictSelectUtil'
   import { JeecgListMixin } from '@/mixins/JeecgListMixin'
   import DetailList from '@/components/tools/DetailList'
+  import JDictSelectTagExpand from "@/components/dict/JDictSelectTagExpand"
 
   const DetailListItem = DetailList.Item;
 
@@ -84,7 +164,8 @@
     mixins:[JeecgListMixin],
     components: {
       DetailList,
-      DetailListItem
+      DetailListItem,
+      JDictSelectTagExpand
     },
     data () {
       return {
@@ -95,6 +176,7 @@
         disableMixinCreated:true,
         productObj:"",
         supplierId: "",
+        supplierType: "",
         selectedKeys:[],
         /* table加载状态 */
         loading:false,
@@ -215,12 +297,17 @@
     computed: {
     },
     created() {
-      this.loadTreeData();
+      this.loadTreeData("");
       //初始化字典配置 在自己页面定义
       this.initDictConfig();
 
     },
     methods: {
+      //展开收起回显bug优化
+      handleToggleSearch(){
+        this.queryParam = {};
+        this.toggleSearchStatus = !this.toggleSearchStatus;
+      },
       //树节点点击事件
       onTreeNodeSelect(id){
         this.loading = true;
@@ -245,9 +332,12 @@
         })
       },
       //加载树
-      loadTreeData(){
+      loadTreeData(name){
+        let params = {};//查询条件
+        params.name = name;
+        params.supplierType = this.supplierType;
         this.loading = true;
-        getAction(this.url.list).then((res) => {
+        getAction(this.url.list,params).then((res) => {
           this.treeData = res.result;
           let supplierData = res.result[0].children;
           if(supplierData.length>0){
@@ -333,10 +423,26 @@
         this.selectionRows = selectionRows;
         this.productObj = selectionRows[0];
       },
+      /**
+       * 搜索部门
+       * @param value
+       */
+      onSearch(name) {
+        this.loadTreeData(name);
+      },
+      //供应商类型改变事件
+      supplierChange(value){
+        this.supplierType = value;
+        this.loadTreeData("");
+      }
+
     }
   }
 </script>
 <style scoped>
+  @import '~@assets/less/common.less'
+</style>
+<style>
   .validityFlag0{
   }
   .validityFlag1{
