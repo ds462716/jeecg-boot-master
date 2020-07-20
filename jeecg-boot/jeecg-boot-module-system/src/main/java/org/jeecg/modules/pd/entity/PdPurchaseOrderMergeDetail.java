@@ -81,6 +81,9 @@ public class PdPurchaseOrderMergeDetail extends BaseEntity {
 	@Excel(name = "产品型号", width = 15)
 	private String version;//产品型号
 	@TableField(exist = false)
+	@Excel(name = "中标号", width = 15)
+	private String bidingNumber;//中标号
+	@TableField(exist = false)
 	@Excel(name = "单位名称", width = 15)
 	private String unitName;//单位名称
 	@TableField(exist = false)

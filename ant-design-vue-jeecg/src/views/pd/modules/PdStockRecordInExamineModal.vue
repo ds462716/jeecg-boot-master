@@ -47,24 +47,43 @@
               </a-col>
               <a-col :span="6">
                 <a-form-item label="供应商" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                  <a-select
-                    showSearch
-                    placeholder="请选择供应商"
-                    disabled
-                    :supplierId="supplierValue"
-                    :defaultActiveFirstOption="false"
-                    :showArrow="true"
-                    :filterOption="false"
-                    :notFoundContent="notFoundContent"
-                    v-decorator="[ 'supplierId', validatorRules.supplierId]"
-                  >
-                    <a-select-option v-for="d in supplierData" :key="d.value">{{d.text}}</a-select-option>
-                  </a-select>
+                  <a-input disabled v-decorator="[ 'supplierName', validatorRules.supplierName]"></a-input>
+                  <!--<a-select-->
+                    <!--showSearch-->
+                    <!--placeholder="请选择供应商"-->
+                    <!--disabled-->
+                    <!--:supplierId="supplierValue"-->
+                    <!--:defaultActiveFirstOption="false"-->
+                    <!--:showArrow="true"-->
+                    <!--:filterOption="false"-->
+                    <!--:notFoundContent="notFoundContent"-->
+                    <!--v-decorator="[ 'supplierId', validatorRules.supplierId]"-->
+                  <!--&gt;-->
+                    <!--<a-select-option v-for="d in supplierData" :key="d.value">{{d.text}}</a-select-option>-->
+                  <!--</a-select>-->
                 </a-form-item>
               </a-col>
               <a-col :span="6">
                 <a-form-item label="业态" :labelCol="labelCol" :wrapperCol="wrapperCol">
                   <j-dict-select-tag-expand disabled type="list" v-decorator="['format', validatorRules.format]" :trigger-change="true" dictCode="format" placeholder="请选择入库类型"/>
+                </a-form-item>
+              </a-col>
+              <a-col :span="6">
+                <a-form-item label="配送商" :labelCol="labelCol" :wrapperCol="wrapperCol">
+                  <a-input disabled v-decorator="[ 'distributorName', validatorRules.distributorName]"></a-input>
+                  <!--<a-select-->
+                    <!--showSearch-->
+                    <!--placeholder="请选择配送商"-->
+                    <!--disabled-->
+                    <!--:supplierId="distributorValue"-->
+                    <!--:defaultActiveFirstOption="false"-->
+                    <!--:showArrow="true"-->
+                    <!--:filterOption="false"-->
+                    <!--:notFoundContent="notFoundContent"-->
+                    <!--v-decorator="[ 'distributorId', validatorRules.distributorId]"-->
+                  <!--&gt;-->
+                    <!--<a-select-option v-for="d in distributorData" :key="d.value">{{d.text}}</a-select-option>-->
+                  <!--</a-select>-->
                 </a-form-item>
               </a-col>
             </a-row>
@@ -258,6 +277,10 @@
         notFoundContent:"未找到内容",
         supplierData: [],
         //供应商下拉列表 end
+        //供应商下拉列表 start
+        distributorValue: undefined,
+        distributorData: [],
+        //供应商下拉列表 end
         showOrderTable:false,
         orderNo:"",
         totalSum:'0',
@@ -286,7 +309,11 @@
           storageResult:{rules: [{required: true, message: '请选择储运状态!'}]},
           temperature:{rules: [{required: true, message: '请输入温度!'},{pattern: '^-?\\d+\\.?\\d*$$',message: '只能输入数字' }]},
           humidity:{rules: [{required: true, message: '请输入湿度!'},{pattern: '^-?\\d+\\.?\\d*$',message: '只能输入数字' }]},
+          distributorId:{},
           supplierId:{rules: [{required: true, message: '请选择供应商!'}]},
+          distributorName:{},
+          supplierName:{},
+
         },
         refKeys: ['pdStockRecordDetail',],
         tableKeys:['pdStockRecordDetail', ],
@@ -362,6 +389,7 @@
           init:"/pd/pdStockRecordIn/initModal",
           audit: "/pd/pdStockRecordIn/audit",
           querySupplier:"/pd/pdSupplier/getSupplierList",
+          queryDistributor:"/pd/pdDistributor/getDistributorList",
           queryById: "/pd/pdStockRecordIn/queryById",
           getOnOff:"/pd/pdStockRecordIn/getOnOff",
         },
@@ -395,9 +423,10 @@
         // this.loading = true;
         this.popModal.title="入库审核";
         //初始化供应商，用于回显供应商
-        this.supplierHandleSearch();
+        // this.distributorHandleSearch();
+        // this.supplierHandleSearch();
 
-        let fieldval = pick(this.model,'recordNo','inType','submitBy','submitByName','submitDate','inDepartId','supplierId',
+        let fieldval = pick(this.model,'recordNo','inType','submitBy','submitByName','submitDate','inDepartId','supplierName','distributorName',
           'testResult','storageResult','temperature','humidity','remarks','refuseReason','format')
 
         let params = { id: this.model.id }
@@ -583,7 +612,7 @@
         this.$message.error(msg)
       },
       popupCallback(row){
-        this.form.setFieldsValue(pick(row,'recordNo','inType','submitBy','submitByName','submitDate','inDepartId','supplierId',
+        this.form.setFieldsValue(pick(row,'recordNo','inType','submitBy','submitByName','submitDate','inDepartId','supplierName','distributorName',
           'testResult','storageResult','temperature','humidity','remarks','refuseReason','format'))
       },
 
@@ -592,6 +621,11 @@
         fetch(value, data => (this.supplierData = data),this.url.querySupplier);
       },
       //----------------供应商查询end
+      //-----------------配送商查询start
+      distributorHandleSearch(value) {
+        fetch(value, data => (this.distributorData = data),this.url.queryDistributor);
+      },
+      //----------------配送商查询end
       /**
        * 校验权限
        * @param code
@@ -644,7 +678,7 @@
       })
     }
     timeout = setTimeout(fake, 0); //这边不延迟
-  }
+  };
 </script>
 
 <style scoped>

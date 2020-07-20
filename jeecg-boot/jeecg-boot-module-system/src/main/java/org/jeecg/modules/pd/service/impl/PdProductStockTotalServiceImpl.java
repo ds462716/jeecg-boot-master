@@ -153,6 +153,7 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
             productStock.setProduceDate(stockRecordDetail.getProduceDate()); // 生产日期
             productStock.setRecordDetailId(stockRecordDetail.getId()); //入库明细ID
             productStock.setSupplierId(stockRecordDetail.getSupplierId());
+            productStock.setDistributorId(stockRecordDetail.getDistributorId());
             productStock.setSpecQuantity(stockRecordDetail.getSpecQuantity());
             productStock.setSpecUnitId(stockRecordDetail.getSpecUnitId());
             productStock.setSpecNum(stockRecordDetail.getSpecQuantity() == null ? 0D : stockRecordDetail.getSpecQuantity() * stockRecordDetail.getProductNum());// 库存规格数量= 产品规格数量* 入库数量
@@ -584,6 +585,7 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
             pdproductStock.setHuoweiCode(huoWeiCode);
             pdproductStock.setExpDate(productStock.getExpDate());
             pdproductStock.setSupplierId(productStock.getSupplierId());
+            pdproductStock.setDistributorId(pdproductStock.getDistributorId());
             pdproductStock.setProduceDate(productStock.getProduceDate());
             pdproductStock.setSpecNum(productStock.getSpecNum());
             pdproductStock.setNestatStatus(productStock.getNestatStatus());
@@ -1256,7 +1258,7 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
     /***
      * 	退货更新库存信息
      *
-     * @param  pdRejected    退货明细列表，不允许为空
+     * @param  pdProductStockCheck    退货明细列表，不允许为空
      * @return Map      更新库存结果  入库成功，返回字符串“true”，否则返回错误信息
      */
     @Transactional

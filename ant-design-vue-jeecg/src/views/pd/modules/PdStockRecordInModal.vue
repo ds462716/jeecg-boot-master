@@ -49,7 +49,7 @@
                 </a-form-item>
               </a-col>
               <a-col :span="6">
-                <a-form-item label="供应商" :labelCol="labelCol" :wrapperCol="wrapperCol">
+                <a-form-item label="供应商" :labelCol="labelCol" :wrapperCol="wrapperCol"  v-show="!disableSubmit">
                   <a-select
                     showSearch
                     placeholder="请选择供应商"
@@ -67,10 +67,36 @@
                     <a-select-option v-for="d in supplierData" :key="d.value" :text="d.text" >{{d.text}}</a-select-option>
                   </a-select>
                 </a-form-item>
+                <a-form-item label="供应商" :labelCol="labelCol" :wrapperCol="wrapperCol"  v-show="disableSubmit">
+                  <a-input disabled v-decorator="[ 'supplierName', validatorRules.supplierName]"></a-input>
+                </a-form-item>
               </a-col>
               <a-col :span="6">
                 <a-form-item label="业态" :labelCol="labelCol" :wrapperCol="wrapperCol">
                   <j-dict-select-tag-expand :disabled="disableSubmit" type="list" v-decorator="['format', validatorRules.format]" :trigger-change="true" dictCode="format" placeholder="请选择入库类型"/>
+                </a-form-item>
+              </a-col>
+              <a-col :span="6">
+                <a-form-item label="配送商" :labelCol="labelCol" :wrapperCol="wrapperCol" v-show="!disableSubmit">
+                  <a-select
+                    showSearch
+                    placeholder="请选择配送商"
+                    :disabled="disableSubmit"
+                    :distributorId="distributorValue"
+                    :defaultActiveFirstOption="false"
+                    :showArrow="true"
+                    :filterOption="false"
+                    @search="distributorHandleSearch"
+                    @change="distributorHandleChange"
+                    @focus="distributorHandleSearch"
+                    :notFoundContent="notFoundContent"
+                    v-decorator="[ 'distributorId', validatorRules.distributorId]"
+                  >
+                    <a-select-option v-for="d in distributorData" :key="d.value" :text="d.text" >{{d.text}}</a-select-option>
+                  </a-select>
+                </a-form-item>
+                <a-form-item label="配送商" :labelCol="labelCol" :wrapperCol="wrapperCol" v-show="disableSubmit">
+                  <a-input disabled v-decorator="[ 'distributorName', validatorRules.distributorName]"></a-input>
                 </a-form-item>
               </a-col>
             </a-row>
@@ -337,11 +363,16 @@
         showSBarcode:false,           //开关-是否显示二级条码框（入库、出库、退货） 1-显示；0-不显示
         inDepartName:"",
         supplierName:"",
+        distributorName:"",
         //供应商下拉列表 start
         supplierValue: undefined,
         notFoundContent:"未找到内容",
         supplierData: [],
         //供应商下拉列表 end
+        //配送商下拉列表 start
+        distributorValue: undefined,
+        distributorData: [],
+        //配送商下拉列表 end
         showOrderTable:false,
         showUniqueTab:false,
         // orderNo:"",
@@ -387,7 +418,10 @@
           humidity:{rules: [{required: true, message: '请输入湿度!'},{pattern: '^-?\\d+\\.?\\d*$',message: '只能输入数字' }]},
           outDepartId:{},
           inDepartId:{},
+          distributorId:{},
           supplierId:{rules: [{required: true, message: '请选择供应商!'}]},
+          distributorName:{},
+          supplierName:{},
         },
         refKeys: ['pdStockRecordDetail',],
         tableKeys:['pdStockRecordDetail',],
@@ -493,6 +527,7 @@
           queryById: "/pd/pdStockRecordIn/queryById",
           cancel: "/pd/pdStockRecordIn/cancel",
           querySupplier:"/pd/pdSupplier/getSupplierList",
+          queryDistributor:"/pd/pdDistributor/getDistributorList",
           querySupplierById:"/pd/pdSupplier/queryById",
           pdStockRecordDetail: {
             list: "/pd/pdStockRecordIn/queryPdStockRecordDetailByMainId",
@@ -547,7 +582,8 @@
         this.showRefuseReason = false;
         this.showSubmitAndPrint = false;
         //初始化供应商，用于回显供应商
-        this.supplierHandleSearch();
+        // this.supplierHandleSearch();
+        // this.distributorHandleSearch();
 
         let params = {};
         if(this.model.id){
@@ -563,7 +599,7 @@
           }
 
           this.popModal.title="入库明细";
-          let fieldval = pick(this.model,'recordNo','mergeOrderNo','inType','submitBy','submitByName','submitDate','remarks','inDepartId','supplierId',
+          let fieldval = pick(this.model,'recordNo','mergeOrderNo','inType','submitBy','submitByName','submitDate','remarks','inDepartId','supplierId','distributorId','supplierName','distributorName',
             'testResult','storageResult','temperature','humidity','remarks','refuseReason','format')
           this.$nextTick(() => {
             this.form.setFieldsValue(fieldval);
@@ -599,7 +635,7 @@
                 this.initData.humidity = "50";
                 this.submitDateStr = res.result.submitDateStr;
                 this.inDepartName = res.result.inDepartName;
-                let fieldval = pick(this.initData,'recordNo','mergeOrderNo','inType','submitBy','submitByName','submitDate','remarks','inDepartId','supplierId',
+                let fieldval = pick(this.initData,'recordNo','mergeOrderNo','inType','submitBy','submitByName','submitDate','remarks','inDepartId','supplierId','distributorId','supplierName','distributorName',
                   'testResult','storageResult','temperature','humidity','remarks','refuseReason','format');
                 this.form.setFieldsValue(fieldval);
                 // //获取光标
@@ -891,7 +927,7 @@
         this.$message.error(msg)
       },
       popupCallback(row){
-        this.form.setFieldsValue(pick(row,'recordNo','mergeOrderNo','inType','submitBy','submitByName','submitDate','remarks','inDepartId','supplierId',
+        this.form.setFieldsValue(pick(row,'recordNo','mergeOrderNo','inType','submitBy','submitByName','submitDate','remarks','inDepartId','supplierId','distributorId','supplierName','distributorName',
           'testResult','storageResult','temperature','humidity','remarks','refuseReason','format'))
       },
 
@@ -915,11 +951,22 @@
 
         if(option){
           this.supplierName = option.data.attrs.text;
-          console.log(this.supplierName);
+          // console.log(this.supplierName);
         }
       },
       //----------------供应商查询end
 
+      //-----------------配送商查询start
+      distributorHandleSearch(value) {
+        fetch(value, data => (this.distributorData = data),this.url.queryDistributor);
+      },
+      distributorHandleChange(value,option) {
+        this.distributorValue = value;
+        if(option){
+          this.distributorName = option.data.attrs.text;
+        }
+      },
+      //----------------配送商查询end
       //选择采购单
       choosePurchaseOrder() {
         this.$refs.pdChoosePurchaseOrderListModel.show();

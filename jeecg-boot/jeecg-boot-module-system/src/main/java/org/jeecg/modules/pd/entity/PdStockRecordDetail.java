@@ -67,6 +67,7 @@ public class PdStockRecordDetail extends BaseEntity {
 	/**导入单号*/
 	private String importNo;
 	private String supplierId;//供应商ID
+	private String distributorId;//配送商ID
 	private String specUnitId;//规格单位
 	private Double specQuantity;//规格数量
 	/**备注*/
@@ -124,10 +125,10 @@ public class PdStockRecordDetail extends BaseEntity {
 	private String venderId;//生产厂家ID
 	@TableField(exist = false)
 	private String venderName;//生产厂家名称
-//	@TableField(exist = false)
-//	private String supplierId;//供应商ID
 	@TableField(exist = false)
 	private String supplierName;//供应商名称
+	@TableField(exist = false)
+	private String distributorName;//配送商名称
 	@TableField(exist = false)
 	private String inDepartId;//入库科室Id
 	@TableField(exist = false)
@@ -232,5 +233,6 @@ public class PdStockRecordDetail extends BaseEntity {
 	private String productFlag;
 	@TableField(exist = false)
 	private String productFlagName;
-
+	@TableField(exist = false)
+	private String nestatStatus;//库存占用状态 0：使用中  1：未使用 2:已用完
 }

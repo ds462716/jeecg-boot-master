@@ -288,6 +288,7 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
                         if(oConvertUtils.isNotEmpty(pdStockRecord.getSupplierId()) && oConvertUtils.isEmpty(main.getSupplierId())){
                             main.setSupplierId(pdStockRecord.getSupplierId());
                         }
+                        main.setDistributorId(pdStockRecord.getDistributorId());
                         main.setProductNum(productNum);
                         newDetailList.add(main);
                     }

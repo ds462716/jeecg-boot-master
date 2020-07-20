@@ -25,6 +25,7 @@
         a.out_depart_id,
         a.in_depart_id,
         a.supplier_id,
+        a.distributor_id,
         a.audit_by,
         a.audit_date,
         a.audit_status,
@@ -54,7 +55,8 @@
         c.depart_name as outDepartName,
         d.name as supplierName,
         e.realname as submitByName,
-        f.realname as auditByName
+        f.realname as auditByName,
+        g.name as distributorName
       from
         pd_stock_record a
         left join sys_depart b on a.in_depart_id = b.id
@@ -62,6 +64,7 @@
         left join pd_supplier d on a.supplier_id = d.id
         left join sys_user e on a.submit_by = e.id
         left join sys_user f on a.audit_by = f.id
+        left join pd_distributor g on a.distributor_id = g.id
         <where>
             a.del_flag = #{entity.DEL_FLAG_NORMAL}
             <if test="entity.recordNo != null and entity.recordNo != ''">
@@ -115,6 +118,9 @@
             <if test="entity.supplierId != null and entity.supplierId != ''">
                 AND a.supplier_id = #{entity.supplierId}
             </if>
+            <if test="entity.distributorId != null and entity.distributorId != ''">
+                AND a.distributor_id = #{entity.distributorId}
+            </if>
             <if test="entity.departId != null and entity.departId != ''">
                 AND a.depart_id = #{entity.departId}
             </if>
@@ -138,7 +144,8 @@
         c.depart_name as outDepartName,
         d.name as supplierName,
         e.realname as submitByName,
-        f.realname as auditByName
+        f.realname as auditByName,
+        g.name as distributorName
         from
         pd_stock_record a
         left join sys_depart b on a.in_depart_id = b.id
@@ -146,6 +153,7 @@
         left join pd_supplier d on a.supplier_id = d.id
         left join sys_user e on a.submit_by = e.id
         left join sys_user f on a.audit_by = f.id
+        left join pd_distributor g on a.distributor_id = g.id
         <where>
             a.del_flag = #{DEL_FLAG_NORMAL}
             <if test="id != null and id != ''">
@@ -211,6 +219,7 @@
       b.id as "productId",
       b.number as "number",
       b.name as "productName",
+      b.biding_number as "bidingNumber",
       b.spec as "spec",
         case
         when b.product_flag = '0' then "耗材"
@@ -221,12 +230,14 @@
 		c.name  as "venderName",
 		d.name   as "supplierName",
         e.name as "unitName"
+        g.name   as "distributorName",
      from pd_stock_record_detail a
         left join pd_stock_record f on a.record_id=f.id  and f.del_flag=#{DEL_FLAG_NORMAL}
         left join pd_product b on a.product_id=b.id
         left join pd_vender c on b.vender_id=c.id
         left join pd_supplier d on b.supplier_id=d.id
         left join pd_unit e on b.unit_id=e.id
+        left join pd_distributor g on a.distributor_id = g.id
 		where a.del_flag=#{DEL_FLAG_NORMAL}
         and   a.create_time > DATE_SUB(CURDATE(), INTERVAL 1 YEAR)
         and substr(a.create_time,1,7) &lt;=substr(CURDATE(),1,7)
@@ -252,7 +263,10 @@
             AND b.number LIKE concat('%',#{number},'%')
         </if>
         <if test="supplierId != null and supplierId != ''">
-            AND b.supplier_id = #{supplierId}
+            AND a.supplier_id = #{supplierId}
+        </if>
+        <if test="distributorId != null and distributorId != ''">
+            AND a.distributor_id = #{distributorId}
         </if>
         <if test="spec != null and spec != ''">
             AND b.spec LIKE concat('%',#{spec},'%')
@@ -537,6 +551,9 @@
         </if>
         <if test="supplierId != null and supplierId != ''">
             AND a.supplier_id = #{supplierId}
+        </if>
+        <if test="distributorId != null and distributorId != ''">
+            AND a.distributor_id = #{distributorId}
         </if>
      </select>
 </mapper>

@@ -36,7 +36,8 @@
         c.number as "number",
         c.name as "productName",
         c.spec as "spec",
-        c.version as "version"
+        c.version as "version",
+        c.biding_number as "bidingNumber"
  	</sql>
 	<sql id="pdProductJoins">
         LEFT JOIN pd_product c ON c.id = a.product_id

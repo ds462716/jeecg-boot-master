@@ -23,6 +23,7 @@
         a.high_low_supplies,
         a.import_no,
         a.supplier_id,
+        a.distributor_id,
         a.sys_org_code,
 		a.create_by,
 		a.create_time,
@@ -106,14 +107,14 @@
         j.stock_num as stockNum
 	</sql>
 	<sql id="pdProductStockJoins">
-        LEFT JOIN pd_product_stock j ON j.id = a.product_stock_id
+        LEFT JOIN pd_product_stock j ON j.id = a.product_stock_id AND j.nestat_status = '1'
     </sql>
 
 	<sql id="pdProductStockColumns2">
         jj.stock_num as stockNum
 	</sql>
 	<sql id="pdProductStockJoins2">
-        LEFT JOIN pd_product_stock jj ON jj.record_detail_id = a.id
+        LEFT JOIN pd_product_stock jj ON jj.record_detail_id = a.id AND jj.nestat_status = '1'
     </sql>
 
 	<!-- 货位 -->
@@ -133,6 +134,14 @@
 	<sql id="pdInvoiceJoins">
         LEFT JOIN pd_invoice_detail l ON l.bill_detail_id = a.id
         LEFT JOIN pd_invoice m ON m.id = l.invoice_id
+    </sql>
+
+	<!-- 配送商 -->
+	<sql id="pdDistributorColumns">
+      n.name AS "distributorName"
+    </sql>
+	<sql id="pdDistributorJoins">
+      left join pd_distributor n on a.distributor_id = n.id
     </sql>
 
 	<delete id="deleteByMainId" parameterType="java.lang.String">
@@ -182,9 +191,15 @@
 		<include refid="pdVenderColumns"/>,
 		<include refid="PdStockRecordColumns"/>,
 		<include refid="pdSupplierColumns"/>,
+		<include refid="pdDistributorColumns"/>,
 		<include refid="pdSysUserColumns"/>,
-		<include refid="pdInvoiceColumns"/>,
-		<include refid="pdProductStockColumns2"/>
+		<include refid="pdInvoiceColumns"/>
+		<if test='entity.recordType == "1"'>
+			,<include refid="pdProductStockColumns2"/>
+		</if>
+		<if test='entity.recordType == "2"'>
+			,<include refid="pdProductStockColumns"/>
+		</if>
 		FROM pd_stock_record_detail a
 		<include refid="PdStockRecordDetailJoins"/>
 		<include refid="PdStockRecordJoins"/>
@@ -192,9 +207,15 @@
 		<include refid="pdUnitJoins"/>
 		<include refid="pdVenderJoins"/>
 		<include refid="pdSupplierJoins"/>
+		<include refid="pdDistributorJoins"/>
 		<include refid="pdSysUserJoins"/>
 		<include refid="pdInvoiceJoins"/>
-		<include refid="pdProductStockJoins2"/>
+		<if test='entity.recordType == "1"'>
+			<include refid="pdProductStockJoins2"/>
+		</if>
+		<if test='entity.recordType == "2"'>
+			<include refid="pdProductStockJoins"/>
+		</if>
  		<where>
 			a.del_flag =#{entity.DEL_FLAG_NORMAL}
 			<if test="entity.id != null and entity.id != ''">
@@ -238,6 +259,9 @@
 			</if>
 			<if test="entity.supplierId != null and entity.supplierId != ''">
 				AND a.supplier_id = #{entity.supplierId}
+			</if>
+			<if test="entity.distributorId != null and entity.distributorId != ''">
+				AND a.distributor_id = #{entity.distributorId}
 			</if>
 			<if test="entity.inType != null and entity.inType != ''">
 				AND g.in_type = #{entity.inType}
@@ -495,6 +519,7 @@
 		<include refid="pdVenderColumns"/>,
 		<include refid="PdStockRecordColumns"/>,
 		<include refid="pdSupplierColumns"/>,
+		<include refid="pdDistributorColumns"/>,
 		<include refid="pdSysUserColumns"/>,
 		<include refid="pdInvoiceColumns"/>
  		FROM pd_stock_record_detail a
@@ -504,6 +529,7 @@
 		<include refid="pdUnitJoins"/>
 		<include refid="pdVenderJoins"/>
 		<include refid="pdSupplierJoins"/>
+		<include refid="pdDistributorJoins"/>
 		<include refid="pdSysUserJoins"/>
 		<include refid="pdInvoiceJoins"/>
 		<where>
@@ -549,6 +575,9 @@
 			</if>
 			<if test="entity.supplierId != null and entity.supplierId != ''">
 				AND a.supplier_id = #{entity.supplierId}
+			</if>
+			<if test="entity.distributorId != null and entity.distributorId != ''">
+				AND a.distributor_id = #{entity.distributorId}
 			</if>
 			<if test="entity.inType != null and entity.inType != ''">
 				AND g.in_type = #{entity.inType}

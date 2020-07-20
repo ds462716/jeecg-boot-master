@@ -19,6 +19,7 @@
 		a.exp_date,
 		a.exp_status,
 		a.supplier_id,
+		a.distributor_id,
 		a.is_long,
 		a.remarks,
 		a.huowei_code,
@@ -118,6 +119,14 @@
 		LEFT JOIN pd_allocation_detail j ON a.product_id = j.product_id
     </sql>
 
+	<!-- 供应商 -->
+	<sql id="pdDistributorColumns">
+      k.name AS "distributorName"
+    </sql>
+	<sql id="pdDistributorJoins">
+      left join pd_distributor k on a.distributor_id = k.id
+    </sql>
+
 	<!-- 列表查询 -->
 	<select id="selectList" resultType="org.jeecg.modules.pd.entity.PdProductStock">
 		SELECT
@@ -126,6 +135,7 @@
 		<include refid="pdProductColumns"/>,
 		<include refid="pdVenderColumns"/>,
 		<include refid="pdSupplierColumns"/>,
+		<include refid="pdDistributorColumns"/>,
 		<include refid="sysDepartColumns"/>,
 		<include refid="pdGoodsAllocationColumns"/>
 		<if test="applyNo != null and applyNo != ''">
@@ -140,6 +150,7 @@
 		<include refid="pdUnitJoins"/>
 		<include refid="pdVenderJoins"/>
 		<include refid="pdSupplierJoins"/>
+		<include refid="pdDistributorJoins"/>
 		<include refid="sysDepartJoins"/>
 		<include refid="pdGoodsAllocation"/>
 		<if test="applyNo != null and applyNo != ''">
@@ -205,6 +216,9 @@
 			</if>
 			<if test="supplierId != null and supplierId != ''">
 				AND a.supplier_id = #{supplierId}
+			</if>
+			<if test="distributorId != null and distributorId != ''">
+				AND a.distributor_id = #{distributorId}
 			</if>
 			<if test="huoweiCode != null and huoweiCode != ''">
 				AND a.huowei_code = #{huoweiCode}
@@ -395,6 +409,7 @@
 		<include refid="pdProductColumns"/>,
 		<include refid="pdVenderColumns"/>,
 		<include refid="pdSupplierColumns"/>,
+		<include refid="pdDistributorColumns"/>,
         <include refid="sysDepartColumns"/>
         FROM pd_product_stock a
         <include refid="pdProductStockJoins"/>
@@ -402,6 +417,7 @@
 		<include refid="pdUnitJoins"/>
 		<include refid="pdVenderJoins"/>
 		<include refid="pdSupplierJoins"/>
+		<include refid="pdDistributorJoins"/>
         <include refid="sysDepartJoins"/>
         LEFT JOIN pd_dosage_detail p ON a.product_id = p.product_id   AND a.product_bar_code = p.product_bar_code AND a.batch_no = p.batch_no
         LEFT JOIN pd_dosage s ON p.dosage_id = s.id
@@ -544,6 +560,7 @@
 		<include refid="pdProductColumns"/>,
 		<include refid="pdVenderColumns"/>,
 		<include refid="pdSupplierColumns"/>,
+		<include refid="pdDistributorColumns"/>,
 		<include refid="sysDepartColumns"/>,
 		<include refid="pdGoodsAllocationColumns"/>,
 		h.purchase_price as "inPurchasePrice"
@@ -553,6 +570,7 @@
 		<include refid="pdUnitJoins"/>
 		<include refid="pdVenderJoins"/>
 		<include refid="pdSupplierJoins"/>
+		<include refid="pdDistributorJoins"/>
 		<include refid="sysDepartJoins"/>
 		<include refid="pdGoodsAllocation"/>
 		LEFT JOIN pd_stock_record_detail h ON h.id=a.record_detail_id
@@ -613,6 +631,9 @@
 			<if test="supplierId != null and supplierId != ''">
 				AND a.supplier_id = #{supplierId}
 			</if>
+			<if test="distributorId != null and distributorId != ''">
+				AND a.distributor_id = #{distributorId}
+			</if>
 			<if test="venderId != null and venderId != ''">
 				AND c.vender_id = #{venderId}
 			</if>
@@ -665,6 +686,7 @@
 		<include refid="pdProductColumns"/>,
 		<include refid="pdVenderColumns"/>,
 		<include refid="pdSupplierColumns"/>,
+		<include refid="pdDistributorColumns"/>,
 		<include refid="sysDepartColumns"/>,
 		<include refid="pdGoodsAllocationColumns"/>,
 		h.purchase_price as "inPurchasePrice",
@@ -675,6 +697,7 @@
 		<include refid="pdUnitJoins"/>
 		<include refid="pdVenderJoins"/>
 		<include refid="pdSupplierJoins"/>
+		<include refid="pdDistributorJoins"/>
 		<include refid="sysDepartJoins"/>
 		<include refid="pdGoodsAllocation"/>
 		LEFT JOIN pd_stock_record_detail h ON h.id=a.record_detail_id
@@ -732,6 +755,9 @@
 			</if>
 			<if test="entity.supplierId != null and entity.supplierId != ''">
 				AND a.supplier_id = #{entity.supplierId}
+			</if>
+			<if test="entity.distributorId != null and entity.distributorId != ''">
+				AND a.distributor_id = #{entity.distributorId}
 			</if>
 			<if test="entity.venderId != null and entity.venderId != ''">
 				AND c.vender_id = #{entity.venderId}
@@ -843,6 +869,7 @@
 		<include refid="pdProductColumns"/>,
 		<include refid="pdVenderColumns"/>,
 		<include refid="pdSupplierColumns"/>,
+		<include refid="pdDistributorColumns"/>,
 		<include refid="sysDepartColumns"/>,
 		<include refid="pdGoodsAllocationColumns"/>
 		FROM pd_product_stock a
@@ -851,6 +878,7 @@
 		<include refid="pdUnitJoins"/>
 		<include refid="pdVenderJoins"/>
 		<include refid="pdSupplierJoins"/>
+		<include refid="pdDistributorJoins"/>
 		<include refid="sysDepartJoins"/>
 		<include refid="pdGoodsAllocation"/>
 		<where>
@@ -911,6 +939,9 @@
 			<if test="supplierId != null and supplierId != ''">
 				AND a.supplier_id = #{supplierId}
 			</if>
+			<if test="distributorId != null and distributorId != ''">
+				AND a.distributor_id = #{distributorId}
+			</if>
 			<if test="huoweiCode != null and huoweiCode != ''">
 				AND a.huowei_code = #{huoweiCode}
 			</if>
@@ -950,6 +981,7 @@
 		<include refid="pdProductColumns"/>,
 		<include refid="pdVenderColumns"/>,
 		<include refid="pdSupplierColumns"/>,
+		<include refid="pdDistributorColumns"/>,
 		<include refid="sysDepartColumns"/>,
 		<include refid="pdGoodsAllocationColumns"/>
 		FROM pd_product_stock a
@@ -958,6 +990,7 @@
 		<include refid="pdUnitJoins"/>
 		<include refid="pdVenderJoins"/>
 		<include refid="pdSupplierJoins"/>
+		<include refid="pdDistributorJoins"/>
 		<include refid="sysDepartJoins"/>
 		<include refid="pdGoodsAllocation"/>
 		<where>
@@ -1017,6 +1050,9 @@
 			</if>
 			<if test="supplierId != null and supplierId != ''">
 				AND a.supplier_id = #{supplierId}
+			</if>
+			<if test="distributorId != null and distributorId != ''">
+				AND a.distributor_id = #{distributorId}
 			</if>
 			<if test="huoweiCode != null and huoweiCode != ''">
 				AND a.huowei_code = #{huoweiCode}
