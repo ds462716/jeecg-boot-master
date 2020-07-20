@@ -223,6 +223,12 @@
             dataIndex: 'inDepartName'
           },
           {
+            title:'出库科室',
+            align:"center",
+            width:'80px',
+            dataIndex: 'outDepartName'
+          },
+          {
             title:'产品编号',
             align:"center",
             width:'150px',

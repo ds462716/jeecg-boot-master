@@ -199,9 +199,9 @@
             dataIndex: 'spec'
           },
           {
-            title:'型号',
+            title:'中标号',
             align:"center",
-            dataIndex: 'version'
+            dataIndex: 'bidingNumber'
           },
           {
             title:'单位',

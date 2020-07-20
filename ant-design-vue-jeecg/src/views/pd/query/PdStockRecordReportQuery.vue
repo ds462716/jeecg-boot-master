@@ -181,6 +181,12 @@
             dataIndex: 'spec'
           },
           {
+            title:'中标号',
+            align:"center",
+            width:'100px',
+            dataIndex: 'bidingNumber'
+          },
+          {
             title:'产品类型',
             align:"center",
             width:'100px',

@@ -139,6 +139,7 @@
 	    c.number as  "number",
 	    c.name as "productName",
         c.vender_id as "venderId",
+        c.biding_number as "bidingNumber",
         g.name  as "venderName",
 		b.spec_quantity as "specQuantity",
 		count(*) as "num",
