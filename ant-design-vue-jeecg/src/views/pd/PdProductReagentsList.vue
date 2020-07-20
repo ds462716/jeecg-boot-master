@@ -209,8 +209,11 @@
         :rowClassName="setdataCss"
         :customRow="onClickRow"
         :rowSelection="{fixed:true,selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
-        
         @change="handleTableChange">
+
+        <template slot="ellipsisText" slot-scope="text">
+          <j-ellipsis :value="text" :length="textMaxLength"></j-ellipsis>
+        </template>
 
         <template slot="htmlSlot" slot-scope="text">
           <div v-html="text"></div>
@@ -278,6 +281,7 @@
   import { getAction,postAction,httpAction } from  '@/api/manage'
   import JDictSelectTagExpand from "@/components/dict/JDictSelectTagExpand"
   import { validateDuplicateValue } from '@/utils/util'
+  import JEllipsis from '@/components/jeecg/JEllipsis'
   import pick from 'lodash.pick'
 
   let timeout;
@@ -316,7 +320,8 @@
     mixins:[JeecgListMixin],
     components: {
       PdProductReagentsModal,
-      JDictSelectTagExpand
+      JDictSelectTagExpand,
+      JEllipsis
     },
     data () {
       return {
@@ -335,6 +340,7 @@
         chargeCodeVisible:false,
         confirmLoading: false,
         copyRecord:"",
+        textMaxLength:20,
         form: this.$form.createForm(this),
         model: {},
         labelCol: {
@@ -365,12 +371,14 @@
             align:"center",
             width:220,
             fixed: 'left',
+            scopedSlots: {customRender: "ellipsisText"},
             dataIndex: 'name'
           },
           {
             title:'规格',
             align:"center",
             width:170,
+            scopedSlots: {customRender: "ellipsisText"},
             dataIndex: 'spec'
           },
           {
@@ -401,12 +409,14 @@
             title:'生产厂家',
             align:"center",
             width:220,
+            scopedSlots: {customRender: "ellipsisText"},
             dataIndex: 'venderName'
           },
           {
             title:'供应商',
             align:"center",
             width:220,
+            scopedSlots: {customRender: "ellipsisText"},
             dataIndex: 'supplierName'
           },
           {
