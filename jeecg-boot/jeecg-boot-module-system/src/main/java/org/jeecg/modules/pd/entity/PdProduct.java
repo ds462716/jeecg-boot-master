@@ -355,6 +355,6 @@ public class PdProduct  extends BaseEntity {
 	/**
 	 * 赣州市立医院中标价
 	 */
-	private String bidingPrice;
+	private java.math.BigDecimal  bidingPrice;
 
 }
