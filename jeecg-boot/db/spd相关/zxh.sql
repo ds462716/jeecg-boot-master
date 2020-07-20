@@ -51,4 +51,4 @@ ALTER TABLE `pd_vender`
 ADD COLUMN `jde_code`  varchar(64) NULL COMMENT 'jde编号' AFTER `zdy`;
 ALTER TABLE `pd_product`
 ADD COLUMN `biding_type`  varchar(1) NULL COMMENT '中标类型中标类型：（1：省标、2：市标 3：其他招标:4：备案）' AFTER `biding_number`,
-ADD COLUMN `biding_price`  decimal(12,4) NULL COMMENT '中标价' AFTER `bidin_type`;
+ADD COLUMN `biding_price`  decimal(12,4) NULL COMMENT '中标价' AFTER `biding_type`;
