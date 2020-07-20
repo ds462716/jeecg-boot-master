@@ -171,6 +171,7 @@
 		WHERE
 		        a.del_flag =#{DEL_FLAG_NORMAL}
 			and record_id = #{recordId}
+			and j.nestat_status = '1'
 	</select>
 
 	<!-- 入库明细列表查询 -->
@@ -183,8 +184,13 @@
 		<include refid="PdStockRecordColumns"/>,
 		<include refid="pdSupplierColumns"/>,
 		<include refid="pdSysUserColumns"/>,
-		<include refid="pdInvoiceColumns"/>,
-		<include refid="pdProductStockColumns2"/>
+		<include refid="pdInvoiceColumns"/>
+		<if test='entity.recordType == "1"'>
+			,<include refid="pdProductStockColumns2"/>
+		</if>
+		<if test='entity.recordType == "2"'>
+			,<include refid="pdProductStockColumns"/>
+		</if>
 		FROM pd_stock_record_detail a
 		<include refid="PdStockRecordDetailJoins"/>
 		<include refid="PdStockRecordJoins"/>
@@ -194,7 +200,12 @@
 		<include refid="pdSupplierJoins"/>
 		<include refid="pdSysUserJoins"/>
 		<include refid="pdInvoiceJoins"/>
-		<include refid="pdProductStockJoins2"/>
+		<if test='entity.recordType == "1"'>
+			<include refid="pdProductStockJoins2"/>
+		</if>
+		<if test='entity.recordType == "2"'>
+			<include refid="pdProductStockJoins"/>
+		</if>
  		<where>
 			a.del_flag =#{entity.DEL_FLAG_NORMAL}
 			<if test="entity.id != null and entity.id != ''">
@@ -256,6 +267,10 @@
 					#{id}
 				</foreach>
 			</if>
+			<if test='entity.recordType == "1" and entity.nestatStatus != null and entity.nestatStatus != ""'>
+				AND jj.nestat_status = #{entity.nestatStatus}
+			</if>
+
 			<if test='entity.recordType == "2" and entity.outDepartIdList != null and entity.outDepartIdList.size() > 0'>
 				AND g.record_type = '2'
 				AND g.out_depart_id in
@@ -269,6 +284,9 @@
 				<foreach item="id" collection="entity.inDepartIdList" open="(" separator="," close=")">
 					#{id}
 				</foreach>
+			</if>
+			<if test='entity.recordType == "2" and entity.nestatStatus != null and entity.nestatStatus != ""'>
+				AND j.nestat_status = #{entity.nestatStatus}
 			</if>
 			<!--<if test="departIdList != null and departIdList.size() > 0">-->
 				<!--AND (-->

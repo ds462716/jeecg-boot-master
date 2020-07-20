@@ -232,5 +232,6 @@ public class PdStockRecordDetail extends BaseEntity {
 	private String productFlag;
 	@TableField(exist = false)
 	private String productFlagName;
-
+	@TableField(exist = false)
+	private String nestatStatus;//库存占用状态 0：使用中  1：未使用 2:已用完
 }
