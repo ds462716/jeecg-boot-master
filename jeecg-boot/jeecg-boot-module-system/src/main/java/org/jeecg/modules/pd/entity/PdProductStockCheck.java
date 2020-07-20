@@ -112,5 +112,14 @@ public class PdProductStockCheck extends BaseEntity {
 	@TableField(exist = false)
 	private String submitDateStr;
 
+	/**
+	 * 锁定状态
+	 */
+	private String lockingState;
+
+	/**
+	 * 需要盘点的科室
+	 */
+	private String targetDepartId;
 
 }

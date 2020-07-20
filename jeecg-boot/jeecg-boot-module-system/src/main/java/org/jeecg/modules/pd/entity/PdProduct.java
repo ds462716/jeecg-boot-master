@@ -347,4 +347,14 @@ public class PdProduct  extends BaseEntity {
 	 * 赣州市立医院中标号
 	 */
 	private String bidingNumber;
+	/**
+	 * 赣州市立医院中标类型
+	 * 中标类型：（1：省标、2：市标 3：其他招标:4：备案）
+	 */
+	private String bidingType;
+	/**
+	 * 赣州市立医院中标价
+	 */
+	private String bidingPrice;
+
 }

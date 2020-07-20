@@ -16,7 +16,7 @@ import java.util.List;
 public interface PdProductStockCheckMapper extends BaseMapper<PdProductStockCheck> {
 
 
-    List<PdProductStockCheck> selectList(PdProductStockCheck stockCheck);
+    List<PdProductStockCheck> queryList(PdProductStockCheck stockCheck);
 
     Page<PdProductStockCheck> selectListByPage(Page<PdProductStockCheck> page, @Param("entity") PdProductStockCheck entity);
 

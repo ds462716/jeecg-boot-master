@@ -114,6 +114,8 @@
         <result column="fsfXmmc" property="fsfXmmc" jdbcType="VARCHAR"/>
         <result column="status" property="status" jdbcType="VARCHAR"/>
         <result column="biding_number" property="bidingNumber" jdbcType="VARCHAR"/>
+        <result column="biding_type" property="bidingType" jdbcType="VARCHAR"/>
+        <result column="biding_price" property="bidingPrice" jdbcType="DECIMAL"/>
         <collection property="pdProductRules" ofType="String">
             <!--<id column="id" property="id" jdbcType="VARCHAR"/>
             <id column="product_id" property="productId" jdbcType="VARCHAR"/>-->
@@ -230,6 +232,8 @@
         a.product_flag,
         a.status,
         a.biding_number,
+        a.biding_type,
+        a.biding_price,
         a.del_flag
 	</sql>
 
@@ -276,6 +280,8 @@
         a.product_flag,
         a.status,
         a.biding_number,
+        a.biding_type,
+        a.biding_price,
         a.del_flag
     </sql>
 
@@ -494,6 +500,87 @@
         </if>
         <if test="entity.departParentId != null and entity.departParentId != ''">
             AND a.depart_parent_id = #{entity.departParentId}
+        </if>
+        ORDER BY a.update_time desc,a.create_time desc
+    </select>
+
+    <!-- 产品不分页查询 -->
+    <select id="queryList" resultMap="resultMap" parameterType="org.jeecg.modules.pd.entity.PdProduct">
+        SELECT
+        <include refid="pdProductColumns"/>,
+        <include refid="pdUnitColumns"/>,
+        <include refid="pdCategoryColumns"/>,
+        <include refid="pdSupplierColumns"/>,
+        <include refid="pdVenderColumns"/>,
+        <include refid="pdGroupColumns"/>,
+        <include refid="pdRuleColumns"/>
+        FROM pd_product a
+        <include refid="pdUnitJoins"/>
+        <include refid="pdCategoryJoins"/>
+        <include refid="pdSupplierJoins"/>
+        <include refid="pdVenderJoins"/>
+        <include refid="pdGroupJoins"/>
+        <include refid="pdRuleJoins"/>
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+        </where>
+        <if test="name != null and name != ''">
+            AND (a.name LIKE concat('%',#{name},'%')
+            or a.py LIKE concat('%',#{name},'%')
+            or a.wb LIKE concat('%',#{name},'%')
+            or a.zdy LIKE concat('%',#{name},'%')
+            or a.bname LIKE concat('%',#{name},'%')
+            or a.bpy LIKE concat('%',#{name},'%')
+            or a.bwb LIKE concat('%',#{name},'%')
+            )
+        </if>
+        <if test="number != null and number != ''">
+            AND a.number LIKE concat('%',#{number},'%')
+        </if>
+        <if test="registration != null and registration != ''">
+            AND a.registration LIKE concat('%',#{registration},'%')
+        </if>
+        <if test="chargeCode != null and chargeCode != ''">
+            AND a.charge_code LIKE concat('%',#{chargeCode},'%')
+        </if>
+        <if test="venderId != null and venderId != ''">
+            AND a.vender_id = #{venderId}
+        </if>
+        <if test="supplierId != null and supplierId != ''">
+            AND a.supplier_id = #{supplierId}
+        </if>
+        <if test="categoryOne != null and categoryOne != ''">
+            AND a.category_one = #{categoryOne}
+        </if>
+        <if test="categoryTwo != null and categoryTwo != ''">
+            AND a.category_two = #{categoryTwo}
+        </if>
+        <if test="groupId != null and groupId != ''">
+            AND a.group_id = #{groupId}
+        </if>
+        <if test="status != null and status != ''">
+            AND a.status = #{status}
+        </if>
+        <if test="spec != null and spec != ''">
+            AND a.spec LIKE concat('%',#{spec},'%')
+        </if>
+        <if test="version != null and version != ''">
+            AND a.version LIKE concat('%',#{version},'%')
+        </if>
+        <if test="validityFlag != null and validityFlag != ''">
+            AND a.validity_flag = #{validityFlag}
+        </if>
+        <if test="productFlag != null and productFlag != ''">
+            AND a.product_flag = #{productFlag}
+        </if>
+        <if test="deviceClassification != null and deviceClassification != ''">
+            AND a.device_classification = #{deviceClassification}
+        </if>
+        <if test="departId != null and departId != ''">
+            AND a.depart_id = #{departId}
+        </if>
+        <if test="departParentId != null and departParentId != ''">
+            AND a.depart_parent_id = #{departParentId}
         </if>
         ORDER BY a.update_time desc,a.create_time desc
     </select>

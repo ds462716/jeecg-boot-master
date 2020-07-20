@@ -1,9 +1,11 @@
 package org.jeecg.modules.pd.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.shiro.SecurityUtils;
+import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.PdConstant;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.DateUtils;
@@ -13,9 +15,7 @@ import org.jeecg.modules.pd.entity.PdProductStockCheckChild;
 import org.jeecg.modules.pd.entity.PdStockLog;
 import org.jeecg.modules.pd.mapper.PdProductStockCheckChildMapper;
 import org.jeecg.modules.pd.mapper.PdProductStockCheckMapper;
-import org.jeecg.modules.pd.service.IPdDepartService;
-import org.jeecg.modules.pd.service.IPdProductStockCheckChildService;
-import org.jeecg.modules.pd.service.IPdProductStockCheckService;
+import org.jeecg.modules.pd.service.*;
 import org.jeecg.modules.pd.util.UUIDUtil;
 import org.jeecg.modules.system.entity.SysDepart;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,10 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * @Description: 盘点记录表
@@ -48,6 +45,12 @@ public class PdProductStockCheckServiceImpl extends ServiceImpl<PdProductStockCh
 	private SqlSession sqlSession;
 	@Autowired
 	private IPdDepartService pdDepartService;
+	@Autowired
+	private IPdProductStockTotalService pdProductStockTotalService;
+	@Autowired
+	private IPdProductStockCheckPermissionService pdProductStockCheckPermissionService;
+
+
 	/**
 	 * 查询列表
 	 * @param page
@@ -193,7 +196,7 @@ public class PdProductStockCheckServiceImpl extends ServiceImpl<PdProductStockCh
 
 	@Override
 	public List<PdProductStockCheck> queryList(PdProductStockCheck pdProductStockCheck) {
-		return baseMapper.selectList(pdProductStockCheck);
+		return baseMapper.queryList(pdProductStockCheck);
 	}
 
 	@Override
@@ -221,6 +224,92 @@ public class PdProductStockCheckServiceImpl extends ServiceImpl<PdProductStockCh
 			pdProductStockCheck.setShouldCount(0.00);
 		}
 		return pdProductStockCheck;
+	}
+
+    /**
+     * 校验盘点单删除
+     * @param id
+     * @return
+     */
+    @Override
+    @Transactional
+    public Result<Object> deleteV(String id) {
+        PdProductStockCheck entity = this.getById(id);
+        if (entity == null) {
+            return Result.error("未找到对应数据");
+        }
+        if (PdConstant.SUBMIT_STATE_1.equals(entity.getCheckStatus()) || PdConstant.SUBMIT_STATE_3.equals(entity.getCheckStatus())) {
+            if(PdConstant.PRODUCT_STOCK_CHECK_LOCKING_STATE_1.equals(entity.getLockingState())){
+                return Result.error("当前库房被锁定，请先解除锁定再删除！");
+            }
+            //假删除
+            LambdaQueryWrapper<PdProductStockCheck> query = new LambdaQueryWrapper<PdProductStockCheck>()
+                    .eq(PdProductStockCheck::getCheckNo,entity.getCheckNo());
+            this.remove(query);
+            LambdaQueryWrapper<PdProductStockCheckChild> query_i = new LambdaQueryWrapper<PdProductStockCheckChild>()
+                    .eq(PdProductStockCheckChild::getCheckNo,entity.getCheckNo());
+            pdProductStockCheckChildService.remove(query_i);
+            return Result.ok("删除成功!");
+        }else{
+            return Result.error("当前盘点单状态非待提交或已撤回状态，不能删除！");
+        }
+    }
+
+    /**
+     * 更改撤销状态
+     * @param pdProductStockCheck
+     */
+    @Override
+    public void updateStatus(PdProductStockCheck pdProductStockCheck) {
+        PdProductStockCheck update = new PdProductStockCheck();
+        update.setId(pdProductStockCheck.getId());
+        update.setCheckStatus(PdConstant.SUBMIT_STATE_3); //已撤销
+        update.setAuditStatus("");
+        baseMapper.updateById(update);
+    }
+
+	/**
+	 * 审核通过
+	 * @param auditEntity
+	 * @param pdProductStockCheck
+	 * @return
+	 */
+	@Override
+	public Map<String, String> audit(PdProductStockCheck auditEntity,PdProductStockCheck pdProductStockCheck) {
+		Map<String, String> result = new HashMap<>();
+		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+
+		//审核通过并修改库存
+		if (PdConstant.AUDIT_STATE_2.equals(auditEntity.getAuditStatus())) {
+			List<PdProductStockCheckChild> pdProductStockCheckChilds = pdProductStockCheckChildService.selectByCheckNo(pdProductStockCheck.getCheckNo());
+			if(pdProductStockCheckChilds!=null && pdProductStockCheckChilds.size()>0){
+				pdProductStockCheck.setPdProductStockCheckChildList(pdProductStockCheckChilds);
+				//处理库存
+				String inStr = pdProductStockTotalService.updateCheckStock(pdProductStockCheck);
+				if (PdConstant.TRUE.equals(inStr)) {
+					//保存出入库记录日志
+					//this.saveStockLog(pdStockRecord, inType, "");
+					//接触库存锁定状态
+					pdProductStockCheckPermissionService.unlock(pdProductStockCheck.getTargetDepartId(),pdProductStockCheck.getId());
+					result.put("code", PdConstant.SUCCESS_200);
+					result.put("message", "审核成功！");
+				} else {
+					result.put("code", PdConstant.FAIL_500);
+					result.put("message", inStr);
+					throw new RuntimeException(inStr);
+				}
+			}
+		}else if (PdConstant.AUDIT_STATE_3.equals(auditEntity.getAuditStatus())) {
+			//驳回
+			auditEntity.setCheckStatus(PdConstant.SUBMIT_STATE_1); // 待提交
+			result.put("code", PdConstant.SUCCESS_200);
+			result.put("message", "驳回成功！");
+		}
+		// 变更审批意见 以及 审批状态
+		auditEntity.setAuditDate(DateUtils.getDate());
+		auditEntity.setAuditBy(sysUser.getId());
+		baseMapper.updateById(auditEntity);
+		return result;
 	}
 
 }

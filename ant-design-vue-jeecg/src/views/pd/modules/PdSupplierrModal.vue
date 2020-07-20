@@ -26,6 +26,9 @@
         <a-form-item label="供应商类别" :labelCol="labelCol" :wrapperCol="wrapperCol">
           <j-dict-select-tag-expand :disabled="disableSubmit" type="list" v-decorator="['supplierType', validatorRules.supplierType]" :trigger-change="true" dictCode="supplier_type" placeholder="请选择类别"/>
          </a-form-item>
+        <a-form-item label="JDE编码" :labelCol="labelCol" :wrapperCol="wrapperCol">
+          <a-input :disabled="disableSubmit" autocomplete="off" v-decorator="[ 'jdeCode', validatorRules.jdeCode]" ></a-input>
+        </a-form-item>
         <a-form-item label="备注" :labelCol="labelCol" :wrapperCol="wrapperCol">
           <a-input :disabled="disableSubmit" autocomplete="off" v-decorator="[ 'remarks', validatorRules.remarks]" :style="{width:'100%',margin:'0'}" ></a-input>
         </a-form-item>
@@ -150,6 +153,8 @@
           ]},
           zdy: {rules: [
           ]},
+          jdeCode: {rules: [
+            ]},
           supplierType:{rules:[ {required: true, message: '请选择类别!'}]}
         },
         url: {
@@ -195,7 +200,7 @@
         this.focusDisable = false;
         this.visible = true;
         this.$nextTick(() => {
-          this.form.setFieldsValue(pick(this.model,'name','py','wb','zdy','supplierType','licenceName0','licenceNum0','licenceDate0','licenceSite0','licenceName1','licenceNum1','licenceDate1','licenceSite1','licenceName2','licenceNum2','licenceDate2','licenceSite2','licenceName3','licenceNum3','licenceDate3','licenceSite3','licenceName4','licenceNum4','licenceDate4','licenceSite4','licenceName5','licenceNum5','licenceDate5','licenceSite5','licenceName6','licenceNum6','licenceDate6','licenceSite6','licenceName7','licenceNum7','licenceDate7','licenceSite7','licenceName8','licenceNum8','licenceDate8','licenceSite8','licenceName9','licenceNum9','licenceDate9','licenceSite9','licenceName10','licenceNum10','licenceDate10','licenceSite10','licenceName11','licenceNum11','licenceDate11','licenceSite11','remarks'))
+          this.form.setFieldsValue(pick(this.model,'name','py','wb','zdy','supplierType','jdeCode','licenceName0','licenceNum0','licenceDate0','licenceSite0','licenceName1','licenceNum1','licenceDate1','licenceSite1','licenceName2','licenceNum2','licenceDate2','licenceSite2','licenceName3','licenceNum3','licenceDate3','licenceSite3','licenceName4','licenceNum4','licenceDate4','licenceSite4','licenceName5','licenceNum5','licenceDate5','licenceSite5','licenceName6','licenceNum6','licenceDate6','licenceSite6','licenceName7','licenceNum7','licenceDate7','licenceSite7','licenceName8','licenceNum8','licenceDate8','licenceSite8','licenceName9','licenceNum9','licenceDate9','licenceSite9','licenceName10','licenceNum10','licenceDate10','licenceSite10','licenceName11','licenceNum11','licenceDate11','licenceSite11','remarks'))
           //获取光标
           let input = this.$refs['inputFocus'];
           input.focus();

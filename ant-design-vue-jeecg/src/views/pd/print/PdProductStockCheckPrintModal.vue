@@ -120,6 +120,7 @@
           {title: '生产厂家', align:"center", dataIndex: 'venderName'},
           {title: '理论数量', align:"center", dataIndex: 'stockNum'},
           {title: '盘点数量', align:"center", dataIndex: 'checkNum'},
+          {title: '盘盈盘亏', align:"center", dataIndex: 'profitLossCount'},
         ],
         dataSource: [],
         labelCol: {

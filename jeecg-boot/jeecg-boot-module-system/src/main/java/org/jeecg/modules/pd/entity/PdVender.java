@@ -221,4 +221,8 @@ public class PdVender  extends BaseEntity {
 	 * 停用或启用0启用，1停用
 	 */
 	private String status;
+	/**
+	 * jde编码
+	 */
+	private String jdeCode;
 }

@@ -67,4 +67,5 @@ public interface IPdProductService extends IService<PdProduct> {
 
     Result<List<PdProductStock>> closeIngQuotation(String barcode,String closeRemarks,String instrCode, Result<List<PdProductStock>> result);
 
+    List<PdProduct> queryList(PdProduct pdProduct);
 }

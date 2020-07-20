@@ -68,6 +68,22 @@ public class PdProductController extends JeecgController<PdProduct, IPdProductSe
     }
 
     /**
+     * 不分页列表查询
+     *
+     * @param pdProduct
+     * @param req
+     * @return
+     */
+    @GetMapping(value = "/queryList")
+    public Result<?> queryList(PdProduct pdProduct,
+                                   HttpServletRequest req) {
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        pdProduct.setDepartParentId(sysUser.getDepartParentId());
+        List<PdProduct> list = pdProductService.queryList(pdProduct);//
+        return Result.ok(list);
+    }
+
+    /**
      * 关联ex_his_charge_inf表的分页查询
      * @param pdProduct
      * @param pageNo

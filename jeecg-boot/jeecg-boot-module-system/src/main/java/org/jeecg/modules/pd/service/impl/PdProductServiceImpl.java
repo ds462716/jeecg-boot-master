@@ -752,6 +752,11 @@ public class PdProductServiceImpl extends ServiceImpl<PdProductMapper, PdProduct
         return result;
     }
 
+    @Override
+    public List<PdProduct> queryList(PdProduct pdProduct) {
+        return baseMapper.queryList(pdProduct);
+    }
+
     /**
      * 唯一码扫码
      * @param Barcode

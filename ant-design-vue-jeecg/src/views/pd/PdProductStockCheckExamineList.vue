@@ -8,7 +8,7 @@
             <a-form-item label="盘点科室">
               <a-select
                 showSearch
-                :targetDepartId="departValue"
+                :departId="departValue"
                 :defaultActiveFirstOption="false"
                 :allowClear="true"
                 :showArrow="true"
@@ -17,7 +17,7 @@
                 @change="departHandleChange"
                 @focus="departHandleSearch"
                 :notFoundContent="notFoundContent"
-                v-model="queryParam.targetDepartId"
+                v-model="queryParam.departId"
                 placeholder="请选择科室"
               >
                 <a-select-option v-for="d in departData" :key="d.value">{{d.text}}</a-select-option>
@@ -25,8 +25,8 @@
             </a-form-item>
           </a-col>
           <a-col :md="6" :sm="8">
-            <a-form-item label="提交状态">
-              <j-dict-select-tag-expand v-model="queryParam.checkStatus" dictCode="submit_status" placeholder="请选择提交状态"/>
+            <a-form-item label="审核状态">
+              <j-dict-select-tag-expand v-model="queryParam.auditStatus" dictCode="audit_status"/>
             </a-form-item>
           </a-col>
          <!-- <template :md="6" v-if="toggleSearchStatus">
@@ -48,9 +48,6 @@
     <!-- 查询区域-END -->
     
     <!-- 操作按钮区域 -->
-    <div class="table-operator">
-      <a-button @click="handleAdd" type="primary" icon="plus">新增盘点单</a-button>
-    </div>
 
     <!-- table区域-begin -->
     <div>
@@ -71,33 +68,14 @@
         :customRow="onClickRow"
         :rowSelection="{fixed:false,selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
         @change="handleTableChange">
-          <span slot="action" slot-scope="text, record">
-          <a @click="handleEdit(record)" v-bind:disabled="record.checkStatus=='2'">修改</a>
-          <a-divider type="vertical"/>
+        <span slot="action" slot-scope="text, record">
+          <a v-if="record.auditStatus=='1'" @click="handleExamine(record)">审核</a> &nbsp;&nbsp;&nbsp;
           <a @click="handleDetail(record)">详情</a>
-
-          <a-divider type="vertical" />
-          <a-dropdown>
-            <a class="ant-dropdown-link" v-bind:disabled="record.checkStatus=='2'" >更多 <a-icon type="down" /></a>
-            <a-menu slot="overlay">
-              <a-menu-item v-show="record.checkStatus=='1' || record.checkStatus=='3'"> <!--待提交、已撤回-->
-                <a-popconfirm title="确定锁定吗?"  @confirm="() => locking(record)"  >
-                  <a>锁定库房</a>
-                </a-popconfirm>
-                <a-popconfirm title="确定解锁吗?解锁后需要按键盘F5进行刷新"  @confirm="() => unlock(record)"  >
-                  <a>解锁库房</a>
-                </a-popconfirm>
-                <a-popconfirm title="确定删除吗?"  @confirm="() => handleDelete(record.id)"  >
-                  <a>删除</a>
-                </a-popconfirm>
-              </a-menu-item>
-            </a-menu>
-          </a-dropdown>
         </span>
       </a-table>
     </div>
 
-    <pdProductStockCheck-modal ref="modalForm" @ok="modalFormOk"></pdProductStockCheck-modal>
+    <pdProductStockCheck-Examine-modal ref="modalForm" @ok="modalFormOk"></pdProductStockCheck-Examine-modal>
   </a-card>
 </template>
 
@@ -106,7 +84,7 @@
   import { JeecgListMixin ,handleEdit,batchDel} from '@/mixins/JeecgListMixin'
   import { deleteAction,getAction } from '@/api/manage'
   import {initDictOptions, filterMultiDictText} from '@/components/dict/JDictSelectUtil'
-  import PdProductStockCheckModal from './modules/PdProductStockCheckModal'
+  import PdProductStockCheckExamineModal from './modules/PdProductStockCheckExamineModal'
   import JDictSelectTagExpand from "@/components/dict/JDictSelectTagExpand"
 
   let timeout;
@@ -143,7 +121,7 @@
     name: "PdProductStockCheckList",
     mixins:[JeecgListMixin],
     components: {
-      PdProductStockCheckModal,
+      PdProductStockCheckExamineModal,
       JDictSelectTagExpand
     },
     data () {
@@ -205,24 +183,12 @@
           {
             title:'盘点状态',
             align:"center",
-            dataIndex: 'checkStatus',
+            dataIndex: 'auditStatus',
             customRender:(text)=>{
               if(!text){
                 return ''
               }else{
-                return filterMultiDictText(this.dictOptions['checkStatus'], text+"")
-              }
-            }
-          },
-          {
-            title:'库房状态',
-            align:"center",
-            dataIndex: 'lockingState',
-            customRender:(text)=>{
-              if(!text){
-                return ''
-              }else{
-                return filterMultiDictText(this.dictOptions['lockingState'], text+"")
+                return filterMultiDictText(this.dictOptions['auditStatus'], text+"")
               }
             }
           },
@@ -234,17 +200,15 @@
           }
         ],
         url: {
-          list: "/pd/pdProductStockCheck/list",
+          list: "/pd/pdProductStockCheck/examineList",
           delete: "/pd/pdProductStockCheck/delete",
           deleteBatch: "/pd/pdProductStockCheck/deleteBatch",
           exportXlsUrl: "/pd/pdProductStockCheck/exportXls",
           queryDepart: "/pd/pdDepart/queryListTree",
-          locking: "/pd/pdProductStockCheckPermission/locking",
-          unlock: "/pd/pdProductStockCheckPermission/unlock",
         },
         dictOptions:{
-          checkStatus:[],
-          lockingState:[]
+          auditStatus:[],
+
         },
       }
     },
@@ -319,14 +283,9 @@
         }
       },
       initDictConfig(){
-        initDictOptions('submit_status').then((res) => {
+        initDictOptions('audit_status').then((res) => {
           if (res.success) {
-            this.$set(this.dictOptions, 'checkStatus', res.result)
-          }
-        }),
-        initDictOptions('locking_state').then((res) => {
-          if (res.success) {
-            this.$set(this.dictOptions, 'lockingState', res.result)
+            this.$set(this.dictOptions, 'auditStatus', res.result)
           }
         })
 
@@ -361,32 +320,13 @@
         }
       },
       /**
-       * 锁定
+       * 审核
+       * @param record
        */
-      locking(record){
-        let that = this;
-        deleteAction(that.url.locking, {id: record.targetDepartId,recordId:record.id}).then((res) => {
-          if (res.success) {
-            that.$message.success(res.message);
-            that.loadData();
-          } else {
-            that.$message.warning(res.message);
-          }
-        });
-      },
-      /**
-       * 解锁
-       */
-      unlock(record){
-        let that = this;
-        deleteAction(that.url.unlock, {id: record.targetDepartId,recordId:record.id}).then((res) => {
-          if (res.success) {
-            that.$message.success(res.message);
-            that.loadData();
-          } else {
-            that.$message.warning(res.message);
-          }
-        });
+      handleExamine: function (record) {
+        this.$refs.modalForm.edit(record);
+        this.$refs.modalForm.title = "审核";
+        this.$refs.modalForm.disableSubmit = false;
       },
        
     }

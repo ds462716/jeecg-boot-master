@@ -1,5 +1,6 @@
 package org.jeecg.modules.pd.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.apache.commons.collections.CollectionUtils;
@@ -12,9 +13,12 @@ import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.pd.entity.PdProduct;
 import org.jeecg.modules.pd.entity.PdSupplier;
 import org.jeecg.modules.pd.mapper.PdSupplierMapper;
+import org.jeecg.modules.pd.model.PdSupplierTreeModel;
 import org.jeecg.modules.pd.service.IPdProductService;
 import org.jeecg.modules.pd.service.IPdSupplierService;
 import org.jeecg.modules.pd.util.JmUtil;
+import org.jeecg.modules.system.entity.SysDepart;
+import org.jeecg.modules.system.service.ISysDepartService;
 import org.jeecgframework.poi.excel.ExcelImportUtil;
 import org.jeecgframework.poi.excel.entity.ImportParams;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,10 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @Description: 供应商
@@ -44,6 +45,9 @@ public class PdSupplierServiceImpl extends ServiceImpl<PdSupplierMapper, PdSuppl
     private IPdProductService pdProductService;
     @Autowired
     private SqlSession sqlsession;
+    @Autowired
+    private ISysDepartService sysDepartService;
+
 
     @Override
     public List<PdSupplier> verify(PdSupplier pdSupplier) {
@@ -194,6 +198,42 @@ public class PdSupplierServiceImpl extends ServiceImpl<PdSupplierMapper, PdSuppl
         }else{
             return Result.error("文件导入失败:"+message);
         }
+    }
+
+    /**
+     * 查询供应商以树节点的形式展示
+     * @param pdSupplier
+     * @return
+     */
+    @Override
+    public List<PdSupplierTreeModel> queryTreeList(PdSupplier pdSupplier) {
+        List<PdSupplierTreeModel> pdSupplierTreeModelList = new ArrayList<>();
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        pdSupplier.setDepartParentId(sysUser.getDepartParentId());
+        SysDepart sysDepart = sysDepartService.getById(sysUser.getDepartParentId());
+        if(sysDepart!=null ){
+            List<PdSupplier> list = this.selectList(pdSupplier);
+            PdSupplierTreeModel pdSupplierTreeModel = new PdSupplierTreeModel();
+            pdSupplierTreeModel.setId("-1");
+            pdSupplierTreeModel.setKey("-1");
+            pdSupplierTreeModel.setTitle(sysDepart.getDepartName());
+            pdSupplierTreeModel.setLeaf(true);
+            if(CollectionUtils.isNotEmpty(list)){
+                List<PdSupplierTreeModel> pdSupplierTreeModels = new ArrayList<>();
+                for(PdSupplier ps :list){
+                    PdSupplierTreeModel ptm = new PdSupplierTreeModel();
+                    ptm.setId(ps.getId());
+                    ptm.setKey(ps.getId());
+                    ptm.setTitle(ps.getName());
+                    ptm.setParentId("-1");
+                    ptm.setLeaf(false);
+                    pdSupplierTreeModels.add(ptm);
+                }
+                pdSupplierTreeModel.setChildren(pdSupplierTreeModels);
+            }
+            pdSupplierTreeModelList.add(pdSupplierTreeModel);
+        }
+        return pdSupplierTreeModelList;
     }
 
     /**

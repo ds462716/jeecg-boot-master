@@ -2,12 +2,14 @@ package org.jeecg.modules.pd.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
+import org.jeecg.common.api.vo.Result;
 import org.jeecg.modules.pd.entity.PdProductStockCheck;
 import org.jeecg.modules.pd.entity.PdProductStockCheckChild;
 
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Description: 盘点记录表
@@ -57,4 +59,10 @@ public interface IPdProductStockCheckService extends IService<PdProductStockChec
 	List<PdProductStockCheck> queryList(PdProductStockCheck pdProductStockCheck);
 
 	PdProductStockCheck initModal(String id);
+
+    Result<Object> deleteV(String id);
+
+	void updateStatus(PdProductStockCheck pdProductStockCheck);
+
+	Map<String, String> audit(PdProductStockCheck pdProductStockCheck,PdProductStockCheck entity);
 }

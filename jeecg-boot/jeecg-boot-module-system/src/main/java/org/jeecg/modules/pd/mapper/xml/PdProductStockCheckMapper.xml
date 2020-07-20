@@ -5,6 +5,7 @@
        a.id,
        a.check_no,
        a.depart_id,
+       a.target_depart_id,
        a.check_date,
        a.check_by,
        a.should_count,
@@ -14,6 +15,7 @@
        a.audit_by,
        a.audit_date,
        a.audit_status,
+       a.locking_state,
        a.refuse_reason,
        a.create_time,
        a.create_by,
@@ -33,7 +35,7 @@
     </sql>
 
     <sql id="sysDepartJoins">
-        LEFT JOIN sys_depart f ON a.depart_id = f.id
+        LEFT JOIN sys_depart f ON a.target_depart_id = f.id
     </sql>
 
     <!--用户-->
@@ -45,7 +47,7 @@
     </sql>
 
     <!-- 列表查询 -->
-    <select id="selectList" resultType="org.jeecg.modules.pd.entity.PdProductStockCheck">
+    <select id="queryList" resultType="org.jeecg.modules.pd.entity.PdProductStockCheck">
         SELECT
         <include refid="PdProductStockCheckColumns"/>,
         <include refid="pdSysUserColumns"/>,
@@ -65,11 +67,14 @@
             <if test="departId != null and departId != ''">
                 AND a.depart_id = #{departId}
             </if>
+            <if test="targetDepartId != null and targetDepartId != ''">
+                AND a.target_depart_id = #{targetDepartId}
+            </if>
             <if test="departParentId != null and departParentId != ''">
                 AND a.depart_parent_id = #{departParentId}
             </if>
             <if test="departIdList != null and departIdList.size() > 0">
-                and a.depart_id IN
+                and a.target_depart_id IN
                 <foreach collection="departIdList" item="item" separator="," open="(" close=")">
                     #{item}
                 </foreach>
@@ -98,11 +103,14 @@
             <if test="departId != null and departId != ''">
                 AND a.depart_id = #{departId}
             </if>
+            <if test="targetDepartId != null and targetDepartId != ''">
+                AND a.target_depart_id = #{targetDepartId}
+            </if>
             <if test="departParentId != null and departParentId != ''">
                 AND a.depart_parent_id = #{departParentId}
             </if>
             <if test="departIdList != null and departIdList.size() > 0">
-                and a.depart_id IN
+                and a.target_depart_id IN
                 <foreach collection="departIdList" item="item" separator="," open="(" close=")">
                     #{item}
                 </foreach>
@@ -136,11 +144,17 @@
             <if test="entity.departId != null and entity.departId != ''">
                 AND a.depart_id = #{entity.departId}
             </if>
+            <if test="entity.targetDepartId != null and entity.targetDepartId != ''">
+                AND a.target_depart_id = #{entity.targetDepartId}
+            </if>
             <if test="entity.departParentId != null and entity.departParentId != ''">
                 AND a.depart_parent_id = #{entity.departParentId}
             </if>
+            <if test="entity.auditStatus != null and entity.auditStatus != ''">
+                AND a.audit_status = #{entity.auditStatus}
+            </if>
             <if test="entity.departIdList != null and entity.departIdList.size() > 0">
-                and a.depart_id IN
+                and a.target_depart_id IN
                 <foreach collection="entity.departIdList" item="item" separator="," open="(" close=")">
                     #{item}
                 </foreach>

@@ -137,7 +137,7 @@
         <a-button style="margin-right: 15px;">取  消</a-button>
       </a-popconfirm>
       <!--<a-button @click="saveBtn" v-show="!disableSubmit" type="primary" :loading="confirmLoading" style="margin-right: 15px;">保存草稿</a-button>-->
-      <a-button @click="submitBtn" v-show="!disableSubmit" type="primary" :loading="confirmLoading" style="margin-right: 15px;">提  交</a-button>
+      <a-button @click="submitBtn" v-show="isDisabledAuth('stock:rejectedSave')" type="primary" :loading="confirmLoading" style="margin-right: 15px;">提  交</a-button>
     </template>
 
     <pd-choose-product-stock-list-model ref="pdChooseProductStockListModel" @ok="returnProductStockData" ></pd-choose-product-stock-list-model>
@@ -159,6 +159,7 @@
   import {stockScanCode} from '@/utils/barcode'
   import PdChooseProductStockListModel from "./PdChooseProductStockListModel";
   import PdChoosePurchaseOrderListModel from "./PdChoosePurchaseOrderListModel";
+  import { disabledAuthFilter } from "@/utils/authFilter"
 
   const VALIDATE_NO_PASSED = Symbol()
   export { FormTypes, VALIDATE_NO_PASSED }
@@ -679,7 +680,18 @@
         })
       },
       //----------------供应商查询end
-
+      /**
+       * 校验权限
+       * @param code
+       * @returns {boolean|*}
+       */
+      isDisabledAuth(code){
+        if(!this.disableSubmit){
+          return !disabledAuthFilter(code);
+        }else{
+          return false
+        }
+      },
     },
   }
 

@@ -201,8 +201,8 @@
         <a-button type="danger" :loading="confirmLoading" style="margin-right: 15px;">驳回</a-button>
       </a-popconfirm>
       <!--<a-button @click="refuseBtn" v-show="!disableSubmit" type="danger" :loading="confirmLoading" style="margin-right: 15px;">驳回</a-button>-->
-      <a-button @click="submitBtn('1')" v-show="!disableSubmit" type="primary" :loading="confirmLoading" style="margin-right: 15px;">审核通过</a-button>
-      <a-button @click="submitBtn('2')" v-show="!disableSubmit" type="primary" :loading="confirmLoading" style="margin-right: 15px;">审核通过并打印</a-button>
+      <a-button @click="submitBtn('1')" v-show="isDisabledAuth_i('stock:form:outRecordExamine')" type="primary" :loading="confirmLoading" style="margin-right: 15px;">审核通过</a-button>
+      <a-button @click="submitBtn('2')" v-show="isDisabledAuth_i('stock:form:outRecordExamine')" type="primary" :loading="confirmLoading" style="margin-right: 15px;">审核通过并打印</a-button>
     </template>
 
     <pd-stock-record-out-print-modal ref="pdStockRecordOutPrintModal"></pd-stock-record-out-print-modal>
@@ -227,6 +227,7 @@
   import PdStockRecordOutPrintModalFCZYY from "../../external/fengcheng/print/PdStockRecordOutPrintModalFCZYY";
   import PdProductNumberPrint from "../print/PdProductNumberPrint";
   import { disabledAuthFilter } from "@/utils/authFilter"
+
 
   const VALIDATE_NO_PASSED = Symbol()
   export { FormTypes, VALIDATE_NO_PASSED }
@@ -815,6 +816,18 @@
        */
       isDisabledAuth(code){
         return !disabledAuthFilter(code);
+      },
+      /**
+       * 校验权限
+       * @param code
+       * @returns {boolean|*}
+       */
+      isDisabledAuth_i(code){
+        if(!this.disableSubmit){
+          return !disabledAuthFilter(code);
+        }else{
+          return false
+        }
       },
     },
   }

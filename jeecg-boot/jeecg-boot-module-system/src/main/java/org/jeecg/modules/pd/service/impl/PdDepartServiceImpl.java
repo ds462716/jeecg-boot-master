@@ -9,15 +9,18 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.CacheConstant;
+import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.constant.PdConstant;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.PasswordUtil;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.pd.service.IPdDepartService;
+import org.jeecg.modules.pd.service.IPdProductStockCheckPermissionService;
 import org.jeecg.modules.pd.util.JmUtil;
 import org.jeecg.modules.pd.util.UUIDUtil;
 import org.jeecg.modules.system.entity.*;
 import org.jeecg.modules.system.mapper.SysDepartMapper;
+import org.jeecg.modules.system.mapper.SysDepartRolePermissionMapper;
 import org.jeecg.modules.system.mapper.SysUserDepartMapper;
 import org.jeecg.modules.system.mapper.SysUserMapper;
 import org.jeecg.modules.system.model.SysDepartTreeModel;
@@ -25,6 +28,7 @@ import org.jeecg.modules.system.service.*;
 import org.jeecg.modules.system.util.FindsDepartsChildrenUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -62,6 +66,14 @@ public class PdDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart>
 
     @Autowired
     private ISysDepartPermissionService sysDepartPermissionService;
+
+    @Autowired
+    private SysDepartRolePermissionMapper sysDepartRolePermissionMapper;
+
+    @Autowired
+    public RedisTemplate<String, Object> redisTemplate;
+
+
 
 
     @Cacheable(value = CacheConstant.SYS_DEPARTS_CACHE)
@@ -140,6 +152,8 @@ public class PdDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart>
                              );
             }
         }
+        //刷新用户权限
+        this.refreshShiro();
 
     }
 
@@ -350,6 +364,8 @@ public class PdDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart>
                 sysDepartRolePermissionService.remove(new QueryWrapper<SysDepartRolePermission>().lambda().eq(SysDepartRolePermission::getDepartId, departId).eq(SysDepartRolePermission::getPermissionId, permissionId));
             }
         }
+        //刷新用户权限
+        this.refreshShiro();
     }
 
     @Override
@@ -517,5 +533,16 @@ public class PdDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart>
     @Override
     public List<Map<String,Object>>  findDepartList(SysDepart sysDepart) {
       return  sysDepartMapper.findDepartList(sysDepart);
+    }
+
+    @Override
+    public List<SysDepartRolePermission> findDepartRolePermissionByName(Map<String,Object> map) {
+        return sysDepartRolePermissionMapper.findDepartRolePermissionByName(map);
+    }
+
+    @Override
+    public void refreshShiro(){
+        Set keys = redisTemplate.keys(CommonConstant.PREFIX_USER_SHIRO_CACHE  + "*");
+        redisTemplate.delete(keys);
     }
 }

@@ -136,7 +136,7 @@ public class PdRejectedController extends JeecgController<PdRejected, IPdRejecte
     }
 
     @PostMapping(value = "/submit")
-    @RequiresPermissions("stock:form:addRejected")
+    @RequiresPermissions("stock:rejectedSave")
     public Result<?> submit(@RequestBody PdRejected pdRejected) {
         pdRejectedService.saveMain(pdRejected, pdRejected.getPdRejectedDetailList());
         return Result.ok("添加成功！");

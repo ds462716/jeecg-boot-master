@@ -221,4 +221,15 @@ public class PdSupplier extends BaseEntity {
 	 * 停用或启用0启用，1停用
 	 */
 	private String status;
+
+	/**
+	 * 树节点的父类
+	 */
+	@TableField(exist = false)
+	private String parentId;
+
+	/**
+	 * jde编码
+	 */
+	private String jdeCode;
 }

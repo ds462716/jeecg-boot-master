@@ -16,6 +16,7 @@
 		<result column="validity_flag" property="validityFlag" jdbcType="VARCHAR"/>
 		<result column="remarks" property="remarks" jdbcType="VARCHAR"/>
 		<result column="status" property="status" jdbcType="VARCHAR"/>
+		<result column="jde_code" property="jdeCode" jdbcType="VARCHAR"/>
 		<result column="del_flag" property="delFlag" jdbcType="VARCHAR"/>
 	</resultMap>
 
@@ -25,6 +26,7 @@
 		a.py,
 		a.wb,
 		a.zdy,
+		a.jde_code,
 		a.licence_name0,
 		a.licence_num0,
 		a.licence_date0,
@@ -104,6 +106,7 @@
 		a.py,
 		a.wb,
 		a.zdy,
+		a.jde_code,
 		a.create_by,
 		a.create_time,
 		a.update_by,

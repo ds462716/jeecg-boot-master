@@ -227,6 +227,7 @@ public class PdStockRecordInController {
      * @return
      */
     @PostMapping(value = "/audit")
+    @RequiresPermissions("stock:form:inRecordExamine")
     public Result<?> audit(@RequestBody PdStockRecord pdStockRecord) {
         PdStockRecord entity = pdStockRecordService.getOne(pdStockRecord);
         if (entity == null) {

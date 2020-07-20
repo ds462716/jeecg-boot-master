@@ -145,5 +145,12 @@ public interface IPdProductStockTotalService extends IService<PdProductStockTota
 
     public PdProductStock closeProdStock(PdProductStock productStock);
 
+    /**
+     * 盘点库存处理
+     * @param pdProductStockCheck
+     * @return
+     */
+    String updateCheckStock(PdProductStockCheck pdProductStockCheck);
+
     List<PdProductStockTotalPage> chooseStockTotalList(PdProductStockTotalPage stockTotal);
 }

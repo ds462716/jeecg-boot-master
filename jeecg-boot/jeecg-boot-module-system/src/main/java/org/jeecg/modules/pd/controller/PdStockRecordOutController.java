@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.PdConstant;
 import org.jeecg.common.system.query.QueryGenerator;
@@ -189,10 +190,11 @@ public class PdStockRecordOutController {
     /**
      * 审批
      *
-     * @param PdStockRecord
+     * @param pdStockRecord
      * @return
      */
     @PostMapping(value = "/audit")
+    @RequiresPermissions("stock:form:outRecordExamine")
     public Result<?> audit(@RequestBody PdStockRecord pdStockRecord) {
         PdStockRecord entity = pdStockRecordService.getOne(pdStockRecord);
         if (entity == null) {

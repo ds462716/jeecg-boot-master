@@ -325,4 +325,13 @@ public interface PdConstant {
 	//发票状态
 	public final static String INVOICE_STATUS_1 ="1";//1-未完成
 	public final static String INVOICE_STATUS_2 ="2";//2-已完成
+
+	//盘点冻结权限的名称
+	public final static String IN_RECORD_EXAMINE = "入库审核按钮";//入库审核按钮
+	public final static String OUT_RECORD_EXAMINE = "出库审核按钮";//出库审核按钮
+	public final static String REJECTED_SAVE = "退货审核按钮权限";//退货审核按钮权限
+
+	//盘点锁定状态
+	public final String PRODUCT_STOCK_CHECK_LOCKING_STATE_1="1";//锁定状态
+	public final String PRODUCT_STOCK_CHECK_LOCKING_STATE_0="0";//正常状态
 }

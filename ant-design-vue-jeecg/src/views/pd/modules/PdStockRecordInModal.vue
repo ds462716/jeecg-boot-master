@@ -275,6 +275,7 @@
   import {scanCode} from '@/utils/barcode'
   import PdStockRecordInPrintModal from "../print/PdStockRecordInPrintModal";
   import ExStockRecordInPrintModal from "../../external/print/ExStockRecordInPrintModal";
+  import { disabledAuthFilter } from "@/utils/authFilter"
 
 
   const VALIDATE_NO_PASSED = Symbol()
@@ -1538,6 +1539,14 @@
           }
         }
         return true;
+      },
+      /**
+       * 校验权限
+       * @param code
+       * @returns {boolean|*}
+       */
+      isDisabledAuth(code){
+        return !disabledAuthFilter(code);
       },
     },
   }

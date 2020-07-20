@@ -89,9 +89,37 @@ public class PdProductStockCheckController {
 			pdProductStockCheck.setDepartIdList(departList);
 		}
  		pdProductStockCheck.setDepartParentId(sysUser.getDepartParentId());
+		pdProductStockCheck.setDepartId(sysUser.getCurrentDepartId());
 		page = pdProductStockCheckService.selectList(page,pdProductStockCheck);
 		return Result.ok(page);
 	}
+
+	 /**
+	  * 查询
+	  * @param pdProductStockCheck
+	  * @param pageNo
+	  * @param pageSize
+	  * @param req
+	  * @return
+	  */
+	 @GetMapping(value = "/examineList")
+	 public Result<?> examineList(PdProductStockCheck pdProductStockCheck,
+									@RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
+									@RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
+									HttpServletRequest req) {
+		 Page<PdProductStockCheck> page = new Page<PdProductStockCheck>(pageNo, pageSize);
+		 LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		 if(StringUtils.isEmpty(pdProductStockCheck.getDepartId())){
+			 //查询科室下所有下级科室的ID
+			 SysDepart sysDepart=new SysDepart();
+			 List<String> departList=pdDepartService.selectListDepart(sysDepart);
+			 pdProductStockCheck.setDepartIdList(departList);
+		 }
+		 pdProductStockCheck.setDepartParentId(sysUser.getDepartParentId());
+		 pdProductStockCheck.setCheckStatus(PdConstant.SUBMIT_STATE_2); //已提交状态
+		 page = pdProductStockCheckService.selectList(page,pdProductStockCheck);
+		 return Result.ok(page);
+	 }
 
 	 /**
 	  * 初始化Modal页面
@@ -196,8 +224,8 @@ public class PdProductStockCheckController {
 	 */
 	@DeleteMapping(value = "/delete")
 	public Result<?> delete(@RequestParam(name="id",required=true) String id) {
-		pdProductStockCheckService.removeById(id);
-		return Result.ok("删除成功!");
+        Result<Object> resul = pdProductStockCheckService.deleteV(id);
+        return resul;
 	}
 
 	/**
@@ -357,5 +385,47 @@ public class PdProductStockCheckController {
 				result.setResult(totalNum);
 		 result.setSuccess(true);
 		 return result;
+	 }
+
+	 /**
+	  * 撤回
+	  * @param pdProductStockCheck
+	  * @return
+	  */
+	 @PutMapping(value = "/cancel")
+	 public Result<?> cancel(@RequestBody PdProductStockCheck pdProductStockCheck) {
+		 PdProductStockCheck entity = pdProductStockCheckService.getById(pdProductStockCheck.getId());
+		 if (entity == null) {
+			 return Result.error("未找到对应数据");
+		 }
+		 if (PdConstant.SUBMIT_STATE_2.equals(entity.getCheckStatus()) && PdConstant.AUDIT_STATE_1.equals(entity.getAuditStatus())) {
+			 pdProductStockCheckService.updateStatus(pdProductStockCheck);
+			 return Result.ok("撤回成功!");
+		 }else{
+			 return Result.error("当前盘点单状态已被审批或已撤回，不能撤回！");
+		 }
+	 }
+
+	 /**
+	  * 审批
+	  *
+	  * @param pdProductStockCheck
+	  * @return
+	  */
+	 @PostMapping(value = "/audit")
+	 public Result<?> audit(@RequestBody PdProductStockCheck pdProductStockCheck) {
+		 PdProductStockCheck entity = pdProductStockCheckService.getById(pdProductStockCheck.getId());
+		 if (entity == null) {
+			 return Result.error("未找到对应数据");
+		 }
+		 if(PdConstant.AUDIT_STATE_2.equals(entity.getAuditStatus()) || PdConstant.AUDIT_STATE_3.equals(entity.getAuditStatus())){
+			 return Result.error("盘点单已被审批，不能再次审批！");
+		 }
+		 Map<String, String> result = pdProductStockCheckService.audit(pdProductStockCheck, entity);
+		 if (PdConstant.SUCCESS_200.equals(result.get("code"))) {
+			 return Result.ok(result.get("message"));
+		 } else {
+			 return Result.error(result.get("message"));
+		 }
 	 }
 }

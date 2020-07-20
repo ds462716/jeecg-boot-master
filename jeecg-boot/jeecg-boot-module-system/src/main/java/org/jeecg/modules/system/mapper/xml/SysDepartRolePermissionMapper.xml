@@ -2,4 +2,25 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.jeecg.modules.system.mapper.SysDepartRolePermissionMapper">
 
+    <select id="findDepartRolePermissionByName" parameterType="map" resultType="org.jeecg.modules.system.entity.SysDepartRolePermission">
+        SELECT * from sys_depart_role_permission a
+        WHERE 1 = 1
+        <if test="names != null and names.size() > 0">
+           and a.permission_id IN (
+            SELECT
+            id
+            FROM
+            sys_permission a
+            WHERE
+            a.`name` IN
+            <foreach collection="names" item="item" separator="," open="(" close=")">
+              #{item}
+             </foreach>
+            )
+        </if>
+        <if test="departId != null and departId != ''">
+            AND a.depart_id = #{departId}
+        </if>
+    </select>
+
 </mapper>
