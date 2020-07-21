@@ -443,6 +443,7 @@
 	g.stock_num as "stockNum",
 	sum(a.product_num) as "productNum",
 	sum(a.product_num) as "autoNum",
+	e.id as "supplierId",
 	e.name as "supplierName",
 	f.name as "venderName",
 	c.charge_code as "chargeCode",

@@ -309,6 +309,7 @@
 	a.stock_num as "stockNum",
 	a.limit_up as "limitUp",
 	a.limit_down as "limitDown",
+    d.id as "supplierId",
 	d.name as "supplierName",
 	IFNULL(a.limit_down -a.stock_num ,0) as "autoNum",
 	e.name as "venderName",
