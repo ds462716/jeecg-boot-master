@@ -462,8 +462,9 @@ public class PdStockRecordInController {
         stockRecord.setInDepartId(sysUser.getCurrentDepartId());
         stockRecord.setDepartParentId(sysUser.getDepartParentId());
         Page<PdStockRecord> page = new Page<PdStockRecord>(pageNo, pageSize);
-        page = pdStockRecordService.stockRecordReportQuery(page, stockRecord);
-        return Result.ok(page);
+        IPage<PdStockRecord> pageList = pdStockRecordService.stockRecordReportQuery(page, stockRecord);//
+        //page = pdStockRecordService.stockRecordReportQuery(page, stockRecord);
+        return Result.ok(pageList);
     }
 
     /**

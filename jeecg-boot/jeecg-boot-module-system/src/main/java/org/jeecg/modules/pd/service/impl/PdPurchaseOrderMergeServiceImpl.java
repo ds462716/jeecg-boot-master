@@ -56,7 +56,7 @@ public class PdPurchaseOrderMergeServiceImpl extends ServiceImpl<PdPurchaseOrder
      */
     @Override
     public Page<PdPurchaseOrderMerge> selectList(Page<PdPurchaseOrderMerge> page, PdPurchaseOrderMerge purchaseOrderMerge) {
-        return page.setRecords(pdPurchaseOrderMergeMapper.selectList(purchaseOrderMerge));
+        return   pdPurchaseOrderMergeMapper.selectListByPage(page,purchaseOrderMerge);
     }
 
     @Override

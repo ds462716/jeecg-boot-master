@@ -679,7 +679,126 @@
 		</where>
 	</select>
 
-
+	<select id="queryListByPage" resultType="org.jeecg.modules.pd.entity.PdProductStock">
+		SELECT
+		<include refid="pdProductStockColumns"/>,
+		<include refid="pdUnitColumns"/>,
+		<include refid="pdProductColumns"/>,
+		<include refid="pdVenderColumns"/>,
+		<include refid="pdSupplierColumns"/>,
+		<include refid="pdDistributorColumns"/>,
+		<include refid="sysDepartColumns"/>,
+		<include refid="pdGoodsAllocationColumns"/>,
+		h.purchase_price as "inPurchasePrice"
+		FROM pd_product_stock a
+		<include refid="pdProductStockJoins"/>
+		<include refid="pdProductJoins"/>
+		<include refid="pdUnitJoins"/>
+		<include refid="pdVenderJoins"/>
+		<include refid="pdSupplierJoins"/>
+		<include refid="pdDistributorJoins"/>
+		<include refid="sysDepartJoins"/>
+		<include refid="pdGoodsAllocation"/>
+		LEFT JOIN pd_stock_record_detail h ON h.id=a.record_detail_id
+		LEFT JOIN pd_stock_record hh on h.record_id = hh.id
+		<where>
+			a.del_flag =#{entity.DEL_FLAG_NORMAL} AND a.stock_num > 0
+			<if test="entity.id != null and entity.id != ''">
+				AND a.id = #{entity.id}
+			</if>
+			<if test="entity.productId != null and entity.productId != ''">
+				AND a.product_id = #{entity.productId}
+			</if>
+			<if test="entity.departId != null and entity.departId != ''">
+				AND a.depart_id = #{entity.departId}
+			</if>
+			<if test="entity.nestatStatus != null and entity.nestatStatus != ''">
+				AND a.nestat_status=#{entity.nestatStatus}
+			</if>
+			<if test="entity.number != null and entity.number != ''">
+				AND c.number LIKE concat('%',#{entity.number},'%')
+			</if>
+			<if test="entity.productFlag != null and entity.productFlag != ''">
+				AND c.product_flag = #{entity.productFlag}
+			</if>
+			<if test="entity.categoryOne != null and entity.categoryOne != ''">
+				AND c.category_one = #{entity.categoryOne}
+			</if>
+			<if test="entity.bidingNumber != null and entity.bidingNumber != ''">
+				AND c.biding_number LIKE concat('%',#{entity.bidingNumber},'%')
+			</if>
+			<if test="entity.productName != null and entity.productName != ''">
+				AND c.name LIKE concat('%',#{entity.productName},'%')
+			</if>
+			<if test="entity.recordNo != null and entity.recordNo != ''">
+				AND  hh.record_no LIKE concat('%',#{entity.recordNo},'%')
+			</if>
+			<if test="entity.spec != null and entity.spec != ''">
+				AND c.spec LIKE concat('%',#{entity.spec},'%')
+			</if>
+			<if test="entity.version != null and entity.version != ''">
+				AND c.version   LIKE concat('%',#{entity.version},'%')
+			</if>
+			<if test="entity.batchNo != null and entity.batchNo != ''">
+				AND a.batch_no LIKE concat('%',#{entity.batchNo},'%')
+			</if>
+			<if test="entity.registration != null and entity.registration != ''">
+				AND c.registration LIKE concat('%',#{entity.registration},'%')
+			</if>
+			<if test="entity.chargeCode != null and entity.chargeCode != ''">
+				AND c.charge_code LIKE concat('%',#{entity.chargeCode},'%')
+			</if>
+			<if test="entity.productBarCode != null and entity.productBarCode != ''">
+				AND a.product_bar_code = #{entity.productBarCode}
+			</if>
+			<if test="entity.supplierId != null and entity.supplierId != ''">
+				AND a.supplier_id = #{entity.supplierId}
+			</if>
+			<if test="entity.distributorId != null and entity.distributorId != ''">
+				AND a.distributor_id = #{entity.distributorId}
+			</if>
+			<if test="entity.venderId != null and entity.venderId != ''">
+				AND c.vender_id = #{entity.venderId}
+			</if>
+			<if test="entity.huoweiCode != null and entity.huoweiCode != ''">
+				AND a.huowei_code = #{entity.huoweiCode}
+			</if>
+			<if test="entity.expDate != null">
+				AND DATE_FORMAT(a.exp_date,'%Y-%m-%d') = DATE_FORMAT( #{entity.expDate}, '%Y-%m-%d')
+			</if>
+			<if test="entity.queryDateStart != null and entity.queryDateStart != ''">
+				AND a.exp_date &gt;= #{entity.queryDateStart}
+			</if>
+			<if test="entity.queryDateEnd != null and entity.queryDateEnd != ''">
+				AND a.exp_date &lt;= #{entity.queryDateEnd}
+			</if>
+			<if test="entity.applyNo != null and entity.applyNo != ''">
+				AND h.apply_no = #{entity.applyNo}
+			</if>
+			<if test="entity.departParentId != null and entity.departParentId != ''">
+				AND a.depart_parent_id = #{entity.departParentId}
+			</if>
+			<if test="entity.expStatus != null and entity.expStatus != ''">
+				AND a.exp_status = #{entity.expStatus}
+			</if>
+			<if test="entity.isLong != null and entity.isLong != ''">
+				AND a.is_long = #{entity.isLong}
+			</if>
+			<if test="entity.allocationNo != null and entity.allocationNo != ''">
+				AND j.allocation_no = #{entity.allocationNo}
+			</if>
+			<if test="entity.departIdList != null and entity.departIdList.size() > 0">
+				AND a.depart_id IN
+				<foreach collection="entity.departIdList" item="item" separator="," open="(" close=")">
+					#{item}
+				</foreach>
+			</if>
+			<if test="entity.barCodeType != null and entity.barCodeType != ''">
+				AND a.bar_code_type = #{entity.barCodeType}
+			</if>
+			order by  exp_status  desc,create_time desc
+		</where>
+	</select>
 	<!-- 条码打印查询 -->
 	<select id="queryPrintList" resultType="org.jeecg.modules.pd.entity.PdProductStock">
 		SELECT

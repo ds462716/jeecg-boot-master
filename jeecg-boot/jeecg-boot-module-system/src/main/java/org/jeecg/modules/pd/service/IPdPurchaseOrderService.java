@@ -27,7 +27,7 @@ public interface IPdPurchaseOrderService extends IService<PdPurchaseOrder> {
 	 * @param pdPurchaseOrder
 	 * @return
 	 */
-	Page<PdPurchaseOrder> selectList(Page<PdPurchaseOrder> pageList,PdPurchaseOrder pdPurchaseOrder);
+	Page<PdPurchaseOrder> selectList(Page<PdPurchaseOrder> pageList, PdPurchaseOrder pdPurchaseOrder);
 
 	/**
 	 * 列表查询不分页

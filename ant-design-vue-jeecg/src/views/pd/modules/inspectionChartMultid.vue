@@ -1,7 +1,7 @@
 <template>
   <a-modal
     centered
-    :title="报表"
+    :title="title"
     :width="1200"
     :visible="visible"
     :confirmLoading="confirmLoading"

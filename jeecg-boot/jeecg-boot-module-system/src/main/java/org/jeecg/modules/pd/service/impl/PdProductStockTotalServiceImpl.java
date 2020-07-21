@@ -70,7 +70,8 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
      */
     @Override
     public Page<PdProductStockTotalPage> selectList(Page<PdProductStockTotalPage> page, PdProductStockTotal stockTotal) {
-        return page.setRecords(pdProductStockTotalMapper.selectList(stockTotal));
+       // return page.setRecords(pdProductStockTotalMapper.selectList(stockTotal));
+        return pdProductStockTotalMapper.selectListByPage(page,stockTotal);
     }
 
     @Override

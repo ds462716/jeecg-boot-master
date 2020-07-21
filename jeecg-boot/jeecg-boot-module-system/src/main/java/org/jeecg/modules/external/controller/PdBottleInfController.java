@@ -185,8 +185,9 @@ public class PdBottleInfController extends JeecgController<PdBottleInf, IPdBottl
 		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
 		pdBottleInf.setDepartParentId(sysUser.getDepartParentId());
 		Page<PdBottleInf> page = new Page<PdBottleInf>(pageNo, pageSize);
-		page = pdBottleInfService.bottleInfReportQuery(page, pdBottleInf);
-		return Result.ok(page);
+		IPage<PdBottleInf> pageList = pdBottleInfService.bottleInfReportQuery(page, pdBottleInf);//
+		//page = pdBottleInfService.bottleInfReportQuery(page, pdBottleInf);
+		return Result.ok(pageList);
 	}
 	/**
 	 * 入库统计视图  mcb  --20200617 用于统计查询  入库统计报表视图

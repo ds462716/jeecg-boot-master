@@ -85,8 +85,8 @@ public class PdProductStockTotalController {
 		 }
 		 stockTotalPage.setDepartParentId(sysUser.getDepartParentId());
 		 stockTotalPage.setFilterType("1");//有值的话，则过滤库存数量为0的数据
-         page = pdProductStockTotalService.selectList(page,stockTotalPage);
-		//计算总库存数量，近效期数量，过期数量等值；
+ 		 IPage<PdProductStockTotalPage> pageList = pdProductStockTotalService.selectList(page, stockTotalPage);//
+		 //计算总库存数量，近效期数量，过期数量等值；
          //**************************
          List<PdProductStockTotalPage> aList = pdProductStockTotalService.findListForQuery(stockTotalPage);
          Double gCount=0.00;//过期数量
@@ -133,7 +133,7 @@ public class PdProductStockTotalController {
              }
          }
 		Map map=new HashMap();
-		 map.put("records",page);
+		 map.put("records",pageList);
 		 map.put("gCount",gCount);//过期数量
 		 map.put("jCount",jCount);//近效期数量
 		 map.put("isLcount",isLcount);//久存产品数量
@@ -349,8 +349,8 @@ public class PdProductStockTotalController {
 			 productStock.setDepartIdList(departList);
 		 }
 		 productStock.setDepartParentId(sysUser.getDepartParentId());
-		 page = pdProductStockService.queryList(page,productStock);
-		 List<PdProductStock> aList= page.getRecords();
+		 IPage<PdProductStock> pageList = pdProductStockService.queryList(page, productStock);//
+		 List<PdProductStock> aList= pageList.getRecords();
 		 if(aList !=null && aList.size()>0){
 			 for(PdProductStock stock : aList){
 				 PdProductStockUniqueCode stockUniqueCode=new PdProductStockUniqueCode();
@@ -360,7 +360,7 @@ public class PdProductStockTotalController {
 				 stock.setRefBarCodes(uniqueCode);
 			 }
 		 }
-		 return Result.ok(page);
+		 return Result.ok(pageList);
 	 }
 
 	/**
