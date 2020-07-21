@@ -3,6 +3,7 @@ package org.jeecg.modules.pd.service;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
+import org.jeecg.modules.pd.entity.PdProductStock;
 import org.jeecg.modules.pd.entity.PdStockRecord;
 import org.jeecg.modules.pd.entity.PdStockRecordDetail;
 
@@ -161,5 +162,12 @@ public interface IPdStockRecordService extends IService<PdStockRecord> {
 	IPage<PdStockRecord> querySupplierCountPageList(Page<PdStockRecord> pageList, PdStockRecord pdStockRecord);
     //供应商入库用量  不分页（导出用）
 	List<PdStockRecord> querySupplierCountList(PdStockRecord pdStockRecord);
+
+	/**
+	 * 一体机终端出库接口
+	 * @param pdStockRecord
+	 * @return
+	 */
+	public String addOutForTerminal(PdStockRecord pdStockRecord, List<PdProductStock> stockList);
 
 }

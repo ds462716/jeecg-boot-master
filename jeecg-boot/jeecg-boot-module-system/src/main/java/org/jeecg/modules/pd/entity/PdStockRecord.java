@@ -305,4 +305,6 @@ public class PdStockRecord extends BaseEntity {
     private String chargeCode;//收费代号
     @TableField(exist = false)
     private Double outProductNum; //出库数量
+    @TableField(exist = false)
+    private List<String> uniqueCode;// 唯一码 用于一体终端机唯一码出库
 }

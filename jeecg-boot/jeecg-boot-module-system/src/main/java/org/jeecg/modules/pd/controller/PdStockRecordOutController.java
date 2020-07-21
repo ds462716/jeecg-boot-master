@@ -1,14 +1,17 @@
 package org.jeecg.modules.pd.controller;
 
 import com.alibaba.fastjson.JSON;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.jeecg.common.api.vo.Result;
+import org.jeecg.common.constant.MessageConstant;
 import org.jeecg.common.constant.PdConstant;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.system.vo.DictModel;
@@ -18,6 +21,7 @@ import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.message.util.PushMsgUtil;
 import org.jeecg.modules.pd.entity.*;
 import org.jeecg.modules.pd.service.*;
+import org.jeecg.modules.pd.util.BarCodeUtil;
 import org.jeecg.modules.pd.util.UUIDUtil;
 import org.jeecg.modules.pd.vo.PdGoodsAllocationPage;
 import org.jeecg.modules.pd.vo.PdStockRecordOutPage;
@@ -78,6 +82,8 @@ public class PdStockRecordOutController {
     private ISysPermissionService sysPermissionService;
     @Autowired
     private PushMsgUtil pushMsgUtil;
+    @Autowired
+    private IPdProductStockUniqueCodeService pdProductStockUniqueCodeService;
 
     @Value("${jeecg.hospital_code}")
     private String hospitalCode;
@@ -164,6 +170,67 @@ public class PdStockRecordOutController {
         result.put("recordId",recordId);
         result.put("message","保存成功！");
         return Result.ok(result);
+    }
+
+    /**
+     * 一体机终端出库接口 （只适配唯一码）
+     * @param pdStockRecord
+     * @return
+     */
+    @PostMapping(value = "/addOutForTerminal")
+    public Result<?> addOutForTerminal(@RequestBody PdStockRecord pdStockRecord) {
+        Result<PdProductStock> result = new Result<>();
+        if(CollectionUtils.isEmpty(pdStockRecord.getUniqueCode())){
+            result.setCode(MessageConstant.ICODE_STATE_500);
+            result.setMessage("请扫描正确的条码");
+            return result;
+        }
+        if(oConvertUtils.isEmpty(pdStockRecord.getInDepartId())){
+            result.setCode(MessageConstant.ICODE_STATE_500);
+            result.setMessage("出库失败，入库库房为空！");
+            return result;
+        }
+        List<PdProductStock> stockList = new ArrayList<>();
+
+        for (String Barcode : pdStockRecord.getUniqueCode()) {
+            if(StringUtils.isNotBlank(Barcode)){
+                LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+                LambdaQueryWrapper<PdProductStockUniqueCode> query = new LambdaQueryWrapper<PdProductStockUniqueCode>()
+                        .eq(PdProductStockUniqueCode::getId, Barcode)
+                        .eq(PdProductStockUniqueCode::getPrintType, PdConstant.CODE_PRINT_TYPE_1)
+                        .eq(PdProductStockUniqueCode::getCodeState,PdConstant.CODE_PRINT_STATE_0)//正常状态不包括已退货和已用完的
+                        /* .eq(PdProductStockUniqueCode::getDepartId,sysUser.getCurrentDepartId())*/;//当前科室下的
+                //查询状态是正常状态且是当前科室下的
+                PdProductStockUniqueCode pdProductStockUniqueCode = pdProductStockUniqueCodeService.getOne(query);
+                if(pdProductStockUniqueCode!=null){
+                    PdProductStock ps = new PdProductStock();
+                    ps.setId(pdProductStockUniqueCode.getProductStockId());
+                    ps.setBarCodeType(PdConstant.CODE_PRINT_TYPE_1);
+                    ps.setProductFlag("");//产品类型0耗材1试剂
+                    ps.setNestatStatus(PdConstant.STOCK_NESTAT_STATUS_1);//状态 未使用
+                    ps.setDepartId(sysUser.getCurrentDepartId());
+                    // 唯一码查库存
+                    List<PdProductStock> pds = pdProductStockService.queryUniqueProductStockList(ps);
+                    if(CollectionUtils.isNotEmpty(pds)){
+                        ps = pds.get(0);
+                        ps.setRefBarCode(Barcode);
+                        stockList.add(ps);
+                    }
+                }
+            }
+        }
+        if(CollectionUtils.isEmpty(stockList)){
+            result.setCode(MessageConstant.ICODE_STATE_500);
+            result.setMessage("出库失败，出库明细为空！");
+            return result;
+        }
+
+        //自动出库操作
+        String recordId = pdStockRecordService.addOutForTerminal(pdStockRecord, stockList);
+
+        result.setCode(MessageConstant.ICODE_STATE_200);
+        result.setMessage(MessageConstant.PACKAGE_CODE_MESSAGE_2+"，并成功出库");
+        return result;
     }
 
     /**

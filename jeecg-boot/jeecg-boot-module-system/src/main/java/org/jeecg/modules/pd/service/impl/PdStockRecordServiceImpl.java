@@ -61,15 +61,11 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
     @Autowired
     private IPdProductStockTotalService pdProductStockTotalService;
     @Autowired
-    private IPdProductStockService pdProductStockService;
-    @Autowired
     private IPdStockLogService pdStockLogService;
     @Autowired
     private IPdStockRecordDetailService pdStockRecordDetailService;
     @Autowired
     private IPdGoodsAllocationService pdGoodsAllocationService;
-    @Autowired
-    private ISysDictService sysDictService;
     @Autowired
     private IPdPurchaseOrderMergeDetailService pdPurchaseOrderMergeDetailService;
     @Autowired
@@ -1510,6 +1506,69 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
             }
         }
         return list;
+    }
+
+    /**
+     * 一体机终端出库接口实现 （只适配唯一码）
+     * @param pdStockRecord
+     * @return
+     */
+    @Override
+    public String addOutForTerminal(PdStockRecord pdStockRecord, List<PdProductStock> stockList) {
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        SysDepart sysDepart = pdDepartService.getById(sysUser.getCurrentDepartId());
+
+        // 1、封装出库单信息
+        pdStockRecord.setRecordNo(UUIDUtil.generateOrderNoByType(PdConstant.ORDER_NO_FIRST_LETTER_CK));
+        pdStockRecord.setOutType(PdConstant.OUT_TYPE_1);
+        pdStockRecord.setSubmitDate(DateUtils.getDate());// 提交日期
+        pdStockRecord.setSubmitBy(sysUser.getId());      // 提交人
+        pdStockRecord.setAuditDate(DateUtils.getDate()); // 审核日期
+        pdStockRecord.setAuditBy(sysUser.getId());       // 审核人
+        pdStockRecord.setOutDepartId(sysDepart.getId()); // 出库库房id
+        pdStockRecord.setOutDepartName(sysDepart.getDepartName());
+        pdStockRecord.setCreateTime(DateUtils.getDate());
+        pdStockRecord.setRecordType(PdConstant.RECODE_TYPE_2); // 出库
+        pdStockRecord.setSubmitStatus(PdConstant.SUBMIT_STATE_2); // 已提交
+        pdStockRecord.setAuditStatus(PdConstant.AUDIT_STATE_2);//审核通过
+        pdStockRecord.setRemarks("一体机终端07出库");
+
+        // 2、封装出库明细
+        List<PdStockRecordDetail> detailList = new ArrayList<>();
+        for (PdProductStock stock : stockList) {
+            PdStockRecordDetail detail = new PdStockRecordDetail();
+            detail.setProductStockId(stock.getId());
+            detail.setProductId(stock.getProductId());
+            detail.setProductBarCode(stock.getProductBarCode());
+            detail.setBatchNo(stock.getBatchNo());
+            detail.setExpDate(stock.getExpDate());
+            detail.setSellingPrice(stock.getSellingPrice());
+            detail.setPurchasePrice(stock.getPurchasePrice());
+            detail.setSpecUnitId(stock.getSpecUnitId());
+            detail.setSpecQuantity(stock.getSpecQuantity());
+            detail.setProductNum(1D);
+            detail.setStockNum(stock.getStockNum());
+            detail.setOutHuoweiCode(stock.getHuoweiCode());
+            detail.setRegistration(stock.getRegistration());
+            detail.setRefBarCode(stock.getRefBarCode());
+            detail.setInHuoweiCode("");
+            detail.setSupplierId(stock.getSupplierId());
+            detail.setDistributorId(stock.getDistributorId());
+            detail.setProduceDate(stock.getProduceDate());
+            detail.setRemarks("一体机终端出库");
+            detailList.add(detail);
+        }
+
+        // 4、保存出库
+        String recordId = this.saveOutStockRecord(pdStockRecord, detailList);
+        // 5、自动审批 + 自动增减库存
+        PdStockRecord auditEntity = new PdStockRecord();
+        BeanUtils.copyProperties(pdStockRecord,auditEntity);
+        auditEntity.setAuditStatus(PdConstant.AUDIT_STATE_2);
+        auditEntity.setRefuseReason("系统自动审批通过");
+        this.auditOut(auditEntity,pdStockRecord);
+
+        return recordId;
     }
 
 }
