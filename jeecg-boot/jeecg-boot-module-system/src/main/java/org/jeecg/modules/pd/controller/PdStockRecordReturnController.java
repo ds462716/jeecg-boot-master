@@ -416,7 +416,7 @@ public class PdStockRecordReturnController {
         stockRecord.setOutDepartId(sysUser.getCurrentDepartId());
         stockRecord.setDepartParentId(sysUser.getDepartParentId());
         stockRecord.setAuditStatus(PdConstant.AUDIT_STATE_2);
-        stockRecord.setProductFlag(PdConstant.PRODUCT_FLAG_0);//只查产品
+        //stockRecord.setProductFlag(PdConstant.PRODUCT_FLAG_0);//只查产品
         List<PdStockRecordDetail>  list=pdStockRecordDetailService.chooseStockRecordDetailList(stockRecord);
         return Result.ok(list);
     }

@@ -604,7 +604,7 @@ public class PdProductStockTotalController {
 		stockTotal.setDepartId(sysUser.getCurrentDepartId());
 		stockTotal.setDepartParentId(sysUser.getDepartParentId());
 		stockTotal.setStatus(PdConstant.DISABLE_ENABLE_STATUS_0);
-		stockTotal.setProductFlag(PdConstant.PRODUCT_FLAG_0);//只查产品
+		//stockTotal.setProductFlag(PdConstant.PRODUCT_FLAG_0);//只查产品
 		List<PdProductStockTotalPage>  list=pdProductStockTotalService.chooseStockTotalList(stockTotal);
 		return Result.ok(list);
 	}
