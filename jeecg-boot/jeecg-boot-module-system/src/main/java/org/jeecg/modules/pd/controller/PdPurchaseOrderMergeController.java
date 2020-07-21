@@ -56,14 +56,11 @@ public class PdPurchaseOrderMergeController extends JeecgController<PdPurchaseOr
 								   @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
 								   @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
 								   HttpServletRequest req) {
-		//QueryWrapper<PdPurchaseOrderMerge> queryWrapper = QueryGenerator.initQueryWrapper(pdPurchaseOrderMerge, req.getParameterMap());
-		//Page<PdPurchaseOrderMerge> page = new Page<PdPurchaseOrderMerge>(pageNo, pageSize);
-		//IPage<PdPurchaseOrderMerge> pageList = pdPurchaseOrderMergeService.page(page, queryWrapper);
 		Page<PdPurchaseOrderMerge> page = new Page<PdPurchaseOrderMerge>(pageNo, pageSize);
 		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
 		pdPurchaseOrderMerge.setDepartParentId(sysUser.getDepartParentId());
-		page = pdPurchaseOrderMergeService.selectList(page, pdPurchaseOrderMerge);
-		return Result.ok(page);
+		IPage<PdPurchaseOrderMerge> pageList = pdPurchaseOrderMergeService.selectList(page, pdPurchaseOrderMerge);//
+		return Result.ok(pageList);
 	}
 	
 	/**

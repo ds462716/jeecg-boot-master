@@ -26,7 +26,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @Description: 申购订单主表
@@ -54,7 +57,7 @@ public class PdPurchaseOrderServiceImpl extends ServiceImpl<PdPurchaseOrderMappe
 	 */
 	@Override
 	public Page<PdPurchaseOrder> selectList(Page<PdPurchaseOrder> page, PdPurchaseOrder pdPurchaseOrder) {
-		return page.setRecords(pdPurchaseOrderMapper.selectList(pdPurchaseOrder));
+		return   pdPurchaseOrderMapper.selectListByPage(page,pdPurchaseOrder);
 	}
 
 	@Override

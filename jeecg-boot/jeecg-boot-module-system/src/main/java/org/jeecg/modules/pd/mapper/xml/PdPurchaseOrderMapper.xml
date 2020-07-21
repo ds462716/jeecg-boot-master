@@ -115,6 +115,76 @@
         </where>
     </select>
 
+
+
+
+    <select id="selectListByPage" resultType="org.jeecg.modules.pd.vo.PdPurchaseOrderPage">
+        SELECT
+        <include refid="PdPurchaseOrderColumns"/>,
+        <include refid="pdSysUserColumns"/>,
+        <include refid="sysDepartColumns"/>
+        FROM pd_purchase_order a
+        <include refid="PdPurchaseOrderJoins"/>
+        <include refid="pdSysUserJoins"/>
+        <include refid="sysDepartJoins"/>
+        <where>
+            a.del_flag =#{entity.DEL_FLAG_NORMAL}
+            <if test="entity.id != null and entity.id != ''">
+                AND a.id = #{entity.id}
+            </if>
+            <if test="entity.orderNo != null and entity.orderNo != ''">
+                AND a.order_no   LIKE concat('%',#{entity.orderNo},'%')
+            </if>
+            <if test="entity.auditStatus != null and entity.auditStatus != ''">
+                AND a.audit_status = #{entity.auditStatus}
+            </if>
+            <if test="entity.submitStatus != null and entity.submitStatus != ''">
+                AND a.submit_status = #{entity.submitStatus}
+            </if>
+            <if test="entity.deptName != null and entity.deptName != ''">
+                AND f.depart_name = #{entity.deptName}
+            </if>
+            <if test="entity.departId != null and entity.departId != ''">
+                AND a.depart_id = #{entity.departId}
+            </if>
+            <if test="entity.purchaseType != null and entity.purchaseType != ''">
+                AND  a.purchase_type  = #{entity.purchaseType}
+            </if>
+            <if test="entity.departParentId != null and entity.departParentId != ''">
+                AND a.depart_parent_id = #{entity.departParentId}
+            </if>
+            <if test="entity.mergeOrderNo != null and entity.mergeOrderNo != ''">
+                AND a.merge_order_no = #{entity.mergeOrderNo}
+            </if>
+            <if test="entity.submitStatusList != null and entity.submitStatusList.size() > 0">
+                and a.submit_status IN
+                <foreach collection="entity.submitStatusList" item="item" separator="," open="(" close=")">
+                    #{item}
+                </foreach>
+            </if>
+
+            <if test="entity.auditStatusList != null and entity.auditStatusList.size() > 0">
+                and a.audit_status IN
+                <foreach collection="entity.auditStatusList" item="item" separator="," open="(" close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="entity.departIdList != null and entity.departIdList.size() > 0">
+                and a.depart_id IN
+                <foreach collection="entity.departIdList" item="item" separator="," open="(" close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="entity.queryDateStart != null and entity.queryDateStart != ''">
+                AND a.order_date &gt;= #{entity.queryDateStart}
+            </if>
+            <if test="entity.queryDateEnd != null and entity.queryDateEnd != ''">
+                AND a.order_date &lt;= #{entity.queryDateEnd}
+            </if>
+            ORDER BY  field(a.audit_status, 1, 3, 2),a.update_time ASC
+        </where>
+    </select>
+
     <!-- 用于采购订单选择框 -->
     <select id="choosePurchaseOrderList" resultType="org.jeecg.modules.pd.vo.PdPurchaseOrderPage"  parameterType="org.jeecg.modules.pd.vo.PdPurchaseOrderPage">
         SELECT DISTINCT

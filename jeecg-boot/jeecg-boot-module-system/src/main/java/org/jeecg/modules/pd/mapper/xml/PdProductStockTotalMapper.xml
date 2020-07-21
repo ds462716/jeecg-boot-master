@@ -177,6 +177,102 @@
     </select>
 
 
+    <select id="selectListByPage" resultType="org.jeecg.modules.pd.vo.PdProductStockTotalPage">
+        SELECT
+        <include refid="pdProductStockTotalColumns"/>,
+        <include refid="pdProductColumns"/>,
+        <include refid="pdUnitColumns"/>,
+        <include refid="sysDepartColumns"/>,
+        <include refid="pdSupplierColumns"/>,
+        <include refid="pdVenderColumns"/>
+        <if test="entity.currentDepartId != null and entity.currentDepartId != ''">
+            ,g.stock_num as "currentStockNum"
+        </if>
+        FROM pd_product_stock_total a
+        <include refid="pdProductStockTotalJoins"/>
+        <include refid="pdProductJoins"/>
+        <include refid="pdUnitJoins"/>
+        <include refid="sysDepartJoins"/>
+        <include refid="pdSupplierJoins"/>
+        <include refid="pdVenderJoins"/>
+        <if test="entity.currentDepartId != null and entity.currentDepartId != ''">
+            LEFT JOIN pd_product_stock_total g ON g.product_id=c.id  and g.depart_id=#{entity.currentDepartId}
+        </if>
+        <where>
+            a.del_flag =#{entity.DEL_FLAG_NORMAL}
+            <if test="entity.filterType != null and entity.filterType != ''">
+                AND a.stock_num > 0
+            </if>
+            <if test="entity.id != null and entity.id != ''">
+                AND a.id = #{entity.id}
+            </if>
+            <if test="entity.productName != null and entity.productName != ''">
+                AND (
+                c.name LIKE concat('%',#{entity.productName},'%')
+                or c.py LIKE concat('%',#{entity.productName},'%')
+                or c.wb LIKE concat('%',#{entity.productName},'%')
+                or c.bname LIKE concat('%',#{entity.productName},'%')
+                or c.bpy LIKE concat('%',#{entity.productName},'%')
+                or c.bwb LIKE concat('%',#{entity.productName},'%')
+                or c.zdy LIKE concat('%',#{entity.productName},'%')
+                )
+            </if>
+            <if test="entity.number != null and entity.number != ''">
+                AND c.number  LIKE concat('%',#{entity.number},'%')
+            </if>
+            <if test="entity.productFlag != null and entity.productFlag != ''">
+                AND c.product_flag =#{entity.productFlag}
+            </if>
+            <if test="entity.bidingNumber != null and entity.bidingNumber != ''">
+                AND c.biding_number LIKE concat('%',#{entity.bidingNumber},'%')
+            </if>
+            <if test="entity.spec != null and entity.spec != ''">
+                AND c.spec   LIKE concat('%',#{entity.spec},'%')
+            </if>
+            <if test="entity.version != null and entity.version != ''">
+                AND c.version   LIKE concat('%',#{entity.version},'%')
+            </if>
+            <if test="entity.categoryOne != null and entity.categoryOne != ''">
+                AND c.category_one = #{entity.categoryOne}
+            </if>
+            <if test="entity.departId != null and entity.departId != ''">
+                AND  a.depart_id = #{entity.departId}
+            </if>
+            <if test="entity.productId != null and entity.productId != ''">
+                AND  a.product_id = #{entity.productId}
+            </if>
+            <if test="entity.departParentId != null and entity.departParentId != ''">
+                AND a.depart_parent_id = #{entity.departParentId}
+            </if>
+            <if test="entity.supplierName != null and entity.supplierName != ''">
+                AND e.name  LIKE concat('%',#{entity.supplierName},'%')
+            </if>
+            <if test="entity.supplierId != null and entity.supplierId != ''">
+                AND e.id =#{entity.supplierId}
+            </if>
+            <if test="entity.expStatus != null and entity.expStatus != ''">
+                AND a.exp_status =#{entity.expStatus}
+            </if>
+            <if test="entity.isLong!=null and entity.isLong!='' ">
+                AND  a.is_long = #{entity.isLong}
+            </if>
+            <if test="entity.venderId != null and entity.venderId != ''">
+                AND c.vender_id =#{entity.venderId}
+            </if>
+            <if test="entity.venderName != null and entity.venderName != ''">
+                AND d.name  LIKE concat('%',#{entity.venderName},'%')
+            </if>
+            <if test="entity.departIdList != null and entity.departIdList.size() > 0">
+                and a.depart_id IN
+                <foreach collection="entity.departIdList" item="item" separator="," open="(" close=")">
+                    #{item}
+                </foreach>
+            </if>
+            order by  exp_status  desc,create_time desc
+        </where>
+    </select>
+
+
 
     <!--修改库存相关信息-->
     <update id="updateProductStockTotal">

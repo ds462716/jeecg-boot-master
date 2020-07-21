@@ -1,6 +1,7 @@
 package org.jeecg.modules.pd.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
@@ -82,8 +83,8 @@ public class PdPurchaseOrderController {
 		 LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
 		 pdPurchaseOrderPage.setDepartId(sysUser.getCurrentDepartId());
 		 pdPurchaseOrderPage.setDepartParentId(sysUser.getDepartParentId());
-		 page = pdPurchaseOrderService.selectList(page, pdPurchaseOrderPage);
-		 return Result.ok(page);
+		 IPage<PdPurchaseOrder> pageList = pdPurchaseOrderService.selectList(page, pdPurchaseOrderPage);//
+		 return Result.ok(pageList);
 	 }
 
 	 /**
@@ -114,8 +115,8 @@ public class PdPurchaseOrderController {
 		 }
 		 LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
 		 pdPurchaseOrderPage.setDepartParentId(sysUser.getDepartParentId());
-		 page = pdPurchaseOrderService.selectList(page, pdPurchaseOrderPage);
-		 return Result.ok(page);
+		 IPage<PdPurchaseOrder> pageList = pdPurchaseOrderService.selectList(page, pdPurchaseOrderPage);//
+		 return Result.ok(pageList);
 	 }
 
 	 /**

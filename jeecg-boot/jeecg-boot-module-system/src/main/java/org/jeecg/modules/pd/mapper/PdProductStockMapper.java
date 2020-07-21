@@ -18,6 +18,7 @@ import java.util.Map;
  */
 public interface PdProductStockMapper extends BaseMapper<PdProductStock> {
 
+	Page<PdProductStock> queryListByPage(Page<PdProductStock> page, @Param("entity") PdProductStock entity);
 
 	List<PdProductStock> selectList(PdProductStockTotalPage stockTotalPage);
 

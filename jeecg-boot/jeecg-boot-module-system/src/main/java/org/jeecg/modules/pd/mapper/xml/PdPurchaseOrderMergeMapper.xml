@@ -86,4 +86,45 @@
         </where>
     </select>
 
+
+
+    <select id="selectListByPage" resultType="org.jeecg.modules.pd.entity.PdPurchaseOrderMerge">
+        SELECT  DISTINCT
+        <include refid="PdPurchaseOrderMergeColumns"/>,
+        <include refid="pdSysUserColumns"/>,
+        <include refid="sysDepartColumns"/>
+        FROM pd_purchase_order_merge a
+        <include refid="pdPurchaseOrderJoins"/>
+        <include refid="pdSysUserJoins"/>
+        <include refid="sysDepartJoins"/>
+        <where>
+            a.del_flag =#{entity.DEL_FLAG_NORMAL}
+            <if test="entity.id != null and entity.id != ''">
+                AND a.id = #{entity.id}
+            </if>
+            <if test="entity.mergeOrderNo != null and entity.mergeOrderNo != ''">
+                AND a.merge_order_no   LIKE concat('%',#{entity.mergeOrderNo},'%')
+            </if>
+            <if test="entity.orderNo != null and entity.orderNo != ''">
+                AND d.order_no   LIKE concat('%',#{entity.orderNo},'%')
+            </if>
+            <if test="entity.auditStatus != null and entity.auditStatus != ''">
+                AND a.audit_status = #{entity.auditStatus}
+            </if>
+            <if test="entity.departId != null and entity.departId != ''">
+                AND a.depart_id = #{entity.departId}
+            </if>
+            <if test="entity.departParentId != null and entity.departParentId != ''">
+                AND a.depart_parent_id = #{entity.departParentId}
+            </if>
+            <if test="entity.queryDateStart != null and entity.queryDateStart != ''">
+                AND a.purchase_date &gt;= #{entity.queryDateStart}
+            </if>
+            <if test="entity.queryDateEnd != null and entity.queryDateEnd != ''">
+                AND a.purchase_date &lt;= #{entity.queryDateEnd}
+            </if>
+            ORDER BY  create_time DESC
+        </where>
+    </select>
+
 </mapper>
