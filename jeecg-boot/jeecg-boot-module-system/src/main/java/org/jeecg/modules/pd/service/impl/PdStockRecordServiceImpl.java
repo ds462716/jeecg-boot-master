@@ -1314,7 +1314,7 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
 
     @Override
     public Page<PdStockRecord> stockRecordReportQuery(Page<PdStockRecord> pageList, PdStockRecord pdStockRecord) {
-        return pageList.setRecords(pdStockRecordMapper.stockRecordReportQuery(pdStockRecord));
+        return pdStockRecordMapper.stockRecordReportQuery(pageList,pdStockRecord);
     }
 
     @Override

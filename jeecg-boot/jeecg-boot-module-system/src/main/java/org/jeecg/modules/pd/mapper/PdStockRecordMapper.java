@@ -39,10 +39,14 @@ public interface PdStockRecordMapper extends BaseMapper<PdStockRecord> {
     List<PdStockRecord> selectTransferList(PdStockRecord pdStockRecord);
     /**
      * 入库统计报表
-     * @param pdStockRecord
+     * @param entity
      * @return
      */
-    List<PdStockRecord> stockRecordReportQuery(PdStockRecord pdStockRecord);
+    Page<PdStockRecord> stockRecordReportQuery(Page<PdStockRecord> page, @Param("entity") PdStockRecord entity);
+
+
+    List<PdStockRecord> stockRecordReportQuery(@Param("entity") PdStockRecord entity);
+
 
     boolean deleteById(@Param("id") String id);
 

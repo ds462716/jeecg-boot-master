@@ -229,68 +229,68 @@
 		sum(a.purchase_price *  a.product_num)  as "inTotalPrice",
 		c.name  as "venderName",
 		d.name   as "supplierName",
-        e.name as "unitName"
-        g.name   as "distributorName",
+        e.name as "unitName",
+        g.name   as "distributorName"
      from pd_stock_record_detail a
-        left join pd_stock_record f on a.record_id=f.id  and f.del_flag=#{DEL_FLAG_NORMAL}
+        left join pd_stock_record f on a.record_id=f.id  and f.del_flag=#{entity.DEL_FLAG_NORMAL}
         left join pd_product b on a.product_id=b.id
         left join pd_vender c on b.vender_id=c.id
         left join pd_supplier d on b.supplier_id=d.id
         left join pd_unit e on b.unit_id=e.id
         left join pd_distributor g on a.distributor_id = g.id
-		where a.del_flag=#{DEL_FLAG_NORMAL}
+		where a.del_flag=#{entity.DEL_FLAG_NORMAL}
         and   a.create_time > DATE_SUB(CURDATE(), INTERVAL 1 YEAR)
         and substr(a.create_time,1,7) &lt;=substr(CURDATE(),1,7)
-        <if test="departParentId != null and departParentId != ''">
-            AND f.depart_parent_id = #{departParentId}
+        <if test="entity.departParentId != null and entity.departParentId != ''">
+            AND f.depart_parent_id = #{entity.departParentId}
         </if>
-        <if test="inDepartId != null and inDepartId != ''">
-            AND f.in_depart_id = #{inDepartId}
+        <if test="entity.inDepartId != null and entity.inDepartId != ''">
+            AND f.in_depart_id = #{entity.inDepartId}
         </if>
-        <if test="productName != null and productName != ''">
+        <if test="entity.productName != null and entity.productName != ''">
             AND (
-            b.number LIKE concat('%',#{productName},'%')
-            or b.name LIKE concat('%',#{productName},'%')
-            or b.py LIKE concat('%',#{productName},'%')
-            or b.wb LIKE concat('%',#{productName},'%')
-            or b.bname LIKE concat('%',#{productName},'%')
-            or b.bpy LIKE concat('%',#{productName},'%')
-            or b.bwb LIKE concat('%',#{productName},'%')
-            or b.zdy LIKE concat('%',#{productName},'%')
+            b.number LIKE concat('%',#{entity.productName},'%')
+            or b.name LIKE concat('%',#{entity.productName},'%')
+            or b.py LIKE concat('%',#{entity.productName},'%')
+            or b.wb LIKE concat('%',#{entity.productName},'%')
+            or b.bname LIKE concat('%',#{entity.productName},'%')
+            or b.bpy LIKE concat('%',#{entity.productName},'%')
+            or b.bwb LIKE concat('%',#{entity.productName},'%')
+            or b.zdy LIKE concat('%',#{entity.productName},'%')
             )
         </if>
-        <if test="number != null and number != ''">
-            AND b.number LIKE concat('%',#{number},'%')
+        <if test="entity.number != null and entity.number != ''">
+            AND b.number LIKE concat('%',#{entity.number},'%')
         </if>
-        <if test="supplierId != null and supplierId != ''">
-            AND a.supplier_id = #{supplierId}
+        <if test="entity.supplierId != null and entity.supplierId != ''">
+            AND a.supplier_id = #{entity.supplierId}
         </if>
-        <if test="distributorId != null and distributorId != ''">
-            AND a.distributor_id = #{distributorId}
+        <if test="entity.distributorId != null and entity.distributorId != ''">
+            AND a.distributor_id = #{entity.distributorId}
         </if>
-        <if test="spec != null and spec != ''">
-            AND b.spec LIKE concat('%',#{spec},'%')
+        <if test="entity.spec != null and entity.spec != ''">
+            AND b.spec LIKE concat('%',#{entity.spec},'%')
         </if>
-        <if test="productFlag != null and productFlag != ''">
-            AND b.product_flag = #{productFlag}
+        <if test="entity.productFlag != null and entity.productFlag != ''">
+            AND b.product_flag = #{entity.productFlag}
         </if>
-        <if test="venderId != null and venderId != ''">
-            AND b.vender_id = #{venderId}
+        <if test="entity.venderId != null and entity.venderId != ''">
+            AND b.vender_id = #{entity.venderId}
         </if>
-        <if test="registration != null and registration != ''">
-            AND b.registration LIKE concat('%',#{registration},'%')
+        <if test="entity.registration != null and entity.registration != ''">
+            AND b.registration LIKE concat('%',#{entity.registration},'%')
         </if>
-        <if test="recordType != null and recordType != ''">
-            AND f.record_type = #{recordType}
+        <if test="entity.recordType != null and entity.recordType != ''">
+            AND f.record_type = #{entity.recordType}
         </if>
-        <if test="auditStatus != null and auditStatus != ''">
-            AND f.audit_status = #{auditStatus}
+        <if test="entity.auditStatus != null and entity.auditStatus != ''">
+            AND f.audit_status = #{entity.auditStatus}
         </if>
-        <if test="queryDateStart != null and queryDateStart != ''">
-            AND a.create_time &gt;= #{queryDateStart}
+        <if test="entity.queryDateStart != null and entity.queryDateStart != ''">
+            AND a.create_time &gt;= #{entity.queryDateStart}
         </if>
-        <if test="queryDateEnd != null and queryDateEnd != ''">
-            AND a.create_time &lt;= #{queryDateEnd}
+        <if test="entity.queryDateEnd != null and entity.queryDateEnd != ''">
+            AND a.create_time &lt;= #{entity.queryDateEnd}
         </if>
 		 GROUP BY  b.number
     </select>

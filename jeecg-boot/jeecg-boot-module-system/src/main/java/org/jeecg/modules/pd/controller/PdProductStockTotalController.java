@@ -350,8 +350,7 @@ public class PdProductStockTotalController {
 		 }
 		 productStock.setDepartParentId(sysUser.getDepartParentId());
 		 IPage<PdProductStock> pageList = pdProductStockService.queryList(page, productStock);//
-		 //page = pdProductStockService.queryList(page,productStock);
-		 List<PdProductStock> aList= page.getRecords();
+		 List<PdProductStock> aList= pageList.getRecords();
 		 if(aList !=null && aList.size()>0){
 			 for(PdProductStock stock : aList){
 				 PdProductStockUniqueCode stockUniqueCode=new PdProductStockUniqueCode();
@@ -361,7 +360,7 @@ public class PdProductStockTotalController {
 				 stock.setRefBarCodes(uniqueCode);
 			 }
 		 }
-		 return Result.ok(page);
+		 return Result.ok(pageList);
 	 }
 
 	/**
