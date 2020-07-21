@@ -342,10 +342,24 @@
             dataIndex: 'venderName'
           },
           {
+            title:'生产厂家JDE编号',
+            align:"center",
+            width:'100px',
+            scopedSlots: {customRender: "ellipsisText"},
+            dataIndex: 'venderJdeCode'
+          },
+          {
             title:'供应商',
             align:"center",
             width:'250px',
             dataIndex: 'supplierName'
+          },
+          {
+            title:'供应商JDE编号',
+            align:"center",
+            width:'100px',
+            scopedSlots: {customRender: "ellipsisText"},
+            dataIndex: 'supplierJdeCode'
           },
           {
             title:'配送商',
@@ -378,7 +392,7 @@
             }
           },
           {
-            title:'JDE编号',
+            title:'产品JDE编号',
             align:"center",
             width:'100px',
             dataIndex: 'jdeCode'
@@ -401,7 +415,7 @@
         dictOptions:{
           outType:[],
         },
-        tableScroll:{x :3500},
+        tableScroll:{x :4000},
       }
     },
     computed: {

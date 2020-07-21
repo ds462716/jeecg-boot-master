@@ -76,9 +76,15 @@ public class PdProductStockExcel{
     /**厂家名称*/
     @Excel(name = "厂家名称", width = 15)
     private String venderName;
+    @Excel(name = "厂家JDE编号", width = 15)
+    private String venderJdeCode; // 厂家JDEcode
     /**供应商名称*/
     @Excel(name = "供应商名称", width = 15)
     private String supplierName;
+    @Excel(name = "供应商JDE编号", width = 15)
+    private String supplierJdeCode;//供应商JDEcode
+    @Excel(name = "配送商", width = 15)
+    private String distributorName;//配送商名称
     /**中标号*/
     @Excel(name = "中标号", width = 15)
     private String bidingNumber;
@@ -88,6 +94,8 @@ public class PdProductStockExcel{
     /**条码集合*/
     @Excel(name = "唯一码", width = 15)
     private String refBarCodes;
+    @Excel(name = "产品JDE编号", width = 15)
+    private String jdeCode;
 
 
 }

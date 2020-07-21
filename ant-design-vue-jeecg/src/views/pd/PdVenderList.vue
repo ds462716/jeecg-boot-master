@@ -175,6 +175,11 @@
             dataIndex: 'zdy'
           },
           {
+            title:'JDE编码',
+            align:"center",
+            dataIndex: 'jdeCode'
+          },
+          {
             title:'状态',
             align:"center",
             dataIndex: 'status',

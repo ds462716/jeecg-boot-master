@@ -167,6 +167,7 @@
         :pagination="ipagination"
         :loading="loading"
         :scroll="tableScroll"
+        :rowSelection="{fixed:true}"
         @change="handleTableChange"
         >
         <template slot="ellipsisText" slot-scope="text">
@@ -210,11 +211,13 @@
             title:'产品名称',
             align:"center",
             scopedSlots: {customRender: "ellipsisText"},
+            fixed: 'left',
             dataIndex: 'productName'
           },
           {
             title:'产品编号',
             align:"center",
+            fixed: 'left',
             dataIndex: 'number'
           },
           {
@@ -328,7 +331,7 @@
             dataIndex: 'registration'
           },
           {
-            title:'JDE编号',
+            title:'产品JDE编号',
             align:"center",
             dataIndex: 'jdeCode'
           },
@@ -339,10 +342,22 @@
             dataIndex: 'venderName'
           },
           {
+            title:'生产厂家JDE编号',
+            align:"center",
+            scopedSlots: {customRender: "ellipsisText"},
+            dataIndex: 'venderJdeCode'
+          },
+          {
             title:'供应商',
             align:"center",
             scopedSlots: {customRender: "ellipsisText"},
             dataIndex: 'supplierName'
+          },
+          {
+            title:'供应商JDE编号',
+            align:"center",
+            scopedSlots: {customRender: "ellipsisText"},
+            dataIndex: 'supplierJdeCode'
           },
           {
             title:'配送商',

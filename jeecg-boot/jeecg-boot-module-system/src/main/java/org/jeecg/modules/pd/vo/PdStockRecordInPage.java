@@ -57,8 +57,12 @@ public class PdStockRecordInPage {
 	private BigDecimal inTotalPrice;
 	@Excel(name = "生产厂家", width = 15)
 	private String venderName;//生产厂家名称
+	@Excel(name = "厂家JDE编号", width = 15)
+	private String venderJdeCode; // 厂家JDEcode
 	@Excel(name = "供应商", width = 15)
 	private String supplierName;//供应商名称
+	@Excel(name = "供应商JDE编号", width = 15)
+	private String supplierJdeCode;//供应商JDEcode
 	@Excel(name = "配送商", width = 15)
 	private String distributorName;//配送商名称
 	@Excel(name = "注册证号", width = 15)
@@ -67,7 +71,7 @@ public class PdStockRecordInPage {
 	private String remarks;
 	@Excel(name = "入库类型", width = 15,dicCode = "in_type")
 	private String inType;
-	@Excel(name = "JDE编号", width = 15)
+	@Excel(name = "产品JDE编号", width = 15)
 	private String jdeCode;
 	@Excel(name = "操作人", width = 15)
 	private String realname;

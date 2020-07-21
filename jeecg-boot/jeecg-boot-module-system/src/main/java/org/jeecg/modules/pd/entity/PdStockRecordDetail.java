@@ -212,6 +212,10 @@ public class PdStockRecordDetail extends BaseEntity {
 	@TableField(exist = false)
 	private String jdeCode;// JDE编号
 	@TableField(exist = false)
+	private String venderJdeCode; // 厂家JDEcode
+	@TableField(exist = false)
+	private String supplierJdeCode;//供应商JDEcode
+	@TableField(exist = false)
 	private String isUrgent;  // 是否是紧急产品   0是1不是
 	@TableField(exist = false)
 	private Double upQuantity; // 紧急产品需要采购数量

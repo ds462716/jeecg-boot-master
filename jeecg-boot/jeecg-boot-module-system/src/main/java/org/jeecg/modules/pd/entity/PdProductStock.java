@@ -164,6 +164,10 @@ public class PdProductStock extends BaseEntity {
 	/**JDE编码*/
 	@TableField(exist = false)
 	private String jdeCode;
+	@TableField(exist = false)
+	private String venderJdeCode; // 厂家JDEcode
+	@TableField(exist = false)
+	private String supplierJdeCode;//供应商JDEcode
 
 	/** 查询日期起始 **/
 	@TableField(exist = false)
