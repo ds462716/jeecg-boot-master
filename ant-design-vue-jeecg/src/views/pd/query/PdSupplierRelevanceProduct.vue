@@ -199,7 +199,7 @@
         productTable:{
           loading:false,
           dataSource:[],
-          tableScroll:{x :1500},
+          tableScroll:{x :2000},
         },
         // 表头
         columns: [
@@ -220,14 +220,12 @@
           {
             title:'规格',
             align:"center",
-            width:170,
             dataIndex: 'spec'
           },
           {
-            title:'型号',
+            title:'中标号',
             align:"center",
-            width:120,
-            dataIndex: 'version'
+            dataIndex: 'bidingNumber'
           },
           {
             title:'单位',
@@ -238,7 +236,6 @@
           {
             title:'生产厂家',
             align:"center",
-            width:220,
             dataIndex: 'venderName'
           },
           {
@@ -267,7 +264,7 @@
             dataIndex: 'sellingPrice'
           },
           {
-            title:'产品收费代码',
+            title:'收费代码',
             align:"center",
             width:110,
             dataIndex: 'chargeCode'
