@@ -427,7 +427,7 @@
 
 
     <!--采购补货查询  根据上月领用量统计查询-->
-	<select id="chooseStockRecordDetailList" resultType="org.jeecg.modules.pd.entity.PdStockRecordDetail">
+	<select id="chooseStockRecordDetailList" parameterType="org.jeecg.modules.pd.entity.PdStockRecord"  resultType="org.jeecg.modules.pd.entity.PdStockRecordDetail">
 	select
 	a.product_id as "productId",
 	c.number as "number",

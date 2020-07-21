@@ -301,7 +301,8 @@ public class PdStockRecord extends BaseEntity {
     private String bidingNumber; //中标号
     @TableField(exist = false)
     private String categoryOne; //一级分类
-
+    @TableField(exist = false)
+    private String chargeCode;//收费代号
     @TableField(exist = false)
     private Double outProductNum; //出库数量
 }
