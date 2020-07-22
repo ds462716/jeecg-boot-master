@@ -215,7 +215,7 @@
           {
             title:'注册证号',
             align:"center",
-            dataIndex: 'registration'
+            dataIndex: 'productRegistration'
           },
 
         ],
