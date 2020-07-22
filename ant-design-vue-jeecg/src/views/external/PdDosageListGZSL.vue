@@ -10,6 +10,27 @@
             </a-form-item>
           </a-col>
           <a-col :md="6" :sm="8">
+            <a-form-item label="科室">
+              <!--<a-input placeholder="请选择科室" v-model="queryParam.deptName"></a-input>-->
+              <a-select
+                mode="multiple"
+                showSearch
+                :departId="departValue"
+                :defaultActiveFirstOption="false"
+                :allowClear="true"
+                :showArrow="true"
+                :filterOption="false"
+                @search="departHandleSearch"
+                @focus="departHandleSearch"
+                :notFoundContent="notFoundContent"
+                v-model="queryParam.departIds"
+                placeholder="请选择科室"
+              >
+                <a-select-option v-for="d in departData" :key="d.id">{{d.departName}}</a-select-option>
+              </a-select>
+            </a-form-item>
+          </a-col>
+          <a-col :md="6" :sm="8">
             <a-form-item label="病人姓名">
               <a-input placeholder="请输入病人姓名" v-model="queryParam.patientInfo"></a-input>
             </a-form-item>
@@ -121,6 +142,7 @@
   import PdDosageFeeModal from '../pd/modules/PdDosageFeeModal'
   import PdDosageCnclFeeModal from '../pd/modules/PdDosageCnclFeeModal'
   import { deleteAction, getAction,downFile } from '@/api/manage'
+  import { filterObj } from '@/utils/util'
 
   export default {
     name: "PdDosageList",
@@ -136,6 +158,9 @@
     },
     data () {
       return {
+        departData: [],
+        departValue: undefined,
+        notFoundContent:"未找到内容",
         description: '用量表管理页面',
         // 表头
         columns: [
@@ -148,6 +173,11 @@
             customRender:function (t,r,index) {
               return parseInt(index)+1;
             }
+          },
+          {
+            title:'用量科室',
+            align:"center",
+            dataIndex: 'departName'
           },
           {
             title:'用量单号',
@@ -201,6 +231,7 @@
           delete: "/pd/pdDosage/delete",
           deleteBatch: "/pd/pdDosage/deleteBatch",
           exportXlsUrl: "/pd/pdDosage/exportXls",
+          queryDepart: "/pd/pdDepart/queryListTree",
         },
         dictOptions:{},
       }
@@ -209,6 +240,19 @@
 
     },
     methods: {
+      getQueryParams() {
+        //获取查询条件
+        let sqp = {}
+        if(this.superQueryParams){
+          sqp['superQueryParams']=encodeURI(this.superQueryParams)
+        }
+        var param = Object.assign(sqp, this.queryParam, this.isorter ,this.filters);
+        param.field = this.getQueryField();
+        param.pageNo = this.ipagination.current;
+        param.pageSize = this.ipagination.pageSize;
+        param.departIds = this.queryParam.departIds+"";
+        return filterObj(param);
+      },
       // 重写loadData方法
       loadData(arg) {
         if(!this.url.list){
@@ -233,7 +277,16 @@
           this.loading = false;
         })
       },
-
+//科室查询start
+      departHandleSearch(value) {
+        getAction(this.url.queryDepart,{departName:value}).then((res)=>{
+          if (!res.success) {
+            this.cmsFailed(res.message);
+          }
+          this.departData = res.result;
+        })
+      },
+      //科室查询end
 
 
       initDictConfig(){

@@ -174,9 +174,10 @@
     <select id="selectListByPage" resultType="org.jeecg.modules.pd.entity.PdDosage" parameterType="org.jeecg.modules.pd.entity.PdDosage">
         SELECT
         <include refid="pdDosageColumns"/>,
+        <include refid="sysDepartColumns"/>,
         b.realname AS dosageByName
-        FROM
-        `pd_dosage` a
+        FROM  `pd_dosage` a
+        <include refid="sysDepartJoins"/>
         LEFT JOIN sys_user b ON a.dosage_by = b.id
         <where>
             a.del_flag = #{entity.DEL_FLAG_NORMAL}
@@ -191,6 +192,12 @@
             </if>
             <if test="entity.departId != null and entity.departId != ''">
                 AND a.depart_id = #{entity.departId}
+            </if>
+            <if test="entity.departIdList != null and entity.departIdList.size() > 0">
+                and a.depart_id IN
+                <foreach collection="entity.departIdList" item="item" separator="," open="(" close=")">
+                    #{item}
+                </foreach>
             </if>
             <if test="entity.departParentId != null and entity.departParentId != ''">
                 AND a.depart_parent_id = #{entity.departParentId}
