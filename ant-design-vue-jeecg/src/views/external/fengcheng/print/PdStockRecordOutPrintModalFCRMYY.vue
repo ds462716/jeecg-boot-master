@@ -14,65 +14,72 @@
     </div>
     <section ref="print" id="printContent" class="printClass">
       <div style="text-align: center">
-        <p style="font-size: 22px;font-weight: 800">赣州市立医院——科室领用单</p>
+        <p style="font-size: 22px;font-weight: 800">{{title}}</p>
       </div>
       <!--签字-->
       <a-col :md="24" :sm="24">
         <div class="sign" style="text-align: left;height: inherit">
           <a-col :span="24">
             <span style="margin-left: 3%">
-              领用科室：
+              制单人：
             </span>
-            <a-input style="width: 20%;text-align: left" disabled v-model="record.inDepartName"/>
-            <span style="margin-left: 3%">
-              领用日期：
-            </span>
-            <a-input style="width: 20%;text-align: left" disabled v-model="record.auditDate"/>
+            <a-input style="width: 10%;text-align: left" disabled v-model="record.submitByName"/>
             <span style="margin-left: 3%">
               出库单号：
             </span>
-            <a-input style="width: 20%;text-align: left" disabled v-model="record.recordNo"/>
+            <a-input style="width: 18%;text-align: left" disabled v-model="record.recordNo"/>
+            <span style="margin-left: 3%">
+              出库日期：
+            </span>
+            <a-input style="width: 12%;text-align: left" disabled v-model="record.auditDate"/>
           </a-col>
           <a-col :span="24" style="margin-top: 0px">
+            <span style="margin-left: 3%">
+              入库库房：
+            </span>
+            <a-input style="width: 12%;text-align: left" disabled v-model="record.inDepartName"/>
             <span style="margin-left: 3%;text-align: right">
               备注：
             </span>
-            <a-input style="width: 77%;text-align: left" disabled v-model="record.remarks"/>
+            <a-input style="width: 50%;text-align: left" disabled v-model="record.remarks"/>
           </a-col>
           <a-col :span="24" style="margin-top: 5px">
             <a-form :form="form">
               <table width="100%" id="contentTable" class="tableStyle">
                 <tr>
-                  <th style="border: 1px solid #000000;text-align: center;padding: 3px 3px;width:5%">
-                   序号
+                  <th style="border: 1px solid #000000;text-align: center;padding: 3px 3px;width:2%">
+
                   </th>
-                  <th style="border: 1px solid #000000;text-align: center;padding: 3px 3px;width:18%">
-                    名称
+                  <th style="border: 1px solid #000000;text-align: center;padding: 3px 3px;width:20%">
+                    产品名称
                   </th>
-                  <th style="border: 1px solid #000000;text-align: center;padding: 3px 3px;width:12%">
+                  <th style="border: 1px solid #000000;text-align: center;padding: 3px 3px;width:15%">
                     规格
                   </th>
                   <th style="border: 1px solid #000000;text-align: center;padding: 3px 3px;width:5%">
                     单位
                   </th>
-                  <th style="border: 1px solid #000000;text-align: center;padding: 3px 3px;width:4%">
+                  <th style="border: 1px solid #000000;text-align: center;padding: 3px 3px;width:5%">
                     数量
                   </th>
-                  <th style="border: 1px solid #000000;text-align: center;padding: 3px 3px;width:7%">
-                    单价
+                  <th style="border: 1px solid #000000;text-align: center;padding: 3px 3px;width:8%">
+                    入库单价
                   </th>
-                  <th style="border: 1px solid #000000;text-align: center;padding: 3px 3px;width:7%">
-                    合计金额
+                  <th style="border: 1px solid #000000;text-align: center;padding: 3px 3px;width:8%">
+                    入库金额
+                  </th>
+                  <th style="border: 1px solid #000000;text-align: center;padding: 3px 3px;width:10%">
+                    批号
                   </th>
                   <th style="border: 1px solid #000000;text-align: center;padding: 3px 3px;">
                     生产厂家
                   </th>
-                  <th style="border: 1px solid #000000;text-align: center;padding: 3px 3px;width:8%">
-                    失效日期
-                  </th>
-                  <th style="border: 1px solid #000000;text-align: center;padding: 3px 3px;width:8%">
-                    批号
-                  </th>
+                  <!--<th style="border: 1px solid #000000;text-align: center;padding: 3px 3px;width:7%">-->
+                    <!--出库单价-->
+                  <!--</th>-->
+                  <!--<th style="border: 1px solid #000000;text-align: center;padding: 3px 3px;width:7%">-->
+                    <!--出库金额-->
+                  <!--</th>-->
                 </tr>
                 <tr v-for="(item, index) in dataSource">
                   <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: xx-small">
@@ -80,6 +87,7 @@
                   </td>
                   <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: xx-small">
                     {{ item.productName }}
+
                     <a-form-item label="id" v-show="false">
                       <a-input v-decorator="[ 'pdStockRecordDetailList['+index+'].id',{'initialValue':item.id} ]"></a-input>
                     </a-form-item>
@@ -94,63 +102,56 @@
                     {{ item.productNum }}
                   </td>
                   <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: xx-small">
-                    {{ item.sellingPrice }}
+                    {{ item.purchasePrice }}
                   </td>
                   <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: xx-small">
-                    {{ item.outTotalPrice }}
-                  </td>
-                  <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: xx-small">
-                    {{ item.venderName }}
-                  </td>
-                  <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: xx-small">
-                    {{ item.expDate }}
+                    {{ item.inTotalPrice }}
                   </td>
                   <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: xx-small">
                     {{ item.batchNo }}
                   </td>
+                  <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: xx-small">
+                    {{ item.venderName }}
+                  </td>
+                  <!--<td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: xx-small">-->
+                    <!--{{ item.sellingPrice }}-->
+                  <!--</td>-->
+                  <!--<td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: xx-small">-->
+                    <!--{{ item.outTotalPrice }}-->
+                  <!--</td>-->
                 </tr>
                 <tr>
-                  <td  colspan="1" style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: small">
+                  <td  colspan="3" style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: small">
                   </td>
-                  <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: small">
-                    合计数量
+                  <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: larger;font-weight: bolder">
+                    合计
                   </td>
-                  <td colspan="4" style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: small">
+                  <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: larger;font-weight: bolder">
                     {{ record.totalSum }}
                   </td>
                   <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: small">
-                  合计金额
                   </td>
-                  <td colspan="3" style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: small">
-                    {{ record.outTotalPrice }}
+                  <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: larger;font-weight: bolder">
+                    {{ record.inTotalPrice }}
+                  </td>
+                  <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: small">
+                  </td>
+                  <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: small">
                   </td>
                 </tr>
               </table>
             </a-form>
           </a-col>
 
-          <!--<a-col :span="24" style="margin-top: 5px;">-->
-            <!--<span style="margin-left: 60%;">-->
-              <!--合计数量：{{ record.totalSum }}-->
-            <!--</span>-->
-            <!--<span style="margin-left: 2%;font-weight: bold">-->
-              <!--合计入库金额：{{ record.inTotalPrice }} 元-->
-            <!--</span>-->
-            <!--<span style="margin-left: 2%;">-->
-              <!--合计出库金额：{{ record.outTotalPrice }} 元-->
-            <!--</span>-->
-          <!--</a-col>-->
 
           <a-col :span="24" style="margin-top: 5px">
             <span style="margin-left: 3%">
-              制单人员：
-            </span>
-            <a-input style="width: 20%;text-align: left" disabled v-model="record.submitByName"/>
-            <span style="margin-left: 3%">
-              保管员：
+              <!--仓库人员签字：-->
+              出库管理：
             </span>
             <a-input style="width: 10%;text-align: left" />
             <span style="margin-left: 3%">
+              <!--销售人员签字：-->
               领用人：
             </span>
             <a-input style="width: 10%;text-align: left" />
@@ -158,7 +159,7 @@
         </div>
       </a-col>
     </section>
-    </j-modal>
+  </j-modal>
   <!--</page-layout>-->
 </template>
 <script>
@@ -170,7 +171,7 @@
     componens: {
 
     },
-    name: 'ExStockRecordOutPrintModal',
+    name: 'PdStockRecordOutPrintModalFCRMYY',
     props:{
       reBizCode:{
         type: String,
@@ -184,6 +185,7 @@
         lockScroll: false,
         fullscreen: true,
         switchFullscreen: false,
+        showApplyBy:true,
         columns: [
           { title: '产品名称', dataIndex: 'productName', align:"center", width:"16%" },
           { title: '生产厂家', dataIndex: 'venderName', align:"center",},
@@ -206,7 +208,7 @@
           xs: { span: 24 },
           sm: { span: 8 },
         },
-        title:"操作",
+        title:"出库单",
         visible: false,
         record:{},
         outTypeList:{},
@@ -241,6 +243,10 @@
         this.visible = true;
         this.dataSource = record.pdStockRecordDetailList;
         this.record = record;
+        this.showApplyBy = true;
+        if(this.record.outType == "4"){
+          this.showApplyBy = false;
+        }
 
         for (let item of this.dataSource){
           let registration = item.productRegistration.replace(/；/g, ";")
@@ -309,12 +315,12 @@
   }
   /*update_end author:scott date:20191203 for:打印机打印的字体模糊问题 */
   /*.printClass .ant-card-body{*/
-    /*margin-left: 0%;*/
-    /*margin-right: 0%;*/
-    /*margin-bottom: 0%;*/
-    /*border:0px solid black;*/
-    /*min-width: 800px;*/
-    /*color:#000000!important;*/
+  /*margin-left: 0%;*/
+  /*margin-right: 0%;*/
+  /*margin-bottom: 0%;*/
+  /*border:0px solid black;*/
+  /*min-width: 800px;*/
+  /*color:#000000!important;*/
   /*}*/
   .explain{
     text-align: left;
@@ -336,8 +342,8 @@
   @page {
     size: auto;
     margin-top: 5mm;
-    margin-left: 13mm;
-    margin-right: 13mm;
+    margin-left: 5mm;
+    margin-right: 5mm;
     margin-bottom: 0mm;
   }
   .ant-form-item-control {

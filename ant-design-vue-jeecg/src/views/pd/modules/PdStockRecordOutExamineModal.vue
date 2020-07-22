@@ -207,6 +207,7 @@
 
     <pd-stock-record-out-print-modal ref="pdStockRecordOutPrintModal"></pd-stock-record-out-print-modal>
     <pd-stock-record-out-print-modal-f-c-z-y-y ref="pdStockRecordOutPrintModalFCZYY"></pd-stock-record-out-print-modal-f-c-z-y-y>
+    <pd-stock-record-out-print-modal-f-c-r-m-y-y ref="pdStockRecordOutPrintModalFCRMYY"></pd-stock-record-out-print-modal-f-c-r-m-y-y>
     <ex-stock-record-out-print-modal ref="exStockRecordOutPrintModal"></ex-stock-record-out-print-modal>
     <pd-product-number-print ref="printModalForm"></pd-product-number-print>
   </j-modal>
@@ -227,6 +228,7 @@
   import PdStockRecordOutPrintModalFCZYY from "../../external/fengcheng/print/PdStockRecordOutPrintModalFCZYY";
   import PdProductNumberPrint from "../print/PdProductNumberPrint";
   import { disabledAuthFilter } from "@/utils/authFilter"
+  import PdStockRecordOutPrintModalFCRMYY from "../../external/fengcheng/print/PdStockRecordOutPrintModalFCRMYY";
 
 
   const VALIDATE_NO_PASSED = Symbol()
@@ -236,6 +238,7 @@
     name: 'PdStockRecordOutModal',
     mixins: [JEditableTableMixin],
     components: {
+      PdStockRecordOutPrintModalFCRMYY,
       PdProductNumberPrint,
       PdStockRecordOutPrintModalFCZYY,
       ExStockRecordOutPrintModal,
@@ -621,15 +624,23 @@
           if(!res.result.auditDate){
             res.result.auditDate = res.result.submitDate;
           }
-          if(this.hospitalCode == "FCZYY" || this.hospitalCode == "FCRMYY"){
-            this.$refs.pdStockRecordOutPrintModalFCZYY.show(res.result);
-            this.$refs.pdStockRecordOutPrintModalFCZYY.title = this.stockOutText + "出库单";
-          }else if(this.hospitalCode == "GZSLYY"){
-            this.$refs.exStockRecordOutPrintModal.show(res.result);
-            this.$refs.exStockRecordOutPrintModal.title = this.stockOutText + "出库单";
-          }else{
-            this.$refs.pdStockRecordOutPrintModal.show(res.result);
-            this.$refs.pdStockRecordOutPrintModal.title = this.stockOutText + "出库单";
+
+          switch(this.hospitalCode) {
+            case "FCZYY":
+              this.$refs.pdStockRecordOutPrintModalFCZYY.show(res.result);
+              this.$refs.pdStockRecordOutPrintModalFCZYY.title = this.stockOutText + "出库单";
+              break;
+            case "FCRMYY":
+              this.$refs.pdStockRecordOutPrintModalFCRMYY.show(res.result);
+              this.$refs.pdStockRecordOutPrintModalFCRMYY.title = this.stockOutText + "出库单";
+              break;
+            case "GZSLYY":
+              this.$refs.exStockRecordOutPrintModal.show(res.result);
+              this.$refs.exStockRecordOutPrintModal.title = this.stockOutText + "出库单";
+              break;
+            default:
+              this.$refs.pdStockRecordOutPrintModal.show(res.result);
+              this.$refs.pdStockRecordOutPrintModal.title = this.stockOutText + "出库单";
           }
         })
       },
@@ -644,6 +655,7 @@
               data.number = item.productNumber;
               data.name = item.productName;
               data.spec = item.spec;
+              data.venderName = item.venderName;
               printData.push(data);
             }
           }

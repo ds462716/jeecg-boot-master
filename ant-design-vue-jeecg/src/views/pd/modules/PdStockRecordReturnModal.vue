@@ -424,9 +424,9 @@
         this.showPrintBtn = false;
         this.showRefuseReason = false;
         this.showSubmitAndPrint = false;
-        this.$nextTick(() => {
+        // this.$nextTick(() => {
           this.departHandleSearch();  // 初始化部门列表 用于详情页(有id）、申领出库(无id)、调拨出库(无id)数据回显
-        })
+        // })
 
         let params = {};
         if(this.model.id){
@@ -705,11 +705,11 @@
           let outDepartId = this.form.getFieldValue("outDepartId");
 
           if(this.hospitalCode == "FCZYY" || this.hospitalCode == "FCRMYY"){
-            this.$refs.pdChooseProductStockListModel.show({nestatStatus:"1",barCodeType:"0",departId:outDepartId});
+            this.$refs.pdChooseProductStockListModel.show({nestatStatus:"1",barCodeType:"0",departId:outDepartId,recordNoType:"out"});
           }else if(this.hospitalCode == "GZSLYY"){
-            this.$refs.pdChooseProductStockListModel.show({nestatStatus:"1",barCodeType:"0",productFlag:"0",departId:outDepartId}); //赣州市立医院，普通出库 禁止不能查询试剂
+            this.$refs.pdChooseProductStockListModel.show({nestatStatus:"1",barCodeType:"0",productFlag:"0",departId:outDepartId,recordNoType:"out"}); //赣州市立医院，普通出库 禁止不能查询试剂
           }else{
-            this.$refs.pdChooseProductStockListModel.show({nestatStatus:"1",barCodeType:"0",departId:outDepartId});
+            this.$refs.pdChooseProductStockListModel.show({nestatStatus:"1",barCodeType:"0",departId:outDepartId,recordNoType:"out"});
           }
         }else{
           this.$message.error("请选择出库类型！");

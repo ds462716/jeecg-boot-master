@@ -527,6 +527,7 @@
               data.number = item.productNumber;
               data.name = item.productName;
               data.spec = item.spec;
+              data.venderName = item.venderName;
               printData.push(data);
             }
           }

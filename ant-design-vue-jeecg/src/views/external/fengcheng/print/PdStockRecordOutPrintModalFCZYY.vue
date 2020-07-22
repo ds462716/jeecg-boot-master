@@ -10,7 +10,7 @@
     :footer="null"
   >
     <div class="no-print" style="text-align: right">
-      <a-button v-print="'#printContent'" ghost type="primary" @click="printBtn" >打印</a-button>
+      <a-button v-print="'#printContent'" ghost type="primary" >打印</a-button>
     </div>
     <section ref="print" id="printContent" class="printClass">
       <div style="text-align: center">

@@ -2,6 +2,7 @@ package org.jeecg.modules.pd.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
+import org.apache.ibatis.annotations.Param;
 import org.jeecg.modules.pd.entity.PdProductStock;
 
 import java.util.HashMap;
@@ -26,6 +27,14 @@ public interface IPdProductStockService extends IService<PdProductStock> {
 	Page<PdProductStock> selectList(Page<PdProductStock> pageList, PdProductStock productStock);
 
 	Page<PdProductStock> queryProductStockList(Page<PdProductStock> pageList, PdProductStock productStock);
+
+	/**
+	 * 库存选择器
+	 * @param page
+	 * @param pdProductStock
+	 * @return
+	 */
+	Page<PdProductStock> chooseProductStockList(Page<PdProductStock> page, @Param("entity") PdProductStock pdProductStock);
 
 	public List<PdProductStock> selectByMainId(String mainId);
 

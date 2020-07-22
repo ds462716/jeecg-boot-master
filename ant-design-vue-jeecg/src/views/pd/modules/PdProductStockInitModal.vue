@@ -50,10 +50,11 @@
               </a-col>
               <a-col :span="6">
                 <a-form-item label="供应商" :labelCol="labelCol" :wrapperCol="wrapperCol">
+                  <!-- :disabled="disableSubmit" -->
                   <a-select
                     showSearch
+                    disabled
                     placeholder="请选择供应商"
-                    :disabled="disableSubmit"
                     :supplierId="supplierValue"
                     :defaultActiveFirstOption="false"
                     :showArrow="true"

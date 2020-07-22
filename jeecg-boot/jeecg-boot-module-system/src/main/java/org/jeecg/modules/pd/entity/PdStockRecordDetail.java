@@ -75,7 +75,7 @@ public class PdStockRecordDetail extends BaseEntity {
 	/**删除标记（0：正常；1：删除）*/
 //	private String delFlag;
 	/**扩展1*/
-	private String extend1;
+	private String extend1;  // 本字段用于存 出库入库的 出库单号， 用于退货出库时 按出库单号查询库存
 	/**扩展2*/
 	private String extend2;
 	/**扩展3*/

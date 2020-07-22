@@ -212,12 +212,14 @@
             align:"center",
             scopedSlots: {customRender: "ellipsisText"},
             fixed: 'left',
+            width:220,
             dataIndex: 'productName'
           },
           {
             title:'产品编号',
             align:"center",
             fixed: 'left',
+            width:120,
             dataIndex: 'number'
           },
           {

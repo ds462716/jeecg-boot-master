@@ -234,6 +234,19 @@
             }
           },
           {
+            title:'出库类型',
+            align:"center",
+            dataIndex: 'outType',
+            width:'90px',
+            customRender:(text)=>{
+              if(!text){
+                return ''
+              }else{
+                return filterMultiDictText(this.dictOptions['outType'], text+"")
+              }
+            }
+          },
+          {
             title:'出库科室',
             align:"center",
             width:'80px',
@@ -377,19 +390,6 @@
             title:'备注',
             align:"center",
             dataIndex: 'remarks'
-          },
-          {
-            title:'出库类型',
-            align:"center",
-            dataIndex: 'outType',
-            width:'90px',
-            customRender:(text)=>{
-              if(!text){
-                return ''
-              }else{
-                return filterMultiDictText(this.dictOptions['outType'], text+"")
-              }
-            }
           },
           {
             title:'产品JDE编号',

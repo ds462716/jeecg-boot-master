@@ -16,6 +16,7 @@
           <div v-if="printData[index].name.length < 12" class="codeListBox"><p>名称：</p><div>{{ printData[index].name }}</div></div>
           <div v-else class="codeListBoxM"><p>名称：</p><div>{{ printData[index].name }}</div></div>
           <div class="codeListBox"><p>规格：</p><div>{{ printData[index].spec }}</div></div>
+          <div class="codeListBox"><p>厂家：</p><div>{{ printData[index].venderName }}</div></div>
           <!--<div class="codeListBox"><p>型号：</p><div>{{ printData[index].version }}</div></div>-->
       </div>
     </section>

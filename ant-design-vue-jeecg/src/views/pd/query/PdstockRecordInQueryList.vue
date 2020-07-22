@@ -217,16 +217,29 @@
             }
           },
           {
-            title:'入库科室',
+            title:'入库类型',
             align:"center",
-            width:'80px',
-            dataIndex: 'inDepartName'
+            dataIndex: 'inType',
+            width:'90px',
+            customRender:(text)=>{
+              if(!text){
+                return ''
+              }else{
+                return filterMultiDictText(this.dictOptions['inType'], text+"")
+              }
+            }
           },
           {
             title:'出库科室',
             align:"center",
             width:'80px',
             dataIndex: 'outDepartName'
+          },
+          {
+            title:'入库科室',
+            align:"center",
+            width:'80px',
+            dataIndex: 'inDepartName'
           },
           {
             title:'产品编号',
@@ -377,19 +390,6 @@
             title:'备注',
             align:"center",
             dataIndex: 'remarks'
-          },
-          {
-            title:'入库类型',
-            align:"center",
-            dataIndex: 'inType',
-            width:'90px',
-            customRender:(text)=>{
-              if(!text){
-                return ''
-              }else{
-                return filterMultiDictText(this.dictOptions['inType'], text+"")
-              }
-            }
           },
           {
             title:'产品JDE编号',

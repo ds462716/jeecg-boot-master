@@ -36,8 +36,8 @@ public class PdStockRecord extends BaseEntity {
     /**出入库类型：1-入库；2-出库*/
     @Excel(name = "出入库类型：1-入库；2-出库", width = 15)
     private String recordType;
-    /**出库类型 : 1-正常出库，2-调拨出库，3-退货出库*/
-    @Excel(name = "出库类型 : 1-正常出库，2-调拨出库，3-退货出库", width = 15)
+    /**出库类型 : 1-申领出库; 2-科室出库; 3-调拨出库; 4-退货出库*/
+    @Excel(name = "出库类型 : 1-申领出库; 2-科室出库; 3-调拨出库; 4-退货出库", width = 15)
     private String outType;
     /**入库类型 : 1-正常入库，2-退货入库，3-调拨入库*/
     @Excel(name = "入库类型 : 1-正常入库，2-退货入库，3-调拨入库", width = 15)

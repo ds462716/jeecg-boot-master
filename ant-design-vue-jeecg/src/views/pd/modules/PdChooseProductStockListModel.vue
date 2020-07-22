@@ -92,6 +92,16 @@
                   </a-select>
                 </a-form-item>
               </a-col>
+              <a-col :md="6" :sm="8" v-show="showOutRecordNo">
+                <a-form-item label="出库单号">
+                  <a-input placeholder="请输入出库单号" v-model="queryParam.outRecordNo"></a-input>
+                </a-form-item>
+              </a-col>
+              <a-col :md="6" :sm="8" v-show="showInRecordNo">
+                <a-form-item label="入库单号">
+                  <a-input placeholder="请输入入库单号" v-model="queryParam.inRecordNo"></a-input>
+                </a-form-item>
+              </a-col>
               <a-col :md="6" :sm="8">
                 <a-form-item label="产品类型">
                   <a-checkbox-group :disabled="productFlagDisabled" v-model="productFlagCheckValues" :options="productFlagOptions" @change="productFlagChange" />
@@ -181,6 +191,10 @@
         allocationNo:"",
         supplierId:"", //供应商ID
         departId:"",//部门id
+
+        recordNoType:"",//出库类型
+        showOutRecordNo:false,
+        showInRecordNo:false,
 
         productFlagDisabled:false,
         productFlag:"", //0-器械；1-试剂
@@ -357,6 +371,8 @@
         this.allocationNo = "";
         this.supplierId = "";
         this.departId="";
+        this.showOutRecordNo = false;
+        this.showInRecordNo = false;
         // this.loadData(1);
         this.$emit('close');
         this.visible = false;
@@ -400,6 +416,13 @@
         }
         if(params && params.departId){
           this.departId = params.departId;
+        }
+        if(params && params.recordNoType){
+          if(params.recordNoType == "out"){
+            this.showOutRecordNo = true;
+          }else if(params.recordNoType == "in"){
+            this.showInRecordNo = true;
+          }
         }
         this.loadData(1);
         this.visible = true;
@@ -468,6 +491,7 @@
         getAction(this.url.list, params).then((res) => {
           if (res.success) {
             this.dataSource = res.result.records;
+            this.ipagination.total = res.result.total;
           }
           if(res.code===510){
             this.$message.warning(res.message)

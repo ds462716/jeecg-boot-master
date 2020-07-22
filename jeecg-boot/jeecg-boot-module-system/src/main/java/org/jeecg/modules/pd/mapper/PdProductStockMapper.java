@@ -32,6 +32,8 @@ public interface PdProductStockMapper extends BaseMapper<PdProductStock> {
 
     List<PdProductStock> selectList(PdProductStock pdProductStock);
 
+	Page<PdProductStock> chooseProductStockList(Page<PdProductStock> page, @Param("entity") PdProductStock pdProductStock);
+
 	 PdProductStock getOne(PdProductStock pdProductStock);
 
 	public void updateProductStock(PdProductStock productStock);

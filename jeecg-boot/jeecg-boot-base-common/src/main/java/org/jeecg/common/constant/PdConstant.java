@@ -334,4 +334,7 @@ public interface PdConstant {
 	//盘点锁定状态
 	public final String PRODUCT_STOCK_CHECK_LOCKING_STATE_1="1";//锁定状态
 	public final String PRODUCT_STOCK_CHECK_LOCKING_STATE_0="0";//正常状态
+
+	// 初始化库存 供应商id
+	public final String INIT_STOCK_SUPPLIER_ID = "1285060963299377153";
 }

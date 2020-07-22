@@ -198,6 +198,7 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
 
         if (oConvertUtils.isNotEmpty(outType)) {
             // 调拨出库 或 申领出库 自动生成入库单 （出库入库）
+            String outRecordNo = pdStockRecord.getRecordNo(); //出库单号
             if (PdConstant.OUT_TYPE_3.equals(outType)) {
                 pdStockRecord.setInType(PdConstant.IN_TYPE_3);
             } else if(PdConstant.OUT_TYPE_4.equals(outType)){
@@ -215,6 +216,7 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
             pdStockRecord.setAuditDate(date);
             pdStockRecord.setUpdateTime(date);
             pdStockRecord.setCreateTime(date);
+            pdStockRecord.setExtend1(outRecordNo); // 本字段用于存 出库入库的 出库单号， 用于退货出库时 按出库单号查询库存
 
             if(PdConstant.CODE_PRINT_TYPE_1.equals(pdStockRecord.getBarCodeType())){
                 // 唯一码出库入库，需要合并入库明细
@@ -235,11 +237,15 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
                         }
                         main.setProductNum(productNum);
                         main.setRefBarCode(String.join(",", refBarCodes));// 合并后记录唯一码（用于入库后更新条码表）
+                        main.setExtend1(outRecordNo); // 本字段用于存 出库入库的 出库单号， 用于退货出库时 按出库单号查询库存
                         newDetailList.add(main);
                     }
                 }
             }else{
                 // 非唯一码出库入库，不需要合并入库明细
+                for (PdStockRecordDetail main : pdStockRecordDetailList) {
+                    main.setExtend1(outRecordNo); // 本字段用于存 出库入库的 出库单号， 用于退货出库时 按出库单号查询库存
+                }
                 newDetailList = pdStockRecordDetailList;
             }
 
@@ -345,12 +351,19 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
      * @return
      */
     private String saveOutStockRecord(PdStockRecord pdStockRecord, List<PdStockRecordDetail> pdStockRecordDetailList) {
+        String outType = pdStockRecord.getOutType();
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        SysDepart sysDepart = pdDepartService.getById(sysUser.getCurrentDepartId());
+        String departId = null;
+        if(PdConstant.DEPART_TYPE_1.equals(sysDepart.getDepartType()) && PdConstant.OUT_TYPE_4.equals(outType)){
+            //一级库房 && 退货出库  所属库房id设置为出库库房id
+            departId = pdStockRecord.getOutDepartId();
+        }
+        pdStockRecord.setDepartId(departId);
         pdStockRecordMapper.insert(pdStockRecord);
-
         if (CollectionUtils.isNotEmpty(pdStockRecordDetailList)) {
             //关-是否允许出入库时可修改进价和出价
             PdOnOff query = new PdOnOff();
-            LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
             query.setDepartParentId(sysUser.getDepartParentId());
             query.setCode(PdConstant.ON_OFF_ALLOW_EDIT_PRICE);
             PdOnOff pdOnOff = pdOnOffService.getOne(query);
@@ -363,6 +376,7 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
                 entity.setId(null);//初始化ID (从前端传过来会自带页面列表行的ID)
                 entity.setRecordId(pdStockRecord.getId());//外键设置
                 entity.setDelFlag(PdConstant.DEL_FLAG_0);
+                entity.setDepartId(departId);
                 pdStockRecordDetailMapper.insert(entity);
 
                 // 修改产品进价
@@ -1138,6 +1152,8 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
             pdStockRecord.setSubmitByName(sysUser.getRealname());
             //默认入库类型
 //            pdStockRecord.setInType(PdConstant.IN_TYPE_1);
+            //初始化库存供应商ID
+            pdStockRecord.setSupplierId(PdConstant.INIT_STOCK_SUPPLIER_ID);
         }
 
         //库区库位下拉框

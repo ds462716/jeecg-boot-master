@@ -58,6 +58,11 @@ public class PdProductStockServiceImpl extends ServiceImpl<PdProductStockMapper,
 		return page.setRecords(pdProductStockMapper.queryProductStockList(productStock));
 	}
 
+	@Override
+	public Page<PdProductStock> chooseProductStockList(Page<PdProductStock> page, PdProductStock pdProductStock) {
+		return pdProductStockMapper.chooseProductStockList(page,pdProductStock);
+	}
+
 	/**
 	 * 以前查询库存的方法
 	 * 该方法只查询耗材  过滤试剂，且只能查非唯一码类型

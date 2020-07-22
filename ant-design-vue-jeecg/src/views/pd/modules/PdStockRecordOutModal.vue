@@ -300,6 +300,7 @@
     <pd-choose-product-stock-list-model ref="pdChooseProductStockListModel" @ok="returnProductStockData" ></pd-choose-product-stock-list-model>
     <pd-stock-record-out-print-modal ref="pdStockRecordOutPrintModal"></pd-stock-record-out-print-modal>
     <pd-stock-record-out-print-modal-f-c-z-y-y ref="pdStockRecordOutPrintModalFCZYY"></pd-stock-record-out-print-modal-f-c-z-y-y>
+    <pd-stock-record-out-print-modal-f-c-r-m-y-y ref="pdStockRecordOutPrintModalFCRMYY"></pd-stock-record-out-print-modal-f-c-r-m-y-y>
     <ex-stock-record-out-print-modal ref="exStockRecordOutPrintModal"></ex-stock-record-out-print-modal>
     <pd-choose-package-record-list-model ref="pdChoosePackageRecordListModel" @ok="returnPackageRecordData" ></pd-choose-package-record-list-model>
   </j-modal>
@@ -323,6 +324,7 @@
   import PdChoosePackageRecordListModel from "./PdChoosePackageRecordListModel";
   import ExStockRecordOutPrintModal from "../../external/print/ExStockRecordOutPrintModal";
   import PdStockRecordOutPrintModalFCZYY from "../../external/fengcheng/print/PdStockRecordOutPrintModalFCZYY";
+  import PdStockRecordOutPrintModalFCRMYY from "../../external/fengcheng/print/PdStockRecordOutPrintModalFCRMYY";
 
   const VALIDATE_NO_PASSED = Symbol()
   export { FormTypes, VALIDATE_NO_PASSED }
@@ -331,6 +333,7 @@
     name: 'PdStockRecordOutModal',
     mixins: [JEditableTableMixin],
     components: {
+      PdStockRecordOutPrintModalFCRMYY,
       PdStockRecordOutPrintModalFCZYY,
       ExStockRecordOutPrintModal,
       PdChoosePackageRecordListModel,
@@ -918,15 +921,23 @@
           if(!res.result.auditDate){
             res.result.auditDate = res.result.submitDate;
           }
-          if(this.hospitalCode == "FCZYY" || this.hospitalCode == "FCRMYY"){
-            this.$refs.pdStockRecordOutPrintModalFCZYY.show(res.result);
-            this.$refs.pdStockRecordOutPrintModalFCZYY.title = this.stockOutText + "出库单";
-          }else if(this.hospitalCode == "GZSLYY"){
-            this.$refs.exStockRecordOutPrintModal.show(res.result);
-            this.$refs.exStockRecordOutPrintModal.title = this.stockOutText + "出库单";
-          }else{
-            this.$refs.pdStockRecordOutPrintModal.show(res.result);
-            this.$refs.pdStockRecordOutPrintModal.title = this.stockOutText + "出库单";
+
+          switch(this.hospitalCode) {
+            case "FCZYY":
+              this.$refs.pdStockRecordOutPrintModalFCZYY.show(res.result);
+              this.$refs.pdStockRecordOutPrintModalFCZYY.title = this.stockOutText + "出库单";
+              break;
+            case "FCRMYY":
+              this.$refs.pdStockRecordOutPrintModalFCRMYY.show(res.result);
+              this.$refs.pdStockRecordOutPrintModalFCRMYY.title = this.stockOutText + "出库单";
+              break;
+            case "GZSLYY":
+              this.$refs.exStockRecordOutPrintModal.show(res.result);
+              this.$refs.exStockRecordOutPrintModal.title = this.stockOutText + "出库单";
+              break;
+            default:
+              this.$refs.pdStockRecordOutPrintModal.show(res.result);
+              this.$refs.pdStockRecordOutPrintModal.title = this.stockOutText + "出库单";
           }
         })
       },
