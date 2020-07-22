@@ -3,11 +3,16 @@ package org.jeecg.modules.external.cxf.impl;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.StringUtils;
+import org.jeecg.common.api.vo.Result;
+import org.jeecg.common.constant.MessageConstant;
 import org.jeecg.common.constant.PdConstant;
 import org.jeecg.common.util.DateUtils;
 import org.jeecg.common.util.PasswordUtil;
+import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.external.cxf.WebServiceService;
 import org.jeecg.modules.external.entity.HForcerInfo;
 import org.jeecg.modules.external.entity.HForcerRfid;
@@ -17,10 +22,12 @@ import org.jeecg.modules.external.service.IHRfidInfoService;
 import org.jeecg.modules.external.service.IHUserFingerFaceService;
 import org.jeecg.modules.external.service.IHforcerInfoService;
 import org.jeecg.modules.pd.entity.PdProductStock;
+import org.jeecg.modules.pd.entity.PdProductStockUniqueCode;
 import org.jeecg.modules.pd.entity.PdStockRecord;
 import org.jeecg.modules.pd.entity.PdStockRecordDetail;
 import org.jeecg.modules.pd.service.IPdDepartService;
 import org.jeecg.modules.pd.service.IPdProductStockService;
+import org.jeecg.modules.pd.service.IPdProductStockUniqueCodeService;
 import org.jeecg.modules.pd.service.IPdStockRecordService;
 import org.jeecg.modules.pd.util.UUIDUtil;
 import org.jeecg.modules.system.entity.SysDepart;
@@ -54,8 +61,10 @@ public class WebServiceServiceImpl implements WebServiceService {
     private IPdDepartService pdDepartService;
     @Autowired
     private ISysUserService sysUserService;
+    @Autowired
+    private IPdProductStockUniqueCodeService pdProductStockUniqueCodeService;
     /**
-     * 耗材柜注册接口
+     * 耗材柜/一体机注册接口
      *
      * @param str
      * @return
@@ -84,7 +93,7 @@ public class WebServiceServiceImpl implements WebServiceService {
                 }
                 if (StringUtils.isEmpty(forcerName)) {
                     retMap.put("result", PdConstant.FAIL_1);
-                    retMap.put("message", "柜子名称不能为空");
+                    retMap.put("message", "设备名称不能为空");
                     return JSON.toJSONString(retMap);
                 }
                 if (StringUtils.isEmpty(kfId)) {
@@ -101,12 +110,12 @@ public class WebServiceServiceImpl implements WebServiceService {
                 boolean state = hforcerInfoService.queryConsumables(macAddress);
                 if (!state) {
                     retMap.put("result", PdConstant.FAIL_1);
-                    retMap.put("message", "该耗材柜已经注册");
+                    retMap.put("message", "该设备已经注册");
                     return JSON.toJSONString(retMap);
                 }
                 hforcerInfoService.saveConsumables(map);
                 retMap.put("result", PdConstant.SUCCESS_0);
-                retMap.put("message", "智能柜注册成功");
+                retMap.put("message", "设备注册成功");
             } else {
                 retMap.put("result", PdConstant.FAIL_1);
                 retMap.put("message", "推送数据为空");
@@ -115,7 +124,7 @@ public class WebServiceServiceImpl implements WebServiceService {
         } catch (Exception e) {
             e.printStackTrace();
             retMap.put("result", PdConstant.FAIL_1);
-            retMap.put("message", "智能柜注册失败，日志：" + e.getMessage());
+            retMap.put("message", "设备注册失败，日志：" + e.getMessage());
             //TODO 日志记录
             return JSON.toJSONString(retMap);
         }
@@ -904,11 +913,62 @@ public class WebServiceServiceImpl implements WebServiceService {
                 String inDepartId = MapUtils.getString(map, "rkkf");//入库库房ID
                 String operator = MapUtils.getString(map, "operator");//操作人
                 String type = MapUtils.getString(map, "type");//操作类型  0:入库；1:出库；
+                List<String> uniqueCodes =(List<String>) MapUtils.getObject(map, "list");//操作类型  0:入库；1:出库；
+
+//--------------
+                Result<PdProductStock> result = new Result<>();
+                if(CollectionUtils.isEmpty(uniqueCodes)){
+                    retMap.put("result",MessageConstant.ICODE_STATE_500);
+                    retMap.put("message", "请扫描正确的条码");
+                    return JSON.toJSONString(retMap);
+                }
+                if(oConvertUtils.isEmpty(inDepartId)){
+                    retMap.put("result",MessageConstant.ICODE_STATE_500);
+                    retMap.put("message", "出库失败，入库库房为空！");
+                    return JSON.toJSONString(retMap);
+                }
+                List<PdProductStock> stockList = new ArrayList<>();
+                for (String Barcode : uniqueCodes) {
+                    if(StringUtils.isNotBlank(Barcode)){
+                        LambdaQueryWrapper<PdProductStockUniqueCode> query = new LambdaQueryWrapper<PdProductStockUniqueCode>()
+                                .eq(PdProductStockUniqueCode::getId, Barcode)
+                                .eq(PdProductStockUniqueCode::getPrintType, PdConstant.CODE_PRINT_TYPE_1)
+                                .eq(PdProductStockUniqueCode::getCodeState,PdConstant.CODE_PRINT_STATE_0)//正常状态不包括已退货和已用完的
+                                /*.eq(PdProductStockUniqueCode::getDepartId,sysUser.getCurrentDepartId())*/;//当前科室下的
+                        //查询状态是正常状态且是当前科室下的
+                        PdProductStockUniqueCode pdProductStockUniqueCode = pdProductStockUniqueCodeService.getOne(query);
+                        if(pdProductStockUniqueCode!=null){
+                            PdProductStock ps = new PdProductStock();
+                            ps.setId(pdProductStockUniqueCode.getProductStockId());
+                            ps.setBarCodeType(PdConstant.CODE_PRINT_TYPE_1);
+                            ps.setProductFlag("");//产品类型0耗材1试剂
+                            ps.setNestatStatus(PdConstant.STOCK_NESTAT_STATUS_1);//状态 未使用
+                            ps.setDepartId(outDepartId);
+                            // 唯一码查库存
+                            List<PdProductStock> pds = pdProductStockService.queryUniqueProductStockList(ps);
+                            if(CollectionUtils.isNotEmpty(pds)){
+                                ps = pds.get(0);
+                                ps.setRefBarCode(Barcode);
+                                stockList.add(ps);
+                            }
+                        }
+                    }
+                }
+                if(CollectionUtils.isEmpty(stockList)){
+                    retMap.put("result",MessageConstant.ICODE_STATE_500);
+                    retMap.put("message", "出库失败，出库明细为空！");
+                    return JSON.toJSONString(retMap);
+                }
+                //自动出库操作
+                PdStockRecord  pdStockRecord=new PdStockRecord();
+                pdStockRecord.setSubmitBy(operator);      // 提交人
+                pdStockRecord.setAuditBy(operator);       // 审核人
+                pdStockRecord.setOutDepartId(outDepartId); // 出库库房id
+                pdStockRecord.setOutDepartName("");
+                String recordId = pdStockRecordService.addOutForTerminal(pdStockRecord, stockList);
 
 
-
-
-
+//-------------------
                 retMap.put("result", PdConstant.SUCCESS_0);
                 retMap.put("message", "成功");
             } else {

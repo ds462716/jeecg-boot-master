@@ -20,7 +20,6 @@ import org.jeecg.modules.pd.vo.PdGoodsAllocationPage;
 import org.jeecg.modules.system.entity.SysDepart;
 import org.jeecg.modules.system.entity.SysPermission;
 import org.jeecg.modules.system.service.ISysDepartService;
-import org.jeecg.modules.system.service.ISysDictService;
 import org.jeecg.modules.system.service.ISysPermissionService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -1531,18 +1530,18 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
      */
     @Override
     public String addOutForTerminal(PdStockRecord pdStockRecord, List<PdProductStock> stockList) {
-        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
-        SysDepart sysDepart = pdDepartService.getById(sysUser.getCurrentDepartId());
+        //LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        //SysDepart sysDepart = pdDepartService.getById(sysUser.getCurrentDepartId());
 
         // 1、封装出库单信息
         pdStockRecord.setRecordNo(UUIDUtil.generateOrderNoByType(PdConstant.ORDER_NO_FIRST_LETTER_CK));
         pdStockRecord.setOutType(PdConstant.OUT_TYPE_1);
         pdStockRecord.setSubmitDate(DateUtils.getDate());// 提交日期
-        pdStockRecord.setSubmitBy(sysUser.getId());      // 提交人
+       // pdStockRecord.setSubmitBy(sysUser.getId());      // 提交人
         pdStockRecord.setAuditDate(DateUtils.getDate()); // 审核日期
-        pdStockRecord.setAuditBy(sysUser.getId());       // 审核人
-        pdStockRecord.setOutDepartId(sysDepart.getId()); // 出库库房id
-        pdStockRecord.setOutDepartName(sysDepart.getDepartName());
+       // pdStockRecord.setAuditBy(sysUser.getId());       // 审核人
+        //pdStockRecord.setOutDepartId(sysDepart.getId()); // 出库库房id
+        //pdStockRecord.setOutDepartName(sysDepart.getDepartName());
         pdStockRecord.setCreateTime(DateUtils.getDate());
         pdStockRecord.setRecordType(PdConstant.RECODE_TYPE_2); // 出库
         pdStockRecord.setSubmitStatus(PdConstant.SUBMIT_STATE_2); // 已提交

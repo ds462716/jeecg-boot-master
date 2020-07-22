@@ -70,8 +70,23 @@ public class PdDosageController extends JeecgController<PdDosage, IPdDosageServi
 								   HttpServletRequest req) {
 		Page<PdDosage> page = new Page<PdDosage>(pageNo, pageSize);
 		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+
+
+
+		if(oConvertUtils.isNotEmpty(pdDosage.getDepartIds()) && !"undefined".equals(pdDosage.getDepartIds())) {
+			pdDosage.setDepartIdList(Arrays.asList(pdDosage.getDepartIds().split(",")));
+		}else{
+			//查询科室下所有下级科室的ID
+			SysDepart sysDepart=new SysDepart();
+			List<String> departList=pdDepartService.selectListDepart(sysDepart);
+			pdDosage.setDepartIdList(departList);
+		}
+		//pdProductStockCheck.setDepartParentId(sysUser.getDepartParentId());
+		//pdProductStockCheck.setDepartId(sysUser.getCurrentDepartId());
+
+
 		pdDosage.setDepartParentId(sysUser.getDepartParentId());
-		pdDosage.setDepartId(sysUser.getCurrentDepartId());
+		//pdDosage.setDepartId(sysUser.getCurrentDepartId());
 		IPage<PdDosage> pageList = pdDosageService.queryList(page, pdDosage);
 
 		Map<String,Object> map = new HashMap<>();
