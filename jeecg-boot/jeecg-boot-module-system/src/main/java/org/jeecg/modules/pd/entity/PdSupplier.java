@@ -231,5 +231,6 @@ public class PdSupplier extends BaseEntity {
 	/**
 	 * jde编码
 	 */
+	@Excel(name = "JDE编码", width = 15)
 	private String jdeCode;
 }
