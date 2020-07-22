@@ -384,7 +384,7 @@
             title:'注册证号',
             align:"center",
             width:'250px',
-            dataIndex: 'registration'
+            dataIndex: 'productRegistration'
           },
           {
             title:'备注',
