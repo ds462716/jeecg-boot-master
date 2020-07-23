@@ -84,9 +84,13 @@
                 <a-popconfirm title="确定锁定吗?"  @confirm="() => locking(record)"  >
                   <a>锁定库房</a>
                 </a-popconfirm>
+              </a-menu-item>
+              <a-menu-item v-show="record.checkStatus=='1' || record.checkStatus=='3'"> <!--待提交、已撤回-->
                 <a-popconfirm title="确定解锁吗?解锁后需要按键盘F5进行刷新"  @confirm="() => unlock(record)"  >
                   <a>解锁库房</a>
                 </a-popconfirm>
+              </a-menu-item>
+              <a-menu-item v-show="record.checkStatus=='1' || record.checkStatus=='3'"> <!--待提交、已撤回-->
                 <a-popconfirm title="确定删除吗?"  @confirm="() => handleDelete(record.id)"  >
                   <a>删除</a>
                 </a-popconfirm>
