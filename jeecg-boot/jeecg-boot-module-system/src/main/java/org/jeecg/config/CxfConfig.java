@@ -1,11 +1,12 @@
 package org.jeecg.config;
 
-
 import org.apache.cxf.Bus;
 import org.apache.cxf.bus.spring.SpringBus;
 import org.apache.cxf.jaxws.EndpointImpl;
 import org.apache.cxf.transport.servlet.CXFServlet;
+import org.jeecg.modules.external.cxf.ConsumablesService;
 import org.jeecg.modules.external.cxf.WebServiceService;
+import org.jeecg.modules.external.cxf.impl.ConsumablesServiceImpl;
 import org.jeecg.modules.external.cxf.impl.WebServiceServiceImpl;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
@@ -38,6 +39,12 @@ public class CxfConfig {
         return new WebServiceServiceImpl();
     }
 
+
+    @Bean
+    public ConsumablesService demoJsonService1(){
+        return new ConsumablesServiceImpl();
+    }
+
     /**
      * 注册WebServiceService接口到webservice服务
      * @return
@@ -46,6 +53,17 @@ public class CxfConfig {
     public Endpoint sweptPayEndpoint() {
         EndpointImpl endpoint = new EndpointImpl(springBus(), demoJsonService());
         endpoint.publish("/webservice");
+        return endpoint;
+    }
+
+    /**
+     * 注册WebServiceService接口到webservice服务
+     * @return
+     */
+    @Bean(name = "WebServiceEndpoint1")
+    public Endpoint sweptPayEndpoint1() {
+        EndpointImpl endpoint = new EndpointImpl(springBus(), demoJsonService1());
+        endpoint.publish("/sendConsumables");
         return endpoint;
     }
 }
