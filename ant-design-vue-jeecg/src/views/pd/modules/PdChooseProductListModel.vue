@@ -15,12 +15,12 @@
           <a-row :gutter="24">
             <a-col :md="6" :sm="8">
               <a-form-item label="产品名称">
-                <a-input placeholder="请输入产品名称" v-model="queryParam.name"></a-input>
+                <a-input placeholder="请输入产品名称" v-model="queryParam.name" @input="searchQuery"></a-input>
               </a-form-item>
             </a-col>
             <a-col :md="6" :sm="8">
               <a-form-item label="注册证">
-                <a-input placeholder="请输入注册证" v-model="queryParam.registration"></a-input>
+                <a-input placeholder="请输入注册证" v-model="queryParam.registration" @input="searchQuery"></a-input>
               </a-form-item>
             </a-col>
             <a-col :md="6" :sm="8">
@@ -31,22 +31,22 @@
             <template v-if="toggleSearchStatus">
               <a-col :md="6" :sm="8">
                 <a-form-item label="规格">
-                  <a-input placeholder="请输入规格" v-model="queryParam.spec"></a-input>
+                  <a-input placeholder="请输入规格" v-model="queryParam.spec" @input="searchQuery"></a-input>
                 </a-form-item>
               </a-col>
               <a-col :md="6" :sm="8">
                 <a-form-item label="产品编号">
-                  <a-input placeholder="请输入产品编号" v-model="queryParam.number"></a-input>
+                  <a-input placeholder="请输入产品编号" v-model="queryParam.number" @input="searchQuery"></a-input>
                 </a-form-item>
               </a-col>
               <a-col :md="6" :sm="8">
                 <a-form-item label="收费代码">
-                  <a-input placeholder="请输入收费代码" v-model="queryParam.chargeCode"></a-input>
+                  <a-input placeholder="请输入收费代码" v-model="queryParam.chargeCode" @input="searchQuery"></a-input>
                 </a-form-item>
               </a-col>
               <a-col :md="6" :sm="8">
                 <a-form-item label="中标号">
-                  <a-input placeholder="请输入中标号" v-model="queryParam.bidingNumber"></a-input>
+                  <a-input placeholder="请输入中标号" v-model="queryParam.bidingNumber" @input="searchQuery"></a-input>
                 </a-form-item>
               </a-col>
               <a-col :md="6" :sm="8">

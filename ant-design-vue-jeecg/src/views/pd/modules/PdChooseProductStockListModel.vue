@@ -15,23 +15,23 @@
           <a-row :gutter="24">
             <a-col :md="6" :sm="8">
               <a-form-item label="产品名称">
-                <a-input placeholder="请输入产品名称" v-model="queryParam.productName"></a-input>
+                <a-input placeholder="请输入产品名称" v-model="queryParam.productName" @input="searchQuery"></a-input>
               </a-form-item>
             </a-col>
             <a-col :md="6" :sm="8">
               <a-form-item label="产品编号">
-                <a-input placeholder="请输入产品编号" v-model="queryParam.number"></a-input>
+                <a-input placeholder="请输入产品编号" v-model="queryParam.number" @input="searchQuery"></a-input>
               </a-form-item>
             </a-col>
             <a-col :md="6" :sm="8">
               <a-form-item label="批号">
-                <a-input placeholder="请输入批号" v-model="queryParam.batchNo"></a-input>
+                <a-input placeholder="请输入批号" v-model="queryParam.batchNo" @input="searchQuery"></a-input>
               </a-form-item>
             </a-col>
             <template v-if="toggleSearchStatus">
               <a-col :md="6" :sm="8">
                 <a-form-item label="规格">
-                  <a-input placeholder="请输入规格" v-model="queryParam.spec"></a-input>
+                  <a-input placeholder="请输入规格" v-model="queryParam.spec" @input="searchQuery"></a-input>
                 </a-form-item>
               </a-col>
               <a-col :md="6" :sm="8">
@@ -94,12 +94,12 @@
               </a-col>
               <a-col :md="6" :sm="8" v-show="showOutRecordNo">
                 <a-form-item label="出库单号">
-                  <a-input placeholder="请输入出库单号" v-model="queryParam.outRecordNo"></a-input>
+                  <a-input placeholder="请输入出库单号" v-model="queryParam.outRecordNo" @input="searchQuery"></a-input>
                 </a-form-item>
               </a-col>
               <a-col :md="6" :sm="8" v-show="showInRecordNo">
                 <a-form-item label="入库单号">
-                  <a-input placeholder="请输入入库单号" v-model="queryParam.inRecordNo"></a-input>
+                  <a-input placeholder="请输入入库单号" v-model="queryParam.inRecordNo" @input="searchQuery"></a-input>
                 </a-form-item>
               </a-col>
               <a-col :md="6" :sm="8">
