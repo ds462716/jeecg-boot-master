@@ -155,7 +155,8 @@
           ]},
           jdeCode: {rules: [
             ]},
-          supplierType:{rules:[ {required: true, message: '请选择类别!'}]}
+          //supplierType:{rules:[ {required: true, message: '请选择类别!'}]}
+          supplierType:{rules:[]}
         },
         url: {
           add: "/pd/pdSupplier/save",
