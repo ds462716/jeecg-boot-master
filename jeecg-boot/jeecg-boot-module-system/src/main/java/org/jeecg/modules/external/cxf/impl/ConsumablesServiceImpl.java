@@ -3,27 +3,28 @@ package org.jeecg.modules.external.cxf.impl;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.StringUtils;
+import org.jeecg.common.api.vo.Result;
+import org.jeecg.common.constant.MessageConstant;
 import org.jeecg.common.constant.PdConstant;
 import org.jeecg.common.util.DateUtils;
 import org.jeecg.common.util.PasswordUtil;
-import org.jeecg.modules.external.cxf.WebServiceService;
+import org.jeecg.common.util.oConvertUtils;
+import org.jeecg.modules.external.cxf.ConsumablesService;
 import org.jeecg.modules.external.entity.HForcerInfo;
-import org.jeecg.modules.external.entity.HForcerRfid;
 import org.jeecg.modules.external.entity.HUserFingerFace;
-import org.jeecg.modules.external.service.IHForcerRfidService;
-import org.jeecg.modules.external.service.IHRfidInfoService;
 import org.jeecg.modules.external.service.IHUserFingerFaceService;
 import org.jeecg.modules.external.service.IHforcerInfoService;
 import org.jeecg.modules.pd.entity.PdProductStock;
+import org.jeecg.modules.pd.entity.PdProductStockUniqueCode;
 import org.jeecg.modules.pd.entity.PdStockRecord;
-import org.jeecg.modules.pd.entity.PdStockRecordDetail;
 import org.jeecg.modules.pd.service.IPdDepartService;
 import org.jeecg.modules.pd.service.IPdProductStockService;
 import org.jeecg.modules.pd.service.IPdProductStockUniqueCodeService;
 import org.jeecg.modules.pd.service.IPdStockRecordService;
-import org.jeecg.modules.pd.util.UUIDUtil;
 import org.jeecg.modules.system.entity.SysDepart;
 import org.jeecg.modules.system.entity.SysUser;
 import org.jeecg.modules.system.service.ISysUserService;
@@ -31,22 +32,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.jws.WebService;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Service
-@WebService(serviceName = "WebServiceService", // 与接口中指定的name一致
+@WebService(serviceName = "ConsumablesService", // 与接口中指定的name一致
         targetNamespace = "http://webservice.business.mixpay.com", // 与接口中的命名空间一致,一般是接口的包名倒
-        endpointInterface = "org.jeecg.modules.external.cxf.WebServiceService" // 接口地址
+        endpointInterface = "org.jeecg.modules.external.cxf.ConsumablesService" // 接口地址
 )
-public class WebServiceServiceImpl implements WebServiceService {
+public class ConsumablesServiceImpl implements ConsumablesService {
     @Autowired
     private IHforcerInfoService hforcerInfoService;
     @Autowired
     private IHUserFingerFaceService userFingerFaceService;
-    @Autowired
-    private IHRfidInfoService rfidInfoService;
-    @Autowired
-    private IHForcerRfidService hForcerRfidService;
     @Autowired
     private IPdStockRecordService pdStockRecordService;
     @Autowired
@@ -58,7 +58,7 @@ public class WebServiceServiceImpl implements WebServiceService {
     @Autowired
     private IPdProductStockUniqueCodeService pdProductStockUniqueCodeService;
     /**
-     * 耗材柜注册接口
+     * 一体机注册接口
      *
      * @param str
      * @return
@@ -125,7 +125,7 @@ public class WebServiceServiceImpl implements WebServiceService {
     }
 
     /**
-     * 获取耗材柜信息
+     * 获取一体机信息
      *
      * @param str
      * @return
@@ -160,7 +160,7 @@ public class WebServiceServiceImpl implements WebServiceService {
                     param.put("userId", info.getUserId());//用户id
                     param.put("isDisable", info.getIsDisable());
                     //根据库房id获取到库房名称
-                   SysDepart sysDepart= pdDepartService.getById(info.getKfId());
+                    SysDepart sysDepart= pdDepartService.getById(info.getKfId());
                     if (sysDepart != null) {
                         param.put("kfId", sysDepart.getId());
                         param.put("kfName",sysDepart.getDepartName());
@@ -297,179 +297,7 @@ public class WebServiceServiceImpl implements WebServiceService {
         }
     }
 
-    /**
-     * 条码打印接口
-     *
-     * @param str
-     * @return
-     */
-    @Override
-    public String sendPrintCodeInterface(String str) {
-        Map<String, Object> retMap = new HashMap<String, Object>();
-        if (str == null || "".equals(str.trim())) {
-            retMap.put("result", PdConstant.FAIL_1);
-            retMap.put("message", "推送数据为空");
-            return JSON.toJSONString(retMap);
-        }
-        try {
-            System.out.println("#######条码打印接口:"+str);
-            Map<Object, Object> map = (Map<Object, Object>) JSONObject.parse(str);
-            if (map != null && !MapUtils.isEmpty(map)) {
-                String rfid = MapUtils.getString(map, "rfId");
-                String productId = MapUtils.getString(map, "productId");
-                String productNo = MapUtils.getString(map, "productNo");
-                String rkmxId = MapUtils.getString(map, "rkmxId");
-                String batchNo = MapUtils.getString(map, "batchNo");
-                String validDate = MapUtils.getString(map, "validDate");
-                if (StringUtils.isEmpty(rfid)) {
-                    retMap.put("result", PdConstant.FAIL_1);
-                    retMap.put("message", "请求参数不能为空！");
-                    return JSON.toJSONString(retMap);
-                }
-                if (StringUtils.isEmpty(productId)) {
-                    retMap.put("result", PdConstant.FAIL_1);
-                    retMap.put("message", "产品ID不能为空！");
-                    return JSON.toJSONString(retMap);
-                }
-                if (StringUtils.isEmpty(productNo)) {
-                    retMap.put("result", PdConstant.FAIL_1);
-                    retMap.put("message", "产品编号不能为空！");
-                    return JSON.toJSONString(retMap);
-                }
 
-                if (StringUtils.isEmpty(batchNo)) {
-                    retMap.put("result", PdConstant.FAIL_1);
-                    retMap.put("message", "批次号不能为空！");
-                    return JSON.toJSONString(retMap);
-                }
-                rfidInfoService.saveHrfid(map);
-                retMap.put("result",PdConstant.SUCCESS_0);
-                retMap.put("message", "成功");
-            }else{
-                retMap.put("result", PdConstant.FAIL_1);
-                retMap.put("message", "推送数据为空");
-            }
-            return JSON.toJSONString(retMap);
-        } catch (Exception e) {
-            e.printStackTrace();
-            retMap.put("result", PdConstant.FAIL_1);
-            retMap.put("message", "失败，日志：" + e.getMessage());
-            return JSON.toJSONString(retMap);
-        }
-    }
-
-    /**
-     * 根据rfid标签获取库存信息
-     *
-     * @param str
-     * @return
-     */
-    @Override
-    public String queryHrfidList(String str) {
-        Map<String, Object> retMap = new HashMap<String, Object>();
-        if (str == null || "".equals(str.trim())) {
-            retMap.put("result", PdConstant.FAIL_1);
-            retMap.put("message", "查询条件为空");
-            return JSON.toJSONString(retMap);
-        }
-        try {
-            System.out.println("#######根据rfid标签获取库存信息接口:"+str);
-            Map<Object, Object> map = (Map<Object, Object>) JSONObject.parse(str);
-            if (map != null && !MapUtils.isEmpty(map)) {
-                List<Map<String, Object>> list = rfidInfoService.queryHrfidList(map);
-                retMap.put("param", list);
-                retMap.put("result",PdConstant.SUCCESS_0);
-                retMap.put("message", "成功");
-            } else {
-                retMap.put("result", PdConstant.FAIL_1);
-                retMap.put("message", "查询条件不能为空");
-            }
-            return JSON.toJSONString(retMap);
-        } catch (Exception e) {
-            e.printStackTrace();
-            retMap.put("result", PdConstant.FAIL_1);
-            retMap.put("message", "查询失败，日志：" + e.getMessage());
-            return JSON.toJSONString(retMap);
-        }
-    }
-
-    /**
-     * 保存耗材柜rfid接口标签信息接口
-     * @param str
-     * @return
-     */
-    @Override
-    public String saveRfidToSpd(String str) {
-        Map<String, Object> retMap = new HashMap<String, Object>();
-        if (str == null || "".equals(str.trim())) {
-            retMap.put("result", PdConstant.FAIL_1);
-            retMap.put("message", "推送数据为空");
-            return JSON.toJSONString(retMap);
-        }
-        try {
-            System.out.println("#######保存耗材柜rfid接口标签信息接口:"+str);
-            Map<Object, Object> map = (Map<Object, Object>) JSONObject.parse(str);
-            if (map != null && !MapUtils.isEmpty(map)) {
-                hForcerRfidService.saveList(map);
-                retMap.put("result",PdConstant.SUCCESS_0);
-                retMap.put("message", "成功");
-            } else {
-                retMap.put("result",PdConstant.FAIL_1);
-                retMap.put("message", "推送数据为空");
-            }
-            return JSON.toJSONString(retMap);
-        } catch (Exception e) {
-            e.printStackTrace();
-            retMap.put("result", PdConstant.FAIL_1);
-            retMap.put("message", "失败，日志：" + e.getMessage());
-            return JSON.toJSONString(retMap);
-        }
-    }
-
-    /**
-     * 获取耗材柜rfid标签接口
-     *
-     * @param str
-     * @return
-     */
-    @Override
-    public String queryHforcerRfidList(String str) {
-        Map<String, Object> retMap = new HashMap<String, Object>();
-        if (str == null || "".equals(str.trim())) {
-            retMap.put("result", PdConstant.FAIL_1);
-            retMap.put("message", "查询条件为空");
-            return JSON.toJSONString(retMap);
-        }
-        try {
-            System.out.println("#######获取耗材柜rfid标签接口:"+str);
-            Map<Object, Object> map = (Map<Object, Object>) JSONObject.parse(str);
-            if (map != null && !MapUtils.isEmpty(map)) {
-                String forcerId = MapUtils.getString(map, "forcerId");//终端设备ID
-                String forcerNumber = MapUtils.getString(map, "forcerNumber");//单个柜子标识
-                if (StringUtils.isEmpty(forcerId)) {
-                    retMap.put("result",PdConstant.FAIL_1);
-                    retMap.put("message", "终端设备ID为空！");
-                    return JSON.toJSONString(retMap);
-                }
-                HForcerRfid forcerRfid = new HForcerRfid();
-                forcerRfid.setForcerId(forcerId);
-                forcerRfid.setForcerNumber(forcerNumber);
-                List<Map<String, Object>> list = hForcerRfidService.queryHforcerRfidList(forcerRfid);
-                retMap.put("param", list);
-                retMap.put("result",PdConstant.SUCCESS_0);
-                retMap.put("message", "成功");
-            } else {
-                retMap.put("result",PdConstant.FAIL_1);
-                retMap.put("message", "查询条件不能为空");
-            }
-            return JSON.toJSONString(retMap);
-        } catch (Exception e) {
-            e.printStackTrace();
-            retMap.put("result",PdConstant.FAIL_1);
-            retMap.put("message", "查询失败，日志：" + e.getMessage());
-            return JSON.toJSONString(retMap);
-        }
-    }
 
     /**
      * 耗材柜人员登录接口
@@ -492,11 +320,11 @@ public class WebServiceServiceImpl implements WebServiceService {
                 String userName = MapUtils.getString(map, "userNo");
                 String passWord = MapUtils.getString(map, "passWord");
                 SysUser sysUser = sysUserService.getUserByName(userName);
-                 if (sysUser == null || sysUser.getPassword() == null) {
+                if (sysUser == null || sysUser.getPassword() == null) {
                     retMap.put("result", PdConstant.FAIL_1);
                     retMap.put("message", "用户名或密码错误");
-                     return JSON.toJSONString(retMap);
-                 }
+                    return JSON.toJSONString(retMap);
+                }
                 //校验用户名或密码是否正确
                 String userpassword = PasswordUtil.encrypt(userName, passWord, sysUser.getSalt());
                 String syspassword = sysUser.getPassword();
@@ -713,14 +541,17 @@ public class WebServiceServiceImpl implements WebServiceService {
 
 
 
+
+
+
     /**
-     * 获取入库单信息接口
+     * 根据唯一码获取产品信息接口
      *
      * @param str
      * @return
      */
     @Override
-    public String queryPdStockList(String str) {
+    public String sendRefBarCode(String str) {
         Map<String, Object> retMap = new HashMap<String, Object>();
         if (str == null || "".equals(str.trim())) {
             retMap.put("result",PdConstant.FAIL_1);
@@ -728,29 +559,35 @@ public class WebServiceServiceImpl implements WebServiceService {
             return JSON.toJSONString(retMap);
         }
         try {
-            System.out.println("#######获取入库单信息接口报文："+str);
+            System.out.println("#######根据唯一码获取产品信息接口报文："+str);
             Map<Object, Object> map = (Map<Object, Object>) JSONObject.parse(str);
             if (map != null && !MapUtils.isEmpty(map)) {
-                String recordNo = MapUtils.getString(map, "rkdh");//入库单号
-                if (StringUtils.isEmpty(recordNo)) {
+                String kfId = MapUtils.getString(map, "kfId");//库房ID
+                String uniqueCode = MapUtils.getString(map, "uniqueCode");//唯一码
+                if (StringUtils.isEmpty(kfId)) {
                     retMap.put("result",PdConstant.FAIL_1);
-                    retMap.put("message", "入库单号为空！");
+                    retMap.put("message", "库房ID不能为空！");
                     return JSON.toJSONString(retMap);
                 }
-                PdStockRecord stockRecord = new PdStockRecord();
-                stockRecord.setRecordNo(recordNo);
-                stockRecord.setRecordType(PdConstant.RECODE_TYPE_1);//入库
-                stockRecord.setAuditStatus(PdConstant.AUDIT_STATE_2);//只查已通过的明细
-                List<Map<String, Object>> list = pdStockRecordService.findOutQueryList(stockRecord);
-                if (list != null && list.size() > 0) {
-                    retMap.put("param", list);
-                    retMap.put("result",PdConstant.SUCCESS_0);
-                    retMap.put("message", "成功");
-                } else {
+                if (StringUtils.isEmpty(uniqueCode)) {
                     retMap.put("result",PdConstant.FAIL_1);
-                    retMap.put("message", "获取入库单信息为空");
+                    retMap.put("message", "唯一码不能为空！");
+                    return JSON.toJSONString(retMap);
                 }
-
+                PdProductStock productStock=new PdProductStock();
+                productStock.setProductFlag(PdConstant.PRODUCT_FLAG_1);
+                productStock.setProductBarCode(uniqueCode);
+                productStock.setDepartId(kfId);
+                productStock.setNestatStatus(PdConstant.STOCK_NESTAT_STATUS_1);
+                List<PdProductStock> stock= pdProductStockService.queryUniqueProductStockList(productStock);
+                if(CollectionUtils.isEmpty(stock)){
+                    retMap.put("result",PdConstant.FAIL_1);
+                    retMap.put("message", "未查询到产品对应的库存");
+                }else {
+                    retMap.put("param", stock);
+                    retMap.put("result", PdConstant.SUCCESS_0);
+                    retMap.put("message", "成功");
+                }
             } else {
                 retMap.put("result",PdConstant.FAIL_1);
                 retMap.put("message", "查询条件不能为空");
@@ -765,82 +602,96 @@ public class WebServiceServiceImpl implements WebServiceService {
     }
 
     /**
-     * 耗材柜出库单接口
+     * 试剂出入库接口
      *
      * @param str
      * @return
      */
     @Override
-    public String sendOutboundOrderToSpd(String str) {
+    public String reagentOutToInRecord(String str) {
         Map<String, Object> retMap = new HashMap<String, Object>();
         if (str == null || "".equals(str.trim())) {
             retMap.put("result",PdConstant.FAIL_1);
-            retMap.put("message", "推送数据为空");
+            retMap.put("message", "参数为空");
             return JSON.toJSONString(retMap);
         }
         try {
-            System.out.println("#######耗材柜出库单接口报文："+str);
+            System.out.println("#######试剂出入库接口报文："+str);
             Map<Object, Object> map = (Map<Object, Object>) JSONObject.parse(str);
             if (map != null && !MapUtils.isEmpty(map)) {
-                String outStoreroomId = MapUtils.getString(map, "outStoreroomId");//出库库房ID
-                String inStoreroomId = MapUtils.getString(map, "inStoreroomId");//入库库房ID
-                String userId = MapUtils.getString(map, "userId");//操作人ID
-                if (StringUtils.isEmpty(outStoreroomId) ||
-                        StringUtils.isEmpty(inStoreroomId) ||
-                        StringUtils.isEmpty(userId)) {
-                    retMap.put("result",PdConstant.FAIL_1);
-                    retMap.put("message", "出库/入库库房ID或操作人信息不能为空！");
+                String outDepartId = MapUtils.getString(map, "ckkf");//出库库房ID
+                String inDepartId = MapUtils.getString(map, "rkkf");//入库库房ID
+                String operator = MapUtils.getString(map, "czr");//操作人
+                String type = MapUtils.getString(map, "type");//操作类型  0:入库；1:出库；
+                List<Map<String,Object>> uniqueCodes =(List<Map<String,Object>>) MapUtils.getObject(map, "list");//操作类型  0:入库；1:出库；
+
+//--------------
+                Result<PdProductStock> result = new Result<>();
+                if(CollectionUtils.isEmpty(uniqueCodes)){
+                    retMap.put("result", MessageConstant.ICODE_STATE_500);
+                    retMap.put("message", "请扫描正确的条码");
                     return JSON.toJSONString(retMap);
                 }
-                SysUser  user = sysUserService.getById(userId);
-                if (user == null || user.getUsername() == null) {
-                    retMap.put("result", PdConstant.FAIL_1);
-                    retMap.put("message", "根据用户id获取不到有效的用户信息");
+                if(oConvertUtils.isEmpty(inDepartId)){
+                    retMap.put("result",MessageConstant.ICODE_STATE_500);
+                    retMap.put("message", "出库失败，入库库房为空！");
                     return JSON.toJSONString(retMap);
                 }
-                PdStockRecord pdStockRecord = new PdStockRecord();
-                pdStockRecord.setOutDepartId(outStoreroomId); //出库库房Id
-               SysDepart outSysDepart= pdDepartService.getById(outStoreroomId);
-                if (outSysDepart == null || outSysDepart.getDepartName() == null) {
-                    retMap.put("result", PdConstant.FAIL_1);
-                    retMap.put("message", "根据出库库房Id获取不到有效信息");
+                List<PdProductStock> stockList = new ArrayList<>();
+                for (Map<String,Object> param : uniqueCodes) {
+                       String    barcode = MapUtils.getString(param,"uniqueCode");
+                    if(StringUtils.isNotBlank(barcode)){
+                        LambdaQueryWrapper<PdProductStockUniqueCode> query = new LambdaQueryWrapper<PdProductStockUniqueCode>()
+                                .eq(PdProductStockUniqueCode::getId, barcode)
+                                .eq(PdProductStockUniqueCode::getPrintType, PdConstant.CODE_PRINT_TYPE_1)
+                                .eq(PdProductStockUniqueCode::getCodeState,PdConstant.CODE_PRINT_STATE_0)//正常状态不包括已退货和已用完的
+                                /*.eq(PdProductStockUniqueCode::getDepartId,sysUser.getCurrentDepartId())*/;//当前科室下的
+                        //查询状态是正常状态且是当前科室下的
+                        PdProductStockUniqueCode pdProductStockUniqueCode = pdProductStockUniqueCodeService.getOne(query);
+                        if(pdProductStockUniqueCode!=null){
+                            PdProductStock ps = new PdProductStock();
+                            ps.setId(pdProductStockUniqueCode.getProductStockId());
+                            ps.setBarCodeType(PdConstant.CODE_PRINT_TYPE_1);
+                            ps.setProductFlag("");//产品类型0耗材1试剂
+                            ps.setNestatStatus(PdConstant.STOCK_NESTAT_STATUS_1);//状态 未使用
+                            ps.setDepartId(outDepartId);
+                            // 唯一码查库存
+                            List<PdProductStock> pds = pdProductStockService.queryUniqueProductStockList(ps);
+                            if(CollectionUtils.isNotEmpty(pds)){
+                                ps = pds.get(0);
+                                ps.setRefBarCode(barcode);
+                                stockList.add(ps);
+                            }
+                        }
+                    }
+                }
+                if(CollectionUtils.isEmpty(stockList)){
+                    retMap.put("result",MessageConstant.ICODE_STATE_500);
+                    retMap.put("message", "出库失败，出库明细为空！");
                     return JSON.toJSONString(retMap);
                 }
-                pdStockRecord.setOutType(PdConstant.OUT_TYPE_2);//出库类型  1:科室出库
-                pdStockRecord.setSubmitDate(new Date());//出入库时间
-                pdStockRecord.setAuditStatus(PdConstant.AUDIT_STATE_2);//审核状态
-                pdStockRecord.setRemarks("高值耗材柜出/入库单");
-                pdStockRecord.setDelFlag(PdConstant.DEL_FLAG_0);
-                SysDepart inSysDepart= pdDepartService.getById(inStoreroomId);
-                if (inSysDepart == null || inSysDepart.getDepartName() == null) {
-                    retMap.put("result",PdConstant.FAIL_1);
-                    retMap.put("message", "根据入库库房Id获取不到有效信息");
-                    return JSON.toJSONString(retMap);
-                }
-                pdStockRecord.setRecordType(PdConstant.RECODE_TYPE_2);//出入库类型
-                pdStockRecord.setInDepartId(inStoreroomId);
-                pdStockRecord.setRecordNo(UUIDUtil.generateOrderNoByType(PdConstant.ORDER_NO_FIRST_LETTER_CK));
-                JSONArray orderArr = JSONObject.parseArray(MapUtils.getObject(map, "List").toString());
-                List<PdStockRecordDetail> list = JSONArray.parseArray(orderArr.toJSONString(), PdStockRecordDetail.class);
-                pdStockRecord.setPdStockRecordDetailList(list);
-                pdStockRecord.setAuditStatus(PdConstant.AUDIT_STATE_2);
-                pdStockRecord.setRecordType(PdConstant.RECODE_TYPE_2);
-//                pdStockRecordService.saveRecordInterface(pdStockRecord);
-                retMap.put("result",PdConstant.SUCCESS_0);
+                //自动出库操作
+                PdStockRecord  pdStockRecord=new PdStockRecord();
+                pdStockRecord.setSubmitBy(operator);      // 提交人
+                pdStockRecord.setAuditBy(operator);       // 审核人
+                pdStockRecord.setApplyBy(operator);       //领用人
+                pdStockRecord.setOutDepartId(outDepartId); // 出库库房id
+                pdStockRecord.setInDepartId(inDepartId);
+                pdStockRecord.setBarCodeType(PdConstant.CODE_PRINT_TYPE_1);
+                String recordId = pdStockRecordService.addOutForTerminal(pdStockRecord, stockList);
+//-------------------
+                retMap.put("result", PdConstant.SUCCESS_0);
                 retMap.put("message", "成功");
             } else {
                 retMap.put("result",PdConstant.FAIL_1);
-                retMap.put("message", "推送数据为空");
+                retMap.put("message", "参数不能为空");
             }
             return JSON.toJSONString(retMap);
         } catch (Exception e) {
             e.printStackTrace();
             retMap.put("result",PdConstant.FAIL_1);
-            retMap.put("message", "失败，日志：" + e.getMessage());
-            //TODO 日志记录
+            retMap.put("message", "操作失败，日志：" + e.getMessage());
             return JSON.toJSONString(retMap);
         }
     }
-
-
 }

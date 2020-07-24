@@ -123,6 +123,7 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
                 productStockTotal.setDepartId(inDeptId);  //库房
                 productStockTotal.setProductId(productId);    //产品ID
                 productStockTotal.setStockNum(productNum);    //入库数量
+                productStockTotal.setDepartParentId(pdStockRecord.getDepartParentId());
                 productStockTotal.setSupplierId(stockRecordDetail.getSupplierId());   //供应商
                 super.save(productStockTotal);
             } else { //如果库存总表存在，则增加库存数量
@@ -144,6 +145,7 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
             // modified by jiangxz 20200327 库存明细关联入库明细
             PdProductStock productStock = new PdProductStock();
             productStock.setDepartId(inDeptId);
+            productStock.setDepartParentId(pdStockRecord.getDepartParentId());
             productStock.setProductId(productId);
             productStock.setProductBarCode(productBarCode);
             productStock.setStockNum(productNum);

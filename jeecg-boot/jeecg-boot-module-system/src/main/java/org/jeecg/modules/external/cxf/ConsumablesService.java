@@ -2,19 +2,20 @@ package org.jeecg.modules.external.cxf;
 
 import javax.jws.WebParam;
 import javax.jws.WebService;
-/***
- * 耗材智能柜接口
- * */
+
+/**
+ * 市立医院试剂库房一体机相关接口
+ */
 @WebService
-public interface WebServiceService {
+public interface ConsumablesService {
     /**
-     * 耗材柜注册接口
+     * 一体机注册接口
      * @param str
      * @return
      */
     public String sendConsumablesToSpd(@WebParam(name = "consumables") String str);
     /**
-     * 获取耗材柜信息
+     * 获取一体机信息
      * @param str
      * @return
      */
@@ -33,34 +34,10 @@ public interface WebServiceService {
      */
     public String sendFngrprtFaceRgst(@WebParam(name = "fngrprtFaceRgst") String str);
 
-    /**
-     * 条码打印接口
-     * @param str
-     * @return
-     */
-    public String sendPrintCodeInterface(@WebParam(name = "printCodeInterface") String str);
+
 
     /**
-     * 根据rfid标签获取库存信息
-     * @param str
-     * @return
-     */
-    public String queryHrfidList(@WebParam(name = "hrfidList") String str);
-    /**
-     * 保存耗材柜rfid接口标签信息接口
-     * @param str
-     * @return
-     */
-    public String saveRfidToSpd(@WebParam(name = "rfidToSpd") String str);
-
-    /**
-     * 获取耗材柜rfid标签接口
-     * @param str
-     * @return
-     */
-    public String queryHforcerRfidList(@WebParam(name = "hforcerRfidList") String str);
-    /**
-     * 耗材柜人员登录接口
+     * 一体机人员登录接口
      * @param str
      * @return
      */
@@ -86,21 +63,18 @@ public interface WebServiceService {
      */
     public String queryPdStoreroomList(@WebParam(name = "pdStoreroomList") String str);
 
+
     /**
-     * 获取入库单信息接口
+     * 试剂出入库接口
      * @param str
      * @return
      */
-    public String queryPdStockList(@WebParam(name = "pdStockList") String str);
-
+    public String reagentOutToInRecord(@WebParam(name = "outToInRecord") String str);
     /**
-     * 耗材柜出库单接口
+     * 根据唯一码获取产品信息
      * @param str
      * @return
      */
-    public String sendOutboundOrderToSpd(@WebParam(name = "outboundOrder") String str);
-
-
-
+    public String sendRefBarCode(@WebParam(name = "queryProduct") String str);
 
 }
