@@ -582,8 +582,8 @@
         this.showRefuseReason = false;
         this.showSubmitAndPrint = false;
         //初始化供应商，用于回显供应商
-        // this.supplierHandleSearch();
-        // this.distributorHandleSearch();
+        this.supplierHandleSearch();
+        this.distributorHandleSearch();
 
         let params = {};
         if(this.model.id){
@@ -1602,13 +1602,13 @@
   let currentValue;
 
   function fetch(value, callback,url) {
-    if (timeout) {
-      clearTimeout(timeout);
-      timeout = null;
-    }
+    // if (timeout) {
+    //   clearTimeout(timeout);
+    //   timeout = null;
+    // }
     currentValue = value;
 
-    function fake() {
+    // function fake() {
       getAction(url,{name:value}).then((res)=>{
         if (!res.success) {
           this.cmsFailed(res.message);
@@ -1625,8 +1625,8 @@
           callback(data);
         }
       })
-    }
-    timeout = setTimeout(fake, 0); //这边不延迟
+    // }
+    // timeout = setTimeout(fake, 0); //这边不延迟
   }
 </script>
 
