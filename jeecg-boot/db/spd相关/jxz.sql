@@ -108,3 +108,4 @@ ALTER TABLE `pd_stock_record_detail`
 ADD COLUMN `distributor_id` varchar(64) NULL COMMENT '配送商ID' AFTER `supplier_id`;
 ALTER TABLE `pd_product_stock`
 ADD COLUMN `distributor_id` varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '配送商ID' AFTER `supplier_id`;
+-- 德兴医院部署截止2020年7月26日09:52:24
