@@ -52,3 +52,11 @@ ADD COLUMN `jde_code`  varchar(64) NULL COMMENT 'jde编号' AFTER `zdy`;
 ALTER TABLE `pd_product`
 ADD COLUMN `biding_type`  varchar(1) NULL COMMENT '中标类型中标类型：（1：省标、2：市标 3：其他招标:4：备案）' AFTER `biding_number`,
 ADD COLUMN `biding_price`  decimal(12,4) NULL COMMENT '中标价' AFTER `biding_type`;
+
+-- add by zxh 2020年7月26日09:25:04 赣州加入财务报表
+ALTER TABLE `pd_product`
+ADD COLUMN `finance_classification`  varchar(1) NULL COMMENT '财务分类' AFTER `biding_price`;
+INSERT INTO `sys_dict` VALUES ('1287184158196838401', '财务分类', 'finance_classification', 'I类 2:II类  3:III类', '0', 'admin', '2020-07-26 08:33:13', 'admin', '2020-07-26 08:33:39', '0');
+INSERT INTO `sys_dict_item` VALUES ('1287184386887069698', '1287184158196838401', 'I类', '1', '', '1', '1', 'admin', '2020-07-26 08:34:07', 'admin', '2020-07-26 08:40:31');
+INSERT INTO `sys_dict_item` VALUES ('1287184468852158465', '1287184158196838401', 'II类', '2', '', '1', '1', 'admin', '2020-07-26 08:34:27', 'admin', '2020-07-26 08:40:35');
+INSERT INTO `sys_dict_item` VALUES ('1287184503417417729', '1287184158196838401', 'III类', '3', '', '1', '1', 'admin', '2020-07-26 08:34:35', 'admin', '2020-07-26 08:40:40');

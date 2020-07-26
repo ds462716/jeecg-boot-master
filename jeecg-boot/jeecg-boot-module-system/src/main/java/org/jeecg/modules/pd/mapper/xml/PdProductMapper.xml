@@ -116,6 +116,7 @@
         <result column="biding_number" property="bidingNumber" jdbcType="VARCHAR"/>
         <result column="biding_type" property="bidingType" jdbcType="VARCHAR"/>
         <result column="biding_price" property="bidingPrice" jdbcType="DECIMAL"/>
+        <result column="finance_classification" property="financeClassification" jdbcType="DECIMAL"/>
         <collection property="pdProductRules" ofType="String">
             <!--<id column="id" property="id" jdbcType="VARCHAR"/>
             <id column="product_id" property="productId" jdbcType="VARCHAR"/>-->
@@ -234,6 +235,7 @@
         a.biding_number,
         a.biding_type,
         a.biding_price,
+        a.finance_classification,
         a.del_flag
 	</sql>
 
@@ -282,6 +284,7 @@
         a.biding_number,
         a.biding_type,
         a.biding_price,
+        a.finance_classification,
         a.del_flag
     </sql>
 

@@ -358,4 +358,8 @@ public class PdProduct  extends BaseEntity {
 	 */
 	private java.math.BigDecimal  bidingPrice;
 
+	/**
+	 * 赣州市立财务分类
+	 */
+	private String financeClassification;
 }
