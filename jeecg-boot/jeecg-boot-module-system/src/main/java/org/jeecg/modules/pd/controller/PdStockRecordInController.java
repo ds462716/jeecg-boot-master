@@ -194,11 +194,11 @@ public class PdStockRecordInController {
             }
         }
 
-        // 盘点不能 操作库存
-        List<PdProductStockCheckPermission> checkList = pdProductStockCheckPermissionService.list(new LambdaQueryWrapper<PdProductStockCheckPermission>().eq(PdProductStockCheckPermission::getTargetDepartId, pdStockRecord.getInDepartId()));
-        if(CollectionUtils.isNotEmpty(checkList)){
-            return Result.error("本库房正在盘点，不能入库！");
-        }
+//        // 盘点不能 操作库存
+//        List<PdProductStockCheckPermission> checkList = pdProductStockCheckPermissionService.list(new LambdaQueryWrapper<PdProductStockCheckPermission>().eq(PdProductStockCheckPermission::getTargetDepartId, pdStockRecord.getInDepartId()));
+//        if(CollectionUtils.isNotEmpty(checkList)){
+//            return Result.error("本库房正在盘点，不能入库！");
+//        }
 
         String recordId = pdStockRecordService.saveMain(pdStockRecord, pdStockRecord.getPdStockRecordDetailList(), PdConstant.RECODE_TYPE_1);
 
