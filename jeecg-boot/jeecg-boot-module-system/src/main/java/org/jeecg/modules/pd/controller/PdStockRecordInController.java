@@ -1,6 +1,7 @@
 package org.jeecg.modules.pd.controller;
 
 import com.alibaba.fastjson.JSON;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
@@ -13,6 +14,7 @@ import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.DateUtils;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.message.util.PushMsgUtil;
+import org.jeecg.modules.pd.entity.PdProductStockCheckPermission;
 import org.jeecg.modules.pd.entity.PdStockRecord;
 import org.jeecg.modules.pd.entity.PdStockRecordDetail;
 import org.jeecg.modules.pd.service.*;
@@ -65,6 +67,8 @@ public class PdStockRecordInController {
     private ISysPermissionService sysPermissionService;
     @Autowired
     private PushMsgUtil pushMsgUtil;
+    @Autowired
+    private IPdProductStockCheckPermissionService pdProductStockCheckPermissionService;
 
     @Value("${jeecg.hospital_code}")
     private String hospitalCode;
@@ -190,6 +194,12 @@ public class PdStockRecordInController {
             }
         }
 
+        // 盘点不能 操作库存
+        List<PdProductStockCheckPermission> checkList = pdProductStockCheckPermissionService.list(new LambdaQueryWrapper<PdProductStockCheckPermission>().eq(PdProductStockCheckPermission::getTargetDepartId, pdStockRecord.getInDepartId()));
+        if(CollectionUtils.isNotEmpty(checkList)){
+            return Result.error("本库房正在盘点，不能入库！");
+        }
+
         String recordId = pdStockRecordService.saveMain(pdStockRecord, pdStockRecord.getPdStockRecordDetailList(), PdConstant.RECODE_TYPE_1);
 
         Map<String,Object> result = new HashMap<>();
@@ -213,6 +223,13 @@ public class PdStockRecordInController {
                 return Result.error("入库单已被提交，不能再次提交！");
             }
         }
+
+        // 盘点不能 操作库存
+        List<PdProductStockCheckPermission> checkList = pdProductStockCheckPermissionService.list(new LambdaQueryWrapper<PdProductStockCheckPermission>().eq(PdProductStockCheckPermission::getTargetDepartId, pdStockRecord.getInDepartId()));
+        if(CollectionUtils.isNotEmpty(checkList)){
+            return Result.error("本库房正在盘点，不能入库！");
+        }
+
         String recordId = pdStockRecordService.submit(pdStockRecord, pdStockRecord.getPdStockRecordDetailList(), PdConstant.RECODE_TYPE_1);
         Map<String,Object> result = new HashMap<>();
         result.put("recordId",recordId);
@@ -236,6 +253,13 @@ public class PdStockRecordInController {
         if(PdConstant.AUDIT_STATE_2.equals(entity.getAuditStatus()) || PdConstant.AUDIT_STATE_3.equals(entity.getAuditStatus())){
             return Result.error("入库单已被审批，不能再次审批！");
         }
+
+        // 盘点不能 操作库存
+        List<PdProductStockCheckPermission> checkList = pdProductStockCheckPermissionService.list(new LambdaQueryWrapper<PdProductStockCheckPermission>().eq(PdProductStockCheckPermission::getTargetDepartId, entity.getInDepartId()));
+        if(CollectionUtils.isNotEmpty(checkList)){
+            return Result.error("本库房正在盘点，不能入库！");
+        }
+
         Map<String, String> result = pdStockRecordService.audit(pdStockRecord, entity, PdConstant.RECODE_TYPE_1);
         if (PdConstant.SUCCESS_200.equals(result.get("code"))) {
             return Result.ok(result.get("message"));

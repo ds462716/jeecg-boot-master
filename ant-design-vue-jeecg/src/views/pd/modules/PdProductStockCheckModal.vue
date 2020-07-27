@@ -14,7 +14,7 @@
       <a-card title="" style="margin-bottom: 10px;">
       <a-form :form="form">
         <a-row>
-          <a-col :span="12">
+          <a-col :span="8">
             <a-form-item label="盘点科室" :labelCol="labelCol" :wrapperCol="wrapperCol">
               <a-select
                 showSearch
@@ -34,43 +34,49 @@
               </a-select>
             </a-form-item>
           </a-col>
-          <a-col :span="12">
+        </a-row>
+        <a-row>
+          <a-col :span="8">
             <a-form-item label="盘点编号" :labelCol="labelCol" :wrapperCol="wrapperCol">
               <a-input  disabled="disabled" v-decorator="[ 'checkNo', validatorRules.checkNo]"></a-input>
             </a-form-item>
           </a-col>
-          <a-col :span="12">
+          <a-col :span="8">
             <a-form-item label="盘点日期" :labelCol="labelCol" :wrapperCol="wrapperCol">
               <j-date disabled="disabled" v-decorator="[ 'checkDate', validatorRules.checkDate]" :trigger-change="true" style="width: 100%"/>
             </a-form-item>
           </a-col>
-          <a-col :span="12">
+          <a-col :span="8">
             <a-form-item label="盘点人" :labelCol="labelCol" :wrapperCol="wrapperCol">
               <a-input disabled="disabled" v-decorator="[ 'checkName', validatorRules.checkName]" ></a-input>
             </a-form-item>
           </a-col>
-          <a-col :span="12">
+          <a-col :span="8">
             <a-form-item label="盘点产品量" :labelCol="labelCol" :wrapperCol="wrapperCol">
               <a-input-number disabled="disabled" v-decorator="[ 'shouldCount', validatorRules.shouldCount]"  style="width: 100%"/>
             </a-form-item>
           </a-col>
-          <a-col :span="12">
+          <a-col :span="8">
             <a-form-item label="已盘产品量" :labelCol="labelCol" :wrapperCol="wrapperCol">
               <a-input-number  disabled="disabled" v-decorator="[ 'checkCount', validatorRules.checkCount]"  style="width: 100%"/>
             </a-form-item>
           </a-col>
-          <a-col :span="12">
+          <a-col :span="8">
             <a-form-item label="盘盈盘亏数量" :labelCol="labelCol" :wrapperCol="wrapperCol">
               <a-input-number disabled="disabled" v-decorator="[ 'profitLossCount', validatorRules.profitLossCount]"  style="width: 100%"/>
             </a-form-item>
           </a-col>
         </a-row>
-        <a-form-item label="备注" :labelCol="labelCol" :wrapperCol="wrapperCol">
-          <a-textarea :disabled="disableSubmit" autocomplete="off" v-decorator="[ 'remarks', validatorRules.remarks]"></a-textarea>
-        </a-form-item>
-        <a-form-item v-show="false" label="盘点人">
-          <a-input v-show="false" v-decorator="[ 'checkBy', {}]"></a-input>
-        </a-form-item>
+        <a-row>
+          <a-col :span="24">
+            <a-form-item label="备注" :labelCol="labelCol3" :wrapperCol="wrapperCol3">
+              <a-textarea :disabled="disableSubmit" autocomplete="off" v-decorator="[ 'remarks', validatorRules.remarks]"></a-textarea>
+            </a-form-item>
+          </a-col>
+          <a-form-item v-show="false" label="盘点人">
+            <a-input v-show="false" v-decorator="[ 'checkBy', {}]"></a-input>
+          </a-form-item>
+        </a-row>
       </a-form>
       </a-card>
         <a-card style="margin-top: 10px;" v-show="showRefuseReason">
@@ -124,9 +130,8 @@
         <a-button style="margin-right: 15px;" :loading="confirmLoading" type="danger">撤  回</a-button>
       </a-popconfirm>
       <a-button @click="printBtn()" style="margin-right: 15px;" type="primary" v-show="disableSubmit">打  印</a-button>
-      <a-button @click="saveBtn('save')" v-show="!disableSubmit" type="primary" :loading="confirmLoading" style="margin-right: 15px;">保存草稿</a-button>
       <a-button @click="submitBtn('submit')" v-show="!disableSubmit" type="primary" :loading="confirmLoading" style="margin-right: 15px;">盘点完成</a-button>
-
+      <a-button @click="saveBtn('save')" v-show="!disableSubmit" type="primary" :loading="confirmLoading" style="margin-right: 15px;">保存草稿</a-button>
       <a-button @click="saveBtn('saveAndPrint')" v-show="!disableSubmit" type="primary" :loading="confirmLoading" style="margin-right: 15px;">保存草稿并打印</a-button>
     </template>
 
@@ -168,16 +173,12 @@
         showCancelBtn:false,
         showPrintBtn:false,
         showRefuseReason:false,
-        labelCol: {
-          xs: { span: 24 },
-          sm: { span: 5 },
-        },
-        wrapperCol: {
-          xs: { span: 24 },
-          sm: { span: 16 },
-        },
+        labelCol: { xs: { span: 24 }, sm: { span: 6 }, },
+        wrapperCol: { xs: { span: 24 }, sm: { span: 16 }, },
         labelCol2: {span: 3},
         wrapperCol2: {span: 20},
+        labelCol3: {span: 2},
+        wrapperCol3: {span: 20},
         //盘点科室下拉列表 start
         deptValue: undefined,
         notFoundContent:"未找到内容",

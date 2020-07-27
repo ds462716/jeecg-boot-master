@@ -84,6 +84,8 @@ public class PdStockRecordOutController {
     private PushMsgUtil pushMsgUtil;
     @Autowired
     private IPdProductStockUniqueCodeService pdProductStockUniqueCodeService;
+    @Autowired
+    private IPdProductStockCheckPermissionService pdProductStockCheckPermissionService;
 
     @Value("${jeecg.hospital_code}")
     private String hospitalCode;
@@ -162,6 +164,21 @@ public class PdStockRecordOutController {
             if(entity != null && PdConstant.SUBMIT_STATE_2.equals(entity.getSubmitStatus())){
                 return Result.error("出库单已被提交，不能保存草稿！");
             }
+        }
+
+        // 出库库房盘点校验
+        List<PdProductStockCheckPermission> checkList1 = pdProductStockCheckPermissionService.list(
+                new LambdaQueryWrapper<PdProductStockCheckPermission>()
+                        .eq(PdProductStockCheckPermission::getTargetDepartId, pdStockRecord.getOutDepartId()));
+        if(CollectionUtils.isNotEmpty(checkList1)){
+            return Result.error("本库房正在盘点，不能出库！");
+        }
+        // 入库库房盘点校验
+        List<PdProductStockCheckPermission> checkList2 = pdProductStockCheckPermissionService.list(
+                new LambdaQueryWrapper<PdProductStockCheckPermission>()
+                        .eq(PdProductStockCheckPermission::getTargetDepartId, pdStockRecord.getInDepartId()));
+        if(CollectionUtils.isNotEmpty(checkList2)){
+            return Result.error("["+pdStockRecord.getInDepartName()+"]正在盘点，不能出库！");
         }
 
         String recordId = pdStockRecordService.saveMain(pdStockRecord, pdStockRecord.getPdStockRecordDetailList(), PdConstant.RECODE_TYPE_2);
@@ -247,6 +264,22 @@ public class PdStockRecordOutController {
                 return Result.error("出库单已被提交，不能再次提交！");
             }
         }
+
+        // 出库库房盘点校验
+        List<PdProductStockCheckPermission> checkList1 = pdProductStockCheckPermissionService.list(
+                new LambdaQueryWrapper<PdProductStockCheckPermission>()
+                        .eq(PdProductStockCheckPermission::getTargetDepartId, pdStockRecord.getOutDepartId()));
+        if(CollectionUtils.isNotEmpty(checkList1)){
+            return Result.error("本库房正在盘点，不能出库！");
+        }
+        // 入库库房盘点校验
+        List<PdProductStockCheckPermission> checkList2 = pdProductStockCheckPermissionService.list(
+                new LambdaQueryWrapper<PdProductStockCheckPermission>()
+                        .eq(PdProductStockCheckPermission::getTargetDepartId, pdStockRecord.getInDepartId()));
+        if(CollectionUtils.isNotEmpty(checkList2)){
+            return Result.error("["+pdStockRecord.getInDepartName()+"]正在盘点，不能出库！");
+        }
+
         String recordId = pdStockRecordService.submit(pdStockRecord, pdStockRecord.getPdStockRecordDetailList(), PdConstant.RECODE_TYPE_2);
         Map<String,Object> result = new HashMap<>();
         result.put("recordId",recordId);
@@ -270,6 +303,22 @@ public class PdStockRecordOutController {
         if(PdConstant.AUDIT_STATE_2.equals(entity.getAuditStatus()) || PdConstant.AUDIT_STATE_3.equals(entity.getAuditStatus())){
             return Result.error("出库单已被审批，不能再次审批！");
         }
+
+        // 出库库房盘点校验
+        List<PdProductStockCheckPermission> checkList1 = pdProductStockCheckPermissionService.list(
+                new LambdaQueryWrapper<PdProductStockCheckPermission>()
+                        .eq(PdProductStockCheckPermission::getTargetDepartId, entity.getOutDepartId()));
+        if(CollectionUtils.isNotEmpty(checkList1)){
+            return Result.error("本库房正在盘点，不能出库！");
+        }
+        // 入库库房盘点校验
+        List<PdProductStockCheckPermission> checkList2 = pdProductStockCheckPermissionService.list(
+                new LambdaQueryWrapper<PdProductStockCheckPermission>()
+                        .eq(PdProductStockCheckPermission::getTargetDepartId, entity.getInDepartId()));
+        if(CollectionUtils.isNotEmpty(checkList2)){
+            return Result.error("["+entity.getInDepartName()+"]正在盘点，不能出库！");
+        }
+
         Map<String,String> result = pdStockRecordService.audit(pdStockRecord,entity, PdConstant.RECODE_TYPE_2);
         if(PdConstant.SUCCESS_200.equals(result.get("code"))) {
             return Result.ok(result.get("message"));
