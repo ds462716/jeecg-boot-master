@@ -512,7 +512,11 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
         if(PdConstant.RECODE_TYPE_1.equals(recodeType)){
             pdStockRecord.setInDepartId(sysUser.getCurrentDepartId());
         }else if(PdConstant.RECODE_TYPE_2.equals(recodeType)){
-            pdStockRecord.setOutDepartId(sysUser.getCurrentDepartId());
+//            pdStockRecord.setOutDepartId(sysUser.getCurrentDepartId());
+            if(oConvertUtils.isEmpty(pdStockRecord.getOnlyReturn())){
+                // 查非退货出库列表
+                pdStockRecord.setOutDepartId(sysUser.getCurrentDepartId());
+            }
         }else if(PdConstant.RECODE_TYPE_3.equals(recodeType)){
             pdStockRecord.setInDepartId(sysUser.getCurrentDepartId());
         }

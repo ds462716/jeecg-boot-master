@@ -269,7 +269,7 @@ public class PdStockRecordOutController {
                 new LambdaQueryWrapper<PdProductStockCheckPermission>()
                         .eq(PdProductStockCheckPermission::getTargetDepartId, pdStockRecord.getOutDepartId()));
         if(CollectionUtils.isNotEmpty(checkList1)){
-            return Result.error("本库房正在盘点，不能出库！");
+            return Result.error("["+pdStockRecord.getOutDepartName()+"]正在盘点，不能出库！");
         }
         // 入库库房盘点校验
         List<PdProductStockCheckPermission> checkList2 = pdProductStockCheckPermissionService.list(
@@ -308,7 +308,7 @@ public class PdStockRecordOutController {
                 new LambdaQueryWrapper<PdProductStockCheckPermission>()
                         .eq(PdProductStockCheckPermission::getTargetDepartId, entity.getOutDepartId()));
         if(CollectionUtils.isNotEmpty(checkList1)){
-            return Result.error("本库房正在盘点，不能出库！");
+            return Result.error("["+entity.getOutDepartName()+"]正在盘点，不能出库！");
         }
         // 入库库房盘点校验
         List<PdProductStockCheckPermission> checkList2 = pdProductStockCheckPermissionService.list(
