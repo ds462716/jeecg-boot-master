@@ -643,7 +643,7 @@
               break;
             case "JJFSYY":
               this.$refs.PdStockRecordOutPrintModalJJFSYY.show(res.result);
-              this.$refs.PdStockRecordOutPrintModalJJFSYY.title = this.stockOutText + "出库单";
+              this.$refs.PdStockRecordOutPrintModalJJFSYY.title = this.stockOutText;
               break;
             default:
               this.$refs.pdStockRecordOutPrintModal.show(res.result);

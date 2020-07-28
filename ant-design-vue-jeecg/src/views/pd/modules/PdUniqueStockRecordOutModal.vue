@@ -915,7 +915,7 @@
             this.$refs.exStockRecordOutPrintModal.title = this.stockOutText + "出库单";
           }else if(this.hospitalCode == "JJFSYY"){
             this.$refs.PdStockRecordOutPrintModalJJFSYY.show(res.result);
-            this.$refs.PdStockRecordOutPrintModalJJFSYY.title = this.stockOutText + "出库单";
+            this.$refs.PdStockRecordOutPrintModalJJFSYY.title = this.stockOutText;
           }else{
             this.$refs.pdStockRecordOutPrintModal.show(res.result);
             this.$refs.pdStockRecordOutPrintModal.title = this.stockOutText + "出库单";
