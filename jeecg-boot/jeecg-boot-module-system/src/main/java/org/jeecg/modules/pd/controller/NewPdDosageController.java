@@ -154,4 +154,29 @@ public class NewPdDosageController {
         return Result.ok("操作成功！");
     }
 
+    /**
+     * 唯一码取消收费
+     * @param pdDosage
+     * @return
+     */
+    @PostMapping(value = "/uniqueDosageCnclFee")
+    public Result<?> uniqueDosageCnclFee(@RequestBody PdDosage pdDosage) {
+        List<PdDosageDetail> detailList = pdDosage.getPdDosageDetails();
+        //数据推送到HIS中间表
+        if(CollectionUtils.isNotEmpty(detailList)){
+            if(StringUtils.isNotEmpty(pdDosage.getInHospitalNo())){//住院
+                exHisZyInfService.saveExHisZyInf(pdDosage, detailList,PdConstant.IS_CHARGE_TYPE_0);
+            }else{//门诊
+                String  prodNames= hisChargeService.queryMztfList(pdDosage);
+                if(StringUtils.isNotEmpty(prodNames)){
+                    //exHisZyInfService.saveExHisMzInf(pdDosage, detailList,PdConstant.IS_CHARGE_TYPE_0);
+                }else{
+                    return  Result.error(prodNames+"在HIS系统还没有进行退费，不允许操作");
+                }
+            }
+            pdDosageService.uniqueDosageCnclFee(pdDosage);
+        }
+        return Result.ok("操作成功！");
+    }
+
 }

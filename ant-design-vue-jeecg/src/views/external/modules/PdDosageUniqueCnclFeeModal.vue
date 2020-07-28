@@ -67,6 +67,8 @@
               </a-form>
 
               <div style="margin-bottom: 8px;" v-show="false">
+                <a-button type="primary" icon="plus" @click="chooseProductList">选择产品</a-button>
+                <a-button type="primary" icon="plus" @click="choosePackageList" style="margin-left: 8px">选择定数包</a-button>
                 <a-popconfirm style="margin-left: 8px"
                               :title="`确定要删除吗?`"
                               @confirm="handleConfirmDelete">
@@ -112,7 +114,7 @@
                     </a-form-item>
                   </a-col>-->
                 </a-row>
-                <a-row>
+               <!-- <a-row>
                   <a-col :md="6" :sm="8" v-if="hyCharged">
                     <a-form-item label="住院号" :labelCol="labelCol" :wrapperCol="wrapperCol">
                       <a-input :disabled="true" v-decorator="[ 'inHospitalNo', validatorRules.inHospitalNo]"></a-input>
@@ -150,7 +152,7 @@
                     <a-form-item label="执行科室" :labelCol="labelCol" :wrapperCol="wrapperCol">
                       <a-input :disabled="true" v-decorator="[ 'exeDeptName', validatorRules.exeDeptName]" ></a-input>
                     </a-form-item>
-                    <!-- 执行科室id -->
+                    &lt;!&ndash; 执行科室id &ndash;&gt;
                     <a-form-item >
                       <a-input type="hidden" v-decorator="[ 'exeDeptId']"></a-input>
                     </a-form-item>
@@ -159,7 +161,7 @@
                     <a-form-item label="手术科室" :labelCol="labelCol" :wrapperCol="wrapperCol">
                       <a-input :disabled="true" v-decorator="[ 'oprDeptName', validatorRules.oprDeptName]"></a-input>
                     </a-form-item>
-                    <!-- 手术科室id -->
+                    &lt;!&ndash; 手术科室id &ndash;&gt;
                     <a-form-item>
                       <a-input type="hidden" v-decorator="[ 'oprDeptId']"></a-input>
                     </a-form-item>
@@ -168,7 +170,7 @@
                     <a-form-item label="手术医生" :labelCol="labelCol" :wrapperCol="wrapperCol">
                       <a-input :disabled="true" v-decorator="[ 'surgeonName', validatorRules.surgeonName]" ></a-input>
                     </a-form-item>
-                    <!-- 手术医生id -->
+                    &lt;!&ndash; 手术医生id &ndash;&gt;
                     <a-form-item>
                       <a-input type="hidden" v-decorator="[ 'surgeonId']"></a-input>
                     </a-form-item>
@@ -177,7 +179,7 @@
                     <a-form-item label="开方医生" :labelCol="labelCol" :wrapperCol="wrapperCol">
                       <a-input :disabled="true" v-decorator="[ 'sqrtDoctorName', validatorRules.sqrtDoctorName]" ></a-input>
                     </a-form-item>
-                    <!-- 开方医生id -->
+                    &lt;!&ndash; 开方医生id &ndash;&gt;
                     <a-form-item>
                       <a-input type="hidden" v-decorator="[ 'sqrtDoctorId']"></a-input>
                     </a-form-item>
@@ -188,9 +190,76 @@
                     <a-form-item label="所属病区" :labelCol="labelCol" :wrapperCol="wrapperCol">
                       <a-input :disabled="true" v-decorator="[ 'subordinateWardName', validatorRules.subordinateWardName]"></a-input>
                     </a-form-item>
-                    <!-- 所属病区id -->
+                    &lt;!&ndash; 所属病区id &ndash;&gt;
                     <a-form-item>
                       <a-input type="hidden" v-decorator="[ 'subordinateWardId']"></a-input>
+                    </a-form-item>
+                  </a-col>
+                </a-row>-->
+                <a-row>
+                  <a-col :md="6" :sm="8">
+                    <a-form-item label="住院号" :labelCol="labelCol" :wrapperCol="wrapperCol">
+                      <a-input :disabled="true" v-decorator="[ 'inHospitalNo']" ></a-input>
+                    </a-form-item>
+                  </a-col>
+                  <a-col :md="6" :sm="8">
+                    <a-form-item label="门诊号" :labelCol="labelCol" :wrapperCol="wrapperCol">
+                      <a-input :disabled="true" v-decorator="[ 'outpatientNumber']" @keyup.enter.native="selectHis(1)"></a-input>
+                    </a-form-item>
+                  </a-col>
+                  <a-col :md="6" :sm="8" v-if="hyCharged">
+                    <a-form-item label="病人姓名" :labelCol="labelCol" :wrapperCol="wrapperCol">
+                      <a-input :disabled="true" v-decorator="[ 'patientInfo', validatorRules.patientInfo]" ></a-input>
+                    </a-form-item>
+                  </a-col>
+                  <a-col :md="6" :sm="8" v-else="!hyCharged">
+                    <a-form-item label="病人姓名" :labelCol="labelCol" :wrapperCol="wrapperCol">
+                      <a-input :disabled="true" v-decorator="[ 'patientInfo']" ></a-input>
+                    </a-form-item>
+                  </a-col>
+                  <a-col :md="6" :sm="8">
+                    <a-form-item label="项目编号" :labelCol="labelCol" :wrapperCol="wrapperCol">
+                      <a-input :disabled="true" v-decorator="[ 'operativeNumber', validatorRules.operativeNumber]" ></a-input>
+                    </a-form-item>
+                  </a-col>
+                </a-row>
+                <a-row>
+                  <a-col :md="6" :sm="8">
+                    <a-form-item label="项目名称" :labelCol="labelCol" :wrapperCol="wrapperCol">
+                      <a-input :disabled="true" v-decorator="[ 'operationName', validatorRules.operationName]" ></a-input>
+                    </a-form-item>
+                  </a-col>
+                  <a-col :md="6" :sm="8">
+                    <a-form-item label="执行科室" :labelCol="labelCol" :wrapperCol="wrapperCol">
+                      <a-input :disabled="true" v-decorator="[ 'oprDeptName', validatorRules.oprDeptName]" ></a-input>
+                    </a-form-item>
+                    <!-- 执行科室id -->
+                    <a-form-item >
+                      <a-input type="hidden" v-decorator="[ 'oprDeptId']"></a-input>
+                    </a-form-item>
+                    <!-- 开单科室id -->
+                    <a-form-item >
+                      <a-input type="hidden" v-decorator="[ 'sqrtDoctorId']"></a-input>
+                    </a-form-item>
+                    <!-- 住院次数 -->
+                    <a-form-item >
+                      <a-input type="hidden" v-decorator="[ 'hospitalizationsNum']"></a-input>
+                    </a-form-item>
+                    <a-form-item >
+                      <a-input type="hidden" v-decorator="[ 'extension1']"></a-input>
+                    </a-form-item>
+                    <a-form-item >
+                      <a-input type="hidden" v-decorator="[ 'extension2']"></a-input>
+                    </a-form-item>
+                  </a-col>
+                  <a-col :md="6" :sm="8">
+                    <a-form-item label="病历号" :labelCol="labelCol" :wrapperCol="wrapperCol">
+                      <a-input :disabled="true" v-decorator="[ 'medicalRecordNo', validatorRules.medicalRecordNo]"></a-input>
+                    </a-form-item>
+                  </a-col>
+                  <a-col :md="6" :sm="8">
+                    <a-form-item label="诊治医生" :labelCol="labelCol" :wrapperCol="wrapperCol">
+                      <a-input :disabled="true" v-decorator="[ 'surgeonName', validatorRules.surgeonName]" ></a-input>
                     </a-form-item>
                   </a-col>
                 </a-row>
@@ -214,7 +283,7 @@
       <a-popconfirm title="确定放弃编辑？" @confirm="handleCancel" v-show="!disableSubmit" okText="确定" cancelText="取消">
         <a-button style="margin-right: 15px;">取  消</a-button>
       </a-popconfirm>
-      <a-button @click="submitBtn" v-show="!disableSubmit" type="primary" :loading="confirmLoading" style="margin-right: 15px;">库存还回</a-button>
+      <a-button @click="submitBtn" v-show="!disableSubmit" type="primary" :loading="confirmLoading" style="margin-right: 15px;">取消收费</a-button>
     </template>
 
   </j-modal>
@@ -248,11 +317,9 @@
   })
 
   export default {
-    //赣州市立医院唯一码还回
-    name: "PdDosageUniqueReturnedModalGZSL",
+    name: "PdDosageUniqueCnclFeeModal",
     mixins: [JEditableTableMixin],
     components: {
-
     },
     data () {
       return {
@@ -290,14 +357,13 @@
             /*{ title: '入库单价', key: 'purchasePrice', width:"80px" },*/
             { title: '出库单价', key: 'sellingPrice', width:"80px" },
             {
-              title: '用量数量', key: 'dosageCount', type: FormTypes.input, disabled:true, width:"80px",
+              title: '用量数量', key: 'dosageCount', type: FormTypes.input,disabled:true, width:"80px",
               placeholder: '${title}', defaultValue: '1',
               validateRules: [{ required: true, message: '${title}不能为空' },{ pattern: '^-?\\d+\\.?\\d*$',message: '${title}的格式不正确' }]
             },
             { title: '用量金额', key: 'amountMoney', type: FormTypes.input, disabled:true, width:"100px" },
             { title: '实际使用数量', key: 'leftRefundNum', width:"80px" },
             { title: '收费状态', key: 'hyChargedText', width:"80px" },
-            /*{ title: '库存数量', key: 'stockNum', width:"80px" },*/
             { title: '收费项目代码', key: 'chargeCode', width:"80px" },
             { title: '是否计费', key: 'isCharge',type: FormTypes.hidden},
             { title: '是否计费', key: 'isChargeText', width:"80px"},
@@ -354,7 +420,9 @@
             ]},
           sqrtDoctorName: {rules: [
             ]},
-          inHospitalNo: {rules: []},
+          inHospitalNo: {rules: [
+              {required: true, message: '请输入住院号!'},
+            ]},
           dosageBy: {rules: [
             ]},
           subordinateWardId: {rules: [
@@ -378,7 +446,8 @@
         },
         url: {
           init:"/pd/pdDosage/initModal",
-          uniqueDosageReturned: "/pd/newPdDosage/uniqueDosageReturned",
+          dosageCnclFee: "/pd/newPdDosage/uniqueDosageCnclFee",//取消收费
+          dosageFee: "/pd/newPdDosage/dosageFee",//收费
           add: "/pd/pdDosage/add",
           edit: "/pd/pdDosage/edit",
           departList:"/pd/pdDepart/getSysDepartList",
@@ -388,9 +457,15 @@
     created () {
     },
     methods: {
-      add () {
-        this.edit({});
+      edit (record) {
+        this.form.resetFields();
+        this.model = Object.assign({}, record);
+        this.visible = true;
+        this.editAfter();
       },
+
+
+
       /** 调用完edit()方法之后会自动调用此方法 */
       editAfter() {
         this.loadData();
@@ -423,14 +498,14 @@
                 this.totalSum = res.result.totalSum;
                 this.totalPrice = res.result.totalPrice;
                 this.pdDosageDetailTable.dataSource = res.result.pdDosageDetails || [];
-                let fieldval = pick(this.initData,'dosageNo','dosageDate','departName','dosageByName','inHospitalNo','patientInfo','patientDetailInfo','outpatientNumber','operativeNumber','exeDeptName','exeDeptId','oprDeptName','oprDeptId','surgeonName','surgeonId','sqrtDoctorName','sqrtDoctorId','subordinateWardName','subordinateWardId','remarks');
+                let fieldval = pick(this.initData,'dosageNo','dosageDate','departName','outHuoweiCode','dosageByName','inHospitalNo','patientInfo','operativeNumber','operationName','outpatientNumber','medicalRecordNo','sqrtDoctorId','oprDeptId','oprDeptName','exeDeptId','exeDeptName','surgeonName','surgeonId','patientDetailInfo','hospitalizationsNum','remarks','extension1','extension2');
                 this.form.setFieldsValue(fieldval);
                 this.goodsAllocationList = res.result.goodsAllocationList;
                 //获取光标
                 this.$refs['productNumberInput'].focus();
               }else{  // 新增页
                 this.initData = res.result;
-                let fieldval = pick(this.initData,'dosageNo','dosageDate','departName','dosageByName','inHospitalNo','patientInfo','patientDetailInfo','outpatientNumber','operativeNumber','exeDeptName','exeDeptId','oprDeptName','oprDeptId','surgeonName','surgeonId','sqrtDoctorName','sqrtDoctorId','subordinateWardName','subordinateWardId','remarks');
+                let fieldval = pick(this.initData,'dosageNo','dosageDate','departName','outHuoweiCode','dosageByName','inHospitalNo','patientInfo','operativeNumber','operationName','outpatientNumber','medicalRecordNo','sqrtDoctorId','oprDeptId','oprDeptName','exeDeptId','exeDeptName','surgeonName','surgeonId','patientDetailInfo','hospitalizationsNum','remarks','extension1','extension2');
                 this.form.setFieldsValue(fieldval);
                 this.goodsAllocationList = res.result.goodsAllocationList;
                 //获取光标
@@ -466,6 +541,11 @@
       },
       handleCancel () {
         this.close()
+      },
+
+      handleSelectRowChange(selectedIds){
+        this.sRowIds = selectedIds;
+        this.getTotalNumAndPrice([]);
       },
       // 扫码查询
       searchQuery(num) {
@@ -547,7 +627,10 @@
           })
         }
       },
+      // 选择定数包
+      choosePackageList() {
 
+      },
       //删除行
       handleConfirmDelete() {
         if(this.$refs.pdDosageDetail.selectedRowIds.length > 0){
@@ -556,10 +639,6 @@
         }else{
           this.$message.error("请选择需要删除的数据！")
         }
-      },
-      handleSelectRowChange(selectedIds){
-        this.sRowIds = selectedIds;
-        this.getTotalNumAndPrice([]);
       },
       // 计算总数量和总价格
       getTotalNumAndPrice(rows){
@@ -621,7 +700,6 @@
       // 扫码 调用 新增一行
       addrowsByScanCode(row){
         let data = {
-          refBarCode:row.refBarCode,
           productStockId:row.id,
           productId: row.productId,
           productName: row.productName,
@@ -658,7 +736,7 @@
           let formData = this.classifyIntoFormData(allValues);
           let selectedArrays = this.$refs.pdDosageDetail.selectedRowIds;
           if(selectedArrays <= 0){
-            this.$message.warning("请勾选需要还回的产品");
+            this.$message.warning("请勾选需要退费的产品");
             return;
           }
           //查找出勾选的产品信息
@@ -674,17 +752,14 @@
               list.splice(i--, 1);
               continue;
             }
-            if(list[i].hyChargedText !='未收费'){
-              this.$message.warning(list[i].productName+"不是未收费产品,无法库存还回");
+            if(list[i].hyChargedText=='已退回'){
+              this.$message.warning(list[i].productName+"产品已退回,无法进行退费");
               return;
-            }
-
-            if(Number(list[i].dosageCount) > Number(list[i].leftRefundNum)){
-              this.$message.error("["+list[i].productName+"]用量数量不能大于剩余可退数量！");
+            }else if(list[i].hyChargedText=='未收费'){
+              this.$message.warning(list[i].productName+"产品未收费,无法进行退费");
               return;
-            }
-            if(Number(list[i].dosageCount) <= 0){
-              this.$message.error("["+list[i].productName+"]用量数量必须大于0！");
+            }else if(list[i].hyChargedText=='已退费'){
+              this.$message.warning(list[i].productName+"产品已退费,无需再次退费");
               return;
             }
           }
@@ -702,7 +777,7 @@
 
       // 保存 提交 修改 请求函数
       request(formData) {
-        let url = this.url.uniqueDosageReturned, method = 'post'
+        let url = this.url.dosageCnclFee, method = 'post'
         this.confirmLoading = true
         //是否收费标识
         formData.hyCharged=this.hyCharged=="true"?"0":"1";

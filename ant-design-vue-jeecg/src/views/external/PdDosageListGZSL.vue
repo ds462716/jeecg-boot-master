@@ -125,6 +125,7 @@
     <pd-gzsl-dosage-modal ref="modalUniqueForm" @ok="modalFormOk"></pd-gzsl-dosage-modal>
     <pdDosageReturned-modal ref="pdDosageReturnedForm" @ok="modalFormOk"></pdDosageReturned-modal>
     <pd-gzsl-returned-dosage-modal ref="uniqueReturnedModal" @ok="modalFormOk"></pd-gzsl-returned-dosage-modal>
+    <pd-dosage-unique-cncl-fee-modal ref="uniqueCnclFeeModal" @ok="modalFormOk"></pd-dosage-unique-cncl-fee-modal>
     <pd-dosage-fee-modal ref="pdDosageFeeForm" @ok="modalFormOk"></pd-dosage-fee-modal>
     <pd-dosage-cncl-fee-modal  ref="pdDosageCnclFeeForm" @ok="modalFormOk"></pd-dosage-cncl-fee-modal>
     <pd-dosage-list-modal ref="pdDosageListModal" @ok="modalFormOk"></pd-dosage-list-modal>
@@ -137,6 +138,7 @@
   import PdDosageModal from '../pd/modules/NewPdDosageModal'
   import PdGzslDosageModal from './modules/PdDosageModalRefGZSL'
   import PdGzslReturnedDosageModal from './modules/PdDosageUniqueReturnedModalGZSL'
+  import PdDosageUniqueCnclFeeModal from './modules/PdDosageUniqueCnclFeeModal'
   import PdDosageListModal from '../pd/modules/NewPdDosageListModal'
   import PdDosageReturnedModal from '../pd/modules/PdDosageReturnedModal'
   import PdDosageFeeModal from '../pd/modules/PdDosageFeeModal'
@@ -154,7 +156,8 @@
       PdDosageCnclFeeModal,
       PdDosageListModal,
       PdGzslDosageModal,
-      PdGzslReturnedDosageModal
+      PdGzslReturnedDosageModal,
+      PdDosageUniqueCnclFeeModal
     },
     data () {
       return {
@@ -297,10 +300,19 @@
         this.$refs.pdDosageFeeForm.disableSubmit = false;
       },
 
-      inventoryCnclFee(record){//取消收费
-        this.$refs.pdDosageCnclFeeForm.edit(record);
-        this.$refs.pdDosageCnclFeeForm.title="取消收费";
-        this.$refs.pdDosageCnclFeeForm.disableSubmit = false;
+      inventoryCnclFee(record){
+        if(record.dosageType=="0"){
+          //唯一码取消收费
+          this.$refs.uniqueCnclFeeModal.edit(record);
+          this.$refs.uniqueCnclFeeModal.title="取消收费";
+          this.$refs.uniqueCnclFeeModal.disableSubmit = false;
+
+        }else{
+          //取消收费
+          this.$refs.pdDosageCnclFeeForm.edit(record);
+          this.$refs.pdDosageCnclFeeForm.title="取消收费";
+          this.$refs.pdDosageCnclFeeForm.disableSubmit = false;
+        }
       },
 
       inventoryReturned(record){//库存还回

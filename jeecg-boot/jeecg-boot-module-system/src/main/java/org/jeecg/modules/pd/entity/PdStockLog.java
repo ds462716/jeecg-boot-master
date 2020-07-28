@@ -133,6 +133,8 @@ public class PdStockLog extends BaseEntity {
     @DateTimeFormat(pattern="yyyy-MM-dd")
     private Date expDate;
 
+    private String refBarCode;//唯一码
+
     @TableField(exist = false)
     private String[] timeStr = new String[]{"","",""};
     //前台做展示用

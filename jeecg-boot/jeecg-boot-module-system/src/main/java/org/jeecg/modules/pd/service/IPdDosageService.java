@@ -51,4 +51,6 @@ public interface IPdDosageService extends IService<PdDosage> {
     List<PdDosageDetail> uniqueSubmit(PdDosage pdDosage, String isChargeFlag0);
 
     void uniqueDosageReturned(PdDosage pdDosage);
+
+    void uniqueDosageCnclFee(PdDosage pdDosage);
 }

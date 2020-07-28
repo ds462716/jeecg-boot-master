@@ -61,3 +61,7 @@ INSERT INTO `sys_dict_item` VALUES ('1287184386887069698', '1287184158196838401'
 INSERT INTO `sys_dict_item` VALUES ('1287184468852158465', '1287184158196838401', 'II类', '2', '', '1', '1', 'admin', '2020-07-26 08:34:27', 'admin', '2020-07-26 08:40:35');
 INSERT INTO `sys_dict_item` VALUES ('1287184503417417729', '1287184158196838401', 'III类', '3', '', '1', '1', 'admin', '2020-07-26 08:34:35', 'admin', '2020-07-26 08:40:40');
 -- 德兴医院部署截止2020年7月26日09:52:24
+
+-- 物流追溯加入唯一码
+ALTER TABLE `pd_stock_log`
+ADD COLUMN `ref_bar_code`  varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NULL COMMENT '唯一码' AFTER `product_bar_code`;
