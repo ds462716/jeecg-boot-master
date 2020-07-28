@@ -282,6 +282,7 @@
     <pd-choose-purchase-order-list-model  ref="pdChoosePurchaseOrderListModel" @ok="returnPurchaseOrderData" ></pd-choose-purchase-order-list-model>
     <pd-choose-product-list-model  ref="pdChooseProductListModel" @ok="returnProductData" ></pd-choose-product-list-model>
     <pd-stock-record-in-print-modal ref="pdStockRecordInPrintModal" ></pd-stock-record-in-print-modal>
+    <pd-stock-record-in-print-modal-j-j-f-s-y-y ref="PdStockRecordInPrintModalJJFSYY"></pd-stock-record-in-print-modal-j-j-f-s-y-y>
     <ex-stock-record-in-print-modal ref="exStockRecordInPrintModal" ></ex-stock-record-in-print-modal>
   </j-modal>
 </template>
@@ -301,6 +302,7 @@
   import {scanCode} from '@/utils/barcode'
   import PdStockRecordInPrintModal from "../print/PdStockRecordInPrintModal";
   import ExStockRecordInPrintModal from "../../external/print/ExStockRecordInPrintModal";
+  import PdStockRecordInPrintModalJJFSYY from "../../external/jiujiang/print/PdStockRecordInPrintModalJJFSYY";
   import { disabledAuthFilter } from "@/utils/authFilter"
 
 
@@ -330,6 +332,7 @@
       ATextarea,
       PdChooseProductListModel,
       PdChoosePurchaseOrderListModel,
+      PdStockRecordInPrintModalJJFSYY,
       JDate,
       JDictSelectTagExpand
     },
@@ -764,6 +767,9 @@
           }else if(this.hospitalCode == "GZSLYY"){
             this.$refs.exStockRecordInPrintModal.show(res.result);
             this.$refs.exStockRecordInPrintModal.title = this.stockInText + "入库单";
+          }else if(this.hospitalCode == "JJFSYY"){
+            this.$refs.PdStockRecordInPrintModalJJFSYY.show(res.result);
+            this.$refs.PdStockRecordInPrintModalJJFSYY.title = this.stockInText + "入库单";
           }else{
             this.$refs.pdStockRecordInPrintModal.show(res.result);
             this.$refs.pdStockRecordInPrintModal.title = this.stockInText + "入库单";

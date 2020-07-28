@@ -49,8 +49,6 @@ public class PdDosageController extends JeecgController<PdDosage, IPdDosageServi
 	@Autowired
 	private IPdDepartService pdDepartService;
 
-	@Value("${jeecg.hospital_code}")
-	private String hospitalCode;
 	
 	/**
 	 * 分页列表查询
@@ -90,7 +88,7 @@ public class PdDosageController extends JeecgController<PdDosage, IPdDosageServi
 		IPage<PdDosage> pageList = pdDosageService.queryList(page, pdDosage);
 
 		Map<String,Object> map = new HashMap<>();
-		map.put("hospitalCode",hospitalCode);
+		map.put("hospitalCode",sysUser.getHospitalCode());
 		map.put("pageList",pageList);
 
 		return Result.ok(map);
@@ -132,8 +130,9 @@ public class PdDosageController extends JeecgController<PdDosage, IPdDosageServi
 	  */
 	 @GetMapping(value = "/initModal")
 	 public Result<?> initModal(@RequestParam(name = "id") String id, HttpServletRequest req) {
+		 LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
 		 PdDosage pdDosage = pdDosageService.initModal(id);
-		 pdDosage.setHospitalCode(hospitalCode);
+		 pdDosage.setHospitalCode(sysUser.getHospitalCode());
 		 return Result.ok(pdDosage);
 	 }
 

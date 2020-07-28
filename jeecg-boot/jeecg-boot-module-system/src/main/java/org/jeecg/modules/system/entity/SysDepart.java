@@ -106,6 +106,11 @@ public class SysDepart implements Serializable {
 
 	private String departType;
 
+	/**
+	 * 当前登录的人医院code
+	 */
+	private String hospitalCode;
+
 	/**过滤本部门标识*/
 	@TableField(exist = false)
 	private String parentFlag;

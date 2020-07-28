@@ -87,8 +87,6 @@ public class PdStockRecordOutController {
     @Autowired
     private IPdProductStockCheckPermissionService pdProductStockCheckPermissionService;
 
-    @Value("${jeecg.hospital_code}")
-    private String hospitalCode;
     /**
      * 初始化Modal页面
      *
@@ -97,8 +95,9 @@ public class PdStockRecordOutController {
      */
     @GetMapping(value = "/initModal")
     public Result<?> initModal(@RequestParam(name = "id") String id, HttpServletRequest req) {
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
         PdStockRecord pdStockRecord = pdStockRecordService.initOutModal(id);
-        pdStockRecord.setHospitalCode(hospitalCode);
+        pdStockRecord.setHospitalCode(sysUser.getHospitalCode());
         return Result.ok(pdStockRecord);
     }
 

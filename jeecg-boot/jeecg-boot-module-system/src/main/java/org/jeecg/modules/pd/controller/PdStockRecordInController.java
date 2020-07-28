@@ -70,8 +70,6 @@ public class PdStockRecordInController {
     @Autowired
     private IPdProductStockCheckPermissionService pdProductStockCheckPermissionService;
 
-    @Value("${jeecg.hospital_code}")
-    private String hospitalCode;
 
 
     /**
@@ -83,7 +81,8 @@ public class PdStockRecordInController {
     @GetMapping(value = "/initModal")
     public Result<?> initModal(@RequestParam(name = "id") String id, HttpServletRequest req) {
         PdStockRecord pdStockRecord = pdStockRecordService.initInModal(id);
-        pdStockRecord.setHospitalCode(hospitalCode);
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        pdStockRecord.setHospitalCode(sysUser.getHospitalCode());
         return Result.ok(pdStockRecord);
     }
 

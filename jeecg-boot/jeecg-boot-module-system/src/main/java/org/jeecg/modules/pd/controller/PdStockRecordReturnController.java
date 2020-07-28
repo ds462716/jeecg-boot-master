@@ -52,8 +52,6 @@ public class PdStockRecordReturnController {
     @Autowired
     private IPdDepartService pdDepartService;
 
-    @Value("${jeecg.hospital_code}")
-    private String hospitalCode;
     /**
      * 初始化Modal页面
      *
@@ -62,8 +60,9 @@ public class PdStockRecordReturnController {
      */
     @GetMapping(value = "/initModal")
     public Result<?> initModal(@RequestParam(name = "id") String id, HttpServletRequest req) {
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
         PdStockRecord pdStockRecord = pdStockRecordService.initReturnModal(id);
-        pdStockRecord.setHospitalCode(hospitalCode);
+        pdStockRecord.setHospitalCode(sysUser.getHospitalCode());
         return Result.ok(pdStockRecord);
     }
 

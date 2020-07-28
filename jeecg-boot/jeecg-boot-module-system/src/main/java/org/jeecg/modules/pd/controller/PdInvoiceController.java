@@ -59,8 +59,6 @@ public class PdInvoiceController {
     @Autowired
     private ISysDepartService sysDepartService;
 
-    @Value("${jeecg.hospital_code}")
-    private String hospitalCode;
 
     /**
      * 初始化Modal页面
@@ -70,9 +68,10 @@ public class PdInvoiceController {
      */
     @GetMapping(value = "/initModal")
     public Result<?> initModal(@RequestParam(name = "id") String id, HttpServletRequest req) {
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
         PdInvoice pdInvoice = new PdInvoice();
 //        pdInvoice.setInvoiceRegNo(UUIDUtil.generateOrderNoByType(PdConstant.ORDER_NO_FIRST_LETTER_FP));
-        pdInvoice.setHospitalCode(this.hospitalCode);
+        pdInvoice.setHospitalCode(sysUser.getHospitalCode());
         return Result.ok(pdInvoice);
     }
 
@@ -100,7 +99,7 @@ public class PdInvoiceController {
         SysDepart depart = sysDepartService.getById(sysUser.getCurrentDepartId());
 
         resluMap.put("pageList",pageList);
-        resluMap.put("hospitalCode",this.hospitalCode);
+        resluMap.put("hospitalCode",sysUser.getHospitalCode());
         resluMap.put("userName",sysUser.getRealname());
         resluMap.put("departName",depart.getDepartName());
         return Result.ok(resluMap);
@@ -125,7 +124,7 @@ public class PdInvoiceController {
         IPage<PdInvoiceDetail> pageList = pdInvoiceDetailService.selectInvoiceDetailList(page, pdInvoiceDetail);
         SysDepart depart = sysDepartService.getById(sysUser.getCurrentDepartId());
         resluMap.put("pageList",pageList);
-        resluMap.put("hospitalCode",this.hospitalCode);
+        resluMap.put("hospitalCode",sysUser.getHospitalCode());
         resluMap.put("userName",sysUser.getRealname());
         resluMap.put("departName",depart.getDepartName());
         return Result.ok(resluMap);

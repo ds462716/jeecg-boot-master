@@ -208,6 +208,7 @@
     <pd-stock-record-out-print-modal ref="pdStockRecordOutPrintModal"></pd-stock-record-out-print-modal>
     <pd-stock-record-out-print-modal-f-c-z-y-y ref="pdStockRecordOutPrintModalFCZYY"></pd-stock-record-out-print-modal-f-c-z-y-y>
     <pd-stock-record-out-print-modal-f-c-r-m-y-y ref="pdStockRecordOutPrintModalFCRMYY"></pd-stock-record-out-print-modal-f-c-r-m-y-y>
+    <pd-stock-record-out-print-modal-j-j-f-s-y-y ref="PdStockRecordOutPrintModalJJFSYY"></pd-stock-record-out-print-modal-j-j-f-s-y-y>
     <ex-stock-record-out-print-modal ref="exStockRecordOutPrintModal"></ex-stock-record-out-print-modal>
     <pd-product-number-print ref="printModalForm"></pd-product-number-print>
   </j-modal>
@@ -229,6 +230,7 @@
   import PdProductNumberPrint from "../print/PdProductNumberPrint";
   import { disabledAuthFilter } from "@/utils/authFilter"
   import PdStockRecordOutPrintModalFCRMYY from "../../external/fengcheng/print/PdStockRecordOutPrintModalFCRMYY";
+  import PdStockRecordOutPrintModalJJFSYY from "../../external/jiujiang/print/PdStockRecordOutPrintModalJJFSYY";
 
 
   const VALIDATE_NO_PASSED = Symbol()
@@ -243,6 +245,7 @@
       PdStockRecordOutPrintModalFCZYY,
       ExStockRecordOutPrintModal,
       PdStockRecordOutPrintModal,
+      PdStockRecordOutPrintModalJJFSYY,
       ATextarea,
       JDate,
       JDictSelectTagExpand
@@ -637,6 +640,10 @@
             case "GZSLYY":
               this.$refs.exStockRecordOutPrintModal.show(res.result);
               this.$refs.exStockRecordOutPrintModal.title = this.stockOutText + "出库单";
+              break;
+            case "JJFSYY":
+              this.$refs.PdStockRecordOutPrintModalJJFSYY.show(res.result);
+              this.$refs.PdStockRecordOutPrintModalJJFSYY.title = this.stockOutText + "出库单";
               break;
             default:
               this.$refs.pdStockRecordOutPrintModal.show(res.result);

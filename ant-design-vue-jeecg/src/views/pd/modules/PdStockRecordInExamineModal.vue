@@ -207,6 +207,7 @@
 
     <pd-stock-record-in-print-modal ref="pdStockRecordInPrintModal"></pd-stock-record-in-print-modal>
     <ex-stock-record-in-print-modal ref="exStockRecordInPrintModal"></ex-stock-record-in-print-modal>
+    <pd-stock-record-in-print-modal-j-j-f-s-y-y ref="PdStockRecordInPrintModalJJFSYY"></pd-stock-record-in-print-modal-j-j-f-s-y-y>
     <pd-product-number-print ref="printModalForm"></pd-product-number-print>
   </j-modal>
 </template>
@@ -223,6 +224,7 @@
   import ATextarea from "ant-design-vue/es/input/TextArea";
   import {scanCode} from '@/utils/barcode'
   import PdStockRecordInPrintModal from '../print/PdStockRecordInPrintModal'
+  import PdStockRecordInPrintModalJJFSYY from "../../external/jiujiang/print/PdStockRecordInPrintModalJJFSYY";
   import ExStockRecordInPrintModal from "../../external/print/ExStockRecordInPrintModal";
   import PdProductNumberPrint from "../print/PdProductNumberPrint";
   import { disabledAuthFilter } from "@/utils/authFilter"
@@ -251,6 +253,7 @@
       PdProductNumberPrint,
       ExStockRecordInPrintModal,
       PdStockRecordInPrintModal,
+      PdStockRecordInPrintModalJJFSYY,
       ATextarea,
       JDate,
       JDictSelectTagExpand,
@@ -510,6 +513,9 @@
           }else if(this.hospitalCode == "GZSLYY"){
             this.$refs.exStockRecordInPrintModal.show(res.result);
             this.$refs.exStockRecordInPrintModal.title = this.stockInText + "入库单";
+          }else if(this.hospitalCode == "JJFSYY"){
+            this.$refs.PdStockRecordInPrintModalJJFSYY.show(res.result);
+            this.$refs.PdStockRecordInPrintModalJJFSYY.title = this.stockInText + "入库单";
           }else{
             this.$refs.pdStockRecordInPrintModal.show(res.result);
             this.$refs.pdStockRecordInPrintModal.title = this.stockInText + "入库单";

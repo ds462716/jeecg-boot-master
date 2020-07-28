@@ -117,4 +117,9 @@ public class LoginUser {
 	 * 当前登录的部门类型
 	 */
 	private String departType;
+
+	/**
+	 * 当前登录的人医院code
+	 */
+	private String hospitalCode;
 }
