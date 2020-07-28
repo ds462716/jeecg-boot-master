@@ -1,6 +1,7 @@
 package org.jeecg.modules.pd.controller;
 
 import com.alibaba.fastjson.JSON;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
@@ -12,12 +13,10 @@ import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.DateUtils;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.pd.entity.PdProductStock;
+import org.jeecg.modules.pd.entity.PdProductStockCheckPermission;
 import org.jeecg.modules.pd.entity.PdStockRecord;
 import org.jeecg.modules.pd.entity.PdStockRecordDetail;
-import org.jeecg.modules.pd.service.IPdDepartService;
-import org.jeecg.modules.pd.service.IPdProductStockService;
-import org.jeecg.modules.pd.service.IPdStockRecordDetailService;
-import org.jeecg.modules.pd.service.IPdStockRecordService;
+import org.jeecg.modules.pd.service.*;
 import org.jeecg.modules.pd.vo.PdStockRecordOutPage;
 import org.jeecg.modules.pd.vo.PdSupplierRecordExcel;
 import org.jeecg.modules.system.entity.SysDepart;
@@ -51,6 +50,8 @@ public class PdStockRecordReturnController {
     private IPdProductStockService pdProductStockService;
     @Autowired
     private IPdDepartService pdDepartService;
+    @Autowired
+    private IPdProductStockCheckPermissionService pdProductStockCheckPermissionService;
 
     /**
      * 初始化Modal页面
@@ -152,6 +153,24 @@ public class PdStockRecordReturnController {
                 return Result.error("退货出库单已被提交，不能再次提交！");
             }
         }
+
+        // 出库库房盘点校验
+        List<PdProductStockCheckPermission> checkList1 = pdProductStockCheckPermissionService.list(
+                new LambdaQueryWrapper<PdProductStockCheckPermission>()
+                        .eq(PdProductStockCheckPermission::getTargetDepartId, pdStockRecord.getOutDepartId()));
+        if(CollectionUtils.isNotEmpty(checkList1)){
+            SysDepart outDepart = pdDepartService.getById(pdStockRecord.getOutDepartId());
+            return Result.error("["+outDepart.getDepartName()+"]正在盘点，不能退货出库！");
+        }
+        // 入库库房盘点校验
+        List<PdProductStockCheckPermission> checkList2 = pdProductStockCheckPermissionService.list(
+                new LambdaQueryWrapper<PdProductStockCheckPermission>()
+                        .eq(PdProductStockCheckPermission::getTargetDepartId, pdStockRecord.getInDepartId()));
+        if(CollectionUtils.isNotEmpty(checkList2)){
+            SysDepart inDepart = pdDepartService.getById(pdStockRecord.getInDepartId());
+            return Result.error("["+inDepart.getDepartName()+"]正在盘点，不能退货出库！");
+        }
+
         String recordId = pdStockRecordService.submit(pdStockRecord, pdStockRecord.getPdStockRecordDetailList(), PdConstant.RECODE_TYPE_2);
         Map<String,Object> result = new HashMap<>();
         result.put("recordId",recordId);
@@ -178,6 +197,24 @@ public class PdStockRecordReturnController {
         if(PdConstant.AUDIT_STATE_2.equals(entity.getAuditStatus()) || PdConstant.AUDIT_STATE_3.equals(entity.getAuditStatus())){
             return Result.error("退货出库单已被审批，不能再次审批！");
         }
+
+        // 出库库房盘点校验
+        List<PdProductStockCheckPermission> checkList1 = pdProductStockCheckPermissionService.list(
+                new LambdaQueryWrapper<PdProductStockCheckPermission>()
+                        .eq(PdProductStockCheckPermission::getTargetDepartId, entity.getOutDepartId()));
+        if(CollectionUtils.isNotEmpty(checkList1)){
+            SysDepart outDepart = pdDepartService.getById(entity.getOutDepartId());
+            return Result.error("["+outDepart.getDepartName()+"]正在盘点，不能退货出库！");
+        }
+        // 入库库房盘点校验
+        List<PdProductStockCheckPermission> checkList2 = pdProductStockCheckPermissionService.list(
+                new LambdaQueryWrapper<PdProductStockCheckPermission>()
+                        .eq(PdProductStockCheckPermission::getTargetDepartId, entity.getInDepartId()));
+        if(CollectionUtils.isNotEmpty(checkList2)){
+            SysDepart inDepart = pdDepartService.getById(entity.getInDepartId());
+            return Result.error("["+inDepart.getDepartName()+"]正在盘点，不能退货出库！");
+        }
+
         Map<String,String> result = pdStockRecordService.audit(pdStockRecord,entity, PdConstant.RECODE_TYPE_2);
         if(PdConstant.SUCCESS_200.equals(result.get("code"))) {
             return Result.ok(result.get("message"));

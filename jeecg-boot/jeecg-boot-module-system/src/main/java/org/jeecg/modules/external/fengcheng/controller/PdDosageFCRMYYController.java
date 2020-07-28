@@ -2,17 +2,22 @@ package org.jeecg.modules.external.fengcheng.controller;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.PdConstant;
+import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.external.fengcheng.service.IPdDosageFCRMYYService;
 import org.jeecg.modules.external.fengcheng.util.HisApiForFCRenminUtils;
 import org.jeecg.modules.pd.entity.PdDosage;
 import org.jeecg.modules.pd.entity.PdDosageDetail;
+import org.jeecg.modules.pd.entity.PdProductStockCheckPermission;
 import org.jeecg.modules.pd.service.IPdDosageService;
+import org.jeecg.modules.pd.service.IPdProductStockCheckPermissionService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +44,8 @@ public class PdDosageFCRMYYController {
     private IPdDosageFCRMYYService pdDosageFCRMYYService;
     @Autowired
     private IPdDosageService pdDosageService;
+    @Autowired
+    private IPdProductStockCheckPermissionService pdProductStockCheckPermissionService;
 
     private static Logger logger = LoggerFactory.getLogger(PdDosageFCRMYYController.class);
 
@@ -62,6 +69,11 @@ public class PdDosageFCRMYYController {
      */
     @PostMapping(value = "/submit")
     public Result<?> submit(@RequestBody PdDosage pdDosage) {
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        List<PdProductStockCheckPermission> checkList = pdProductStockCheckPermissionService.list(new LambdaQueryWrapper<PdProductStockCheckPermission>().eq(PdProductStockCheckPermission::getTargetDepartId, sysUser.getCurrentDepartId()));
+        if(CollectionUtils.isNotEmpty(checkList)){
+            return Result.error("本库房正在盘点，不能操作！");
+        }
         List<PdDosageDetail> list = pdDosageFCRMYYService.saveMain(pdDosage, PdConstant.IS_CHARGE_FLAG_0);
         return Result.ok("操作成功！");
     }
@@ -73,6 +85,11 @@ public class PdDosageFCRMYYController {
      */
     @PostMapping(value = "/dosageReturned")
     public Result<?> dosageReturned(@RequestBody PdDosage pdDosage) {
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        List<PdProductStockCheckPermission> checkList = pdProductStockCheckPermissionService.list(new LambdaQueryWrapper<PdProductStockCheckPermission>().eq(PdProductStockCheckPermission::getTargetDepartId, sysUser.getCurrentDepartId()));
+        if(CollectionUtils.isNotEmpty(checkList)){
+            return Result.error("本库房正在盘点，不能操作！");
+        }
         //不收费
         pdDosageFCRMYYService.dosageReturned(pdDosage);
         return Result.ok("退回成功！");
@@ -106,6 +123,11 @@ public class PdDosageFCRMYYController {
      */
     @PostMapping(value = "/dosageCnclFee")
     public Result<?> dosageCnclFee(@RequestBody PdDosage pdDosage) {
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        List<PdProductStockCheckPermission> checkList = pdProductStockCheckPermissionService.list(new LambdaQueryWrapper<PdProductStockCheckPermission>().eq(PdProductStockCheckPermission::getTargetDepartId, sysUser.getCurrentDepartId()));
+        if(CollectionUtils.isNotEmpty(checkList)){
+            return Result.error("本库房正在盘点，不能操作！");
+        }
         List<PdDosageDetail> detailList = pdDosage.getPdDosageDetails();
         if (CollectionUtils.isNotEmpty(detailList)) {
             pdDosageFCRMYYService.dosageCnclFee(pdDosage);
@@ -120,6 +142,11 @@ public class PdDosageFCRMYYController {
      */
     @PostMapping(value = "/dosageFee")
     public Result<?> dosageFee(@RequestBody PdDosage pdDosage) {
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        List<PdProductStockCheckPermission> checkList = pdProductStockCheckPermissionService.list(new LambdaQueryWrapper<PdProductStockCheckPermission>().eq(PdProductStockCheckPermission::getTargetDepartId, sysUser.getCurrentDepartId()));
+        if(CollectionUtils.isNotEmpty(checkList)){
+            return Result.error("本库房正在盘点，不能操作！");
+        }
         List<PdDosageDetail> detailList = pdDosage.getPdDosageDetails();
         if (CollectionUtils.isNotEmpty(detailList)) {
             pdDosageFCRMYYService.dosageFee(pdDosage);

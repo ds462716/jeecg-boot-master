@@ -2,19 +2,24 @@ package org.jeecg.modules.external.fengcheng.controller;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
+import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.PdConstant;
+import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.modules.external.fengcheng.service.IPdDosageFCZYYService;
 import org.jeecg.modules.external.fengcheng.util.HisApiForFCZhongyiUtils;
 import org.jeecg.modules.pd.entity.PdDosage;
 import org.jeecg.modules.pd.entity.PdDosageDetail;
+import org.jeecg.modules.pd.entity.PdProductStockCheckPermission;
 import org.jeecg.modules.pd.service.IExHisZyInfService;
 import org.jeecg.modules.pd.service.IHisChargeService;
 import org.jeecg.modules.pd.service.IPdDosageService;
+import org.jeecg.modules.pd.service.IPdProductStockCheckPermissionService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +43,8 @@ public class PdDosageFCZYYController {
     private IPdDosageFCZYYService pdDosageFCZYYService;
     @Autowired
     private IPdDosageService pdDosageService;
+    @Autowired
+    private IPdProductStockCheckPermissionService pdProductStockCheckPermissionService;
 
     private static Logger logger = LoggerFactory.getLogger(PdDosageFCZYYController.class);
 
@@ -61,6 +68,11 @@ public class PdDosageFCZYYController {
      */
     @PostMapping(value = "/submit")
     public Result<?> submit(@RequestBody PdDosage pdDosage) {
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        List<PdProductStockCheckPermission> checkList = pdProductStockCheckPermissionService.list(new LambdaQueryWrapper<PdProductStockCheckPermission>().eq(PdProductStockCheckPermission::getTargetDepartId, sysUser.getCurrentDepartId()));
+        if(org.apache.commons.collections.CollectionUtils.isNotEmpty(checkList)){
+            return Result.error("本库房正在盘点，不能使用！");
+        }
         List<PdDosageDetail> list = pdDosageFCZYYService.saveMain(pdDosage, PdConstant.IS_CHARGE_FLAG_0);
         return Result.ok("添加成功！");
     }
@@ -72,6 +84,11 @@ public class PdDosageFCZYYController {
      */
     @PostMapping(value = "/dosageReturned")
     public Result<?> dosageReturned(@RequestBody PdDosage pdDosage) {
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        List<PdProductStockCheckPermission> checkList = pdProductStockCheckPermissionService.list(new LambdaQueryWrapper<PdProductStockCheckPermission>().eq(PdProductStockCheckPermission::getTargetDepartId, sysUser.getCurrentDepartId()));
+        if(org.apache.commons.collections.CollectionUtils.isNotEmpty(checkList)){
+            return Result.error("本库房正在盘点，不能使用！");
+        }
         //不收费
         pdDosageFCZYYService.dosageReturned(pdDosage);
         return Result.ok("退回成功！");
@@ -105,6 +122,11 @@ public class PdDosageFCZYYController {
      */
     @PostMapping(value = "/dosageCnclFee")
     public Result<?> dosageCnclFee(@RequestBody PdDosage pdDosage) {
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        List<PdProductStockCheckPermission> checkList = pdProductStockCheckPermissionService.list(new LambdaQueryWrapper<PdProductStockCheckPermission>().eq(PdProductStockCheckPermission::getTargetDepartId, sysUser.getCurrentDepartId()));
+        if(org.apache.commons.collections.CollectionUtils.isNotEmpty(checkList)){
+            return Result.error("本库房正在盘点，不能使用！");
+        }
         List<PdDosageDetail> detailList = pdDosage.getPdDosageDetails();
         if (CollectionUtils.isNotEmpty(detailList)) {
             //HIS退费接口
@@ -126,6 +148,11 @@ public class PdDosageFCZYYController {
      */
     @PostMapping(value = "/dosageFee")
     public Result<?> dosageFee(@RequestBody PdDosage pdDosage) {
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        List<PdProductStockCheckPermission> checkList = pdProductStockCheckPermissionService.list(new LambdaQueryWrapper<PdProductStockCheckPermission>().eq(PdProductStockCheckPermission::getTargetDepartId, sysUser.getCurrentDepartId()));
+        if(org.apache.commons.collections.CollectionUtils.isNotEmpty(checkList)){
+            return Result.error("本库房正在盘点，不能使用！");
+        }
         List<PdDosageDetail> detailList = pdDosage.getPdDosageDetails();
         if (CollectionUtils.isNotEmpty(detailList)) {
             //HIS计费接口
