@@ -60,8 +60,8 @@
                   <th style="border: 1px solid #000000;text-align: center;padding: 3px 3px;width:15%">
                     规格
                   </th>
-                  <th style="border: 1px solid #000000;text-align: center;padding: 3px 3px;width:15%">
-                    型号
+                  <th style="border: 1px solid #000000;text-align: center;padding: 3px 3px;width:10%">
+                    注册证号
                   </th>
                   <th style="border: 1px solid #000000;text-align: center;padding: 3px 3px;width:10%">
                     批号
@@ -104,7 +104,19 @@
                     {{ item.spec }}
                   </td>
                   <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: xx-small">
-                    {{ item.version }}
+                    <a-form-item label="" style="width: 100%;height: 100%;padding: 0px;margin: 0px;line-height: 0px">
+                      <a-select
+                        size="small"
+                        style="width: 100%;font-size: xx-small"
+                        :showArrow="false"
+                        :dropdownMatchSelectWidth="false"
+                        v-decorator="[ 'pdStockRecordDetailList['+index+'].registration',{'initialValue':item.registrationSelected}]"
+                      >
+                        <a-select-option v-for="(registration, index) in item.registrationList" :key="registration">
+                          {{ registration }}
+                        </a-select-option>
+                      </a-select>
+                    </a-form-item>
                   </td>
                   <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: xx-small">
                     {{ item.batchNo }}
