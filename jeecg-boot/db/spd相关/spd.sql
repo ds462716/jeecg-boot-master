@@ -1158,3 +1158,4 @@ INSERT INTO `sys_dict_item` VALUES ('1282959020370710530', '1282958924639916034'
 INSERT INTO `sys_permission` VALUES ('1282492599924731905', '1218784892172963842', '盘点审核', '/pd/PdProductStockCheckExamine', 'pd/PdProductStockCheckExamineList', null, null, '1', '0', null, '1', '3.10', '0', null, '1', '1', '0', '0', null, 'admin', '2020-07-13 09:50:38', 'admin', '2020-07-13 09:51:21', '0', '0', '1', '0');
 INSERT INTO `sys_permission` VALUES ('1283567494771359746', '1239453470183882753', '退货审核按钮权限', null, null, null, null, '2', '0', 'stock:rejectedSave', '2', '1.00', '0', null, '1', '1', '0', '0', null, 'admin', '2020-07-16 09:01:53', 'admin', '2020-07-16 09:49:07', '0', '0', '1', '0');
 -- add by zxh 2020年7月15日16:45:02 盘点优化end
+-- add by zxh 2020年7月15日16:45:02 盘点优化end
