@@ -69,3 +69,4 @@ ADD COLUMN `ref_bar_code`  varchar(64) CHARACTER SET utf8 COLLATE utf8_general_c
 -- 医院编号2020年7月28日13:52:00
 ALTER TABLE `sys_depart`
 ADD COLUMN `hospital_code`  varchar(64) NULL COMMENT '医院编号' AFTER `depart_type`;
+-- 德兴医院部署截止2020年7月29日10:46:32
