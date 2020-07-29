@@ -805,7 +805,7 @@
 			<if test="entity.barCodeType != null and entity.barCodeType != ''">
 				AND a.bar_code_type = #{entity.barCodeType}
 			</if>
-			order by  exp_status  desc,create_time desc
+			order by  exp_status  desc,c.number desc
 		</where>
 	</select>
 	<!-- 条码打印查询 -->

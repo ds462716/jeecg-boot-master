@@ -682,12 +682,14 @@ public class ConsumablesServiceImpl implements ConsumablesService {
 //-------------------
                 retMap.put("result", PdConstant.SUCCESS_0);
                 retMap.put("message", "成功");
+                System.out.println("#######试剂出入库结束");
             } else {
                 retMap.put("result",PdConstant.FAIL_1);
                 retMap.put("message", "参数不能为空");
             }
             return JSON.toJSONString(retMap);
         } catch (Exception e) {
+            System.out.println("#######操作失败，日志：" + e.getMessage());
             e.printStackTrace();
             retMap.put("result",PdConstant.FAIL_1);
             retMap.put("message", "操作失败，日志：" + e.getMessage());
