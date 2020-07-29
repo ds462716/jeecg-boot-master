@@ -222,7 +222,6 @@
           this.model.auditStatus='3';//拒绝
           this.model.submitStatus='1';//待提交
         }
-        that.confirmLoading = true;
         this.form.validateFields((err, values) => {
           if(type=="no"){
             if(values.refuseReason==null || values.refuseReason==''){
@@ -235,6 +234,7 @@
             this.model.orderNos=this.model.orderNo;
             this.model.oprtSource="1";
             let formData = Object.assign(this.model, values);
+            that.confirmLoading = true;
             httpAction(this.url.edit, formData, 'put').then((res) => {
               if (res.success) {
                 that.$message.success("操作成功");
