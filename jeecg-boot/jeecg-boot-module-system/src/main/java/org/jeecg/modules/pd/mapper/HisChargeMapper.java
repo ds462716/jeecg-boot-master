@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Param;
 import org.jeecg.modules.external.entity.ExInspectionItems;
 import org.jeecg.modules.external.entity.ExLabInstrInf;
+import org.jeecg.modules.external.entity.ExLabPurpose;
 import org.jeecg.modules.pd.entity.HisChargeInf;
 import org.jeecg.modules.pd.entity.HisDepartInf;
 import org.jeecg.modules.pd.entity.HisUserInf;
@@ -55,4 +56,9 @@ public interface HisChargeMapper extends BaseMapper<HisChargeInf> {
 	List<ExInspectionItems> selectExjianYanLis(ExInspectionItems exInspectionItems);
 
 	List<ExLabInstrInf> selectExLabInstrInf();
+
+    List<ExInspectionItems> selectExjianYanLisFc(ExInspectionItems exInspectionItems);
+
+    List<ExLabPurpose> selectExLabPurpose(ExLabPurpose exLabPurpose);
+
 }

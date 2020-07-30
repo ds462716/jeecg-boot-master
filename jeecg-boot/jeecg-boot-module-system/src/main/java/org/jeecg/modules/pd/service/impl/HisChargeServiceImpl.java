@@ -1,13 +1,13 @@
 package org.jeecg.modules.pd.service.impl;
 
 import com.baomidou.dynamic.datasource.annotation.DS;
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.ObjectUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.apache.commons.collections.MapUtils;
 import org.jeecg.modules.external.entity.ExInspectionItems;
 import org.jeecg.modules.external.entity.ExLabInstrInf;
+import org.jeecg.modules.external.entity.ExLabPurpose;
 import org.jeecg.modules.pd.entity.*;
 import org.jeecg.modules.pd.mapper.HisChargeMapper;
 import org.jeecg.modules.pd.service.IHisChargeService;
@@ -160,5 +160,21 @@ public class HisChargeServiceImpl extends ServiceImpl<HisChargeMapper, HisCharge
 	@Override
 	public boolean deleteByDepartParentId(String departParentId) {
 		return hisChargeMapper.deleteByDepartParentId(departParentId);
+	}
+
+
+	//查询LIS检验目的信息
+	@Override
+	@DS("multi-datasource2")
+	public List<ExLabPurpose> selectExLabPurpose(ExLabPurpose exLabPurpose) {
+		return hisChargeMapper.selectExLabPurpose(exLabPurpose);
+	}
+
+
+	//查询检验项目信息   lis系统
+	@Override
+	@DS("multi-datasource2")
+	public List<ExInspectionItems> selectExjianYanLisFc(ExInspectionItems exInspectionItems){
+		return hisChargeMapper.selectExjianYanLisFc(exInspectionItems);
 	}
 }

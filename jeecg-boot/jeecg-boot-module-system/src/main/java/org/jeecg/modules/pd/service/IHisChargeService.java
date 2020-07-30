@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.jeecg.modules.external.entity.ExInspectionItems;
 import org.jeecg.modules.external.entity.ExLabInstrInf;
+import org.jeecg.modules.external.entity.ExLabPurpose;
 import org.jeecg.modules.pd.entity.HisChargeInf;
 import org.jeecg.modules.pd.entity.HisDepartInf;
 import org.jeecg.modules.pd.entity.HisUserInf;
@@ -53,10 +54,16 @@ public interface IHisChargeService extends IService<HisChargeInf> {
     //获取检验项目明细--LIS
     public List<ExInspectionItems> selectExjianYanLis(ExInspectionItems exInspectionItems);
 
+    //获取检验项目明细(复查类)--LIS
+    public List<ExInspectionItems> selectExjianYanLisFc(ExInspectionItems exInspectionItems);
+
     /*查询his系统门诊病人退费信息*/
     String  queryMztfList(PdDosage pdDosage);
 
-   /*查询LIS系统仪器设备信息*/
+   /*查询LIS检验目的信息*/
+    List<ExLabPurpose> selectExLabPurpose(ExLabPurpose exLabPurpose);
+
+    /*查询LIS系统仪器设备信息*/
     List<ExLabInstrInf> selectExLabInstrInf();
 
     boolean deleteByDepartParentId(String departParentId);

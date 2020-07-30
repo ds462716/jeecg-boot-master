@@ -246,6 +246,34 @@
 	</select>
 
 
+	<!--查询检验項目明細信息  LIS系统的（针对复查、质控、专家门诊类的数据）-->
+	<select id="selectExjianYanLisFc"   resultType="org.jeecg.modules.external.entity.ExInspectionItems">
+		select
+		id as "jyId",
+		yqmc as "instrName",
+		yq as "instrCode",
+		patientName as "patientName",
+		patientSex as "patientSex",
+		patientAge as "patientAge",
+		cardId as "cardId",
+		barCode as "barCode",
+		receiveDate as "receiveDate",
+		applyDoctor as "applyDoctor",
+		applyDepartment as "applyDepartment",
+		testDepartment as "testDepartment",
+		patientType as "patientType",
+		combinationCode as "testItemCode",
+		combinationName as "testItemName",
+		testDate as "testDate"
+		from  [v_spd_lis_jyxm_fc]   where
+		1=1
+		<if test="queryDateEnd != null and queryDateEnd != ''">
+			AND  testDate >= #{queryDateEnd}
+		</if>
+
+	</select>
+
+
 	<!--查询检验項目明細信息 HIS系统的-->
 	<select id="selectExjianYanHis"   resultType="org.jeecg.modules.external.entity.ExInspectionItems">
 		select
@@ -277,6 +305,23 @@
       a.yqmc as "instrName"
        from lab_instr a
 	</select>
+
+
+	<!--查询LIS系统检验目的信息-->
+	<select id="selectExLabPurpose"  resultType="org.jeecg.modules.external.entity.ExLabPurpose">
+		 select
+		   a.yq as "yq",
+		   a.purno as "purno",
+		   a.pruna as "pruna"
+		  from lab_purpose a where 1=1
+		<if test="yq != null and yq != ''">
+			AND  a.yq = #{yq}
+		</if>
+		<if test="pruna != null and pruna != ''">
+			AND a.pruna =#{pruna}
+		</if>
+	</select>
+
 
 	<delete id="deleteByDepartParentId" parameterType="java.lang.String">
 		DELETE FROM ex_his_charge_inf WHERE depart_parent_id = #{departParentId}

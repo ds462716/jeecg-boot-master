@@ -138,6 +138,11 @@
     </select>
     <!-- 增量同步 -->
     <select id="selectListIds"  resultType="String">
-        SELECT  jy_id as "jyId"  FROM ex_inspection_items  a
+        SELECT
+        jy_id as "jyId"
+        FROM ex_inspection_items  a
+        where 1=1
+      and  DATE_SUB(CURDATE(), INTERVAL 2 DAY)  &lt;= date(a.test_date)
+
     </select>
 </mapper>
