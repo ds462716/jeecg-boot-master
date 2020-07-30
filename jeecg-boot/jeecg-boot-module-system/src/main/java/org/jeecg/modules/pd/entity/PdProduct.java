@@ -71,12 +71,12 @@ public class PdProduct  extends BaseEntity {
 	/**一级分类*/
     private java.lang.String categoryOne;
 	@TableField(exist = false)
-	//@Excel(name = "一级分类", width = 15)
+	@Excel(name = "一级分类", width = 15)
 	private java.lang.String categoryOneName;
 	/**二级分类*/
     private java.lang.String categoryTwo;
 	@TableField(exist = false)
-	//@Excel(name = "二级分类", width = 15)
+	@Excel(name = "二级分类", width = 15)
 	private java.lang.String categoryTwoName;
 	/**产品组别*/
     private java.lang.String groupId;
