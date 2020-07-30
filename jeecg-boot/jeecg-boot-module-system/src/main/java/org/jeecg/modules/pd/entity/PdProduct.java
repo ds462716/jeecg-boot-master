@@ -352,10 +352,12 @@ public class PdProduct  extends BaseEntity {
 	 * 赣州市立医院中标类型
 	 * 中标类型：（1：省标、2：市标 3：其他招标:4：备案）
 	 */
+	@Excel(name = "中标类型", width = 15)
 	private String bidingType;
 	/**
 	 * 赣州市立医院中标价
 	 */
+	@Excel(name = "中标价", width = 15)
 	private java.math.BigDecimal  bidingPrice;
 
 	/**

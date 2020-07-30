@@ -1132,6 +1132,12 @@ public class PdProductServiceImpl extends ServiceImpl<PdProductMapper, PdProduct
                             ps.setCategoryTwo(pdCategorys.get(0).getId());
                         }
                     }
+                    //校验中标价
+                    if(!isMoney(ps.getBidingPrice())){
+                        message = "导入失败,第"+(i+1)+"行中标价格式不正确";
+                        bl = false;
+                        break;
+                    }
                     ps.setValidityFlag(PdConstant.PD_STATE_0);
                     i ++;
                 }
@@ -1352,6 +1358,12 @@ public class PdProductServiceImpl extends ServiceImpl<PdProductMapper, PdProduct
                         if(pdCategorys!=null && pdCategorys.size()>0){
                             ps.setCategoryTwo(pdCategorys.get(0).getId());
                         }
+                    }
+                    //校验中标价
+                    if(!isMoney(ps.getBidingPrice())){
+                        message = "导入失败,第"+(i+1)+"行中标价格式不正确";
+                        bl = false;
+                        break;
                     }
                     ps.setValidityFlag(PdConstant.PD_STATE_0);
                     i ++;
