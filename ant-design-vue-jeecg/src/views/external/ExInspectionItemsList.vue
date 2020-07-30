@@ -369,7 +369,12 @@
       },
       //查询检验包详情
       queryUsePackageDetail: function (record) {
-        getAction(this.url.queryUsePackageDetail, {testItemCode:record.testItemCode}).then((res) => {
+        var testItemCode=record.testItemCode;
+        if(testItemCode=="" || testItemCode==null){
+          this.$message.warning('检验项目代号为空，无法查看配置信息！');
+          return;
+        }
+        getAction(this.url.queryUsePackageDetail, {testItemCode:testItemCode}).then((res) => {
           if (res.success) {
             this.$refs.pdUsePackageModal.edit(res.result);
             this.$refs.pdUsePackageModal.title = "详情";

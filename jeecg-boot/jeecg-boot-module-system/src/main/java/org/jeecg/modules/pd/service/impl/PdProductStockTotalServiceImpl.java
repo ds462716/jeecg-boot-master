@@ -724,14 +724,14 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
                     bottleInf.setNestatStatus(PdConstant.STOCK_NESTAT_STATUS_0);
                     productStocks_i=  pdBottleInfMapper.queryProductStock(bottleInf);
                 }
-                if(CollectionUtils.isEmpty(productStocks_i)){
+                /*if(CollectionUtils.isEmpty(productStocks_i)){
                     //4.1 查询扣減科室下库存明细(先查询使用中的)，根据有效期排序
                     PdProductStock pproductStockq = new PdProductStock();
                     pproductStockq.setDepartIdList(departIds);
                     pproductStockq.setProductId(productId);
                     pproductStockq.setNestatStatus(PdConstant.STOCK_NESTAT_STATUS_0);
                     productStocks_i = pdProductStockMapper.selectOrExpDate(pproductStockq);
-                }
+                }*/
                 if (CollectionUtils.isEmpty(productStocks_i)) {
                     String remarks= "根据产品[" + detail.getProductName() + "]获取不到已开瓶的库存明细信息";
                     PdProductStock stock = new PdProductStock();
@@ -839,14 +839,14 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
                     bottleInf.setProductId(productId);
                     bottleInf.setNestatStatus(PdConstant.STOCK_NESTAT_STATUS_0);
                     productStocks_i=  pdBottleInfMapper.queryProductStock(bottleInf);
-                }else{
+                }/*else{
                     //4.1 查询扣減科室下库存明细(先查询使用中的)，根据有效期排序
                     PdProductStock pproductStockq = new PdProductStock();
                     pproductStockq.setDepartIdList(departIds);
                     pproductStockq.setProductId(productId);
                     pproductStockq.setNestatStatus(PdConstant.STOCK_NESTAT_STATUS_0);
                     productStocks_i = pdProductStockMapper.selectOrExpDate(pproductStockq);
-                }
+                }*/
                 if (CollectionUtils.isEmpty(productStocks_i)) {
                     String remarks= "根据产品[" + detail.getProductName() + "]获取不到已开瓶的库存明细信息";
                     PdProductStock stock = new PdProductStock();

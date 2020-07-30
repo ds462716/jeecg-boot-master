@@ -90,7 +90,7 @@ public class LisInspectionItemsTaskLisJob implements Job {
                                items.setRemarks(repItem.getRemarks());
                                items.setAcceptStatus(repItem.getAcceptStatus());
                            }else{
-                               items.setRemarks(items.getTestItemName()+"获取不到检验目的信息");
+                               items.setRemarks("获取不到检验目的信息");
                                items.setAcceptStatus(PdConstant.ACCEPT_STATUS_2);// 0:已扣减  1：无检验项目  2：未扣减  3：无试剂用量
                            }
                         }else {
