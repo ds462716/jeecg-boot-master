@@ -190,7 +190,7 @@
   import { randomUUID,validateDuplicateValue } from '@/utils/util';
   import {stockScanCode} from '@/utils/barcode';
   import { FormTypes,getRefPromise,validateFormAndTables } from '@/utils/JEditableTableUtil';
-  import PdChooseProductStockListModel from "../../pd/modules/PdChooseProductStockListModel";
+  import PdChooseProductStockListModel from "../../external/modules/ExChooseProductStockListModel";
   import PdChooseDosageListModel from "../../pd/modules/PdChooseDosageListModel";
 
   const VALIDATE_NO_PASSED = Symbol()
