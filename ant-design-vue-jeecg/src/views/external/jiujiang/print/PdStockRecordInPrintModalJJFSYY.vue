@@ -63,16 +63,16 @@
                   <th style="border: 1px solid #000000;text-align: center;padding: 3px 3px;width:10%">
                     注册证号
                   </th>
-                  <th style="border: 1px solid #000000;text-align: center;padding: 3px 3px;width:10%">
+                  <th style="border: 1px solid #000000;text-align: center;padding: 3px 3px;width:12%">
                     规格
                   </th>
-                  <th style="border: 1px solid #000000;text-align: center;padding: 3px 3px;width:8%">
+                  <th style="border: 1px solid #000000;text-align: center;padding: 3px 3px;width:10%">
                     批号
                   </th>
-                  <th style="border: 1px solid #000000;text-align: center;padding: 3px 3px;width:8%">
+                  <th style="border: 1px solid #000000;text-align: center;padding: 3px 3px;width:10%">
                     生产日期
                   </th>
-                  <th style="border: 1px solid #000000;text-align: center;padding: 3px 3px;width:8%">
+                  <th style="border: 1px solid #000000;text-align: center;padding: 3px 3px;width:10%">
                     有效期
                   </th>
                   <th style="border: 1px solid #000000;text-align: center;padding: 3px 3px;width:4%">

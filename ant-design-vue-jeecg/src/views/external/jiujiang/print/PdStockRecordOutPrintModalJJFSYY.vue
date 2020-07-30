@@ -63,7 +63,7 @@
                   <th style="border: 1px solid #000000;text-align: center;padding: 3px 3px;width:10%">
                     注册证号
                   </th>
-                  <th style="border: 1px solid #000000;text-align: center;padding: 3px 3px;width:10%">
+                  <th style="border: 1px solid #000000;text-align: center;padding: 3px 3px;width:15%">
                     批号
                   </th>
                   <th style="border: 1px solid #000000;text-align: center;padding: 3px 3px;width:5%">
