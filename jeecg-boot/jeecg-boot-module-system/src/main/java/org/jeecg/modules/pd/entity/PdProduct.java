@@ -347,6 +347,7 @@ public class PdProduct  extends BaseEntity {
 	/**
 	 * 赣州市立医院中标号
 	 */
+	@Excel(name = "中标号", width = 15)
 	private String bidingNumber;
 	/**
 	 * 赣州市立医院中标类型
