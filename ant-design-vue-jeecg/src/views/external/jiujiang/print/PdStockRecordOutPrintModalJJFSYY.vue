@@ -13,17 +13,144 @@
       <a-button v-print="'#printContent'" ghost type="primary" >打印</a-button>
     </div>
     <section ref="print" id="printContent" class="printClass">
-      <div style="text-align: center">
-        <p style="font-size: 22px;font-weight: 800">{{title}}</p>
-      </div>
-      <!--签字-->
-      <a-col :md="24" :sm="24">
-        <div class="sign" style="text-align: left;height: inherit">
-          <a-col :span="24">
-            <!--<span style="margin-left: 3%">
-              制单人：
+      <!-- 超过十个的循环区域 -->
+      <div v-if="batchPrint">
+        <div v-for="(item, index1) in divNumber-1"  class="sign" style="page-break-after:always;text-align: left;height: inherit">
+          <div style="text-align: center">
+            <p style="font-size: 22px;font-weight: 800">{{title}}</p>
+          </div>
+          <!--签字-->
+          <a-col :md="24" :sm="24">
+            <a-col :span="24">
+              <!--<span style="margin-left: 3%">
+                制单人：
+              </span>
+              <a-input style="width: 10%;text-align: left" disabled v-model="record.submitByName"/>-->
+              <span style="margin-left: 3%">
+              出库单号：
             </span>
-            <a-input style="width: 10%;text-align: left" disabled v-model="record.submitByName"/>-->
+              <a-input style="width: 18%;text-align: left" disabled v-model="record.recordNo"/>
+              <span style="margin-left: 3%">
+              出库日期：
+            </span>
+              <a-input style="width: 12%;text-align: left" disabled v-model="record.auditDate"/>
+              <span style="margin-left: 35%">
+                页码：
+              {{index1+1}} /{{divNumber}}
+              </span>
+            </a-col>
+            <a-col :span="24" style="margin-top: 0px">
+            <span style="margin-left: 3%">
+              出库库房：
+            </span>
+              <a-input style="width: 18%;text-align: left" disabled v-model="record.outDepartName"/>
+              <span style="margin-left: 3%">
+              入库库房：
+            </span>
+              <a-input style="width: 12%;text-align: left" disabled v-model="record.inDepartName"/>
+              <span style="margin-left: 3%;text-align: right">
+              备注：
+            </span>
+              <a-input style="width: 30%;text-align: left" disabled v-model="record.remarks"/>
+            </a-col>
+            <a-col :span="24" style="margin-top: 5px">
+              <a-form :form="form">
+                <table width="100%" class="tableStyle">
+                  <tr>
+                    <th style="border: 1px solid #000000;text-align: center;padding: 3px 3px;width:2%">
+
+                    </th>
+                    <th style="border: 1px solid #000000;text-align: center;padding: 3px 3px;width:20%">
+                      产品名称
+                    </th>
+                    <th style="border: 1px solid #000000;text-align: center;padding: 3px 3px;width:15%">
+                      规格
+                    </th>
+                    <th style="border: 1px solid #000000;text-align: center;padding: 3px 3px;width:10%">
+                      注册证号
+                    </th>
+                    <th style="border: 1px solid #000000;text-align: center;padding: 3px 3px;width:15%">
+                      批号
+                    </th>
+                    <th style="border: 1px solid #000000;text-align: center;padding: 3px 3px;width:5%">
+                      数量
+                    </th>
+                    <th style="border: 1px solid #000000;text-align: center;padding: 3px 3px;width:5%">
+                      单位
+                    </th>
+                    <th style="border: 1px solid #000000;text-align: center;padding: 3px 3px;">
+                      生产厂家
+                    </th>
+                    <th style="border: 1px solid #000000;text-align: center;padding: 3px 3px;width:7%">
+                      单价
+                    </th>
+                    <th style="border: 1px solid #000000;text-align: center;padding: 3px 3px;width:7%">
+                      金额
+                    </th>
+                  </tr>
+                  <tr v-for="(item, index2) in tableNumber[index1]">
+                    <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: xx-small">
+                      {{ index2+(index1*10) +1}}
+                    </td>
+                    <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: xx-small">
+                      {{ item.productName }}
+
+                      <a-form-item label="id" v-show="false">
+                        <a-input v-decorator="[ 'pdStockRecordDetailList['+index2+'].id',{'initialValue':item.id} ]"></a-input>
+                      </a-form-item>
+                    </td>
+                    <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: xx-small">
+                      {{ item.spec }}
+                    </td>
+                    <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: xx-small">
+                      <a-form-item label="" style="width: 100%;height: 100%;padding: 0px;margin: 0px;line-height: 0px">
+                        <a-select
+                          size="small"
+                          style="width: 100%;font-size: xx-small"
+                          :showArrow="false"
+                          :dropdownMatchSelectWidth="false"
+                          v-decorator="[ 'pdStockRecordDetailList['+index2+'].registration',{'initialValue':item.registrationSelected}]"
+                        >
+                          <a-select-option v-for="(registration, index2) in item.registrationList" :key="registration">
+                            {{ registration }}
+                          </a-select-option>
+                        </a-select>
+                      </a-form-item>
+                    </td>
+                    <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: xx-small">
+                      {{ item.batchNo }}
+                    </td>
+                    <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: xx-small">
+                      {{ item.productNum }}
+                    </td>
+                    <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: xx-small">
+                      {{ item.unitName }}
+                    </td>
+                    <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: xx-small">
+                      {{ item.venderName }}
+                    </td>
+                    <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: xx-small">
+                      {{ item.sellingPrice }}
+                    </td>
+                    <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: xx-small">
+                      {{ item.outTotalPrice }}
+                    </td>
+                  </tr>
+                </table>
+              </a-form>
+            </a-col>
+          </a-col>
+        </div>
+      </div>
+
+      <!-- 超过十个 或者不等于十个 -->
+      <div  class="sign" style="text-align: left;height: inherit">
+        <div style="text-align: center">
+          <p style="font-size: 22px;font-weight: 800">{{title}}</p>
+        </div>
+        <!--签字-->
+        <a-col :md="24" :sm="24">
+          <a-col :span="24">
             <span style="margin-left: 3%">
               出库单号：
             </span>
@@ -32,6 +159,10 @@
               出库日期：
             </span>
             <a-input style="width: 12%;text-align: left" disabled v-model="record.auditDate"/>
+            <span style="margin-left: 35%">
+                页码：
+              {{divNumber}} /{{divNumber}}
+              </span>
           </a-col>
           <a-col :span="24" style="margin-top: 0px">
             <span style="margin-left: 3%">
@@ -49,7 +180,7 @@
           </a-col>
           <a-col :span="24" style="margin-top: 5px">
             <a-form :form="form">
-              <table width="100%" id="contentTable" class="tableStyle">
+              <table width="100%" class="tableStyle">
                 <tr>
                   <th style="border: 1px solid #000000;text-align: center;padding: 3px 3px;width:2%">
 
@@ -72,13 +203,6 @@
                   <th style="border: 1px solid #000000;text-align: center;padding: 3px 3px;width:5%">
                     单位
                   </th>
-                  <!--<th style="border: 1px solid #000000;text-align: center;padding: 3px 3px;width:8%">
-                    入库单价
-                  </th>
-                  <th style="border: 1px solid #000000;text-align: center;padding: 3px 3px;width:8%">
-                    入库金额
-                  </th>-->
-
                   <th style="border: 1px solid #000000;text-align: center;padding: 3px 3px;">
                     生产厂家
                   </th>
@@ -89,15 +213,15 @@
                     金额
                   </th>
                 </tr>
-                <tr v-for="(item, index) in dataSource">
+                <tr v-for="(item, index2) in tableNumber[divNumber-1]">
                   <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: xx-small">
-                    {{ index +1}}
+                    {{ index2+((divNumber-1)*10) +1}}
                   </td>
                   <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: xx-small">
                     {{ item.productName }}
 
                     <a-form-item label="id" v-show="false">
-                      <a-input v-decorator="[ 'pdStockRecordDetailList['+index+'].id',{'initialValue':item.id} ]"></a-input>
+                      <a-input v-decorator="[ 'pdStockRecordDetailList['+index2+'].id',{'initialValue':item.id} ]"></a-input>
                     </a-form-item>
                   </td>
                   <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: xx-small">
@@ -110,9 +234,9 @@
                         style="width: 100%;font-size: xx-small"
                         :showArrow="false"
                         :dropdownMatchSelectWidth="false"
-                        v-decorator="[ 'pdStockRecordDetailList['+index+'].registration',{'initialValue':item.registrationSelected}]"
+                        v-decorator="[ 'pdStockRecordDetailList['+index2+'].registration',{'initialValue':item.registrationSelected}]"
                       >
-                        <a-select-option v-for="(registration, index) in item.registrationList" :key="registration">
+                        <a-select-option v-for="(registration, index2) in item.registrationList" :key="registration">
                           {{ registration }}
                         </a-select-option>
                       </a-select>
@@ -127,12 +251,6 @@
                   <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: xx-small">
                     {{ item.unitName }}
                   </td>
-                 <!-- <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: xx-small">
-                    {{ item.purchasePrice }}
-                  </td>
-                  <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: xx-small">
-                    {{ item.inTotalPrice }}
-                  </td>-->
                   <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: xx-small">
                     {{ item.venderName }}
                   </td>
@@ -144,55 +262,60 @@
                   </td>
                 </tr>
                 <tr>
-                  <td  colspan="3" style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: small">
+                  <td  colspan="3" style="border-bottom: 1px solid #000000;text-align: center;padding: 3px 3px;font-size: small">
                   </td>
-                  <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: small">
+                  <td style="border-bottom: 1px solid #000000;text-align: center;padding: 3px 3px;font-size: small">
                   </td>
-                  <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: larger;font-weight: bolder">
-                    合计
+                  <td style="border-bottom: 1px solid #000000;text-align: center;padding: 3px 3px;font-size: larger;font-weight: bolder">
+                    合计:
                   </td>
-                  <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: larger;font-weight: bolder">
+                  <td style="border-bottom: 1px solid #000000;text-align: center;padding: 3px 3px;font-size: larger;font-weight: bolder">
                     {{ record.totalSum }}
                   </td>
-                  <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: small">
+                  <td style="border-bottom: 1px solid #000000;text-align: center;padding: 3px 3px;font-size: small">
                   </td>
-                  <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: small">
+                  <td style="border-bottom: 1px solid #000000;text-align: center;padding: 3px 3px;font-size: small">
                   </td>
-                  <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: small">
+                  <td style="border-bottom: 1px solid #000000;text-align: center;padding: 3px 3px;font-size: small">
                   </td>
-                  <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: larger;font-weight: bolder">
+                  <td style="border-bottom: 1px solid #000000;text-align: center;padding: 3px 3px;font-size: larger;font-weight: bolder">
                     {{ record.outTotalPrice }}
                   </td>
                 </tr>
               </table>
             </a-form>
           </a-col>
-
-
-          <a-col :span="24" style="margin-top: 5px">
+        </a-col>
+      </div>
+      <!-- 页脚  -->
+      <div class="sign" style="text-align: left;height: inherit">
+        <a-col :span="24" style="margin-top: 5px">
             <span style="margin-left: 3%">
               <!--仓库人员签字：-->
               发货员：
             </span>
-            <a-input style="width: 10%;text-align: left" />
-            <span style="margin-left: 3%">
+          <a-input style="width: 10%;text-align: left" />
+          <span style="margin-left: 3%">
               <!--销售人员签字：-->
               收货人：
             </span>
-            <a-input style="width: 10%;text-align: left" />
-          </a-col>
-        </div>
-      </a-col>
+          <a-input style="width: 10%;text-align: left" />
+        </a-col>
+      </div>
     </section>
   </j-modal>
   <!--</page-layout>-->
 </template>
 <script>
-
+  import Vue from 'vue'
   import {initDictOptions, filterMultiDictText} from '@/components/dict/JDictSelectUtil'
   import { httpAction } from '@/api/manage'
+  import Print from '@/utils/print'
+  import SplitPanel from "../../../jeecg/SplitPanel";
+  Vue.use(Print); //注册
 
   export default {
+    components: {SplitPanel},
     componens: {
 
     },
@@ -225,6 +348,9 @@
           { title: '出库金额', dataIndex: 'outTotalPrice',align:"center", width:"9%"  },
         ],
         dataSource: [],
+        divNumber:0,
+        batchPrint:false,
+        tableNumber:[],
         labelCol: {
           xs: { span: 24 },
           sm: { span: 2 },
@@ -250,7 +376,10 @@
       // 重写close方法
       close() {
         this.visible = false;
+        this.batchPrint = false;
         this.dataSource = [];
+        this.tableNumber = [];
+        this.divNumber = 0;
         this.$emit('close')
       },
       /** 关闭按钮 **/
@@ -258,21 +387,14 @@
         this.close()
       },
       show(record){
-        // for(let item of this.outTypeList){
-        //   if(item.value == record.outType){
-        //     record.outType = item.text;
-        //     break;
-        //   }
-        // }
-
         this.visible = true;
         this.dataSource = record.pdStockRecordDetailList;
+        this.printInit(this.dataSource);
         this.record = record;
         this.showApplyBy = true;
         if(this.record.outType == "4"){
           this.showApplyBy = false;
         }
-
         for (let item of this.dataSource){
           let registration = item.productRegistration.replace(/；/g, ";")
           let registrationList = [];
@@ -295,9 +417,7 @@
             let formData = Object.assign(this.model, values);
             httpAction(this.url.edit,formData,'put').then((res)=>{
               if(res.success){
-                // this.$message.success(res.message);
               }else{
-                // this.$message.warning(res.message);
               }
             }).finally(() => {
             })
@@ -308,26 +428,54 @@
         })
       },
       initDictConfig(){ //静态字典值加载
-        // initDictOptions('out_type').then((res) => {
-        //   if (res.success) {
-        //     this.outTypeList=res.result;
-        //     this.$set(this.dictOptions, 'outType', res.result)
-        //   }
-        // })
       },
       //打印字体设置
       customRow(record) {
         return {
           style: {
-            // 字体颜色
-            // color:  'rgba(0, 0, 0, 0.65)',
-            // 行背景色
-            // 'background-color':  '#ffffff',
             'font-weight': 600,
             'font-size': 'xx-small',
             'height':'10px',
           },
         }
+      },
+      printInit(data){
+        let number = data.length;
+        if(number>10){
+          this.batchPrint = true;
+        }
+        let num;
+        if(number%10==0){
+          num = parseInt(number/10);
+          for(let index =0;index<num;index++){
+            let lsData = [];
+            for(let i =0;i<10;i++){
+              lsData.push(data[index*10+i])
+            }
+            this.tableNumber.push(lsData);
+          }
+        }else{
+          num = parseInt(number/10);
+          if(num>0){
+            for(let index =0;index<num;index++){
+              let lsData = [];
+              for(let i =0;i<10;i++){
+                lsData.push(data[index*10+i]);
+              }
+              this.tableNumber.push(lsData);
+            }
+            let wsData = [];
+            let ws = parseInt(number%10);
+            for(let x =0;x<ws;x++){
+              wsData.push(data[num*10+x]);
+            }
+            this.tableNumber.push(wsData);
+          }else{
+            this.tableNumber.push(data);
+          }
+          num = num+1;
+        }
+        this.divNumber = num;
       },
     }
   }
