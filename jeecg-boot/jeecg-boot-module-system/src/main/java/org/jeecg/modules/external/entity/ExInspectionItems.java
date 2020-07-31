@@ -10,6 +10,7 @@ import lombok.experimental.Accessors;
 import org.jeecgframework.poi.excel.annotation.Excel;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 /**
@@ -116,7 +117,8 @@ public class ExInspectionItems{
     private String testItemCode;
     @Excel(name = "检查项目费用", width = 15)
     @ApiModelProperty(value = "检查项目费用")
-    private Double testItemCost;
+    private BigDecimal testItemCost;
+    //private Double testItemCost;
     @Excel(name = "读取状态", width = 15)
     @ApiModelProperty(value = "读取状态")
     private String acceptStatus;

@@ -237,6 +237,7 @@
         patientType as "patientType",
 		combinationCode as "testItemCode",
         combinationName as "testItemName",
+		testItemCost as "testItemCost",
 		testDate as "testDate"
       from  [v_spd_lis_jyxm]   where
        1=1
@@ -264,6 +265,7 @@
 		patientType as "patientType",
 		combinationCode as "testItemCode",
 		combinationName as "testItemName",
+		testItemCost as "testItemCost",
 		testDate as "testDate"
 		from  [v_spd_lis_jyxm_fc]   where
 		1=1
