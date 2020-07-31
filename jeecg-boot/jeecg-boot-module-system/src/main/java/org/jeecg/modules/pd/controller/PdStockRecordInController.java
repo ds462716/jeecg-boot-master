@@ -29,7 +29,6 @@ import org.jeecgframework.poi.excel.entity.ExportParams;
 import org.jeecgframework.poi.excel.view.JeecgEntityExcelView;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -481,6 +480,7 @@ public class PdStockRecordInController {
                                             @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize) {
         stockRecord.setRecordType(PdConstant.RECODE_TYPE_1);
         stockRecord.setAuditStatus(PdConstant.AUDIT_STATE_2);//只查已通过的明细
+        stockRecord.setInType(PdConstant.IN_TYPE_1);
         LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
         stockRecord.setInDepartId(sysUser.getCurrentDepartId());
         stockRecord.setDepartParentId(sysUser.getDepartParentId());

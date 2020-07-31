@@ -575,7 +575,7 @@ public class ConsumablesServiceImpl implements ConsumablesService {
                     return JSON.toJSONString(retMap);
                 }
                 PdProductStock productStock=new PdProductStock();
-                productStock.setProductFlag(PdConstant.PRODUCT_FLAG_1);
+                //productStock.setProductFlag(PdConstant.PRODUCT_FLAG_1);
                 productStock.setProductBarCode(uniqueCode);
                 productStock.setDepartId(kfId);
                 productStock.setNestatStatus(PdConstant.STOCK_NESTAT_STATUS_1);
