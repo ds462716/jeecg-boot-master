@@ -355,6 +355,7 @@ public class PdProductStockTotalController {
 			 for(PdProductStock stock : aList){
 				 PdProductStockUniqueCode stockUniqueCode=new PdProductStockUniqueCode();
 				 stockUniqueCode.setDepartParentId(sysUser.getDepartParentId());
+				 stockUniqueCode.setCodeState(PdConstant.CODE_PRINT_STATE_2);
 				 stockUniqueCode.setProductStockId(stock.getId());
 				 String uniqueCode=productStockUniqueCodeService.queryUniqueCode(stockUniqueCode);
 				 stock.setRefBarCodes(uniqueCode);

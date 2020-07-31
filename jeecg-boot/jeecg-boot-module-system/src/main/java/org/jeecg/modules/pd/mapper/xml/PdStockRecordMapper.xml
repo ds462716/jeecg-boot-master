@@ -287,10 +287,10 @@
             AND f.audit_status = #{entity.auditStatus}
         </if>
         <if test="entity.queryDateStart != null and entity.queryDateStart != ''">
-            AND a.create_time &gt;= #{entity.queryDateStart}
+            AND DATE_FORMAT(a.create_time, '%Y-%m-%d') &gt;= #{entity.queryDateStart}
         </if>
         <if test="entity.queryDateEnd != null and entity.queryDateEnd != ''">
-            AND a.create_time &lt;= #{entity.queryDateEnd}
+            AND DATE_FORMAT(a.create_time, '%Y-%m-%d') &lt;= #{entity.queryDateEnd}
         </if>
 		 GROUP BY  b.number
     </select>
@@ -329,6 +329,7 @@
         FROM pd_stock_record_detail a
         left join pd_stock_record b on a.record_id=b.id and  b.del_flag='0'
         where   b.record_type ='1'
+        AND b.in_type ='1'
         AND b.audit_status ='2'
         AND a.create_time > DATE_SUB(CURDATE(), INTERVAL 1 YEAR)
         AND substr(a.create_time,1,7) &lt;=substr(CURDATE(),1,7)
@@ -342,10 +343,10 @@
             AND b.in_depart_id = #{inDepartId}
         </if>
         <if test="queryDateStart != null and queryDateStart != ''">
-            AND a.create_time &gt;= #{queryDateStart}
+            AND DATE_FORMAT(a.create_time, '%Y-%m-%d') &gt;= #{queryDateStart}
         </if>
         <if test="queryDateEnd != null and queryDateEnd != ''">
-            AND a.create_time &lt;= #{queryDateEnd}
+            AND DATE_FORMAT(a.create_time, '%Y-%m-%d') &lt;= #{queryDateEnd}
         </if>
         ) c
         GROUP BY type;
@@ -369,6 +370,7 @@
         left join pd_stock_record b on a.record_id=b.id and  b.del_flag='0'
         where
         b.record_type ='1'
+        AND b.in_type ='1'
         AND b.audit_status ='2'
         AND a.create_time > DATE_SUB(CURDATE(), INTERVAL 1 YEAR)
         AND substr(a.create_time,1,7) &lt;=substr(CURDATE(),1,7)
@@ -382,10 +384,10 @@
             AND b.in_depart_id = #{inDepartId}
         </if>
         <if test="queryDateStart != null and queryDateStart != ''">
-            AND a.create_time &gt;= #{queryDateStart}
+            AND DATE_FORMAT(a.create_time, '%Y-%m-%d') &gt;= #{queryDateStart}
         </if>
         <if test="queryDateEnd != null and queryDateEnd != ''">
-            AND a.create_time &lt;= #{queryDateEnd}
+            AND DATE_FORMAT(a.create_time, '%Y-%m-%d') &lt;= #{queryDateEnd}
         </if>
         ) c
         GROUP BY type;
