@@ -626,6 +626,7 @@ public class PdProductServiceImpl extends ServiceImpl<PdProductMapper, PdProduct
                                 bottleInf.setRefBarCode(Barcode);//试剂对应条码
                                 bottleInf.setStockId(productStock_i.getId());//对应库存明细ID
                                 bottleInf.setRemarks("");//备注
+                                bottleInf.setStatus("0");
                                 bottleInf.setDepartId(sysUser.getCurrentDepartId());//所属部门
                                 bottleInf.setDepartParentId(sysUser.getDepartParentId());//所属机构
                                 bottleInf.setInstrCode(instrCode);//仪器设备code
@@ -706,6 +707,7 @@ public class PdProductServiceImpl extends ServiceImpl<PdProductMapper, PdProduct
                                     inf.setCloseDate(new Date());
                                     inf.setCloseBy(sysUser.getRealname());
                                     inf.setCloseRemarks(closeRemarks);
+                                    bottleInf.setStatus("1");
                                     pdBottleInfMapper.updateById(inf);
                                     //新增一条开瓶记录数据；
                                     PdBottleInf newBottleInf = new PdBottleInf();
@@ -715,6 +717,7 @@ public class PdProductServiceImpl extends ServiceImpl<PdProductMapper, PdProduct
                                     newBottleInf.setRefBarCode(inf.getRefBarCode());
                                     newBottleInf.setStockId(inf.getStockId());
                                     newBottleInf.setSpecNum(inf.getSpecNum());
+                                    newBottleInf.setStatus("0");
                                     pdBottleInfMapper.insert(newBottleInf);
                                 }
                             }else {
@@ -728,6 +731,7 @@ public class PdProductServiceImpl extends ServiceImpl<PdProductMapper, PdProduct
                                 inf.setCloseDate(new Date());
                                 inf.setCloseBy(sysUser.getRealname());
                                 inf.setCloseRemarks(closeRemarks);
+                                inf.setStatus("1");
                                 pdBottleInfMapper.updateById(inf);
                                 //批量更新条码状态
                                 PdProductStockUniqueCode productStockUniqueCode = new PdProductStockUniqueCode();

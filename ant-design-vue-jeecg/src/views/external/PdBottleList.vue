@@ -47,6 +47,14 @@
               </a-form-item>
             </a-col>
             <a-col :md="6" :sm="8">
+              <a-form-item label="使用状态">
+                <a-select placeholder="使用状态" :allowClear="true" v-model="queryParam.status" >
+                  <a-select-option value="0">正在使用</a-select-option>
+                  <a-select-option value="1">已使用完</a-select-option>
+                 </a-select>
+              </a-form-item>
+            </a-col>
+            <a-col :md="6" :sm="8">
               <a-form-item label="所属仪器">
                 <a-select
                   showSearch
@@ -177,11 +185,6 @@
             align:"center",
             dataIndex: 'refBarCode'
           },
-          /*{
-            title:'库存明细ID',
-            align:"center",
-            dataIndex: 'stockId'
-          },*/
           {
             title:'批次号',
             align:"center",
@@ -202,6 +205,11 @@
             align:"center",
             dataIndex: 'specQuantity'
           },
+           {
+           title:'剩余规格数量',
+           align:"center",
+           dataIndex: 'sySpecNum'
+         },
           {
             title:'规格单位',
             align:"center",

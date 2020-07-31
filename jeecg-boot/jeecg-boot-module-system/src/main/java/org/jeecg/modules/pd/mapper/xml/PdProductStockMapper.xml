@@ -684,7 +684,7 @@
 			<if test="barCodeType != null and barCodeType != ''">
 				AND a.bar_code_type = #{barCodeType}
 			</if>
-			order by  exp_status  desc,create_time desc
+			order by  exp_status  desc,c.number desc
 		</where>
 	</select>
 

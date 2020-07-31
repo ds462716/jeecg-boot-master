@@ -15,6 +15,7 @@ import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.pd.entity.*;
 import org.jeecg.modules.pd.service.*;
 import org.jeecg.modules.pd.vo.PdGoodsAllocationPage;
+import org.jeecg.modules.pd.vo.PdProductAllocationExcel;
 import org.jeecg.modules.pd.vo.PdProductStockExcel;
 import org.jeecg.modules.pd.vo.PdProductStockTotalPage;
 import org.jeecg.modules.system.entity.SysDepart;
@@ -448,15 +449,21 @@ public class PdProductStockTotalController {
 				stock.setRefBarCodes(uniqueCode);
 			}
 		}
-
-
-		List<PdProductStockExcel> exportList = JSON.parseArray(JSON.toJSONString(aList), PdProductStockExcel.class);
-		// Step.3 AutoPoi 导出Excel
+        // Step.3 AutoPoi 导出Excel
+		String exportType=productStock.getExportType();
 		ModelAndView mv = new ModelAndView(new JeecgEntityExcelView());
+		if(exportType.equals("2")){
+			List<PdProductAllocationExcel>  exportList = JSON.parseArray(JSON.toJSONString(aList), PdProductAllocationExcel.class);
+			mv.addObject(NormalExcelConstants.CLASS, PdProductAllocationExcel.class);
+			mv.addObject(NormalExcelConstants.DATA_LIST, exportList);
+		}else{
+			List<PdProductStockExcel>  exportList = JSON.parseArray(JSON.toJSONString(aList), PdProductStockExcel.class);
+			mv.addObject(NormalExcelConstants.CLASS, PdProductStockExcel.class);
+			mv.addObject(NormalExcelConstants.DATA_LIST, exportList);
+		}
 		mv.addObject(NormalExcelConstants.FILE_NAME, "库存明细列表");
-		mv.addObject(NormalExcelConstants.CLASS, PdProductStockExcel.class);
 		mv.addObject(NormalExcelConstants.PARAMS, new ExportParams("库存明细列表", "导出人:"+sysUser.getRealname(), "库存明细列表"));
-		mv.addObject(NormalExcelConstants.DATA_LIST, exportList);
+
 		return mv;
 	}
 

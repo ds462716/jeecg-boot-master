@@ -261,4 +261,7 @@ public class PdProductStock extends BaseEntity {
 	private String outRecordNo;//用于退货出库 查询库存
 	@TableField(exist = false)
 	private String inRecordNo;//用于退货到供应商 查询库存
+
+	@TableField(exist = false)
+	private String exportType;//导出按钮类型
 }

@@ -152,7 +152,9 @@
     <!-- 查询区域-END -->
     <!-- 操作按钮区域 -->
     <div class="table-operator">
-      <a-button type="primary" icon="download" @click="handleExportXls('库存明细')">导出</a-button>
+      <a-button type="primary" icon="download" @click="handleExportXls('库存明细','1')">导出</a-button>
+      <a-button type="primary" icon="download" @click="handleExportXls('库存明细','2')">盘点导出</a-button>
+
     </div>
     <!-- table区域-begin -->
     <div>
@@ -467,7 +469,7 @@
 
 
       /**重写导出方法**/
-      handleExportXls(fileName){
+      handleExportXls(fileName,exportType){
         if(!fileName || typeof fileName != "string"){
           fileName = "导出文件"
         }
@@ -477,6 +479,8 @@
           param['selections'] = this.selectedRowKeys.join(",")
         }
         console.log("导出参数",param)
+        param.exportType=exportType;
+        alert(param.exportType);
         downFile(this.url.exportXlsUrl,param).then((data)=>{
           if (!data) {
             this.$message.warning("文件下载失败")

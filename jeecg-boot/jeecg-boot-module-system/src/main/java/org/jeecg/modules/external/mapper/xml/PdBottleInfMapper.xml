@@ -9,6 +9,7 @@
         a.*,
         c.name as "productName",
         b.spec_quantity as "specQuantity",
+        (IFNULL(b.spec_quantity,0)  - IFNULL(a.spec_num,0))  as "sySpecNum",
         b.batch_no as "batchNo",
         b.exp_date as "expDate",
         e.name as "unitName",
@@ -51,6 +52,9 @@
         </if>
         <if test="entity.departParentId != null and entity.departParentId != ''">
             AND a.depart_parent_id = #{entity.departParentId}
+        </if>
+        <if test="entity.status != null and entity.status != ''">
+            AND a.status = #{entity.status}
         </if>
         <if test="entity.departIdList != null and entity.departIdList.size() > 0">
             AND a.depart_id IN

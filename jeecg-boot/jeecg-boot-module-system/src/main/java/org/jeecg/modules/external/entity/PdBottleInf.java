@@ -55,34 +55,38 @@ public class PdBottleInf extends BaseEntity {
     @ApiModelProperty(value = "所属部门")
     private String sysOrgCode;
 	/**开瓶操作人*/
-    @Excel(name = "开瓶操作人", width = 15)
+    //@Excel(name = "开瓶操作人", width = 15)
     @ApiModelProperty(value = "开瓶操作人")
     private String boottleBy;
+    @Excel(name = "所属部门", width = 15)
+    @TableField(exist = false)
+    private String departName;
+    @Excel(name = "产品名称", width = 15)
+    @TableField(exist = false)
+    private String productName;
+    /**试剂对应条码*/
+    @Excel(name = "试剂对应唯一码", width = 15)
+    @ApiModelProperty(value = "试剂对应唯一码")
+    private String refBarCode;
 	/**开瓶时间*/
     @Excel(name = "开瓶时间", width = 20, format = "yyyy-MM-dd HH:mm:ss")
     @JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd HH:mm:ss")
     @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
     @ApiModelProperty(value = "开瓶时间")
     private Date boottleDate;
-	/**试剂对应条码*/
-	@Excel(name = "试剂对应唯一码", width = 15)
-    @ApiModelProperty(value = "试剂对应唯一码")
-    private String refBarCode;
 	/**对应库存明细ID*/
     @ApiModelProperty(value = "对应库存明细ID")
     private String stockId;
-    /**使用規格數量*/
-    @Excel(name = "使用規格數量", width = 15)
-    @ApiModelProperty(value = "使用規格數量")
-    private Double specNum;
-	/**闭瓶时间*/
-    @Excel(name = "闭瓶时间", width = 20, format = "yyyy-MM-dd HH:mm:ss")
+    @ApiModelProperty(value = "使用状态")
+    private String status; //使用状态
+    /**闭瓶时间*/
+    //@Excel(name = "闭瓶时间", width = 20, format = "yyyy-MM-dd HH:mm:ss")
     @JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd HH:mm:ss")
     @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
     @ApiModelProperty(value = "闭瓶时间")
     private Date closeDate;
 	/**闭瓶操作人*/
-	@Excel(name = "闭瓶操作人", width = 15)
+	//@Excel(name = "闭瓶操作人", width = 15)
     @ApiModelProperty(value = "闭瓶操作人")
     private String closeBy;
 	/**备注*/
@@ -99,25 +103,19 @@ public class PdBottleInf extends BaseEntity {
     @ApiModelProperty(value = "所属机构")
     private String departParentId;
     /**检验仪器代号*/
-    @Excel(name = "检验仪器代号", width = 15)
+    //@Excel(name = "检验仪器代号", width = 15)
     @ApiModelProperty(value = "检验仪器代号")
     private String instrCode;
     @TableField(exist = false)
     private String bottleType;//操作类型   1：开瓶   2：闭瓶
     @TableField(exist = false)
     private List<PdProductStock> pdProductStockList;
-    @Excel(name = "产品名称", width = 15)
-    @TableField(exist = false)
-    private String productName;
     @TableField(exist = false)
     private String number;//产品编号
     @TableField(exist = false)
     private String bidingNumber;//中标号
     @TableField(exist = false)
     private String productId;//产品ID
-    @Excel(name = "所属部门", width = 15)
-    @TableField(exist = false)
-    private String departName;
     @Excel(name = "单位名称", width = 15)
     @TableField(exist = false)
     private String unitName;
@@ -125,6 +123,12 @@ public class PdBottleInf extends BaseEntity {
     @Excel(name = "产品规格数量", width = 15)
     @TableField(exist = false)
     private Double specQuantity;
+    /**使用規格數量*/
+    @Excel(name = "使用規格數量", width = 15)
+    @ApiModelProperty(value = "使用規格數量")
+    private Double specNum;
+    @Excel(name = "剩余规格数量", width = 15)
+    private Double sySpecNum; //剩余规格数量
     @TableField(exist = false)
     private String venderName; //生产厂家
     @TableField(exist = false)
@@ -141,14 +145,11 @@ public class PdBottleInf extends BaseEntity {
     @DateTimeFormat(pattern="yyyy-MM-dd")
     @TableField(exist = false)
     private Date expDate;
-
     /*多个部门集合*/
     @TableField(exist = false)
     private List<String> departIdList;
-
     @TableField(exist = false)
     private String departIds; //批量查询用
-
     @TableField(exist = false)
     private Double num; //使用数量
     @TableField(exist = false)
@@ -165,5 +166,6 @@ public class PdBottleInf extends BaseEntity {
     private String filterType;
     @TableField(exist = false)
     private String instrCodes; //批量查询仪器用
+
 
 }
