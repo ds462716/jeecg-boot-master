@@ -707,7 +707,7 @@ public class PdProductServiceImpl extends ServiceImpl<PdProductMapper, PdProduct
                                     inf.setCloseDate(new Date());
                                     inf.setCloseBy(sysUser.getRealname());
                                     inf.setCloseRemarks(closeRemarks);
-                                    bottleInf.setStatus("1");
+                                    inf.setStatus("1");
                                     pdBottleInfMapper.updateById(inf);
                                     //新增一条开瓶记录数据；
                                     PdBottleInf newBottleInf = new PdBottleInf();
