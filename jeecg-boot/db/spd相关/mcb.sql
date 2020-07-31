@@ -34,3 +34,6 @@ INSERT INTO `sys_dict_item` VALUES ('1285398487503114242', '1285398280212221953'
 -- 2020年7月31日 18:52:59  增加使用状态
 ALTER TABLE  `pd_bottle_inf`
 ADD COLUMN `status` varchar(4) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT 0 COMMENT '使用状态' AFTER `instr_code`;
+-- 2020年7月31日 18:52:59  修改字段类型
+ALTER TABLE  `ex_inspection_items`
+MODIFY COLUMN `test_item_cost` decimal(12, 4) NULL DEFAULT NULL COMMENT '检查项目费用' AFTER `test_item_code`;

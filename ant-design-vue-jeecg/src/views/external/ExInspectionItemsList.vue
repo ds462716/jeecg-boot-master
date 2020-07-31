@@ -227,6 +227,11 @@
             dataIndex: 'testItemCode'
           },
           {
+            title:'检查费用',
+            align:"center",
+            dataIndex: 'testItemCost'
+          },
+          {
             title:'扣减状态',
             align:"center",
             dataIndex: 'acceptStatus',
