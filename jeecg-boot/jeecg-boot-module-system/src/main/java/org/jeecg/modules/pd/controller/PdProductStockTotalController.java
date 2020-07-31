@@ -355,7 +355,7 @@ public class PdProductStockTotalController {
 			 for(PdProductStock stock : aList){
 				 PdProductStockUniqueCode stockUniqueCode=new PdProductStockUniqueCode();
 				 stockUniqueCode.setDepartParentId(sysUser.getDepartParentId());
-				 stockUniqueCode.setCodeState(PdConstant.CODE_PRINT_STATE_1);
+				 stockUniqueCode.setCodeState(PdConstant.CODE_PRINT_STATE_0);
 				 stockUniqueCode.setProductStockId(stock.getId());
 				 String uniqueCode=productStockUniqueCodeService.queryUniqueCode(stockUniqueCode);
 				 stock.setRefBarCodes(uniqueCode);
@@ -443,6 +443,7 @@ public class PdProductStockTotalController {
 				PdProductStockUniqueCode stockUniqueCode=new PdProductStockUniqueCode();
 				stockUniqueCode.setDepartParentId(sysUser.getDepartParentId());
 				stockUniqueCode.setProductStockId(stock.getId());
+				stockUniqueCode.setCodeState(PdConstant.CODE_PRINT_STATE_0);
 				String uniqueCode=productStockUniqueCodeService.queryUniqueCode(stockUniqueCode);
 				stock.setRefBarCodes(uniqueCode);
 			}
