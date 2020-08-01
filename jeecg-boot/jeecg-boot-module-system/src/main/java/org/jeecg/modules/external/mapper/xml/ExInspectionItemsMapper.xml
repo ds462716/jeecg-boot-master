@@ -145,4 +145,57 @@
       and  DATE_SUB(CURDATE(), INTERVAL 2 DAY)  &lt;= date(a.test_date)
 
     </select>
+
+
+
+
+    <select id="inspectionMonthQuery" resultType="org.jeecg.modules.external.entity.ExInspectionItems"   parameterType="org.jeecg.modules.external.entity.ExInspectionItems">
+        select rr.month ,
+        sum(test_item_cost) as "itemPrice",
+        sum(num)  as "itemNum" from (
+        SELECT  DATE_FORMAT(x.Month, '%Y-%m') as month,null as test_item_cost, null as num    FROM   XNumber x
+        where  x.Month > DATE_SUB(CURDATE(), INTERVAL 1 YEAR)
+        and substr(x.Month,1,7) &lt;=substr(CURDATE(),1,7)
+        union all
+        select DATE_FORMAT(a.create_time, '%Y-%m') AS month, test_item_cost ,  "1"  as num
+        from ex_inspection_items a
+        left join ex_lab_instr_inf b on b.instr_code=a.instr_code
+        where
+        a.create_time > DATE_SUB(CURDATE(), INTERVAL 1 YEAR)
+        AND substr(a.create_time,1,7) &lt;=substr(CURDATE(),1,7)
+        <if test="month != null and month != ''">
+            AND DATE_FORMAT(a.create_time, '%Y-%m') =#{month}
+        </if>
+        <if test="departId != null and departId != ''">
+            b.test_depart_id=#{departId}
+        </if>
+        ) rr
+        where num>0
+        GROUP BY rr.month
+    </select>
+
+
+    <select id="selectExInsepectionMonth" resultType="org.jeecg.modules.external.entity.ExInspectionItems" parameterType="org.jeecg.modules.external.entity.ExInspectionItems">
+        select
+        tt.testItemName as "testItemName",
+        tt.testItemCode AS "testItemCode",
+        sum(tt.itemNum) as "itemNum",
+        sum(tt.itemPrice) as "itemPrice"
+        from (
+        SELECT test_item_name AS "testItemName", test_item_code AS "testItemCode", "1" AS "itemNum", test_item_cost AS
+        "itemPrice"
+        FROM ex_inspection_items a
+        WHERE 1 = 1
+        <if test="entity.month != null and entity.month != ''">
+            AND DATE_FORMAT(a.create_time, '%Y-%m') =#{entity.month}
+        </if>
+        <if test="entity.testItemName != null and entity.testItemName != ''">
+            AND a.test_item_name LIKE concat('%',#{entity.testItemName},'%')
+        </if>
+        <if test="entity.testItemCode != null and entity.testItemCode != ''">
+            AND a.test_item_code LIKE concat('%',#{entity.testItemCode},'%')
+        </if>
+        ) tt
+        GROUP BY tt.testItemName
+    </select>
 </mapper>

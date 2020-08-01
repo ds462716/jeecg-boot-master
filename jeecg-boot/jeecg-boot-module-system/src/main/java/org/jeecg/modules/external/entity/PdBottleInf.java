@@ -151,7 +151,7 @@ public class PdBottleInf extends BaseEntity {
     @TableField(exist = false)
     private String departIds; //批量查询用
     @TableField(exist = false)
-    private Double num; //使用数量
+    private Double num; //试剂使用数量
     @TableField(exist = false)
     private String specUnitName; //规格单位名称
     @TableField(exist = false)
@@ -166,6 +166,19 @@ public class PdBottleInf extends BaseEntity {
     private String filterType;
     @TableField(exist = false)
     private String instrCodes; //批量查询仪器用
-
+    @TableField(exist = false)
+    private String month; //使用月份
+    @TableField(exist = false)
+    private Double itemNum; //检验项目数量
+    @TableField(exist = false)
+    private BigDecimal itemPrice; //检验项目总费用
+    /** 查询日期起始 **/
+    @TableField(exist = false)
+    private String queryDateStart;
+    /** 查询日期结束 **/
+    @TableField(exist = false)
+    private String queryDateEnd;
+    @TableField(exist = false)
+    private String spec; //产品规格
 
 }

@@ -318,4 +318,17 @@ public class ExInspectionItemsController extends JeecgController<ExInspectionIte
 		return Result.ok(pageList);
 	}
 
+	/**
+	 *  统计查询 --检验项目明细（月份统计）
+	 */
+	@GetMapping(value = "selectExInsepectionMonth")
+	public Result<?> selectExInsepectionMonth(ExInspectionItems exInspectionItems,
+										  @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
+										  @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize) {
+		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		exInspectionItems.setDepartParentId(sysUser.getDepartParentId());
+		Page<ExInspectionItems> page = new Page<ExInspectionItems>(pageNo, pageSize);
+		IPage<ExInspectionItems> pageList = exInspectionItemsService.selectExInsepectionMonth(page, exInspectionItems);//
+		return Result.ok(pageList);
+	}
 }

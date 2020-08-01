@@ -10,9 +10,12 @@ import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.system.base.controller.JeecgController;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.oConvertUtils;
+import org.jeecg.modules.external.entity.ExInspectionItems;
 import org.jeecg.modules.external.entity.PdBottleInf;
+import org.jeecg.modules.external.service.IExInspectionItemsService;
 import org.jeecg.modules.external.service.IPdBottleInfService;
 import org.jeecg.modules.external.vo.PdBottleInfExlce;
+import org.jeecg.modules.external.vo.PdBottleInfMonthExlce;
 import org.jeecg.modules.pd.service.IPdDepartService;
 import org.jeecg.modules.system.entity.SysDepart;
 import org.jeecgframework.poi.excel.def.NormalExcelConstants;
@@ -41,6 +44,8 @@ public class PdBottleInfController extends JeecgController<PdBottleInf, IPdBottl
 	private IPdBottleInfService pdBottleInfService;
 	@Autowired
 	private IPdDepartService pdDepartService;
+	@Autowired
+	private IExInspectionItemsService exInspectionItemsService;
 	/**
 	 * 分页列表查询
 	 *
@@ -228,5 +233,85 @@ public class PdBottleInfController extends JeecgController<PdBottleInf, IPdBottl
 		mv.addObject(NormalExcelConstants.PARAMS, new ExportParams("试剂消耗报表数据", "导出人:" + sysUser.getRealname(), "试剂消耗报表"));
 		mv.addObject(NormalExcelConstants.DATA_LIST, exportList);
 		return mv;
+	}
+
+
+
+	/**
+	 * 统计查询  -- 月检验项目收费金额统计
+	 */
+	@GetMapping(value = "inspectionMonthQuery")
+	public Result<?> inspectionMonthQuery(PdBottleInf pdBottleInf,
+										  @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
+										  @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize) {
+		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		pdBottleInf.setDepartParentId(sysUser.getDepartParentId());
+		Page<PdBottleInf> page = new Page<PdBottleInf>(pageNo, pageSize);
+		IPage<PdBottleInf> pageList = pdBottleInfService.inspectionMonthQuery(page, pdBottleInf);//
+		 List<PdBottleInf> list=  pageList.getRecords();
+		 if(oConvertUtils.isNotEmpty(list)){
+			 for(PdBottleInf  inf:  list ){
+			 String month=inf.getMonth();
+				 ExInspectionItems items=new ExInspectionItems();
+				 items.setMonth(month);
+				 items= exInspectionItemsService.inspectionMonthQuery(items);
+				 if(oConvertUtils.isNotEmpty(items)){
+					 inf.setItemNum(items.getItemNum());
+					 inf.setItemPrice(items.getItemPrice());
+				 }
+			 }
+		 }
+ 		return Result.ok(pageList);
+	}
+
+
+
+	/**
+	 * 导出excel(月消耗及费用统计报表导出)
+	 *
+	 * @param request
+	 * @param pdBottleInf
+	 */
+	@RequestMapping(value = "/monthQueryExportXls")
+	public ModelAndView monthQueryExportXls(HttpServletRequest request, PdBottleInf pdBottleInf) {
+		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		pdBottleInf.setDepartParentId(sysUser.getDepartParentId());
+		List<PdBottleInf> list = pdBottleInfService.inspectionMonthQuery(pdBottleInf);//
+		if(oConvertUtils.isNotEmpty(list)){
+			for(PdBottleInf  inf:  list ){
+				String month=inf.getMonth();
+				ExInspectionItems items=new ExInspectionItems();
+				items.setMonth(month);
+				items= exInspectionItemsService.inspectionMonthQuery(items);
+				if(oConvertUtils.isNotEmpty(items)){
+					inf.setItemNum(items.getItemNum());
+					inf.setItemPrice(items.getItemPrice());
+				}
+			}
+		}
+		List<PdBottleInfMonthExlce> exportList = JSON.parseArray(JSON.toJSONString(list), PdBottleInfMonthExlce.class);
+		// Step.4 AutoPoi 导出Excel
+		ModelAndView mv = new ModelAndView(new JeecgEntityExcelView());
+		mv.addObject(NormalExcelConstants.FILE_NAME, "月消耗及费用统计报表");
+		mv.addObject(NormalExcelConstants.CLASS, PdBottleInfMonthExlce.class);
+		mv.addObject(NormalExcelConstants.PARAMS, new ExportParams("月消耗及费用统计", "导出人:" + sysUser.getRealname(), "月消耗及费用统计报表"));
+		mv.addObject(NormalExcelConstants.DATA_LIST, exportList);
+		return mv;
+	}
+
+
+
+	/**
+	 *  统计查询 --试剂消耗明细（月份统计）
+	 */
+	@GetMapping(value = "selectBottleInfMonth")
+	public Result<?> selectBottleInfMonth(PdBottleInf pdBottleInf,
+										  @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
+										  @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize) {
+		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		pdBottleInf.setDepartParentId(sysUser.getDepartParentId());
+		Page<PdBottleInf> page = new Page<PdBottleInf>(pageNo, pageSize);
+		IPage<PdBottleInf> pageList = pdBottleInfService.selectBottleInfMonth(page, pdBottleInf);//
+		return Result.ok(pageList);
 	}
 }

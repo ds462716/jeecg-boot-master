@@ -52,6 +52,22 @@ public class PdBottleInfServiceImpl extends ServiceImpl<PdBottleInfMapper, PdBot
     public List<HashMap> queryRecordViewCount(PdBottleInf pdBottleInf) {
         return pdBottleInfMapper.queryRecordViewCount(pdBottleInf);
     }
+
+
+    @Override
+    public Page<PdBottleInf> inspectionMonthQuery(Page<PdBottleInf> page, PdBottleInf pdBottleInf) {
+        return pdBottleInfMapper.inspectionMonthQuery(page,pdBottleInf);
+    }
+
+    @Override
+    public List<PdBottleInf> inspectionMonthQuery(PdBottleInf pdBottleInf) {
+        return pdBottleInfMapper.inspectionMonthQuery(pdBottleInf);
+    }
+
+    @Override
+    public Page<PdBottleInf> selectBottleInfMonth(Page<PdBottleInf> page, PdBottleInf pdBottleInf) {
+        return pdBottleInfMapper.selectBottleInfMonth(page,pdBottleInf);
+    }
 }
 
 

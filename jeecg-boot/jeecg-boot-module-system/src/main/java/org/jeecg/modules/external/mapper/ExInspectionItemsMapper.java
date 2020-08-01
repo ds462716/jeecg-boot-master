@@ -23,4 +23,11 @@ public interface ExInspectionItemsMapper extends BaseMapper<ExInspectionItems> {
 
     Page<ExInspectionItems> patientListPage(Page<ExInspectionItems> page, @Param("entity") ExInspectionItems entity);
 
+
+     ExInspectionItems  inspectionMonthQuery(ExInspectionItems exInspectionItems);
+
+
+    Page<ExInspectionItems> selectExInsepectionMonth(Page<ExInspectionItems> page, @Param("entity") ExInspectionItems entity);
+
+
 }

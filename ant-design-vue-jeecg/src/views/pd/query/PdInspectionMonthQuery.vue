@@ -14,53 +14,8 @@
               <a-input placeholder="请输入编号" v-model="queryParam.number"></a-input>
             </a-form-item>
           </a-col>
-          <a-col :md="6" :sm="8">
-            <a-form-item label="生产厂家">
-              <a-select
-                showSearch
-                :venderId="venderValue"
-                placeholder="请选择生产厂家"
-                :defaultActiveFirstOption="false"
-                :allowClear="true"
-                :showArrow="true"
-                :filterOption="false"
-                @search="venderHandleSearch"
-                @change="venderHandleChange"
-                @focus="venderHandleSearch"
-                :notFoundContent="notFoundContent"
-                v-model="queryParam.venderId"
-              >
-                <a-select-option v-for="d in venderData" :key="d.value">{{d.text}}</a-select-option>
-              </a-select>
-            </a-form-item>
-          </a-col>
+
           <template v-if="toggleSearchStatus">
-            <a-col :md="6" :sm="8">
-              <a-form-item label="供应商">
-                <a-select
-                  ref="supplierSelect"
-                  showSearch
-                  :supplierId="supplierValue"
-                  placeholder="请选择供应商"
-                  :defaultActiveFirstOption="false"
-                  :showArrow="true"
-                  :allowClear="true"
-                  :filterOption="false"
-                  @search="supplierHandleSearch"
-                  @change="supplierHandleChange"
-                  @focus="supplierHandleSearch"
-                  :notFoundContent="notFoundContent"
-                  v-model="queryParam.supplierId"
-                >
-                  <a-select-option v-for="d in supplierData" :key="d.value">{{d.text}}</a-select-option>
-                </a-select>
-              </a-form-item>
-            </a-col>
-            <a-col :md="6" :sm="8">
-              <a-form-item label="使用日期">
-                <a-range-picker @change="dateChange" v-model="queryParam.queryDate"/>
-              </a-form-item>
-            </a-col>
           </template>
 
           <a-col :md="6" :sm="8">
@@ -88,19 +43,23 @@
         ref="table"
         size="middle"
         bordered
-        rowKey="productId"
+        rowKey="month"
         :columns="columns"
         :dataSource="dataSource"
         :pagination="ipagination"
         :loading="loading"
          @change="handleTableChange">
         <span slot="action" slot-scope="text, record">
-          <a @click="queryDetail(record)">图表查看</a>
+          <a @click="queryBottleDetail(record)">试剂消耗明细</a>
+           <a-divider type="vertical" />
+            <a @click="queryItemDetail(record)">检验项目明细</a>
         </span>
+
       </a-table>
     </div>
-    <inspection-chart-multid ref="modalForm" @ok="modalFormOk"></inspection-chart-multid>
-  </a-card>
+    <pd-bottle-inf-modal ref="modalForm" @ok="modalFormOk"></pd-bottle-inf-modal>
+    <pd-inspection-item-modal  ref="modalForm1" @ok="modalFormOk"></pd-inspection-item-modal>
+   </a-card>
 </template>
 <script>
 
@@ -109,19 +68,21 @@
   import { JeecgListMixin} from '@/mixins/JeecgListMixin'
   import {initDictOptions, filterMultiDictText} from '@/components/dict/JDictSelectUtil'
   import JDictSelectTagExpand from "@/components/dict/JDictSelectTagExpand"
-  import inspectionChartMultid from '../modules/inspectionChartMultid'
+  import pdBottleInfModal from '../modules/PdBottleInfModal'
+  import pdInspectionItemModal from '../modules/PdInspectionItemModal'
 
 
   export default {
-    name: "PdInspectionReportQuery",
+    name: "PdInspectionMonthQuery",
     mixins:[JeecgListMixin],
     components: {
-      inspectionChartMultid,
+      pdBottleInfModal,
+      pdInspectionItemModal,
       JDictSelectTagExpand
     },
     data () {
       return {
-        description: '试剂消耗报表',
+        description: '月报表',
         notFoundContent:"未找到内容",
         venderValue: undefined,
         venderData: [],
@@ -140,57 +101,30 @@
             }
           },
           {
-            title:'试剂编号',
+            title:'统计月份',
             align:"center",
             width:'200px',
-            dataIndex: 'number'
+            dataIndex: 'month'
           },
           {
-            title:'试剂名称',
+            title:'试剂消耗金额',
             align:"center",
-            width:'450px',
-            dataIndex: 'productName'
-          },
-          {
-            title:'中标号',
-            align:"center",
-            width:'80px',
-            dataIndex: 'bidingNumber'
-          },
-          {
-            title:'规格数量',
-            align:"center",
-            width:'80px',
-            dataIndex: 'specQuantity'
-          },
-          {
-            title:'规格单位',
-            align:"center",
-            width:'80px',
-            dataIndex: 'specUnitName'
-          },
-          {
-            title:'消耗总数量',
-            align:"center",
-            width:'100px',
-            dataIndex: 'num'
-          },
-          {
-            title:'单位',
-            align:"center",
-            width:'100px',
-            dataIndex: 'unitName'
-          },
-          {
-            title:'消耗总金额',
-            align:"center",
-            width:'90px',
             dataIndex: 'totalPrice'
           },
           {
-            title:'生产厂家',
+            title:'试剂消耗数量',
             align:"center",
-            dataIndex: 'venderName'
+            dataIndex: 'num'
+          },
+          {
+            title:'检验总收入金额',
+            align:"center",
+            dataIndex: 'itemPrice'
+          },
+          {
+            title:'检验项目总数量',
+            align:"center",
+            dataIndex: 'itemNum'
           },
           {
             title: '操作',
@@ -200,10 +134,8 @@
           }
         ],
         url: {
-          list: "/pd/pdBottleInf/bottleInfReportQuery",
-          exportXlsUrl: "/pd/pdBottleInf/ReportQueryExportXls",
-          queryVender:"/pd/pdVender/getVenderList",
-          querySupplier:"/pd/pdSupplier/getSupplierList",
+          list: "/pd/pdBottleInf/inspectionMonthQuery",
+          exportXlsUrl: "/pd/pdBottleInf/monthQueryExportXls",
         },
         dictOptions:{
 
@@ -220,49 +152,21 @@
       initDictConfig(){ //静态字典值加载
 
       },
-      dateChange: function (value, dateString) {
-        this.queryParam.queryDateStart=dateString[0];
-        this.queryParam.queryDateEnd=dateString[1];
-      },
-      //生产厂家查询start
-      venderHandleSearch(value) {
-        this.getList(value,this.url.queryVender,"2");
-      },
-      venderHandleChange(value) {
-        this.venderValue = value;
-        this.getList(value,this.url.queryVender,"2");
-      },
-      //生产厂家查询end
-
-      //供应商查询start
-      supplierHandleSearch(value) {
-        this.getList(value,this.url.querySupplier,"1");
-      },
-      supplierHandleChange(value) {
-        this.supplierValue = value;
-        this.getList(value,this.url.querySupplier,"1");
-      },
-      getList(value,url,flag){
-        getAction(url,{name:value}).then((res)=>{
-          if (!res.success) {
-            this.cmsFailed(res.message);
+      loadData(arg) {
+        //加载数据 若传入参数1则加载第一页的内容
+        if (arg === 1) {
+          this.ipagination.current = 1;
+        }
+        var params = this.getQueryParams();//查询条件
+        this.loading = true;
+        getAction(this.url.list, params).then((res) => {
+          if (res.success) {
+            this.dataSource = res.result.records;
+            this.ipagination.total = res.result.total;
           }
-          const result = res.result;
-          const data = [];
-          result.forEach(r => {
-            data.push({
-              value: r.id,
-              text: r.name,
-            });
-          });
-          if(flag == "1"){
-            this.supplierData = data;
-          }else if(flag == "2"){
-            this.venderData = data;
-          }
+          this.loading = false;
         })
       },
-
       getQueryParams() {
         //获取查询条件
         let sqp = {}
@@ -273,7 +177,6 @@
         param.field = this.getQueryField();
         param.pageNo = this.ipagination.current;
         param.pageSize = this.ipagination.pageSize;
-        delete param.queryDate; //范围参数不传递后台，传后台会报错
         return filterObj(param);
       },
       /**重写导出方法**/
@@ -307,10 +210,15 @@
           }
         })
       },
-      //图表信息查看
-      queryDetail(record){
+      //试剂消耗明细
+      queryBottleDetail(record){
           this.$refs.modalForm.edit(record);
           this.$refs.modalForm.disableSubmit = false;
+      },
+      //检验项目明细
+      queryItemDetail(record){
+        this.$refs.modalForm1.edit(record);
+        this.$refs.modalForm1.disableSubmit = false;
       },
     }
   }

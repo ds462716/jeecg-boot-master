@@ -48,4 +48,10 @@ public interface PdBottleInfMapper extends BaseMapper<PdBottleInf> {
 
     List<PdBottleInf> bottleInfReportQuery(@Param("entity") PdBottleInf entity);
 
+    Page<PdBottleInf> inspectionMonthQuery(Page<PdBottleInf> page, @Param("entity") PdBottleInf entity);
+
+    List<PdBottleInf> inspectionMonthQuery(@Param("entity") PdBottleInf entity);
+
+    Page<PdBottleInf> selectBottleInfMonth(Page<PdBottleInf> page, @Param("entity") PdBottleInf entity);
+
 }

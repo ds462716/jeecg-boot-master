@@ -162,4 +162,15 @@ public class ExInspectionItemsServiceImpl extends ServiceImpl<ExInspectionItemsM
     public Page<ExInspectionItems> patientList(Page<ExInspectionItems> page, ExInspectionItems exInspectionItems) {
         return exInspectionItemsMapper.patientListPage(page,exInspectionItems);
     }
+
+
+    @Override
+    public  ExInspectionItems  inspectionMonthQuery(ExInspectionItems exInspectionItems) {
+        return exInspectionItemsMapper.inspectionMonthQuery(exInspectionItems);
+    }
+
+    @Override
+    public Page<ExInspectionItems> selectExInsepectionMonth(Page<ExInspectionItems> page, ExInspectionItems exInspectionItems) {
+        return exInspectionItemsMapper.selectExInsepectionMonth(page,exInspectionItems);
+    }
 }

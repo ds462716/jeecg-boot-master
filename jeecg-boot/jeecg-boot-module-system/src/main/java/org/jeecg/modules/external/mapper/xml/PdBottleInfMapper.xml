@@ -183,6 +183,12 @@
         <if test="entity.number != null and entity.number != ''">
             AND c.number   LIKE concat('%',#{entity.number},'%')
         </if>
+        <if test="entity.queryDateStart != null and entity.queryDateStart != ''">
+            AND DATE_FORMAT(a.create_time, '%Y-%m-%d') &gt;= #{entity.queryDateStart}
+        </if>
+        <if test="entity.queryDateEnd != null and entity.queryDateEnd != ''">
+            AND DATE_FORMAT(a.create_time, '%Y-%m-%d') &lt;= #{entity.queryDateEnd}
+        </if>
 	GROUP BY productId
 
     </select>
@@ -256,5 +262,76 @@
         </if>
         ) c
         GROUP BY  type
+    </select>
+
+
+
+    <select id="inspectionMonthQuery"  resultType="org.jeecg.modules.external.entity.PdBottleInf">
+        select
+        tt.month as "month",sum(tt.je) as  "totalPrice" ,
+        sum(tt.num) as  "num"  from (
+        SELECT  DATE_FORMAT(x.Month, '%Y-%m') as month,null as je, null as num    FROM   XNumber x
+        where  x.Month > DATE_SUB(CURDATE(), INTERVAL 1 YEAR)
+        and substr(x.Month,1,7) &lt;=substr(CURDATE(),1,7)
+        union all
+        select DATE_FORMAT(a.create_time, '%Y-%m') AS month,d.selling_price  AS je, "1" as num
+        from pd_bottle_inf a
+        left join pd_product_stock b on a.stock_id=b.id
+        left join pd_stock_record_detail d on d.id=b.record_detail_id
+        left join pd_product c on c.id=b.product_id
+        where a.status='1'  and a.close_remarks !='2'
+        <if test="entity.departParentId != null and  entity.departParentId != ''">
+            AND a.depart_parent_id = #{entity.departParentId}
+        </if>
+        <if test="entity.departId != null and  entity.departId != ''">
+            AND a.depart_id = #{entity.departId}
+        </if>
+        AND a.create_time > DATE_SUB(CURDATE(), INTERVAL 1 YEAR)
+        AND substr(a.create_time,1,7) &lt;=substr(CURDATE(),1,7)
+        ) tt
+        where num>0
+        GROUP BY tt.month
+    </select>
+
+
+    <select id="selectBottleInfMonth"  resultType="org.jeecg.modules.external.entity.PdBottleInf">
+     select c.name as "productName",
+     c.number as "number",
+     c.spec as "spec",
+     e.name as "unitName",
+     sum(d.selling_price)  AS "totalPrice",
+     sum(1) as "num"
+     from pd_bottle_inf a
+    left join pd_product_stock b on a.stock_id=b.id
+    left join pd_stock_record_detail d on d.id=b.record_detail_id
+    left join pd_product c on b.product_id=c.id
+    left join pd_unit e on e.id=c.unit_id
+    where a.status='1'  and a.close_remarks !='2'
+        <if test="entity.departParentId != null and  entity.departParentId != ''">
+            AND a.depart_parent_id = #{entity.departParentId}
+        </if>
+        <if test="entity.departId != null and  entity.departId != ''">
+            AND a.depart_id = #{entity.departId}
+        </if>
+        <if test="entity.productName != null and  entity.productName != ''">
+            AND (c.name LIKE concat('%',#{entity.productName},'%')
+            or c.py LIKE concat('%',#{entity.productName},'%')
+            or c.wb LIKE concat('%',#{entity.productName},'%')
+            or c.zdy LIKE concat('%',#{entity.productName},'%')
+            or c.bname LIKE concat('%',#{entity.productName},'%')
+            or c.bpy LIKE concat('%',#{entity.productName},'%')
+            or c.bwb LIKE concat('%',#{entity.productName},'%')
+            )
+        </if>
+        <if test="entity.number != null and  entity.number != ''">
+            AND c.number  LIKE concat('%',#{entity.number},'%')
+        </if>
+        <if test="entity.spec != null and  entity.spec != ''">
+            AND c.spec  LIKE concat('%',#{entity.spec},'%')
+        </if>
+        <if test="entity.month != null and  entity.month != ''">
+            AND DATE_FORMAT(a.create_time, '%Y-%m')  = #{entity.month}
+        </if>
+        group by c.number
     </select>
 </mapper>

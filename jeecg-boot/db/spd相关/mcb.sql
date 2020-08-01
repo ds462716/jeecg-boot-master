@@ -37,3 +37,5 @@ ADD COLUMN `status` varchar(4) CHARACTER SET utf8 COLLATE utf8_general_ci NULL D
 -- 2020年7月31日 18:52:59  修改字段类型
 ALTER TABLE  `ex_inspection_items`
 MODIFY COLUMN `test_item_cost` decimal(12, 4) NULL DEFAULT NULL COMMENT '检查项目费用' AFTER `test_item_code`;
+
+INSERT INTO `sys_permission`  VALUES ('1289532174829174785', '1218785597982052353', '月消耗费用统计(市立)', '/pd/query/PdInspectionMonth', 'pd/query/PdInspectionMonthQuery', NULL, NULL, 1, '0', NULL, '1', 2.00, 0, NULL, 1, 1, 0, 0, NULL, 'admin', '2020-08-01 20:03:23', 'admin', '2020-08-01 20:03:33', 0, 0, '1', 0);

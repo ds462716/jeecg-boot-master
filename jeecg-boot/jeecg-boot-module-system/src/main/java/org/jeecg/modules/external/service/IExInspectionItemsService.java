@@ -31,4 +31,8 @@ public interface IExInspectionItemsService extends IService<ExInspectionItems> {
 
     IPage<ExInspectionItems> patientList(Page<ExInspectionItems> pageList, ExInspectionItems exInspectionItems);
 
+    ExInspectionItems inspectionMonthQuery(ExInspectionItems exInspectionItems);
+
+    IPage<ExInspectionItems> selectExInsepectionMonth(Page<ExInspectionItems> pageList, ExInspectionItems exInspectionItems);
+
 }

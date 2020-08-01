@@ -191,6 +191,16 @@ public class ExInspectionItems{
     @ApiModelProperty(value = "试剂扣减时间")
     private Date inspectionTime;
 
+    @TableField(exist = false)
+    @Excel(name = "月份", width = 15)
+    private String month;//月份
+    @TableField(exist = false)
+    @Excel(name = "检查项目总费用", width = 15)
+    private BigDecimal itemPrice;
+    @TableField(exist = false)
+    @Excel(name = "检查项目总数量", width = 15)
+    private Double itemNum;
+
 
 
 }
