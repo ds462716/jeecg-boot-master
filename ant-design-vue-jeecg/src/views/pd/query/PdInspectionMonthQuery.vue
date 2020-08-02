@@ -5,13 +5,13 @@
       <a-form layout="inline" @keyup.enter.native="searchQuery">
         <a-row :gutter="24">
         <a-col :md="6" :sm="8">
-          <a-form-item label="产品名称">
-            <a-input placeholder="请选输入品名称" v-model="queryParam.productName"></a-input>
+          <a-form-item label="试剂名称">
+            <a-input placeholder="请输入试剂名称" v-model="queryParam.productName"></a-input>
           </a-form-item>
         </a-col>
           <a-col :md="6" :sm="8">
-            <a-form-item label="产品编号">
-              <a-input placeholder="请输入编号" v-model="queryParam.number"></a-input>
+            <a-form-item label="试剂编号">
+              <a-input placeholder="请输入试剂编号" v-model="queryParam.number"></a-input>
             </a-form-item>
           </a-col>
 
