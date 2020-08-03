@@ -3,9 +3,7 @@ package org.jeecg.modules.pd.service;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
-import org.jeecg.modules.pd.entity.PdProductStock;
-import org.jeecg.modules.pd.entity.PdStockRecord;
-import org.jeecg.modules.pd.entity.PdStockRecordDetail;
+import org.jeecg.modules.pd.entity.*;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -162,6 +160,20 @@ public interface IPdStockRecordService extends IService<PdStockRecord> {
 	IPage<PdStockRecord> querySupplierCountPageList(Page<PdStockRecord> pageList, PdStockRecord pdStockRecord);
     //供应商入库用量  不分页（导出用）
 	List<PdStockRecord> querySupplierCountList(PdStockRecord pdStockRecord);
+
+	/**
+	 * 盘盈入库
+	 * @param pdProductStockCheck
+	 * @return
+	 */
+	public String addInForStockCheck(PdProductStockCheck pdProductStockCheck, List<PdProductStockCheckChild> inChildList);
+
+	/**
+	 * 盘亏出库
+	 * @param pdProductStockCheck
+	 * @return
+	 */
+	public String addOutForStockCheck(PdProductStockCheck pdProductStockCheck, List<PdProductStockCheckChild> outChildList);
 
 	/**
 	 * 一体机终端出库接口

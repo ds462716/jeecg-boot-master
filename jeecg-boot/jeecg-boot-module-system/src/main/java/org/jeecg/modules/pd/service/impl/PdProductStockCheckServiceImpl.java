@@ -3,6 +3,8 @@ package org.jeecg.modules.pd.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
@@ -49,8 +51,8 @@ public class PdProductStockCheckServiceImpl extends ServiceImpl<PdProductStockCh
 	private IPdProductStockTotalService pdProductStockTotalService;
 	@Autowired
 	private IPdProductStockCheckPermissionService pdProductStockCheckPermissionService;
-
-
+	@Autowired
+	private IPdStockRecordService pdStockRecordService;
 	/**
 	 * 查询列表
 	 * @param page
@@ -125,15 +127,45 @@ public class PdProductStockCheckServiceImpl extends ServiceImpl<PdProductStockCh
 
 	@Override
 	@Transactional
-	public void delBatchMain(Collection<? extends Serializable> idList) {
+	public Result<Object> delBatchMain(Collection<? extends Serializable> idList) {
 		PdProductStockCheckChildMapper childDao=sqlSession.getMapper(PdProductStockCheckChildMapper.class);
 		PdProductStockCheckMapper dao=sqlSession.getMapper(PdProductStockCheckMapper.class);
+		String message = "";
 		for(Serializable id:idList) {
-			childDao.deleteByMainId(id.toString());
-			dao.deleteById(id);
-			//pdProductStockCheckChildMapper.deleteByMainId(id.toString());
-			//pdProductStockCheckMapper.deleteById(id);
+//			childDao.deleteByMainId(id.toString());
+//			dao.deleteById(id);
+			PdProductStockCheck entity = this.getById(id);
+			if (entity == null) {
+				message = "未找到对应数据！";
+				break;
+			}else{
+				if (PdConstant.SUBMIT_STATE_1.equals(entity.getCheckStatus()) || PdConstant.SUBMIT_STATE_3.equals(entity.getCheckStatus())) {
+					if(PdConstant.PRODUCT_STOCK_CHECK_LOCKING_STATE_1.equals(entity.getLockingState())){
+						message = "选中条目存在被锁定的库房，请先解除锁定再删除！";
+						break;
+					}
+				}else{
+					message = "选中条目存在已提交的盘点数据，不能删除！";
+					break;
+				}
+			}
 		}
+		if(StringUtils.isNotEmpty(message)){
+			return Result.error(message);
+		}
+
+		for(Serializable id:idList) {
+			PdProductStockCheck entity = this.getById(id);
+			//假删除
+			LambdaQueryWrapper<PdProductStockCheck> query = new LambdaQueryWrapper<PdProductStockCheck>()
+					.eq(PdProductStockCheck::getCheckNo,entity.getCheckNo());
+			this.remove(query);
+			LambdaQueryWrapper<PdProductStockCheckChild> query_i = new LambdaQueryWrapper<PdProductStockCheckChild>()
+					.eq(PdProductStockCheckChild::getCheckNo,entity.getCheckNo());
+			pdProductStockCheckChildService.remove(query_i);
+
+		}
+		return Result.ok("删除成功!");
 	}
 
 	@Transactional
@@ -311,5 +343,63 @@ public class PdProductStockCheckServiceImpl extends ServiceImpl<PdProductStockCh
 		baseMapper.updateById(auditEntity);
 		return result;
 	}
+
+	/**
+	 * 审批盘点单，自动生成盘盈入库单 盘亏出库单
+	 * @param auditEntity
+	 * @param pdProductStockCheck
+	 * @return
+	 */
+    @Override
+	@Transactional(rollbackFor = Exception.class)
+    public Map<String, String> newAudit(PdProductStockCheck auditEntity, PdProductStockCheck pdProductStockCheck) {
+		Map<String, String> result = new HashMap<>();
+		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+
+		//审核通过并自动生成盘盈入库单 盘亏出库单
+		if (PdConstant.AUDIT_STATE_2.equals(auditEntity.getAuditStatus())) {
+			List<PdProductStockCheckChild> childList = pdProductStockCheckChildService.selectByCheckNo(pdProductStockCheck.getCheckNo());
+			List<PdProductStockCheckChild> inChildList = null;
+			List<PdProductStockCheckChild> outChildList = null;
+			if(CollectionUtils.isNotEmpty(childList)){
+				inChildList = new ArrayList<>();
+				outChildList = new ArrayList<>();
+				for(PdProductStockCheckChild child : childList){
+					if(child.getProfitLossCount() > 0){
+						inChildList.add(child);
+					}else if(child.getProfitLossCount() < 0){
+						outChildList.add(child);
+					}
+				}
+			}
+
+			// 生成盘盈入库单
+			if(CollectionUtils.isNotEmpty(inChildList)){
+				pdStockRecordService.addInForStockCheck(pdProductStockCheck,inChildList);
+			}
+
+			// 生成盘亏出库单
+			if(CollectionUtils.isNotEmpty(outChildList)){
+				pdStockRecordService.addOutForStockCheck(pdProductStockCheck,outChildList);
+			}
+
+			//解除库存锁定状态
+			pdProductStockCheckPermissionService.unlock(pdProductStockCheck.getTargetDepartId(),pdProductStockCheck.getId());
+			result.put("code", PdConstant.SUCCESS_200);
+			result.put("message", "审核成功！");
+
+		}else if (PdConstant.AUDIT_STATE_3.equals(auditEntity.getAuditStatus())) {
+			//驳回
+			auditEntity.setCheckStatus(PdConstant.SUBMIT_STATE_1); // 待提交
+			result.put("code", PdConstant.SUCCESS_200);
+			result.put("message", "驳回成功！");
+		}
+
+		// 变更审批意见 以及 审批状态
+		auditEntity.setAuditDate(DateUtils.getDate());
+		auditEntity.setAuditBy(sysUser.getId());
+		baseMapper.updateById(auditEntity);
+		return result;
+    }
 
 }

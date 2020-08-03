@@ -118,10 +118,10 @@ public class PdStockRecord extends BaseEntity {
     private String applyBy;
     /**扩展1*/
     @Excel(name = "扩展1", width = 15)
-    private String extend1;
+    private String extend1;   // 自动生成入库单时存对应的出库单号
     /**扩展2*/
     @Excel(name = "扩展2", width = 15)
-    private String extend2;
+    private String extend2;   // 自动生成盘点出入库单时存对应的存盘点单号
     /**扩展3*/
     @Excel(name = "扩展3", width = 15)
     private String extend3;

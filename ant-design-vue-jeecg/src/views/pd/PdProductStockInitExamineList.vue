@@ -4,12 +4,12 @@
     <div class="table-page-search-wrapper">
       <a-form layout="inline" @keyup.enter.native="searchQuery">
         <a-row :gutter="24">
-          <a-col :md="6" :sm="8">
+          <a-col :md="5" :sm="8">
             <a-form-item label="单号">
               <a-input placeholder="请输入初始化库存单号" v-model="queryParam.recordNo"></a-input>
             </a-form-item>
           </a-col>
-          <a-col :md="6" :sm="8">
+          <a-col :md="5" :sm="8">
             <a-form-item label="供应商">
               <a-select
                 ref="supplierSelect"
@@ -30,28 +30,28 @@
               </a-select>
             </a-form-item>
           </a-col>
-          <a-col :md="6" :sm="8" v-show="false">
+          <a-col :md="5" :sm="8" v-show="false">
             <a-form-item label="入库类型">
               <j-dict-select-tag-expand v-model="queryParam.inType" dictCode="in_type"/>
             </a-form-item>
           </a-col>
-          <!--<a-col :md="6" :sm="8">-->
+          <!--<a-col :md="5" :sm="8">-->
           <!--<a-form-item label="提交状态">-->
           <!--<j-dict-select-tag v-model="queryParam.submitStatus" dictCode="submit_status"/>-->
           <!--</a-form-item>-->
           <!--</a-col>-->
-          <a-col :md="6" :sm="8">
+          <a-col :md="5" :sm="8">
             <a-form-item label="审核状态">
               <j-dict-select-tag-expand v-model="queryParam.auditStatus" dictCode="audit_status"/>
             </a-form-item>
           </a-col>
-          <a-col :md="6" :sm="8">
+          <a-col :md="5" :sm="8">
             <a-form-item label="提交日期">
               <a-range-picker @change="dateChange" v-model="queryParam.queryDate"/>
             </a-form-item>
           </a-col>
 
-          <a-col :md="6" :sm="8">
+          <a-col :md="4" :sm="8">
             <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
               <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
               <a-button type="primary" @click="searchReset" icon="reload" style="margin-left: 8px">重置</a-button>

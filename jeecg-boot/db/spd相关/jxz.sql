@@ -109,3 +109,15 @@ ADD COLUMN `distributor_id` varchar(64) NULL COMMENT '配送商ID' AFTER `suppli
 ALTER TABLE `pd_product_stock`
 ADD COLUMN `distributor_id` varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '配送商ID' AFTER `supplier_id`;
 -- 德兴医院部署截止2020年7月26日09:52:24
+
+-- 2020年7月30日 14:34:25 增加盘点出入库
+ALTER TABLE `jeecg-boot`.`pd_stock_record`
+MODIFY COLUMN `record_type` varchar(1) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '出入库类型：1-入库；2-出库；3-初始化库存；4-盘点' AFTER `record_no`,
+MODIFY COLUMN `out_type` varchar(1) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '出库类型 : 1-申领出库; 2-科室出库; 3-调拨出库; 4-退货出库；5-盘亏出库' AFTER `record_type`,
+MODIFY COLUMN `in_type` varchar(1) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '入库类型 : 1-正常入库，2-退货入库，3-调拨入库；4-盘盈入库' AFTER `out_type`;
+ALTER TABLE `jeecg-boot`.`pd_stock_record`
+MODIFY COLUMN `extend1` varchar(320) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '扩展1，自动生成入库单时存对应的出库单号' AFTER `apply_by`,
+MODIFY COLUMN `extend2` varchar(320) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '扩展2，自动生成盘点出入库单时存对应的存盘点单号' AFTER `extend1`;
+ALTER TABLE `jeecg-boot`.`pd_stock_record_detail`
+MODIFY COLUMN `extend1` varchar(320) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '扩展1，自动生成入库单时存对应的出库单号' AFTER `del_flag`,
+MODIFY COLUMN `extend2` varchar(320) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '扩展2，自动生成盘点出入库单时存对应的存盘点单号' AFTER `extend1`;
