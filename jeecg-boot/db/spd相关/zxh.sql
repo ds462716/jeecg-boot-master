@@ -60,7 +60,7 @@ INSERT INTO `sys_dict` VALUES ('1287184158196838401', '财务分类', 'finance_c
 INSERT INTO `sys_dict_item` VALUES ('1287184386887069698', '1287184158196838401', 'I类', '1', '', '1', '1', 'admin', '2020-07-26 08:34:07', 'admin', '2020-07-26 08:40:31');
 INSERT INTO `sys_dict_item` VALUES ('1287184468852158465', '1287184158196838401', 'II类', '2', '', '1', '1', 'admin', '2020-07-26 08:34:27', 'admin', '2020-07-26 08:40:35');
 INSERT INTO `sys_dict_item` VALUES ('1287184503417417729', '1287184158196838401', 'III类', '3', '', '1', '1', 'admin', '2020-07-26 08:34:35', 'admin', '2020-07-26 08:40:40');
--- 德兴医院部署截止2020年7月26日09:52:24
+-- ***************德兴医院部署截止2020年7月26日09:52:24
 
 -- 物流追溯加入唯一码 2020年7月28日13:51:58
 ALTER TABLE `pd_stock_log`
@@ -69,4 +69,4 @@ ADD COLUMN `ref_bar_code`  varchar(64) CHARACTER SET utf8 COLLATE utf8_general_c
 -- 医院编号2020年7月28日13:52:00
 ALTER TABLE `sys_depart`
 ADD COLUMN `hospital_code`  varchar(64) NULL COMMENT '医院编号' AFTER `depart_type`;
--- 德兴医院部署截止2020年7月29日10:46:32
+-- ***************德兴医院部署截止2020年7月29日10:46:32

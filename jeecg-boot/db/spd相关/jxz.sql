@@ -108,7 +108,7 @@ ALTER TABLE `pd_stock_record_detail`
 ADD COLUMN `distributor_id` varchar(64) NULL COMMENT '配送商ID' AFTER `supplier_id`;
 ALTER TABLE `pd_product_stock`
 ADD COLUMN `distributor_id` varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '配送商ID' AFTER `supplier_id`;
--- 德兴医院部署截止2020年7月26日09:52:24
+-- ***************德兴医院部署截止2020年7月26日09:52:24
 
 -- 2020年7月30日 14:34:25 增加盘点出入库
 ALTER TABLE `jeecg-boot`.`pd_stock_record`
@@ -121,3 +121,7 @@ MODIFY COLUMN `extend2` varchar(320) CHARACTER SET utf8 COLLATE utf8_general_ci 
 ALTER TABLE `jeecg-boot`.`pd_stock_record_detail`
 MODIFY COLUMN `extend1` varchar(320) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '扩展1，自动生成入库单时存对应的出库单号' AFTER `del_flag`,
 MODIFY COLUMN `extend2` varchar(320) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '扩展2，自动生成盘点出入库单时存对应的存盘点单号' AFTER `extend1`;
+
+-- 2020年8月3日 11:03:19 盘点明细菜单
+INSERT INTO `sys_permission`(`id`, `parent_id`, `name`, `url`, `component`, `component_name`, `redirect`, `menu_type`, `business_type`, `perms`, `perms_type`, `sort_no`, `always_show`, `icon`, `is_route`, `is_leaf`, `keep_alive`, `hidden`, `description`, `create_by`, `create_time`, `update_by`, `update_time`, `del_flag`, `rule_flag`, `status`, `internal_or_external`) VALUES ('1290118650616700929', '1218785597982052353', '盘点明细', '/pd/query/PdProductStockCheckReport', 'pd/query/PdProductStockCheckReport', NULL, NULL, 1, '0', NULL, '1', 13.00, 0, '', 1, 1, 0, 0, NULL, 'admin', '2020-08-03 10:53:50', 'admin', '2020-08-03 10:56:24', 0, 0, '1', 0);
+
