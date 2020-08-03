@@ -212,6 +212,8 @@ public class PdStockRecordDetail extends BaseEntity {
 	@TableField(exist = false)
 	private String jdeCode;// JDE编号
 	@TableField(exist = false)
+	private String dartCode;// 省标码
+	@TableField(exist = false)
 	private String venderJdeCode; // 厂家JDEcode
 	@TableField(exist = false)
 	private String supplierJdeCode;//供应商JDEcode

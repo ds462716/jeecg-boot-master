@@ -70,3 +70,7 @@ ADD COLUMN `ref_bar_code`  varchar(64) CHARACTER SET utf8 COLLATE utf8_general_c
 ALTER TABLE `sys_depart`
 ADD COLUMN `hospital_code`  varchar(64) NULL COMMENT '医院编号' AFTER `depart_type`;
 -- 德兴医院部署截止2020年7月29日10:46:32
+
+-- 九江医院加入省标码2020年8月3日11:24:10
+ALTER TABLE `pd_product`
+ADD COLUMN `dart_code`  varchar(64) NULL COMMENT '省标码' AFTER `jde_code`;

@@ -105,6 +105,7 @@
         <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
         <result column="remarks" property="remarks" jdbcType="VARCHAR"/>
         <result column="jde_code" property="jdeCode" jdbcType="VARCHAR"/>
+        <result column="dart_code" property="dartCode" jdbcType="VARCHAR"/>
         <result column="device_classification" property="deviceClassification" jdbcType="VARCHAR"/>
         <result column="validity_flag" property="validityFlag" jdbcType="VARCHAR"/>
         <result column="product_flag" property="productFlag" jdbcType="VARCHAR"/>
@@ -228,6 +229,7 @@
         a.sys_org_code,
         a.remarks,
         a.jde_code,
+        a.dart_code,
         a.device_classification,
         a.validity_flag,
         a.product_flag,
@@ -277,6 +279,7 @@
         a.sys_org_code,
         a.remarks,
         a.jde_code,
+        a.dart_code,
         a.device_classification,
         a.validity_flag,
         a.product_flag,

@@ -56,6 +56,7 @@
         c.spec as "spec",
         c.version as "version",
         c.jde_code as "jdeCode",
+        c.dart_code as "dartCode",
         c.registration as "productRegistration"
 	</sql>
 	<sql id="pdProductJoins">

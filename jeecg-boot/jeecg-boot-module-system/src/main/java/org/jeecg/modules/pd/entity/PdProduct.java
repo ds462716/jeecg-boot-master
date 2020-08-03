@@ -365,4 +365,9 @@ public class PdProduct  extends BaseEntity {
 	 * 赣州市立财务分类
 	 */
 	private String financeClassification;
+
+	/**
+	 * 省标码
+	 */
+	private String dartCode;
 }
