@@ -22,10 +22,6 @@
           <!--签字-->
           <a-col :md="24" :sm="24">
             <a-col :span="24">
-              <!--<span style="margin-left: 3%">
-                制单人：
-              </span>
-              <a-input style="width: 10%;text-align: left" disabled v-model="record.submitByName"/>-->
               <span style="margin-left: 3%">
               出库单号：
             </span>
