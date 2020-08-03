@@ -224,8 +224,8 @@
                 <a-button type="primary" icon="plus" @click="chooseProductList">选择库存产品</a-button>
                 <!--<a-button type="primary" icon="plus" @click="choosePackageList" style="margin-left: 8px">选择定数包</a-button>-->
                 <a-popconfirm style="margin-left: 8px"
-                  :title="`确定要删除吗?`"
-                  @confirm="handleConfirmDelete">
+                              :title="`确定要删除吗?`"
+                              @confirm="handleConfirmDelete">
                   <a-button type="primary" icon="minus">删除</a-button>
                   <span class="gap"></span>
                 </a-popconfirm>
@@ -248,8 +248,8 @@
               >
               </j-editable-table>
               <a-row style="margin-top:10px;text-align: right;padding-right: 5%">
-                  <span style="font-weight: bold;font-size: large;padding-right: 5%">总数量：{{ totalSum }}</span>
-                  <span style="font-weight: bold;font-size: large">总金额：{{ outTotalPrice }}</span>
+                <span style="font-weight: bold;font-size: large;padding-right: 5%">总数量：{{ totalSum }}</span>
+                <span style="font-weight: bold;font-size: large">总金额：{{ outTotalPrice }}</span>
               </a-row>
             </a-tab-pane>
           </a-tabs>
@@ -289,8 +289,6 @@
         <a-button style="margin-right: 15px;" :loading="confirmLoading" type="danger">撤  回</a-button>
       </a-popconfirm> <!-- margin-right: 50px; -->
       <a-button @click="printBtn('1')" style="margin-right: 15px;" type="primary" v-show="showPrintBtn">打  印</a-button>
-      <!-- 九江医院加入打印发货单 -->
-      <a-button v-if="hospitalCode=='JJFSYY'" @click="printInvoiceBtn()" style="margin-right: 15px;" type="primary" v-show="showPrintBtn">打印发货单</a-button>
       <a-button @click="saveBtn" v-show="!disableSubmit" type="primary" :loading="confirmLoading" style="margin-right: 15px;">保存草稿</a-button>
       <a-button @click="submitBtn('1')" v-show="!disableSubmit" type="primary" :loading="confirmLoading" style="margin-right: 15px;">提  交</a-button>
       <!--<a-button @click="submitBtn('2')" v-show="showSubmitAndPrint" type="primary" :loading="confirmLoading" style="margin-right: 15px;">提交并打印</a-button>-->
@@ -304,7 +302,6 @@
     <pd-stock-record-out-print-modal-f-c-z-y-y ref="pdStockRecordOutPrintModalFCZYY"></pd-stock-record-out-print-modal-f-c-z-y-y>
     <pd-stock-record-out-print-modal-f-c-r-m-y-y ref="pdStockRecordOutPrintModalFCRMYY"></pd-stock-record-out-print-modal-f-c-r-m-y-y>
     <pd-stock-record-out-print-modal-j-j-f-s-y-y ref="PdStockRecordOutPrintModalJJFSYY"></pd-stock-record-out-print-modal-j-j-f-s-y-y>
-    <pd-invoice-print-modal-j-j-f-s-y-y ref="PdInvoicePrintModalJJFSYY"></pd-invoice-print-modal-j-j-f-s-y-y>
     <ex-stock-record-out-print-modal ref="exStockRecordOutPrintModal"></ex-stock-record-out-print-modal>
     <pd-choose-package-record-list-model ref="pdChoosePackageRecordListModel" @ok="returnPackageRecordData" ></pd-choose-package-record-list-model>
   </j-modal>
@@ -330,7 +327,6 @@
   import PdStockRecordOutPrintModalFCZYY from "../../external/fengcheng/print/PdStockRecordOutPrintModalFCZYY";
   import PdStockRecordOutPrintModalFCRMYY from "../../external/fengcheng/print/PdStockRecordOutPrintModalFCRMYY";
   import PdStockRecordOutPrintModalJJFSYY from "../../external/jiujiang/print/PdStockRecordOutPrintModalJJFSYY";
-  import PdInvoicePrintModalJJFSYY from "../../external/jiujiang/print/PdInvoicePrintModalJJFSYY";
 
   const VALIDATE_NO_PASSED = Symbol()
   export { FormTypes, VALIDATE_NO_PASSED }
@@ -348,7 +344,6 @@
       PdChooseApplyOrderListModel,
       PdChooseProductStockListModel,
       PdStockRecordOutPrintModalJJFSYY,
-      PdInvoicePrintModalJJFSYY,
       ATextarea,
       JDate,
       JDictSelectTagExpand
@@ -762,7 +757,7 @@
         }
 
         this.pdStockRecordDetailTable.loading = true;
-            getAction(this.url.init, params).then((res) => {
+        getAction(this.url.init, params).then((res) => {
           if (res.success) {
             this.$nextTick(() => {
               // this.departList = res.result.sysDepartList; // 初始化部门列表 用于数据回显
@@ -950,21 +945,6 @@
               this.$refs.pdStockRecordOutPrintModal.show(res.result);
               this.$refs.pdStockRecordOutPrintModal.title = this.stockOutText + "出库单";
           }
-        })
-      },
-      //九江医院发货单打印
-      printInvoiceBtn(){
-        let recordId = this.model.id;
-        if(!recordId){
-          this.$message.warning("参数不正确，请重新打印！");
-          return;
-        }
-        getAction(this.url.queryById, {id:this.model.id}).then((res) => {
-          if(!res.result.auditDate){
-            res.result.auditDate = res.result.submitDate;
-          }
-          this.$refs.PdInvoicePrintModalJJFSYY.show(res.result);
-          this.$refs.PdInvoicePrintModalJJFSYY.title = this.stockOutText;
         })
       },
       /**撤回**/

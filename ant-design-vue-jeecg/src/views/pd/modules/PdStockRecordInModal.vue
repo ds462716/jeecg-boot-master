@@ -273,6 +273,8 @@
         <a-button style="margin-right: 15px;" :loading="confirmLoading" type="danger">撤  回</a-button>
       </a-popconfirm>
       <a-button @click="printBtn('1')" style="margin-right: 15px;" type="primary" v-show="showPrintBtn">打  印</a-button>
+      <!-- 九江医院加入打印发货单 -->
+      <a-button v-if="hospitalCode=='JJFSYY'" @click="printInvoiceBtn()" style="margin-right: 15px;" type="primary" v-show="showPrintBtn">打印发货单</a-button>
       <a-button @click="saveBtn" v-show="!disableSubmit" type="primary" :loading="confirmLoading" style="margin-right: 15px;">保存草稿</a-button>
       <a-button @click="submitBtn('1')" v-show="!disableSubmit" type="primary" :loading="confirmLoading" style="margin-right: 15px;">提  交</a-button>
       <!--<a-button @click="submitBtn('2')" v-show="showSubmitAndPrint" type="primary" :loading="confirmLoading" style="margin-right: 15px;">提交并打印</a-button>-->
@@ -283,6 +285,7 @@
     <pd-choose-product-list-model  ref="pdChooseProductListModel" @ok="returnProductData" ></pd-choose-product-list-model>
     <pd-stock-record-in-print-modal ref="pdStockRecordInPrintModal" ></pd-stock-record-in-print-modal>
     <pd-stock-record-in-print-modal-j-j-f-s-y-y ref="PdStockRecordInPrintModalJJFSYY"></pd-stock-record-in-print-modal-j-j-f-s-y-y>
+    <pd-invoice-print-modal-j-j-f-s-y-y ref="PdInvoicePrintModalJJFSYY"></pd-invoice-print-modal-j-j-f-s-y-y>
     <ex-stock-record-in-print-modal ref="exStockRecordInPrintModal" ></ex-stock-record-in-print-modal>
   </j-modal>
 </template>
@@ -303,6 +306,7 @@
   import PdStockRecordInPrintModal from "../print/PdStockRecordInPrintModal";
   import ExStockRecordInPrintModal from "../../external/print/ExStockRecordInPrintModal";
   import PdStockRecordInPrintModalJJFSYY from "../../external/jiujiang/print/PdStockRecordInPrintModalJJFSYY";
+  import PdInvoicePrintModalJJFSYY from "../../external/jiujiang/print/PdInvoicePrintModalJJFSYY";
   import { disabledAuthFilter } from "@/utils/authFilter"
 
 
@@ -333,6 +337,7 @@
       PdChooseProductListModel,
       PdChoosePurchaseOrderListModel,
       PdStockRecordInPrintModalJJFSYY,
+      PdInvoicePrintModalJJFSYY,
       JDate,
       JDictSelectTagExpand
     },
@@ -774,6 +779,20 @@
             this.$refs.pdStockRecordInPrintModal.show(res.result);
             this.$refs.pdStockRecordInPrintModal.title = this.stockInText + "入库单";
           }
+        })
+      },
+      //九江医院发货单打印
+      printInvoiceBtn(){
+        let recordId = this.model.id;
+        if(!recordId){
+          this.$message.warning("参数不正确，请重新打印！");
+          return;
+        }
+        getAction(this.url.queryById, {id:this.model.id}).then((res) => {
+          if(!res.result.auditDate){
+            res.result.auditDate = res.result.submitDate;
+          }
+          this.$refs.PdInvoicePrintModalJJFSYY.show(res.result);
         })
       },
       /** 关闭按钮点击事件 */
