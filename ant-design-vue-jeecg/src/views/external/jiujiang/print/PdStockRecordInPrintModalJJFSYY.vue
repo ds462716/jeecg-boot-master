@@ -81,7 +81,7 @@
                     数量
                   </th>
                 </tr>
-                <tr v-for="(item, index2) in tableNumber[divNumber-1]">
+                <tr v-for="(item, index2) in tableNumber[index1]">
                   <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: xx-small">
                     {{ index2+(index1*10) +1}}
                   </td>
