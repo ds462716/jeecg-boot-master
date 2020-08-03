@@ -10,9 +10,9 @@
     :footer="null"
   >
     <div class="no-print" style="text-align: right">
-      <a-button v-print="'#printContent'" ghost type="primary" >打印</a-button>
+      <a-button v-print="'#printContentOne'" ghost type="primary" >打印</a-button>
     </div>
-    <section ref="print" id="printContent" class="printClass">
+    <section ref="print" id="printContentOne" class="printClass">
       <!-- 超过十个的循环区域 -->
       <div v-if="batchPrint">
         <div v-for="(item, index1) in divNumber-1"  class="sign" style="page-break-after:always;text-align: left;height: inherit">
@@ -404,6 +404,8 @@
         //金额转换成大写金额
         if(record.outTotalPrice){
           this.wordsAmount = digitUppercase(record.outTotalPrice);
+        }else{
+          this.wordsAmount = "零";
         }
         this.showApplyBy = true;
         if(this.record.outType == "4"){
