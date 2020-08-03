@@ -477,6 +477,7 @@
             {
               title: '生产日期', key: 'produceDate', type: FormTypes.date, width:"130px",
               placeholder: '${title}', defaultValue: '',
+              //validateRules: [{ required: true, message: '${title}不能为空' }]
             },
             {
               title: '有效期', key: 'expDate', type: FormTypes.date, width:"130px",
