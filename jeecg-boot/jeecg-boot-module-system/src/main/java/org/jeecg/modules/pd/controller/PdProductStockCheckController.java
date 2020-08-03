@@ -236,7 +236,7 @@ public class PdProductStockCheckController {
 	 */
 	@DeleteMapping(value = "/deleteBatch")
 	public Result<?> deleteBatch(@RequestParam(name="ids",required=true) String ids) {
-		this.pdProductStockCheckService.removeByIds(Arrays.asList(ids.split(",")));
+		this.pdProductStockCheckService.delBatchMain(Arrays.asList(ids.split(",")));
 		return Result.ok("批量删除成功！");
 	}
 
@@ -421,7 +421,8 @@ public class PdProductStockCheckController {
 		 if(PdConstant.AUDIT_STATE_2.equals(entity.getAuditStatus()) || PdConstant.AUDIT_STATE_3.equals(entity.getAuditStatus())){
 			 return Result.error("盘点单已被审批，不能再次审批！");
 		 }
-		 Map<String, String> result = pdProductStockCheckService.audit(pdProductStockCheck, entity);
+//		 Map<String, String> result = pdProductStockCheckService.audit(pdProductStockCheck, entity);
+         Map<String, String> result = pdProductStockCheckService.newAudit(pdProductStockCheck, entity);
 		 if (PdConstant.SUCCESS_200.equals(result.get("code"))) {
 			 return Result.ok(result.get("message"));
 		 } else {

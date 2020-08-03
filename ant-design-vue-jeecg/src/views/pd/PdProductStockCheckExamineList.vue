@@ -181,7 +181,19 @@
             dataIndex: 'profitLossCount'
           },
           {
-            title:'盘点状态',
+            title:'提交状态',
+            align:"center",
+            dataIndex: 'checkStatus',
+            customRender:(text)=>{
+              if(!text){
+                return ''
+              }else{
+                return filterMultiDictText(this.dictOptions['checkStatus'], text+"")
+              }
+            }
+          },
+          {
+            title:'审批状态',
             align:"center",
             dataIndex: 'auditStatus',
             customRender:(text)=>{
@@ -283,6 +295,11 @@
         }
       },
       initDictConfig(){
+        initDictOptions('submit_status').then((res) => {
+          if (res.success) {
+            this.$set(this.dictOptions, 'checkStatus', res.result)
+          }
+        }),
         initDictOptions('audit_status').then((res) => {
           if (res.success) {
             this.$set(this.dictOptions, 'auditStatus', res.result)

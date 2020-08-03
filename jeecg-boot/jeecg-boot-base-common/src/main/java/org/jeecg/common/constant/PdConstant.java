@@ -54,17 +54,20 @@ public interface PdConstant {
 	public static final String RECODE_TYPE_1 = "1"; //入库
 	public static final String RECODE_TYPE_2 = "2"; //出库
 	public static final String RECODE_TYPE_3 = "3"; //初始化库存
+	public static final String RECODE_TYPE_4 = "4"; //盘点出入库单
 
 	/**入库类型 add by jiangxz 20200214*/
 	public static final String IN_TYPE_1 = "1";//正常入库
 	public static final String IN_TYPE_2 = "2";//退货入库
 	public static final String IN_TYPE_3 = "3";//调拨入库
+	public static final String IN_TYPE_4 = "4";//盘盈入库
 
 	/**入库类型 add by jiangxz 20200302*/
 	public static final String OUT_TYPE_1 = "1";//正常出库
 	public static final String OUT_TYPE_2 = "2";//科室出库
 	public static final String OUT_TYPE_3 = "3";//调拨出库
 	public static final String OUT_TYPE_4 = "4";//退货出库
+	public static final String OUT_TYPE_5 = "5";//盘亏出库
 
 	/***编码规则*/
 	//各种类型单号首字母
@@ -79,6 +82,8 @@ public interface PdConstant {
 	public final static String ORDER_NO_FIRST_LETTER_SG = "SG";//申购单
 	public final static String ORDER_NO_FIRST_LETTER_XC = "XC";//巡查单
 	public final static String ORDER_NO_FIRST_LETTER_PD = "PD";//盘点单
+	public final static String ORDER_NO_FIRST_LETTER_PDRK = "PDRK";//盘盈入库单
+	public final static String ORDER_NO_FIRST_LETTER_PDCK = "PDCK";//盘亏出库单
 	public final static String ORDER_NO_FIRST_LETTER_DSB = "DSB";//定数包
 	public final static String ORDER_NO_FIRST_LETTER_FP = "FP";//发票
 	public final static String ORDER_NO_FIRST_LETTER_CSKC = "CSKC";//初始化库存

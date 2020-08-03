@@ -50,6 +50,15 @@
     <!-- 操作按钮区域 -->
     <div class="table-operator">
       <a-button @click="handleAdd" type="primary" icon="plus">新增盘点单</a-button>
+      <a-dropdown v-if="selectedRowKeys.length > 0">
+      <a-menu slot="overlay">
+        <!--<a-menu-item key="1" @click="batchLocking"><a-icon type="lock"/>锁定库房</a-menu-item>-->
+        <!--<a-menu-item key="2" @click="batchUnlock"><a-icon type="unlock"/>解锁库房</a-menu-item>-->
+        <a-menu-item key="3" @click="batchDel"><a-icon type="delete"/>删除</a-menu-item>
+      </a-menu>
+      <a-button style="margin-left: 8px"> 批量操作 <a-icon type="down" /></a-button>
+    </a-dropdown>
+
     </div>
 
     <!-- table区域-begin -->
@@ -75,28 +84,34 @@
           <a @click="handleEdit(record)" v-bind:disabled="record.checkStatus=='2'">修改</a>
           <a-divider type="vertical"/>
           <a @click="handleDetail(record)">详情</a>
-
           <a-divider type="vertical" />
-          <a-dropdown>
+          <a @click="locking(record)" v-bind:disabled="record.checkStatus=='2'">锁定库房</a>
+          <a-divider type="vertical" />
+          <a @click="unlock(record)" v-bind:disabled="record.checkStatus=='2'">解锁库房</a>
+          <a-divider type="vertical" />
+          <a @click="handleDelete(record)" v-bind:disabled="record.checkStatus=='2'">删除</a>
+
+
+         <!-- <a-dropdown>
             <a class="ant-dropdown-link" v-bind:disabled="record.checkStatus=='2'" >更多 <a-icon type="down" /></a>
             <a-menu slot="overlay">
-              <a-menu-item v-show="record.checkStatus=='1' || record.checkStatus=='3'"> <!--待提交、已撤回-->
+              <a-menu-item v-show="record.checkStatus=='1' || record.checkStatus=='3'"> &lt;!&ndash;待提交、已撤回&ndash;&gt;
                 <a-popconfirm title="确定锁定吗?"  @confirm="() => locking(record)"  >
                   <a>锁定库房</a>
                 </a-popconfirm>
               </a-menu-item>
-              <a-menu-item v-show="record.checkStatus=='1' || record.checkStatus=='3'"> <!--待提交、已撤回-->
+              <a-menu-item v-show="record.checkStatus=='1' || record.checkStatus=='3'"> &lt;!&ndash;待提交、已撤回&ndash;&gt;
                 <a-popconfirm title="确定解锁吗?解锁后需要按键盘F5进行刷新"  @confirm="() => unlock(record)"  >
                   <a>解锁库房</a>
                 </a-popconfirm>
               </a-menu-item>
-              <a-menu-item v-show="record.checkStatus=='1' || record.checkStatus=='3'"> <!--待提交、已撤回-->
+              <a-menu-item v-show="record.checkStatus=='1' || record.checkStatus=='3'"> &lt;!&ndash;待提交、已撤回&ndash;&gt;
                 <a-popconfirm title="确定删除吗?"  @confirm="() => handleDelete(record.id)"  >
                   <a>删除</a>
                 </a-popconfirm>
               </a-menu-item>
             </a-menu>
-          </a-dropdown>
+          </a-dropdown>-->
         </span>
       </a-table>
     </div>
@@ -207,7 +222,7 @@
             dataIndex: 'profitLossCount'
           },
           {
-            title:'盘点状态',
+            title:'提交状态',
             align:"center",
             dataIndex: 'checkStatus',
             customRender:(text)=>{
@@ -215,6 +230,18 @@
                 return ''
               }else{
                 return filterMultiDictText(this.dictOptions['checkStatus'], text+"")
+              }
+            }
+          },
+          {
+            title:'审批状态',
+            align:"center",
+            dataIndex: 'auditStatus',
+            customRender:(text)=>{
+              if(!text){
+                return ''
+              }else{
+                return filterMultiDictText(this.dictOptions['auditStatus'], text+"")
               }
             }
           },
@@ -287,18 +314,27 @@
           this.$message.warning('请选择一条记录！');
           return;
         } else {
-          var ids = "";
-          var checkNos="";
+          let ids = "";
+          let checkNos1="",checkNos2="";
           for (let a = 0; a < this.selectionRows.length; a++) {
             let checkStatus= this.selectionRows[a].checkStatus;
-            if(checkStatus=='1'){
-              checkNos+=this.selectionRows[a].checkNo + ",";
-            }else{
-              ids += this.selectionRows[a].id + ",";
+            let lockingState= this.selectionRows[a].lockingState;
+            if(checkStatus == '2'){
+              checkNos1+=this.selectionRows[a].checkNo + ",";
             }
+
+            if(lockingState == '1'){
+              checkNos2+=this.selectionRows[a].checkNo + ",";
+            }
+
+            ids += this.selectionRows[a].id + ",";
           }
-          if(checkNos != ""){
-            this.$message.warning("盘点编号["+checkNos.substring(0,checkNos.length-1)+"]已盘点完成，不允许删除！")
+          if(checkNos1 != ""){
+            this.$message.warning("盘点编号["+checkNos1.substring(0,checkNos1.length-1)+"]已提交，不允许删除！")
+            return
+          }
+          if(checkNos2 != ""){
+            this.$message.warning("盘点编号["+checkNos2.substring(0,checkNos2.length-1)+"]库房已锁定，不允许删除！")
             return
           }
           var that = this;
@@ -326,6 +362,11 @@
         initDictOptions('submit_status').then((res) => {
           if (res.success) {
             this.$set(this.dictOptions, 'checkStatus', res.result)
+          }
+        }),
+        initDictOptions('audit_status').then((res) => {
+          if (res.success) {
+            this.$set(this.dictOptions, 'auditStatus', res.result)
           }
         }),
         initDictOptions('locking_state').then((res) => {
@@ -378,6 +419,38 @@
           }
         });
       },
+      batchLocking(){ //批量删除
+        if (this.selectionRows.length <= 0) {
+          this.$message.warning('请选择一条记录！');
+          return;
+        } else {
+          let ids = "";
+          let checkNos1="",checkNos2="";
+          for (let a = 0; a < this.selectionRows.length; a++) {
+            let checkStatus= this.selectionRows[a].checkStatus;
+            let lockingState= this.selectionRows[a].lockingState;
+            if(checkStatus == '2'){
+              checkNos1+=this.selectionRows[a].checkNo + ",";
+            }
+
+            if(lockingState == '1'){
+              checkNos2+=this.selectionRows[a].checkNo + ",";
+            }
+
+            ids += this.selectionRows[a].id + ",";
+          }
+          if(checkNos1 != ""){
+            this.$message.warning("盘点编号["+checkNos1.substring(0,checkNos1.length-1)+"]已提交，不允许锁定！")
+            return
+          }
+          if(checkNos2 != ""){
+            this.$message.warning("盘点编号["+checkNos2.substring(0,checkNos2.length-1)+"]库房已锁定，不能再次锁定！")
+            return
+          }
+
+        }
+      },
+
       /**
        * 解锁
        */
@@ -391,6 +464,9 @@
             that.$message.warning(res.message);
           }
         });
+      },
+      batchUnlock(){
+
       },
        
     }

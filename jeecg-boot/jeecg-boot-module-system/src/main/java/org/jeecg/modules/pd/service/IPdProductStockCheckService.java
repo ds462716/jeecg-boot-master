@@ -48,7 +48,7 @@ public interface IPdProductStockCheckService extends IService<PdProductStockChec
 	/**
 	 * 批量删除一对多
 	 */
-	public void delBatchMain(Collection<? extends Serializable> idList);
+	Result<Object> delBatchMain(Collection<? extends Serializable> idList);
 
     String submit(PdProductStockCheck pdProductStockCheck, List<PdProductStockCheckChild> pdProductStockCheckChildList);
 
@@ -64,5 +64,19 @@ public interface IPdProductStockCheckService extends IService<PdProductStockChec
 
 	void updateStatus(PdProductStockCheck pdProductStockCheck);
 
+	/**
+	 * 审批盘点单
+	 * @param pdProductStockCheck
+	 * @param entity
+	 * @return
+	 */
 	Map<String, String> audit(PdProductStockCheck pdProductStockCheck,PdProductStockCheck entity);
+
+	/**
+	 * 审批盘点单，生成盘点出入库单
+	 * @param pdProductStockCheck
+	 * @param entity
+	 * @return
+	 */
+	Map<String, String> newAudit(PdProductStockCheck pdProductStockCheck,PdProductStockCheck entity);
 }
