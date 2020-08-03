@@ -62,7 +62,7 @@
                     <th style="border: 1px solid #000000;text-align: center;padding: 3px 3px;width:15%">
                       规格
                     </th>
-                    <th style="border: 1px solid #000000;text-align: center;padding: 3px 3px;width:10%">
+                    <th style="border: 1px solid #000000;text-align: center;padding: 3px 3px;width:8%">
                       注册证号
                     </th>
                     <th style="border: 1px solid #000000;text-align: center;padding: 3px 3px;width:15%">
@@ -74,7 +74,7 @@
                     <th style="border: 1px solid #000000;text-align: center;padding: 3px 3px;width:5%">
                       单位
                     </th>
-                    <th style="border: 1px solid #000000;text-align: center;padding: 3px 3px;">
+                    <th style="border: 1px solid #000000;text-align: center;padding: 3px 3px;width:15%">
                       生产厂家
                     </th>
                     <th style="border: 1px solid #000000;text-align: center;padding: 3px 3px;width:7%">
@@ -187,7 +187,7 @@
                   <th style="border: 1px solid #000000;text-align: center;padding: 3px 3px;width:15%">
                     规格
                   </th>
-                  <th style="border: 1px solid #000000;text-align: center;padding: 3px 3px;width:10%">
+                  <th style="border: 1px solid #000000;text-align: center;padding: 3px 3px;width:8%">
                     注册证号
                   </th>
                   <th style="border: 1px solid #000000;text-align: center;padding: 3px 3px;width:15%">
@@ -199,7 +199,7 @@
                   <th style="border: 1px solid #000000;text-align: center;padding: 3px 3px;width:5%">
                     单位
                   </th>
-                  <th style="border: 1px solid #000000;text-align: center;padding: 3px 3px;">
+                  <th style="border: 1px solid #000000;text-align: center;padding: 3px 3px;width:15%">
                     生产厂家
                   </th>
                   <th style="border: 1px solid #000000;text-align: center;padding: 3px 3px;width:7%">
@@ -330,19 +330,6 @@
         fullscreen: true,
         switchFullscreen: false,
         showApplyBy:true,
-        columns: [
-          { title: '产品名称', dataIndex: 'productName', align:"center", width:"16%" },
-          { title: '生产厂家', dataIndex: 'venderName', align:"center",},
-          { title: '注册证号', dataIndex: 'registration',align:"center",  },
-          { title: '规格', dataIndex: 'spec',align:"center", },
-          // { title: '型号', dataIndex: 'version',align:"center", width:"12%" },
-          { title: '批号', dataIndex: 'batchNo',align:"center" },
-          { title: '有效期', dataIndex: 'expDate',align:"center", width:"10%" },
-          { title: '数量', dataIndex: 'productNum',align:"center", width:"6%" },
-          // { title: '入库单价', dataIndex: 'purchasePrice',align:"center", width:"8%" },
-          { title: '出库单价', dataIndex: 'sellingPrice',align:"center", width:"9%" },
-          { title: '出库金额', dataIndex: 'outTotalPrice',align:"center", width:"9%"  },
-        ],
         dataSource: [],
         divNumber:0,
         batchPrint:false,
