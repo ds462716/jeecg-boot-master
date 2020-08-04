@@ -6,6 +6,7 @@
                  a.id,
                  a.check_no,
                  a.stock_id,
+                 a.stock_num,
                  a.check_num,
                  a.profit_loss_count,
                  a.create_time,
@@ -27,7 +28,7 @@
 
 	<!-- 库存明细表 -->
 	<sql id="pdProductStockColumns">
-        d.stock_num as "stockNum",
+--         d.stock_num as "stockNum",
         d.batch_no as "batchNo",
         d.exp_date as "expDate"
     </sql>
@@ -93,4 +94,91 @@
  		WHERE a.check_no = #{checkNo}
 		ORDER BY a.create_time DESC
 	</select>
+
+
+
+    <select id="pdProductStockCheckQueryList" parameterType="org.jeecg.modules.pd.entity.PdProductStockCheckChild" resultType="org.jeecg.modules.pd.entity.PdProductStockCheckChild">
+        select
+            b.id,a.check_no,a.audit_date,a.target_depart_id,
+            i.depart_name as target_depart_name,
+            b.check_num,b.profit_loss_count,b.stock_num,
+            b.batch_no,b.exp_date,
+            d.record_no,d.in_type,d.out_type,
+            e.number as number,e.name as product_name,e.spec,e.version,
+            f.name as supplier_name,
+            g.name as vender_name,
+            h.name as unit_name,
+            case when d.in_type is not null and d.in_type = '4' then '盘盈入库'
+                 when d.out_type is not null and d.out_type = '5' then '盘亏出库'
+            end as type
+        from pd_product_stock_check a
+        left join pd_product_stock_check_child b on a.check_no = b.check_no
+        left join pd_stock_record_detail c on b.id = c.extend2
+        left join pd_stock_record d on c.record_id = d.id and d.record_type = '4'
+        left join pd_product_stock j on j.id = b.stock_id
+        left join pd_product e on b.product_id = e.id
+        left join pd_supplier f on j.supplier_id = f.id
+        left join pd_vender g on e.vender_id = g.id
+        left join pd_unit h on e.unit_id = h.id
+        left join sys_depart i on a.target_depart_id = i.id
+        <where>
+
+            <if test="entity.checkNo != null and entity.checkNo != ''">
+                AND a.check_no LIKE concat('%',#{entity.checkNo},'%')
+            </if>
+            <if test="entity.targetDepartId != null and entity.targetDepartId != ''">
+                AND a.target_depart_id = #{entity.targetDepartId}
+            </if>
+            <if test="entity.queryDateStart != null and entity.queryDateStart != ''">
+                AND a.audit_date &gt;= #{entity.queryDateStart}
+            </if>
+            <if test="entity.queryDateEnd != null and entity.queryDateEnd != ''">
+                AND a.audit_date &lt;= #{entity.queryDateEnd}
+            </if>
+
+            <if test="entity.queryExpDateStart != null and entity.queryExpDateStart != ''">
+                AND b.exp_date &gt;= #{entity.queryExpDateStart}
+            </if>
+            <if test="entity.queryExpDateEnd != null and entity.queryExpDateEnd != ''">
+                AND b.exp_date &lt;= #{entity.queryExpDateEnd}
+            </if>
+            <if test="entity.batchNo != null and entity.batchNo != ''">
+                AND b.batch_no LIKE concat('%',#{entity.batchNo},'%')
+            </if>
+
+            <if test="entity.recordNo != null and entity.recordNo != ''">
+                AND d.record_no LIKE concat('%',#{entity.recordNo},'%')
+            </if>
+
+            <if test="entity.number != null and entity.number != ''">
+                AND e.number LIKE concat('%',#{entity.number},'%')
+            </if>
+            <if test="entity.venderId != null and entity.venderId != ''">
+                AND e.vender_id = #{entity.venderId}
+            </if>
+            <if test="entity.spec != null and entity.spec != ''">
+                AND e.spec LIKE concat('%',#{entity.spec},'%')
+            </if>
+            <if test="entity.version != null and entity.version != ''">
+                AND e.version LIKE concat('%',#{entity.version},'%')
+            </if>
+            <if test="entity.productName != null and entity.productName != ''">
+                AND (
+                e.number LIKE concat('%',#{entity.productName},'%')
+                or e.name LIKE concat('%',#{entity.productName},'%')
+                or e.py LIKE concat('%',#{entity.productName},'%')
+                or e.wb LIKE concat('%',#{entity.productName},'%')
+                or e.bname LIKE concat('%',#{entity.productName},'%')
+                or e.bpy LIKE concat('%',#{entity.productName},'%')
+                or e.bwb LIKE concat('%',#{entity.productName},'%')
+                or e.zdy LIKE concat('%',#{entity.productName},'%')
+                )
+            </if>
+
+            <if test="entity.supplierId != null and entity.supplierId != ''">
+                AND j.supplier_id = #{entity.supplierId}
+            </if>
+        </where>
+        order by a.audit_date desc
+    </select>
 </mapper>

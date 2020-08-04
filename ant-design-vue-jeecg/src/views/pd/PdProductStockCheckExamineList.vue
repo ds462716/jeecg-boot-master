@@ -215,7 +215,6 @@
           list: "/pd/pdProductStockCheck/examineList",
           delete: "/pd/pdProductStockCheck/delete",
           deleteBatch: "/pd/pdProductStockCheck/deleteBatch",
-          exportXlsUrl: "/pd/pdProductStockCheck/exportXls",
           queryDepart: "/pd/pdDepart/queryListTree",
         },
         dictOptions:{

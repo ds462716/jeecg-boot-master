@@ -124,4 +124,6 @@ MODIFY COLUMN `extend2` varchar(320) CHARACTER SET utf8 COLLATE utf8_general_ci 
 
 -- 2020年8月3日 11:03:19 盘点明细菜单
 INSERT INTO `sys_permission`(`id`, `parent_id`, `name`, `url`, `component`, `component_name`, `redirect`, `menu_type`, `business_type`, `perms`, `perms_type`, `sort_no`, `always_show`, `icon`, `is_route`, `is_leaf`, `keep_alive`, `hidden`, `description`, `create_by`, `create_time`, `update_by`, `update_time`, `del_flag`, `rule_flag`, `status`, `internal_or_external`) VALUES ('1290118650616700929', '1218785597982052353', '盘点明细', '/pd/query/PdProductStockCheckQueryList', 'pd/query/PdProductStockCheckQueryList', NULL, NULL, 1, '0', NULL, '1', 13.00, 0, '', 1, 1, 0, 0, NULL, 'admin', '2020-08-03 10:53:50', 'admin', '2020-08-03 10:56:24', 0, 0, '1', 0);
-
+-- 2020年8月3日 16:36:22 增加当前库存数量字段
+ALTER TABLE `pd_product_stock_check_child`
+ADD COLUMN `stock_num` double(10, 2) NULL COMMENT '当前库存数量' AFTER `stock_id`;

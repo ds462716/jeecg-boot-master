@@ -77,7 +77,7 @@ public class PdStockRecordDetail extends BaseEntity {
 	/**扩展1*/
 	private String extend1;  // 自动生成入库单时存对应的出库单号
 	/**扩展2*/
-	private String extend2;  // 自动生成盘点出入库单时存对应的存盘点单号
+	private String extend2;  // 自动生成盘点出入库单时存对应的存盘点单明细id
 	/**扩展3*/
 	private String extend3;
 	/**创建人*/

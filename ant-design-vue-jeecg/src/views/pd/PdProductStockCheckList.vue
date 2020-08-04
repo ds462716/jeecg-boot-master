@@ -268,7 +268,6 @@
           list: "/pd/pdProductStockCheck/list",
           delete: "/pd/pdProductStockCheck/delete",
           deleteBatch: "/pd/pdProductStockCheck/deleteBatch",
-          exportXlsUrl: "/pd/pdProductStockCheck/exportXls",
           queryDepart: "/pd/pdDepart/queryListTree",
           locking: "/pd/pdProductStockCheckPermission/locking",
           unlock: "/pd/pdProductStockCheckPermission/unlock",

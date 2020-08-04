@@ -1760,7 +1760,7 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
             detail.setProduceDate(stock.getProduceDate());
 //            detail.setBarCodeType(pdStockRecord.getBarCodeType());
 //            detail.setRemarks(remarks);
-            detail.setExtend2(pdStockRecord.getExtend2());
+            detail.setExtend2(child.getId());
             detail.setUpdateTime(date);
             detail.setCreateBy(sysUser.getRealname());
             detail.setCreateTime(date);
