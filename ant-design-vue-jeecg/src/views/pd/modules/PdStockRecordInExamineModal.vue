@@ -116,7 +116,7 @@
         <a-card style="margin-bottom: 10px;">
           <a-tabs v-model="activeKey" @change="handleChangeTabs">
             <a-tab-pane tab="产品明细" :key="refKeys[0]" :forceRender="true">
-              <div style="margin-bottom: 8px;"> <!-- v-show="disableSubmit" -->
+              <div style="margin-bottom: 8px;">
                 <a-button type="primary" icon="printer" @click="printNumber" v-show="isDisabledAuth('instock:printProductNumber')">打印编号</a-button>
               </div>
               <j-editable-table

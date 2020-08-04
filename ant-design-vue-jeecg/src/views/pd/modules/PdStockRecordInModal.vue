@@ -162,7 +162,7 @@
                 </a-row>
               </a-form>
 
-              <div style="margin-bottom: 8px;" v-show="!disableSubmit">
+              <div style="margin-bottom: 8px;" v-if="!disableSubmit">
                 <a-button type="primary" icon="plus" @click="chooseProductList">选择产品</a-button>
                 <span style="padding-left: 8px;"></span>
                 <a-popconfirm
@@ -171,6 +171,12 @@
                   <a-button type="primary" icon="minus">删除</a-button>
                   <span class="gap"></span>
                 </a-popconfirm>
+                <span style="padding-left: 8px;"></span>
+                <a-button type="primary" icon="printer" @click="printNumber" v-show="isDisabledAuth('instock:printProductNumber')">打印编号</a-button>
+              </div>
+
+              <div style="margin-bottom: 8px;" v-if="disableSubmit">
+                <a-button type="primary" icon="printer" @click="printNumber" v-show="isDisabledAuth('instock:printProductNumber')">打印编号</a-button>
               </div>
 
               <j-editable-table
@@ -185,6 +191,7 @@
                 :actionButton="false"
                 :customRow="onClickRow"
                 :disabled="disableSubmit"
+                @selectRowChange="handleSelectRowChange"
                 @valueChange="valueChange"
                 @added="setPriceDisabled"
                 style="text-overflow: ellipsis;"
@@ -287,6 +294,7 @@
     <pd-stock-record-in-print-modal-j-j-f-s-y-y ref="PdStockRecordInPrintModalJJFSYY"></pd-stock-record-in-print-modal-j-j-f-s-y-y>
     <pd-invoice-print-modal-j-j-f-s-y-y ref="PdInvoicePrintModalJJFSYY"></pd-invoice-print-modal-j-j-f-s-y-y>
     <ex-stock-record-in-print-modal ref="exStockRecordInPrintModal" ></ex-stock-record-in-print-modal>
+    <pd-product-number-print ref="printModalForm"></pd-product-number-print>
   </j-modal>
 </template>
 
@@ -308,6 +316,7 @@
   import PdStockRecordInPrintModalJJFSYY from "../../external/jiujiang/print/PdStockRecordInPrintModalJJFSYY";
   import PdInvoicePrintModalJJFSYY from "../../external/jiujiang/print/PdInvoicePrintModalJJFSYY";
   import { disabledAuthFilter } from "@/utils/authFilter"
+  import PdProductNumberPrint from "../print/PdProductNumberPrint";
 
 
   const VALIDATE_NO_PASSED = Symbol()
@@ -331,6 +340,7 @@
     name: 'PdStockRecordInModal',
     mixins: [JEditableTableMixin],
     components: {
+      PdProductNumberPrint,
       ExStockRecordInPrintModal,
       PdStockRecordInPrintModal,
       ATextarea,
@@ -394,6 +404,8 @@
         huoquOptions:[],
         huoweiOptions:[],
         hospitalCode:"",
+
+        sRowIds:[],//选中行id
 
         //分页参数
         ipagination:{
@@ -795,6 +807,33 @@
           }
           this.$refs.PdInvoicePrintModalJJFSYY.show(res.result);
         })
+      },
+      //产品编号打印，add by jiangxz 2020年7月15日 09:40:00
+      printNumber(){
+        if(this.sRowIds.length > 0){
+          let dataSource = this.pdStockRecordDetailTable.dataSource;
+          let printData = [];
+          for(let item of dataSource){
+            if(this.sRowIds.indexOf(item.id)>=0){
+              let data = {};
+              data.number = item.productNumber;
+              data.name = item.productName;
+              data.spec = item.spec;
+              data.venderName = item.venderName;
+              printData.push(data);
+            }
+          }
+          if(printData.length > 0){
+            this.$refs.printModalForm.init(printData);
+          }else{
+            this.$message.error("选择产品数据有误，请刷新页面后重新选择打印！")
+          }
+        }else{
+          this.$message.error("请选择需要打印的产品！")
+        }
+      },
+      handleSelectRowChange(selectedIds){
+        this.sRowIds = selectedIds;
       },
       /** 关闭按钮点击事件 */
       handleCancel() {

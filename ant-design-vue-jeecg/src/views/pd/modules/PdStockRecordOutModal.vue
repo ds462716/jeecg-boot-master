@@ -220,7 +220,7 @@
                 </a-row>
               </a-form>
 
-              <div style="margin-bottom: 8px;" v-show="!disableSubmit">
+              <div style="margin-bottom: 8px;" v-if="!disableSubmit">
                 <a-button type="primary" icon="plus" @click="chooseProductList">选择库存产品</a-button>
                 <!--<a-button type="primary" icon="plus" @click="choosePackageList" style="margin-left: 8px">选择定数包</a-button>-->
                 <a-popconfirm style="margin-left: 8px"
@@ -229,6 +229,12 @@
                   <a-button type="primary" icon="minus">删除</a-button>
                   <span class="gap"></span>
                 </a-popconfirm>
+                <span style="padding-left: 8px;"></span>
+                <a-button type="primary" icon="printer" @click="printNumber" v-show="isDisabledAuth('instock:printProductNumber')">打印编号</a-button>
+              </div>
+
+              <div style="margin-bottom: 8px;" v-if="disableSubmit">
+                <a-button type="primary" icon="printer" @click="printNumber" v-show="isDisabledAuth('instock:printProductNumber')">打印编号</a-button>
               </div>
 
               <j-editable-table
@@ -242,6 +248,7 @@
                 :rowSelection="true"
                 :actionButton="false"
                 :disabled="disableSubmit"
+                @selectRowChange="handleSelectRowChange"
                 @valueChange="valueChange"
                 @added="setPriceDisabled"
                 style="text-overflow: ellipsis;"
@@ -304,6 +311,7 @@
     <pd-stock-record-out-print-modal-j-j-f-s-y-y ref="PdStockRecordOutPrintModalJJFSYY"></pd-stock-record-out-print-modal-j-j-f-s-y-y>
     <ex-stock-record-out-print-modal ref="exStockRecordOutPrintModal"></ex-stock-record-out-print-modal>
     <pd-choose-package-record-list-model ref="pdChoosePackageRecordListModel" @ok="returnPackageRecordData" ></pd-choose-package-record-list-model>
+    <pd-product-number-print ref="printModalForm"></pd-product-number-print>
   </j-modal>
 </template>
 
@@ -327,6 +335,8 @@
   import PdStockRecordOutPrintModalFCZYY from "../../external/fengcheng/print/PdStockRecordOutPrintModalFCZYY";
   import PdStockRecordOutPrintModalFCRMYY from "../../external/fengcheng/print/PdStockRecordOutPrintModalFCRMYY";
   import PdStockRecordOutPrintModalJJFSYY from "../../external/jiujiang/print/PdStockRecordOutPrintModalJJFSYY";
+  import PdProductNumberPrint from "../print/PdProductNumberPrint";
+  import { disabledAuthFilter } from "@/utils/authFilter"
 
   const VALIDATE_NO_PASSED = Symbol()
   export { FormTypes, VALIDATE_NO_PASSED }
@@ -335,6 +345,7 @@
     name: 'PdStockRecordOutModal',
     mixins: [JEditableTableMixin],
     components: {
+      PdProductNumberPrint,
       PdStockRecordOutPrintModalFCRMYY,
       PdStockRecordOutPrintModalFCZYY,
       ExStockRecordOutPrintModal,
@@ -390,6 +401,7 @@
         //用户下拉列表 end
 
         hospitalCode:"",
+        sRowIds:[],//选中行id
 
         orderTableTitle:"",
         showApplyBtn:false,
@@ -946,6 +958,33 @@
               this.$refs.pdStockRecordOutPrintModal.title = this.stockOutText + "出库单";
           }
         })
+      },
+      //产品编号打印，add by jiangxz 2020年7月15日 09:40:00
+      printNumber(){
+        if(this.sRowIds.length > 0){
+          let dataSource = this.pdStockRecordDetailTable.dataSource;
+          let printData = [];
+          for(let item of dataSource){
+            if(this.sRowIds.indexOf(item.id)>=0){
+              let data = {};
+              data.number = item.productNumber;
+              data.name = item.productName;
+              data.spec = item.spec;
+              data.venderName = item.venderName;
+              printData.push(data);
+            }
+          }
+          if(printData.length > 0){
+            this.$refs.printModalForm.init(printData);
+          }else{
+            this.$message.error("选择产品数据有误，请刷新页面后重新选择打印！")
+          }
+        }else{
+          this.$message.error("请选择需要打印的产品！")
+        }
+      },
+      handleSelectRowChange(selectedIds){
+        this.sRowIds = selectedIds;
       },
       /**撤回**/
       cancelBtn(){
@@ -1628,6 +1667,14 @@
           return false;
         }
         return true;
+      },
+      /**
+       * 校验权限
+       * @param code
+       * @returns {boolean|*}
+       */
+      isDisabledAuth(code){
+        return !disabledAuthFilter(code);
       },
     },
   }
