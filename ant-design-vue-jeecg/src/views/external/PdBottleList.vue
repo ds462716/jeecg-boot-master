@@ -55,6 +55,11 @@
               </a-form-item>
             </a-col>
             <a-col :md="6" :sm="8">
+              <a-form-item label="开瓶日期">
+                <a-range-picker @change="dateChange" v-model="queryParam.queryDate"/>
+              </a-form-item>
+            </a-col>
+            <a-col :md="6" :sm="8">
               <a-form-item label="所属仪器">
                 <a-select
                   showSearch
@@ -270,7 +275,10 @@
       }
     },
     methods: {
-
+      dateChange: function (value, dateString) {
+        this.queryParam.queryDateStart=dateString[0];
+        this.queryParam.queryDateEnd=dateString[1];
+      },
       // 重写loadData方法
       loadData(arg) {
         if(!this.url.list){
@@ -303,6 +311,7 @@
         param.pageNo = this.ipagination.current;
         param.pageSize = this.ipagination.pageSize;
         param.departIds = this.queryParam.departIds+"";
+        delete param.queryDate; //范围参数不传递后台，传后台会报错
         return filterObj(param);
       },
 

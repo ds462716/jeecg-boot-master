@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.CacheConstant;
@@ -15,7 +16,6 @@ import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.PasswordUtil;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.pd.service.IPdDepartService;
-import org.jeecg.modules.pd.service.IPdProductStockCheckPermissionService;
 import org.jeecg.modules.pd.util.JmUtil;
 import org.jeecg.modules.pd.util.UUIDUtil;
 import org.jeecg.modules.system.entity.*;
@@ -270,8 +270,15 @@ public class PdDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart>
         }
         //封装查询参数
         sb = sb.substring(0,sb.length()-1);
+
+       String departType= sysDepart.getDepartType();
+       List<String> departTypeList=null;
+       if(StringUtils.isNotEmpty(departType)){
+           departTypeList= Arrays.asList(departType.split(","));
+       }
         Map<String,Object> map = new HashMap<>();
         map.put("ids",sb);
+        map.put("departTypeList",departTypeList);
         map.put("departName",sysDepart.getDepartName()!=null?sysDepart.getDepartName():"");
         map.put("departParentId",sysUser.getDepartParentId());
         map.put("DEL_FLAG_NORMAL", PdConstant.DEL_FLAG_0);
@@ -544,5 +551,10 @@ public class PdDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart>
     public void refreshShiro(){
         Set keys = redisTemplate.keys(CommonConstant.PREFIX_USER_SHIRO_CACHE  + "*");
         redisTemplate.delete(keys);
+    }
+
+    @Override
+    public List<String> queryDepartIdByParentId(String parentId){
+        return sysDepartMapper.queryDepartIdByParentId(parentId);
     }
 }

@@ -9,6 +9,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -114,6 +115,9 @@ public class SysDepart implements Serializable {
 	/**过滤本部门标识*/
 	@TableField(exist = false)
 	private String parentFlag;
+	/**部门类型集合*/
+	@TableField(exist = false)
+	private List<String> departTypeList;
 	/**
 	 * 重写equals方法
 	 */

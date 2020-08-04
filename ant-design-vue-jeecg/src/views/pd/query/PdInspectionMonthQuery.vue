@@ -5,14 +5,30 @@
       <a-form layout="inline" @keyup.enter.native="searchQuery">
         <a-row :gutter="24">
         <a-col :md="6" :sm="8">
-          <a-form-item label="试剂名称">
-            <a-input placeholder="请输入试剂名称" v-model="queryParam.productName"></a-input>
+          <a-form-item label="月份">
+            <a-input placeholder="请输入月份" v-model="queryParam.month"></a-input>
           </a-form-item>
         </a-col>
           <a-col :md="6" :sm="8">
-            <a-form-item label="试剂编号">
-              <a-input placeholder="请输入试剂编号" v-model="queryParam.number"></a-input>
-            </a-form-item>
+          <a-form-item label="科室">
+            <!--<a-input placeholder="请选择科室" v-model="queryParam.deptName"></a-input>-->
+            <a-select
+              mode="multiple"
+              showSearch
+              :departId="departValue"
+              :defaultActiveFirstOption="false"
+              :allowClear="true"
+              :showArrow="true"
+              :filterOption="false"
+              @search="departHandleSearch"
+              @focus="departHandleSearch"
+              :notFoundContent="notFoundContent"
+              v-model="queryParam.departIds"
+              placeholder="请选择科室"
+            >
+              <a-select-option v-for="d in departData" :key="d.id">{{d.departName}}</a-select-option>
+            </a-select>
+          </a-form-item>
           </a-col>
 
           <template v-if="toggleSearchStatus">
@@ -48,6 +64,7 @@
         :dataSource="dataSource"
         :pagination="ipagination"
         :loading="loading"
+        :scroll="tableScroll"
          @change="handleTableChange">
         <span slot="action" slot-scope="text, record">
           <a @click="queryBottleDetail(record)">试剂消耗明细</a>
@@ -88,6 +105,8 @@
         venderData: [],
         supplierValue: undefined,
         supplierData: [],
+        departData: [],
+        departValue: undefined,
         // 表头
         columns: [
           {
@@ -107,14 +126,70 @@
             dataIndex: 'month'
           },
           {
-            title:'试剂消耗金额',
+            title:'统计科室',
             align:"center",
-            dataIndex: 'totalPrice'
+            width:'200px',
+            dataIndex: 'departName'
           },
           {
-            title:'试剂消耗数量',
+            title:'试剂入库数量',
             align:"center",
-            dataIndex: 'num'
+            dataIndex: 'sjInRecordNum'
+          },
+          {
+            title:'试剂入库金额',
+            align:"center",
+            dataIndex: 'sjInRecordPrice'
+          },
+          {
+            title:'试剂使用数量',
+            align:"center",
+            dataIndex: 'sjNum'
+          },
+          {
+            title:'试剂使用金额',
+            align:"center",
+            dataIndex: 'sjPrice'
+          },
+          {
+            title:'试剂库存数量',
+            align:"center",
+            dataIndex: 'sjStockNum'
+          },
+          {
+            title:'试剂库存金额',
+            align:"center",
+            dataIndex: 'sjStockPrice'
+          },
+          {
+            title:'耗材入库数量',
+            align:"center",
+            dataIndex: 'hcInRecordNum'
+          },
+          {
+            title:'耗材入库金额',
+            align:"center",
+            dataIndex: 'hcInRecordPrice'
+          },
+          {
+            title:'耗材使用数量',
+            align:"center",
+            dataIndex: 'hcNum'
+          },
+          {
+            title:'耗材使用金额',
+            align:"center",
+            dataIndex: 'hcPrice'
+          },
+          {
+            title:'耗材库存数量',
+            align:"center",
+            dataIndex: 'hcStockNum'
+          },
+          {
+            title:'耗材库存金额',
+            align:"center",
+            dataIndex: 'hcStockPrice'
           },
           {
             title:'检验总收入金额',
@@ -126,21 +201,22 @@
             align:"center",
             dataIndex: 'itemNum'
           },
-          {
+         /* {
             title: '操作',
             dataIndex: 'action',
             align:"center",
             scopedSlots: { customRender: 'action' }
-          }
+          }*/
         ],
         url: {
-          list: "/pd/pdBottleInf/inspectionMonthQuery",
-          exportXlsUrl: "/pd/pdBottleInf/monthQueryExportXls",
+          list: "/external/pdNumericalInf/list",
+          queryDepart: "/pd/pdDepart/queryListTree",
+          exportXlsUrl: "/external/pdNumericalInf/exportXls",
         },
         dictOptions:{
 
         },
-
+        tableScroll:{ x: 1300 },
       }
     },
     computed: {
@@ -152,6 +228,17 @@
       initDictConfig(){ //静态字典值加载
 
       },
+      //科室查询start
+      departHandleSearch(value) {
+        getAction(this.url.queryDepart,{departName:value,departType:"1,2"}).then((res)=>{
+          if (!res.success) {
+            this.cmsFailed(res.message);
+          }
+          this.departData = res.result;
+        })
+      },
+      //科室查询end
+
       loadData(arg) {
         //加载数据 若传入参数1则加载第一页的内容
         if (arg === 1) {
@@ -177,6 +264,7 @@
         param.field = this.getQueryField();
         param.pageNo = this.ipagination.current;
         param.pageSize = this.ipagination.pageSize;
+        param.departIds = this.queryParam.departIds+"";
         return filterObj(param);
       },
       /**重写导出方法**/

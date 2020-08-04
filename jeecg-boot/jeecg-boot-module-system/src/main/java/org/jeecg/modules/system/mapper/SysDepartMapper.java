@@ -63,4 +63,7 @@ public interface SysDepartMapper extends BaseMapper<SysDepart> {
 	List<SysDepart> getSysTwoDepartList(SysDepart sysDepart);
 
 	List<Map<String,Object>> findDepartList(SysDepart sysDepart);
+
+	@Select("select id from sys_depart where parent_id=#{parentId} and del_flag='0'")
+	public List<String> queryDepartIdByParentId(@Param("parentId") String parentId);
 }
