@@ -39,3 +39,33 @@ ALTER TABLE  `ex_inspection_items`
 MODIFY COLUMN `test_item_cost` decimal(12, 4) NULL DEFAULT NULL COMMENT '检查项目费用' AFTER `test_item_code`;
 
 INSERT INTO `sys_permission`  VALUES ('1289532174829174785', '1218785597982052353', '月消耗费用统计(市立)', '/pd/query/PdInspectionMonth', 'pd/query/PdInspectionMonthQuery', NULL, NULL, 1, '0', NULL, '1', 2.00, 0, NULL, 1, 1, 0, 0, NULL, 'admin', '2020-08-01 20:03:23', 'admin', '2020-08-01 20:03:33', 0, 0, '1', 0);
+
+-- 2020年8月4日 18:52:59  增加耗材/试剂使用统计报表
+CREATE TABLE  `pd_numerical_inf`  (
+  `id` varchar(36) NOT NULL COMMENT '主键',
+  `create_time` datetime(0) NULL COMMENT '创建时间',
+  `create_by` varchar(50) NULL COMMENT '创建人',
+  `update_time` datetime(0) NULL COMMENT '修改时间',
+  `update_by` varchar(0) NULL COMMENT '修改人',
+  `sys_org_code` varchar(64) NULL COMMENT '所属部门',
+  `month` varchar(64) NULL COMMENT '统计月份',
+  `depart_id` varchar(64) NULL COMMENT '所属科室',
+  `sj_in_record_num` double(32, 2) NULL COMMENT '试剂入库数量',
+  `sj_in_record_price` decimal(20, 2) NULL COMMENT '试剂入库金额',
+  `sj_num` double(32, 2) NULL COMMENT '试剂使用数量',
+  `sj_price` decimal(20, 2) NULL COMMENT '试剂使用金额',
+  `sj_stock_num` double(32, 0) NULL COMMENT '试剂库存数量',
+  `sj_stock_price` decimal(20, 2) NULL COMMENT '试剂库存金额',
+  `hc_in_record_num` double(32, 0) NULL COMMENT '耗材入库数量',
+  `hc_in_record_price` decimal(20, 2) NULL COMMENT '耗材入库金额',
+  `hc_num` double(32, 0) NULL COMMENT '耗材使用数量',
+  `hc_price` decimal(20, 2) NULL COMMENT '耗材使用金额',
+  `hc_stock_num` double(32, 0) NULL COMMENT '耗材库存数量',
+  `hc_stock_price` decimal(20, 2) NULL COMMENT '耗材库存金额',
+  `item_price` decimal(20, 2) NULL COMMENT '检验项目收入金额',
+  `item_num` double(32, 0) NULL COMMENT '检验项目总数量',
+  `del_flag` varchar(4)  DEFAULT '0' COMMENT '删除标识，0-正常；1-删除',
+  PRIMARY KEY (`id`)
+);
+
+INSERT INTO `sys_quartz_job` VALUES ('1290475878282895361', 'admin', '2020-08-04 10:33:20', 0, NULL, '2020-08-04 10:33:20', 'org.jeecg.modules.quartz.job.PdNumericalInfTaskJob', '* * * * * ? *', NULL, '根据月份定时更新试剂/耗材入库、消耗、库存数量及金额定时任务', -1);

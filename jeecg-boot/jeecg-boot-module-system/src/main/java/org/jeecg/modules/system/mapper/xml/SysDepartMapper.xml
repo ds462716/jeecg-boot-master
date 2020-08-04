@@ -61,6 +61,16 @@
         <if test="departId != null and departId != ''">
             AND a.id != #{departId}
         </if>
+        <if test="departType != null and departType != ''">
+            AND a.depart_type != #{departType}
+        </if>
+        <if test="departTypeList != null and departTypeList.size() > 0">
+            AND a.depart_type IN
+            <foreach collection="departTypeList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+
     </select>
 
     <!--根据条件获取二级部门信息-->
@@ -111,6 +121,12 @@
         </if>
         <if test="parMap.departParentId != null and parMap.departParentId != ''">
             and a.depart_parent_id = #{parMap.departParentId}
+        </if>
+        <if test="parMap.departTypeList != null and parMap.departTypeList.size() > 0">
+            AND a.depart_type IN
+            <foreach collection="parMap.departTypeList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
         </if>
     </select>
 

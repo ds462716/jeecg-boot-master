@@ -15,7 +15,6 @@ import org.jeecg.modules.external.entity.PdBottleInf;
 import org.jeecg.modules.external.service.IExInspectionItemsService;
 import org.jeecg.modules.external.service.IPdBottleInfService;
 import org.jeecg.modules.external.vo.PdBottleInfExlce;
-import org.jeecg.modules.external.vo.PdBottleInfMonthExlce;
 import org.jeecg.modules.pd.service.IPdDepartService;
 import org.jeecg.modules.system.entity.SysDepart;
 import org.jeecgframework.poi.excel.def.NormalExcelConstants;
@@ -263,42 +262,6 @@ public class PdBottleInfController extends JeecgController<PdBottleInf, IPdBottl
 		 }
  		return Result.ok(pageList);
 	}
-
-
-
-	/**
-	 * 导出excel(月消耗及费用统计报表导出)
-	 *
-	 * @param request
-	 * @param pdBottleInf
-	 */
-	@RequestMapping(value = "/monthQueryExportXls")
-	public ModelAndView monthQueryExportXls(HttpServletRequest request, PdBottleInf pdBottleInf) {
-		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
-		pdBottleInf.setDepartParentId(sysUser.getDepartParentId());
-		List<PdBottleInf> list = pdBottleInfService.inspectionMonthQuery(pdBottleInf);//
-		if(oConvertUtils.isNotEmpty(list)){
-			for(PdBottleInf  inf:  list ){
-				String month=inf.getMonth();
-				ExInspectionItems items=new ExInspectionItems();
-				items.setMonth(month);
-				items= exInspectionItemsService.inspectionMonthQuery(items);
-				if(oConvertUtils.isNotEmpty(items)){
-					inf.setItemNum(items.getItemNum());
-					inf.setItemPrice(items.getItemPrice());
-				}
-			}
-		}
-		List<PdBottleInfMonthExlce> exportList = JSON.parseArray(JSON.toJSONString(list), PdBottleInfMonthExlce.class);
-		// Step.4 AutoPoi 导出Excel
-		ModelAndView mv = new ModelAndView(new JeecgEntityExcelView());
-		mv.addObject(NormalExcelConstants.FILE_NAME, "月消耗及费用统计报表");
-		mv.addObject(NormalExcelConstants.CLASS, PdBottleInfMonthExlce.class);
-		mv.addObject(NormalExcelConstants.PARAMS, new ExportParams("月消耗及费用统计", "导出人:" + sysUser.getRealname(), "月消耗及费用统计报表"));
-		mv.addObject(NormalExcelConstants.DATA_LIST, exportList);
-		return mv;
-	}
-
 
 
 	/**

@@ -56,6 +56,12 @@
         <if test="entity.status != null and entity.status != ''">
             AND a.status = #{entity.status}
         </if>
+        <if test="entity.queryDateStart != null and entity.queryDateStart != ''">
+            AND DATE_FORMAT(a.create_time, '%Y-%m-%d') &gt;= #{entity.queryDateStart}
+        </if>
+        <if test="entity.queryDateEnd != null and entity.queryDateEnd != ''">
+            AND DATE_FORMAT(a.create_time, '%Y-%m-%d') &lt;= #{entity.queryDateEnd}
+        </if>
         <if test="entity.departIdList != null and entity.departIdList.size() > 0">
             AND a.depart_id IN
             <foreach collection="entity.departIdList" item="item" separator="," open="(" close=")">

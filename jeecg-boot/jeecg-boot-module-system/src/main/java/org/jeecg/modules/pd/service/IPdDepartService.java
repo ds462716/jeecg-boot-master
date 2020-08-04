@@ -62,4 +62,6 @@ public interface IPdDepartService extends IService<SysDepart> {
 
     void refreshShiro();
 
+    List<String> queryDepartIdByParentId(String parentId);
+
 }
