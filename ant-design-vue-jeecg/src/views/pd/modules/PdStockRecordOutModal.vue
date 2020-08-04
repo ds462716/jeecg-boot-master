@@ -230,11 +230,11 @@
                   <span class="gap"></span>
                 </a-popconfirm>
                 <span style="padding-left: 8px;"></span>
-                <a-button type="primary" icon="printer" @click="printNumber" v-show="isDisabledAuth('instock:printProductNumber')">打印编号</a-button>
+                <a-button type="primary" icon="printer" @click="printNumber" v-show="isDisabledAuth('outstock:printProductNumber')">打印编号</a-button>
               </div>
 
               <div style="margin-bottom: 8px;" v-if="disableSubmit">
-                <a-button type="primary" icon="printer" @click="printNumber" v-show="isDisabledAuth('instock:printProductNumber')">打印编号</a-button>
+                <a-button type="primary" icon="printer" @click="printNumber" v-show="isDisabledAuth('outstock:printProductNumber')">打印编号</a-button>
               </div>
 
               <j-editable-table

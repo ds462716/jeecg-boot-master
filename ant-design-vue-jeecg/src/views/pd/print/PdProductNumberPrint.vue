@@ -7,6 +7,7 @@
     :closable="false"
   >
     <div class="no-print" style="text-align: right">
+      <a-button class="no-print" @click="close" style="margin-right: 15px;" >关  闭</a-button>
       <a-button v-print="'#printContent'" ghost type="primary">打印</a-button>
     </div>
     <section  id="printContent">
