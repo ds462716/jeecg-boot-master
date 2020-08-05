@@ -62,11 +62,11 @@
                     <th style="border: 1px solid #000000;text-align: center;padding: 3px 3px;width:15%">
                       规格
                     </th>
-                    <th style="border: 1px solid #000000;text-align: center;padding: 3px 3px;width:8%">
-                      注册证号
-                    </th>
-                    <th style="border: 1px solid #000000;text-align: center;padding: 3px 3px;width:15%">
+                    <th style="border: 1px solid #000000;text-align: center;padding: 3px 3px;width:12%">
                       批号
+                    </th>
+                    <th style="border: 1px solid #000000;text-align: center;padding: 3px 3px;width:8%">
+                      有效期
                     </th>
                     <th style="border: 1px solid #000000;text-align: center;padding: 3px 3px;width:5%">
                       数量
@@ -74,19 +74,22 @@
                     <th style="border: 1px solid #000000;text-align: center;padding: 3px 3px;width:5%">
                       单位
                     </th>
-                    <th style="border: 1px solid #000000;text-align: center;padding: 3px 3px;width:15%">
-                      生产厂家
-                    </th>
                     <th style="border: 1px solid #000000;text-align: center;padding: 3px 3px;width:7%">
                       单价
                     </th>
                     <th style="border: 1px solid #000000;text-align: center;padding: 3px 3px;width:7%">
                       金额
                     </th>
+                    <th style="border: 1px solid #000000;text-align: center;padding: 3px 3px;width:8%">
+                      注册证号
+                    </th>
+                    <th style="border: 1px solid #000000;text-align: center;padding: 3px 3px;width:15%">
+                      生产厂家
+                    </th>
                   </tr>
                   <tr v-for="(item, index2) in tableNumber[index1]">
                     <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: xx-small">
-                      {{ index2+(index1*10) +1}}
+                      {{ index2+(index1*tableLength) +1}}
                     </td>
                     <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: xx-small">
                       {{ item.productName }}
@@ -97,6 +100,24 @@
                     </td>
                     <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: xx-small">
                       {{ item.spec }}
+                    </td>
+                    <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: xx-small">
+                      {{ item.batchNo }}
+                    </td>
+                    <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: xx-small">
+                      {{ item.expDate }}
+                    </td>
+                    <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: xx-small">
+                      {{ item.productNum }}
+                    </td>
+                    <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: xx-small">
+                      {{ item.unitName }}
+                    </td>
+                    <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: xx-small">
+                      {{ item.sellingPrice }}
+                    </td>
+                    <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: xx-small">
+                      {{ item.outTotalPrice }}
                     </td>
                     <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: xx-small">
                       <a-form-item label="" style="width: 100%;height: 100%;padding: 0px;margin: 0px;line-height: 0px">
@@ -114,22 +135,7 @@
                       </a-form-item>
                     </td>
                     <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: xx-small">
-                      {{ item.batchNo }}
-                    </td>
-                    <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: xx-small">
-                      {{ item.productNum }}
-                    </td>
-                    <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: xx-small">
-                      {{ item.unitName }}
-                    </td>
-                    <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: xx-small">
                       {{ item.venderName }}
-                    </td>
-                    <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: xx-small">
-                      {{ item.sellingPrice }}
-                    </td>
-                    <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: xx-small">
-                      {{ item.outTotalPrice }}
                     </td>
                   </tr>
                 </table>
@@ -187,11 +193,11 @@
                   <th style="border: 1px solid #000000;text-align: center;padding: 3px 3px;width:15%">
                     规格
                   </th>
-                  <th style="border: 1px solid #000000;text-align: center;padding: 3px 3px;width:8%">
-                    注册证号
-                  </th>
-                  <th style="border: 1px solid #000000;text-align: center;padding: 3px 3px;width:15%">
+                  <th style="border: 1px solid #000000;text-align: center;padding: 3px 3px;width:12%">
                     批号
+                  </th>
+                  <th style="border: 1px solid #000000;text-align: center;padding: 3px 3px;width:8%">
+                    有效期
                   </th>
                   <th style="border: 1px solid #000000;text-align: center;padding: 3px 3px;width:5%">
                     数量
@@ -199,19 +205,22 @@
                   <th style="border: 1px solid #000000;text-align: center;padding: 3px 3px;width:5%">
                     单位
                   </th>
-                  <th style="border: 1px solid #000000;text-align: center;padding: 3px 3px;width:15%">
-                    生产厂家
-                  </th>
                   <th style="border: 1px solid #000000;text-align: center;padding: 3px 3px;width:7%">
                     单价
                   </th>
                   <th style="border: 1px solid #000000;text-align: center;padding: 3px 3px;width:7%">
                     金额
                   </th>
+                  <th style="border: 1px solid #000000;text-align: center;padding: 3px 3px;width:8%">
+                    注册证号
+                  </th>
+                  <th style="border: 1px solid #000000;text-align: center;padding: 3px 3px;width:15%">
+                    生产厂家
+                  </th>
                 </tr>
                 <tr v-for="(item, index2) in tableNumber[divNumber-1]">
                   <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: xx-small">
-                    {{ index2+((divNumber-1)*10) +1}}
+                    {{ index2+((divNumber-1)*tableLength) +1}}
                   </td>
                   <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: xx-small">
                     {{ item.productName }}
@@ -222,6 +231,24 @@
                   </td>
                   <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: xx-small">
                     {{ item.spec }}
+                  </td>
+                  <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: xx-small">
+                    {{ item.batchNo }}
+                  </td>
+                  <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: xx-small">
+                    {{ item.expDate }}
+                  </td>
+                  <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: xx-small">
+                    {{ item.productNum }}
+                  </td>
+                  <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: xx-small">
+                    {{ item.unitName }}
+                  </td>
+                  <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: xx-small">
+                    {{ item.sellingPrice }}
+                  </td>
+                  <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: xx-small">
+                    {{ item.outTotalPrice }}
                   </td>
                   <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: xx-small">
                     <a-form-item label="" style="width: 100%;height: 100%;padding: 0px;margin: 0px;line-height: 0px">
@@ -239,22 +266,7 @@
                     </a-form-item>
                   </td>
                   <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: xx-small">
-                    {{ item.batchNo }}
-                  </td>
-                  <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: xx-small">
-                    {{ item.productNum }}
-                  </td>
-                  <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: xx-small">
-                    {{ item.unitName }}
-                  </td>
-                  <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: xx-small">
                     {{ item.venderName }}
-                  </td>
-                  <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: xx-small">
-                    {{ item.sellingPrice }}
-                  </td>
-                  <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: xx-small">
-                    {{ item.outTotalPrice }}
                   </td>
                 </tr>
                 <tr>
@@ -272,10 +284,12 @@
                   </td>
                   <td style="border-bottom: 1px solid #000000;text-align: center;padding: 3px 3px;font-size: small">
                   </td>
-                  <td style="border-bottom: 1px solid #000000;text-align: center;padding: 3px 3px;font-size: small">
-                  </td>
                   <td style="border-bottom: 1px solid #000000;text-align: center;padding: 3px 3px;font-size: larger;font-weight: bolder">
                     {{ record.outTotalPrice }}
+                  </td>
+                  <td style="border-bottom: 1px solid #000000;text-align: center;padding: 3px 3px;font-size: small">
+                  </td>
+                  <td style="border-bottom: 1px solid #000000;text-align: center;padding: 3px 3px;font-size: small">
                   </td>
                 </tr>
               </table>
@@ -291,7 +305,7 @@
               发货员：
             </span>
           <a-input style="width: 10%;text-align: left" />
-          <span style="margin-left: 3%">
+          <span style="margin-left: 60%">
               <!--销售人员签字：-->
               收货人：
             </span>
@@ -334,6 +348,7 @@
         divNumber:0,
         batchPrint:false,
         tableNumber:[],
+        tableLength:7,
         labelCol: {
           xs: { span: 24 },
           sm: { span: 2 },
@@ -423,34 +438,35 @@
         }
       },
       printInit(data){
+        let length = this.tableLength;
         let number = data.length;
-        if(number>10){
+        if(number>length){
           this.batchPrint = true;
         }
         let num;
-        if(number%10==0){
-          num = parseInt(number/10);
+        if(number%length==0){
+          num = parseInt(number/length);
           for(let index =0;index<num;index++){
             let lsData = [];
-            for(let i =0;i<10;i++){
-              lsData.push(data[index*10+i])
+            for(let i =0;i<length;i++){
+              lsData.push(data[index*length+i])
             }
             this.tableNumber.push(lsData);
           }
         }else{
-          num = parseInt(number/10);
+          num = parseInt(number/length);
           if(num>0){
             for(let index =0;index<num;index++){
               let lsData = [];
-              for(let i =0;i<10;i++){
-                lsData.push(data[index*10+i]);
+              for(let i =0;i<length;i++){
+                lsData.push(data[index*length+i]);
               }
               this.tableNumber.push(lsData);
             }
             let wsData = [];
-            let ws = parseInt(number%10);
+            let ws = parseInt(number%length);
             for(let x =0;x<ws;x++){
-              wsData.push(data[num*10+x]);
+              wsData.push(data[num*length+x]);
             }
             this.tableNumber.push(wsData);
           }else{
