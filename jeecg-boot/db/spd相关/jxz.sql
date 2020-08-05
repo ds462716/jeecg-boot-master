@@ -127,3 +127,9 @@ INSERT INTO `sys_permission`(`id`, `parent_id`, `name`, `url`, `component`, `com
 -- 2020年8月3日 16:36:22 增加当前库存数量字段
 ALTER TABLE `pd_product_stock_check_child`
 ADD COLUMN `stock_num` double(10, 2) NULL COMMENT '当前库存数量' AFTER `stock_id`;
+
+-- 2020年8月5日 09:16:09 修改统计报表菜单顺序
+update sys_permission set business_type = '0', sort_no = '3.41' where id = 'f0675b52d89100ee88472b6800754a08';
+update sys_permission set sort_no = '3.45' where id = '1275351703808368642';
+-- 2020年8月5日 09:22:52 出入库统计报表菜单
+INSERT INTO `sys_permission`(`id`, `parent_id`, `name`, `url`, `component`, `component_name`, `redirect`, `menu_type`, `business_type`, `perms`, `perms_type`, `sort_no`, `always_show`, `icon`, `is_route`, `is_leaf`, `keep_alive`, `hidden`, `description`, `create_by`, `create_time`, `update_by`, `update_time`, `del_flag`, `rule_flag`, `status`, `internal_or_external`) VALUES ('1290819696255049729', 'f0675b52d89100ee88472b6800754a08', '出入库统计报表', '/pd/report/PdInAndOutReport', 'pd/report/PdInAndOutReport', NULL, NULL, 1, '0', NULL, '1', 1.00, 0, NULL, 1, 1, 0, 0, NULL, 'admin', '2020-08-05 09:19:32', NULL, '2020-08-05 09:19:33', 0, 0, '1', 0);
