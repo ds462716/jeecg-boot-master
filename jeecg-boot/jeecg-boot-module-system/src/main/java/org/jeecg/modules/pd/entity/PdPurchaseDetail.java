@@ -96,6 +96,8 @@ public class PdPurchaseDetail extends BaseEntity {
 	@TableField(exist = false)
 	@Excel(name = "合并申购编号", width = 15)
 	private String mergeOrderNo;
+	@TableField(exist = false)
+	private String productRegistration; //产品表中的注册证
 }
 
 
