@@ -311,20 +311,6 @@
         fullscreen: true,
         switchFullscreen: false,
         selectRegistrations: [],
-        columns: [
-          { title: '产品名称', dataIndex: 'productName', align:"center", width:"15%" },
-          { title: '生产厂家', dataIndex: 'venderName',align:"center"},
-          { title: '注册证号', dataIndex: 'registration',align:"center"  },
-          { title: '规格', dataIndex: 'spec',align:"center" },
-          // { title: '型号', dataIndex: 'version',align:"center", width:"10%" },
-          // { title: '单位', dataIndex: 'unitName',align:"center", width:"50px" },
-          { title: '批号', dataIndex: 'batchNo',align:"center" },
-          { title: '生产日期', dataIndex: 'produceDate',align:"center", width:"10%" },
-          { title: '有效期', dataIndex: 'expDate',align:"center", width:"10%" },
-          { title: '数量', dataIndex: 'productNum',align:"center", width:"7%" },
-          { title: '单价', dataIndex: 'purchasePrice',align:"center", width:"7%" },
-          { title: '金额', dataIndex: 'inTotalPrice',align:"center", width:"7%" },
-        ],
         dataSource: [],
         divNumber:0,
         batchPrint:false,
@@ -354,7 +340,6 @@
         this.visible = false;
         this.dataSource = [];
         this.batchPrint = false;
-        this.dataSource = [];
         this.tableNumber = [];
         this.divNumber = 0;
         this.$emit('close')
