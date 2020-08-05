@@ -256,7 +256,7 @@
       },
       /** 调用完edit()方法之后会自动调用此方法 */
       editAfter() {
-        let fieldval = pick(this.model,'orderNo','purchaseName','purchaseType','orderDate','deptName','auditStatus','submitStatus','refuseReason')
+        let fieldval = pick(this.model,'orderNo','purchaseName','purchaseType','orderDate','deptName','refuseReason')
         this.$nextTick(() => {
           this.form.setFieldsValue(fieldval)
         })
@@ -280,7 +280,7 @@
         this.$message.error(msg)
       },
       popupCallback(row){
-        this.form.setFieldsValue(pick(row,'orderNo','purchaseName','purchaseType','orderDate','deptName','auditStatus','submitStatus','refuseReason'))
+        this.form.setFieldsValue(pick(row,'orderNo','purchaseName','purchaseType','orderDate','deptName','refuseReason'))
       },
       /** 关闭按钮 **/
       closeBtn(){

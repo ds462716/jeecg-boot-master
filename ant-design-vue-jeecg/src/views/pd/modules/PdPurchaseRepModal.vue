@@ -411,7 +411,7 @@
       },
       /** 调用完edit()方法之后会自动调用此方法 */
       editAfter() {
-        let fieldval = pick(this.model,'orderNo','purchaseName','orderDate','deptName','purchaseType','auditStatus','submitStatus','refuseReason','repType')
+        let fieldval = pick(this.model,'orderNo','purchaseName','orderDate','deptName','purchaseType','refuseReason','repType')
         this.$nextTick(() => {
           this.form.setFieldsValue(fieldval)
         })

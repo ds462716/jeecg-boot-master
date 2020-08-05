@@ -23,7 +23,7 @@
             <span style="margin-left: 3%">
               入库单号：
             </span>
-            <a-input style="width: 20%;text-align: left" disabled v-model="record.recordNo"/>
+            <a-input style="width: 25%;text-align: left" disabled v-model="record.recordNo"/>
             <span style="margin-left: 3%">
               入库日期：
             </span>
@@ -37,7 +37,7 @@
             <span style="margin-left: 3%">
               配送商：&nbsp;&nbsp;&nbsp;
             </span>
-            <a-input style="width: 20%;text-align: left" disabled v-model="record.distributorName"/>
+            <a-input style="width: 25%;text-align: left" disabled v-model="record.distributorName"/>
             <span style="margin-left: 3%">
               入库库房：
             </span>
@@ -45,7 +45,7 @@
             <span style="margin-left: 3%;text-align: right">
               备注：
             </span>
-            <a-input style="width: 30%;text-align: left" disabled v-model="record.remarks"/>
+            <a-input style="width: 28%;text-align: left" disabled v-model="record.remarks"/>
           </a-col>
           <a-col :span="24" style="margin-top: 0px">
           </a-col>
@@ -142,7 +142,7 @@
             <span style="margin-left: 3%">
               入库单号：
             </span>
-            <a-input style="width: 20%;text-align: left" disabled v-model="record.recordNo"/>
+            <a-input style="width: 25%;text-align: left" disabled v-model="record.recordNo"/>
             <span style="margin-left: 3%">
               入库日期：
             </span>
@@ -156,7 +156,7 @@
             <span style="margin-left: 3%">
               配送商：&nbsp;&nbsp;&nbsp;
             </span>
-            <a-input style="width: 20%;text-align: left" disabled v-model="record.distributorName"/>
+            <a-input style="width: 25%;text-align: left" disabled v-model="record.distributorName"/>
             <span style="margin-left: 3%">
               入库库房：
             </span>
@@ -164,7 +164,7 @@
             <span style="margin-left: 3%;text-align: right">
               备注：
             </span>
-            <a-input style="width: 30%;text-align: left" disabled v-model="record.remarks"/>
+            <a-input style="width: 28%;text-align: left" disabled v-model="record.remarks"/>
           </a-col>
           <a-col :span="24" style="margin-top: 0px">
           </a-col>
@@ -311,20 +311,6 @@
         fullscreen: true,
         switchFullscreen: false,
         selectRegistrations: [],
-        columns: [
-          { title: '产品名称', dataIndex: 'productName', align:"center", width:"15%" },
-          { title: '生产厂家', dataIndex: 'venderName',align:"center"},
-          { title: '注册证号', dataIndex: 'registration',align:"center"  },
-          { title: '规格', dataIndex: 'spec',align:"center" },
-          // { title: '型号', dataIndex: 'version',align:"center", width:"10%" },
-          // { title: '单位', dataIndex: 'unitName',align:"center", width:"50px" },
-          { title: '批号', dataIndex: 'batchNo',align:"center" },
-          { title: '生产日期', dataIndex: 'produceDate',align:"center", width:"10%" },
-          { title: '有效期', dataIndex: 'expDate',align:"center", width:"10%" },
-          { title: '数量', dataIndex: 'productNum',align:"center", width:"7%" },
-          { title: '单价', dataIndex: 'purchasePrice',align:"center", width:"7%" },
-          { title: '金额', dataIndex: 'inTotalPrice',align:"center", width:"7%" },
-        ],
         dataSource: [],
         divNumber:0,
         batchPrint:false,
@@ -354,7 +340,6 @@
         this.visible = false;
         this.dataSource = [];
         this.batchPrint = false;
-        this.dataSource = [];
         this.tableNumber = [];
         this.divNumber = 0;
         this.$emit('close')
