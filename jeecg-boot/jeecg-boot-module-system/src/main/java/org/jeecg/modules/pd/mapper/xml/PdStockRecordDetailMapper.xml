@@ -225,10 +225,10 @@
 				AND a.id = #{entity.id}
 			</if>
 			<if test="entity.queryExpDateStart != null and entity.queryExpDateStart != ''">
-				AND a.exp_date &gt;= #{entity.queryExpDateStart}
+				AND date_format( a.exp_date, '%Y-%m-%d') &gt;= #{entity.queryExpDateStart}
 			</if>
 			<if test="entity.queryExpDateEnd != null and entity.queryExpDateEnd != ''">
-				AND a.exp_date &lt;= #{entity.queryExpDateEnd}
+				AND date_format( a.exp_date, '%Y-%m-%d') &lt;= #{entity.queryExpDateEnd}
 			</if>
 			<if test="entity.batchNo != null and entity.batchNo != ''">
 				AND a.batch_no LIKE concat('%',#{entity.batchNo},'%')
@@ -243,10 +243,10 @@
 				AND g.record_no LIKE concat('%',#{entity.recordNo},'%')
 			</if>
 			<if test="entity.queryDateStart != null and entity.queryDateStart != ''">
-				AND g.audit_date &gt;= #{entity.queryDateStart}
+				AND date_format( g.audit_date, '%Y-%m-%d') &gt;= #{entity.queryDateStart}
 			</if>
 			<if test="entity.queryDateEnd != null and entity.queryDateEnd != ''">
-				AND g.audit_date &lt;= #{entity.queryDateEnd}
+				AND date_format( g.audit_date, '%Y-%m-%d') &lt;= #{entity.queryDateEnd}
 			</if>
 			<if test="entity.auditStatus != null and entity.auditStatus != ''">
 				AND g.audit_status = #{entity.auditStatus}
@@ -400,10 +400,10 @@
             </foreach>
         </if>
         <if test="queryInDateStart != null and queryInDateStart != ''">
-            AND b.audit_date &gt;= #{queryInDateStart}
+            AND date_format( b.audit_date, '%Y-%m-%d') &gt;= #{queryInDateStart}
         </if>
         <if test="queryInDateEnd != null and queryInDateEnd != ''">
-            AND b.audit_date &lt;= #{queryInDateEnd}
+            AND date_format( b.audit_date, '%Y-%m-%d') &lt;= #{queryInDateEnd}
         </if>
         <if test="auditDate != null">
  			AND DATE_FORMAT(b.audit_date,'%Y-%m-%d')=DATE_FORMAT(#{auditDate},'%Y-%m-%d')
@@ -542,10 +542,10 @@
 				AND a.id = #{entity.id}
 			</if>
 			<if test="entity.queryExpDateStart != null and entity.queryExpDateStart != ''">
-				AND a.exp_date &gt;= #{entity.queryExpDateStart}
+				AND date_format( a.exp_date, '%Y-%m-%d') &gt;= #{entity.queryExpDateStart}
 			</if>
 			<if test="entity.queryExpDateEnd != null and entity.queryExpDateEnd != ''">
-				AND a.exp_date &lt;= #{entity.queryExpDateEnd}
+				AND date_format( a.exp_date, '%Y-%m-%d') &lt;= #{entity.queryExpDateEnd}
 			</if>
 			<if test="entity.batchNo != null and entity.batchNo != ''">
 				AND a.batch_no LIKE concat('%',#{entity.batchNo},'%')
@@ -560,10 +560,10 @@
 				AND g.record_no LIKE concat('%',#{entity.recordNo},'%')
 			</if>
 			<if test="entity.queryDateStart != null and entity.queryDateStart != ''">
-				AND g.audit_date &gt;= #{entity.queryDateStart}
+				AND date_format( g.audit_date, '%Y-%m-%d') &gt;= #{entity.queryDateStart}
 			</if>
 			<if test="entity.queryDateEnd != null and entity.queryDateEnd != ''">
-				AND g.audit_date &lt;= #{entity.queryDateEnd}
+				AND date_format( g.audit_date, '%Y-%m-%d') &lt;= #{entity.queryDateEnd}
 			</if>
 			<if test="entity.auditStatus != null and entity.auditStatus != ''">
 				AND g.audit_status = #{entity.auditStatus}

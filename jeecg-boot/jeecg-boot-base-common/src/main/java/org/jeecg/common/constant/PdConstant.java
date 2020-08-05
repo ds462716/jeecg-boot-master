@@ -74,6 +74,7 @@ public interface PdConstant {
 	public final static String ORDER_NO_FIRST_LETTER_RK = "RK";//入库单
 	public final static String ORDER_NO_FIRST_LETTER_CK = "CK";//出库单
 	public final static String ORDER_NO_FIRST_LETTER_THCK = "THCK";//退货出库单
+	public final static String ORDER_NO_FIRST_LETTER_THRK = "THRK";//退货入库单
 	public final static String ORDER_NO_FIRST_LETTER_TH = "TH";//退货单
 	public final static String ORDER_NO_FIRST_LETTER_YL = "YL";//用量单
 	public final static String ORDER_NO_FIRST_LETTER_TYL = "TYL";//用量退回单
