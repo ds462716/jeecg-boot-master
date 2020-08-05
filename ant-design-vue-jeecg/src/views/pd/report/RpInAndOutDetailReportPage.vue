@@ -1,146 +1,158 @@
 <template>
-  <a-card :bordered="false">
-    <!-- 查询区域 -->
-    <div class="table-page-search-wrapper">
-      <a-form layout="inline" @keyup.enter.native="searchQuery">
-        <a-row :gutter="24">
+  <j-modal
+    :visible="visible"
+    :width="popModal.width"
+    :maskClosable="true"
+    :title="popModal.title"
+    :lockScroll="popModal.lockScroll"
+    :fullscreen="popModal.fullscreen"
+    :switchFullscreen="popModal.switchFullscreen"
+    @cancel="handleCancel"
+  >
 
-          <a-col :md="6" :sm="8">
-            <a-form-item label="出库单号">
-              <a-input placeholder="请输出单号" v-model="queryParam.recordNo"></a-input>
-            </a-form-item>
-          </a-col>
-          <a-col :span="6">
-            <a-form-item label="出库库房">
-              <a-select
-                mode="multiple"
-                showSearch
-                placeholder="请选择出库库房"
-                :supplierId="departValue"
-                :defaultActiveFirstOption="false"
-                :allowClear="true"
-                :showArrow="true"
-                :filterOption="false"
-                @search="departHandleSearch"
-                @focus="departHandleSearch"
-                :notFoundContent="notFoundContent"
-                v-model="queryParam.outDepartIds"
-              >
-                <a-select-option v-for="d in departList" :key="d.id">{{d.departName}}</a-select-option>
-              </a-select>
-            </a-form-item>
-          </a-col>
-          <a-col :span="6">
-            <a-form-item label="入库库房">
-              <a-select
-                mode="multiple"
-                showSearch
-                placeholder="请选择入库库房"
-                :supplierId="allDepartValue"
-                :defaultActiveFirstOption="false"
-                :allowClear="true"
-                :showArrow="true"
-                :filterOption="false"
-                @search="allDepartHandleSearch"
-                @focus="allDepartHandleSearch"
-                :notFoundContent="notFoundContent"
-                v-model="queryParam.inDepartIds"
-              >
-                <a-select-option v-for="d in allDepartList" :key="d.id">{{d.departName}}</a-select-option>
-              </a-select>
-            </a-form-item>
-          </a-col>
 
-          <template v-if="toggleSearchStatus">
+    <a-card :bordered="false">
+      <!-- 查询区域 -->
+      <div class="table-page-search-wrapper">
+        <a-form layout="inline" @keyup.enter.native="searchQuery">
+          <a-row :gutter="24">
+
             <a-col :md="6" :sm="8">
-              <a-form-item label="产品名称">
-                <a-input placeholder="请选输入品名称" v-model="queryParam.productName"></a-input>
+              <a-form-item label="出入库单号">
+                <a-input placeholder="请输入单号" v-model="queryParam.recordNo"></a-input>
               </a-form-item>
             </a-col>
-            <a-col :md="6" :sm="8">
-              <a-form-item label="产品编号">
-                <a-input placeholder="请输入产品编号" v-model="queryParam.productNumber"></a-input>
-              </a-form-item>
-            </a-col>
-            <a-col :md="6" :sm="8">
-              <a-form-item label="规格">
-                <a-input placeholder="请输入规格" v-model="queryParam.spec"></a-input>
-              </a-form-item>
-            </a-col>
-            <a-col :md="6" :sm="8">
-              <a-form-item label="出库日期">
-                <a-range-picker @change="outDateChange" v-model="queryParam.queryOutDate"/>
-              </a-form-item>
-            </a-col>
-            <a-col :md="6" :sm="8">
-              <a-form-item label="有效期">
-                <a-range-picker @change="expDateChange" v-model="queryParam.queryExpDate"/>
-              </a-form-item>
-            </a-col>
-            <a-col :md="6" :sm="8">
-              <a-form-item label="注册证">
-                <a-input placeholder="请输入注册证" v-model="queryParam.registration"></a-input>
-              </a-form-item>
-            </a-col>
-            <a-col :md="6" :sm="8">
-              <a-form-item label="型号">
-                <a-input placeholder="请输入型号" v-model="queryParam.version"></a-input>
-              </a-form-item>
-            </a-col>
-            <a-col :md="6" :sm="8">
-              <a-form-item label="批号">
-                <a-input placeholder="请输入批号" v-model="queryParam.batchNo"></a-input>
-              </a-form-item>
-            </a-col>
-            <a-col :md="6" :sm="8">
-              <a-form-item label="出库类型">
-                <j-dict-select-tag-expand v-model="queryParam.outType" dictCode="out_type"/>
-              </a-form-item>
-            </a-col>
-            <!--<a-col :md="6" :sm="8">-->
-            <!--<a-form-item label="供应商">-->
-            <!--<a-select-->
-            <!--ref="supplierSelect"-->
-            <!--showSearch-->
-            <!--:supplierId="supplierValue"-->
-            <!--placeholder="请选择供应商"-->
-            <!--:defaultActiveFirstOption="false"-->
-            <!--:showArrow="true"-->
-            <!--:allowClear="true"-->
-            <!--:filterOption="false"-->
-            <!--@search="supplierHandleSearch"-->
-            <!--@change="supplierHandleChange"-->
-            <!--@focus="supplierHandleSearch"-->
-            <!--:notFoundContent="notFoundContent"-->
-            <!--v-model="queryParam.supplierId"-->
-            <!--&gt;-->
-            <!--<a-select-option v-for="d in supplierData" :key="d.value">{{d.text}}</a-select-option>-->
-            <!--</a-select>-->
-            <!--</a-form-item>-->
-            <!--</a-col>-->
-            <a-col :md="6" :sm="8">
-              <a-form-item label="生产厂家">
+            <a-col :span="6">
+              <a-form-item label="出库库房">
                 <a-select
+                  mode="multiple"
                   showSearch
-                  :venderId="venderValue"
-                  placeholder="请选择生产厂家"
+                  placeholder="请选择出库库房"
+                  :supplierId="departValue"
                   :defaultActiveFirstOption="false"
                   :allowClear="true"
                   :showArrow="true"
                   :filterOption="false"
-                  @search="venderHandleSearch"
-                  @change="venderHandleChange"
-                  @focus="venderHandleSearch"
+                  @search="departHandleSearch"
+                  @focus="departHandleSearch"
                   :notFoundContent="notFoundContent"
-                  v-model="queryParam.venderId"
+                  v-model="queryParam.outDepartIds"
                 >
-                  <a-select-option v-for="d in venderData" :key="d.value">{{d.text}}</a-select-option>
+                  <a-select-option v-for="d in departList" :key="d.id">{{d.departName}}</a-select-option>
                 </a-select>
               </a-form-item>
             </a-col>
-          </template>
+            <a-col :span="6">
+              <a-form-item label="入库库房">
+                <a-select
+                  mode="multiple"
+                  showSearch
+                  placeholder="请选择入库库房"
+                  :supplierId="allDepartValue"
+                  :defaultActiveFirstOption="false"
+                  :allowClear="true"
+                  :showArrow="true"
+                  :filterOption="false"
+                  @search="allDepartHandleSearch"
+                  @focus="allDepartHandleSearch"
+                  :notFoundContent="notFoundContent"
+                  v-model="queryParam.inDepartIds"
+                >
+                  <a-select-option v-for="d in allDepartList" :key="d.id">{{d.departName}}</a-select-option>
+                </a-select>
+              </a-form-item>
+            </a-col>
 
-          <a-col :md="6" :sm="8">
+            <template v-if="toggleSearchStatus">
+              <a-col :md="6" :sm="8">
+                <a-form-item label="产品名称">
+                  <a-input placeholder="请选输入品名称" v-model="queryParam.productName"></a-input>
+                </a-form-item>
+              </a-col>
+              <a-col :md="6" :sm="8">
+                <a-form-item label="产品编号">
+                  <a-input placeholder="请输入产品编号" v-model="queryParam.productNumber"></a-input>
+                </a-form-item>
+              </a-col>
+              <a-col :md="6" :sm="8">
+                <a-form-item label="规格">
+                  <a-input placeholder="请输入规格" v-model="queryParam.spec"></a-input>
+                </a-form-item>
+              </a-col>
+              <a-col :md="6" :sm="8">
+                <a-form-item label="出库日期">
+                  <a-range-picker @change="outDateChange" v-model="queryParam.queryOutDate"/>
+                </a-form-item>
+              </a-col>
+              <a-col :md="6" :sm="8">
+                <a-form-item label="有效期">
+                  <a-range-picker @change="expDateChange" v-model="queryParam.queryExpDate"/>
+                </a-form-item>
+              </a-col>
+              <a-col :md="6" :sm="8">
+                <a-form-item label="注册证">
+                  <a-input placeholder="请输入注册证" v-model="queryParam.registration"></a-input>
+                </a-form-item>
+              </a-col>
+              <a-col :md="6" :sm="8">
+                <a-form-item label="型号">
+                  <a-input placeholder="请输入型号" v-model="queryParam.version"></a-input>
+                </a-form-item>
+              </a-col>
+              <a-col :md="6" :sm="8">
+                <a-form-item label="批号">
+                  <a-input placeholder="请输入批号" v-model="queryParam.batchNo"></a-input>
+                </a-form-item>
+              </a-col>
+              <a-col :md="6" :sm="8">
+                <a-form-item label="出库类型">
+                  <j-dict-select-tag-expand v-model="queryParam.outType" dictCode="out_type"/>
+                </a-form-item>
+              </a-col>
+              <!--<a-col :md="6" :sm="8">-->
+              <!--<a-form-item label="供应商">-->
+              <!--<a-select-->
+              <!--ref="supplierSelect"-->
+              <!--showSearch-->
+              <!--:supplierId="supplierValue"-->
+              <!--placeholder="请选择供应商"-->
+              <!--:defaultActiveFirstOption="false"-->
+              <!--:showArrow="true"-->
+              <!--:allowClear="true"-->
+              <!--:filterOption="false"-->
+              <!--@search="supplierHandleSearch"-->
+              <!--@change="supplierHandleChange"-->
+              <!--@focus="supplierHandleSearch"-->
+              <!--:notFoundContent="notFoundContent"-->
+              <!--v-model="queryParam.supplierId"-->
+              <!--&gt;-->
+              <!--<a-select-option v-for="d in supplierData" :key="d.value">{{d.text}}</a-select-option>-->
+              <!--</a-select>-->
+              <!--</a-form-item>-->
+              <!--</a-col>-->
+              <a-col :md="6" :sm="8">
+                <a-form-item label="生产厂家">
+                  <a-select
+                    showSearch
+                    :venderId="venderValue"
+                    placeholder="请选择生产厂家"
+                    :defaultActiveFirstOption="false"
+                    :allowClear="true"
+                    :showArrow="true"
+                    :filterOption="false"
+                    @search="venderHandleSearch"
+                    @change="venderHandleChange"
+                    @focus="venderHandleSearch"
+                    :notFoundContent="notFoundContent"
+                    v-model="queryParam.venderId"
+                  >
+                    <a-select-option v-for="d in venderData" :key="d.value">{{d.text}}</a-select-option>
+                  </a-select>
+                </a-form-item>
+              </a-col>
+            </template>
+
+            <a-col :md="6" :sm="8">
             <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
               <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
               <a-button type="primary" @click="searchReset" icon="reload" style="margin-left: 8px">重置</a-button>
@@ -149,33 +161,38 @@
                 <a-icon :type="toggleSearchStatus ? 'up' : 'down'"/>
               </a>
             </span>
-          </a-col>
-        </a-row>
-      </a-form>
-    </div>
-    <!-- 查询区域-END -->
-    <!-- 操作按钮区域 -->
-    <div class="table-operator">
-      <a-button type="primary" icon="download" @click="handleExportXls('出库明细')">导出</a-button>
-    </div>
-    <!-- table区域-begin -->
-    <div>
-      <a-table
-        CLASS="changeColor"
-        ref="table"
-        size="middle"
-        bordered
-        rowKey="id"
-        :columns="columns"
-        :dataSource="dataSource"
-        :pagination="ipagination"
-        :loading="loading"
-        :scroll="tableScroll"
-        @change="handleTableChange">
-      </a-table>
-    </div>
-  </a-card>
+            </a-col>
+          </a-row>
+        </a-form>
+      </div>
+      <!-- 查询区域-END -->
+      <!-- 操作按钮区域 -->
+      <div class="table-operator">
+        <a-button type="primary" icon="download" @click="handleExportXls('出库明细')">导出</a-button>
+      </div>
+      <!-- table区域-begin -->
+      <div>
+        <a-table
+          CLASS="changeColor"
+          ref="table"
+          size="middle"
+          bordered
+          rowKey="id"
+          :columns="columns"
+          :dataSource="dataSource"
+          :pagination="ipagination"
+          :loading="loading"
+          :scroll="tableScroll"
+          @change="handleTableChange">
+        </a-table>
+      </div>
+      <template slot="footer">
+        <a-button @click="handleCancel" style="margin-right: 15px;">关  闭</a-button>
+      </template>
+    </a-card>
+  </j-modal>
 </template>
+
 <script>
 
   import { httpAction,getAction,downFile } from '@/api/manage'
@@ -183,16 +200,18 @@
   import { JeecgListMixin} from '@/mixins/JeecgListMixin'
   import {initDictOptions, filterMultiDictText} from '@/components/dict/JDictSelectUtil'
   import JDictSelectTagExpand from "@/components/dict/JDictSelectTagExpand"
+  import JEllipsis from '@/components/jeecg/JEllipsis'
 
   export default {
-    name: "PdstockRecordOutQueryList",
+    name: 'RpInAndOutDetailReportPage',
     mixins:[JeecgListMixin],
     components: {
-      JDictSelectTagExpand
+      JDictSelectTagExpand,JEllipsis
     },
-    data () {
+    data() {
       return {
-        description: '出库明细查询',
+        visible: false,
+
 
         notFoundContent:"未找到内容",
         supplierValue: undefined,
@@ -208,16 +227,16 @@
         allDepartList:[],
         // 表头
         columns: [
-        /*  {
-            title: '序号',
-            dataIndex: '',
-            key:'rowIndex',
-            width:60,
-            align:"center",
-            customRender:function (t,r,index) {
-              return parseInt(index)+1;
-            }
-          },*/
+          /*  {
+              title: '序号',
+              dataIndex: '',
+              key:'rowIndex',
+              width:60,
+              align:"center",
+              customRender:function (t,r,index) {
+                return parseInt(index)+1;
+              }
+            },*/
           {
             title:'出库单号',
             align:"center",
@@ -416,6 +435,16 @@
           outType:[],
         },
         tableScroll:{x :4000},
+        popModal: {
+          title: '出入库明细统计报表',
+          visible: false,
+          width: '100%',
+          // width: '1200',
+          style: { top: '20px' },
+          switchFullscreen: true,  //缩放按钮
+          lockScroll: false,
+          fullscreen: true,
+        },
       }
     },
     computed: {
@@ -424,6 +453,21 @@
       }
     },
     methods: {
+      // 重写close方法
+      close() {
+        this.visible = false;
+        this.$emit('close');
+      },
+      show(record){
+        this.visible = true;
+      },
+      loadData() {
+      },
+      /** 关闭按钮 **/
+      handleCancel(){
+        this.$emit('ok');
+        this.close();
+      },
       initDictConfig(){ //静态字典值加载
         initDictOptions('out_type').then((res) => { //入库类型
           if (res.success) {
@@ -545,5 +589,12 @@
     }
   }
 </script>
+
 <style scoped>
+  .drawer-bootom-button {
+    width: 100%;
+    text-align: right;
+    background: #fff;
+    margin-top:10px;
+  }
 </style>

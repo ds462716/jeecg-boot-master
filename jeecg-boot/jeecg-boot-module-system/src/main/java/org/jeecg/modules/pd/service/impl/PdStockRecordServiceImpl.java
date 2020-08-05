@@ -17,6 +17,7 @@ import org.jeecg.modules.pd.mapper.*;
 import org.jeecg.modules.pd.service.*;
 import org.jeecg.modules.pd.util.UUIDUtil;
 import org.jeecg.modules.pd.vo.PdGoodsAllocationPage;
+import org.jeecg.modules.pd.vo.RpInAndOutReportPage;
 import org.jeecg.modules.system.entity.SysDepart;
 import org.jeecg.modules.system.entity.SysPermission;
 import org.jeecg.modules.system.service.ISysDepartService;
@@ -1830,7 +1831,40 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
         return recordId;
     }
 
+    /**
+     * 出入库统计报表
+     * @param page
+     * @param rpInAndOutReportPage
+     * @return
+     */
+    @Override
+    public IPage<RpInAndOutReportPage> rpInAndOutReport(Page<RpInAndOutReportPage> page, RpInAndOutReportPage rpInAndOutReportPage) {
+        IPage<RpInAndOutReportPage> pageList = pdStockRecordMapper.rpInAndOutReport(page,rpInAndOutReportPage);
+        List<RpInAndOutReportPage> list = pageList.getRecords();
+        for(RpInAndOutReportPage vo : list){
+            rpInAndOutReportPage.setDepartId(vo.getDepartId());
+            //入库数据
+            RpInAndOutReportPage inVo = pdStockRecordMapper.getInTotalData(rpInAndOutReportPage);
+            if(inVo != null){
+                vo.setInProductNum(inVo.getInProductNum());
+                vo.setInTotalPrice(inVo.getInTotalPrice());
+            }else{
+                vo.setInProductNum(0D);
+                vo.setInTotalPrice(new BigDecimal(0));
+            }
+            //出库数据
+            RpInAndOutReportPage outVo = pdStockRecordMapper.getOutTotalData(rpInAndOutReportPage);
+            if(outVo != null){
+                vo.setOutProductNum(outVo.getOutProductNum());
+                vo.setOutTotalPrice(outVo.getOutTotalPrice());
+            }else{
+                vo.setOutProductNum(0D);
+                vo.setOutTotalPrice(new BigDecimal(0));
+            }
+        }
 
+        return pageList;
+    }
 
     /**
      * 一体机试剂出库（接口过来的）

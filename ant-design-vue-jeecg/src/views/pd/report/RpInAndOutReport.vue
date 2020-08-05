@@ -4,17 +4,17 @@
     <div class="table-page-search-wrapper">
       <a-form layout="inline" @keyup.enter.native="searchQuery">
         <a-row :gutter="24">
-          <a-col :md="6" :sm="8">
-            <a-form-item label="入库单号">
-              <a-input placeholder="请输入单号" v-model="queryParam.recordNo"></a-input>
+          <a-col :md="3">
+            <a-form-item label="年月">
+              <a-month-picker placeholder="选择年月" @change="monthChange"/>
             </a-form-item>
           </a-col>
           <a-col :span="6">
-            <a-form-item label="入库库房">
+            <a-form-item label="科室">
               <a-select
                 mode="multiple"
                 showSearch
-                placeholder="请选择入库库房"
+                placeholder="请选择库房"
                 :supplierId="departValue"
                 :defaultActiveFirstOption="false"
                 :allowClear="true"
@@ -23,110 +23,25 @@
                 @search="departHandleSearch"
                 @focus="departHandleSearch"
                 :notFoundContent="notFoundContent"
-                v-model="queryParam.inDepartIds"
+                v-model="queryParam.departIds"
               >
                 <a-select-option v-for="d in departList" :key="d.id">{{d.departName}}</a-select-option>
               </a-select>
             </a-form-item>
           </a-col>
-          <a-col :md="6" :sm="8">
-            <a-form-item label="产品名称">
-              <a-input placeholder="请选输入品名称" v-model="queryParam.productName"></a-input>
+          <a-col :md="6">
+            <a-form-item label="出入库日期">
+              <a-range-picker @change="inDateChange" v-model="queryParam.queryInDate"/>
             </a-form-item>
           </a-col>
-
-          <template v-if="toggleSearchStatus">
-            <a-col :md="6" :sm="8">
-              <a-form-item label="产品编号">
-                <a-input placeholder="请输入产品编号" v-model="queryParam.productNumber"></a-input>
-              </a-form-item>
-            </a-col>
-            <a-col :md="6" :sm="8">
-              <a-form-item label="规格">
-                <a-input placeholder="请输入规格" v-model="queryParam.spec"></a-input>
-              </a-form-item>
-            </a-col>
-            <a-col :md="6" :sm="8">
-              <a-form-item label="入库日期">
-                <a-range-picker @change="inDateChange" v-model="queryParam.queryInDate"/>
-              </a-form-item>
-            </a-col>
-            <a-col :md="6" :sm="8">
-              <a-form-item label="有效期">
-                <a-range-picker @change="expDateChange" v-model="queryParam.queryExpDate"/>
-              </a-form-item>
-            </a-col>
-            <a-col :md="6" :sm="8">
-              <a-form-item label="注册证">
-                <a-input placeholder="请输入注册证" v-model="queryParam.registration"></a-input>
-              </a-form-item>
-            </a-col>
-            <a-col :md="6" :sm="8">
-              <a-form-item label="型号">
-                <a-input placeholder="请输入型号" v-model="queryParam.version"></a-input>
-              </a-form-item>
-            </a-col>
-            <a-col :md="6" :sm="8">
-              <a-form-item label="批号">
-                <a-input placeholder="请输入批号" v-model="queryParam.batchNo"></a-input>
-              </a-form-item>
-            </a-col>
-            <a-col :md="6" :sm="8">
-              <a-form-item label="入库类型">
-                <j-dict-select-tag-expand v-model="queryParam.inType" dictCode="in_type"/>
-              </a-form-item>
-            </a-col>
-            <a-col :md="6" :sm="8">
-              <a-form-item label="供应商">
-                <a-select
-                  ref="supplierSelect"
-                  showSearch
-                  :supplierId="supplierValue"
-                  placeholder="请选择供应商"
-                  :defaultActiveFirstOption="false"
-                  :showArrow="true"
-                  :allowClear="true"
-                  :filterOption="false"
-                  @search="supplierHandleSearch"
-                  @change="supplierHandleChange"
-                  @focus="supplierHandleSearch"
-                  :notFoundContent="notFoundContent"
-                  v-model="queryParam.supplierId"
-                >
-                  <a-select-option v-for="d in supplierData" :key="d.value">{{d.text}}</a-select-option>
-                </a-select>
-              </a-form-item>
-            </a-col>
-            <a-col :md="6" :sm="8">
-              <a-form-item label="生产厂家">
-                <a-select
-                  showSearch
-                  :venderId="venderValue"
-                  placeholder="请选择生产厂家"
-                  :defaultActiveFirstOption="false"
-                  :allowClear="true"
-                  :showArrow="true"
-                  :filterOption="false"
-                  @search="venderHandleSearch"
-                  @change="venderHandleChange"
-                  @focus="venderHandleSearch"
-                  :notFoundContent="notFoundContent"
-                  v-model="queryParam.venderId"
-                >
-                  <a-select-option v-for="d in venderData" :key="d.value">{{d.text}}</a-select-option>
-                </a-select>
-              </a-form-item>
-            </a-col>
-          </template>
-
           <a-col :md="6" :sm="8">
             <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
               <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
               <a-button type="primary" @click="searchReset" icon="reload" style="margin-left: 8px">重置</a-button>
-              <a @click="handleToggleSearch" style="margin-left: 8px">
-                {{ toggleSearchStatus ? '收起' : '展开' }}
-                <a-icon :type="toggleSearchStatus ? 'up' : 'down'"/>
-              </a>
+              <!--<a @click="handleToggleSearch" style="margin-left: 8px">-->
+                <!--{{ toggleSearchStatus ? '收起' : '展开' }}-->
+                <!--<a-icon :type="toggleSearchStatus ? 'up' : 'down'"/>-->
+              <!--</a>-->
             </span>
           </a-col>
 
@@ -138,7 +53,8 @@
     <div class="table-operator">
       <a-button type="primary" icon="download" @click="handleExportXls('入库明细')">导出</a-button>
     </div>
-    <!-- table区域-begin -->
+    <!-- table区域-begin
+        :scroll="tableScroll"-->
     <div>
       <a-table
         CLASS="changeColor"
@@ -150,13 +66,18 @@
         :dataSource="dataSource"
         :pagination="ipagination"
         :loading="loading"
-        :scroll="tableScroll"
         @change="handleTableChange">
         <template slot="ellipsisText" slot-scope="text">
           <j-ellipsis :value="text" :length="textMaxLength"></j-ellipsis>
         </template>
+        <span slot="action" slot-scope="text, record">
+          <a @click="detailBtn(record)">明细</a>
+        </span>
       </a-table>
     </div>
+
+    <rp-in-and-out-detail-report-page ref="rpInAndOutDetailReportPage"></rp-in-and-out-detail-report-page>
+
   </a-card>
 </template>
 <script>
@@ -167,25 +88,21 @@
   import {initDictOptions, filterMultiDictText} from '@/components/dict/JDictSelectUtil'
   import JDictSelectTagExpand from "@/components/dict/JDictSelectTagExpand"
   import JEllipsis from '@/components/jeecg/JEllipsis'
+  import RpInAndOutDetailReportPage from "./RpInAndOutDetailReportPage";
 
   export default {
     name: "RpInAndOutReport",
     mixins:[JeecgListMixin],
     components: {
+      RpInAndOutDetailReportPage,
       JDictSelectTagExpand,JEllipsis
     },
     data () {
       return {
-        description: '入库明细查询',
+        description: '出入库统计报表',
 
         textMaxLength:15,
         notFoundContent:"未找到内容",
-        supplierValue: undefined,
-        supplierData: [],
-
-        venderValue: undefined,
-        venderData: [],
-
         departValue: undefined,
         departList:[],
 
@@ -204,61 +121,49 @@
           {
             title:'科室',
             align:"center",
-            width:'100px',
-            dataIndex: 'recordNo'
+            width:'250px',
+            dataIndex: 'departName'
           },
           {
             title:'入库产品数量',
             align:"center",
-            dataIndex: 'auditDate',
-            width:'90px',
-            customRender:function (text) {
-              return !text?"":(text.length>10?text.substr(0,10):text)
-            }
+            dataIndex: 'inProductNum',
+            width:'250px',
           },
           {
             title:'入库产品金额',
             align:"center",
-            dataIndex: 'inType',
-            width:'90px',
-            customRender:(text)=>{
-              if(!text){
-                return ''
-              }else{
-                return filterMultiDictText(this.dictOptions['inType'], text+"")
-              }
-            }
+            dataIndex: 'inTotalPrice',
+            width:'250px',
           },
           {
             title:'出库产品数量',
             align:"center",
-            width:'80px',
-            dataIndex: 'outDepartName'
+            width:'250px',
+            dataIndex: 'outProductNum'
           },
           {
             title:'出库产品金额',
             align:"center",
-            width:'80px',
-            dataIndex: 'inDepartName'
+            width:'250px',
+            dataIndex: 'outTotalPrice'
           },
           {
-            title:'操作',
+            title: '操作',
+            dataIndex: 'action',
             align:"center",
-            width:'150px',
-            dataIndex: 'number'
+            scopedSlots: { customRender: 'action' },
           },
         ],
         url: {
-          list: "/pd/pdStockRecordIn/queryPdStockRecordInList",
-          querySupplier:"/pd/pdSupplier/getSupplierList",
-          queryVender:"/pd/pdVender/getVenderList",
+          list: "/pd/pdStockRecordIn/rpInAndOutReport",
           departList: "/pd/pdDepart/queryListTree",
           exportXlsUrl: "/pd/pdStockRecordIn/exportXls",
         },
         dictOptions:{
           inType:[],
         },
-        tableScroll:{x :4200},
+        tableScroll:{x :1200},
       }
     },
     computed: {
@@ -268,11 +173,6 @@
     },
     methods: {
       initDictConfig(){ //静态字典值加载
-        initDictOptions('in_type').then((res) => { //入库类型
-          if (res.success) {
-            this.$set(this.dictOptions, 'inType', res.result)
-          }
-        })
       },
       // 部门下拉框搜索
       departHandleSearch(value){
@@ -283,51 +183,12 @@
           this.departList = res.result;
         })
       },
-      //供应商查询start
-      supplierHandleSearch(value) {
-        this.getList(value,this.url.querySupplier,"1");
-      },
-      supplierHandleChange(value) {
-        this.supplierValue = value;
-        this.getList(value,this.url.querySupplier,"1");
-      },
-      //供应商查询end
-      //生产厂家查询start
-      venderHandleSearch(value) {
-        this.getList(value,this.url.queryVender,"2");
-      },
-      venderHandleChange(value) {
-        this.venderValue = value;
-        this.getList(value,this.url.queryVender,"2");
-      },
-      //生产厂家查询end
-      getList(value,url,flag){
-        getAction(url,{name:value}).then((res)=>{
-          if (!res.success) {
-            this.cmsFailed(res.message);
-          }
-          const result = res.result;
-          const data = [];
-          result.forEach(r => {
-            data.push({
-              value: r.id,
-              text: r.name,
-            });
-          });
-          if(flag == "1"){
-            this.supplierData = data;
-          }else if(flag == "2"){
-            this.venderData = data;
-          }
-        })
-      },
-      expDateChange: function (value, dateString) {
-        this.queryParam.queryExpDateStart=dateString[0];
-        this.queryParam.queryExpDateEnd=dateString[1];
-      },
       inDateChange: function (value, dateString) {
         this.queryParam.queryDateStart=dateString[0];
         this.queryParam.queryDateEnd=dateString[1];
+      },
+      monthChange(date, dateString){
+        this.queryParam.yearMonth=dateString;
       },
       getQueryParams() {
         //获取查询条件
@@ -339,10 +200,12 @@
         param.field = this.getQueryField();
         param.pageNo = this.ipagination.current;
         param.pageSize = this.ipagination.pageSize;
-        param.inDepartIds = this.queryParam.inDepartIds+"";
-        delete param.queryExpDate; //范围参数不传递后台，传后台会报错
-        delete param.queryInDate;
+        param.departIds = this.queryParam.departIds+"";
+        delete param.queryInDate; //范围参数不传递后台，传后台会报错
         return filterObj(param);
+      },
+      detailBtn(record){
+        this.$refs.rpInAndOutDetailReportPage.show(record);
       },
       /**重写导出方法**/
       handleExportXls(fileName){

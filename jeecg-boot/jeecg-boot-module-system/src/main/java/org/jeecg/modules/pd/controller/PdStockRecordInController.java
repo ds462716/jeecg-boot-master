@@ -20,6 +20,7 @@ import org.jeecg.modules.pd.entity.PdStockRecordDetail;
 import org.jeecg.modules.pd.service.*;
 import org.jeecg.modules.pd.vo.PdStockRecordInExcle;
 import org.jeecg.modules.pd.vo.PdStockRecordInPage;
+import org.jeecg.modules.pd.vo.RpInAndOutReportPage;
 import org.jeecg.modules.system.entity.SysDepart;
 import org.jeecg.modules.system.service.ISysDepartService;
 import org.jeecg.modules.system.service.ISysDictService;
@@ -533,5 +534,33 @@ public class PdStockRecordInController {
         mv.addObject(NormalExcelConstants.PARAMS, new ExportParams("入库统计报表数据", "导出人:" + sysUser.getRealname(), "入库统计报表"));
         mv.addObject(NormalExcelConstants.DATA_LIST, exportList);
         return mv;
+    }
+
+    /**
+     * 出入库统计报表
+     * @param rpInAndOutReportPage
+     * @param pageNo
+     * @param pageSize
+     * @return
+     */
+    @GetMapping(value = "/rpInAndOutReport")
+    public Result<?> rpInAndOutReport(RpInAndOutReportPage rpInAndOutReportPage,
+                                      @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
+                                      @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize) {
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        rpInAndOutReportPage.setDepartParentId(sysUser.getDepartParentId());
+
+        if(oConvertUtils.isNotEmpty(rpInAndOutReportPage.getDepartIds()) && !"undefined".equals(rpInAndOutReportPage.getDepartIds())){
+            rpInAndOutReportPage.setDepartIdList(Arrays.asList(rpInAndOutReportPage.getDepartIds().split(",")));
+        }else{
+            //查询科室下所有下级科室的ID
+            SysDepart sysDepart=new SysDepart();
+            List<String> departList=pdDepartService.selectListDepart(sysDepart);
+            rpInAndOutReportPage.setDepartIdList(departList);
+        }
+
+        Page<RpInAndOutReportPage> page = new Page<RpInAndOutReportPage>(pageNo, pageSize);
+        IPage<RpInAndOutReportPage> pageList = pdStockRecordService.rpInAndOutReport(page, rpInAndOutReportPage);
+        return Result.ok(pageList);
     }
 }
