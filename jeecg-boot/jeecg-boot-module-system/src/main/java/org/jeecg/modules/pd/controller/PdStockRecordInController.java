@@ -20,6 +20,7 @@ import org.jeecg.modules.pd.entity.PdStockRecordDetail;
 import org.jeecg.modules.pd.service.*;
 import org.jeecg.modules.pd.vo.PdStockRecordInExcle;
 import org.jeecg.modules.pd.vo.PdStockRecordInPage;
+import org.jeecg.modules.pd.vo.RpInAndOutDetailReportPage;
 import org.jeecg.modules.pd.vo.RpInAndOutReportPage;
 import org.jeecg.modules.system.entity.SysDepart;
 import org.jeecg.modules.system.service.ISysDepartService;
@@ -563,4 +564,77 @@ public class PdStockRecordInController {
         IPage<RpInAndOutReportPage> pageList = pdStockRecordService.rpInAndOutReport(page, rpInAndOutReportPage);
         return Result.ok(pageList);
     }
+
+    /**
+     * 出入库明细统计报表
+     * @param rpInAndOutDetailReportPage
+     * @param pageNo
+     * @param pageSize
+     * @return
+     */
+    @GetMapping(value = "/rpInDetailReport")
+    public Result<?> rpInDetailReport(PdStockRecordDetail inDetail,
+                                            @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
+                                            @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize) {
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+
+        if(oConvertUtils.isEmpty(inDetail.getDepartId())){
+            return Result.error("参数不正确，请重新查询！");
+        }
+        //查询入库明细
+        List<String> inDepartList = new ArrayList<>();
+        inDepartList.add(inDetail.getDepartId());
+        inDetail.setInDepartIdList(inDepartList);
+        inDetail.setDepartParentId(sysUser.getDepartParentId());
+        inDetail.setRecordType(PdConstant.RECODE_TYPE_1);
+        inDetail.setAuditStatus(PdConstant.AUDIT_STATE_2);
+        inDetail.setDepartId(null);
+
+        Page<PdStockRecordDetail> inPageDetail = new Page<PdStockRecordDetail>(pageNo, pageSize);
+        IPage<PdStockRecordDetail> inPageDetailList = pdStockRecordDetailService.selectList(inPageDetail, inDetail);
+
+        List<PdStockRecordDetail> inList = inPageDetailList.getRecords();
+        List<RpInAndOutDetailReportPage> inReportList = JSON.parseArray(JSON.toJSONString(inList), RpInAndOutDetailReportPage.class);
+
+        Page<RpInAndOutDetailReportPage> inPage = new Page<RpInAndOutDetailReportPage>(pageNo, pageSize);
+        inPage.setTotal(inPageDetailList.getTotal());
+        inPage.setSize(inPageDetailList.getSize());
+        inPage.setCurrent(inPageDetailList.getCurrent());
+        inPage.setRecords(inReportList);
+
+        return Result.ok(inPage);
+    }
+    @GetMapping(value = "/rpOutDetailReport")
+    public Result<?> rpOutDetailReport(PdStockRecordDetail outDetail,
+                                            @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
+                                            @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize) {
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+
+        if(oConvertUtils.isEmpty(outDetail.getDepartId())){
+            return Result.error("参数不正确，请重新查询！");
+        }
+        // 查询出库明细
+        List<String> outDepartList = new ArrayList<>();
+        outDepartList.add(outDetail.getDepartId());
+        outDetail.setOutDepartIdList(outDepartList);
+        outDetail.setDepartParentId(sysUser.getDepartParentId());
+        outDetail.setRecordType(PdConstant.RECODE_TYPE_2);
+        outDetail.setAuditStatus(PdConstant.AUDIT_STATE_2);
+        outDetail.setDepartId(null);
+
+        Page<PdStockRecordDetail> outPageDetail = new Page<PdStockRecordDetail>(pageNo, pageSize);
+        IPage<PdStockRecordDetail> outPageDetailList = pdStockRecordDetailService.selectList(outPageDetail, outDetail);
+
+        List<PdStockRecordDetail> outList = outPageDetailList.getRecords();
+        List<RpInAndOutDetailReportPage> outReportList = JSON.parseArray(JSON.toJSONString(outList), RpInAndOutDetailReportPage.class);
+
+        Page<RpInAndOutDetailReportPage> outPage = new Page<RpInAndOutDetailReportPage>(pageNo, pageSize);
+        outPage.setTotal(outPageDetailList.getTotal());
+        outPage.setSize(outPageDetailList.getSize());
+        outPage.setCurrent(outPageDetailList.getCurrent());
+        outPage.setRecords(outReportList);
+
+        return Result.ok(outPage);
+    }
+
 }

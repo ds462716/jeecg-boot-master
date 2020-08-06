@@ -2,7 +2,7 @@
   <j-modal
     :visible="visible"
     :width="popModal.width"
-    :maskClosable="true"
+    :maskClosable="false"
     :title="popModal.title"
     :lockScroll="popModal.lockScroll"
     :fullscreen="popModal.fullscreen"
@@ -109,27 +109,27 @@
                   <j-dict-select-tag-expand v-model="queryParam.outType" dictCode="out_type"/>
                 </a-form-item>
               </a-col>
-              <!--<a-col :md="6" :sm="8">-->
-              <!--<a-form-item label="供应商">-->
-              <!--<a-select-->
-              <!--ref="supplierSelect"-->
-              <!--showSearch-->
-              <!--:supplierId="supplierValue"-->
-              <!--placeholder="请选择供应商"-->
-              <!--:defaultActiveFirstOption="false"-->
-              <!--:showArrow="true"-->
-              <!--:allowClear="true"-->
-              <!--:filterOption="false"-->
-              <!--@search="supplierHandleSearch"-->
-              <!--@change="supplierHandleChange"-->
-              <!--@focus="supplierHandleSearch"-->
-              <!--:notFoundContent="notFoundContent"-->
-              <!--v-model="queryParam.supplierId"-->
-              <!--&gt;-->
-              <!--<a-select-option v-for="d in supplierData" :key="d.value">{{d.text}}</a-select-option>-->
-              <!--</a-select>-->
-              <!--</a-form-item>-->
-              <!--</a-col>-->
+              <a-col :md="6" :sm="8">
+                <a-form-item label="供应商">
+                  <a-select
+                    ref="supplierSelect"
+                    showSearch
+                    :supplierId="supplierValue"
+                    placeholder="请选择供应商"
+                    :defaultActiveFirstOption="false"
+                    :showArrow="true"
+                    :allowClear="true"
+                    :filterOption="false"
+                    @search="supplierHandleSearch"
+                    @change="supplierHandleChange"
+                    @focus="supplierHandleSearch"
+                    :notFoundContent="notFoundContent"
+                    v-model="queryParam.supplierId"
+                  >
+                    <a-select-option v-for="d in supplierData" :key="d.value">{{d.text}}</a-select-option>
+                  </a-select>
+                </a-form-item>
+              </a-col>
               <a-col :md="6" :sm="8">
                 <a-form-item label="生产厂家">
                   <a-select
@@ -171,20 +171,49 @@
         <a-button type="primary" icon="download" @click="handleExportXls('出库明细')">导出</a-button>
       </div>
       <!-- table区域-begin -->
-      <div>
-        <a-table
-          CLASS="changeColor"
-          ref="table"
-          size="middle"
-          bordered
-          rowKey="id"
-          :columns="columns"
-          :dataSource="dataSource"
-          :pagination="ipagination"
-          :loading="loading"
-          :scroll="tableScroll"
-          @change="handleTableChange">
-        </a-table>
+
+      <div class="table-operator">
+        <a-tabs>
+          <a-tab-pane tab="入库明细" :forceRender="true">
+            <a-table
+              ref="out_table"
+              size="small"
+              bordered
+              rowKey="id"
+              :columns="inTable.columns"
+              :dataSource="inTable.dataSource"
+              :pagination="inTable.ipagination"
+              :loading="inTable.loading"
+              :scroll="inTable.tableScroll"
+              @change="inHandleTableChange">
+              <template slot="htmlSlot" slot-scope="text">
+                <div v-html="text"></div>
+              </template>
+            </a-table>
+          </a-tab-pane>
+        </a-tabs>
+      </div>
+
+      <div class="table-operator">
+        <a-tabs>
+          <a-tab-pane tab="出库明细" :forceRender="true">
+            <a-table
+              ref="in_table"
+              size="small"
+              bordered
+              rowKey="id"
+              :columns="outTable.columns"
+              :dataSource="outTable.dataSource"
+              :pagination="outTable.ipagination"
+              :loading="outTable.loading"
+              :scroll="outTable.tableScroll"
+              @change="outHandleTableChange">
+              <template slot="htmlSlot" slot-scope="text">
+                <div v-html="text"></div>
+              </template>
+            </a-table>
+          </a-tab-pane>
+        </a-tabs>
       </div>
       <template slot="footer">
         <a-button @click="handleCancel" style="margin-right: 15px;">关  闭</a-button>
@@ -195,24 +224,32 @@
 
 <script>
 
+  import Vue from 'vue'
+  import { ACCESS_TOKEN } from "@/store/mutation-types"
   import { httpAction,getAction,downFile } from '@/api/manage'
   import { filterObj } from '@/utils/util';
-  import { JeecgListMixin} from '@/mixins/JeecgListMixin'
+  // import { JeecgListMixin} from '@/mixins/JeecgListMixin'
   import {initDictOptions, filterMultiDictText} from '@/components/dict/JDictSelectUtil'
   import JDictSelectTagExpand from "@/components/dict/JDictSelectTagExpand"
   import JEllipsis from '@/components/jeecg/JEllipsis'
 
   export default {
     name: 'RpInAndOutDetailReportPage',
-    mixins:[JeecgListMixin],
+    // mixins:[JeecgListMixin],
     components: {
       JDictSelectTagExpand,JEllipsis
     },
     data() {
       return {
+        //token header
+        tokenHeader: {'X-Access-Token': Vue.ls.get(ACCESS_TOKEN)},
+        /* 查询条件-请不要在queryParam中声明非字符串值的属性 */
+        queryParam: {},
+        /* 查询折叠 */
+        toggleSearchStatus:false,
+
         visible: false,
-
-
+        record:{},
         notFoundContent:"未找到内容",
         supplierValue: undefined,
         supplierData: [],
@@ -225,206 +262,161 @@
 
         allDepartValue: undefined,
         allDepartList:[],
-        // 表头
-        columns: [
-          /*  {
-              title: '序号',
-              dataIndex: '',
-              key:'rowIndex',
-              width:60,
-              align:"center",
+        inTable: {
+          loading:false,
+          dataSource: [],
+          ipagination:{
+            current: 1,
+            pageSize: 10,
+            pageSizeOptions: ['10', '20', '30'],
+            showTotal: (total, range) => {
+              return range[0] + "-" + range[1] + " 共" + total + "条"
+            },
+            showQuickJumper: true,
+            showSizeChanger: true,
+            total: 0
+          },
+          tableScroll:{x :4500},
+          columns: [
+            { title: '序号', dataIndex: '', key:'rowIndex', width:60, align:"center",
               customRender:function (t,r,index) {
                 return parseInt(index)+1;
               }
-            },*/
-          {
-            title:'出库单号',
-            align:"center",
-            width:'100px',
-            dataIndex: 'recordNo'
-          },
-          {
-            title:'出库日期',
-            align:"center",
-            dataIndex: 'auditDate',
-            width:'90px',
-            customRender:function (text) {
-              return !text?"":(text.length>10?text.substr(0,10):text)
-            }
-          },
-          {
-            title:'出库类型',
-            align:"center",
-            dataIndex: 'outType',
-            width:'90px',
-            customRender:(text)=>{
-              if(!text){
-                return ''
-              }else{
-                return filterMultiDictText(this.dictOptions['outType'], text+"")
+            },
+            { title:'入库单号', align:"center", width:'100px', dataIndex: 'recordNo'},
+            { title:'入库日期', align:"center", width:'100px', dataIndex: 'auditDate',
+              customRender:function (text) {
+                return !text?"":(text.length>10?text.substr(0,10):text)
               }
-            }
+            },
+            { title:'入库类型', align:"center", width:'100px',dataIndex: 'inType',
+              customRender:(text)=>{
+                if(!text){
+                  return ''
+                }else{
+                  return filterMultiDictText(this.dictOptions['inType'], text+"")
+                }
+              }
+            },
+            { title:'出库科室', align:"center", width:'100px', dataIndex: 'outDepartName' },
+            { title:'入库科室', align:"center", width:'100px', dataIndex: 'inDepartName' },
+            { title:'产品编号', align:"center", width:'150px', dataIndex: 'productNumber' },
+            { title:'产品名称', align:"center", width:'250px', dataIndex: 'productName' },
+            // { title:'产品条码', align:"center", width:'150px', dataIndex: 'productBarCode' },
+            { title:'规格', align:"center", width:'150px', dataIndex: 'spec' },
+            { title:'型号', align:"center", width:'150px', dataIndex: 'version' },
+            { title:'批号', align:"center", width:'150px', dataIndex: 'batchNo' },
+            { title:'生产日期', align:"center", dataIndex: 'produceDate', width:'100px',
+              customRender:function (text) {
+                return !text?"":(text.length>10?text.substr(0,10):text)
+              }
+            },
+            { title:'有效期', align:"center", dataIndex: 'expDate', width:'100px',
+              customRender:function (text) {
+                return !text?"":(text.length>10?text.substr(0,10):text)
+              }
+            },
+            { title:'入库数量', align:"center", width:'100px', dataIndex: 'productNum' },
+            { title:'库存数量', align:"center", width:'100px', dataIndex: 'stockNum' },
+            { title:'单位', align:"center", width:'60px', dataIndex: 'unitName' },
+            { title:'入库单价', align:"center", width:'100px', dataIndex: 'purchasePrice' },
+            { title:'入库金额', align:"center", width:'100px', dataIndex: 'inTotalPrice' },
+            { title:'生产厂家', align:"center", width:'250px', dataIndex: 'venderName' },
+            { title:'供应商', align:"center", width:'250px', dataIndex: 'supplierName' },
+            { title:'配送商', align:"center", width:'250px', dataIndex: 'distributorName' },
+            { title:'注册证号', align:"center", width:'250px', dataIndex: 'productRegistration' },
+            { title:'发票号', align:"center", width:'150px', scopedSlots: {customRender: "ellipsisText"}, dataIndex: 'invoiceNo' },
+            { title:'发票代码', align:"center", width:'150px', scopedSlots: {customRender: "ellipsisText"}, dataIndex: 'invoiceCode' },
+            { title:'发票日期', align:"center", width:'100px', dataIndex: 'invoiceData',
+              customRender:function (text) {
+                return !text?"":(text.length>10?text.substr(0,10):text)
+              }
+            },
+            { title:'备注', align:"center", dataIndex: 'remarks' },
+            { title:'中标号', align:"center", width:'150px', dataIndex: 'bidingNumber' },
+            { title:'省标码', align:"center", width:'150px', dataIndex: 'dartCode' },
+            { title:'产品JDE编号', align:"center", width:'150px', dataIndex: 'jdeCode' },
+            { title:'供应商JDE编号', align:"center", width:'150px', dataIndex: 'supplierJdeCode' },
+            { title:'生产厂家JDE编号', align:"center", width:'150px', dataIndex: 'venderJdeCode' },
+            { title:'操作人', align:"center", width:'100px', dataIndex: 'realname' }
+          ],
+        },
+        outTable: {
+          loading:false,
+          dataSource: [],
+          ipagination:{
+            current: 1,
+            pageSize: 10,
+            pageSizeOptions: ['10', '20', '30'],
+            showTotal: (total, range) => {
+              return range[0] + "-" + range[1] + " 共" + total + "条"
+            },
+            showQuickJumper: true,
+            showSizeChanger: true,
+            total: 0
           },
-          {
-            title:'出库科室',
-            align:"center",
-            width:'80px',
-            dataIndex: 'outDepartName'
-          },
-          {
-            title:'入库科室',
-            align:"center",
-            width:'80px',
-            dataIndex: 'inDepartName'
-          },
-          {
-            title:'产品编号',
-            align:"center",
-            width:'150px',
-            dataIndex: 'number'
-          },
-          {
-            title:'产品名称',
-            align:"center",
-            width:'250px',
-            dataIndex: 'productName'
-          },
-          {
-            title:'产品条码',
-            align:"center",
-            width:'150px',
-            dataIndex: 'productBarCode'
-          },
-          {
-            title:'规格',
-            align:"center",
-            width:'150px',
-            dataIndex: 'spec'
-          },
-          {
-            title:'型号',
-            align:"center",
-            width:'150px',
-            dataIndex: 'version'
-          },
-          {
-            title:'批号',
-            align:"center",
-            width:'150px',
-            dataIndex: 'batchNo'
-          },
-          {
-            title:'生产日期',
-            align:"center",
-            dataIndex: 'produceDate',
-            width:'90px',
-            customRender:function (text) {
-              return !text?"":(text.length>10?text.substr(0,10):text)
-            }
-          },
-          {
-            title:'有效期',
-            align:"center",
-            dataIndex: 'expDate',
-            width:'90px',
-            customRender:function (text) {
-              return !text?"":(text.length>10?text.substr(0,10):text)
-            }
-          },
-          {
-            title:'数量',
-            align:"center",
-            width:'90px',
-            dataIndex: 'productNum'
-          },
-          {
-            title:'单位',
-            align:"center",
-            width:'60px',
-            dataIndex: 'unitName'
-          },
-          {
-            title:'入库单价',
-            align:"center",
-            width:'90px',
-            dataIndex: 'purchasePrice'
-          },
-          {
-            title:'入库金额',
-            align:"center",
-            width:'90px',
-            dataIndex: 'inTotalPrice'
-          },
-          {
-            title:'出库单价',
-            align:"center",
-            width:'90px',
-            dataIndex: 'sellingPrice'
-          },
-          {
-            title:'出库金额',
-            align:"center",
-            width:'90px',
-            dataIndex: 'outTotalPrice'
-          },
-          {
-            title:'生产厂家',
-            align:"center",
-            width:'250px',
-            dataIndex: 'venderName'
-          },
-          {
-            title:'生产厂家JDE编号',
-            align:"center",
-            width:'100px',
-            scopedSlots: {customRender: "ellipsisText"},
-            dataIndex: 'venderJdeCode'
-          },
-          {
-            title:'供应商',
-            align:"center",
-            width:'250px',
-            dataIndex: 'supplierName'
-          },
-          {
-            title:'供应商JDE编号',
-            align:"center",
-            width:'100px',
-            scopedSlots: {customRender: "ellipsisText"},
-            dataIndex: 'supplierJdeCode'
-          },
-          {
-            title:'配送商',
-            align:"center",
-            width:'250px',
-            dataIndex: 'distributorName'
-          },
-          {
-            title:'注册证号',
-            align:"center",
-            width:'250px',
-            dataIndex: 'productRegistration'
-          },
-          {
-            title:'备注',
-            align:"center",
-            dataIndex: 'remarks'
-          },
-          {
-            title:'产品JDE编号',
-            align:"center",
-            width:'100px',
-            dataIndex: 'jdeCode'
-          },
-          {
-            title:'操作人',
-            align:"center",
-            width:'100px',
-            dataIndex: 'realname'
-          }
-        ],
+          tableScroll:{x :4300},
+          columns: [
+            { title: '序号', dataIndex: '', key:'rowIndex', width:60, align:"center",
+              customRender:function (t,r,index) {
+                return parseInt(index)+1;
+              }
+            },
+            { title:'出库单号', align:"center", width:'100px', dataIndex: 'recordNo' },
+            { title:'出库日期', align:"center", width:'100px', dataIndex: 'auditDate',
+              customRender:function (text) {
+                return !text?"":(text.length>10?text.substr(0,10):text)
+              }
+            },
+            { title:'出库类型', align:"center", width:'100px', dataIndex: 'outType',
+              customRender:(text)=>{
+                if(!text){
+                  return ''
+                }else{
+                  return filterMultiDictText(this.dictOptions['outType'], text+"")
+                }
+              }
+            },
+            { title:'出库科室', align:"center", width:'100px', dataIndex: 'outDepartName' },
+            { title:'入库科室', align:"center", width:'100px', dataIndex: 'inDepartName' },
+            { title:'产品编号', align:"center", width:'150px', dataIndex: 'productNumber' },
+            { title:'产品名称', align:"center", width:'250px', dataIndex: 'productName' },
+            // { title:'产品条码', align:"center", width:'150px', dataIndex: 'productBarCode' },
+            { title:'规格', align:"center", width:'150px', dataIndex: 'spec' },
+            { title:'型号', align:"center", width:'150px', dataIndex: 'version' },
+            { title:'批号', align:"center", width:'150px', dataIndex: 'batchNo' },
+            { title:'生产日期', align:"center", width:'100px', dataIndex: 'produceDate',
+              customRender:function (text) {
+                return !text?"":(text.length>10?text.substr(0,10):text)
+              }
+            },
+            { title:'有效期', align:"center", width:'100px', dataIndex: 'expDate',
+              customRender:function (text) {
+                return !text?"":(text.length>10?text.substr(0,10):text)
+              }
+            },
+            { title:'数量', align:"center", width:'100px', dataIndex: 'productNum' },
+            { title:'单位', align:"center", width:'60px', dataIndex: 'unitName' },
+            { title:'入库单价', align:"center", width:'100px', dataIndex: 'purchasePrice' },
+            { title:'入库金额', align:"center", width:'100px', dataIndex: 'inTotalPrice' },
+            { title:'出库单价', align:"center", width:'100px', dataIndex: 'sellingPrice' },
+            { title:'出库金额', align:"center", width:'100px', dataIndex: 'outTotalPrice' },
+            { title:'生产厂家', align:"center", width:'250px', dataIndex: 'venderName' },
+            { title:'供应商', align:"center", width:'250px', dataIndex: 'supplierName' },
+            { title:'配送商', align:"center", width:'250px', dataIndex: 'distributorName' },
+            { title:'注册证号', align:"center", width:'250px', dataIndex: 'productRegistration' },
+            { title:'备注', align:"center", dataIndex: 'remarks' },
+            { title:'中标号', align:"center", width:'150px', dataIndex: 'bidingNumber' },
+            { title:'省标码', align:"center", width:'150px', dataIndex: 'dartCode' },
+            { title:'产品JDE编号', align:"center", width:'150px', dataIndex: 'jdeCode' },
+            { title:'供应商JDE编号', align:"center", width:'150px', dataIndex: 'supplierJdeCode' },
+            { title:'生产厂家JDE编号', align:"center", width:'150px', dataIndex: 'venderJdeCode' },
+            { title:'操作人', align:"center", width:'100px', dataIndex: 'realname' }
+          ],
+        },
         url: {
-          list: "/pd/pdStockRecordOut/queryPdStockRecordOutList",
+          inList: "/pd/pdStockRecordIn/rpInDetailReport",
+          outList: "/pd/pdStockRecordIn/rpOutDetailReport",
           querySupplier:"/pd/pdSupplier/getSupplierList",
           queryVender:"/pd/pdVender/getVenderList",
           allDepartList:"/pd/pdDepart/getSysDepartList",
@@ -434,7 +426,6 @@
         dictOptions:{
           outType:[],
         },
-        tableScroll:{x :4000},
         popModal: {
           title: '出入库明细统计报表',
           visible: false,
@@ -453,27 +444,150 @@
       }
     },
     methods: {
-      // 重写close方法
-      close() {
-        this.visible = false;
-        this.$emit('close');
-      },
       show(record){
         this.visible = true;
+        this.record = record;
+        this.initDictConfig();
+        this.loadData(record);
       },
-      loadData() {
+      initDictConfig(){
+        //静态字典值加载
+        initDictOptions('out_type').then((res) => { //出库类型
+          if (res.success) {
+            this.$set(this.dictOptions, 'outType', res.result)
+          }
+        });
+        initDictOptions('in_type').then((res) => { //入库类型
+          if (res.success) {
+            this.$set(this.dictOptions, 'inType', res.result)
+          }
+        })
+      },
+      loadData(record) {
+        this.loadInData(record);
+        this.loadOutData(record);
+      },
+      //查入库明细
+      loadInData(record){
+        let that = this;
+        var params = this.getInQueryParams();//查询条件
+        params.departId = record.departId;
+        params.yearMonth = record.yearMonth;
+        params.queryDateStart = record.queryDateStart;
+        params.queryDateEnd = record.queryDateEnd;
+        that.inTable.loading = true;
+        getAction(that.url.inList, params).then((res) => {
+          if (res.success) {
+            that.inTable.dataSource = res.result.records;
+            that.inTable.ipagination.total = res.result.total;
+          }
+          if(res.code===510){
+            that.$message.warning(res.message)
+          }
+          that.inTable.loading = false;
+        })
+      },
+      //查出库明细
+      loadOutData(record){
+        let that = this;
+        var params = this.getOutQueryParams();//查询条件
+        params.departId = record.departId;
+        params.yearMonth = record.yearMonth;
+        params.queryDateStart = record.queryDateStart;
+        params.queryDateEnd = record.queryDateEnd;
+        that.outTable.loading = true;
+        getAction(that.url.outList, params).then((res) => {
+          if (res.success) {
+            that.outTable.dataSource = res.result.records;
+            that.outTable.ipagination.total = res.result.total;
+          }
+          if(res.code===510){
+            that.$message.warning(res.message)
+          }
+          that.outTable.loading = false;
+        })
+      },
+      getInQueryParams() {
+        //获取查询条件
+        // let sqp = {}
+        // if(this.superQueryParams){
+        //   sqp['superQueryParams']=encodeURI(this.superQueryParams)
+        // }
+        // var param = Object.assign(sqp, this.queryParam, this.isorter ,this.filters);
+        var param = this.queryParam;
+        param.field = this.getInQueryField();
+        param.pageNo = this.inTable.ipagination.current;
+        param.pageSize = this.inTable.ipagination.pageSize;
+        param.inDepartIds = this.queryParam.inDepartIds+"";
+        param.outDepartIds = this.queryParam.outDepartIds+"";
+        delete param.queryExpDate; //范围参数不传递后台，传后台会报错
+        delete param.queryOutDate;
+        return filterObj(param);
+      },
+      getOutQueryParams() {
+        //获取查询条件
+        // let sqp = {}
+        // if(this.superQueryParams){
+        //   sqp['superQueryParams']=encodeURI(this.superQueryParams)
+        // }
+        // var param = Object.assign(sqp, this.queryParam, this.isorter ,this.filters);
+        var param = this.queryParam;
+        param.field = this.getOutQueryField();
+        param.pageNo = this.outTable.ipagination.current;
+        param.pageSize = this.outTable.ipagination.pageSize;
+        param.inDepartIds = this.queryParam.inDepartIds+"";
+        param.outDepartIds = this.queryParam.outDepartIds+"";
+        delete param.queryExpDate; //范围参数不传递后台，传后台会报错
+        delete param.queryOutDate;
+        return filterObj(param);
+      },
+      getInQueryField() {
+        var str = "id,";
+        this.inTable.columns.forEach(function (value) {
+          str += "," + value.dataIndex;
+        });
+        return str;
+      },
+      getOutQueryField() {
+        var str = "id,";
+        this.outTable.columns.forEach(function (value) {
+          str += "," + value.dataIndex;
+        });
+        return str;
+      },
+      searchQuery() {
+        this.loadData(this.record);
+      },
+      superQuery() {
+        this.$refs.superQueryModal.show();
+      },
+      searchReset() {
+        this.queryParam = {}
+        this.loadData(this.record);
+      },
+      inHandleTableChange(pagination, filters, sorter) {
+        this.inTable.ipagination = pagination;
+        this.loadInData(this.record);
+      },
+      outHandleTableChange(pagination, filters, sorter) {
+        this.outTable.ipagination = pagination;
+        this.loadOutData(this.record);
+      },
+      handleToggleSearch(){
+        this.toggleSearchStatus = !this.toggleSearchStatus;
       },
       /** 关闭按钮 **/
       handleCancel(){
         this.$emit('ok');
         this.close();
       },
-      initDictConfig(){ //静态字典值加载
-        initDictOptions('out_type').then((res) => { //入库类型
-          if (res.success) {
-            this.$set(this.dictOptions, 'outType', res.result)
-          }
-        })
+      close() {
+        this.inTable.ipagination.current = 1;
+        this.inTable.ipagination.pageSize = 10;
+        this.outTable.ipagination.current = 1;
+        this.outTable.ipagination.pageSize = 10;
+        this.visible = false;
+        this.$emit('close');
       },
       // 部门下拉框搜索
       departHandleSearch(value){
@@ -539,22 +653,6 @@
         this.queryParam.queryDateStart=dateString[0];
         this.queryParam.queryDateEnd=dateString[1];
       },
-      getQueryParams() {
-        //获取查询条件
-        let sqp = {}
-        if(this.superQueryParams){
-          sqp['superQueryParams']=encodeURI(this.superQueryParams)
-        }
-        var param = Object.assign(sqp, this.queryParam, this.isorter ,this.filters);
-        param.field = this.getQueryField();
-        param.pageNo = this.ipagination.current;
-        param.pageSize = this.ipagination.pageSize;
-        param.inDepartIds = this.queryParam.inDepartIds+"";
-        param.outDepartIds = this.queryParam.outDepartIds+"";
-        delete param.queryExpDate; //范围参数不传递后台，传后台会报错
-        delete param.queryOutDate;
-        return filterObj(param);
-      },
       /**重写导出方法**/
       handleExportXls(fileName){
         if(!fileName || typeof fileName != "string"){
@@ -562,9 +660,9 @@
         }
         fileName = fileName + "_" + new Date().toLocaleString();
         let param = this.getQueryParams();//查询条件
-        if(this.selectedRowKeys && this.selectedRowKeys.length>0){
-          param['selections'] = this.selectedRowKeys.join(",")
-        }
+        // if(this.selectedRowKeys && this.selectedRowKeys.length>0){
+        //   param['selections'] = this.selectedRowKeys.join(",")
+        // }
         console.log("导出参数",param)
         downFile(this.url.exportXlsUrl,param).then((data)=>{
           if (!data) {

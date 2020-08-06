@@ -6,7 +6,7 @@
         <a-row :gutter="24">
           <a-col :md="3">
             <a-form-item label="年月">
-              <a-month-picker placeholder="选择年月" @change="monthChange"/>
+              <a-month-picker placeholder="选择年月" @change="monthChange" v-model="queryParam.ym"/>
             </a-form-item>
           </a-col>
           <a-col :span="6">
@@ -105,7 +105,7 @@
         notFoundContent:"未找到内容",
         departValue: undefined,
         departList:[],
-
+        detailParam:{}, //查询明细条件
         // 表头
         columns: [
           {
@@ -117,6 +117,19 @@
              customRender:function (t,r,index) {
                return parseInt(index)+1;
              }
+          },
+          {
+            title:'科室id',
+            align:"center",
+            width:'250px',
+            dataIndex: 'departId',
+            colSpan: 0,
+            customRender: (value, row, index) => {
+              const obj = {
+                attrs: {colSpan:0},
+              };
+              return obj;
+            },
           },
           {
             title:'科室',
@@ -202,10 +215,20 @@
         param.pageSize = this.ipagination.pageSize;
         param.departIds = this.queryParam.departIds+"";
         delete param.queryInDate; //范围参数不传递后台，传后台会报错
+        this.detailParam = param;
         return filterObj(param);
       },
+      searchReset() {
+        this.queryParam = {}
+        this.loadData(1);
+      },
       detailBtn(record){
-        this.$refs.rpInAndOutDetailReportPage.show(record);
+        let param = {};
+        param.departId = record.departId;
+        param.yearMonth = this.detailParam.yearMonth;
+        param.queryDateStart = this.detailParam.queryDateStart;
+        param.queryDateEnd = this.detailParam.queryDateEnd;
+        this.$refs.rpInAndOutDetailReportPage.show(param);
       },
       /**重写导出方法**/
       handleExportXls(fileName){

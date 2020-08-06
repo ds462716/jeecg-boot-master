@@ -17,6 +17,7 @@ import java.util.List;
 @Data
 public class RpInAndOutDetailReportPage {
 
+    private String id;//出入库明细id
     @Excel(name = "出入库单号", width = 15)
     private String recordNo;//出入库单号
     @Excel(name = "出入库日期", width = 15, format = "yyyy-MM-dd")
@@ -56,7 +57,8 @@ public class RpInAndOutDetailReportPage {
     private BigDecimal sellingPrice;
     @Excel(name = "出库金额", width = 15)
     private BigDecimal outTotalPrice;//出库金额
-
+    @Excel(name = "库存数量", width = 15)
+    private Double stockNum;// 库存数量
     @Excel(name = "规格数量", width = 15)
     private Double specQuantity;// 规格数量
     @Excel(name = "规格单位", width = 15)
@@ -88,6 +90,8 @@ public class RpInAndOutDetailReportPage {
     @Excel(name = "省标码", width = 15)
     private String dartCode;// 省标码
 
+    @Excel(name = "备注", width = 15)
+    private String remarks;
     @Excel(name = "发票号", width = 15)
     private String invoiceNo; // 发票号
     @Excel(name = "发票代码", width = 15)
@@ -103,8 +107,11 @@ public class RpInAndOutDetailReportPage {
     private String venderJdeCode; // 厂家JDEcode
     @Excel(name = "供应商JDE编号", width = 15)
     private String supplierJdeCode;//供应商JDEcode
+    @Excel(name = "操作人", width = 15)
+    private String realname;//操作人名称
 
     // 查询条件
+    private String departId;
     private List<String> departIdList;
 
     private String queryDateStart;
@@ -121,4 +128,6 @@ public class RpInAndOutDetailReportPage {
 
     private String submitStatus;//记录提交状态
     private String auditStatus;//记录审核状态
+
+    private String yearMonth;
 }

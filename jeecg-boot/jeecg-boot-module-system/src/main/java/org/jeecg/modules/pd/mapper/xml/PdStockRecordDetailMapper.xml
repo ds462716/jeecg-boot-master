@@ -242,6 +242,9 @@
 			<if test="entity.recordNo != null and entity.recordNo != ''">
 				AND g.record_no LIKE concat('%',#{entity.recordNo},'%')
 			</if>
+			<if test="entity.yearMonth != null and entity.yearMonth != ''">
+				AND date_format( g.audit_date,'%Y-%m') = #{entity.yearMonth}
+			</if>
 			<if test="entity.queryDateStart != null and entity.queryDateStart != ''">
 				AND date_format( g.audit_date, '%Y-%m-%d') &gt;= #{entity.queryDateStart}
 			</if>
