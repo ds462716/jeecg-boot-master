@@ -83,7 +83,7 @@
                 </tr>
                 <tr v-for="(item, index2) in tableNumber[index1]">
                   <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: xx-small">
-                    {{ index2+(index1*10) +1}}
+                    {{ index2+(index1*tableLength) +1}}
                   </td>
                   <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: xx-small">
                     {{ item.productName }}
@@ -202,7 +202,7 @@
                 </tr>
                 <tr v-for="(item, index2) in tableNumber[divNumber-1]">
                   <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: xx-small">
-                    {{ index2+((divNumber-1)*10) +1}}
+                    {{ index2+((divNumber-1)*tableLength) +1}}
                   </td>
                   <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: xx-small">
                     {{ item.productName }}
@@ -315,6 +315,7 @@
         divNumber:0,
         batchPrint:false,
         tableNumber:[],
+        tableLength:10,
         labelCol: {
           xs: { span: 24 },
           sm: { span: 2 },
@@ -401,34 +402,35 @@
         }
       },
       printInit(data){
+        let length = this.tableLength;
         let number = data.length;
-        if(number>10){
+        if(number>length){
           this.batchPrint = true;
         }
         let num;
-        if(number%10==0){
-          num = parseInt(number/10);
+        if(number%length==0){
+          num = parseInt(number/length);
           for(let index =0;index<num;index++){
             let lsData = [];
-            for(let i =0;i<10;i++){
-              lsData.push(data[index*10+i])
+            for(let i =0;i<length;i++){
+              lsData.push(data[index*length+i])
             }
             this.tableNumber.push(lsData);
           }
         }else{
-          num = parseInt(number/10);
+          num = parseInt(number/length);
           if(num>0){
             for(let index =0;index<num;index++){
               let lsData = [];
-              for(let i =0;i<10;i++){
-                lsData.push(data[index*10+i]);
+              for(let i =0;i<length;i++){
+                lsData.push(data[index*length+i]);
               }
               this.tableNumber.push(lsData);
             }
             let wsData = [];
-            let ws = parseInt(number%10);
+            let ws = parseInt(number%length);
             for(let x =0;x<ws;x++){
-              wsData.push(data[num*10+x]);
+              wsData.push(data[num*length+x]);
             }
             this.tableNumber.push(wsData);
           }else{
