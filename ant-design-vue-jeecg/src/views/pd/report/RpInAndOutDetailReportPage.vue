@@ -22,66 +22,21 @@
                 <a-input placeholder="请输入单号" v-model="queryParam.recordNo"></a-input>
               </a-form-item>
             </a-col>
-            <a-col :span="6">
-              <a-form-item label="出库库房">
-                <a-select
-                  mode="multiple"
-                  showSearch
-                  placeholder="请选择出库库房"
-                  :supplierId="departValue"
-                  :defaultActiveFirstOption="false"
-                  :allowClear="true"
-                  :showArrow="true"
-                  :filterOption="false"
-                  @search="departHandleSearch"
-                  @focus="departHandleSearch"
-                  :notFoundContent="notFoundContent"
-                  v-model="queryParam.outDepartIds"
-                >
-                  <a-select-option v-for="d in departList" :key="d.id">{{d.departName}}</a-select-option>
-                </a-select>
+            <a-col :md="6" :sm="8">
+              <a-form-item label="产品名称">
+                <a-input placeholder="请选输入品名称" v-model="queryParam.productName"></a-input>
               </a-form-item>
             </a-col>
-            <a-col :span="6">
-              <a-form-item label="入库库房">
-                <a-select
-                  mode="multiple"
-                  showSearch
-                  placeholder="请选择入库库房"
-                  :supplierId="allDepartValue"
-                  :defaultActiveFirstOption="false"
-                  :allowClear="true"
-                  :showArrow="true"
-                  :filterOption="false"
-                  @search="allDepartHandleSearch"
-                  @focus="allDepartHandleSearch"
-                  :notFoundContent="notFoundContent"
-                  v-model="queryParam.inDepartIds"
-                >
-                  <a-select-option v-for="d in allDepartList" :key="d.id">{{d.departName}}</a-select-option>
-                </a-select>
+            <a-col :md="6" :sm="8">
+              <a-form-item label="产品编号">
+                <a-input placeholder="请输入产品编号" v-model="queryParam.productNumber"></a-input>
               </a-form-item>
             </a-col>
 
             <template v-if="toggleSearchStatus">
               <a-col :md="6" :sm="8">
-                <a-form-item label="产品名称">
-                  <a-input placeholder="请选输入品名称" v-model="queryParam.productName"></a-input>
-                </a-form-item>
-              </a-col>
-              <a-col :md="6" :sm="8">
-                <a-form-item label="产品编号">
-                  <a-input placeholder="请输入产品编号" v-model="queryParam.productNumber"></a-input>
-                </a-form-item>
-              </a-col>
-              <a-col :md="6" :sm="8">
                 <a-form-item label="规格">
                   <a-input placeholder="请输入规格" v-model="queryParam.spec"></a-input>
-                </a-form-item>
-              </a-col>
-              <a-col :md="6" :sm="8">
-                <a-form-item label="出库日期">
-                  <a-range-picker @change="outDateChange" v-model="queryParam.queryOutDate"/>
                 </a-form-item>
               </a-col>
               <a-col :md="6" :sm="8">
@@ -102,11 +57,6 @@
               <a-col :md="6" :sm="8">
                 <a-form-item label="批号">
                   <a-input placeholder="请输入批号" v-model="queryParam.batchNo"></a-input>
-                </a-form-item>
-              </a-col>
-              <a-col :md="6" :sm="8">
-                <a-form-item label="出库类型">
-                  <j-dict-select-tag-expand v-model="queryParam.outType" dictCode="out_type"/>
                 </a-form-item>
               </a-col>
               <a-col :md="6" :sm="8">
@@ -464,96 +414,69 @@
         })
       },
       loadData(record) {
+        this.inTable.ipagination.current = 1;
+        this.outTable.ipagination.current = 1;
         this.loadInData(record);
         this.loadOutData(record);
       },
       //查入库明细
       loadInData(record){
-        let that = this;
-        var params = this.getInQueryParams();//查询条件
-        params.departId = record.departId;
-        params.yearMonth = record.yearMonth;
-        params.queryDateStart = record.queryDateStart;
-        params.queryDateEnd = record.queryDateEnd;
-        that.inTable.loading = true;
-        getAction(that.url.inList, params).then((res) => {
+        var params = this.getInQueryParams(record);//查询条件
+        this.inTable.loading = true;
+        getAction(this.url.inList, params).then((res) => {
           if (res.success) {
-            that.inTable.dataSource = res.result.records;
-            that.inTable.ipagination.total = res.result.total;
+            this.inTable.dataSource = res.result.records;
+            this.inTable.ipagination.total = res.result.total;
           }
           if(res.code===510){
-            that.$message.warning(res.message)
+            this.$message.warning(res.message)
           }
-          that.inTable.loading = false;
+          this.inTable.loading = false;
         })
       },
       //查出库明细
       loadOutData(record){
-        let that = this;
-        var params = this.getOutQueryParams();//查询条件
-        params.departId = record.departId;
-        params.yearMonth = record.yearMonth;
-        params.queryDateStart = record.queryDateStart;
-        params.queryDateEnd = record.queryDateEnd;
-        that.outTable.loading = true;
-        getAction(that.url.outList, params).then((res) => {
+        var params = this.getOutQueryParams(record);//查询条件
+        this.outTable.loading = true;
+        getAction(this.url.outList, params).then((res) => {
           if (res.success) {
-            that.outTable.dataSource = res.result.records;
-            that.outTable.ipagination.total = res.result.total;
+            this.outTable.dataSource = res.result.records;
+            this.outTable.ipagination.total = res.result.total;
           }
           if(res.code===510){
-            that.$message.warning(res.message)
+            this.$message.warning(res.message)
           }
-          that.outTable.loading = false;
+          this.outTable.loading = false;
         })
       },
-      getInQueryParams() {
+      getInQueryParams(record) {
         //获取查询条件
-        // let sqp = {}
-        // if(this.superQueryParams){
-        //   sqp['superQueryParams']=encodeURI(this.superQueryParams)
-        // }
-        // var param = Object.assign(sqp, this.queryParam, this.isorter ,this.filters);
         var param = this.queryParam;
-        param.field = this.getInQueryField();
         param.pageNo = this.inTable.ipagination.current;
         param.pageSize = this.inTable.ipagination.pageSize;
-        param.inDepartIds = this.queryParam.inDepartIds+"";
-        param.outDepartIds = this.queryParam.outDepartIds+"";
+        param.departId = record.departId;
+        param.yearMonth = record.yearMonth;
+        param.queryDateStart = record.queryDateStart;
+        param.queryDateEnd = record.queryDateEnd;
         delete param.queryExpDate; //范围参数不传递后台，传后台会报错
-        delete param.queryOutDate;
         return filterObj(param);
       },
-      getOutQueryParams() {
+      getOutQueryParams(record) {
         //获取查询条件
-        // let sqp = {}
-        // if(this.superQueryParams){
-        //   sqp['superQueryParams']=encodeURI(this.superQueryParams)
-        // }
-        // var param = Object.assign(sqp, this.queryParam, this.isorter ,this.filters);
         var param = this.queryParam;
-        param.field = this.getOutQueryField();
         param.pageNo = this.outTable.ipagination.current;
         param.pageSize = this.outTable.ipagination.pageSize;
-        param.inDepartIds = this.queryParam.inDepartIds+"";
-        param.outDepartIds = this.queryParam.outDepartIds+"";
-        delete param.queryExpDate; //范围参数不传递后台，传后台会报错
-        delete param.queryOutDate;
+        param.departId = record.departId;
+        param.yearMonth = record.yearMonth;
+        param.queryDateStart = record.queryDateStart;
+        param.queryDateEnd = record.queryDateEnd;
+        // delete param.queryExpDate; //范围参数不传递后台，传后台会报错
         return filterObj(param);
       },
-      getInQueryField() {
-        var str = "id,";
-        this.inTable.columns.forEach(function (value) {
-          str += "," + value.dataIndex;
-        });
-        return str;
-      },
-      getOutQueryField() {
-        var str = "id,";
-        this.outTable.columns.forEach(function (value) {
-          str += "," + value.dataIndex;
-        });
-        return str;
+      expDateChange: function (value, dateString) {
+        this.queryParam.queryExpDateStart=dateString[0];
+        this.queryParam.queryExpDateEnd=dateString[1];
+        // delete this.queryParam.queryExpDate; //范围参数不传递后台，传后台会报错
       },
       searchQuery() {
         this.loadData(this.record);
@@ -582,6 +505,7 @@
         this.close();
       },
       close() {
+        this.queryParam = {};
         this.inTable.ipagination.current = 1;
         this.inTable.ipagination.pageSize = 10;
         this.outTable.ipagination.current = 1;
@@ -644,14 +568,6 @@
             this.venderData = data;
           }
         })
-      },
-      expDateChange: function (value, dateString) {
-        this.queryParam.queryExpDateStart=dateString[0];
-        this.queryParam.queryExpDateEnd=dateString[1];
-      },
-      outDateChange: function (value, dateString) {
-        this.queryParam.queryDateStart=dateString[0];
-        this.queryParam.queryDateEnd=dateString[1];
       },
       /**重写导出方法**/
       handleExportXls(fileName){
