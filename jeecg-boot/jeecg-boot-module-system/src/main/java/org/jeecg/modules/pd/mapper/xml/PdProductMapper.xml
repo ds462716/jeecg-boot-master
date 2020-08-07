@@ -762,7 +762,7 @@
                 AND a.biding_number  LIKE concat('%',#{entity.bidingNumber},'%')
             </if>
         </where>
-        ORDER BY a.update_time desc,a.create_time desc
+        ORDER BY a.update_time desc,a.create_time desc,a.id
     </select>
 
     <!-- 批量更新产品收费代码 -->
