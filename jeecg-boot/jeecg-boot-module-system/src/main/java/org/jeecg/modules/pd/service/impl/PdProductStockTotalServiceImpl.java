@@ -288,10 +288,12 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
             PdProductStock o_productStockq = new PdProductStock();
             o_productStockq.setId(pdPackageRecordDetail.getProductStockId());
             o_productStockq.setNestatStatus(PdConstant.STOCK_NESTAT_STATUS_1);
-            List<PdProductStock> productStocks = pdProductStockMapper.selectList(o_productStockq);
+//            List<PdProductStock> productStocks = pdProductStockMapper.selectList(o_productStockq);
+            PdProductStock productStock = pdProductStockMapper.getOne(o_productStockq);
             // 扣减库存
-            if (CollectionUtils.isNotEmpty(productStocks)) {
-                PdProductStock productStock = productStocks.get(0);
+//            if (CollectionUtils.isNotEmpty(productStocks)) {
+            if (productStock != null && oConvertUtils.isNotEmpty(productStock.getId())) {
+//                PdProductStock productStock = productStocks.get(0);
                 Double num = productStock.getStockNum() + packageNum;
                 productStock.setStockNum(num);
                 productStock.setSpecNum(productStock.getSpecQuantity() == null ? 0D : productStock.getSpecQuantity() * num);// 库存规格数量= 产品规格数量* 入库数量

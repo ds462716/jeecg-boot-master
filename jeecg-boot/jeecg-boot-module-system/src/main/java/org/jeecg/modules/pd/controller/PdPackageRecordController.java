@@ -73,7 +73,7 @@ public class PdPackageRecordController {
 
         pdPackageRecord.setCreateTime(DateUtils.getDate());
         pdPackageRecord.setCreateBy(sysUser.getRealname());
-        pdPackageRecord.setPackageBarCode(DateUtils.date2Str(DateUtils.getDate(),DateUtils.yyMMdd.get()));;
+        pdPackageRecord.setPackageBarCode(DateUtils.date2Str(DateUtils.getDate(),DateUtils.yyyymmddhhmmss.get()));;
 
         return Result.ok(pdPackageRecord);
     }

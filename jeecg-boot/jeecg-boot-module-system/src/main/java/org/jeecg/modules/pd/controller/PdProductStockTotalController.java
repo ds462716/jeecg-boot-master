@@ -585,6 +585,9 @@ public class PdProductStockTotalController {
 		productStock.setDepartParentId(sysUser.getDepartParentId());
 //		productStock.setNestatStatus(PdConstant.STOCK_NESTAT_STATUS_1);
 //		page = pdProductStockService.selectList(page,productStock);
+		if(oConvertUtils.isNotEmpty(productStock.getProductIds())){
+			productStock.setProductIdList(Arrays.asList(productStock.getProductIds().split(",")));
+		}
 		page = pdProductStockService.chooseProductStockList(page,productStock);
 
 		return Result.ok(page);

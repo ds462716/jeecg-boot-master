@@ -283,7 +283,10 @@
 		</where>
 	</select>
 
+	<select id="" resultType="org.jeecg.modules.pd.entity.PdProductStock">
 
+
+	</select>
 
 	<select id="getOne" resultType="org.jeecg.modules.pd.entity.PdProductStock" parameterType="org.jeecg.modules.pd.entity.PdProductStock">
 
