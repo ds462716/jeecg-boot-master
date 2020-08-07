@@ -18,10 +18,7 @@ import org.jeecg.modules.pd.entity.PdProductStockCheckPermission;
 import org.jeecg.modules.pd.entity.PdStockRecord;
 import org.jeecg.modules.pd.entity.PdStockRecordDetail;
 import org.jeecg.modules.pd.service.*;
-import org.jeecg.modules.pd.vo.PdStockRecordInExcle;
-import org.jeecg.modules.pd.vo.PdStockRecordInPage;
-import org.jeecg.modules.pd.vo.RpInAndOutDetailReportPage;
-import org.jeecg.modules.pd.vo.RpInAndOutReportPage;
+import org.jeecg.modules.pd.vo.*;
 import org.jeecg.modules.system.entity.SysDepart;
 import org.jeecg.modules.system.service.ISysDepartService;
 import org.jeecg.modules.system.service.ISysDictService;
@@ -637,4 +634,129 @@ public class PdStockRecordInController {
         return Result.ok(outPage);
     }
 
+    /**
+     * 出入库报表导出
+     * @param request
+     * @param rpInAndOutReportPage
+     * @return
+     */
+    @RequestMapping(value = "/exportInAndOutReportXls")
+    public ModelAndView exportInAndOutReportXls(HttpServletRequest request, RpInAndOutReportPage rpInAndOutReportPage) {
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        rpInAndOutReportPage.setDepartParentId(sysUser.getDepartParentId());
+
+        if(oConvertUtils.isNotEmpty(rpInAndOutReportPage.getDepartIds()) && !"undefined".equals(rpInAndOutReportPage.getDepartIds())){
+            rpInAndOutReportPage.setDepartIdList(Arrays.asList(rpInAndOutReportPage.getDepartIds().split(",")));
+        }else{
+            //查询科室下所有下级科室的ID
+            SysDepart sysDepart=new SysDepart();
+            List<String> departList=pdDepartService.selectListDepart(sysDepart);
+            rpInAndOutReportPage.setDepartIdList(departList);
+        }
+
+        List<RpInAndOutReportPage> pageList = pdStockRecordService.rpInAndOutReport(rpInAndOutReportPage);
+//        for(RpInAndOutReportPage report : pageList){
+//            //查询入库明细
+//            PdStockRecordDetail inDetail = new PdStockRecordDetail();
+//            List<String> inDepartList = new ArrayList<>();
+//            inDepartList.add(report.getDepartId());
+//            inDetail.setInDepartIdList(inDepartList);
+//            inDetail.setDepartParentId(sysUser.getDepartParentId());
+//            inDetail.setRecordType(PdConstant.RECODE_TYPE_1);
+//            inDetail.setAuditStatus(PdConstant.AUDIT_STATE_2);
+//            inDetail.setYearMonth(rpInAndOutReportPage.getYearMonth());
+//            inDetail.setQueryDateStart(rpInAndOutReportPage.getQueryDateStart());
+//            inDetail.setQueryDateEnd(rpInAndOutReportPage.getQueryDateEnd());
+//            List<PdStockRecordDetail> inList = pdStockRecordDetailService.selectList(inDetail);
+//            List<RpInAndOutDetailReportPage> inReportList = JSON.parseArray(JSON.toJSONString(inList), RpInAndOutDetailReportPage.class);
+//
+//            //查询出库明细
+//            PdStockRecordDetail outDetail = new PdStockRecordDetail();
+//            List<String> outDepartList = new ArrayList<>();
+//            outDepartList.add(report.getDepartId());
+//            outDetail.setOutDepartIdList(outDepartList);
+//            outDetail.setDepartParentId(sysUser.getDepartParentId());
+//            outDetail.setRecordType(PdConstant.RECODE_TYPE_2);
+//            outDetail.setAuditStatus(PdConstant.AUDIT_STATE_2);
+//            outDetail.setYearMonth(rpInAndOutReportPage.getYearMonth());
+//            outDetail.setQueryDateStart(rpInAndOutReportPage.getQueryDateStart());
+//            outDetail.setQueryDateEnd(rpInAndOutReportPage.getQueryDateEnd());
+//            outDetail.setDepartId(null);
+//            List<PdStockRecordDetail> outList = pdStockRecordDetailService.selectList(outDetail);
+//            List<RpInAndOutDetailReportPage> outReportList = JSON.parseArray(JSON.toJSONString(outList), RpInAndOutDetailReportPage.class);
+//
+//            report.setInDetailList(inReportList);
+//            report.setOutDetailList(outReportList);
+//        }
+
+        ModelAndView mv = new ModelAndView(new JeecgEntityExcelView());
+        mv.addObject(NormalExcelConstants.FILE_NAME, "出入库统计报表");
+        mv.addObject(NormalExcelConstants.CLASS, RpInAndOutReportPage.class);
+        mv.addObject(NormalExcelConstants.PARAMS, new ExportParams("出库统计报表数据", "导出人:" + sysUser.getRealname(), "出库统计报表"));
+        mv.addObject(NormalExcelConstants.DATA_LIST, pageList);
+        return mv;
+    }
+
+    /**
+     * 入库明细报表导出
+     * @param request
+     * @param inDetail
+     * @return
+     */
+    @RequestMapping(value = "/exportInReportXls")
+    public ModelAndView exportInReportXls(HttpServletRequest request, PdStockRecordDetail inDetail) {
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+
+        //查询入库明细
+        List<String> inDepartList = new ArrayList<>();
+        inDepartList.add(inDetail.getDepartId());
+        inDetail.setInDepartIdList(inDepartList);
+        inDetail.setDepartParentId(sysUser.getDepartParentId());
+        inDetail.setRecordType(PdConstant.RECODE_TYPE_1);
+        inDetail.setAuditStatus(PdConstant.AUDIT_STATE_2);
+        inDetail.setDepartId(null);
+
+
+        List<PdStockRecordDetail> inList = pdStockRecordDetailService.selectList(inDetail);
+        List<RpInDetailReportExcel> inReportList = JSON.parseArray(JSON.toJSONString(inList), RpInDetailReportExcel.class);
+
+        ModelAndView mv = new ModelAndView(new JeecgEntityExcelView());
+        mv.addObject(NormalExcelConstants.FILE_NAME, "入库明细统计报表");
+        mv.addObject(NormalExcelConstants.CLASS, RpInDetailReportExcel.class);
+        mv.addObject(NormalExcelConstants.PARAMS, new ExportParams("入库明细统计报表数据", "导出人:" + sysUser.getRealname(), "入库明细统计报表"));
+        mv.addObject(NormalExcelConstants.DATA_LIST, inReportList);
+
+        return mv;
+    }
+
+    /**
+     * 出库明细报表导出
+     * @param request
+     * @param outDetail
+     * @return
+     */
+    @RequestMapping(value = "/exportOutReportXls")
+    public ModelAndView exportOutReportXls(HttpServletRequest request, PdStockRecordDetail outDetail) {
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+
+        // 查询出库明细
+        List<String> outDepartList = new ArrayList<>();
+        outDepartList.add(outDetail.getDepartId());
+        outDetail.setOutDepartIdList(outDepartList);
+        outDetail.setDepartParentId(sysUser.getDepartParentId());
+        outDetail.setRecordType(PdConstant.RECODE_TYPE_2);
+        outDetail.setAuditStatus(PdConstant.AUDIT_STATE_2);
+        outDetail.setDepartId(null);
+
+        List<PdStockRecordDetail> outList = pdStockRecordDetailService.selectList(outDetail);
+        List<RpOutDetailReportExcel> outReportList = JSON.parseArray(JSON.toJSONString(outList), RpOutDetailReportExcel.class);
+
+        ModelAndView mv = new ModelAndView(new JeecgEntityExcelView());
+        mv.addObject(NormalExcelConstants.FILE_NAME, "出库明细统计报表");
+        mv.addObject(NormalExcelConstants.CLASS, RpOutDetailReportExcel.class);
+        mv.addObject(NormalExcelConstants.PARAMS, new ExportParams("出库明细统计报表数据", "导出人:" + sysUser.getRealname(), "出库明细统计报表"));
+        mv.addObject(NormalExcelConstants.DATA_LIST, outReportList);
+
+        return mv;
+    }
 }

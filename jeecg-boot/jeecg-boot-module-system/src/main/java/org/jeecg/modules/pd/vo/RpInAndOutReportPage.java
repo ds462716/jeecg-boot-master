@@ -2,6 +2,7 @@ package org.jeecg.modules.pd.vo;
 
 import lombok.Data;
 import org.jeecgframework.poi.excel.annotation.Excel;
+import org.jeecgframework.poi.excel.annotation.ExcelCollection;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -25,6 +26,10 @@ public class RpInAndOutReportPage {
     private Double outProductNum;// 出库产品数量
     @Excel(name = "出库产品金额", width = 15)
     private BigDecimal outTotalPrice;// 出库产品金额
+//    @ExcelCollection(name="入库明细统计表")
+//    private List<RpInAndOutDetailReportPage> inDetailList;
+//    @ExcelCollection(name="出库明细统计表")
+//    private List<RpInAndOutDetailReportPage> outDetailList;
 
     // 查询条件
     private String auditStatus;

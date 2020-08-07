@@ -1832,7 +1832,7 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
     }
 
     /**
-     * 出入库统计报表
+     * 出入库统计报表 分页查询
      * @param page
      * @param rpInAndOutReportPage
      * @return
@@ -1864,6 +1864,39 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
         }
 
         return pageList;
+    }
+
+    /**
+     * 出入库统计报表
+     * @param page
+     * @param rpInAndOutReportPage
+     * @return
+     */
+    @Override
+    public List<RpInAndOutReportPage> rpInAndOutReport(RpInAndOutReportPage rpInAndOutReportPage) {
+        List<RpInAndOutReportPage> list = pdStockRecordMapper.rpInAndOutReport(rpInAndOutReportPage);
+        for(RpInAndOutReportPage vo : list){
+            rpInAndOutReportPage.setDepartId(vo.getDepartId());
+            //入库数据
+            RpInAndOutReportPage inVo = pdStockRecordMapper.getInTotalData(rpInAndOutReportPage);
+            if(inVo != null){
+                vo.setInProductNum(inVo.getInProductNum());
+                vo.setInTotalPrice(inVo.getInTotalPrice());
+            }else{
+                vo.setInProductNum(0D);
+                vo.setInTotalPrice(new BigDecimal(0));
+            }
+            //出库数据
+            RpInAndOutReportPage outVo = pdStockRecordMapper.getOutTotalData(rpInAndOutReportPage);
+            if(outVo != null){
+                vo.setOutProductNum(outVo.getOutProductNum());
+                vo.setOutTotalPrice(outVo.getOutTotalPrice());
+            }else{
+                vo.setOutProductNum(0D);
+                vo.setOutTotalPrice(new BigDecimal(0));
+            }
+        }
+        return list;
     }
 
     /**

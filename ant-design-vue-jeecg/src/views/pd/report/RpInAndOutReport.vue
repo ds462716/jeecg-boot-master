@@ -171,7 +171,7 @@
         url: {
           list: "/pd/pdStockRecordIn/rpInAndOutReport",
           departList: "/pd/pdDepart/queryListTree",
-          exportXlsUrl: "/pd/pdStockRecordIn/exportXls",
+          exportXlsUrl: "/pd/pdStockRecordIn/exportInAndOutReportXls",
         },
         dictOptions:{
           inType:[],
@@ -233,7 +233,7 @@
       /**重写导出方法**/
       handleExportXls(fileName){
         if(!fileName || typeof fileName != "string"){
-          fileName = "导出文件"
+          fileName = "出入库统计报表"
         }
         fileName = fileName + "_" + new Date().toLocaleString();
         let param = this.getQueryParams();//查询条件

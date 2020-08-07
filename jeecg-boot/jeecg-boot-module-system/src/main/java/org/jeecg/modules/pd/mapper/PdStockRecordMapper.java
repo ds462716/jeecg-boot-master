@@ -80,6 +80,7 @@ public interface PdStockRecordMapper extends BaseMapper<PdStockRecord> {
     PdStockRecord queryApplyPriceList(PdStockRecord pdStockRecord);
 
     IPage<RpInAndOutReportPage> rpInAndOutReport(Page<RpInAndOutReportPage> page, @Param("entity") RpInAndOutReportPage entity);
+    List<RpInAndOutReportPage> rpInAndOutReport(@Param("entity") RpInAndOutReportPage entity);
 
     /**
      * 获取入库产品总数 和 入库总金额

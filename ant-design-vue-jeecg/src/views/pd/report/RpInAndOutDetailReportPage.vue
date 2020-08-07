@@ -118,7 +118,7 @@
       <!-- 查询区域-END -->
       <!-- 操作按钮区域 -->
       <div class="table-operator">
-        <a-button type="primary" icon="download" @click="handleExportXls('出库明细')">导出</a-button>
+        <a-button type="primary" icon="download" @click="handleExportXls()">导出</a-button>
       </div>
       <!-- table区域-begin -->
 
@@ -165,10 +165,10 @@
           </a-tab-pane>
         </a-tabs>
       </div>
-      <template slot="footer">
-        <a-button @click="handleCancel" style="margin-right: 15px;">关  闭</a-button>
-      </template>
     </a-card>
+    <template slot="footer">
+      <a-button @click="handleCancel" style="margin-right: 15px;">关  闭</a-button>
+    </template>
   </j-modal>
 </template>
 
@@ -218,7 +218,7 @@
           ipagination:{
             current: 1,
             pageSize: 10,
-            pageSizeOptions: ['10', '20', '30'],
+            pageSizeOptions: ['10', '20', '30', '50', '100'],
             showTotal: (total, range) => {
               return range[0] + "-" + range[1] + " 共" + total + "条"
             },
@@ -226,7 +226,7 @@
             showSizeChanger: true,
             total: 0
           },
-          tableScroll:{x :4500},
+          tableScroll:{x :4700},
           columns: [
             { title: '序号', dataIndex: '', key:'rowIndex', width:60, align:"center",
               customRender:function (t,r,index) {
@@ -271,6 +271,9 @@
             { title:'单位', align:"center", width:'60px', dataIndex: 'unitName' },
             { title:'入库单价', align:"center", width:'100px', dataIndex: 'purchasePrice' },
             { title:'入库金额', align:"center", width:'100px', dataIndex: 'inTotalPrice' },
+            { title:'规格数量', align:"center", width:'100px', dataIndex: 'specQuantity' },
+            { title:'规格单位', align:"center", width:'100px', dataIndex: 'specUnitName' },
+
             { title:'生产厂家', align:"center", width:'250px', dataIndex: 'venderName' },
             { title:'供应商', align:"center", width:'250px', dataIndex: 'supplierName' },
             { title:'配送商', align:"center", width:'250px', dataIndex: 'distributorName' },
@@ -283,6 +286,7 @@
               }
             },
             { title:'备注', align:"center", dataIndex: 'remarks' },
+            { title:'收费代码', align:"center", dataIndex: 'chargeCode' },
             { title:'中标号', align:"center", width:'150px', dataIndex: 'bidingNumber' },
             { title:'省标码', align:"center", width:'150px', dataIndex: 'dartCode' },
             { title:'产品JDE编号', align:"center", width:'150px', dataIndex: 'jdeCode' },
@@ -297,7 +301,7 @@
           ipagination:{
             current: 1,
             pageSize: 10,
-            pageSizeOptions: ['10', '20', '30'],
+            pageSizeOptions: ['10', '20', '30', '50', '100'],
             showTotal: (total, range) => {
               return range[0] + "-" + range[1] + " 共" + total + "条"
             },
@@ -305,7 +309,7 @@
             showSizeChanger: true,
             total: 0
           },
-          tableScroll:{x :4300},
+          tableScroll:{x :4500},
           columns: [
             { title: '序号', dataIndex: '', key:'rowIndex', width:60, align:"center",
               customRender:function (t,r,index) {
@@ -345,17 +349,22 @@
                 return !text?"":(text.length>10?text.substr(0,10):text)
               }
             },
-            { title:'数量', align:"center", width:'100px', dataIndex: 'productNum' },
+            { title:'出库数量', align:"center", width:'100px', dataIndex: 'productNum' },
             { title:'单位', align:"center", width:'60px', dataIndex: 'unitName' },
             { title:'入库单价', align:"center", width:'100px', dataIndex: 'purchasePrice' },
             { title:'入库金额', align:"center", width:'100px', dataIndex: 'inTotalPrice' },
             { title:'出库单价', align:"center", width:'100px', dataIndex: 'sellingPrice' },
             { title:'出库金额', align:"center", width:'100px', dataIndex: 'outTotalPrice' },
+            { title:'规格数量', align:"center", width:'100px', dataIndex: 'specQuantity' },
+            { title:'规格单位', align:"center", width:'100px', dataIndex: 'specUnitName' },
+
             { title:'生产厂家', align:"center", width:'250px', dataIndex: 'venderName' },
             { title:'供应商', align:"center", width:'250px', dataIndex: 'supplierName' },
             { title:'配送商', align:"center", width:'250px', dataIndex: 'distributorName' },
             { title:'注册证号', align:"center", width:'250px', dataIndex: 'productRegistration' },
+
             { title:'备注', align:"center", dataIndex: 'remarks' },
+            { title:'收费代码', align:"center", dataIndex: 'chargeCode' },
             { title:'中标号', align:"center", width:'150px', dataIndex: 'bidingNumber' },
             { title:'省标码', align:"center", width:'150px', dataIndex: 'dartCode' },
             { title:'产品JDE编号', align:"center", width:'150px', dataIndex: 'jdeCode' },
@@ -371,7 +380,8 @@
           queryVender:"/pd/pdVender/getVenderList",
           allDepartList:"/pd/pdDepart/getSysDepartList",
           departList: "/pd/pdDepart/queryListTree",
-          exportXlsUrl: "/pd/pdStockRecordOut/exportXls",
+          exportInReportXls: "/pd/pdStockRecordIn/exportInReportXls",
+          exportOutReportXls: "/pd/pdStockRecordIn/exportOutReportXls",
         },
         dictOptions:{
           outType:[],
@@ -570,29 +580,46 @@
         })
       },
       /**重写导出方法**/
-      handleExportXls(fileName){
-        if(!fileName || typeof fileName != "string"){
-          fileName = "导出文件"
-        }
-        fileName = fileName + "_" + new Date().toLocaleString();
-        let param = this.getQueryParams();//查询条件
-        // if(this.selectedRowKeys && this.selectedRowKeys.length>0){
-        //   param['selections'] = this.selectedRowKeys.join(",")
-        // }
-        console.log("导出参数",param)
-        downFile(this.url.exportXlsUrl,param).then((data)=>{
+      handleExportXls(){
+        //入库明细导出
+        let inFileName = "入库明细统计报表" + "_" + new Date().toLocaleString();
+        let inParam = this.getInQueryParams(this.record);//查询条件
+        downFile(this.url.exportInReportXls,inParam).then((data)=>{
           if (!data) {
             this.$message.warning("文件下载失败")
             return
           }
           if (typeof window.navigator.msSaveBlob !== 'undefined') {
-            window.navigator.msSaveBlob(new Blob([data],{type: 'application/vnd.ms-excel'}), fileName+'.xls')
+            window.navigator.msSaveBlob(new Blob([data],{type: 'application/vnd.ms-excel'}), inFileName+'.xls')
           }else{
             let url = window.URL.createObjectURL(new Blob([data],{type: 'application/vnd.ms-excel'}))
             let link = document.createElement('a')
             link.style.display = 'none'
             link.href = url
-            link.setAttribute('download', fileName+'.xls')
+            link.setAttribute('download', inFileName+'.xls')
+            document.body.appendChild(link)
+            link.click()
+            document.body.removeChild(link); //下载完成移除元素
+            window.URL.revokeObjectURL(url); //释放掉blob对象
+          }
+        });
+
+        //出库明细导出
+        let outFileName = "出库明细统计报表" + "_" + new Date().toLocaleString();
+        let outParam = this.getOutQueryParams(this.record);//查询条件
+        downFile(this.url.exportOutReportXls,outParam).then((data)=>{
+          if (!data) {
+            this.$message.warning("文件下载失败")
+            return
+          }
+          if (typeof window.navigator.msSaveBlob !== 'undefined') {
+            window.navigator.msSaveBlob(new Blob([data],{type: 'application/vnd.ms-excel'}), outFileName+'.xls')
+          }else{
+            let url = window.URL.createObjectURL(new Blob([data],{type: 'application/vnd.ms-excel'}))
+            let link = document.createElement('a')
+            link.style.display = 'none'
+            link.href = url
+            link.setAttribute('download', outFileName+'.xls')
             document.body.appendChild(link)
             link.click()
             document.body.removeChild(link); //下载完成移除元素
