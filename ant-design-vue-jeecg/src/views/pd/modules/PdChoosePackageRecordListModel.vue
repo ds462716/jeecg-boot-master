@@ -146,7 +146,7 @@
               return parseInt(index)+1;
             }
           },
-          { title:'产品名称', align:"center", dataIndex: 'productName' },
+          { title:'产品名称1', align:"center", dataIndex: 'productName' },
           { title:'产品编号', align:"center", dataIndex: 'productNumber' },
           { title:'产品条码', align:"center",dataIndex: 'productBarCode' },
           { title:'规格', align:"center", dataIndex: 'spec' },
@@ -160,7 +160,7 @@
           },
           { title:'入库单价', align:"center", dataIndex: 'purchasePrice' },
           { title:'出库单价', align:"center", dataIndex: 'sellingPrice' },
-          { title:'定数包产品数量', align:"center", dataIndex: 'productNum' },
+          { title:'产品数量', align:"center", dataIndex: 'productNum' },
           { title:'出库金额', align:"center", dataIndex: 'outTotalPrice' },
           { title:'库存数量', align:"center", dataIndex: 'stockNum' },
           { title: '出库货位', align:"center", dataIndex: 'outHuoweiName' },
@@ -219,6 +219,22 @@
             },
           },
           { title: '规格数量', align:"center", dataIndex: 'specQuantity', colSpan: 0,
+            customRender: (value, row, index) => {
+              const obj = {
+                attrs: {colSpan:0},
+              };
+              return obj;
+            },
+          },
+          { title: '注册证号', align:"center", dataIndex: 'registration', colSpan: 0,
+            customRender: (value, row, index) => {
+              const obj = {
+                attrs: {colSpan:0},
+              };
+              return obj;
+            },
+          },
+          { title: '配送商id', align:"center", dataIndex: 'distributorId', colSpan: 0,
             customRender: (value, row, index) => {
               const obj = {
                 attrs: {colSpan:0},

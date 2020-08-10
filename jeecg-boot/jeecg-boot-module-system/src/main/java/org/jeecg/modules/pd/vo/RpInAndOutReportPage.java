@@ -16,6 +16,8 @@ import java.util.List;
 public class RpInAndOutReportPage {
 
     private String id;
+    @Excel(name = "月份", width = 15)
+    private String auditDate;
     @Excel(name = "科室", width = 15)
     private String departName;//科室名称
     @Excel(name = "入库产品数量", width = 15)
@@ -42,4 +44,5 @@ public class RpInAndOutReportPage {
     private String yearMonth;       // 年月
     private String queryDateStart;  // 查询日期
     private String queryDateEnd;
+
 }

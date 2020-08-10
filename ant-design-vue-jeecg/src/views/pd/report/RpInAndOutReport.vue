@@ -29,11 +29,11 @@
               </a-select>
             </a-form-item>
           </a-col>
-          <a-col :md="6">
-            <a-form-item label="出入库日期">
-              <a-range-picker @change="inDateChange" v-model="queryParam.queryInDate"/>
-            </a-form-item>
-          </a-col>
+          <!--<a-col :md="6">-->
+            <!--<a-form-item label="出入库日期">-->
+              <!--<a-range-picker @change="inDateChange" v-model="queryParam.queryInDate"/>-->
+            <!--</a-form-item>-->
+          <!--</a-col>-->
           <a-col :md="6" :sm="8">
             <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
               <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
@@ -132,6 +132,12 @@
             },
           },
           {
+            title:'月份',
+            align:"center",
+            width:'250px',
+            dataIndex: 'auditDate'
+          },
+          {
             title:'科室',
             align:"center",
             width:'250px',
@@ -225,9 +231,10 @@
       detailBtn(record){
         let param = {};
         param.departId = record.departId;
-        param.yearMonth = this.detailParam.yearMonth;
-        param.queryDateStart = this.detailParam.queryDateStart;
-        param.queryDateEnd = this.detailParam.queryDateEnd;
+        param.yearMonth = record.auditDate;
+        // param.yearMonth = this.detailParam.yearMonth;
+        // param.queryDateStart = this.detailParam.queryDateStart;
+        // param.queryDateEnd = this.detailParam.queryDateEnd;
         this.$refs.rpInAndOutDetailReportPage.show(param);
       },
       /**重写导出方法**/

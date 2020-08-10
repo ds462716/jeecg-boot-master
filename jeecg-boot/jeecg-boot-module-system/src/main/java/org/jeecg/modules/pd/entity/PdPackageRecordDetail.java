@@ -102,4 +102,6 @@ public class PdPackageRecordDetail implements Serializable {
 	private String registration;//注册号
 	@TableField(exist = false)
 	private String venderName;//生产厂家名称
+	@TableField(exist = false)
+	private String distributorId;//配送商id
 }

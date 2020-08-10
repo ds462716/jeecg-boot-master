@@ -12,12 +12,14 @@
 	<select id="selectByMainId" parameterType="java.lang.String" resultType="org.jeecg.modules.pd.entity.PdPackageRecordDetail">
 		SELECT
 			a.*,
+			a.package_num as productNum,
 			a.record_id as package_record_id,
 			b.number AS productNumber,
 			b.NAME AS productName,
 			b.spec,
 			b.version,
 			b.unit_id,
+			b.registration,
 			c.NAME AS unitName,
 			d.stock_num,
 			d.product_bar_code,
@@ -27,11 +29,11 @@
 			d.spec_quantity,
 			d.supplier_id,
 			d.produce_date,
-			f.count as productNum,
 			g.purchase_price,
-			IFNULL( g.purchase_price, 0 ) * f.count AS inTotalPrice,
+			g.distributor_id,
+			IFNULL( g.purchase_price, 0 ) * a.package_num AS inTotalPrice,
 			b.selling_price,
-			IFNULL( b.selling_price, 0 ) * f.count AS outTotalPrice
+			IFNULL( b.selling_price, 0 ) * a.package_num AS outTotalPrice
 		FROM
 			pd_package_record_detail a
 			LEFT JOIN pd_product b ON a.product_id = b.id

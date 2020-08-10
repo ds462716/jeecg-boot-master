@@ -381,7 +381,7 @@
         dictOptions:{
             nestatStatus:[],
         },
-        tableScroll:{x :3000},
+        tableScroll:{x :3500},
       }
     },
     computed: {

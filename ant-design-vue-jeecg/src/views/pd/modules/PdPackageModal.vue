@@ -158,7 +158,7 @@
             {
               title: '产品编号',
               align:"center",
-              key: 'productNumber'
+              key: 'number'
             },
             {
               title: '产品名称',
@@ -369,7 +369,7 @@
         let data = {
           productId: row.productId,
           productName: row.productName,
-          productNumber : row.number,
+          number : row.number,
           spec: row.spec,
           unitName: row.unitName,
           venderName: row.venderName,

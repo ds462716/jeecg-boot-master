@@ -560,112 +560,228 @@
         </if>
     </select>
 
-
     <select id="rpInAndOutReport" resultType="org.jeecg.modules.pd.vo.RpInAndOutReportPage"
             parameterType="org.jeecg.modules.pd.vo.RpInAndOutReportPage">
         SELECT
-        @rowNum:=@rowNum + 1 as id,
-        a.id AS depart_id,
-        a.parent_id,
-        a.depart_parent_id,
-        a.depart_name
+            in_table.audit_date,
+            in_table.depart_id,
+            in_table.inProductNum,
+            in_table.inTotalPrice,
+            out_table.outProductNum,
+            out_table.outTotalPrice,
+            de.depart_name
         FROM
-          sys_depart a,(SELECT @rowNum:=0) n
+        (
+            SELECT
+                sum( t1.product_num ) AS inProductNum,
+                sum( t1.sum_purchase_price ) AS inTotalPrice,
+                t1.audit_date,
+                t1.depart_id
+            FROM
+            (
+                SELECT
+                    a.id,
+                    a.record_id,
+                    b.record_no,
+                    b.record_type,
+                    b.in_type,
+                    b.out_type,
+                    a.product_id,
+                    a.product_num,
+                    a.purchase_price,
+                    a.selling_price,
+                    a.purchase_price * a.product_num AS sum_purchase_price,
+                    date_format( b.audit_date, '%Y-%m' ) AS audit_date,
+                    b.in_depart_id AS depart_id
+                FROM
+                  pd_stock_record_detail a
+                LEFT JOIN pd_stock_record b ON a.record_id = b.id AND b.audit_status = '2'
+                WHERE
+                    b.del_flag = '0'
+                    AND b.record_type = '1'
+                    AND ( b.in_type IS NOT NULL AND in_type &lt;&gt; '' )
+                <if test="entity.departParentId != null and entity.departParentId != ''">
+                    AND b.depart_parent_id = #{entity.departParentId}
+                </if>
+                <if test="entity.departId != null and entity.departId != ''">
+                    AND b.in_depart_id = #{entity.departId}
+                </if>
+                <if test="entity.yearMonth != null and entity.yearMonth != ''">
+                    AND date_format(b.audit_date,'%Y-%m') = #{entity.yearMonth}
+                </if>
+                <if test="entity.departIdList != null and entity.departIdList.size() > 0">
+                    and b.in_depart_id IN
+                    <foreach collection="entity.departIdList" item="item" separator="," open="(" close=")">
+                        #{item}
+                    </foreach>
+                </if>
+
+            ) AS t1
+            GROUP BY t1.audit_date, t1.depart_id
+        ) AS in_table,
+        (
+            SELECT
+                sum( t2.product_num ) AS outProductNum,
+                sum( t2.sum_selling_price ) AS outTotalPrice,
+                t2.audit_date,
+                t2.depart_id
+            FROM
+            (
+                SELECT
+                    a.id,
+                    a.record_id,
+                    b.record_no,
+                    b.record_type,
+                    b.in_type,
+                    b.out_type,
+                    a.product_id,
+                    a.product_num,
+                    a.purchase_price,
+                    a.selling_price,
+                    a.selling_price * a.product_num AS sum_selling_price,
+                    date_format( b.audit_date, '%Y-%m' ) AS audit_date,
+                    b.out_depart_id AS depart_id
+                FROM
+                  pd_stock_record_detail a
+                LEFT JOIN pd_stock_record b ON a.record_id = b.id AND b.audit_status = '2'
+                WHERE
+                    b.del_flag = '0'
+                    AND b.record_type = '2'
+                    AND ( b.out_type IS NOT NULL AND out_type &lt;&gt; '' )
+                <if test="entity.departParentId != null and entity.departParentId != ''">
+                    AND b.depart_parent_id = #{entity.departParentId}
+                </if>
+                <if test="entity.departId != null and entity.departId != ''">
+                    AND b.out_depart_id = #{entity.departId}
+                </if>
+                <if test="entity.yearMonth != null and entity.yearMonth != ''">
+                    AND date_format(b.audit_date,'%Y-%m') = #{entity.yearMonth}
+                </if>
+                <if test="entity.departIdList != null and entity.departIdList.size() > 0">
+                    and b.out_depart_id IN
+                    <foreach collection="entity.departIdList" item="item" separator="," open="(" close=")">
+                        #{item}
+                    </foreach>
+                </if>
+            ) AS t2
+            GROUP BY t2.audit_date, t2.depart_id
+        ) AS out_table,
+        sys_depart de
         WHERE
-            a.del_flag = '0'
-            and a.depart_type &lt;&gt; '0'
-        <if test="entity.departParentId != null and entity.departParentId != ''">
-            AND a.depart_parent_id = #{entity.departParentId}
-        </if>
-        <if test="entity.departIdList != null and entity.departIdList.size() > 0">
-            and a.id IN
-            <foreach collection="entity.departIdList" item="item" separator="," open="(" close=")">
-                #{item}
-            </foreach>
-        </if>
-        ORDER BY
-        create_time
+            in_table.depart_id = out_table.depart_id
+            AND in_table.audit_date = out_table.audit_date
+            AND in_table.depart_id = de.id
+        ORDER BY in_table.audit_date DESC
     </select>
 
-    <select id="getInTotalData" resultType="org.jeecg.modules.pd.vo.RpInAndOutReportPage"
-            parameterType="org.jeecg.modules.pd.vo.RpInAndOutReportPage">
-        SELECT
-            sum( t.product_num ) as inProductNum,
-            sum( t.sum_purchase_price ) as inTotalPrice
-        FROM
-        (
-            SELECT
-                a.id,
-                a.record_id,
-                b.record_no,
-                b.record_type,
-                b.in_type,
-                b.out_type,
-                a.product_id,
-                a.product_num,
-                a.purchase_price,
-                a.selling_price,
-                a.purchase_price * a.product_num AS sum_purchase_price
-            FROM
-              pd_stock_record_detail a
-            LEFT JOIN pd_stock_record b ON a.record_id = b.id AND b.audit_status = '2'
-            WHERE
-                b.del_flag = '0'
-                AND b.record_type = '1'
-                AND ( b.in_type IS NOT NULL AND in_type &lt;&gt; '' )
-            <if test="departId != null and departId != ''">
-                AND b.in_depart_id = #{departId}
-            </if>
-            <if test="yearMonth != null and yearMonth != ''">
-                AND date_format(b.audit_date,'%Y-%m') = #{yearMonth}
-            </if>
-            <if test="queryDateStart != null and queryDateStart != ''">
-                AND date_format( b.audit_date, '%Y-%m-%d') &gt;= #{queryDateStart}
-            </if>
-            <if test="queryDateEnd != null and queryDateEnd != ''">
-                AND date_format( b.audit_date, '%Y-%m-%d') &lt;= #{queryDateEnd}
-            </if>
-        ) AS t
-    </select>
+    <!-- 弃用 20200810 jiangxz -->
+    <!--<select id="rpInAndOutReport" resultType="org.jeecg.modules.pd.vo.RpInAndOutReportPage"-->
+            <!--parameterType="org.jeecg.modules.pd.vo.RpInAndOutReportPage">-->
+        <!--SELECT-->
+        <!--@rowNum:=@rowNum + 1 as id,-->
+        <!--a.id AS depart_id,-->
+        <!--a.parent_id,-->
+        <!--a.depart_parent_id,-->
+        <!--a.depart_name-->
+        <!--FROM-->
+          <!--sys_depart a,(SELECT @rowNum:=0) n-->
+        <!--WHERE-->
+            <!--a.del_flag = '0'-->
+            <!--and a.depart_type &lt;&gt; '0'-->
+        <!--<if test="entity.departParentId != null and entity.departParentId != ''">-->
+            <!--AND a.depart_parent_id = #{entity.departParentId}-->
+        <!--</if>-->
+        <!--<if test="entity.departIdList != null and entity.departIdList.size() > 0">-->
+            <!--and a.id IN-->
+            <!--<foreach collection="entity.departIdList" item="item" separator="," open="(" close=")">-->
+                <!--#{item}-->
+            <!--</foreach>-->
+        <!--</if>-->
+        <!--ORDER BY-->
+        <!--create_time-->
+    <!--</select>-->
 
-    <select id="getOutTotalData" resultType="org.jeecg.modules.pd.vo.RpInAndOutReportPage"
-            parameterType="org.jeecg.modules.pd.vo.RpInAndOutReportPage">
-        SELECT
-            sum( t.product_num ) as outProductNum,
-            sum( t.sum_selling_price ) as outTotalPrice
-        FROM
-        (
-            SELECT
-                a.id,
-                a.record_id,
-                b.record_no,
-                b.record_type,
-                b.in_type,
-                b.out_type,
-                a.product_id,
-                a.product_num,
-                a.purchase_price,
-                a.selling_price,
-                a.selling_price * a.product_num AS sum_selling_price
-            FROM
-            pd_stock_record_detail a
-            LEFT JOIN pd_stock_record b ON a.record_id = b.id AND b.audit_status = '2'
-            WHERE
-            b.del_flag = '0'
-            AND b.record_type = '2'
-            AND ( b.out_type IS NOT NULL AND out_type &lt;&gt; '' )
-            <if test="departId != null and departId != ''">
-                AND b.out_depart_id = #{departId}
-            </if>
-            <if test="yearMonth != null and yearMonth != ''">
-                AND date_format(b.audit_date,'%Y-%m') = #{yearMonth}
-            </if>
-            <if test="queryDateStart != null and queryDateStart != ''">
-                AND date_format( b.audit_date, '%Y-%m-%d') &gt;= #{queryDateStart}
-            </if>
-            <if test="queryDateEnd != null and queryDateEnd != ''">
-                AND date_format( b.audit_date, '%Y-%m-%d') &lt;= #{queryDateEnd}
-            </if>
-        ) AS t
-    </select>
+    <!-- 弃用 20200810 jiangxz -->
+    <!--<select id="getInTotalData" resultType="org.jeecg.modules.pd.vo.RpInAndOutReportPage"-->
+            <!--parameterType="org.jeecg.modules.pd.vo.RpInAndOutReportPage">-->
+        <!--SELECT-->
+            <!--sum( t.product_num ) as inProductNum,-->
+            <!--sum( t.sum_purchase_price ) as inTotalPrice-->
+        <!--FROM-->
+        <!--(-->
+            <!--SELECT-->
+                <!--a.id,-->
+                <!--a.record_id,-->
+                <!--b.record_no,-->
+                <!--b.record_type,-->
+                <!--b.in_type,-->
+                <!--b.out_type,-->
+                <!--a.product_id,-->
+                <!--a.product_num,-->
+                <!--a.purchase_price,-->
+                <!--a.selling_price,-->
+                <!--a.purchase_price * a.product_num AS sum_purchase_price-->
+            <!--FROM-->
+              <!--pd_stock_record_detail a-->
+            <!--LEFT JOIN pd_stock_record b ON a.record_id = b.id AND b.audit_status = '2'-->
+            <!--WHERE-->
+                <!--b.del_flag = '0'-->
+                <!--AND b.record_type = '1'-->
+                <!--AND ( b.in_type IS NOT NULL AND in_type &lt;&gt; '' )-->
+            <!--<if test="departId != null and departId != ''">-->
+                <!--AND b.in_depart_id = #{departId}-->
+            <!--</if>-->
+            <!--<if test="yearMonth != null and yearMonth != ''">-->
+                <!--AND date_format(b.audit_date,'%Y-%m') = #{yearMonth}-->
+            <!--</if>-->
+            <!--<if test="queryDateStart != null and queryDateStart != ''">-->
+                <!--AND date_format( b.audit_date, '%Y-%m-%d') &gt;= #{queryDateStart}-->
+            <!--</if>-->
+            <!--<if test="queryDateEnd != null and queryDateEnd != ''">-->
+                <!--AND date_format( b.audit_date, '%Y-%m-%d') &lt;= #{queryDateEnd}-->
+            <!--</if>-->
+        <!--) AS t-->
+    <!--</select>-->
+
+    <!-- 弃用 20200810 jiangxz -->
+    <!--<select id="getOutTotalData" resultType="org.jeecg.modules.pd.vo.RpInAndOutReportPage"-->
+            <!--parameterType="org.jeecg.modules.pd.vo.RpInAndOutReportPage">-->
+        <!--SELECT-->
+            <!--sum( t.product_num ) as outProductNum,-->
+            <!--sum( t.sum_selling_price ) as outTotalPrice-->
+        <!--FROM-->
+        <!--(-->
+            <!--SELECT-->
+                <!--a.id,-->
+                <!--a.record_id,-->
+                <!--b.record_no,-->
+                <!--b.record_type,-->
+                <!--b.in_type,-->
+                <!--b.out_type,-->
+                <!--a.product_id,-->
+                <!--a.product_num,-->
+                <!--a.purchase_price,-->
+                <!--a.selling_price,-->
+                <!--a.selling_price * a.product_num AS sum_selling_price-->
+            <!--FROM-->
+            <!--pd_stock_record_detail a-->
+            <!--LEFT JOIN pd_stock_record b ON a.record_id = b.id AND b.audit_status = '2'-->
+            <!--WHERE-->
+            <!--b.del_flag = '0'-->
+            <!--AND b.record_type = '2'-->
+            <!--AND ( b.out_type IS NOT NULL AND out_type &lt;&gt; '' )-->
+            <!--<if test="departId != null and departId != ''">-->
+                <!--AND b.out_depart_id = #{departId}-->
+            <!--</if>-->
+            <!--<if test="yearMonth != null and yearMonth != ''">-->
+                <!--AND date_format(b.audit_date,'%Y-%m') = #{yearMonth}-->
+            <!--</if>-->
+            <!--<if test="queryDateStart != null and queryDateStart != ''">-->
+                <!--AND date_format( b.audit_date, '%Y-%m-%d') &gt;= #{queryDateStart}-->
+            <!--</if>-->
+            <!--<if test="queryDateEnd != null and queryDateEnd != ''">-->
+                <!--AND date_format( b.audit_date, '%Y-%m-%d') &lt;= #{queryDateEnd}-->
+            <!--</if>-->
+        <!--) AS t-->
+    <!--</select>-->
 </mapper>
