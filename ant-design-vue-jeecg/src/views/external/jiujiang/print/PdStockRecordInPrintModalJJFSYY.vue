@@ -54,7 +54,7 @@
               <table width="100%"  class="tableStyle" style="border: 1px black">
                 <tr>
                   <th style="border: 1px solid #000000;text-align: center;padding: 3px 3px;width:2%">
-
+                    序号
                   </th>
                   <th style="border: 1px solid #000000;text-align: center;padding: 3px 3px;">
                     产品名称
@@ -68,7 +68,7 @@
                   <th style="border: 1px solid #000000;text-align: center;padding: 3px 3px;width:12%">
                     规格
                   </th>
-                  <th style="border: 1px solid #000000;text-align: center;padding: 3px 3px;width:10%">
+                  <th style="border: 1px solid #000000;text-align: center;padding: 3px 3px;width:12%">
                     批号
                   </th>
                   <th style="border: 1px solid #000000;text-align: center;padding: 3px 3px;width:10%">
@@ -77,7 +77,7 @@
                   <th style="border: 1px solid #000000;text-align: center;padding: 3px 3px;width:10%">
                     有效期
                   </th>
-                  <th style="border: 1px solid #000000;text-align: center;padding: 3px 3px;width:4%">
+                  <th style="border: 1px solid #000000;text-align: center;padding: 3px 3px;width:8%">
                     数量
                   </th>
                 </tr>
@@ -113,7 +113,7 @@
                   <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: xx-small">
                     {{ item.spec }}
                   </td>
-                  <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: xx-small">
+                  <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: larger;font-weight: bolder">
                     {{ item.batchNo }}
                   </td>
                   <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: xx-small">
@@ -122,7 +122,7 @@
                   <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: xx-small">
                     {{ item.expDate }}
                   </td>
-                  <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: xx-small">
+                  <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: larger;font-weight: bolder">
                     {{ item.productNum }}
                   </td>
                 </tr>
@@ -173,7 +173,7 @@
               <table width="100%"  class="tableStyle" style="border: 1px black">
                 <tr>
                   <th style="border: 1px solid #000000;text-align: center;padding: 3px 3px;width:2%">
-
+                    序号
                   </th>
                   <th style="border: 1px solid #000000;text-align: center;padding: 3px 3px;">
                     产品名称
@@ -187,7 +187,7 @@
                   <th style="border: 1px solid #000000;text-align: center;padding: 3px 3px;width:12%">
                     规格
                   </th>
-                  <th style="border: 1px solid #000000;text-align: center;padding: 3px 3px;width:10%">
+                  <th style="border: 1px solid #000000;text-align: center;padding: 3px 3px;width:12%">
                     批号
                   </th>
                   <th style="border: 1px solid #000000;text-align: center;padding: 3px 3px;width:10%">
@@ -196,7 +196,7 @@
                   <th style="border: 1px solid #000000;text-align: center;padding: 3px 3px;width:10%">
                     有效期
                   </th>
-                  <th style="border: 1px solid #000000;text-align: center;padding: 3px 3px;width:4%">
+                  <th style="border: 1px solid #000000;text-align: center;padding: 3px 3px;width:8%">
                     数量
                   </th>
                 </tr>
@@ -232,7 +232,7 @@
                   <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: xx-small">
                     {{ item.spec }}
                   </td>
-                  <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: xx-small">
+                  <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: larger;font-weight: bolder">
                     {{ item.batchNo }}
                   </td>
                   <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: xx-small">
@@ -241,7 +241,7 @@
                   <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: xx-small">
                     {{ item.expDate }}
                   </td>
-                  <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: xx-small">
+                  <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: larger;font-weight: bolder">
                     {{ item.productNum }}
                   </td>
                 </tr>
@@ -315,7 +315,7 @@
         divNumber:0,
         batchPrint:false,
         tableNumber:[],
-        tableLength:10,
+        tableLength:7,
         labelCol: {
           xs: { span: 24 },
           sm: { span: 2 },

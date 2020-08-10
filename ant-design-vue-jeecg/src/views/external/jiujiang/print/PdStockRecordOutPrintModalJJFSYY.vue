@@ -88,7 +88,7 @@
                     </th>
                   </tr>
                   <tr v-for="(item, index2) in tableNumber[index1]">
-                    <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: xx-small">
+                    <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: larger;font-weight: bolder">
                       {{ index2+(index1*tableLength) +1}}
                     </td>
                     <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: xx-small">
@@ -101,7 +101,7 @@
                     <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: xx-small">
                       {{ item.spec }}
                     </td>
-                    <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: xx-small">
+                    <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: larger;font-weight: bolder">
                       {{ item.batchNo }}
                     </td>
                     <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: xx-small">
@@ -113,7 +113,7 @@
                     <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: xx-small">
                       {{ item.unitName }}
                     </td>
-                    <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: xx-small">
+                    <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: larger;font-weight: bolder">
                       {{ item.sellingPrice }}
                     </td>
                     <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: xx-small">
@@ -219,7 +219,7 @@
                   </th>
                 </tr>
                 <tr v-for="(item, index2) in tableNumber[divNumber-1]">
-                  <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: xx-small">
+                  <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: larger;font-weight: bolder">
                     {{ index2+((divNumber-1)*tableLength) +1}}
                   </td>
                   <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: xx-small">
@@ -232,7 +232,7 @@
                   <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: xx-small">
                     {{ item.spec }}
                   </td>
-                  <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: xx-small">
+                  <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: larger;font-weight: bolder">
                     {{ item.batchNo }}
                   </td>
                   <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: xx-small">
@@ -244,7 +244,7 @@
                   <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: xx-small">
                     {{ item.unitName }}
                   </td>
-                  <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: xx-small">
+                  <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: larger;font-weight: bolder">
                     {{ item.sellingPrice }}
                   </td>
                   <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: xx-small">
