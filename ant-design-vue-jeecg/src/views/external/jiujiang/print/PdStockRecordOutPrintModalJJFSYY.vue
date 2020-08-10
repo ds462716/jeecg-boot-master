@@ -51,7 +51,7 @@
             </a-col>
             <a-col :span="24" style="margin-top: 5px">
               <a-form :form="form">
-                <table width="100%" class="tableStyle">
+                <table width="98%" class="tableStyle">
                   <tr>
                     <th style="border: 1px solid #000000;text-align: center;padding: 3px 3px;width:2%">
 
@@ -107,7 +107,7 @@
                     <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: xx-small">
                       {{ item.expDate }}
                     </td>
-                    <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: xx-small">
+                    <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: larger;font-weight: bolder">
                       {{ item.productNum }}
                     </td>
                     <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: xx-small">
@@ -116,7 +116,7 @@
                     <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: larger;font-weight: bolder">
                       {{ item.sellingPrice }}
                     </td>
-                    <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: xx-small">
+                    <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: larger;font-weight: bolder">
                       {{ item.outTotalPrice }}
                     </td>
                     <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: xx-small">
@@ -182,7 +182,7 @@
           </a-col>
           <a-col :span="24" style="margin-top: 5px">
             <a-form :form="form">
-              <table width="100%" class="tableStyle">
+              <table width="98%" class="tableStyle">
                 <tr>
                   <th style="border: 1px solid #000000;text-align: center;padding: 3px 3px;width:2%">
 
@@ -238,7 +238,7 @@
                   <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: xx-small">
                     {{ item.expDate }}
                   </td>
-                  <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: xx-small">
+                  <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: larger;font-weight: bolder">
                     {{ item.productNum }}
                   </td>
                   <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: xx-small">
@@ -247,7 +247,7 @@
                   <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: larger;font-weight: bolder">
                     {{ item.sellingPrice }}
                   </td>
-                  <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: xx-small">
+                  <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: larger;font-weight: bolder">
                     {{ item.outTotalPrice }}
                   </td>
                   <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: xx-small">

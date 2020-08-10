@@ -36,7 +36,7 @@
             </a-col>
             <a-col :span="24" style="margin-top: 5px">
               <a-form :form="form">
-                <table width="100%" class="tableStyle">
+                <table width="98%" class="tableStyle">
                   <tr>
                     <th style="border: 1px solid #000000;text-align: center;padding: 3px 3px;width:2%">
                       序号
@@ -158,7 +158,7 @@
           </a-col>
           <a-col :span="24" style="margin-top: 5px">
             <a-form :form="form">
-              <table width="100%" class="tableStyle">
+              <table width="98%" class="tableStyle">
                 <tr>
                   <th style="border: 1px solid #000000;text-align: center;padding: 3px 3px;width:2%">
                     序号
