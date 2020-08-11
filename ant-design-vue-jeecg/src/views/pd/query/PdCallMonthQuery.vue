@@ -90,7 +90,7 @@
 
 
   export default {
-    name: "PdInspectionMonthQuery",
+    name: "PdCallMonthQuery",
     mixins:[JeecgListMixin],
     components: {
       pdBottleInfModal,
@@ -99,7 +99,7 @@
     },
     data () {
       return {
-        description: '耗材月统计报表',
+        description: '试剂月统计报表',
         notFoundContent:"未找到内容",
         venderValue: undefined,
         venderData: [],
@@ -122,13 +122,11 @@
           {
             title:'统计月份',
             align:"center",
-            width:'200px',
             dataIndex: 'month'
           },
           {
             title:'统计科室',
             align:"center",
-            width:'200px',
             dataIndex: 'departName'
           },
           {
@@ -201,10 +199,35 @@
             align:"center",
             dataIndex: 'disPrice'
           },
-          {
+          /*{
             title:'月环比',
             align:"center",
             dataIndex: 'disPrice1'
+          },*/
+          {
+            title:'使用理论规格数量',
+            align:"center",
+            dataIndex: 'specQuantityNum'
+          },
+          {
+            title:'实际使用规格数量',
+            align:"center",
+            dataIndex: 'specRealityNum'
+          },
+          {
+            title:'差异规格数量',
+            align:"center",
+            dataIndex: 'disSpecNum'
+          },
+          {
+            title:' 检验项目数量',
+            align:"center",
+            dataIndex: 'itemNum'
+          },
+          {
+            title:'检验项目收入金额',
+            align:"center",
+            dataIndex: 'itemPrice'
           },
          /* {
             title: '操作',
@@ -253,7 +276,7 @@
           this.ipagination.current = 1;
         }
         var params = this.getQueryParams();//查询条件
-        params.tjType='0';
+        params.tjType='1';
         this.loading = true;
         getAction(this.url.list, params).then((res) => {
           if (res.success) {

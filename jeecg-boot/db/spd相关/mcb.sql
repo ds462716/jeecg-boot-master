@@ -69,3 +69,45 @@ CREATE TABLE  `pd_numerical_inf`  (
 );
 
 INSERT INTO `sys_quartz_job` VALUES ('1290475878282895361', 'admin', '2020-08-04 10:33:20', 0, NULL, '2020-08-04 10:33:20', 'org.jeecg.modules.quartz.job.PdNumericalInfTaskJob', '* * * * * ? *', NULL, '根据月份定时更新试剂/耗材入库、消耗、库存数量及金额定时任务', -1);
+
+-- 2020年8月5日 18:52:59  月統計費用表增加字段
+ALTER TABLE `pd_numerical_inf`
+ADD COLUMN `sj_jy_stock_num` double(32, 0) NULL COMMENT '上月结余试剂库存数量' AFTER `del_flag`,
+ADD COLUMN `sj_jy_stock_price` decimal(20, 2) NULL COMMENT '上月结余试剂库存金额' AFTER `sj_jy_stock_num`,
+ADD COLUMN `in_num` double(32, 0) NULL COMMENT '调入数量' AFTER `sj_jy_stock_price`,
+ADD COLUMN `out_num` double(32, 0) NULL COMMENT '调出数量' AFTER `in_num`,
+ADD COLUMN `hc_jy_stock_num` double(32, 0) NULL COMMENT '上月结余耗材库存数量' AFTER `out_num`,
+ADD COLUMN `hc_jy_stock_price` decimal(20, 2) NULL COMMENT '上月结余耗材库存金额' AFTER `hc_jy_stock_num`,
+ADD COLUMN `rejected_num` double(32, 0) NULL COMMENT '退货数量' AFTER `hc_jy_stock_price`,
+ADD COLUMN `rejected_price` decimal(20, 2) NULL COMMENT '退货金额' AFTER `rejected_num`;
+
+
+-- 2020年8月6日 18:52:59   統計費用表字段调整及增加
+ALTER TABLE  `pd_numerical_inf`
+CHANGE COLUMN `sj_in_record_num` `in_record_num` double(32, 2) NULL DEFAULT NULL COMMENT '入库数量' AFTER `depart_id`,
+CHANGE COLUMN `sj_in_record_price` `in_record_price` decimal(20, 2) NULL DEFAULT NULL COMMENT '入库金额' AFTER `in_record_num`,
+CHANGE COLUMN `sj_num` `purchase_num` double(32, 2) NULL DEFAULT NULL COMMENT '使用数量' AFTER `in_record_price`,
+CHANGE COLUMN `sj_price` `purchase_price` decimal(20, 2) NULL DEFAULT NULL COMMENT '使用金额' AFTER `purchase_num`,
+CHANGE COLUMN `sj_stock_num` `stock_num` double(32, 0) NULL DEFAULT NULL COMMENT '库存数量' AFTER `purchase_price`,
+CHANGE COLUMN `sj_stock_price` `stock_price` decimal(20, 2) NULL DEFAULT NULL COMMENT '库存金额' AFTER `stock_num`,
+CHANGE COLUMN `hc_in_record_num` `call_in_num` double(32, 0) NULL DEFAULT NULL COMMENT '调入数量' AFTER `stock_price`,
+CHANGE COLUMN `hc_in_record_price` `call_in_price` decimal(20, 2) NULL DEFAULT NULL COMMENT '调入金额' AFTER `call_in_num`,
+CHANGE COLUMN `hc_num` `call_out_num` double(32, 0) NULL DEFAULT NULL COMMENT '调出数量' AFTER `call_in_price`,
+CHANGE COLUMN `hc_price` `call_out_price` decimal(20, 2) NULL DEFAULT NULL COMMENT '调出金额' AFTER `call_out_num`,
+CHANGE COLUMN `hc_stock_num` `dis_num` double(32, 0) NULL DEFAULT NULL COMMENT '差异数量' AFTER `call_out_price`,
+CHANGE COLUMN `hc_stock_price` `dis_price` decimal(20, 2) NULL DEFAULT NULL COMMENT '差异金额' AFTER `dis_num`,
+CHANGE COLUMN `sj_jy_stock_num` `the_stock_num` double(32, 0) NULL DEFAULT NULL COMMENT '期初库存数量' AFTER `del_flag`,
+CHANGE COLUMN `sj_jy_stock_price` `the_stock_price` decimal(20, 2) NULL DEFAULT NULL COMMENT '期初库存金额' AFTER `the_stock_num`,
+CHANGE COLUMN `in_num` `spec_quantity_num` double(32, 0) NULL DEFAULT NULL COMMENT '使用理论规格数量' AFTER `the_stock_price`,
+CHANGE COLUMN `out_num` `spec_reality_num` double(32, 0) NULL DEFAULT NULL COMMENT '实际使用规格数量' AFTER `spec_quantity_num`,
+CHANGE COLUMN `hc_jy_stock_num` `dis_spec_num` double(32, 0) NULL DEFAULT NULL COMMENT '差异规格数量' AFTER `spec_reality_num`,
+CHANGE COLUMN `hc_jy_stock_price` `tj_type` varchar(4) NULL DEFAULT NULL COMMENT '统计类型  1：试剂   0：耗材' AFTER `dis_spec_num`;
+
+
+INSERT INTO  `sys_permission` VALUES ('1291276845681188866', 'f0675b52d89100ee88472b6800754a08', '试剂月统计报表', '/pd/query/PdCallMonth', 'pd/query/PdCallMonthQuery', NULL, NULL, 1, '0', NULL, '1', 1.10, 0, NULL, 1, 1, 0, 0, NULL, 'admin', '2020-08-06 15:36:05', NULL, '2020-08-06 15:36:05', 0, 0, '1', 0);
+
+ALTER TABLE `jeecg-boot`.`pd_numerical_inf`
+DROP COLUMN `sj_jy_stock_num`,
+DROP COLUMN `sj_jy_stock_price`,
+DROP COLUMN `hc_jy_stock_num`,
+DROP COLUMN `hc_jy_stock_price`;

@@ -10,6 +10,8 @@ import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.system.base.controller.JeecgController;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.oConvertUtils;
+import org.jeecg.modules.external.vo.PdNumericalInfHcExlce;
+import org.jeecg.modules.external.vo.PdNumericalInfSjExlce;
 import org.jeecg.modules.pd.entity.PdNumericalInf;
 import org.jeecg.modules.pd.service.IPdDepartService;
 import org.jeecg.modules.pd.service.IPdNumericalInfService;
@@ -25,6 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -72,24 +75,33 @@ public class PdNumericalInfController extends JeecgController<PdNumericalInf, IP
 	}
 
 	/**
-	 * 导出excel
-	 *
+	 * 导出excel(月费用统计报表)
 	 * @param request
 	 * @param pdNumericalInf
 	 */
 	@RequestMapping(value = "/exportXls")
 	public ModelAndView exportXls(HttpServletRequest request, PdNumericalInf pdNumericalInf) {
+
 		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
-
 		List<PdNumericalInf> list = pdNumericalInfService.selectList(pdNumericalInf);//
-
-		List<PdNumericalInf> exportList = JSON.parseArray(JSON.toJSONString(list), PdNumericalInf.class);
+		String tjType=pdNumericalInf.getTjType();
 		// Step.4 AutoPoi 导出Excel
 		ModelAndView mv = new ModelAndView(new JeecgEntityExcelView());
-		mv.addObject(NormalExcelConstants.FILE_NAME, "月消耗及费用统计报表");
-		mv.addObject(NormalExcelConstants.CLASS, PdNumericalInf.class);
-		mv.addObject(NormalExcelConstants.PARAMS, new ExportParams("月消耗及费用统计", "导出人:" + sysUser.getRealname(), "月消耗及费用统计报表"));
-		mv.addObject(NormalExcelConstants.DATA_LIST, exportList);
+		List<PdNumericalInfHcExlce> exportHcList =new ArrayList<>();
+		List<PdNumericalInfSjExlce> exportSjList =new ArrayList<>();
+		if("0".equals(tjType)){ //试剂统计导出
+			exportSjList = JSON.parseArray(JSON.toJSONString(list), PdNumericalInfSjExlce.class);
+			mv.addObject(NormalExcelConstants.FILE_NAME, "试剂月统计报表");
+			mv.addObject(NormalExcelConstants.CLASS, PdNumericalInfSjExlce.class);
+			mv.addObject(NormalExcelConstants.PARAMS, new ExportParams("试剂月统计报表", "导出人:" + sysUser.getRealname(), "试剂月统计报表"));
+			mv.addObject(NormalExcelConstants.DATA_LIST, exportSjList);
+		}else{ //耗材
+			exportHcList = JSON.parseArray(JSON.toJSONString(list), PdNumericalInfHcExlce.class);
+			mv.addObject(NormalExcelConstants.FILE_NAME, "耗材月统计报表");
+			mv.addObject(NormalExcelConstants.CLASS, PdNumericalInfHcExlce.class);
+			mv.addObject(NormalExcelConstants.PARAMS, new ExportParams("耗材月统计报表", "导出人:" + sysUser.getRealname(), "耗材月统计报表"));
+			mv.addObject(NormalExcelConstants.DATA_LIST, exportHcList);
+		}
 		return mv;
 	}
 }
