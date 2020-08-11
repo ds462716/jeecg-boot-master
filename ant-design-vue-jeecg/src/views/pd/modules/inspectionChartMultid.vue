@@ -178,6 +178,7 @@
       loadData() {
         var params={};
         params.productId =this.model.productId;
+        params.status =this.model.status;
         this.loading = true;
         getAction(this.url.queryView, params).then((res) => {
           if (res.success) {

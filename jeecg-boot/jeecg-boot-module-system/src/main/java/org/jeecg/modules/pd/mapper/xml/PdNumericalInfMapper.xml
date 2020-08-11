@@ -55,7 +55,7 @@
                   #{item}
              </foreach>
         </if>
-            order by a.month,t.depart_type,a.in_record_num  desc
+            order by a.month desc,t.depart_type,a.in_record_num  desc
         </where>
 	</select>
 

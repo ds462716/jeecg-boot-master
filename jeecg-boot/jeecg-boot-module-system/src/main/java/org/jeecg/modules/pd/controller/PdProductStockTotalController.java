@@ -428,6 +428,7 @@ public class PdProductStockTotalController {
 	@RequestMapping(value = "/stockExportXls")
 	public ModelAndView stockExportXls(HttpServletRequest request, PdProductStock productStock) {
 		// Step.1 组装查询条件查询数据
+		String exportType=productStock.getExportType();
 		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
 		if(oConvertUtils.isNotEmpty(productStock.getDepartIds()) && !"undefined".equals(productStock.getDepartIds())) {
 			productStock.setDepartIdList(Arrays.asList(productStock.getDepartIds().split(",")));
@@ -438,6 +439,9 @@ public class PdProductStockTotalController {
 			productStock.setDepartIdList(departList);
 		}
 		//Step.2 获取导出数据
+		if(exportType.equals("2")){
+			productStock.setNestatStatus(PdConstant.STOCK_NESTAT_STATUS_1);
+		}
 		List<PdProductStock> aList =pdProductStockService.queryStockList(productStock);
 		if(aList !=null && aList.size()>0){
 			for(PdProductStock stock : aList){
@@ -450,7 +454,6 @@ public class PdProductStockTotalController {
 			}
 		}
         // Step.3 AutoPoi 导出Excel
-		String exportType=productStock.getExportType();
 		ModelAndView mv = new ModelAndView(new JeecgEntityExcelView());
 		if(exportType.equals("2")){
 			List<PdProductAllocationExcel>  exportList = JSON.parseArray(JSON.toJSONString(aList), PdProductAllocationExcel.class);
