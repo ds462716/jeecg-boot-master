@@ -133,3 +133,8 @@ update sys_permission set business_type = '0', sort_no = '3.41' where id = 'f067
 update sys_permission set sort_no = '3.45' where id = '1275351703808368642';
 -- 2020年8月5日 09:22:52 出入库统计报表菜单
 INSERT INTO `sys_permission`(`id`, `parent_id`, `name`, `url`, `component`, `component_name`, `redirect`, `menu_type`, `business_type`, `perms`, `perms_type`, `sort_no`, `always_show`, `icon`, `is_route`, `is_leaf`, `keep_alive`, `hidden`, `description`, `create_by`, `create_time`, `update_by`, `update_time`, `del_flag`, `rule_flag`, `status`, `internal_or_external`) VALUES ('1290819696255049729', 'f0675b52d89100ee88472b6800754a08', '出入库统计报表', '/pd/report/RpInAndOutReport', 'pd/report/RpInAndOutReport', NULL, NULL, 1, '0', NULL, '1', 1.00, 0, NULL, 1, 1, 0, 0, NULL, 'admin', '2020-08-05 09:19:32', NULL, '2020-08-05 09:19:33', 0, 0, '1', 0);
+
+-- 2020年8月11日 10:59:18 增加套包管理菜单
+INSERT INTO `sys_permission`(`id`, `parent_id`, `name`, `url`, `component`, `component_name`, `redirect`, `menu_type`, `business_type`, `perms`, `perms_type`, `sort_no`, `always_show`, `icon`, `is_route`, `is_leaf`, `keep_alive`, `hidden`, `description`, `create_by`, `create_time`, `update_by`, `update_time`, `del_flag`, `rule_flag`, `status`, `internal_or_external`) VALUES ('1293016386424840194', '', '套包管理', '/package', 'layouts/RouteView', NULL, NULL, 0, '0', NULL, '1', 3.35, 0, 'shopping', 1, 0, 0, 0, NULL, 'admin', '2020-08-11 10:48:24', 'admin', '2020-08-11 10:54:06', 0, 0, '1', 0);
+update sys_permission set parent_id = '1293016386424840194',name = '套包管理',sort_no = '1' where id = '1223876921657380866';
+update sys_permission set parent_id = '1293016386424840194',name = '打包管理',sort_no = '2' where id = '1254291714732748802';
