@@ -91,8 +91,8 @@ export async function stockScanCode(Barcode1, Barcode2,productFlag,nestatStatus,
 }
 
 /**
- * 定数包记录扫码
- * @param Barcode1  定数包打包记录条码
+ * 套包记录扫码
+ * @param Barcode1  套包打包记录条码
  * @returns {Promise<*>}
  */
 export async function packageRecordScanCode(Barcode1){

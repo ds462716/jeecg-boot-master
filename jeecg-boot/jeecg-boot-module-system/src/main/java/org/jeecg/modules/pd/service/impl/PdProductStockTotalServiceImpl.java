@@ -252,7 +252,7 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
     }
 
     /**
-     * 定数包拆包加库存
+     * 套包拆包加库存
      * @param pdPackageRecord
      * @return
      */
@@ -308,7 +308,7 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
     }
 
     /**
-     * 定数包打包扣库存
+     * 套包打包扣库存
      * @param pdPackageRecord
      * @return
      */
@@ -1042,7 +1042,7 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
 
 
     /**
-     *检验项目手动扣减库存方法(定数包)
+     *检验项目手动扣减库存方法(套包)
      * @param departId
      * @param usePackageDetailList
      * @return

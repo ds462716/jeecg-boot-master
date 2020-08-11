@@ -49,7 +49,7 @@ public class ExInspectionItemsUseServiceImpl extends ServiceImpl<ExInspectionIte
         List<ExInspectionItemsUseDetail> exInspectionItemsUseAll = new ArrayList<>();
         //需要放在同一个事物里面
 
-        //选择定数包的产品
+        //选择套包的产品
         if(exInspectionItemsUse.getPdUsePackageDetails()!=null && exInspectionItemsUse.getPdUsePackageDetails().size()>0){
             List<PdProductStock> pdProductStocks  = pdProductStockTotalService.jyUpdatePackageStockNum(departId,exInspectionItemsUse.getPdUsePackageDetails());
             pdProductStockAll.addAll(pdProductStocks);
@@ -81,7 +81,7 @@ public class ExInspectionItemsUseServiceImpl extends ServiceImpl<ExInspectionIte
         ExInspectionItemsUseDetail exInspectionItemsUseDetail = new ExInspectionItemsUseDetail();
         exInspectionItemsUseDetail.setRefId(id);
         exInspectionItemsUseDetail.setPackageTrueFlag("true");
-        //查询定数包消耗的产品
+        //查询套包消耗的产品
         List<ExInspectionItemsUseDetail> exInspectionItemsUseDetails = exInspectionItemsUseDetailService.selectList(exInspectionItemsUseDetail);
         if(exInspectionItemsUseDetails!=null && exInspectionItemsUseDetails.size()>0){
             exInspectionItemsUse.setPakageUseDetailList(exInspectionItemsUseDetails);
@@ -90,7 +90,7 @@ public class ExInspectionItemsUseServiceImpl extends ServiceImpl<ExInspectionIte
         ExInspectionItemsUseDetail eiud = new ExInspectionItemsUseDetail();
         eiud.setRefId(id);
         eiud.setPackageFalseFlag("true");
-        //查询定数包消耗的产品
+        //查询套包消耗的产品
         List<ExInspectionItemsUseDetail> exInspectionItemsUseDetailList = exInspectionItemsUseDetailService.selectList(eiud);
         if(exInspectionItemsUseDetailList!=null && exInspectionItemsUseDetailList.size()>0){
             exInspectionItemsUse.setUseDetailList(exInspectionItemsUseDetailList);

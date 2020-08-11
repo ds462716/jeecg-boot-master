@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Collection;
 
 /**
- * @Description: 定数包
+ * @Description: 套包
  * @Author: jiangxz
  * @Date:   2020-02-02
  * @Version: V1.0

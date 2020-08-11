@@ -123,22 +123,22 @@
           </div>
         </a-card>
 
-        <!-- 定数包区域 -->
+        <!-- 套包区域 -->
         <a-card style="margin-bottom: 10px;" v-show="false"> <!-- v-show="showPackageCard" -->
           <a-tabs v-model="activeKey">
-            <a-tab-pane tab="定数包明细" :key="refKeys[0]" :forceRender="true">
+            <a-tab-pane tab="套包明细" :key="refKeys[0]" :forceRender="true">
               <a-form v-show="!disableSubmit">
                 <a-row>
                   <a-col :md="6" :sm="8">
-                    <a-form-item label="定数包条码" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                      <a-input ref="packageBarCodeInput" placeholder="请输入定数包条码" v-model="packageQueryParam.packageBarCode" @keyup.enter.native="searchQueryPackage(0)"></a-input>
+                    <a-form-item label="套包条码" :labelCol="labelCol" :wrapperCol="wrapperCol">
+                      <a-input ref="packageBarCodeInput" placeholder="请输入套包条码" v-model="packageQueryParam.packageBarCode" @keyup.enter.native="searchQueryPackage(0)"></a-input>
                     </a-form-item>
                   </a-col>
                 </a-row>
               </a-form>
 
               <div style="margin-bottom: 8px;" v-show="showPackageBtn">
-                <a-button type="primary" icon="plus" @click="choosePackageList">选择定数包</a-button>
+                <a-button type="primary" icon="plus" @click="choosePackageList">选择套包</a-button>
                 <a-popconfirm style="margin-left: 8px"
                               :title="`确定要删除吗?`"
                               @confirm="handleConfirmDeletePackage">
@@ -435,11 +435,11 @@
             { title: '申请数量', align:"center", dataIndex: 'productNum' },
             { title: '已发货数量', align:"center", dataIndex: 'arrivalNum' },
             { title: '单位', align:"center", dataIndex: 'unitName' },
-            // { title: '定数包名称', align:"center", dataIndex: 'packageName' },
-            // { title: '定数包编号', align:"center", dataIndex: 'packageCode' },
+            // { title: '套包名称', align:"center", dataIndex: 'packageName' },
+            // { title: '套包编号', align:"center", dataIndex: 'packageCode' },
           ],
         },
-        // 定数包列表
+        // 套包列表
         pdPackageTable: {
           loading: false,
           dataSource: [],
@@ -461,9 +461,9 @@
                 return parseInt(index)+1;
               }
             },
-            { title:'定数包编号', align:"center", dataIndex: 'packageCode' },
-            { title:'定数包条码', align:"center", dataIndex: 'packageBarCode' },
-            { title:'定数包名称', align:"center", dataIndex: 'packageName' },
+            { title:'套包编号', align:"center", dataIndex: 'packageCode' },
+            { title:'套包条码', align:"center", dataIndex: 'packageBarCode' },
+            { title:'套包名称', align:"center", dataIndex: 'packageName' },
             { title:'产品总数', align:"center", dataIndex: 'packageSum' },
             { title:'打包人', align:"center", dataIndex: 'createBy' },
             { title:'打包时间', align:"center", dataIndex: 'createTime',
@@ -498,7 +498,7 @@
             },
             { title:'入库单价', align:"center", dataIndex: 'purchasePrice' },
             { title:'出库单价', align:"center", dataIndex: 'sellingPrice' },
-            { title:'定数包产品数量', align:"center", dataIndex: 'productNum' },
+            { title:'套包产品数量', align:"center", dataIndex: 'productNum' },
             { title:'出库金额', align:"center", dataIndex: 'outTotalPrice' },
             { title:'库存数量', align:"center", dataIndex: 'stockNum' },
             { title: '出库货位', align:"center", dataIndex: 'outHuoweiName' },
@@ -708,7 +708,7 @@
         this.showPrintBtn = false;
         this.showRefuseReason = false;
         this.showSubmitAndPrint = false;
-        // 订书包相关按钮
+        // 套包相关按钮
         this.showPackageCard = false;
         this.showPackageTable = false;
         this.showPackageBtn = false;
@@ -773,7 +773,7 @@
                   })
                   this.pdOrderDetailTable.dataSource = pdApplyDetailList;
                 }
-                // 定数包打包记录明细
+                // 套包打包记录明细
                 let pdPackageRecordList = res.result.pdPackageRecordList || [];
                 if(pdPackageRecordList.length > 0){
                   this.showPackageCard = true;
@@ -795,7 +795,7 @@
                 this.inTotalPrice = res.result.inTotalPrice.toString();
               }else{  // 新增页
                 this.disableSubmit2 = false;
-                // 订书包相关按钮
+                // 套包相关按钮
                 this.showPackageCard = true;
                 this.showPackageTable = false;
                 this.showPackageBtn = true;
@@ -827,7 +827,7 @@
                     this.orderTableTitle = "调拨单明细";
                     this.returnAllocationData(data);
                   }
-                  // 定数包打包记录明细
+                  // 套包打包记录明细
                   this.showPackageBtn = false;
                   let pdPackageRecordList = this.args.pdPackageRecordList || [];
                   if(pdPackageRecordList.length > 0){
@@ -963,10 +963,10 @@
           let formData = this.classifyIntoFormData(allValues);
 
           if(formData.pdStockRecordDetailList.length <= 0 && this.pdPackageTable.dataSource.length <= 0){
-            this.$message.warning("出库产品数据为空，请扫码出库、选择产品或选择定数包");
+            this.$message.warning("出库产品数据为空，请扫码出库、选择产品或选择套包");
             return;
           }
-          //定数包
+          //套包
           if(this.pdPackageTable.dataSource.length > 0){
             for (let data of this.pdPackageTable.dataSource){
               for(let item of data.pdPackageRecordDetailList){
@@ -1219,7 +1219,7 @@
         // 计算总数量和总价格
         this.getTotalNumAndPrice(values);
       },
-      // 选择定数包
+      // 选择套包
       choosePackageList() {
         // 校验是否选择入库科室
         if(!this.checkInDepart()){
@@ -1228,7 +1228,7 @@
         }
         this.$refs.pdChoosePackageRecordListModel.show();
       },
-      // 选择定数包后返回
+      // 选择套包后返回
       returnPackageRecordData(data){
         this.showPackageTable = true;
         if(this.pdPackageTable.dataSource.length > 0){
@@ -1250,7 +1250,7 @@
         }
         this.getTotalNumAndPrice([]);
       },
-      //定数包展开按钮
+      //套包展开按钮
       handleExpand(expanded, record){
         this.pdPackageTable.expandedRowKeys=[];
         this.pdPackageTable.innerData=[];
@@ -1259,7 +1259,7 @@
           this.pdPackageTable.innerData = record.pdPackageRecordDetailList;
         }
       },
-      //定数包列表选中
+      //套包列表选中
       onSelectChange(selectedRowKeys, selectionRows) {
         this.pdPackageTable.selectedRowKeys = selectedRowKeys;
         this.pdPackageTable.selectionRows = selectionRows;
@@ -1269,7 +1269,7 @@
         this.pdPackageTable.selectedRowKeys = [];
         this.pdPackageTable.selectionRows = [];
       },
-      //定数包删除行
+      //套包删除行
       handleConfirmDeletePackage(){
         if(this.pdPackageTable.selectedRowKeys.length > 0){
           for(let i = 0; i< this.pdPackageTable.selectedRowKeys.length; i++){
@@ -1368,7 +1368,7 @@
             outTotalPrice = outTotalPrice + Number(item.outTotalPrice);
           })
 
-          //定数包
+          //套包
           if(this.pdPackageTable.dataSource.length > 0){
             for (let data of this.pdPackageTable.dataSource){
               for(let item of data.pdPackageRecordDetailList){
@@ -1526,16 +1526,16 @@
           })
         }
       },
-      // 定数包扫码
+      // 套包扫码
       searchQueryPackage(num){
         let that = this;
         let packageBarCode = this.packageQueryParam.packageBarCode;
         if(!packageBarCode){
-          this.$message.error("请输入定数包条码！");
+          this.$message.error("请输入套包条码！");
           return;
         }
 
-        if(num == 0) {       //定数包扫码
+        if(num == 0) {       //套包扫码
           //解析条码
           packageRecordScanCode(packageBarCode).then((res) => {
             if (res.code == "200") {

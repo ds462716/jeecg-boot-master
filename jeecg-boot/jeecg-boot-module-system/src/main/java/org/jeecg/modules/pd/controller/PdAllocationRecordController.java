@@ -300,7 +300,7 @@ public class PdAllocationRecordController {
 
 
 	/**
-	 * 通过调拨单号查询定数包明细
+	 * 通过调拨单号查询套包明细
 	 *
 	 * @param allocationDetail
 	 * @return

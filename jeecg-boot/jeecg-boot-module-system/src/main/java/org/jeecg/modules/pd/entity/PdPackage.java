@@ -10,7 +10,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import org.springframework.format.annotation.DateTimeFormat;
 
 /**
- * @Description: 定数包
+ * @Description: 套包
  * @Author: jiangxz
  * @Date:   2020-02-02
  * @Version: V1.0
@@ -23,9 +23,9 @@ public class PdPackage extends BaseEntity {
 	/**主键*/
 	@TableId(type = IdType.ID_WORKER_STR)
     private String id;
-	/**定数包编号*/
+	/**套包编号*/
     private String packageCode;
-	/**定数包名称*/
+	/**套包名称*/
     private String packageName;
 	/**产品总数*/
     private Double packageSum;

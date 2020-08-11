@@ -333,7 +333,7 @@ public class PdApplyOrderController {
 	 }
 
 	 /**
-	  * 通过申领单号查询定数包明细
+	  * 通过申领单号查询套包明细
 	  *
 	  * @param applyDetail
 	  * @return

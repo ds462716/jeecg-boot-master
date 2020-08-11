@@ -194,7 +194,7 @@ public class PdPackageRecordServiceImpl extends ServiceImpl<PdPackageRecordMappe
 	}
 
 	/**
-	 * 保存定数包打包日志
+	 * 保存套包打包日志
 	 * @param pdPackageRecord
 	 * @param type
 	 */

@@ -101,10 +101,10 @@
           </div>
         </a-card>
 
-        <!-- 定数包区域 -->
+        <!-- 套包区域 -->
         <a-card style="margin-bottom: 10px;" v-show="showPackageCard">
           <a-tabs v-model="activeKey">
-            <a-tab-pane tab="定数包明细" :key="refKeys[0]" :forceRender="true">
+            <a-tab-pane tab="套包明细" :key="refKeys[0]" :forceRender="true">
               <a-table
                 ref="table"
                 bordered
@@ -336,11 +336,11 @@
             { title: '申请数量', align:"center", dataIndex: 'productNum' },
             { title: '已发货数量', align:"center", dataIndex: 'arrivalNum' },
             { title: '单位', align:"center", dataIndex: 'unitName' },
-            { title: '定数包名称', align:"center", dataIndex: 'packageName' },
-            { title: '定数包编号', align:"center", dataIndex: 'packageCode' },
+            { title: '套包名称', align:"center", dataIndex: 'packageName' },
+            { title: '套包编号', align:"center", dataIndex: 'packageCode' },
           ],
         },
-        // 定数包列表
+        // 套包列表
         pdPackageTable: {
           loading: false,
           dataSource: [],
@@ -362,9 +362,9 @@
                 return parseInt(index)+1;
               }
             },
-            { title:'定数包编号', align:"center", dataIndex: 'packageCode' },
-            { title:'定数包条码', align:"center", dataIndex: 'packageBarCode' },
-            { title:'定数包名称', align:"center", dataIndex: 'packageName' },
+            { title:'套包编号', align:"center", dataIndex: 'packageCode' },
+            { title:'套包条码', align:"center", dataIndex: 'packageBarCode' },
+            { title:'套包名称', align:"center", dataIndex: 'packageName' },
             { title:'产品总数', align:"center", dataIndex: 'packageSum' },
             { title:'打包人', align:"center", dataIndex: 'createBy' },
             { title:'打包时间', align:"center", dataIndex: 'createTime',
@@ -399,7 +399,7 @@
             },
             { title:'入库单价', align:"center", dataIndex: 'purchasePrice' },
             { title:'出库单价', align:"center", dataIndex: 'sellingPrice' },
-            { title:'定数包产品数量', align:"center", dataIndex: 'productNum' },
+            { title:'套包产品数量', align:"center", dataIndex: 'productNum' },
             { title:'出库金额', align:"center", dataIndex: 'outTotalPrice' },
             { title:'库存数量', align:"center", dataIndex: 'stockNum' },
             { title: '出库货位', align:"center", dataIndex: 'outHuoweiName' },
@@ -595,7 +595,7 @@
                   }
                 })
 
-                // 定数包打包记录明细
+                // 套包打包记录明细
                 this.showPackageCard = false;
                 let pdPackageRecordList = res.result.pdPackageRecordList || [];
                 if(pdPackageRecordList.length > 0){
@@ -731,7 +731,7 @@
           this.confirmLoading = false
         })
       },
-      //定数包展开按钮
+      //套包展开按钮
       handleExpand(expanded, record){
         this.pdPackageTable.expandedRowKeys=[];
         this.pdPackageTable.innerData=[];
@@ -814,7 +814,7 @@
             outTotalPrice = outTotalPrice + Number(item.outTotalPrice);
           })
 
-          //定数包
+          //套包
           if(this.pdPackageTable.dataSource.length > 0){
             for (let data of this.pdPackageTable.dataSource){
               for(let item of data.pdPackageRecordDetailList){

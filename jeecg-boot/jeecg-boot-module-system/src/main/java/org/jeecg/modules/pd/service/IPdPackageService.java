@@ -10,7 +10,7 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- * @Description: 定数包
+ * @Description: 套包
  * @Author: jiangxz
  * @Date:   2020-02-02
  * @Version: V1.0

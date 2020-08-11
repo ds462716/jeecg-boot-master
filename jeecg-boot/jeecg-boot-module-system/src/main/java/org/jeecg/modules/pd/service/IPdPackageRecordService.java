@@ -57,7 +57,7 @@ public interface IPdPackageRecordService extends IService<PdPackageRecord> {
 	IPage<PdPackageRecord> queryList(Page<PdPackageRecord> pageList, PdPackageRecord pdPackageRecord);
 
 	/**
-	 * 定数包打包记录扫码
+	 * 套包打包记录扫码
 	 * @param Barcode1
 	 * @param result
 	 * @return

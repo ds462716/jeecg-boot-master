@@ -32,18 +32,18 @@ public class PdPackageRecord extends BaseEntity {
 	@TableId(type = IdType.ID_WORKER_STR)
     @ApiModelProperty(value = "id")
     private String id;
-	/**定数包ID*/
-	@Excel(name = "定数包ID", width = 15)
-    @ApiModelProperty(value = "定数包ID")
+	/**套包ID*/
+	@Excel(name = "套包ID", width = 15)
+    @ApiModelProperty(value = "套包ID")
     private String packageId;
 	/**科室ID*/
 	@Excel(name = "科室ID", width = 15)
     @ApiModelProperty(value = "科室ID")
     private String departId;
     private String departParentId;
-	/**定数包流水码*/
-	@Excel(name = "定数包流水码", width = 15)
-    @ApiModelProperty(value = "定数包流水码")
+	/**套包流水码*/
+	@Excel(name = "套包流水码", width = 15)
+    @ApiModelProperty(value = "套包流水码")
     private String packageBarCode;
 	/**出库状态：0-已出库；1-未出库*/
 	@Excel(name = "出库状态：0-已出库；1-未出库", width = 15)
@@ -78,11 +78,11 @@ public class PdPackageRecord extends BaseEntity {
     private List<PdPackageRecordDetail> pdPackageRecordDetailList;
 
     @TableField(exist = false)
-    private String packageCode;          //定数包编号
+    private String packageCode;          //套包编号
     @TableField(exist = false)
-    private String packageName;          //定数包名称
+    private String packageName;          //套包名称
     @TableField(exist = false)
-    private String packageSum;           //定数包产品总数
+    private String packageSum;           //套包产品总数
     @TableField(exist = false)
     private List<String> idList;
 

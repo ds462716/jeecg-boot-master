@@ -68,7 +68,7 @@
 
               <div style="margin-bottom: 8px;" v-show="false">
                 <a-button type="primary" icon="plus" @click="chooseProductList">选择产品</a-button>
-                <a-button type="primary" icon="plus" @click="choosePackageList" style="margin-left: 8px">选择定数包</a-button>
+                <a-button type="primary" icon="plus" @click="choosePackageList" style="margin-left: 8px">选择套包</a-button>
                 <a-popconfirm style="margin-left: 8px"
                               :title="`确定要删除吗?`"
                               @confirm="handleConfirmDelete">
@@ -627,7 +627,7 @@
           })
         }
       },
-      // 选择定数包
+      // 选择套包
       choosePackageList() {
 
       },

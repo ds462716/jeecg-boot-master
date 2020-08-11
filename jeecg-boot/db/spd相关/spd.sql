@@ -49,20 +49,20 @@ ADD COLUMN `spec_unit_id` varchar(64) NULL COMMENT '试剂规格单位' AFTER `s
 ADD COLUMN `spec_quantity` double(11, 4) NULL COMMENT '试剂规格数量' AFTER `spec_unit_id`;
 
 
--- add by jiangxz 2020年4月21日09:39:10 定数包产品数量 改为double
+-- add by jiangxz 2020年4月21日09:39:10 套包产品数量 改为double
 ALTER TABLE `pd_package`
 MODIFY COLUMN `sum` double(11, 2) NULL DEFAULT NULL COMMENT '产品总数' AFTER `name`;
 ALTER TABLE `pd_package_detail`
 MODIFY COLUMN `count` double(11, 2) NULL DEFAULT 0 COMMENT '产品数量' AFTER `product_id`;
 
--- add by jiangxz 2020年4月21日09:48:06 定数包打包记录表、打包记录明细表
+-- add by jiangxz 2020年4月21日09:48:06 套包打包记录表、打包记录明细表
 DROP TABLE IF EXISTS `pd_package_record`;
 CREATE TABLE `pd_package_record`  (
   `id` varchar(36) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT 'id',
-  `package_id` varchar(36) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '定数包ID',
+  `package_id` varchar(36) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '套包ID',
   `depart_id` varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '科室ID',
   `depart_parent_id` varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '所属父部门',
-  `package_bar_code` varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '定数包流水码',
+  `package_bar_code` varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '套包流水码',
   `status` char(1) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '出库状态：0-已出库；1-未出库',
   `del_flag` varchar(1) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '删除标识，0-正常；1-删除',
   `remarks` varchar(500) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '备注',
@@ -171,7 +171,7 @@ CREATE TABLE `ex_inspection_items_detail` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- add by jiangxz 2020年4月24日10:51:59 出库记录明细 定数包ID改为打包记录ID
+-- add by jiangxz 2020年4月24日10:51:59 出库记录明细 套包ID改为打包记录ID
 ALTER TABLE `pd_stock_record_detail`
 CHANGE COLUMN `package_id` `package_record_id` varchar(36) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '打包记录ID' AFTER `exp_date`;
 
@@ -179,16 +179,16 @@ CHANGE COLUMN `package_id` `package_record_id` varchar(36) CHARACTER SET utf8 CO
 ALTER TABLE `pd_product_stock`
 ADD COLUMN `reason` varchar(2000) NULL COMMENT '规格库存数量清零原因';
 
--- add by jiangxz 2020年4月26日14:14:30 定数包打包记录 菜单
-INSERT INTO `sys_permission`(`id`, `parent_id`, `name`, `url`, `component`, `component_name`, `redirect`, `menu_type`, `business_type`, `perms`, `perms_type`, `sort_no`, `always_show`, `icon`, `is_route`, `is_leaf`, `keep_alive`, `hidden`, `description`, `create_by`, `create_time`, `update_by`, `update_time`, `del_flag`, `rule_flag`, `status`, `internal_or_external`) VALUES ('1254291714732748802', '1218784892172963842', '定数包打包记录', '/pd/PdPackageRecordList', 'pd/PdPackageRecordList', NULL, NULL, 1, '0', NULL, '1', 1.10, 0, NULL, 1, 1, 0, 0, NULL, 'admin', '2020-04-26 14:10:23', NULL, '2020-04-26 14:10:23', 0, 0, '1', 0);
--- add by jiangxz 2020年4月26日14:14:30 定数包打包记录状态数据字典
-INSERT INTO `sys_dict` (`id`, `dict_name`, `dict_code`, `description`, `del_flag`, `create_by`, `create_time`, `update_by`, `update_time`, `type`) VALUES ('1254304620731985922', '定数包打包记录状态', 'package_record_status', '', 0, 'admin', '2020-04-26 15:01:40', NULL, '2020-04-26 15:01:40', 0);
+-- add by jiangxz 2020年4月26日14:14:30 套包打包记录 菜单
+INSERT INTO `sys_permission`(`id`, `parent_id`, `name`, `url`, `component`, `component_name`, `redirect`, `menu_type`, `business_type`, `perms`, `perms_type`, `sort_no`, `always_show`, `icon`, `is_route`, `is_leaf`, `keep_alive`, `hidden`, `description`, `create_by`, `create_time`, `update_by`, `update_time`, `del_flag`, `rule_flag`, `status`, `internal_or_external`) VALUES ('1254291714732748802', '1218784892172963842', '套包打包记录', '/pd/PdPackageRecordList', 'pd/PdPackageRecordList', NULL, NULL, 1, '0', NULL, '1', 1.10, 0, NULL, 1, 1, 0, 0, NULL, 'admin', '2020-04-26 14:10:23', NULL, '2020-04-26 14:10:23', 0, 0, '1', 0);
+-- add by jiangxz 2020年4月26日14:14:30 套包打包记录状态数据字典
+INSERT INTO `sys_dict` (`id`, `dict_name`, `dict_code`, `description`, `del_flag`, `create_by`, `create_time`, `update_by`, `update_time`, `type`) VALUES ('1254304620731985922', '套包打包记录状态', 'package_record_status', '', 0, 'admin', '2020-04-26 15:01:40', NULL, '2020-04-26 15:01:40', 0);
 INSERT INTO `sys_dict_item` (`id`, `dict_id`, `item_text`, `item_value`, `description`, `sort_order`, `status`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES ('1254304707726045186', '1254304620731985922', '已出库', '0', '', 1, 1, 'admin', '2020-04-26 15:02:01', NULL, '2020-04-26 15:02:01');
 INSERT INTO `sys_dict_item` (`id`, `dict_id`, `item_text`, `item_value`, `description`, `sort_order`, `status`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES ('1254304737581101058', '1254304620731985922', '未出库', '1', '', 1, 1, 'admin', '2020-04-26 15:02:08', NULL, '2020-04-26 15:02:08');
--- add by jiangxz 2020年4月26日14:14:30 定数包字段名称修改
+-- add by jiangxz 2020年4月26日14:14:30 套包字段名称修改
 ALTER TABLE `pd_package`
-CHANGE COLUMN `code` `package_code` varchar(32) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '定数包编号' AFTER `id`,
-CHANGE COLUMN `name` `package_name` varchar(200) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '定数包名称' AFTER `package_code`,
+CHANGE COLUMN `code` `package_code` varchar(32) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '套包编号' AFTER `id`,
+CHANGE COLUMN `name` `package_name` varchar(200) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '套包名称' AFTER `package_code`,
 CHANGE COLUMN `sum` `package_sum` double(11, 2) NULL DEFAULT NULL COMMENT '产品总数' AFTER `package_name`;
 
 -- add by mcb 2020年4月26日19:14:30 增加打包记录id
@@ -411,9 +411,9 @@ CREATE TABLE `ex_inspection_items_use_detail` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- add by jiangxz 2020年5月20日14:58:03 定数包打包相关日志数据字典
-INSERT INTO `sys_dict_item`(`id`, `dict_id`, `item_text`, `item_value`, `description`, `sort_order`, `status`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES ('1262999977709240322', '1233244236134825986', '定数包打包', '8', '', 8, 1, 'admin', '2020-05-20 14:53:55', NULL, '2020-05-20 14:53:55');
-INSERT INTO `sys_dict_item`(`id`, `dict_id`, `item_text`, `item_value`, `description`, `sort_order`, `status`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES ('1263000120286216194', '1233244236134825986', '定数包拆包', '9', '', 9, 1, 'admin', '2020-05-20 14:54:29', NULL, '2020-05-20 14:54:29');
+-- add by jiangxz 2020年5月20日14:58:03 套包打包相关日志数据字典
+INSERT INTO `sys_dict_item`(`id`, `dict_id`, `item_text`, `item_value`, `description`, `sort_order`, `status`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES ('1262999977709240322', '1233244236134825986', '套包打包', '8', '', 8, 1, 'admin', '2020-05-20 14:53:55', NULL, '2020-05-20 14:53:55');
+INSERT INTO `sys_dict_item`(`id`, `dict_id`, `item_text`, `item_value`, `description`, `sort_order`, `status`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES ('1263000120286216194', '1233244236134825986', '套包拆包', '9', '', 9, 1, 'admin', '2020-05-20 14:54:29', NULL, '2020-05-20 14:54:29');
 
 
 -- add by mcb 2020年5月20日09:06:32  收费项目管理菜单移到基础信息模块

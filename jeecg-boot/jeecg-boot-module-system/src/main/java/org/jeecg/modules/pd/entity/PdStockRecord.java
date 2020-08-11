@@ -165,7 +165,7 @@ public class PdStockRecord extends BaseEntity {
     // 调拨单明细
     @TableField(exist = false)
     private List<PdAllocationDetail> pdAllocationDetailList;
-    // 定数包记录
+    // 套包记录
     @TableField(exist = false)
     private List<PdPackageRecord> pdPackageRecordList;
 

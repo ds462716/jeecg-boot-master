@@ -742,7 +742,7 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
                         arrivalAllocationCount = arrivalAllocationCount + entity.getProductNum();
                     }
 
-                    //0.3取定数包打包记录ID、分离定数包的出库明细，（定数包明细已扣库存 下面无需重复扣减）
+                    //0.3取套包打包记录ID、分离套包的出库明细，（套包明细已扣库存 下面无需重复扣减）
                     if(oConvertUtils.isNotEmpty(entity.getPackageRecordId())){
                         packageRecordIdSet.add(entity.getPackageRecordId());
                     }else{
@@ -806,7 +806,7 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
             //5.处理入库库存
             String inStr2 = pdProductStockTotalService.updateInStock(inRecord);
 
-            //6.处理订书包记录（修改状态为已出库）
+            //6.处理套包记录（修改状态为已出库）
             if(packageRecordIdSet != null && packageRecordIdSet.size() > 0){
                 List<String> packageRecordIdList = new ArrayList<>(packageRecordIdSet);
                 for (String id : packageRecordIdList) {
@@ -907,7 +907,7 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
             //5.处理入库库存
             String inStr2 = pdProductStockTotalService.updateInStock(inRecord);
 
-            //6.处理订书包记录（修改状态为已出库）
+            //6.处理套包记录（修改状态为已出库）
             if(packageRecordIdSet != null && packageRecordIdSet.size() > 0){
                 List<String> packageRecordIdList = new ArrayList<>(packageRecordIdSet);
                 for (String id : packageRecordIdList) {
@@ -1099,7 +1099,7 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
                 outTotalPrice = outTotalPrice.add(sellingPrice.multiply(BigDecimal.valueOf(item.getProductNum())).setScale(4, BigDecimal.ROUND_HALF_UP));
                 inTotalPrice = inTotalPrice.add(purchasePrice.multiply(BigDecimal.valueOf(item.getProductNum())).setScale(4, BigDecimal.ROUND_HALF_UP));
 
-                // 分离定数包的出库明细，页面上需分开展示
+                // 分离套包的出库明细，页面上需分开展示
                 if(oConvertUtils.isEmpty(item.getPackageRecordId())){
                     pdStockRecordDetailListWithOutPackage.add(item);
                 }else{
@@ -1112,7 +1112,7 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
             pdStockRecord.setOutTotalPrice(outTotalPrice);
 //            pdStockRecord.setPdStockRecordDetailList(pdStockRecordDetailList);
             pdStockRecord.setPdStockRecordDetailList(pdStockRecordDetailListWithOutPackage);
-            //定数包 出库明细
+            //套包 出库明细
             if(packageRecordIdSet.size() > 0){
                 PdPackageRecord pdPackageRecord = new PdPackageRecord();
                 pdPackageRecord.setDepartParentId(sysUser.getDepartParentId());

@@ -30,7 +30,7 @@
                 <a-form-item label="打包日期" :labelCol="labelCol" :wrapperCol="wrapperCol">
                   <j-date disabled placeholder="请选择打包日期" v-decorator="[ 'createTime', validatorRules.createTime]" :trigger-change="true" style="width: 100%"/>
                 </a-form-item>
-                <a-form-item label="定数包ID" :labelCol="labelCol" :wrapperCol="wrapperCol" v-show="false">
+                <a-form-item label="套包ID" :labelCol="labelCol" :wrapperCol="wrapperCol" v-show="false">
                   <a-input disabled v-decorator="[ 'packageId', validatorRules.packageId]" :trigger-change="true" style="width: 100%"/>
                 </a-form-item>
               </a-col>
@@ -39,8 +39,8 @@
 
           <div class="table-operator">
             <a-tabs>
-              <a-tab-pane tab="定数包明细" :forceRender="true">
-                <a-button @click="choosePackageList" type="primary" icon="plus" style="margin-bottom: 8px;">选择定数包</a-button>
+              <a-tab-pane tab="套包明细" :forceRender="true">
+                <a-button @click="choosePackageList" type="primary" icon="plus" style="margin-bottom: 8px;">选择套包</a-button>
                 <a-table
                   ref="table"
                   bordered
@@ -52,7 +52,7 @@
                 >
                 </a-table>
                 <a-row style="margin-top:10px;text-align: right;padding-right: 5%">
-                  <span style="font-weight: bold;font-size: large;padding-right: 5%">定数包总数量：{{ packageTotalSum }}</span>
+                  <span style="font-weight: bold;font-size: large;padding-right: 5%">套包总数量：{{ packageTotalSum }}</span>
                   <!--<span style="font-weight: bold;font-size: large">总金额：{{ packageTotalPrice }}</span>-->
                 </a-row>
               </a-tab-pane>
@@ -209,12 +209,12 @@
               }
             },
             {
-              title:'定数包编号',
+              title:'套包编号',
               align:"center",
               dataIndex: 'packageCode'
             },
             {
-              title:'定数包名称',
+              title:'套包名称',
               align:"center",
               dataIndex: 'packageName',
               customRender:function (text) {
@@ -248,7 +248,7 @@
               dataIndex: 'unitName'
             },
             {
-              title:'定数包产品数量',
+              title:'套包产品数量',
               align:"center",
               width: 200,
               dataIndex: 'count'
@@ -451,7 +451,7 @@
           let formData = this.classifyIntoFormData(allValues);
 
           if(!formData.packageId){
-            this.$message.warning("定数包读取失败，请重新选择定数包！");
+            this.$message.warning("套包读取失败，请重新选择套包！");
             return;
           }
 
@@ -464,8 +464,8 @@
           let packageList = this.pdPackageTable.dataSource;
 
           for(let pa of packageList){
-            let isInPackage = false; // 打包的产品是否在定数包中
-            let count = Number(pa.count);//定数包产品数量
+            let isInPackage = false; // 打包的产品是否在套包中
+            let count = Number(pa.count);//套包产品数量
             let sumPackageNum = 0;//打包产品总数
             for(let record of recordList){
               if(pa.productId == record.productId){
@@ -478,7 +478,7 @@
               return;
             }
             if(sumPackageNum != count){
-              this.$message.error("产品["+pa.productName+"]打包数量与定数包产品数量不一致，请重新打包！");
+              this.$message.error("产品["+pa.productName+"]打包数量与套包产品数量不一致，请重新打包！");
               return;
             }
           }
@@ -580,12 +580,12 @@
 
         let packageId = this.form.getFieldValue("packageId");
         if(!packageId){
-          this.$message.warning("请选择定数包！");
+          this.$message.warning("请选择套包！");
           return;
         }
 
         // if(packageData.length <= 0){
-        //   this.$message.error("请选择定数包！");
+        //   this.$message.error("请选择套包！");
         //   return;
         // }
 
@@ -624,11 +624,11 @@
         // 计算总数量和总价格
         this.getTotalNumAndPrice(values);
       },
-      // 选择定数包
+      // 选择套包
       choosePackageList() {
         this.$refs.pdChoosePackageListModel.show();
       },
-      // 选择定数包后返回
+      // 选择套包后返回
       returnPackageData(data){
         // this.pdPackageTable.dataSource = data;
         this.pdPackageRecordDetailTable.dataSource = [];

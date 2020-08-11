@@ -99,7 +99,7 @@
 
               <span style="padding-left: 8px;"></span>
               <div style="margin-bottom: 8px;">
-                <a-button v-show="!disableSubmit" type="primary" icon="plus" @click="choicePackage">选择定数包</a-button>
+                <a-button v-show="!disableSubmit" type="primary" icon="plus" @click="choicePackage">选择套包</a-button>
                 <span style="padding-left: 8px;"></span>
                 <a-popconfirm
                   :title="`确定要删除吗?`"
@@ -272,9 +272,9 @@
                 return parseInt(index)+1;
               }
             },
-            {title:'定数包编号', align:"center",key:"packageCode", dataIndex: 'packageCode'},
-            {title:'定数包名称', align:"center", key:"packageName",dataIndex: 'packageName'},
-            { title:'定数包条码', align:"center", dataIndex: 'packageBarCode' },
+            {title:'套包编号', align:"center",key:"packageCode", dataIndex: 'packageCode'},
+            {title:'套包名称', align:"center", key:"packageName",dataIndex: 'packageName'},
+            { title:'套包条码', align:"center", dataIndex: 'packageBarCode' },
             {title:'产品总数', align:"center", key:"packageSum",dataIndex: 'packageSum'},
             {title:'调拨数量', align:"center",key:"allocationNum",  dataIndex: 'allocationNum',
             },
@@ -297,7 +297,7 @@
           },
           { title:'入库单价', align:"center", dataIndex: 'purchasePrice' },
           { title:'出库单价', align:"center", dataIndex: 'sellingPrice' },
-          { title:'定数包产品数量', align:"center", dataIndex: 'productNum' },
+          { title:'套包产品数量', align:"center", dataIndex: 'productNum' },
           { title:'出库金额', align:"center", dataIndex: 'outTotalPrice' },
           { title:'库存数量', align:"center", dataIndex: 'stockNum' },
           { title: '出库货位', align:"center", dataIndex: 'outHuoweiName' },
@@ -399,7 +399,7 @@
           this.$refs.PdAllocationDetailAddModal.show({departId:outDeptId});
       },
 
-      //选择定数包产品
+      //选择套包产品
       choicePackage() {
         //判断是否选择了出库科室
         let outDeptId = this.form.getFieldValue("outDeptId");
@@ -408,7 +408,7 @@
           return
         }
         this.$refs.PdAllocationPackageAddModal.show();
-        this.$refs.PdAllocationPackageAddModal.title = "选择定数包";
+        this.$refs.PdAllocationPackageAddModal.title = "选择套包";
       },
 
       handleProdDelete() {  //删除产品
@@ -423,13 +423,13 @@
         }
       },
 
-      handlePackDelete() {  //删除定数包
+      handlePackDelete() {  //删除套包
         let dataId = [];
         if (this.selectionRows.length <= 0) {
           this.$message.warning('请选择一条记录！');
           return;
         } else {
-          //删除定数包
+          //删除套包
           let packageId= this.selectionRows[0].packageId;
           let data=this.table2.dataSource;
           data.forEach((item,index)=>{
@@ -448,7 +448,7 @@
       // 计算总数量
       getTotalNumAndPrice(rows){
         let totalNum=0;//总申领数量
-        let data=this.table2.dataSource;//定数包的
+        let data=this.table2.dataSource;//套包的
         const that = this;
         data.forEach((item,ids) => {
           totalNum+=parseFloat(item.packageSum) * parseFloat(item.allocationNum);
@@ -505,7 +505,7 @@
         this.table1.dataSource.push(data)
       },
 
-      modalFormInfoOk (rows) { //选择定数包产品确定后返回所选择的数据
+      modalFormInfoOk (rows) { //选择套包产品确定后返回所选择的数据
         var  formData= rows.pdPackageRecordList;
         let data = [];
         let source=this.table2.dataSource;
@@ -531,7 +531,7 @@
 
       },
 
-      addPackRows(row) {  //新增定数包
+      addPackRows(row) {  //新增套包
         let data = {
           packageRecordId:row.id,
           packageId:row.packageId,
@@ -567,7 +567,7 @@
           // 发起请求
           let data= this.table2.dataSource;
           let packageName=null;
-          data.forEach((item,ids)=>{ //合并定数包
+          data.forEach((item,ids)=>{ //合并套包
             if(item.allocationNum <=0 || item.allocationNum=='' ||item.allocationNum==null){
               packageName+=item.packageName+",";
             }
@@ -575,7 +575,7 @@
           });
 
           if(packageName!=null){
-            that.$message.error("定数包调拨数量不能为空或不能为0");
+            that.$message.error("套包调拨数量不能为空或不能为0");
             return;
           }
 
@@ -624,7 +624,7 @@
           let params = {allocationNo: this.model.allocationNo,productAttr:"1"}
           this.requestSubTableData(this.url.pdAllocationDetail.list, params, this.table1)//加载产品
           params =  {allocationNo: this.model.allocationNo,productAttr:"2" }
-          this.requestSubTableData(this.url.pdAllocationDetail.packList, params, this.table2)//加载定数包
+          this.requestSubTableData(this.url.pdAllocationDetail.packList, params, this.table2)//加载套包
         }
       },
       /** 整理成formData */
