@@ -612,6 +612,9 @@
             ]},
           bidingType: {rules: [
             ]},
+          financeClassification: {rules: [
+
+            ]},
         },
         isChargeRules:[
           {
@@ -707,6 +710,7 @@
             text: record.categoryOneName,
           });
           this.categoryOneData = categoryOneData;
+          this.categoryOneValue = record.categoryOne;
           //二级分类
           const categoryTwoData = [];
           categoryTwoData.push({
@@ -775,6 +779,7 @@
         this.focusDisable = false;
         this.$emit('close');
         this.visible = false;
+        this.categoryTwoData = [];
       },
       handleOk () {
         const that = this;
