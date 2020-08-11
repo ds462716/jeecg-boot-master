@@ -72,4 +72,16 @@ public class PdNumericalInfServiceImpl extends ServiceImpl<PdNumericalInfMapper,
 	public  HashMap  selectDosageNumOrPrice(PdNumericalInf  numericalInf){
 		return pdNumericalInfMapper.selectDosageNumOrPrice(numericalInf);
 	};
+
+	/*统计退货数量    退货金额*/
+	@Override
+	public  HashMap  selectrejectedNumOrPrice(PdNumericalInf  numericalInf){
+		return pdNumericalInfMapper.selectrejectedNumOrPrice(numericalInf);
+	};
+
+	/*统计试剂理论使用规格数量   实际使用规格数量*/
+	@Override
+	public  HashMap  selectItemSpecNum(PdNumericalInf  numericalInf){
+		return pdNumericalInfMapper.selectItemSpecNum(numericalInf);
+	};
 }
