@@ -111,3 +111,8 @@ DROP COLUMN `sj_jy_stock_num`,
 DROP COLUMN `sj_jy_stock_price`,
 DROP COLUMN `hc_jy_stock_num`,
 DROP COLUMN `hc_jy_stock_price`;
+
+
+-- 2020年8月11日 18:52:59   字段注释调整
+ALTER TABLE  `pd_product_stock`
+MODIFY COLUMN `spec_num` double(32, 2) NULL DEFAULT NULL COMMENT '库存规格数量' AFTER `record_detail_id`;

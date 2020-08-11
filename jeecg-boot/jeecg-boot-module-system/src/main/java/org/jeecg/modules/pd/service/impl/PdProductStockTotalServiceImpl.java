@@ -380,9 +380,6 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
         for (PdDosageDetail dosageDetail : dosageDetails) {
             String productStockId = dosageDetail.getProductStockId();   //庫存明細ID
             String productId = dosageDetail.getProductId();    //产品ID
-            String prodBarcode = dosageDetail.getProductBarCode();  //条码
-            String batchNo = dosageDetail.getBatchNo();
-            String huoweiCode = dosageDetail.getOutHuoweiCode();
             Double productNum = dosageDetail.getDosageCount();  //数量
             //1、扣减出库库存，扣减出库库存明细
             PdProductStockTotalPage stockTotalq = new PdProductStockTotalPage();
@@ -402,11 +399,6 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
 
             PdProductStock o_productStockq = new PdProductStock();
             o_productStockq.setId(productStockId);
-            //o_productStockq.setDepartId(departId);
-            //o_productStockq.setProductId(productId);
-            //o_productStockq.setProductBarCode(prodBarcode);
-            //o_productStockq.setBatchNo(batchNo);
-            //o_productStockq.setHuoweiCode(huoweiCode);
              o_productStockq.setNestatStatus(PdConstant.STOCK_NESTAT_STATUS_1);//查询未使用的库存明细
             List<PdProductStock> productStocks = pdProductStockMapper.selectList(o_productStockq);
             if (productStocks != null && productStocks.size() >= 0) {
@@ -435,10 +427,6 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
         for (PdDosageDetail drt : detailList) {
             String productStockId = drt.getProductStockId();   //庫存明細ID
             String productId = drt.getProductId();      //产品ID
-            String number = drt.getNumber();      //产品编码
-            String productBarCode = drt.getProductBarCode();  //产品条码
-            String batchNo = drt.getBatchNo();       //产品批号
-            String huoweiCode = drt.getInHuoweiCode();//入库货位号
             Double productNum_i = drt.getDosageCount();  //退回数量
             //2、增加入库库存
             PdProductStockTotalPage stockTotalq = new PdProductStockTotalPage();
@@ -456,12 +444,6 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
             //增加入库库存明细
             PdProductStock i_productStockq = new PdProductStock();
             i_productStockq.setId(productStockId);
-            /*i_productStockq.setDepartId(departId);
-            i_productStockq.setProductId(productId);
-            i_productStockq.setProductBarCode(productBarCode);
-            i_productStockq.setBatchNo(batchNo);
-            i_productStockq.setNumber(number);
-            i_productStockq.setHuoweiCode(huoweiCode);*/
             i_productStockq.setNestatStatus(PdConstant.STOCK_NESTAT_STATUS_1);//查询未使用的库存明细
             List<PdProductStock> i_productStocks = pdProductStockMapper.findForUpdate(i_productStockq);
             if (i_productStocks != null || i_productStocks.size() > 0) {
@@ -726,14 +708,14 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
                     bottleInf.setNestatStatus(PdConstant.STOCK_NESTAT_STATUS_0);
                     productStocks_i=  pdBottleInfMapper.queryProductStock(bottleInf);
                 }
-                /*if(CollectionUtils.isEmpty(productStocks_i)){
-                    //4.1 查询扣減科室下库存明细(先查询使用中的)，根据有效期排序
+                 if(CollectionUtils.isEmpty(productStocks_i)){
+                    //4.1 查询扣減科室下库存明细(查询使用中的)，根据有效期排序
                     PdProductStock pproductStockq = new PdProductStock();
                     pproductStockq.setDepartIdList(departIds);
                     pproductStockq.setProductId(productId);
                     pproductStockq.setNestatStatus(PdConstant.STOCK_NESTAT_STATUS_0);
                     productStocks_i = pdProductStockMapper.selectOrExpDate(pproductStockq);
-                }*/
+                }
                 if (CollectionUtils.isEmpty(productStocks_i)) {
                     String remarks= "根据产品[" + detail.getProductName() + "]获取不到已开瓶的库存明细信息";
                     PdProductStock stock = new PdProductStock();
@@ -841,14 +823,15 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
                     bottleInf.setProductId(productId);
                     bottleInf.setNestatStatus(PdConstant.STOCK_NESTAT_STATUS_0);
                     productStocks_i=  pdBottleInfMapper.queryProductStock(bottleInf);
-                }/*else{
-                    //4.1 查询扣減科室下库存明细(先查询使用中的)，根据有效期排序
+                }
+                if(CollectionUtils.isEmpty(productStocks_i)){
+                    //4.1 查询扣減科室下库存明细(查询使用中的)，根据有效期排序
                     PdProductStock pproductStockq = new PdProductStock();
                     pproductStockq.setDepartIdList(departIds);
                     pproductStockq.setProductId(productId);
                     pproductStockq.setNestatStatus(PdConstant.STOCK_NESTAT_STATUS_0);
                     productStocks_i = pdProductStockMapper.selectOrExpDate(pproductStockq);
-                }*/
+                }
                 if (CollectionUtils.isEmpty(productStocks_i)) {
                     String remarks= "根据产品[" + detail.getProductName() + "]获取不到已开瓶的库存明细信息";
                     PdProductStock stock = new PdProductStock();
