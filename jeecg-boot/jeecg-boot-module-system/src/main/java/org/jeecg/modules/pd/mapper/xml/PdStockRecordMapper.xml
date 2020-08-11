@@ -562,7 +562,7 @@
 
     <select id="rpInAndOutReport" resultType="org.jeecg.modules.pd.vo.RpInAndOutReportPage"
             parameterType="org.jeecg.modules.pd.vo.RpInAndOutReportPage">
-    select * from
+    select @rowNum:=@rowNum + 1 as id,rep.* from
     (
         (
             SELECT
@@ -781,7 +781,8 @@
             left join sys_depart de on de.id = in_table.depart_id
             WHERE 1=1
         )
-    ) as rep order by rep.audit_date DESC
+    ) as rep , (SELECT @rowNum:=0) n
+    order by rep.audit_date DESC
     </select>
 
     <!-- 弃用 20200810 jiangxz -->
