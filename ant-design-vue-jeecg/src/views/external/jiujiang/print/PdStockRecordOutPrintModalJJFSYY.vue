@@ -22,29 +22,29 @@
           <!--签字-->
           <a-col :md="24" :sm="24">
             <a-col :span="24">
-              <span style="margin-left: 3%">
+              <span style="margin-left: 3%;font-size: 14px;font-weight: 800">
               出库单号：
             </span>
-              <a-input style="width: 18%;text-align: left" disabled v-model="record.recordNo"/>
-              <span style="margin-left: 3%">
+              <a-input style="width: 18%;text-align: left;font-size: 14px;font-weight: 800" disabled v-model="record.recordNo"/>
+              <span style="margin-left: 3%;font-size: 14px;font-weight: 800">
               出库日期：
             </span>
-              <a-input style="width: 12%;text-align: left" disabled v-model="record.auditDate"/>
+              <a-input style="width: 12%;text-align: left;font-size: 14px;font-weight: 800" disabled v-model="record.auditDate"/>
               <span style="margin-left: 35%">
                 页码：
               {{index1+1}} /{{divNumber}}
               </span>
             </a-col>
             <a-col :span="24" style="margin-top: 0px">
-            <span style="margin-left: 3%">
+            <span style="margin-left: 3%;font-size: 14px;font-weight: 800">
               出库库房：
             </span>
-              <a-input style="width: 18%;text-align: left" disabled v-model="record.outDepartName"/>
-              <span style="margin-left: 3%">
+              <a-input style="width: 18%;text-align: left;font-size: 14px;font-weight: 800" disabled v-model="record.outDepartName"/>
+              <span style="margin-left: 3%;font-size: 14px;font-weight: 800">
               入库库房：
             </span>
-              <a-input style="width: 12%;text-align: left" disabled v-model="record.inDepartName"/>
-              <span style="margin-left: 3%;text-align: right">
+              <a-input style="width: 12%;text-align: left;font-size: 14px;font-weight: 800" disabled v-model="record.inDepartName"/>
+              <span style="margin-left: 3%;text-align: right;font-size: 14px;font-weight: 800">
               备注：
             </span>
               <a-input style="width: 30%;text-align: left" disabled v-model="record.remarks"/>
@@ -54,7 +54,7 @@
                 <table width="98%" class="tableStyle">
                   <tr>
                     <th style="border: 1px solid #000000;text-align: center;padding: 3px 3px;width:2%">
-
+                      序号
                     </th>
                     <th style="border: 1px solid #000000;text-align: center;padding: 3px 3px;width:20%">
                       产品名称
@@ -88,29 +88,29 @@
                     </th>
                   </tr>
                   <tr v-for="(item, index2) in tableNumber[index1]">
-                    <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: larger;font-weight: bolder">
+                    <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: xx-small">
                       {{ index2+(index1*tableLength) +1}}
                     </td>
-                    <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: xx-small">
+                    <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: larger;font-weight: bolder">
                       {{ item.productName }}
 
                       <a-form-item label="id" v-show="false">
                         <a-input v-decorator="[ 'pdStockRecordDetailList['+index2+'].id',{'initialValue':item.id} ]"></a-input>
                       </a-form-item>
                     </td>
-                    <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: xx-small">
+                    <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: larger;">
                       {{ item.spec }}
                     </td>
                     <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: larger;font-weight: bolder">
                       {{ item.batchNo }}
                     </td>
-                    <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: xx-small">
+                    <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: larger;">
                       {{ item.expDate }}
                     </td>
                     <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: larger;font-weight: bolder">
                       {{ item.productNum }}
                     </td>
-                    <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: xx-small">
+                    <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: larger;">
                       {{ item.unitName }}
                     </td>
                     <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: larger;font-weight: bolder">
@@ -119,11 +119,11 @@
                     <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: larger;font-weight: bolder">
                       {{ item.outTotalPrice }}
                     </td>
-                    <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: xx-small">
+                    <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: xx-small;">
                       <a-form-item label="" style="width: 100%;height: 100%;padding: 0px;margin: 0px;line-height: 0px">
                         <a-select
                           size="small"
-                          style="width: 100%;font-size: xx-small"
+                          style="width: 100%;font-size: xx-small;"
                           :showArrow="false"
                           :dropdownMatchSelectWidth="false"
                           v-decorator="[ 'pdStockRecordDetailList['+index2+'].registration',{'initialValue':item.registrationSelected}]"
@@ -134,7 +134,7 @@
                         </a-select>
                       </a-form-item>
                     </td>
-                    <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: xx-small">
+                    <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: xx-small;">
                       {{ item.venderName }}
                     </td>
                   </tr>
@@ -153,29 +153,29 @@
         <!--签字-->
         <a-col :md="24" :sm="24">
           <a-col :span="24">
-            <span style="margin-left: 3%">
+            <span style="margin-left: 3%;font-size: 14px;font-weight: 800">
               出库单号：
             </span>
-            <a-input style="width: 18%;text-align: left" disabled v-model="record.recordNo"/>
-            <span style="margin-left: 3%">
+            <a-input style="width: 18%;text-align: left;font-size: 14px;font-weight: 800" disabled v-model="record.recordNo"/>
+            <span style="margin-left: 3%;font-size: 14px;font-weight: 800">
               出库日期：
             </span>
-            <a-input style="width: 12%;text-align: left" disabled v-model="record.auditDate"/>
+            <a-input style="width: 12%;text-align: left;font-size: 14px;font-weight: 800" disabled v-model="record.auditDate"/>
             <span style="margin-left: 35%">
                 页码：
               {{divNumber}} /{{divNumber}}
               </span>
           </a-col>
           <a-col :span="24" style="margin-top: 0px">
-            <span style="margin-left: 3%">
+            <span style="margin-left: 3%;font-size: 14px;font-weight: 800">
               出库库房：
             </span>
-            <a-input style="width: 18%;text-align: left" disabled v-model="record.outDepartName"/>
-            <span style="margin-left: 3%">
+            <a-input style="width: 18%;text-align: left;font-size: 14px;font-weight: 800" disabled v-model="record.outDepartName"/>
+            <span style="margin-left: 3%;font-size: 14px;font-weight: 800">
               入库库房：
             </span>
-            <a-input style="width: 12%;text-align: left" disabled v-model="record.inDepartName"/>
-            <span style="margin-left: 3%;text-align: right">
+            <a-input style="width: 12%;text-align: left;font-size: 14px;font-weight: 800" disabled v-model="record.inDepartName"/>
+            <span style="margin-left: 3%;text-align: right;font-size: 14px;font-weight: 800">
               备注：
             </span>
             <a-input style="width: 30%;text-align: left" disabled v-model="record.remarks"/>
@@ -185,7 +185,7 @@
               <table width="98%" class="tableStyle">
                 <tr>
                   <th style="border: 1px solid #000000;text-align: center;padding: 3px 3px;width:2%">
-
+                    序号
                   </th>
                   <th style="border: 1px solid #000000;text-align: center;padding: 3px 3px;width:20%">
                     产品名称
@@ -219,29 +219,29 @@
                   </th>
                 </tr>
                 <tr v-for="(item, index2) in tableNumber[divNumber-1]">
-                  <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: larger;font-weight: bolder">
+                  <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: xx-small">
                     {{ index2+((divNumber-1)*tableLength) +1}}
                   </td>
-                  <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: xx-small">
+                  <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: larger;font-weight: bolder">
                     {{ item.productName }}
 
                     <a-form-item label="id" v-show="false">
                       <a-input v-decorator="[ 'pdStockRecordDetailList['+index2+'].id',{'initialValue':item.id} ]"></a-input>
                     </a-form-item>
                   </td>
-                  <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: xx-small">
+                  <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: larger;">
                     {{ item.spec }}
                   </td>
                   <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: larger;font-weight: bolder">
                     {{ item.batchNo }}
                   </td>
-                  <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: xx-small">
+                  <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: larger;">
                     {{ item.expDate }}
                   </td>
                   <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: larger;font-weight: bolder">
                     {{ item.productNum }}
                   </td>
-                  <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: xx-small">
+                  <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: larger;">
                     {{ item.unitName }}
                   </td>
                   <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: larger;font-weight: bolder">
@@ -250,11 +250,11 @@
                   <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: larger;font-weight: bolder">
                     {{ item.outTotalPrice }}
                   </td>
-                  <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: xx-small">
+                  <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: xx-small;">
                     <a-form-item label="" style="width: 100%;height: 100%;padding: 0px;margin: 0px;line-height: 0px">
                       <a-select
                         size="small"
-                        style="width: 100%;font-size: xx-small"
+                        style="width: 100%;font-size: xx-small;"
                         :showArrow="false"
                         :dropdownMatchSelectWidth="false"
                         v-decorator="[ 'pdStockRecordDetailList['+index2+'].registration',{'initialValue':item.registrationSelected}]"
@@ -265,7 +265,7 @@
                       </a-select>
                     </a-form-item>
                   </td>
-                  <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: xx-small">
+                  <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: xx-small;">
                     {{ item.venderName }}
                   </td>
                 </tr>
