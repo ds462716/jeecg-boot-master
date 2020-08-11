@@ -5,13 +5,13 @@
       <a-form layout="inline" @keyup.enter.native="searchQuery">
         <a-row :gutter="24">
           <a-col :md="6" :sm="8">
-            <a-form-item label="定数包编号">
-              <a-input placeholder="请输入定数包编号" v-model="queryParam.packageCode"></a-input>
+            <a-form-item label="套包编号">
+              <a-input placeholder="请输入套包编号" v-model="queryParam.packageCode"></a-input>
             </a-form-item>
           </a-col>
           <a-col :md="6" :sm="8">
-            <a-form-item label="定数包名称">
-              <a-input placeholder="请输入定数包名称" v-model="queryParam.packageName"></a-input>
+            <a-form-item label="套包名称">
+              <a-input placeholder="请输入套包名称" v-model="queryParam.packageName"></a-input>
             </a-form-item>
           </a-col>
           <a-col :md="6" :sm="8">
@@ -142,8 +142,8 @@
             }
           },
           { title:'打包流水码', align:"center", dataIndex: 'packageBarCode' },
-          { title:'定数包编号', align:"center", dataIndex: 'packageCode' },
-          { title:'定数包名称', align:"center", dataIndex: 'packageName' },
+          { title:'套包编号', align:"center", dataIndex: 'packageCode' },
+          { title:'套包名称', align:"center", dataIndex: 'packageName' },
           { title:'产品总数', align:"center", dataIndex: 'packageSum' },
           { title:'状态', align:"center", dataIndex: 'status',
             customRender:(text)=>{

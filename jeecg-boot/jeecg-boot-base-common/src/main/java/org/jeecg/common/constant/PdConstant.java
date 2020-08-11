@@ -85,7 +85,7 @@ public interface PdConstant {
 	public final static String ORDER_NO_FIRST_LETTER_PD = "PD";//盘点单
 	public final static String ORDER_NO_FIRST_LETTER_PDRK = "PDRK";//盘盈入库单
 	public final static String ORDER_NO_FIRST_LETTER_PDCK = "PDCK";//盘亏出库单
-	public final static String ORDER_NO_FIRST_LETTER_DSB = "DSB";//定数包
+	public final static String ORDER_NO_FIRST_LETTER_TB = "TB";//套包
 	public final static String ORDER_NO_FIRST_LETTER_FP = "FP";//发票
 	public final static String ORDER_NO_FIRST_LETTER_CSKC = "CSKC";//初始化库存
 
@@ -172,8 +172,8 @@ public interface PdConstant {
 	public final static String STOCK_LOG_TYPE_5 = "5";//耗材退货
 	public final static String STOCK_LOG_TYPE_6 = "6";//执行收费
 	public final static String STOCK_LOG_TYPE_7 = "7";//耗材院外退货
-	public final static String STOCK_LOG_TYPE_8 = "8";//定数包打包
-	public final static String STOCK_LOG_TYPE_9 = "9";//定数包拆包
+	public final static String STOCK_LOG_TYPE_8 = "8";//套包打包
+	public final static String STOCK_LOG_TYPE_9 = "9";//套包拆包
 	public final static String STOCK_LOG_TYPE_10 = "10";//执行退费
 	public final static String STOCK_LOG_TYPE_11 = "11";//盘盈入库
 	public final static String STOCK_LOG_TYPE_12 = "12";//盘亏出库
@@ -250,7 +250,7 @@ public interface PdConstant {
 
 	//产品属性类型
 	public final static String PROD_ATTR_1 = "1";//产品
-	public final static String PROD_ATTR_2 = "2";//定数包
+	public final static String PROD_ATTR_2 = "2";//套包
 
 	// 巡查结果
 	public final static String RESULT_QUALIFIED = "合格";
@@ -274,7 +274,7 @@ public interface PdConstant {
     public final static String STOCK_NESTAT_STATUS_1="1";//未使用
     public final static String STOCK_NESTAT_STATUS_2="2";//已用完
 
-	//定数包打包记录出库状态
+	//套包打包记录出库状态
 	public final static String PACKAGE_RECORD_STATUS_0="0";//出库状态：0-已出库；1-未出库
 	public final static String PACKAGE_RECORD_STATUS_1="1";//出库状态：0-已出库；1-未出库
 

@@ -129,9 +129,9 @@
           {title:'型号', align:"center", dataIndex: 'version'},
           {title:'单位', align:"center", dataIndex: 'unitName'},
           /*{title:'发货数量',  align:"center", dataIndex: 'arrivalNum' },*/
-          {title:'定数包编号', align:"center", width: 100, dataIndex: 'code'},
-          {title:'定数包名称', align:"center", width: 100, dataIndex: 'name'},
-          {title:'定数包产品数量', align:"center", width: 100, dataIndex: 'count'},
+          {title:'套包编号', align:"center", width: 100, dataIndex: 'code'},
+          {title:'套包名称', align:"center", width: 100, dataIndex: 'name'},
+          {title:'套包产品数量', align:"center", width: 100, dataIndex: 'count'},
         ],
         packDataSource: [],
 
@@ -169,7 +169,7 @@
         console.log(this.dataSource);
         let packageIds  = record.packageIds;
         if(packageIds != null && packageIds !=""){
-        //根据定数包获取查询定数包产品明细
+        //根据套包获取查询套包产品明细
           packageIds=packageIds.substring(0, (packageIds.length-1));
           getAction("/pd/pdPackage/queryPdPackageDetailList", {packageIds: packageIds}).then((res) => {
           if (res.success) {

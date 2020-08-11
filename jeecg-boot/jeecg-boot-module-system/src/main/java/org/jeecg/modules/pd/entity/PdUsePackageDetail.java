@@ -9,7 +9,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import java.util.Date;
 
 /**
- * @Description: 定数包明细
+ * @Description: 套包明细
  * @Author: zxh
  * @Date:   2020年4月21日09:18:57
  * @Version: V1.0

@@ -54,7 +54,7 @@
               <div style="margin-bottom: 8px;">
                 <a-button v-show="!disableSubmit" type="primary" icon="plus" @click="choice">选择产品</a-button>
                 <span style="padding-left: 8px;"></span>
-                <!--<a-button v-show="!disableSubmit" type="primary" icon="plus" @click="choicePackage">选择定数包</a-button>
+                <!--<a-button v-show="!disableSubmit" type="primary" icon="plus" @click="choicePackage">选择套包</a-button>
                 <span style="padding-left: 8px;"></span>-->
                 <a-popconfirm
                   :title="`确定要删除吗?`"
@@ -160,10 +160,10 @@
           dataSource: [],
           columns: [
             { title: '产品ID', key: 'productId', type: FormTypes.hidden },
-            { title: '定数包Id', key: 'packageId', type: FormTypes.hidden },
-            { title: '定数包编号', width:"130px",   key: 'packageCode' },
-            { title: '定数包名称',  width:"130px", key: 'packageName' },
-            { title: '定数包产品数量',  width:"130px",type: FormTypes.normal, key: 'packageNum' },
+            { title: '套包Id', key: 'packageId', type: FormTypes.hidden },
+            { title: '套包编号', width:"130px",   key: 'packageCode' },
+            { title: '套包名称',  width:"130px", key: 'packageName' },
+            { title: '套包产品数量',  width:"130px",type: FormTypes.normal, key: 'packageNum' },
             { title: '产品名称', width:"250px",  key: 'productName' },
             { title: '申领数量', key: 'applyNum', type: FormTypes.input, width:"80px",
               placeholder: '${title}', defaultValue: '1',
@@ -257,10 +257,10 @@
         this.$refs.PdApplyDetailAddModal.show({departId:this.model.departId,code:"2"});
        },
 
-      //选择定数包产品
+      //选择套包产品
       choicePackage() {
         this.$refs.PdApplyPackageAddModal.show();
-        this.$refs.PdApplyPackageAddModal.title = "选择定数包";
+        this.$refs.PdApplyPackageAddModal.title = "选择套包";
       },
 
       handleConfirmDelete() {
@@ -339,7 +339,7 @@
         this.pdApplyDetailTable.dataSource.push(data)
       },
 
-      modalFormInfoOk (formData) { //选择定数包产品确定后返回所选择的数据
+      modalFormInfoOk (formData) { //选择套包产品确定后返回所选择的数据
         let data = [];
         this.$refs.pdApplyDetail.getValues((error, values) => {
           formData.forEach((item, idx) => {

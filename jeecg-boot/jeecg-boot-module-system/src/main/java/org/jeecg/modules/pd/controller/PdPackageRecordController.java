@@ -102,7 +102,7 @@ public class PdPackageRecordController {
     }
 
     /**
-     * 定数包选择器用
+     * 套包选择器用
      * @param pdPackageRecord
      * @param pageNo
      * @param pageSize
@@ -123,7 +123,7 @@ public class PdPackageRecordController {
     }
 
     /**
-     * 定数包打包记录扫码
+     * 套包打包记录扫码
      * @param Barcode1
      * @param req
      * @return
@@ -200,7 +200,7 @@ public class PdPackageRecordController {
     }
 
     /**
-     * 定数包拆包
+     * 套包拆包
      *
      * @param id
      * @return

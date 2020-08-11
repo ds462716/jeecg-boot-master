@@ -39,4 +39,11 @@ public interface IPdNumericalInfService extends IService<PdNumericalInf> {
 
     /*统计耗材使用数量    耗材使用金额*/
      HashMap  selectDosageNumOrPrice(PdNumericalInf  numericalInf);
+
+
+    /*根据月份统计  退货数量   退货金额*/
+    HashMap selectrejectedNumOrPrice(PdNumericalInf  numericalInf);
+
+    /*统计试剂理论使用规格数量   实际使用规格数量*/
+    HashMap selectItemSpecNum(PdNumericalInf  numericalInf);
 }

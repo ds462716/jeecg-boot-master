@@ -21,7 +21,7 @@ public interface MessageConstant {
 
 
 	/**
-	 * 定数包扫码提示
+	 * 套包扫码提示
 	 */
 	public final static String PACKAGE_CODE_MESSAGE_1 = "解析失败，请记录条码并联系管理员";
 	public final static String PACKAGE_CODE_MESSAGE_2 = "扫码成功";

@@ -13,13 +13,13 @@
         <a-form layout="inline" @keyup.enter.native="searchQuery">
           <a-row :gutter="24">
             <a-col :md="6" :sm="8">
-              <a-form-item label="定数包编号">
-                <a-input placeholder="请输入定数包编号" v-model="queryParam.packageCode"></a-input>
+              <a-form-item label="套包编号">
+                <a-input placeholder="请输入套包编号" v-model="queryParam.packageCode"></a-input>
               </a-form-item>
             </a-col>
             <a-col :md="6" :sm="8">
-              <a-form-item label="定数包名称">
-                <a-input placeholder="请输入定数包名称" v-model="queryParam.packageName"></a-input>
+              <a-form-item label="套包名称">
+                <a-input placeholder="请输入套包名称" v-model="queryParam.packageName"></a-input>
               </a-form-item>
             </a-col>
             <template v-if="toggleSearchStatus">
@@ -95,7 +95,7 @@
     data () {
       return {
         form: this.$form.createForm(this),
-        title:"选择定数包",
+        title:"选择套包",
         width:1200,
         visible: false,
         innerData:[],
@@ -115,12 +115,12 @@
             }
           },
           {
-            title:'定数包编号',
+            title:'套包编号',
             align:"center",
             dataIndex: 'packageCode'
           },
           {
-            title:'定数包名称',
+            title:'套包名称',
             align:"center",
             dataIndex: 'packageName',
             customRender:function (text) {
@@ -166,7 +166,7 @@
             dataIndex: 'unitName'
           },
           {
-            title:'定数包产品数量',
+            title:'套包产品数量',
             align:"center",
             width: 100,
             dataIndex: 'count'

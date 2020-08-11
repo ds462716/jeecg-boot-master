@@ -638,7 +638,7 @@
         this.$refs.pdChooseProductStockListModel.width = 1550;
         this.$refs.pdChooseProductStockListModel.show({});
       },
-      // 选择定数包
+      // 选择套包
       choosePackageList() {
 
       },

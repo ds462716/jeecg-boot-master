@@ -41,7 +41,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
  /**
- * @Description: 定数包
+ * @Description: 套包
  * @Author: jiangxz
  * @Date:   2020-02-02
  * @Version: V1.0
@@ -66,7 +66,7 @@ public class PdPackageController {
 	 @GetMapping(value = "/initModal")
 	 public Result<?> initModal(@RequestParam(name = "id") String id, HttpServletRequest req) {
 		 PdPackage pdPackage = new PdPackage();
-		 pdPackage.setPackageCode(UUIDUtil.generateOrderNoByType(PdConstant.ORDER_NO_FIRST_LETTER_DSB));
+		 pdPackage.setPackageCode(UUIDUtil.generateOrderNoByType(PdConstant.ORDER_NO_FIRST_LETTER_TB));
 		 return Result.ok(pdPackage);
 	 }
 
@@ -213,9 +213,9 @@ public class PdPackageController {
 
       // Step.4 AutoPoi 导出Excel
       ModelAndView mv = new ModelAndView(new JeecgEntityExcelView());
-      mv.addObject(NormalExcelConstants.FILE_NAME, "定数包列表");
+      mv.addObject(NormalExcelConstants.FILE_NAME, "套包列表");
       mv.addObject(NormalExcelConstants.CLASS, PdPackage.class);
-      mv.addObject(NormalExcelConstants.PARAMS, new ExportParams("定数包数据", "导出人:"+sysUser.getRealname(), "定数包"));
+      mv.addObject(NormalExcelConstants.PARAMS, new ExportParams("套包数据", "导出人:"+sysUser.getRealname(), "套包"));
       mv.addObject(NormalExcelConstants.DATA_LIST, pageList);
       return mv;
     }
@@ -261,7 +261,7 @@ public class PdPackageController {
 
 
 	 /**
-	  * 定数包选择器用
+	  * 套包选择器用
 	  *
 	  * @param pdPackage
 	  * @param pageNo
@@ -281,7 +281,7 @@ public class PdPackageController {
 		 return Result.ok(pageList);
 	 }
 	 /**
-	  *  查询定数包明细   申领单及调拨单用
+	  *  查询套包明细   申领单及调拨单用
 	  * @param pdPackageDetail
 	  * @return
 	  */

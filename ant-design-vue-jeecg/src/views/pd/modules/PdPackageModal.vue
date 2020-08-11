@@ -15,13 +15,13 @@
         <a-row>
 
           <a-col :span="12">
-            <a-form-item label="定数包编号" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input v-decorator="[ 'packageCode', validatorRules.packageCode]" disabled="disabled" placeholder="请输入定数包编号"></a-input>
+            <a-form-item label="套包编号" :labelCol="labelCol" :wrapperCol="wrapperCol">
+              <a-input v-decorator="[ 'packageCode', validatorRules.packageCode]" disabled="disabled" placeholder="请输入套包编号"></a-input>
             </a-form-item>
           </a-col>
           <a-col :span="12">
-            <a-form-item label="定数包名称" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input v-decorator="[ 'packageName', validatorRules.packageName]"  @change="pinyinTran" placeholder="请输入定数包名称"></a-input>
+            <a-form-item label="套包名称" :labelCol="labelCol" :wrapperCol="wrapperCol">
+              <a-input v-decorator="[ 'packageName', validatorRules.packageName]"  @change="pinyinTran" placeholder="请输入套包名称"></a-input>
             </a-form-item>
           </a-col>
           <!--<a-col :span="12" v-show="false">-->
@@ -54,7 +54,7 @@
 
       <!-- 子表单区域 -->
       <a-tabs v-model="activeKey" @change="handleChangeTabs">
-        <a-tab-pane tab="定数包明细" :key="refKeys[0]" :forceRender="true">
+        <a-tab-pane tab="套包明细" :key="refKeys[0]" :forceRender="true">
           <div style="margin-bottom: 8px;">
             <a-button type="primary" icon="plus" @click="handleConfirmAdd">新增</a-button>
             <span style="padding-left: 8px;"></span>
@@ -133,8 +133,8 @@
         // 新增时子表默认添加几行空数据
         addDefaultRowNum: 0,
         validatorRules: {
-          packageCode: { rules: [{ required: true, message: '请输入定数包编号!' }] },
-          packageName: { rules: [{ required: true, message: '请输入定数包名称!' }] },
+          packageCode: { rules: [{ required: true, message: '请输入套包编号!' }] },
+          packageName: { rules: [{ required: true, message: '请输入套包名称!' }] },
           py:{},
           wb:{},
           zdy:{},
@@ -144,7 +144,7 @@
         tableKeys:['pdPackageDetail', ],
         activeKey: 'pdPackageDetail',
         id:0,
-        // 定数包明细
+        // 套包明细
         pdPackageDetailTable: {
           loading: false,
           dataSource: [],
@@ -206,7 +206,7 @@
           },
         },
         popModal: {
-          title: '定数包管理',
+          title: '套包管理',
           visible: false,
           width: '100%',
           // width: '1200',
@@ -294,7 +294,7 @@
           }
           let formData = this.classifyIntoFormData(allValues)
           if(formData.pdPackageDetailList.length <= 0){
-            this.$message.warning("定数包产品数据为空，请选择产品！");
+            this.$message.warning("套包产品数据为空，请选择产品！");
             return;
           }
 

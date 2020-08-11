@@ -178,8 +178,8 @@
           loading: false,
           dataSource: [],
           columns: [
-          /*  { title: '定数包编号', width:"130px",   key: 'packageId' },
-            { title: '定数包名称',  width:"130px", key: 'packageName' },*/
+          /*  { title: '套包编号', width:"130px",   key: 'packageId' },
+            { title: '套包名称',  width:"130px", key: 'packageName' },*/
             { title: '产品ID', key: 'productId', type: FormTypes.hidden },
             { title: '产品名称', width:"250px",  key: 'productName' },
             { title: '产品编号',width:"200px",  key: 'number' },
@@ -201,9 +201,9 @@
                 return parseInt(index)+1;
               }
             },
-            {title:'定数包编号', align:"center",key:"packageCode", dataIndex: 'packageCode'},
-            {title:'定数包名称', align:"center", key:"packageName",dataIndex: 'packageName'},
-            { title:'定数包条码', align:"center", dataIndex: 'packageBarCode' },
+            {title:'套包编号', align:"center",key:"packageCode", dataIndex: 'packageCode'},
+            {title:'套包名称', align:"center", key:"packageName",dataIndex: 'packageName'},
+            { title:'套包条码', align:"center", dataIndex: 'packageBarCode' },
             {title:'产品总数', align:"center", key:"packageSum",dataIndex: 'packageSum'},
             {title:'申领数量', align:"center",key:"applyNum", dataIndex: 'applyNum'},
             { title:'打包人', align:"center", dataIndex: 'createBy' },
@@ -225,7 +225,7 @@
           },
           { title:'入库单价', align:"center", dataIndex: 'purchasePrice' },
           { title:'出库单价', align:"center", dataIndex: 'sellingPrice' },
-          { title:'定数包产品数量', align:"center", dataIndex: 'productNum' },
+          { title:'套包产品数量', align:"center", dataIndex: 'productNum' },
           { title:'出库金额', align:"center", dataIndex: 'outTotalPrice' },
           { title:'库存数量', align:"center", dataIndex: 'stockNum' },
           { title: '出库货位', align:"center", dataIndex: 'outHuoweiName' },
@@ -374,7 +374,7 @@
  //--------------
       editLound(){
           let params = {applyNo: this.model.applyNo}
-           this.requestSubTableData(this.url.pdApplyDetail.list, params, this.pdApplyDetailTable)//加载产品及定数包明细
+           this.requestSubTableData(this.url.pdApplyDetail.list, params, this.pdApplyDetailTable)//加载产品及套包明细
       },
  //---------------
 
@@ -393,7 +393,7 @@
           let params = {applyNo: this.model.applyNo,productAttr:"1"}
           this.requestSubTableData(this.url.pdApplyDetail.list, params, this.pdApplyDetailTable)//加载产品
           params =  {applyNo: this.model.applyNo,productAttr:"2" }
-          this.requestSubTableData(this.url.pdApplyDetail.packList, params, this.table2)//加载定数包
+          this.requestSubTableData(this.url.pdApplyDetail.packList, params, this.table2)//加载套包
         }
       },
       /** 整理成formData */

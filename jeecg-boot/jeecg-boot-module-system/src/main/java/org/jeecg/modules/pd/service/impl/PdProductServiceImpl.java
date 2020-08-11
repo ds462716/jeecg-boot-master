@@ -879,7 +879,7 @@ public class PdProductServiceImpl extends ServiceImpl<PdProductMapper, PdProduct
             if(CollectionUtils.isNotEmpty(pdStockRecordDetails)){
                 return Result.error("删除失败!，当前产品被使用不能删除");
             }
-            //查询定数包记录  TODO
+            //查询套包记录  TODO
             this.removeById(id);
             return Result.ok("删除成功!");
         }catch(Exception e){
@@ -916,7 +916,7 @@ public class PdProductServiceImpl extends ServiceImpl<PdProductMapper, PdProduct
                         bl = false;
                         continue;
                     }
-                    //查询定数包记录  TODO
+                    //查询套包记录  TODO
                     dao.deleteById(id);
                 }
                 if(bl){

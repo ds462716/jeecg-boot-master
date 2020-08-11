@@ -43,7 +43,7 @@
         LEFT JOIN pd_product c ON c.id = a.product_id
     </sql>
 
-	<!--定数包-->
+	<!--套包-->
 	<sql id="pdPackageColumns">
 		 d.package_name AS "packageName",
          d.package_code AS "packageCode"
@@ -107,7 +107,7 @@
 
 
 
-    <!--查询定数包申领明细-->
+    <!--查询套包申领明细-->
 	<select id="queryApplyDetailPack"   resultType="org.jeecg.modules.pd.entity.PdApplyDetail">
        select
            a.package_id as "packageId",

@@ -60,7 +60,7 @@ public class PdStockRecordDetail extends BaseEntity {
 	private Date expDate;
 
 	private String registration;//注册证号
-	/**定数包 打包记录ID*/
+	/**套包 打包记录ID*/
 	private String packageRecordId;
 	/**高低值耗材标志 1-高值；2-低值*/
 	private String highLowSupplies;

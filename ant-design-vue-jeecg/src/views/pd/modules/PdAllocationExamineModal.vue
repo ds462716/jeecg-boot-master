@@ -167,8 +167,8 @@
           loading: false,
           dataSource: [],
           columns: [
-            { title: '定数包名称', width:"130px",   key: 'packageName' },
-            { title: '定数包编号', width:"130px",   key: 'packageId' },
+            { title: '套包名称', width:"130px",   key: 'packageName' },
+            { title: '套包编号', width:"130px",   key: 'packageId' },
             { title: '产品ID', key: 'productId', type: FormTypes.hidden },
             { title: '产品名称', width:"250px",  key: 'productName' },
             { title: '产品编号',width:"200px",  key: 'number' },

@@ -5,13 +5,13 @@
       <a-form layout="inline" @keyup.enter.native="searchQuery">
         <a-row :gutter="24">
           <a-col :md="6" :sm="8">
-            <a-form-item label="定数包编号">
-              <a-input placeholder="请输入定数包编号" v-model="queryParam.packageCode"></a-input>
+            <a-form-item label="套包编号">
+              <a-input placeholder="请输入套包编号" v-model="queryParam.packageCode"></a-input>
             </a-form-item>
           </a-col>
           <a-col :md="6" :sm="8">
-            <a-form-item label="定数包名称">
-              <a-input placeholder="定数包名称\拼音码\五笔码\自定义码" v-model="queryParam.packageName"></a-input>
+            <a-form-item label="套包名称">
+              <a-input placeholder="套包名称\拼音码\五笔码\自定义码" v-model="queryParam.packageName"></a-input>
             </a-form-item>
           </a-col>
           <a-col :md="6" :sm="8">
@@ -33,7 +33,7 @@
     <!-- 操作按钮区域 -->
     <div class="table-operator">
       <a-button @click="handleAdd" type="primary" icon="plus">新增</a-button>
-      <a-button type="primary" icon="download" @click="handleExportXls('定数包')">导出</a-button>
+      <a-button type="primary" icon="download" @click="handleExportXls('套包')">导出</a-button>
       <!--<a-upload name="file" :showUploadList="false" :multiple="false" :headers="tokenHeader" :action="importExcelUrl" @change="handleImportExcel">-->
         <!--<a-button type="primary" icon="import">导入</a-button>-->
       <!--</a-upload>-->
@@ -120,7 +120,7 @@
     },
     data () {
       return {
-        description: '定数包管理页面',
+        description: '套包管理页面',
         // 表头
         columns: [
           {
@@ -134,12 +134,12 @@
             }
           },
           {
-            title:'定数包编号',
+            title:'套包编号',
             align:"center",
             dataIndex: 'packageCode'
           },
           {
-            title:'定数包名称',
+            title:'套包名称',
             align:"center",
             dataIndex: 'packageName'
           },
