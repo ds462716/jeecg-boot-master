@@ -22,13 +22,13 @@
           <!--签字-->
           <a-col :md="24" :sm="24">
             <a-col :span="24">
-              <span style="margin-left: 3%">
+              <span style="margin-left: 3%;font-size: 14px;font-weight: 800">
               购货单位：九江学院附属医院
             </span>
-              <span style="margin-left: 20%">
+              <span style="margin-left: 20%;font-size: 14px;font-weight: 800">
               出库日期：
             </span>
-              <a-input style="width: 12%;text-align: left" disabled v-model="record.auditDate"/>
+              <a-input style="width: 12%;text-align: left;font-size: 14px;font-weight: 800" disabled v-model="record.auditDate"/>
               <span style="margin-left: 18%">
                 页码：
               {{index1+1}} /{{divNumber}}
@@ -76,7 +76,7 @@
                     </th>
                   </tr>
                   <tr v-for="(item, index2) in tableNumber[index1]">
-                    <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: xx-small">
+                    <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: larger">
                       {{ index2+(index1*tableLength) +1}}
                     </td>
                     <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: xx-small">
@@ -85,14 +85,14 @@
                     <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: xx-small">
                       {{ item.venderName }}
                     </td>
-                    <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: xx-small">
+                    <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: larger">
                       {{ item.productName }}
 
                       <a-form-item label="id" v-show="false">
                         <a-input v-decorator="[ 'pdStockRecordDetailList['+index2+'].id',{'initialValue':item.id} ]"></a-input>
                       </a-form-item>
                     </td>
-                    <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: xx-small">
+                    <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: larger">
                       {{ item.spec }}
                     </td>
                     <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: larger;font-weight: bolder">
@@ -104,7 +104,7 @@
                     <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: larger;font-weight: bolder">
                       {{ item.productNum }}
                     </td>
-                    <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: xx-small">
+                    <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: larger">
                       {{ item.unitName }}
                     </td>
                     <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: larger;font-weight: bolder">
@@ -144,13 +144,13 @@
         <!--签字-->
         <a-col :md="24" :sm="24">
           <a-col :span="24">
-            <span style="margin-left: 3%">
+            <span style="margin-left: 3%;font-size: 14px;font-weight: 800">
               购货单位：九江学院附属医院
             </span>
-            <span style="margin-left: 20%">
+            <span style="margin-left: 20%;font-size: 14px;font-weight: 800">
               出库日期：
             </span>
-            <a-input style="width: 12%;text-align: left" disabled v-model="record.auditDate"/>
+            <a-input style="width: 12%;text-align: left;font-size: 14px;font-weight: 800" disabled v-model="record.auditDate"/>
             <span style="margin-left: 18%">
                 页码：
               {{divNumber}} /{{divNumber}}
@@ -201,20 +201,20 @@
                   <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: xx-small">
                     {{ index2+((divNumber-1)*tableLength) +1}}
                   </td>
-                  <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: xx-small">
+                  <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: larger">
                     {{ item.dartCode }}
                   </td>
                   <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: xx-small">
                     {{ item.venderName }}
                   </td>
-                  <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: xx-small">
+                  <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: larger">
                     {{ item.productName }}
 
                     <a-form-item label="id" v-show="false">
                       <a-input v-decorator="[ 'pdStockRecordDetailList['+index2+'].id',{'initialValue':item.id} ]"></a-input>
                     </a-form-item>
                   </td>
-                  <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: xx-small">
+                  <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: larger">
                     {{ item.spec }}
                   </td>
                   <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: larger;font-weight: bolder">
@@ -226,7 +226,7 @@
                   <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: larger;font-weight: bolder">
                     {{ item.productNum }}
                   </td>
-                  <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: xx-small">
+                  <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: larger">
                     {{ item.unitName }}
                   </td>
                   <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: larger;font-weight: bolder">
@@ -436,7 +436,7 @@
         return {
           style: {
             'font-weight': 600,
-            'font-size': 'xx-small',
+            'font-size': 'x-large',
             'height':'10px',
           },
         }
