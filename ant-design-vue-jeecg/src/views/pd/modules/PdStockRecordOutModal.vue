@@ -129,7 +129,7 @@
         </a-card>
 
         <!-- 定数包区域 -->
-        <a-card style="margin-bottom: 10px;" v-show="false"> <!-- v-show="showPackageCard" -->
+        <a-card style="margin-bottom: 10px;" v-show="showPackageCard || !disableSubmit"> <!-- v-show="showPackageCard"   v-show="false"-->
           <a-tabs v-model="activeKey">
             <a-tab-pane tab="定数包明细" :key="refKeys[0]" :forceRender="true">
               <a-form v-show="!disableSubmit">
@@ -142,7 +142,7 @@
                 </a-row>
               </a-form>
 
-              <div style="margin-bottom: 8px;" v-show="showPackageBtn">
+              <div style="margin-bottom: 8px;" v-show="!disableSubmit"> <!-- v-show="showPackageBtn" -->
                 <a-button type="primary" icon="plus" @click="choosePackageList">选择定数包</a-button>
                 <a-popconfirm style="margin-left: 8px"
                               :title="`确定要删除吗?`"
@@ -449,9 +449,7 @@
               title: '产品ID', align:"center", dataIndex: 'productId',
               colSpan: 0,
               customRender: (value, row, index) => {
-                const obj = {
-                  attrs: {colSpan:0},
-                };
+                const obj = { attrs: {colSpan:0}, };
                 return obj;
               },
             },
@@ -526,49 +524,69 @@
             },
             { title:'入库单价', align:"center", dataIndex: 'purchasePrice' },
             { title:'出库单价', align:"center", dataIndex: 'sellingPrice' },
-            { title:'定数包产品数量', align:"center", dataIndex: 'productNum' },
+            { title:'产品数量', align:"center", dataIndex: 'productNum' },
             { title:'出库金额', align:"center", dataIndex: 'outTotalPrice' },
-            { title:'库存数量', align:"center", dataIndex: 'stockNum' },
+            { title:'库存数量', align:"center", dataIndex: 'stockNum', colSpan: 0,
+              customRender: (value, row, index) => {
+                const obj = { attrs: {colSpan:0}, };
+                return obj;
+              },
+            },
             { title: '出库货位', align:"center", dataIndex: 'outHuoweiName' },
             { title: '生产日期', align:"center", dataIndex: 'produceDate',
               customRender:function (text) {
                 return !text?"":(text.length>10?text.substr(0,10):text)
               }
             },
-            { title: '打包记录ID', align:"center", dataIndex: 'packageRecordId',
-              colSpan: 0,
+            { title: '打包记录ID', align:"center", dataIndex: 'packageRecordId', colSpan: 0,
               customRender: (value, row, index) => {
-                const obj = {
-                  attrs: {colSpan:0},
-                };
+                const obj = { attrs: {colSpan:0}, };
                 return obj;
               },
             },
             { title: '库存明细ID', align:"center", dataIndex: 'productStockId', colSpan: 0,
               customRender: (value, row, index) => {
-                const obj = {
-                  attrs: {colSpan:0},
-                };
+                const obj = { attrs: {colSpan:0}, };
                 return obj;
               },
             },
             { title: '产品ID', align:"center", dataIndex: 'productId', colSpan: 0,
               customRender: (value, row, index) => {
-                const obj = {
-                  attrs: {colSpan:0},
-                };
+                const obj = { attrs: {colSpan:0}, };
                 return obj;
               },
             },
             { title: '出库货位编号', align:"center", dataIndex: 'outHuoweiCode', colSpan: 0,
               customRender: (value, row, index) => {
-                const obj = {
-                  attrs: {colSpan:0},
-                };
+                const obj = { attrs: {colSpan:0}, };
                 return obj;
               },
             },
             { title: '供应商id', align:"center", dataIndex: 'supplierId', colSpan: 0,
+              customRender: (value, row, index) => {
+                const obj = { attrs: {colSpan:0}, };
+                return obj;
+              },
+            },
+            { title: '配送商id', align:"center", dataIndex: 'distributorId', colSpan: 0,
+              customRender: (value, row, index) => {
+                const obj = { attrs: {colSpan:0}, };
+                return obj;
+              },
+            },
+            { title: '规格单位ID', align:"center", dataIndex: 'specUnitId', colSpan: 0,
+              customRender: (value, row, index) => {
+                const obj = { attrs: {colSpan:0}, };
+                return obj;
+              },
+            },
+            { title: '规格数量', align:"center", dataIndex: 'specQuantity', colSpan: 0,
+              customRender: (value, row, index) => {
+                const obj = { attrs: {colSpan:0}, };
+                return obj;
+              },
+            },
+            { title: '注册证号', align:"center", dataIndex: 'registration', colSpan: 0,
               customRender: (value, row, index) => {
                 const obj = {
                   attrs: {colSpan:0},
@@ -577,22 +595,6 @@
               },
             },
             { title: '配送商id', align:"center", dataIndex: 'distributorId', colSpan: 0,
-              customRender: (value, row, index) => {
-                const obj = {
-                  attrs: {colSpan:0},
-                };
-                return obj;
-              },
-            },
-            { title: '规格单位ID', align:"center", dataIndex: 'specUnitId', colSpan: 0,
-              customRender: (value, row, index) => {
-                const obj = {
-                  attrs: {colSpan:0},
-                };
-                return obj;
-              },
-            },
-            { title: '规格数量', align:"center", dataIndex: 'specQuantity', colSpan: 0,
               customRender: (value, row, index) => {
                 const obj = {
                   attrs: {colSpan:0},
@@ -731,7 +733,7 @@
         this.showPrintBtn = false;
         this.showRefuseReason = false;
         this.showSubmitAndPrint = false;
-        // 订书包相关按钮
+        // 定数包相关按钮
         this.showPackageCard = false;
         this.showPackageTable = false;
         this.showPackageBtn = false;
@@ -818,7 +820,7 @@
                 this.inTotalPrice = res.result.inTotalPrice.toString();
               }else{  // 新增页
                 this.disableSubmit2 = false;
-                // 订书包相关按钮
+                // 定数包相关按钮
                 this.showPackageCard = true;
                 this.showPackageTable = false;
                 this.showPackageBtn = true;
@@ -1030,14 +1032,6 @@
             this.$message.warning("出库产品数据为空，请扫码出库、选择产品或选择定数包");
             return;
           }
-          //定数包
-          if(this.pdPackageTable.dataSource.length > 0){
-            for (let data of this.pdPackageTable.dataSource){
-              for(let item of data.pdPackageRecordDetailList){
-                formData.pdStockRecordDetailList.push(item);
-              }
-            }
-          }
 
           let list = formData.pdStockRecordDetailList;
 
@@ -1049,6 +1043,15 @@
             if(Number(item.productNum) <= 0){
               this.$message.error("["+item.productName+"]出库数量必须大于0！");
               return;
+            }
+          }
+
+          //定数包   定数包在打包时已扣库存，所以无需校验库存数量
+          if(this.pdPackageTable.dataSource.length > 0){
+            for (let data of this.pdPackageTable.dataSource){
+              for(let item of data.pdPackageRecordDetailList){
+                formData.pdStockRecordDetailList.push(item);
+              }
             }
           }
 

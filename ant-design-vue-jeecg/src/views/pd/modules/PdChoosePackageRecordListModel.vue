@@ -35,15 +35,15 @@
                 </a-form-item>
               </a-col>
             <!--</template>-->
-            <a-col :md="6" :sm="8">
-            <span style="float: right;overflow: hidden;" class="table-page-search-submitButtons">
-              <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
-              <a-button type="primary" @click="searchReset" icon="reload" style="margin-left: 8px">重置</a-button>
-              <!--<a @click="handleToggleSearch" style="margin-left: 8px">-->
-                <!--{{ toggleSearchStatus ? '收起' : '展开' }}-->
-                <!--<a-icon :type="toggleSearchStatus ? 'up' : 'down'"/>-->
-              <!--</a>-->
-            </span>
+            <a-col :md="4" :sm="8">
+              <span style="float: right;overflow: hidden;" class="table-page-search-submitButtons">
+                <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
+                <a-button type="primary" @click="searchReset" icon="reload" style="margin-left: 8px">重置</a-button>
+                <!--<a @click="handleToggleSearch" style="margin-left: 8px">-->
+                  <!--{{ toggleSearchStatus ? '收起' : '展开' }}-->
+                  <!--<a-icon :type="toggleSearchStatus ? 'up' : 'down'"/>-->
+                <!--</a>-->
+              </span>
             </a-col>
 
           </a-row>
