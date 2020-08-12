@@ -4,7 +4,6 @@ import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.constant.PdConstant;
 import org.jeecg.common.exception.JeecgBootException;
@@ -549,6 +548,7 @@ public class PdDosageServiceImpl extends ServiceImpl<PdDosageMapper, PdDosage> i
     @Transactional
     @Override
     public List<PdDosageDetail> uniqueSubmit(PdDosage pdDosage,String displayFlag) {
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
         List<PdDosageDetail> detailList = pdDosage.getPdDosageDetails();
         pdDosage.setId(UUIDUtil.getUuid());
         //校验数据的合法性
@@ -584,13 +584,25 @@ public class PdDosageServiceImpl extends ServiceImpl<PdDosageMapper, PdDosage> i
                 //pps.setExpDate(pdd.getExpDate());
                 //pps.setProductBarCode(pdd.getProductBarCode());
                 PdProductStock tempPps = pdProductStockService.getById(pps);
-                if( null == tempPps || pdd.getDosageCount() > tempPps.getStockNum()){
-                    validFlag = false;
-                    json.put(String.valueOf(i), pdd);
-                    i = i + 1;
-                    continue;
+                PdOnOff query = new PdOnOff();
+                query.setDepartParentId(sysUser.getDepartParentId());
+                query.setCode(PdConstant.ON_OFF_SPEC_NUM);
+                PdOnOff pdOnOff = pdOnOffService.getOne(query);
+                if (pdOnOff != null && pdOnOff.getValue() == PdConstant.ON_OFF_SPEC_NUM_1) { //是
+                    if (null == tempPps || pdd.getDosageCount() > tempPps.getSpecQuantity()) {
+                        validFlag = false;
+                        json.put(String.valueOf(i), pdd);
+                        i = i + 1;
+                        continue;
+                    }
+                }else{
+                    if (null == tempPps || pdd.getDosageCount() > tempPps.getStockNum()) {
+                        validFlag = false;
+                        json.put(String.valueOf(i), pdd);
+                        i = i + 1;
+                        continue;
+                    }
                 }
-
                 BigDecimal sprice = pdd.getSellingPrice()==null?new BigDecimal(0):pdd.getSellingPrice();
                 BigDecimal pdMoney = new BigDecimal(pdd.getDosageCount()).multiply(sprice);
                 BigDecimal dosageCount = new BigDecimal(pdd.getDosageCount());
@@ -627,10 +639,10 @@ public class PdDosageServiceImpl extends ServiceImpl<PdDosageMapper, PdDosage> i
                 prodLog.setChargeDeptName(pdDosage.getExeDeptName());
                 prodLog.setRecordTime(DateUtils.getDate());
                 logList.add(prodLog);
-                PdProductStockUniqueCode pdProductStockUniqueCode = new PdProductStockUniqueCode();
+                /*PdProductStockUniqueCode pdProductStockUniqueCode = new PdProductStockUniqueCode();
                 pdProductStockUniqueCode.setId(pdd.getRefBarCode());
                 pdProductStockUniqueCode.setCodeState(PdConstant.CODE_PRINT_STATE_2);//已用完状态
-                productStockUniqueCodes.add(pdProductStockUniqueCode);
+                productStockUniqueCodes.add(pdProductStockUniqueCode);*/
             }
             if (!validFlag) {//数据校验没通过
                 throw new JeecgBootException("数据校验失败");
@@ -648,7 +660,6 @@ public class PdDosageServiceImpl extends ServiceImpl<PdDosageMapper, PdDosage> i
                     pdDosageDetailService.saveBatch(tempArray);
                 if(!logList.isEmpty())
                     pdStockLogService.saveBatch(logList);
-                LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
                 //保存用量
                 pdDosage.setDisplayFlag(displayFlag);//是否有收费接口标识，0有1没有
                 pdDosage.setTotalSum(dosageTotal.doubleValue());
@@ -659,9 +670,9 @@ public class PdDosageServiceImpl extends ServiceImpl<PdDosageMapper, PdDosage> i
                 pdDosage.setDosageType(PdConstant.DOSAGE_TYPE_0);//唯一码使用
                 this.save(pdDosage);
                 //扣减当前库房的库存
-                pdProductStockTotalService.updateUseStock(sysUser.getCurrentDepartId(),detailList);
+                 pdProductStockTotalService.updateUseStock(sysUser.getCurrentDepartId(),detailList);
                 //批量更新条码状态
-                pdProductStockUniqueCodeService.updateBatchById(productStockUniqueCodes);
+                // pdProductStockUniqueCodeService.updateBatchById(productStockUniqueCodes);
 
             }
         }

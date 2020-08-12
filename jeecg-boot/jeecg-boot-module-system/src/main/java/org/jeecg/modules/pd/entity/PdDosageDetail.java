@@ -57,9 +57,13 @@ public class PdDosageDetail extends BaseEntity {
     @ApiModelProperty(value = "产品有效期")
     private Date expDate;
 	/**用量数量*/
-	@Excel(name = "用量数量", width = 15)
+    @Excel(name = "用量数量", width = 15)
     @ApiModelProperty(value = "用量数量")
     private Double dosageCount;
+    /**库存规格数量*/
+    @Excel(name = "库存规格数量", width = 15)
+    @ApiModelProperty(value = "库存规格数量")
+    private Double specQuantity;
 	/**添加用量时库存*/
 	@Excel(name = "添加用量时库存", width = 15)
     @ApiModelProperty(value = "添加用量时库存")

@@ -116,3 +116,9 @@ DROP COLUMN `hc_jy_stock_price`;
 -- 2020年8月11日 18:52:59   字段注释调整
 ALTER TABLE  `pd_product_stock`
 MODIFY COLUMN `spec_num` double(32, 2) NULL DEFAULT NULL COMMENT '库存规格数量' AFTER `record_detail_id`;
+
+-- 2020年8月12日 18:52:59   增加开关
+INSERT INTO  `pd_on_off` VALUES ('1293364869915095041', '是否根据规格数量扣减库存开关', 'on_off_spec_num', NULL, '1:根据规格数量    0:不根据规格数量', 0, 'mcb', '2020-08-12 09:53:09', NULL, '2020-08-12 09:53:09', 'dea5919617234ef9854c5806d4b44efa', 'c6d7cb4deeac411cb3384b1b31278596', '0', 'A01A01');
+-- 2020年8月12日 18:52:59   用量明细表增加库存规格数量
+ALTER TABLE  `pd_dosage_detail`
+ADD COLUMN `spec_quantity` double(11, 2) NULL COMMENT '库存规格数量' AFTER `his_package_flag`;

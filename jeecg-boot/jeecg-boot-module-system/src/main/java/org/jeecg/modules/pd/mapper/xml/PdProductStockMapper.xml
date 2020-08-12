@@ -1102,6 +1102,12 @@
 					#{item}
 				</foreach>
 			</if>
+			<if test="nestatStatusList != null and nestatStatusList.size() > 0">
+				AND a.nestat_status IN
+				<foreach collection="nestatStatusList" item="item" separator="," open="(" close=")">
+					#{item}
+				</foreach>
+			</if>
 			order by  a.exp_status  desc,a.create_time desc
 		</where>
 	</select>

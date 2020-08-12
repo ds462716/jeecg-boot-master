@@ -57,9 +57,9 @@ public class PdNumericalInfTaskJob implements Job {
      //试剂类统计
     public void  reagentCallCount(SysDepart depart,String  month){
         //如果科室不用到试剂，则不需要统计  ，这里目前只能写死，后续在优化；
-             if(!depart.getId().equals("dea5919617234ef9854c5806d4b44efa")||
-                !depart.getId().equals("743dc34c1bcd4e4fa9503ccebce7edc6")||
-                !depart.getId().equals("298120171f5347e79686b5c2a2002a92")||
+             if(!depart.getId().equals("dea5919617234ef9854c5806d4b44efa")&&
+                !depart.getId().equals("743dc34c1bcd4e4fa9503ccebce7edc6")&&
+                !depart.getId().equals("298120171f5347e79686b5c2a2002a92")&&
                 !depart.getId().equals("6032fec9fdb24007a74a2535859ac3f1")){
                return;
              }

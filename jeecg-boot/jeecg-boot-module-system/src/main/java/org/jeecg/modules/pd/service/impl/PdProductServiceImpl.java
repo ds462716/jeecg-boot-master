@@ -785,9 +785,11 @@ public class PdProductServiceImpl extends ServiceImpl<PdProductMapper, PdProduct
                     ps.setId(pdProductStockUniqueCode.getProductStockId());
                     ps.setBarCodeType(PdConstant.CODE_PRINT_TYPE_1);
                     ps.setProductFlag(productFlag);
-                    ps.setNestatStatus(nestatStatus);//状态
+                    if(StringUtils.isNotEmpty(nestatStatus)){
+                        ps.setNestatStatusList(Arrays.asList(nestatStatus.split(",")));//使用状态集合
+                    }
                     ps.setDepartId(sysUser.getCurrentDepartId());
-                    //查询该条码是否是试剂且未使用
+                    //查询该条码是否是未使用或使用中
                     List<PdProductStock> pds = pdProductStockService.queryUniqueProductStockList(ps);
                     if(pds!=null && pds.size()>0){
                         ps = pds.get(0);

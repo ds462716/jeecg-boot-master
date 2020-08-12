@@ -293,13 +293,13 @@
             { title: '批号', key: 'batchNo', width:"100px" },
             { title: '单位', key: 'unitName', width:"50px" },
             { title: '有效期', key: 'expDate', width:"100px" },
-            /*{ title: '入库单价', key: 'purchasePrice', width:"80px" },*/
             { title: '出库单价', key: 'sellingPrice', width:"80px" },
             {
-              title: '用量数量', key: 'dosageCount', type: FormTypes.input, disabled:true, width:"80px",
+              title: '用量数量', key: 'dosageCount', type: FormTypes.input, disabled:false, width:"80px",
               placeholder: '${title}', defaultValue: '1',
               validateRules: [{ required: true, message: '${title}不能为空' },{ pattern: '^-?\\d+\\.?\\d*$',message: '${title}的格式不正确' }]
             },
+            { title: '库存规格数量', key: 'specNum', width:"80px" },
             { title: '用量金额', key: 'amountMoney', type: FormTypes.input, disabled:true, width:"100px" },
             { title: '库存数量', key: 'stockNum', width:"80px" },
             { title: '收费项目代码', key: 'chargeCode', width:"80px" },
@@ -505,7 +505,7 @@
         }
         if(num == 0){       //产品编号扫码
           //解析条码
-          uniqueScanCode(productNumber,"0","1").then((res) => {
+          uniqueScanCode(productNumber,"0","1,0").then((res) => {
             if(res.code == "200" || res.code == "203"){
               let pdProductStock = res.result;
               if(!pdProductStock){
@@ -604,6 +604,7 @@
           spec: row.spec,
           batchNo:row.batchNo,
           unitName:row.unitName,
+          specNum:row.specNum,
           expDate:row.expDate,
           sellingPrice:row.sellingPrice,
           dosageCount: 1,
@@ -652,8 +653,8 @@
               continue;
             }
             list[i].id=null;
-            if(Number(list[i].dosageCount) > Number(list[i].stockNum)){
-              this.$message.error("["+list[i].productName+"]用量数量不能大于库存数量！");
+            if(Number(list[i].dosageCount) > Number(list[i].specNum)){
+              this.$message.error("["+list[i].productName+"]用量数量不能大于库存规格数量！");
               return;
             }
             if(Number(list[i].dosageCount) <= 0){
