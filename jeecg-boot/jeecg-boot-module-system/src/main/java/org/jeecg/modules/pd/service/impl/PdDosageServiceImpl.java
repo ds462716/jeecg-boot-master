@@ -110,8 +110,14 @@ public class PdDosageServiceImpl extends ServiceImpl<PdDosageMapper, PdDosage> i
         if (showSBarcode != null && showSBarcode.getValue() != null) {
             pdDosage.setShowSBarcode(showSBarcode.getValue().toString());
         }
+       //开关-是否根据规格数量扣减库存   1-是；0-否
+        query.setCode(PdConstant.ON_OFF_SPEC_NUM);
+        query.setDepartParentId(sysUser.getDepartParentId());
+        PdOnOff offSpecNum = pdOnOffService.getOne(query);
+        if (offSpecNum != null && offSpecNum.getValue() != null) {
+            pdDosage.setOffSpecNum(offSpecNum.getValue().toString());
+        }
         return pdDosage;
-
     }
 
     /**

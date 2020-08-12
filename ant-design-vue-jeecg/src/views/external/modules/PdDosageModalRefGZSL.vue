@@ -275,6 +275,7 @@
         sRowIds:[],//选中行id
         activeKey: 'pdDosageDetail',
         refKeys: ['pdDosageDetail',],
+        offSpecNum:false,           //开关-是否根据规格数量扣减库存 1-是；0-否
         //货区货位二级联动下拉框
         goodsAllocationList:[],
         queryParam:{},
@@ -416,6 +417,12 @@
                 let fieldval = pick(this.initData,'dosageNo','dosageDate','departName','outHuoweiCode','dosageByName','inHospitalNo','patientInfo','operativeNumber','operationName','outpatientNumber','medicalRecordNo','sqrtDoctorId','oprDeptId','oprDeptName','exeDeptId','exeDeptName','surgeonName','surgeonId','patientDetailInfo','hospitalizationsNum','remarks','extension1','extension2');
                 this.form.setFieldsValue(fieldval);
                 this.goodsAllocationList = res.result.goodsAllocationList;
+                //开关-是否根据规格数量扣减库存 1-是；0-否
+                if(res.result.offSpecNum && res.result.offSpecNum == "0"){
+                  this.offSpecNum = false;
+                }else{
+                  this.offSpecNum = true;
+                }
                 //获取光标
                 this.$refs['productNumberInput'].focus();
               }
@@ -653,9 +660,16 @@
               continue;
             }
             list[i].id=null;
-            if(Number(list[i].dosageCount) > Number(list[i].specNum)){
-              this.$message.error("["+list[i].productName+"]用量数量不能大于库存规格数量！");
-              return;
+            if(this.offSpecNum=="1"){//如果是根据规格数量扣减库存
+              if(Number(list[i].dosageCount) > Number(list[i].specNum)){
+                this.$message.error("["+list[i].productName+"]用量数量不能大于库存规格数量！");
+                return;
+              }
+            }else{
+              if(Number(list[i].dosageCount) > Number(list[i].stockNum)){
+                this.$message.error("["+list[i].productName+"]用量数量不能大于库存数量！");
+                return;
+              }
             }
             if(Number(list[i].dosageCount) <= 0){
               this.$message.error("["+list[i].productName+"]用量数量必须大于0！");
