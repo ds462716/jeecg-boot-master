@@ -22,6 +22,25 @@
                 <a-input placeholder="请输入套包名称" v-model="queryParam.packageName"></a-input>
               </a-form-item>
             </a-col>
+            <a-col :span="6">
+              <a-form-item label="所属科室">
+                <a-select
+                  showSearch
+                  placeholder="请选择科室"
+                  :supplierId="departValue"
+                  :defaultActiveFirstOption="false"
+                  :showArrow="true"
+                  :filterOption="false"
+                  :allowClear="true"
+                  @search="departHandleSearch"
+                  @focus="departHandleSearch"
+                  :notFoundContent="notFoundContent"
+                  v-model="queryParam.departId"
+                >
+                  <a-select-option v-for="d in departList" :key="d.id">{{d.departName}}</a-select-option>
+                </a-select>
+              </a-form-item>
+            </a-col>
             <template v-if="toggleSearchStatus">
               <a-col :md="6" :sm="8">
                 <a-form-item label="产品编号">
@@ -102,6 +121,11 @@
         expandedRowKeys:[],
         subloading:false,
         confirmLoading: false,
+
+        notFoundContent:"未找到内容",
+        departValue: undefined,
+        departList:[],
+
         // 表头
         columns: [
           {
@@ -131,6 +155,11 @@
             title:'产品总数',
             align:"center",
             dataIndex: 'packageSum'
+          },
+          {
+            title:'所属科室',
+            align:"center",
+            dataIndex: 'departName'
           },
           {
             title:'备注',
@@ -192,6 +221,7 @@
         url: {
           list: "/pd/pdPackage/queryPackgeList",
           chooseDetailList:"/pd/pdPackage/queryPdPackageDetailList",
+          departList:"/pd/pdDepart/getSysDepartList",
         },
         dictOptions:{
         },
@@ -292,6 +322,15 @@
         param.pageSize = this.ipagination.pageSize;
         delete param.queryDate; //范围参数不传递后台，传后台会报错
         return filterObj(param);
+      },
+      // 部门下拉框搜索
+      departHandleSearch(value){
+        getAction(this.url.departList,{departName:value,parentFlag:"0"}).then((res)=>{
+          if (!res.success) {
+            this.cmsFailed(res.message);
+          }
+          this.departList = res.result;
+        })
       },
     }
   }

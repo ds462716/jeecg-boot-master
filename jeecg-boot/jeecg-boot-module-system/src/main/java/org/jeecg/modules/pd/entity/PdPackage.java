@@ -66,4 +66,8 @@ public class PdPackage extends BaseEntity {
 
     @TableField(exist = false)
     private List<PdPackageDetail> pdPackageDetailList;
+    @TableField(exist = false)
+    private String departName;
+    @TableField(exist = false)
+    private String departType; //部门类型 0医院1一级库房2二级库房
 }
