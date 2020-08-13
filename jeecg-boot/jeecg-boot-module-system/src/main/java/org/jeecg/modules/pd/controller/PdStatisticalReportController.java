@@ -42,7 +42,7 @@ public class PdStatisticalReportController extends JeecgController<PdStatistical
     private IPdStatisticalReportService pdStatisticalReportService;
 
     /**
-     * 出入库明细统计报表
+     * zxh出入库明细统计报表
      * @param inDetail
      * @param pageNo
      * @param pageSize
@@ -68,7 +68,7 @@ public class PdStatisticalReportController extends JeecgController<PdStatistical
 
 
     /**
-     * 用量明细统计报表
+     * zxh用量明细统计报表
      * @param dosageDetail
      * @param pageNo
      * @param pageSize

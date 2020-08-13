@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.jeecg.modules.pd.mapper.PdStatisticalReportMapper">
 
-    <!-- 供应商用量统计查询入库明细 -->
+    <!-- zxh供应商用量统计查询入库明细 -->
     <select id="rpInDetailReport" resultType="org.jeecg.modules.pd.entity.PdStockRecordDetail">
         SELECT
         a.id,
@@ -122,7 +122,7 @@
             )
         </if>
     </select>
-    <!-- 供应商用量统计查询用量明细 -->
+    <!-- zxh供应商用量统计查询用量明细 -->
     <select id="rpUseDetailReport" resultType="org.jeecg.modules.pd.vo.RpUseDetailReportPage">
         SELECT
         a.id,

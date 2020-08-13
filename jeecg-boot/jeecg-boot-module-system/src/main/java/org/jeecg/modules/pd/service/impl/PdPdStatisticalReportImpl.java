@@ -20,7 +20,7 @@ import org.springframework.stereotype.Service;
 public class PdPdStatisticalReportImpl extends ServiceImpl<PdStatisticalReportMapper, PdStatisticalReport> implements IPdStatisticalReportService {
 
     /**
-     * 出入库明细统计报表
+     * zxh出入库明细统计报表
      * @param inPageDetail
      * @param inDetail
      * @return
@@ -31,7 +31,7 @@ public class PdPdStatisticalReportImpl extends ServiceImpl<PdStatisticalReportMa
     }
 
     /**
-     * 用量明细统计报表
+     * zxh用量明细统计报表
      * @param usePageDetail
      * @param rpUseDetailReportPage
      * @return
