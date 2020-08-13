@@ -84,8 +84,8 @@
                 <a-col :md="6" :sm="8">
             <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
               <a-button type="primary" @click="inSearchQuery" icon="search">查询</a-button>
-              <a-button type="primary" @click="searchReset" icon="reload" style="margin-left: 8px">重置</a-button>
-              <a @click="handleToggleSearch" style="margin-left: 8px">
+              <a-button type="primary" @click="inSearchReset" icon="reload" style="margin-left: 8px">重置</a-button>
+              <a @click="inHandleToggleSearch" style="margin-left: 8px">
                 {{ inToggleSearchStatus ? '收起' : '展开' }}
                 <a-icon :type="inToggleSearchStatus ? 'up' : 'down'"/>
               </a>
@@ -122,21 +122,110 @@
 
       </a-tab-pane>
       <a-tab-pane tab="供应商用量明细" key="2">
-        <div>
-          <a-table
-            CLASS="changeColor"
-            ref="use_table"
-            size="middle"
-            bordered
-            rowKey="id"
-            :columns="useTable.columns"
-            :dataSource="useTable.dataSource"
-            :pagination="useTable.ipagination"
-            :loading="useTable.loading"
-            :scroll="useTable.tableScroll"
-            @change="useHandleTableChange">
-          </a-table>
-        </div>
+        <a-card :bordered="false">
+          <!-- 查询区域 -->
+          <div class="table-page-search-wrapper">
+            <a-form layout="inline" @keyup.enter.native="useSearchQuery">
+              <a-row :gutter="24">
+                <a-col :md="6" :sm="8">
+                  <a-form-item label="用量单号">
+                    <a-input placeholder="请输入用量单号" v-model="useQueryParam.dosageNo"></a-input>
+                  </a-form-item>
+                </a-col>
+                <a-col :md="6" :sm="8">
+                  <a-form-item label="产品名称">
+                    <a-input placeholder="请选输入品名称" v-model="useQueryParam.productName"></a-input>
+                  </a-form-item>
+                </a-col>
+                <a-col :md="6" :sm="8">
+                  <a-form-item label="产品编号">
+                    <a-input placeholder="请输入产品编号" v-model="useQueryParam.productNumber"></a-input>
+                  </a-form-item>
+                </a-col>
+
+                <template v-if="useToggleSearchStatus">
+                  <a-col :md="6" :sm="8">
+                    <a-form-item label="规格">
+                      <a-input placeholder="请输入规格" v-model="useQueryParam.spec"></a-input>
+                    </a-form-item>
+                  </a-col>
+                  <a-col :md="6" :sm="8">
+                    <a-form-item label="有效期">
+                      <a-range-picker @change="useExpDateChange" v-model="useQueryParam.queryExpDate"/>
+                    </a-form-item>
+                  </a-col>
+                  <a-col :md="6" :sm="8">
+                    <a-form-item label="注册证">
+                      <a-input placeholder="请输入注册证" v-model="useQueryParam.registration"></a-input>
+                    </a-form-item>
+                  </a-col>
+                  <a-col :md="6" :sm="8">
+                    <a-form-item label="型号">
+                      <a-input placeholder="请输入型号" v-model="useQueryParam.version"></a-input>
+                    </a-form-item>
+                  </a-col>
+                  <a-col :md="6" :sm="8">
+                    <a-form-item label="批号">
+                      <a-input placeholder="请输入批号" v-model="useQueryParam.batchNo"></a-input>
+                    </a-form-item>
+                  </a-col>
+                  <a-col :md="6" :sm="8">
+                    <a-form-item label="生产厂家">
+                      <a-select
+                        showSearch
+                        :venderId="useVenderValue"
+                        placeholder="请选择生产厂家"
+                        :defaultActiveFirstOption="false"
+                        :allowClear="true"
+                        :showArrow="true"
+                        :filterOption="false"
+                        @search="useVenderHandleSearch"
+                        @change="useVenderHandleChange"
+                        @focus="useVenderHandleSearch"
+                        :notFoundContent="notFoundContent"
+                        v-model="useQueryParam.venderId"
+                      >
+                        <a-select-option v-for="d in useVenderData" :key="d.value">{{d.text}}</a-select-option>
+                      </a-select>
+                    </a-form-item>
+                  </a-col>
+                </template>
+
+                <a-col :md="6" :sm="8">
+            <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
+              <a-button type="primary" @click="useSearchQuery" icon="search">查询</a-button>
+              <a-button type="primary" @click="useSearchReset" icon="reload" style="margin-left: 8px">重置</a-button>
+              <a @click="useHandleToggleSearch" style="margin-left: 8px">
+                {{ useToggleSearchStatus ? '收起' : '展开' }}
+                <a-icon :type="useToggleSearchStatus ? 'up' : 'down'"/>
+              </a>
+            </span>
+                </a-col>
+              </a-row>
+            </a-form>
+          </div>
+          <!-- 查询区域-END -->
+          <!-- 操作按钮区域 -->
+          <div class="table-operator">
+            <!--<a-button type="primary" icon="download" @click="handleExportXls()">导出</a-button>-->
+          </div>
+          <!-- table区域-begin -->
+          <div>
+            <a-table
+              CLASS="changeColor"
+              ref="use_table"
+              size="middle"
+              bordered
+              rowKey="id"
+              :columns="useTable.columns"
+              :dataSource="useTable.dataSource"
+              :pagination="useTable.ipagination"
+              :loading="useTable.loading"
+              :scroll="useTable.tableScroll"
+              @change="useHandleTableChange">
+            </a-table>
+          </div>
+        </a-card>
       </a-tab-pane>
     </a-tabs>
 
@@ -236,6 +325,11 @@
             { title:'生产厂家JDE编号', align:"center", width:'150px', dataIndex: 'venderJdeCode' },
           ],
         },
+        useQueryParam: {},
+        /* 查询折叠 */
+        useToggleSearchStatus:false,
+        useVenderValue: undefined,
+        useVenderData: [],
         // 表头
         useTable: {
           loading:false,
@@ -413,6 +507,27 @@
           this.useLoadData(1);
         }
       },
+      //生产厂家下拉
+      getList(value,url,flag){
+        getAction(url,{name:value}).then((res)=>{
+          if (!res.success) {
+            this.cmsFailed(res.message);
+          }
+          const result = res.result;
+          const data = [];
+          result.forEach(r => {
+            data.push({
+              value: r.id,
+              text: r.name,
+            });
+          });
+          if(flag == "1"){
+            this.inVenderData = data;
+          }else if(flag == "2"){
+            this.useVenderData = data;
+          }
+        })
+      },
 
       //供应商入库明细start
       inLoadData(arg) {
@@ -458,42 +573,23 @@
         this.inLoadData();
       },
       //入库明细重置
-      searchReset() {
+      inSearchReset() {
         this.inQueryParam = {}
         this.inLoadData();
       },
-      handleToggleSearch(){
+      inHandleToggleSearch(){
         this.inToggleSearchStatus = !this.inToggleSearchStatus;
       },
       //生产厂家查询start
       inVenderHandleSearch(value) {
-        this.inGetList(value,this.url.queryVender,"2");
+        this.getList(value,this.url.queryVender,"1");
       },
       inVenderHandleChange(value) {
         this.inVenderValue = value;
-        this.inGetList(value,this.url.queryVender,"2");
+        this.getList(value,this.url.queryVender,"1");
       },
       //生产厂家查询end
-      inGetList(value,url,flag){
-        getAction(url,{name:value}).then((res)=>{
-          if (!res.success) {
-            this.cmsFailed(res.message);
-          }
-          const result = res.result;
-          const data = [];
-          result.forEach(r => {
-            data.push({
-              value: r.id,
-              text: r.name,
-            });
-          });
-          if(flag == "1"){
 
-          }else if(flag == "2"){
-            this.inVenderData = data;
-          }
-        })
-      },
       /**重写导出方法**/
       handleExportXls(){
         //入库明细导出
@@ -542,11 +638,12 @@
       //获取使用条件
       getUseQueryParams() {
         //获取查询条件
-        let param = this.inQueryParam;
+        let param = this.useQueryParam;
         param.pageNo = this.useTable.ipagination.current;
         param.pageSize = this.useTable.ipagination.pageSize;
         param.supplierId = this.initParams.supplierId;
         param.yearMonth = this.initParams.yearMonth;
+        delete param.queryExpDate; //范围参数不传递后台，传后台会报错
         return filterObj(param);
       },
       //表格分页事件
@@ -554,6 +651,33 @@
         this.useTable.ipagination = pagination;
         this.useLoadData();
       },
+      //有效期
+      useExpDateChange: function (value, dateString) {
+        this.useQueryParam.queryExpDateStart=dateString[0];
+        this.useQueryParam.queryExpDateEnd=dateString[1];
+        // delete this.queryParam.queryExpDate; //范围参数不传递后台，传后台会报错
+      },
+      //入库明细搜索
+      useSearchQuery() {
+        this.useLoadData();
+      },
+      //入库明细重置
+      useSearchReset() {
+        this.useQueryParam = {}
+        this.useLoadData();
+      },
+      useHandleToggleSearch(){
+        this.useToggleSearchStatus = !this.useToggleSearchStatus;
+      },
+      //生产厂家查询start
+      useVenderHandleSearch(value) {
+        this.getList(value,this.url.queryVender,"2");
+      },
+      useVenderHandleChange(value) {
+        this.useVenderValue = value;
+        this.getList(value,this.url.queryVender,"2");
+      },
+      //生产厂家查询end
       //供应商使用明细end
     }
   }
