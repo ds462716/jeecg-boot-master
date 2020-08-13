@@ -7,7 +7,10 @@ import org.apache.ibatis.annotations.Param;
 import org.jeecg.modules.pd.entity.PdStatisticalReport;
 import org.jeecg.modules.pd.entity.PdStockRecordDetail;
 import org.jeecg.modules.pd.vo.RpReDetailReportPage;
+import org.jeecg.modules.pd.vo.RpSupplierUseReportPage;
 import org.jeecg.modules.pd.vo.RpUseDetailReportPage;
+
+import java.util.List;
 
 /**
  * @Description: 报表统计
@@ -22,4 +25,8 @@ public interface PdStatisticalReportMapper extends BaseMapper<PdStatisticalRepor
     IPage<RpUseDetailReportPage> rpUseDetailReport(Page<RpUseDetailReportPage> usePageDetail, @Param("entity") RpUseDetailReportPage rpUseDetailReportPage);
 
     IPage<RpReDetailReportPage> rpReDetailReport(Page<RpReDetailReportPage> rePageDetail, @Param("entity")RpReDetailReportPage rpReDetailReportPage);
+
+    IPage<RpSupplierUseReportPage> supplierUseReport(Page<RpSupplierUseReportPage> page, @Param("entity")RpSupplierUseReportPage rpSupplierUseReportPage);
+
+    List<RpSupplierUseReportPage> supplierUseReport(@Param("entity")RpSupplierUseReportPage rpSupplierUseReportPage);
 }

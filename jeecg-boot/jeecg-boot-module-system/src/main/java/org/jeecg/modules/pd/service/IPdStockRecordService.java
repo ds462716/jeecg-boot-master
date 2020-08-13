@@ -192,8 +192,5 @@ public interface IPdStockRecordService extends IService<PdStockRecord> {
 	 */
 	IPage<RpInAndOutReportPage> rpInAndOutReport(Page<RpInAndOutReportPage> pageList, RpInAndOutReportPage rpInAndOutReportPage);
 	List<RpInAndOutReportPage> rpInAndOutReport(RpInAndOutReportPage rpInAndOutReportPage);
-
-    IPage<RpSupplierUseReportPage> supplierUseReport(Page<RpSupplierUseReportPage> page, RpSupplierUseReportPage rpSupplierUseReportPage);
-
-	List<RpSupplierUseReportPage> supplierUseReport(RpSupplierUseReportPage rpSupplierUseReportPage);
+	
 }

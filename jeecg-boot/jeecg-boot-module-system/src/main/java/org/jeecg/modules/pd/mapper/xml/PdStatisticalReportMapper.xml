@@ -2,6 +2,186 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.jeecg.modules.pd.mapper.PdStatisticalReportMapper">
 
+    <!-- zxh供应商用量统计查询 -->
+    <select id="supplierUseReport" resultType="org.jeecg.modules.pd.vo.RpSupplierUseReportPage"
+            parameterType="org.jeecg.modules.pd.vo.RpSupplierUseReportPage">
+        SELECT
+        @rowNum :=@rowNum + 1 AS id,
+        rep.*
+        FROM
+        (
+        SELECT
+        in_table.audit_date,
+        in_table.supplier_id,
+        in_table.supplierName,
+        IFNULL(in_table.inProductNum, 0) AS inProductNum,
+        IFNULL(in_table.inTotalPrice, 0) AS inTotalPrice,
+        IFNULL(do_table.dosageNum, 0) AS dosageNum,
+        IFNULL(do_table.dosagePrice, 0) AS dosagePrice,
+        IFNULL(re_table.rejectedNum, 0) AS rejectedNum,
+        IFNULL(re_table.rejectedPrice, 0) AS rejectedPrice
+        FROM
+        (
+        SELECT
+        sum(t1.product_num) AS inProductNum,
+        sum(t1.sum_purchase_price) AS inTotalPrice,
+        t1.audit_date,
+        t1.supplier_id,
+        t1.supplierName
+        FROM
+        (
+        SELECT
+        a.id,
+        a.record_id,
+        b.record_no,
+        b.record_type,
+        b.in_type,
+        b.out_type,
+        a.product_id,
+        a.product_num,
+        a.purchase_price,
+        a.selling_price,
+        a.purchase_price * a.product_num AS sum_purchase_price,
+        date_format(b.audit_date, '%Y-%m') AS audit_date,
+        b.supplier_id,
+        s.`name` AS supplierName
+        FROM
+        pd_stock_record_detail a
+        LEFT JOIN pd_stock_record b ON a.record_id = b.id
+        LEFT JOIN pd_supplier s ON b.supplier_id = s.id
+        LEFT JOIN pd_product pp on a.product_id = pp.id
+        AND b.audit_status = '2'
+        WHERE
+        b.del_flag = '0'
+        AND b.record_type = '1'
+        AND (
+        b.in_type IS NOT NULL
+        AND b.in_type &lt;&gt; ''
+        )
+        AND (
+        b.supplier_id IS NOT NULL
+        AND b.supplier_id &lt;&gt; ''
+        )
+        AND pp.product_flag = '0'
+        <if test="entity.yearMonth != null and entity.yearMonth != ''">
+            AND date_format(b.audit_date,'%Y-%m') = #{entity.yearMonth}
+        </if>
+        <if test="entity.querySupplierId != null and entity.querySupplierId != ''">
+            AND b.supplier_id = #{entity.querySupplierId}
+        </if>
+        <if test="entity.departParentId != null and entity.departParentId != ''">
+            AND a.depart_parent_id = #{entity.departParentId}
+        </if>
+        ) AS t1
+        GROUP BY
+        t1.audit_date,
+        t1.supplier_id
+        ) AS in_table
+        LEFT JOIN (
+        SELECT
+        sum(t2.left_refund_num) AS dosageNum,
+        sum(t2.amount_money) AS dosagePrice,
+        t2.audit_date,
+        t2.supplier_id,
+        t2.supplierName
+        FROM
+        (
+        SELECT
+        a.id,
+        a.dosage_id,
+        b.dosage_no,
+        a.product_id,
+        a.left_refund_num,
+        a.selling_price,
+        a.amount_money,
+        date_format(b.create_time, '%Y-%m') AS audit_date,
+        ps.supplier_id,
+        s.`name` AS supplierName
+        FROM
+        pd_dosage_detail a
+        LEFT JOIN pd_dosage b ON a.dosage_id = b.id
+        LEFT JOIN pd_product_stock ps ON a.product_stock_id = ps.id
+        LEFT JOIN pd_supplier s ON ps.supplier_id = s.id
+        LEFT JOIN pd_product pp on a.product_id = pp.id
+        WHERE
+        b.del_flag = '0'
+        AND a.left_refund_num > 0
+        AND (
+        ps.supplier_id IS NOT NULL
+        AND ps.supplier_id &lt;&gt; ''
+        )
+        AND pp.product_flag = '0'
+        <if test="entity.yearMonth != null and entity.yearMonth != ''">
+            AND date_format(b.create_time,'%Y-%m') = #{entity.yearMonth}
+        </if>
+        <if test="entity.querySupplierId != null and entity.querySupplierId != ''">
+            AND ps.supplier_id = #{entity.querySupplierId}
+        </if>
+        <if test="entity.departParentId != null and entity.departParentId != ''">
+            AND a.depart_parent_id = #{entity.departParentId}
+        </if>
+        ) AS t2
+        GROUP BY
+        t2.audit_date,
+        t2.supplier_id
+        ) AS do_table ON in_table.supplier_id = do_table.supplier_id
+        AND in_table.audit_date = do_table.audit_date
+        LEFT JOIN (
+        SELECT
+        sum(t3.rejected_count) AS rejectedNum,
+        sum(t3.amount_money) AS rejectedPrice,
+        t3.audit_date,
+        t3.supplier_id,
+        t3.supplierName,
+        t3.purchase_price
+        FROM
+        (
+        SELECT
+        a.id,
+        a.rejected_id,
+        b.rejected_no,
+        a.product_id,
+        a.rejected_count,
+        srd.purchase_price,
+        srd.purchase_price * a.rejected_count AS amount_money,
+        date_format(b.rejected_date, '%Y-%m') AS audit_date,
+        b.supplier_id,
+        s.`name` AS supplierName
+        FROM
+        pd_rejected_detail a
+        LEFT JOIN pd_rejected b ON a.rejected_id = b.id
+        LEFT JOIN pd_supplier s ON b.supplier_id = s.id
+        LEFT JOIN pd_product_stock ps ON a.product_stock_id = ps.id
+        LEFT JOIN pd_stock_record_detail srd ON ps.record_detail_id = srd.id
+        LEFT JOIN pd_product pp on a.product_id = pp.id
+        WHERE
+        b.del_flag = '0'
+        AND a.rejected_count > 0
+        AND (
+        b.supplier_id IS NOT NULL
+        AND b.supplier_id &lt;&gt; ''
+        )
+        AND pp.product_flag = '0'
+        <if test="entity.yearMonth != null and entity.yearMonth != ''">
+            AND date_format(b.rejected_date,'%Y-%m') = #{entity.yearMonth}
+        </if>
+        <if test="entity.querySupplierId != null and entity.querySupplierId != ''">
+            AND b.supplier_id = #{entity.querySupplierId}
+        </if>
+        <if test="entity.departParentId != null and entity.departParentId != ''">
+            AND a.depart_parent_id = #{entity.departParentId}
+        </if>
+        ) AS t3
+        GROUP BY
+        t3.audit_date,
+        t3.supplier_id
+        ) AS re_table ON in_table.supplier_id = re_table.supplier_id
+        AND in_table.audit_date = re_table.audit_date
+        ) AS rep,
+        (SELECT @rowNum := 0) n
+        ORDER BY
+        rep.audit_date DESC
+    </select>
     <!-- zxh供应商用量统计查询入库明细 -->
     <select id="rpInDetailReport" resultType="org.jeecg.modules.pd.entity.PdStockRecordDetail">
         SELECT
@@ -269,11 +449,12 @@
         b.supplier_id IS NOT NULL
         AND b.supplier_id &lt;&gt; ''
         )
+        AND pp.product_flag = '0'
         <if test="entity.yearMonth != null and entity.yearMonth != ''">
             AND date_format(b.create_time,'%Y-%m') = #{entity.yearMonth}
         </if>
         <if test="entity.supplierId != null and entity.supplierId != ''">
-            AND ps.supplier_id = #{entity.supplierId}
+            AND b.supplier_id = #{entity.supplierId}
         </if>
         <if test="entity.departParentId != null and entity.departParentId != ''">
             AND a.depart_parent_id = #{entity.departParentId}

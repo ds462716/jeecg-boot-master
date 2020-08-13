@@ -763,43 +763,6 @@ public class PdStockRecordInController {
     }
 
     /**
-     * 供应商用量使用统计
-     * @param rpSupplierUseReportPage
-     * @param pageNo
-     * @param pageSize
-     * @return
-     */
-    @GetMapping(value = "/supplierUseReport")
-    public Result<?> supplierUseReport(RpSupplierUseReportPage rpSupplierUseReportPage,
-                                      @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
-                                      @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize) {
-        Page<RpSupplierUseReportPage> page = new Page<RpSupplierUseReportPage>(pageNo, pageSize);
-        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
-        rpSupplierUseReportPage.setDepartParentId(sysUser.getDepartParentId());
-        IPage<RpSupplierUseReportPage> pageList = pdStockRecordService.supplierUseReport(page, rpSupplierUseReportPage);
-        return Result.ok(pageList);
-    }
-
-    /**
-     * 导出excel(供应商用量使用统计导出)
-     *
-     * @param request
-     * @param pdStockRecord
-     */
-    @RequestMapping(value = "/exportSupplierUseReportXls")
-    public ModelAndView exportSupplierUseReportXls(HttpServletRequest request, RpSupplierUseReportPage rpSupplierUseReportPage) {
-        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
-        rpSupplierUseReportPage.setDepartParentId(sysUser.getDepartParentId());
-        List<RpSupplierUseReportPage> pageList = pdStockRecordService.supplierUseReport(rpSupplierUseReportPage);
-        ModelAndView mv = new ModelAndView(new JeecgEntityExcelView());
-        mv.addObject(NormalExcelConstants.FILE_NAME, "供应商用量使用统计报表");
-        mv.addObject(NormalExcelConstants.CLASS, RpSupplierUseReportPage.class);
-        mv.addObject(NormalExcelConstants.PARAMS, new ExportParams("供应商用量使用统计报表数据", "导出人:" + sysUser.getRealname(), "出库统计报表"));
-        mv.addObject(NormalExcelConstants.DATA_LIST, pageList);
-        return mv;
-    }
-
-    /**
      * 供应商用量明细查询
      * @param pdStockRecord
      * @param pageNo

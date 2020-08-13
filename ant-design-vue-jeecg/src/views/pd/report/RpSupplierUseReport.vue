@@ -217,7 +217,7 @@
           },
         ],
         url: {
-          list: "/pd/pdStockRecordIn/supplierUseReport",
+          list: "/pd/pdStatisticalReport/supplierUseReport",
           querySupplier:"/pd/pdSupplier/getSupplierList",
           exportXlsUrl: "/pd/pdStockRecordIn/exportSupplierUseReportXls",
         },

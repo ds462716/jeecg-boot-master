@@ -18,7 +18,11 @@ import org.jeecg.modules.pd.service.IPdStatisticalReportService;
 import org.jeecg.modules.pd.service.IPdStockRecordDetailService;
 import org.jeecg.modules.pd.vo.RpInAndOutDetailReportPage;
 import org.jeecg.modules.pd.vo.RpReDetailReportPage;
+import org.jeecg.modules.pd.vo.RpSupplierUseReportPage;
 import org.jeecg.modules.pd.vo.RpUseDetailReportPage;
+import org.jeecgframework.poi.excel.def.NormalExcelConstants;
+import org.jeecgframework.poi.excel.entity.ExportParams;
+import org.jeecgframework.poi.excel.view.JeecgEntityExcelView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
@@ -41,6 +45,44 @@ public class PdStatisticalReportController extends JeecgController<PdStatistical
 
     @Autowired
     private IPdStatisticalReportService pdStatisticalReportService;
+
+
+    /**
+     * 供应商用量使用统计
+     * @param rpSupplierUseReportPage
+     * @param pageNo
+     * @param pageSize
+     * @return
+     */
+    @GetMapping(value = "/supplierUseReport")
+    public Result<?> supplierUseReport(RpSupplierUseReportPage rpSupplierUseReportPage,
+                                       @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
+                                       @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize) {
+        Page<RpSupplierUseReportPage> page = new Page<RpSupplierUseReportPage>(pageNo, pageSize);
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        rpSupplierUseReportPage.setDepartParentId(sysUser.getDepartParentId());
+        IPage<RpSupplierUseReportPage> pageList = pdStatisticalReportService.supplierUseReport(page, rpSupplierUseReportPage);
+        return Result.ok(pageList);
+    }
+
+    /**
+     * 导出excel(供应商用量使用统计导出)
+     *
+     * @param request
+     * @param pdStockRecord
+     */
+    @RequestMapping(value = "/exportSupplierUseReportXls")
+    public ModelAndView exportSupplierUseReportXls(HttpServletRequest request, RpSupplierUseReportPage rpSupplierUseReportPage) {
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        rpSupplierUseReportPage.setDepartParentId(sysUser.getDepartParentId());
+        List<RpSupplierUseReportPage> pageList = pdStatisticalReportService.supplierUseReport(rpSupplierUseReportPage);
+        ModelAndView mv = new ModelAndView(new JeecgEntityExcelView());
+        mv.addObject(NormalExcelConstants.FILE_NAME, "供应商用量使用统计报表");
+        mv.addObject(NormalExcelConstants.CLASS, RpSupplierUseReportPage.class);
+        mv.addObject(NormalExcelConstants.PARAMS, new ExportParams("供应商用量使用统计报表数据", "导出人:" + sysUser.getRealname(), "出库统计报表"));
+        mv.addObject(NormalExcelConstants.DATA_LIST, pageList);
+        return mv;
+    }
 
     /**
      * zxh出入库明细统计报表

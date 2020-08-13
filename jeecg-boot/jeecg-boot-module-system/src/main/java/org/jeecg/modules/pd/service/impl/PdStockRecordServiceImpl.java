@@ -1909,25 +1909,6 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
         return list;
     }
 
-    /**
-     *供应商用量使用统计
-     * @param page
-     * @param rpSupplierUseReportPage
-     * @return
-     */
-    @Override
-    public IPage<RpSupplierUseReportPage> supplierUseReport(Page<RpSupplierUseReportPage> page, RpSupplierUseReportPage rpSupplierUseReportPage) {
-        return pdStockRecordMapper.supplierUseReport(page,rpSupplierUseReportPage);
-    }
-    /**
-     *供应商用量使用统计
-     * @param rpSupplierUseReportPage
-     * @return
-     */
-    @Override
-    public List<RpSupplierUseReportPage> supplierUseReport(RpSupplierUseReportPage rpSupplierUseReportPage) {
-        return pdStockRecordMapper.supplierUseReport(rpSupplierUseReportPage);
-    }
 
     /**
      * 一体机试剂出库（接口过来的）

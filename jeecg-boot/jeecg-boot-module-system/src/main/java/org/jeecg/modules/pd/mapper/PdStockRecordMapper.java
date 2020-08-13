@@ -97,7 +97,4 @@ public interface PdStockRecordMapper extends BaseMapper<PdStockRecord> {
      */
     RpInAndOutReportPage getOutTotalData(RpInAndOutReportPage entity);
 
-    IPage<RpSupplierUseReportPage> supplierUseReport(Page<RpSupplierUseReportPage> page, @Param("entity")RpSupplierUseReportPage rpSupplierUseReportPage);
-
-    List<RpSupplierUseReportPage> supplierUseReport(@Param("entity")RpSupplierUseReportPage rpSupplierUseReportPage);
 }
