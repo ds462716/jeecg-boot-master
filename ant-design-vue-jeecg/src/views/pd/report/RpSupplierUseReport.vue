@@ -219,7 +219,7 @@
         url: {
           list: "/pd/pdStatisticalReport/supplierUseReport",
           querySupplier:"/pd/pdSupplier/getSupplierList",
-          exportXlsUrl: "/pd/pdStockRecordIn/exportSupplierUseReportXls",
+          exportXlsUrl: "/pd/pdStatisticalReport/exportSupplierUseReportXls",
         },
         dictOptions:{
           inType:[],
