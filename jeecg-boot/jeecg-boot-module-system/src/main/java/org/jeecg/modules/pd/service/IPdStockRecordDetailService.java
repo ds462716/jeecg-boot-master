@@ -53,7 +53,4 @@ public interface IPdStockRecordDetailService extends IService<PdStockRecordDetai
 
 	List<PdStockRecordDetail> selectStockRecordList(PdStockRecordDetail pdStockRecordDetail);
 
-	IPage<PdStockRecordDetail> rpInDetailReport(Page<PdStockRecordDetail> inPageDetail, PdStockRecordDetail inDetail);
-
-	IPage<RpUseDetailReportPage> rpUseDetailReport(Page<RpUseDetailReportPage> usePageDetail, RpUseDetailReportPage rpUseDetailReportPage);
 }

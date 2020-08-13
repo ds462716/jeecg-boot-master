@@ -12,9 +12,9 @@ import org.jeecg.common.system.base.controller.JeecgController;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.pd.entity.PdDosageDetail;
-import org.jeecg.modules.pd.entity.PdGroup;
+import org.jeecg.modules.pd.entity.PdStatisticalReport;
 import org.jeecg.modules.pd.entity.PdStockRecordDetail;
-import org.jeecg.modules.pd.service.IPdGroupService;
+import org.jeecg.modules.pd.service.IPdStatisticalReportService;
 import org.jeecg.modules.pd.service.IPdStockRecordDetailService;
 import org.jeecg.modules.pd.vo.RpInAndOutDetailReportPage;
 import org.jeecg.modules.pd.vo.RpUseDetailReportPage;
@@ -36,10 +36,10 @@ import java.util.List;
 @RestController
 @RequestMapping("/pd/pdStatisticalReport")
 @Slf4j
-public class PdStatisticalReportController extends JeecgController<PdGroup, IPdGroupService> {
+public class PdStatisticalReportController extends JeecgController<PdStatisticalReport, IPdStatisticalReportService> {
 
     @Autowired
-    private IPdStockRecordDetailService pdStockRecordDetailService;
+    private IPdStatisticalReportService pdStatisticalReportService;
 
     /**
      * 出入库明细统计报表
@@ -55,7 +55,7 @@ public class PdStatisticalReportController extends JeecgController<PdGroup, IPdG
         LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
         inDetail.setDepartParentId(sysUser.getDepartParentId());
         Page<PdStockRecordDetail> inPageDetail = new Page<PdStockRecordDetail>(pageNo, pageSize);
-        IPage<PdStockRecordDetail> inPageDetailList = pdStockRecordDetailService.rpInDetailReport(inPageDetail, inDetail);
+        IPage<PdStockRecordDetail> inPageDetailList = pdStatisticalReportService.rpInDetailReport(inPageDetail, inDetail);
         List<PdStockRecordDetail> inList = inPageDetailList.getRecords();
         List<RpInAndOutDetailReportPage> inReportList = JSON.parseArray(JSON.toJSONString(inList), RpInAndOutDetailReportPage.class);
         Page<RpInAndOutDetailReportPage> inPage = new Page<RpInAndOutDetailReportPage>(pageNo, pageSize);
@@ -81,7 +81,7 @@ public class PdStatisticalReportController extends JeecgController<PdGroup, IPdG
         LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
         rpUseDetailReportPage.setDepartParentId(sysUser.getDepartParentId());
         Page<RpUseDetailReportPage> usePageDetail = new Page<RpUseDetailReportPage>(pageNo, pageSize);
-        IPage<RpUseDetailReportPage> usePageDetailList = pdStockRecordDetailService.rpUseDetailReport(usePageDetail, rpUseDetailReportPage);
+        IPage<RpUseDetailReportPage> usePageDetailList = pdStatisticalReportService.rpUseDetailReport(usePageDetail, rpUseDetailReportPage);
         List<RpUseDetailReportPage> useList = usePageDetailList.getRecords();
         List<RpUseDetailReportPage> inReportList = JSON.parseArray(JSON.toJSONString(useList), RpUseDetailReportPage.class);
         Page<RpUseDetailReportPage> usePage = new Page<RpUseDetailReportPage>(pageNo, pageSize);

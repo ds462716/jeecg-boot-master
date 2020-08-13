@@ -95,25 +95,4 @@ public class PdStockRecordDetailServiceImpl extends ServiceImpl<PdStockRecordDet
 		return pdStockRecordDetailMapper.selectStockRecordList(pdStockRecordDetail);
 	}
 
-	/**
-	 * 出入库明细统计报表
-	 * @param page
-	 * @param inDetail
-	 * @return
-	 */
-	@Override
-	public IPage<PdStockRecordDetail> rpInDetailReport(Page<PdStockRecordDetail> page, PdStockRecordDetail inDetail) {
-		return pdStockRecordDetailMapper.rpInDetailReport(page, inDetail);
-	}
-
-	/**
-	 * 用量明细统计报表
-	 * @param usePageDetail
-	 * @param rpUseDetailReportPage
-	 * @return
-	 */
-	@Override
-	public IPage<RpUseDetailReportPage> rpUseDetailReport(Page<RpUseDetailReportPage> usePageDetail, RpUseDetailReportPage rpUseDetailReportPage) {
-		return pdStockRecordDetailMapper.rpUseDetailReport(usePageDetail, rpUseDetailReportPage);
-	}
 }
