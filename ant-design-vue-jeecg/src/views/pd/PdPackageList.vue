@@ -149,25 +149,10 @@
             dataIndex: 'packageSum'
           },
           {
-            title:'拼音简码',
+            title:'备注',
             align:"center",
-            dataIndex: 'py'
+            dataIndex: 'remarks'
           },
-          {
-            title:'五笔简码',
-            align:"center",
-            dataIndex: 'wb'
-          },
-          {
-            title:'自定义码',
-            align:"center",
-            dataIndex: 'zdy'
-          },
-          // {
-          //   title:'父机构',
-          //   align:"center",
-          //   dataIndex: 'departParentId'
-          // },
           {
             title: '操作',
             dataIndex: 'action',

@@ -50,32 +50,43 @@ public class PdPackageRecordServiceImpl extends ServiceImpl<PdPackageRecordMappe
 	public Map<String, String> saveMain(PdPackageRecord pdPackageRecord, List<PdPackageRecordDetail> pdPackageRecordDetailList) {
 		Map<String, String> result = new HashMap<>();
 		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
-		pdPackageRecord.setDepartId(sysUser.getCurrentDepartId());
-		pdPackageRecord.setDepartParentId(sysUser.getDepartParentId());
-		pdPackageRecord.setStatus(PdConstant.PACKAGE_RECORD_STATUS_1);
-		pdPackageRecordMapper.insert(pdPackageRecord);
-		if(pdPackageRecordDetailList!=null && pdPackageRecordDetailList.size()>0) {
-			for(PdPackageRecordDetail entity:pdPackageRecordDetailList) {
-				//外键设置
-				entity.setRecordId(pdPackageRecord.getId());
-				pdPackageRecordDetailMapper.insert(entity);
+
+		Integer packageCount = pdPackageRecord.getPackageCount();
+		if(packageCount == null || packageCount <=0){
+			throw new RuntimeException("请输入打包数量！");
+		}
+		if(oConvertUtils.isEmpty(pdPackageRecord.getRecordNo())){
+			throw new RuntimeException("打包编号为空！请刷新页面重新打包");
+		}
+		String time = DateUtils.date2Str(DateUtils.getDate(),DateUtils.yymmddhhmmssSSS.get());
+		for(int i = 0; i < packageCount; i++){
+			pdPackageRecord.setId(null); // 清空主键
+			pdPackageRecord.setCreateTime(null);
+			pdPackageRecord.setPackageBarCode(time+(i+1));
+			pdPackageRecord.setDepartId(sysUser.getCurrentDepartId());
+			pdPackageRecord.setDepartParentId(sysUser.getDepartParentId());
+			pdPackageRecord.setStatus(PdConstant.PACKAGE_RECORD_STATUS_1);
+			pdPackageRecordMapper.insert(pdPackageRecord);
+			if(pdPackageRecordDetailList!=null && pdPackageRecordDetailList.size()>0) {
+				for(PdPackageRecordDetail entity:pdPackageRecordDetailList) {
+					//外键设置
+					entity.setId(null);
+					entity.setRecordId(pdPackageRecord.getId());
+					pdPackageRecordDetailMapper.insert(entity);
+				}
 			}
-		}
 
-		// 扣减库存
-		String retStr = pdProductStockTotalService.updateOutStockForPackage(pdPackageRecord);
-
-		if (PdConstant.TRUE.equals(retStr)) {
-			//保存出入库记录日志
+			// 扣减库存
+			String retStr = pdProductStockTotalService.updateOutStockForPackage(pdPackageRecord);
+			if(!PdConstant.TRUE.equals(retStr)){
+				throw new RuntimeException(retStr);
+			}
+			// 日志
 			this.saveStockLog(pdPackageRecord, PdConstant.STOCK_LOG_TYPE_8);
-			result.put("code", PdConstant.SUCCESS_200);
-			result.put("message", "审打包成功！");
-		} else {
-			result.put("code", PdConstant.FAIL_500);
-			result.put("message", retStr);
-			throw new RuntimeException(retStr);
 		}
 
+		result.put("code", PdConstant.SUCCESS_200);
+		result.put("message", "审打包成功！");
 		return result;
 	}
 
@@ -101,6 +112,9 @@ public class PdPackageRecordServiceImpl extends ServiceImpl<PdPackageRecordMappe
 	@Transactional
 	public void delMain(String id) {
 		PdPackageRecord pdPackageRecord = pdPackageRecordMapper.selectById(id);
+		if(PdConstant.PACKAGE_RECORD_STATUS_0.equals(pdPackageRecord.getStatus())){
+			throw new RuntimeException("该套包已出库，不能拆包！");
+		}
 		List<PdPackageRecordDetail> pdPackageRecordDetailList = pdPackageRecordDetailMapper.selectByMainId(id);
 		pdPackageRecord.setPdPackageRecordDetailList(pdPackageRecordDetailList);
 		// 拆包 库存还回
@@ -111,11 +125,25 @@ public class PdPackageRecordServiceImpl extends ServiceImpl<PdPackageRecordMappe
 
 	@Override
 	@Transactional
-	public void delBatchMain(Collection<? extends Serializable> idList) {
+	public String delBatchMain(Collection<? extends Serializable> idList) {
+		List<String> messageList = new ArrayList<>();
 		for(Serializable id:idList) {
-//			pdPackageRecordDetailMapper.deleteByMainId(id.toString());
-			pdPackageRecordMapper.deleteById(id);
+			PdPackageRecord pdPackageRecord = pdPackageRecordMapper.selectById(id);
+			if(PdConstant.PACKAGE_RECORD_STATUS_1.equals(pdPackageRecord.getStatus())){
+				// 未出库状态
+				List<PdPackageRecordDetail> pdPackageRecordDetailList = pdPackageRecordDetailMapper.selectByMainId(id.toString());
+				pdPackageRecord.setPdPackageRecordDetailList(pdPackageRecordDetailList);
+				// 拆包 库存还回
+				pdProductStockTotalService.updateInStockForPackage(pdPackageRecord);
+				pdPackageRecordMapper.deleteById(id);
+			}else{
+				messageList.add(pdPackageRecord.getPackageBarCode());
+			}
 		}
+		if(CollectionUtils.isNotEmpty(messageList)){
+			return messageList.toString();
+		}
+		return "";
 	}
 
 	@Override

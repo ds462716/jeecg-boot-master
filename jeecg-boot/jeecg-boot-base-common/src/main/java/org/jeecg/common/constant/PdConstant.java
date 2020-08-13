@@ -275,8 +275,8 @@ public interface PdConstant {
     public final static String STOCK_NESTAT_STATUS_2="2";//已用完
 
 	//套包打包记录出库状态
-	public final static String PACKAGE_RECORD_STATUS_0="0";//出库状态：0-已出库；1-未出库
-	public final static String PACKAGE_RECORD_STATUS_1="1";//出库状态：0-已出库；1-未出库
+	public final static String PACKAGE_RECORD_STATUS_0="0";//出库状态：0-已出库
+	public final static String PACKAGE_RECORD_STATUS_1="1";//出库状态：1-未出库
 
 
 	//自动补货订单类别

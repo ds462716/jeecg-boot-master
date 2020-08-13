@@ -58,9 +58,27 @@ public class PdProductStockServiceImpl extends ServiceImpl<PdProductStockMapper,
 		return page.setRecords(pdProductStockMapper.queryProductStockList(productStock));
 	}
 
+	/**
+	 * 分页 用于库存选择器
+	 *
+	 * @param page
+	 * @param pdProductStock
+	 * @return
+	 */
 	@Override
 	public Page<PdProductStock> chooseProductStockList(Page<PdProductStock> page, PdProductStock pdProductStock) {
 		return pdProductStockMapper.chooseProductStockList(page,pdProductStock);
+	}
+
+	/**
+	 * 不分页，用于套包自动选择库存
+	 *
+	 * @param pdProductStock
+	 * @return
+	 */
+	@Override
+	public List<PdProductStock> chooseProductStockList(PdProductStock pdProductStock) {
+		return pdProductStockMapper.chooseProductStockList(pdProductStock);
 	}
 
 	/**

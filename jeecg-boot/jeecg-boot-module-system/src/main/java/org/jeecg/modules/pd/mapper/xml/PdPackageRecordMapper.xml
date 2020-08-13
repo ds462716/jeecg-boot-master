@@ -21,6 +21,9 @@
             <if test="entity.packageCode != null and entity.packageCode != ''">
                 AND c.package_code LIKE concat('%',#{entity.packageCode},'%')
             </if>
+            <if test="entity.recordNo != null and entity.recordNo != ''">
+                AND a.record_no = #{entity.recordNo}
+            </if>
             <if test="entity.packageBarCode != null and entity.packageBarCode != ''">
                 AND a.package_bar_code = #{entity.packageBarCode}
             </if>
@@ -39,7 +42,6 @@
                     #{item}
                 </foreach>
             </if>
-
             <if test="entity.productName != null and entity.productName != ''">
                 AND a.id in (
                     SELECT DISTINCT
@@ -69,9 +71,6 @@
                       n.number LIKE concat('%',#{entity.productNumber},'%')
                 )
             </if>
-
-
-
         </where>
         ORDER BY a.update_time desc
     </select>

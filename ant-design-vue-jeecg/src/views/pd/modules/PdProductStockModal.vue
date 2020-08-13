@@ -305,7 +305,7 @@
           }
         ],
         url: {
-          list: "/pd/pdProductStockTotal/chooseProductStockList",
+          list: "/pd/pdProductStockTotal/selectProductStockList",
         },
         dictOptions:{
           expStatus:[],

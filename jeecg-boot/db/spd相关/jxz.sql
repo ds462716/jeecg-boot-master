@@ -138,3 +138,7 @@ INSERT INTO `sys_permission`(`id`, `parent_id`, `name`, `url`, `component`, `com
 INSERT INTO `sys_permission`(`id`, `parent_id`, `name`, `url`, `component`, `component_name`, `redirect`, `menu_type`, `business_type`, `perms`, `perms_type`, `sort_no`, `always_show`, `icon`, `is_route`, `is_leaf`, `keep_alive`, `hidden`, `description`, `create_by`, `create_time`, `update_by`, `update_time`, `del_flag`, `rule_flag`, `status`, `internal_or_external`) VALUES ('1293016386424840194', '', '套包管理', '/package', 'layouts/RouteView', NULL, NULL, 0, '0', NULL, '1', 3.35, 0, 'shopping', 1, 0, 0, 0, NULL, 'admin', '2020-08-11 10:48:24', 'admin', '2020-08-11 10:54:06', 0, 0, '1', 0);
 update sys_permission set parent_id = '1293016386424840194',name = '套包管理',sort_no = '1' where id = '1223876921657380866';
 update sys_permission set parent_id = '1293016386424840194',name = '打包管理',sort_no = '2' where id = '1254291714732748802';
+
+-- 2020年8月12日 14:43:58 打包编号
+ALTER TABLE `jeecg-boot`.`pd_package_record`
+ADD COLUMN `record_no` varchar(64) NULL COMMENT '打包编号' AFTER `depart_parent_id`;

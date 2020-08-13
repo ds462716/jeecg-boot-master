@@ -29,12 +29,19 @@ public interface IPdProductStockService extends IService<PdProductStock> {
 	Page<PdProductStock> queryProductStockList(Page<PdProductStock> pageList, PdProductStock productStock);
 
 	/**
-	 * 库存选择器
+	 * 分页 用于库存选择器
 	 * @param page
 	 * @param pdProductStock
 	 * @return
 	 */
 	Page<PdProductStock> chooseProductStockList(Page<PdProductStock> page, @Param("entity") PdProductStock pdProductStock);
+
+	/**
+	 * 不分页，用于套包自动选择库存
+	 * @param pdProductStock
+	 * @return
+	 */
+	List<PdProductStock> chooseProductStockList(@Param("entity") PdProductStock pdProductStock);
 
 	public List<PdProductStock> selectByMainId(String mainId);
 

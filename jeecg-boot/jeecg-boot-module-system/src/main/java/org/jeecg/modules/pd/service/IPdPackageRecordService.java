@@ -39,7 +39,7 @@ public interface IPdPackageRecordService extends IService<PdPackageRecord> {
 	/**
 	 * 批量删除一对多
 	 */
-	public void delBatchMain (Collection<? extends Serializable> idList);
+	public String delBatchMain (Collection<? extends Serializable> idList);
 
 	/**
 	 * 查询列表

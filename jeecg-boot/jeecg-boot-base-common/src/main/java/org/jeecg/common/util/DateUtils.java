@@ -63,6 +63,19 @@ public class DateUtils extends PropertyEditorSupport {
             return new SimpleDateFormat("yyyyMMddHHmmss");
         }
     };
+    //毫秒级
+    public static ThreadLocal<SimpleDateFormat> yyyymmddhhmmssSSS = new ThreadLocal<SimpleDateFormat>() {
+        @Override
+        protected SimpleDateFormat initialValue() {
+            return new SimpleDateFormat("yyyyMMddHHmmssSSS");
+        }
+    };
+    public static ThreadLocal<SimpleDateFormat> yymmddhhmmssSSS = new ThreadLocal<SimpleDateFormat>() {
+        @Override
+        protected SimpleDateFormat initialValue() {
+            return new SimpleDateFormat("yyMMddHHmmssSSS");
+        }
+    };
     public static ThreadLocal<SimpleDateFormat> short_time_sdf = new ThreadLocal<SimpleDateFormat>() {
         @Override
         protected SimpleDateFormat initialValue() {

@@ -41,6 +41,9 @@ public class PdPackageRecord extends BaseEntity {
     @ApiModelProperty(value = "科室ID")
     private String departId;
     private String departParentId;
+    @Excel(name = "打包编号", width = 15)
+    @ApiModelProperty(value = "打包编号")
+    private String recordNo;
 	/**套包流水码*/
 	@Excel(name = "套包流水码", width = 15)
     @ApiModelProperty(value = "套包流水码")
@@ -59,8 +62,8 @@ public class PdPackageRecord extends BaseEntity {
     private String createBy;
 	/**创建日期*/
 	@Excel(name = "创建日期", width = 15, format = "yyyy-MM-dd")
-	@JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd")
-    @DateTimeFormat(pattern="yyyy-MM-dd")
+	@JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd HH:mm:ss")
+    @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
     @ApiModelProperty(value = "创建日期")
     private Date createTime;
 	/**更新人*/
@@ -90,4 +93,9 @@ public class PdPackageRecord extends BaseEntity {
     private String productNumber; // 产品编号 查询用
     @TableField(exist = false)
     private String productName; // 产品名称 查询用
+    @TableField(exist = false)
+    private Integer packageCount; //打包数量
+    /**开关-是否显示二级条码框**/
+    @TableField(exist = false)
+    private String showSBarcode;
 }

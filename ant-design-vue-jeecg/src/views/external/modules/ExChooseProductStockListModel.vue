@@ -339,7 +339,7 @@
           },
         ],
         url: {
-          list: "/pd/pdProductStockTotal/selectProductStockList",
+          list: "/pd/pdProductStockTotal/chooseProductStockListPage",
           querySupplier:"/pd/pdSupplier/getSupplierList",
           queryVender:"/pd/pdVender/getVenderList",
         },

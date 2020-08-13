@@ -4,6 +4,11 @@
     <div class="table-page-search-wrapper">
       <a-form layout="inline" @keyup.enter.native="searchQuery">
         <a-row :gutter="24">
+          <!--<a-col :md="6" :sm="8">-->
+            <!--<a-form-item label="流水码">-->
+              <!--<a-input placeholder="请输入流水码" v-model="queryParam.packageBarCode"></a-input>-->
+            <!--</a-form-item>-->
+          <!--</a-col>-->
           <a-col :md="6" :sm="8">
             <a-form-item label="套包编号">
               <a-input placeholder="请输入套包编号" v-model="queryParam.packageCode"></a-input>
@@ -52,7 +57,7 @@
       <a-button @click="handleAdd" type="primary" icon="plus">打包</a-button>
       <a-dropdown v-if="selectedRowKeys.length > 0">
         <a-menu slot="overlay">
-          <a-menu-item key="1" @click="batchDel"><a-icon type="delete"/>删除</a-menu-item>
+          <a-menu-item key="1" @click="batchDel"><a-icon type="delete"/>拆包</a-menu-item>
         </a-menu>
         <a-button style="margin-left: 8px"> 批量操作 <a-icon type="down" /></a-button>
       </a-dropdown>
@@ -81,9 +86,9 @@
 
         <span slot="action" slot-scope="text, record">
           <!--<a @click="handleDelete(record.id)">查看</a>-->
-                <a-popconfirm title="确定拆包吗?" @confirm="() => handleDelete(record.id)">
-                  <a>拆包</a>
-                </a-popconfirm>
+          <a-popconfirm title="确定拆包吗?" @confirm="() => handleDelete(record.id)" v-bind:disabled="record.status=='0'">
+            <a>拆包</a>
+          </a-popconfirm>
         </span>
 
 
@@ -155,11 +160,7 @@
             }
           },
           { title:'打包人', align:"center", dataIndex: 'createBy' },
-          { title:'打包时间', align:"center", dataIndex: 'createTime',
-            customRender:function (text) {
-              return !text?"":(text.length>10?text.substr(0,10):text)
-            }
-          },
+          { title:'打包时间', align:"center", dataIndex: 'createTime' },
           { title:'备注', align:"center", dataIndex: 'remarks' },
           {
             title: '操作',
@@ -179,8 +180,8 @@
               return parseInt(index)+1;
             }
           },
-          { title:'产品名称', align:"center", dataIndex: 'productName' },
           { title:'产品编号', align:"center", dataIndex: 'productNumber' },
+          { title:'产品名称', align:"center", dataIndex: 'productName' },
           { title:'产品条码', align:"center",dataIndex: 'productBarCode' },
           { title:'规格', align:"center", dataIndex: 'spec' },
           { title:'批号', align:"center", dataIndex: 'batchNo' },
@@ -269,7 +270,9 @@
           queryPackageRecordListByIds: "/pd/pdPackageRecord/queryPackageRecordListByIds",
           chooseDetailList:"/pd/pdPackageRecord/queryPdPackageRecordDetailByMainId",
         },
-        dictOptions:{},
+        dictOptions:{
+          packageRecordStatus:[],
+        },
       }
     },
     computed: {
@@ -313,7 +316,36 @@
             this.$message.warning(res.message);
           }
         });
-
+      },
+      batchDel() {
+        if (this.selectedRowKeys.length <= 0) {
+          this.$message.warning('请选择一条记录！');
+          return;
+        } else {
+          var ids = "";
+          for (var a = 0; a < this.selectedRowKeys.length; a++) {
+            ids += this.selectedRowKeys[a] + ",";
+          }
+          var that = this;
+          this.$confirm({
+            title: "确认拆包",
+            content: "是否拆包选中数据?",
+            onOk: function () {
+              that.loading = true;
+              deleteAction(that.url.deleteBatch, {ids: ids}).then((res) => {
+                if (res.success) {
+                  that.$message.success(res.message);
+                  that.loadData();
+                  that.onClearSelected();
+                } else {
+                  that.$message.warning(res.message);
+                }
+              }).finally(() => {
+                that.loading = false;
+              });
+            }
+          });
+        }
       },
       /**
        * 点击行选中checkbox
