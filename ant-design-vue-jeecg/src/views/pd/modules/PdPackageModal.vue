@@ -14,37 +14,56 @@
       <a-form :form="form">
         <a-row>
 
-          <a-col :span="12">
+          <a-col :span="8">
             <a-form-item label="套包编号" :labelCol="labelCol" :wrapperCol="wrapperCol">
               <a-input v-decorator="[ 'packageCode', validatorRules.packageCode]" disabled="disabled" placeholder="请输入套包编号"></a-input>
             </a-form-item>
           </a-col>
-          <a-col :span="12">
+          <a-col :span="8">
             <a-form-item label="套包名称" :labelCol="labelCol" :wrapperCol="wrapperCol">
               <a-input v-decorator="[ 'packageName', validatorRules.packageName]"  @change="pinyinTran" placeholder="请输入套包名称"></a-input>
             </a-form-item>
           </a-col>
-          <!--<a-col :span="12" v-show="false">-->
+          <a-col :span="8" v-if="isFirstdepart">
+            <a-form-item label="科室" :labelCol="labelCol" :wrapperCol="wrapperCol">
+              <a-select
+                showSearch
+                placeholder="请选择科室"
+                :defaultActiveFirstOption="false"
+                :showArrow="true"
+                :filterOption="false"
+                :allowClear="true"
+                @search="departHandleSearch"
+                @change="departHandleChange"
+                @focus="departHandleSearch"
+                :notFoundContent="notFoundContent"
+                v-decorator="[ 'departId', validatorRules.departId]"
+              >
+                <a-select-option v-for="d in departList" :key="d.id" :text="d.departName" >{{d.departName}}</a-select-option>
+              </a-select>
+            </a-form-item>
+          </a-col>
+          <!--<a-col :span="8" v-show="false">-->
             <!--<a-form-item label="产品总数" :labelCol="labelCol" :wrapperCol="wrapperCol">-->
               <!--<a-input-number v-decorator="[ 'packageSum', validatorRules.packageSum]" placeholder="0" disabled="disabled" style="width: 100%"/>-->
             <!--</a-form-item>-->
           <!--</a-col>-->
-          <a-col :span="12">
+          <a-col :span="8">
             <a-form-item label="拼音简码" :labelCol="labelCol" :wrapperCol="wrapperCol">
               <a-input v-decorator="[ 'py', validatorRules.py]" placeholder="请输入拼音简码"></a-input>
             </a-form-item>
           </a-col>
-          <a-col :span="12">
+          <a-col :span="8">
             <a-form-item label="五笔简码" :labelCol="labelCol" :wrapperCol="wrapperCol">
               <a-input v-decorator="[ 'wb', validatorRules.wb]" placeholder="请输入五笔简码"></a-input>
             </a-form-item>
           </a-col>
-          <a-col :span="12">
+          <a-col :span="8">
             <a-form-item label="自定义码" :labelCol="labelCol" :wrapperCol="wrapperCol">
               <a-input v-decorator="[ 'zdy', validatorRules.zdy]" placeholder="请输入自定义码"></a-input>
             </a-form-item>
           </a-col>
-          <a-col :span="12">
+          <a-col :span="8">
             <a-form-item label="备注" :labelCol="labelCol" :wrapperCol="wrapperCol">
               <a-input v-decorator="[ 'remarks', validatorRules.remarks]" placeholder="请输入备注"></a-input>
             </a-form-item>
@@ -118,23 +137,21 @@
       return {
         totalSum:'0',
 
-        labelCol: {
-          span: 6
-        },
-        wrapperCol: {
-          span: 16
-        },
-        labelCol2: {
-          span: 3
-        },
-        wrapperCol2: {
-          span: 20
-        },
+        labelCol: { span: 6 },
+        wrapperCol: { span: 16 },
+        labelCol2: { span: 3 },
+        wrapperCol2: { span: 20 },
+
+        departValue: undefined,
+        notFoundContent:"未找到内容",
+        departList:[],
+        isFirstdepart:true,
         // 新增时子表默认添加几行空数据
         addDefaultRowNum: 0,
         validatorRules: {
           packageCode: { rules: [{ required: true, message: '请输入套包编号!' }] },
           packageName: { rules: [{ required: true, message: '请输入套包名称!' }] },
+          departId: { rules: [{ required: true, message: '请选择科室!' }] },
           py:{},
           wb:{},
           zdy:{},
@@ -201,6 +218,7 @@
           add: "/pd/pdPackage/add",
           init: "/pd/pdPackage/initModal",
           edit: "/pd/pdPackage/edit",
+          departList:"/pd/pdDepart/getSysDepartList",
           pdPackageDetail: {
             list: '/pd/pdPackage/queryPdPackageDetailByMainId'
           },
@@ -229,7 +247,10 @@
       },
       /** 调用完edit()方法之后会自动调用此方法 */
       editAfter() {
-        let fieldval = pick(this.model,'packageCode','packageName','py','wb','zdy','remarks');
+        this.$nextTick(() => {
+          this.departHandleSearch();  // 初始化部门列表 用于数据回显
+        })
+        let fieldval = pick(this.model,'packageCode','packageName','py','wb','zdy','remarks','departId');
         this.$nextTick(() => {
           this.form.setFieldsValue(fieldval);
           this.totalSum = this.model.packageSum;
@@ -240,8 +261,13 @@
           }else{
             getAction(this.url.init, {id:""}).then((res) => {
               if (res.success) {
+                if(res.result.departType == "1"){
+                  this.isFirstdepart = true;
+                }else{
+                  this.isFirstdepart = false;
+                }
                 this.$nextTick(() => {
-                  this.form.setFieldsValue({packageCode:res.result.packageCode});
+                  this.form.setFieldsValue({packageCode:res.result.packageCode,departId:res.result.departId});
                 })
               }
             })
@@ -378,7 +404,19 @@
         }
         this.pdPackageDetailTable.dataSource.push(data);
         this.$refs.pdPackageDetail.add();
-      }
+      },
+      // 部门下拉框搜索
+      departHandleSearch(value){
+        getAction(this.url.departList,{departName:value,parentFlag:"0"}).then((res)=>{
+          if (!res.success) {
+            this.cmsFailed(res.message);
+          }
+          this.departList = res.result;
+        })
+      },
+      // 部门下拉框变更
+      departHandleChange(value,option){
+      },
     }
   }
 </script>

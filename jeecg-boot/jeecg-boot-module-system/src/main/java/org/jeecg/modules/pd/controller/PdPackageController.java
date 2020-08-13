@@ -14,11 +14,13 @@ import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.pd.entity.PdPackage;
 import org.jeecg.modules.pd.entity.PdPackageDetail;
 import org.jeecg.modules.pd.entity.PdStockRecord;
+import org.jeecg.modules.pd.service.IPdDepartService;
 import org.jeecg.modules.pd.service.IPdPackageDetailService;
 import org.jeecg.modules.pd.service.IPdPackageService;
 import org.jeecg.modules.pd.service.IPdProductStockTotalService;
 import org.jeecg.modules.pd.util.UUIDUtil;
 import org.jeecg.modules.pd.vo.PdProductStockTotalPage;
+import org.jeecg.modules.system.entity.SysDepart;
 import org.jeecgframework.poi.excel.ExcelImportUtil;
 import org.jeecgframework.poi.excel.def.NormalExcelConstants;
 import org.jeecgframework.poi.excel.entity.ExportParams;
@@ -56,6 +58,8 @@ public class PdPackageController {
 	private IPdPackageDetailService pdPackageDetailService;
 	@Autowired
 	private IPdProductStockTotalService pdProductStockTotalService;
+	 @Autowired
+	 private IPdDepartService pdDepartService;
 
 	 /**
 	  * 初始化Modal页面
@@ -65,8 +69,12 @@ public class PdPackageController {
 	  */
 	 @GetMapping(value = "/initModal")
 	 public Result<?> initModal(@RequestParam(name = "id") String id, HttpServletRequest req) {
+		 LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		 SysDepart sysDepart = pdDepartService.getById(sysUser.getCurrentDepartId());
 		 PdPackage pdPackage = new PdPackage();
 		 pdPackage.setPackageCode(UUIDUtil.generateOrderNoByType(PdConstant.ORDER_NO_FIRST_LETTER_TB));
+		 pdPackage.setDepartId(sysUser.getCurrentDepartId());
+		 pdPackage.setDepartType(sysDepart.getDepartType());
 		 return Result.ok(pdPackage);
 	 }
 
@@ -88,6 +96,10 @@ public class PdPackageController {
 		Page<PdPackage> page = new Page<PdPackage>(pageNo, pageSize);
 //		IPage<PdPackage> pageList = pdPackageService.page(page, queryWrapper);
 		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		SysDepart sysDepart = pdDepartService.getById(sysUser.getCurrentDepartId());
+		if(PdConstant.DEPART_TYPE_2.equals(sysDepart.getDepartType())){
+			pdPackage.setDepartId(sysUser.getCurrentDepartId());
+		}
 		pdPackage.setDepartParentId(sysUser.getDepartParentId());
 		IPage<PdPackage> pageList = pdPackageService.queryList(page, pdPackage);
 		return Result.ok(pageList);
@@ -103,6 +115,13 @@ public class PdPackageController {
 	public Result<?> add(@RequestBody PdPackage PdPackage) {
 		PdPackage pdPackage = new PdPackage();
 		BeanUtils.copyProperties(PdPackage, pdPackage);
+
+		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		SysDepart sysDepart = pdDepartService.getById(sysUser.getCurrentDepartId());
+		if(PdConstant.DEPART_TYPE_2.equals(sysDepart.getDepartType())){
+			pdPackage.setDepartId(sysUser.getCurrentDepartId());
+		}
+
 		pdPackageService.saveMain(pdPackage, PdPackage.getPdPackageDetailList());
 		return Result.ok("添加成功！");
 	}

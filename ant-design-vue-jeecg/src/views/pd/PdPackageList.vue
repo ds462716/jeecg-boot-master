@@ -14,6 +14,25 @@
               <a-input placeholder="套包名称\拼音码\五笔码\自定义码" v-model="queryParam.packageName"></a-input>
             </a-form-item>
           </a-col>
+          <a-col :span="6">
+            <a-form-item label="所属科室">
+              <a-select
+                showSearch
+                placeholder="请选择科室"
+                :supplierId="departValue"
+                :defaultActiveFirstOption="false"
+                :showArrow="true"
+                :filterOption="false"
+                :allowClear="true"
+                @search="departHandleSearch"
+                @focus="departHandleSearch"
+                :notFoundContent="notFoundContent"
+                v-model="queryParam.departId"
+              >
+                <a-select-option v-for="d in departList" :key="d.id">{{d.departName}}</a-select-option>
+              </a-select>
+            </a-form-item>
+          </a-col>
           <a-col :md="6" :sm="8">
             <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
               <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
@@ -111,6 +130,7 @@
 
   import { JeecgListMixin } from '@/mixins/JeecgListMixin'
   import PdPackageModal from './modules/PdPackageModal'
+  import {getAction} from '@/api/manage'
 
   export default {
     name: "PdPackageList",
@@ -121,6 +141,9 @@
     data () {
       return {
         description: '套包管理页面',
+        notFoundContent:"未找到内容",
+        departValue: undefined,
+        departList:[],
         // 表头
         columns: [
           {
@@ -149,6 +172,11 @@
             dataIndex: 'packageSum'
           },
           {
+            title:'所属科室',
+            align:"center",
+            dataIndex: 'departName'
+          },
+          {
             title:'备注',
             align:"center",
             dataIndex: 'remarks'
@@ -166,6 +194,7 @@
           deleteBatch: "/pd/pdPackage/deleteBatch",
           exportXlsUrl: "/pd/pdPackage/exportXls",
           importExcelUrl: "pd/pdPackage/importExcel",
+          departList:"/pd/pdDepart/getSysDepartList",
         },
         dictOptions:{
         },
@@ -179,7 +208,16 @@
     },
     methods: {
       initDictConfig(){
-      }
+      },
+      // 部门下拉框搜索
+      departHandleSearch(value){
+        getAction(this.url.departList,{departName:value,parentFlag:"0"}).then((res)=>{
+          if (!res.success) {
+            this.cmsFailed(res.message);
+          }
+          this.departList = res.result;
+        })
+      },
        
     }
   }

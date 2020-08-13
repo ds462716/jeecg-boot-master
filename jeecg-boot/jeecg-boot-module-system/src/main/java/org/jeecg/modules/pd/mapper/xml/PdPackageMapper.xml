@@ -19,8 +19,10 @@
         a.del_flag,
         a.sys_org_code,
         a.depart_id,
-        a.depart_parent_id
+        a.depart_parent_id,
+        b.depart_name
         FROM pd_package a
+        left join sys_depart b on a.depart_id = b.id
         <where>
             a.del_flag = #{entity.DEL_FLAG_NORMAL}
             <if test="entity.packageName != null and entity.packageName != ''">
