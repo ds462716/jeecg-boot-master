@@ -21,8 +21,8 @@ public class PdProductAllocationExcel {
     /**产品名称*/
     @Excel(name = "产品名称", width = 15)
     private String productName;
-    @Excel(name = "产品类型", width = 15)
-    private String productFlagName;
+    /*@Excel(name = "产品类型", width = 15)
+    private String productFlagName;*/
     /**规格*/
     @Excel(name = "规格", width = 15)
     private String spec;

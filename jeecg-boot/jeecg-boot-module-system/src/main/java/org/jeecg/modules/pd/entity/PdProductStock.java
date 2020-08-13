@@ -264,4 +264,7 @@ public class PdProductStock extends BaseEntity {
 
 	@TableField(exist = false)
 	private String exportType;//导出按钮类型
+
+	@TableField(exist = false)
+	private List<String> nestatStatusList;
 }

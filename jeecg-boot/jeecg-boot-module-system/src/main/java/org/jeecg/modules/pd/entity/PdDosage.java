@@ -318,4 +318,7 @@ public class PdDosage extends BaseEntity {
     /**开关-是否显示二级条码框（入库、出库、退货）**/
     @TableField(exist = false)
     private String showSBarcode;
+    /**开关-是否根据规格数量扣减库存**/
+    @TableField(exist = false)
+    private String offSpecNum;
 }

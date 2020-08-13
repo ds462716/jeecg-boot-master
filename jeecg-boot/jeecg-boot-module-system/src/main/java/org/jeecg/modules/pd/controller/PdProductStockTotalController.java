@@ -408,50 +408,55 @@ public class PdProductStockTotalController {
         return mv;
     }
 
-    /**
-     * 库存明细导出excel
-     *
-     * @param request
-     * @param productStock
-     */
-    @RequestMapping(value = "/stockExportXls")
-    public ModelAndView stockExportXls(HttpServletRequest request, PdProductStock productStock) {
-        // Step.1 组装查询条件查询数据
-        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
-        if (oConvertUtils.isNotEmpty(productStock.getDepartIds()) && !"undefined".equals(productStock.getDepartIds())) {
-            productStock.setDepartIdList(Arrays.asList(productStock.getDepartIds().split(",")));
-        } else {
-            //查询科室下所有下级科室的ID
-            SysDepart sysDepart = new SysDepart();
-            List<String> departList = pdDepartService.selectListDepart(sysDepart);
-            productStock.setDepartIdList(departList);
-        }
-        //Step.2 获取导出数据
-        List<PdProductStock> aList = pdProductStockService.queryStockList(productStock);
-        if (aList != null && aList.size() > 0) {
-            for (PdProductStock stock : aList) {
-                PdProductStockUniqueCode stockUniqueCode = new PdProductStockUniqueCode();
-                stockUniqueCode.setDepartParentId(sysUser.getDepartParentId());
-                stockUniqueCode.setProductStockId(stock.getId());
-                stockUniqueCode.setCodeState(PdConstant.CODE_PRINT_STATE_0);
-                String uniqueCode = productStockUniqueCodeService.queryUniqueCode(stockUniqueCode);
-                stock.setRefBarCodes(uniqueCode);
-            }
-        }
+
+
+	/**
+	 * 库存明细导出excel
+	 *
+	 * @param request
+	 * @param productStock
+	 */
+	@RequestMapping(value = "/stockExportXls")
+	public ModelAndView stockExportXls(HttpServletRequest request, PdProductStock productStock) {
+		// Step.1 组装查询条件查询数据
+		String exportType=productStock.getExportType();
+		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		if(oConvertUtils.isNotEmpty(productStock.getDepartIds()) && !"undefined".equals(productStock.getDepartIds())) {
+			productStock.setDepartIdList(Arrays.asList(productStock.getDepartIds().split(",")));
+		}else{
+			//查询科室下所有下级科室的ID
+			SysDepart sysDepart=new SysDepart();
+			List<String> departList=pdDepartService.selectListDepart(sysDepart);
+			productStock.setDepartIdList(departList);
+		}
+		//Step.2 获取导出数据
+		if(exportType.equals("2")){
+			productStock.setNestatStatus(PdConstant.STOCK_NESTAT_STATUS_1);
+		}
+		List<PdProductStock> aList =pdProductStockService.queryStockList(productStock);
+		if(aList !=null && aList.size()>0){
+			for(PdProductStock stock : aList){
+				PdProductStockUniqueCode stockUniqueCode=new PdProductStockUniqueCode();
+				stockUniqueCode.setDepartParentId(sysUser.getDepartParentId());
+				stockUniqueCode.setProductStockId(stock.getId());
+				stockUniqueCode.setCodeState(PdConstant.CODE_PRINT_STATE_0);
+				String uniqueCode=productStockUniqueCodeService.queryUniqueCode(stockUniqueCode);
+				stock.setRefBarCodes(uniqueCode);
+			}
+		}
         // Step.3 AutoPoi 导出Excel
-        String exportType = productStock.getExportType();
-        ModelAndView mv = new ModelAndView(new JeecgEntityExcelView());
-        if (exportType.equals("2")) {
-            List<PdProductAllocationExcel> exportList = JSON.parseArray(JSON.toJSONString(aList), PdProductAllocationExcel.class);
-            mv.addObject(NormalExcelConstants.CLASS, PdProductAllocationExcel.class);
-            mv.addObject(NormalExcelConstants.DATA_LIST, exportList);
-        } else {
-            List<PdProductStockExcel> exportList = JSON.parseArray(JSON.toJSONString(aList), PdProductStockExcel.class);
-            mv.addObject(NormalExcelConstants.CLASS, PdProductStockExcel.class);
-            mv.addObject(NormalExcelConstants.DATA_LIST, exportList);
-        }
-        mv.addObject(NormalExcelConstants.FILE_NAME, "库存明细列表");
-        mv.addObject(NormalExcelConstants.PARAMS, new ExportParams("库存明细列表", "导出人:" + sysUser.getRealname(), "库存明细列表"));
+		ModelAndView mv = new ModelAndView(new JeecgEntityExcelView());
+		if(exportType.equals("2")){
+			List<PdProductAllocationExcel>  exportList = JSON.parseArray(JSON.toJSONString(aList), PdProductAllocationExcel.class);
+			mv.addObject(NormalExcelConstants.CLASS, PdProductAllocationExcel.class);
+			mv.addObject(NormalExcelConstants.DATA_LIST, exportList);
+		}else{
+			List<PdProductStockExcel>  exportList = JSON.parseArray(JSON.toJSONString(aList), PdProductStockExcel.class);
+			mv.addObject(NormalExcelConstants.CLASS, PdProductStockExcel.class);
+			mv.addObject(NormalExcelConstants.DATA_LIST, exportList);
+		}
+		mv.addObject(NormalExcelConstants.FILE_NAME, "库存明细列表");
+		mv.addObject(NormalExcelConstants.PARAMS, new ExportParams("库存明细列表", "导出人:"+sysUser.getRealname(), "库存明细列表"));
 
         return mv;
     }

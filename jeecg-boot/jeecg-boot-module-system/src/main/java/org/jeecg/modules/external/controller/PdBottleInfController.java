@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.system.base.controller.JeecgController;
@@ -26,6 +27,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.math.BigDecimal;
 import java.util.*;
 
 /**
@@ -190,8 +192,23 @@ public class PdBottleInfController extends JeecgController<PdBottleInf, IPdBottl
 		pdBottleInf.setDepartParentId(sysUser.getDepartParentId());
 		Page<PdBottleInf> page = new Page<PdBottleInf>(pageNo, pageSize);
 		IPage<PdBottleInf> pageList = pdBottleInfService.bottleInfReportQuery(page, pdBottleInf);//
-		//page = pdBottleInfService.bottleInfReportQuery(page, pdBottleInf);
-		return Result.ok(pageList);
+		List<PdBottleInf> list = pdBottleInfService.bottleInfReportQuery(pdBottleInf);//
+		//计算总消耗数量，总消耗金额
+		//**************************
+		Double totalCount=0.00;//总消耗数量
+		BigDecimal totalPrice=BigDecimal.ZERO;//总消耗金额
+		if(CollectionUtils.isNotEmpty(list)){
+			for (PdBottleInf inf : list) {
+				totalCount+=inf.getNum();
+				totalPrice=totalPrice.add(inf.getTotalPrice());
+			}
+		}
+		Map map=new HashMap();
+		map.put("records",pageList);
+		map.put("totalCount",totalCount);//总消耗数量
+		map.put("totalPrice",totalPrice);//总消耗金额
+		return Result.ok(map);
+		//return Result.ok(pageList);
 	}
 	/**
 	 * 入库统计视图  mcb  --20200617 用于统计查询  入库统计报表视图

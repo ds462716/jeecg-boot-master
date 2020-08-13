@@ -275,6 +275,7 @@
         sRowIds:[],//选中行id
         activeKey: 'pdDosageDetail',
         refKeys: ['pdDosageDetail',],
+        offSpecNum:false,           //开关-是否根据规格数量扣减库存 1-是；0-否
         //货区货位二级联动下拉框
         goodsAllocationList:[],
         queryParam:{},
@@ -293,13 +294,13 @@
             { title: '批号', key: 'batchNo', width:"100px" },
             { title: '单位', key: 'unitName', width:"50px" },
             { title: '有效期', key: 'expDate', width:"100px" },
-            /*{ title: '入库单价', key: 'purchasePrice', width:"80px" },*/
             { title: '出库单价', key: 'sellingPrice', width:"80px" },
             {
-              title: '用量数量', key: 'dosageCount', type: FormTypes.input, disabled:true, width:"80px",
+              title: '用量数量', key: 'dosageCount', type: FormTypes.input, disabled:false, width:"80px",
               placeholder: '${title}', defaultValue: '1',
               validateRules: [{ required: true, message: '${title}不能为空' },{ pattern: '^-?\\d+\\.?\\d*$',message: '${title}的格式不正确' }]
             },
+            { title: '库存规格数量', key: 'specNum', width:"80px" },
             { title: '用量金额', key: 'amountMoney', type: FormTypes.input, disabled:true, width:"100px" },
             { title: '库存数量', key: 'stockNum', width:"80px" },
             { title: '收费项目代码', key: 'chargeCode', width:"80px" },
@@ -416,6 +417,12 @@
                 let fieldval = pick(this.initData,'dosageNo','dosageDate','departName','outHuoweiCode','dosageByName','inHospitalNo','patientInfo','operativeNumber','operationName','outpatientNumber','medicalRecordNo','sqrtDoctorId','oprDeptId','oprDeptName','exeDeptId','exeDeptName','surgeonName','surgeonId','patientDetailInfo','hospitalizationsNum','remarks','extension1','extension2');
                 this.form.setFieldsValue(fieldval);
                 this.goodsAllocationList = res.result.goodsAllocationList;
+                //开关-是否根据规格数量扣减库存 1-是；0-否
+                if(res.result.offSpecNum && res.result.offSpecNum == "0"){
+                  this.offSpecNum = false;
+                }else{
+                  this.offSpecNum = true;
+                }
                 //获取光标
                 this.$refs['productNumberInput'].focus();
               }
@@ -505,7 +512,7 @@
         }
         if(num == 0){       //产品编号扫码
           //解析条码
-          uniqueScanCode(productNumber,"0","1").then((res) => {
+          uniqueScanCode(productNumber,"0","1,0").then((res) => {
             if(res.code == "200" || res.code == "203"){
               let pdProductStock = res.result;
               if(!pdProductStock){
@@ -604,6 +611,7 @@
           spec: row.spec,
           batchNo:row.batchNo,
           unitName:row.unitName,
+          specNum:row.specNum,
           expDate:row.expDate,
           sellingPrice:row.sellingPrice,
           dosageCount: 1,
@@ -652,9 +660,16 @@
               continue;
             }
             list[i].id=null;
-            if(Number(list[i].dosageCount) > Number(list[i].stockNum)){
-              this.$message.error("["+list[i].productName+"]用量数量不能大于库存数量！");
-              return;
+            if(this.offSpecNum=="1"){//如果是根据规格数量扣减库存
+              if(Number(list[i].dosageCount) > Number(list[i].specNum)){
+                this.$message.error("["+list[i].productName+"]用量数量不能大于库存规格数量！");
+                return;
+              }
+            }else{
+              if(Number(list[i].dosageCount) > Number(list[i].stockNum)){
+                this.$message.error("["+list[i].productName+"]用量数量不能大于库存数量！");
+                return;
+              }
             }
             if(Number(list[i].dosageCount) <= 0){
               this.$message.error("["+list[i].productName+"]用量数量必须大于0！");

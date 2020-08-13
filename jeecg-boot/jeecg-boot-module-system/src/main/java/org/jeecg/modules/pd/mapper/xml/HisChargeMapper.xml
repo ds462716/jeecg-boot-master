@@ -267,12 +267,11 @@
 		combinationName as "testItemName",
 		testItemCost as "testItemCost",
 		testDate as "testDate"
-		from  [v_spd_lis_jyxm_fc]   where
-		1=1
+		from  [v_spd_lis_jyxm_fc]
+		where  combinationName  !=''
 		<if test="queryDateEnd != null and queryDateEnd != ''">
 			AND  testDate >= #{queryDateEnd}
 		</if>
-
 	</select>
 
 

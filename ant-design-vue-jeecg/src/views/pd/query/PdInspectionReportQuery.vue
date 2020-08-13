@@ -61,6 +61,14 @@
                 <a-range-picker @change="dateChange" v-model="queryParam.queryDate"/>
               </a-form-item>
             </a-col>
+            <a-col :md="6" :sm="8">
+                  <a-form-item label="使用状态">
+                    <a-select placeholder="使用状态" :allowClear="true" v-model="queryParam.status" >
+                      <a-select-option value="0">正在使用</a-select-option>
+                      <a-select-option value="1">已使用完</a-select-option>
+                    </a-select>
+                  </a-form-item>
+            </a-col>
           </template>
 
           <a-col :md="6" :sm="8">
@@ -77,6 +85,10 @@
       </a-form>
     </div>
     <!-- 查询区域-END -->
+    <div class="numberWARAP">
+      <div class="total">总数量：<span >{{this.validatorRules.totalCount}}</span></div>
+      <div class="overTime">总金额：<span>{{this.validatorRules.totalPrice}}</span></div>
+    </div>
     <!-- 操作按钮区域 -->
     <div class="table-operator">
       <a-button type="primary" icon="download" @click="handleExportXls('试剂消耗报表')">导出</a-button>
@@ -127,6 +139,10 @@
         venderData: [],
         supplierValue: undefined,
         supplierData: [],
+        validatorRules: {
+          totalCount:{},//总数量
+          totalPrice:{},//总金额
+        },
         // 表头
         columns: [
           {
@@ -220,6 +236,26 @@
       initDictConfig(){ //静态字典值加载
 
       },
+      loadData(arg) {
+        //加载数据 若传入参数1则加载第一页的内容
+        if (arg === 1) {
+          this.ipagination.current = 1;
+        }
+        var params = this.getQueryParams();//查询条件
+        this.loading = true;
+        getAction(this.url.list, params).then((res) => {
+          if (res.success) {
+            this.validatorRules.totalCount=res.result.totalCount;
+            this.validatorRules.totalPrice=res.result.totalPrice;
+            this.dataSource = res.result.records.records;
+            this.ipagination.total = res.result.records.total;
+          }
+          if(res.code===510){
+            this.$message.warning(res.message)
+          }
+          this.loading = false;
+        })
+      },
       dateChange: function (value, dateString) {
         this.queryParam.queryDateStart=dateString[0];
         this.queryParam.queryDateEnd=dateString[1];
@@ -309,11 +345,17 @@
       },
       //图表信息查看
       queryDetail(record){
+        record.status=this.queryParam.status;
           this.$refs.modalForm.edit(record);
           this.$refs.modalForm.disableSubmit = false;
       },
     }
   }
 </script>
+
 <style scoped>
+.numberWARAP{width:100%;height:30px;line-height:30px;margin:20px 0;}
+.numberWARAP>div{float:left;width:50%;height:30px;line-height:30px;color:#666;font-size:20px;text-align:center;border-right:1px solid #ccc;}
+.numberWARAP>div:nth-child(2){border:none;}
+.changeColor .red td,.changeColor .red td a{color: red}
 </style>

@@ -83,6 +83,14 @@ public class PdNumericalInfController extends JeecgController<PdNumericalInf, IP
 	public ModelAndView exportXls(HttpServletRequest request, PdNumericalInf pdNumericalInf) {
 
 		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		if(oConvertUtils.isNotEmpty(pdNumericalInf.getDepartIds()) && !"undefined".equals(pdNumericalInf.getDepartIds())) {
+			pdNumericalInf.setDepartIdList(Arrays.asList(pdNumericalInf.getDepartIds().split(",")));
+		}else{
+			//查询科室下所有下级科室的ID
+			SysDepart sysDepart=new SysDepart();
+			List<String> departList=pdDepartService.selectListDepart(sysDepart);
+			pdNumericalInf.setDepartIdList(departList);
+		}
 		List<PdNumericalInf> list = pdNumericalInfService.selectList(pdNumericalInf);//
 		String tjType=pdNumericalInf.getTjType();
 		// Step.4 AutoPoi 导出Excel

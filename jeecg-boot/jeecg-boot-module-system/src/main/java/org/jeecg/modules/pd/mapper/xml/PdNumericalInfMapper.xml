@@ -25,8 +25,20 @@
         a.dis_price,
         a.item_price,
         a.item_num,
-        a.the_stock_num,
-        a.the_stock_price,
+        (a.the_stock_num +
+        in_record_num +
+        call_in_num -
+         purchase_num  -
+         call_out_num -
+         stock_num-
+         rejected_num) as the_stock_num,
+         (a.the_stock_price +
+        in_record_price +
+        call_in_price -
+         purchase_price  -
+         call_out_price -
+         stock_price-
+         rejected_price) as the_stock_price,
         a.spec_quantity_num,
         a.spec_reality_num,
         a.dis_spec_num,
@@ -55,7 +67,7 @@
                   #{item}
              </foreach>
         </if>
-            order by a.month,t.depart_type,a.in_record_num  desc
+            order by a.month desc,t.depart_type,a.in_record_num  desc
         </where>
 	</select>
 
