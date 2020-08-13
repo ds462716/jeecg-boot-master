@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Param;
 import org.jeecg.modules.pd.entity.PdStockRecord;
 import org.jeecg.modules.pd.vo.RpInAndOutReportPage;
+import org.jeecg.modules.pd.vo.RpSupplierUseReportPage;
 
 import java.util.HashMap;
 import java.util.List;
@@ -95,4 +96,8 @@ public interface PdStockRecordMapper extends BaseMapper<PdStockRecord> {
      * @return
      */
     RpInAndOutReportPage getOutTotalData(RpInAndOutReportPage entity);
+
+    IPage<RpSupplierUseReportPage> supplierUseReport(Page<RpSupplierUseReportPage> page, @Param("entity")RpSupplierUseReportPage rpSupplierUseReportPage);
+
+    List<RpSupplierUseReportPage> supplierUseReport(@Param("entity")RpSupplierUseReportPage rpSupplierUseReportPage);
 }

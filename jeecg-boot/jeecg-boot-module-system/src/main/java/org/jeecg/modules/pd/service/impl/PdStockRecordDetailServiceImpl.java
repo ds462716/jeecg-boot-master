@@ -3,10 +3,12 @@ package org.jeecg.modules.pd.service.impl;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.jeecg.modules.pd.entity.PdDosageDetail;
 import org.jeecg.modules.pd.entity.PdStockRecord;
 import org.jeecg.modules.pd.entity.PdStockRecordDetail;
 import org.jeecg.modules.pd.mapper.PdStockRecordDetailMapper;
 import org.jeecg.modules.pd.service.IPdStockRecordDetailService;
+import org.jeecg.modules.pd.vo.RpUseDetailReportPage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -91,5 +93,27 @@ public class PdStockRecordDetailServiceImpl extends ServiceImpl<PdStockRecordDet
 	@Override
 	public List<PdStockRecordDetail> selectStockRecordList( PdStockRecordDetail pdStockRecordDetail) {
 		return pdStockRecordDetailMapper.selectStockRecordList(pdStockRecordDetail);
+	}
+
+	/**
+	 * 出入库明细统计报表
+	 * @param page
+	 * @param inDetail
+	 * @return
+	 */
+	@Override
+	public IPage<PdStockRecordDetail> rpInDetailReport(Page<PdStockRecordDetail> page, PdStockRecordDetail inDetail) {
+		return pdStockRecordDetailMapper.rpInDetailReport(page, inDetail);
+	}
+
+	/**
+	 * 用量明细统计报表
+	 * @param usePageDetail
+	 * @param rpUseDetailReportPage
+	 * @return
+	 */
+	@Override
+	public IPage<RpUseDetailReportPage> rpUseDetailReport(Page<RpUseDetailReportPage> usePageDetail, RpUseDetailReportPage rpUseDetailReportPage) {
+		return pdStockRecordDetailMapper.rpUseDetailReport(usePageDetail, rpUseDetailReportPage);
 	}
 }

@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.jeecg.modules.pd.entity.*;
 import org.jeecg.modules.pd.vo.RpInAndOutReportPage;
+import org.jeecg.modules.pd.vo.RpSupplierUseReportPage;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -192,4 +193,7 @@ public interface IPdStockRecordService extends IService<PdStockRecord> {
 	IPage<RpInAndOutReportPage> rpInAndOutReport(Page<RpInAndOutReportPage> pageList, RpInAndOutReportPage rpInAndOutReportPage);
 	List<RpInAndOutReportPage> rpInAndOutReport(RpInAndOutReportPage rpInAndOutReportPage);
 
+    IPage<RpSupplierUseReportPage> supplierUseReport(Page<RpSupplierUseReportPage> page, RpSupplierUseReportPage rpSupplierUseReportPage);
+
+	List<RpSupplierUseReportPage> supplierUseReport(RpSupplierUseReportPage rpSupplierUseReportPage);
 }

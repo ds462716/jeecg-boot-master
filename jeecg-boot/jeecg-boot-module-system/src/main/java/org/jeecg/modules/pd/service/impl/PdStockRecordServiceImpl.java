@@ -18,6 +18,7 @@ import org.jeecg.modules.pd.service.*;
 import org.jeecg.modules.pd.util.UUIDUtil;
 import org.jeecg.modules.pd.vo.PdGoodsAllocationPage;
 import org.jeecg.modules.pd.vo.RpInAndOutReportPage;
+import org.jeecg.modules.pd.vo.RpSupplierUseReportPage;
 import org.jeecg.modules.system.entity.SysDepart;
 import org.jeecg.modules.system.entity.SysPermission;
 import org.jeecg.modules.system.service.ISysDepartService;
@@ -1906,6 +1907,26 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
 //            }
 //        }
         return list;
+    }
+
+    /**
+     *供应商用量使用统计
+     * @param page
+     * @param rpSupplierUseReportPage
+     * @return
+     */
+    @Override
+    public IPage<RpSupplierUseReportPage> supplierUseReport(Page<RpSupplierUseReportPage> page, RpSupplierUseReportPage rpSupplierUseReportPage) {
+        return pdStockRecordMapper.supplierUseReport(page,rpSupplierUseReportPage);
+    }
+    /**
+     *供应商用量使用统计
+     * @param rpSupplierUseReportPage
+     * @return
+     */
+    @Override
+    public List<RpSupplierUseReportPage> supplierUseReport(RpSupplierUseReportPage rpSupplierUseReportPage) {
+        return pdStockRecordMapper.supplierUseReport(rpSupplierUseReportPage);
     }
 
     /**
