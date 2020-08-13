@@ -75,3 +75,6 @@ ADD COLUMN `hospital_code`  varchar(64) NULL COMMENT '医院编号' AFTER `depar
 -- 九江医院加入省标码2020年8月3日11:24:10
 ALTER TABLE `pd_product`
 ADD COLUMN `dart_code`  varchar(64) NULL COMMENT '省标码' AFTER `jde_code`;
+
+-- 赣州市立医院供应商用量统计查询
+INSERT INTO `sys_permission` VALUES ('1293093425294729218', 'f0675b52d89100ee88472b6800754a08', '供应商用量使用统计报表', '/pd/report/RpSupplierUseReport', 'pd/report/RpSupplierUseReport', null, null, '1', '0', null, '1', '1.20', '0', null, '1', '1', '0', '0', null, 'admin', '2020-08-11 15:54:32', 'admin', '2020-08-11 15:54:44', '0', '0', '1', '0');

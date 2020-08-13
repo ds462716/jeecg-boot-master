@@ -3,8 +3,10 @@ package org.jeecg.modules.pd.service;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
+import org.jeecg.modules.pd.entity.PdDosageDetail;
 import org.jeecg.modules.pd.entity.PdStockRecord;
 import org.jeecg.modules.pd.entity.PdStockRecordDetail;
+import org.jeecg.modules.pd.vo.RpUseDetailReportPage;
 
 import java.util.List;
 import java.util.Map;
@@ -51,4 +53,7 @@ public interface IPdStockRecordDetailService extends IService<PdStockRecordDetai
 
 	List<PdStockRecordDetail> selectStockRecordList(PdStockRecordDetail pdStockRecordDetail);
 
+	IPage<PdStockRecordDetail> rpInDetailReport(Page<PdStockRecordDetail> inPageDetail, PdStockRecordDetail inDetail);
+
+	IPage<RpUseDetailReportPage> rpUseDetailReport(Page<RpUseDetailReportPage> usePageDetail, RpUseDetailReportPage rpUseDetailReportPage);
 }

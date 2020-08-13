@@ -4,8 +4,10 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Param;
+import org.jeecg.modules.pd.entity.PdDosageDetail;
 import org.jeecg.modules.pd.entity.PdStockRecord;
 import org.jeecg.modules.pd.entity.PdStockRecordDetail;
+import org.jeecg.modules.pd.vo.RpUseDetailReportPage;
 
 import java.util.List;
 import java.util.Map;
@@ -54,4 +56,7 @@ public interface PdStockRecordDetailMapper extends BaseMapper<PdStockRecordDetai
 	public List<PdStockRecordDetail> selectStockRecordList(@Param("entity") PdStockRecordDetail pdStockRecordDetail);
 
 
+    IPage<PdStockRecordDetail> rpInDetailReport(Page<PdStockRecordDetail> page, @Param("entity")PdStockRecordDetail inDetail);
+
+	IPage<RpUseDetailReportPage> rpUseDetailReport(Page<RpUseDetailReportPage> usePageDetail, @Param("entity") RpUseDetailReportPage rpUseDetailReportPage);
 }
