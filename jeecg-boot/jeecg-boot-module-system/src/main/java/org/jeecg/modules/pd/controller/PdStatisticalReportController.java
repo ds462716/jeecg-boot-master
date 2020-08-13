@@ -17,6 +17,7 @@ import org.jeecg.modules.pd.entity.PdStockRecordDetail;
 import org.jeecg.modules.pd.service.IPdStatisticalReportService;
 import org.jeecg.modules.pd.service.IPdStockRecordDetailService;
 import org.jeecg.modules.pd.vo.RpInAndOutDetailReportPage;
+import org.jeecg.modules.pd.vo.RpReDetailReportPage;
 import org.jeecg.modules.pd.vo.RpUseDetailReportPage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -69,7 +70,7 @@ public class PdStatisticalReportController extends JeecgController<PdStatistical
 
     /**
      * zxh用量明细统计报表
-     * @param dosageDetail
+     * @param rpUseDetailReportPage
      * @param pageNo
      * @param pageSize
      * @return
@@ -91,4 +92,30 @@ public class PdStatisticalReportController extends JeecgController<PdStatistical
         usePage.setRecords(inReportList);
         return Result.ok(usePage);
     }
+
+    /**
+     * zxh用量明细统计报表
+     * @param rpReDetailReportPage
+     * @param pageNo
+     * @param pageSize
+     * @return
+     */
+    @GetMapping(value = "/rpReDetailReport")
+    public Result<?> rpReDetailReport(RpReDetailReportPage rpReDetailReportPage,
+                                      @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
+                                      @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize) {
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        rpReDetailReportPage.setDepartParentId(sysUser.getDepartParentId());
+        Page<RpReDetailReportPage> rePageDetail = new Page<RpReDetailReportPage>(pageNo, pageSize);
+        IPage<RpReDetailReportPage> usePageDetailList = pdStatisticalReportService.rpReDetailReport(rePageDetail, rpReDetailReportPage);
+        List<RpReDetailReportPage> useList = usePageDetailList.getRecords();
+        List<RpReDetailReportPage> inReportList = JSON.parseArray(JSON.toJSONString(useList), RpReDetailReportPage.class);
+        Page<RpReDetailReportPage> rePage = new Page<RpReDetailReportPage>(pageNo, pageSize);
+        rePage.setTotal(usePageDetailList.getTotal());
+        rePage.setSize(usePageDetailList.getSize());
+        rePage.setCurrent(usePageDetailList.getCurrent());
+        rePage.setRecords(inReportList);
+        return Result.ok(rePage);
+    }
+
 }

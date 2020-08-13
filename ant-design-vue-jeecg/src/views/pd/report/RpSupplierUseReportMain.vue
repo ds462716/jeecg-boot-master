@@ -227,6 +227,112 @@
           </div>
         </a-card>
       </a-tab-pane>
+      <a-tab-pane tab="供应商退货明细" key="3">
+        <a-card :bordered="false">
+          <!-- 查询区域 -->
+          <div class="table-page-search-wrapper">
+            <a-form layout="inline" @keyup.enter.native="reSearchQuery">
+              <a-row :gutter="24">
+                <a-col :md="6" :sm="8">
+                  <a-form-item label="退货单号">
+                    <a-input placeholder="请输入退货单号" v-model="reQueryParam.rejectedNo"></a-input>
+                  </a-form-item>
+                </a-col>
+                <a-col :md="6" :sm="8">
+                  <a-form-item label="产品名称">
+                    <a-input placeholder="请选输入品名称" v-model="reQueryParam.productName"></a-input>
+                  </a-form-item>
+                </a-col>
+                <a-col :md="6" :sm="8">
+                  <a-form-item label="产品编号">
+                    <a-input placeholder="请输入产品编号" v-model="reQueryParam.productNumber"></a-input>
+                  </a-form-item>
+                </a-col>
+
+                <template v-if="reToggleSearchStatus">
+                  <a-col :md="6" :sm="8">
+                    <a-form-item label="规格">
+                      <a-input placeholder="请输入规格" v-model="reQueryParam.spec"></a-input>
+                    </a-form-item>
+                  </a-col>
+                  <a-col :md="6" :sm="8">
+                    <a-form-item label="有效期">
+                      <a-range-picker @change="reExpDateChange" v-model="reQueryParam.queryExpDate"/>
+                    </a-form-item>
+                  </a-col>
+                  <a-col :md="6" :sm="8">
+                    <a-form-item label="注册证">
+                      <a-input placeholder="请输入注册证" v-model="reQueryParam.registration"></a-input>
+                    </a-form-item>
+                  </a-col>
+                  <a-col :md="6" :sm="8">
+                    <a-form-item label="型号">
+                      <a-input placeholder="请输入型号" v-model="reQueryParam.version"></a-input>
+                    </a-form-item>
+                  </a-col>
+                  <a-col :md="6" :sm="8">
+                    <a-form-item label="批号">
+                      <a-input placeholder="请输入批号" v-model="reQueryParam.batchNo"></a-input>
+                    </a-form-item>
+                  </a-col>
+                  <a-col :md="6" :sm="8">
+                    <a-form-item label="生产厂家">
+                      <a-select
+                        showSearch
+                        :venderId="reVenderValue"
+                        placeholder="请选择生产厂家"
+                        :defaultActiveFirstOption="false"
+                        :allowClear="true"
+                        :showArrow="true"
+                        :filterOption="false"
+                        @search="reVenderHandleSearch"
+                        @change="reVenderHandleChange"
+                        @focus="reVenderHandleSearch"
+                        :notFoundContent="notFoundContent"
+                        v-model="reQueryParam.venderId"
+                      >
+                        <a-select-option v-for="d in reVenderData" :key="d.value">{{d.text}}</a-select-option>
+                      </a-select>
+                    </a-form-item>
+                  </a-col>
+                </template>
+
+                <a-col :md="6" :sm="8">
+            <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
+              <a-button type="primary" @click="reSearchQuery" icon="search">查询</a-button>
+              <a-button type="primary" @click="reSearchReset" icon="reload" style="margin-left: 8px">重置</a-button>
+              <a @click="reHandleToggleSearch" style="margin-left: 8px">
+                {{ reToggleSearchStatus ? '收起' : '展开' }}
+                <a-icon :type="reToggleSearchStatus ? 'up' : 'down'"/>
+              </a>
+            </span>
+                </a-col>
+              </a-row>
+            </a-form>
+          </div>
+          <!-- 查询区域-END -->
+          <!-- 操作按钮区域 -->
+          <div class="table-operator">
+            <!--<a-button type="primary" icon="download" @click="handleExportXls()">导出</a-button>-->
+          </div>
+          <!-- table区域-begin -->
+          <div>
+            <a-table
+              CLASS="changeColor"
+              ref="re_table"
+              size="middle"
+              bordered
+              rowKey="id"
+              :columns="reTable.columns"
+              :dataSource="reTable.dataSource"
+              :pagination="reTable.ipagination"
+              :loading="reTable.loading"
+              :scroll="reTable.tableScroll"
+              @change="reHandleTableChange">
+            </a-table>
+          </div>
+        </a-card>
+      </a-tab-pane>
     </a-tabs>
 
   </a-card>
@@ -441,6 +547,121 @@
           ],
         },
 
+        reQueryParam: {},
+        /* 查询折叠 */
+        reToggleSearchStatus:false,
+        reVenderValue: undefined,
+        reVenderData: [],
+        // 表头
+        reTable: {
+          loading:false,
+          dataSource: [],
+          ipagination:{
+            current: 1,
+            pageSize: 10,
+            pageSizeOptions: ['10', '20', '30', '50', '100'],
+            showTotal: (total, range) => {
+              return range[0] + "-" + range[1] + " 共" + total + "条"
+            },
+            showQuickJumper: true,
+            showSizeChanger: true,
+            total: 0
+          },
+          tableScroll:{x :3000},
+          columns: [
+            { title: '序号', dataIndex: '', key:'rowIndex', width:60, align:"center",
+              customRender:function (t,r,index) {
+                return parseInt(index)+1;
+              }
+            },
+            { title:'退货日期', align:"center", width:'100px', dataIndex: 'rejectedDate',
+              customRender:function (text) {
+                return !text?"":(text.length>10?text.substr(0,10):text)
+              }
+            },
+            {
+              title:'供应商',
+              align:"center",
+              scopedSlots: {customRender: "ellipsisText"},
+              dataIndex: 'supplierName'
+            },
+            {
+              title:'退货单号',
+              align:"center",
+              dataIndex: 'rejectedNo'
+            },
+            {
+              title:'产品编号',
+              align:"center",
+              dataIndex: 'productNumber'
+            },
+            {
+              title:'产品名称',
+              align:"center",
+              scopedSlots: {customRender: "ellipsisText"},
+              dataIndex: 'productName'
+            },
+            {
+              title:'规格',
+              align:"center",
+              dataIndex: 'spec'
+            },
+            {
+              title:'型号',
+              align:"center",
+              dataIndex: 'version'
+            },
+            {
+              title:'批号',
+              align:"center",
+              dataIndex: 'batchNo'
+            },
+            { title:'有效期', align:"center", dataIndex: 'expDate', width:'100px',
+              customRender:function (text) {
+                return !text?"":(text.length>10?text.substr(0,10):text)
+              }
+            },
+            {
+              title:'退货数量',
+              align:"center",
+              dataIndex: 'rejectedCount'
+            },
+            {
+              title:'单位',
+              align:"center",
+              dataIndex: 'unitName'
+            },
+            {
+              title:'单价',
+              align:"center",
+              dataIndex: 'purchasePrice'
+            },
+            {
+              title:'金额',
+              align:"center",
+              dataIndex: 'rejectedPrice'
+            },
+            { title:'生产厂家', align:"center", width:'250px', dataIndex: 'venderName' },
+            {
+              title:'注册证号',
+              align:"center",
+              scopedSlots: {customRender: "ellipsisText"},
+              dataIndex: 'productRegistration'
+            },
+            {
+              title:'备注',
+              align:"center",
+              scopedSlots: {customRender: "ellipsisText"},
+              dataIndex: 'remarks'
+            },
+            {
+              title:'产品收费代码',
+              align:"center",
+              dataIndex: 'chargeCode'
+            },
+
+          ],
+        },
         visible: false,
         initParams:{
           supplierId :"",
@@ -458,10 +679,11 @@
           exportInReportXls: "/pd/pdStockRecordIn/exportInReportXls",
           queryVender:"/pd/pdVender/getVenderList",
           useList: "/pd/pdStatisticalReport/rpUseDetailReport",
+          reList: "/pd/pdStatisticalReport/rpReDetailReport",
 
         },
         dictOptions:{
-          outType:[],
+
         },
       }
     },
@@ -483,6 +705,9 @@
         this.useTable.ipagination.current = 1;
         this.useTable.ipagination.pageSize = 10;
         this.useTable.dataSource = [];
+        this.reTable.ipagination.current = 1;
+        this.reTable.ipagination.pageSize = 10;
+        this.reTable.dataSource = [];
         this.visible = false;
         this.inToggleSearchStatus = false;
         this.$emit('close');
@@ -505,6 +730,8 @@
           this.inLoadData(1);
         }else if(key==2){
           this.useLoadData(1);
+        }else if(key==3){
+          this.reLoadData(1);
         }
       },
       //生产厂家下拉
@@ -525,6 +752,8 @@
             this.inVenderData = data;
           }else if(flag == "2"){
             this.useVenderData = data;
+          }else if(flag == "3"){
+            this.reVenderData = data;
           }
         })
       },
@@ -675,6 +904,69 @@
       },
       useVenderHandleChange(value) {
         this.useVenderValue = value;
+        this.getList(value,this.url.queryVender,"2");
+      },
+      //生产厂家查询end
+      //供应商使用明细end
+
+      //供应商退货明细start
+      reLoadData(arg) {
+        if (arg === 1) {
+          this.reTable.ipagination.current = 1;
+        }
+        let params = this.getReQueryParams();//查询条件
+        this.reTable.loading = true;
+        getAction(this.url.reList, params).then((res) => {
+          if (res.success) {
+            this.reTable.dataSource = res.result.records;
+            this.reTable.ipagination.total = res.result.total;
+          }
+          if(res.code===510){
+            this.$message.warning(res.message)
+          }
+          this.reTable.loading = false;
+        })
+      },
+      //获取使用条件
+      getReQueryParams() {
+        //获取查询条件
+        let param = this.reQueryParam;
+        param.pageNo = this.reTable.ipagination.current;
+        param.pageSize = this.reTable.ipagination.pageSize;
+        param.supplierId = this.initParams.supplierId;
+        param.yearMonth = this.initParams.yearMonth;
+        delete param.queryExpDate; //范围参数不传递后台，传后台会报错
+        return filterObj(param);
+      },
+      //表格分页事件
+      reHandleTableChange(pagination, filters, sorter) {
+        this.reTable.ipagination = pagination;
+        this.reLoadData();
+      },
+      //有效期
+      reExpDateChange: function (value, dateString) {
+        this.reQueryParam.queryExpDateStart=dateString[0];
+        this.reQueryParam.queryExpDateEnd=dateString[1];
+        // delete this.queryParam.queryExpDate; //范围参数不传递后台，传后台会报错
+      },
+      //入库明细搜索
+      reSearchQuery() {
+        this.reLoadData();
+      },
+      //入库明细重置
+      reSearchReset() {
+        this.reQueryParam = {}
+        this.reLoadData();
+      },
+      reHandleToggleSearch(){
+        this.reToggleSearchStatus = !this.reToggleSearchStatus;
+      },
+      //生产厂家查询start
+      reVenderHandleSearch(value) {
+        this.getList(value,this.url.queryVender,"2");
+      },
+      reVenderHandleChange(value) {
+        this.reVenderValue = value;
         this.getList(value,this.url.queryVender,"2");
       },
       //生产厂家查询end

@@ -223,5 +223,105 @@
             )
         </if>
     </select>
-
+    <!-- zxh供应商用量统计查询退货明细 -->
+    <select id="rpReDetailReport" resultType="org.jeecg.modules.pd.vo.RpReDetailReportPage">
+        SELECT
+        a.id,
+        a.rejected_id,
+        s.`name` AS supplierName,
+        b.rejected_date,
+        b.rejected_no,
+        b.remarks as "remarks",
+        a.product_id,
+        a.rejected_count,
+        srd.purchase_price,
+        srd.purchase_price * a.rejected_count AS amount_money,
+        ps.supplier_id,
+        pp.number as productNumber,
+        pp.`name` as productName,
+        pp.spec,
+        pp.version,
+        a.batch_no,
+        ps.exp_date,
+        pp.unit_id,
+        pu.`name` AS unitName,
+        pv.`name` AS venderName,
+        pp.registration as productRegistration,
+        pp.charge_code,
+        pp.jde_code AS jdeCode,
+        pp.dart_code AS dartCode,
+        pp.biding_number as bidingNumber,
+        pv.jde_code AS "venderJdeCode",
+        s.jde_code AS "supplierJdeCode"
+        FROM
+        pd_rejected_detail a
+        LEFT JOIN pd_rejected b ON a.rejected_id = b.id
+        LEFT JOIN pd_supplier s on b.supplier_id = s.id
+        LEFT JOIN pd_product_stock ps on a.product_stock_id = ps.id
+        LEFT JOIN pd_stock_record_detail srd on ps.record_detail_id = srd.id
+        LEFT JOIN pd_product pp ON a.product_id = pp.id
+        LEFT JOIN pd_unit pu ON pp.unit_id = pu.id
+        LEFT JOIN pd_vender pv ON pp.vender_id = pv.id
+        WHERE
+        b.del_flag = '0'
+        AND a.rejected_count >0
+        AND (
+        b.supplier_id IS NOT NULL
+        AND b.supplier_id &lt;&gt; ''
+        )
+        <if test="entity.yearMonth != null and entity.yearMonth != ''">
+            AND date_format(b.create_time,'%Y-%m') = #{entity.yearMonth}
+        </if>
+        <if test="entity.supplierId != null and entity.supplierId != ''">
+            AND ps.supplier_id = #{entity.supplierId}
+        </if>
+        <if test="entity.departParentId != null and entity.departParentId != ''">
+            AND a.depart_parent_id = #{entity.departParentId}
+        </if>
+        <if test="entity.queryExpDateStart != null and entity.queryExpDateStart != ''">
+            AND date_format( ps.exp_date, '%Y-%m-%d') &gt;= #{entity.queryExpDateStart}
+        </if>
+        <if test="entity.queryExpDateEnd != null and entity.queryExpDateEnd != ''">
+            AND date_format( ps.exp_date, '%Y-%m-%d') &lt;= #{entity.queryExpDateEnd}
+        </if>
+        <if test="entity.batchNo != null and entity.batchNo != ''">
+            AND a.batch_no LIKE concat('%',#{entity.batchNo},'%')
+        </if>
+        <if test="entity.rejectedNo != null and entity.rejectedNo != ''">
+            AND b.rejected_no LIKE concat('%',#{entity.rejectedNo},'%')
+        </if>
+        <if test="entity.queryDateStart != null and entity.queryDateStart != ''">
+            AND date_format( b.create_time, '%Y-%m-%d') &gt;= #{entity.queryDateStart}
+        </if>
+        <if test="entity.queryDateEnd != null and entity.queryDateEnd != ''">
+            AND date_format( b.create_time, '%Y-%m-%d') &lt;= #{entity.queryDateEnd}
+        </if>
+        <if test="entity.productNumber != null and entity.productNumber != ''">
+            AND pp.number LIKE concat('%',#{entity.productNumber},'%')
+        </if>
+        <if test="entity.venderId != null and entity.venderId != ''">
+            AND pp.vender_id = #{entity.venderId}
+        </if>
+        <if test="entity.spec != null and entity.spec != ''">
+            AND pp.spec LIKE concat('%',#{entity.spec},'%')
+        </if>
+        <if test="entity.version != null and entity.version != ''">
+            AND pp.version LIKE concat('%',#{entity.version},'%')
+        </if>
+        <if test="entity.registration != null and entity.registration != ''">
+            AND pp.registration LIKE concat('%',#{entity.registration},'%')
+        </if>
+        <if test="entity.productName != null and entity.productName != ''">
+            AND (
+            pp.number LIKE concat('%',#{entity.productName},'%')
+            or pp.name LIKE concat('%',#{entity.productName},'%')
+            or pp.py LIKE concat('%',#{entity.productName},'%')
+            or pp.wb LIKE concat('%',#{entity.productName},'%')
+            or pp.bname LIKE concat('%',#{entity.productName},'%')
+            or pp.bpy LIKE concat('%',#{entity.productName},'%')
+            or pp.bwb LIKE concat('%',#{entity.productName},'%')
+            or pp.zdy LIKE concat('%',#{entity.productName},'%')
+            )
+        </if>
+    </select>
 </mapper>

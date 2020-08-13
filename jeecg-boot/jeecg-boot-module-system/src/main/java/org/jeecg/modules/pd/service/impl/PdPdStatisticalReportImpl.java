@@ -7,6 +7,7 @@ import org.jeecg.modules.pd.entity.PdStatisticalReport;
 import org.jeecg.modules.pd.entity.PdStockRecordDetail;
 import org.jeecg.modules.pd.mapper.PdStatisticalReportMapper;
 import org.jeecg.modules.pd.service.IPdStatisticalReportService;
+import org.jeecg.modules.pd.vo.RpReDetailReportPage;
 import org.jeecg.modules.pd.vo.RpUseDetailReportPage;
 import org.springframework.stereotype.Service;
 
@@ -39,5 +40,15 @@ public class PdPdStatisticalReportImpl extends ServiceImpl<PdStatisticalReportMa
     @Override
     public IPage<RpUseDetailReportPage> rpUseDetailReport(Page<RpUseDetailReportPage> usePageDetail, RpUseDetailReportPage rpUseDetailReportPage) {
         return baseMapper.rpUseDetailReport(usePageDetail,rpUseDetailReportPage);
+    }
+    /**
+     * zxh退货明细统计报表
+     * @param rePageDetail
+     * @param rpReDetailReportPage
+     * @return
+     */
+    @Override
+    public IPage<RpReDetailReportPage> rpReDetailReport(Page<RpReDetailReportPage> rePageDetail, RpReDetailReportPage rpReDetailReportPage) {
+        return baseMapper.rpReDetailReport(rePageDetail,rpReDetailReportPage);
     }
 }
