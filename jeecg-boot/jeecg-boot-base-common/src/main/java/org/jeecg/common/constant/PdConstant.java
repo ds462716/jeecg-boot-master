@@ -88,6 +88,7 @@ public interface PdConstant {
 	public final static String ORDER_NO_FIRST_LETTER_TB = "TB";//套包
 	public final static String ORDER_NO_FIRST_LETTER_FP = "FP";//发票
 	public final static String ORDER_NO_FIRST_LETTER_CSKC = "CSKC";//初始化库存
+	public final static String ORDER_NO_FIRST_LETTER_SGMB = "SGMB";//申购模板
 
 	//是否过期
 	public final static String PD_STATE="pd_state";

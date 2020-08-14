@@ -1405,7 +1405,26 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
         return productStock;
     }
 
-
+    //开瓶新增已使用的库存明细
+    @Transactional
+    public PdProductStock insertProdStockSj(PdProductStock productStock){
+        //更新老的库存明细表的数据
+        PdProductStock stock=new PdProductStock();
+        stock.setId(productStock.getId());
+        stock=pdProductStockMapper.getOne(stock);
+        Double stockNum=stock.getStockNum();
+        stock.setStockNum(stockNum-1);
+        stock.setSpecNum(stock.getSpecQuantity() == null ? 0D : stock.getSpecQuantity() * stock.getStockNum());// 库存规格数量= 产品规格数量* 库存数量
+        pdProductStockMapper.updateById(stock);
+        //新增一条明细记录
+        productStock.setId(null);
+        productStock.setStockNum(1.00);
+        Double specQuantity=productStock.getSpecQuantity();
+        productStock.setSpecNum(specQuantity);
+        productStock.setNestatStatus(PdConstant.STOCK_NESTAT_STATUS_0);
+        pdProductStockMapper.insert(productStock);
+        return productStock;
+    }
 
     //闭瓶更新库存信息
     @Transactional

@@ -126,3 +126,47 @@ ADD COLUMN `spec_quantity` double(11, 2) NULL COMMENT '库存规格数量' AFTER
 -- 2020年8月13日 18:52:59   用量明细表库存规格数量字段调整
  ALTER TABLE  `pd_dosage_detail`
 CHANGE COLUMN `spec_quantity` `spec_num` double(11, 2) NULL DEFAULT NULL COMMENT '库存规格数量' AFTER `his_package_flag`;
+
+
+-- 2020年8月14日 18:52:59   新建申购模板表及模板明细表
+CREATE TABLE `pd_purchase_temp` (
+  `id` varchar(36) NOT NULL COMMENT '主键',
+  `create_by` varchar(50) DEFAULT NULL COMMENT '创建人',
+  `create_time` datetime DEFAULT NULL COMMENT '创建日期',
+  `update_by` varchar(64) DEFAULT NULL COMMENT '更新人',
+  `update_time` datetime DEFAULT NULL COMMENT '更新日期',
+  `sys_org_code` varchar(64) DEFAULT NULL COMMENT '所属部门',
+  `temp_no` varchar(64) DEFAULT NULL COMMENT '模板编号',
+  `temp_name` varchar(100) DEFAULT NULL COMMENT '模板名称',
+  `remarks` varchar(200) DEFAULT NULL COMMENT '备注信息',
+  `del_flag` varchar(4) DEFAULT NULL COMMENT '删除状态',
+  `total_num` double(32,2) DEFAULT NULL COMMENT '模板产品总数量',
+  `depart_id` varchar(64) DEFAULT NULL COMMENT '模板科室编号',
+  `depart_parent_id` varchar(64) DEFAULT NULL COMMENT '所属医院ID',
+  `time_type` varchar(4) DEFAULT NULL COMMENT '模板类型',
+  `user_id` varchar(64) DEFAULT NULL COMMENT '模板创建人编号',
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='申购模板主表';
+
+ CREATE TABLE `pd_purchase_temp_detail` (
+  `id` varchar(36) NOT NULL COMMENT '主键',
+  `create_by` varchar(50) DEFAULT NULL COMMENT '创建人',
+  `create_time` datetime DEFAULT NULL COMMENT '创建日期',
+  `update_by` varchar(50) DEFAULT NULL COMMENT '更新人',
+  `update_time` datetime DEFAULT NULL COMMENT '更新日期',
+  `sys_org_code` varchar(64) DEFAULT NULL COMMENT '所属部门',
+  `temp_no` varchar(64) DEFAULT NULL COMMENT '模板编号',
+  `product_id` varchar(64) DEFAULT NULL COMMENT '产品ID',
+  `remarks` varchar(200) DEFAULT NULL COMMENT '备注',
+  `del_flag` varchar(4) DEFAULT '0' COMMENT '删除状态',
+  `order_num` double(32,2) DEFAULT NULL COMMENT '申购数量',
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='申购模板明细表';
+
+
+-- 2020年8月14日 18:52:59   增加采购模板菜单
+ INSERT INTO  `sys_permission`  VALUES ('1294088254068539393', '1218784310368473089', '采购模板', '/pd/PdPurchaseTemp', 'pd/PdPurchaseTempList', NULL, NULL, 1, '0', NULL, '1', 4.00, 0, NULL, 1, 1, 0, 0, NULL, 'admin', '2020-08-14 09:47:37', 'admin', '2020-08-14 09:47:51', 0, 0, '1', 0);
+-- 2020年8月14日 18:52:59   增加申购模板静态字段
+INSERT INTO  `sys_dict` VALUES ('1294109481097166849', '申购模板类型', 'temp_type', '1：私有   2：公用', 0, 'admin', '2020-08-14 11:11:58', 'admin', '2020-08-14 11:12:49', 0);
+INSERT INTO  `sys_dict_item`  VALUES ('1294109619622445057', '1294109481097166849', '公用', '2', '', 2, 1, 'admin', '2020-08-14 11:12:31', 'admin', '2020-08-14 11:12:38');
+INSERT INTO  `sys_dict_item` VALUES ('1294109566577082369', '1294109481097166849', '私有', '1', '', 1, 1, 'admin', '2020-08-14 11:12:19', 'admin', '2020-08-14 11:12:42');

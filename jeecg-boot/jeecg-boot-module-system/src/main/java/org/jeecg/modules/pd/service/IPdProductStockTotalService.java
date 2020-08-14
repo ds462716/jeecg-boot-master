@@ -152,6 +152,10 @@ public interface IPdProductStockTotalService extends IService<PdProductStockTota
 
     public PdProductStock insertProdStock(PdProductStock productStock);
 
+    public PdProductStock insertProdStockSj(PdProductStock productStock);
+    /**
+     * 试剂开瓶用
+     */
     public PdProductStock closeProdStock(PdProductStock productStock);
 
     /**

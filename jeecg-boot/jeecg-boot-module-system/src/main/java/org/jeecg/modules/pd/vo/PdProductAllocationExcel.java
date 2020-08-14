@@ -43,6 +43,8 @@ public class PdProductAllocationExcel {
     /**库存占用状态  0:使用中   1:未使用 2:已用完*/
     @Excel(name = "库存占用状态 0:使用中   1:未使用", width = 15)
     private String nestatStatus;
+    @Excel(name = "生产厂家", width = 15)
+    private String venderName;
     /**条码集合*/
     @Excel(name = "唯一码", width = 15)
     private String refBarCodes;

@@ -618,7 +618,7 @@ public class PdProductServiceImpl extends ServiceImpl<PdProductMapper, PdProduct
                                 result.setMessage("该试剂不在当前部门库存中，请确认在开瓶");
                             }else {
                                 newPdProductStock.setRefBarCode(Barcode);
-                                PdProductStock productStock_i = pdProductStockTotalService.insertProdStock(newPdProductStock);
+                                PdProductStock productStock_i = pdProductStockTotalService.insertProdStockSj(newPdProductStock);
                                 //开瓶记录数据插入
                                 PdBottleInf bottleInf = new PdBottleInf();
                                 bottleInf.setBoottleBy(sysUser.getRealname());//开瓶操作人
