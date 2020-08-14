@@ -46,7 +46,7 @@ public class PdStatisticalReportController extends JeecgController<PdStatistical
     @Autowired
     private IPdStatisticalReportService pdStatisticalReportService;
 
-
+    //供应商用量使用统计 start
     /**
      * 供应商用量使用统计
      * @param rpSupplierUseReportPage
@@ -159,5 +159,7 @@ public class PdStatisticalReportController extends JeecgController<PdStatistical
         rePage.setRecords(inReportList);
         return Result.ok(rePage);
     }
+
+    //供应商用量使用统计 end
 
 }
