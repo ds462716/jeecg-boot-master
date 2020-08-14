@@ -175,9 +175,9 @@
           },
         ],
         url: {
-          list: "/pd/pdStockRecordIn/rpInAndOutReport",
+          list: "/pd/pdStatisticalReport/rpInAndOutReport",
           departList: "/pd/pdDepart/queryListTree",
-          exportXlsUrl: "/pd/pdStockRecordIn/exportInAndOutReportXls",
+          exportXlsUrl: "/pd/pdStatisticalReport/exportInAndOutReportXls",
         },
         dictOptions:{
           inType:[],

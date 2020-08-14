@@ -675,7 +675,7 @@
           fullscreen: true,
         },
         url: {
-          inList: "/pd/pdStatisticalReport/rpInDetailReport",
+          inList: "/pd/pdStatisticalReport/supplierInDetailReport",
           exportInReportXls: "/pd/pdStockRecordIn/exportInReportXls",
           queryVender:"/pd/pdVender/getVenderList",
           useList: "/pd/pdStatisticalReport/rpUseDetailReport",

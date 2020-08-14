@@ -124,7 +124,7 @@
 
       <div class="table-operator">
         <a-tabs>
-          <a-tab-pane tab="入库明细" :forceRender="true">
+          <a-tab-pane tab="入库明细" :forceRender="true"  key="1">
             <a-table
               ref="out_table"
               size="small"
@@ -141,12 +141,7 @@
               </template>
             </a-table>
           </a-tab-pane>
-        </a-tabs>
-      </div>
-
-      <div class="table-operator">
-        <a-tabs>
-          <a-tab-pane tab="出库明细" :forceRender="true">
+          <a-tab-pane tab="出库明细" :forceRender="true"  key="2">
             <a-table
               ref="in_table"
               size="small"
@@ -165,6 +160,28 @@
           </a-tab-pane>
         </a-tabs>
       </div>
+
+      <!--<div class="table-operator">-->
+        <!--<a-tabs>-->
+          <!--<a-tab-pane tab="出库明细" :forceRender="true">-->
+            <!--<a-table-->
+              <!--ref="in_table"-->
+              <!--size="small"-->
+              <!--bordered-->
+              <!--rowKey="id"-->
+              <!--:columns="outTable.columns"-->
+              <!--:dataSource="outTable.dataSource"-->
+              <!--:pagination="outTable.ipagination"-->
+              <!--:loading="outTable.loading"-->
+              <!--:scroll="outTable.tableScroll"-->
+              <!--@change="outHandleTableChange">-->
+              <!--<template slot="htmlSlot" slot-scope="text">-->
+                <!--<div v-html="text"></div>-->
+              <!--</template>-->
+            <!--</a-table>-->
+          <!--</a-tab-pane>-->
+        <!--</a-tabs>-->
+      <!--</div>-->
     </a-card>
     <template slot="footer">
       <a-button @click="handleCancel" style="margin-right: 15px;">关  闭</a-button>
@@ -374,14 +391,14 @@
           ],
         },
         url: {
-          inList: "/pd/pdStockRecordIn/rpInDetailReport",
-          outList: "/pd/pdStockRecordIn/rpOutDetailReport",
+          inList: "/pd/pdStatisticalReport/rpInDetailReport",
+          outList: "/pd/pdStatisticalReport/rpOutDetailReport",
           querySupplier:"/pd/pdSupplier/getSupplierList",
           queryVender:"/pd/pdVender/getVenderList",
           allDepartList:"/pd/pdDepart/getSysDepartList",
           departList: "/pd/pdDepart/queryListTree",
-          exportInReportXls: "/pd/pdStockRecordIn/exportInReportXls",
-          exportOutReportXls: "/pd/pdStockRecordIn/exportOutReportXls",
+          exportInReportXls: "/pd/pdStatisticalReport/exportInReportXls",
+          exportOutReportXls: "/pd/pdStatisticalReport/exportOutReportXls",
         },
         dictOptions:{
           outType:[],

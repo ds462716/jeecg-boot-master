@@ -14,12 +14,11 @@ import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.pd.entity.PdDosageDetail;
 import org.jeecg.modules.pd.entity.PdStatisticalReport;
 import org.jeecg.modules.pd.entity.PdStockRecordDetail;
+import org.jeecg.modules.pd.service.IPdDepartService;
 import org.jeecg.modules.pd.service.IPdStatisticalReportService;
 import org.jeecg.modules.pd.service.IPdStockRecordDetailService;
-import org.jeecg.modules.pd.vo.RpInAndOutDetailReportPage;
-import org.jeecg.modules.pd.vo.RpReDetailReportPage;
-import org.jeecg.modules.pd.vo.RpSupplierUseReportPage;
-import org.jeecg.modules.pd.vo.RpUseDetailReportPage;
+import org.jeecg.modules.pd.vo.*;
+import org.jeecg.modules.system.entity.SysDepart;
 import org.jeecgframework.poi.excel.def.NormalExcelConstants;
 import org.jeecgframework.poi.excel.entity.ExportParams;
 import org.jeecgframework.poi.excel.view.JeecgEntityExcelView;
@@ -30,6 +29,7 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -45,6 +45,8 @@ public class PdStatisticalReportController extends JeecgController<PdStatistical
 
     @Autowired
     private IPdStatisticalReportService pdStatisticalReportService;
+    @Autowired
+    private IPdDepartService pdDepartService;
 
     //供应商用量使用统计 start
     /**
@@ -85,20 +87,20 @@ public class PdStatisticalReportController extends JeecgController<PdStatistical
     }
 
     /**
-     * zxh出入库明细统计报表
+     * zxh供应商用量统计查询入库明细
      * @param inDetail
      * @param pageNo
      * @param pageSize
      * @return
      */
-    @GetMapping(value = "/rpInDetailReport")
-    public Result<?> rpInDetailReport(PdStockRecordDetail inDetail,
+    @GetMapping(value = "/supplierInDetailReport")
+    public Result<?> supplierInDetailReport(PdStockRecordDetail inDetail,
                                       @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
                                       @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize) {
         LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
         inDetail.setDepartParentId(sysUser.getDepartParentId());
         Page<PdStockRecordDetail> inPageDetail = new Page<PdStockRecordDetail>(pageNo, pageSize);
-        IPage<PdStockRecordDetail> inPageDetailList = pdStatisticalReportService.rpInDetailReport(inPageDetail, inDetail);
+        IPage<PdStockRecordDetail> inPageDetailList = pdStatisticalReportService.supplierInDetailReport(inPageDetail, inDetail);
         List<PdStockRecordDetail> inList = inPageDetailList.getRecords();
         List<RpInAndOutDetailReportPage> inReportList = JSON.parseArray(JSON.toJSONString(inList), RpInAndOutDetailReportPage.class);
         Page<RpInAndOutDetailReportPage> inPage = new Page<RpInAndOutDetailReportPage>(pageNo, pageSize);
@@ -161,5 +163,182 @@ public class PdStatisticalReportController extends JeecgController<PdStatistical
     }
 
     //供应商用量使用统计 end
+
+
+    //出入库统计报表 jiangxz  20200814  start
+    /**
+     * 出入库统计报表
+     * @param rpInAndOutReportPage
+     * @param pageNo
+     * @param pageSize
+     * @return
+     */
+    @GetMapping(value = "/rpInAndOutReport")
+    public Result<?> rpInAndOutReport(RpInAndOutReportPage rpInAndOutReportPage,
+                                      @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
+                                      @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize) {
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        rpInAndOutReportPage.setDepartParentId(sysUser.getDepartParentId());
+
+        if(oConvertUtils.isNotEmpty(rpInAndOutReportPage.getDepartIds()) && !"undefined".equals(rpInAndOutReportPage.getDepartIds())){
+            rpInAndOutReportPage.setDepartIdList(Arrays.asList(rpInAndOutReportPage.getDepartIds().split(",")));
+        }else{
+            //查询科室下所有下级科室的ID
+            SysDepart sysDepart = new SysDepart();
+            List<String> departList = pdDepartService.selectListDepart(sysDepart);
+            rpInAndOutReportPage.setDepartIdList(departList);
+        }
+
+        Page<RpInAndOutReportPage> page = new Page<RpInAndOutReportPage>(pageNo, pageSize);
+        IPage<RpInAndOutReportPage> pageList = pdStatisticalReportService.rpInAndOutReport(page, rpInAndOutReportPage);
+        return Result.ok(pageList);
+    }
+
+    /**
+     * 出入库明细统计报表
+     * @param rpInAndOutDetailReportPage
+     * @param pageNo
+     * @param pageSize
+     * @return
+     */
+    @GetMapping(value = "/rpInDetailReport")
+    public Result<?> rpInDetailReport(RpInAndOutDetailReportPage inDetail,
+                                      @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
+                                      @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize) {
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+
+        //查询入库明细
+        if(oConvertUtils.isNotEmpty(inDetail.getDepartId())){
+            List<String> inDepartList = new ArrayList<>();
+            inDepartList.add(inDetail.getDepartId());
+            inDetail.setInDepartIdList(inDepartList);
+        }
+        inDetail.setDepartParentId(sysUser.getDepartParentId());
+        inDetail.setRecordType(PdConstant.RECODE_TYPE_1);
+        inDetail.setAuditStatus(PdConstant.AUDIT_STATE_2);
+        inDetail.setDepartId(null);
+
+        Page<RpInAndOutDetailReportPage> inPageDetail = new Page<RpInAndOutDetailReportPage>(pageNo, pageSize);
+        IPage<RpInAndOutDetailReportPage> inPageDetailList = pdStatisticalReportService.rpInAndOutDetailReport(inPageDetail, inDetail);
+
+        return Result.ok(inPageDetailList);
+    }
+    @GetMapping(value = "/rpOutDetailReport")
+    public Result<?> rpOutDetailReport(RpInAndOutDetailReportPage outDetail,
+                                       @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
+                                       @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize) {
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+
+        if(oConvertUtils.isEmpty(outDetail.getDepartId())){
+            return Result.error("参数不正确，请重新查询！");
+        }
+        // 查询出库明细
+        List<String> outDepartList = new ArrayList<>();
+        outDepartList.add(outDetail.getDepartId());
+        outDetail.setOutDepartIdList(outDepartList);
+        outDetail.setDepartParentId(sysUser.getDepartParentId());
+        outDetail.setRecordType(PdConstant.RECODE_TYPE_2);
+        outDetail.setAuditStatus(PdConstant.AUDIT_STATE_2);
+        outDetail.setDepartId(null);
+
+        Page<RpInAndOutDetailReportPage> outPageDetail = new Page<RpInAndOutDetailReportPage>(pageNo, pageSize);
+        IPage<RpInAndOutDetailReportPage> outPageDetailList = pdStatisticalReportService.rpInAndOutDetailReport(outPageDetail, outDetail);
+
+        return Result.ok(outPageDetailList);
+    }
+
+    /**
+     * 出入库报表导出
+     * @param request
+     * @param rpInAndOutReportPage
+     * @return
+     */
+    @RequestMapping(value = "/exportInAndOutReportXls")
+    public ModelAndView exportInAndOutReportXls(HttpServletRequest request, RpInAndOutReportPage rpInAndOutReportPage) {
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        rpInAndOutReportPage.setDepartParentId(sysUser.getDepartParentId());
+
+        if(oConvertUtils.isNotEmpty(rpInAndOutReportPage.getDepartIds()) && !"undefined".equals(rpInAndOutReportPage.getDepartIds())){
+            rpInAndOutReportPage.setDepartIdList(Arrays.asList(rpInAndOutReportPage.getDepartIds().split(",")));
+        }else{
+            //查询科室下所有下级科室的ID
+            SysDepart sysDepart=new SysDepart();
+            List<String> departList=pdDepartService.selectListDepart(sysDepart);
+            rpInAndOutReportPage.setDepartIdList(departList);
+        }
+
+        List<RpInAndOutReportPage> pageList = pdStatisticalReportService.rpInAndOutReport(rpInAndOutReportPage);
+
+        ModelAndView mv = new ModelAndView(new JeecgEntityExcelView());
+        mv.addObject(NormalExcelConstants.FILE_NAME, "出入库统计报表");
+        mv.addObject(NormalExcelConstants.CLASS, RpInAndOutReportPage.class);
+        mv.addObject(NormalExcelConstants.PARAMS, new ExportParams("出库统计报表数据", "导出人:" + sysUser.getRealname(), "出库统计报表"));
+        mv.addObject(NormalExcelConstants.DATA_LIST, pageList);
+        return mv;
+    }
+
+    /**
+     * 入库明细报表导出
+     * @param request
+     * @param inDetail
+     * @return
+     */
+    @RequestMapping(value = "/exportInReportXls")
+    public ModelAndView exportInReportXls(HttpServletRequest request, RpInAndOutDetailReportPage inDetail) {
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+
+        //查询入库明细
+        List<String> inDepartList = new ArrayList<>();
+        inDepartList.add(inDetail.getDepartId());
+        inDetail.setInDepartIdList(inDepartList);
+        inDetail.setDepartParentId(sysUser.getDepartParentId());
+        inDetail.setRecordType(PdConstant.RECODE_TYPE_1);
+        inDetail.setAuditStatus(PdConstant.AUDIT_STATE_2);
+        inDetail.setDepartId(null);
+
+
+        List<RpInAndOutDetailReportPage> inList = pdStatisticalReportService.rpInAndOutDetailReport(inDetail);
+        List<RpInDetailReportExcel> inReportList = JSON.parseArray(JSON.toJSONString(inList), RpInDetailReportExcel.class);
+
+        ModelAndView mv = new ModelAndView(new JeecgEntityExcelView());
+        mv.addObject(NormalExcelConstants.FILE_NAME, "入库明细统计报表");
+        mv.addObject(NormalExcelConstants.CLASS, RpInDetailReportExcel.class);
+        mv.addObject(NormalExcelConstants.PARAMS, new ExportParams("入库明细统计报表数据", "导出人:" + sysUser.getRealname(), "入库明细统计报表"));
+        mv.addObject(NormalExcelConstants.DATA_LIST, inReportList);
+
+        return mv;
+    }
+
+    /**
+     * 出库明细报表导出
+     * @param request
+     * @param outDetail
+     * @return
+     */
+    @RequestMapping(value = "/exportOutReportXls")
+    public ModelAndView exportOutReportXls(HttpServletRequest request, RpInAndOutDetailReportPage outDetail) {
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+
+        // 查询出库明细
+        List<String> outDepartList = new ArrayList<>();
+        outDepartList.add(outDetail.getDepartId());
+        outDetail.setOutDepartIdList(outDepartList);
+        outDetail.setDepartParentId(sysUser.getDepartParentId());
+        outDetail.setRecordType(PdConstant.RECODE_TYPE_2);
+        outDetail.setAuditStatus(PdConstant.AUDIT_STATE_2);
+        outDetail.setDepartId(null);
+
+        List<RpInAndOutDetailReportPage> outList = pdStatisticalReportService.rpInAndOutDetailReport(outDetail);
+        List<RpOutDetailReportExcel> outReportList = JSON.parseArray(JSON.toJSONString(outList), RpOutDetailReportExcel.class);
+
+        ModelAndView mv = new ModelAndView(new JeecgEntityExcelView());
+        mv.addObject(NormalExcelConstants.FILE_NAME, "出库明细统计报表");
+        mv.addObject(NormalExcelConstants.CLASS, RpOutDetailReportExcel.class);
+        mv.addObject(NormalExcelConstants.PARAMS, new ExportParams("出库明细统计报表数据", "导出人:" + sysUser.getRealname(), "出库明细统计报表"));
+        mv.addObject(NormalExcelConstants.DATA_LIST, outReportList);
+
+        return mv;
+    }
+    //出入库统计报表 jiangxz  20200814  end
 
 }

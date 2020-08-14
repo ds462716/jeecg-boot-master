@@ -184,13 +184,4 @@ public interface IPdStockRecordService extends IService<PdStockRecord> {
 	 */
 	public String addOutForTerminal(PdStockRecord pdStockRecord, List<PdProductStock> stockList);
 
-	/**
-	 * 出入库报表
-	 * @param pageList
-	 * @param rpInAndOutReportPage
-	 * @return
-	 */
-	IPage<RpInAndOutReportPage> rpInAndOutReport(Page<RpInAndOutReportPage> pageList, RpInAndOutReportPage rpInAndOutReportPage);
-	List<RpInAndOutReportPage> rpInAndOutReport(RpInAndOutReportPage rpInAndOutReportPage);
-	
 }

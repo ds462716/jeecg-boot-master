@@ -112,7 +112,10 @@ public class RpInAndOutDetailReportPage {
 
     // 查询条件
     private String departId;
+    private String departParentId;
     private List<String> departIdList;
+    private List<String> InDepartIdList;
+    private List<String> OutDepartIdList;
 
     private String queryDateStart;
     private String queryDateEnd;
@@ -130,4 +133,13 @@ public class RpInAndOutDetailReportPage {
     private String auditStatus;//记录审核状态
 
     private String yearMonth;
+
+    private String productStockId;
+    private String refBarCode;
+    private String productId;
+    private String supplierId;
+    private String distributorId;
+    private String deptId;
+    private String venderId;
+    private String registration;
 }

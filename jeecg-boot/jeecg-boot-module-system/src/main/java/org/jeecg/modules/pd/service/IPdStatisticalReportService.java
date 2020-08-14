@@ -5,9 +5,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.jeecg.modules.pd.entity.PdStatisticalReport;
 import org.jeecg.modules.pd.entity.PdStockRecordDetail;
-import org.jeecg.modules.pd.vo.RpReDetailReportPage;
-import org.jeecg.modules.pd.vo.RpSupplierUseReportPage;
-import org.jeecg.modules.pd.vo.RpUseDetailReportPage;
+import org.jeecg.modules.pd.vo.*;
 
 import java.util.List;
 
@@ -23,10 +21,44 @@ public interface IPdStatisticalReportService extends IService<PdStatisticalRepor
 
     List<RpSupplierUseReportPage> supplierUseReport(RpSupplierUseReportPage rpSupplierUseReportPage);
 
-    IPage<PdStockRecordDetail> rpInDetailReport(Page<PdStockRecordDetail> inPageDetail, PdStockRecordDetail inDetail);
+    IPage<PdStockRecordDetail> supplierInDetailReport(Page<PdStockRecordDetail> inPageDetail, PdStockRecordDetail inDetail);
 
     IPage<RpUseDetailReportPage> rpUseDetailReport(Page<RpUseDetailReportPage> usePageDetail, RpUseDetailReportPage rpUseDetailReportPage);
 
     IPage<RpReDetailReportPage> rpReDetailReport(Page<RpReDetailReportPage> rePageDetail, RpReDetailReportPage rpReDetailReportPage);
+
+    /**
+     * 出入库统计报表查询——分页
+     * add by jiangxz 2020年8月14日 09:59:53
+     * @param page
+     * @param entity
+     * @return
+     */
+    IPage<RpInAndOutReportPage> rpInAndOutReport(Page<RpInAndOutReportPage> page, RpInAndOutReportPage entity);
+
+    /**
+     * 出入库统计报表查询
+     * add by jiangxz 2020年8月14日 09:59:53
+     * @param entity
+     * @return
+     */
+    List<RpInAndOutReportPage> rpInAndOutReport(RpInAndOutReportPage entity);
+
+    /**
+     * 出入库统计报表明细查询——分页
+     * add by jiangxz 2020年8月14日 09:59:53
+     * @param page
+     * @param entity
+     * @return
+     */
+    IPage<RpInAndOutDetailReportPage> rpInAndOutDetailReport(Page<RpInAndOutDetailReportPage> page, RpInAndOutDetailReportPage entity);
+
+    /**
+     * 出入库统计报表明细查询
+     * add by jiangxz 2020年8月14日 09:59:53
+     * @param entity
+     * @return
+     */
+    List<RpInAndOutDetailReportPage> rpInAndOutDetailReport(RpInAndOutDetailReportPage entity);
 
 }
