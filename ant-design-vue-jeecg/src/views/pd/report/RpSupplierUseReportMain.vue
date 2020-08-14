@@ -963,11 +963,11 @@
       },
       //生产厂家查询start
       reVenderHandleSearch(value) {
-        this.getList(value,this.url.queryVender,"2");
+        this.getList(value,this.url.queryVender,"3");
       },
       reVenderHandleChange(value) {
         this.reVenderValue = value;
-        this.getList(value,this.url.queryVender,"2");
+        this.getList(value,this.url.queryVender,"3");
       },
       //生产厂家查询end
       //供应商使用明细end
