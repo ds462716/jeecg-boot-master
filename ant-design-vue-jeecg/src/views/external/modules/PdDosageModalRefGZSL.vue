@@ -660,12 +660,16 @@
               continue;
             }
             list[i].id=null;
-            if(this.offSpecNum=="1"){//如果是根据规格数量扣减库存
+            if(this.offSpecNum &&   Number(list[i].specNum) !='' && Number(list[i].specNum) !=null && Number(list[i].specNum)>0){ //如果是根据规格数量扣减库存
               if(Number(list[i].dosageCount) > Number(list[i].specNum)){
                 this.$message.error("["+list[i].productName+"]用量数量不能大于库存规格数量！");
                 return;
               }
             }else{
+              if(Number(list[i].dosageCount)>1){
+                this.$message.error("["+list[i].productName+"]用量数量只能为1！");
+                return;
+              }
               if(Number(list[i].dosageCount) > Number(list[i].stockNum)){
                 this.$message.error("["+list[i].productName+"]用量数量不能大于库存数量！");
                 return;

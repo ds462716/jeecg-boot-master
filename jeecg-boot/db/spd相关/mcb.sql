@@ -122,3 +122,7 @@ INSERT INTO  `pd_on_off` VALUES ('1293364869915095041', '是否根据规格数�
 -- 2020年8月12日 18:52:59   用量明细表增加库存规格数量
 ALTER TABLE  `pd_dosage_detail`
 ADD COLUMN `spec_quantity` double(11, 2) NULL COMMENT '库存规格数量' AFTER `his_package_flag`;
+
+-- 2020年8月13日 18:52:59   用量明细表库存规格数量字段调整
+ ALTER TABLE  `pd_dosage_detail`
+CHANGE COLUMN `spec_quantity` `spec_num` double(11, 2) NULL DEFAULT NULL COMMENT '库存规格数量' AFTER `his_package_flag`;
