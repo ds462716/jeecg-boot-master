@@ -395,6 +395,9 @@
 			<if test="barCodeType != null and barCodeType != ''">
 				AND a.bar_code_type = #{barCodeType}
 			</if>
+			<if test="refBarCode != null and refBarCode != ''">
+				AND a.ref_bar_code = #{refBarCode}
+			</if>
 		</where>
 		FOR UPDATE
 	</select>

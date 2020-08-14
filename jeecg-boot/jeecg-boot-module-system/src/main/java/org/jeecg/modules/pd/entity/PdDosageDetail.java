@@ -63,7 +63,7 @@ public class PdDosageDetail extends BaseEntity {
     /**库存规格数量*/
     @Excel(name = "库存规格数量", width = 15)
     @ApiModelProperty(value = "库存规格数量")
-    private Double specQuantity;
+    private Double specNum;
 	/**添加用量时库存*/
 	@Excel(name = "添加用量时库存", width = 15)
     @ApiModelProperty(value = "添加用量时库存")

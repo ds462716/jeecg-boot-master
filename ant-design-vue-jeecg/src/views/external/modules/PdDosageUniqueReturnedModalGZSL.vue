@@ -296,7 +296,7 @@
             { title: '用量金额', key: 'amountMoney', type: FormTypes.input, disabled:true, width:"100px" },
             { title: '实际使用数量', key: 'leftRefundNum', width:"80px" },
             { title: '收费状态', key: 'hyChargedText', width:"80px" },
-            /*{ title: '库存数量', key: 'stockNum', width:"80px" },*/
+            { title: '库存规格数量', key: 'specNum', width:"80px",type: FormTypes.hidden },
             { title: '收费项目代码', key: 'chargeCode', width:"80px" },
             { title: '是否计费', key: 'isCharge',type: FormTypes.hidden},
             { title: '是否计费', key: 'isChargeText', width:"80px"},
@@ -627,6 +627,7 @@
           productNumber:row.number,
           productBarCode:row.productBarCode,
           spec: row.spec,
+          specNum: row.specNum,
           batchNo:row.batchNo,
           unitName:row.unitName,
           expDate:row.expDate,

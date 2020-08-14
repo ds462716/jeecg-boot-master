@@ -104,6 +104,15 @@ public interface IPdProductStockTotalService extends IService<PdProductStockTota
 
 
     /**
+     * 唯一码用量退回更新库存
+     * @param departId
+     * @param afterDealList
+     * @return
+     */
+    String updateRefBarCodeRetunuseStock(String departId, List<PdDosageDetail> afterDealList);
+
+
+    /**
      * 库存规格数量清零操作
      * @param productStock
      * @return

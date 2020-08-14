@@ -1,5 +1,6 @@
 package org.jeecg.modules.pd.service.impl;
 
+import cn.hutool.core.util.ObjectUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -594,7 +595,7 @@ public class PdDosageServiceImpl extends ServiceImpl<PdDosageMapper, PdDosage> i
                 query.setDepartParentId(sysUser.getDepartParentId());
                 query.setCode(PdConstant.ON_OFF_SPEC_NUM);
                 PdOnOff pdOnOff = pdOnOffService.getOne(query);
-                if (pdOnOff != null && pdOnOff.getValue() == PdConstant.ON_OFF_SPEC_NUM_1) { //是
+                if (ObjectUtil.isNotEmpty(tempPps.getSpecQuantity()) && pdOnOff != null && pdOnOff.getValue() == PdConstant.ON_OFF_SPEC_NUM_1) { //是
                     if (null == tempPps || pdd.getDosageCount() > tempPps.getSpecQuantity()) {
                         validFlag = false;
                         json.put(String.valueOf(i), pdd);
@@ -690,6 +691,7 @@ public class PdDosageServiceImpl extends ServiceImpl<PdDosageMapper, PdDosage> i
      * 唯一码用量退回
      * @param pdDosage
      */
+    @Transactional
     @Override
     public void uniqueDosageReturned(PdDosage pdDosage) {
         LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
@@ -730,7 +732,7 @@ public class PdDosageServiceImpl extends ServiceImpl<PdDosageMapper, PdDosage> i
             if(!logList.isEmpty())
                 pdStockLogService.saveBatch(logList);
             pdDosageDetailService.updateBatchById(detailList);
-            pdProductStockTotalService.updateRetunuseStock(sysUser.getCurrentDepartId(),detailList);
+            pdProductStockTotalService.updateRefBarCodeRetunuseStock(sysUser.getCurrentDepartId(),detailList);
             //批量更新条码状态
             pdProductStockUniqueCodeService.updateBatchById(productStockUniqueCodes);
         }
@@ -741,6 +743,7 @@ public class PdDosageServiceImpl extends ServiceImpl<PdDosageMapper, PdDosage> i
      * 唯一码取消收费
      * @param pdDosage
      */
+    @Transactional
     @Override
     public void uniqueDosageCnclFee(PdDosage pdDosage) {
         LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
@@ -780,7 +783,7 @@ public class PdDosageServiceImpl extends ServiceImpl<PdDosageMapper, PdDosage> i
             if(!logList.isEmpty())
                 pdStockLogService.saveBatch(logList);
             pdDosageDetailService.updateBatchById(detailList);
-            pdProductStockTotalService.updateRetunuseStock(sysUser.getCurrentDepartId(),detailList);
+            pdProductStockTotalService.updateRefBarCodeRetunuseStock(sysUser.getCurrentDepartId(),detailList);
             //批量更新条码状态
             pdProductStockUniqueCodeService.updateBatchById(productStockUniqueCodes);
         }
