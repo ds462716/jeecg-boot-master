@@ -321,4 +321,7 @@ public class PdDosage extends BaseEntity {
     /**开关-是否根据规格数量扣减库存**/
     @TableField(exist = false)
     private String offSpecNum;
+    /*检查项目申请号*/
+    @TableField(exist = false)
+    private String applicationNumber;
 }

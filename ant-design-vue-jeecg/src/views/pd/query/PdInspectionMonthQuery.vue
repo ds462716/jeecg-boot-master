@@ -202,9 +202,9 @@
             dataIndex: 'disPrice'
           },
           {
-            title:'月环比',
+            title:'库存耗占比',
             align:"center",
-            dataIndex: 'disPrice1'
+            dataIndex: 'proportion'
           },
          /* {
             title: '操作',

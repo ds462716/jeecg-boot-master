@@ -199,11 +199,6 @@
             align:"center",
             dataIndex: 'disPrice'
           },
-          /*{
-            title:'月环比',
-            align:"center",
-            dataIndex: 'disPrice1'
-          },*/
           {
             title:'使用理论规格数量',
             align:"center",
@@ -228,6 +223,11 @@
             title:'检验项目收入金额',
             align:"center",
             dataIndex: 'itemPrice'
+          },
+          {
+            title:'库存耗占比',
+            align:"center",
+            dataIndex: 'proportion'
           },
          /* {
             title: '操作',

@@ -3,49 +3,50 @@
 <mapper namespace="org.jeecg.modules.pd.mapper.PdNumericalInfMapper">
 
 	<sql id="PdNumericalInfColumns">
-        a.id,
-        a.create_by,
-		a.create_time,
-		a.update_by,
-		a.update_time,
-		a.sys_org_code,
-        a.month,
-		a.depart_id,
-        a.in_record_num,
-        a.in_record_price,
-        a.purchase_num,
-        a.purchase_price,
-        a.stock_num,
-        a.stock_price,
-        a.call_in_num,
-        a.call_in_price,
-        a.call_out_num,
-        a.call_out_price,
-        a.dis_num,
-        a.dis_price,
-        a.item_price,
-        a.item_num,
+         a.id,
+         a.create_by,
+		 a.create_time,
+		 a.update_by,
+		 a.update_time,
+		 a.sys_org_code,
+         a.month,
+		 a.depart_id,
+         a.in_record_num,
+         a.in_record_price,
+         a.purchase_num,
+         a.purchase_price,
+         a.stock_num,
+         a.stock_price,
+         a.call_in_num,
+         a.call_in_price,
+         a.call_out_num,
+         a.call_out_price,
+         a.dis_num,
+         a.dis_price,
+         a.item_price,
+         a.item_num,
         (a.the_stock_num +
-        in_record_num +
-        call_in_num -
-         purchase_num  -
-         call_out_num -
-         stock_num-
-         rejected_num) as the_stock_num,
+         a.in_record_num +
+         a.call_in_num -
+         a.purchase_num  -
+         a.call_out_num -
+         a.stock_num-
+         a.rejected_num) as the_stock_num,
          (a.the_stock_price +
-        in_record_price +
-        call_in_price -
-         purchase_price  -
-         call_out_price -
-         stock_price-
-         rejected_price) as the_stock_price,
-        a.spec_quantity_num,
-        a.spec_reality_num,
-        a.dis_spec_num,
-        a.rejected_num,
-        a.rejected_price,
-	    a.tj_type,
-        a.del_flag
+         a.in_record_price +
+         a.call_in_price -
+         a.purchase_price  -
+         a.call_out_price -
+         a.stock_price-
+         a.rejected_price) as the_stock_price,
+         ROUND(((a.stock_price-a.call_out_price) / a.purchase_price),2)  as "proportion",
+         a.spec_quantity_num,
+         a.spec_reality_num,
+         a.dis_spec_num,
+         a.rejected_num,
+         a.rejected_price,
+	     a.tj_type,
+         a.del_flag
 	</sql>
     <!--查询统计列表-->
 	<select id="selectList"   resultType="org.jeecg.modules.pd.entity.PdNumericalInf">

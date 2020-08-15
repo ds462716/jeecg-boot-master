@@ -112,4 +112,7 @@ public class PdNumericalInf extends BaseEntity {
     private String auditStatus;
     @TableField(exist = false)
     private List<String> outDepartIdList;//出库科室集合
+    //库存耗占比
+    @TableField(exist = false)
+    private String proportion;
 }
