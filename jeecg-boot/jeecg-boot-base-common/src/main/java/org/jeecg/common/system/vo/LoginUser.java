@@ -122,4 +122,9 @@ public class LoginUser {
 	 * 当前登录的人医院code
 	 */
 	private String hospitalCode;
+
+	/**
+	 * 登录人工号
+	 */
+	private String workNo;
 }

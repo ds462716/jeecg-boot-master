@@ -1,6 +1,5 @@
 package org.jeecg.modules.external.ganzhouwuyuan.controller;
 
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
@@ -127,12 +126,13 @@ public class PdDosageGZWYController {
         List<PdDosageDetail> detailList = pdDosage.getPdDosageDetails();
         if (CollectionUtils.isNotEmpty(detailList)) {
             //HIS退费接口
-            JSONObject result = AxisGZWYUtils.exeCharge(pdDosage,detailList);
-            if(!PdConstant.SUCCESS_0.equals(result.getString("statusCode"))){
-                logger.error("执行HIS退费接口失败！HIS返回："+result.getString("msg"));
-                return Result.error("执行HIS退费接口失败！HIS返回："+result.getString("msg"));
+            for(PdDosageDetail detail : detailList) {
+                JSONObject result = AxisGZWYUtils.exeRefund(pdDosage, detail);
+                if (!PdConstant.SUCCESS_0.equals(result.getString("statusCode"))) {
+                    logger.error("执行HIS退费接口失败！HIS返回：" + result.getString("msg"));
+                    return Result.error("执行HIS退费接口失败！HIS返回：" + result.getString("msg"));
+                }
             }
-
             pdDosageService.dosageCnclFee(pdDosage);
         }
         return Result.ok("操作成功！");
@@ -152,31 +152,18 @@ public class PdDosageGZWYController {
         }
         List<PdDosageDetail> detailList = pdDosage.getPdDosageDetails();
         if (CollectionUtils.isNotEmpty(detailList)) {
+
+            for(PdDosageDetail detail : detailList){
             //HIS计费接口
-            JSONObject result = AxisGZWYUtils.exeCharge(pdDosage,detailList);
+            JSONObject result = AxisGZWYUtils.exeCharge(pdDosage,detail);
             if(result == null || result.getJSONArray("data") == null || result.getJSONArray("data").size() <= 0){
                 logger.error("HIS返回数据为空，请重新计费或联系管理员！！");
                 return Result.error("HIS返回数据为空，请重新计费或联系管理员！！");
             }
-
-            if(!PdConstant.SUCCESS_0.equals(result.getString("statusCode"))){
+            if(!PdConstant.SUCCESS_0.equals(result.getString("code"))){
                 logger.error("执行HIS收费接口失败！HIS返回："+result.getString("msg"));
                 return Result.error("执行HIS收费接口失败！HIS返回："+result.getString("msg"));
             }
-
-            JSONArray array = result.getJSONArray("data");
-            for(int k = 0; k < array.size(); k++){
-                JSONObject obj = array.getJSONObject(k);   // 遍历 jsonarray 数组，把每一个对象转成 json 对象
-                String prodNo = obj.getString("prodNo");//产品编码
-                String visitNo = obj.getString("vaa07");//就诊流水号
-                String hisChargeId = obj.getString("vai01");//计费单据id
-                String hisChargeItemId = obj.getString("vaj01");//计费单据明细id (退费用)
-                for(PdDosageDetail pdd : detailList){
-                    if(pdd.getProductStockId().equals(prodNo)){
-                        pdd.setHisChargeId(hisChargeId);
-                        pdd.setHisChargeItemId(hisChargeItemId);
-                    }
-                }
             }
             pdDosage.setPdDosageDetails(detailList);
             pdDosageGZWYService.dosageFee(pdDosage);

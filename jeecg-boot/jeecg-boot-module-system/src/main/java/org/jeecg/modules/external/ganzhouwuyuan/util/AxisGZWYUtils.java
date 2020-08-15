@@ -12,6 +12,10 @@ import org.apache.axis2.client.Options;
 import org.apache.axis2.client.ServiceClient;
 import org.apache.axis2.transport.http.HTTPConstants;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.shiro.SecurityUtils;
+import org.jeecg.common.constant.PdConstant;
+import org.jeecg.common.system.vo.LoginUser;
+import org.jeecg.common.util.DateUtils;
 import org.jeecg.modules.pd.entity.PdDosage;
 import org.jeecg.modules.pd.entity.PdDosageDetail;
 import org.slf4j.Logger;
@@ -20,7 +24,6 @@ import org.slf4j.LoggerFactory;
 import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /** 
@@ -144,25 +147,31 @@ public class AxisGZWYUtils {
 			logger.info("******调用HIS根据住院号查询病人信息接口出现错误！******");
 			json.put("code", "-200");
 			json.put("msg","调用HIS根据住院号查询病人信息接口出现错误！");
-		} catch */(JSONException ee) {
+		} catch */ (JSONException ee) {
 			ee.printStackTrace();
 			json.put("code", "-200");
 			logger.info("******调用HIS根据住院号查询病人信息接口JSON转换返回信息出现错误！******");
 			json.put("msg","调用HIS根据住院号查询病人信息接口JSON转换返回信息出现错误！");
 		}
 		return json;
-	}
+	}/**/
 
 
 	/**
 	 * 收费接口
-	 * @param pdDosage  chargeType    0：正常收费；1：补计费
+	 * @param pdDosage  chargeType    1：收费；0：退费
 	 * @return
 	 */
-	public static JSONObject exeCharge(PdDosage pdDosage, List<PdDosageDetail> dosageDetailList) {
+	public static JSONObject exeCharge(PdDosage pdDosage,  PdDosageDetail dosageDetail) {
+		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
 		JSONObject json = new JSONObject();
 		//参数校验
-		/*if(chargeCode==null ||"".equals(chargeCode)|| productNum==null ||"".equals(productNum) ||
+		//库房id,收费代码，产品编号，产品数量，住院号，收费类型,HIS用户编码，当前时间，备注，唯一号，手术编号
+		String departId=sysUser.getCurrentDepartId();
+		String chargeCode=dosageDetail.getChargeCode();
+		String inHospitalNo=pdDosage.getInHospitalNo();
+		Double productNum=dosageDetail.getDosageCount();
+		 if(chargeCode==null ||"".equals(chargeCode)|| productNum==null ||"".equals(productNum) ||
 				inHospitalNo==null ||"".equals(inHospitalNo)){
 			json.put("code", "-200");
 			json.put("msg", "参数异常");
@@ -170,21 +179,21 @@ public class AxisGZWYUtils {
 		}
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("cxbm", chargeCode);
-		params.put("cxlx", productNo);
+		params.put("cxlx", dosageDetail.getProductNumber());
 		params.put("cxsl", productNum);
 		params.put("zyh", inHospitalNo);
-		if("d8c060c562f8485eb9c3a639674c32e6".equals(warehouseId)
-				|| "65caa20e7fab4b8b9a6b23806a8dfde8".equals(warehouseId)
-				|| "11eeda15c89f421fa656fa74879edf67".equals(warehouseId)){
+		if("d8c060c562f8485eb9c3a639674c32e6".equals(departId)
+				|| "65caa20e7fab4b8b9a6b23806a8dfde8".equals(departId)
+				|| "11eeda15c89f421fa656fa74879edf67".equals(departId)){
 			params.put("ssbm", "0");//传0的话，HIS系统会记录到手工记账那里，而不是手术项目收费那里；
 		}else{
-			params.put("ssbm", ssbm);
+			params.put("ssbm", pdDosage.getOperativeNumber());
 		}
-		params.put("sflx", chargeType);
-		params.put("czr", oprtPeople);
-		params.put("czsj", oprtDate);
-		params.put("remark", remark);
-		params.put("token", token);
+		params.put("sflx", PdConstant.IS_CHARGE_TYPE_1);//收费类型
+		params.put("czr", sysUser.getWorkNo());
+		params.put("czsj", DateUtils.date2Str(DateUtils.datetimeFormat.get()));
+		params.put("remark", "");
+		params.put("token",System.currentTimeMillis());
 		String result = null;
 		try {
 			result = getJsonDataFromWebservice(chargeUrl, defaultNamespace, "Charges", params);
@@ -198,13 +207,74 @@ public class AxisGZWYUtils {
 			logger.info("******调用HIS收费接口出现错误！--->{}******", result);
 			json.put("code", "-200");
 			json.put("msg", "调用HIS收费接口出现错误");
-		} catch (JSONException ee) {
+		} catch (Exception ee) {
 			ee.printStackTrace();
 			logger.info("******调用HIS收费接口JSON转换返回信息出现错误！--->{}******", result);
 			json.put("code", "-200");
 			json.put("msg", "调用HIS收费接口JSON转换返回信息出现错误！");
 		}
-		*/
+
+		return json;
+	}
+
+
+
+
+
+	/**
+	 * 退费接口
+	 chargeType    1：收费；0：退费
+	 * @return
+	 */
+	public static JSONObject exeRefund(PdDosage pdDosage,  PdDosageDetail dosageDetail) {
+		//参数校验
+		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		JSONObject json = new JSONObject();
+		//参数校验
+		String departId=sysUser.getCurrentDepartId();
+		String chargeCode=dosageDetail.getChargeCode();
+		String inHospitalNo=pdDosage.getInHospitalNo();
+		Double productNum=dosageDetail.getDosageCount();
+		if(chargeCode==null ||"".equals(chargeCode)|| productNum==null ||"".equals(productNum) ||
+				inHospitalNo==null ||"".equals(inHospitalNo)){
+			json.put("code", "-200");
+			json.put("msg", "参数异常");
+			return json;
+		}
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put("cxbm", chargeCode);
+		params.put("cxlx", dosageDetail.getProductNumber());
+		params.put("cxsl", "-"+productNum);
+		params.put("zyh", inHospitalNo);
+
+		if("d8c060c562f8485eb9c3a639674c32e6".equals(departId)
+				|| "65caa20e7fab4b8b9a6b23806a8dfde8".equals(departId)
+				|| "11eeda15c89f421fa656fa74879edf67".equals(departId)){
+			params.put("ssbm", "0");//传0的话，HIS系统会记录到手工记账那里，而不是手术项目收费那里；
+		}else{
+			params.put("ssbm",  pdDosage.getOperativeNumber());
+		}
+		params.put("sflx",PdConstant.IS_CHARGE_TYPE_0);//收费类型
+		params.put("czr", sysUser.getWorkNo());
+		params.put("czsj", DateUtils.date2Str(DateUtils.datetimeFormat.get()));
+		params.put("remark", "");
+		params.put("token",System.currentTimeMillis()+(Math.random()*100));
+		String result = null;
+		try {
+			result = getJsonDataFromWebservice(chargeUrl, defaultNamespace, "Charges", params);
+			json = JSONObject.parseObject(result);
+			if (!"0".equals(json.get("code"))) {
+				json.put("code", "-200");
+			}
+		} catch (AxisFault e) {
+			e.printStackTrace();
+			json.put("code", "-200");
+			logger.info("******调用HIS退费接口出现错误！--->{}******", result);
+		} catch (JSONException ee) {
+			ee.printStackTrace();
+			logger.info("******调用HIS退费接口JSON转换返回信息出现错误！--->{}******", result);
+			json.put("code", "-200");
+		}
 		return json;
 	}
 }
