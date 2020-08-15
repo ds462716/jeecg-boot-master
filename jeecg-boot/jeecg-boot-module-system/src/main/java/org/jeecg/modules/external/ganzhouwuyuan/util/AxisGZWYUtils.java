@@ -270,7 +270,7 @@ public class AxisGZWYUtils {
 			e.printStackTrace();
 			json.put("code", "-200");
 			logger.info("******调用HIS退费接口出现错误！--->{}******", result);
-		} catch (JSONException ee) {
+		} catch (Exception ee) {
 			ee.printStackTrace();
 			logger.info("******调用HIS退费接口JSON转换返回信息出现错误！--->{}******", result);
 			json.put("code", "-200");
