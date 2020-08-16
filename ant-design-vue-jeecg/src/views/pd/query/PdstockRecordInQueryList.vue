@@ -360,7 +360,7 @@
           {
             title:'注册证号',
             align:"center",
-            width:'250px',
+            width:'200px',
             dataIndex: 'productRegistration'
           },
           {
@@ -373,7 +373,7 @@
           {
             title:'发票代码',
             align:"center",
-            width:'150px',
+            width:'100px',
             scopedSlots: {customRender: "ellipsisText"},
             dataIndex: 'invoiceCode'
           },
@@ -389,6 +389,7 @@
           {
             title:'备注',
             align:"center",
+            width:'100px',
             dataIndex: 'remarks'
           },
           {
@@ -400,7 +401,7 @@
           {
             title:'操作人',
             align:"center",
-            width:'100px',
+            width:'80px',
             dataIndex: 'realname'
           }
         ],

@@ -170,3 +170,28 @@ CREATE TABLE `pd_purchase_temp` (
 INSERT INTO  `sys_dict` VALUES ('1294109481097166849', '申购模板类型', 'temp_type', '1：私有   2：公用', 0, 'admin', '2020-08-14 11:11:58', 'admin', '2020-08-14 11:12:49', 0);
 INSERT INTO  `sys_dict_item`  VALUES ('1294109619622445057', '1294109481097166849', '公用', '2', '', 2, 1, 'admin', '2020-08-14 11:12:31', 'admin', '2020-08-14 11:12:38');
 INSERT INTO  `sys_dict_item` VALUES ('1294109566577082369', '1294109481097166849', '私有', '1', '', 1, 1, 'admin', '2020-08-14 11:12:19', 'admin', '2020-08-14 11:12:42');
+-- 2020年8月15日 18:52:59   增加器械使用（赣州五院）菜单
+INSERT INTO `sys_permission`(`id`, `parent_id`, `name`, `url`, `component`, `component_name`, `redirect`, `menu_type`, `business_type`, `perms`, `perms_type`, `sort_no`, `always_show`, `icon`, `is_route`, `is_leaf`, `keep_alive`, `hidden`, `description`, `create_by`, `create_time`, `update_by`, `update_time`, `del_flag`, `rule_flag`, `status`, `internal_or_external`) VALUES ('1294445368496369666', '1244532359552057345', '器械使用（赣州五院）', '/pd/PdDosageGZWY', 'pd/PdDosageList', NULL, NULL, 1, '0', NULL, '1', 2.00, 0, NULL, 1, 1, 0, 0, NULL, 'admin', '2020-08-15 09:26:40', NULL, '2020-08-15 09:26:40', 0, 0, '1', 0);
+
+-- 2020年8月16日 10:22:59   增加索引
+CREATE INDEX record_detail_id ON pd_product_stock (record_detail_id);
+CREATE INDEX in_depart_id ON pd_stock_record (in_depart_id);
+CREATE INDEX id ON pd_stock_record_detail (id);
+CREATE INDEX distributor_id ON pd_stock_record_detail (distributor_id);
+CREATE INDEX supplier_id ON pd_stock_record_detail (supplier_id);
+CREATE INDEX depart_parent_id ON pd_stock_record_detail (depart_parent_id);
+CREATE INDEX product_id ON pd_stock_record_detail (product_id);
+CREATE INDEX record_id ON pd_stock_record_detail (record_id);
+
+
+-- 2020年8月16日 10:22:59   试剂用量查询菜单设置逻辑删除
+ update   sys_permission set del_flag='1'  where id='1263760305687826434' and name='试剂用量查询'
+
+
+
+
+
+
+
+
+
