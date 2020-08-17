@@ -173,6 +173,14 @@ public class PdStatisticalReportController extends JeecgController<PdStatistical
         Page<RpDepartUseReportPage> page = new Page<RpDepartUseReportPage>(pageNo, pageSize);
         LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
         rpDepartUseReportPage.setDepartParentId(sysUser.getDepartParentId());
+        if(oConvertUtils.isNotEmpty(rpDepartUseReportPage.getDepartIds()) && !"undefined".equals(rpDepartUseReportPage.getDepartIds())){
+            rpDepartUseReportPage.setDepartIdList(Arrays.asList(rpDepartUseReportPage.getDepartIds().split(",")));
+        }else{
+            //查询科室下所有下级科室的ID
+            SysDepart sysDepart = new SysDepart();
+            List<String> departList = pdDepartService.selectListDepart(sysDepart);
+            rpDepartUseReportPage.setDepartIdList(departList);
+        }
         IPage<RpDepartUseReportPage> pageList = pdStatisticalReportService.departUseReport(page, rpDepartUseReportPage);
         return Result.ok(pageList);
     }
@@ -187,6 +195,14 @@ public class PdStatisticalReportController extends JeecgController<PdStatistical
     public ModelAndView exportDepartUseReportXls(HttpServletRequest request, RpDepartUseReportPage rpDepartUseReportPage) {
         LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
         rpDepartUseReportPage.setDepartParentId(sysUser.getDepartParentId());
+        if(oConvertUtils.isNotEmpty(rpDepartUseReportPage.getDepartIds()) && !"undefined".equals(rpDepartUseReportPage.getDepartIds())){
+            rpDepartUseReportPage.setDepartIdList(Arrays.asList(rpDepartUseReportPage.getDepartIds().split(",")));
+        }else{
+            //查询科室下所有下级科室的ID
+            SysDepart sysDepart = new SysDepart();
+            List<String> departList = pdDepartService.selectListDepart(sysDepart);
+            rpDepartUseReportPage.setDepartIdList(departList);
+        }
         List<RpDepartUseReportPage> pageList = pdStatisticalReportService.departUseReport(rpDepartUseReportPage);
         ModelAndView mv = new ModelAndView(new JeecgEntityExcelView());
         mv.addObject(NormalExcelConstants.FILE_NAME, "部门用量使用统计报表");
