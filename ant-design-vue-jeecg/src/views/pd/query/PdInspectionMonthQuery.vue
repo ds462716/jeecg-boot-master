@@ -214,9 +214,9 @@
           }*/
         ],
         url: {
-          list: "/external/pdNumericalInf/list",
+          list: "/pd/pdStatisticalReport/queryNumericalInfList",
           queryDepart: "/pd/pdDepart/queryListTree",
-          exportXlsUrl: "/external/pdNumericalInf/exportXls",
+          exportXlsUrl: "/pd/pdStatisticalReport/numericalInfExportXls",
         },
         dictOptions:{
 

@@ -187,6 +187,9 @@ CREATE INDEX record_id ON pd_stock_record_detail (record_id);
 -- 2020年8月16日 10:22:59   试剂用量查询菜单设置逻辑删除
  update   sys_permission set del_flag='1'  where id='1263760305687826434' and name='试剂用量查询'
 
+-- 2020年8月17日 10:22:59   菜单名称修改
+UPDATE sys_permission SET name='供应商耗材用量统计报表' where id='1293093425294729218'
+
 
 
 

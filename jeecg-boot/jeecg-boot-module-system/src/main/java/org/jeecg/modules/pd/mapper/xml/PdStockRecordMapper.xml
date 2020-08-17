@@ -475,6 +475,9 @@
         <if test="entity.recordType != null and entity.recordType != ''">
             AND b.record_type = #{entity.recordType}
         </if>
+        <if test="entity.inType != null and entity.inType != ''">
+            AND b.in_type = #{entity.inType}
+        </if>
         <if test="entity.auditStatus != null and entity.auditStatus != ''">
             AND b.audit_status =#{entity.auditStatus}
         </if>

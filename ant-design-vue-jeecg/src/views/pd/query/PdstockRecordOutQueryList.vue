@@ -357,33 +357,33 @@
           {
             title:'生产厂家JDE编号',
             align:"center",
-            width:'100px',
+            width:'80px',
             scopedSlots: {customRender: "ellipsisText"},
             dataIndex: 'venderJdeCode'
           },
           {
             title:'供应商',
             align:"center",
-            width:'250px',
+            width:'230px',
             dataIndex: 'supplierName'
           },
           {
             title:'供应商JDE编号',
             align:"center",
-            width:'100px',
+            width:'80px',
             scopedSlots: {customRender: "ellipsisText"},
             dataIndex: 'supplierJdeCode'
           },
           {
             title:'配送商',
             align:"center",
-            width:'250px',
+            width:'230px',
             dataIndex: 'distributorName'
           },
           {
             title:'注册证号',
             align:"center",
-            width:'250px',
+            width:'200px',
             dataIndex: 'productRegistration'
           },
           {
@@ -394,13 +394,13 @@
           {
             title:'产品JDE编号',
             align:"center",
-            width:'100px',
+            width:'80px',
             dataIndex: 'jdeCode'
           },
           {
             title:'操作人',
             align:"center",
-            width:'100px',
+            width:'80px',
             dataIndex: 'realname'
           }
         ],

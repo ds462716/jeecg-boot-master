@@ -375,6 +375,7 @@
             <if test="supplierId != null and supplierId != ''">
                 AND e.supplier_id = #{supplierId}
             </if>
+            order by a.create_time desc
         </where>
     </select>
 

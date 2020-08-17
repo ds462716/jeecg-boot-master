@@ -24,7 +24,6 @@ import org.jeecgframework.poi.excel.def.NormalExcelConstants;
 import org.jeecgframework.poi.excel.entity.ExportParams;
 import org.jeecgframework.poi.excel.view.JeecgEntityExcelView;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -474,6 +473,7 @@ public class PdStockRecordReturnController {
                                    @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
                                    HttpServletRequest req) {
         Page<PdStockRecord> page = new Page<PdStockRecord>(pageNo, pageSize);
+        pdStockRecord.setInType(PdConstant.IN_TYPE_1);
         IPage<PdStockRecord> pageList = pdStockRecordService.querySupplierCountPageList(page, pdStockRecord);
         return Result.ok(pageList);
     }
