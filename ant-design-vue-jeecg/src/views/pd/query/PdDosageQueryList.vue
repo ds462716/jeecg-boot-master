@@ -5,11 +5,11 @@
       <a-form layout="inline" @keyup.enter.native="searchQuery">
         <a-row :gutter="24">
           <a-col :span="6">
-            <a-form-item label="入库库房">
+            <a-form-item label="入库科室">
               <a-select
                 mode="multiple"
                 showSearch
-                placeholder="请选择入库库房"
+                placeholder="请选择入库科室"
                 :supplierId="departValue"
                 :defaultActiveFirstOption="false"
                 :showArrow="true"
@@ -42,6 +42,11 @@
           <a-col :md="6" :sm="8">
             <a-form-item label="住院号">
               <a-input placeholder="请输入住院号" v-model="queryParam.inHospitalNo"></a-input>
+            </a-form-item>
+          </a-col>
+          <a-col  :md="6" :sm="8">
+            <a-form-item label="使用日期">
+              <a-range-picker @change="dosageDateChange" v-model="queryParam.queryDate"/>
             </a-form-item>
           </a-col>
           <a-col :md="6" :sm="8">
@@ -95,7 +100,7 @@
     data () {
       return {
         description: '用量明细查询',
-        tableScroll:{x :3500},
+        tableScroll:{x :3000},
         notFoundContent:"未找到内容",
         departValue: undefined,
         departList:[],
@@ -117,15 +122,15 @@
             dataIndex: 'dosageNo'
           },
           {
-            title:'用量库房',
+            title:'用量科室',
             align:"center",
             dataIndex: 'departName'
           },
-          {
+          /*{
             title:'货位',
             align:"center",
             dataIndex: 'outHuoweiName'
-          },
+          },*/
           {
             title:'用量日期',
             align:"center",
@@ -136,10 +141,15 @@
             align:"center",
             dataIndex: 'productName'
           },
-          {
+          /*{
             title:'产品条码',
             align:"center",
             dataIndex: 'productBarCode'
+          },*/
+          {
+            title:'唯一码',
+            align:"center",
+            dataIndex: 'refBarCode'
           },
           {
             title:'规格',
@@ -238,6 +248,10 @@
       }
     },
     methods: {
+      dosageDateChange (value, dateString) {
+        this.queryParam.queryDateStart=dateString[0];
+        this.queryParam.queryDateEnd=dateString[1];
+      },
     // 部门下拉框搜索
       departHandleSearch(value){
         getAction(this.url.departList,{departName:value}).then((res)=>{
@@ -258,7 +272,40 @@
         param.pageNo = this.ipagination.current;
         param.pageSize = this.ipagination.pageSize;
         param.departIds = this.queryParam.departIds+"";
+        delete param.queryDate; //范围参数不传递后台，传后台会报错
         return filterObj(param);
+      },
+
+      /**重写导出方法**/
+      handleExportXls(fileName){
+        if(!fileName || typeof fileName != "string"){
+          fileName = "导出文件"
+        }
+        fileName = fileName + "_" + new Date().toLocaleString();
+        let param = this.getQueryParams();//查询条件
+        if(this.selectedRowKeys && this.selectedRowKeys.length>0){
+          param['selections'] = this.selectedRowKeys.join(",")
+        }
+        console.log("导出参数",param)
+        downFile(this.url.exportXlsUrl,param).then((data)=>{
+          if (!data) {
+            this.$message.warning("文件下载失败")
+            return
+          }
+          if (typeof window.navigator.msSaveBlob !== 'undefined') {
+            window.navigator.msSaveBlob(new Blob([data],{type: 'application/vnd.ms-excel'}), fileName+'.xls')
+          }else{
+            let url = window.URL.createObjectURL(new Blob([data],{type: 'application/vnd.ms-excel'}))
+            let link = document.createElement('a')
+            link.style.display = 'none'
+            link.href = url
+            link.setAttribute('download', fileName+'.xls')
+            document.body.appendChild(link)
+            link.click()
+            document.body.removeChild(link); //下载完成移除元素
+            window.URL.revokeObjectURL(url); //释放掉blob对象
+          }
+        })
       },
     }
   }

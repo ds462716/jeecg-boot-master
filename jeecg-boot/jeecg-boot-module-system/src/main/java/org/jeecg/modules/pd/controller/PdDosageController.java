@@ -22,7 +22,6 @@ import org.jeecgframework.poi.excel.def.NormalExcelConstants;
 import org.jeecgframework.poi.excel.entity.ExportParams;
 import org.jeecgframework.poi.excel.view.JeecgEntityExcelView;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -162,7 +161,7 @@ public class PdDosageController extends JeecgController<PdDosage, IPdDosageServi
 			 List<String> departList=pdDepartService.selectListDepart(sysDepart);
 			 pdDosage.setDepartIdList(departList);
 		 }
-
+		 pdDosage.setHyChargedList(Arrays.asList("0,1".split(",")));
 		 page = pdDosageService.queryPdDosageList(page, pdDosage);
 		 return Result.ok(page);
 	 }
@@ -256,6 +255,7 @@ public class PdDosageController extends JeecgController<PdDosage, IPdDosageServi
 			List<String> departList=pdDepartService.selectListDepart(sysDepart);
 			pdDosage.setDepartIdList(departList);
 		}
+		pdDosage.setHyChargedList(Arrays.asList("0,1".split(",")));
 		List<PdDosage> detailList = pdDosageService.queryPdDosageList(pdDosage);
 		List<PdDosagePage> exportList = JSON.parseArray(JSON.toJSONString(detailList), PdDosagePage.class);
 		// Step.4 AutoPoi 导出Excel

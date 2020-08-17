@@ -41,12 +41,10 @@ public class PdDosagePage extends BaseEntity {
 	@Excel(name = "用量单号", width = 15)
     @ApiModelProperty(value = "用量单号")
     private String dosageNo;
-    @Excel(name = "用量库房", width = 15)
-    @ApiModelProperty(value = "用量库房")
+    @Excel(name = "用量科室", width = 15)
+    @ApiModelProperty(value = "用量科室")
     @TableField(exist = false)
     private String departName;
-    @Excel(name = "货位", width = 15)
-    @ApiModelProperty(value = "货位")
     @TableField(exist = false)
     private String outHuoweiName;//出库货位
 	/**用量日期*/
@@ -63,6 +61,10 @@ public class PdDosagePage extends BaseEntity {
     @ApiModelProperty(value = "产品条码")
     @TableField(exist = false)
     private String productBarCode;
+    @Excel(name = "唯一码", width = 15)
+    @ApiModelProperty(value = "唯一码")
+    @TableField(exist = false)
+    private String refBarCode;
     @Excel(name = "产品规格", width = 15)
     @ApiModelProperty(value = "产品规格")
     @TableField(exist = false)
@@ -98,9 +100,9 @@ public class PdDosagePage extends BaseEntity {
     @ApiModelProperty(value = "生产厂家")
     @TableField(exist = false)
     private String venderName;//生产厂家名称
-	/**病人信息*/
-	@Excel(name = "病人信息", width = 15)
-    @ApiModelProperty(value = "病人信息")
+	/**病人姓名*/
+	@Excel(name = "病人姓名", width = 15)
+    @ApiModelProperty(value = "病人姓名")
     private String patientInfo;
 	/**病人详细信息*/
     private String patientDetailInfo;
@@ -125,8 +127,6 @@ public class PdDosagePage extends BaseEntity {
 	/**开方医生id*/
     private String sqrtDoctorId;
 	/**开方医生名称*/
-	@Excel(name = "开方医生名称", width = 15)
-    @ApiModelProperty(value = "开方医生名称")
     private String sqrtDoctorName;
 	/**住院号*/
 	@Excel(name = "住院号", width = 15)
@@ -141,8 +141,6 @@ public class PdDosagePage extends BaseEntity {
 	/**所属病区id*/
     private String subordinateWardId;
 	/**所属病区名称*/
-	@Excel(name = "所属病区名称", width = 15)
-    @ApiModelProperty(value = "所属病区名称")
     private String subordinateWardName;
 	/**门诊号*/
 	@Excel(name = "门诊号", width = 15)

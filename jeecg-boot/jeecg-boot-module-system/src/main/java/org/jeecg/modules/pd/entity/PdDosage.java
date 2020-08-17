@@ -239,6 +239,9 @@ public class PdDosage extends BaseEntity {
     /*多个部门集合*/
     @TableField(exist = false)
     private List<String> departIdList;
+    /*是否收費集合*/
+    @TableField(exist = false)
+    private List<String> hyChargedList;
 
 
     /**
@@ -324,4 +327,7 @@ public class PdDosage extends BaseEntity {
     /*检查项目申请号*/
     @TableField(exist = false)
     private String applicationNumber;
+    /*唯一码*/
+    @TableField(exist = false)
+    private String refBarCode;
 }

@@ -95,7 +95,8 @@
 		dd.exp_date AS "expDate",
 		dd.dosage_count AS "dosageCount",
 		dd.hy_charged AS "dhyCharged",
-		dd.charge_code AS "chargeCode"
+		dd.charge_code AS "chargeCode",
+		dd.ref_bar_code AS "refBarCode"
 	</sql>
     <sql id="pdDosageDetailJoins">
 		LEFT JOIN pd_dosage_detail dd on a.id = dd.dosage_id
@@ -372,8 +373,20 @@
             <if test="batchNo != null and batchNo != ''">
                 AND dd.batch_no = #{batchNo}
             </if>
+            <if test="hyChargedList != null and hyChargedList.size() > 0">
+                AND dd.hy_charged IN
+                <foreach collection="hyChargedList" item="item" separator="," open="(" close=")">
+                    #{item}
+                </foreach>
+            </if>
             <if test="supplierId != null and supplierId != ''">
                 AND e.supplier_id = #{supplierId}
+            </if>
+            <if test="queryDateStart != null and queryDateStart != ''">
+                AND date_format(a.dosage_date, "%Y-%m-%d") &gt;= #{queryDateStart}
+            </if>
+            <if test="queryDateEnd != null and queryDateEnd != ''">
+                AND date_format(a.dosage_date, "%Y-%m-%d") &lt;= #{queryDateEnd}
             </if>
             order by a.create_time desc
         </where>
