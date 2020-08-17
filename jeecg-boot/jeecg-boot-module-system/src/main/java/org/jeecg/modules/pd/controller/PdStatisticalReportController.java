@@ -18,6 +18,7 @@ import org.jeecg.modules.pd.service.IPdDepartService;
 import org.jeecg.modules.pd.service.IPdStatisticalReportService;
 import org.jeecg.modules.pd.service.IPdStockRecordDetailService;
 import org.jeecg.modules.pd.vo.*;
+import org.jeecg.modules.pd.vo.*;
 import org.jeecg.modules.system.entity.SysDepart;
 import org.jeecgframework.poi.excel.def.NormalExcelConstants;
 import org.jeecgframework.poi.excel.entity.ExportParams;
@@ -164,6 +165,38 @@ public class PdStatisticalReportController extends JeecgController<PdStatistical
 
     //供应商用量使用统计 end
 
+    //部门用量使用统计 start
+    @GetMapping(value = "/departUseReport")
+    public Result<?> departUseReport(RpDepartUseReportPage rpDepartUseReportPage,
+                                       @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
+                                       @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize) {
+        Page<RpDepartUseReportPage> page = new Page<RpDepartUseReportPage>(pageNo, pageSize);
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        rpDepartUseReportPage.setDepartParentId(sysUser.getDepartParentId());
+        IPage<RpDepartUseReportPage> pageList = pdStatisticalReportService.departUseReport(page, rpDepartUseReportPage);
+        return Result.ok(pageList);
+    }
+
+    /**
+     * 导出excel(部门用量使用统计)
+     *
+     * @param request
+     * @param pdStockRecord
+     */
+    @RequestMapping(value = "/exportDepartUseReportXls")
+    public ModelAndView exportDepartUseReportXls(HttpServletRequest request, RpDepartUseReportPage rpDepartUseReportPage) {
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        rpDepartUseReportPage.setDepartParentId(sysUser.getDepartParentId());
+        List<RpDepartUseReportPage> pageList = pdStatisticalReportService.departUseReport(rpDepartUseReportPage);
+        ModelAndView mv = new ModelAndView(new JeecgEntityExcelView());
+        mv.addObject(NormalExcelConstants.FILE_NAME, "部门用量使用统计报表");
+        mv.addObject(NormalExcelConstants.CLASS, RpDepartUseReportPage.class);
+        mv.addObject(NormalExcelConstants.PARAMS, new ExportParams("部门用量使用统计报表数据", "导出人:" + sysUser.getRealname(), "部门用量报表"));
+        mv.addObject(NormalExcelConstants.DATA_LIST, pageList);
+        return mv;
+    }
+
+    //部门用量使用统计 end
 
     //出入库统计报表 jiangxz  20200814  start
     /**

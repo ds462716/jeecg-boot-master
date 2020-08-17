@@ -5,6 +5,10 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.jeecg.modules.pd.entity.PdStatisticalReport;
 import org.jeecg.modules.pd.entity.PdStockRecordDetail;
+import org.jeecg.modules.pd.vo.RpDepartUseReportPage;
+import org.jeecg.modules.pd.vo.RpReDetailReportPage;
+import org.jeecg.modules.pd.vo.RpSupplierUseReportPage;
+import org.jeecg.modules.pd.vo.RpUseDetailReportPage;
 import org.jeecg.modules.pd.vo.*;
 
 import java.util.List;
@@ -61,4 +65,7 @@ public interface IPdStatisticalReportService extends IService<PdStatisticalRepor
      */
     List<RpInAndOutDetailReportPage> rpInAndOutDetailReport(RpInAndOutDetailReportPage entity);
 
+    IPage<RpDepartUseReportPage> departUseReport(Page<RpDepartUseReportPage> page, RpDepartUseReportPage rpDepartUseReportPage);
+
+    List<RpDepartUseReportPage> departUseReport(RpDepartUseReportPage rpDepartUseReportPage);
 }

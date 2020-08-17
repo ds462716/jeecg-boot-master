@@ -932,4 +932,179 @@
             ORDER BY create_time desc
         </where>
     </select>
+
+    <!-- 部门用量统计报表 -->
+    <select id="departUseReport" resultType="org.jeecg.modules.pd.vo.RpDepartUseReportPage" parameterType="org.jeecg.modules.pd.vo.RpDepartUseReportPage">
+      SELECT
+	@rowNum :=@rowNum + 1 AS id,
+	rep.*
+FROM
+	(
+		SELECT
+			do_table1.audit_date,
+			do_table1.depart_id,
+			IFNULL(do_table1.dosageNum, 0) AS dosageNum,
+			IFNULL(do_table1.dosagePrice, 0) AS dosagePrice,
+            IFNULL(do_table2.dosageNum, 0) AS chargeDosageNum,
+            IFNULL(do_table2.dosagePrice, 0) AS chargeDosagePrice,
+            IFNULL(do_table3.dosageNum, 0) AS noChargeDosageNum,
+            IFNULL(do_table3.dosagePrice, 0) AS noChargeDosagePrice,
+			de.depart_name
+		FROM
+			(
+				SELECT
+					t1.audit_date,
+					sum(t1.left_refund_num) AS dosageNum,
+					sum(t1.dosagePrice) AS dosagePrice,
+					t1.depart_id,
+					t1.dosage_no
+				FROM
+					(
+						SELECT
+							date_format(b.dosage_date, '%Y-%m') AS audit_date,
+							b.depart_id,
+							a.left_refund_num,
+							IFNULL(a.selling_price, 0) AS sellingPrice,
+							a.left_refund_num * IFNULL(a.selling_price, 0) AS dosagePrice,
+							b.dosage_no
+						FROM
+							pd_dosage_detail a
+						LEFT JOIN pd_dosage b ON a.dosage_id = b.id
+						WHERE
+							a.del_flag = '0'
+						AND a.left_refund_num > 0
+                        <if test="entity.departParentId != null and entity.departParentId != ''">
+                            AND b.depart_parent_id = #{entity.departParentId}
+                        </if>
+                        <if test="entity.departId != null and entity.departId != ''">
+                            AND b.depart_id = #{entity.departId}
+                        </if>
+                        <if test="entity.yearMonth != null and entity.yearMonth != ''">
+                            AND date_format(b.dosage_date,'%Y-%m') = #{entity.yearMonth}
+                        </if>
+                        <if test="entity.departIdList != null and entity.departIdList.size() > 0">
+                            and b.depart_id IN
+                            <foreach collection="entity.departIdList" item="item" separator="," open="(" close=")">
+                                #{item}
+                            </foreach>
+                        </if>
+					) t1
+				GROUP BY
+					t1.audit_date,
+					t1.depart_id
+			) do_table1
+		LEFT JOIN (
+			SELECT
+				do_table2.audit_date,
+				do_table2.depart_id,
+				IFNULL(do_table2.dosageNum, 0) AS dosageNum,
+				IFNULL(do_table2.dosagePrice, 0) AS dosagePrice,
+				de.depart_name
+			FROM
+				(
+					SELECT
+						t1.audit_date,
+						sum(t1.left_refund_num) AS dosageNum,
+						sum(t1.dosagePrice) AS dosagePrice,
+						t1.depart_id,
+						t1.dosage_no
+					FROM
+						(
+							SELECT
+								date_format(b.dosage_date, '%Y-%m') AS audit_date,
+								b.depart_id,
+								a.left_refund_num,
+								IFNULL(a.selling_price, 0) AS sellingPrice,
+								a.left_refund_num * IFNULL(a.selling_price, 0) AS dosagePrice,
+								b.dosage_no
+							FROM
+								pd_dosage_detail a
+							LEFT JOIN pd_dosage b ON a.dosage_id = b.id
+							WHERE
+								a.del_flag = '0'
+							AND a.left_refund_num > 0
+							AND a.hy_charged = '0'
+                            <if test="entity.departParentId != null and entity.departParentId != ''">
+                                AND b.depart_parent_id = #{entity.departParentId}
+                            </if>
+                            <if test="entity.departId != null and entity.departId != ''">
+                                AND b.depart_id = #{entity.departId}
+                            </if>
+                            <if test="entity.yearMonth != null and entity.yearMonth != ''">
+                                AND date_format(b.dosage_date,'%Y-%m') = #{entity.yearMonth}
+                            </if>
+                            <if test="entity.departIdList != null and entity.departIdList.size() > 0">
+                                and b.depart_id IN
+                                <foreach collection="entity.departIdList" item="item" separator="," open="(" close=")">
+                                    #{item}
+                                </foreach>
+                            </if>
+						) t1
+					GROUP BY
+						t1.audit_date,
+						t1.depart_id
+				) do_table2
+			LEFT JOIN sys_depart de ON de.id = do_table2.depart_id
+		) do_table2 ON do_table1.depart_id = do_table2.depart_id
+		AND do_table1.audit_date = do_table2.audit_date
+		LEFT JOIN (
+			SELECT
+				do_table3.audit_date,
+				do_table3.depart_id,
+				IFNULL(do_table3.dosageNum, 0) AS dosageNum,
+				IFNULL(do_table3.dosagePrice, 0) AS dosagePrice,
+				de.depart_name
+			FROM
+				(
+					SELECT
+						t1.audit_date,
+						sum(t1.left_refund_num) AS dosageNum,
+						sum(t1.dosagePrice) AS dosagePrice,
+						t1.depart_id,
+						t1.dosage_no
+					FROM
+						(
+							SELECT
+								date_format(b.dosage_date, '%Y-%m') AS audit_date,
+								b.depart_id,
+								a.left_refund_num,
+								IFNULL(a.selling_price, 0) AS sellingPrice,
+								a.left_refund_num * IFNULL(a.selling_price, 0) AS dosagePrice,
+								b.dosage_no
+							FROM
+								pd_dosage_detail a
+							LEFT JOIN pd_dosage b ON a.dosage_id = b.id
+							WHERE
+								a.del_flag = '0'
+							AND a.left_refund_num > 0
+							AND a.hy_charged != '0'
+                            <if test="entity.departParentId != null and entity.departParentId != ''">
+                                AND b.depart_parent_id = #{entity.departParentId}
+                            </if>
+                            <if test="entity.departId != null and entity.departId != ''">
+                                AND b.depart_id = #{entity.departId}
+                            </if>
+                            <if test="entity.yearMonth != null and entity.yearMonth != ''">
+                                AND date_format(b.dosage_date,'%Y-%m') = #{entity.yearMonth}
+                            </if>
+                            <if test="entity.departIdList != null and entity.departIdList.size() > 0">
+                                and b.depart_id IN
+                                <foreach collection="entity.departIdList" item="item" separator="," open="(" close=")">
+                                    #{item}
+                                </foreach>
+                            </if>
+						) t1
+					GROUP BY
+						t1.audit_date,
+						t1.depart_id
+				) do_table3
+			LEFT JOIN sys_depart de ON de.id = do_table3.depart_id
+		) do_table3 ON do_table1.depart_id = do_table3.depart_id
+		AND do_table1.audit_date = do_table3.audit_date
+		LEFT JOIN sys_depart de ON de.id = do_table1.depart_id
+	) AS rep,
+	(SELECT @rowNum := 0) n
+ORDER BY
+	rep.audit_date DESC
+    </select>
 </mapper>

@@ -7,6 +7,10 @@ import org.jeecg.modules.pd.entity.PdStatisticalReport;
 import org.jeecg.modules.pd.entity.PdStockRecordDetail;
 import org.jeecg.modules.pd.mapper.PdStatisticalReportMapper;
 import org.jeecg.modules.pd.service.IPdStatisticalReportService;
+import org.jeecg.modules.pd.vo.RpDepartUseReportPage;
+import org.jeecg.modules.pd.vo.RpReDetailReportPage;
+import org.jeecg.modules.pd.vo.RpSupplierUseReportPage;
+import org.jeecg.modules.pd.vo.RpUseDetailReportPage;
 import org.jeecg.modules.pd.vo.*;
 import org.springframework.stereotype.Service;
 
@@ -71,6 +75,25 @@ public class PdPdStatisticalReportImpl extends ServiceImpl<PdStatisticalReportMa
     @Override
     public IPage<RpReDetailReportPage> rpReDetailReport(Page<RpReDetailReportPage> rePageDetail, RpReDetailReportPage rpReDetailReportPage) {
         return baseMapper.rpReDetailReport(rePageDetail,rpReDetailReportPage);
+    }
+    /**
+     * zxh部门用量使用统计
+     * @param page
+     * @param rpDepartUseReportPage
+     * @return
+     */
+    @Override
+    public IPage<RpDepartUseReportPage> departUseReport(Page<RpDepartUseReportPage> page, RpDepartUseReportPage rpDepartUseReportPage) {
+        return baseMapper.departUseReport(page,rpDepartUseReportPage);
+    }
+    /**
+     * zxh部门用量使用统计
+     * @param rpDepartUseReportPage
+     * @return
+     */
+    @Override
+    public List<RpDepartUseReportPage> departUseReport(RpDepartUseReportPage rpDepartUseReportPage) {
+        return baseMapper.departUseReport(rpDepartUseReportPage);
     }
 
     /**
