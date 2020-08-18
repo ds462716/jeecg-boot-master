@@ -242,12 +242,18 @@ public class AxisGZWYUtils {
 		params.put("cxlx", dosageDetail.getProductNumber());
 		params.put("cxsl", productNum);
 		params.put("zyh", inHospitalNo);
-		if("d8c060c562f8485eb9c3a639674c32e6".equals(departId)
-				|| "65caa20e7fab4b8b9a6b23806a8dfde8".equals(departId)
-				|| "11eeda15c89f421fa656fa74879edf67".equals(departId)){
+		if("ed88fae1d871426ba8df883dedcb9bd9".equals(departId)
+				|| "2c7f3452b92f40c3a88f0cfa40d438ad".equals(departId)
+				|| "12c7393a5ddc4737ac73de425fd805a7".equals(departId)){
 			params.put("ssbm", "0");//传0的话，HIS系统会记录到手工记账那里，而不是手术项目收费那里；
 		}else{
-			params.put("ssbm", pdDosage.getOperativeNumber());
+			if(pdDosage.getOperativeNumber()==null ||"".equals(pdDosage.getOperativeNumber())){
+				json.put("code", "-200");
+				json.put("msg", "参数异常");
+				return json;
+			}else{
+			params.put("ssbm",  pdDosage.getOperativeNumber());
+			}
 		}
 		params.put("sflx", PdConstant.IS_CHARGE_TYPE_1);//收费类型
 		params.put("czr", sysUser.getWorkNo());
@@ -307,12 +313,18 @@ public class AxisGZWYUtils {
 		params.put("cxsl", "-"+productNum);
 		params.put("zyh", inHospitalNo);
 
-		if("d8c060c562f8485eb9c3a639674c32e6".equals(departId)
-				|| "65caa20e7fab4b8b9a6b23806a8dfde8".equals(departId)
-				|| "11eeda15c89f421fa656fa74879edf67".equals(departId)){
+		if("ed88fae1d871426ba8df883dedcb9bd9".equals(departId)
+				|| "2c7f3452b92f40c3a88f0cfa40d438ad".equals(departId)
+				|| "12c7393a5ddc4737ac73de425fd805a7".equals(departId)){
 			params.put("ssbm", "0");//传0的话，HIS系统会记录到手工记账那里，而不是手术项目收费那里；
 		}else{
-			params.put("ssbm",  pdDosage.getOperativeNumber());
+			if(pdDosage.getOperativeNumber()==null ||"".equals(pdDosage.getOperativeNumber())){
+				json.put("code", "-200");
+				json.put("msg", "参数异常");
+				return json;
+			}else{
+				params.put("ssbm",  pdDosage.getOperativeNumber());
+			}
 		}
 		params.put("sflx",PdConstant.IS_CHARGE_TYPE_0);//收费类型
 		params.put("czr", sysUser.getWorkNo());
