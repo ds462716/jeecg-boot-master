@@ -200,17 +200,17 @@
             dataIndex: 'disPrice'
           },
           {
-            title:'使用理论规格数量',
+            title:'理论使用人份数量',
             align:"center",
             dataIndex: 'specQuantityNum'
           },
           {
-            title:'实际使用规格数量',
+            title:'实际使用人份数量',
             align:"center",
             dataIndex: 'specRealityNum'
           },
           {
-            title:'差异规格数量',
+            title:'差异人份数量',
             align:"center",
             dataIndex: 'disSpecNum'
           },
@@ -309,7 +309,7 @@
         if(this.selectedRowKeys && this.selectedRowKeys.length>0){
           param['selections'] = this.selectedRowKeys.join(",")
         }
-        param.tjType="0";
+        param.tjType="1";
         console.log("导出参数",param)
         downFile(this.url.exportXlsUrl,param).then((data)=>{
           if (!data) {

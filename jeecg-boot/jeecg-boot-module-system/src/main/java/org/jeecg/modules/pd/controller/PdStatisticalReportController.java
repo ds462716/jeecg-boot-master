@@ -476,18 +476,19 @@ public class PdStatisticalReportController extends JeecgController<PdStatistical
         ModelAndView mv = new ModelAndView(new JeecgEntityExcelView());
         List<PdNumericalInfHcExlce> exportHcList =new ArrayList<>();
         List<PdNumericalInfSjExlce> exportSjList =new ArrayList<>();
-        if("0".equals(tjType)){ //试剂统计导出
-            exportSjList = JSON.parseArray(JSON.toJSONString(list), PdNumericalInfSjExlce.class);
-            mv.addObject(NormalExcelConstants.FILE_NAME, "试剂月统计报表");
-            mv.addObject(NormalExcelConstants.CLASS, PdNumericalInfSjExlce.class);
-            mv.addObject(NormalExcelConstants.PARAMS, new ExportParams("试剂月统计报表", "导出人:" + sysUser.getRealname(), "试剂月统计报表"));
-            mv.addObject(NormalExcelConstants.DATA_LIST, exportSjList);
-        }else{ //耗材
+        if("0".equals(tjType)){ //耗材统计导出
             exportHcList = JSON.parseArray(JSON.toJSONString(list), PdNumericalInfHcExlce.class);
             mv.addObject(NormalExcelConstants.FILE_NAME, "耗材月统计报表");
             mv.addObject(NormalExcelConstants.CLASS, PdNumericalInfHcExlce.class);
             mv.addObject(NormalExcelConstants.PARAMS, new ExportParams("耗材月统计报表", "导出人:" + sysUser.getRealname(), "耗材月统计报表"));
             mv.addObject(NormalExcelConstants.DATA_LIST, exportHcList);
+
+        }else{ //试剂统计导出
+            exportSjList = JSON.parseArray(JSON.toJSONString(list), PdNumericalInfSjExlce.class);
+            mv.addObject(NormalExcelConstants.FILE_NAME, "试剂月统计报表");
+            mv.addObject(NormalExcelConstants.CLASS, PdNumericalInfSjExlce.class);
+            mv.addObject(NormalExcelConstants.PARAMS, new ExportParams("试剂月统计报表", "导出人:" + sysUser.getRealname(), "试剂月统计报表"));
+            mv.addObject(NormalExcelConstants.DATA_LIST, exportSjList);
         }
         return mv;
     }

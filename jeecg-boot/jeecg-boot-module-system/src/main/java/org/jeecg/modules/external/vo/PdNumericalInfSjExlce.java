@@ -64,5 +64,28 @@ public class PdNumericalInfSjExlce {
     /**差异金额*/
     @Excel(name = "差异金额", width = 15)
     private BigDecimal disPrice;
+    /**理论使用人份数量*/
+    @Excel(name = "理论使用人份数量", width = 15)
+    private Double specQuantityNum;
+    /**实际使用人份数量*/
+    @Excel(name = "实际使用人份数量", width = 15)
+    private Double specRealityNum;
+    /**差异人份数量*/
+    @Excel(name = "差异人份数量", width = 15)
+    private Double disSpecNum;
+    /**检验项目数量*/
+    @Excel(name = "检验项目数量", width = 15)
+    private Double itemNum;
+    /** 检验项目收入金额*/
+    @Excel(name = " 检验项目收入金额", width = 15)
+    private BigDecimal itemPrice;
+
+
+
+
+
+
+
+
 
 }

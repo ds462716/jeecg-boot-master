@@ -33,8 +33,10 @@ public class PdDosagePageExcel{
     private String spec;//产品规格
     @Excel(name = "批号", width = 15)
     private String batchNo;
-    @Excel(name = "有效期", width = 15)
-    private String expDate;
+    @Excel(name = "有效期", width = 15, format = "yyyy-MM-dd")
+    @JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd")
+    @DateTimeFormat(pattern="yyyy-MM-dd")
+    private Date expDate;
     @Excel(name = "住院号", width = 15)
     private String inHospitalNo;
     @Excel(name = "病人姓名", width = 15)

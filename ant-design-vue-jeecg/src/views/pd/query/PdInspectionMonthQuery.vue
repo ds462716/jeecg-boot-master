@@ -50,7 +50,7 @@
     <!-- 查询区域-END -->
     <!-- 操作按钮区域 -->
     <div class="table-operator">
-      <a-button type="primary" icon="download" @click="handleExportXls('试剂消耗报表')">导出</a-button>
+      <a-button type="primary" icon="download" @click="handleExportXls('耗材消耗报表')">导出</a-button>
     </div>
     <!-- table区域-begin -->
     <div>
