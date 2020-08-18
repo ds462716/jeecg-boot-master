@@ -153,8 +153,8 @@
     <!-- 操作按钮区域 -->
     <div class="table-operator">
       <a-button type="primary" icon="download" @click="handleExportXls('库存明细','1')">导出</a-button>
-      <a-button type="primary" icon="download" @click="handleExportXls('库存明细','2')">盘点导出</a-button>
-
+      <a-button type="primary" icon="download" v-show="isDisabledAuth('stock:form:sjExportXls')" @click="handleExportXls('库存明细','2')">试剂盘点导出</a-button>
+      <a-button type="primary" icon="download" v-show="isDisabledAuth('stock:form:hcExportXls')" @click="handleExportXls('库存明细','3')">耗材盘点导出</a-button>
     </div>
     <!-- table区域-begin -->
     <div>
@@ -187,6 +187,8 @@
   import {initDictOptions, filterMultiDictText} from '@/components/dict/JDictSelectUtil'
   import JDictSelectTagExpand from "@/components/dict/JDictSelectTagExpand"
   import JEllipsis from '@/components/jeecg/JEllipsis'
+  import { disabledAuthFilter } from "@/utils/authFilter"
+
   export default {
     name: "PdProductStockQueryList",
     mixins:[JeecgListMixin],
@@ -507,6 +509,14 @@
             this.$set(this.dictOptions, 'nestatStatus', res.result)
           }
         })
+      },
+      /**
+       * 校验权限
+       * @param code
+       * @returns {boolean|*}
+       */
+      isDisabledAuth(code){
+        return !disabledAuthFilter(code);
       },
     }
   }

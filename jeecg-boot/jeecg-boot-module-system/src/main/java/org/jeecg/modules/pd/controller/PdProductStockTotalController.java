@@ -427,8 +427,12 @@ public class PdProductStockTotalController {
             productStock.setDepartIdList(departList);
         }
         //Step.2 获取导出数据
-        if (exportType.equals("2")) {
+        if (exportType.equals("2")) { //只导出未使用的试剂类
             productStock.setNestatStatus(PdConstant.STOCK_NESTAT_STATUS_1);
+            productStock.setProductFlag(PdConstant.PRODUCT_FLAG_1);
+        }else if(exportType.equals("3")){ //只导出未使用的耗材类
+            //productStock.setNestatStatus(PdConstant.STOCK_NESTAT_STATUS_1);
+            productStock.setProductFlag(PdConstant.PRODUCT_FLAG_0);
         }
         List<PdProductStock> aList = pdProductStockService.queryStockList(productStock);
         if (aList != null && aList.size() > 0) {
@@ -443,7 +447,7 @@ public class PdProductStockTotalController {
         }
         // Step.3 AutoPoi 导出Excel
         ModelAndView mv = new ModelAndView(new JeecgEntityExcelView());
-        if (exportType.equals("2")) {
+        if (exportType.equals("2") || exportType.equals("3")) {
             List<PdProductAllocationExcel> exportList = JSON.parseArray(JSON.toJSONString(aList), PdProductAllocationExcel.class);
             mv.addObject(NormalExcelConstants.CLASS, PdProductAllocationExcel.class);
             mv.addObject(NormalExcelConstants.DATA_LIST, exportList);

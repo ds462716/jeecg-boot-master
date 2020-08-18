@@ -6,7 +6,6 @@ import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMFactory;
 import org.apache.axiom.om.OMNamespace;
-import org.apache.axiom.soap.SOAP12Constants;
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.addressing.EndpointReference;
 import org.apache.axis2.client.Options;
@@ -58,7 +57,8 @@ public class AxisGZWYUtils {
 		options.setManageSession(true);
 		options.setTimeOutInMilliSeconds(9000L);
 		//options.setSoapVersionURI("http://schemas.xmlsoap.org/soap/envelope/");// 设定SOAP版本soap1.1
-		options.setSoapVersionURI(SOAP12Constants.SOAP_ENVELOPE_NAMESPACE_URI);// 设定SOAP版本soap1.2
+		options.setSoapVersionURI("http://www.w3.org/2001/XMLSchema/");// 设定SOAP版本soap1.1
+		//options.setSoapVersionURI(SOAP12Constants.SOAP_ENVELOPE_NAMESPACE_URI);// 设定SOAP版本soap1.2
 		options.setProperty(HTTPConstants.REUSE_HTTP_CLIENT, true);
         options.setAction("");
         options.setTo(targetEPR);  
