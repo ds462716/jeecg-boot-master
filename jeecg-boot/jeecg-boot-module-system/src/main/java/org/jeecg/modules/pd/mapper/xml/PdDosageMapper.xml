@@ -81,6 +81,7 @@
         pp.remarks,
         pp.jde_code,
         pp.validity_flag,
+        pp.biding_number,
         pp.del_flag
     </sql>
     <sql id="pdProductJoins">
@@ -94,6 +95,7 @@
 		dd.batch_no AS "batchNo",
 		dd.exp_date AS "expDate",
 		dd.dosage_count AS "dosageCount",
+		dd.amount_money AS "amountMoney",
 		dd.hy_charged AS "dhyCharged",
 		dd.charge_code AS "chargeCode",
 		dd.ref_bar_code AS "refBarCode"
@@ -367,6 +369,9 @@
             <if test="spec != null and spec != ''">
                 AND pp.spec = #{spec}
             </if>
+            <if test="categoryOne != null and categoryOne != ''">
+                AND pp.category_one = #{categoryOne}
+            </if>
             <if test="productNumber != null and productNumber != ''">
                 AND pp.number LIKE concat('%',#{productNumber},'%')
             </if>
@@ -378,6 +383,12 @@
                 <foreach collection="hyChargedList" item="item" separator="," open="(" close=")">
                     #{item}
                 </foreach>
+            </if>
+            <if test="hyCharged != null and hyCharged != ''">
+                AND dd.hy_charged = #{hyCharged}
+            </if>
+            <if test="refBarCode != null and refBarCode != ''">
+                AND dd.ref_bar_code = #{refBarCode}
             </if>
             <if test="supplierId != null and supplierId != ''">
                 AND e.supplier_id = #{supplierId}

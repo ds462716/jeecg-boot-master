@@ -17,6 +17,7 @@ import org.jeecg.modules.pd.entity.PdDosage;
 import org.jeecg.modules.pd.service.IPdDepartService;
 import org.jeecg.modules.pd.service.IPdDosageService;
 import org.jeecg.modules.pd.vo.PdDosagePage;
+import org.jeecg.modules.pd.vo.PdDosagePageExcel;
 import org.jeecg.modules.system.entity.SysDepart;
 import org.jeecgframework.poi.excel.def.NormalExcelConstants;
 import org.jeecgframework.poi.excel.entity.ExportParams;
@@ -257,13 +258,19 @@ public class PdDosageController extends JeecgController<PdDosage, IPdDosageServi
 		}
 		pdDosage.setHyChargedList(Arrays.asList("0,1".split(",")));
 		List<PdDosage> detailList = pdDosageService.queryPdDosageList(pdDosage);
-		List<PdDosagePage> exportList = JSON.parseArray(JSON.toJSONString(detailList), PdDosagePage.class);
 		// Step.4 AutoPoi 导出Excel
 		ModelAndView mv = new ModelAndView(new JeecgEntityExcelView());
 		mv.addObject(NormalExcelConstants.FILE_NAME, "用量");
-		mv.addObject(NormalExcelConstants.CLASS, PdDosagePage.class);
 		mv.addObject(NormalExcelConstants.PARAMS, new ExportParams("用量数据", "导出人:" + sysUser.getRealname(), "用量表"));
-		mv.addObject(NormalExcelConstants.DATA_LIST, exportList);
+       if(sysUser.getHospitalCode().equals("GZSLYY")){
+		   List<PdDosagePageExcel> gzslExportList = JSON.parseArray(JSON.toJSONString(detailList), PdDosagePageExcel.class);
+		   mv.addObject(NormalExcelConstants.CLASS, PdDosagePageExcel.class);
+		   mv.addObject(NormalExcelConstants.DATA_LIST, gzslExportList);
+	   }else{
+		   List<PdDosagePage> exportList = JSON.parseArray(JSON.toJSONString(detailList), PdDosagePage.class);
+		   mv.addObject(NormalExcelConstants.CLASS, PdDosagePage.class);
+		   mv.addObject(NormalExcelConstants.DATA_LIST, exportList);
+	   }
 		return mv;
     }
 

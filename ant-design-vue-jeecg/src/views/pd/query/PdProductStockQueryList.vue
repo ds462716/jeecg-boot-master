@@ -152,8 +152,9 @@
     <!-- 查询区域-END -->
     <!-- 操作按钮区域 -->
     <div class="table-operator">
-      <a-button type="primary" icon="download" @click="handleExportXls('库存明细','1')">导出</a-button>
-      <a-button type="primary" icon="download" @click="handleExportXls('库存明细','2')">盘点导出</a-button>
+      <a-button type="primary" icon="download" @click="handleExportXls('库存明细','1')">全部导出</a-button>
+      <a-button type="primary" icon="download" @click="handleExportXls('库存明细','2')">试剂盘点导出</a-button>
+      <a-button type="primary" icon="download" @click="handleExportXls('库存明细','3')">耗材盘点导出</a-button>
 
     </div>
     <!-- table区域-begin -->

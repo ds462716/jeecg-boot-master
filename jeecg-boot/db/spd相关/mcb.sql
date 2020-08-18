@@ -185,10 +185,16 @@ CREATE INDEX record_id ON pd_stock_record_detail (record_id);
 
 
 -- 2020年8月16日 10:22:59   试剂用量查询菜单设置逻辑删除
- update   sys_permission set del_flag='1'  where id='1263760305687826434' and name='试剂用量查询'
+ update   sys_permission set del_flag='1'  where id='1263760305687826434' and name='试剂用量查询';
 
 -- 2020年8月17日 10:22:59   菜单名称修改
-UPDATE sys_permission SET name='供应商耗材用量统计报表' where id='1293093425294729218'
+UPDATE sys_permission SET name='供应商耗材用量统计报表' where id='1293093425294729218';
+-- 2020年8月18日 10:22:59   增加静态字典
+INSERT INTO  `sys_dict`  VALUES ('1295520195443605505', '是否执行收费标识', 'hy_charged', '0:已收费   1：未收费   2：已退回    3：已退费', 0, 'admin', '2020-08-18 08:37:39', NULL, '2020-08-18 08:37:39', 0);
+INSERT INTO  `sys_dict_item`  VALUES ('1295520265144549378', '1295520195443605505', '已收费', '0', '', 1, 1, 'admin', '2020-08-18 08:37:55', NULL, '2020-08-18 08:37:55');
+INSERT INTO  `sys_dict_item`  VALUES ('1295520302746484738', '1295520195443605505', '未收费', '1', '', 2, 1, 'admin', '2020-08-18 08:38:04', NULL, '2020-08-18 08:38:04');
+INSERT INTO  `sys_dict_item`  VALUES ('1295520361621929985', '1295520195443605505', '已退回', '2', '', 3, 1, 'admin', '2020-08-18 08:38:18', NULL, '2020-08-18 08:38:18');
+INSERT INTO  `sys_dict_item`  VALUES ('1295520410984693762', '1295520195443605505', '已退费', '3', '', 4, 1, 'admin', '2020-08-18 08:38:30', NULL, '2020-08-18 08:38:30');
 
 
 

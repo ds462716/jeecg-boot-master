@@ -260,6 +260,8 @@ public class PdDosage extends BaseEntity {
     @TableField(exist = false)
     private String number;//产品编号
     @TableField(exist = false)
+    private String categoryOne;//一级分类
+    @TableField(exist = false)
     private String productNumber;//产品编号
     @TableField(exist = false)
     private String spec;//产品规格
@@ -271,6 +273,8 @@ public class PdDosage extends BaseEntity {
     private String venderId;//生产厂家ID
     @TableField(exist = false)
     private String venderName;//生产厂家名称
+    @TableField(exist = false)
+    private String bidingNumber;//中标号
     @TableField(exist = false)
     private String supplierId;//供应商ID
     @TableField(exist = false)
@@ -330,4 +334,7 @@ public class PdDosage extends BaseEntity {
     /*唯一码*/
     @TableField(exist = false)
     private String refBarCode;
+    /*使用金额*/
+    @TableField(exist = false)
+    private BigDecimal amountMoney;
 }
