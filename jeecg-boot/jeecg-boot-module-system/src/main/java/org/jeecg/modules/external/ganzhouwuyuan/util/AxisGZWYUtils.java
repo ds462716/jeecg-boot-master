@@ -1,11 +1,10 @@
 package org.jeecg.modules.external.ganzhouwuyuan.util;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
-import org.apache.axiom.om.OMAbstractFactory;
-import org.apache.axiom.om.OMElement;
-import org.apache.axiom.om.OMFactory;
-import org.apache.axiom.om.OMNamespace;
+import org.apache.axiom.om.*;
+import org.apache.axiom.soap.SOAP12Constants;
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.addressing.EndpointReference;
 import org.apache.axis2.client.Options;
@@ -18,13 +17,14 @@ import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.DateUtils;
 import org.jeecg.modules.pd.entity.PdDosage;
 import org.jeecg.modules.pd.entity.PdDosageDetail;
+import org.jeecg.modules.pd.util.AxisUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.xml.namespace.QName;
 import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /** 
  * 描述：axis2调用webservice工具类（赣州五院调接口用）
@@ -32,18 +32,12 @@ import java.util.Map;
  * @version 2017年10月20日 下午2:51:07 
  */
 public class AxisGZWYUtils {
-	private static Logger logger = LoggerFactory.getLogger(AxisGZWYUtils.class);
-	private static String defaultNamespace = "http://www.mingweisoft.com/";
-	private static String drugInfoUrl = "http://192.168.0.128:8086/HisService.asmx?wsdl";
-	private static String chargeUrl = "";
-	private static String chargeCodeUrl = "";
-
+	private static Logger logger = LoggerFactory.getLogger(AxisUtils.class);
 	private static OMFactory fac = OMAbstractFactory.getOMFactory();
+	private static String defaultNamespace = "http://www.mingweisoft.com/";
+	private static String chargeUrl = "http://192.168.0.128:8086/HisService.asmx?wsdl";
+	private static OMElement value=null;
 
-	//默认命名空间
-	//public static final String defaultNamespace = "http://tempuri.org/";
-
-	
 	/**
 	 * 获取发送客户端
 	 * @param soapUrl 调用地址
@@ -51,70 +45,137 @@ public class AxisGZWYUtils {
 	 * @return
 	 * @throws AxisFault
 	 */
-	public static ServiceClient getClientSend(String soapUrl, String actionUrl) throws AxisFault{
+	public static ServiceClient getClientSend(String soapUrl, String actionUrl) throws AxisFault {
 		EndpointReference targetEPR = new EndpointReference(soapUrl);
 		Options options = new Options();
 		options.setManageSession(true);
 		options.setTimeOutInMilliSeconds(9000L);
-		//options.setSoapVersionURI("http://schemas.xmlsoap.org/soap/envelope/");// 设定SOAP版本soap1.1
-		options.setSoapVersionURI("http://www.w3.org/2001/XMLSchema/");// 设定SOAP版本soap1.1
-		//options.setSoapVersionURI(SOAP12Constants.SOAP_ENVELOPE_NAMESPACE_URI);// 设定SOAP版本soap1.2
+		options.setSoapVersionURI(SOAP12Constants.SOAP_ENVELOPE_NAMESPACE_URI);// 设定SOAP版本soap1.2
 		options.setProperty(HTTPConstants.REUSE_HTTP_CLIENT, true);
-        options.setAction("");
-        options.setTo(targetEPR);  
-        options.setProperty(HTTPConstants.CHUNKED, "false");  
-        ServiceClient sender = new ServiceClient();  
-	    sender.setOptions(options);  
-	    return sender;
+		options.setAction(actionUrl);
+		options.setTo(targetEPR);
+		options.setProperty(HTTPConstants.CHUNKED, "false");
+		ServiceClient sender = new ServiceClient();
+		sender.setOptions(options);
+		return sender;
 	}
 
-	public static void main(String[] args) throws AxisFault, NoSuchAlgorithmException, UnsupportedEncodingException {
-		getBaseInfo();
+	public static List<Map<String,String>> getLisData(List<String> list) throws AxisFault {
+		String lisUrl="";
+		ServiceClient sender = getClientSend(lisUrl, "http://tempuri.org/LisGetRepList");
+		OMNamespace omNs = fac.createOMNamespace("http://tempuri.org/", "");
+		OMElement method = fac.createOMElement("LisGetRepList", omNs);
+		OMElement name = fac.createOMElement("UserName", omNs);// 设置入参名称
+		OMElement name2 = fac.createOMElement("UserPwd", omNs);// 设置入参名称
+		OMElement name3 = fac.createOMElement("PatName", omNs);// 设置入参名称
+		OMElement name4 = fac.createOMElement("PatID", omNs);// 设置入参名称
+
+		name.setText(list.get(0));// 设置入参值
+		name2.setText(list.get(1));
+		name3.setText(list.get(2));
+		name4.setText(list.get(3));
+
+		method.addChild(name);
+		method.addChild(name2);
+		method.addChild(name3);
+		method.addChild(name4);
+		method.build();
+		OMElement response = sender.sendReceive(method);
+		//sender.cleanupTransport();
+		OMElement newDataSet = getTheNodeValue(response, "NewDataSet");
+		List<Map<String,String>> arrayList = new ArrayList<Map<String,String>>();
+		if(newDataSet==null){
+			return arrayList;
+		}
+		Iterator iterator = newDataSet.getChildElements();
+		Map<String,String> results=new HashMap<String,String>();
+		while (iterator.hasNext()) {
+			OMElement element = (OMElement) iterator.next();
+			results = getResults(element);
+			arrayList.add(results);
+			System.out.println(JSON.toJSONString(results));
+
+		}
+		return arrayList;
 	}
-	
-	
-	public static String getJsonDataFromWebservice(String appointUrl, String appointNamespace, String appointMethod, Map<String,Object> params) throws AxisFault{
+
+
+	public static void main(String[] args) throws AxisFault, NoSuchAlgorithmException, UnsupportedEncodingException {
+		String result = "{'code':'0','msg':'查询成功','data':[{'手术编号':'11542','所属病区编码':'647','所属病区':'肝胆外科','所属科室编码':'647','所属科室':'肝胆外科','手术科室':'40','申请医生姓名编码':'1214','申请医生姓名':'刘新海','门诊号':'00060847','姓名':'李海宇','住院号':'00060847','床位号':'9830','性别':'男','登记日期':'2019/7/27 18:47:00'},{'手术编号':'11561','所属病区编码':'647','所属病区':'肝胆外科','所属科室编码':'647','所属科室':'肝胆外科','手术科室':'40','申请医生姓名编码':'1214','申请医生姓名':'刘新海','门诊号':'00060847','姓名':'李海宇','住院号':'00060847','床位号':'9830','性别':'男','登记日期':'2019/7/29 14:17:00'}]}";
+		JSONObject json = JSONObject.parseObject(result);
+		System.out.println(json);
+	}
+
+
+
+	public static String getJsonDataFromWebservice(String appointUrl, String appointNamespace, String appointMethod, Map<String,Object> params) throws AxisFault {
 		ServiceClient sender = getClientSend(appointUrl, appointNamespace + appointMethod);
 		OMNamespace omNs = fac.createOMNamespace(appointNamespace, "");
-		OMNamespace omNs1 = fac.createOMNamespace("", "");
 		OMElement method = fac.createOMElement(appointMethod, omNs);
 		for(String key:params.keySet()){
-			OMElement name = fac.createOMElement(key, omNs1);// 设置入参名称
+			OMElement name = fac.createOMElement(key, omNs);// 设置入参名称
 			name.setText((String)params.get(key));
 			method.addChild(name);
 		}
-		method.build();  
-	    OMElement response = sender.sendReceive(method);
-	    OMElement element = response.getFirstElement();
+		method.build();
+		OMElement response = sender.sendReceive(method);
+		OMElement element = response.getFirstElement();
 		return element.getText();
 	}
 
 
-	public static JSONObject getBaseInfo() {
-		Map<String,Object> params = new HashMap<>();
-		String str = "222";
-		//JSONArray jsonObj = JSONArray.parseArray(str);
-		params.put("purchaseOrder",str);
-		JSONObject json = new JSONObject();
+	public static OMElement getTheNodeValue(OMElement omElement, String nodeName) {
 		try {
-			String result = getJsonDataFromWebservice(drugInfoUrl, defaultNamespace, "sendPurchaseOrderToSpd", params);
-			json = JSONObject.parseObject(result);
-			if (!"0".equals(json.get("code"))) {
-				json.put("code", "-200");
+			Iterator desc = omElement.getChildElements();
+			value = null;
+			while (desc.hasNext()) {
+				OMElement element = (OMElement) desc.next();
+				OMElement e = element.getFirstChildWithName(new QName(nodeName));
+				if (e == null && element.getQName().equals(new QName(nodeName))) {
+					e = element;
+				}
+				if (e != null) {
+					value = e;
+					break;
+				} else {
+					if (value == null) {
+						getTheNodeValue(element, nodeName);
+					}
+				}
 			}
-		} catch (AxisFault e) {
-			e.printStackTrace();
-			logger.info("******调用HIS查询基础信息接口出现错误！******");
-			json.put("code", "-200");
-		} catch (JSONException ee) {
-			ee.printStackTrace();
-			json.put("code", "-200");
-			logger.info("******调用HIS查询基础信息接口JSON转换返回信息出现错误！******");
+			return value;
+
+		} catch (Exception e) {
+			return null;
 		}
-		return json;
+
 	}
 
 
+	/**
+	 * 遍历全部节点，将节点放入Map返回
+	 *
+	 * @param element
+	 * @return
+	 */
+	public static Map<String,String> getResults(OMElement element) {
+		if (element == null) {
+			return null;
+		}
+		Iterator iter = element.getChildElements();
+		Map<String,String> map = new HashMap<String,String>();
+		while (iter.hasNext()) {
+			OMNode omNode = (OMNode) iter.next();
+			if (omNode.getType() == OMNode.ELEMENT_NODE) {
+				OMElement omElement = (OMElement) omNode;
+				String key = omElement.getLocalName().trim();
+				//System.out.println("sta: " + key);
+				String value = omElement.getText().trim();
+				map.put(key, value);
+			}
+		}
+		return map;
+	}
 
 
 	/**
@@ -135,8 +196,6 @@ public class AxisGZWYUtils {
 		try {
 			//String result = getJsonDataFromWebservice(chargeUrl, defaultNamespace, "GetSurgInfo", params);
 			 String result = getJsonDataFromWebservice(chargeUrl, defaultNamespace, "GetApplication", params);
-			//String result="{'code':'0','msg':'查询成功','data':[{'手术编号':'12684','所属病区编码':'624','手术名称':'深静脉置管术','所属病区':'肝病科二区','所属科室编码':'624','所属科室':'肝病科二区','手术科室':'手术室','申请医生姓名编码':'749','申请医生姓名':'胡江玲','门诊号':'00065299','姓名':'刘荣祜','住院号':'00065299','床位号':'9451','性别':'男','登记日期':'2019/12/2 23:09:00','申请编号':'12684','住院标识':'1'},{'手术编号':'12696','所属病区编码':'624','手术名称':'无痛胃镜介入治疗','所属病区':'肝病科二区','所属科室编码':'624','所属科室':'肝病科二区','手术科室':'手术室','申请医生姓名编码':'749','申请医生姓名':'胡江玲','门诊号':'00065299','姓名':'刘荣祜','住院号':'00065299','床位号':'9451','性别':'男','登记日期':'2019/12/3 12:52:00','申请编号':'12696','住院标识':'1'}]}";
-			//String result="{'code':'0','msg':'查询成功','data':[{'手术编号':'1124080','所属病区编码':'649','手术名称':'','所属病区':'内科三区','所属科室编码':'649','所属科室':'内科三区','手术科室':'','申请医生姓名编码':'413','申请医生姓名':'叶远飞','门诊号':'1500017512','姓名':'舒启凡','住院号':'1500017512','床位号':'','性别':'男','登记日期':'2019/12/4 8:16:52','申请编号':'2019120400022','住院标识':'2'}]}";
 			//String result="{'code':'0','msg':'查询成功','data':[{'手术编号':'','所属病区编码':'','手术名称':'','所属病区':'','所属科室编码':'','所属科室':'','手术科室':'','申请医生姓名编码':'','申请医生姓名':'','门诊号':'00070278','姓名':'许金连','住院号':'00070278','床位号':'9938','性别':'女','登记日期':'','申请编号':'','住院标识':'1'}]}";
 			json = JSONObject.parseObject(result);
 			if (!"0".equals(json.get("code"))) {
