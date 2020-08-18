@@ -67,7 +67,7 @@
       </a-table>
     </div>
 
-    <!--<rp-supplier-use-report-main ref="RpSupplierUseReportMain"></rp-supplier-use-report-main>-->
+    <rp-depart-use-report-main ref="RpDepartUseReportMain"></rp-depart-use-report-main>
 
   </a-card>
 </template>
@@ -79,6 +79,7 @@
   import {initDictOptions, filterMultiDictText} from '@/components/dict/JDictSelectUtil'
   import JDictSelectTagExpand from "@/components/dict/JDictSelectTagExpand"
   import JEllipsis from '@/components/jeecg/JEllipsis'
+  import RpDepartUseReportMain from "./RpDepartUseReportMain";
 
   let timeout;
   let currentValue;
@@ -115,6 +116,7 @@
     name: "RpDepartUseReport",
     mixins:[JeecgListMixin],
     components: {
+      RpDepartUseReportMain,
       JDictSelectTagExpand,JEllipsis
     },
     data () {
@@ -263,7 +265,7 @@
         let param = {};
         param.departId = record.departId;
         param.yearMonth = record.auditDate;
-        this.$refs.RpSupplierUseReportMain.show(param);
+        this.$refs.RpDepartUseReportMain.show(param);
       },
       /**重写导出方法**/
       handleExportXls(fileName){

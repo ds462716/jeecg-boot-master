@@ -170,6 +170,14 @@ public class PdStatisticalReportController extends JeecgController<PdStatistical
     //供应商用量使用统计 end
 
     //部门用量使用统计 start
+
+    /**
+     * zxh部门用量使用统计报表
+     * @param rpDepartUseReportPage
+     * @param pageNo
+     * @param pageSize
+     * @return
+     */
     @GetMapping(value = "/departUseReport")
     public Result<?> departUseReport(RpDepartUseReportPage rpDepartUseReportPage,
                                        @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
@@ -190,7 +198,7 @@ public class PdStatisticalReportController extends JeecgController<PdStatistical
     }
 
     /**
-     * 导出excel(部门用量使用统计)
+     * zxh导出excel(部门用量使用统计)
      *
      * @param request
      * @param rpDepartUseReportPage
@@ -214,6 +222,31 @@ public class PdStatisticalReportController extends JeecgController<PdStatistical
         mv.addObject(NormalExcelConstants.PARAMS, new ExportParams("部门用量使用统计报表数据", "导出人:" + sysUser.getRealname(), "部门用量报表"));
         mv.addObject(NormalExcelConstants.DATA_LIST, pageList);
         return mv;
+    }
+
+    /**
+     * zxh部门用量明细统计报表
+     * @param rpUseDetailReportPage
+     * @param pageNo
+     * @param pageSize
+     * @return
+     */
+    @GetMapping(value = "/rpDepartUseDetailReport")
+    public Result<?> rpDepartUseDetailReport(RpDepartUseDetailReportPage rpDepartUseDetailReportPage,
+                                       @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
+                                       @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize) {
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        rpDepartUseDetailReportPage.setDepartParentId(sysUser.getDepartParentId());
+        Page<RpDepartUseDetailReportPage> usePageDetail = new Page<RpDepartUseDetailReportPage>(pageNo, pageSize);
+        IPage<RpDepartUseDetailReportPage> usePageDetailList = pdStatisticalReportService.rpDepartUseDetailReport(usePageDetail, rpDepartUseDetailReportPage);
+        List<RpDepartUseDetailReportPage> useList = usePageDetailList.getRecords();
+        List<RpDepartUseDetailReportPage> inReportList = JSON.parseArray(JSON.toJSONString(useList), RpDepartUseDetailReportPage.class);
+        Page<RpDepartUseDetailReportPage> usePage = new Page<RpDepartUseDetailReportPage>(pageNo, pageSize);
+        usePage.setTotal(usePageDetailList.getTotal());
+        usePage.setSize(usePageDetailList.getSize());
+        usePage.setCurrent(usePageDetailList.getCurrent());
+        usePage.setRecords(inReportList);
+        return Result.ok(usePage);
     }
 
     //部门用量使用统计 end

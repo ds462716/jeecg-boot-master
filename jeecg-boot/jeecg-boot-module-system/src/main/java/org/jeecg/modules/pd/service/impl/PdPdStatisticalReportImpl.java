@@ -95,6 +95,16 @@ public class PdPdStatisticalReportImpl extends ServiceImpl<PdStatisticalReportMa
     public List<RpDepartUseReportPage> departUseReport(RpDepartUseReportPage rpDepartUseReportPage) {
         return baseMapper.departUseReport(rpDepartUseReportPage);
     }
+    /**
+     * zxh部门用量使用明细
+     * @param usePageDetail
+     * @param rpDepartUseDetailReportPage
+     * @return
+     */
+    @Override
+    public IPage<RpDepartUseDetailReportPage> rpDepartUseDetailReport(Page<RpDepartUseDetailReportPage> usePageDetail, RpDepartUseDetailReportPage rpDepartUseDetailReportPage) {
+        return baseMapper.rpDepartUseDetailReport(usePageDetail,rpDepartUseDetailReportPage);
+    }
 
     /**
      * 出入库统计报表查询——分页
