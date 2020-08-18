@@ -211,6 +211,12 @@
             dataIndex: 'productBarCode'
           },
           {
+            title:'唯一码',
+            align:"center",
+            width:'90px',
+            dataIndex: 'refBarCode'
+          },
+          {
             title:'退货数量',
             align:"center",
             width:'90px',

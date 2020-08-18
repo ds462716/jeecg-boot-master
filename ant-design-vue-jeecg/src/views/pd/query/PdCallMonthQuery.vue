@@ -224,11 +224,11 @@
             align:"center",
             dataIndex: 'itemPrice'
           },
-          {
+          /*{
             title:'库存耗占比',
             align:"center",
             dataIndex: 'proportion'
-          },
+          },*/
          /* {
             title: '操作',
             dataIndex: 'action',
