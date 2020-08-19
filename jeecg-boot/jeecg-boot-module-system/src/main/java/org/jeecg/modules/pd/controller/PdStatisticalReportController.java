@@ -573,4 +573,49 @@ public class PdStatisticalReportController extends JeecgController<PdStatistical
         usePage.setRecords(inReportList);
         return Result.ok(usePage);
     }
+    //库存统计报表 end
+
+    //供应商用量使用统计 start
+    /**
+     * 供应商用量使用统计
+     * @param rpSupplierUseReportPage
+     * @param pageNo
+     * @param pageSize
+     * @return
+     */
+    @GetMapping(value = "/supplierReagentUseReport")
+    public Result<?> supplierReagentUseReport(RpSupplierUseReportPage rpSupplierUseReportPage,
+                                       @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
+                                       @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize) {
+        Page<RpSupplierUseReportPage> page = new Page<RpSupplierUseReportPage>(pageNo, pageSize);
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        rpSupplierUseReportPage.setDepartParentId(sysUser.getDepartParentId());
+        IPage<RpSupplierUseReportPage> pageList = pdStatisticalReportService.supplierReagentUseReport(page, rpSupplierUseReportPage);
+        return Result.ok(pageList);
+    }
+
+    /**
+     * zxh用量明细统计报表
+     * @param rpUseDetailReportPage
+     * @param pageNo
+     * @param pageSize
+     * @return
+     */
+    @GetMapping(value = "/rpReagentUseDetailReport")
+    public Result<?> rpReagentUseDetailReport(RpReagentUseDetailReportPage rpReagentUseDetailReportPage,
+                                       @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
+                                       @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize) {
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        rpReagentUseDetailReportPage.setDepartParentId(sysUser.getDepartParentId());
+        Page<RpReagentUseDetailReportPage> usePageDetail = new Page<RpReagentUseDetailReportPage>(pageNo, pageSize);
+        IPage<RpReagentUseDetailReportPage> usePageDetailList = pdStatisticalReportService.rpReagentUseDetailReport(usePageDetail, rpReagentUseDetailReportPage);
+        List<RpReagentUseDetailReportPage> useList = usePageDetailList.getRecords();
+        List<RpReagentUseDetailReportPage> inReportList = JSON.parseArray(JSON.toJSONString(useList), RpReagentUseDetailReportPage.class);
+        Page<RpReagentUseDetailReportPage> usePage = new Page<RpReagentUseDetailReportPage>(pageNo, pageSize);
+        usePage.setTotal(usePageDetailList.getTotal());
+        usePage.setSize(usePageDetailList.getSize());
+        usePage.setCurrent(usePageDetailList.getCurrent());
+        usePage.setRecords(inReportList);
+        return Result.ok(usePage);
+    }
 }

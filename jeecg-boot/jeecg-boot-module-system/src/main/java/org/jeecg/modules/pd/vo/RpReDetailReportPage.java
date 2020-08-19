@@ -85,5 +85,7 @@ public class RpReDetailReportPage {
     private String queryDateStart;
     private String queryDateEnd;
     private String registration;
+    private String productFlag;//产品类型
+
 
 }

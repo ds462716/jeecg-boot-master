@@ -128,13 +128,18 @@
             <a-form layout="inline" @keyup.enter.native="useSearchQuery">
               <a-row :gutter="24">
                 <a-col :md="6" :sm="8">
-                  <a-form-item label="用量单号">
-                    <a-input placeholder="请输入用量单号" v-model="useQueryParam.dosageNo"></a-input>
+                  <a-form-item label="唯一码编号">
+                    <a-input placeholder="请输入唯一码编号" v-model="useQueryParam.refBarCode"></a-input>
                   </a-form-item>
                 </a-col>
                 <a-col :md="6" :sm="8">
                   <a-form-item label="产品名称">
                     <a-input placeholder="请选输入品名称" v-model="useQueryParam.productName"></a-input>
+                  </a-form-item>
+                </a-col>
+                <a-col :md="6" :sm="8">
+                  <a-form-item label="批号">
+                    <a-input placeholder="请输入批号" v-model="useQueryParam.batchNo"></a-input>
                   </a-form-item>
                 </a-col>
                 <a-col :md="6" :sm="8">
@@ -144,7 +149,7 @@
                 </a-col>
 
                 <template v-if="useToggleSearchStatus">
-                  <a-col :md="6" :sm="8">
+                  <!--<a-col :md="6" :sm="8">
                     <a-form-item label="规格">
                       <a-input placeholder="请输入规格" v-model="useQueryParam.spec"></a-input>
                     </a-form-item>
@@ -162,11 +167,6 @@
                   <a-col :md="6" :sm="8">
                     <a-form-item label="型号">
                       <a-input placeholder="请输入型号" v-model="useQueryParam.version"></a-input>
-                    </a-form-item>
-                  </a-col>
-                  <a-col :md="6" :sm="8">
-                    <a-form-item label="批号">
-                      <a-input placeholder="请输入批号" v-model="useQueryParam.batchNo"></a-input>
                     </a-form-item>
                   </a-col>
                   <a-col :md="6" :sm="8">
@@ -188,7 +188,7 @@
                         <a-select-option v-for="d in useVenderData" :key="d.value">{{d.text}}</a-select-option>
                       </a-select>
                     </a-form-item>
-                  </a-col>
+                  </a-col>-->
                 </template>
 
                 <a-col :md="6" :sm="8">
@@ -350,7 +350,7 @@
   import { VALIDATE_NO_PASSED, getRefPromise, validateFormAndTables } from '@/utils/JEditableTableUtil'
 
   export default {
-    name: "RpSupplierUseReportMain",
+    name: "RpSupplierReagentUseReportMain",
     components: {
     },
     data() {
@@ -453,97 +453,89 @@
           },
           tableScroll:{x :3000},
           columns: [
-            { title: '序号', dataIndex: '', key:'rowIndex', width:60, align:"center",
-              customRender:function (t,r,index) {
-                return parseInt(index)+1;
-              }
-            },
-            { title:'用量日期', align:"center", width:'100px', dataIndex: 'dosageDate',
-              customRender:function (text) {
-                return !text?"":(text.length>10?text.substr(0,10):text)
-              }
+            {
+              title:'开瓶操作人',
+              align:"center",
+              dataIndex: 'boottleBy'
             },
             {
-              title:'供应商',
+              title:'开瓶时间',
               align:"center",
-              scopedSlots: {customRender: "ellipsisText"},
-              dataIndex: 'supplierName'
+              dataIndex: 'boottleDate'
             },
             {
-              title:'用量单号',
+              title:'所属仪器',
               align:"center",
-              dataIndex: 'dosageNo'
-            },
-            {
-              title:'产品编号',
-              align:"center",
-              dataIndex: 'productNumber'
+              dataIndex: 'instrName'
             },
             {
               title:'产品名称',
               align:"center",
-              scopedSlots: {customRender: "ellipsisText"},
               dataIndex: 'productName'
             },
             {
-              title:'规格',
+              title:'唯一码编号',
               align:"center",
-              dataIndex: 'spec'
+              dataIndex: 'refBarCode'
             },
             {
-              title:'型号',
-              align:"center",
-              dataIndex: 'version'
-            },
-            {
-              title:'批号',
+              title:'批次号',
               align:"center",
               dataIndex: 'batchNo'
             },
-            { title:'有效期', align:"center", dataIndex: 'expDate', width:'100px',
-              customRender:function (text) {
-                return !text?"":(text.length>10?text.substr(0,10):text)
-              }
-            },
             {
-              title:'用量数量',
+              title:'有效期',
               align:"center",
-              dataIndex: 'leftRefundNum'
+              dataIndex: 'expDate'
             },
             {
-              title:'单位',
+              title:'使用数量',
+              align:"center",
+              dataIndex: 'specNum'
+            },
+            {
+              title:'规格数量',
+              align:"center",
+              dataIndex: 'specQuantity'
+            },
+            {
+              title:'剩余规格数量',
+              align:"center",
+              dataIndex: 'sySpecNum'
+            },
+            {
+              title:'规格单位',
               align:"center",
               dataIndex: 'unitName'
             },
             {
-              title:'单价',
+              title:'闭瓶时间',
               align:"center",
-              dataIndex: 'sellingPrice'
+              dataIndex: 'closeDate'
             },
             {
-              title:'金额',
+              title:'闭瓶操作人',
               align:"center",
-              dataIndex: 'dosagePrice'
-            },
-            { title:'生产厂家', align:"center", width:'250px', dataIndex: 'venderName' },
-            {
-              title:'注册证号',
-              align:"center",
-              scopedSlots: {customRender: "ellipsisText"},
-              dataIndex: 'productRegistration'
-            },
-            {
-              title:'备注',
-              align:"center",
-              scopedSlots: {customRender: "ellipsisText"},
-              dataIndex: 'remarks'
-            },
-            {
-              title:'产品收费代码',
-              align:"center",
-              dataIndex: 'chargeCode'
+              dataIndex: 'closeBy'
             },
 
+            {
+              title:'闭瓶原因',
+              align:"center",
+              dataIndex: 'closeRemarks',
+              customRender:(text)=>{
+                if(!text){
+                  return ''
+                }else{
+                  return filterMultiDictText(this.dictOptions['closeRemarks'], text+"")
+                }
+              }
+            },
+            {
+              title:'所属部门',
+              align:"center",
+              dataIndex: 'departName'
+            },
           ],
         },
 
@@ -678,7 +670,7 @@
           inList: "/pd/pdStatisticalReport/supplierInDetailReport",
           exportInReportXls: "/pd/pdStockRecordIn/exportInReportXls",
           queryVender:"/pd/pdVender/getVenderList",
-          useList: "/pd/pdStatisticalReport/rpUseDetailReport",
+          useList: "/pd/pdStatisticalReport/rpReagentUseDetailReport",
           reList: "/pd/pdStatisticalReport/rpReDetailReport",
 
         },
@@ -783,7 +775,7 @@
         param.pageSize = this.inTable.ipagination.pageSize;
         param.supplierId = this.initParams.supplierId;
         param.yearMonth = this.initParams.yearMonth;
-        param.productFlag = 0;//只查产品
+        param.productFlag = 1;//只查试剂
         delete param.queryExpDate; //范围参数不传递后台，传后台会报错
         return filterObj(param);
       },
@@ -936,7 +928,7 @@
         param.pageSize = this.reTable.ipagination.pageSize;
         param.supplierId = this.initParams.supplierId;
         param.yearMonth = this.initParams.yearMonth;
-        param.productFlag = 0;//只查产品
+        param.productFlag = 1;//只查试剂
         delete param.queryExpDate; //范围参数不传递后台，传后台会报错
         return filterObj(param);
       },

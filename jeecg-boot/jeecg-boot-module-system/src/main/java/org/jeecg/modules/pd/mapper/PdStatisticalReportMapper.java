@@ -76,4 +76,8 @@ public interface PdStatisticalReportMapper extends BaseMapper<PdStatisticalRepor
     List<RpDepartStockReportPage> departStockReport(@Param("entity")RpDepartStockReportPage rpDepartStockReportPage);
 
     IPage<RpDepartStockDetailReportPage> rpDepartStockDetailReport(Page<RpDepartStockDetailReportPage> stockPageDetail, @Param("entity")RpDepartStockDetailReportPage rpDepartStockDetailReportPage);
+
+    IPage<RpSupplierUseReportPage> supplierReagentUseReport(Page<RpSupplierUseReportPage> page, @Param("entity")RpSupplierUseReportPage rpSupplierUseReportPage);
+
+    IPage<RpReagentUseDetailReportPage> rpReagentUseDetailReport(Page<RpReagentUseDetailReportPage> usePageDetail, @Param("entity")RpReagentUseDetailReportPage rpReagentUseDetailReportPage);
 }

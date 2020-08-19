@@ -172,9 +172,33 @@ public class PdPdStatisticalReportImpl extends ServiceImpl<PdStatisticalReportMa
     public List<RpDepartStockReportPage> departStockReport(RpDepartStockReportPage rpDepartStockReportPage) {
         return baseMapper.departStockReport(rpDepartStockReportPage);
     }
-
+    /**
+     * zxh库存统计报表
+     * @param rpDepartStockDetailReportPage
+     * @return
+     */
     @Override
     public IPage<RpDepartStockDetailReportPage> rpDepartStockDetailReport(Page<RpDepartStockDetailReportPage> stockPageDetail, RpDepartStockDetailReportPage rpDepartStockDetailReportPage) {
         return baseMapper.rpDepartStockDetailReport(stockPageDetail,rpDepartStockDetailReportPage);
+    }
+    /**
+     * zxh供应商试剂使用报表
+     * @param page
+     * @param rpSupplierUseReportPage
+     * @return
+     */
+    @Override
+    public IPage<RpSupplierUseReportPage> supplierReagentUseReport(Page<RpSupplierUseReportPage> page, RpSupplierUseReportPage rpSupplierUseReportPage) {
+        return baseMapper.supplierReagentUseReport(page,rpSupplierUseReportPage);
+    }
+    /**
+     * zxh供应商试剂使用报表详情
+     * @param usePageDetail
+     * @param rpReagentUseDetailReportPage
+     * @return
+     */
+    @Override
+    public IPage<RpReagentUseDetailReportPage> rpReagentUseDetailReport(Page<RpReagentUseDetailReportPage> usePageDetail, RpReagentUseDetailReportPage rpReagentUseDetailReportPage) {
+        return baseMapper.rpReagentUseDetailReport(usePageDetail,rpReagentUseDetailReportPage);
     }
 }
