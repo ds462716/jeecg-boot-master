@@ -70,4 +70,10 @@ public interface PdStatisticalReportMapper extends BaseMapper<PdStatisticalRepor
     List<RpInAndOutDetailReportPage> rpInAndOutDetailReport(@Param("entity") RpInAndOutDetailReportPage entity);
 
     IPage<RpDepartUseDetailReportPage> rpDepartUseDetailReport(Page<RpDepartUseDetailReportPage> usePageDetail, @Param("entity")RpDepartUseDetailReportPage rpDepartUseDetailReportPage);
+
+    IPage<RpDepartStockReportPage> departStockReport(Page<RpDepartStockReportPage> page, @Param("entity")RpDepartStockReportPage rpDepartStockReportPage);
+
+    List<RpDepartStockReportPage> departStockReport(@Param("entity")RpDepartStockReportPage rpDepartStockReportPage);
+
+    IPage<RpDepartStockDetailReportPage> rpDepartStockDetailReport(Page<RpDepartStockDetailReportPage> stockPageDetail, @Param("entity")RpDepartStockDetailReportPage rpDepartStockDetailReportPage);
 }

@@ -1107,7 +1107,7 @@ FROM
 ORDER BY
 	rep.audit_date DESC
     </select>
-
+    <!-- 部门用量统计详情报表 -->
     <select id="rpDepartUseDetailReport" resultType="org.jeecg.modules.pd.vo.RpDepartUseDetailReportPage">
         SELECT
         a.id,
@@ -1213,4 +1213,148 @@ ORDER BY
             )
         </if>
     </select>
+
+    <!-- 库存统计报表 -->
+    <select id="departStockReport" resultType="org.jeecg.modules.pd.vo.RpDepartStockReportPage" parameterType="org.jeecg.modules.pd.vo.RpDepartStockReportPage">
+        SELECT
+            @rowNum :=@rowNum + 1 AS id,
+            rep.*
+        FROM
+            (
+                SELECT
+                    sum(t1.stock_num) AS stockNum,
+                    sum(t1.sellingAmount) AS sellingAmount,
+                    sum(t1.purchaseAmount) AS purchaseAmount,
+                    t1.depart_id,
+                    t1.depart_name,
+                    t1.create_time
+                FROM
+                    (
+                        SELECT
+                        a.create_time,
+                        a.depart_id,
+                        a.stock_num,
+                        IFNULL(b.selling_price, 0) AS sellingPrice,
+                        IFNULL(b.purchase_price, 0) AS purchasePrice,
+                        a.stock_num * IFNULL(b.selling_price, 0) AS sellingAmount,
+                        a.stock_num * IFNULL(b.purchase_price, 0) AS purchaseAmount,
+                        de.depart_name
+                        FROM
+                        pd_product_stock a
+                        LEFT JOIN pd_stock_record_detail b ON a.record_detail_id = b.id
+                        LEFT JOIN sys_depart de ON a.depart_id = de.id
+                        WHERE
+                            a.del_flag = '0'
+                        AND a.stock_num > 0
+                        <if test="entity.departParentId != null and entity.departParentId != ''">
+                            AND a.depart_parent_id = #{entity.departParentId}
+                        </if>
+                        <if test="entity.departId != null and entity.departId != ''">
+                            AND a.depart_id = #{entity.departId}
+                        </if>
+                        <if test="entity.departIdList != null and entity.departIdList.size() > 0">
+                            and a.depart_id IN
+                            <foreach collection="entity.departIdList" item="item" separator="," open="(" close=")">
+                                #{item}
+                            </foreach>
+                        </if>
+                    ) t1
+                GROUP BY
+                    t1.depart_id
+            ) AS rep,
+            (SELECT @rowNum := 0) n
+        ORDER BY
+            rep.create_time DESC
+    </select>
+
+    <!-- 部门用量统计详情报表 -->
+    <select id="rpDepartStockDetailReport" resultType="org.jeecg.modules.pd.vo.RpDepartStockDetailReportPage">
+        SELECT
+        a.id,
+        a.batch_no,
+        a.exp_date,
+        a.stock_num,
+        a.supplier_id,
+        b.selling_price,
+        b.purchase_price,
+        a.stock_num * IFNULL(b.selling_price, 0) AS sellingAmount,
+        a.stock_num * IFNULL(b.purchase_price, 0) AS purchaseAmount,
+        a.produce_date,
+        pp.number AS productNumber,
+        pp.`name` AS productName,
+        pp.spec,
+        pp.version,
+        pp.unit_id,
+        pu.`name` AS unitName,
+        pv.`name` AS venderName,
+        pp.registration AS productRegistration,
+        pp.charge_code,
+        pp.jde_code AS jdeCode,
+        pp.dart_code AS dartCode,
+        pp.biding_number AS bidingNumber,
+        pv.jde_code AS "venderJdeCode",
+        s.jde_code AS "supplierJdeCode"
+        FROM
+        pd_product_stock a
+        LEFT JOIN pd_stock_record_detail b on a.record_detail_id = b.id
+        LEFT JOIN pd_supplier s ON a.supplier_id = s.id
+        LEFT JOIN pd_product pp ON a.product_id = pp.id
+        LEFT JOIN pd_unit pu ON pp.unit_id = pu.id
+        LEFT JOIN pd_vender pv ON pp.vender_id = pv.id
+        WHERE
+        a.del_flag = '0'
+        and a.stock_num >0
+        <if test="entity.supplierId != null and entity.supplierId != ''">
+            AND a.supplier_id = #{entity.supplierId}
+        </if>
+        <if test="entity.departId != null and entity.departId != ''">
+            AND a.depart_id = #{entity.departId}
+        </if>
+        <if test="entity.departParentId != null and entity.departParentId != ''">
+            AND a.depart_parent_id = #{entity.departParentId}
+        </if>
+        <if test="entity.queryExpDateStart != null and entity.queryExpDateStart != ''">
+            AND date_format( a.exp_date, '%Y-%m-%d') &gt;= #{entity.queryExpDateStart}
+        </if>
+        <if test="entity.queryExpDateEnd != null and entity.queryExpDateEnd != ''">
+            AND date_format( a.exp_date, '%Y-%m-%d') &lt;= #{entity.queryExpDateEnd}
+        </if>
+        <if test="entity.batchNo != null and entity.batchNo != ''">
+            AND a.batch_no LIKE concat('%',#{entity.batchNo},'%')
+        </if>
+        <if test="entity.queryDateStart != null and entity.queryDateStart != ''">
+            AND date_format( a.create_time, '%Y-%m-%d') &gt;= #{entity.queryDateStart}
+        </if>
+        <if test="entity.queryDateEnd != null and entity.queryDateEnd != ''">
+            AND date_format( a.create_time, '%Y-%m-%d') &lt;= #{entity.queryDateEnd}
+        </if>
+        <if test="entity.productNumber != null and entity.productNumber != ''">
+            AND pp.number LIKE concat('%',#{entity.productNumber},'%')
+        </if>
+        <if test="entity.venderId != null and entity.venderId != ''">
+            AND pp.vender_id = #{entity.venderId}
+        </if>
+        <if test="entity.spec != null and entity.spec != ''">
+            AND pp.spec LIKE concat('%',#{entity.spec},'%')
+        </if>
+        <if test="entity.version != null and entity.version != ''">
+            AND pp.version LIKE concat('%',#{entity.version},'%')
+        </if>
+        <if test="entity.registration != null and entity.registration != ''">
+            AND pp.registration LIKE concat('%',#{entity.registration},'%')
+        </if>
+        <if test="entity.productName != null and entity.productName != ''">
+            AND (
+            pp.number LIKE concat('%',#{entity.productName},'%')
+            or pp.name LIKE concat('%',#{entity.productName},'%')
+            or pp.py LIKE concat('%',#{entity.productName},'%')
+            or pp.wb LIKE concat('%',#{entity.productName},'%')
+            or pp.bname LIKE concat('%',#{entity.productName},'%')
+            or pp.bpy LIKE concat('%',#{entity.productName},'%')
+            or pp.bwb LIKE concat('%',#{entity.productName},'%')
+            or pp.zdy LIKE concat('%',#{entity.productName},'%')
+            )
+        </if>
+    </select>
+
 </mapper>

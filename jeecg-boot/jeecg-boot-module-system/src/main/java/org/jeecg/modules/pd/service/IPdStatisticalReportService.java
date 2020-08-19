@@ -70,4 +70,10 @@ public interface IPdStatisticalReportService extends IService<PdStatisticalRepor
     List<RpDepartUseReportPage> departUseReport(RpDepartUseReportPage rpDepartUseReportPage);
 
     IPage<RpDepartUseDetailReportPage> rpDepartUseDetailReport(Page<RpDepartUseDetailReportPage> usePageDetail, RpDepartUseDetailReportPage rpDepartUseDetailReportPage);
+
+    IPage<RpDepartStockReportPage> departStockReport(Page<RpDepartStockReportPage> page, RpDepartStockReportPage rpDepartStockReportPage);
+
+    List<RpDepartStockReportPage> departStockReport(RpDepartStockReportPage rpDepartStockReportPage);
+
+    IPage<RpDepartStockDetailReportPage> rpDepartStockDetailReport(Page<RpDepartStockDetailReportPage> stockPageDetail, RpDepartStockDetailReportPage rpDepartStockDetailReportPage);
 }

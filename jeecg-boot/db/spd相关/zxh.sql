@@ -78,3 +78,9 @@ ADD COLUMN `dart_code`  varchar(64) NULL COMMENT '省标码' AFTER `jde_code`;
 
 -- 赣州市立医院供应商用量统计查询
 INSERT INTO `sys_permission` VALUES ('1293093425294729218', 'f0675b52d89100ee88472b6800754a08', '供应商用量使用统计报表', '/pd/report/RpSupplierUseReport', 'pd/report/RpSupplierUseReport', null, null, '1', '0', null, '1', '1.20', '0', null, '1', '1', '0', '0', null, 'admin', '2020-08-11 15:54:32', 'admin', '2020-08-11 15:54:44', '0', '0', '1', '0');
+
+-- 库存统计报表
+INSERT INTO `sys_permission` VALUES ('1295920023274373121', 'f0675b52d89100ee88472b6800754a08', '库存统计报表', '/pd/report/RpDepartStockReport', 'pd/report/RpDepartStockReport', null, null, '1', '0', null, '1', '1.00', '0', null, '1', '1', '0', '0', null, 'admin', '2020-08-19 11:06:25', null, '2020-08-19 11:06:25', '0', '0', '1', '0');
+
+-- 科室用量统计
+INSERT INTO `sys_permission` VALUES ('1295261514840997889', 'f0675b52d89100ee88472b6800754a08', '科室用量统计', '/pd/report/RpDepartUseReport', 'pd/report/RpDepartUseReport', null, null, '1', '0', null, '1', '1.30', '0', null, '1', '1', '0', '0', null, 'admin', '2020-08-17 15:29:45', 'admin', '2020-08-17 15:30:14', '0', '0', '1', '0');

@@ -152,4 +152,29 @@ public class PdPdStatisticalReportImpl extends ServiceImpl<PdStatisticalReportMa
         return baseMapper.rpInAndOutDetailReport(entity);
     }
 
+
+    /**
+     * zxh库存统计报表
+     * @param page
+     * @param rpDepartStockReportPage
+     * @return
+     */
+    @Override
+    public IPage<RpDepartStockReportPage> departStockReport(Page<RpDepartStockReportPage> page, RpDepartStockReportPage rpDepartStockReportPage) {
+        return baseMapper.departStockReport(page,rpDepartStockReportPage);
+    }
+    /**
+     * zxh库存统计报表
+     * @param rpDepartStockReportPage
+     * @return
+     */
+    @Override
+    public List<RpDepartStockReportPage> departStockReport(RpDepartStockReportPage rpDepartStockReportPage) {
+        return baseMapper.departStockReport(rpDepartStockReportPage);
+    }
+
+    @Override
+    public IPage<RpDepartStockDetailReportPage> rpDepartStockDetailReport(Page<RpDepartStockDetailReportPage> stockPageDetail, RpDepartStockDetailReportPage rpDepartStockDetailReportPage) {
+        return baseMapper.rpDepartStockDetailReport(stockPageDetail,rpDepartStockDetailReportPage);
+    }
 }

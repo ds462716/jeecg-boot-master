@@ -494,4 +494,83 @@ public class PdStatisticalReportController extends JeecgController<PdStatistical
     }
 
 
+    //库存统计报表 start
+
+    /**
+     * zxh库存统计报表
+     * @param rpDepartUseReportPage
+     * @param pageNo
+     * @param pageSize
+     * @return
+     */
+    @GetMapping(value = "/departStockReport")
+    public Result<?> departStockReport(RpDepartStockReportPage rpDepartStockReportPage,
+                                     @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
+                                     @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize) {
+        Page<RpDepartStockReportPage> page = new Page<RpDepartStockReportPage>(pageNo, pageSize);
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        rpDepartStockReportPage.setDepartParentId(sysUser.getDepartParentId());
+        if(oConvertUtils.isNotEmpty(rpDepartStockReportPage.getDepartIds()) && !"undefined".equals(rpDepartStockReportPage.getDepartIds())){
+            rpDepartStockReportPage.setDepartIdList(Arrays.asList(rpDepartStockReportPage.getDepartIds().split(",")));
+        }else{
+            //查询科室下所有下级科室的ID
+            SysDepart sysDepart = new SysDepart();
+            List<String> departList = pdDepartService.selectListDepart(sysDepart);
+            rpDepartStockReportPage.setDepartIdList(departList);
+        }
+        IPage<RpDepartStockReportPage> pageList = pdStatisticalReportService.departStockReport(page, rpDepartStockReportPage);
+        return Result.ok(pageList);
+    }
+
+    /**
+     * zxh导出excel(库存统计报表)
+     *
+     * @param request
+     * @param rpDepartUseReportPage
+     */
+    @RequestMapping(value = "/exportDepartStockReportXls")
+    public ModelAndView exportDepartStockReportXls(HttpServletRequest request, RpDepartStockReportPage rpDepartStockReportPage) {
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        rpDepartStockReportPage.setDepartParentId(sysUser.getDepartParentId());
+        if(oConvertUtils.isNotEmpty(rpDepartStockReportPage.getDepartIds()) && !"undefined".equals(rpDepartStockReportPage.getDepartIds())){
+            rpDepartStockReportPage.setDepartIdList(Arrays.asList(rpDepartStockReportPage.getDepartIds().split(",")));
+        }else{
+            //查询科室下所有下级科室的ID
+            SysDepart sysDepart = new SysDepart();
+            List<String> departList = pdDepartService.selectListDepart(sysDepart);
+            rpDepartStockReportPage.setDepartIdList(departList);
+        }
+        List<RpDepartStockReportPage> pageList = pdStatisticalReportService.departStockReport(rpDepartStockReportPage);
+        ModelAndView mv = new ModelAndView(new JeecgEntityExcelView());
+        mv.addObject(NormalExcelConstants.FILE_NAME, "部门用量使用统计报表");
+        mv.addObject(NormalExcelConstants.CLASS, RpDepartStockReportPage.class);
+        mv.addObject(NormalExcelConstants.PARAMS, new ExportParams("部门用量使用统计报表数据", "导出人:" + sysUser.getRealname(), "部门用量报表"));
+        mv.addObject(NormalExcelConstants.DATA_LIST, pageList);
+        return mv;
+    }
+
+    /**
+     * zxh部门用量明细统计报表
+     * @param rpUseDetailReportPage
+     * @param pageNo
+     * @param pageSize
+     * @return
+     */
+    @GetMapping(value = "/rpDepartStockDetailReport")
+    public Result<?> rpDepartStockDetailReport(RpDepartStockDetailReportPage rpDepartStockDetailReportPage,
+                                             @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
+                                             @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize) {
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        rpDepartStockDetailReportPage.setDepartParentId(sysUser.getDepartParentId());
+        Page<RpDepartStockDetailReportPage> stockPageDetail = new Page<RpDepartStockDetailReportPage>(pageNo, pageSize);
+        IPage<RpDepartStockDetailReportPage> usePageDetailList = pdStatisticalReportService.rpDepartStockDetailReport(stockPageDetail, rpDepartStockDetailReportPage);
+        List<RpDepartStockDetailReportPage> useList = usePageDetailList.getRecords();
+        List<RpDepartStockDetailReportPage> inReportList = JSON.parseArray(JSON.toJSONString(useList), RpDepartStockDetailReportPage.class);
+        Page<RpDepartStockDetailReportPage> usePage = new Page<RpDepartStockDetailReportPage>(pageNo, pageSize);
+        usePage.setTotal(usePageDetailList.getTotal());
+        usePage.setSize(usePageDetailList.getSize());
+        usePage.setCurrent(usePageDetailList.getCurrent());
+        usePage.setRecords(inReportList);
+        return Result.ok(usePage);
+    }
 }
