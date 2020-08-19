@@ -1459,8 +1459,7 @@ ORDER BY
         LEFT JOIN pd_product_stock ps ON a.stock_id = ps.id
         LEFT JOIN pd_supplier s ON ps.supplier_id = s.id
         LEFT JOIN pd_product pp on ps.product_id = pp.id
-        WHERE
-        a.del_flag = '0'
+        WHERE  a.del_flag = '0'  AND  (a.close_remarks  is null  or  close_remarks !=2)
         AND (
         ps.supplier_id IS NOT NULL
         AND ps.supplier_id &lt;&gt; ''
@@ -1551,11 +1550,11 @@ ORDER BY
         d.depart_name as "departName",
         f.instr_name as "instrName"
         from pd_bottle_inf a
-        left join pd_product_stock b on a.stock_id=b.id
-        LEFT JOIN pd_supplier s ON b.supplier_id = s.id
-        left join pd_product c on c.id=b.product_id  and c.del_flag= '0'
-        left join sys_depart d on d.id=a.depart_id and d.del_flag= '0'
-        LEFT JOIN pd_unit e ON b.spec_unit_id = e.id and e.del_flag= '0'
+        left join  pd_product_stock  b on b.id=a.stock_id
+        left join pd_product c on c.id=b.product_id
+        left join pd_supplier t on t.id=b.supplier_id
+        left join sys_depart d on d.id=a.depart_id
+        LEFT JOIN pd_unit e ON b.spec_unit_id = e.id
         LEFT JOIN ex_lab_instr_inf f on f.instr_code=a.instr_code
         where  a.del_flag= '0' and  (a.close_remarks  is null  or  close_remarks !=2)
         <if test="entity.productName != null and entity.productName != ''">
