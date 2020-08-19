@@ -144,7 +144,7 @@
         description: '生产厂家管理页面',
         // 表头
         columns: [
-          {
+          /*{
             title: '#',
             dataIndex: '',
             key:'rowIndex',
@@ -153,7 +153,7 @@
             customRender:function (t,r,index) {
               return parseInt(index)+1;
             }
-          },
+          },*/
           {
             title:'名称',
             align:"center",
@@ -191,16 +191,22 @@
               }
             }
           },
-          {
+          /*{
             title:'创建日期',
             align:"center",
-            dataIndex: 'createTime'
+            dataIndex: 'createTime',
+            customRender:function (text) {
+              return !text?"":(text.length>10?text.substr(0,10):text)
+            }
           },
           {
             title:'更新日期',
             align:"center",
-            dataIndex: 'updateTime'
-          },
+            dataIndex: 'updateTime',
+            customRender:function (text) {
+              return !text?"":(text.length>10?text.substr(0,10):text)
+            }
+          },*/
           {
             title:'备注',
             align:"center",
