@@ -67,9 +67,9 @@
         :pagination="ipagination"
         :loading="loading"
         @change="handleTableChange">
-        <template slot="ellipsisText" slot-scope="text">
+        <!--<template slot="ellipsisText" slot-scope="text">
           <j-ellipsis :value="text" :length="textMaxLength"></j-ellipsis>
-        </template>
+        </template>-->
         <span slot="action" slot-scope="text, record">
           <a @click="detailBtn(record)">明细</a>
         </span>
@@ -151,7 +151,6 @@
           {
             title:'供应商id',
             align:"center",
-            width:'250px',
             dataIndex: 'supplierId',
             colSpan: 0,
             customRender: (value, row, index) => {
@@ -164,49 +163,41 @@
           {
             title:'月份',
             align:"center",
-            width:'200px',
             dataIndex: 'auditDate'
           },
           {
             title:'供应商名称',
             align:"center",
-            width:'300px',
             dataIndex: 'supplierName'
           },
           {
             title:'产品入库数量',
             align:"center",
             dataIndex: 'inProductNum',
-            width:'200px',
           },
           {
             title:'入库产品金额',
             align:"center",
             dataIndex: 'inTotalPrice',
-            width:'200px',
           },
           {
             title:'产品使用数量',
             align:"center",
-            width:'200px',
             dataIndex: 'dosageNum'
           },
           {
             title:'产品使用金额',
             align:"center",
-            width:'200px',
             dataIndex: 'dosagePrice'
           },
           {
             title:'产品退货数量',
             align:"center",
-            width:'200px',
             dataIndex: 'rejectedNum'
           },
           {
             title:'产品退货金额',
             align:"center",
-            width:'200px',
             dataIndex: 'rejectedPrice'
           },
           {
@@ -224,7 +215,7 @@
         dictOptions:{
           inType:[],
         },
-        tableScroll:{x :1200},
+       // tableScroll:{x :1200},
       }
     },
     computed: {

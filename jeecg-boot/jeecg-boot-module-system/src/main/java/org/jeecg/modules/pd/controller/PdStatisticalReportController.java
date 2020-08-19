@@ -380,8 +380,8 @@ public class PdStatisticalReportController extends JeecgController<PdStatistical
         inDetail.setDepartParentId(sysUser.getDepartParentId());
         inDetail.setRecordType(PdConstant.RECODE_TYPE_1);
         inDetail.setAuditStatus(PdConstant.AUDIT_STATE_2);
+        inDetail.setInType(PdConstant.IN_TYPE_1);
         inDetail.setDepartId(null);
-
 
         List<RpInAndOutDetailReportPage> inList = pdStatisticalReportService.rpInAndOutDetailReport(inDetail);
         List<RpInDetailReportExcel> inReportList = JSON.parseArray(JSON.toJSONString(inList), RpInDetailReportExcel.class);

@@ -551,7 +551,7 @@
                         LEFT JOIN pd_stock_record b ON a.record_id = b.id AND b.audit_status = '2'
                         WHERE
                             b.del_flag = '0'
-                            AND b.record_type = '1'
+                            AND b.record_type = '1' AND b.in_type = '1'
                             AND ( b.in_type IS NOT NULL AND in_type &lt;&gt; '' )
                             <if test="entity.departParentId != null and entity.departParentId != ''">
                                 AND b.depart_parent_id = #{entity.departParentId}
@@ -660,7 +660,7 @@
                         LEFT JOIN pd_stock_record b ON a.record_id = b.id AND b.audit_status = '2'
                         WHERE
                             b.del_flag = '0'
-                            AND b.record_type = '1'
+                            AND b.record_type = '1' AND b.in_type = '1'
                             AND ( b.in_type IS NOT NULL AND in_type &lt;&gt; '' )
                             <if test="entity.departParentId != null and entity.departParentId != ''">
                                 AND b.depart_parent_id = #{entity.departParentId}
@@ -1557,7 +1557,7 @@ ORDER BY
         left join sys_depart d on d.id=a.depart_id and d.del_flag= '0'
         LEFT JOIN pd_unit e ON b.spec_unit_id = e.id and e.del_flag= '0'
         LEFT JOIN ex_lab_instr_inf f on f.instr_code=a.instr_code
-        where  a.del_flag= '0'
+        where  a.del_flag= '0' and  (a.close_remarks  is null  or  close_remarks !=2)
         <if test="entity.productName != null and entity.productName != ''">
             AND (c.name LIKE concat('%',#{entity.productName},'%')
             or c.py LIKE concat('%',#{entity.productName},'%')
