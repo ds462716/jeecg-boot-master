@@ -737,6 +737,7 @@
       },
       //关闭方法
       close() {
+        this.useQueryParam = {};
         this.useTable.ipagination.current = 1;
         this.useTable.ipagination.pageSize = 10;
         this.useTable.dataSource = [];
@@ -744,6 +745,7 @@
         this.chargeUseTable.ipagination.current = 1;
         this.chargeUseTable.ipagination.pageSize = 10;
         this.chargeUseTable.dataSource = [];
+        this.noChargeUseQueryParam = {};
         this.noChargeUseTable.ipagination.curnoChargeUsent = 1;
         this.noChargeUseTable.ipagination.pageSize = 10;
         this.noChargeUseTable.dataSource = [];
