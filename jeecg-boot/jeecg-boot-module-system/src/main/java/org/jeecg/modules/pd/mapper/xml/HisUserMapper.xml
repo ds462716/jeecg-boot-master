@@ -51,7 +51,7 @@
 			AND a.fsf_yhxm LIKE concat('%',#{userName},'%')
 		</if>
 		<if test="departName != null and departName != ''">
-			AND b.fsf_ksmc  LIKE concat('%',#{departName},'%')
+			AND (b.fsf_ksmc  LIKE concat('%',#{departName},'%') or a.fsf_yhks  LIKE concat('%',#{departName},'%'))
 		</if>
 	</select>
 
@@ -74,9 +74,9 @@
 			AND a.fsf_yhxm LIKE concat('%',#{entity.userName},'%')
 		</if>
 		<if test="entity.departName != null and entity.departName != ''">
-			AND b.fsf_ksmc  LIKE concat('%',#{entity.departName},'%')
+			AND (b.fsf_ksmc  LIKE concat('%',#{entity.departName},'%') or a.fsf_yhks  LIKE concat('%',#{entity.departName},'%'))
 		</if>
-		order by create_time desc
+		order by a.create_time desc
 	</select>
 
 
