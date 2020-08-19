@@ -489,17 +489,17 @@
               dataIndex: 'expDate'
             },
             {
-              title:'使用数量',
+              title:'使用人份数量',
               align:"center",
               dataIndex: 'specNum'
             },
             {
-              title:'规格数量',
+              title:'规格人份数量',
               align:"center",
               dataIndex: 'specQuantity'
             },
             {
-              title:'剩余规格数量',
+              title:'剩余人份数量',
               align:"center",
               dataIndex: 'sySpecNum'
             },
