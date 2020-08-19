@@ -199,6 +199,9 @@ INSERT INTO  `sys_dict_item`  VALUES ('1295520410984693762', '129552019544360550
 INSERT INTO  `sys_permission` VALUES ('1295550484245032962', '1229578873631465473', '耗材盘点导出按钮', NULL, NULL, NULL, NULL, 2, '0', 'stock:form:hcExportXls', '2', 1.00, 0, NULL, 1, 1, 0, 0, NULL, 'admin', '2020-08-18 10:38:00', NULL, '2020-08-18 10:38:00', 0, 0, '1', 0);
 INSERT INTO  `sys_permission` VALUES ('1295550197367222273', '1229578873631465473', '试剂盘点导出按钮', NULL, NULL, NULL, NULL, 2, '0', 'stock:form:sjExportXls', '2', 1.00, 0, NULL, 1, 1, 0, 0, NULL, 'admin', '2020-08-18 10:36:52', NULL, '2020-08-18 10:36:52', 0, 0, '1', 0);
 
+-- 2020年8月19日 11:22:59   增加字段
+ALTER TABLE `jeecg-boot`.`ex_inspection_items_use_detail`
+ADD COLUMN `ref_bar_code` varchar(64) NULL COMMENT '唯一条码' AFTER `depart_parent_id`;
 
 
 

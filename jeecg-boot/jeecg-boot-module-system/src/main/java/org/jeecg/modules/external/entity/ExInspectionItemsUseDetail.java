@@ -1,22 +1,20 @@
 package org.jeecg.modules.external.entity;
 
-import java.io.Serializable;
-import java.io.UnsupportedEncodingException;
-import java.util.Date;
-import java.math.BigDecimal;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import lombok.Data;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import org.springframework.format.annotation.DateTimeFormat;
-import org.jeecgframework.poi.excel.annotation.Excel;
-import org.jeecg.common.aspect.annotation.Dict;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
+import org.jeecgframework.poi.excel.annotation.Excel;
+import org.springframework.format.annotation.DateTimeFormat;
+
+import java.math.BigDecimal;
+import java.util.Date;
 
 /**
  * @Description: 检验项目使用详情表
@@ -110,7 +108,9 @@ public class ExInspectionItemsUseDetail  {
 	@Excel(name = "所属父部门", width = 15)
     @ApiModelProperty(value = "所属父部门")
     private String departParentId;
-
+    /**唯一码*/
+    @Excel(name = "唯一码", width = 15)
+    private String refBarCode;//唯一码
     @TableField(exist = false)
 	private String code;//检验包代码
     @TableField(exist = false)
@@ -148,5 +148,4 @@ public class ExInspectionItemsUseDetail  {
     private String version;//产品型号
     @TableField(exist = false)
     private String productFlagName;//产品型号
-
 }
