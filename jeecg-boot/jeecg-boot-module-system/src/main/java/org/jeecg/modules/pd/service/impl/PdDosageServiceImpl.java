@@ -596,7 +596,7 @@ public class PdDosageServiceImpl extends ServiceImpl<PdDosageMapper, PdDosage> i
                 query.setCode(PdConstant.ON_OFF_SPEC_NUM);
                 PdOnOff pdOnOff = pdOnOffService.getOne(query);
                 if (ObjectUtil.isNotEmpty(tempPps.getSpecQuantity()) && pdOnOff != null && pdOnOff.getValue() == PdConstant.ON_OFF_SPEC_NUM_1) { //是
-                    if (null == tempPps || pdd.getDosageCount() > tempPps.getSpecQuantity()) {
+                    if (null == tempPps || pdd.getDosageCount() > tempPps.getSpecNum()) {
                         validFlag = false;
                         json.put(String.valueOf(i), pdd);
                         i = i + 1;

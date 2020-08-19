@@ -579,6 +579,7 @@ public class PdProductServiceImpl extends ServiceImpl<PdProductMapper, PdProduct
      * @return
      */
     @Override
+    @Transactional
     public Result<List<PdProductStock>> openingQuotation(String Barcode,String instrCode, Result<List<PdProductStock>> result) {
         if(Barcode!=null || instrCode!=null){
             Barcode = BarCodeUtil.trimStr(Barcode.toUpperCase());
@@ -630,6 +631,7 @@ public class PdProductServiceImpl extends ServiceImpl<PdProductMapper, PdProduct
                                 bottleInf.setDepartId(sysUser.getCurrentDepartId());//所属部门
                                 bottleInf.setDepartParentId(sysUser.getDepartParentId());//所属机构
                                 bottleInf.setInstrCode(instrCode);//仪器设备code
+                                bottleInf.setPurchasePrice(newPdProductStock.getPurchasePrice());
                                 pdBottleInfMapper.insert(bottleInf);
                                 //批新条码表信息
                                 PdProductStockUniqueCode productStockUniqueCode = new PdProductStockUniqueCode();
@@ -665,6 +667,7 @@ public class PdProductServiceImpl extends ServiceImpl<PdProductMapper, PdProduct
      * @return
      */
     @Override
+    @Transactional
     public Result<List<PdProductStock>> closeIngQuotation(String Barcode,String closeRemarks,String instrCode,Result<List<PdProductStock>> result) {
         if(Barcode!=null){
             Barcode = BarCodeUtil.trimStr(Barcode.toUpperCase());
@@ -821,6 +824,7 @@ public class PdProductServiceImpl extends ServiceImpl<PdProductMapper, PdProduct
 
     //批量更新产品收费代码
     @Override
+    @Transactional
     public void editChargeCodeBatch(String ids, String chargeCode) {
         PdProductMapper dao = sqlsession.getMapper(PdProductMapper.class);
         PdProduct pdProduct = new PdProduct();

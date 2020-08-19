@@ -200,8 +200,11 @@ INSERT INTO  `sys_permission` VALUES ('1295550484245032962', '122957887363146547
 INSERT INTO  `sys_permission` VALUES ('1295550197367222273', '1229578873631465473', '试剂盘点导出按钮', NULL, NULL, NULL, NULL, 2, '0', 'stock:form:sjExportXls', '2', 1.00, 0, NULL, 1, 1, 0, 0, NULL, 'admin', '2020-08-18 10:36:52', NULL, '2020-08-18 10:36:52', 0, 0, '1', 0);
 
 -- 2020年8月19日 11:22:59   增加字段
-ALTER TABLE `jeecg-boot`.`ex_inspection_items_use_detail`
+ALTER TABLE  `ex_inspection_items_use_detail`
 ADD COLUMN `ref_bar_code` varchar(64) NULL COMMENT '唯一条码' AFTER `depart_parent_id`;
+-- 2020年8月19日 14:50:59   增加金额字段
+ALTER TABLE  `pd_bottle_inf`
+ADD COLUMN `purchase_price` decimal(20, 4) NULL COMMENT '试剂金额' AFTER `status`;
 
 
 

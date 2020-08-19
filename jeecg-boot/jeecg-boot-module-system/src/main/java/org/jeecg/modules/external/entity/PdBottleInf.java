@@ -89,6 +89,8 @@ public class PdBottleInf extends BaseEntity {
 	//@Excel(name = "闭瓶操作人", width = 15)
     @ApiModelProperty(value = "闭瓶操作人")
     private String closeBy;
+    @ApiModelProperty(value = "试剂金额")
+    private BigDecimal purchasePrice;//试剂金额
 	/**备注*/
     @ApiModelProperty(value = "备注")
     private String remarks;
