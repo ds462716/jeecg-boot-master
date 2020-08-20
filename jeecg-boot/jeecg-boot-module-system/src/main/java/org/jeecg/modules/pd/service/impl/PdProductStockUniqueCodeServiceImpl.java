@@ -74,6 +74,7 @@ public class PdProductStockUniqueCodeServiceImpl extends ServiceImpl<PdProductSt
                         psc.setProductName(pdProductStock.getProductName());
                         psc.setExpDate(pdProductStock.getExpDate());
                         psc.setBatchNo(pdProductStock.getBatchNo());
+                        psc.setProductFlagName(pdProductStock.getProductFlagName());
                     }
                 }else{
                     //判断是否已经打印了普通码
@@ -96,6 +97,7 @@ public class PdProductStockUniqueCodeServiceImpl extends ServiceImpl<PdProductSt
                             psc.setProductName(pdProductStock.getProductName());
                             psc.setExpDate(pdProductStock.getExpDate());
                             psc.setBatchNo(pdProductStock.getBatchNo());
+                            psc.setProductFlagName(pdProductStock.getProductFlagName());
                             pdProductStockUniqueCodeList.add(psc);
                         }
                         this.saveBatch(pdProductStockUniqueCodeList);
@@ -116,6 +118,7 @@ public class PdProductStockUniqueCodeServiceImpl extends ServiceImpl<PdProductSt
                                     psc.setProductName(pdProductStock.getProductName());
                                     psc.setExpDate(pdProductStock.getExpDate());
                                     psc.setBatchNo(pdProductStock.getBatchNo());
+                                    psc.setProductFlagName(pdProductStock.getProductFlagName());
                                 }
                             }else{
                                 result.setResult(new ArrayList<>());
@@ -173,6 +176,7 @@ public class PdProductStockUniqueCodeServiceImpl extends ServiceImpl<PdProductSt
                         PdProductStockUniqueCode psucs = this.getOne(query);
                         //重复打条码
                         psucs.setProductName(ps.getProductName());
+                        psucs.setProductFlagName(ps.getProductFlagName());
                         psucs.setExpDate(ps.getExpDate());
                         psucs.setBatchNo(ps.getBatchNo());
                         pdProductStockUniqueCodeList.add(psucs);
@@ -195,6 +199,7 @@ public class PdProductStockUniqueCodeServiceImpl extends ServiceImpl<PdProductSt
                             psc.setCodeState(PdConstant.CODE_PRINT_STATE_0);//正常状态
                             psc.setUniqueCodeOrder(1);
                             psc.setProductName(ps.getProductName());
+                            psc.setProductFlagName(ps.getProductFlagName());
                             psc.setExpDate(ps.getExpDate());
                             psc.setBatchNo(ps.getBatchNo());
                             this.save(psc);
