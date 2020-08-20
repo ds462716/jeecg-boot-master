@@ -6,10 +6,12 @@
         a.*,
         c.package_code,
         c.package_name,
-        c.package_sum
+        c.package_sum,
+        d.depart_name
         FROM
         pd_package_record a
         LEFT JOIN pd_package c ON a.package_id = c.id
+        left join sys_depart d on c.depart_id = d.id
         <where>
             a.del_flag = #{entity.DEL_FLAG_NORMAL}
             <if test="entity.packageName != null and entity.packageName != ''">

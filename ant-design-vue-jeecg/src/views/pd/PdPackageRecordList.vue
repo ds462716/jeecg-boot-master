@@ -150,6 +150,7 @@
           { title:'套包编号', align:"center", dataIndex: 'packageCode' },
           { title:'套包名称', align:"center", dataIndex: 'packageName' },
           { title:'产品总数', align:"center", dataIndex: 'packageSum' },
+          { title:'所属科室', align:"center", dataIndex: 'departName' },
           { title:'状态', align:"center", dataIndex: 'status',
             customRender:(text)=>{
               if(!text){

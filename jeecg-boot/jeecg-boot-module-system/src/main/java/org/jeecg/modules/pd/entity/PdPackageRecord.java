@@ -98,4 +98,6 @@ public class PdPackageRecord extends BaseEntity {
     /**开关-是否显示二级条码框**/
     @TableField(exist = false)
     private String showSBarcode;
+    @TableField(exist = false)
+    private String departName;
 }

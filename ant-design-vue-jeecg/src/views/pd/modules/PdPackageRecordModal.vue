@@ -187,7 +187,7 @@
 
     <template slot="footer">
       <a-popconfirm title="确定放弃编辑？" @confirm="handleCancel" v-show="!disableSubmit" okText="确定" cancelText="取消">
-        <a-button style="margin-right: 15px;">取  消</a-button>
+        <a-button style="margin-right: 15px;">关闭</a-button>
       </a-popconfirm>
       <!--<a-button @click="" style="margin-right: 15px;" type="primary">打  印</a-button>-->
       <a-button @click="submitBtn" v-show="!disableSubmit" type="primary" :loading="confirmLoading" style="margin-right: 15px;">确定</a-button>
