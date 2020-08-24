@@ -373,14 +373,16 @@ public class PdProductStockTotalController {
                                     HttpServletRequest req) {
         Page<PdProductStock> page = new Page<PdProductStock>(pageNo, pageSize);
         LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
-        if (oConvertUtils.isNotEmpty(productStock.getDepartIds()) && !"undefined".equals(productStock.getDepartIds())) {
+        //2020年8月24日09:52:30  zxh 只查本科室的库存
+/*        if (oConvertUtils.isNotEmpty(productStock.getDepartIds()) && !"undefined".equals(productStock.getDepartIds())) {
             productStock.setDepartIdList(Arrays.asList(productStock.getDepartIds().split(",")));
         } else {
             //查询科室下所有下级科室的ID
             SysDepart sysDepart = new SysDepart();
             List<String> departList = pdDepartService.selectListDepart(sysDepart);
             productStock.setDepartIdList(departList);
-        }
+        }*/
+        productStock.setDepartId(sysUser.getCurrentDepartId());
         productStock.setDepartParentId(sysUser.getDepartParentId());
         page = pdProductStockService.queryPrintList(page, productStock);
         return Result.ok(page);
