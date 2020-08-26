@@ -1232,7 +1232,7 @@
 
 	<select id="queryPdProductStockList" resultType="java.util.Map">
 		SELECT
-		a.id AS "id",
+		a.id AS "stockId",
 		a.depart_id AS "kfId",
 		a.product_id AS "productId",
 		b.number AS "productNo",
