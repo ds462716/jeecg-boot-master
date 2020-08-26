@@ -267,7 +267,7 @@
       },
       handleFileUpload(event,index){
         let that = this;
-        this.imgIsShow[index].show=true;
+        //this.imgIsShow[index].show=true;
         event.preventDefault();
         let oFile = that.$refs.file[index].files[0];
         let bo = photoCheck(oFile,that);
