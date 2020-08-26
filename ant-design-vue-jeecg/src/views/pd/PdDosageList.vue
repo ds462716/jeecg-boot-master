@@ -25,8 +25,8 @@
               <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
               <a-button type="primary" @click="searchReset" icon="reload" style="margin-left: 8px">重置</a-button>
               <!--<a @click="handleToggleSearch" style="margin-left: 8px">-->
-              <!--{{ toggleSearchStatus ? '收起' : '展开' }}-->
-              <!--<a-icon :type="toggleSearchStatus ? 'up' : 'down'"/>-->
+                <!--{{ toggleSearchStatus ? '收起' : '展开' }}-->
+                <!--<a-icon :type="toggleSearchStatus ? 'up' : 'down'"/>-->
               <!--</a>-->
             </span>
           </a-col>
@@ -124,6 +124,7 @@
     <pd-dosage-cncl-fee-modal-g-z-w-y  ref="pdDosageCnclFeeModalGZWY" @ok="modalFormOk"></pd-dosage-cncl-fee-modal-g-z-w-y>
 
 
+
   </a-card>
 </template>
 
@@ -137,15 +138,12 @@
   import { deleteAction, getAction,downFile } from '@/api/manage'
   import PdDosageModalFCZYY from "../external/fengcheng/modules/PdDosageModalFCZYY";
   import PdDosageReturnedModalFCZYY from "../external/fengcheng/modules/PdDosageReturnedModalFCZYY";
-  import PdDosageFeeModal from '../pd/modules/PdDosageFeeModal'
-  import PdDosageCnclFeeModal from '../pd/modules/PdDosageCnclFeeModal'
   import PdDosageFeeModalFCZYY from "../external/fengcheng/modules/PdDosageFeeModalFCZYY";
   import PdDosageCnclFeeModalFCZZY from "../external/fengcheng/modules/PdDosageCnclFeeModalFCZZY";
   import PdDosageModalFCRMYY from "../external/fengcheng/modules/PdDosageModalFCRMYY";
   import PdDosageReturnedModalFCRMYY from "../external/fengcheng/modules/PdDosageReturnedModalFCRMYY";
   import PdDosageFeeModalFCRMYY from "../external/fengcheng/modules/PdDosageFeeModalFCRMYY";
   import PdDosageCnclFeeModalFCRMYY from "../external/fengcheng/modules/PdDosageCnclFeeModalFCRMYY";
-
   import PdDosageModalGZWY from '../external/ganzhouwuyuan/modules/PdDosageModalGZWY'
   import PdDosageReturnedModalGZWY from '../external/ganzhouwuyuan/modules/PdDosageReturnedModalGZWY'
   import PdDosageFeeModalGZWY from '../external/ganzhouwuyuan/modules/PdDosageFeeModalGZWY'
@@ -165,7 +163,6 @@
       PdDosageModal,
       PdDosageReturnedModal,
       PdDosageFeeModal,
-      PdDosageCnclFeeModal
       PdDosageCnclFeeModal,
       PdDosageModalGZWY,
       PdDosageReturnedModalGZWY,
