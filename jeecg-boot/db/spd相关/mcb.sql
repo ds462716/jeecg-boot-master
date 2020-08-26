@@ -206,6 +206,8 @@ ADD COLUMN `ref_bar_code` varchar(64) NULL COMMENT '唯一条码' AFTER `depart_
 ALTER TABLE  `pd_bottle_inf`
 ADD COLUMN `purchase_price` decimal(20, 4) NULL COMMENT '试剂金额' AFTER `status`;
 
+-- 赣州肿瘤医院部署截止 2020年8月26日16:22:29
+
 
 
 

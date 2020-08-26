@@ -142,3 +142,5 @@ update sys_permission set parent_id = '1293016386424840194',name = '打包管理
 -- 2020年8月12日 14:43:58 打包编号
 ALTER TABLE `jeecg-boot`.`pd_package_record`
 ADD COLUMN `record_no` varchar(64) NULL COMMENT '打包编号' AFTER `depart_parent_id`;
+
+-- 赣州肿瘤医院部署截止 2020年8月26日16:22:29
