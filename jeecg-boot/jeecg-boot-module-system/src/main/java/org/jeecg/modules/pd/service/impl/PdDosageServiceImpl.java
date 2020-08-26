@@ -63,10 +63,11 @@ public class PdDosageServiceImpl extends ServiceImpl<PdDosageMapper, PdDosage> i
         SysDepart sysDepart = pdDepartService.getById(sysUser.getCurrentDepartId());
         PdDosage pdDosage = new PdDosage();
         if (oConvertUtils.isNotEmpty(id)) { // 查看页面
-            pdDosage = this.getById(id);
+            pdDosage.setId(id);
+            pdDosage = baseMapper.getByOne(pdDosage);
             // 新增页面
-            pdDosage.setDepartName(sysDepart.getDepartName());
-            pdDosage.setDosageByName(sysUser.getRealname());
+            //pdDosage.setDepartName(sysDepart.getDepartName());
+            //pdDosage.setDosageByName(sysUser.getRealname());
             PdGoodsAllocation pdGoodsAllocation = new PdGoodsAllocation();
             pdGoodsAllocation.setDepartId(sysUser.getCurrentDepartId());
             pdGoodsAllocation.setAreaType(PdConstant.GOODS_ALLCATION_AREA_TYPE_2);

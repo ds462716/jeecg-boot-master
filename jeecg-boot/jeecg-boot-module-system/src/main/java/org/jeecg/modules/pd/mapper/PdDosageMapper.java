@@ -29,4 +29,6 @@ public interface PdDosageMapper extends BaseMapper<PdDosage> {
     List<PdDosage> queryPdDosageList(PdDosage pdDosage);
 
     IPage<PdDosage> selectListByPage(Page<PdDosage> page, @Param("entity") PdDosage entity);
+
+    PdDosage getByOne(PdDosage pdDosage);
 }

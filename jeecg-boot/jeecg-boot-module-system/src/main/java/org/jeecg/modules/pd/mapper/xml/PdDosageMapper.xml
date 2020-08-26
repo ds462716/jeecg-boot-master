@@ -134,6 +134,14 @@
         sd.depart_name AS "departName"
     </sql>
 
+    <!--用户-->
+    <sql id="pdSysUserColumns">
+        b.realname as "checkName"
+	</sql>
+    <sql id="pdSysUserJoins">
+        LEFT JOIN sys_user b ON b.id = a.check_by
+    </sql>
+
     <sql id="sysDepartJoins">
         LEFT JOIN sys_depart sd ON a.depart_id = sd.id
     </sql>
@@ -403,5 +411,21 @@
         </where>
     </select>
 
+    <select id="getByOne" resultType="org.jeecg.modules.pd.entity.PdDosage">
+        SELECT
+        <include refid="pdDosageColumns"/>,
+        <include refid="pdSysUserColumns"/>,
+        <include refid="sysDepartColumns"/>
+        FROM pd_dosage a
+        <include refid="pdSysUserJoins"/>
+        <include refid="sysDepartJoins"/>
+        <where>
+            a.del_flag =#{DEL_FLAG_NORMAL}
+            <if test="id != null and id != ''">
+                AND a.id = #{id}
+            </if>
+            order by create_time desc
+        </where>
+    </select>
 
 </mapper>
