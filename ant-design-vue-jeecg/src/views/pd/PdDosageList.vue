@@ -25,8 +25,8 @@
               <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
               <a-button type="primary" @click="searchReset" icon="reload" style="margin-left: 8px">重置</a-button>
               <!--<a @click="handleToggleSearch" style="margin-left: 8px">-->
-                <!--{{ toggleSearchStatus ? '收起' : '展开' }}-->
-                <!--<a-icon :type="toggleSearchStatus ? 'up' : 'down'"/>-->
+              <!--{{ toggleSearchStatus ? '收起' : '展开' }}-->
+              <!--<a-icon :type="toggleSearchStatus ? 'up' : 'down'"/>-->
               <!--</a>-->
             </span>
           </a-col>
@@ -124,9 +124,6 @@
     <pd-dosage-cncl-fee-modal-g-z-w-y  ref="pdDosageCnclFeeModalGZWY" @ok="modalFormOk"></pd-dosage-cncl-fee-modal-g-z-w-y>
 
 
-    <!-- 九江附属医院收费模组 -->
-    <pd-dosage-modal-j-j-f-s-y-y ref="pdDosageModalJJFSYY" @ok="modalFormOk"></pd-dosage-modal-j-j-f-s-y-y>
-
   </a-card>
 </template>
 
@@ -140,17 +137,19 @@
   import { deleteAction, getAction,downFile } from '@/api/manage'
   import PdDosageModalFCZYY from "../external/fengcheng/modules/PdDosageModalFCZYY";
   import PdDosageReturnedModalFCZYY from "../external/fengcheng/modules/PdDosageReturnedModalFCZYY";
+  import PdDosageFeeModal from '../pd/modules/PdDosageFeeModal'
+  import PdDosageCnclFeeModal from '../pd/modules/PdDosageCnclFeeModal'
   import PdDosageFeeModalFCZYY from "../external/fengcheng/modules/PdDosageFeeModalFCZYY";
   import PdDosageCnclFeeModalFCZZY from "../external/fengcheng/modules/PdDosageCnclFeeModalFCZZY";
   import PdDosageModalFCRMYY from "../external/fengcheng/modules/PdDosageModalFCRMYY";
   import PdDosageReturnedModalFCRMYY from "../external/fengcheng/modules/PdDosageReturnedModalFCRMYY";
   import PdDosageFeeModalFCRMYY from "../external/fengcheng/modules/PdDosageFeeModalFCRMYY";
   import PdDosageCnclFeeModalFCRMYY from "../external/fengcheng/modules/PdDosageCnclFeeModalFCRMYY";
+
   import PdDosageModalGZWY from '../external/ganzhouwuyuan/modules/PdDosageModalGZWY'
   import PdDosageReturnedModalGZWY from '../external/ganzhouwuyuan/modules/PdDosageReturnedModalGZWY'
   import PdDosageFeeModalGZWY from '../external/ganzhouwuyuan/modules/PdDosageFeeModalGZWY'
   import PdDosageCnclFeeModalGZWY from '../external/ganzhouwuyuan/modules/PdDosageCnclFeeModalGZWY'
-  import PdDosageModalJJFSYY from "../external/jiujiang/modules/PdDosageModalJJFSYY";
   export default {
     name: "PdDosageList",
     mixins:[JeecgListMixin],
@@ -166,12 +165,12 @@
       PdDosageModal,
       PdDosageReturnedModal,
       PdDosageFeeModal,
+      PdDosageCnclFeeModal
       PdDosageCnclFeeModal,
       PdDosageModalGZWY,
       PdDosageReturnedModalGZWY,
       PdDosageFeeModalGZWY,
-      PdDosageCnclFeeModalGZWY,
-      PdDosageModalJJFSYY
+      PdDosageCnclFeeModalGZWY
     },
     data () {
       return {
@@ -293,10 +292,6 @@
           this.$refs.pdDosageModalGZWY.add();
           this.$refs.pdDosageModalGZWY.title = "新增";
           this.$refs.pdDosageModalGZWY.disableSubmit = false;
-        }else if(this.hospitalCode=="JJFSYY"){ // 九江附属医院
-          this.$refs.pdDosageModalJJFSYY.add();
-          this.$refs.pdDosageModalJJFSYY.title="新增";
-          this.$refs.pdDosageModalJJFSYY.disableSubmit = false;
         }else{
           this.$refs.modalForm.add();
           this.$refs.modalForm.title = "新增";
