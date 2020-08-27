@@ -136,10 +136,10 @@
 
     <!--用户-->
     <sql id="pdSysUserColumns">
-        b.realname as "checkName"
+        b.realname AS dosageByName
 	</sql>
     <sql id="pdSysUserJoins">
-        LEFT JOIN sys_user b ON b.id = a.check_by
+        LEFT JOIN sys_user b ON b.id = a.dosage_by
     </sql>
 
     <sql id="sysDepartJoins">
