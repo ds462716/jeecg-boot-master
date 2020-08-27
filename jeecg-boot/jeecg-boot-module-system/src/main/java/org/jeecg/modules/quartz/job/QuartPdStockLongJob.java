@@ -75,6 +75,12 @@ public class QuartPdStockLongJob implements Job {
                         pids.add(pid);
                         m.put(deptId, pids);
                     }
+                }else{
+                    PdProductStockTotal stockTotal = new PdProductStockTotal();
+                    stockTotal.setIsLong(PdConstant.IS_LONG_0);
+                    stockTotal.setProductId(pdProductStock.getProductId());
+                    stockTotal.setDepartId(deptId);
+                    pdProductStockTotalService.updateProductStockTotal(stockTotal);
                 }
             }
         }

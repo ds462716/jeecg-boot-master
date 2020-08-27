@@ -118,6 +118,12 @@ public class QuartPdExpireJob implements Job {
                             p.put(deptId, names);
                         }
                     }
+                }else{
+                    PdProductStockTotal stockTotal = new PdProductStockTotal();
+                    stockTotal.setExpStatus(PdConstant.PD_STATE_0);
+                    stockTotal.setProductId(pdProductStock.getProductId());
+                    stockTotal.setDepartId(deptId);
+                    pdProductStockTotalService.updateProductStockTotal(stockTotal);
                 }
             }
         }
