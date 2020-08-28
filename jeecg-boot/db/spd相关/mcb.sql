@@ -106,11 +106,11 @@ CHANGE COLUMN `hc_jy_stock_price` `tj_type` varchar(4) NULL DEFAULT NULL COMMENT
 
 INSERT INTO  `sys_permission` VALUES ('1291276845681188866', 'f0675b52d89100ee88472b6800754a08', '试剂月统计报表', '/pd/query/PdCallMonth', 'pd/query/PdCallMonthQuery', NULL, NULL, 1, '0', NULL, '1', 1.10, 0, NULL, 1, 1, 0, 0, NULL, 'admin', '2020-08-06 15:36:05', NULL, '2020-08-06 15:36:05', 0, 0, '1', 0);
 
-ALTER TABLE `jeecg-boot`.`pd_numerical_inf`
-DROP COLUMN `sj_jy_stock_num`,
-DROP COLUMN `sj_jy_stock_price`,
-DROP COLUMN `hc_jy_stock_num`,
-DROP COLUMN `hc_jy_stock_price`;
+-- ALTER TABLE `jeecg-boot`.`pd_numerical_inf`
+-- DROP COLUMN `sj_jy_stock_num`,
+-- DROP COLUMN `sj_jy_stock_price`,
+-- DROP COLUMN `hc_jy_stock_num`,
+-- DROP COLUMN `hc_jy_stock_price`;
 
 
 -- 2020年8月11日 18:52:59   字段注释调整
