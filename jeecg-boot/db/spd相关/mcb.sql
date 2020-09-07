@@ -216,7 +216,8 @@ update  pd_product_stock  a
   left join pd_stock_record_detail b on a.record_detail_id=b.id
 	set a.purchase_price=b.purchase_price
 
-
+-- 2020年9月7日 10:22:59   增加采购统计报表菜单
+INSERT INTO  `sys_permission`    VALUES ('1302806183652024322', 'f0675b52d89100ee88472b6800754a08', '采购统计报表', '/pd/report/RpPurchaseUseReport', 'pd/report/RpPurchaseUseReport', NULL, NULL, 1, '0', NULL, '1', 12.00, 0, NULL, 1, 1, 0, 0, NULL, 'admin', '2020-09-07 11:09:34', NULL, '2020-09-07 11:09:34', 0, 0, '1', 0);
 
 
 
