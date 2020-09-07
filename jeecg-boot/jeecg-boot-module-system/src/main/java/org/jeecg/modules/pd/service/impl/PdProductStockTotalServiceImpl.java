@@ -136,6 +136,7 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
             productStock.setProductId(productId);
             productStock.setProductBarCode(productBarCode);
             productStock.setStockNum(productNum);
+            productStock.setPurchasePrice(stockRecordDetail.getPurchasePrice());
             productStock.setProductName(productName);
             productStock.setBatchNo(batchNo);
             productStock.setHuoweiCode(inHuoweiCode);
@@ -751,6 +752,7 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
             pdproductStock.setProductId(productStock.getProductId());
             pdproductStock.setProductBarCode(productStock.getProductBarCode());
             pdproductStock.setStockNum(ykStockNum);
+            productStock.setPurchasePrice(productStock.getPurchasePrice());
             pdproductStock.setProductName(productStock.getProductName());
             pdproductStock.setBatchNo(productStock.getBatchNo());
             pdproductStock.setHuoweiCode(huoWeiCode);

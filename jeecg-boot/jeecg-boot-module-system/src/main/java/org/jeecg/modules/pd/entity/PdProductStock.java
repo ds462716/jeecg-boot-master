@@ -61,6 +61,9 @@ public class PdProductStock extends BaseEntity {
 	/**数量*/
 	@Excel(name = "数量", width = 15)
 	private Double stockNum;
+	/**单价*/
+	@Excel(name = "单价", width = 15)
+	private BigDecimal purchasePrice;
 	/**库存规格数量*/
 	@Excel(name = "库存规格数量", width = 15)
 	private Double specNum;
@@ -152,9 +155,6 @@ public class PdProductStock extends BaseEntity {
 	@Excel(name = "科室名称", width = 15)
 	@TableField(exist = false)
 	private String deptName;
-	/**进价*/
-	@TableField(exist = false)
-	private BigDecimal purchasePrice;
 	//入库时产品单价
 	@TableField(exist = false)
 	private String inPurchasePrice;

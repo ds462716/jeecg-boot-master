@@ -259,7 +259,7 @@ public class AxisGZWYUtils {
 		params.put("czr", sysUser.getWorkNo());
 		params.put("czsj", DateUtils.date2Str(DateUtils.datetimeFormat.get()));
 		params.put("remark", "");
-		params.put("token",System.currentTimeMillis());
+		params.put("token",System.currentTimeMillis()+sysUser.getWorkNo());
 		String result = null;
 		try {
 			result = getJsonDataFromWebservice(chargeUrl, defaultNamespace, "Charges", params);
@@ -330,7 +330,8 @@ public class AxisGZWYUtils {
 		params.put("czr", sysUser.getWorkNo());
 		params.put("czsj", DateUtils.date2Str(DateUtils.datetimeFormat.get()));
 		params.put("remark", "");
-		params.put("token",System.currentTimeMillis()+(Math.random()*100));
+		//params.put("token",System.currentTimeMillis()+(Math.random()*100));
+		params.put("token",System.currentTimeMillis()+sysUser.getWorkNo());
 		String result = null;
 		try {
 			result = getJsonDataFromWebservice(chargeUrl, defaultNamespace, "Charges", params);

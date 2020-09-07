@@ -208,6 +208,10 @@ ADD COLUMN `purchase_price` decimal(20, 4) NULL COMMENT '试剂金额' AFTER `st
 
 -- 赣州肿瘤医院部署截止 2020年8月26日16:22:29
 
+-- 2020年9月7日 10:22:59   增加产品单价字段
+ALTER TABLE `pd_product_stock`
+ADD COLUMN `purchase_price` decimal(20, 4) NULL COMMENT '产品单价' AFTER `stock_num`;
+
 
 
 
