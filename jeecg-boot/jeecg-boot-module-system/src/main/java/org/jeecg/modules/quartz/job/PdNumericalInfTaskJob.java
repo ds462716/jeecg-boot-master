@@ -60,6 +60,7 @@ public class PdNumericalInfTaskJob implements Job {
              if(!depart.getId().equals("dea5919617234ef9854c5806d4b44efa")&&
                 !depart.getId().equals("743dc34c1bcd4e4fa9503ccebce7edc6")&&
                 !depart.getId().equals("298120171f5347e79686b5c2a2002a92")&&
+                !depart.getId().equals("b85b672a97514ecaa839e9030d42b511")&&
                 !depart.getId().equals("6032fec9fdb24007a74a2535859ac3f1")){
                return;
              }
