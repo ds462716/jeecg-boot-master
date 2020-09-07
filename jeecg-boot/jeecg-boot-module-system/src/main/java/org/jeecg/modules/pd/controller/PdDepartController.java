@@ -494,7 +494,7 @@ public class PdDepartController extends JeecgController<PdDepartConfig, IPdDepar
      * 一键生成用户表的拼音简码和自定义码
      * http://localhost:3000/jeecg-boot/pd/pdDepart/generateUserPyWb?_t=1592379417
      */
-    @PostMapping(value = "generateUserPyWb")
+    @GetMapping(value = "generateUserPyWb")
     public Result<Object> generateUserPyWb() {
         Result<Object> result = new Result<>();
         try{

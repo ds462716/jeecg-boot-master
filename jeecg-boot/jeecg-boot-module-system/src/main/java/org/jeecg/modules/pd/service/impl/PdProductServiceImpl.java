@@ -765,6 +765,17 @@ public class PdProductServiceImpl extends ServiceImpl<PdProductMapper, PdProduct
     }
 
     /**
+     * 查询产品关联收费代码用
+     * @param page
+     * @param pdProduct
+     * @return
+     */
+    @Override
+    public IPage<PdProduct> queryPageListForHisCharge(Page<PdProduct> page, PdProduct pdProduct) {
+        return pdProductMapper.queryPageListForHisCharge(page,pdProduct);
+    }
+
+    /**
      * 唯一码扫码
      * @param Barcode
      * @param result

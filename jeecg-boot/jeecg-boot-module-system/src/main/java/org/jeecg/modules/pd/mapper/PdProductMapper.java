@@ -41,4 +41,6 @@ public interface PdProductMapper extends BaseMapper<PdProduct> {
     Page<PdProduct> selectListForHisCharge(Page<PdProduct> page, @Param("entity") PdProduct entity);
 
     List<PdProduct> queryList(PdProduct pdProduct);
+
+    IPage<PdProduct> queryPageListForHisCharge(Page<PdProduct> page, @Param("entity")PdProduct pdProduct);
 }
