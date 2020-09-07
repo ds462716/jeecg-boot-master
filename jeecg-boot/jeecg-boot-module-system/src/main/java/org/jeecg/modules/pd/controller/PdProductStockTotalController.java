@@ -354,7 +354,13 @@ public class PdProductStockTotalController {
                 stock.setRefBarCodes(uniqueCode);
             }
         }
-        return Result.ok(pageList);
+        //查询统计库存总数量及总金额
+        PdProductStock pdProductStock= pdProductStockService.queryStockCount(productStock);
+        Map map = new HashMap();
+        map.put("page", pageList);
+        map.put("stockCount", pdProductStock.getStockCount());//库存总数量
+        map.put("stockPrice", pdProductStock.getStockPrice());//库存总金额
+        return Result.ok(map);
     }
 
     /**
@@ -420,6 +426,7 @@ public class PdProductStockTotalController {
         // Step.1 组装查询条件查询数据
         String exportType = productStock.getExportType();
         LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        String hospitalCode=sysUser.getHospitalCode();
         if (oConvertUtils.isNotEmpty(productStock.getDepartIds()) && !"undefined".equals(productStock.getDepartIds())) {
             productStock.setDepartIdList(Arrays.asList(productStock.getDepartIds().split(",")));
         } else {
@@ -430,7 +437,7 @@ public class PdProductStockTotalController {
         }
         //Step.2 获取导出数据
         if (exportType.equals("2")) { //只导出未使用的试剂类
-            productStock.setNestatStatus(PdConstant.STOCK_NESTAT_STATUS_1);
+            //productStock.setNestatStatus(PdConstant.STOCK_NESTAT_STATUS_1);
             productStock.setProductFlag(PdConstant.PRODUCT_FLAG_1);
         }else if(exportType.equals("3")){ //只导出未使用的耗材类
             //productStock.setNestatStatus(PdConstant.STOCK_NESTAT_STATUS_1);
@@ -449,7 +456,7 @@ public class PdProductStockTotalController {
         }
         // Step.3 AutoPoi 导出Excel
         ModelAndView mv = new ModelAndView(new JeecgEntityExcelView());
-        if (exportType.equals("2") || exportType.equals("3")) {
+        if (exportType.equals("2") || exportType.equals("3") || "GZSLYY".equals(hospitalCode)) {
             List<PdProductAllocationExcel> exportList = JSON.parseArray(JSON.toJSONString(aList), PdProductAllocationExcel.class);
             mv.addObject(NormalExcelConstants.CLASS, PdProductAllocationExcel.class);
             mv.addObject(NormalExcelConstants.DATA_LIST, exportList);
@@ -460,7 +467,6 @@ public class PdProductStockTotalController {
         }
         mv.addObject(NormalExcelConstants.FILE_NAME, "库存明细列表");
         mv.addObject(NormalExcelConstants.PARAMS, new ExportParams("库存明细列表", "导出人:" + sysUser.getRealname(), "库存明细列表"));
-
         return mv;
     }
 

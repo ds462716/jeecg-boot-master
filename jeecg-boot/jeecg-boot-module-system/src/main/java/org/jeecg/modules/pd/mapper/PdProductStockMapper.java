@@ -20,6 +20,8 @@ public interface PdProductStockMapper extends BaseMapper<PdProductStock> {
 
     Page<PdProductStock> queryListByPage(Page<PdProductStock> page, @Param("entity") PdProductStock entity);
 
+    PdProductStock  queryStockCount(@Param("entity") PdProductStock entity);
+
     List<PdProductStock> selectList(PdProductStockTotalPage stockTotalPage);
 
     /*试剂查询专用*/

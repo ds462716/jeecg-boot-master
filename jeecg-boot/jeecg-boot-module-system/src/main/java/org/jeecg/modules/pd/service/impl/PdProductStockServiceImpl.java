@@ -168,6 +168,11 @@ public class PdProductStockServiceImpl extends ServiceImpl<PdProductStockMapper,
 	}
 
 	@Override
+	public  PdProductStock  queryStockCount(PdProductStock productStock) {
+		return  pdProductStockMapper.queryStockCount(productStock);
+	}
+
+	@Override
 	public List<PdProductStock> queryStockList( PdProductStock productStock) {
 		return  pdProductStockMapper.queryList(productStock);
 	}

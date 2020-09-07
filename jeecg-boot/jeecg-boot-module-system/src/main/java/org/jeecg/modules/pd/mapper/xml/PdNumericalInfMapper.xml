@@ -194,13 +194,12 @@
         and substr(x.Month,1,7) &lt;=substr(CURDATE(),1,7)
         union all
         select DATE_FORMAT(a.create_time, '%Y-%m') AS month,
-        d.purchase_price  AS je,
+        b.purchase_price  AS je,
         "1" as num,
         t.depart_name as "departName",
         a.depart_id as "departId"
         from pd_bottle_inf a
         left join pd_product_stock b on a.stock_id=b.id
-        left join pd_stock_record_detail d on d.id=b.record_detail_id
         left join pd_product c on c.id=b.product_id
         left join sys_depart t on t.id=a.depart_id
         where  (close_remarks !='2'  or close_remarks is null)
@@ -248,15 +247,13 @@
     <!--统计试剂库存数量	试剂库存金额     耗材库存数量    耗材库存金额-->
     <select id="selectStockNumOrStockPrice"   resultType="java.util.Map">
         SELECT  IFNULL(sum(a.stock_num),0) as "stockCount",
-        IFNULL(sum(b.purchase_price * a.stock_num),0) as "stockPrice",
+        IFNULL(sum(a.purchase_price * a.stock_num),0) as "stockPrice",
       t.depart_name as "departName",
       a.depart_id as "departId"
        FROM PD_PRODUCT_STOCK a
-       LEFT JOIN pd_stock_record_detail  b on b.id=a.record_detail_id
        left join pd_product c on c.id=a.product_id
        left join sys_depart t on t.id=a.depart_id
         WHERE  a.del_flag='0'
-        AND b.del_flag='0'
         AND a.STOCK_NUM >0
         AND a.nestat_status='1'
         <if test="productFlag != null and productFlag != ''">
@@ -316,13 +313,12 @@
     <select id="selectrejectedNumOrPrice"   resultType="java.util.Map">
         select
         sum(b.rejected_count) as "rejectedNum",
-        sum(e.selling_price) as "rejectedPrice"
+        sum(d.purchase_price) as "rejectedPrice"
         from pd_rejected a
 	left join pd_rejected_detail  b on b.rejected_id=a.id
 	left join pd_product c on c.id=b.product_id
 	left join pd_product_stock d on d.id=b.product_stock_id
-	left join pd_stock_record_detail e on e.id=d.record_detail_id
-	where   b.del_flag='0'
+ 	where   b.del_flag='0'
 	    and  a.del_flag='0'
         <if test="month != null and month != ''">
             AND DATE_FORMAT(a.create_time, '%Y-%m')= #{month}

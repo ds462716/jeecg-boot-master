@@ -53,7 +53,7 @@ public class PdProductStockExcel{
     @Excel(name = "数量", width = 15)
     private Double stockNum;
     @Excel(name = "产品单价", width = 15)
-    private BigDecimal sellingPrice;
+    private BigDecimal purchasePrice;
     @Excel(name = "规格单位", width = 15)
     private String specUnitName;//规格单位
     @Excel(name = "规格数量", width = 15)

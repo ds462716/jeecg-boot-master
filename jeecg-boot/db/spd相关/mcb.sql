@@ -211,6 +211,10 @@ ADD COLUMN `purchase_price` decimal(20, 4) NULL COMMENT '试剂金额' AFTER `st
 -- 2020年9月7日 10:22:59   增加产品单价字段
 ALTER TABLE `pd_product_stock`
 ADD COLUMN `purchase_price` decimal(20, 4) NULL COMMENT '产品单价' AFTER `stock_num`;
+-- 2020年9月7日 10:22:59   批量更新历史数据
+update  pd_product_stock  a
+  left join pd_stock_record_detail b on a.record_detail_id=b.id
+	set a.purchase_price=b.purchase_price
 
 
 

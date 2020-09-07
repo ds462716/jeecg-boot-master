@@ -150,6 +150,10 @@
       </a-form>
     </div>
     <!-- 查询区域-END -->
+    <div class="numberWARAP">
+      <div class="total">总数量：<span id="stockCount">{{validatorRules.stockCount}}</span></div>
+      <div class="nearTime">总金额：<span id="stockPrice">{{validatorRules.stockPrice}}</span></div>
+    </div>
     <!-- 操作按钮区域 -->
     <div class="table-operator">
       <a-button type="primary" icon="download" @click="handleExportXls('库存明细','1')">导出</a-button>
@@ -209,6 +213,10 @@
         categoryOneData: [],
         categoryOneValue: undefined,
         textMaxLength:20,
+        validatorRules: {
+          stockCount: {},//总数量
+          stockPrice: {},//总金额
+        },
         // 表头
         columns: [
           {
@@ -392,6 +400,31 @@
       }
     },
     methods: {
+
+      loadData(arg) {
+        //加载数据 若传入参数1则加载第一页的内容
+        if (arg === 1) {
+          this.ipagination.current = 1;
+        }
+        var params = this.getQueryParams();//查询条件
+        this.loading = true;
+        getAction(this.url.list, params).then((res) => {
+          if (res.success) {
+            this.validatorRules.stockCount=res.result.stockCount;
+            this.validatorRules.stockPrice=res.result.stockPrice;
+            this.dataSource = res.result.page.records;
+            this.ipagination.total = res.result.page.total;
+          }
+          if(res.code===510){
+            this.$message.warning(res.message)
+          }
+          this.loading = false;
+        })
+      },
+
+
+
+
      //科室查询start
       departHandleSearch(value) {
         getAction(this.url.queryDepart,{departName:value}).then((res)=>{
@@ -521,5 +554,10 @@
     }
   }
 </script>
-<style scoped>
+
+  <style scoped>
+  .numberWARAP{width:100%;height:30px;line-height:30px;margin:20px 0;}
+  .numberWARAP>div{float:left;width:50%;height:30px;line-height:30px;color:#666;font-size:16px;text-align:center;border-right:1px solid #ccc;}
+  .numberWARAP>div:nth-child(2){border:none;}
+  .changeColor .red td,.changeColor .red td a{color: red}
 </style>

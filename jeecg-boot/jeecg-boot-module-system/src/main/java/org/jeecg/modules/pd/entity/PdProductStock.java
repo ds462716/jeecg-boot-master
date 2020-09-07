@@ -264,7 +264,12 @@ public class PdProductStock extends BaseEntity {
 
 	@TableField(exist = false)
 	private String exportType;//导出按钮类型
-
+	/**总金额*/
+	@TableField(exist = false)
+	private BigDecimal stockPrice;
+	/**总数量*/
+	@TableField(exist = false)
+	private Double stockCount;
 	@TableField(exist = false)
 	private List<String> nestatStatusList;
 }
