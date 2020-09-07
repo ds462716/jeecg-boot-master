@@ -88,3 +88,6 @@ INSERT INTO `sys_permission` VALUES ('1295261514840997889', 'f0675b52d89100ee884
 -- 供应商试剂用量统计
 INSERT INTO `sys_permission` VALUES ('1295987290456567810', 'f0675b52d89100ee88472b6800754a08', '供应商试剂用量使用统计报表', '/pd/report/RpSupplierReagentUseReport', 'pd/report/RpSupplierReagentUseReport', null, null, '1', '0', null, '1', '12.10', '0', null, '1', '1', '0', '0', null, 'admin', '2020-08-19 15:33:43', null, '2020-08-19 15:33:43', '0', '0', '1', '0');
 -- 赣州肿瘤医院部署截止 2020年8月26日16:22:29
+
+-- 赣州肿瘤医院产品价格对照
+INSERT INTO `sys_permission` VALUES ('1302889584016056321', '1210107255254798338', '产品价格对照', '/external/ganzhouzhongliu/HisSynProductListGZZL', 'external/ganzhouzhongliu/HisSynProductListGZZL', null, null, '1', '0', null, '1', '1.51', '0', null, '1', '1', '0', '0', null, 'admin', '2020-09-07 16:40:58', 'admin', '2020-09-07 16:41:14', '0', '0', '1', '0');
