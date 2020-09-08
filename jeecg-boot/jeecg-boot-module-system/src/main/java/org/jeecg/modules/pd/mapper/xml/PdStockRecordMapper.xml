@@ -363,7 +363,7 @@
         "0" as "y"
         FROM XNumber x
         where x.Month > DATE_SUB(CURDATE(), INTERVAL 1 YEAR)
-        and substr(x.Month,1,7) &lt;=substr(CURDATE(),1,7)
+        and substr(x.Month,1,7)  &lt;=substr(CURDATE(),1,7)
         UNION ALL
         SELECT DATE_FORMAT(a.create_time, '%Y-%m') AS "type",a.product_num AS "y"
         FROM pd_stock_record_detail a
@@ -373,7 +373,7 @@
         AND b.in_type ='1'
         AND b.audit_status ='2'
         AND a.create_time > DATE_SUB(CURDATE(), INTERVAL 1 YEAR)
-        AND substr(a.create_time,1,7) &lt;=substr(CURDATE(),1,7)
+        AND substr(a.create_time,1,7)  &lt;=substr(CURDATE(),1,7)
         <if test="productId != null and productId != ''">
             and a.product_id=#{productId}
         </if>

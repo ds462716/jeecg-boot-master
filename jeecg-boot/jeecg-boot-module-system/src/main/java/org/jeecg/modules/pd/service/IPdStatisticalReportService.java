@@ -80,4 +80,7 @@ public interface IPdStatisticalReportService extends IService<PdStatisticalRepor
     IPage<RpSupplierUseReportPage> supplierReagentUseReport(Page<RpSupplierUseReportPage> page, RpSupplierUseReportPage rpSupplierUseReportPage);
 
     IPage<RpReagentUseDetailReportPage> rpReagentUseDetailReport(Page<RpReagentUseDetailReportPage> usePageDetail, RpReagentUseDetailReportPage rpReagentUseDetailReportPage);
+
+    List<RpPurchaseUseReportPage> queryPurchaseCountView(RpPurchaseUseReportPage entity);
+
 }

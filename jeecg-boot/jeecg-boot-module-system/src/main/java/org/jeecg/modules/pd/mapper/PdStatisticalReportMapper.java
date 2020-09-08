@@ -80,4 +80,7 @@ public interface PdStatisticalReportMapper extends BaseMapper<PdStatisticalRepor
     IPage<RpSupplierUseReportPage> supplierReagentUseReport(Page<RpSupplierUseReportPage> page, @Param("entity")RpSupplierUseReportPage rpSupplierUseReportPage);
 
     IPage<RpReagentUseDetailReportPage> rpReagentUseDetailReport(Page<RpReagentUseDetailReportPage> usePageDetail, @Param("entity")RpReagentUseDetailReportPage rpReagentUseDetailReportPage);
+
+    List<RpPurchaseUseReportPage> queryPurchaseCountView(@Param("entity")RpPurchaseUseReportPage rpPurchaseUseReportPage);
+
 }

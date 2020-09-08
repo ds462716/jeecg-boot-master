@@ -21,12 +21,18 @@
                   @search="departHandleSearch"
                   @focus="departHandleSearch"
                   :notFoundContent="notFoundContent"
-                  v-model="useQueryParam.departIds"
+                  v-model="queryParam.departIds"
                   placeholder="请选择科室"
                 >
                   <a-select-option v-for="d in departData" :key="d.id">{{d.departName}}</a-select-option>
                 </a-select>
               </a-form-item>
+            </a-col>
+            <a-col :md="6" :sm="8">
+            <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
+             <!-- <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>-->
+              <a-button type="primary" @click="searchReset" icon="reload" style="margin-left: 8px">重置</a-button>
+            </span>
             </a-col>
           </a-row>
         </a-form>
@@ -35,7 +41,7 @@
 
         <a-tab-pane tab="科室采购趋势表" key="1">
           <a-card :bordered="false">
-            <bar-multid title="采购收费对照表" :height="height" :width="width"/>
+            <bar-multid title="采购收费对照表" :height="height" :width="width" :dataSource="dataSource1"/>
             <line-chart-multid title="采购收费趋势表" :height="height" :width="width"/>
             <div class="table-operator">
             </div>
@@ -44,7 +50,7 @@
 
         <a-tab-pane tab="科室采购消耗表" key="2">
           <a-card :bordered="false">
-            <bar-multid title="采购收费柱状图" :height="height" :width="width"/>
+            <bar-multid title="采购收费柱状图" :height="height" :width="width"  />
             <line-chart-multid title="采购收费趋势图" :height="height" :width="width"/>
                <div style="width:800px;height:400px;float:left">
             <pie title="采购科室金额占比"  :height="height"/>
@@ -89,7 +95,7 @@
   import LineChartMultid from '@/components/chart/gzslyyChart/GzslyyLineChartMultid'
   import Pie from '@/components/chart/gzslyyChart/GzslPircePie'
   export default {
-    name: "RpDepartUseReportMain",
+    name: "RpPurchaseUseReport",
     components: {
       BarMultid,LineChartMultid,Pie
     },
@@ -101,8 +107,9 @@
         /* 查询折叠 */
         notFoundContent:"未找到内容",
         activeKey:"1",
+        dataSource1:[],
         // 表头
-        useQueryParam: {},
+        queryParam: {},
         departData: [],
         departValue: undefined,
         visible: false,
@@ -118,10 +125,8 @@
           fullscreen: true,
         },
         url: {
-          useList: "/pd/pdStatisticalReport/rpDepartUseDetailReport",
-          chargeUseList:  "/pd/pdStatisticalReport/rpDepartUseDetailReport",
-          noChargeUseList: "/pd/pdStatisticalReport/rpDepartUseDetailReport",
           queryDepart: "/pd/pdDepart/queryListTree",
+          queryView: "/pd/pdStatisticalReport/queryPurchaseCountView",
         },
         dictOptions:{
 
@@ -150,7 +155,7 @@
       },
       //关闭方法
       close() {
-        this.useQueryParam = {};
+        this.queryParam = {};
         this.chargeUseQueryParam = {};
         this.noChargeUseQueryParam = {};
         this.visible = false;
@@ -158,14 +163,18 @@
       },
       //初始化
       show(initParams){
+        alert("d");
         this.visible = true;
         this.initParams = initParams;
         this.activeKey = "1";
         this.handleChangeTabs(1)
       },
-
+      searchReset() {
+        this.queryParam = {}
+        this.loadData(1);
+      },
       monthChange(date, dateString){
-        this.useQueryParam.month=dateString;
+        this.queryParam.month=dateString;
       },
 
 //科室查询start
@@ -179,70 +188,57 @@
       },
       //科室查询end
 
-      getQueryParams() {
-        //获取查询条件
-        let sqp = {}
-        if(this.superQueryParams){
-          sqp['superQueryParams']=encodeURI(this.superQueryParams)
-        }
-        var param = Object.assign(sqp, this.queryParam, this.isorter ,this.filters);
-        param.field = this.getQueryField();
-        param.pageNo = this.ipagination.current;
-        param.pageSize = this.ipagination.pageSize;
-        param.departIds = this.queryParam.departIds+"";
-        return filterObj(param);
-      },
-
-
-
-      //供应商入库明细start
       useLoadData(arg) {
+          alert("ddd");
+          var params={};
+          this.loading = true;
+          getAction(this.url.queryView, params).then((res) => {
+            if (res.success) {
+              this.dataSource1 = res.result;
+            }else{
+              this.$message.warning(res.message)
+            }
+            this.loading = false;
+          })
 
       },
 
-      //入库明细搜索
+
       useSearchQuery() {
         this.useLoadData();
       },
-      //入库明细重置
+
       useSearchReset() {
-        this.useQueryParam = {}
+        this.queryParam = {}
         this.useLoadData();
       },
 
-      //供应商入库明细end
 
 
 
-      //供应商使用明细start
+
+
       chargeUseLoadData(arg) {
       },
-      //获取使用条件
-      getChargeUseQueryParams() {
-
-      },
 
 
-      //入库明细搜索
+
+
       chargeUseSearchQuery() {
         this.chargeUseLoadData();
       },
-      //入库明细重置
+
       chargeUseSearchReset() {
         this.chargeUseQueryParam = {}
         this.chargeUseLoadData();
       },
-      chargeUseHandleToggleSearch(){
-      },
 
-      //供应商退货明细start
+
+
       noChargeUseLoadData(arg) {
 
       },
-      //获取使用条件
-      getNoChargeUseQueryParams() {
 
-      },
     }
   }
 </script>

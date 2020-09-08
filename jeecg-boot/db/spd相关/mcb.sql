@@ -221,6 +221,6 @@ INSERT INTO  `sys_permission`    VALUES ('1302806183652024322', 'f0675b52d89100e
 
 
 
-
-
-
+-- 2020年9月8日 10:22:59   字段名称修改
+ALTER TABLE  `pd_purchase_temp`
+CHANGE COLUMN `time_type` `temp_type` varchar(4) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '模板类型' AFTER `depart_parent_id`;

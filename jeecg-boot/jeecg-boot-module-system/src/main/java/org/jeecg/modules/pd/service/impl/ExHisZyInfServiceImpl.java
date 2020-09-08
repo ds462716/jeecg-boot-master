@@ -2,10 +2,14 @@ package org.jeecg.modules.pd.service.impl;
 
 import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.constant.PdConstant;
+import org.jeecg.common.system.vo.LoginUser;
+import org.jeecg.modules.pd.entity.HisDepartInf;
 import org.jeecg.modules.pd.entity.PdDosage;
 import org.jeecg.modules.pd.entity.PdDosageDetail;
 import org.jeecg.modules.pd.mapper.ExHisZyInfMapper;
+import org.jeecg.modules.pd.mapper.HisDepartMapper;
 import org.jeecg.modules.pd.service.IExHisZyInfService;
 import org.jeecg.modules.pd.vo.ExHisMzInfPage;
 import org.jeecg.modules.pd.vo.ExHisZyInfPage;
@@ -29,7 +33,8 @@ import java.util.List;
 public class ExHisZyInfServiceImpl extends ServiceImpl<ExHisZyInfMapper, ExHisZyInfPage> implements IExHisZyInfService {
 	@Autowired
 	private ExHisZyInfMapper exHisZyInfMapper;
-
+	@Autowired
+	private HisDepartMapper hisDepartMapper;
 
 
 
@@ -38,6 +43,12 @@ public class ExHisZyInfServiceImpl extends ServiceImpl<ExHisZyInfMapper, ExHisZy
 	@Transactional
 	@DS("multi-datasource1")
 	public int saveExHisZyInf(PdDosage pdDosage,List<PdDosageDetail> chargeArray,String chargeType) {
+		String fsfZxKs="";
+		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		HisDepartInf departInf=new HisDepartInf();
+		departInf.setSpdDepartId(sysUser.getCurrentDepartId());
+		HisDepartInf hisDepartInf=hisDepartMapper.queryHisDepartInfo(departInf);
+		fsfZxKs=hisDepartInf.getFsfKsbh();
  		List<ExHisZyInfPage> list=new ArrayList<ExHisZyInfPage>();
  		for(PdDosageDetail dosageDetail :chargeArray){
 		ExHisZyInfPage  hisZyInfPage=new ExHisZyInfPage();
@@ -59,7 +70,7 @@ public class ExHisZyInfServiceImpl extends ServiceImpl<ExHisZyInfMapper, ExHisZy
 		hisZyInfPage.setFsbGg(dosageDetail.getSpec());//规格
 
 		hisZyInfPage.setFsfKdKs(pdDosage.getSqrtDoctorId());//开单科室
-		hisZyInfPage.setFsfZxKs(pdDosage.getOprDeptId());//执行科室
+		hisZyInfPage.setFsfZxKs(fsfZxKs);//执行科室
 		hisZyInfPage.setFsfRq(new Date());//计费日期
 		hisZyInfPage.setFsbRy(pdDosage.getCreateBy());//计费人员
 		hisZyInfPage.setFsbZt("0");//计费状态  0：未计费
@@ -75,6 +86,13 @@ public class ExHisZyInfServiceImpl extends ServiceImpl<ExHisZyInfMapper, ExHisZy
 	@Transactional
 	@DS("multi-datasource1")
 	public int saveExHisMzInf(PdDosage pdDosage,List<PdDosageDetail> chargeArray,String chargeType) {
+		//获取当前工号所关联的HIS系统科室ID
+		String fsfZxKs="";
+		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		HisDepartInf departInf=new HisDepartInf();
+		departInf.setSpdDepartId(sysUser.getCurrentDepartId());
+		HisDepartInf hisDepartInf=hisDepartMapper.queryHisDepartInfo(departInf);
+		 fsfZxKs=hisDepartInf.getFsfKsbh();
 		List<ExHisMzInfPage> list=new ArrayList<ExHisMzInfPage>();
 		for(PdDosageDetail dosageDetail :chargeArray){
 			ExHisMzInfPage  hisMzInfPage=new ExHisMzInfPage();
@@ -91,7 +109,7 @@ public class ExHisZyInfServiceImpl extends ServiceImpl<ExHisZyInfMapper, ExHisZy
 			hisMzInfPage.setFsfXmbh(dosageDetail.getChargeCode());//收费项目编号
 			hisMzInfPage.setFsfMc(dosageDetail.getProductName());//收费项目名称
 			hisMzInfPage.setFsfKdKs(pdDosage.getOprDeptId());//开单科室
-			hisMzInfPage.setFsfZxKs(pdDosage.getOprDeptId());//执行科室
+			hisMzInfPage.setFsfZxKs(fsfZxKs);//执行科室
 			hisMzInfPage.setFsfRq(new Date());//计费日期
 			hisMzInfPage.setFsbRy(pdDosage.getCreateBy());//计费人员
 			hisMzInfPage.setFsbZt("0");//计费状态

@@ -201,4 +201,14 @@ public class PdPdStatisticalReportImpl extends ServiceImpl<PdStatisticalReportMa
     public IPage<RpReagentUseDetailReportPage> rpReagentUseDetailReport(Page<RpReagentUseDetailReportPage> usePageDetail, RpReagentUseDetailReportPage rpReagentUseDetailReportPage) {
         return baseMapper.rpReagentUseDetailReport(usePageDetail,rpReagentUseDetailReportPage);
     }
+
+    /**
+     * zxh库存统计报表
+     * @param purchaseUseReportPage
+     * @return
+     */
+    @Override
+    public List<RpPurchaseUseReportPage> queryPurchaseCountView(RpPurchaseUseReportPage purchaseUseReportPage) {
+        return baseMapper.queryPurchaseCountView(purchaseUseReportPage);
+    }
 }

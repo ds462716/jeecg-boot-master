@@ -14,6 +14,7 @@ import org.jeecg.modules.external.vo.PdNumericalInfHcExlce;
 import org.jeecg.modules.external.vo.PdNumericalInfSjExlce;
 import org.jeecg.modules.pd.entity.PdNumericalInf;
 import org.jeecg.modules.pd.entity.PdStatisticalReport;
+import org.jeecg.modules.pd.entity.PdStockRecord;
 import org.jeecg.modules.pd.entity.PdStockRecordDetail;
 import org.jeecg.modules.pd.service.IPdDepartService;
 import org.jeecg.modules.pd.service.IPdNumericalInfService;
@@ -31,9 +32,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 /**
 * @Description: 统计报表
@@ -617,5 +616,46 @@ public class PdStatisticalReportController extends JeecgController<PdStatistical
         usePage.setCurrent(usePageDetailList.getCurrent());
         usePage.setRecords(inReportList);
         return Result.ok(usePage);
+    }
+
+
+
+
+
+    /**
+     * 综合统计   ---科室采购趋势图表  mcb  --20200907
+     */
+    @GetMapping(value = "queryPurchaseCountView")
+    public Result<?> queryPurchaseCountView(RpPurchaseUseReportPage purchaseUseReportPage){
+        Map<String,Object> map=new HashMap<String, Object>();
+        Map<String,Object> map1=new HashMap<String, Object>();
+         List<Map> list=new  ArrayList<Map>();//金额
+        /* List<HashMap> orderCount=new  ArrayList<HashMap>();//数量
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        stockRecord.setDepartParentId(sysUser.getDepartParentId());
+        stockRecord.setInDepartId(sysUser.getCurrentDepartId());
+        //根据产品按月统计入库金额
+        orderMoney=pdStockRecordService.queryRecordViewMoney(stockRecord);
+        //根据产品按月统计入库数量
+        orderCount=pdStockRecordService.queryRecordViewCount(stockRecord);
+        map.put("orderMoney",orderMoney);
+        map.put("orderCount",orderCount);*/
+       //List<RpPurchaseUseReportPage> list=pdStatisticalReportService.queryPurchaseCountView(purchaseUseReportPage);
+        map.put("type","金额");
+        map.put("2020-01","222");
+        map.put("2020-02","333");
+        map.put("2020-03","444");
+        map.put("2020-04","555");
+        map.put("2020-05","666");
+        map1.put("type","数量");
+        map1.put("2020-01","444");
+        map1.put("2020-02","555");
+        map1.put("2020-03","666");
+        map1.put("2020-04","777");
+        map1.put("2020-05","888");
+        list.add(map);
+        list.add(map1);
+         //{ type: 'Jeecg', 'Jan.': 18.9, 'Feb.': 28.8, 'Mar.': 39.3, 'Apr.': 81.4, 'May': 47, 'Jun.': 20.3, 'Jul.': 24, 'Aug.': 35.6 },
+        return Result.ok(list);
     }
 }

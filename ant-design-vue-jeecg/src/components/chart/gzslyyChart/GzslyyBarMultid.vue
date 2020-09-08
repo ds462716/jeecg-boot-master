@@ -5,12 +5,13 @@
       <v-tooltip/>
       <v-axis/>
       <v-legend/>
-      <v-bar position="x*y" color="type" :adjust="adjust"/>
+      <v-bar position="money*y" color="type" :adjust="adjust"/>
     </v-chart>
   </div>
 </template>
 
 <script>
+  import {getAction } from '@/api/manage'
   import { DataSet } from '@antv/data-set'
   import { ChartEventMixins } from '@/components/chart/mixins/ChartMixins'
 
@@ -31,7 +32,8 @@
       },
       fields: {
         type: Array,
-        default: () => ['Jan.', 'Feb.', 'Mar.', 'Apr.', 'May', 'Jun.', 'Jul.', 'Aug.']
+        //default: () => ['Jan.', 'Feb.', 'Mar.', 'Apr.', 'May', 'Jun.', 'Jul.', 'Aug.']
+         default: () => []
       },
       // 别名，需要的格式：[{field:'name',alias:'姓名'}, {field:'sex',alias:'性别'}]
       aliases: {
@@ -40,7 +42,7 @@
       },
       height: {
         type: Number,
-        default: 10
+        default: 254
       }
     },
     data() {
@@ -48,16 +50,20 @@
         adjust: [{
           type: 'dodge',
           marginRatio: 1 / 32
-        }]
+        }],
+        url: {
+          queryView: "/pd/pdStatisticalReport/queryPurchaseCountView",
+        }
       }
     },
     computed: {
       data() {
+        alert("rrr:"+this.dataSource);
         const dv = new DataSet.View().source(this.dataSource)
         dv.transform({
           type: 'fold',
           fields: this.fields,
-          key: 'x',
+          key: 'money',
           value: 'y'
         })
 
@@ -78,7 +84,10 @@
           }
         })
         return rows
-      }
+      },
+    },
+    methods: {
+
     }
   }
 </script>

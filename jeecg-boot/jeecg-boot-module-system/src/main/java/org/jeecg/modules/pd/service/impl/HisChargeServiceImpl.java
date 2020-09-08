@@ -127,7 +127,7 @@ public class HisChargeServiceImpl extends ServiceImpl<HisChargeMapper, HisCharge
 		if("1".equals(prjType)){  //门诊
 			    list=hisChargeMapper.queryPatientInfoMZ(pdDosage);
 		}else{  //住院
-				list=hisChargeMapper.queryPatientInfoSS(pdDosage);
+				 list=hisChargeMapper.queryPatientInfoSS(pdDosage);
 		}
 		return list;
 	}

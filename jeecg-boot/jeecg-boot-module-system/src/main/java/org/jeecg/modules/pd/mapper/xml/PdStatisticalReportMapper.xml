@@ -1647,4 +1647,48 @@ ORDER BY
         </if>
         ORDER BY  a.close_remarks , a.CREATE_TIME DESC
     </select>
+
+
+
+
+    <!-- zxh供应商用量统计查询入库明细 -->
+    <select id="queryPurchaseCountView" resultType="org.jeecg.modules.pd.vo.RpPurchaseUseReportPage">
+        select
+        c.type as "type",
+        ROUND(sum(c.y),2) as "y",
+        sum(c.money)  as "money"
+        from(
+        SELECT DATE_FORMAT(x.Month, '%Y-%m') as "type" ,
+        "0" as "y","0" as "money"
+        FROM XNumber x
+        where x.Month > DATE_SUB(CURDATE(), INTERVAL 1 YEAR)
+        and substr(x.Month,1,7) &lt;=substr(CURDATE(),1,7)
+        UNION ALL
+        SELECT DATE_FORMAT(a.create_time, '%Y-%m') AS "type",
+        a.product_num AS "y",
+        "" as "money"
+        FROM pd_stock_record_detail a
+        left join pd_stock_record b on a.record_id=b.id and b.del_flag='0'
+        where
+        b.record_type ='1'
+        AND b.in_type ='1'
+        AND b.audit_status ='2'
+        and b.in_depart_id='dea5919617234ef9854c5806d4b44efa'
+        AND a.create_time > DATE_SUB(CURDATE(), INTERVAL 1 YEAR)
+        AND substr(a.create_time,1,7) &lt;=substr(CURDATE(),1,7)
+        UNION ALL
+        select  DATE_FORMAT(e.create_time, '%Y-%m') AS "type",
+        "" AS "y",
+        d.amount_money AS "money"
+        from pd_dosage_detail d
+        left join pd_dosage  e on e.id=d.dosage_id
+        where d.hy_charged='0'
+        and d.del_flag='0'
+
+        AND e.create_time > DATE_SUB(CURDATE(), INTERVAL 1 YEAR)
+        AND substr(e.create_time,1,7) &lt;=substr(CURDATE(),1,7)
+        ) c
+        GROUP BY type;
+
+    </select>
 </mapper>
