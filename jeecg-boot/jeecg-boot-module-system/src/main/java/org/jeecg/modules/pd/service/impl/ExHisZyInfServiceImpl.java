@@ -5,11 +5,11 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.constant.PdConstant;
 import org.jeecg.common.system.vo.LoginUser;
-import org.jeecg.modules.pd.entity.HisDepartInf;
+import org.jeecg.modules.pd.entity.HisUserInf;
 import org.jeecg.modules.pd.entity.PdDosage;
 import org.jeecg.modules.pd.entity.PdDosageDetail;
 import org.jeecg.modules.pd.mapper.ExHisZyInfMapper;
-import org.jeecg.modules.pd.mapper.HisDepartMapper;
+import org.jeecg.modules.pd.mapper.HisUserMapper;
 import org.jeecg.modules.pd.service.IExHisZyInfService;
 import org.jeecg.modules.pd.vo.ExHisMzInfPage;
 import org.jeecg.modules.pd.vo.ExHisZyInfPage;
@@ -34,7 +34,7 @@ public class ExHisZyInfServiceImpl extends ServiceImpl<ExHisZyInfMapper, ExHisZy
 	@Autowired
 	private ExHisZyInfMapper exHisZyInfMapper;
 	@Autowired
-	private HisDepartMapper hisDepartMapper;
+	private HisUserMapper hisUserMapper;
 
 
 
@@ -45,10 +45,10 @@ public class ExHisZyInfServiceImpl extends ServiceImpl<ExHisZyInfMapper, ExHisZy
 	public int saveExHisZyInf(PdDosage pdDosage,List<PdDosageDetail> chargeArray,String chargeType) {
 		String fsfZxKs="";
 		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
-		HisDepartInf departInf=new HisDepartInf();
-		departInf.setSpdDepartId(sysUser.getCurrentDepartId());
-		HisDepartInf hisDepartInf=hisDepartMapper.queryHisDepartInfo(departInf);
-		fsfZxKs=hisDepartInf.getFsfKsbh();
+		HisUserInf userInf=new HisUserInf();
+		userInf.setFsfYhid(sysUser.getUsername());
+		HisUserInf hisUsertInf=hisUserMapper.queryHisUserInfo(userInf);
+		fsfZxKs=hisUsertInf.getFsfYhks();
  		List<ExHisZyInfPage> list=new ArrayList<ExHisZyInfPage>();
  		for(PdDosageDetail dosageDetail :chargeArray){
 		ExHisZyInfPage  hisZyInfPage=new ExHisZyInfPage();
@@ -89,10 +89,10 @@ public class ExHisZyInfServiceImpl extends ServiceImpl<ExHisZyInfMapper, ExHisZy
 		//获取当前工号所关联的HIS系统科室ID
 		String fsfZxKs="";
 		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
-		HisDepartInf departInf=new HisDepartInf();
-		departInf.setSpdDepartId(sysUser.getCurrentDepartId());
-		HisDepartInf hisDepartInf=hisDepartMapper.queryHisDepartInfo(departInf);
-		 fsfZxKs=hisDepartInf.getFsfKsbh();
+		HisUserInf userInf=new HisUserInf();
+		userInf.setFsfYhid(sysUser.getUsername());
+		HisUserInf hisUsertInf=hisUserMapper.queryHisUserInfo(userInf);
+		fsfZxKs=hisUsertInf.getFsfYhks();
 		List<ExHisMzInfPage> list=new ArrayList<ExHisMzInfPage>();
 		for(PdDosageDetail dosageDetail :chargeArray){
 			ExHisMzInfPage  hisMzInfPage=new ExHisMzInfPage();

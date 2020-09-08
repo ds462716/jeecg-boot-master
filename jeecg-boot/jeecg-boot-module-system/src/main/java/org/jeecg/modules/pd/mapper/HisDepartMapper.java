@@ -23,5 +23,4 @@ public interface HisDepartMapper extends BaseMapper<HisDepartInf> {
 
 	HisDepartInf queryHisDepart(@Param("fsfKsbh") String fsfKsbh);
 
-	HisDepartInf queryHisDepartInfo(HisDepartInf hisDepartInf);
 }

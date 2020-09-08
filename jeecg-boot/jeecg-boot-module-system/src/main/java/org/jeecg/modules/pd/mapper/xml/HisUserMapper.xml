@@ -85,4 +85,16 @@
 		DELETE 	FROM  ex_his_user_inf
     </delete>
 
+
+	<!-- 查询 -->
+	<select id="queryHisUserInfo" resultType="org.jeecg.modules.pd.entity.HisUserInf">
+		SELECT
+		<include refid="HisUserInfColumns"/>
+		FROM ex_his_user_inf a
+		where 1=1
+		AND	a.del_flag ="0"
+		<if test="fsfYhid != null and fsfYhid != ''">
+			AND a.fsf_yhid = #{fsfYhid}
+		</if>
+	</select>
 </mapper>

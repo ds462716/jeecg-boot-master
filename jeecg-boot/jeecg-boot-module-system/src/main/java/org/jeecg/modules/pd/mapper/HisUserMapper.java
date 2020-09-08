@@ -20,4 +20,6 @@ public interface HisUserMapper extends BaseMapper<HisUserInf> {
 	Page<HisUserInf> selectListByPage(Page<HisUserInf> page, @Param("entity") HisUserInf entity);
 
 	void deleteHisUserInf();
+
+	HisUserInf queryHisUserInfo(HisUserInf hisUserInf);
 }
