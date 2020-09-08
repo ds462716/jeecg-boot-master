@@ -41,7 +41,7 @@ public interface HisChargeMapper extends BaseMapper<HisChargeInf> {
 
 	List<HisDepartInf> selectHisDepart();
 
-	List<HisUserInf> selectHisUser();
+	List<HisUserInf> selectHisUser(HisUserInf info);
 
 	List<PdDosage> queryPatientInfoSS(PdDosage pdDosage);
 

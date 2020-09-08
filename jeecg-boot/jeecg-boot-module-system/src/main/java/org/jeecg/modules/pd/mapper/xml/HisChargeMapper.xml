@@ -157,10 +157,11 @@
 
 	<!--查询HIS系统用户信息-->
 	<select id="selectHisUser" parameterType="java.lang.String" resultType="org.jeecg.modules.pd.entity.HisUserInf">
-		select  * from v_spd_his_users
+		select  * from v_spd_his_users a where 1=1
+		<if test=" fsfYhid != null and fsfYhid != ''">
+			AND a.fsf_yhid=#{fsfYhid}
+		</if>
 	</select>
-
-
 
 	<!--查询HIS系统病人信息  手術項目-->
 	<select id="queryPatientInfoSS"   resultType="org.jeecg.modules.pd.entity.PdDosage">

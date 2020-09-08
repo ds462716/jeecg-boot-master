@@ -57,7 +57,7 @@ public class PdHisUserController {
     @PostMapping(value = "/synUpdateDeptOrUser")
     public Result<?> synUpdateDeptOrUser(@RequestBody HisUserInf hisUserInf) {
         List<HisDepartInf> deptList= hisChargeService.selectHisDepart();//查询HIS科室信息
-        List<HisUserInf> userList= hisChargeService.selectHisUser();//查询HIS用户信息
+        List<HisUserInf> userList= hisChargeService.selectHisUser(null);//查询HIS用户信息
         hisUserService.synUpdateDeptOrUser(deptList,userList);
         return Result.ok("操作成功！");
     }

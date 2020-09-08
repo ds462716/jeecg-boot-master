@@ -97,8 +97,8 @@ public class HisChargeServiceImpl extends ServiceImpl<HisChargeMapper, HisCharge
 	//查询HIS系统用戶信息
 	@Override
 	@DS("multi-datasource1")
-	public List<HisUserInf> selectHisUser() {
-		List list = hisChargeMapper.selectHisUser();
+	public List<HisUserInf> selectHisUser(HisUserInf info) {
+		List list = hisChargeMapper.selectHisUser(info);
 		return list;
 	}
 	//查询检验项目明细信息   his系统

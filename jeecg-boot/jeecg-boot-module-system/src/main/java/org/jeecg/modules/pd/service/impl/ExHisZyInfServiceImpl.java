@@ -9,7 +9,7 @@ import org.jeecg.modules.pd.entity.HisUserInf;
 import org.jeecg.modules.pd.entity.PdDosage;
 import org.jeecg.modules.pd.entity.PdDosageDetail;
 import org.jeecg.modules.pd.mapper.ExHisZyInfMapper;
-import org.jeecg.modules.pd.mapper.HisUserMapper;
+import org.jeecg.modules.pd.mapper.HisChargeMapper;
 import org.jeecg.modules.pd.service.IExHisZyInfService;
 import org.jeecg.modules.pd.vo.ExHisMzInfPage;
 import org.jeecg.modules.pd.vo.ExHisZyInfPage;
@@ -34,7 +34,7 @@ public class ExHisZyInfServiceImpl extends ServiceImpl<ExHisZyInfMapper, ExHisZy
 	@Autowired
 	private ExHisZyInfMapper exHisZyInfMapper;
 	@Autowired
-	private HisUserMapper hisUserMapper;
+	private HisChargeMapper hisChargeMapper;
 
 
 
@@ -47,8 +47,8 @@ public class ExHisZyInfServiceImpl extends ServiceImpl<ExHisZyInfMapper, ExHisZy
 		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
 		HisUserInf userInf=new HisUserInf();
 		userInf.setFsfYhid(sysUser.getUsername());
-		HisUserInf hisUsertInf=hisUserMapper.queryHisUserInfo(userInf);
-		fsfZxKs=hisUsertInf.getFsfYhks();
+		List<HisUserInf> hisUserList=hisChargeMapper.selectHisUser(userInf);
+		fsfZxKs=hisUserList.get(0).getFsfYhks();
  		List<ExHisZyInfPage> list=new ArrayList<ExHisZyInfPage>();
  		for(PdDosageDetail dosageDetail :chargeArray){
 		ExHisZyInfPage  hisZyInfPage=new ExHisZyInfPage();
@@ -91,8 +91,8 @@ public class ExHisZyInfServiceImpl extends ServiceImpl<ExHisZyInfMapper, ExHisZy
 		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
 		HisUserInf userInf=new HisUserInf();
 		userInf.setFsfYhid(sysUser.getUsername());
-		HisUserInf hisUsertInf=hisUserMapper.queryHisUserInfo(userInf);
-		fsfZxKs=hisUsertInf.getFsfYhks();
+		List<HisUserInf> hisUserList=hisChargeMapper.selectHisUser(userInf);
+		fsfZxKs=hisUserList.get(0).getFsfYhks();
 		List<ExHisMzInfPage> list=new ArrayList<ExHisMzInfPage>();
 		for(PdDosageDetail dosageDetail :chargeArray){
 			ExHisMzInfPage  hisMzInfPage=new ExHisMzInfPage();

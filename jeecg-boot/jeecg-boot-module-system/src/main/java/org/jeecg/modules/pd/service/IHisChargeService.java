@@ -43,7 +43,7 @@ public interface IHisChargeService extends IService<HisChargeInf> {
     List<HisDepartInf> selectHisDepart();
 
     /*查询his系统用户信息*/
-    List<HisUserInf> selectHisUser();
+    List<HisUserInf> selectHisUser(HisUserInf info);
 
     /*查询his系统病人信息*/
     List<PdDosage> queryPatientInfoList(PdDosage pdDosage);
