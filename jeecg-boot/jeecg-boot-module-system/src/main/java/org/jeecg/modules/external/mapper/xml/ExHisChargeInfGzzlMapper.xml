@@ -34,12 +34,12 @@
         v_GY_baseitem a
         where 1 = 1
         <if test="entity.gyXmbh != null and entity.gyXmbh != ''">
-            AND a.gy_xmbh LIKE concat('%',#{entity.gyXmbh},'%')
+            AND a.gy_xmbh LIKE '%'+ #{entity.gyXmbh} +'%'
         </if>
         <if test="entity.gyXmmc != null and entity.gyXmmc != ''">
-            AND (a.gy_xmmc LIKE concat('%',#{entity.gyXmmc},'%')
-            or a.gy_pym LIKE concat('%',#{entity.gyXmmc},'%')
-            or a.gy_wbm LIKE concat('%',#{entity.gyXmmc},'%'))
+            AND (a.gy_xmmc LIKE '%'+ #{entity.gyXmmc} +'%'
+            or a.gy_pym LIKE '%'+ #{entity.gyXmmc} +'%'
+            or a.gy_wbm LIKE '%'+ #{entity.gyXmmc} +'%')
         </if>
     </select>
 
