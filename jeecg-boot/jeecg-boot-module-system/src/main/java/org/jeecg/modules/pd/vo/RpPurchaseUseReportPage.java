@@ -16,6 +16,6 @@ public class RpPurchaseUseReportPage {
     private String type;
     private String y;
     private String money;
-
-
+    private Double count;
+    private String item;
 }

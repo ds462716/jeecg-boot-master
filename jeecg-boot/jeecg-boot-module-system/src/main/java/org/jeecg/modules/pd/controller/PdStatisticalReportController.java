@@ -619,7 +619,11 @@ public class PdStatisticalReportController extends JeecgController<PdStatistical
     }
 
 
-
+    @GetMapping(value = "queryConsumptionView")
+    public Result<?> queryConsumptionView(RpPurchaseUseReportPage purchaseUseReportPage){
+         List<RpPurchaseUseReportPage> list= pdStatisticalReportService.queryConsumptionView(purchaseUseReportPage);
+        return Result.ok(list);
+    }
 
 
     /**

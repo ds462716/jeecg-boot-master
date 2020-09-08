@@ -77,7 +77,7 @@
 
         <a-tab-pane tab="可收费——不可收费比例图" key="4">
           <a-card :bordered="false">
-            <pie title="全院耗材占比" :height="height"/>
+            <pie title="全院耗材占比" :height="height"  :dataSource="dataSource4"/>
             <div class="table-operator">
             </div>
           </a-card>
@@ -108,6 +108,9 @@
         notFoundContent:"未找到内容",
         activeKey:"1",
         dataSource1:[],
+        dataSource2:[],
+        dataSource3:[],
+        dataSource4:[],
         // 表头
         queryParam: {},
         departData: [],
@@ -126,7 +129,8 @@
         },
         url: {
           queryDepart: "/pd/pdDepart/queryListTree",
-          queryView: "/pd/pdStatisticalReport/queryPurchaseCountView",
+          queryPurchaseCountView: "/pd/pdStatisticalReport/queryPurchaseCountView",
+          queryConsumptionView: "/pd/pdStatisticalReport/queryConsumptionView",
         },
         dictOptions:{
 
@@ -141,11 +145,13 @@
           editableTable.resetScrollTop()
         })
         if(key==1){
-          this.useLoadData(1);
+          this.useLoadData(1);//科室采购趋势表
         }else if(key==2){
-          this.chargeUseLoadData(1);
+          this.chargeUseLoadData(1);//科室采购消耗表
         }else if(key==3){
-          this.noChargeUseLoadData(1);
+          this.noChargeUseLoadData(1);//科室采购环比——同比图
+        }else if(key==4){
+          this.allConsumptionData(1); //全院耗材占比
         }
       },
       /** 关闭按钮 **/
@@ -163,7 +169,6 @@
       },
       //初始化
       show(initParams){
-        alert("d");
         this.visible = true;
         this.initParams = initParams;
         this.activeKey = "1";
@@ -171,7 +176,6 @@
       },
       searchReset() {
         this.queryParam = {}
-        this.loadData(1);
       },
       monthChange(date, dateString){
         this.queryParam.month=dateString;
@@ -189,10 +193,11 @@
       //科室查询end
 
       useLoadData(arg) {
-          alert("ddd");
+
+        //获取采购收费对照表数据
           var params={};
           this.loading = true;
-          getAction(this.url.queryView, params).then((res) => {
+          getAction(this.url.queryPurchaseCountView, params).then((res) => {
             if (res.success) {
               this.dataSource1 = res.result;
             }else{
@@ -233,10 +238,22 @@
         this.chargeUseLoadData();
       },
 
+      noChargeUseLoadData(arg){
+
+      },
 
 
-      noChargeUseLoadData(arg) {
-
+      allConsumptionData(arg) {//全院耗材占比
+        var params={};
+        this.loading = true;
+        getAction(this.url.queryConsumptionView, params).then((res) => {
+          if (res.success) {
+            this.dataSource4 = res.result;
+          }else{
+            this.$message.warning(res.message)
+          }
+          this.loading = false;
+        })
       },
 
     }

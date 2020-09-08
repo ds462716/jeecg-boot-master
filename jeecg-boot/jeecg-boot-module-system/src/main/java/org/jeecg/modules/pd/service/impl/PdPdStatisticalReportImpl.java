@@ -203,12 +203,22 @@ public class PdPdStatisticalReportImpl extends ServiceImpl<PdStatisticalReportMa
     }
 
     /**
-     * zxh库存统计报表
+     *  综合统计报表  采购收费对照表数据获取
      * @param purchaseUseReportPage
      * @return
      */
     @Override
     public List<RpPurchaseUseReportPage> queryPurchaseCountView(RpPurchaseUseReportPage purchaseUseReportPage) {
         return baseMapper.queryPurchaseCountView(purchaseUseReportPage);
+    }
+
+    /**
+     *  综合统计报表    全院耗材占比数据查
+     * @param purchaseUseReportPage
+     * @return
+     */
+    @Override
+    public List<RpPurchaseUseReportPage> queryConsumptionView(RpPurchaseUseReportPage purchaseUseReportPage) {
+        return baseMapper.queryConsumptionView(purchaseUseReportPage);
     }
 }

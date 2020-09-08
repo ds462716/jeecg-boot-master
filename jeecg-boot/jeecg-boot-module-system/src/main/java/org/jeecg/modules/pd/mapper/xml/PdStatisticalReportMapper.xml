@@ -1691,4 +1691,18 @@ ORDER BY
         GROUP BY type;
 
     </select>
+
+
+    <!-- 全院耗材占比数据查 -->
+    <select id="queryConsumptionView" resultType="org.jeecg.modules.pd.vo.RpPurchaseUseReportPage">
+         select sum(stock_num) as "count",
+        case
+        when is_charge = '0' then "可收费"
+        when is_charge = '1' then "不可收费"
+        end as "item"
+       from pd_product_stock_total  a
+       left join pd_product  b on a.product_id=b.id
+      where a.stock_num>0
+       group by is_charge
+    </select>
 </mapper>
