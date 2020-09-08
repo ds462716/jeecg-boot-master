@@ -618,11 +618,27 @@ public class PdStatisticalReportController extends JeecgController<PdStatistical
         return Result.ok(usePage);
     }
 
-
+    /**
+     * 综合统计   ---全院耗材占比  mcb  --20200907
+     */
     @GetMapping(value = "queryConsumptionView")
     public Result<?> queryConsumptionView(RpPurchaseUseReportPage purchaseUseReportPage){
          List<RpPurchaseUseReportPage> list= pdStatisticalReportService.queryConsumptionView(purchaseUseReportPage);
         return Result.ok(list);
+    }
+
+    /**
+     * 综合统计   ---科室采购消耗表 mcb  --20200907
+     */
+    @GetMapping(value = "queryDepartContionView")
+    public Result<?> queryDepartContionView(RpPurchaseUseReportPage purchaseUseReportPage){
+
+        Map map=new HashMap();
+        List<RpPurchaseUseReportPage> contionList= pdStatisticalReportService.queryDepartContionView(purchaseUseReportPage);
+        List<RpPurchaseUseReportPage> chargeList= pdStatisticalReportService.queryDepartChargeView(purchaseUseReportPage);
+        map.put("dataSource5",contionList);
+        map.put("dataSource6",chargeList);
+        return Result.ok(map);
     }
 
 

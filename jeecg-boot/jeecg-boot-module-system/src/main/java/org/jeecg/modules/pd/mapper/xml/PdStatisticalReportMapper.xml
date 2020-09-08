@@ -1705,4 +1705,33 @@ ORDER BY
       where a.stock_num>0
        group by is_charge
     </select>
+
+
+    <!-- 采购科室金额占比 -->
+    <select id="queryDepartContionView" resultType="org.jeecg.modules.pd.vo.RpPurchaseUseReportPage">
+    select SUM(a.product_num) as "count",
+    d.depart_name as "item"
+     from pd_stock_record_detail a
+	left join pd_stock_record b on a.record_id=b.id
+	left join pd_product c on c.id=a.product_id
+	left join sys_depart d on d.id=b.in_depart_id
+	where b.record_type='1' and b.in_type='1'
+	and d.depart_type in('1','2')
+     group by in_depart_id
+      order by count desc limit 0,10
+    </select>
+
+    <!-- 科室收费金额占比 -->
+    <select id="queryDepartChargeView" resultType="org.jeecg.modules.pd.vo.RpPurchaseUseReportPage">
+     select
+     sum(dosage_count) as "count",
+     d.depart_name as "item"
+     from pd_dosage_detail a
+      left join pd_dosage b on b.id=a.dosage_id
+      left join pd_product c on c.id=a.product_id
+      left join sys_depart d on d.id=b.depart_id
+      where a.hy_charged='0'
+     group by  b.depart_id
+      order by count desc limit 0,10
+    </select>
 </mapper>

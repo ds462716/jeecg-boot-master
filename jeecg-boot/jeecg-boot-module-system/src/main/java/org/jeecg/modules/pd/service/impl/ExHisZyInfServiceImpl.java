@@ -69,7 +69,8 @@ public class ExHisZyInfServiceImpl extends ServiceImpl<ExHisZyInfMapper, ExHisZy
 		hisZyInfPage.setFsfMc(dosageDetail.getProductName());//收费项目名称
 		hisZyInfPage.setFsbGg(dosageDetail.getSpec());//规格
 
-		hisZyInfPage.setFsfKdKs(pdDosage.getSqrtDoctorId());//开单科室
+		//hisZyInfPage.setFsfKdKs(pdDosage.getSqrtDoctorId());//开单科室
+		hisZyInfPage.setFsfKdKs(fsfZxKs);//开单科室
 		hisZyInfPage.setFsfZxKs(fsfZxKs);//执行科室
 		hisZyInfPage.setFsfRq(new Date());//计费日期
 		hisZyInfPage.setFsbRy(pdDosage.getCreateBy());//计费人员
@@ -108,7 +109,8 @@ public class ExHisZyInfServiceImpl extends ServiceImpl<ExHisZyInfMapper, ExHisZy
 			//}
 			hisMzInfPage.setFsfXmbh(dosageDetail.getChargeCode());//收费项目编号
 			hisMzInfPage.setFsfMc(dosageDetail.getProductName());//收费项目名称
-			hisMzInfPage.setFsfKdKs(pdDosage.getOprDeptId());//开单科室
+			//hisMzInfPage.setFsfKdKs(pdDosage.getOprDeptId());//开单科室
+			hisMzInfPage.setFsfKdKs(fsfZxKs);//开单科室
 			hisMzInfPage.setFsfZxKs(fsfZxKs);//执行科室
 			hisMzInfPage.setFsfRq(new Date());//计费日期
 			hisMzInfPage.setFsbRy(pdDosage.getCreateBy());//计费人员

@@ -221,4 +221,24 @@ public class PdPdStatisticalReportImpl extends ServiceImpl<PdStatisticalReportMa
     public List<RpPurchaseUseReportPage> queryConsumptionView(RpPurchaseUseReportPage purchaseUseReportPage) {
         return baseMapper.queryConsumptionView(purchaseUseReportPage);
     }
+
+    /**
+     *  综合统计报表    采购科室金额占比
+     * @param purchaseUseReportPage
+     * @return
+     */
+    @Override
+    public List<RpPurchaseUseReportPage> queryDepartContionView(RpPurchaseUseReportPage purchaseUseReportPage) {
+        return baseMapper.queryDepartContionView(purchaseUseReportPage);
+    }
+
+    /**
+     *  综合统计报表    科室收费金额占比
+     * @param purchaseUseReportPage
+     * @return
+     */
+    @Override
+    public List<RpPurchaseUseReportPage> queryDepartChargeView(RpPurchaseUseReportPage purchaseUseReportPage) {
+        return baseMapper.queryDepartChargeView(purchaseUseReportPage);
+    }
 }

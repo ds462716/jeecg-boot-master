@@ -41,8 +41,8 @@
 
         <a-tab-pane tab="科室采购趋势表" key="1">
           <a-card :bordered="false">
-            <bar-multid title="采购收费对照表" :height="height" :width="width" :dataSource="dataSource1"/>
-            <line-chart-multid title="采购收费趋势表" :height="height" :width="width"/>
+            <bar-multid title="采购收费对照表" :height="height" :width="width"  />
+            <line-chart-multid title="采购收费趋势表" :height="height" :width="width"  />
             <div class="table-operator">
             </div>
           </a-card>
@@ -50,13 +50,13 @@
 
         <a-tab-pane tab="科室采购消耗表" key="2">
           <a-card :bordered="false">
-            <bar-multid title="采购收费柱状图" :height="height" :width="width"  />
-            <line-chart-multid title="采购收费趋势图" :height="height" :width="width"/>
+            <bar-multid title="采购收费柱状图" :height="height" :width="width"   />
+            <line-chart-multid title="采购收费趋势图" :height="height" :width="width"  />
                <div style="width:800px;height:400px;float:left">
-            <pie title="采购科室金额占比"  :height="height"/>
+            <pie title="采购科室金额占比"  :height="height"  :dataSource="dataSource5"/>
                </div>
             <div style="width:800px;height:400px;float:right">
-            <pie title="收费金额占比" :height="height"/>
+            <pie title="收费金额占比" :height="height"  :dataSource="dataSource6"/>
              </div>
             <div class="table-operator">
             </div>
@@ -67,7 +67,7 @@
 
         <a-tab-pane tab="科室采购环比——同比图" key="3">
           <a-card :bordered="false">
-            <bar-multid title="采购环比——同比图" :height="height" :width="width"/>
+            <bar-multid title="采购环比——同比图" :height="height" :width="width" />
             <div class="table-operator">
             </div>
           </a-card>
@@ -77,7 +77,7 @@
 
         <a-tab-pane tab="可收费——不可收费比例图" key="4">
           <a-card :bordered="false">
-            <pie title="全院耗材占比" :height="height"  :dataSource="dataSource4"/>
+            <pie title="全院耗材占比" :height="height"  :dataSource="dataSource8"/>
             <div class="table-operator">
             </div>
           </a-card>
@@ -97,7 +97,7 @@
   export default {
     name: "RpPurchaseUseReport",
     components: {
-      BarMultid,LineChartMultid,Pie
+      BarMultid, LineChartMultid, Pie
     },
     data() {
       return {
@@ -105,20 +105,24 @@
         width: 420,
         description: '报表页面',
         /* 查询折叠 */
-        notFoundContent:"未找到内容",
-        activeKey:"1",
-        dataSource1:[],
-        dataSource2:[],
-        dataSource3:[],
-        dataSource4:[],
+        notFoundContent: "未找到内容",
+        activeKey: "1",
+        dataSource1: [],
+        dataSource2: [],
+        dataSource3: [],
+        dataSource4: [],
+        dataSource5: [],
+        dataSource6: [],
+        dataSource7: [],
+        dataSource8: [],
         // 表头
         queryParam: {},
         departData: [],
         departValue: undefined,
         visible: false,
-        initParams:{
-          supplierId :"",
-          yearMonth :""
+        initParams: {
+          supplierId: "",
+          yearMonth: ""
         },
         popModal: {
           visible: false,
@@ -131,31 +135,30 @@
           queryDepart: "/pd/pdDepart/queryListTree",
           queryPurchaseCountView: "/pd/pdStatisticalReport/queryPurchaseCountView",
           queryConsumptionView: "/pd/pdStatisticalReport/queryConsumptionView",
+          queryDepartContionView: "/pd/pdStatisticalReport/queryDepartContionView",
         },
-        dictOptions:{
-
-        },
+        dictOptions: {},
       }
     },
     methods: {
       //tabs 切换事件
-      handleChangeTabs(key){
+      handleChangeTabs(key) {
         // 自动重置scrollTop状态，防止出现白屏
         getRefPromise(this, key).then(editableTable => {
           editableTable.resetScrollTop()
         })
-        if(key==1){
+        if (key == 1) {
           this.useLoadData(1);//科室采购趋势表
-        }else if(key==2){
+        } else if (key == 2) {
           this.chargeUseLoadData(1);//科室采购消耗表
-        }else if(key==3){
+        } else if (key == 3) {
           this.noChargeUseLoadData(1);//科室采购环比——同比图
-        }else if(key==4){
+        } else if (key == 4) {
           this.allConsumptionData(1); //全院耗材占比
         }
       },
       /** 关闭按钮 **/
-      handleCancel(){
+      handleCancel() {
         this.$emit('ok');
         this.close();
       },
@@ -168,7 +171,7 @@
         this.$emit('close');
       },
       //初始化
-      show(initParams){
+      show(initParams) {
         this.visible = true;
         this.initParams = initParams;
         this.activeKey = "1";
@@ -177,13 +180,13 @@
       searchReset() {
         this.queryParam = {}
       },
-      monthChange(date, dateString){
-        this.queryParam.month=dateString;
+      monthChange(date, dateString) {
+        this.queryParam.month = dateString;
       },
 
 //科室查询start
       departHandleSearch(value) {
-        getAction(this.url.queryDepart,{departName:value,departType:"1,2"}).then((res)=>{
+        getAction(this.url.queryDepart, {departName: value, departType: "1,2"}).then((res) => {
           if (!res.success) {
             this.cmsFailed(res.message);
           }
@@ -192,19 +195,21 @@
       },
       //科室查询end
 
+
+      //科室采购趋势表
       useLoadData(arg) {
 
         //获取采购收费对照表数据
-          var params={};
-          this.loading = true;
-          getAction(this.url.queryPurchaseCountView, params).then((res) => {
-            if (res.success) {
-              this.dataSource1 = res.result;
-            }else{
-              this.$message.warning(res.message)
-            }
-            this.loading = false;
-          })
+        var params = {};
+        this.loading = true;
+        getAction(this.url.queryPurchaseCountView, params).then((res) => {
+          if (res.success) {
+            this.dataSource1 = res.result;
+          } else {
+            this.$message.warning(res.message)
+          }
+          this.loading = false;
+        })
 
       },
 
@@ -213,50 +218,44 @@
         this.useLoadData();
       },
 
-      useSearchReset() {
-        this.queryParam = {}
-        this.useLoadData();
-      },
 
-
-
-
-
-
+      //科室采购消耗表
       chargeUseLoadData(arg) {
-      },
-
-
-
-
-      chargeUseSearchQuery() {
-        this.chargeUseLoadData();
-      },
-
-      chargeUseSearchReset() {
-        this.chargeUseQueryParam = {}
-        this.chargeUseLoadData();
-      },
-
-      noChargeUseLoadData(arg){
-
-      },
-
-
-      allConsumptionData(arg) {//全院耗材占比
-        var params={};
+        var params = {};
         this.loading = true;
-        getAction(this.url.queryConsumptionView, params).then((res) => {
+        getAction(this.url.queryDepartContionView, params).then((res) => {
           if (res.success) {
-            this.dataSource4 = res.result;
-          }else{
+            this.dataSource5 = res.result.dataSource5;//采购科室金额占比
+            this.dataSource6 = res.result.dataSource6;//收费金额占比
+          } else {
             this.$message.warning(res.message)
           }
           this.loading = false;
         })
       },
 
+
+      //科室采购环比——同比图
+      noChargeUseLoadData(arg) {
+
+      },
+
+      //全院耗材占比
+      allConsumptionData(arg) {
+        var params = {};
+        this.loading = true;
+        getAction(this.url.queryConsumptionView, params).then((res) => {
+          if (res.success) {
+            this.dataSource8 = res.result;
+          } else {
+            this.$message.warning(res.message)
+          }
+          this.loading = false;
+        })
+      }
+
     }
+
   }
 </script>
 <style scoped>
