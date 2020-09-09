@@ -1,4 +1,4 @@
-package org.jeecg.modules.external.entity;
+package org.jeecg.modules.external.ganzhouzhongliu.entity;
 
 import lombok.Data;
 import org.jeecg.modules.pd.entity.BaseEntity;

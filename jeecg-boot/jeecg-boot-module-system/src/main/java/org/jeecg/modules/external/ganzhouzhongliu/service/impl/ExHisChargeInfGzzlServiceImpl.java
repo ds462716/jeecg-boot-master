@@ -1,14 +1,14 @@
-package org.jeecg.modules.external.service.impl;
+package org.jeecg.modules.external.ganzhouzhongliu.service.impl;
 
 import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import org.jeecg.modules.external.entity.ExHisChargeCodeGzzl;
-import org.jeecg.modules.external.entity.ExHisZyChargeInfGzzl;
-import org.jeecg.modules.external.entity.ExHisMzChargeInfGzzl;
-import org.jeecg.modules.external.mapper.ExHisChargeInfGzzlMapper;
-import org.jeecg.modules.external.service.IExHisChargeInfGzzlService;
-import org.jeecg.modules.pd.entity.HisChargeInf;
+import org.jeecg.modules.external.ganzhouzhongliu.entity.ExHisChargeCodeGzzl;
+import org.jeecg.modules.external.ganzhouzhongliu.entity.ExHisZyChargeInfGzzl;
+import org.jeecg.modules.external.ganzhouzhongliu.entity.ExHisMzChargeInfGzzl;
+import org.jeecg.modules.external.ganzhouzhongliu.mapper.ExHisChargeInfGzzlMapper;
+import org.jeecg.modules.external.ganzhouzhongliu.service.IExHisChargeInfGzzlService;
+import org.jeecg.modules.pd.entity.PdDosage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -27,24 +27,35 @@ public class ExHisChargeInfGzzlServiceImpl extends ServiceImpl<ExHisChargeInfGzz
     private ExHisChargeInfGzzlMapper exHisChargeInfGzzlMapper;
     /**
      * 赣州肿瘤医院查询病人信息
+     * @param pdDosage
+     * @return
+     */
+    @Override
+    @DS("multi-datasource1")
+    public Page<PdDosage>  queryZyPatientInfoList(Page<PdDosage> page, PdDosage pdDosage) {
+        return exHisChargeInfGzzlMapper.queryZyPatientInfoList(page,pdDosage);
+    }
+
+    /**
+     * 赣州肿瘤医院查询病人信息
      * @param exHisZyChargeInfGzzl
      * @return
      */
     @Override
     @DS("multi-datasource1")
-    public Page<ExHisZyChargeInfGzzl>  queryZyPatientInfoList(Page<ExHisZyChargeInfGzzl> page,ExHisZyChargeInfGzzl exHisZyChargeInfGzzl) {
-        return exHisChargeInfGzzlMapper.queryZyPatientInfoList(page,exHisZyChargeInfGzzl);
+    public List<ExHisZyChargeInfGzzl> queryZyPatientInfoList(ExHisZyChargeInfGzzl exHisZyChargeInfGzzl) {
+        return exHisChargeInfGzzlMapper.queryZyPatientInfoList(exHisZyChargeInfGzzl);
     }
 
     /**
      * 赣州肿瘤医院查询门诊病人信息
-     * @param exHisMzChargeInfGzzl
+     * @param pdDosage
      * @return
      */
     @Override
     @DS("multi-datasource1")
-    public Page<ExHisMzChargeInfGzzl> queryMzPatientInfoList(Page<ExHisMzChargeInfGzzl> page,ExHisMzChargeInfGzzl exHisMzChargeInfGzzl) {
-        return exHisChargeInfGzzlMapper.queryMzPatientInfoList(page,exHisMzChargeInfGzzl);
+    public Page<PdDosage> queryMzPatientInfoList(Page<PdDosage> page,PdDosage pdDosage) {
+        return exHisChargeInfGzzlMapper.queryMzPatientInfoList(page,pdDosage);
     }
 
     /**

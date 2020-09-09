@@ -1,17 +1,7 @@
-package org.jeecg.modules.external.entity;
+package org.jeecg.modules.external.ganzhouzhongliu.entity;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import org.jeecg.modules.pd.entity.BaseEntity;
-import org.jeecgframework.poi.excel.annotation.Excel;
-import org.springframework.format.annotation.DateTimeFormat;
-
-import java.math.BigDecimal;
-import java.util.Date;
 
 /**
  * @Description: 收费项目基础信息
@@ -29,7 +19,7 @@ public class ExHisZyChargeInfGzzl extends BaseEntity {
     private String gyKs;//申请科室名称
     private String gyKsdm;//申请科室代码
     private String gyBq;//申请病区
-    private String gyBqdm;//申请病区代码
+    private String gyBqdh;//申请病区代码
     private String gyBrch;//病床号
     private String gyXm;//姓名
     private String gyXb;//性别
@@ -41,7 +31,7 @@ public class ExHisZyChargeInfGzzl extends BaseEntity {
     private String gyZzysbh;//诊治医生编号
     private String gyLxdh;//联系电话
     private String gyDz;//联系地址
-    private String gyDrbs   ;//手术编号
+    private String gyBrbs   ;//手术编号
     private String gySsmc   ;//手术名称
     private String gySssj   ;//手术时间
     private String gySsks   ;//手术科室

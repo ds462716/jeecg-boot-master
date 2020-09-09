@@ -123,6 +123,11 @@
     <pd-dosage-fee-modal-g-z-w-y ref="pdDosageFeeModalGZWY" @ok="modalFormOk"></pd-dosage-fee-modal-g-z-w-y>
     <pd-dosage-cncl-fee-modal-g-z-w-y  ref="pdDosageCnclFeeModalGZWY" @ok="modalFormOk"></pd-dosage-cncl-fee-modal-g-z-w-y>
 
+    <!-- 赣州肿瘤医院收费模组 -->
+    <pd-dosage-modal-g-z-z-l ref="pdDosageModalGZZL" @ok="modalFormOk"></pd-dosage-modal-g-z-z-l>
+    <pd-dosage-returned-modal-g-z-z-l ref="pdDosageReturnedModalGZZL" @ok="modalFormOk"></pd-dosage-returned-modal-g-z-z-l>
+    <pd-dosage-fee-modal-g-z-z-l ref="pdDosageFeeModalGZZL" @ok="modalFormOk"></pd-dosage-fee-modal-g-z-z-l>
+    <pd-dosage-cncl-fee-modal-g-z-z-l  ref="pdDosageCnclFeeModalGZZL" @ok="modalFormOk"></pd-dosage-cncl-fee-modal-g-z-z-l>
 
 
   </a-card>
@@ -148,6 +153,10 @@
   import PdDosageReturnedModalGZWY from '../external/ganzhouwuyuan/modules/PdDosageReturnedModalGZWY'
   import PdDosageFeeModalGZWY from '../external/ganzhouwuyuan/modules/PdDosageFeeModalGZWY'
   import PdDosageCnclFeeModalGZWY from '../external/ganzhouwuyuan/modules/PdDosageCnclFeeModalGZWY'
+  import PdDosageModalGZZL from '../external/ganzhouzhongliu/modules/PdDosageModalGZZL'
+  import PdDosageReturnedModalGZZL from '../external/ganzhouzhongliu/modules/PdDosageReturnedModalGZZL'
+  import PdDosageFeeModalGZZL from '../external/ganzhouzhongliu/modules/PdDosageFeeModalGZZL'
+  import PdDosageCnclFeeModalGZZL from '../external/ganzhouzhongliu/modules/PdDosageCnclFeeModalGZZL'
   export default {
     name: "PdDosageList",
     mixins:[JeecgListMixin],
@@ -167,7 +176,11 @@
       PdDosageModalGZWY,
       PdDosageReturnedModalGZWY,
       PdDosageFeeModalGZWY,
-      PdDosageCnclFeeModalGZWY
+      PdDosageCnclFeeModalGZWY,
+      PdDosageModalGZZL,
+      PdDosageReturnedModalGZZL,
+      PdDosageFeeModalGZZL,
+      PdDosageCnclFeeModalGZZL,
     },
     data () {
       return {
@@ -277,6 +290,7 @@
         })
       },
       handleAdd: function () {
+        console.log(this.hospitalCode)
         if(this.hospitalCode=="FCZYY"){ // 丰城市中医院
           this.$refs.pdDosageModalFCZYY.add();
           this.$refs.pdDosageModalFCZYY.title = "新增";
@@ -289,6 +303,10 @@
           this.$refs.pdDosageModalGZWY.add();
           this.$refs.pdDosageModalGZWY.title = "新增";
           this.$refs.pdDosageModalGZWY.disableSubmit = false;
+        }else if(this.hospitalCode=="GZZLYY"){//赣州肿瘤医院
+          this.$refs.pdDosageModalGZZL.add();
+          this.$refs.pdDosageModalGZZL.title = "新增";
+          this.$refs.pdDosageModalGZZL.disableSubmit = false;
         }else{
           this.$refs.modalForm.add();
           this.$refs.modalForm.title = "新增";

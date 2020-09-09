@@ -337,4 +337,29 @@ public class PdDosage extends BaseEntity {
     /*使用金额*/
     @TableField(exist = false)
     private BigDecimal amountMoney;
+
+    @TableField(exist = false)
+    private String cardId;//身份证号
+    @TableField(exist = false)
+    private String admissionDiagnosis;//入院诊断
+    @TableField(exist = false)
+    private String inspectioniItemsNumber;//检查项目
+    private String inspectioniItemsName;//检查项目
+
+    public String getCardId() {
+        return cardId;
+    }
+
+    public void setCardId(String cardId) {
+        if(!"".equals(cardId)){
+            if(cardId.length()!=18){
+                String str = cardId;
+                String str1 = cardId;
+                cardId = str.substring(0,4)+"*****" + str1.substring(str1.length()-4);
+            }else{
+                cardId = cardId.replaceAll("(\\d{4})\\d{10}(\\w{4})","$1*****$2");
+            }
+        }
+        this.cardId = cardId;
+    }
 }
