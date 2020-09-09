@@ -42,7 +42,8 @@
         <a-tab-pane tab="科室采购趋势表" key="1">
           <a-card :bordered="false">
             <bar-multid title="采购收费对照表" :height="height" :width="width"  />
-            <line-chart-multid title="采购收费趋势表" :height="height" :width="width"  />
+
+            <line-chart-multid title="采购收费趋势表" :height="height" :width="width"  :dataSource="dataSource2"/>
             <div class="table-operator">
             </div>
           </a-card>
@@ -51,7 +52,7 @@
         <a-tab-pane tab="科室采购消耗表" key="2">
           <a-card :bordered="false">
             <bar-multid title="采购收费柱状图" :height="height" :width="width"   />
-            <line-chart-multid title="采购收费趋势图" :height="height" :width="width"  />
+            <line-chart-multid title="采购收费趋势图" :height="height" :width="width"  :dataSource="dataSource4"/>
                <div style="width:800px;height:400px;float:left">
             <pie title="采购科室金额占比"  :height="height"  :dataSource="dataSource5"/>
                </div>
@@ -204,7 +205,7 @@
         this.loading = true;
         getAction(this.url.queryPurchaseCountView, params).then((res) => {
           if (res.success) {
-            this.dataSource1 = res.result;
+            this.dataSource2 = res.result.dataSource2;//采购收费趋势表
           } else {
             this.$message.warning(res.message)
           }
@@ -225,6 +226,7 @@
         this.loading = true;
         getAction(this.url.queryDepartContionView, params).then((res) => {
           if (res.success) {
+            this.dataSource4 = res.result.dataSource4;//采购收费趋势图
             this.dataSource5 = res.result.dataSource5;//采购科室金额占比
             this.dataSource6 = res.result.dataSource6;//收费金额占比
           } else {

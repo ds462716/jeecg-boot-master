@@ -241,4 +241,25 @@ public class PdPdStatisticalReportImpl extends ServiceImpl<PdStatisticalReportMa
     public List<RpPurchaseUseReportPage> queryDepartChargeView(RpPurchaseUseReportPage purchaseUseReportPage) {
         return baseMapper.queryDepartChargeView(purchaseUseReportPage);
     }
+
+    /**
+     *  综合统计报表    采购收费趋势图（根据科室统计）
+     * @param purchaseUseReportPage
+     * @return
+     */
+    @Override
+    public List<RpPurchaseUseReportPage> queryDepartpurchaseView(RpPurchaseUseReportPage purchaseUseReportPage) {
+        return baseMapper.queryDepartpurchaseView(purchaseUseReportPage);
+    }
+
+
+    /**
+     *  综合统计报表    采购收费趋势表（根据月份统计）
+     * @param purchaseUseReportPage
+     * @return
+     */
+    @Override
+    public List<RpPurchaseUseReportPage> queryPurchaseTableView(RpPurchaseUseReportPage purchaseUseReportPage) {
+        return baseMapper.queryPurchaseTableView(purchaseUseReportPage);
+    }
 }

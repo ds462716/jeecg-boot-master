@@ -21,8 +21,13 @@
           <a href="https://github.com/zhangdaiscott/jeecg-boot" target="_blank">隐私</a>
           <a href="https://github.com/zhangdaiscott/jeecg-boot/blob/master/LICENSE" target="_blank">条款</a>
         </div>-->
-        <div class="copyright">
+        <!--<div class="copyright">
           Copyright &copy; 2019 <a href="http://jx.sinopharm-cmdc.com.cn" target="_blank">国药集团江西医疗器械有限公司</a> 出品
+        </div>-->
+        <div class="copyright">
+          Copyright
+          <a-icon type="copyright"/>
+          2019 <span>国药集团江西医疗器械有限公司 出品</span>
         </div>
       </div>
     </div>

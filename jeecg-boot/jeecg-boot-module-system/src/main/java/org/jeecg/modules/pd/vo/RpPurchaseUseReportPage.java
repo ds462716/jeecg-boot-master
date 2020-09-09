@@ -14,8 +14,11 @@ public class RpPurchaseUseReportPage {
     private String yearMonth;//年月
 
     private String type;
-    private String y;
+    private Double y;
+    private Double x;
     private String money;
     private Double count;
     private String item;
+    private Double 采购金额;
+    private Double 收费金额;
 }

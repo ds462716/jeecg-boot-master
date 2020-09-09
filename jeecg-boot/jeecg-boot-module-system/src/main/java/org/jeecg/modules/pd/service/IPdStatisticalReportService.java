@@ -89,5 +89,8 @@ public interface IPdStatisticalReportService extends IService<PdStatisticalRepor
 
     List<RpPurchaseUseReportPage> queryDepartChargeView(RpPurchaseUseReportPage entity);
 
+    List<RpPurchaseUseReportPage> queryDepartpurchaseView(RpPurchaseUseReportPage entity);
+
+    List<RpPurchaseUseReportPage> queryPurchaseTableView(RpPurchaseUseReportPage entity);
 
 }

@@ -1734,4 +1734,77 @@ ORDER BY
      group by  b.depart_id
       order by count desc limit 0,10
     </select>
+
+    <!-- 根据科室统计   -采购收费趋势图 -->
+    <select id="queryDepartpurchaseView" resultType="org.jeecg.modules.pd.vo.RpPurchaseUseReportPage">
+      select
+        c.type as "type",
+        ROUND(sum(c.y),2) as 收费金额,
+		 ROUND(sum(c.x),2)  as 采购金额
+        from(
+		 select   (a.purchase_price * a.product_num)  as "x","" as "y",d.depart_name as "type"
+		 from pd_stock_record_detail a
+		 left join pd_stock_record b on a.record_id=b.id
+		 left join sys_depart d on d.id=b.in_depart_id
+		 where d.depart_type in('1','2')
+		  and b.record_type='1' and b.in_type='1'
+		 and b.del_flag='0'
+         UNION ALL
+		 select  "" AS "x",  (a.selling_price * a.dosage_count)  AS "y",d.depart_name as "type" from
+    pd_dosage_detail a
+ left join pd_dosage b on b.id=a.dosage_id
+left join pd_product c on c.id=a.product_id
+left join sys_depart d on d.id=b.depart_id
+where a.hy_charged='0' AND d.depart_type in('1','2')
+			 ) C
+				group by type
+
+       order by x desc limit 0,10
+    </select>
+
+
+
+    <!-- 根据月份统计   ——采购收费趋势表 -->
+    <select id="queryPurchaseTableView" resultType="org.jeecg.modules.pd.vo.RpPurchaseUseReportPage">
+        select
+        c.type as "type",
+        ROUND(sum(c.y),2) as "收费金额",
+        ROUND(sum(c.x),2)  as "采购金额"
+        from(
+        SELECT
+        "0" as "x","0" as "y",
+        DATE_FORMAT(x.Month, '%Y-%m') as "type"
+        FROM XNumber x
+        where x.Month > DATE_SUB(CURDATE(), INTERVAL 1 YEAR)
+        and substr(x.Month,1,7) &lt;=substr(CURDATE(),1,7)
+
+        UNION ALL
+
+
+        select    (a.purchase_price * a.product_num)     as "x",
+        "" as "y",
+        DATE_FORMAT(b.create_time, '%Y-%m') as "type"
+        from pd_stock_record_detail a
+        left join pd_stock_record b on a.record_id=b.id
+        left join sys_depart d on d.id=b.in_depart_id
+        where d.depart_type in('1','2')
+        and record_type='1' and in_type='1'
+        AND b.create_time > DATE_SUB(CURDATE(), INTERVAL 1 YEAR)
+        AND substr(b.create_time,1,7)&lt;=substr(CURDATE(),1,7)
+
+        UNION ALL
+
+        select  "" AS "x",
+        (a.selling_price * a.dosage_count)  AS "y",
+        DATE_FORMAT(b.create_time, '%Y-%m') as "type" from
+        pd_dosage_detail a
+        left join pd_dosage b on b.id=a.dosage_id
+        left join pd_product c on c.id=a.product_id
+        left join sys_depart d on d.id=b.depart_id
+        where a.hy_charged='0' AND d.depart_type in('1','2')
+        AND b.create_time > DATE_SUB(CURDATE(), INTERVAL 1 YEAR)
+        AND substr(b.create_time,1,7)&lt;=substr(CURDATE(),1,7)
+        ) C
+        group by type
+    </select>
 </mapper>
