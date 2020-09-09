@@ -1,45 +1,46 @@
 <template>
     <a-card :bordered="false">
-      <div class="table-page-search-wrapper">
-        <a-form layout="inline" @keyup.enter.native="useSearchQuery">
-          <a-row :gutter="24">
-            <a-col :md="6" :sm="8">
-              <a-form-item label="年月">
-                <a-month-picker placeholder="选择年月" @change="monthChange"/>
-              </a-form-item>
-            </a-col>
-            <a-col :md="6" :sm="8">
-              <a-form-item label="科室">
-                <a-select
-                  mode="multiple"
-                  showSearch
-                  :departId="departValue"
-                  :defaultActiveFirstOption="false"
-                  :allowClear="true"
-                  :showArrow="true"
-                  :filterOption="false"
-                  @search="departHandleSearch"
-                  @focus="departHandleSearch"
-                  :notFoundContent="notFoundContent"
-                  v-model="queryParam.departIds"
-                  placeholder="请选择科室"
-                >
-                  <a-select-option v-for="d in departData" :key="d.id">{{d.departName}}</a-select-option>
-                </a-select>
-              </a-form-item>
-            </a-col>
-            <a-col :md="6" :sm="8">
+      <a-tabs v-model="activeKey" @change="handleChangeTabs">
+        <a-tab-pane tab="科室采购趋势表" key="1">
+          <!--查询按钮开始-->
+          <div class="table-page-search-wrapper">
+            <a-form layout="inline" @keyup.enter.native="searchQuery(1)">
+              <a-row :gutter="24">
+                <a-col :md="6" :sm="8">
+                  <a-form-item label="年月">
+                    <a-month-picker placeholder="选择年月" @change="monthChange"/>
+                  </a-form-item>
+                </a-col>
+                <a-col :md="6" :sm="8">
+                  <a-form-item label="科室">
+                    <a-select
+                      mode="multiple"
+                      showSearch
+                      :departId="departValue"
+                      :defaultActiveFirstOption="false"
+                      :allowClear="true"
+                      :showArrow="true"
+                      :filterOption="false"
+                      @search="departHandleSearch"
+                      @focus="departHandleSearch"
+                      :notFoundContent="notFoundContent"
+                      v-model="queryParam.departIds"
+                      placeholder="请选择科室"
+                    >
+                      <a-select-option v-for="d in departData" :key="d.id">{{d.departName}}</a-select-option>
+                    </a-select>
+                  </a-form-item>
+                </a-col>
+                <a-col :md="6" :sm="8">
             <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
-             <!-- <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>-->
+               <a-button type="primary" @click="searchQuery(1)" icon="search">查询</a-button>
               <a-button type="primary" @click="searchReset" icon="reload" style="margin-left: 8px">重置</a-button>
             </span>
-            </a-col>
-          </a-row>
-        </a-form>
-      </div>
-      <a-tabs v-model="activeKey" @change="handleChangeTabs">
-
-        <a-tab-pane tab="科室采购趋势表" key="1">
+                </a-col>
+              </a-row>
+            </a-form>
+          </div>
+        <!--查询按钮结束-->
           <a-card :bordered="false">
             <bar-multid title="采购收费对照表" :height="height" :width="width"  />
 
@@ -50,6 +51,45 @@
         </a-tab-pane>
 
         <a-tab-pane tab="科室采购消耗表" key="2">
+          <!--查询按钮开始-->
+          <div class="table-page-search-wrapper">
+            <a-form layout="inline" @keyup.enter.native="searchQuery(2)">
+              <a-row :gutter="24">
+                <a-col :md="6" :sm="8">
+                  <a-form-item label="年月">
+                    <a-month-picker placeholder="选择年月" @change="monthChange"/>
+                  </a-form-item>
+                </a-col>
+                <a-col :md="6" :sm="8">
+                  <a-form-item label="科室">
+                    <a-select
+                      mode="multiple"
+                      showSearch
+                      :departId="departValue"
+                      :defaultActiveFirstOption="false"
+                      :allowClear="true"
+                      :showArrow="true"
+                      :filterOption="false"
+                      @search="departHandleSearch"
+                      @focus="departHandleSearch"
+                      :notFoundContent="notFoundContent"
+                      v-model="queryParam.departIds"
+                      placeholder="请选择科室"
+                    >
+                      <a-select-option v-for="d in departData" :key="d.id">{{d.departName}}</a-select-option>
+                    </a-select>
+                  </a-form-item>
+                </a-col>
+                <a-col :md="6" :sm="8">
+            <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
+               <a-button type="primary" @click="searchQuery(2)" icon="search">查询</a-button>
+              <a-button type="primary" @click="searchReset" icon="reload" style="margin-left: 8px">重置</a-button>
+            </span>
+                </a-col>
+              </a-row>
+            </a-form>
+          </div>
+          <!--查询按钮结束-->
           <a-card :bordered="false">
             <bar-multid title="采购收费柱状图" :height="height" :width="width"   />
             <line-chart-multid title="采购收费趋势图" :height="height" :width="width"  :dataSource="dataSource4"/>
@@ -67,6 +107,45 @@
 
 
         <a-tab-pane tab="科室采购环比——同比图" key="3">
+          <!--查询按钮开始-->
+          <div class="table-page-search-wrapper">
+            <a-form layout="inline" @keyup.enter.native="searchQuery(3)">
+              <a-row :gutter="24">
+                <a-col :md="6" :sm="8">
+                  <a-form-item label="年月">
+                    <a-month-picker placeholder="选择年月" @change="monthChange"/>
+                  </a-form-item>
+                </a-col>
+                <a-col :md="6" :sm="8">
+                  <a-form-item label="科室">
+                    <a-select
+                      mode="multiple"
+                      showSearch
+                      :departId="departValue"
+                      :defaultActiveFirstOption="false"
+                      :allowClear="true"
+                      :showArrow="true"
+                      :filterOption="false"
+                      @search="departHandleSearch"
+                      @focus="departHandleSearch"
+                      :notFoundContent="notFoundContent"
+                      v-model="queryParam.departIds"
+                      placeholder="请选择科室"
+                    >
+                      <a-select-option v-for="d in departData" :key="d.id">{{d.departName}}</a-select-option>
+                    </a-select>
+                  </a-form-item>
+                </a-col>
+                <a-col :md="6" :sm="8">
+            <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
+             <a-button type="primary" @click="searchQuery(3)" icon="search">查询</a-button>
+              <a-button type="primary" @click="searchReset" icon="reload" style="margin-left: 8px">重置</a-button>
+            </span>
+                </a-col>
+              </a-row>
+            </a-form>
+          </div>
+          <!--查询按钮结束-->
           <a-card :bordered="false">
             <bar-multid title="采购环比——同比图" :height="height" :width="width" />
             <div class="table-operator">
@@ -77,6 +156,45 @@
 
 
         <a-tab-pane tab="可收费——不可收费比例图" key="4">
+          <!--查询按钮开始-->
+          <div class="table-page-search-wrapper">
+            <a-form layout="inline" @keyup.enter.native="searchQuery(4)">
+              <a-row :gutter="24">
+                <a-col :md="6" :sm="8">
+                  <a-form-item label="年月">
+                    <a-month-picker placeholder="选择年月" @change="monthChange"/>
+                  </a-form-item>
+                </a-col>
+                <a-col :md="6" :sm="8">
+                  <a-form-item label="科室">
+                    <a-select
+                      mode="multiple"
+                      showSearch
+                      :departId="departValue"
+                      :defaultActiveFirstOption="false"
+                      :allowClear="true"
+                      :showArrow="true"
+                      :filterOption="false"
+                      @search="departHandleSearch"
+                      @focus="departHandleSearch"
+                      :notFoundContent="notFoundContent"
+                      v-model="queryParam.departIds"
+                      placeholder="请选择科室"
+                    >
+                      <a-select-option v-for="d in departData" :key="d.id">{{d.departName}}</a-select-option>
+                    </a-select>
+                  </a-form-item>
+                </a-col>
+                <a-col :md="6" :sm="8">
+            <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
+              <a-button type="primary" @click="searchQuery(4)" icon="search">查询</a-button>
+              <a-button type="primary" @click="searchReset" icon="reload" style="margin-left: 8px">重置</a-button>
+            </span>
+                </a-col>
+              </a-row>
+            </a-form>
+          </div>
+          <!--查询按钮结束-->
           <a-card :bordered="false">
             <pie title="全院耗材占比" :height="height"  :dataSource="dataSource8"/>
             <div class="table-operator">
@@ -95,8 +213,10 @@
   import BarMultid from '@/components/chart/gzslyyChart/GzslyyBarMultid'
   import LineChartMultid from '@/components/chart/gzslyyChart/GzslyyLineChartMultid'
   import Pie from '@/components/chart/gzslyyChart/GzslPircePie'
+  import { JeecgListMixin } from '@/mixins/JeecgListMixin'
   export default {
     name: "RpPurchaseUseReport",
+    mixins:[JeecgListMixin],
     components: {
       BarMultid, LineChartMultid, Pie
     },
@@ -141,7 +261,17 @@
         dictOptions: {},
       }
     },
+    computed: {
+
+    },
     methods: {
+
+      loadData() {
+        this.visible = true;
+        this.activeKey = "1";
+        this.handleChangeTabs(1)
+      },
+
       //tabs 切换事件
       handleChangeTabs(key) {
         // 自动重置scrollTop状态，防止出现白屏
@@ -171,13 +301,7 @@
         this.visible = false;
         this.$emit('close');
       },
-      //初始化
-      show(initParams) {
-        this.visible = true;
-        this.initParams = initParams;
-        this.activeKey = "1";
-        this.handleChangeTabs(1)
-      },
+
       searchReset() {
         this.queryParam = {}
       },
@@ -215,8 +339,16 @@
       },
 
 
-      useSearchQuery() {
-        this.useLoadData();
+      searchQuery(num) {
+        if(num==1){
+          this.useLoadData();
+        }else if(num==2){
+          this.chargeUseLoadData();//科室采购消耗表
+        }else if(num==3){
+          this.noChargeUseLoadData();
+        }else if(num==4){
+          this.allConsumptionData();
+        }
       },
 
 
@@ -256,7 +388,7 @@
         })
       }
 
-    }
+    },
 
   }
 </script>
