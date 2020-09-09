@@ -42,7 +42,7 @@
           </div>
         <!--查询按钮结束-->
           <a-card :bordered="false">
-            <bar-multid title="采购收费对照表" :height="height" :width="width"  :dataSource="dataSource1"/>
+            <bar-multid title="采购收费对照表" :height="height" :width="width"  :fields="visitFields1" :dataSource="dataSource1"/>
 
             <line-chart-multid title="采购收费趋势表" :height="height" :width="width"  :dataSource="dataSource2"/>
             <div class="table-operator">
@@ -229,6 +229,7 @@
         notFoundContent: "未找到内容",
         activeKey: "1",
         dataSource1: [],
+        visitFields1: [],
         dataSource2: [],
         dataSource3: [],
         dataSource4: [],
@@ -320,9 +321,14 @@
         this.loading = true;
         getAction(this.url.queryPurchaseCountView, params).then((res) => {
           if (res.success) {
-            alert(res.result.dataSource2);
-            //this.dataSource1 = res.result.dataSource1;//采购收费对照表
-            this.dataSource2 = res.result.dataSource2;//采购收费趋势表
+            //alert(res.result.dataSource2);
+            for(let i = 0;i<res.result.dataSource1.length;i++){
+              res.result.dataSource1[i].type = "zhangsan"+i;
+            }
+            this.visitFields1 = res.result.visitFields1;//采购收费对照表
+            console.log(res.result.dataSource1)
+            this.dataSource1 = res.result.dataSource1;//采购收费对照表
+            //this.dataSource2 = res.result.dataSource2;//采购收费趋势表
           } else {
             this.$message.warning(res.message)
           }

@@ -672,24 +672,32 @@ public class PdStatisticalReportController extends JeecgController<PdStatistical
         for(RpPurchaseUseReportPage info:list){
             Double x=info.getX();//收费金额
             Double y=info.getY();//采购金额
-            map1.put("type","收费金额");
-            map1.put("2020-01",11);
-            map1.put("2020-02",22);
-            map1.put("2020-03",33);
-            map1.put("2020-04",4);
-            map1.put("2020-05",55);
-            map1.put("2020-06",66);
-            map2.put("type","采购金额");
-            map2.put("2020-01",71);
-            map2.put("2020-02",82);
-            map2.put("2020-03",93);
-            map2.put("2020-04",104);
-            map2.put("2020-05",115);
-            map2.put("2020-06",126);
+            //map1.put("type","zhangsan");
+            map1.put("202001",11);
+            map1.put("202002",22);
+            map1.put("202003",33);
+            map1.put("202004",4);
+            map1.put("202005",55);
+            map1.put("202006",66);
+            //map2.put("type","lisi");
+            map2.put("202001",71);
+            map2.put("202002",82);
+            map2.put("202003",93);
+            map2.put("202004",104);
+            map2.put("202005",115);
+            map2.put("202006",126);
         }
         list_1.add(map1);
         list_1.add(map2);
-         map.put("dataSource1",JSON.toJSONString(list_1));
+        List<String> str = new ArrayList<>();
+        str.add("202001");
+        str.add("202002");
+        str.add("202003");
+        str.add("202004");
+        str.add("202005");
+        str.add("202006");
+        map.put("dataSource1",list_1);
+        map.put("visitFields1",str);
         return Result.ok(map);
     }
 }
