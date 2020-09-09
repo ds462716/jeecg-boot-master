@@ -1,6 +1,8 @@
 package org.jeecg.modules.pd.controller;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
@@ -671,23 +673,23 @@ public class PdStatisticalReportController extends JeecgController<PdStatistical
             Double x=info.getX();//收费金额
             Double y=info.getY();//采购金额
             map1.put("type","收费金额");
-            map1.put("2020-01","11");
-            map1.put("2020-02","22");
-            map1.put("2020-03","33");
-            map1.put("2020-04","44");
-            map1.put("2020-05","55");
-            map1.put("2020-06","66");
+            map1.put("2020-01",11);
+            map1.put("2020-02",22);
+            map1.put("2020-03",33);
+            map1.put("2020-04",4);
+            map1.put("2020-05",55);
+            map1.put("2020-06",66);
             map2.put("type","采购金额");
-            map2.put("2020-01","71");
-            map2.put("2020-02","82");
-            map2.put("2020-03","93");
-            map2.put("2020-04","104");
-            map2.put("2020-05","115");
-            map2.put("2020-06","126");
+            map2.put("2020-01",71);
+            map2.put("2020-02",82);
+            map2.put("2020-03",93);
+            map2.put("2020-04",104);
+            map2.put("2020-05",115);
+            map2.put("2020-06",126);
         }
         list_1.add(map1);
         list_1.add(map2);
-        map.put("dataSource1",list_1);
+         map.put("dataSource1",JSON.toJSONString(list_1));
         return Result.ok(map);
     }
 }

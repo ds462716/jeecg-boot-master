@@ -320,7 +320,8 @@
         this.loading = true;
         getAction(this.url.queryPurchaseCountView, params).then((res) => {
           if (res.success) {
-            this.dataSource1 = res.result.dataSource1;//采购收费对照表
+            alert(res.result.dataSource2);
+            //this.dataSource1 = res.result.dataSource1;//采购收费对照表
             this.dataSource2 = res.result.dataSource2;//采购收费趋势表
           } else {
             this.$message.warning(res.message)
