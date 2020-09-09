@@ -42,7 +42,7 @@
           </div>
         <!--查询按钮结束-->
           <a-card :bordered="false">
-            <bar-multid title="采购收费对照表" :height="height" :width="width"  />
+            <bar-multid title="采购收费对照表" :height="height" :width="width"  :dataSource="dataSource1"/>
 
             <line-chart-multid title="采购收费趋势表" :height="height" :width="width"  :dataSource="dataSource2"/>
             <div class="table-operator">
@@ -196,7 +196,7 @@
           </div>
           <!--查询按钮结束-->
           <a-card :bordered="false">
-            <pie title="全院耗材占比" :height="height"  :dataSource="dataSource8"/>
+            <pie title="全院耗材占比"  :height="height"  :dataSource="dataSource8"/>
             <div class="table-operator">
             </div>
           </a-card>
@@ -288,25 +288,9 @@
           this.allConsumptionData(1); //全院耗材占比
         }
       },
-      /** 关闭按钮 **/
-      handleCancel() {
-        this.$emit('ok');
-        this.close();
-      },
-      //关闭方法
-      close() {
-        this.queryParam = {};
-        this.chargeUseQueryParam = {};
-        this.noChargeUseQueryParam = {};
-        this.visible = false;
-        this.$emit('close');
-      },
 
-      searchReset() {
-        this.queryParam = {}
-      },
       monthChange(date, dateString) {
-        this.queryParam.month = dateString;
+        this.queryParam.yearMonth = dateString;
       },
 
 //科室查询start
@@ -319,16 +303,24 @@
         })
       },
       //科室查询end
-
+      //获取使用条件
+      getQueryParams() {
+        //获取查询条件
+        let param = this.queryParam;
+        param.pageNo = this.ipagination.current;
+        param.pageSize = this.ipagination.pageSize;
+        return filterObj(param);
+      },
 
       //科室采购趋势表
       useLoadData(arg) {
-
         //获取采购收费对照表数据
         var params = {};
+         params = this.getQueryParams();//查询条件
         this.loading = true;
         getAction(this.url.queryPurchaseCountView, params).then((res) => {
           if (res.success) {
+            this.dataSource1 = res.result.dataSource1;//采购收费对照表
             this.dataSource2 = res.result.dataSource2;//采购收费趋势表
           } else {
             this.$message.warning(res.message)
@@ -355,6 +347,7 @@
       //科室采购消耗表
       chargeUseLoadData(arg) {
         var params = {};
+        params = this.getQueryParams();//查询条件
         this.loading = true;
         getAction(this.url.queryDepartContionView, params).then((res) => {
           if (res.success) {
@@ -377,6 +370,7 @@
       //全院耗材占比
       allConsumptionData(arg) {
         var params = {};
+        params = this.getQueryParams();//查询条件
         this.loading = true;
         getAction(this.url.queryConsumptionView, params).then((res) => {
           if (res.success) {
@@ -386,8 +380,25 @@
           }
           this.loading = false;
         })
-      }
+      },
 
+
+
+      /** 关闭按钮 **/
+      handleCancel() {
+        this.$emit('ok');
+        this.close();
+      },
+      //关闭方法
+      close() {
+        this.queryParam = {};
+        this.visible = false;
+        this.$emit('close');
+      },
+
+      searchReset() {
+        this.queryParam = {}
+      },
     },
 
   }

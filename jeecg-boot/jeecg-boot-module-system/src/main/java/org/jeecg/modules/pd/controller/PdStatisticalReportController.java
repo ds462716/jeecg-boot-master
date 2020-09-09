@@ -622,7 +622,10 @@ public class PdStatisticalReportController extends JeecgController<PdStatistical
      */
     @GetMapping(value = "queryConsumptionView")
     public Result<?> queryConsumptionView(RpPurchaseUseReportPage purchaseUseReportPage){
-         List<RpPurchaseUseReportPage> list= pdStatisticalReportService.queryConsumptionView(purchaseUseReportPage);
+        if (oConvertUtils.isNotEmpty(purchaseUseReportPage.getDepartIds()) && !"undefined".equals(purchaseUseReportPage.getDepartIds())) {
+            purchaseUseReportPage.setDepartIdList(Arrays.asList(purchaseUseReportPage.getDepartIds().split(",")));
+        }
+        List<RpPurchaseUseReportPage> list= pdStatisticalReportService.queryConsumptionView(purchaseUseReportPage);
         return Result.ok(list);
     }
 
@@ -632,7 +635,9 @@ public class PdStatisticalReportController extends JeecgController<PdStatistical
     @GetMapping(value = "queryDepartContionView")
     public Result<?> queryDepartContionView(RpPurchaseUseReportPage purchaseUseReportPage){
         Map map=new HashMap();
-
+        if (oConvertUtils.isNotEmpty(purchaseUseReportPage.getDepartIds()) && !"undefined".equals(purchaseUseReportPage.getDepartIds())) {
+            purchaseUseReportPage.setDepartIdList(Arrays.asList(purchaseUseReportPage.getDepartIds().split(",")));
+        }
          //采购收费趋势图
         List<RpPurchaseUseReportPage> purchaseList= pdStatisticalReportService.queryDepartpurchaseView(purchaseUseReportPage);
         map.put("dataSource4",purchaseList);
@@ -654,8 +659,35 @@ public class PdStatisticalReportController extends JeecgController<PdStatistical
         Map<String,Object> map=new HashMap<String, Object>();
        List<RpPurchaseUseReportPage> TableList= pdStatisticalReportService.queryPurchaseTableView(purchaseUseReportPage);
         map.put("dataSource2",TableList);
-       //List<RpPurchaseUseReportPage> list=pdStatisticalReportService.queryPurchaseCountView(purchaseUseReportPage);
-         //{ type: 'Jeecg', 'Jan.': 18.9, 'Feb.': 28.8, 'Mar.': 39.3, 'Apr.': 81.4, 'May': 47, 'Jun.': 20.3, 'Jul.': 24, 'Aug.': 35.6 },
+        List<RpPurchaseUseReportPage> list=pdStatisticalReportService.queryPurchaseCountView(purchaseUseReportPage);
+        //数据格式
+         //[ { type: '收费金额', '2020-01': 18.9, '2020-02': 28.8, '2020-03': 39.3},
+        // { type: '采购金额', '2020-01': 18.9, '2020-02': 28.8, '2020-03': 39.3}]
+
+        Map<String,Object> map1=new HashMap<String, Object>();
+        Map<String,Object> map2=new HashMap<String, Object>();
+        List<Map> list_1=new ArrayList<>();
+        for(RpPurchaseUseReportPage info:list){
+            Double x=info.getX();//收费金额
+            Double y=info.getY();//采购金额
+            map1.put("type","收费金额");
+            map1.put("2020-01","11");
+            map1.put("2020-02","22");
+            map1.put("2020-03","33");
+            map1.put("2020-04","44");
+            map1.put("2020-05","55");
+            map1.put("2020-06","66");
+            map2.put("type","采购金额");
+            map2.put("2020-01","71");
+            map2.put("2020-02","82");
+            map2.put("2020-03","93");
+            map2.put("2020-04","104");
+            map2.put("2020-05","115");
+            map2.put("2020-06","126");
+        }
+        list_1.add(map1);
+        list_1.add(map2);
+        map.put("dataSource1",list_1);
         return Result.ok(map);
     }
 }

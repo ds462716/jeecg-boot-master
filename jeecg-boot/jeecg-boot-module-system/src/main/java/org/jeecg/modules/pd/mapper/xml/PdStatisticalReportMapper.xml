@@ -1655,8 +1655,8 @@ ORDER BY
     <select id="queryPurchaseCountView" resultType="org.jeecg.modules.pd.vo.RpPurchaseUseReportPage">
         select
         c.type as "type",
-        ROUND(sum(c.y),2) as "y",
-        sum(c.money)  as "money"
+        ROUND(sum(c.y),2) as 采购金额,
+        sum(c.money)  as 收费金额
         from(
         SELECT DATE_FORMAT(x.Month, '%Y-%m') as "type" ,
         "0" as "y","0" as "money"
@@ -1768,8 +1768,8 @@ where a.hy_charged='0' AND d.depart_type in('1','2')
     <select id="queryPurchaseTableView" resultType="org.jeecg.modules.pd.vo.RpPurchaseUseReportPage">
         select
         c.type as "type",
-        ROUND(sum(c.y),2) as "收费金额",
-        ROUND(sum(c.x),2)  as "采购金额"
+        ROUND(sum(c.y),2) as y,
+        ROUND(sum(c.x),2)  as x
         from(
         SELECT
         "0" as "x","0" as "y",

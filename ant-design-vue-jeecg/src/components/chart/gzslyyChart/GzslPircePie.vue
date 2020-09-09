@@ -5,7 +5,7 @@
     <v-tooltip :showTitle="false" dataKey="item*percent"/>
     <v-axis/>
     <v-legend dataKey="item"/>
-    <v-pie position="percent" color="item" :v-style="pieStyle" :label="labelConfig"/>
+    <v-pie position="percent" color="item" style="font-size: 30px;"  :v-style="pieStyle" :label="labelConfig"/>
     <v-coord type="theta"/>
   </v-chart>
 </div>
@@ -45,7 +45,7 @@
         }],
         pieStyle: {
           stroke: '#fff',
-          lineWidth: 1
+          lineWidth: 1,
         },
         labelConfig: ['percent', {
           formatter: (val, item) => {
