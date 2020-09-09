@@ -262,4 +262,14 @@ public class PdPdStatisticalReportImpl extends ServiceImpl<PdStatisticalReportMa
     public List<RpPurchaseUseReportPage> queryPurchaseTableView(RpPurchaseUseReportPage purchaseUseReportPage) {
         return baseMapper.queryPurchaseTableView(purchaseUseReportPage);
     }
+
+    /**
+     *  综合统计报表    采购收费柱状图(根据科室统计)
+     * @param purchaseUseReportPage
+     * @return
+     */
+    @Override
+    public List<RpPurchaseUseReportPage> queryDepartPurchaseCountView(RpPurchaseUseReportPage purchaseUseReportPage) {
+        return baseMapper.queryDepartPurchaseCountView(purchaseUseReportPage);
+    }
 }

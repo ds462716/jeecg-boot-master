@@ -91,7 +91,7 @@
           </div>
           <!--查询按钮结束-->
           <a-card :bordered="false">
-            <bar-multid title="采购收费柱状图" :height="height" :width="width"   />
+            <bar-multid title="采购收费柱状图" :height="height" :width="width"  :fields="visitFields2" :dataSource="dataSource3"/>
             <line-chart-multid title="采购收费趋势图" :height="height" :width="width"  :dataSource="dataSource4"/>
                <div style="width:800px;height:400px;float:left">
             <pie title="采购科室金额占比"  :height="height"  :dataSource="dataSource5"/>
@@ -230,6 +230,8 @@
         activeKey: "1",
         dataSource1: [],
         visitFields1: [],
+        visitFields2: [],
+        visitFields3: [],
         dataSource2: [],
         dataSource3: [],
         dataSource4: [],
@@ -321,14 +323,9 @@
         this.loading = true;
         getAction(this.url.queryPurchaseCountView, params).then((res) => {
           if (res.success) {
-            //alert(res.result.dataSource2);
-            for(let i = 0;i<res.result.dataSource1.length;i++){
-              res.result.dataSource1[i].type = "zhangsan"+i;
-            }
-            this.visitFields1 = res.result.visitFields1;//采购收费对照表
-            console.log(res.result.dataSource1)
+            this.visitFields1 = res.result.visitFields1;//采购收费对照表fields
             this.dataSource1 = res.result.dataSource1;//采购收费对照表
-            //this.dataSource2 = res.result.dataSource2;//采购收费趋势表
+            this.dataSource2 = res.result.dataSource2;//采购收费趋势表
           } else {
             this.$message.warning(res.message)
           }
@@ -358,6 +355,8 @@
         this.loading = true;
         getAction(this.url.queryDepartContionView, params).then((res) => {
           if (res.success) {
+            this.visitFields2 = res.result.visitFields2;//采购收费趋势图fields
+            this.dataSource3 = res.result.dataSource3;//采购收费趋势图
             this.dataSource4 = res.result.dataSource4;//采购收费趋势图
             this.dataSource5 = res.result.dataSource5;//采购科室金额占比
             this.dataSource6 = res.result.dataSource6;//收费金额占比

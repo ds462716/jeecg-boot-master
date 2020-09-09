@@ -93,4 +93,6 @@ public interface PdStatisticalReportMapper extends BaseMapper<PdStatisticalRepor
 
     List<RpPurchaseUseReportPage> queryPurchaseTableView(@Param("entity")RpPurchaseUseReportPage rpPurchaseUseReportPage);
 
+    List<RpPurchaseUseReportPage> queryDepartPurchaseCountView(@Param("entity")RpPurchaseUseReportPage rpPurchaseUseReportPage);
+
 }

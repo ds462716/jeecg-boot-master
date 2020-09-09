@@ -1651,12 +1651,12 @@ ORDER BY
 
 
 
-    <!-- zxh供应商用量统计查询入库明细 -->
+    <!-- 采购收费对照柱状图 根据月份统计-->
     <select id="queryPurchaseCountView" resultType="org.jeecg.modules.pd.vo.RpPurchaseUseReportPage">
         select
         c.type as "type",
-        ROUND(sum(c.y),2) as 采购金额,
-        sum(c.money)  as 收费金额
+        ROUND(sum(c.y),2) as y ,
+        sum(c.money)  as x
         from(
         SELECT DATE_FORMAT(x.Month, '%Y-%m') as "type" ,
         "0" as "y","0" as "money"
@@ -1691,6 +1691,42 @@ ORDER BY
         GROUP BY type;
 
     </select>
+
+
+
+    <!-- 采购收费对照柱状图 根据科室统计-->
+    <select id="queryDepartPurchaseCountView" resultType="org.jeecg.modules.pd.vo.RpPurchaseUseReportPage">
+        select
+        c.type as "type",
+        ROUND(sum(c.y),2) as y ,
+        sum(c.x)  as x
+        from(
+        SELECT c.depart_name AS "type",
+        (a.product_num * a.purchase_price) AS "y",
+        "" as "x"
+        FROM pd_stock_record_detail a
+        left join pd_stock_record b on a.record_id=b.id and b.del_flag='0'
+				left join sys_depart c on c.id=b.in_depart_id
+        where
+        b.record_type ='1'
+        AND b.in_type ='1'
+        AND b.audit_status ='2'
+        and c.depart_type in(1,2)
+        UNION ALL
+        select  c.depart_name AS "type",
+        "" AS "y",
+        (d.dosage_count * d.amount_money) AS "money"
+        from pd_dosage_detail d
+        left join pd_dosage  e on e.id=d.dosage_id
+				left join sys_depart c on c.id=e.depart_id
+        where d.hy_charged='0'
+        and d.del_flag='0'
+        ) c
+        GROUP BY type;
+    </select>
+
+
+
 
 
     <!-- 全院耗材占比数据查 -->
@@ -1768,8 +1804,8 @@ where a.hy_charged='0' AND d.depart_type in('1','2')
     <select id="queryPurchaseTableView" resultType="org.jeecg.modules.pd.vo.RpPurchaseUseReportPage">
         select
         c.type as "type",
-        ROUND(sum(c.y),2) as y,
-        ROUND(sum(c.x),2)  as x
+        ROUND(sum(c.y),2) as  "收费金额",
+        ROUND(sum(c.x),2)  as "采购金额"
         from(
         SELECT
         "0" as "x","0" as "y",

@@ -649,6 +649,26 @@ public class PdStatisticalReportController extends JeecgController<PdStatistical
         //收费金额占比
         List<RpPurchaseUseReportPage> chargeList= pdStatisticalReportService.queryDepartChargeView(purchaseUseReportPage);
         map.put("dataSource6",chargeList);
+        //采购收费柱状图 --根据科室统计
+        List<RpPurchaseUseReportPage> list=pdStatisticalReportService.queryDepartPurchaseCountView(purchaseUseReportPage);
+        Map<String,Object> map1=new HashMap<String, Object>();
+        map1.put("type","采购金额");
+        Map<String,Object> map2=new HashMap<String, Object>();
+        map2.put("type","收费金额");
+        List<String> str = new ArrayList<>();
+        List<Map> list_1=new ArrayList<>();
+        for(RpPurchaseUseReportPage info:list){
+            Double x=info.getX();//收费金额
+            Double y=info.getY();//采购金额
+            String type=info.getType();
+            map1.put(type,y);
+            map2.put(type,x);
+            str.add(type);
+        }
+        list_1.add(map1);
+        list_1.add(map2);
+        map.put("dataSource3",list_1);
+        map.put("visitFields2",str);
         return Result.ok(map);
     }
 
@@ -665,37 +685,22 @@ public class PdStatisticalReportController extends JeecgController<PdStatistical
         //数据格式
          //[ { type: '收费金额', '2020-01': 18.9, '2020-02': 28.8, '2020-03': 39.3},
         // { type: '采购金额', '2020-01': 18.9, '2020-02': 28.8, '2020-03': 39.3}]
-
         Map<String,Object> map1=new HashMap<String, Object>();
+        map1.put("type","采购金额");
         Map<String,Object> map2=new HashMap<String, Object>();
+        map2.put("type","收费金额");
+        List<String> str = new ArrayList<>();
         List<Map> list_1=new ArrayList<>();
         for(RpPurchaseUseReportPage info:list){
             Double x=info.getX();//收费金额
             Double y=info.getY();//采购金额
-            //map1.put("type","zhangsan");
-            map1.put("202001",11);
-            map1.put("202002",22);
-            map1.put("202003",33);
-            map1.put("202004",4);
-            map1.put("202005",55);
-            map1.put("202006",66);
-            //map2.put("type","lisi");
-            map2.put("202001",71);
-            map2.put("202002",82);
-            map2.put("202003",93);
-            map2.put("202004",104);
-            map2.put("202005",115);
-            map2.put("202006",126);
+            String type=info.getType();
+            map1.put(type,y);
+            map2.put(type,x);
+            str.add(type);
         }
         list_1.add(map1);
         list_1.add(map2);
-        List<String> str = new ArrayList<>();
-        str.add("202001");
-        str.add("202002");
-        str.add("202003");
-        str.add("202004");
-        str.add("202005");
-        str.add("202006");
         map.put("dataSource1",list_1);
         map.put("visitFields1",str);
         return Result.ok(map);
