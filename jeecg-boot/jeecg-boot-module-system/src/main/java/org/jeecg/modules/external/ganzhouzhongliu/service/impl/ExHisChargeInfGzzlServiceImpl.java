@@ -21,7 +21,7 @@ import java.util.List;
  * @Version: V1.0
  */
 @Service
-@DS("multi-datasource1")
+@DS("multi-datasourceGZZL")
 public class ExHisChargeInfGzzlServiceImpl extends ServiceImpl<ExHisChargeInfGzzlMapper, ExHisZyChargeInfGzzl> implements IExHisChargeInfGzzlService {
     @Autowired
     private ExHisChargeInfGzzlMapper exHisChargeInfGzzlMapper;
