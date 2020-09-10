@@ -6,7 +6,7 @@
         <a-row :gutter="24">
         <a-col :md="6" :sm="8">
           <a-form-item label="年月">
-            <a-month-picker placeholder="选择年月" @change="monthChange"/>
+            <a-month-picker placeholder="选择年月" @change="monthChange" v-model="queryParam.ym"/>
           </a-form-item>
         </a-col>
           <a-col :md="6" :sm="8">

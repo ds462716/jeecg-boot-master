@@ -6,11 +6,11 @@
           <div class="table-page-search-wrapper">
             <a-form layout="inline" @keyup.enter.native="searchQuery(1)">
               <a-row :gutter="24">
-                <a-col :md="6" :sm="8">
-                  <a-form-item label="年月">
-                    <a-month-picker placeholder="选择年月" @change="monthChange"/>
+                <!--<a-col :md="6" :sm="8">
+                  <a-form-item label="是否试剂">
+                    <j-dict-select-tag-expand type="list" v-model="queryParam1.productFlag" dictCode="yn" placeholder="请选择"/>
                   </a-form-item>
-                </a-col>
+                </a-col>-->
                 <a-col :md="6" :sm="8">
                   <a-form-item label="科室">
                     <a-select
@@ -24,7 +24,7 @@
                       @search="departHandleSearch"
                       @focus="departHandleSearch"
                       :notFoundContent="notFoundContent"
-                      v-model="queryParam.departIds"
+                      v-model="queryParam1.departIds"
                       placeholder="请选择科室"
                     >
                       <a-select-option v-for="d in departData" :key="d.id">{{d.departName}}</a-select-option>
@@ -34,7 +34,7 @@
                 <a-col :md="6" :sm="8">
             <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
                <a-button type="primary" @click="searchQuery(1)" icon="search">查询</a-button>
-              <a-button type="primary" @click="searchReset" icon="reload" style="margin-left: 8px">重置</a-button>
+              <a-button type="primary" @click="searchReset(1)" icon="reload" style="margin-left: 8px">重置</a-button>
             </span>
                 </a-col>
               </a-row>
@@ -57,10 +57,10 @@
               <a-row :gutter="24">
                 <a-col :md="6" :sm="8">
                   <a-form-item label="年月">
-                    <a-month-picker placeholder="选择年月" @change="monthChange"/>
+                    <a-month-picker placeholder="选择年月" @change="monthChange" v-model="queryParam2.ym"/>
                   </a-form-item>
                 </a-col>
-                <a-col :md="6" :sm="8">
+               <!-- <a-col :md="6" :sm="8">
                   <a-form-item label="科室">
                     <a-select
                       mode="multiple"
@@ -73,17 +73,17 @@
                       @search="departHandleSearch"
                       @focus="departHandleSearch"
                       :notFoundContent="notFoundContent"
-                      v-model="queryParam.departIds"
+                      v-model="queryParam2.departIds"
                       placeholder="请选择科室"
                     >
                       <a-select-option v-for="d in departData" :key="d.id">{{d.departName}}</a-select-option>
                     </a-select>
                   </a-form-item>
-                </a-col>
+                </a-col>-->
                 <a-col :md="6" :sm="8">
             <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
                <a-button type="primary" @click="searchQuery(2)" icon="search">查询</a-button>
-              <a-button type="primary" @click="searchReset" icon="reload" style="margin-left: 8px">重置</a-button>
+              <a-button type="primary" @click="searchReset(2)" icon="reload" style="margin-left: 8px">重置</a-button>
             </span>
                 </a-col>
               </a-row>
@@ -113,7 +113,7 @@
               <a-row :gutter="24">
                 <a-col :md="6" :sm="8">
                   <a-form-item label="年月">
-                    <a-month-picker placeholder="选择年月" @change="monthChange"/>
+                    <a-month-picker placeholder="选择年月" @change="monthChangeUse"/>
                   </a-form-item>
                 </a-col>
                 <a-col :md="6" :sm="8">
@@ -129,7 +129,7 @@
                       @search="departHandleSearch"
                       @focus="departHandleSearch"
                       :notFoundContent="notFoundContent"
-                      v-model="queryParam.departIds"
+                      v-model="queryParam3.departIds"
                       placeholder="请选择科室"
                     >
                       <a-select-option v-for="d in departData" :key="d.id">{{d.departName}}</a-select-option>
@@ -139,7 +139,7 @@
                 <a-col :md="6" :sm="8">
             <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
              <a-button type="primary" @click="searchQuery(3)" icon="search">查询</a-button>
-              <a-button type="primary" @click="searchReset" icon="reload" style="margin-left: 8px">重置</a-button>
+              <a-button type="primary" @click="searchReset(3)" icon="reload" style="margin-left: 8px">重置</a-button>
             </span>
                 </a-col>
               </a-row>
@@ -159,13 +159,13 @@
           <!--查询按钮开始-->
           <div class="table-page-search-wrapper">
             <a-form layout="inline" @keyup.enter.native="searchQuery(4)">
-              <a-row :gutter="24">
+              <!-- <a-row :gutter="24">
                 <a-col :md="6" :sm="8">
                   <a-form-item label="年月">
-                    <a-month-picker placeholder="选择年月" @change="monthChange"/>
+                    <a-month-picker placeholder="选择年月" @change="monthChangeAllConion"/>
                   </a-form-item>
                 </a-col>
-                <a-col :md="6" :sm="8">
+               <a-col :md="6" :sm="8">
                   <a-form-item label="科室">
                     <a-select
                       mode="multiple"
@@ -178,7 +178,7 @@
                       @search="departHandleSearch"
                       @focus="departHandleSearch"
                       :notFoundContent="notFoundContent"
-                      v-model="queryParam.departIds"
+                      v-model="queryParam4.departIds"
                       placeholder="请选择科室"
                     >
                       <a-select-option v-for="d in departData" :key="d.id">{{d.departName}}</a-select-option>
@@ -188,15 +188,15 @@
                 <a-col :md="6" :sm="8">
             <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
               <a-button type="primary" @click="searchQuery(4)" icon="search">查询</a-button>
-              <a-button type="primary" @click="searchReset" icon="reload" style="margin-left: 8px">重置</a-button>
+              <a-button type="primary" @click="searchReset(4)" icon="reload" style="margin-left: 8px">重置</a-button>
             </span>
                 </a-col>
-              </a-row>
+              </a-row> -->
             </a-form>
           </div>
           <!--查询按钮结束-->
           <a-card :bordered="false">
-            <pie title="全院耗材占比"  :height="height"  :dataSource="dataSource8"/>
+            <pie title="全院耗材占比(实时)"  :height="height"  :dataSource="dataSource8"/>
             <div class="table-operator">
             </div>
           </a-card>
@@ -214,11 +214,13 @@
   import LineChartMultid from '@/components/chart/gzslyyChart/GzslyyLineChartMultid'
   import Pie from '@/components/chart/gzslyyChart/GzslPircePie'
   import { JeecgListMixin } from '@/mixins/JeecgListMixin'
+  import JDictSelectTagExpand from "@/components/dict/JDictSelectTagExpand"
+
   export default {
     name: "RpPurchaseUseReport",
     mixins:[JeecgListMixin],
     components: {
-      BarMultid, LineChartMultid, Pie
+      BarMultid, LineChartMultid, Pie,JDictSelectTagExpand
     },
     data() {
       return {
@@ -240,7 +242,10 @@
         dataSource7: [],
         dataSource8: [],
         // 表头
-        queryParam: {},
+        queryParam1: {},
+        queryParam2: {},
+        queryParam3: {},
+        queryParam4: {},
         departData: [],
         departValue: undefined,
         visible: false,
@@ -293,7 +298,13 @@
       },
 
       monthChange(date, dateString) {
-        this.queryParam.yearMonth = dateString;
+        this.queryParam2.yearMonth = dateString;
+      },
+      monthChangeUse(date, dateString) {
+        this.queryParam3.yearMonth = dateString;
+      },
+      monthChangeAllConion(date, dateString) {
+        this.queryParam4.yearMonth = dateString;
       },
 
 //科室查询start
@@ -307,19 +318,39 @@
       },
       //科室查询end
       //获取使用条件
-      getQueryParams() {
+      getQueryParams(num) {
         //获取查询条件
-        let param = this.queryParam;
-        param.pageNo = this.ipagination.current;
-        param.pageSize = this.ipagination.pageSize;
+        //获取查询条件
+        let sqp = {}
+        if(this.superQueryParams){
+          sqp['superQueryParams']=encodeURI(this.superQueryParams)
+        }
+        let param ={};
+        if(num==1){
+           param = Object.assign(sqp, this.queryParam1, this.isorter ,this.filters);
+          param.departIds = this.queryParam1.departIds+"";
+        }else if(num==2){
+          param = Object.assign(sqp, this.queryParam2, this.isorter ,this.filters);
+          param.departIds = this.queryParam2.departIds+"";
+        }else if(num==3){
+          param = Object.assign(sqp, this.queryParam3, this.isorter ,this.filters);
+          param.departIds = this.queryParam3.departIds+"";
+        }else if(num==4){
+          param = Object.assign(sqp, this.queryParam4, this.isorter ,this.filters);
+          param.departIds = this.queryParam4.departIds+"";
+        }
         return filterObj(param);
       },
+
+
+
+
 
       //科室采购趋势表
       useLoadData(arg) {
         //获取采购收费对照表数据
         var params = {};
-         params = this.getQueryParams();//查询条件
+         params = this.getQueryParams(1);//查询条件
         this.loading = true;
         getAction(this.url.queryPurchaseCountView, params).then((res) => {
           if (res.success) {
@@ -351,7 +382,7 @@
       //科室采购消耗表
       chargeUseLoadData(arg) {
         var params = {};
-        params = this.getQueryParams();//查询条件
+        params = this.getQueryParams(2);//查询条件
         this.loading = true;
         getAction(this.url.queryDepartContionView, params).then((res) => {
           if (res.success) {
@@ -376,7 +407,7 @@
       //全院耗材占比
       allConsumptionData(arg) {
         var params = {};
-        params = this.getQueryParams();//查询条件
+        params = this.getQueryParams(4);//查询条件
         this.loading = true;
         getAction(this.url.queryConsumptionView, params).then((res) => {
           if (res.success) {
@@ -397,16 +428,26 @@
       },
       //关闭方法
       close() {
-        this.queryParam = {};
+        this.queryParam1 = {};
+        this.queryParam2 = {};
+        this.queryParam3 = {};
+        this.queryParam4 = {};
         this.visible = false;
         this.$emit('close');
       },
 
-      searchReset() {
-        this.queryParam = {}
+      searchReset(num) {
+        if(num==1){
+          this.queryParam1 = {};
+        }else if(num==2){
+          this.queryParam2 = {};
+        }else if(num==3){
+          this.queryParam3 = {};
+        }else if(num==4){
+          this.queryParam4 = {};
+        }
       },
     },
-
   }
 </script>
 <style scoped>

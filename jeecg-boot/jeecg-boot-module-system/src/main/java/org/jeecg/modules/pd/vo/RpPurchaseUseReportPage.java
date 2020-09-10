@@ -13,8 +13,10 @@ import java.util.List;
 public class RpPurchaseUseReportPage {
 
     private String departIds;// 科室名称
+    private String prpductFlag;// 是否试剂
     private String yearMonth;//年月
     private List<String> departIdList; /*多个部门集合*/
+
     private String type;
     private Double y;
     private Double x;

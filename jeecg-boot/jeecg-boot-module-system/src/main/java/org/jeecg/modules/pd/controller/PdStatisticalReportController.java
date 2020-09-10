@@ -6,6 +6,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.PdConstant;
@@ -640,35 +641,38 @@ public class PdStatisticalReportController extends JeecgController<PdStatistical
         if (oConvertUtils.isNotEmpty(purchaseUseReportPage.getDepartIds()) && !"undefined".equals(purchaseUseReportPage.getDepartIds())) {
             purchaseUseReportPage.setDepartIdList(Arrays.asList(purchaseUseReportPage.getDepartIds().split(",")));
         }
-         //采购收费趋势图
-        List<RpPurchaseUseReportPage> purchaseList= pdStatisticalReportService.queryDepartpurchaseView(purchaseUseReportPage);
-        map.put("dataSource4",purchaseList);
          //采购科室金额占比
         List<RpPurchaseUseReportPage> contionList= pdStatisticalReportService.queryDepartContionView(purchaseUseReportPage);
         map.put("dataSource5",contionList);
         //收费金额占比
         List<RpPurchaseUseReportPage> chargeList= pdStatisticalReportService.queryDepartChargeView(purchaseUseReportPage);
         map.put("dataSource6",chargeList);
+        //采购收费趋势图
+       // List<RpPurchaseUseReportPage> purchaseList= pdStatisticalReportService.queryDepartpurchaseView(purchaseUseReportPage);
+        //map.put("dataSource4",purchaseList);
         //采购收费柱状图 --根据科室统计
         List<RpPurchaseUseReportPage> list=pdStatisticalReportService.queryDepartPurchaseCountView(purchaseUseReportPage);
+         map.put("dataSource4",list);
         Map<String,Object> map1=new HashMap<String, Object>();
         map1.put("type","采购金额");
         Map<String,Object> map2=new HashMap<String, Object>();
         map2.put("type","收费金额");
         List<String> str = new ArrayList<>();
         List<Map> list_1=new ArrayList<>();
-        for(RpPurchaseUseReportPage info:list){
-            Double x=info.getX();//收费金额
-            Double y=info.getY();//采购金额
-            String type=info.getType();
-            map1.put(type,y);
-            map2.put(type,x);
-            str.add(type);
+        if(CollectionUtils.isNotEmpty(list)) {
+            for (RpPurchaseUseReportPage info : list) {
+                Double x = info.getX();//收费金额
+                Double y = info.getY();//采购金额
+                String type = info.getType();
+                map1.put(type, y);
+                map2.put(type, x);
+                str.add(type);
+            }
+            list_1.add(map1);
+            list_1.add(map2);
+            map.put("dataSource3", list_1);
+            map.put("visitFields2", str);
         }
-        list_1.add(map1);
-        list_1.add(map2);
-        map.put("dataSource3",list_1);
-        map.put("visitFields2",str);
         return Result.ok(map);
     }
 
@@ -679,11 +683,15 @@ public class PdStatisticalReportController extends JeecgController<PdStatistical
     @GetMapping(value = "queryPurchaseCountView")
     public Result<?> queryPurchaseCountView(RpPurchaseUseReportPage purchaseUseReportPage){
         Map<String,Object> map=new HashMap<String, Object>();
-       List<RpPurchaseUseReportPage> TableList= pdStatisticalReportService.queryPurchaseTableView(purchaseUseReportPage);
-        map.put("dataSource2",TableList);
+        if (oConvertUtils.isNotEmpty(purchaseUseReportPage.getDepartIds()) && !"undefined".equals(purchaseUseReportPage.getDepartIds())) {
+            purchaseUseReportPage.setDepartIdList(Arrays.asList(purchaseUseReportPage.getDepartIds().split(",")));
+        }
+      // List<RpPurchaseUseReportPage> TableList= pdStatisticalReportService.queryPurchaseTableView(purchaseUseReportPage);
+
         List<RpPurchaseUseReportPage> list=pdStatisticalReportService.queryPurchaseCountView(purchaseUseReportPage);
+        map.put("dataSource2",list);
         //数据格式
-         //[ { type: '收费金额', '2020-01': 18.9, '2020-02': 28.8, '2020-03': 39.3},
+        // [ { type: '收费金额', '2020-01': 18.9, '2020-02': 28.8, '2020-03': 39.3},
         // { type: '采购金额', '2020-01': 18.9, '2020-02': 28.8, '2020-03': 39.3}]
         Map<String,Object> map1=new HashMap<String, Object>();
         map1.put("type","采购金额");

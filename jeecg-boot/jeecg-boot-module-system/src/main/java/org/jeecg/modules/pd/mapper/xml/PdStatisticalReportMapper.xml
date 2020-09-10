@@ -1655,74 +1655,128 @@ ORDER BY
     <select id="queryPurchaseCountView" resultType="org.jeecg.modules.pd.vo.RpPurchaseUseReportPage">
         select
         c.type as "type",
-        ROUND(sum(c.y),2) as y ,
-        sum(c.money)  as x
+        ROUND(sum(c.y),2) as y,
+        ROUND(sum(c.x +c.s),2) as x,
+        ROUND(sum(c.y),2) as 采购金额,
+        ROUND(sum(c.x +c.s),2) as 收费金额
         from(
         SELECT DATE_FORMAT(x.Month, '%Y-%m') as "type" ,
-        "0" as "y","0" as "money"
+        "0" as "y","0" as "x", "" as "s"
         FROM XNumber x
         where x.Month > DATE_SUB(CURDATE(), INTERVAL 1 YEAR)
         and substr(x.Month,1,7) &lt;=substr(CURDATE(),1,7)
         UNION ALL
-        SELECT DATE_FORMAT(a.create_time, '%Y-%m') AS "type",
-        a.product_num AS "y",
-        "" as "money"
-        FROM pd_stock_record_detail a
-        left join pd_stock_record b on a.record_id=b.id and b.del_flag='0'
-        where
-        b.record_type ='1'
-        AND b.in_type ='1'
+        select DATE_FORMAT(b.create_time, '%Y-%m') as "type" ,
+        (a.product_num * a.purchase_price) as "y" ,
+        "" as "x",
+        "" as "s"
+        from 	 pd_stock_record_detail a
+        left join pd_stock_record b on a.record_id=b.id
+        left join pd_product c on c.id=a.product_id
+        left join sys_depart t on t.id=b.in_depart_id
+        where b.del_flag='0'
+        and record_type='1' and in_type='1'
         AND b.audit_status ='2'
-        and b.in_depart_id='dea5919617234ef9854c5806d4b44efa'
-        AND a.create_time > DATE_SUB(CURDATE(), INTERVAL 1 YEAR)
-        AND substr(a.create_time,1,7) &lt;=substr(CURDATE(),1,7)
+        <if test="entity.departIdList != null and entity.departIdList.size() > 0">
+            AND b.in_depart_id IN
+            <foreach collection="entity.departIdList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="entity.departIdList == null || entity.departIdList.size() == 0">
+            and t.depart_type in(1)
+        </if>
+        AND b.create_time > DATE_SUB(CURDATE(), INTERVAL 1 YEAR)
+        AND substr(b.create_time,1,7) &lt;=substr(CURDATE(),1,7)
         UNION ALL
         select  DATE_FORMAT(e.create_time, '%Y-%m') AS "type",
         "" AS "y",
-        d.amount_money AS "money"
+        (d.selling_price * d.dosage_count) AS "x",
+        "" as "s"
         from pd_dosage_detail d
         left join pd_dosage  e on e.id=d.dosage_id
         where d.hy_charged='0'
         and d.del_flag='0'
-
+        <if test="entity.departIdList != null and entity.departIdList.size() > 0">
+            AND e.depart_id IN
+            <foreach collection="entity.departIdList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
         AND e.create_time > DATE_SUB(CURDATE(), INTERVAL 1 YEAR)
         AND substr(e.create_time,1,7) &lt;=substr(CURDATE(),1,7)
+
+         UNION ALL
+        select DATE_FORMAT(f.create_time, '%Y-%m') AS "type",
+        "" as "y",
+        "" as "x",
+        f.test_item_cost  as "s" from ex_inspection_items	  f
+        left join ex_lab_instr_inf  g on f.instr_code=g.instr_code
+        where f.create_time > DATE_SUB(CURDATE(), INTERVAL 1 YEAR)
+        AND substr(f.create_time,1,7) &lt;=substr(CURDATE(),1,7)
+        <if test="entity.departIdList != null and entity.departIdList.size() > 0">
+            AND g.depart_id IN
+            <foreach collection="entity.departIdList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
         ) c
         GROUP BY type;
-
     </select>
-
-
 
     <!-- 采购收费对照柱状图 根据科室统计-->
     <select id="queryDepartPurchaseCountView" resultType="org.jeecg.modules.pd.vo.RpPurchaseUseReportPage">
         select
         c.type as "type",
         ROUND(sum(c.y),2) as y ,
-        sum(c.x)  as x
+        sum(c.x)  as x,
+        ROUND(sum(c.y),2) as 采购金额 ,
+        sum(c.x)  as 收费金额
         from(
         SELECT c.depart_name AS "type",
         (a.product_num * a.purchase_price) AS "y",
         "" as "x"
         FROM pd_stock_record_detail a
-        left join pd_stock_record b on a.record_id=b.id and b.del_flag='0'
-				left join sys_depart c on c.id=b.in_depart_id
+        left join pd_stock_record b on a.record_id=b.id
+		left join sys_depart c on c.id=b.in_depart_id
         where
         b.record_type ='1'
+        and b.del_flag='0'
+        and a.del_flag='0'
         AND b.in_type ='1'
         AND b.audit_status ='2'
-        and c.depart_type in(1,2)
+        <if test="entity.departIdList != null and entity.departIdList.size() > 0">
+            AND b.in_depart_id IN
+            <foreach collection="entity.departIdList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="entity.yearMonth != null and entity.yearMonth != ''">
+            AND DATE_FORMAT(b.create_time, '%Y-%m') = #{entity.yearMonth}
+        </if>
+         and c.depart_type in(1,2)
         UNION ALL
         select  c.depart_name AS "type",
         "" AS "y",
-        (d.dosage_count * d.amount_money) AS "money"
+        (d.dosage_count * d.amount_money) AS "x"
         from pd_dosage_detail d
         left join pd_dosage  e on e.id=d.dosage_id
-				left join sys_depart c on c.id=e.depart_id
+		left join sys_depart c on c.id=e.depart_id
         where d.hy_charged='0'
         and d.del_flag='0'
+        and e.del_flag='0'
+        <if test="entity.departIdList != null and entity.departIdList.size() > 0">
+            AND e.depart_id IN
+            <foreach collection="entity.departIdList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="entity.yearMonth != null and entity.yearMonth != ''">
+            AND DATE_FORMAT(e.create_time, '%Y-%m') = #{entity.yearMonth}
+        </if>
         ) c
-        GROUP BY type;
+        GROUP BY type
+        order by y desc limit 0,10
     </select>
 
 
@@ -1751,8 +1805,24 @@ ORDER BY
 	left join pd_stock_record b on a.record_id=b.id
 	left join pd_product c on c.id=a.product_id
 	left join sys_depart d on d.id=b.in_depart_id
-	where b.record_type='1' and b.in_type='1'
-	and d.depart_type in('1','2')
+	where
+	b.record_type='1'
+	and b.in_type='1'
+    and b.del_flag='0'
+    and a.del_flag='0'
+        <if test="entity.departIdList != null and entity.departIdList.size() > 0">
+            AND b.in_depart_id IN
+            <foreach collection="entity.departIdList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="entity.departIdList == null || entity.departIdList.size() == 0">
+            and d.depart_type in('2')
+        </if>
+        <if test="entity.yearMonth != null and entity.yearMonth != ''">
+            AND DATE_FORMAT(b.create_time, '%Y-%m') = #{entity.yearMonth}
+        </if>
+
      group by in_depart_id
       order by count desc limit 0,10
     </select>
@@ -1767,13 +1837,27 @@ ORDER BY
       left join pd_product c on c.id=a.product_id
       left join sys_depart d on d.id=b.depart_id
       where a.hy_charged='0'
+        and b.del_flag='0'
+        and a.del_flag='0'
+        <if test="entity.departIdList != null and entity.departIdList.size() > 0">
+            AND b.depart_id IN
+            <foreach collection="entity.departIdList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="entity.departIdList == null || entity.departIdList.size() == 0">
+            and d.depart_type in('2')
+        </if>
+        <if test="entity.yearMonth != null and entity.yearMonth != ''">
+            AND DATE_FORMAT(b.create_time, '%Y-%m') = #{entity.yearMonth}
+        </if>
      group by  b.depart_id
       order by count desc limit 0,10
     </select>
 
     <!-- 根据科室统计   -采购收费趋势图 -->
     <select id="queryDepartpurchaseView" resultType="org.jeecg.modules.pd.vo.RpPurchaseUseReportPage">
-      select
+      /*select
         c.type as "type",
         ROUND(sum(c.y),2) as 收费金额,
 		 ROUND(sum(c.x),2)  as 采购金额
@@ -1795,52 +1879,13 @@ where a.hy_charged='0' AND d.depart_type in('1','2')
 			 ) C
 				group by type
 
-       order by x desc limit 0,10
+       order by x desc limit 0,10*/
     </select>
 
 
 
-    <!-- 根据月份统计   ——采购收费趋势表 -->
+   <!--   根据月份统计   ——采购收费趋势表-->
     <select id="queryPurchaseTableView" resultType="org.jeecg.modules.pd.vo.RpPurchaseUseReportPage">
-        select
-        c.type as "type",
-        ROUND(sum(c.y),2) as  "收费金额",
-        ROUND(sum(c.x),2)  as "采购金额"
-        from(
-        SELECT
-        "0" as "x","0" as "y",
-        DATE_FORMAT(x.Month, '%Y-%m') as "type"
-        FROM XNumber x
-        where x.Month > DATE_SUB(CURDATE(), INTERVAL 1 YEAR)
-        and substr(x.Month,1,7) &lt;=substr(CURDATE(),1,7)
 
-        UNION ALL
-
-
-        select    (a.purchase_price * a.product_num)     as "x",
-        "" as "y",
-        DATE_FORMAT(b.create_time, '%Y-%m') as "type"
-        from pd_stock_record_detail a
-        left join pd_stock_record b on a.record_id=b.id
-        left join sys_depart d on d.id=b.in_depart_id
-        where d.depart_type in('1','2')
-        and record_type='1' and in_type='1'
-        AND b.create_time > DATE_SUB(CURDATE(), INTERVAL 1 YEAR)
-        AND substr(b.create_time,1,7)&lt;=substr(CURDATE(),1,7)
-
-        UNION ALL
-
-        select  "" AS "x",
-        (a.selling_price * a.dosage_count)  AS "y",
-        DATE_FORMAT(b.create_time, '%Y-%m') as "type" from
-        pd_dosage_detail a
-        left join pd_dosage b on b.id=a.dosage_id
-        left join pd_product c on c.id=a.product_id
-        left join sys_depart d on d.id=b.depart_id
-        where a.hy_charged='0' AND d.depart_type in('1','2')
-        AND b.create_time > DATE_SUB(CURDATE(), INTERVAL 1 YEAR)
-        AND substr(b.create_time,1,7)&lt;=substr(CURDATE(),1,7)
-        ) C
-        group by type
     </select>
 </mapper>
