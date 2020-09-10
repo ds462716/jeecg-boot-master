@@ -42,8 +42,9 @@
           </div>
         <!--查询按钮结束-->
           <a-card :bordered="false">
-            <bar-multid title="采购收费对照表" :height="height" :width="width"  :fields="visitFields1" :dataSource="dataSource1"/>
 
+            <bar-multid title="采购收费对照表" :height="height" :width="width"  :fields="visitFields1" :dataSource="dataSource1"/>
+           <!-- <gzsl-bar-multid title="采购收费对照表" :height="height" :width="width" />-->
             <line-chart-multid title="采购收费趋势表" :height="height" :width="width"  :dataSource="dataSource2"/>
             <div class="table-operator">
             </div>
@@ -159,7 +160,7 @@
           <!--查询按钮开始-->
           <div class="table-page-search-wrapper">
             <a-form layout="inline" @keyup.enter.native="searchQuery(4)">
-              <!-- <a-row :gutter="24">
+                <a-row :gutter="24">
                 <a-col :md="6" :sm="8">
                   <a-form-item label="年月">
                     <a-month-picker placeholder="选择年月" @change="monthChangeAllConion"/>
@@ -191,12 +192,12 @@
               <a-button type="primary" @click="searchReset(4)" icon="reload" style="margin-left: 8px">重置</a-button>
             </span>
                 </a-col>
-              </a-row> -->
+              </a-row>
             </a-form>
           </div>
           <!--查询按钮结束-->
           <a-card :bordered="false">
-            <pie title="全院耗材占比(实时)"  :height="height"  :dataSource="dataSource8"/>
+            <pie title="全院耗材占比"  :height="height"  :dataSource="dataSource8"/>
             <div class="table-operator">
             </div>
           </a-card>

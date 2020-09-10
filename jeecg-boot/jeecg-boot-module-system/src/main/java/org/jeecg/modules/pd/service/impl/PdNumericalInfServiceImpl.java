@@ -48,7 +48,11 @@ public class PdNumericalInfServiceImpl extends ServiceImpl<PdNumericalInfMapper,
 		return pdNumericalInfMapper.selectItemOrRecordNum(numericalInf);
 	};
 
-
+	/*根据月份统计  所属科室   试剂出库数量   试剂出库金额   耗材出库数量   耗材出库金额*/
+	@Override
+	public  HashMap selectOutRecordNum(PdNumericalInf  numericalInf){
+		return pdNumericalInfMapper.selectOutRecordNum(numericalInf);
+	};
 	/*根据月份统计试剂使用金额	试剂使用数量*/
 	@Override
 	public  HashMap selectItemNumOrItemPrice(PdNumericalInf  numericalInf){

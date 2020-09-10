@@ -27,6 +27,8 @@ public interface IPdNumericalInfService extends IService<PdNumericalInf> {
     /*根据月份统计  所属科室   试剂入库数量   试剂入库金额   耗材入库数量   耗材入库金额*/
      HashMap selectItemOrRecordNum(PdNumericalInf  numericalInf);
 
+     /*根据月份统计  所属科室   试剂出库数量   试剂出库金额   耗材出库数量   耗材出库金额*/
+    HashMap selectOutRecordNum(PdNumericalInf  numericalInf);
 
     /*根据月份统计试剂使用金额	试剂使用数量*/
      HashMap selectItemNumOrItemPrice(PdNumericalInf  numericalInf);

@@ -142,16 +142,13 @@ public class PdNumericalInfTaskJob implements Job {
         numericalInf.setItemPrice(itemPrice);//检验项目收入金额
 
         /*统计  调出数量、调出金额*/
-        numericalInf_1.setRecordType(PdConstant.RECODE_TYPE_2);
-        numericalInf_1.setAuditStatus(PdConstant.AUDIT_STATE_2);
-        numericalInf_1.setInTypeList(null);
+         numericalInf_1.setInTypeList(null);
         numericalInf_1.setOutDepartIdList(numericalInf_1.getDepartIdList());
         numericalInf_1.setDepartIdList(null);
         if(!"1".equals(depart.getDepartType())){
-            numericalInf_1.setOutTypeList(Arrays.asList("4".split(",")));
-            numericalInf_1.setDepartIdList(Arrays.asList(depart.getParentId().split(",")));
+            numericalInf_1.setOutTypeList(Arrays.asList("2,4".split(",")));
         }
-        HashMap callOutMap=pdNumericalInfService.selectItemOrRecordNum(numericalInf_1);
+        HashMap callOutMap=pdNumericalInfService.selectOutRecordNum(numericalInf_1);
         Double callOutNum= MapUtils.getDouble(callOutMap,"productNum");////调出数量
         Double callOutNumPrice=MapUtils.getDouble(callOutMap,"purchasePrice");//调出金额
         numericalInf.setCallOutNum(callOutNum);//试剂调出数量
@@ -214,6 +211,7 @@ public class PdNumericalInfTaskJob implements Job {
         numericalInf.setCallInNum(callInNum != null ? callInNum : 0);//调入数量
         numericalInf.setCallInPrice(callInNumPrice != null ?   new BigDecimal(callInNumPrice) : BigDecimal.ZERO);//调入金额
 
+
         /*统计   使用数量、 使用金额*/
         //先判断当前科室是否是二级科室，并且二级科室是否存在三级科室，如果存在，则统一查询统计，数量及金额归并到二级科室下；
         String departType=depart.getDepartType();
@@ -240,15 +238,13 @@ public class PdNumericalInfTaskJob implements Job {
 
 
         /*统计  调出数量、调出金额*/
-        numericalInf_1.setRecordType(PdConstant.RECODE_TYPE_2);
-        numericalInf_1.setInTypeList(null);
+         numericalInf_1.setInTypeList(null);
         numericalInf_1.setOutDepartIdList(numericalInf_1.getDepartIdList());
         numericalInf_1.setDepartIdList(null);
         if(!"1".equals(depart.getDepartType())){
-         numericalInf_1.setOutTypeList(Arrays.asList("4".split(",")));
-         numericalInf_1.setDepartIdList(Arrays.asList(depart.getParentId().split(",")));
-        }
-        HashMap callOutMap=pdNumericalInfService.selectItemOrRecordNum(numericalInf_1);
+         numericalInf_1.setOutTypeList(Arrays.asList("2,4".split(",")));
+         }
+        HashMap callOutMap=pdNumericalInfService.selectOutRecordNum(numericalInf_1);
         Double callOutNum= MapUtils.getDouble(callOutMap,"productNum");////调出数量
         Double callOutNumPrice=MapUtils.getDouble(callOutMap,"purchasePrice");//调出金额
         numericalInf.setCallOutNum(callOutNum != null ? callOutNum : 0);//调出数量
