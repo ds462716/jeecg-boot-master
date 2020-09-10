@@ -31,7 +31,7 @@ public class ExHisChargeInfGzzlServiceImpl extends ServiceImpl<ExHisChargeInfGzz
      * @return
      */
     @Override
-    @DS("multi-datasource1")
+    @DS("multi-datasourceGZZL")
     public Page<PdDosage>  queryZyPatientInfoList(Page<PdDosage> page, PdDosage pdDosage) {
         return exHisChargeInfGzzlMapper.queryZyPatientInfoList(page,pdDosage);
     }
@@ -42,7 +42,7 @@ public class ExHisChargeInfGzzlServiceImpl extends ServiceImpl<ExHisChargeInfGzz
      * @return
      */
     @Override
-    @DS("multi-datasource1")
+    @DS("multi-datasourceGZZL")
     public List<ExHisZyChargeInfGzzl> queryZyPatientInfoList(ExHisZyChargeInfGzzl exHisZyChargeInfGzzl) {
         return exHisChargeInfGzzlMapper.queryZyPatientInfoList(exHisZyChargeInfGzzl);
     }
@@ -53,7 +53,7 @@ public class ExHisChargeInfGzzlServiceImpl extends ServiceImpl<ExHisChargeInfGzz
      * @return
      */
     @Override
-    @DS("multi-datasource1")
+    @DS("multi-datasourceGZZL")
     public Page<PdDosage> queryMzPatientInfoList(Page<PdDosage> page,PdDosage pdDosage) {
         return exHisChargeInfGzzlMapper.queryMzPatientInfoList(page,pdDosage);
     }
@@ -64,7 +64,7 @@ public class ExHisChargeInfGzzlServiceImpl extends ServiceImpl<ExHisChargeInfGzz
      * @return
      */
     @Override
-    @DS("multi-datasource1")
+    @DS("multi-datasourceGZZL")
     public Page<ExHisChargeCodeGzzl> queryHisChargeCode(Page<ExHisChargeCodeGzzl> page,ExHisChargeCodeGzzl exHisChargeCodeGzzl) {
         return exHisChargeInfGzzlMapper.queryHisChargeCode(page,exHisChargeCodeGzzl);
     }
