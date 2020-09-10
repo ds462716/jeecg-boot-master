@@ -1729,22 +1729,24 @@ ORDER BY
         select
         c.type as "type",
         ROUND(sum(c.y),2) as y ,
-        sum(c.x)  as x,
+        ROUND(sum(c.x +c.s),2)  as x,
         ROUND(sum(c.y),2) as 采购金额 ,
-        sum(c.x)  as 收费金额
+        ROUND(sum(c.x  +c.s),2)  as 收费金额
         from(
         SELECT c.depart_name AS "type",
         (a.product_num * a.purchase_price) AS "y",
-        "" as "x"
+        "" as "x",
+        "" as "s"
         FROM pd_stock_record_detail a
         left join pd_stock_record b on a.record_id=b.id
-		left join sys_depart c on c.id=b.in_depart_id
+        left join sys_depart c on c.id=b.in_depart_id
         where
         b.record_type ='1'
         and b.del_flag='0'
         and a.del_flag='0'
         AND b.in_type ='1'
         AND b.audit_status ='2'
+        and c.depart_type in(1,2)
         <if test="entity.departIdList != null and entity.departIdList.size() > 0">
             AND b.in_depart_id IN
             <foreach collection="entity.departIdList" item="item" separator="," open="(" close=")">
@@ -1754,14 +1756,15 @@ ORDER BY
         <if test="entity.yearMonth != null and entity.yearMonth != ''">
             AND DATE_FORMAT(b.create_time, '%Y-%m') = #{entity.yearMonth}
         </if>
-         and c.depart_type in(1,2)
         UNION ALL
+
         select  c.depart_name AS "type",
         "" AS "y",
-        (d.dosage_count * d.amount_money) AS "x"
+        (d.dosage_count * d.amount_money) AS "x",
+        "" as "s"
         from pd_dosage_detail d
         left join pd_dosage  e on e.id=d.dosage_id
-		left join sys_depart c on c.id=e.depart_id
+        left join sys_depart c on c.id=e.depart_id
         where d.hy_charged='0'
         and d.del_flag='0'
         and e.del_flag='0'
@@ -1774,6 +1777,24 @@ ORDER BY
         <if test="entity.yearMonth != null and entity.yearMonth != ''">
             AND DATE_FORMAT(e.create_time, '%Y-%m') = #{entity.yearMonth}
         </if>
+        UNION ALL
+        select c.depart_name AS "type",
+        "" as "y",
+        "" as "x",
+        f.test_item_cost  as "s"
+        from ex_inspection_items	  f
+        left join ex_lab_instr_inf  g on f.instr_code=g.instr_code
+        left join sys_depart c on c.id=g.depart_id
+        where  1=1 and f.instr_code is not null
+        <if test="entity.departIdList != null and entity.departIdList.size() > 0">
+            AND g.depart_id IN
+            <foreach collection="entity.departIdList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="entity.yearMonth != null and entity.yearMonth != ''">
+            AND DATE_FORMAT(f.create_time, '%Y-%m') = #{entity.yearMonth}
+        </if>
         ) c
         GROUP BY type
         order by y desc limit 0,10
@@ -1785,15 +1806,26 @@ ORDER BY
 
     <!-- 全院耗材占比数据查 -->
     <select id="queryConsumptionView" resultType="org.jeecg.modules.pd.vo.RpPurchaseUseReportPage">
-         select sum(stock_num) as "count",
-        case
+       select
+        sum(a.product_num * a.purchase_price) as "count",
+			case
         when is_charge = '0' then "可收费"
         when is_charge = '1' then "不可收费"
         end as "item"
-       from pd_product_stock_total  a
-       left join pd_product  b on a.product_id=b.id
-      where a.stock_num>0
-       group by is_charge
+        from pd_stock_record_detail a
+		 left join pd_stock_record b on a.record_id=b.id
+		 left join pd_product c  on c.id=a.product_id
+		 where 	1=1
+        <if test="entity.departIdList != null and entity.departIdList.size() > 0">
+            AND b.in_depart_id IN
+            <foreach collection="entity.departIdList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="entity.yearMonth != null and entity.yearMonth != ''">
+            AND DATE_FORMAT(b.create_time, '%Y-%m') = #{entity.yearMonth}
+        </if>
+		  group by is_charge
     </select>
 
 
@@ -1829,16 +1861,22 @@ ORDER BY
 
     <!-- 科室收费金额占比 -->
     <select id="queryDepartChargeView" resultType="org.jeecg.modules.pd.vo.RpPurchaseUseReportPage">
-     select
-     sum(dosage_count) as "count",
-     d.depart_name as "item"
-     from pd_dosage_detail a
-      left join pd_dosage b on b.id=a.dosage_id
-      left join pd_product c on c.id=a.product_id
-      left join sys_depart d on d.id=b.depart_id
-      where a.hy_charged='0'
+        select ROUND(sum(c.count),2) as "count",
+        c.item as "item"
+        from(
+        select
+        (a.dosage_count * a.selling_price) as "count",
+        d.depart_name as "item"
+        from pd_dosage_detail a
+        left join pd_dosage b on b.id=a.dosage_id
+        left join pd_product c on c.id=a.product_id
+        left join sys_depart d on d.id=b.depart_id
+        where a.hy_charged='0'
         and b.del_flag='0'
         and a.del_flag='0'
+        <if test="entity.yearMonth != null and entity.yearMonth != ''">
+            AND DATE_FORMAT(b.create_time, '%Y-%m') = #{entity.yearMonth}
+        </if>
         <if test="entity.departIdList != null and entity.departIdList.size() > 0">
             AND b.depart_id IN
             <foreach collection="entity.departIdList" item="item" separator="," open="(" close=")">
@@ -1848,11 +1886,27 @@ ORDER BY
         <if test="entity.departIdList == null || entity.departIdList.size() == 0">
             and d.depart_type in('2')
         </if>
+        union all
+        select
+
+        f.test_item_cost  as "count",
+        c.depart_name AS "item"
+        from ex_inspection_items	  f
+        left join ex_lab_instr_inf  g on f.instr_code=g.instr_code
+        left join sys_depart c on c.id=g.depart_id
+        where  1=1  and f.instr_code is not null
         <if test="entity.yearMonth != null and entity.yearMonth != ''">
-            AND DATE_FORMAT(b.create_time, '%Y-%m') = #{entity.yearMonth}
+            AND DATE_FORMAT(f.create_time, '%Y-%m') = #{entity.yearMonth}
         </if>
-     group by  b.depart_id
-      order by count desc limit 0,10
+        <if test="entity.departIdList != null and entity.departIdList.size() > 0">
+            AND g.depart_id IN
+            <foreach collection="entity.departIdList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        ) c
+        group by  c.item
+        order by c.count desc limit 0,10
     </select>
 
     <!-- 根据科室统计   -采购收费趋势图 -->
