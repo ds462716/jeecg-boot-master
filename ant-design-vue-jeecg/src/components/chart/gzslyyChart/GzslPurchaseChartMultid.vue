@@ -39,7 +39,6 @@
           toolbox: {show: true,},
           xAxis: {
             type: 'category',
-            boundaryGap: false,
             //data: ['一月份', '一月份', '一月份', '一月份', '一月份', '一月份', '一月份', '一月份', '一月份', '一月份', '一月份', '一月份']
             data: []
           },
