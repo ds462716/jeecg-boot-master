@@ -22,7 +22,6 @@ import org.jeecg.modules.pd.entity.PdStockRecordDetail;
 import org.jeecg.modules.pd.service.IPdDepartService;
 import org.jeecg.modules.pd.service.IPdProductStockService;
 import org.jeecg.modules.pd.service.IPdStockRecordService;
-import org.jeecg.modules.pd.util.UUIDUtil;
 import org.jeecg.modules.system.entity.SysDepart;
 import org.jeecg.modules.system.entity.SysUser;
 import org.jeecg.modules.system.service.ISysUserService;
@@ -30,7 +29,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.jws.WebService;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Service
 @WebService(serviceName = "WebServiceService", // 与接口中指定的name一致
@@ -778,7 +780,7 @@ public class WebServiceServiceImpl implements WebServiceService {
      *
      * @param str
      * @return
-     */
+     *//*
     @Override
     public String sendOutboundOrderToSpd(String str) {
         Map<String, Object> retMap = new HashMap<String, Object>();
@@ -831,10 +833,12 @@ public class WebServiceServiceImpl implements WebServiceService {
                 pdStockRecord.setRecordNo(UUIDUtil.generateOrderNoByType(PdConstant.ORDER_NO_FIRST_LETTER_CK));
                 JSONArray orderArr = JSONObject.parseArray(MapUtils.getObject(map, "List").toString());
                 List<PdStockRecordDetail> list = JSONArray.parseArray(orderArr.toJSONString(), PdStockRecordDetail.class);
-                pdStockRecord.setPdStockRecordDetailList(list);
-                pdStockRecord.setAuditStatus(PdConstant.AUDIT_STATE_2);
-                pdStockRecord.setRecordType(PdConstant.RECODE_TYPE_2);
-      //       pdStockRecordService.saveRecordInterface(pdStockRecord);
+                PdStockRecord pdStockRecords = new PdStockRecord();
+                pdStockRecords.setOutDepartId(outStoreroomId); //出库库房Id
+                pdStockRecords.setInDepartId(inStoreroomId);
+                pdStockRecords.setPdStockRecordDetailList(list);
+                // 出库
+                pdStockRecordService.addOutForCabinet(pdStockRecord);
                 retMap.put("result",PdConstant.SUCCESS_0);
                 retMap.put("message", "成功");
             } else {
@@ -849,7 +853,78 @@ public class WebServiceServiceImpl implements WebServiceService {
             //TODO 日志记录
             return JSON.toJSONString(retMap);
         }
+    }*/
+
+    /**
+     * 耗材柜出库单接口
+     *
+     * @param str
+     * @return
+     */
+    @Override
+    public String sendOutboundOrderToSpd(String str) {
+        Map<String, Object> retMap = new HashMap<String, Object>();
+        if (str == null || "".equals(str.trim())) {
+            retMap.put("result", PdConstant.FAIL_1);
+            retMap.put("message", "推送数据为空");
+            return JSON.toJSONString(retMap);
+        }
+        try {
+            System.out.println("#######耗材柜出库单接口报文：" + str);
+            Map<Object, Object> map = (Map<Object, Object>) JSONObject.parse(str);
+            if (map != null && !MapUtils.isEmpty(map)) {
+                String outStoreroomId = MapUtils.getString(map, "outStoreroomId");//出库库房ID
+                String inStoreroomId = MapUtils.getString(map, "inStoreroomId");//入库库房ID
+                String userId = MapUtils.getString(map, "userId");//操作人ID
+                if (StringUtils.isEmpty(outStoreroomId) ||
+                        StringUtils.isEmpty(inStoreroomId) ||
+                        StringUtils.isEmpty(userId)) {
+                    retMap.put("result", PdConstant.FAIL_1);
+                    retMap.put("message", "出库/入库库房ID或操作人信息不能为空！");
+                    return JSON.toJSONString(retMap);
+                }
+                SysUser user = sysUserService.getById(userId);
+                if (user == null || user.getUsername() == null) {
+                    retMap.put("result", PdConstant.FAIL_1);
+                    retMap.put("message", "根据用户id获取不到有效的用户信息");
+                    return JSON.toJSONString(retMap);
+                }
+                SysDepart outSysDepart = pdDepartService.getById(outStoreroomId);
+                if (outSysDepart == null || outSysDepart.getDepartName() == null) {
+                    retMap.put("result", PdConstant.FAIL_1);
+                    retMap.put("message", "根据出库库房Id获取不到有效信息");
+                    return JSON.toJSONString(retMap);
+                }
+                SysDepart inSysDepart = pdDepartService.getById(inStoreroomId);
+                if (inSysDepart == null || inSysDepart.getDepartName() == null) {
+                    retMap.put("result", PdConstant.FAIL_1);
+                    retMap.put("message", "根据入库库房Id获取不到有效信息");
+                    return JSON.toJSONString(retMap);
+                }
+
+                JSONArray orderArr = JSONObject.parseArray(MapUtils.getObject(map, "List").toString());
+                List<PdStockRecordDetail> list = JSONArray.parseArray(orderArr.toJSONString(), PdStockRecordDetail.class);
+
+                PdStockRecord pdStockRecord = new PdStockRecord();
+                pdStockRecord.setOutDepartId(outStoreroomId); //出库库房Id
+                pdStockRecord.setInDepartId(inStoreroomId);
+                pdStockRecord.setPdStockRecordDetailList(list);
+                // 出库
+                pdStockRecordService.addOutForCabinet(pdStockRecord);
+
+                retMap.put("result", PdConstant.SUCCESS_0);
+                retMap.put("message", "成功");
+            } else {
+                retMap.put("result", PdConstant.FAIL_1);
+                retMap.put("message", "推送数据为空");
+            }
+            return JSON.toJSONString(retMap);
+        } catch (Exception e) {
+            e.printStackTrace();
+            retMap.put("result", PdConstant.FAIL_1);
+            retMap.put("message", "失败，日志：" + e.getMessage());
+            //TODO 日志记录
+            return JSON.toJSONString(retMap);
+        }
     }
-
-
 }

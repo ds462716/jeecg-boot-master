@@ -17,8 +17,6 @@ import org.jeecg.modules.pd.mapper.*;
 import org.jeecg.modules.pd.service.*;
 import org.jeecg.modules.pd.util.UUIDUtil;
 import org.jeecg.modules.pd.vo.PdGoodsAllocationPage;
-import org.jeecg.modules.pd.vo.RpInAndOutReportPage;
-import org.jeecg.modules.pd.vo.RpSupplierUseReportPage;
 import org.jeecg.modules.system.entity.SysDepart;
 import org.jeecg.modules.system.entity.SysPermission;
 import org.jeecg.modules.system.service.ISysDepartService;
@@ -1940,5 +1938,32 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
             }
         }
         return pdStockRecord.getId();
+    }
+
+    /**
+     * 耗材柜出库接口实现
+     * @param pdStockRecord
+     * @return
+     */
+    @Override
+    public String addOutForCabinet(PdStockRecord pdStockRecord) {
+        pdStockRecord.setRecordType(PdConstant.RECODE_TYPE_2); // 出库
+        pdStockRecord.setRecordNo(UUIDUtil.generateOrderNoByType(PdConstant.ORDER_NO_FIRST_LETTER_CK));
+        pdStockRecord.setSubmitStatus(PdConstant.SUBMIT_STATE_2); // 已提交
+        pdStockRecord.setAuditStatus(PdConstant.AUDIT_STATE_2);   //审核状态
+
+        pdStockRecord.setOutType(PdConstant.OUT_TYPE_2);//出库类型  2:科室出库
+        pdStockRecord.setSubmitDate(new Date());//出入库时间
+        pdStockRecord.setRemarks("高值耗材柜出/入库单");
+        pdStockRecord.setDelFlag(PdConstant.DEL_FLAG_0);
+
+        String recordId = this.saveOutStockRecord(pdStockRecord, pdStockRecord.getPdStockRecordDetailList());
+        // 自动审批
+        PdStockRecord auditEntity = new PdStockRecord();
+        BeanUtils.copyProperties(pdStockRecord,auditEntity);
+        auditEntity.setAuditStatus(PdConstant.AUDIT_STATE_2);
+        auditEntity.setRefuseReason("系统自动审批通过");
+        this.auditOut(auditEntity,pdStockRecord);
+        return recordId;
     }
 }

@@ -4,8 +4,6 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.jeecg.modules.pd.entity.*;
-import org.jeecg.modules.pd.vo.RpInAndOutReportPage;
-import org.jeecg.modules.pd.vo.RpSupplierUseReportPage;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -183,5 +181,12 @@ public interface IPdStockRecordService extends IService<PdStockRecord> {
 	 * @return
 	 */
 	public String addOutForTerminal(PdStockRecord pdStockRecord, List<PdProductStock> stockList);
+
+	/**
+	 * 耗材柜出库接口
+	 * @param pdStockRecord
+	 * @return
+	 */
+	public String addOutForCabinet(PdStockRecord pdStockRecord);
 
 }
