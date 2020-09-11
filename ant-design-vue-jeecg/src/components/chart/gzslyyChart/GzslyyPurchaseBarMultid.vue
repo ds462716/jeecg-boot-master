@@ -4,9 +4,7 @@
     <h4 :style="{ marginBottom: '20px' }">{{ title }}</h4>
     <v-chart :options="polar"  :style="{width:'1600px'}"  />
   </div>
-</template>
-
-<script>
+</template><script>
 
   import { httpAction ,getAction} from '@/api/manage'
   import { validateDuplicateValue } from '@/utils/util'
@@ -57,11 +55,7 @@
               }
             }
           ],
-          yAxis: [
-            {
-              type: 'value'
-            }
-          ],
+          yAxis: [{type: 'value'}],
           series: [
             {
               name: '采购金额',
@@ -105,3 +99,4 @@
     }
   }
 </script>
+

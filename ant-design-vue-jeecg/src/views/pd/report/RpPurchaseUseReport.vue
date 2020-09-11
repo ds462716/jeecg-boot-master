@@ -39,8 +39,10 @@
           <a-card :bordered="false">
            <!--<bar-multid title="采购收费对照表" :height="height" :width="width"  :fields="visitFields1" :dataSource="dataSource1"/>
                <line-chart-multid title="采购收费趋势表" :height="height" :width="width"  :dataSource="dataSource2"/>-->
-            <gzslyy-purchase-bar-multid  title="采购收费对照图"  :dataSource="dataSource1"/>
-            <gzsl-chart-multid title="采购收费趋势图"  :dataSource="dataSource1"/>
+            <!--采购收费对照图-->
+            <gzslyy-purchase-bar-multid  :height="height" :width="width"/>
+            <!--采购收费趋势图-->
+            <gzsl-chart-multid :height="height" :width="width" />
             <div class="table-operator">
             </div>
           </a-card>
@@ -69,10 +71,12 @@
           <a-card :bordered="false">
             <!--<line-chart-multid title="采购收费趋势图" :height="height" :width="width"  :dataSource="dataSource4"/>
             <bar-multid title="采购收费柱状图" :height="height" :width="width"  :fields="visitFields2" :dataSource="dataSource3"/>-->
-            <gzsl-pu-bar-multid  title="采购收费柱状图"/>
-            <gzsl-purchase-chart-multid title="采购收费趋势图"   :dataSource="dataSource4"/>
+            <!--采购收费柱状图-->
+            <gzsl-pu-bar-multid  :height="height" :width="width"/>
+            <!--采购收费趋势图-->
+            <gzsl-purchase-chart-multid :height="height" :width="width"/>
 
-                <div style="width:800px;height:400px;float:left">
+             <div style="width:800px;height:400px;float:left">
             <pie title="采购科室金额占比"  :height="height"  :dataSource="dataSource5"/>
                </div>
             <div style="width:800px;height:400px;float:right">
@@ -92,10 +96,10 @@
               <a-row :gutter="24">
                 <a-col :md="6" :sm="8">
                   <a-form-item label="年月">
-                    <a-month-picker placeholder="选择年月" @change="monthChangeUse"/>
+                    <a-month-picker placeholder="选择年月" @change="monthChangeUse" v-model="queryParam3.ym"/>
                   </a-form-item>
                 </a-col>
-                <a-col :md="6" :sm="8">
+                <!--<a-col :md="6" :sm="8">
                   <a-form-item label="科室">
                     <a-select
                       mode="multiple"
@@ -114,7 +118,7 @@
                       <a-select-option v-for="d in departData" :key="d.id">{{d.departName}}</a-select-option>
                     </a-select>
                   </a-form-item>
-                </a-col>
+                </a-col>-->
                 <a-col :md="6" :sm="8">
             <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
              <a-button type="primary" @click="searchQuery(3)" icon="search">查询</a-button>
@@ -126,8 +130,9 @@
           </div>
           <!--查询按钮结束-->
           <a-card :bordered="false">
+            <!--采购环比——同比图-->
            <!-- <bar-multid title="采购环比——同比图" :height="height" :width="width" />-->
-            <hb-bar-multid title="采购环比——同比图" :height="height" :width="width" />
+            <hb-bar-multid   :height="height" :width="width" />
             <div class="table-operator">
             </div>
           </a-card>
@@ -142,7 +147,7 @@
                 <a-row :gutter="24">
                 <a-col :md="6" :sm="8">
                   <a-form-item label="年月">
-                    <a-month-picker placeholder="选择年月" @change="monthChangeAllConion"/>
+                    <a-month-picker placeholder="选择年月" @change="monthChangeAllConion" v-model="queryParam4.ym"/>
                   </a-form-item>
                 </a-col>
                <a-col :md="6" :sm="8">

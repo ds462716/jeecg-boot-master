@@ -3,6 +3,7 @@ package org.jeecg.modules.pd.service.impl;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.pd.entity.PdStatisticalReport;
 import org.jeecg.modules.pd.entity.PdStockRecordDetail;
 import org.jeecg.modules.pd.mapper.PdStatisticalReportMapper;
@@ -205,8 +206,34 @@ public class PdPdStatisticalReportImpl extends ServiceImpl<PdStatisticalReportMa
      * @return
      */
     @Override
-    public List<RpPurchaseUseReportPage> queryPurchaseCountView(RpPurchaseUseReportPage purchaseUseReportPage) {
-        return baseMapper.queryPurchaseCountView(purchaseUseReportPage);
+    public Map<String, Object> queryPurchaseCountView(RpPurchaseUseReportPage purchaseUseReportPage) {
+        Map<String,Object> map=new HashMap<String, Object>();
+        if (oConvertUtils.isNotEmpty(purchaseUseReportPage.getDepartIds()) && !"undefined".equals(purchaseUseReportPage.getDepartIds())) {
+            purchaseUseReportPage.setDepartIdList(Arrays.asList(purchaseUseReportPage.getDepartIds().split(",")));
+        }
+        List<RpPurchaseUseReportPage>  list= baseMapper.queryPurchaseCountView(purchaseUseReportPage);
+        //数据格式
+        Map<String,Object> map1=new HashMap<>();
+        map1.put("name","采购金额");
+        Map<String,Object> map2=new HashMap<>();
+        map2.put("name","收费金额");
+        List<String> str = new ArrayList<>();
+        List<Map> list_1=new ArrayList<>();
+        List<Double> list3=new ArrayList<>();
+        List<Double> list4=new ArrayList<>();
+        for(RpPurchaseUseReportPage info:list){
+            String type=info.getType();
+            list3.add(info.getY());
+            list4.add(info.getX());
+            str.add(type);
+        }
+        map1.put("data",list3);
+        map2.put("data",list4);
+        list_1.add(map1);
+        list_1.add(map2);
+        map.put("dataSource1",list_1);
+        map.put("visitFields1",str);
+        return map;
     }
 
     /**
@@ -218,56 +245,45 @@ public class PdPdStatisticalReportImpl extends ServiceImpl<PdStatisticalReportMa
     public List<RpPurchaseUseReportPage> queryConsumptionView(RpPurchaseUseReportPage purchaseUseReportPage) {
         return baseMapper.queryConsumptionView(purchaseUseReportPage);
     }
-
-    /**
-     *  综合统计报表    采购科室金额占比
-     * @param purchaseUseReportPage
-     * @return
-     */
-    @Override
-    public List<RpPurchaseUseReportPage> queryDepartContionView(RpPurchaseUseReportPage purchaseUseReportPage) {
-        return baseMapper.queryDepartContionView(purchaseUseReportPage);
-    }
-
-    /**
-     *  综合统计报表    科室收费金额占比
-     * @param purchaseUseReportPage
-     * @return
-     */
-    @Override
-    public List<RpPurchaseUseReportPage> queryDepartChargeView(RpPurchaseUseReportPage purchaseUseReportPage) {
-        return baseMapper.queryDepartChargeView(purchaseUseReportPage);
-    }
-
-    /**
-     *  综合统计报表    采购收费趋势图（根据科室统计）
-     * @param purchaseUseReportPage
-     * @return
-     */
-    @Override
-    public List<RpPurchaseUseReportPage> queryDepartpurchaseView(RpPurchaseUseReportPage purchaseUseReportPage) {
-        return baseMapper.queryDepartpurchaseView(purchaseUseReportPage);
-    }
-
-
-    /**
-     *  综合统计报表    采购收费趋势表（根据月份统计）
-     * @param purchaseUseReportPage
-     * @return
-     */
-    @Override
-    public List<RpPurchaseUseReportPage> queryPurchaseTableView(RpPurchaseUseReportPage purchaseUseReportPage) {
-        return baseMapper.queryPurchaseTableView(purchaseUseReportPage);
-    }
-
     /**
      *  综合统计报表    采购收费柱状图(根据科室统计)
      * @param purchaseUseReportPage
      * @return
      */
     @Override
-    public List<RpPurchaseUseReportPage> queryDepartPurchaseCountView(RpPurchaseUseReportPage purchaseUseReportPage) {
-        return baseMapper.queryDepartPurchaseCountView(purchaseUseReportPage);
+    public Map<String, Object> queryDepartPurchaseCountView(RpPurchaseUseReportPage purchaseUseReportPage) {
+        Map<String,Object> resultMap = new HashMap<>();
+        if (oConvertUtils.isNotEmpty(purchaseUseReportPage.getDepartIds()) && !"undefined".equals(purchaseUseReportPage.getDepartIds())) {
+            purchaseUseReportPage.setDepartIdList(Arrays.asList(purchaseUseReportPage.getDepartIds().split(",")));
+        }
+        //采购科室金额占比
+        List<RpPurchaseUseReportPage> contionList= baseMapper.queryDepartContionView(purchaseUseReportPage);
+        resultMap.put("dataSource5",contionList);
+        //收费金额占比
+        List<RpPurchaseUseReportPage> chargeList= baseMapper.queryDepartChargeView(purchaseUseReportPage);
+        resultMap.put("dataSource6",chargeList);
+        List<RpPurchaseUseReportPage> list= baseMapper.queryDepartPurchaseCountView(purchaseUseReportPage);
+        Map<String,Object> map1=new HashMap<>();
+        map1.put("name","采购金额");
+        Map<String,Object> map2=new HashMap<>();
+        map2.put("name","收费金额");
+        List<String> str = new ArrayList<>();
+        List<Map> list_1=new ArrayList<>();
+        List<Double> list3=new ArrayList<>();
+        List<Double> list4=new ArrayList<>();
+        for(RpPurchaseUseReportPage info:list){
+            String type=info.getType();
+            list3.add(info.getY());
+            list4.add(info.getX());
+            str.add(type);
+        }
+        map1.put("data",list3);
+        map2.put("data",list4);
+        list_1.add(map1);
+        list_1.add(map2);
+        resultMap.put("dataSource3",list_1);
+        resultMap.put("visitFields2",str);
+        return resultMap;
     }
 
 

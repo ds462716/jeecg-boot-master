@@ -1,13 +1,9 @@
 package org.jeecg.modules.pd.controller;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import jdk.nashorn.internal.scripts.JS;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.PdConstant;
@@ -35,7 +31,10 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 /**
 * @Description: 统计报表
@@ -78,7 +77,7 @@ public class PdStatisticalReportController extends JeecgController<PdStatistical
      * 导出excel(供应商用量使用统计导出)
      *
      * @param request
-     * @param pdStockRecord
+     * @param rpSupplierUseReportPage
      */
     @RequestMapping(value = "/exportSupplierUseReportXls")
     public ModelAndView exportSupplierUseReportXls(HttpServletRequest request, RpSupplierUseReportPage rpSupplierUseReportPage) {
@@ -228,7 +227,7 @@ public class PdStatisticalReportController extends JeecgController<PdStatistical
 
     /**
      * zxh部门用量明细统计报表
-     * @param rpUseDetailReportPage
+     * @param rpDepartUseDetailReportPage
      * @param pageNo
      * @param pageSize
      * @return
@@ -500,7 +499,7 @@ public class PdStatisticalReportController extends JeecgController<PdStatistical
 
     /**
      * zxh库存统计报表
-     * @param rpDepartUseReportPage
+     * @param rpDepartStockReportPage
      * @param pageNo
      * @param pageSize
      * @return
@@ -528,7 +527,7 @@ public class PdStatisticalReportController extends JeecgController<PdStatistical
      * zxh导出excel(库存统计报表)
      *
      * @param request
-     * @param rpDepartUseReportPage
+     * @param rpDepartStockReportPage
      */
     @RequestMapping(value = "/exportDepartStockReportXls")
     public ModelAndView exportDepartStockReportXls(HttpServletRequest request, RpDepartStockReportPage rpDepartStockReportPage) {
@@ -553,7 +552,7 @@ public class PdStatisticalReportController extends JeecgController<PdStatistical
 
     /**
      * zxh部门用量明细统计报表
-     * @param rpUseDetailReportPage
+     * @param rpDepartStockDetailReportPage
      * @param pageNo
      * @param pageSize
      * @return
@@ -598,7 +597,7 @@ public class PdStatisticalReportController extends JeecgController<PdStatistical
 
     /**
      * zxh用量明细统计报表
-     * @param rpUseDetailReportPage
+     * @param rpReagentUseDetailReportPage
      * @param pageNo
      * @param pageSize
      * @return
@@ -638,39 +637,7 @@ public class PdStatisticalReportController extends JeecgController<PdStatistical
      */
     @GetMapping(value = "queryDepartContionView")
     public Result<?> queryDepartContionView(RpPurchaseUseReportPage purchaseUseReportPage){
-        Map map=new HashMap();
-        if (oConvertUtils.isNotEmpty(purchaseUseReportPage.getDepartIds()) && !"undefined".equals(purchaseUseReportPage.getDepartIds())) {
-            purchaseUseReportPage.setDepartIdList(Arrays.asList(purchaseUseReportPage.getDepartIds().split(",")));
-        }
-         //采购科室金额占比
-        List<RpPurchaseUseReportPage> contionList= pdStatisticalReportService.queryDepartContionView(purchaseUseReportPage);
-        map.put("dataSource5",contionList);
-        //收费金额占比
-        List<RpPurchaseUseReportPage> chargeList= pdStatisticalReportService.queryDepartChargeView(purchaseUseReportPage);
-        map.put("dataSource6",chargeList);
-        //采购收费趋势图
-        //采购收费柱状图 --根据科室统计
-        List<RpPurchaseUseReportPage> list=pdStatisticalReportService.queryDepartPurchaseCountView(purchaseUseReportPage);
-        Map<String,Object> map1=new HashMap<>();
-        map1.put("name","采购金额");
-        Map<String,Object> map2=new HashMap<>();
-        map2.put("name","收费金额");
-        List<String> str = new ArrayList<>();
-        List<Map> list_1=new ArrayList<>();
-        List<Double> list3=new ArrayList<>();
-        List<Double> list4=new ArrayList<>();
-        for(RpPurchaseUseReportPage info:list){
-            String type=info.getType();
-            list3.add(info.getY());
-            list4.add(info.getX());
-            str.add(type);
-        }
-        map1.put("data",list3);
-        map2.put("data",list4);
-        list_1.add(map1);
-        list_1.add(map2);
-        map.put("dataSource3",list_1);
-        map.put("visitFields2",str);
+        Map<String,Object> map=pdStatisticalReportService.queryDepartPurchaseCountView(purchaseUseReportPage);
         return Result.ok(map);
     }
 
@@ -680,32 +647,7 @@ public class PdStatisticalReportController extends JeecgController<PdStatistical
      */
     @GetMapping(value = "queryPurchaseCountView")
     public Result<?> queryPurchaseCountView(RpPurchaseUseReportPage purchaseUseReportPage){
-        Map<String,Object> map=new HashMap<String, Object>();
-        if (oConvertUtils.isNotEmpty(purchaseUseReportPage.getDepartIds()) && !"undefined".equals(purchaseUseReportPage.getDepartIds())) {
-            purchaseUseReportPage.setDepartIdList(Arrays.asList(purchaseUseReportPage.getDepartIds().split(",")));
-        }
-       List<RpPurchaseUseReportPage> list=pdStatisticalReportService.queryPurchaseCountView(purchaseUseReportPage);
-        //数据格式
-        Map<String,Object> map1=new HashMap<>();
-        map1.put("name","采购金额");
-        Map<String,Object> map2=new HashMap<>();
-        map2.put("name","收费金额");
-        List<String> str = new ArrayList<>();
-        List<Map> list_1=new ArrayList<>();
-        List<Double> list3=new ArrayList<>();
-        List<Double> list4=new ArrayList<>();
-        for(RpPurchaseUseReportPage info:list){
-            String type=info.getType();
-            list3.add(info.getY());
-            list4.add(info.getX());
-            str.add(type);
-        }
-        map1.put("data",list3);
-        map2.put("data",list4);
-        list_1.add(map1);
-        list_1.add(map2);
-        map.put("dataSource1",list_1);
-        map.put("visitFields1",str);
+        Map<String,Object> map= pdStatisticalReportService.queryPurchaseCountView(purchaseUseReportPage);
         return Result.ok(map);
     }
 
