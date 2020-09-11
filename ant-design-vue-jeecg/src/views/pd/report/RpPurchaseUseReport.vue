@@ -56,26 +56,6 @@
                     <a-month-picker placeholder="选择年月" @change="monthChange" v-model="queryParam2.ym"/>
                   </a-form-item>
                 </a-col>
-               <!-- <a-col :md="6" :sm="8">
-                  <a-form-item label="科室">
-                    <a-select
-                      mode="multiple"
-                      showSearch
-                      :departId="departValue"
-                      :defaultActiveFirstOption="false"
-                      :allowClear="true"
-                      :showArrow="true"
-                      :filterOption="false"
-                      @search="departHandleSearch"
-                      @focus="departHandleSearch"
-                      :notFoundContent="notFoundContent"
-                      v-model="queryParam2.departIds"
-                      placeholder="请选择科室"
-                    >
-                      <a-select-option v-for="d in departData" :key="d.id">{{d.departName}}</a-select-option>
-                    </a-select>
-                  </a-form-item>
-                </a-col>-->
                 <a-col :md="6" :sm="8">
             <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
                <a-button type="primary" @click="searchQuery(2)" icon="search">查询</a-button>
@@ -361,7 +341,7 @@
 
       //科室采购趋势表
       useLoadData(arg) {
-        //获取采购收费对照表数据
+      /*  //获取采购收费对照表数据
         var params = {};
          params = this.getQueryParams(1);//查询条件
         this.loading = true;
@@ -374,7 +354,7 @@
             this.$message.warning(res.message)
           }
           this.loading = false;
-        })
+        })*/
 
       },
 
@@ -394,14 +374,14 @@
 
       //科室采购消耗表
       chargeUseLoadData(arg) {
-        var params = {};
+         var params = {};
         params = this.getQueryParams(2);//查询条件
         this.loading = true;
         getAction(this.url.queryDepartContionView, params).then((res) => {
           if (res.success) {
-            this.visitFields2 = res.result.visitFields2;//采购收费趋势图fields
-            this.dataSource3 = res.result.dataSource3;//采购收费趋势图
-            this.dataSource4 = res.result.dataSource4;//采购收费趋势图
+            //this.visitFields2 = res.result.visitFields2;//采购收费趋势图fields
+            //this.dataSource3 = res.result.dataSource3;//采购收费趋势图
+            //this.dataSource4 = res.result.dataSource4;//采购收费趋势图
             this.dataSource5 = res.result.dataSource5;//采购科室金额占比
             this.dataSource6 = res.result.dataSource6;//收费金额占比
           } else {
@@ -419,7 +399,7 @@
 
       //全院耗材占比
       allConsumptionData(arg) {
-        var params = {};
+         var params = {};
         params = this.getQueryParams(4);//查询条件
         this.loading = true;
         getAction(this.url.queryConsumptionView, params).then((res) => {
