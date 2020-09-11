@@ -85,7 +85,8 @@
         })
         return rows
       }
-    }
+    },
+
   }
 </script>
 

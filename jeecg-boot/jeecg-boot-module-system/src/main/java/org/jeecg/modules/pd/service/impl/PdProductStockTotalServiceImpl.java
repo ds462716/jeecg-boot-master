@@ -752,7 +752,7 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
             pdproductStock.setProductId(productStock.getProductId());
             pdproductStock.setProductBarCode(productStock.getProductBarCode());
             pdproductStock.setStockNum(ykStockNum);
-            productStock.setPurchasePrice(productStock.getPurchasePrice());
+            pdproductStock.setPurchasePrice(productStock.getPurchasePrice());
             pdproductStock.setProductName(productStock.getProductName());
             pdproductStock.setBatchNo(productStock.getBatchNo());
             pdproductStock.setHuoweiCode(huoWeiCode);

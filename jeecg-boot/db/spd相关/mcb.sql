@@ -224,3 +224,8 @@ INSERT INTO  `sys_permission`    VALUES ('1302806183652024322', 'f0675b52d89100e
 -- 2020年9月8日 10:22:59   字段名称修改
 ALTER TABLE  `pd_purchase_temp`
 CHANGE COLUMN `time_type` `temp_type` varchar(4) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '模板类型' AFTER `depart_parent_id`;
+
+-- 2020年9月11日 10:22:59   智能柜RFID关联库存表增加库存明细ID字段
+ALTER TABLE `h_rfid_info`
+ADD COLUMN `stock_id` varchar(64) NULL COMMENT '对应的库存明细ID' AFTER `user_id`,
+MODIFY COLUMN `depart_parent_id` varchar(64) CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL COMMENT '所属父部门' AFTER `rkmx_id`;

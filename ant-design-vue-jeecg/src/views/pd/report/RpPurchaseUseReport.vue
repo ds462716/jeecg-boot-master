@@ -6,11 +6,6 @@
           <div class="table-page-search-wrapper">
             <a-form layout="inline" @keyup.enter.native="searchQuery(1)">
               <a-row :gutter="24">
-                <!--<a-col :md="6" :sm="8">
-                  <a-form-item label="是否试剂">
-                    <j-dict-select-tag-expand type="list" v-model="queryParam1.productFlag" dictCode="yn" placeholder="请选择"/>
-                  </a-form-item>
-                </a-col>-->
                 <a-col :md="6" :sm="8">
                   <a-form-item label="科室">
                     <a-select
@@ -42,10 +37,10 @@
           </div>
         <!--查询按钮结束-->
           <a-card :bordered="false">
-
-            <bar-multid title="采购收费对照表" :height="height" :width="width"  :fields="visitFields1" :dataSource="dataSource1"/>
-           <!-- <gzsl-bar-multid title="采购收费对照表" :height="height" :width="width" />-->
-            <line-chart-multid title="采购收费趋势表" :height="height" :width="width"  :dataSource="dataSource2"/>
+           <!--<bar-multid title="采购收费对照表" :height="height" :width="width"  :fields="visitFields1" :dataSource="dataSource1"/>
+               <line-chart-multid title="采购收费趋势表" :height="height" :width="width"  :dataSource="dataSource2"/>-->
+            <gzslyy-purchase-bar-multid  title="采购收费对照图"  :dataSource="dataSource1"/>
+            <gzsl-chart-multid title="采购收费趋势图"  :dataSource="dataSource1"/>
             <div class="table-operator">
             </div>
           </a-card>
@@ -92,9 +87,12 @@
           </div>
           <!--查询按钮结束-->
           <a-card :bordered="false">
-            <bar-multid title="采购收费柱状图" :height="height" :width="width"  :fields="visitFields2" :dataSource="dataSource3"/>
-            <line-chart-multid title="采购收费趋势图" :height="height" :width="width"  :dataSource="dataSource4"/>
-               <div style="width:800px;height:400px;float:left">
+            <!--<line-chart-multid title="采购收费趋势图" :height="height" :width="width"  :dataSource="dataSource4"/>
+            <bar-multid title="采购收费柱状图" :height="height" :width="width"  :fields="visitFields2" :dataSource="dataSource3"/>-->
+            <gzsl-pu-bar-multid  title="采购收费柱状图"/>
+            <gzsl-purchase-chart-multid title="采购收费趋势图"   :dataSource="dataSource4"/>
+
+                <div style="width:800px;height:400px;float:left">
             <pie title="采购科室金额占比"  :height="height"  :dataSource="dataSource5"/>
                </div>
             <div style="width:800px;height:400px;float:right">
@@ -148,7 +146,8 @@
           </div>
           <!--查询按钮结束-->
           <a-card :bordered="false">
-            <bar-multid title="采购环比——同比图" :height="height" :width="width" />
+           <!-- <bar-multid title="采购环比——同比图" :height="height" :width="width" />-->
+            <hb-bar-multid title="采购环比——同比图" :height="height" :width="width" />
             <div class="table-operator">
             </div>
           </a-card>
@@ -216,12 +215,25 @@
   import Pie from '@/components/chart/gzslyyChart/GzslPircePie'
   import { JeecgListMixin } from '@/mixins/JeecgListMixin'
   import JDictSelectTagExpand from "@/components/dict/JDictSelectTagExpand"
+  import GzslChartMultid from '@/components/chart/gzslyyChart/GzslChartMultid'
+  import GzslPurchaseChartMultid from '@/components/chart/gzslyyChart/GzslPurchaseChartMultid'
+  import HbBarMultid from '@/components/chart/gzslyyChart/GzslyyHbBarMultid'
+  import GzslyyPurchaseBarMultid from '@/components/chart/gzslyyChart/GzslyyPurchaseBarMultid'
+  import GzslPuBarMultid from '@/components/chart/gzslyyChart/GzslPuBarMultid'
 
   export default {
     name: "RpPurchaseUseReport",
     mixins:[JeecgListMixin],
     components: {
-      BarMultid, LineChartMultid, Pie,JDictSelectTagExpand
+      BarMultid,
+      LineChartMultid,
+      Pie,
+      JDictSelectTagExpand,
+      GzslChartMultid,
+      GzslPurchaseChartMultid,
+      HbBarMultid,
+      GzslyyPurchaseBarMultid,
+      GzslPuBarMultid
     },
     data() {
       return {
@@ -355,9 +367,9 @@
         this.loading = true;
         getAction(this.url.queryPurchaseCountView, params).then((res) => {
           if (res.success) {
-            this.visitFields1 = res.result.visitFields1;//采购收费对照表fields
-            this.dataSource1 = res.result.dataSource1;//采购收费对照表
-            this.dataSource2 = res.result.dataSource2;//采购收费趋势表
+            this.visitFields1 =res.result.visitFields1;//采购收费对照表fields
+            this.dataSource1  =res.result.dataSource1;//采购收费对照表
+            //this.dataSource2  =res.result.dataSource2;//采购收费趋势表
           } else {
             this.$message.warning(res.message)
           }

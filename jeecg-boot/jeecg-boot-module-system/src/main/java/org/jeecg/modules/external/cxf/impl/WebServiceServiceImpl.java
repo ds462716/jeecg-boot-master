@@ -562,6 +562,7 @@ public class WebServiceServiceImpl implements WebServiceService {
                 String productId = MapUtils.getString(map, "productId");
                 String productNo = MapUtils.getString(map, "productNo");
                 String rkmxId = MapUtils.getString(map, "rkmxId");
+                String stockId = MapUtils.getString(map, "stockId");
                 String batchNo = MapUtils.getString(map, "batchNo");
                 String validDate = MapUtils.getString(map, "validDate");
                 //是否在打印标签时加上库存明细ID,

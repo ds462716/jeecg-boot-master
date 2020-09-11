@@ -12,6 +12,7 @@ import org.jeecg.modules.pd.vo.RpUseDetailReportPage;
 import org.jeecg.modules.pd.vo.*;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Description: 空接口
@@ -95,5 +96,5 @@ public interface IPdStatisticalReportService extends IService<PdStatisticalRepor
 
     List<RpPurchaseUseReportPage> queryDepartPurchaseCountView(RpPurchaseUseReportPage entity);
 
-
+    Map<String, Object> queryPurchaseAmountMomTableView(RpPurchaseUseReportPage entity);
 }

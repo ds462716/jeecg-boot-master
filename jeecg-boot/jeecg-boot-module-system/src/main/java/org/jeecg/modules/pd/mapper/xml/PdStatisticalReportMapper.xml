@@ -1707,13 +1707,16 @@ ORDER BY
         AND substr(e.create_time,1,7) &lt;=substr(CURDATE(),1,7)
 
          UNION ALL
-        select DATE_FORMAT(f.create_time, '%Y-%m') AS "type",
+        select
+        DATE_FORMAT(a.create_time, '%Y-%m') AS "type",
         "" as "y",
         "" as "x",
-        f.test_item_cost  as "s" from ex_inspection_items	  f
-        left join ex_lab_instr_inf  g on f.instr_code=g.instr_code
-        where f.create_time > DATE_SUB(CURDATE(), INTERVAL 1 YEAR)
-        AND substr(f.create_time,1,7) &lt;=substr(CURDATE(),1,7)
+        a.item_price as "s"
+        from pd_numerical_inf a
+        left join sys_depart c on c.id=a.depart_id
+        where a.tj_type='1'
+        AND a.create_time > DATE_SUB(CURDATE(), INTERVAL 1 YEAR)
+        AND substr(a.create_time,1,7) &lt;=substr(CURDATE(),1,7)
         <if test="entity.departIdList != null and entity.departIdList.size() > 0">
             AND g.depart_id IN
             <foreach collection="entity.departIdList" item="item" separator="," open="(" close=")">
@@ -1778,22 +1781,22 @@ ORDER BY
             AND DATE_FORMAT(e.create_time, '%Y-%m') = #{entity.yearMonth}
         </if>
         UNION ALL
-        select c.depart_name AS "type",
+        select
+        c.depart_name AS "type",
         "" as "y",
         "" as "x",
-        f.test_item_cost  as "s"
-        from ex_inspection_items	  f
-        left join ex_lab_instr_inf  g on f.instr_code=g.instr_code
-        left join sys_depart c on c.id=g.depart_id
-        where  1=1 and f.instr_code is not null
+        a.item_price as "s"
+        from pd_numerical_inf a
+        left join sys_depart c on c.id=a.depart_id
+        where a.tj_type='1'
+        <if test="entity.yearMonth != null and entity.yearMonth != ''">
+            AND  a.month  = #{entity.yearMonth}
+        </if>
         <if test="entity.departIdList != null and entity.departIdList.size() > 0">
             AND g.depart_id IN
             <foreach collection="entity.departIdList" item="item" separator="," open="(" close=")">
                 #{item}
             </foreach>
-        </if>
-        <if test="entity.yearMonth != null and entity.yearMonth != ''">
-            AND DATE_FORMAT(f.create_time, '%Y-%m') = #{entity.yearMonth}
         </if>
         ) c
         GROUP BY type
@@ -1888,18 +1891,16 @@ ORDER BY
         </if>
         union all
         select
-
-        f.test_item_cost  as "count",
+        a.item_price as "count",
         c.depart_name AS "item"
-        from ex_inspection_items	  f
-        left join ex_lab_instr_inf  g on f.instr_code=g.instr_code
-        left join sys_depart c on c.id=g.depart_id
-        where  1=1  and f.instr_code is not null
+        from pd_numerical_inf a
+        left join sys_depart c on c.id=a.depart_id
+        where a.tj_type='1'
         <if test="entity.yearMonth != null and entity.yearMonth != ''">
-            AND DATE_FORMAT(f.create_time, '%Y-%m') = #{entity.yearMonth}
+            AND  a.month  = #{entity.yearMonth}
         </if>
         <if test="entity.departIdList != null and entity.departIdList.size() > 0">
-            AND g.depart_id IN
+            AND a.depart_id IN
             <foreach collection="entity.departIdList" item="item" separator="," open="(" close=")">
                 #{item}
             </foreach>
@@ -1941,5 +1942,48 @@ where a.hy_charged='0' AND d.depart_type in('1','2')
    <!--   根据月份统计   ——采购收费趋势表-->
     <select id="queryPurchaseTableView" resultType="org.jeecg.modules.pd.vo.RpPurchaseUseReportPage">
 
+    </select>
+
+
+
+    <!--   zxh采购金额环比-->
+    <select id="queryPurchaseAmountMomTableView" resultType="org.jeecg.modules.pd.vo.RpPurchaseUseReportPage">
+        SELECT
+            sdt.depart_name,
+            zz.amount
+        FROM
+            (
+                SELECT
+                    a.in_depart_id,
+                    SUM(
+                        srd.product_num * srd.selling_price
+                    ) AS amount
+                FROM
+                    pd_stock_record a
+                LEFT JOIN pd_stock_record_detail srd ON a.id = srd.record_id
+                LEFT JOIN sys_depart sd ON a.out_depart_id = sd.id
+                WHERE
+                    a.del_flag = '0'
+                AND a.audit_status = '2'
+                AND a.in_depart_id IN (
+                    SELECT
+                        id
+                    FROM
+                        sys_depart a
+                    WHERE
+                        a.depart_type = '2'
+                )
+                AND a.record_type = '2'
+                AND (
+                    a.out_type = '2'
+                    OR a.out_type = '2'
+                )
+                AND sd.depart_type = '1'
+                AND date_format(a.audit_date, '%Y-%m') = #{entity.yearMonth}
+                GROUP BY
+                    a.in_depart_id
+            ) zz
+        LEFT JOIN sys_depart sdt ON zz.in_depart_id = sdt.id
+        order by zz.amount desc
     </select>
 </mapper>

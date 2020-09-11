@@ -12,7 +12,7 @@ import java.util.List;
 @Data
 public class RpPurchaseUseReportPage {
 
-    private String departIds;// 科室名称
+    private String departIds;// 科室ID集合
     private String prpductFlag;// 是否试剂
     private String yearMonth;//年月
     private List<String> departIdList; /*多个部门集合*/
@@ -25,4 +25,7 @@ public class RpPurchaseUseReportPage {
     private String item;
     private Double 采购金额;
     private Double 收费金额;
+    private String departName;// 科室名称
+    private String amount;
+
 }

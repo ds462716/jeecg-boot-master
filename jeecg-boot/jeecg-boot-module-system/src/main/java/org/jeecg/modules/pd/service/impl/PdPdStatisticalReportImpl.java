@@ -7,14 +7,11 @@ import org.jeecg.modules.pd.entity.PdStatisticalReport;
 import org.jeecg.modules.pd.entity.PdStockRecordDetail;
 import org.jeecg.modules.pd.mapper.PdStatisticalReportMapper;
 import org.jeecg.modules.pd.service.IPdStatisticalReportService;
-import org.jeecg.modules.pd.vo.RpDepartUseReportPage;
-import org.jeecg.modules.pd.vo.RpReDetailReportPage;
-import org.jeecg.modules.pd.vo.RpSupplierUseReportPage;
-import org.jeecg.modules.pd.vo.RpUseDetailReportPage;
 import org.jeecg.modules.pd.vo.*;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import java.math.BigDecimal;
+import java.util.*;
 
 /**
  * @Description: 空实现
@@ -271,5 +268,96 @@ public class PdPdStatisticalReportImpl extends ServiceImpl<PdStatisticalReportMa
     @Override
     public List<RpPurchaseUseReportPage> queryDepartPurchaseCountView(RpPurchaseUseReportPage purchaseUseReportPage) {
         return baseMapper.queryDepartPurchaseCountView(purchaseUseReportPage);
+    }
+
+
+
+    /**
+     *  zxh采购环比
+     * @param purchaseUseReportPage
+     * @return
+     */
+    @Override
+    public Map<String, Object> queryPurchaseAmountMomTableView(RpPurchaseUseReportPage purchaseUseReportPage) {
+        Map<String,Object> resultMap = new HashMap<>();
+        if(!"".equals(purchaseUseReportPage.getYearMonth()) && purchaseUseReportPage.getYearMonth()!=null){
+            List<RpPurchaseUseReportPage> pdPurchaseAmountMomReportPages = baseMapper.queryPurchaseAmountMomTableView(purchaseUseReportPage);
+        }else{
+            //获得当前月的上个月
+           // String date_i = DateUtils.getLastMonth(1);
+            String date_i = "2020-08";
+            purchaseUseReportPage.setYearMonth(date_i);
+            List<RpPurchaseUseReportPage> pdPurchaseAmountMomReportPages = baseMapper.queryPurchaseAmountMomTableView(purchaseUseReportPage);
+            //获得当前月的上上个月
+            purchaseUseReportPage = new RpPurchaseUseReportPage();
+           // String date_ii = DateUtils.getLastMonth(2);
+            String date_ii = "2020-07";
+            purchaseUseReportPage.setYearMonth(date_ii);
+            List<RpPurchaseUseReportPage> pdPurchaseAmountMomReportPages_i = baseMapper.queryPurchaseAmountMomTableView(purchaseUseReportPage);
+            //获得横坐标
+            List<String> xAxis = new ArrayList<>();
+            List<String> legends = new ArrayList<>();
+            legends.add(date_i);
+            legends.add(date_ii);
+            legends.add("环比");
+            //取上个月的所有库房
+            for(RpPurchaseUseReportPage ps :pdPurchaseAmountMomReportPages){
+                xAxis.add(ps.getDepartName());
+            }
+            //取上上个月的所有库房
+            for(RpPurchaseUseReportPage ps_i :pdPurchaseAmountMomReportPages_i){
+                if(!xAxis.contains(ps_i.getDepartName())){
+                    xAxis.add(ps_i.getDepartName());
+                }
+            }
+            //获得上个月的金额
+            List<String> seriesData1 = new ArrayList<>();
+            //获得上上个月的金额
+            List<String> seriesData2 = new ArrayList<>();
+            //获得环比
+            List<String> seriesData3 = new ArrayList<>();
+            Iterator<String> it = xAxis.iterator();
+            while (it.hasNext()) {
+                String str = it.next();
+                //取得上个月的金额数据
+                //记录当前金额
+                //上个月金额
+                String amout_i = "0";
+                String amout_ii = "0";
+                String series_hb = "0%";
+                for(RpPurchaseUseReportPage ps :pdPurchaseAmountMomReportPages){
+                    if(ps.getDepartName().equals(str)){
+                        amout_i = ps.getAmount();
+                        break;
+                    }
+                }
+                //如果当前科室当前月没有则补0
+                seriesData1.add(amout_i);
+                //取得上上个月的金额数据
+                for(RpPurchaseUseReportPage ps_i :pdPurchaseAmountMomReportPages_i){
+                    if(ps_i.getDepartName().equals(str)){
+                        amout_ii = ps_i.getAmount();
+                        break;
+                    }
+                }
+                //如果当前科室当前月没有则补0
+                seriesData2.add(amout_ii);
+                //获得环比率
+                if(!"0".equals(amout_ii)){
+                    BigDecimal bd1=new BigDecimal(amout_i);
+                    BigDecimal bd2=new BigDecimal(amout_ii);
+                    series_hb = String.format("%.2f", (bd1.doubleValue()-bd2.doubleValue())/bd2.doubleValue()*100);
+                }else{
+                    series_hb = "100";
+                }
+                seriesData3.add(series_hb);
+            }
+            resultMap.put("seriesData1",seriesData1);
+            resultMap.put("seriesData2",seriesData2);
+            resultMap.put("seriesData3",seriesData3);
+            resultMap.put("xAxis",xAxis);
+            resultMap.put("legends",legends);
+        }
+        return resultMap;
     }
 }
