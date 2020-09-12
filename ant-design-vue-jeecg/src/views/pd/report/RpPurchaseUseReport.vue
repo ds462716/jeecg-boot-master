@@ -40,9 +40,17 @@
            <!--<bar-multid title="采购收费对照表" :height="height" :width="width"  :fields="visitFields1" :dataSource="dataSource1"/>
                <line-chart-multid title="采购收费趋势表" :height="height" :width="width"  :dataSource="dataSource2"/>-->
             <!--采购收费对照图-->
-            <gzslyy-purchase-bar-multid  :height="height" :width="width" :dataSource="dataSource"/>
+            <!--<gzslyy-purchase-bar-multid  :height="height" :width="width" :dataSource="dataSource"/>-->
+            <div :style="{ padding: '0 0 32px 32px' }"  >
+              <h4 :style="{ marginBottom: '20px' }">采购收费对照图</h4>
+              <v-chart :options="polar1"  :style="{width:'1600px'}"  />
+            </div>
             <!--采购收费趋势图-->
-            <gzsl-chart-multid :height="height" :width="width" />
+            <div :style="{ padding: '0 0 32px 32px' }"  >
+              <h4 :style="{ marginBottom: '20px' }">采购收费趋势图</h4>
+              <v-chart :options="polar2"  :style="{ width:'1600px'}"  />
+            </div>
+           <!-- <gzsl-chart-multid :height="height" :width="width" />-->
             <div class="table-operator">
             </div>
           </a-card>
@@ -72,10 +80,17 @@
             <!--<line-chart-multid title="采购收费趋势图" :height="height" :width="width"  :dataSource="dataSource4"/>
             <bar-multid title="采购收费柱状图" :height="height" :width="width"  :fields="visitFields2" :dataSource="dataSource3"/>-->
             <!--采购收费柱状图-->
-            <gzsl-pu-bar-multid  :height="height" :width="width"/>
+            <!--<gzsl-pu-bar-multid  :height="height" :width="width"/>-->
+            <div :style="{ padding: '0 0 32px 32px' }"  >
+              <h4 :style="{ marginBottom: '20px' }">采购收费柱状图</h4>
+              <v-chart :options="polar3"  :style="{ width:'1600px'}"  />
+            </div>
             <!--采购收费趋势图-->
-            <gzsl-purchase-chart-multid :height="height" :width="width"/>
-
+            <!--<gzsl-purchase-chart-multid :height="height" :width="width"/>-->
+            <div :style="{ padding: '0 0 32px 32px' }"  >
+              <h4 :style="{ marginBottom: '20px' }">采购收费趋势图</h4>
+              <v-chart :options="polar4"  :style="{ width:'1600px'}"  />
+            </div>
              <div style="width:800px;height:400px;float:left">
             <pie title="采购科室金额占比"  :height="height"  :dataSource="dataSource5"/>
                </div>
@@ -132,7 +147,11 @@
           <a-card :bordered="false">
             <!--采购环比——同比图-->
            <!-- <bar-multid title="采购环比——同比图" :height="height" :width="width" />-->
-            <hb-bar-multid   :height="height" :width="width" />
+           <!-- <hb-bar-multid   :height="height" :width="width" />-->
+            <div :style="{ padding: '0 0 32px 32px' }"  >
+              <h4 :style="{ marginBottom: '20px' }">采购环比——同比图</h4>
+              <v-chart :options="polar5"  :style="{ width:'1600px'}"  />
+            </div>
             <div class="table-operator">
             </div>
           </a-card>
@@ -193,32 +212,45 @@
 
 <script>
   import { httpAction,getAction,downFile } from '@/api/manage'
-  import { filterObj } from '@/utils/util';
+  import { filterObj ,validateDuplicateValue} from '@/utils/util';
   import { VALIDATE_NO_PASSED, getRefPromise, validateFormAndTables } from '@/utils/JEditableTableUtil'
-  import BarMultid from '@/components/chart/gzslyyChart/GzslyyBarMultid'
-  import LineChartMultid from '@/components/chart/gzslyyChart/GzslyyLineChartMultid'
+//  import BarMultid from '@/components/chart/gzslyyChart/GzslyyBarMultid'
+//  import LineChartMultid from '@/components/chart/gzslyyChart/GzslyyLineChartMultid'
   import Pie from '@/components/chart/gzslyyChart/GzslPircePie'
   import { JeecgListMixin } from '@/mixins/JeecgListMixin'
   import JDictSelectTagExpand from "@/components/dict/JDictSelectTagExpand"
-  import GzslChartMultid from '@/components/chart/gzslyyChart/GzslChartMultid'
-  import GzslPurchaseChartMultid from '@/components/chart/gzslyyChart/GzslPurchaseChartMultid'
-  import HbBarMultid from '@/components/chart/gzslyyChart/GzslyyHbBarMultid'
-  import  GzslyyPurchaseBarMultid from '@/components/chart/gzslyyChart/GzslyyPurchaseBarMultid'
-  import GzslPuBarMultid from '@/components/chart/gzslyyChart/GzslPuBarMultid'
+ // import GzslChartMultid from '@/components/chart/gzslyyChart/GzslChartMultid'
+ // import GzslPurchaseChartMultid from '@/components/chart/gzslyyChart/GzslPurchaseChartMultid'
+ // import HbBarMultid from '@/components/chart/gzslyyChart/GzslyyHbBarMultid'
+ // import  GzslyyPurchaseBarMultid from '@/components/chart/gzslyyChart/GzslyyPurchaseBarMultid'
+ // import GzslPuBarMultid from '@/components/chart/gzslyyChart/GzslPuBarMultid'
+  import ECharts from 'vue-echarts'
+  import { makeWb } from '@/utils/wubi'
+  import {duplicateCheckHasDelFlag } from '@/api/api'
+  import "echarts/lib/chart/bar";
+  import "echarts/lib/chart/line";
+  import "echarts/lib/chart/pie";
+  import "echarts/lib/component/tooltip";
+  import "echarts/lib/component/legend";
+  import "echarts/lib/component/markPoint";
+  import "echarts/lib/component/markLine";
+  import "echarts/lib/component/graphic"
+  import { DataSet } from '@antv/data-set'
 
   export default {
     name: "RpPurchaseUseReport",
     mixins:[JeecgListMixin],
     components: {
-      BarMultid,
-      LineChartMultid,
+      'v-chart': ECharts,
+ //     BarMultid,
+ //     LineChartMultid,
       Pie,
       JDictSelectTagExpand,
-      GzslChartMultid,
-      GzslPurchaseChartMultid,
-      HbBarMultid,
-      GzslyyPurchaseBarMultid,
-      GzslPuBarMultid
+  //    GzslChartMultid,
+  //    GzslPurchaseChartMultid,
+  //    HbBarMultid,
+   //   GzslyyPurchaseBarMultid,
+   //   GzslPuBarMultid
     },
     data() {
       return {
@@ -247,10 +279,6 @@
         departData: [],
         departValue: undefined,
         visible: false,
-        initParams: {
-          supplierId: "",
-          yearMonth: ""
-        },
         popModal: {
           visible: false,
           width: '100%',
@@ -258,11 +286,205 @@
           lockScroll: false,
           fullscreen: true,
         },
+//--------------------
+        polar1: {
+          //title:"采购收费对照图",
+          tooltip: {trigger: 'axis'},
+          legend: {data: ['采购金额', '收费金额']},
+          toolbox: {
+            show: true,
+            feature: {
+              dataView: {show: true, readOnly: false},
+              magicType: {show: true, type: ['line', 'bar']},
+              restore: {show: true},
+              saveAsImage: {show: true}
+            }
+          },
+          calculable: true,
+          xAxis: [{type: 'category',data: [],axisPointer: {type: 'shadow'}}],
+          yAxis: [{type: 'value'}],
+          series: [
+            {name: '采购金额', type: 'bar', data: []},
+            {name: '收费金额', type: 'bar', data: []}
+                  ],
+          label:{show:true},
+        },
+ //----------------------
+        polar2: {
+          height: 300,
+          tooltip: {trigger: 'axis'},
+          legend: {data: ['采购金额', '收费金额']},
+          toolbox: {show: true,},
+          xAxis: {
+            type: 'category',
+            data:[]
+          },
+          yAxis: {},
+          series: [
+            {
+              name: '采购金额',
+              type: 'line',
+              data:[]
+            },
+            {
+              name: '收费金额',
+              type: 'line',
+              data:[]
+            }
+          ],
+          label: {show: true}
+        },
+//-----------------
+        polar3: {
+          tooltip: {
+            trigger: 'axis'
+          },
+          legend: {
+            data: ['采购金额', '收费金额']
+          },
+          toolbox: {
+            show: true,
+            feature: {
+              dataView: {show: true, readOnly: false},
+              magicType: {show: true, type: ['line', 'bar']},
+              restore: {show: true},
+              saveAsImage: {show: true}
+            }
+          },
+          calculable: true,
+          xAxis: [
+            {
+              type: 'category',
+              //data: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月']
+              data: [],
+              axisPointer: {
+                type: 'shadow'
+              }
+            }
+          ],
+          yAxis: [{
+            type: 'value'
+          }],
+          series: [
+            {
+              name: '采购金额',
+              type: 'bar',
+              data: []
+            },
+            {
+              name: '收费金额',
+              type: 'bar',
+              data: []
+            }
+          ],
+          label:{show:true},
+
+        },
+//------------------
+        polar4: {
+          height: 300,
+          tooltip: {trigger: 'axis'},
+          legend: {data: ['采购金额', '收费金额']},
+          toolbox: {show: true},
+          xAxis: {
+            type: 'category',
+            data: []
+          },
+          yAxis: {},
+          series: [
+            {
+              name: '采购金额',
+              type: 'line',
+              data: []
+            },
+            {
+              name: '收费金额',
+              type: 'line',
+              data: []
+            }
+          ],
+          label: {show: true}
+        },
+//-------------------
+        polar5: {
+          tooltip: {
+            trigger: 'axis',
+            axisPointer: {
+              type: 'cross',
+              crossStyle: {
+                color: '#999'
+              }
+            }
+          },
+          toolbox: {
+            feature: {
+              dataView: {show: true, readOnly: false},
+              magicType: {show: true, type: ['line', 'bar']},
+              restore: {show: true},
+              saveAsImage: {show: true}
+            }
+          },
+          legend: {
+            data: []
+          },
+          xAxis: [
+            {
+              type: 'category',
+              data:[],
+              axisPointer: {
+                type: 'shadow'
+              }
+            }
+          ],
+          yAxis: [
+            {
+              type: 'value',
+              name: '金额',
+              min: 0,
+              max: 2000000,
+              interval: 1000000,
+              axisLabel: {
+                formatter: '{value}'
+              }
+            },
+            {
+              type: 'value',
+              name: '涨幅',
+              min: -100,
+              max: 100,
+              interval: 20,
+              axisLabel: {
+                formatter: '{value} %'
+              }
+            }
+          ],
+          series: [
+            {
+              name: '6月份',
+              type: 'bar',
+              data:[]
+            },
+            {
+              name: '7月份',
+              type: 'bar',
+              data:[]
+            },
+            {
+              name: '涨幅',
+              type: 'line',
+              yAxisIndex: 1,
+              data:[]
+            }
+          ],
+          label:{show:true},
+        },
+//-------------------
         url: {
           queryDepart: "/pd/pdDepart/queryListTree",
           queryPurchaseCountView: "/pd/pdStatisticalReport/queryPurchaseCountView",
           queryConsumptionView: "/pd/pdStatisticalReport/queryConsumptionView",
           queryDepartContionView: "/pd/pdStatisticalReport/queryDepartContionView",
+          queryPurchaseAmountMomTableView: "/pd/pdStatisticalReport/queryPurchaseAmountMomTableView",
         },
         dictOptions: {},
       }
@@ -347,19 +569,20 @@
       //科室采购趋势表
       useLoadData(arg) {
        //获取采购收费对照表数据
-      /*  var params = {};
+         var params = {};
          params = this.getQueryParams(1);//查询条件
         this.loading = true;
         getAction(this.url.queryPurchaseCountView, params).then((res) => {
           if (res.success) {
-            this.visitFields1 =res.result.visitFields1;//采购收费对照表fields
-            this.dataSource  =res.result.dataSource1;//采购收费对照表
-            //this.dataSource2  =res.result.dataSource2;//采购收费趋势表
+            this.polar1.xAxis[0].data  = res.result.visitFields1;//采购收费趋势表
+            this.polar1.series  = res.result.dataSource1;//采购收费趋势表
+            this.polar2.xAxis.data  = res.result.visitFields1;//采购收费趋势表
+            this.polar2.series  = res.result.dataSource1;//采购收费趋势表
           } else {
             this.$message.warning(res.message)
           }
           this.loading = false;
-        })*/
+        })
 
       },
 
@@ -384,9 +607,10 @@
         this.loading = true;
         getAction(this.url.queryDepartContionView, params).then((res) => {
           if (res.success) {
-            //this.visitFields2 = res.result.visitFields2;//采购收费趋势图fields
-            //this.dataSource3 = res.result.dataSource3;//采购收费趋势图
-            //this.dataSource4 = res.result.dataSource4;//采购收费趋势图
+            this.polar3.xAxis[0].data  = res.result.visitFields2;//采购收费趋势表
+            this.polar3.series  = res.result.dataSource3;//采购收费趋势表
+            this.polar4.xAxis.data  = res.result.visitFields2;//采购收费趋势表
+            this.polar4.series  = res.result.dataSource3;//采购收费趋势表
             this.dataSource5 = res.result.dataSource5;//采购科室金额占比
             this.dataSource6 = res.result.dataSource6;//收费金额占比
           } else {
@@ -398,8 +622,25 @@
 
 
       //科室采购环比——同比图
-      noChargeUseLoadData(arg) {
-
+      noChargeUseLoadData() {
+        //获取采购收费对照表数据
+        var params = {};
+        params = this.getQueryParams(3);//查询条件
+        this.loading = true;
+        getAction(this.url.queryPurchaseAmountMomTableView, params).then((res) => {
+          if (res.success) {
+            let resultMap = res.result;
+            this.polar5.xAxis[0].data = resultMap.xAxis;
+            this.polar5.series[0].name = resultMap.legends[0];
+            this.polar5.series[1].name = resultMap.legends[1];
+            this.polar5.series[2].name = resultMap.legends[2];
+            this.polar5.series[0].data = resultMap.seriesData1;
+            this.polar5.series[1].data = resultMap.seriesData2;
+            this.polar5.series[2].data = resultMap.seriesData3;
+            this.polar5.legend.data = resultMap.legends;
+          }
+          this.loading = false;
+        })
       },
 
       //全院耗材占比
