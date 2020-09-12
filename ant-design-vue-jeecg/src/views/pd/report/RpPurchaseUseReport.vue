@@ -40,7 +40,7 @@
            <!--<bar-multid title="采购收费对照表" :height="height" :width="width"  :fields="visitFields1" :dataSource="dataSource1"/>
                <line-chart-multid title="采购收费趋势表" :height="height" :width="width"  :dataSource="dataSource2"/>-->
             <!--采购收费对照图-->
-            <gzslyy-purchase-bar-multid  :height="height" :width="width"/>
+            <gzslyy-purchase-bar-multid  :height="height" :width="width" :dataSource="dataSource"/>
             <!--采购收费趋势图-->
             <gzsl-chart-multid :height="height" :width="width" />
             <div class="table-operator">
@@ -203,7 +203,7 @@
   import GzslChartMultid from '@/components/chart/gzslyyChart/GzslChartMultid'
   import GzslPurchaseChartMultid from '@/components/chart/gzslyyChart/GzslPurchaseChartMultid'
   import HbBarMultid from '@/components/chart/gzslyyChart/GzslyyHbBarMultid'
-  import GzslyyPurchaseBarMultid from '@/components/chart/gzslyyChart/GzslyyPurchaseBarMultid'
+  import  GzslyyPurchaseBarMultid from '@/components/chart/gzslyyChart/GzslyyPurchaseBarMultid'
   import GzslPuBarMultid from '@/components/chart/gzslyyChart/GzslPuBarMultid'
 
   export default {
@@ -228,7 +228,7 @@
         /* 查询折叠 */
         notFoundContent: "未找到内容",
         activeKey: "1",
-        dataSource1: [],
+        dataSource: [],
         visitFields1: [],
         visitFields2: [],
         visitFields3: [],
@@ -346,14 +346,14 @@
 
       //科室采购趋势表
       useLoadData(arg) {
-      /*  //获取采购收费对照表数据
-        var params = {};
+       //获取采购收费对照表数据
+      /*  var params = {};
          params = this.getQueryParams(1);//查询条件
         this.loading = true;
         getAction(this.url.queryPurchaseCountView, params).then((res) => {
           if (res.success) {
             this.visitFields1 =res.result.visitFields1;//采购收费对照表fields
-            this.dataSource1  =res.result.dataSource1;//采购收费对照表
+            this.dataSource  =res.result.dataSource1;//采购收费对照表
             //this.dataSource2  =res.result.dataSource2;//采购收费趋势表
           } else {
             this.$message.warning(res.message)

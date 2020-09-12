@@ -92,7 +92,6 @@
 
     methods: {
       useLoadData() {
-        alert("e:");
         var params = {};
         this.loading = true;
         getAction(this.url.queryPurchaseCountView, params).then((res) => {
