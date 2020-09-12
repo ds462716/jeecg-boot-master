@@ -37,10 +37,7 @@
           </div>
         <!--查询按钮结束-->
           <a-card :bordered="false">
-           <!--<bar-multid title="采购收费对照表" :height="height" :width="width"  :fields="visitFields1" :dataSource="dataSource1"/>
-               <line-chart-multid title="采购收费趋势表" :height="height" :width="width"  :dataSource="dataSource2"/>-->
             <!--采购收费对照图-->
-            <!--<gzslyy-purchase-bar-multid  :height="height" :width="width" :dataSource="dataSource"/>-->
             <div :style="{ padding: '0 0 32px 32px' }"  >
               <h4 :style="{ marginBottom: '20px' }">采购收费对照图</h4>
               <v-chart :options="polar1"  :style="{width:'1600px'}"  />
@@ -50,7 +47,6 @@
               <h4 :style="{ marginBottom: '20px' }">采购收费趋势图</h4>
               <v-chart :options="polar2"  :style="{ width:'1600px'}"  />
             </div>
-           <!-- <gzsl-chart-multid :height="height" :width="width" />-->
             <div class="table-operator">
             </div>
           </a-card>
@@ -77,16 +73,12 @@
           </div>
           <!--查询按钮结束-->
           <a-card :bordered="false">
-            <!--<line-chart-multid title="采购收费趋势图" :height="height" :width="width"  :dataSource="dataSource4"/>
-            <bar-multid title="采购收费柱状图" :height="height" :width="width"  :fields="visitFields2" :dataSource="dataSource3"/>-->
             <!--采购收费柱状图-->
-            <!--<gzsl-pu-bar-multid  :height="height" :width="width"/>-->
             <div :style="{ padding: '0 0 32px 32px' }"  >
               <h4 :style="{ marginBottom: '20px' }">采购收费柱状图</h4>
               <v-chart :options="polar3"  :style="{ width:'1600px'}"  />
             </div>
             <!--采购收费趋势图-->
-            <!--<gzsl-purchase-chart-multid :height="height" :width="width"/>-->
             <div :style="{ padding: '0 0 32px 32px' }"  >
               <h4 :style="{ marginBottom: '20px' }">采购收费趋势图</h4>
               <v-chart :options="polar4"  :style="{ width:'1600px'}"  />
@@ -146,8 +138,6 @@
           <!--查询按钮结束-->
           <a-card :bordered="false">
             <!--采购环比——同比图-->
-           <!-- <bar-multid title="采购环比——同比图" :height="height" :width="width" />-->
-           <!-- <hb-bar-multid   :height="height" :width="width" />-->
             <div :style="{ padding: '0 0 32px 32px' }"  >
               <h4 :style="{ marginBottom: '20px' }">采购环比——同比图</h4>
               <v-chart :options="polar5"  :style="{ width:'1600px'}"  />
@@ -214,16 +204,9 @@
   import { httpAction,getAction,downFile } from '@/api/manage'
   import { filterObj ,validateDuplicateValue} from '@/utils/util';
   import { VALIDATE_NO_PASSED, getRefPromise, validateFormAndTables } from '@/utils/JEditableTableUtil'
-//  import BarMultid from '@/components/chart/gzslyyChart/GzslyyBarMultid'
-//  import LineChartMultid from '@/components/chart/gzslyyChart/GzslyyLineChartMultid'
   import Pie from '@/components/chart/gzslyyChart/GzslPircePie'
   import { JeecgListMixin } from '@/mixins/JeecgListMixin'
   import JDictSelectTagExpand from "@/components/dict/JDictSelectTagExpand"
- // import GzslChartMultid from '@/components/chart/gzslyyChart/GzslChartMultid'
- // import GzslPurchaseChartMultid from '@/components/chart/gzslyyChart/GzslPurchaseChartMultid'
- // import HbBarMultid from '@/components/chart/gzslyyChart/GzslyyHbBarMultid'
- // import  GzslyyPurchaseBarMultid from '@/components/chart/gzslyyChart/GzslyyPurchaseBarMultid'
- // import GzslPuBarMultid from '@/components/chart/gzslyyChart/GzslPuBarMultid'
   import ECharts from 'vue-echarts'
   import { makeWb } from '@/utils/wubi'
   import {duplicateCheckHasDelFlag } from '@/api/api'
@@ -242,15 +225,8 @@
     mixins:[JeecgListMixin],
     components: {
       'v-chart': ECharts,
- //     BarMultid,
- //     LineChartMultid,
       Pie,
       JDictSelectTagExpand,
-  //    GzslChartMultid,
-  //    GzslPurchaseChartMultid,
-  //    HbBarMultid,
-   //   GzslyyPurchaseBarMultid,
-   //   GzslPuBarMultid
     },
     data() {
       return {
@@ -355,7 +331,6 @@
           xAxis: [
             {
               type: 'category',
-              //data: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月']
               data: [],
               axisPointer: {
                 type: 'shadow'
@@ -439,17 +414,17 @@
           yAxis: [
             {
               type: 'value',
-              name: '金额',
+              name: '金额(RMB)',
               min: 0,
               max: 2000000,
-              interval: 1000000,
+              interval: 500000,
               axisLabel: {
                 formatter: '{value}'
               }
             },
             {
               type: 'value',
-              name: '涨幅',
+              name: '涨幅(%)',
               min: -100,
               max: 100,
               interval: 20,
