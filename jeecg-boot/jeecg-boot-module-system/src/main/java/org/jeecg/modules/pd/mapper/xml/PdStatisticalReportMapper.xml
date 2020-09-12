@@ -1718,7 +1718,7 @@ ORDER BY
         AND a.create_time > DATE_SUB(CURDATE(), INTERVAL 1 YEAR)
         AND substr(a.create_time,1,7) &lt;=substr(CURDATE(),1,7)
         <if test="entity.departIdList != null and entity.departIdList.size() > 0">
-            AND g.depart_id IN
+            AND a.depart_id IN
             <foreach collection="entity.departIdList" item="item" separator="," open="(" close=")">
                 #{item}
             </foreach>
@@ -1793,7 +1793,7 @@ ORDER BY
             AND  a.month  = #{entity.yearMonth}
         </if>
         <if test="entity.departIdList != null and entity.departIdList.size() > 0">
-            AND g.depart_id IN
+            AND a.depart_id IN
             <foreach collection="entity.departIdList" item="item" separator="," open="(" close=")">
                 #{item}
             </foreach>
