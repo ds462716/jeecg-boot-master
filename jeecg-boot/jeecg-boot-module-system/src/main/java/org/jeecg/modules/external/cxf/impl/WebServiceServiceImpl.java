@@ -3,6 +3,7 @@ package org.jeecg.modules.external.cxf.impl;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.StringUtils;
 import org.jeecg.common.constant.PdConstant;
@@ -388,8 +389,8 @@ public class WebServiceServiceImpl implements WebServiceService {
             Map<Object, Object> map = (Map<Object, Object>) JSONObject.parse(str);
             if (map != null && !MapUtils.isEmpty(map)) {
                 String userId = MapUtils.getString(map, "userId");
-                String loginName = MapUtils.getString(map, "userName");
-                if (userId == null && loginName== null) {
+                String loginName = MapUtils.getString(map, "loginName");
+                if (StringUtils.isEmpty(userId)  && StringUtils.isEmpty(loginName)) {
                     retMap.put("result",PdConstant.FAIL_1);
                     retMap.put("message", "参数异常");
                     return JSON.toJSONString(retMap);
@@ -578,17 +579,22 @@ public class WebServiceServiceImpl implements WebServiceService {
                     retMap.put("message", "产品ID不能为空！");
                     return JSON.toJSONString(retMap);
                 }
-                if (StringUtils.isEmpty(productNo)) {
+                if (StringUtils.isEmpty(stockId)) {
+                    retMap.put("result", PdConstant.FAIL_1);
+                    retMap.put("message", "库存明细ID不能为空！");
+                    return JSON.toJSONString(retMap);
+                }
+                /*if (StringUtils.isEmpty(productNo)) {
                     retMap.put("result", PdConstant.FAIL_1);
                     retMap.put("message", "产品编号不能为空！");
                     return JSON.toJSONString(retMap);
-                }
+                }*/
 
-                if (StringUtils.isEmpty(batchNo)) {
+                /*if (StringUtils.isEmpty(batchNo)) {
                     retMap.put("result", PdConstant.FAIL_1);
                     retMap.put("message", "批次号不能为空！");
                     return JSON.toJSONString(retMap);
-                }
+                }*/
                 rfidInfoService.saveHrfid(map);
                 retMap.put("result",PdConstant.SUCCESS_0);
                 retMap.put("message", "成功");
@@ -904,7 +910,11 @@ public class WebServiceServiceImpl implements WebServiceService {
 
                 JSONArray orderArr = JSONObject.parseArray(MapUtils.getObject(map, "List").toString());
                 List<PdStockRecordDetail> list = JSONArray.parseArray(orderArr.toJSONString(), PdStockRecordDetail.class);
-
+                  if(CollectionUtils.isEmpty(list)){
+                      retMap.put("result", PdConstant.FAIL_1);
+                      retMap.put("message", "数据异常，产品信息不能为空");
+                      return JSON.toJSONString(retMap);
+                  }
                 PdStockRecord pdStockRecord = new PdStockRecord();
                 pdStockRecord.setOutDepartId(outStoreroomId); //出库库房Id
                 pdStockRecord.setInDepartId(inStoreroomId);

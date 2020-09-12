@@ -292,8 +292,10 @@
 	<select id="getOne" resultType="org.jeecg.modules.pd.entity.PdProductStock" parameterType="org.jeecg.modules.pd.entity.PdProductStock">
 
 		SELECT
-		<include refid="pdProductStockColumns"/>
+		<include refid="pdProductStockColumns"/>,
+		<include refid="pdProductColumns"/>
 		FROM pd_product_stock a
+		<include refid="pdProductJoins"/>
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
 			<if test="id != null and id != ''">
@@ -1353,6 +1355,7 @@
 	<select id="queryPdProductStockList" resultType="java.util.Map">
 		SELECT
 		a.id AS "stockId",
+		a.record_detail_id AS "rkmxId",
 		a.depart_id AS "kfId",
 		a.product_id AS "productId",
 		b.number AS "productNo",

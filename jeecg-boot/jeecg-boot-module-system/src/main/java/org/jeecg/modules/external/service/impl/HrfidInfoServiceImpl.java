@@ -41,6 +41,9 @@ public class HrfidInfoServiceImpl extends ServiceImpl<HRfidInfoMapper, HRfidInfo
         List<Map<String, Object>> list = rfidInfoMapper.queryHrfid(rfid);
         if (list == null || list.size() == 0) {
             rfid.setProductId(MapUtils.getString(map, "productId"));//产品ID
+            rfid.setStockId(MapUtils.getString(map, "stockId"));//库存明细ID
+            rfid.setRkmxId(MapUtils.getString(map, "rkmxId"));//入库明细ID
+            rfid.setProductId(MapUtils.getString(map, "productId"));//产品ID
             rfid.setProductNo(MapUtils.getString(map, "productNo"));//产品编码
             rfid.setIsDisable("1");//启用标识   1：默认为启用
             rfid.setBatchNo(MapUtils.getString(map, "batchNo"));//批号
@@ -80,13 +83,15 @@ public class HrfidInfoServiceImpl extends ServiceImpl<HRfidInfoMapper, HRfidInfo
         if(rfidList!=null && rfidList.size()>0){
             for(Map<String,Object> maps:rfidList){
                 int czNum=0;//操作数量
+                String stockId= MapUtils.getString(maps,"stockId");
                 String productId= MapUtils.getString(maps,"productId");
-                String productNo= MapUtils.getString(maps,"productNo");
-                String bacthNo= MapUtils.getString(maps,"batchNo");
+                //String productNo= MapUtils.getString(maps,"productNo");
+                //String bacthNo= MapUtils.getString(maps,"batchNo");
                 HRfidInfo hrfidInfo=new HRfidInfo();
                 hrfidInfo.setProductId(productId);
-                hrfidInfo.setProductNo(productNo);
-                hrfidInfo.setBatchNo(bacthNo);
+                //hrfidInfo.setProductNo(productNo);
+                //hrfidInfo.setBatchNo(bacthNo);
+                hrfidInfo.setStockId(stockId);
                 hrfidInfo.setRfIds(rfIds);
                 List<Map<String,Object>> hfidList= rfidInfoMapper.queryHrfid(hrfidInfo);
                 if(hfidList!=null && hfidList.size()>0){

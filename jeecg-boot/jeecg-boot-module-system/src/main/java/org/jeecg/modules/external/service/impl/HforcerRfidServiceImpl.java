@@ -40,9 +40,9 @@ public class HforcerRfidServiceImpl extends ServiceImpl<HforcerRfidMapper, HForc
             //1.入SPD库
             for (Map<String, Object> map : list) {
                 HForcerRfid forcer = new HForcerRfid();
-                forcer.setForcerId(MapUtils.getString(map, "ForcerId"));
-                forcer.setForcerNumber(MapUtils.getString(map, "ForcerNumber"));
-                forcer.setRfId(MapUtils.getString(map, "RfId"));
+                forcer.setForcerId(MapUtils.getString(map, "forcerId"));
+                forcer.setForcerNumber(MapUtils.getString(map, "forcerNumber"));
+                forcer.setRfId(MapUtils.getString(map, "rfId"));
                 forcerRfidMapper.insert(forcer);
             }
         }

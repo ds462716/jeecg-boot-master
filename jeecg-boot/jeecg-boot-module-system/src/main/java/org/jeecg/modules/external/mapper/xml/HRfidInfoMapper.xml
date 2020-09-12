@@ -13,19 +13,18 @@
         st.exp_date  AS "validDate",
         st.product_bar_code AS "productBarCode",
         st.stock_num  AS "stockNum",
-        st.id  AS "kcId",
+        st.record_detail_id as "rkmxId",
+        st.id  AS "stockId",
         prod.name  AS "productName",
         prod.spec  AS "spec",
         prod.version  AS "version",
         prod.purchase_price AS "inPrice",
         prod.selling_price AS "outPrice"
-        from h_rfid_info rfid,
-        pd_product_stock st,
-        pd_product prod
+        from h_rfid_info rfid
+        left join 	pd_product_stock st on  rfid.product_id=st.product_Id  and rfid.stock_id=st.id
+        left join pd_product prod   on rfid.product_id=prod.id
         <where>
-            rfid.product_no=prod.number
-            and rfid.product_id=st.product_Id and rfid.batch_no=st.batch_no
-            and rfid.product_id=st.product_id and rfid.product_id=prod.id
+             1=1
             <if test="rfId != null and rfId != ''">
                 AND rfid.rf_id=#{rfId}
             </if>
@@ -55,6 +54,7 @@
         SELECT
         rfid.id AS "id",
         rfid.rkmx_id AS "rkmxId",
+        rfid.stock_id AS "stockId",
         rfid.product_no AS "productNo",
         rfId.product_id AS "productId",
         rfId.is_disable AS "isDisable",
@@ -63,6 +63,9 @@
         <where> 1=1
             <if test="rfId != null and rfId != ''">
                 AND rfid.rf_id=#{rfId}
+            </if>
+            <if test="stockId != null and stockId != ''">
+                AND rfid.stock_id=#{stockId}
             </if>
             <if test="productNo != null and productNo != ''">
                 AND rfid.product_no=#{productNo}

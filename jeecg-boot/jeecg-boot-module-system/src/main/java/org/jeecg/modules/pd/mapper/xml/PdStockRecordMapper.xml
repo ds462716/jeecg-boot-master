@@ -404,7 +404,7 @@
         pp.name AS "productName",
         pp.spec AS "productSpec",
         pp.version AS "productVersion",
-        pp.unit_id AS "unit",
+        tt.name AS "unit",
         pp.product_flag AS "productType",
         vd.name AS "venderName",
         pp.purchase_price AS "pruPrice",
@@ -414,12 +414,12 @@
         FROM pd_stock_record a
         left join pd_stock_record_detail srp ON a.id = srp.record_id
         left join pd_product pp on srp.product_id = pp.id
-        LEFT JOIN pd_supplier su on pp.supplier_id = su.id
         LEFT JOIN pd_vender vd on pp.vender_id = vd.id
+        LEFT JOIN pd_unit tt on tt.id=pp.unit_id
         <where>
             a.del_flag = #{DEL_FLAG_NORMAL}
-            <if test="storeroomId != null and storeroomId != ''">
-                AND a.in_depart_id = #{storeroomId}
+            <if test="departId != null and departId != ''">
+                AND a.in_depart_id = #{departId}
             </if>
             <if test="recordNo != null and recordNo != ''">
                 AND a.record_no = #{recordNo}

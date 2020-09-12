@@ -4,8 +4,9 @@
     <h4 :style="{ marginBottom: '20px' }">{{ title }}</h4>
     <v-chart :options="polar"  :style="{width:'1600px'}"  />
   </div>
-</template><script>
-
+</template>
+<script>
+  import { DataSet } from '@antv/data-set'
   import { httpAction ,getAction} from '@/api/manage'
   import { validateDuplicateValue } from '@/utils/util'
   import { makeWb } from '@/utils/wubi'
@@ -27,8 +28,10 @@
     },
     data() {
       return {
-        title: "采购收费对照图",
+       title: "采购收费对照图",
+        dataSource: [],
         polar: {
+          dataSource: [],
           tooltip: {
             trigger: 'axis'
           },
@@ -82,8 +85,14 @@
     created () {
       this.useLoadData();
     },
+    computed: {
+
+    },
+
+
     methods: {
       useLoadData() {
+        alert("e:");
         var params = {};
         this.loading = true;
         getAction(this.url.queryPurchaseCountView, params).then((res) => {
