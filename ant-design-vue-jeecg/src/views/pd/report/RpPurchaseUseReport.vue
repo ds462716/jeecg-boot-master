@@ -266,7 +266,10 @@
         polar1: {
           //title:"采购收费对照图",
           tooltip: {trigger: 'axis'},
-          legend: {data: ['采购金额', '收费金额']},
+          legend: {data: ['采购金额', '收费金额'],
+            textStyle: { //图例文字的样式
+              fontSize: 16
+            },},
           toolbox: {
             show: true,
             feature: {
@@ -277,25 +280,47 @@
             }
           },
           calculable: true,
-          xAxis: [{type: 'category',data: [],axisPointer: {type: 'shadow'}}],
-          yAxis: [{type: 'value'}],
+          xAxis: [{type: 'category',data: [],
+            axisPointer: {type: 'shadow'},
+            axisLabel: {
+              fontSize:'16',
+              fontFamily:'微软雅黑',
+            },}],
+          yAxis: [{type: 'value',
+            axisLabel: {
+              fontSize:'16',
+              fontFamily:'微软雅黑',
+            },}],
           series: [
             {name: '采购金额', type: 'bar', data: []},
             {name: '收费金额', type: 'bar', data: []}
                   ],
+          //label:{show:true,fontSize:'16'},
           label:{show:true},
         },
  //----------------------
         polar2: {
           height: 300,
           tooltip: {trigger: 'axis'},
-          legend: {data: ['采购金额', '收费金额']},
+          legend: {
+            data: ['采购金额', '收费金额'],
+            textStyle: { //图例文字的样式
+              fontSize: 16
+            }},
           toolbox: {show: true,},
           xAxis: {
             type: 'category',
-            data:[]
+            data:[],
+            axisLabel: {
+              fontSize:'16',
+              fontFamily:'微软雅黑',
+            }
           },
-          yAxis: {},
+          yAxis: {
+            axisLabel: {
+              fontSize:'16',
+              fontFamily:'微软雅黑',
+            }},
           series: [
             {
               name: '采购金额',
@@ -316,7 +341,10 @@
             trigger: 'axis'
           },
           legend: {
-            data: ['采购金额', '收费金额']
+            data: ['采购金额', '收费金额'],
+            textStyle: { //图例文字的样式
+              fontSize: 16
+            }
           },
           toolbox: {
             show: true,
@@ -333,12 +361,20 @@
               type: 'category',
               data: [],
               axisPointer: {
-                type: 'shadow'
+                type: 'shadow',
+                axisLabel: {
+                  fontSize:'16',
+                  fontFamily:'微软雅黑',
+                }
               }
             }
           ],
           yAxis: [{
-            type: 'value'
+            type: 'value',
+            axisLabel: {
+              fontSize:'16',
+              fontFamily:'微软雅黑',
+            }
           }],
           series: [
             {
@@ -359,13 +395,24 @@
         polar4: {
           height: 300,
           tooltip: {trigger: 'axis'},
-          legend: {data: ['采购金额', '收费金额']},
+          legend: {data: ['采购金额', '收费金额'],
+            textStyle: { //图例文字的样式
+              fontSize: 16
+            }},
           toolbox: {show: true},
           xAxis: {
             type: 'category',
-            data: []
+            data: [],
+            axisLabel: {
+              fontSize:'16',
+              fontFamily:'微软雅黑',
+            }
           },
-          yAxis: {},
+          yAxis: {
+            axisLabel: {
+              fontSize:'16',
+              fontFamily:'微软雅黑',
+            }},
           series: [
             {
               name: '采购金额',
@@ -389,7 +436,8 @@
               crossStyle: {
                 color: '#999'
               }
-            }
+            },
+
           },
           toolbox: {
             feature: {
@@ -400,7 +448,10 @@
             }
           },
           legend: {
-            data: []
+            data: [],
+            textStyle: { //图例文字的样式
+              fontSize: 16
+            }
           },
           xAxis: [
             {
@@ -408,6 +459,10 @@
               data:[],
               axisPointer: {
                 type: 'shadow'
+              },
+              axisLabel: {
+                fontSize:'16',
+                fontFamily:'微软雅黑',
               }
             }
           ],
@@ -420,6 +475,10 @@
               interval: 500000,
               axisLabel: {
                 formatter: '{value}'
+              },
+              axisLabel: {
+                fontSize:'16',
+                fontFamily:'微软雅黑',
               }
             },
             {
@@ -429,7 +488,11 @@
               max: 100,
               interval: 20,
               axisLabel: {
-                formatter: '{value} %'
+                formatter: '{value}%'
+              },
+              axisLabel: {
+                fontSize:'16',
+                fontFamily:'微软雅黑',
               }
             }
           ],
