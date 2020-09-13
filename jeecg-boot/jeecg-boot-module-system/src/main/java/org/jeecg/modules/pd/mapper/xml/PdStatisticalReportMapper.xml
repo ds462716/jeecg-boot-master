@@ -1810,7 +1810,7 @@ ORDER BY
     <!-- 全院耗材占比数据查 -->
     <select id="queryConsumptionView" resultType="org.jeecg.modules.pd.vo.RpPurchaseUseReportPage">
        select
-        sum(a.product_num * a.purchase_price) as "count",
+        ROUND(sum(a.product_num * a.purchase_price),2) as "count",
 			case
         when is_charge = '0' then "可收费"
         when is_charge = '1' then "不可收费"
@@ -1834,8 +1834,9 @@ ORDER BY
 
     <!-- 采购科室金额占比 -->
     <select id="queryDepartContionView" resultType="org.jeecg.modules.pd.vo.RpPurchaseUseReportPage">
-    select SUM(a.product_num) as "count",
-    d.depart_name as "item"
+    select
+        ROUND(SUM(a.product_num * a.purchase_price),2) as "count",
+        d.depart_name as "item"
      from pd_stock_record_detail a
 	left join pd_stock_record b on a.record_id=b.id
 	left join pd_product c on c.id=a.product_id
@@ -1912,7 +1913,25 @@ ORDER BY
 
     <!--   zxh采购金额环比-->
     <select id="queryPurchaseAmountMomTableView" resultType="org.jeecg.modules.pd.vo.RpPurchaseUseReportPage">
-        SELECT
+         select
+        ROUND(SUM(a.product_num * a.purchase_price),2) as "amount",
+        d.depart_name as "departName"
+     from pd_stock_record_detail a
+	left join pd_stock_record b on a.record_id=b.id
+	left join pd_product c on c.id=a.product_id
+	left join sys_depart d on d.id=b.in_depart_id
+	where
+	b.record_type='1'
+	and b.in_type='1'
+    and b.del_flag='0'
+    and a.del_flag='0'
+       and d.depart_type in('1','2')
+         AND DATE_FORMAT(b.create_time, '%Y-%m') = #{entity.yearMonth}
+     group by in_depart_id
+      order by amount desc limit 0,10
+
+
+      <!-- SELECT
             sdt.depart_name,
             ROUND(zz.amount,2) as  amount
         FROM
@@ -1948,6 +1967,7 @@ ORDER BY
                     a.in_depart_id
             ) zz
         LEFT JOIN sys_depart sdt ON zz.in_depart_id = sdt.id
-        order by zz.amount desc
+        order by zz.amount desc-->
+
     </select>
 </mapper>
