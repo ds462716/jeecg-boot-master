@@ -3,6 +3,8 @@ package org.jeecg.modules.pd.service.impl;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.apache.commons.lang.StringUtils;
+import org.jeecg.common.util.DateUtils;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.pd.entity.PdStatisticalReport;
 import org.jeecg.modules.pd.entity.PdStockRecordDetail;
@@ -12,6 +14,7 @@ import org.jeecg.modules.pd.vo.*;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.text.ParseException;
 import java.util.*;
 
 /**
@@ -296,19 +299,25 @@ public class PdPdStatisticalReportImpl extends ServiceImpl<PdStatisticalReportMa
     @Override
     public Map<String, Object> queryPurchaseAmountMomTableView(RpPurchaseUseReportPage purchaseUseReportPage) {
         Map<String,Object> resultMap = new HashMap<>();
-        if(!"".equals(purchaseUseReportPage.getYearMonth()) && purchaseUseReportPage.getYearMonth()!=null){
-            List<RpPurchaseUseReportPage> pdPurchaseAmountMomReportPages = baseMapper.queryPurchaseAmountMomTableView(purchaseUseReportPage);
-        }else{
-            //获得当前月的上个月
-           // String date_i = DateUtils.getLastMonth(1);
-            String date_i = "2020-08";
-            purchaseUseReportPage.setYearMonth(date_i);
-            List<RpPurchaseUseReportPage> pdPurchaseAmountMomReportPages = baseMapper.queryPurchaseAmountMomTableView(purchaseUseReportPage);
+        String date_i ="";//当前月的上个月
+        String date_ii ="";//当前月的上上个月
+        try {
+            if(StringUtils.isNotEmpty(purchaseUseReportPage.getYearMonth())) {
+                //获得选择月份和对应上个月的值
+                date_i = DateUtils.getLastMonth(0,purchaseUseReportPage.getYearMonth());
+                date_ii = DateUtils.getLastMonth(1,purchaseUseReportPage.getYearMonth());
+            }else {
+                  date_i = DateUtils.getLastMonth(1,null);
+                  date_ii = DateUtils.getLastMonth(2,null);
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        purchaseUseReportPage.setYearMonth(date_i);
+        List<RpPurchaseUseReportPage>  pdPurchaseAmountMomReportPages = baseMapper.queryPurchaseAmountMomTableView(purchaseUseReportPage);
             //获得当前月的上上个月
             purchaseUseReportPage = new RpPurchaseUseReportPage();
-           // String date_ii = DateUtils.getLastMonth(2);
-            String date_ii = "2020-07";
-            purchaseUseReportPage.setYearMonth(date_ii);
+             purchaseUseReportPage.setYearMonth(date_ii);
             List<RpPurchaseUseReportPage> pdPurchaseAmountMomReportPages_i = baseMapper.queryPurchaseAmountMomTableView(purchaseUseReportPage);
             //获得横坐标
             List<String> xAxis = new ArrayList<>();
@@ -373,7 +382,6 @@ public class PdPdStatisticalReportImpl extends ServiceImpl<PdStatisticalReportMa
             resultMap.put("seriesData3",seriesData3);
             resultMap.put("xAxis",xAxis);
             resultMap.put("legends",legends);
-        }
         return resultMap;
     }
 }

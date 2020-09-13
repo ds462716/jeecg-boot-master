@@ -870,7 +870,19 @@ public class DateUtils extends PropertyEditorSupport {
     }
 
  //------------------------
-
-
-
+// 获取指定年月并返回字符串格式
+ public static String getLastMonth(Integer num,String dateMonth) throws ParseException {
+     SimpleDateFormat format = new SimpleDateFormat("yyyy-MM");
+     Date date = new Date();
+     Calendar calendar = Calendar.getInstance();
+     if(!StringUtils.isEmpty(dateMonth)){
+         date=format.parse(dateMonth);
+         calendar.setTime(date); // 设置当前时间
+     }else{
+         calendar.setTime(date); // 设置当前时间
+     }
+     calendar.set(Calendar.MONTH, calendar.get(Calendar.MONTH) - num); // 设置为上一个月
+     date = calendar.getTime();
+     return  format.format(date);
+ }
 }
