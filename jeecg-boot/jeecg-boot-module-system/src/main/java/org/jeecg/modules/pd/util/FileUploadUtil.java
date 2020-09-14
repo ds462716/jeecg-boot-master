@@ -62,7 +62,7 @@ public class FileUploadUtil {
 			if(imgs.length>0){
 				for (int i=0; i<imgs.length; i++) {
 					MultipartFile img = imgs[i];
-					String orgName = img.getOriginalFilename().substring(img.getOriginalFilename().lastIndexOf("."));
+					String orgName = img.getOriginalFilename();// 获取文件名
 					fileName = orgName.substring(0, orgName.lastIndexOf(".")) + "_" + System.currentTimeMillis() + orgName.substring(orgName.indexOf("."));
 					String savePath = file.getPath() + File.separator + fileName;
 					File savefile = new File(savePath);
