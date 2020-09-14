@@ -101,6 +101,11 @@ public interface WebServiceService {
     public String sendOutboundOrderToSpd(@WebParam(name = "outboundOrder") String str);
 
 
-
+    /**
+     * 唯一码清除接口
+     * @param str
+     * @return
+     */
+    public String deleteRefBerCode(@WebParam(name = "deleteRefBerCode") String str);
 
 }

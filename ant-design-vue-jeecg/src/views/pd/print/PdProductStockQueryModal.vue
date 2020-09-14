@@ -6,8 +6,7 @@
        <!-- /* 供应商，生产厂家*/-->
 
         <a-row :gutter="24">
-          <!-- 只查本科室的库存 -->
-          <!--<a-col :md="6" :sm="8">
+          <a-col :md="6" :sm="8">
             <a-form-item label="科室">
                <a-select
                  mode="multiple"
@@ -27,7 +26,7 @@
               </a-select>
 
             </a-form-item>
-          </a-col>-->
+          </a-col>
           <a-col :md="6" :sm="8">
             <a-form-item label="入库单号">
               <a-input placeholder="请输入入库单号" v-model="queryParam.recordNo"></a-input>

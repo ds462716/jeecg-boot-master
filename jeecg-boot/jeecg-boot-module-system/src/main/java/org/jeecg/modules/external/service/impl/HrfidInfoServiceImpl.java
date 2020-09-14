@@ -3,10 +3,13 @@ package org.jeecg.modules.external.service.impl;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.jeecg.common.constant.PdConstant;
 import org.jeecg.common.util.DateUtils;
 import org.jeecg.modules.external.entity.HRfidInfo;
 import org.jeecg.modules.external.mapper.HRfidInfoMapper;
 import org.jeecg.modules.external.service.IHRfidInfoService;
+import org.jeecg.modules.pd.entity.PdProductStockUniqueCode;
+import org.jeecg.modules.pd.service.IPdProductStockUniqueCodeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,6 +29,8 @@ import java.util.Map;
 public class HrfidInfoServiceImpl extends ServiceImpl<HRfidInfoMapper, HRfidInfo> implements IHRfidInfoService {
     @Autowired
     private HRfidInfoMapper rfidInfoMapper;
+    @Autowired
+    private IPdProductStockUniqueCodeService productStockUniqueCodeService;
 
     /**
      * rfid条码信息保存
@@ -45,13 +50,20 @@ public class HrfidInfoServiceImpl extends ServiceImpl<HRfidInfoMapper, HRfidInfo
             rfid.setRkmxId(MapUtils.getString(map, "rkmxId"));//入库明细ID
             rfid.setProductId(MapUtils.getString(map, "productId"));//产品ID
             rfid.setProductNo(MapUtils.getString(map, "productNo"));//产品编码
-            rfid.setIsDisable("1");//启用标识   1：默认为启用
+            rfid.setIsDisable(PdConstant.DISABLE_ENABLE_STATUS_0);//启用标识   0：默认为启用
             rfid.setBatchNo(MapUtils.getString(map, "batchNo"));//批号
             String validDate = MapUtils.getString(map, "validDate");
             if (!StringUtils.isEmpty(validDate)) {
                 rfid.setValidDate(DateUtils.str2Date(validDate,new SimpleDateFormat("yyyy-MM-dd")));//有效期
             }
             rfidInfoMapper.insert(rfid);
+            PdProductStockUniqueCode psc=new PdProductStockUniqueCode();
+            psc.setProductStockId(rfid.getStockId());
+            psc.setId(rfid.getRfId());
+            psc.setUniqueCodeOrder(MapUtils.getInteger(map, "uniqueCodeOrder"));
+            psc.setDepartId(MapUtils.getString(map, "departId"));
+            psc.setDepartParentId(MapUtils.getString(map, "departParentId"));
+            productStockUniqueCodeService.foreignSaveUniqueCode(psc);
         }
     }
 

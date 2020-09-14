@@ -385,6 +385,11 @@ public class PdProductStockUniqueCodeServiceImpl extends ServiceImpl<PdProductSt
             psc.setCodeState(PdConstant.CODE_PRINT_STATE_0);//正常状态
             psc.setPrintNum(1);
             baseMapper.insert(psc);
+            PdProductStock ps = new PdProductStock();
+            ps.setId(psc.getProductStockId());
+            ps.setBarCodeType(PdConstant.CODE_PRINT_TYPE_1);
+            //更新库存表的条码状态
+            pdProductStockService.updateStockBarCodeType(ps);
         }
     }
 }

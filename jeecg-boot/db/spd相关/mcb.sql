@@ -229,3 +229,18 @@ CHANGE COLUMN `time_type` `temp_type` varchar(4) CHARACTER SET utf8 COLLATE utf8
 ALTER TABLE `h_rfid_info`
 ADD COLUMN `stock_id` varchar(64) NULL COMMENT '对应的库存明细ID' AFTER `user_id`,
 MODIFY COLUMN `depart_parent_id` varchar(64) CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL COMMENT '所属父部门' AFTER `rkmx_id`;
+
+
+-- 2020年9月14日 10:22:59   菜单名称修改
+update   sys_permission   set name='综合统计报表'  where id='1302806183652024322';
+
+-- 2020年9月14日 15:22:59   增加智能柜管理模块菜单
+INSERT INTO  `sys_permission`  VALUES ('1305413507581272066', '1305412850602270722', '智能柜管理', '/pd/PdForcerInfo', 'pd/PdForcerInfoList', NULL, NULL, 1, '0', NULL, '1', 1.00, 0, NULL, 1, 1, 0, 0, NULL, 'admin', '2020-09-14 15:50:08', NULL, '2020-09-14 15:50:08', 0, 0, '1', 0);
+INSERT INTO  `sys_permission`  VALUES ('1305412850602270722', '', '智能柜管理', '/pdForcerInfo', 'layouts/RouteView', NULL, NULL, 0, '0', NULL, '1', 10.00, 0, 'database', 1, 0, 0, 0, NULL, 'admin', '2020-09-14 15:47:32', 'admin', '2020-09-14 15:47:56', 0, 0, '1', 0);
+
+ALTER TABLE  `h_forcer_info`
+MODIFY COLUMN `is_disable` varchar(4) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL COMMENT '启用状态  1:未启用  0：已启用' AFTER `forcer_name`;
+ALTER TABLE  `h_rfid_info`
+MODIFY COLUMN `is_disable` varchar(4) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '启用标识   1：未启用   0：已启用' AFTER `product_id`;
+ALTER TABLE  `h_user_finger_face`
+MODIFY COLUMN `is_disable` varchar(4) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL COMMENT '是否启用 1：未启用 0：已启用' AFTER `user_id`;

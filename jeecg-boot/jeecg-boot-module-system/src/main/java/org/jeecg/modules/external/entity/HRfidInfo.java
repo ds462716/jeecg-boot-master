@@ -95,6 +95,10 @@ public class HRfidInfo extends BaseEntity {
     @Excel(name = "对应的rkmxid", width = 15)
     @ApiModelProperty(value = "对应的rkmxid")
     private String rkmxId;
+    /**条码序号*/
+    @Excel(name = "条码序号", width = 15)
+    @ApiModelProperty(value = "条码序号")
+    private Integer uniqueCodeOrder;
     /**库存明细ID*/
     private String stockId;
     @TableField(exist = false)

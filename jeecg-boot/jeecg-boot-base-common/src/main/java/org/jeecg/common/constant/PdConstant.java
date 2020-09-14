@@ -331,7 +331,7 @@ public interface PdConstant {
 	public final static String CLOSE_REMARKS_2 = "2";//试剂迁移
 
 	public final static String DISABLE_ENABLE_STATUS_0 ="0";//启用
-	public final static String DISABLE_ENABLE_STATUS_1 ="1";//启用
+	public final static String DISABLE_ENABLE_STATUS_1 ="1";//未启用
 
 	//发票状态
 	public final static String INVOICE_STATUS_1 ="1";//1-未完成
