@@ -16,10 +16,35 @@
 			 a.sjkf_id as "sjkfId"
 	</sql>
 
+    <!-- 科室 -->
+    <sql id="sysDepartColumns">
+        f.depart_name AS "departName"
+    </sql>
 
+    <sql id="sysDepartJoins">
+        LEFT JOIN sys_depart f ON a.kf_id = f.id
+    </sql>
 
     <select id="selectList"  resultType="org.jeecg.modules.external.entity.HForcerInfo">
-
+        SELECT
+        <include refid="HForcerInfoColumns"/>,
+        <include refid="sysDepartColumns"/>,
+        d.depart_name AS "supDepartName"
+        FROM h_forcer_info a
+        <include refid="sysDepartJoins"/>
+        LEFT JOIN sys_depart d ON a.sjkf_id = d.id
+        <where>
+            1 = 1
+            <if test="entity.macAddress != null and entity.macAddress != ''">
+                AND a.mac_address=#{macAddress}
+            </if>
+            <if test="entity.forcerNo != null and entity.forcerNo != ''">
+                AND a.forcer_no LIKE concat('%',#{entity.forcerNo},'%')
+            </if>
+            <if test="entity.forcerName != null and entity.forcerName != ''">
+                AND a.forcer_name  LIKE concat('%',#{entity.forcerName},'%')
+            </if>
+        </where>
 
 
     </select>

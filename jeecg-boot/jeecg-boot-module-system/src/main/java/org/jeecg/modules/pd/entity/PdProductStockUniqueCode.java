@@ -38,7 +38,7 @@ public class PdProductStockUniqueCode extends BaseEntity{
     @ApiModelProperty(value = "库存明细表id")
     private String productStockId;
 	/**条码序号*/
-	@Excel(name = "条码序号", width = 15)
+    @Excel(name = "条码序号", width = 15)
     @ApiModelProperty(value = "条码序号")
     private Integer uniqueCodeOrder;
 	/**打印类型0唯一码打印，1批量打印*/

@@ -9,6 +9,7 @@ import org.apache.commons.lang.StringUtils;
 import org.jeecg.common.constant.PdConstant;
 import org.jeecg.common.util.DateUtils;
 import org.jeecg.common.util.PasswordUtil;
+import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.external.cxf.WebServiceService;
 import org.jeecg.modules.external.entity.HForcerInfo;
 import org.jeecg.modules.external.entity.HForcerRfid;
@@ -18,10 +19,12 @@ import org.jeecg.modules.external.service.IHRfidInfoService;
 import org.jeecg.modules.external.service.IHUserFingerFaceService;
 import org.jeecg.modules.external.service.IHforcerInfoService;
 import org.jeecg.modules.pd.entity.PdProductStock;
+import org.jeecg.modules.pd.entity.PdProductStockUniqueCode;
 import org.jeecg.modules.pd.entity.PdStockRecord;
 import org.jeecg.modules.pd.entity.PdStockRecordDetail;
 import org.jeecg.modules.pd.service.IPdDepartService;
 import org.jeecg.modules.pd.service.IPdProductStockService;
+import org.jeecg.modules.pd.service.IPdProductStockUniqueCodeService;
 import org.jeecg.modules.pd.service.IPdStockRecordService;
 import org.jeecg.modules.system.entity.SysDepart;
 import org.jeecg.modules.system.entity.SysUser;
@@ -57,6 +60,8 @@ public class WebServiceServiceImpl implements WebServiceService {
     private IPdDepartService pdDepartService;
     @Autowired
     private ISysUserService sysUserService;
+    @Autowired
+    private IPdProductStockUniqueCodeService pdProductStockUniqueCodeService;
 
     /**
      * 耗材柜注册接口
@@ -934,6 +939,55 @@ public class WebServiceServiceImpl implements WebServiceService {
             retMap.put("result", PdConstant.FAIL_1);
             retMap.put("message", "失败，日志：" + e.getMessage());
             //TODO 日志记录
+            return JSON.toJSONString(retMap);
+        }
+    }
+
+
+    /**
+     * 唯一码清除接口
+     *
+     * @param str
+     * @return
+     */
+    @Override
+    public String deleteRefBerCode(String str) {
+        Map<String, Object> retMap = new HashMap<String, Object>();
+        if (str == null || "".equals(str.trim())) {
+            retMap.put("result", PdConstant.FAIL_1);
+            retMap.put("message", "推送数据为空");
+            return JSON.toJSONString(retMap);
+        }
+        try {
+            System.out.println("#######唯一码清除接口:"+str);
+            Map<Object, Object> map = (Map<Object, Object>) JSONObject.parse(str);
+            if (map != null && !MapUtils.isEmpty(map)) {
+                String rfId = MapUtils.getString(map, "rfId");
+
+                if (StringUtils.isEmpty(rfId)) {
+                    retMap.put("result", PdConstant.FAIL_1);
+                    retMap.put("message", "唯一码不能为空！");
+                    return JSON.toJSONString(retMap);
+                }
+                PdProductStockUniqueCode productStockUniqueCode=pdProductStockUniqueCodeService.getById(rfId);
+                if(oConvertUtils.isEmpty(productStockUniqueCode)){
+                    retMap.put("result",PdConstant.FAIL_1);
+                    retMap.put("message", "根据唯一码获取不到数据");
+                    return JSON.toJSONString(retMap);
+                }else{
+                    pdProductStockUniqueCodeService.removeById(rfId);
+                }
+                retMap.put("result",PdConstant.SUCCESS_0);
+                retMap.put("message", "成功");
+            }else{
+                retMap.put("result", PdConstant.FAIL_1);
+                retMap.put("message", "推送数据为空");
+            }
+            return JSON.toJSONString(retMap);
+        } catch (Exception e) {
+            e.printStackTrace();
+            retMap.put("result", PdConstant.FAIL_1);
+            retMap.put("message", "失败，日志：" + e.getMessage());
             return JSON.toJSONString(retMap);
         }
     }
