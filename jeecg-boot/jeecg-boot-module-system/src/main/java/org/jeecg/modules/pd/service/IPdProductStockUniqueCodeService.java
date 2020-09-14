@@ -36,4 +36,5 @@ public interface IPdProductStockUniqueCodeService extends IService<PdProductStoc
 
     String queryUniqueCode(PdProductStockUniqueCode pdProductStockUniqueCode);
 
+    void foreignSaveUniqueCode(PdProductStockUniqueCode psc);
 }

@@ -373,4 +373,18 @@ public class PdProductStockUniqueCodeServiceImpl extends ServiceImpl<PdProductSt
         }
         return str;
     }
+
+    /**
+     * 已经有唯一码保存(智能柜唯一码)
+     * @param psc
+     */
+    @Override
+    public  void foreignSaveUniqueCode(PdProductStockUniqueCode psc){
+        if(!oConvertUtils.isEmpty(psc)){
+            psc.setPrintType(PdConstant.CODE_PRINT_TYPE_1);//唯一码
+            psc.setCodeState(PdConstant.CODE_PRINT_STATE_0);//正常状态
+            psc.setPrintNum(1);
+            baseMapper.insert(psc);
+        }
+    }
 }
