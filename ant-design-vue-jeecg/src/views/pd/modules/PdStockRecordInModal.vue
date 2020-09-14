@@ -295,6 +295,7 @@
     <pd-invoice-print-modal-j-j-f-s-y-y ref="PdInvoicePrintModalJJFSYY"></pd-invoice-print-modal-j-j-f-s-y-y>
     <ex-stock-record-in-print-modal ref="exStockRecordInPrintModal" ></ex-stock-record-in-print-modal>
     <pd-product-number-print ref="printModalForm"></pd-product-number-print>
+    <pd-stock-record-in-print-modal-g-z-z-l-y-y ref="PdStockRecordInPrintModalGZZLYY"></pd-stock-record-in-print-modal-g-z-z-l-y-y>
   </j-modal>
 </template>
 
@@ -315,6 +316,7 @@
   import ExStockRecordInPrintModal from "../../external/print/ExStockRecordInPrintModal";
   import PdStockRecordInPrintModalJJFSYY from "../../external/jiujiang/print/PdStockRecordInPrintModalJJFSYY";
   import PdInvoicePrintModalJJFSYY from "../../external/jiujiang/print/PdInvoicePrintModalJJFSYY";
+  import PdStockRecordInPrintModalGZZLYY from "../../external/ganzhouzhongliu/print/PdStockRecordInPrintModalGZZLYY";
   import { disabledAuthFilter } from "@/utils/authFilter"
   import PdProductNumberPrint from "../print/PdProductNumberPrint";
 
@@ -348,6 +350,7 @@
       PdChoosePurchaseOrderListModel,
       PdStockRecordInPrintModalJJFSYY,
       PdInvoicePrintModalJJFSYY,
+      PdStockRecordInPrintModalGZZLYY,
       JDate,
       JDictSelectTagExpand
     },
@@ -788,6 +791,9 @@
           }else if(this.hospitalCode == "JJFSYY"){
             this.$refs.PdStockRecordInPrintModalJJFSYY.show(res.result);
             this.$refs.PdStockRecordInPrintModalJJFSYY.title = this.stockInText;
+          }else if(this.hospitalCode == "GZZLYY"){
+            this.$refs.PdStockRecordInPrintModalGZZLYY.show(res.result);
+            this.$refs.PdStockRecordInPrintModalGZZLYY.title = this.stockInText;
           }else{
             this.$refs.pdStockRecordInPrintModal.show(res.result);
             this.$refs.pdStockRecordInPrintModal.title = this.stockInText + "入库单";

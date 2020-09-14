@@ -309,6 +309,7 @@
     <pd-stock-record-out-print-modal-f-c-z-y-y ref="pdStockRecordOutPrintModalFCZYY"></pd-stock-record-out-print-modal-f-c-z-y-y>
     <pd-stock-record-out-print-modal-f-c-r-m-y-y ref="pdStockRecordOutPrintModalFCRMYY"></pd-stock-record-out-print-modal-f-c-r-m-y-y>
     <pd-stock-record-out-print-modal-j-j-f-s-y-y ref="PdStockRecordOutPrintModalJJFSYY"></pd-stock-record-out-print-modal-j-j-f-s-y-y>
+    <pd-stock-record-out-print-modal-g-z-z-l-y-y ref="PdStockRecordOutPrintModalGZZLYY"></pd-stock-record-out-print-modal-g-z-z-l-y-y>
     <ex-stock-record-out-print-modal ref="exStockRecordOutPrintModal"></ex-stock-record-out-print-modal>
     <pd-choose-package-record-list-model ref="pdChoosePackageRecordListModel" @ok="returnPackageRecordData" ></pd-choose-package-record-list-model>
     <pd-product-number-print ref="printModalForm"></pd-product-number-print>
@@ -335,6 +336,7 @@
   import PdStockRecordOutPrintModalFCZYY from "../../external/fengcheng/print/PdStockRecordOutPrintModalFCZYY";
   import PdStockRecordOutPrintModalFCRMYY from "../../external/fengcheng/print/PdStockRecordOutPrintModalFCRMYY";
   import PdStockRecordOutPrintModalJJFSYY from "../../external/jiujiang/print/PdStockRecordOutPrintModalJJFSYY";
+  import PdStockRecordOutPrintModalGZZLYY from "../../external/ganzhouzhongliu/print/PdStockRecordOutPrintModalGZZLYY";
   import PdProductNumberPrint from "../print/PdProductNumberPrint";
   import { disabledAuthFilter } from "@/utils/authFilter"
 
@@ -355,6 +357,7 @@
       PdChooseApplyOrderListModel,
       PdChooseProductStockListModel,
       PdStockRecordOutPrintModalJJFSYY,
+      PdStockRecordOutPrintModalGZZLYY,
       ATextarea,
       JDate,
       JDictSelectTagExpand
@@ -954,6 +957,10 @@
             case "JJFSYY":
               this.$refs.PdStockRecordOutPrintModalJJFSYY.show(res.result);
               this.$refs.PdStockRecordOutPrintModalJJFSYY.title = this.stockOutText;
+              break;
+            case "GZZLYY":
+              this.$refs.PdStockRecordOutPrintModalGZZLYY.show(res.result);
+              this.$refs.PdStockRecordOutPrintModalGZZLYY.title = this.stockOutText;
               break;
             default:
               this.$refs.pdStockRecordOutPrintModal.show(res.result);

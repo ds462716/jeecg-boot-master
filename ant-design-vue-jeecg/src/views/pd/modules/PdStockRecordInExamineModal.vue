@@ -208,6 +208,7 @@
     <pd-stock-record-in-print-modal ref="pdStockRecordInPrintModal"></pd-stock-record-in-print-modal>
     <ex-stock-record-in-print-modal ref="exStockRecordInPrintModal"></ex-stock-record-in-print-modal>
     <pd-stock-record-in-print-modal-j-j-f-s-y-y ref="PdStockRecordInPrintModalJJFSYY"></pd-stock-record-in-print-modal-j-j-f-s-y-y>
+    <pd-stock-record-in-print-modal-g-z-z-l-y-y ref="PdStockRecordInPrintModalGZZLYY"></pd-stock-record-in-print-modal-g-z-z-l-y-y>
     <pd-product-number-print ref="printModalForm"></pd-product-number-print>
   </j-modal>
 </template>
@@ -225,6 +226,7 @@
   import {scanCode} from '@/utils/barcode'
   import PdStockRecordInPrintModal from '../print/PdStockRecordInPrintModal'
   import PdStockRecordInPrintModalJJFSYY from "../../external/jiujiang/print/PdStockRecordInPrintModalJJFSYY";
+  import PdStockRecordInPrintModalGZZLYY from "../../external/ganzhouzhongliu/print/PdStockRecordInPrintModalGZZLYY";
   import ExStockRecordInPrintModal from "../../external/print/ExStockRecordInPrintModal";
   import PdProductNumberPrint from "../print/PdProductNumberPrint";
   import { disabledAuthFilter } from "@/utils/authFilter"
@@ -254,6 +256,7 @@
       ExStockRecordInPrintModal,
       PdStockRecordInPrintModal,
       PdStockRecordInPrintModalJJFSYY,
+      PdStockRecordInPrintModalGZZLYY,
       ATextarea,
       JDate,
       JDictSelectTagExpand,
@@ -516,6 +519,9 @@
           }else if(this.hospitalCode == "JJFSYY"){
             this.$refs.PdStockRecordInPrintModalJJFSYY.show(res.result);
             this.$refs.PdStockRecordInPrintModalJJFSYY.title = this.stockInText;
+          }else if(this.hospitalCode == "GZZLYY"){
+            this.$refs.PdStockRecordInPrintModalGZZLYY.show(res.result);
+            this.$refs.PdStockRecordInPrintModalGZZLYY.title = this.stockInText;
           }else{
             this.$refs.pdStockRecordInPrintModal.show(res.result);
             this.$refs.pdStockRecordInPrintModal.title = this.stockInText + "入库单";
