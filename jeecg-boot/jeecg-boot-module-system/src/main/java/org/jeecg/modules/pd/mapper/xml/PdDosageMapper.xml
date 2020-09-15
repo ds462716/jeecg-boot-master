@@ -187,11 +187,15 @@
         <include refid="pdDosageColumns"/>,
         <include refid="sysDepartColumns"/>,
         b.realname AS dosageByName
-        FROM  `pd_dosage` a
+        FROM  pd_dosage a
+        LEFT JOIN pd_dosage_detail dd on a.id = dd.dosage_id
         <include refid="sysDepartJoins"/>
         LEFT JOIN sys_user b ON a.dosage_by = b.id
         <where>
             a.del_flag = #{entity.DEL_FLAG_NORMAL}
+             <if test="entity.refBarCode != null and entity.refBarCode != ''">
+                AND dd.ref_bar_code = #{entity.refBarCode}
+            </if>
             <if test="entity.dosageNo != null and entity.dosageNo != ''">
                 AND a.dosage_no = #{entity.dosageNo}
             </if>

@@ -137,10 +137,16 @@
           </div>
           <!--查询按钮结束-->
           <a-card :bordered="false">
-            <!--采购环比——同比图-->
+            <!--采购环比图-->
             <div :style="{ padding: '0 0 32px 32px' }"  >
-              <h4 :style="{ marginBottom: '20px' }">采购环比——同比图</h4>
+              <h4 :style="{ marginBottom: '20px' }">采购环比图</h4>
               <v-chart :options="polar5"  :style="{ width:'1600px'}"  />
+            </div>
+
+            <!--采购同比图-->
+            <div :style="{ padding: '0 0 32px 32px' }"  >
+              <h4 :style="{ marginBottom: '20px' }">采购同比图</h4>
+              <v-chart :options="polar6"  :style="{ width:'1600px'}"  />
             </div>
             <div class="table-operator">
             </div>
@@ -192,6 +198,166 @@
           <a-card :bordered="false">
             <pie title="全院耗材占比"  :height="height"  :dataSource="dataSource8"/>
             <div class="table-operator">
+            </div>
+          </a-card>
+        </a-tab-pane>
+
+        <a-tab-pane tab="检验收入金额柱状图" key="5">
+          <!--查询按钮开始-->
+          <div class="table-page-search-wrapper">
+            <a-form layout="inline" @keyup.enter.native="searchQuery(5)">
+              <!--<a-row :gutter="24">
+                <a-col :md="6" :sm="8">
+                  <a-form-item label="年月">
+                    <a-month-picker placeholder="选择年月" @change="monthChangeAllConion" v-model="queryParam4.ym"/>
+                  </a-form-item>
+                </a-col>
+                <a-col :md="6" :sm="8">
+                  <a-form-item label="科室">
+                    <a-select
+                      mode="multiple"
+                      showSearch
+                      :departId="departValue"
+                      :defaultActiveFirstOption="false"
+                      :allowClear="true"
+                      :showArrow="true"
+                      :filterOption="false"
+                      @search="departHandleSearch"
+                      @focus="departHandleSearch"
+                      :notFoundContent="notFoundContent"
+                      v-model="queryParam4.departIds"
+                      placeholder="请选择科室"
+                    >
+                      <a-select-option v-for="d in departData" :key="d.id">{{d.departName}}</a-select-option>
+                    </a-select>
+                  </a-form-item>
+                </a-col>
+                <a-col :md="6" :sm="8">
+            <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
+              <a-button type="primary" @click="searchQuery(5)" icon="search">查询</a-button>
+              <a-button type="primary" @click="searchReset(5)" icon="reload" style="margin-left: 8px">重置</a-button>
+            </span>
+                </a-col>
+              </a-row>-->
+            </a-form>
+          </div>
+          <!--查询按钮结束-->
+        <!--  采购收费柱状图-->
+          <div :style="{ padding: '0 0 32px 32px' }"  >
+            <h4 :style="{ marginBottom: '20px' }">采购收费柱状图</h4>
+            <v-chart :options="polar7"  :style="{ width:'1600px'}"  />
+          </div>
+          <!-- 采购收费趋势图-->
+          <div :style="{ padding: '0 0 32px 32px' }"  >
+            <h4 :style="{ marginBottom: '20px' }">检验收费趋势图</h4>
+            <v-chart :options="polar8"  :style="{ width:'1600px'}"  />
+          </div>
+        </a-tab-pane>
+
+
+        <a-tab-pane tab="综合统计数据报表" key="6">
+            <a-card :bordered="false">
+              <!-- 查询区域 -->
+              <div class="table-page-search-wrapper">
+                <a-form layout="inline" @keyup.enter.native="inSearchQuery">
+                  <a-row :gutter="24">
+
+                    <a-col :md="6" :sm="8">
+                      <a-form-item label="年月">
+                        <a-month-picker placeholder="选择年月" @change="monthChangeAllConion" v-model="queryParam4.ym"/>
+                      </a-form-item>
+                    </a-col>
+
+
+
+                    <template v-if="toggleSearchStatus">
+                    </template>
+
+                    <a-col :md="6" :sm="8">
+            <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
+              <a-button type="primary" @click="searchQuery(6)" icon="search">查询</a-button>
+              <a-button type="primary" @click="searchQuery(6)" icon="reload" style="margin-left: 8px">重置</a-button>
+              <a  @click="handleToggleSearch" style="margin-left: 8px">
+                {{ toggleSearchStatus ? '收起' : '展开' }}
+                <a-icon :type="toggleSearchStatus ? 'up' : 'down'"/>
+              </a>
+            </span>
+                    </a-col>
+                  </a-row>
+                </a-form>
+              </div>
+              <!-- 查询区域-END -->
+              <!-- 操作按钮区域 -->
+              <div class="table-operator">
+                <a-button type="primary" icon="download" @click="handleExportXls()">导出</a-button>
+              </div>
+              <!-- table区域-begin -->
+              <div>
+                <a-table
+                  ref="in_table"
+                  size="small"
+                  bordered
+                  rowKey="id"
+                  :columns="inTable.columns"
+                  :dataSource="inTable.dataSource"
+                  :pagination="inTable.ipagination"
+                  :loading="inTable.loading"
+                  @change="inHandleTableChange"
+                >
+                </a-table>
+              </div>
+            </a-card>
+
+
+          <a-card :bordered="false">
+            <!-- 查询区域 -->
+            <div class="table-page-search-wrapper">
+              <a-form layout="inline" @keyup.enter.native="inSearchQuery">
+                <a-row :gutter="24">
+
+                  <a-col :md="6" :sm="8">
+                    <a-form-item label="年月">
+                      <a-month-picker placeholder="选择年月" @change="monthChangeAllConion" v-model="queryParam4.ym"/>
+                    </a-form-item>
+                  </a-col>
+
+
+
+                  <template v-if="toggleSearchStatus">
+                  </template>
+
+                  <a-col :md="6" :sm="8">
+            <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
+              <a-button type="primary" @click="searchQuery(6)" icon="search">查询</a-button>
+              <a-button type="primary" @click="searchQuery(6)" icon="reload" style="margin-left: 8px">重置</a-button>
+              <a  @click="handleToggleSearch" style="margin-left: 8px">
+                {{ toggleSearchStatus ? '收起' : '展开' }}
+                <a-icon :type="toggleSearchStatus ? 'up' : 'down'"/>
+              </a>
+            </span>
+                  </a-col>
+                </a-row>
+              </a-form>
+            </div>
+            <!-- 查询区域-END -->
+            <!-- 操作按钮区域 -->
+            <div class="table-operator">
+              <a-button type="primary" icon="download" @click="handleExportXls()">导出1</a-button>
+            </div>
+            <!-- table区域-begin -->
+            <div>
+              <a-table
+                ref="in_table"
+                size="small"
+                bordered
+                rowKey="id"
+                :columns="inTable.columns"
+                :dataSource="inTable.dataSource"
+                :pagination="inTable.ipagination"
+                :loading="inTable.loading"
+                @change="inHandleTableChange"
+              >
+              </a-table>
             </div>
           </a-card>
         </a-tab-pane>
@@ -252,6 +418,8 @@
         queryParam2: {},
         queryParam3: {},
         queryParam4: {},
+        queryParam5: {},
+        queryParam6: {},
         departData: [],
         departValue: undefined,
         visible: false,
@@ -262,11 +430,41 @@
           lockScroll: false,
           fullscreen: true,
         },
+//----------------------------------------
+        // 表头
+        inTable: {
+          loading:false,
+          dataSource: [],
+          ipagination:{
+            current: 1,
+            pageSize: 10,
+            pageSizeOptions: ['10', '20', '30', '50', '100'],
+            showTotal: (total, range) => {
+              return range[0] + "-" + range[1] + " 共" + total + "条"
+            },
+            showQuickJumper: true,
+            showSizeChanger: true,
+            total: 0
+          },
+          columns: [
+            { title: '序号', dataIndex: '', key:'rowIndex', width:60, align:"center",
+              customRender:function (t,r,index) {
+                return parseInt(index)+1;
+              }
+            },
+            { title:'月份', align:"center", width:'150px', dataIndex: 'batchNo' },
+            { title:'采购金额', align:"center", width:'100px', dataIndex: 'productNum' },
+            { title:'收费金额', align:"center", width:'60px', dataIndex: 'unitName' },
+            { title:'不可收费金额', align:"center", width:'100px', dataIndex: 'purchasePrice' },
+            { title:'检验收入金额', align:"center", width:'100px', dataIndex: 'inTotalPrice' },
+          ],
+        },
+
 //--------------------
         polar1: {
           //title:"采购收费对照图",
           tooltip: {trigger: 'axis'},
-          legend: {data: ['采购金额', '收费金额'],
+          legend: {data: ['采购金额', '收费金额','不可收费金额'],
             textStyle: { //图例文字的样式
               fontSize: 16
             },},
@@ -293,7 +491,8 @@
             },}],
           series: [
             {name: '采购金额', type: 'bar', data: []},
-            {name: '收费金额', type: 'bar', data: []}
+            {name: '收费金额', type: 'bar', data: []},
+            {name: '不可收费金额', type: 'bar', data: []}
                   ],
           //label:{show:true,fontSize:'16'},
           label:{show:true},
@@ -303,7 +502,7 @@
           height: 300,
           tooltip: {trigger: 'axis'},
           legend: {
-            data: ['采购金额', '收费金额'],
+            data: ['采购金额', '收费金额','不可收费金额'],
             textStyle: { //图例文字的样式
               fontSize: 16
             }},
@@ -321,18 +520,10 @@
               fontSize:'16',
               fontFamily:'微软雅黑',
             }},
-          series: [
-            {
-              name: '采购金额',
-              type: 'line',
-              data:[]
-            },
-            {
-              name: '收费金额',
-              type: 'line',
-              data:[]
-            }
-          ],
+          series: [{name: '采购金额', type: 'line', data:[]},
+                   {name: '收费金额',type: 'line',data:[]},
+                   {name: '不可收费金额',type: 'line',data:[]}
+                  ],
           label: {show: true}
         },
 //-----------------
@@ -341,7 +532,7 @@
             trigger: 'axis'
           },
           legend: {
-            data: ['采购金额', '收费金额'],
+            data: ['采购金额', '收费金额','不可收费金额'],
             textStyle: { //图例文字的样式
               fontSize: 16
             }
@@ -376,18 +567,10 @@
               fontFamily:'微软雅黑',
             }
           }],
-          series: [
-            {
-              name: '采购金额',
-              type: 'bar',
-              data: []
-            },
-            {
-              name: '收费金额',
-              type: 'bar',
-              data: []
-            }
-          ],
+          series: [{name: '采购金额',type: 'bar',data: []},
+                   {name: '收费金额',type: 'bar',data: []},
+                   {name: '不可收费金额',type: 'bar',data: []}
+                  ],
           label:{show:true},
 
         },
@@ -395,7 +578,7 @@
         polar4: {
           height: 300,
           tooltip: {trigger: 'axis'},
-          legend: {data: ['采购金额', '收费金额'],
+          legend: {data: ['采购金额', '收费金额','不可收费金额'],
             textStyle: { //图例文字的样式
               fontSize: 16
             }},
@@ -413,18 +596,10 @@
               fontSize:'16',
               fontFamily:'微软雅黑',
             }},
-          series: [
-            {
-              name: '采购金额',
-              type: 'line',
-              data: []
-            },
-            {
-              name: '收费金额',
-              type: 'line',
-              data: []
-            }
-          ],
+          series: [{name: '采购金额',type: 'line',data: []},
+                   {name: '收费金额',type: 'line',data: []},
+                   {name: '不可收费金额',type: 'line',data: []}
+                  ],
           label: {show: true}
         },
 //-------------------
@@ -496,6 +671,59 @@
               }
             }
           ],
+          series: [{name: '6月份',type: 'bar',data:[]},
+            {name: '7月份',type: 'bar',data:[]},
+            {name: '涨幅',type: 'line',yAxisIndex: 1,data:[]}
+                  ],
+          label:{show:true},
+        },
+//-------------------
+        polar6: {
+          tooltip: {trigger: 'axis', axisPointer: {type: 'cross', crossStyle: {color: '#999'}},},
+          toolbox: {
+            feature: {
+              dataView: {show: true, readOnly: false},
+              magicType: {show: true, type: ['line', 'bar']},
+              restore: {show: true},
+              saveAsImage: {show: true}
+            }
+          },
+          legend: {data: [],textStyle: { //图例文字的样式
+              fontSize: 16
+            }
+          },
+          xAxis: [{type: 'category',data:[],axisPointer: {type: 'shadow'},
+                  axisLabel: {fontSize:'16',fontFamily:'微软雅黑',}
+                  }],
+          yAxis: [{
+              type: 'value',
+              name: '金额(RMB)',
+              min: 0,
+              max: 2000000,
+              interval: 500000,
+              axisLabel: {
+                formatter: '{value}'
+              },
+              axisLabel: {
+                fontSize:'16',
+                fontFamily:'微软雅黑',
+              }
+            },
+            {
+              type: 'value',
+              name: '涨幅(%)',
+              min: -100,
+              max: 100,
+              interval: 20,
+              axisLabel: {
+                formatter: '{value}%'
+              },
+              axisLabel: {
+                fontSize:'16',
+                fontFamily:'微软雅黑',
+              }
+            }
+          ],
           series: [
             {
               name: '6月份',
@@ -516,13 +744,76 @@
           ],
           label:{show:true},
         },
-//-------------------
+ //--------------------
+        polar7: {
+          tooltip: {trigger: 'axis'},
+          legend: {data: ['采购金额','检验收入金额'],
+            textStyle: { //图例文字的样式
+              fontSize: 16
+            },},
+          toolbox: {
+            show: true,
+            feature: {
+              dataView: {show: true, readOnly: false},
+              magicType: {show: true, type: ['line', 'bar']},
+              restore: {show: true},
+              saveAsImage: {show: true}
+            }
+          },
+          calculable: true,
+          xAxis: [{type: 'category',data: [],
+            axisPointer: {type: 'shadow'},
+            axisLabel: {
+              fontSize:'16',
+              fontFamily:'微软雅黑',
+            },}],
+          yAxis: [{type: 'value',
+            axisLabel: {
+              fontSize:'16',
+              fontFamily:'微软雅黑',
+            },}],
+          series: [
+            {name: '采购金额', type: 'bar', data: []},
+            {name: '检验收入金额', type: 'bar', data: []}
+          ],
+          label:{show:true},
+        },
+ //-------------------------------------------
+        polar8: {
+          height: 300,
+          tooltip: {trigger: 'axis'},
+          legend: {
+            data: ['采购金额', '检验收入金额'],
+            textStyle: { //图例文字的样式
+              fontSize: 16
+            }},
+          toolbox: {show: true,},
+          xAxis: {
+            type: 'category',
+            data:[],
+            axisLabel: {
+              fontSize:'16',
+              fontFamily:'微软雅黑',
+            }
+          },
+          yAxis: {
+            axisLabel: {
+              fontSize:'16',
+              fontFamily:'微软雅黑',
+            }},
+          series: [{name: '采购金额', type: 'line', data:[]},
+                   {name: '检验收入金额',type: 'line',data:[]}
+                  ],
+          label: {show: true}
+        },
+//-------------------------------------
         url: {
           queryDepart: "/pd/pdDepart/queryListTree",
           queryPurchaseCountView: "/pd/pdStatisticalReport/queryPurchaseCountView",
           queryConsumptionView: "/pd/pdStatisticalReport/queryConsumptionView",
           queryDepartContionView: "/pd/pdStatisticalReport/queryDepartContionView",
           queryPurchaseAmountMomTableView: "/pd/pdStatisticalReport/queryPurchaseAmountMomTableView",
+          queryItemMoneyCountView: "/pd/pdStatisticalReport/queryItemMoneyCountView",
         },
         dictOptions: {},
       }
@@ -531,6 +822,12 @@
 
     },
     methods: {
+
+      //表格分页事件
+      inHandleTableChange(pagination, filters, sorter) {
+        this.inTable.ipagination = pagination;
+        this.inLoadData();
+      },
 
       loadData() {
         this.visible = true;
@@ -549,9 +846,14 @@
         } else if (key == 2) {
           this.chargeUseLoadData(1);//科室采购消耗表
         } else if (key == 3) {
-          this.noChargeUseLoadData(1);//科室采购环比——同比图
+          this.noChargeUseLoadData(1);//科室采购环比图
+          this.toChargeUseLoadData(1);//科室采购同比图
         } else if (key == 4) {
           this.allConsumptionData(1); //全院耗材占比
+        }else if (key == 5) {
+          this.itemConsumptionData(1); //检验收入金额柱状图
+        }else if (key == 6) {
+          this.tableConsumptionData(1); //全院耗材占比
         }
       },
 
@@ -596,6 +898,12 @@
         }else if(num==4){
           param = Object.assign(sqp, this.queryParam4, this.isorter ,this.filters);
           param.departIds = this.queryParam4.departIds+"";
+        }else if(num==5){
+          param = Object.assign(sqp, this.queryParam5, this.isorter ,this.filters);
+          param.departIds = this.queryParam5.departIds+"";
+        }else if(num==6){
+          param = Object.assign(sqp, this.queryParam6, this.isorter ,this.filters);
+          param.departIds = this.queryParam6.departIds+"";
         }
         return filterObj(param);
       },
@@ -632,8 +940,13 @@
           this.chargeUseLoadData();//科室采购消耗表
         }else if(num==3){
           this.noChargeUseLoadData();
+          this.toChargeUseLoadData();
         }else if(num==4){
           this.allConsumptionData();
+        }else if(num==5){
+          this.itemConsumptionData();//检验收入金额统计表
+        }else if(num==6){
+          this.tableConsumptionData();
         }
       },
 
@@ -659,11 +972,12 @@
       },
 
 
-      //科室采购环比——同比图
+      //科室采购环比图
       noChargeUseLoadData() {
         //获取采购收费对照表数据
         var params = {};
         params = this.getQueryParams(3);//查询条件
+        params.selectType="0";
         this.loading = true;
         getAction(this.url.queryPurchaseAmountMomTableView, params).then((res) => {
           if (res.success) {
@@ -676,6 +990,28 @@
             this.polar5.series[1].data = resultMap.seriesData2;
             this.polar5.series[2].data = resultMap.seriesData3;
             this.polar5.legend.data = resultMap.legends;
+          }
+          this.loading = false;
+        })
+      },
+      //科室采购同比图
+      toChargeUseLoadData() {
+        //获取采购收费对照表数据
+        var params = {};
+        params = this.getQueryParams(3);//查询条件
+        params.selectType="1";
+        this.loading = true;
+        getAction(this.url.queryPurchaseAmountMomTableView, params).then((res) => {
+          if (res.success) {
+            let resultMap = res.result;
+            this.polar6.xAxis[0].data = resultMap.xAxis;
+            this.polar6.series[0].name = resultMap.legends[0];
+            this.polar6.series[1].name = resultMap.legends[1];
+            this.polar6.series[2].name = resultMap.legends[2];
+            this.polar6.series[0].data = resultMap.seriesData1;
+            this.polar6.series[1].data = resultMap.seriesData2;
+            this.polar6.series[2].data = resultMap.seriesData3;
+            this.polar6.legend.data = resultMap.legends;
           }
           this.loading = false;
         })
@@ -696,7 +1032,30 @@
         })
       },
 
+      //检验收入金额报表
+      itemConsumptionData(arg) {
+        var params = {};
+        params = this.getQueryParams(5);//查询条件
+        this.loading = true;
+        getAction(this.url.queryItemMoneyCountView, params).then((res) => {
+          if (res.success) {
+            this.polar7.xAxis[0].data  = res.result.visitFields;//柱状图表
+            this.polar7.series  = res.result.dataSource;//柱状图表
+            this.polar8.xAxis.data  = res.result.visitFields;//趋势表
+            this.polar8.series  = res.result.dataSource;//趋势表
+          } else {
+            this.$message.warning(res.message)
+          }
+          this.loading = false;
+        })
+      },
 
+
+
+      //综合统计报表数据
+      tableConsumptionData(arg) {
+
+      },
 
       /** 关闭按钮 **/
       handleCancel() {
@@ -709,6 +1068,8 @@
         this.queryParam2 = {};
         this.queryParam3 = {};
         this.queryParam4 = {};
+        this.queryParam5 = {};
+        this.queryParam6 = {};
         this.visible = false;
         this.$emit('close');
       },
@@ -722,6 +1083,10 @@
           this.queryParam3 = {};
         }else if(num==4){
           this.queryParam4 = {};
+        }else if(num==5){
+          this.queryParam5 = {};
+        }else if(num==6){
+          this.queryParam6 = {};
         }
       },
     },

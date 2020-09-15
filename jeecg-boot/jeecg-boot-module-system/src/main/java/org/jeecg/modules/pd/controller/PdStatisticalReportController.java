@@ -659,4 +659,13 @@ public class PdStatisticalReportController extends JeecgController<PdStatistical
         Map<String,Object> map =pdStatisticalReportService.queryPurchaseAmountMomTableView(purchaseUseReportPage);
         return Result.ok(map);
     }
+
+    /**
+     * 综合统计   ---检验收入金额统计表  mcb  --20200907
+     */
+    @GetMapping(value = "queryItemMoneyCountView")
+    public Result<?> queryItemMoneyCountView(RpPurchaseUseReportPage purchaseUseReportPage){
+        Map<String,Object> map= pdStatisticalReportService.queryItemMoneyCountView(purchaseUseReportPage);
+        return Result.ok(map);
+    }
 }

@@ -89,4 +89,6 @@ public interface IPdStatisticalReportService extends IService<PdStatisticalRepor
     Map<String, Object> queryDepartPurchaseCountView(RpPurchaseUseReportPage entity);
 
     Map<String, Object> queryPurchaseAmountMomTableView(RpPurchaseUseReportPage entity);
+
+    Map<String, Object> queryItemMoneyCountView(RpPurchaseUseReportPage entity);
 }
