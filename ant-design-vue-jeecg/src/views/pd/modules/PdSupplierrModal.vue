@@ -10,7 +10,7 @@
   >
   
     <a-spin :spinning="confirmLoading">
-      <a-form :form="form" >
+      <a-form :form="form" :selfUpdate = "true">
         <a-form-item label="名称" :labelCol="labelCol" :wrapperCol="wrapperCol">
           <a-input ref="inputFocus" :disabled="focusDisable"  autocomplete="off" @change="pinyinTran" v-decorator="[ 'name', validatorRules.name]" :style="{width:'100%',margin:'0'}" placeholder="请输入名称"></a-input>
         </a-form-item>
