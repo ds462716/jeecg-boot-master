@@ -2617,8 +2617,8 @@
           }
 
           &:disabled {
-            color: rgba(0, 0, 0, 0.25);
-            background: #f5f5f5;
+            color: #000000!important;
+            background-color: #fafafa;
             cursor: not-allowed;
           }
 
