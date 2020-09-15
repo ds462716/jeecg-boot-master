@@ -12,11 +12,11 @@
   >
 
     <a-spin :spinning="confirmLoading">
-      <a-form :form="form">
+      <a-form :form="form" :selfUpdate = "true">
         <a-row class="form-row" :gutter="{ xs: 8, sm: 16, md: 24, lg: 32 }">
           <a-col :lg="12">
             <a-form-item label="产品编号" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input ref="inputFocus" :disabled="focusDisable" autocomplete="off" @keyup.enter.native="getPrdNumber" v-decorator="[ 'number', validatorRules.number]" placeholder="请输入产品编号"></a-input>
+              <a-input ref="inputFocus"  :disabled="focusDisable" autocomplete="off" @keyup.enter.native="getPrdNumber" v-decorator="[ 'number', validatorRules.number]" placeholder="请输入产品编号"></a-input>
             </a-form-item>
           </a-col>
           <a-col :lg="1" >
