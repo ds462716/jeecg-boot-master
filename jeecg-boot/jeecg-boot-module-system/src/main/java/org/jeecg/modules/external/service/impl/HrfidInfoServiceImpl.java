@@ -83,18 +83,19 @@ public class HrfidInfoServiceImpl extends ServiceImpl<HRfidInfoMapper, HRfidInfo
         List<String> batchNos =new ArrayList<>();
         for(Map<String,Object> map:lists){
             String rfId=MapUtils.getString(map,"rfId");
-            String batchNo=MapUtils.getString(map,"batchNo");
+            //String batchNo=MapUtils.getString(map,"batchNo");
             rfIds.add(rfId);
-            if(StringUtils.isNotEmpty(batchNo)){
+            /*if(StringUtils.isNotEmpty(batchNo)){
                 batchNos.add(batchNo);
-            }
+            }*/
         }
         HRfidInfo rfIdInfo=new HRfidInfo();
         rfIdInfo.setKfId(kfId);
-        rfIdInfo.setBatchNos(batchNos);
+        //rfIdInfo.setBatchNos(batchNos);
         rfIdInfo.setRfIds(rfIds);
         List<Map<String,Object>> rfidList=rfidInfoMapper.queryHrfidList(rfIdInfo);
-        if(rfidList!=null && rfidList.size()>0){
+
+        /*if(rfidList!=null && rfidList.size()>0){
             for(Map<String,Object> maps:rfidList){
                 int czNum=0;//操作数量
                 String stockId= MapUtils.getString(maps,"productStockId");
@@ -113,7 +114,7 @@ public class HrfidInfoServiceImpl extends ServiceImpl<HRfidInfoMapper, HRfidInfo
                 }
                 maps.put("czNum",czNum);
             }
-        }
+        }*/
         return rfidList;
     }
 }

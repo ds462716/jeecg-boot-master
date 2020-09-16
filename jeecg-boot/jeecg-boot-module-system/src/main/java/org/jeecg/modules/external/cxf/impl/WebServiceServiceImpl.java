@@ -3,9 +3,12 @@ package org.jeecg.modules.external.cxf.impl;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.StringUtils;
+import org.jeecg.common.api.vo.Result;
+import org.jeecg.common.constant.MessageConstant;
 import org.jeecg.common.constant.PdConstant;
 import org.jeecg.common.util.DateUtils;
 import org.jeecg.common.util.PasswordUtil;
@@ -21,7 +24,6 @@ import org.jeecg.modules.external.service.IHforcerInfoService;
 import org.jeecg.modules.pd.entity.PdProductStock;
 import org.jeecg.modules.pd.entity.PdProductStockUniqueCode;
 import org.jeecg.modules.pd.entity.PdStockRecord;
-import org.jeecg.modules.pd.entity.PdStockRecordDetail;
 import org.jeecg.modules.pd.service.IPdDepartService;
 import org.jeecg.modules.pd.service.IPdProductStockService;
 import org.jeecg.modules.pd.service.IPdProductStockUniqueCodeService;
@@ -882,69 +884,91 @@ public class WebServiceServiceImpl implements WebServiceService {
     public String sendOutboundOrderToSpd(String str) {
         Map<String, Object> retMap = new HashMap<String, Object>();
         if (str == null || "".equals(str.trim())) {
-            retMap.put("result", PdConstant.FAIL_1);
-            retMap.put("message", "推送数据为空");
+            retMap.put("result",PdConstant.FAIL_1);
+            retMap.put("message", "参数为空");
             return JSON.toJSONString(retMap);
         }
         try {
-            System.out.println("#######耗材柜出库单接口报文：" + str);
-            Map<Object, Object> map = (Map<Object, Object>) JSONObject.parse(str);
-            if (map != null && !MapUtils.isEmpty(map)) {
-                String outStoreroomId = MapUtils.getString(map, "outStoreroomId");//出库库房ID
-                String inStoreroomId = MapUtils.getString(map, "inStoreroomId");//入库库房ID
-                String userId = MapUtils.getString(map, "userId");//操作人ID
-                if (StringUtils.isEmpty(outStoreroomId) ||
-                        StringUtils.isEmpty(inStoreroomId) ||
-                        StringUtils.isEmpty(userId)) {
-                    retMap.put("result", PdConstant.FAIL_1);
-                    retMap.put("message", "出库/入库库房ID或操作人信息不能为空！");
-                    return JSON.toJSONString(retMap);
+            System.out.println("#######智能柜出库接口报文："+str);
+            List<Map<Object, Object>> list = (List<Map<Object, Object>>) JSONObject.parse(str);
+             if(CollectionUtils.isEmpty(list)){
+                 retMap.put("result",PdConstant.FAIL_1);
+                 retMap.put("message", "参数不能为空");
+                 return JSON.toJSONString(retMap);
+             }else{
+                    for(Map<Object, Object> map:list){
+                        if (map != null && !MapUtils.isEmpty(map)) {
+                            String outDepartId = MapUtils.getString(map, "outDepartId");//出库库房ID
+                            String inDepartId = MapUtils.getString(map, "inDepartId");//入库库房ID
+                            String operator = MapUtils.getString(map, "userId");//操作人
+                            String type = MapUtils.getString(map, "type");//操作类型  0:入库；1:出库；
+                            List<Map<String,Object>> uniqueCodes =(List<Map<String,Object>>) MapUtils.getObject(map, "list");//操作类型  0:入库；1:出库；
+//--------------
+                            Result<PdProductStock> result = new Result<>();
+                            if(CollectionUtils.isEmpty(uniqueCodes)){
+                                retMap.put("result", MessageConstant.ICODE_STATE_500);
+                                retMap.put("message", "唯一码不能为空");
+                                return JSON.toJSONString(retMap);
+                            }
+                            if(oConvertUtils.isEmpty(inDepartId)){
+                                retMap.put("result",MessageConstant.ICODE_STATE_500);
+                                retMap.put("message", "出库失败，入库库房为空！");
+                                return JSON.toJSONString(retMap);
+                            }
+                            List<PdProductStock> stockList = new ArrayList<>();
+                            for (Map<String,Object> param : uniqueCodes) {
+                                String    barcode = MapUtils.getString(param,"uniqueCode");
+                                if(StringUtils.isNotBlank(barcode)){
+                                    LambdaQueryWrapper<PdProductStockUniqueCode> query = new LambdaQueryWrapper<PdProductStockUniqueCode>()
+                                            .eq(PdProductStockUniqueCode::getId, barcode)
+                                            .eq(PdProductStockUniqueCode::getPrintType, PdConstant.CODE_PRINT_TYPE_1)
+                                            .eq(PdProductStockUniqueCode::getCodeState,PdConstant.CODE_PRINT_STATE_0);//正常状态不包括已退货和已用完的
+                                    //查询状态是正常状态且是当前科室下的
+                                    PdProductStockUniqueCode pdProductStockUniqueCode = pdProductStockUniqueCodeService.getOne(query);
+                                    if(pdProductStockUniqueCode!=null){
+                                        PdProductStock ps = new PdProductStock();
+                                        ps.setId(pdProductStockUniqueCode.getProductStockId());
+                                        // 唯一码查库存
+                                        PdProductStock stock=pdProductStockService.getOne(ps);
+                                        if(oConvertUtils.isNotEmpty(stock)){
+                                            stock.setRefBarCode(barcode);
+                                            if(StringUtils.isEmpty(outDepartId)){
+                                                outDepartId=stock.getDepartId();
+                                            }
+                                            stockList.add(stock);
+                                        }
+                                    }
+                                }
+                            }
+                            if(CollectionUtils.isEmpty(stockList)){
+                                retMap.put("result",MessageConstant.ICODE_STATE_500);
+                                retMap.put("message", "出库失败，出库明细为空！");
+                                return JSON.toJSONString(retMap);
+                            }
+                            //自动出库操作
+                            PdStockRecord pdStockRecord=new PdStockRecord();
+                            pdStockRecord.setSubmitBy(operator);      // 提交人
+                            pdStockRecord.setAuditBy(operator);       // 审核人
+                            pdStockRecord.setApplyBy(operator);       //领用人
+                            pdStockRecord.setOutDepartId(outDepartId); // 出库库房id
+                            pdStockRecord.setInDepartId(inDepartId);
+                            pdStockRecord.setBarCodeType(PdConstant.CODE_PRINT_TYPE_1);
+                            String recordId = pdStockRecordService.addOutForTerminal(pdStockRecord, stockList);
+                        } else {
+                            retMap.put("result",PdConstant.FAIL_1);
+                            retMap.put("message", "参数不能为空");
+                        }
+                    }
                 }
-                SysUser user = sysUserService.getById(userId);
-                if (user == null || user.getUsername() == null) {
-                    retMap.put("result", PdConstant.FAIL_1);
-                    retMap.put("message", "根据用户id获取不到有效的用户信息");
-                    return JSON.toJSONString(retMap);
-                }
-                SysDepart outSysDepart = pdDepartService.getById(outStoreroomId);
-                if (outSysDepart == null || outSysDepart.getDepartName() == null) {
-                    retMap.put("result", PdConstant.FAIL_1);
-                    retMap.put("message", "根据出库库房Id获取不到有效信息");
-                    return JSON.toJSONString(retMap);
-                }
-                SysDepart inSysDepart = pdDepartService.getById(inStoreroomId);
-                if (inSysDepart == null || inSysDepart.getDepartName() == null) {
-                    retMap.put("result", PdConstant.FAIL_1);
-                    retMap.put("message", "根据入库库房Id获取不到有效信息");
-                    return JSON.toJSONString(retMap);
-                }
-
-                JSONArray orderArr = JSONObject.parseArray(MapUtils.getObject(map, "List").toString());
-                List<PdStockRecordDetail> list = JSONArray.parseArray(orderArr.toJSONString(), PdStockRecordDetail.class);
-                  if(CollectionUtils.isEmpty(list)){
-                      retMap.put("result", PdConstant.FAIL_1);
-                      retMap.put("message", "数据异常，产品信息不能为空");
-                      return JSON.toJSONString(retMap);
-                  }
-                PdStockRecord pdStockRecord = new PdStockRecord();
-                pdStockRecord.setOutDepartId(outStoreroomId); //出库库房Id
-                pdStockRecord.setInDepartId(inStoreroomId);
-                pdStockRecord.setPdStockRecordDetailList(list);
-                // 出库
-                pdStockRecordService.addOutForCabinet(pdStockRecord);
-
-                retMap.put("result", PdConstant.SUCCESS_0);
-                retMap.put("message", "成功");
-            } else {
-                retMap.put("result", PdConstant.FAIL_1);
-                retMap.put("message", "推送数据为空");
-            }
+            retMap.put("result", PdConstant.SUCCESS_0);
+            retMap.put("message", "成功");
+            System.out.println("#######智能柜出库结束");
             return JSON.toJSONString(retMap);
         } catch (Exception e) {
+            System.out.println("#######操作失败，日志：" + e.getMessage());
             e.printStackTrace();
-            retMap.put("result", PdConstant.FAIL_1);
-            retMap.put("message", "失败，日志：" + e.getMessage());
-            //TODO 日志记录
+            retMap.put("result",PdConstant.FAIL_1);
+            retMap.put("message", "操作失败，日志：" + e.getMessage());
             return JSON.toJSONString(retMap);
         }
     }
@@ -966,7 +990,7 @@ public class WebServiceServiceImpl implements WebServiceService {
         }
         try {
             System.out.println("#######唯一码清除接口:"+str);
-            Map<Object, Object> map = (Map<Object, Object>) JSONObject.parse(str);
+             Map<Object, Object> map = (Map<Object, Object>) JSONObject.parse(str);
             if (map != null && !MapUtils.isEmpty(map)) {
                 String refBarCode = MapUtils.getString(map, "refBarCode");
 

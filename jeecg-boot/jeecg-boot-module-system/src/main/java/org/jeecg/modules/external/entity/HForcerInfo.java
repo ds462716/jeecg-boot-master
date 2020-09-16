@@ -57,11 +57,11 @@ public class HForcerInfo extends BaseEntity {
     /**所属科室*/
     @Excel(name = "所属科室", width = 15)
     private String departId;
-    /**管理科室库房*/
-    @Excel(name = "管理科室", width = 15)
+    /**当前库房*/
+    @Excel(name = "当前库房", width = 15)
     private String kfId;
-    /**上级管理科室*/
-    @Excel(name = "上级管理科室", width = 15)
+    /**关联科室*/
+    @Excel(name = "关联科室", width = 15)
     private String sjkfId;
     /**柜子编号*/
     @Excel(name = "柜子编号", width = 15)

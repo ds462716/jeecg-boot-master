@@ -2064,7 +2064,7 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
         pdStockRecord.setRecordType(PdConstant.RECODE_TYPE_2); // 出库
         pdStockRecord.setSubmitStatus(PdConstant.SUBMIT_STATE_2); // 已提交
         pdStockRecord.setAuditStatus(PdConstant.AUDIT_STATE_2);//审核通过
-        pdStockRecord.setRemarks("一体机终端07出库");
+        pdStockRecord.setRemarks("高值耗材智能柜出库");
         pdStockRecord.setBarCodeType(PdConstant.CODE_PRINT_TYPE_1);
         // 2、封装出库明细
         List<PdStockRecordDetail> detailList = new ArrayList<>();
@@ -2088,7 +2088,7 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
             detail.setDistributorId(stock.getDistributorId());
             detail.setProduceDate(stock.getProduceDate());
             detail.setBarCodeType(pdStockRecord.getBarCodeType());
-            detail.setRemarks("一体机终端出库");
+            detail.setRemarks("高值耗材智能柜出库");
             detailList.add(detail);
         }
         // 4、保存出库

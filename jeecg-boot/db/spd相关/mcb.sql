@@ -244,3 +244,8 @@ ALTER TABLE  `h_rfid_info`
 MODIFY COLUMN `is_disable` varchar(4) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '启用标识   1：未启用   0：已启用' AFTER `product_id`;
 ALTER TABLE  `h_user_finger_face`
 MODIFY COLUMN `is_disable` varchar(4) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL COMMENT '是否启用 1：未启用 0：已启用' AFTER `user_id`;
+
+-- 2020年9月16日 15:22:59   修改字段注释
+ALTER TABLE  `h_forcer_info`
+MODIFY COLUMN `kf_id` varchar(64) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL COMMENT '当前库房' AFTER `link_phone`,
+MODIFY COLUMN `sjkf_id` varchar(64) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL COMMENT '关联库房' AFTER `kf_id`;
