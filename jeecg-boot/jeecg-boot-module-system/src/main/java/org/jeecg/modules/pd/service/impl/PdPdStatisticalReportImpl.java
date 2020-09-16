@@ -11,6 +11,8 @@ import org.jeecg.modules.pd.entity.PdStockRecordDetail;
 import org.jeecg.modules.pd.mapper.PdStatisticalReportMapper;
 import org.jeecg.modules.pd.service.IPdStatisticalReportService;
 import org.jeecg.modules.pd.vo.*;
+import org.jeecg.modules.system.mapper.SysDepartMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -25,6 +27,8 @@ import java.util.*;
  */
 @Service
 public class PdPdStatisticalReportImpl extends ServiceImpl<PdStatisticalReportMapper, PdStatisticalReport> implements IPdStatisticalReportService {
+    @Autowired
+    private SysDepartMapper sysDepartMapper;
 
     /**
      *供应商用量使用统计
@@ -220,27 +224,33 @@ public class PdPdStatisticalReportImpl extends ServiceImpl<PdStatisticalReportMa
         map1.put("name","采购金额");
         Map<String,Object> map2=new HashMap<>();
         map2.put("name","收费金额");
+        Map<String,Object> map3=new HashMap<>();
+        map3.put("name","不可收费金额");
         List<String> str = new ArrayList<>();
         List<Map> list_1=new ArrayList<>();
         List<Double> list3=new ArrayList<>();
         List<Double> list4=new ArrayList<>();
+        List<Double> list5=new ArrayList<>();
         for(RpPurchaseUseReportPage info:list){
             String type=info.getType();
             list3.add(info.getY());
             list4.add(info.getX());
+            list5.add(info.getS());
             str.add(type);
         }
         map1.put("data",list3);
         map2.put("data",list4);
+        map3.put("data",list5);
         list_1.add(map1);
         list_1.add(map2);
+        list_1.add(map3);
         map.put("dataSource1",list_1);
         map.put("visitFields1",str);
         return map;
     }
 
     /**
-     *  综合统计报表    全院耗材占比数据查
+     *  综合统计报表    全院耗材占比数据查询
      * @param purchaseUseReportPage
      * @return
      */
@@ -270,20 +280,35 @@ public class PdPdStatisticalReportImpl extends ServiceImpl<PdStatisticalReportMa
         map1.put("name","采购金额");
         Map<String,Object> map2=new HashMap<>();
         map2.put("name","收费金额");
+        Map<String,Object> map3=new HashMap<>();
+        map3.put("name","不可收费金额");
         List<String> str = new ArrayList<>();
         List<Map> list_1=new ArrayList<>();
         List<Double> list3=new ArrayList<>();
         List<Double> list4=new ArrayList<>();
+        List<Double> list5=new ArrayList<>();
+        List<String> list6=new ArrayList<>();
         for(RpPurchaseUseReportPage info:list){
+            //采购金额
             String type=info.getType();
+            /*String departType=info.getDepartType();
+            String parentId=info.getParentId();
+            SysDepart sys=null;
+                  if(departType.equals("3")){//如果是三级科室，则将数据计入在上级科室中
+                       sys=sysDepartMapper.getParentDepartId(parentId);
+                      type=sys.getDepartName();
+                  }*/
             list3.add(info.getY());
             list4.add(info.getX());
+            list5.add(info.getS());
             str.add(type);
         }
         map1.put("data",list3);
         map2.put("data",list4);
+        map3.put("data",list5);
         list_1.add(map1);
         list_1.add(map2);
+        list_1.add(map3);
         resultMap.put("dataSource3",list_1);
         resultMap.put("visitFields2",str);
         return resultMap;
@@ -301,14 +326,26 @@ public class PdPdStatisticalReportImpl extends ServiceImpl<PdStatisticalReportMa
         Map<String,Object> resultMap = new HashMap<>();
         String date_i ="";//当前月的上个月
         String date_ii ="";//当前月的上上个月
+        String selectType=purchaseUseReportPage.getSelectType();
         try {
             if(StringUtils.isNotEmpty(purchaseUseReportPage.getYearMonth())) {
-                //获得选择月份和对应上个月的值
-                date_i = DateUtils.getLastMonth(0,purchaseUseReportPage.getYearMonth());
-                date_ii = DateUtils.getLastMonth(1,purchaseUseReportPage.getYearMonth());
+                if("1".equals(selectType)){
+                    //获得选择月份和对应上个月的值
+                    date_i = DateUtils.getLastMonth(0,purchaseUseReportPage.getYearMonth());
+                    date_ii = DateUtils.getLastMonth(12,purchaseUseReportPage.getYearMonth());
+                }else{
+                    date_i = DateUtils.getLastMonth(0,purchaseUseReportPage.getYearMonth());
+                    date_ii = DateUtils.getLastMonth(1,purchaseUseReportPage.getYearMonth());
+                }
+
             }else {
-                  date_i = DateUtils.getLastMonth(1,null);
-                  date_ii = DateUtils.getLastMonth(2,null);
+                if("1".equals(selectType)) {
+                    date_i = DateUtils.getLastMonth(1, null);
+                    date_ii = DateUtils.getLastMonth(13, null);
+                }else{
+                    date_i = DateUtils.getLastMonth(1, null);
+                    date_ii = DateUtils.getLastMonth(2, null);
+                }
             }
         } catch (ParseException e) {
             e.printStackTrace();
@@ -324,7 +361,11 @@ public class PdPdStatisticalReportImpl extends ServiceImpl<PdStatisticalReportMa
             List<String> legends = new ArrayList<>();
             legends.add(date_i);
             legends.add(date_ii);
+        if("0".equals(selectType)) {
             legends.add("环比");
+        }else{
+            legends.add("同比");
+        }
             //取上个月的所有库房
             for(RpPurchaseUseReportPage ps :pdPurchaseAmountMomReportPages){
                 xAxis.add(ps.getDepartName());
@@ -383,5 +424,43 @@ public class PdPdStatisticalReportImpl extends ServiceImpl<PdStatisticalReportMa
             resultMap.put("xAxis",xAxis);
             resultMap.put("legends",legends);
         return resultMap;
+    }
+
+
+
+    /**
+     *  综合统计报表 检验收入金额及采购金额数据获取
+     * @param purchaseUseReportPage
+     * @return
+     */
+    @Override
+    public Map<String, Object> queryItemMoneyCountView(RpPurchaseUseReportPage purchaseUseReportPage) {
+        Map<String,Object> map=new HashMap<String, Object>();
+        if (oConvertUtils.isNotEmpty(purchaseUseReportPage.getDepartIds()) && !"undefined".equals(purchaseUseReportPage.getDepartIds())) {
+            purchaseUseReportPage.setDepartIdList(Arrays.asList(purchaseUseReportPage.getDepartIds().split(",")));
+        }
+        List<RpPurchaseUseReportPage>  list= baseMapper.queryItemMoneyCountView(purchaseUseReportPage);
+        //数据格式
+        Map<String,Object> map1=new HashMap<>();
+        map1.put("name","采购金额");
+        Map<String,Object> map2=new HashMap<>();
+        map2.put("name","检验收入金额");
+        List<String> str = new ArrayList<>();
+        List<Map> list_1=new ArrayList<>();
+        List<Double> list3=new ArrayList<>();
+        List<Double> list4=new ArrayList<>();
+        for(RpPurchaseUseReportPage info:list){
+            String type=info.getType();
+            list3.add(info.getY());
+            list4.add(info.getX());
+            str.add(type);
+        }
+        map1.put("data",list3);
+        map2.put("data",list4);
+        list_1.add(map1);
+        list_1.add(map2);
+        map.put("dataSource",list_1);
+        map.put("visitFields",str);
+        return map;
     }
 }

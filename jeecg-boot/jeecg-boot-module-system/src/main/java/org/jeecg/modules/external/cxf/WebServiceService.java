@@ -86,12 +86,12 @@ public interface WebServiceService {
      */
     public String queryPdStoreroomList(@WebParam(name = "pdStoreroomList") String str);
 
-    /**
+  /*  *//**
      * 获取入库单信息接口
      * @param str
      * @return
-     */
-    public String queryPdStockList(@WebParam(name = "pdStockList") String str);
+     *//*
+    public String queryPdStockList(@WebParam(name = "pdStockList") String str);*/
 
     /**
      * 耗材柜出库单接口

@@ -1354,7 +1354,9 @@
 
 	<select id="queryPdProductStockList" resultType="java.util.Map">
 		SELECT
-		a.id AS "stockId",
+		a.id AS "productStockId",
+		a.depart_id AS "departId",
+		a.depart_parent_id AS "departParentId",
 		a.record_detail_id AS "rkmxId",
 		a.depart_id AS "kfId",
 		a.product_id AS "productId",
@@ -1371,6 +1373,8 @@
 		a.stock_num AS "stockNum",
 		date_format(a.exp_date, "%Y-%m-%d") AS "validDate"
 		FROM pd_product_stock a
+		LEFT JOIN pd_stock_record_detail s on s.id=a.record_detail_id
+		LEFT JOIN pd_stock_record p on p.id=s.record_id
 		LEFT JOIN pd_product b ON a.product_id = b.id
 		LEFT JOIN sys_depart c ON c.id = a.depart_id
 		LEFT JOIN pd_vender	d ON d.id = b.vender_id
@@ -1378,6 +1382,9 @@
 			a.del_flag = #{DEL_FLAG_NORMAL} AND a.stock_num > 0
 			<if test="departId != null and departId != ''">
 				AND a.depart_id = #{departId}
+			</if>
+			<if test="recordNo != null and recordNo != ''">
+				AND p.record_no = #{recordNo}
 			</if>
 			<if test="number != null and number != ''">
 				AND b.number = #{number}

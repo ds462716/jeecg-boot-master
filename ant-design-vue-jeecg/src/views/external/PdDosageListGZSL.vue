@@ -30,17 +30,23 @@
               </a-select>
             </a-form-item>
           </a-col>
-          <a-col :md="6" :sm="8">
-            <a-form-item label="病人姓名">
-              <a-input placeholder="请输入病人姓名" v-model="queryParam.patientInfo"></a-input>
-            </a-form-item>
-          </a-col>
-          <a-col :md="6" :sm="8">
-            <a-form-item label="住院号">
-              <a-input placeholder="请输入住院号" v-model="queryParam.inHospitalNo"></a-input>
-            </a-form-item>
-          </a-col>
-
+          <template v-if="toggleSearchStatus">
+            <a-col :md="6" :sm="8">
+              <a-form-item label="病人姓名">
+                <a-input placeholder="请输入病人姓名" v-model="queryParam.patientInfo"></a-input>
+              </a-form-item>
+            </a-col>
+            <a-col :md="6" :sm="8">
+              <a-form-item label="住院号">
+                <a-input placeholder="请输入住院号" v-model="queryParam.inHospitalNo"></a-input>
+              </a-form-item>
+            </a-col>
+            <a-col :md="6" :sm="8">
+              <a-form-item label="唯一码">
+                <a-input placeholder="请输入唯一码" v-model="queryParam.refBarCode"></a-input>
+              </a-form-item>
+            </a-col>
+          </template>
           <a-col :md="6" :sm="8" >
             <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
               <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>

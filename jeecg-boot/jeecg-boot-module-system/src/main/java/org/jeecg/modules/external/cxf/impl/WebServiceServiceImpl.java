@@ -394,7 +394,7 @@ public class WebServiceServiceImpl implements WebServiceService {
             Map<Object, Object> map = (Map<Object, Object>) JSONObject.parse(str);
             if (map != null && !MapUtils.isEmpty(map)) {
                 String userId = MapUtils.getString(map, "userId");
-                String loginName = MapUtils.getString(map, "loginName");
+                String loginName = MapUtils.getString(map, "userName");
                 if (StringUtils.isEmpty(userId)  && StringUtils.isEmpty(loginName)) {
                     retMap.put("result",PdConstant.FAIL_1);
                     retMap.put("message", "参数异常");
@@ -515,9 +515,10 @@ public class WebServiceServiceImpl implements WebServiceService {
                 String productSpec = MapUtils.getString(map, "productSpec");//产品规格
                 String productName = MapUtils.getString(map, "productName");//产品名称
                 String productType = MapUtils.getString(map, "productType");//产品类型
-                if (StringUtils.isEmpty(kfid)) {
+                String recordNo = MapUtils.getString(map, "recordNo");//入库单号
+                if (StringUtils.isEmpty(kfid) && StringUtils.isEmpty(recordNo)) {
                     retMap.put("result",PdConstant.FAIL_1);
-                    retMap.put("message", "库房ID不能为空！");
+                    retMap.put("message", "参数不能为空！");
                     return JSON.toJSONString(retMap);
                 }
                 PdProductStock pdProductStock = new PdProductStock();
@@ -528,6 +529,7 @@ public class WebServiceServiceImpl implements WebServiceService {
                 pdProductStock.setProductName(productName);//产品名称
                 pdProductStock.setSpec(productSpec);//产品规格
                 pdProductStock.setProductFlag(productType);//产品类型
+                pdProductStock.setRecordNo(recordNo);//入库单号
                 List<Map<String, Object>> list = pdProductStockService.queryPdProductStockList(pdProductStock);
                 retMap.put("param", list);
                 retMap.put("result",PdConstant.SUCCESS_0);
@@ -570,7 +572,7 @@ public class WebServiceServiceImpl implements WebServiceService {
                 String productId = MapUtils.getString(map, "productId");
                 String productNo = MapUtils.getString(map, "productNo");
                 String rkmxId = MapUtils.getString(map, "rkmxId");
-                String stockId = MapUtils.getString(map, "stockId");
+                String stockId = MapUtils.getString(map, "productStockId");
                 String batchNo = MapUtils.getString(map, "batchNo");
                 String validDate = MapUtils.getString(map, "validDate");
                 //是否在打印标签时加上库存明细ID,
@@ -735,12 +737,12 @@ public class WebServiceServiceImpl implements WebServiceService {
 
 
 
-    /**
+   /* *//**
      * 获取入库单信息接口
      *
      * @param str
      * @return
-     */
+     *//*
     @Override
     public String queryPdStockList(String str) {
         Map<String, Object> retMap = new HashMap<String, Object>();
@@ -759,11 +761,15 @@ public class WebServiceServiceImpl implements WebServiceService {
                     retMap.put("message", "入库单号为空！");
                     return JSON.toJSONString(retMap);
                 }
-                PdStockRecord stockRecord = new PdStockRecord();
+               *//* PdStockRecord stockRecord = new PdStockRecord();
                 stockRecord.setRecordNo(recordNo);
                 stockRecord.setRecordType(PdConstant.RECODE_TYPE_1);//入库
-                stockRecord.setAuditStatus(PdConstant.AUDIT_STATE_2);//只查已通过的明细
-                List<Map<String, Object>> list = pdStockRecordService.findOutQueryList(stockRecord);
+                stockRecord.setAuditStatus(PdConstant.AUDIT_STATE_2);//只查已通过的明细*//*
+                //List<Map<String, Object>> list = pdStockRecordService.findOutQueryList(stockRecord);
+
+                PdProductStock productStock=new PdProductStock();
+                productStock.setR
+                List<Map<String, Object>> list = pdProductStockService.queryPdProductStockList(productStock);
                 if (list != null && list.size() > 0) {
                     retMap.put("param", list);
                     retMap.put("result",PdConstant.SUCCESS_0);
@@ -784,7 +790,7 @@ public class WebServiceServiceImpl implements WebServiceService {
             retMap.put("message", "查询失败，日志：" + e.getMessage());
             return JSON.toJSONString(retMap);
         }
-    }
+    }*/
 
     /**
      * 耗材柜出库单接口
@@ -962,20 +968,20 @@ public class WebServiceServiceImpl implements WebServiceService {
             System.out.println("#######唯一码清除接口:"+str);
             Map<Object, Object> map = (Map<Object, Object>) JSONObject.parse(str);
             if (map != null && !MapUtils.isEmpty(map)) {
-                String rfId = MapUtils.getString(map, "rfId");
+                String refBarCode = MapUtils.getString(map, "refBarCode");
 
-                if (StringUtils.isEmpty(rfId)) {
+                if (StringUtils.isEmpty(refBarCode)) {
                     retMap.put("result", PdConstant.FAIL_1);
                     retMap.put("message", "唯一码不能为空！");
                     return JSON.toJSONString(retMap);
                 }
-                PdProductStockUniqueCode productStockUniqueCode=pdProductStockUniqueCodeService.getById(rfId);
+                PdProductStockUniqueCode productStockUniqueCode=pdProductStockUniqueCodeService.getById(refBarCode);
                 if(oConvertUtils.isEmpty(productStockUniqueCode)){
                     retMap.put("result",PdConstant.FAIL_1);
                     retMap.put("message", "根据唯一码获取不到数据");
                     return JSON.toJSONString(retMap);
                 }else{
-                    pdProductStockUniqueCodeService.removeById(rfId);
+                    pdProductStockUniqueCodeService.removeById(refBarCode);
                 }
                 retMap.put("result",PdConstant.SUCCESS_0);
                 retMap.put("message", "成功");
