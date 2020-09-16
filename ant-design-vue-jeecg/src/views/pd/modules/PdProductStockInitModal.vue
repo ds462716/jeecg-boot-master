@@ -105,7 +105,7 @@
         <a-card style="margin-bottom: 10px;">
           <a-tabs v-model="activeKey" @change="handleChangeTabs"> <!-- @change="handleChangeTabs"  v-show="!showSBarcode" v-show="showSBarcode"-->
             <a-tab-pane tab="产品明细" :key="refKeys[0]" :forceRender="true">
-              <a-form v-show="!disableSubmit">
+              <a-form v-show="!disableSubmit" :selfUpdate = "true">
                 <a-row v-if="!showSBarcode">
                   <a-col :md="6" :sm="8">
                     <a-form-item label="产品编号" :labelCol="labelCol" :wrapperCol="wrapperCol">
