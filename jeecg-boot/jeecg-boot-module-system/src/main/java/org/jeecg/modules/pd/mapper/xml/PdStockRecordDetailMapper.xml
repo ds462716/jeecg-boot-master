@@ -19,7 +19,10 @@
         a.product_num * IFNULL(a.selling_price,0) as outTotalPrice,
         a.produce_date,
         a.exp_date,
+        a.in_record_id,
+		a.in_record_detail_id,
         a.package_record_id,
+		a.package_record_detail_id,
         a.high_low_supplies,
         a.import_no,
         a.supplier_id,
@@ -33,7 +36,9 @@
 		a.spec_quantity,
         a.registration,
  		a.ref_bar_code,
- 		a.bar_code_type
+ 		a.bar_code_type,
+ 		a.supplier_bill_no,
+ 		a.invoice_no
 	</sql>
 
 	<sql id="PdStockRecordDetailJoins">
@@ -87,8 +92,14 @@
       g.audit_date AS "auditDate",
       g.record_type AS "recordType",
       g.record_no AS "recordNo",
-      g.in_type AS "inType",
-      g.out_type AS "outType",
+	  case
+		  when g.out_type = '1' then '1'
+		  when g.out_type = '2' then '1'
+		  when g.out_type = '3' then '3'
+		  when g.out_type = '4' then '2'
+		  when g.out_type is null or g.out_type = '' then '1'
+	  end as "inType",
+	  g.out_type AS "outType",
       g.remarks as "remarks",
 	(select r.depart_name from sys_depart r where r.id=g.in_depart_id) AS "inDepartName",
 	(select r.depart_name from sys_depart r where r.id=g.out_depart_id) AS "outDepartName"
@@ -182,10 +193,10 @@
 		<include refid="pdGoodsAllocationJoins"/>
 		WHERE
 		        a.del_flag =#{DEL_FLAG_NORMAL}
-			and record_id = #{recordId}
+			and a.record_id = #{recordId}
 	</select>
 
-	<!-- 入库明细列表查询 -->
+	<!-- 出入库明细列表查询 -->
 	<select id="selectList" resultType="org.jeecg.modules.pd.entity.PdStockRecordDetail">
 		SELECT
 		<include refid="PdStockRecordDetailColumns"/>,
@@ -197,12 +208,6 @@
 		<include refid="pdDistributorColumns"/>,
 		<include refid="pdSysUserColumns"/>,
 		<include refid="pdInvoiceColumns"/>
-		<if test='entity.recordType == "1"'>
-			,<include refid="pdProductStockColumns2"/>
-		</if>
-		<if test='entity.recordType == "2"'>
-			,<include refid="pdProductStockColumns"/>
-		</if>
 		FROM pd_stock_record_detail a
 		<include refid="PdStockRecordDetailJoins"/>
 		<include refid="PdStockRecordJoins"/>
@@ -213,12 +218,6 @@
 		<include refid="pdDistributorJoins"/>
 		<include refid="pdSysUserJoins"/>
 		<include refid="pdInvoiceJoins"/>
-		<if test='entity.recordType == "1"'>
-			<include refid="pdProductStockJoins2"/>
-		</if>
-		<if test='entity.recordType == "2"'>
-			<include refid="pdProductStockJoins"/>
-		</if>
  		<where>
 			a.del_flag =#{entity.DEL_FLAG_NORMAL}
 			<if test="entity.id != null and entity.id != ''">
@@ -300,22 +299,6 @@
 					#{id}
 				</foreach>
 			</if>
-			<!--<if test="departIdList != null and departIdList.size() > 0">-->
-				<!--AND (-->
-				<!--(g.record_type = '2'-->
-				<!--AND g.out_depart_id in-->
-				<!--<foreach item="id" collection="departIdList" open="(" separator="," close=")">-->
-					<!--#{id}-->
-				<!--</foreach>-->
-				<!--)-->
-				<!--OR (g.record_type = '1'-->
-				<!--AND g.in_depart_id in-->
-				<!--<foreach item="id" collection="departIdList" open="(" separator="," close=")">-->
-					<!--#{id}-->
-				<!--</foreach>-->
-				<!--)-->
-				<!--)-->
-			<!--</if>-->
 			<if test="entity.departId != null and entity.departId != ''">
 				AND a.depart_id = #{entity.departId}
 			</if>
@@ -349,7 +332,271 @@
 				or c.zdy LIKE concat('%',#{entity.productName},'%')
 				)
 			</if>
-			ORDER BY create_time desc
+			ORDER BY a.create_time desc
+		</where>
+	</select>
+
+	<!-- 入库明细列表查询 -->
+	<select id="selectInList" resultType="org.jeecg.modules.pd.entity.PdStockRecordDetail">
+		SELECT
+		<include refid="PdStockRecordDetailColumns"/>,
+		<include refid="pdUnitColumns"/>,
+		<include refid="pdProductColumns"/>,
+		<include refid="pdVenderColumns"/>,
+		<include refid="PdStockRecordColumns"/>,
+		<include refid="pdSupplierColumns"/>,
+		<include refid="pdDistributorColumns"/>,
+		<include refid="pdSysUserColumns"/>,
+		<include refid="pdInvoiceColumns"/>
+		FROM pd_stock_record_detail a
+		<include refid="PdStockRecordDetailJoins"/>
+		<include refid="PdStockRecordJoins"/>
+		<include refid="pdProductJoins"/>
+		<include refid="pdUnitJoins"/>
+		<include refid="pdVenderJoins"/>
+		<include refid="pdSupplierJoins"/>
+		<include refid="pdDistributorJoins"/>
+		<include refid="pdSysUserJoins"/>
+		<include refid="pdInvoiceJoins"/>
+		<where>
+			a.del_flag =#{entity.DEL_FLAG_NORMAL} and g.in_depart_id is not null
+			<if test="entity.id != null and entity.id != ''">
+				AND a.id = #{entity.id}
+			</if>
+			<if test="entity.queryExpDateStart != null and entity.queryExpDateStart != ''">
+				AND date_format( a.exp_date, '%Y-%m-%d') &gt;= #{entity.queryExpDateStart}
+			</if>
+			<if test="entity.queryExpDateEnd != null and entity.queryExpDateEnd != ''">
+				AND date_format( a.exp_date, '%Y-%m-%d') &lt;= #{entity.queryExpDateEnd}
+			</if>
+			<if test="entity.batchNo != null and entity.batchNo != ''">
+				AND a.batch_no LIKE concat('%',#{entity.batchNo},'%')
+			</if>
+			<if test="entity.productStockId != null and entity.productStockId != ''">
+				AND a.product_stock_id = #{entity.productStockId}
+			</if>
+			<if test="entity.refBarCode != null and entity.refBarCode != ''">
+				AND a.ref_bar_code LIKE concat('%',#{entity.refBarCode},'%')
+			</if>
+			<if test="entity.recordNo != null and entity.recordNo != ''">
+				AND g.record_no LIKE concat('%',#{entity.recordNo},'%')
+			</if>
+			<if test="entity.yearMonth != null and entity.yearMonth != ''">
+				AND date_format( g.audit_date,'%Y-%m') = #{entity.yearMonth}
+			</if>
+			<if test="entity.queryDateStart != null and entity.queryDateStart != ''">
+				AND date_format( g.audit_date, '%Y-%m-%d') &gt;= #{entity.queryDateStart}
+			</if>
+			<if test="entity.queryDateEnd != null and entity.queryDateEnd != ''">
+				AND date_format( g.audit_date, '%Y-%m-%d') &lt;= #{entity.queryDateEnd}
+			</if>
+			<if test="entity.auditStatus != null and entity.auditStatus != ''">
+				AND g.audit_status = #{entity.auditStatus}
+			</if>
+			<if test="entity.submitStatus != null and entity.submitStatus != ''">
+				AND g.submit_status = #{entity.submitStatus}
+			</if>
+			<if test="entity.productId != null and entity.productId != ''">
+				AND a.product_id = #{entity.productId}
+			</if>
+			<if test="entity.recordType != null and entity.recordType != ''">
+				AND g.record_type = #{entity.recordType}
+			</if>
+			<if test="entity.supplierId != null and entity.supplierId != ''">
+				AND a.supplier_id = #{entity.supplierId}
+			</if>
+			<if test="entity.distributorId != null and entity.distributorId != ''">
+				AND a.distributor_id = #{entity.distributorId}
+			</if>
+			<if test="entity.inType != null and entity.inType != '' and entity.inType == '1'">
+				AND (g.out_type = '1' or g.out_type = '2' or g.in_type = '1')
+			</if>
+			<if test="entity.inType != null and entity.inType != '' and entity.inType == '2'">
+				AND (g.out_type = '4' or in_type = '2')
+			</if>
+			<if test="entity.inType != null and entity.inType != '' and entity.inType == '3'">
+				AND (g.out_type = '3' or in_type = '3')
+			</if>
+			<if test="entity.outType != null and entity.outType != ''">
+				AND g.out_type = #{entity.outType}
+			</if>
+			<if test="entity.deptId != null and entity.deptId != ''">
+				AND ((g.record_type = '2' AND g.out_depart_id = #{entity.deptId})
+				OR (g.record_type = '1' AND g.in_depart_id =#{entity.deptId}))
+			</if>
+			<if test='entity.inDepartIdList != null and entity.inDepartIdList.size() > 0'>
+				AND g.in_depart_id in
+				<foreach item="id" collection="entity.inDepartIdList" open="(" separator="," close=")">
+					#{id}
+				</foreach>
+			</if>
+			<if test="entity.departId != null and entity.departId != ''">
+				AND a.depart_id = #{entity.departId}
+			</if>
+			<if test="entity.departParentId != null and entity.departParentId != ''">
+				AND a.depart_parent_id = #{entity.departParentId}
+			</if>
+			<if test="entity.productNumber != null and entity.productNumber != ''">
+				AND c.number LIKE concat('%',#{entity.productNumber},'%')
+			</if>
+			<if test="entity.venderId != null and entity.venderId != ''">
+				AND c.vender_id = #{entity.venderId}
+			</if>
+			<if test="entity.spec != null and entity.spec != ''">
+				AND c.spec LIKE concat('%',#{entity.spec},'%')
+			</if>
+			<if test="entity.version != null and entity.version != ''">
+				AND c.version LIKE concat('%',#{entity.version},'%')
+			</if>
+			<if test="entity.registration != null and entity.registration != ''">
+				AND c.registration LIKE concat('%',#{entity.registration},'%')
+			</if>
+			<if test="entity.productName != null and entity.productName != ''">
+				AND (
+				c.number LIKE concat('%',#{entity.productName},'%')
+				or c.name LIKE concat('%',#{entity.productName},'%')
+				or c.py LIKE concat('%',#{entity.productName},'%')
+				or c.wb LIKE concat('%',#{entity.productName},'%')
+				or c.bname LIKE concat('%',#{entity.productName},'%')
+				or c.bpy LIKE concat('%',#{entity.productName},'%')
+				or c.bwb LIKE concat('%',#{entity.productName},'%')
+				or c.zdy LIKE concat('%',#{entity.productName},'%')
+				)
+			</if>
+			ORDER BY a.create_time desc
+		</where>
+	</select>
+
+	<!-- 出库明细列表查询 -->
+	<select id="selectOutList" resultType="org.jeecg.modules.pd.entity.PdStockRecordDetail">
+		SELECT
+		<include refid="PdStockRecordDetailColumns"/>,
+		<include refid="pdUnitColumns"/>,
+		<include refid="pdProductColumns"/>,
+		<include refid="pdVenderColumns"/>,
+		<include refid="PdStockRecordColumns"/>,
+		<include refid="pdSupplierColumns"/>,
+		<include refid="pdDistributorColumns"/>,
+		<include refid="pdSysUserColumns"/>,
+		<include refid="pdInvoiceColumns"/>
+		FROM pd_stock_record_detail a
+		<include refid="PdStockRecordDetailJoins"/>
+		<include refid="PdStockRecordJoins"/>
+		<include refid="pdProductJoins"/>
+		<include refid="pdUnitJoins"/>
+		<include refid="pdVenderJoins"/>
+		<include refid="pdSupplierJoins"/>
+		<include refid="pdDistributorJoins"/>
+		<include refid="pdSysUserJoins"/>
+		<include refid="pdInvoiceJoins"/>
+		<where>
+			a.del_flag =#{entity.DEL_FLAG_NORMAL}
+			<if test="entity.id != null and entity.id != ''">
+				AND a.id = #{entity.id}
+			</if>
+			<if test="entity.queryExpDateStart != null and entity.queryExpDateStart != ''">
+				AND date_format( a.exp_date, '%Y-%m-%d') &gt;= #{entity.queryExpDateStart}
+			</if>
+			<if test="entity.queryExpDateEnd != null and entity.queryExpDateEnd != ''">
+				AND date_format( a.exp_date, '%Y-%m-%d') &lt;= #{entity.queryExpDateEnd}
+			</if>
+			<if test="entity.batchNo != null and entity.batchNo != ''">
+				AND a.batch_no LIKE concat('%',#{entity.batchNo},'%')
+			</if>
+			<if test="entity.productStockId != null and entity.productStockId != ''">
+				AND a.product_stock_id = #{entity.productStockId}
+			</if>
+			<if test="entity.refBarCode != null and entity.refBarCode != ''">
+				AND a.ref_bar_code LIKE concat('%',#{entity.refBarCode},'%')
+			</if>
+			<if test="entity.recordNo != null and entity.recordNo != ''">
+				AND g.record_no LIKE concat('%',#{entity.recordNo},'%')
+			</if>
+			<if test="entity.yearMonth != null and entity.yearMonth != ''">
+				AND date_format( g.audit_date,'%Y-%m') = #{entity.yearMonth}
+			</if>
+			<if test="entity.queryDateStart != null and entity.queryDateStart != ''">
+				AND date_format( g.audit_date, '%Y-%m-%d') &gt;= #{entity.queryDateStart}
+			</if>
+			<if test="entity.queryDateEnd != null and entity.queryDateEnd != ''">
+				AND date_format( g.audit_date, '%Y-%m-%d') &lt;= #{entity.queryDateEnd}
+			</if>
+			<if test="entity.auditStatus != null and entity.auditStatus != ''">
+				AND g.audit_status = #{entity.auditStatus}
+			</if>
+			<if test="entity.submitStatus != null and entity.submitStatus != ''">
+				AND g.submit_status = #{entity.submitStatus}
+			</if>
+			<if test="entity.productId != null and entity.productId != ''">
+				AND a.product_id = #{entity.productId}
+			</if>
+			<if test="entity.recordType != null and entity.recordType != ''">
+				AND g.record_type = #{entity.recordType}
+			</if>
+			<if test="entity.supplierId != null and entity.supplierId != ''">
+				AND a.supplier_id = #{entity.supplierId}
+			</if>
+			<if test="entity.distributorId != null and entity.distributorId != ''">
+				AND a.distributor_id = #{entity.distributorId}
+			</if>
+			<if test="entity.inType != null and entity.inType != ''">
+				AND g.in_type = #{entity.inType}
+			</if>
+			<if test="entity.outType != null and entity.outType != ''">
+				AND g.out_type = #{entity.outType}
+			</if>
+			<if test="entity.deptId != null and entity.deptId != ''">
+				AND ((g.record_type = '2' AND g.out_depart_id = #{entity.deptId})
+				OR (g.record_type = '1' AND g.in_depart_id =#{entity.deptId}))
+			</if>
+			<if test='entity.outDepartIdList != null and entity.outDepartIdList.size() > 0'>
+				AND g.record_type = '2'
+				AND g.out_depart_id in
+				<foreach item="id" collection="entity.outDepartIdList" open="(" separator="," close=")">
+					#{id}
+				</foreach>
+			</if>
+			<if test='entity.inDepartIdList != null and entity.inDepartIdList.size() > 0'>
+				AND g.record_type = '2'
+				AND g.in_depart_id in
+				<foreach item="id" collection="entity.inDepartIdList" open="(" separator="," close=")">
+					#{id}
+				</foreach>
+			</if>
+			<if test="entity.departId != null and entity.departId != ''">
+				AND a.depart_id = #{entity.departId}
+			</if>
+			<if test="entity.departParentId != null and entity.departParentId != ''">
+				AND a.depart_parent_id = #{entity.departParentId}
+			</if>
+			<if test="entity.productNumber != null and entity.productNumber != ''">
+				AND c.number LIKE concat('%',#{entity.productNumber},'%')
+			</if>
+			<if test="entity.venderId != null and entity.venderId != ''">
+				AND c.vender_id = #{entity.venderId}
+			</if>
+			<if test="entity.spec != null and entity.spec != ''">
+				AND c.spec LIKE concat('%',#{entity.spec},'%')
+			</if>
+			<if test="entity.version != null and entity.version != ''">
+				AND c.version LIKE concat('%',#{entity.version},'%')
+			</if>
+			<if test="entity.registration != null and entity.registration != ''">
+				AND c.registration LIKE concat('%',#{entity.registration},'%')
+			</if>
+			<if test="entity.productName != null and entity.productName != ''">
+				AND (
+				c.number LIKE concat('%',#{entity.productName},'%')
+				or c.name LIKE concat('%',#{entity.productName},'%')
+				or c.py LIKE concat('%',#{entity.productName},'%')
+				or c.wb LIKE concat('%',#{entity.productName},'%')
+				or c.bname LIKE concat('%',#{entity.productName},'%')
+				or c.bpy LIKE concat('%',#{entity.productName},'%')
+				or c.bwb LIKE concat('%',#{entity.productName},'%')
+				or c.zdy LIKE concat('%',#{entity.productName},'%')
+				)
+			</if>
+			ORDER BY a.create_time desc
 		</where>
 	</select>
 
@@ -374,7 +621,7 @@
 					#{id}
 				</foreach>
 			</if>
-			ORDER BY create_time desc
+			ORDER BY a.create_time desc
 		</where>
 	</select>
 
@@ -650,9 +897,18 @@
 				or c.zdy LIKE concat('%',#{entity.productName},'%')
 				)
 			</if>
-			ORDER BY create_time desc
+			ORDER BY a.create_time desc
 		</where>
 	</select>
 
+	<select id="selectInvoiceNoByRecordId" resultType="java.lang.String">
+		select distinct a.invoice_no from pd_stock_record_detail a where a.del_flag = '0' and a.record_id = #{recordId}
+	</select>
 
+	<select id="selectRecordDetailByInvoiceNo" resultType="org.jeecg.modules.pd.entity.PdStockRecordDetail">
+		select a.id,a.product_id,a.product_num,a.purchase_price,b.record_no,c.id as product_stock_id from pd_stock_record_detail a
+		left join pd_stock_record b on a.record_id = b.id
+		left join pd_product_stock c on c.record_detail_id = a.id and b.in_depart_id = c.depart_id
+		where a.del_flag = '0' and b.record_type='1' and a.record_id = #{recordId} and a.invoice_no = #{invoiceNo}
+	</select>
 </mapper>

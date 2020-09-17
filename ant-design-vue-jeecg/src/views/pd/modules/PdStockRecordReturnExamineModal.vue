@@ -260,9 +260,9 @@
             },
             { title: '出库金额', key: 'outTotalPrice', type: FormTypes.input, disabled:true, width:"100px" },
             { title: '库存数量', key: 'stockNum', width:"80px" },
-            { title: '出库货位', key: 'outHuoweiName', width:"100px" },
+            // { title: '出库货位', key: 'outHuoweiName', width:"100px" },
             { title: '出库货位编号', key: 'outHuoweiCode', type: FormTypes.hidden },
-            { title: '入库货位', key: 'inHuoweiCode', type: FormTypes.select, width:"150px", options: [],allowSearch:true, placeholder: '${title}' },
+            // { title: '入库货位', key: 'inHuoweiCode', type: FormTypes.select, width:"150px", options: [],allowSearch:true, placeholder: '${title}' },
             { title: '唯一码/批次码', key: 'refBarCode', width:"160px" },
           ]
         },

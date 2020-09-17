@@ -178,6 +178,14 @@
               return obj;
             },
           },
+          { title: '打包记录明细ID', align:"center", dataIndex: 'packageRecordDetailId', colSpan: 0,
+            customRender: (value, row, index) => {
+              const obj = {
+                attrs: {colSpan:0},
+              };
+              return obj;
+            },
+          },
           { title: '库存明细ID', align:"center", dataIndex: 'productStockId', colSpan: 0,
             customRender: (value, row, index) => {
               const obj = {

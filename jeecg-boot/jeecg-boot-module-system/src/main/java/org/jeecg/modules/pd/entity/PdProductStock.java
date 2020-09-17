@@ -103,9 +103,13 @@ public class PdProductStock extends BaseEntity {
 	/**货位编号*/
 	@Excel(name = "货位编号", width = 15)
 	private String huoweiCode;
-	/**产品id*/
+	@Excel(name = "入库Id", width = 15)
+	private String recordId;
 	@Excel(name = "入库明细Id", width = 15)
 	private String recordDetailId;
+	private String packageRecordId;//套包id
+	private String packageRecordDetailId;//套包明细id
+
 	/**规格库存数量清零原因*/
 	private String reason;
 	/**货位名称**/
@@ -272,4 +276,8 @@ public class PdProductStock extends BaseEntity {
 	private Double stockCount;
 	@TableField(exist = false)
 	private List<String> nestatStatusList;
+	@TableField(exist = false)
+	private String inRecordId;  //入库id
+	@TableField(exist = false)
+	private String inRecordDetailId;//入库明细id
 }

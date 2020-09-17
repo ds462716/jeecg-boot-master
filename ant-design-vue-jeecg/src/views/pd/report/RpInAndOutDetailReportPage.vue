@@ -250,7 +250,7 @@
                 return parseInt(index)+1;
               }
             },
-            { title:'入库单号', align:"center", width:'100px', dataIndex: 'recordNo'},
+            { title:'单号', align:"center", width:'100px', dataIndex: 'recordNo'},
             { title:'入库日期', align:"center", width:'100px', dataIndex: 'auditDate',
               customRender:function (text) {
                 return !text?"":(text.length>10?text.substr(0,10):text)
@@ -333,7 +333,7 @@
                 return parseInt(index)+1;
               }
             },
-            { title:'出库单号', align:"center", width:'100px', dataIndex: 'recordNo' },
+            { title:'单号', align:"center", width:'100px', dataIndex: 'recordNo' },
             { title:'出库日期', align:"center", width:'100px', dataIndex: 'auditDate',
               customRender:function (text) {
                 return !text?"":(text.length>10?text.substr(0,10):text)

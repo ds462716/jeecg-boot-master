@@ -355,41 +355,7 @@
         pdStockRecordDetailTable: {
           loading: false,
           dataSource: [],
-          columns: [
-            { title: '产品ID', key: 'productId', type: FormTypes.hidden },
-            { title: '产品名称', key: 'productName', width:"220px" },
-            { title: '产品编号', key: 'productNumber', width:"150px" },
-            { title: '产品条码', key: 'productBarCode', width:"200px" },
-            { title: '规格', key: 'spec', width:"150px" },
-            // { title: '型号', key: 'version', width:"150px" },
-            { title: '单位', key: 'unitName', width:"50px" },
-            {
-              title: '有效期', key: 'expDate', type: FormTypes.date, width:"130px",
-              placeholder: '${title}', defaultValue: '',
-              validateRules: [{ required: true, message: '${title}不能为空' }]
-            },
-            {
-              title: '批号', key: 'batchNo', width:"120px", type: FormTypes.input,
-              placeholder: '${title}', defaultValue: '',
-              validateRules: [{ required: true, message: '${title}不能为空' }]
-            },
-            { title: '入库单价', key: 'purchasePrice', width:"80px" },
-            {
-              title: '数量', key: 'productNum', type: FormTypes.input, width:"80px",
-              placeholder: '${title}', defaultValue: '1',
-              validateRules: [{ required: true, message: '${title}不能为空' },{ pattern: '^-?\\d+\\.?\\d*$',message: '${title}的格式不正确' }]
-            },
-            { title: '金额', key: 'inTotalPrice', width:"90px" },
-            // {
-            //   title: '货区', key: 'huoquId', type: FormTypes.select, width:"150px", options: this.huoquOptions,allowSearch:true,
-            //   placeholder: '${title}', validateRules: [{ required: true, message: '${title}不能为空' }]
-            // },
-            {
-              title: '货位', key: 'inHuoweiCode', type: FormTypes.select, width:"150px", options: [],allowSearch:true,
-              placeholder: '${title}', validateRules: [{ required: true, message: '${title}不能为空' }]
-            },
-            { title: '合并申购单号', key: 'mergeOrderNo', width:"180px" }
-          ]
+          columns: []
         },
         url: {
           init:"/pd/pdStockRecordIn/initModal",
@@ -456,6 +422,13 @@
 
               this.stockInText = res.result.stockInText;
               this.hospitalCode = res.result.hospitalCode;
+              if(res.result.hospitalCode == 'GZZLYY'){
+                // 赣州肿瘤医院——出入库明细表列表（比通用多了“供应商单据号”和“发票号”）
+                this.pdStockRecordDetailTable.columns = gzzlyyColumns;
+              }else{
+                // 通用——出入库明细表列表
+                this.pdStockRecordDetailTable.columns = currencyColumns;
+              }
               this.goodsAllocationList = res.result.goodsAllocationList;
               this.pdStockRecordDetailTable.columns.forEach((item, idx) => {
                 if(item.key === "inHuoweiCode"){
@@ -692,6 +665,74 @@
     }
     timeout = setTimeout(fake, 0); //这边不延迟
   };
+
+  // 通用——出入库明细表列表
+  let currencyColumns = [
+    { title: '产品ID', key: 'productId', type: FormTypes.hidden },
+    { title: '产品名称', key: 'productName', width:"250px" },
+    { title: '产品编号', key: 'productNumber', width:"200px" },
+    { title: '规格', key: 'spec', width:"200px" },
+    // { title: '型号', key: 'version', width:"150px" },
+    { title: '单位', key: 'unitName', width:"50px" },
+    {
+      title: '有效期', key: 'expDate', type: FormTypes.date, width:"130px",
+      placeholder: '${title}', defaultValue: '',
+      validateRules: [{ required: true, message: '${title}不能为空' }]
+    },
+    {
+      title: '批号', key: 'batchNo', width:"120px", type: FormTypes.input,
+      placeholder: '${title}', defaultValue: '',
+      validateRules: [{ required: true, message: '${title}不能为空' }]
+    },
+    { title: '入库单价', key: 'purchasePrice', width:"80px" },
+    {
+      title: '数量', key: 'productNum', type: FormTypes.input, width:"80px",
+      placeholder: '${title}', defaultValue: '1',
+      validateRules: [{ required: true, message: '${title}不能为空' },{ pattern: '^-?\\d+\\.?\\d*$',message: '${title}的格式不正确' }]
+    },
+    { title: '金额', key: 'inTotalPrice', width:"90px" },
+    // {
+    //   title: '货位', key: 'inHuoweiCode', type: FormTypes.select, width:"150px", options: [],allowSearch:true,
+    //   placeholder: '${title}', validateRules: [{ required: true, message: '${title}不能为空' }]
+    // },
+    { title: '产品条码', key: 'productBarCode', width:"230px" },
+    { title: '合并申购单号', key: 'mergeOrderNo', width:"180px" }
+  ];
+
+  // 赣州肿瘤医院——出入库明细表列表（比通用多了“供应商单据号”和“发票号”）
+  let gzzlyyColumns = [
+    { title: '产品ID', key: 'productId', type: FormTypes.hidden },
+    { title: '产品名称', key: 'productName', width:"250px" },
+    { title: '产品编号', key: 'productNumber', width:"200px" },
+    { title: '规格', key: 'spec', width:"200px" },
+    // { title: '型号', key: 'version', width:"150px" },
+    { title: '单位', key: 'unitName', width:"50px" },
+    {
+      title: '有效期', key: 'expDate', type: FormTypes.date, width:"130px",
+      placeholder: '${title}', defaultValue: '',
+      validateRules: [{ required: true, message: '${title}不能为空' }]
+    },
+    {
+      title: '批号', key: 'batchNo', width:"120px", type: FormTypes.input,
+      placeholder: '${title}', defaultValue: '',
+      validateRules: [{ required: true, message: '${title}不能为空' }]
+    },
+    { title: '入库单价', key: 'purchasePrice', width:"80px" },
+    {
+      title: '数量', key: 'productNum', type: FormTypes.input, width:"80px",
+      placeholder: '${title}', defaultValue: '1',
+      validateRules: [{ required: true, message: '${title}不能为空' },{ pattern: '^-?\\d+\\.?\\d*$',message: '${title}的格式不正确' }]
+    },
+    { title: '金额', key: 'inTotalPrice', width:"90px" },
+    // {
+    //   title: '货位', key: 'inHuoweiCode', type: FormTypes.select, width:"150px", options: [],allowSearch:true,
+    //   placeholder: '${title}', validateRules: [{ required: true, message: '${title}不能为空' }]
+    // },
+    { title: '供应商单据号', key: 'supplierBillNo', width:"150px" },
+    { title: '发票号', key: 'invoiceNo', width:"150px" },
+    { title: '产品条码', key: 'productBarCode', width:"230px" },
+    { title: '合并申购单号', key: 'mergeOrderNo', width:"180px" },
+  ];
 </script>
 
 <style scoped>

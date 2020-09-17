@@ -453,8 +453,7 @@
               validateRules: [{ required: true, message: '${title}不能为空' },{ pattern: '^-?\\d+\\.?\\d*$',message: '${title}的格式不正确' }]
             },
             { title: '金额', key: 'inTotalPrice', type: FormTypes.input, disabled:true, width:"100px" },
-            { title: '货位', key: 'inHuoweiCode', type: FormTypes.select, width:"150px", options: [],allowSearch:true, placeholder: '${title}' },
-            // { title: '申购单号', key: 'orderNo', },
+            // { title: '货位', key: 'inHuoweiCode', type: FormTypes.select, width:"150px", options: [],allowSearch:true, placeholder: '${title}' },
             { title: '合并申购单号', key: 'mergeOrderNo', type: FormTypes.hidden, disabled:true, width:"180px" },
             { title: '生产厂家', key: 'venderName', type: FormTypes.hidden },
             { title: '紧急产品-0是1不是', key: 'isUrgent', type: FormTypes.hidden },
@@ -480,9 +479,6 @@
             { title: '批号', align:"center", dataIndex: 'batchNo' },
             { title: '入库单价', align:"center", dataIndex: 'purchasePrice' },
             { title: '数量', align:"center", dataIndex: 'productNum' },
-            // { title: '金额', align:"center", dataIndex: 'inTotalPrice' },
-            // { title: '货位', align:"center", dataIndex: 'inHuoweiCode' },
-            // { title: '合并申购单号', align:"center", dataIndex: 'mergeOrderNo' },
           ],
         },
         url: {

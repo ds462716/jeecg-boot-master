@@ -24,8 +24,13 @@
 		a.remarks,
 		a.huowei_code,
 		a.msg_send_state,
+		a.record_id,
 		a.record_detail_id,
 		a.purchase_price,
+		a.record_id as in_record_id,
+		a.record_detail_id as in_record_detail_id,
+		a.package_record_id,
+		a.package_record_detail_id,
 		a.spec_num,
 		a.nestat_status,
 		a.spec_unit_id,
@@ -386,11 +391,17 @@
 			<if test="productBarCode != null and productBarCode != ''">
 				AND a.product_bar_code = #{productBarCode}
 			</if>
+			<if test="recordDetailId != null and recordDetailId != ''">
+				AND a.record_detail_id = #{recordDetailId}
+			</if>
 			<if test="batchNo != null and batchNo != ''">
 				AND a.batch_no = #{batchNo}
 			</if>
 			<if test="huoweiCode != null and huoweiCode != ''">
 				AND a.huowei_code = #{huoweiCode}
+			</if>
+			<if test="huoweiCode == null or huoweiCode == ''">
+				AND (a.huowei_code is null or a.huowei_code = '')
 			</if>
 			<if test="nestatStatus != null and nestatStatus != ''">
 				AND a.nestat_status = #{nestatStatus}
@@ -402,6 +413,7 @@
 				AND a.ref_bar_code = #{refBarCode}
 			</if>
 		</where>
+		order by a.create_time
 		FOR UPDATE
 	</select>
 
@@ -410,6 +422,9 @@
 			stock_num = #{stockNum}
 		<if test="specNum != null and specNum != ''">
 			,spec_num = #{specNum}
+		</if>
+		<if test="updateTime != null">
+			,update_time = #{updateTime}
 		</if>
 		WHERE id= #{id}
 	</update>
@@ -708,7 +723,7 @@
 	<include refid="pdDistributorColumns"/>,
 	<include refid="sysDepartColumns"/>,
 	<include refid="pdGoodsAllocationColumns"/>,
-	h.purchase_price as "inPurchasePrice"
+	a.purchase_price as "inPurchasePrice"
 	FROM pd_product_stock a
 	<include refid="pdProductStockJoins"/>
 	<include refid="pdProductJoins"/>
@@ -719,7 +734,7 @@
 	<include refid="sysDepartJoins"/>
 	<include refid="pdGoodsAllocation"/>
 	LEFT JOIN pd_stock_record_detail h ON h.id=a.record_detail_id
-	LEFT JOIN pd_stock_record hh on h.record_id = hh.id
+	LEFT JOIN pd_stock_record hh on h.record_id = hh.id and hh.record_type = '1'
 	<where>
 		a.del_flag =#{entity.DEL_FLAG_NORMAL} AND a.stock_num > 0
 		<if test="entity.id != null and entity.id != ''">
@@ -1560,7 +1575,7 @@
 				AND n.record_no LIKE concat('%',#{entity.inRecordNo},'%')
 			</if>
 
-			order by  exp_status  desc,create_time desc
+			order by a.exp_status desc,a.create_time desc,a.id
 		</where>
 	</select>
 </mapper>

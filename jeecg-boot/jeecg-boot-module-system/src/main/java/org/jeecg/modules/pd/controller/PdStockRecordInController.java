@@ -392,7 +392,7 @@ public class PdStockRecordInController {
      */
     @RequestMapping(value = "/exportXls")
     public ModelAndView exportXls(HttpServletRequest request, PdStockRecordDetail pdStockRecordDetail) {
-        pdStockRecordDetail.setRecordType(PdConstant.RECODE_TYPE_1);
+//        pdStockRecordDetail.setRecordType(PdConstant.RECODE_TYPE_1);
         pdStockRecordDetail.setAuditStatus(PdConstant.AUDIT_STATE_2);
         LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
         pdStockRecordDetail.setDepartParentId(sysUser.getDepartParentId());
@@ -406,7 +406,7 @@ public class PdStockRecordInController {
             pdStockRecordDetail.setInDepartIdList(departList);
         }
 
-        List<PdStockRecordDetail> detailList =  pdStockRecordDetailService.selectList(pdStockRecordDetail);
+        List<PdStockRecordDetail> detailList =  pdStockRecordDetailService.selectInList(pdStockRecordDetail);
 		List<PdStockRecordInPage> exportList = JSON.parseArray(JSON.toJSONString(detailList), PdStockRecordInPage.class);
 
         // Step.4 AutoPoi 导出Excel
@@ -434,7 +434,7 @@ public class PdStockRecordInController {
                                               HttpServletRequest req) {
 
         Page<PdStockRecordDetail> page = new Page<PdStockRecordDetail>(pageNo, pageSize);
-        pdStockRecordDetail.setRecordType(PdConstant.RECODE_TYPE_1);
+//        pdStockRecordDetail.setRecordType(PdConstant.RECODE_TYPE_1);
         pdStockRecordDetail.setAuditStatus(PdConstant.AUDIT_STATE_2);
         LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
         pdStockRecordDetail.setDepartParentId(sysUser.getDepartParentId());
@@ -447,7 +447,7 @@ public class PdStockRecordInController {
             pdStockRecordDetail.setInDepartIdList(departList);
         }
 
-        IPage<PdStockRecordDetail> pageList = pdStockRecordDetailService.selectList(page, pdStockRecordDetail);
+        IPage<PdStockRecordDetail> pageList = pdStockRecordDetailService.selectInList(page, pdStockRecordDetail);
         return Result.ok(pageList);
     }
 
@@ -458,9 +458,9 @@ public class PdStockRecordInController {
     public Result<?> stockRecordCallInQuery(PdStockRecord stockRecord,
                                             @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
                                             @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize) {
-        stockRecord.setRecordType(PdConstant.RECODE_TYPE_1);
+        stockRecord.setRecordType(PdConstant.RECODE_TYPE_2);
         stockRecord.setAuditStatus(PdConstant.AUDIT_STATE_2);//只查已通过的明细
-        stockRecord.setInType(PdConstant.IN_TYPE_3);//只查调拨入库的明细
+        stockRecord.setOutType(PdConstant.OUT_TYPE_3);//只查调拨出库的明细
         LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
         stockRecord.setDepartParentId(sysUser.getDepartParentId());
         Page<PdStockRecord> page = new Page<PdStockRecord>(pageNo, pageSize);

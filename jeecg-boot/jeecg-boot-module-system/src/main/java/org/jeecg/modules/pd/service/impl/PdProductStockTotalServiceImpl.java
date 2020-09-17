@@ -86,6 +86,57 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
         pdProductStockTotalMapper.updateProductStockTotal(stockTotal);
     }
 
+    /**
+     * 入库保存库存 add by jiangxz 2020年8月20日 16:47:53
+     * @param pdStockRecord
+     * @param stockRecordDetail
+     * @return
+     */
+    public PdProductStock saveStock(PdStockRecord pdStockRecord,PdStockRecordDetail stockRecordDetail){
+        String inDeptId = pdStockRecord.getInDepartId();
+        String productId = stockRecordDetail.getProductId();            //产品ID
+        String productBarCode = stockRecordDetail.getProductBarCode();  //产品条码
+        String productName = stockRecordDetail.getProductName();  //产品名称
+        String batchNo = stockRecordDetail.getBatchNo();
+        Double productNum = stockRecordDetail.getProductNum();  //数量
+        String inHuoweiCode = stockRecordDetail.getInHuoweiCode(); //货位编号
+
+        PdProductStock productStock = new PdProductStock();
+        productStock.setDepartId(inDeptId);
+        productStock.setDepartParentId(pdStockRecord.getDepartParentId());
+        productStock.setProductId(productId);
+        productStock.setProductBarCode(productBarCode);
+        productStock.setStockNum(productNum);
+        productStock.setPurchasePrice(stockRecordDetail.getPurchasePrice());
+        productStock.setProductName(productName);
+        productStock.setBatchNo(batchNo);
+        productStock.setHuoweiCode(inHuoweiCode);
+        productStock.setExpDate(stockRecordDetail.getExpDate());
+        productStock.setProduceDate(stockRecordDetail.getProduceDate()); // 生产日期
+        if(oConvertUtils.isNotEmpty(pdStockRecord.getOutType())){
+            // 出库入库
+            productStock.setRecordId(stockRecordDetail.getInRecordId());
+            productStock.setRecordDetailId(stockRecordDetail.getInRecordDetailId());
+        }else{
+            // 供应商入库
+            productStock.setRecordId(pdStockRecord.getId());
+            productStock.setRecordDetailId(stockRecordDetail.getId()); //入库明细ID
+        }
+        productStock.setSupplierId(stockRecordDetail.getSupplierId());
+        productStock.setDistributorId(stockRecordDetail.getDistributorId());
+        productStock.setSpecQuantity(stockRecordDetail.getSpecQuantity());
+        productStock.setSpecUnitId(stockRecordDetail.getSpecUnitId());
+        productStock.setSpecNum(stockRecordDetail.getSpecQuantity() == null ? 0D : stockRecordDetail.getSpecQuantity() * stockRecordDetail.getProductNum());// 库存规格数量= 产品规格数量* 入库数量
+        if(PdConstant.CODE_PRINT_TYPE_1.equals(stockRecordDetail.getBarCodeType())){
+            // 唯一码入库
+            productStock.setBarCodeType(stockRecordDetail.getBarCodeType());
+        }else{
+            // 批量码入库
+            productStock.setRefBarCode(stockRecordDetail.getRefBarCode());
+        }
+        productStockService.save(productStock);
+        return productStock;
+    }
 
     /***
      * 	耗材入库更新库存信息
@@ -93,7 +144,7 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
      * @param   pdStockRecord    入库记录
      * @return String   更新库存结果  入库成功，返回字符串“true”，否则返回错误信息
      */
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public String updateInStock(PdStockRecord pdStockRecord) {
 
         if (pdStockRecord == null || CollectionUtils.isEmpty(pdStockRecord.getPdStockRecordDetailList())) {
@@ -102,6 +153,7 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
 
         String inDeptId = pdStockRecord.getInDepartId();
         List<PdStockRecordDetail> stockRecordDetails = pdStockRecord.getPdStockRecordDetailList();
+        String stockId = null;
         for (PdStockRecordDetail stockRecordDetail : stockRecordDetails) {
             String productId = stockRecordDetail.getProductId();            //产品ID
             String productBarCode = stockRecordDetail.getProductBarCode();  //产品条码
@@ -129,33 +181,37 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
                 productStockTotal.setStockNum(productNum + productStockTotal.getStockNum());
                 pdProductStockTotalMapper.updateStockNum(productStockTotal);
             }
-            // modified by jiangxz 20200327 库存明细关联入库明细
+
+            // modified by jiangxz 2020年8月20日 17:07:59 二级科室入库 合并同入库明细产品
             PdProductStock productStock = new PdProductStock();
-            productStock.setDepartId(inDeptId);
-            productStock.setDepartParentId(pdStockRecord.getDepartParentId());
-            productStock.setProductId(productId);
-            productStock.setProductBarCode(productBarCode);
-            productStock.setStockNum(productNum);
-            productStock.setPurchasePrice(stockRecordDetail.getPurchasePrice());
-            productStock.setProductName(productName);
-            productStock.setBatchNo(batchNo);
-            productStock.setHuoweiCode(inHuoweiCode);
-            productStock.setExpDate(stockRecordDetail.getExpDate());
-            productStock.setProduceDate(stockRecordDetail.getProduceDate()); // 生产日期
-            productStock.setRecordDetailId(stockRecordDetail.getId()); //入库明细ID
-            productStock.setSupplierId(stockRecordDetail.getSupplierId());
-            productStock.setDistributorId(stockRecordDetail.getDistributorId());
-            productStock.setSpecQuantity(stockRecordDetail.getSpecQuantity());
-            productStock.setSpecUnitId(stockRecordDetail.getSpecUnitId());
-            productStock.setSpecNum(stockRecordDetail.getSpecQuantity() == null ? 0D : stockRecordDetail.getSpecQuantity() * stockRecordDetail.getProductNum());// 库存规格数量= 产品规格数量* 入库数量
-            if(PdConstant.CODE_PRINT_TYPE_1.equals(stockRecordDetail.getBarCodeType())){
-                // 唯一码入库
-                productStock.setBarCodeType(stockRecordDetail.getBarCodeType());
+//            if(oConvertUtils.isNotEmpty(pdStockRecord.getOutType())){
+            if(PdConstant.RECODE_TYPE_2.equals(pdStockRecord.getRecordType())){
+                // 2.1 出库入库 (上级科室出库到下级科室) 合并同一个供应商入库单同批号的产品
+                PdProductStock i_productStockq = new PdProductStock();
+                i_productStockq.setDepartId(inDeptId);
+                i_productStockq.setRecordDetailId(stockRecordDetail.getInRecordDetailId());
+                i_productStockq.setHuoweiCode(inHuoweiCode);
+                i_productStockq.setBarCodeType(pdStockRecord.getBarCodeType()); // 0：普通条码 1：唯一码
+                i_productStockq.setNestatStatus(PdConstant.STOCK_NESTAT_STATUS_1);//未使用
+                List<PdProductStock> i_productStocks = pdProductStockMapper.findForUpdate(i_productStockq);
+                if(CollectionUtils.isEmpty(i_productStocks)){
+                    // 若库存明细表不存在，则新增入库
+                    productStock = this.saveStock(pdStockRecord,stockRecordDetail);
+                    stockId = productStock.getId();
+                }else{
+                    // 若存在，则增加库存数量
+                    PdProductStock updateStock = i_productStocks.get(0);
+                    updateStock.setStockNum(productNum + updateStock.getStockNum());
+                    updateStock.setUpdateTime(new Date());
+                    pdProductStockMapper.updateStockNum(updateStock);
+                    stockId = updateStock.getId();
+                }
+//            }else if(PdConstant.RECODE_TYPE_4.equals(pdStockRecord.getRecordType())){
             }else{
-                // 批量码入库
-                productStock.setRefBarCode(stockRecordDetail.getRefBarCode());
+                // 2.2 供应商入库、盘盈入库、初始化库存 add by jiangxz 2020年8月20日 16:47:53
+                productStock = this.saveStock(pdStockRecord,stockRecordDetail);
+                stockId = productStock.getId();
             }
-            productStockService.save(productStock);
 
             if(PdConstant.CODE_PRINT_TYPE_1.equals(pdStockRecord.getBarCodeType())){
                 // 唯一码入库，更新条码表库存id
@@ -164,7 +220,7 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
                     for(String refBarCode : refBarCodeList){
                         PdProductStockUniqueCode code = new PdProductStockUniqueCode();
                         code.setId(refBarCode);
-                        code.setProductStockId(productStock.getId());
+                        code.setProductStockId(stockId);
                         pdProductStockUniqueCodeMapper.updateById(code);
                     }
                 }

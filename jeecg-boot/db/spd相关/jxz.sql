@@ -111,14 +111,14 @@ ADD COLUMN `distributor_id` varchar(64) CHARACTER SET utf8 COLLATE utf8_general_
 -- ***************德兴医院部署截止2020年7月26日09:52:24
 
 -- 2020年7月30日 14:34:25 增加盘点出入库
-ALTER TABLE `jeecg-boot`.`pd_stock_record`
+ALTER TABLE `pd_stock_record`
 MODIFY COLUMN `record_type` varchar(1) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '出入库类型：1-入库；2-出库；3-初始化库存；4-盘点' AFTER `record_no`,
 MODIFY COLUMN `out_type` varchar(1) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '出库类型 : 1-申领出库; 2-科室出库; 3-调拨出库; 4-退货出库；5-盘亏出库' AFTER `record_type`,
 MODIFY COLUMN `in_type` varchar(1) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '入库类型 : 1-正常入库，2-退货入库，3-调拨入库；4-盘盈入库' AFTER `out_type`;
-ALTER TABLE `jeecg-boot`.`pd_stock_record`
+ALTER TABLE `pd_stock_record`
 MODIFY COLUMN `extend1` varchar(320) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '扩展1，自动生成入库单时存对应的出库单号' AFTER `apply_by`,
 MODIFY COLUMN `extend2` varchar(320) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '扩展2，自动生成盘点出入库单时存对应的存盘点单号' AFTER `extend1`;
-ALTER TABLE `jeecg-boot`.`pd_stock_record_detail`
+ALTER TABLE `pd_stock_record_detail`
 MODIFY COLUMN `extend1` varchar(320) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '扩展1，自动生成入库单时存对应的出库单号' AFTER `del_flag`,
 MODIFY COLUMN `extend2` varchar(320) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '扩展2，自动生成盘点出入库单时存对应的存盘点单号' AFTER `extend1`;
 
@@ -140,7 +140,33 @@ update sys_permission set parent_id = '1293016386424840194',name = '套包管理
 update sys_permission set parent_id = '1293016386424840194',name = '打包管理',sort_no = '2' where id = '1254291714732748802';
 
 -- 2020年8月12日 14:43:58 打包编号
-ALTER TABLE `jeecg-boot`.`pd_package_record`
+ALTER TABLE `pd_package_record`
 ADD COLUMN `record_no` varchar(64) NULL COMMENT '打包编号' AFTER `depart_parent_id`;
+-- ***************赣州肿瘤医院部署截止 2020年8月26日16:22:29
 
--- 赣州肿瘤医院部署截止 2020年8月26日16:22:29
+-- 2020年8月20日 10:52:44 入库ID 打包记录id 打包记录明细id
+ALTER TABLE `pd_product_stock`
+ADD COLUMN `record_id` varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '入库ID' AFTER `depart_parent_id`,
+ADD COLUMN `package_record_id` varchar(36) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '打包记录ID' AFTER `record_detail_id`,
+ADD COLUMN `package_record_detail_id` varchar(36) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '打包记录明细ID' AFTER `package_record_id`;
+
+-- 2020年8月20日 16:02:13
+ALTER TABLE `pd_product_stock`
+MODIFY COLUMN `record_id` varchar(36) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '入库ID' AFTER `depart_parent_id`,
+MODIFY COLUMN `record_detail_id` varchar(36) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '入库明细Id' AFTER `record_id`;
+
+-- 2020年8月20日 14:16:19 打包记录明细id
+ALTER TABLE `pd_stock_record_detail`
+ADD COLUMN `package_record_detail_id` varchar(36) NULL COMMENT '打包记录明细ID' AFTER `package_record_id`;
+
+-- 2020年8月20日 15:23:29  出库报表增加入库id字段
+ALTER TABLE `pd_stock_record_detail`
+ADD COLUMN `in_record_id` varchar(36) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '入库ID（用于出库单）' AFTER `registration`,
+ADD COLUMN `in_record_detail_id` varchar(36) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '入库明细Id（用于出库单）' AFTER `in_record_id`;
+
+-- 2020年9月15日 15:37:47  入库明细增加供应商单据号
+ALTER TABLE `pd_stock_record_detail`
+ADD COLUMN `supplier_bill_no` varchar(64) NULL COMMENT '供应商单据号' AFTER `bar_code_type`;
+-- 2020年9月16日 09:10:17  入库明细增加发票号字段
+ALTER TABLE `pd_stock_record_detail`
+ADD COLUMN `invoice_no` varchar(640) NULL COMMENT '发票号' AFTER `supplier_bill_no`;

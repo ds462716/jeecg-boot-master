@@ -56,6 +56,10 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
     @Autowired
     private PdPackageRecordMapper pdPackageRecordMapper;
     @Autowired
+    private PdInvoiceMapper pdInvoiceMapper;
+    @Autowired
+    private PdInvoiceDetailMapper pdInvoiceDetailMapper;
+    @Autowired
     private IPdProductStockUniqueCodeService pdProductStockUniqueCodeService;
     @Autowired
     private IPdProductStockTotalService pdProductStockTotalService;
@@ -197,104 +201,59 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
 
         List<PdStockRecordDetail> newDetailList = new ArrayList<>();
 
-        if (oConvertUtils.isNotEmpty(outType)) {
-            // 调拨出库 或 申领出库 自动生成入库单 （出库入库）
-            String outRecordNo = pdStockRecord.getRecordNo(); //出库单号
-            if (PdConstant.OUT_TYPE_3.equals(outType)) {
-                pdStockRecord.setInType(PdConstant.IN_TYPE_3);
-            } else if(PdConstant.OUT_TYPE_4.equals(outType)){
-                pdStockRecord.setInType(PdConstant.IN_TYPE_2);
-            } else {
-                pdStockRecord.setInType(PdConstant.IN_TYPE_1);
-            }
-            Date date = DateUtils.getDate();
-            pdStockRecord.setRecordType(PdConstant.RECODE_TYPE_1);
-            pdStockRecord.setOutType(null);
-            pdStockRecord.setId(null); // 清空ID
-            pdStockRecord.setRecordNo(UUIDUtil.generateOrderNoByType(PdConstant.ORDER_NO_FIRST_LETTER_RK)); //生成入库单号
-            pdStockRecord.setAuditStatus(PdConstant.AUDIT_STATE_2);   // 审核通过
-            pdStockRecord.setSubmitDate(date);
-            pdStockRecord.setAuditDate(date);
-            pdStockRecord.setUpdateTime(date);
-            pdStockRecord.setCreateTime(date);
-            pdStockRecord.setExtend1(outRecordNo); // 本字段用于存 出库入库的 出库单号， 用于退货出库时 按出库单号查询库存
+        // 供应商入库
+        if (CollectionUtils.isNotEmpty(pdStockRecordDetailList)) {
+            Set<String> setIds = new HashSet<>();
+            //相同产品合并
+            for (PdStockRecordDetail main : pdStockRecordDetailList) {
+                String expDate = DateUtils.date2Str(main.getExpDate(), DateUtils.yyMMdd.get());
 
-            if(PdConstant.CODE_PRINT_TYPE_1.equals(pdStockRecord.getBarCodeType())){
-                // 唯一码出库入库，需要合并入库明细
-                Set<String> setIds = new HashSet<>();
-                for (PdStockRecordDetail main : pdStockRecordDetailList) {
-                    Double productNum = 0D;
-                    StringBuilder setId = new StringBuilder();
-                    setId.append(main.getProductStockId()).append(main.getInHuoweiCode());
-                    String mainHuoweCode = main.getInHuoweiCode() == null ? "" : main.getInHuoweiCode();
-                    if(setIds.add(setId.toString())){
-                        List<String> refBarCodes = new ArrayList<>();
-                        for (PdStockRecordDetail entity : pdStockRecordDetailList) {
-                            String entityHuoweCode = entity.getInHuoweiCode() == null ? "" : entity.getInHuoweiCode();
-                            if(main.getProductStockId().equals(entity.getProductStockId()) && mainHuoweCode.equals(entityHuoweCode)){
-                                refBarCodes.add(entity.getRefBarCode());
-                                productNum = productNum + entity.getProductNum();
-                            }
+                // 1. 如果产品ID、批号、效期一样，则赋值条码
+                if(oConvertUtils.isEmpty(main.getProductBarCode())){
+                    for (PdStockRecordDetail entity : pdStockRecordDetailList) {
+                        if(main.getProductId().equals(entity.getProductId()) && main.getBatchNo().equals(entity.getBatchNo()) && main.getExpDate().equals(entity.getExpDate())
+                                && oConvertUtils.isNotEmpty(entity.getProductBarCode())){
+                            main.setProductBarCode(entity.getProductBarCode());
+                            break;
                         }
-                        main.setProductNum(productNum);
-                        main.setRefBarCode(String.join(",", refBarCodes));// 合并后记录唯一码（用于入库后更新条码表）
-                        main.setExtend1(outRecordNo); // 本字段用于存 出库入库的 出库单号， 用于退货出库时 按出库单号查询库存
-                        newDetailList.add(main);
                     }
                 }
-            }else{
-                // 非唯一码出库入库，不需要合并入库明细
-                for (PdStockRecordDetail main : pdStockRecordDetailList) {
-                    main.setExtend1(outRecordNo); // 本字段用于存 出库入库的 出库单号， 用于退货出库时 按出库单号查询库存
+
+                // 2. 如果第1步没有赋值到条码，则自动拼条码
+                if(oConvertUtils.isEmpty(main.getProductBarCode())){
+                    String batchNo = main.getBatchNo()==null?"":main.getBatchNo().trim();
+                    main.setProductBarCode("01" + main.getProductNumber().trim() + "17" + expDate + "10" + batchNo);
                 }
-                newDetailList = pdStockRecordDetailList;
-            }
 
-        }else{
-            // 供应商入库
-            if (CollectionUtils.isNotEmpty(pdStockRecordDetailList)) {
-                Set<String> setIds = new HashSet<>();
-                //相同产品合并
-                for (PdStockRecordDetail main : pdStockRecordDetailList) {
-                    String expDate = DateUtils.date2Str(main.getExpDate(), DateUtils.yyMMdd.get());
+                StringBuilder setId = new StringBuilder();
+                Double productNum = 0D;
+                String mainHuoweCode = main.getInHuoweiCode() == null ? "" : main.getInHuoweiCode();
+                // 合并数据时增加 供应商发货单和发票号判断 （赣州肿瘤医院需求） add by jiangxz 2020年9月16日 09:14:30
+                String mainSupplierBillNo = main.getSupplierBillNo() == null ? "" : main.getSupplierBillNo().trim();
+                String mainInvoiceNo = main.getInvoiceNo() == null ? "" : main.getInvoiceNo().trim();
 
-                    // 1. 如果产品ID、批号、效期一样，则赋值条码
-                    if(oConvertUtils.isEmpty(main.getProductBarCode())){
-                        for (PdStockRecordDetail entity : pdStockRecordDetailList) {
-                            if(main.getProductId().equals(entity.getProductId()) && main.getBatchNo().equals(entity.getBatchNo()) && main.getExpDate().equals(entity.getExpDate())
-                                    && oConvertUtils.isNotEmpty(entity.getProductBarCode())){
-                                main.setProductBarCode(entity.getProductBarCode());
-                                break;
-                            }
+                setId.append(main.getProductId()).append(main.getBatchNo()).append(main.getExpDate())
+                        .append(mainHuoweCode).append(mainSupplierBillNo).append(mainInvoiceNo);
+                // 3.合并数量
+                if(setIds.add(setId.toString())){
+                    for (PdStockRecordDetail entity : pdStockRecordDetailList) {
+                        String entityHuoweCode = entity.getInHuoweiCode() == null ? "" : entity.getInHuoweiCode();
+                        // 合并数据时增加 供应商发货单和发票号判断 （赣州肿瘤医院需求） add by jiangxz 2020年9月16日 09:14:30
+                        String entitySupplierBillNo = entity.getSupplierBillNo() == null ? "" : entity.getSupplierBillNo().trim();
+                        String entityInvoiceNo = entity.getInvoiceNo() == null ? "" : entity.getInvoiceNo().trim();
+                        if(main.getProductId().equals(entity.getProductId()) && main.getBatchNo().equals(entity.getBatchNo())
+                                && main.getExpDate().equals(entity.getExpDate()) && mainHuoweCode.equals(entityHuoweCode)
+                                && mainSupplierBillNo.equals(entitySupplierBillNo) && mainInvoiceNo.equals(entityInvoiceNo)
+                        ){
+                            productNum = productNum + entity.getProductNum();
                         }
                     }
-
-                    // 2. 如果第1步没有赋值到条码，则自动拼条码
-                    if(oConvertUtils.isEmpty(main.getProductBarCode())){
-                        String batchNo = main.getBatchNo()==null?"":main.getBatchNo().trim();
-                        main.setProductBarCode("01" + main.getProductNumber().trim() + "17" + expDate + "10" + batchNo);
+                    if(oConvertUtils.isNotEmpty(pdStockRecord.getSupplierId()) && oConvertUtils.isEmpty(main.getSupplierId())){
+                        main.setSupplierId(pdStockRecord.getSupplierId());
                     }
-
-                    StringBuilder setId = new StringBuilder();
-                    setId.append(main.getProductId()).append(main.getBatchNo()).append(main.getExpDate()).append(main.getInHuoweiCode());
-                    Double productNum = 0D;
-                    String mainHuoweCode = main.getInHuoweiCode() == null ? "" : main.getInHuoweiCode();
-                    // 3.合并数量
-                    if(setIds.add(setId.toString())){
-                        for (PdStockRecordDetail entity : pdStockRecordDetailList) {
-                            String entityHuoweCode = entity.getInHuoweiCode() == null ? "" : entity.getInHuoweiCode();
-                            if(main.getProductId().equals(entity.getProductId()) && main.getBatchNo().equals(entity.getBatchNo())
-                                    && main.getExpDate().equals(entity.getExpDate()) && mainHuoweCode.equals(entityHuoweCode)){
-                                productNum = productNum + entity.getProductNum();
-                            }
-                        }
-                        if(oConvertUtils.isNotEmpty(pdStockRecord.getSupplierId()) && oConvertUtils.isEmpty(main.getSupplierId())){
-                            main.setSupplierId(pdStockRecord.getSupplierId());
-                        }
-                        main.setDistributorId(pdStockRecord.getDistributorId());
-                        main.setProductNum(productNum);
-                        newDetailList.add(main);
-                    }
+                    main.setDistributorId(pdStockRecord.getDistributorId());
+                    main.setProductNum(productNum);
+                    newDetailList.add(main);
                 }
             }
         }
@@ -312,10 +271,8 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
             if (pdOnOff != null && pdOnOff.getValue() != null) {
                 allowEditPrice = pdOnOff.getValue();
             }
+
             for (PdStockRecordDetail detail : newDetailList) {
-
-//                PdProductStock stock = pdProductStockService.getById(detail.getProductStockId());
-
                 detail.setId(null);//初始化ID (从前端传过来会自带页面列表行的ID)
                 detail.setRecordId(pdStockRecord.getId());//外键设置
                 detail.setDelFlag(PdConstant.DEL_FLAG_0);
@@ -327,10 +284,6 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
                 } else if (PdConstant.OUT_TYPE_3.equals(outType)) {
                     detail.setImportNo(pdStockRecord.getAllocationNo());
                 }
-//                if (oConvertUtils.isEmpty(outType)) {
-//                    // 从供货商入库 则生成REF码
-//                    detail.setRefBarCode(SnowUtils.bigKey());
-//                }
                 pdStockRecordDetailMapper.insert(detail);
                 // 修改产品进价
                 if(allowEditPrice == PdConstant.ON_OFF_ALLOW_EDIT_PRICE_1){
@@ -341,10 +294,8 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
                 }
             }
         }
-
         return pdStockRecord.getId();
     }
-
 
 
     /**
@@ -816,6 +767,9 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
             //处理库存
             String inStr = pdProductStockTotalService.updateInStock(pdStockRecord);
 
+            // 保存发票信息，目前只用于赣州五院
+            this.saveInvoice(pdStockRecord);
+
             if (PdConstant.TRUE.equals(inStr)) {
                 //保存出入库记录日志
                 this.saveStockLog(pdStockRecord);
@@ -837,6 +791,8 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
         auditEntity.setAuditDate(DateUtils.getDate());
         auditEntity.setAuditBy(sysUser.getId());
         pdStockRecordMapper.updateById(auditEntity);
+
+
 
         return result;
     }
@@ -915,8 +871,6 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
                     result.put("message", "唯一码[" + String.join(",", message) + "]已被出库，不能再次出库！");
                     return result;
                 }
-//                for (PdStockRecordDetail entity : pdStockRecordDetailList) {
-//                }
 
                 //0.4更新申领单发货总数量
                 if (oConvertUtils.isNotEmpty(pdStockRecord.getApplyNo())) {
@@ -951,6 +905,8 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
 
             //3.更新申领单 调拨单出库状态  这步暂时没有
 
+            /*
+                一级科室出库 二级科室不再生成入库单  midified by jiangxz 2020年8月20日 14:58:14
             //4.生成入库单
             String recordId = this.saveInStockRecord(pdStockRecord, pdStockRecordDetailList, outType);
 
@@ -966,6 +922,10 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
 
             //5.处理入库库存
             String inStr2 = pdProductStockTotalService.updateInStock(inRecord);
+             */
+
+            //5.处理入库库存
+            String inStr2 = pdProductStockTotalService.updateInStock(pdStockRecord);
 
             //6.处理套包记录（修改状态为已出库）
             if(packageRecordIdSet != null && packageRecordIdSet.size() > 0){
@@ -979,7 +939,7 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
             }
 
             //7.保存入库日志记录
-            this.saveStockLog(inRecord);
+//            this.saveStockLog(inRecord);  一级科室出库 二级科室不再生成入库单  midified by jiangxz 2020年8月20日 14:58:14
 
             if (PdConstant.TRUE.equals(inStr) && PdConstant.TRUE.equals(inStr2)) {
                 result.put("code", PdConstant.SUCCESS_200);
@@ -1116,80 +1076,86 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
      */
     private Map<String, String> auditOutInterface(PdStockRecord auditEntity, PdStockRecord pdStockRecord) {
         Map<String, String> result = new HashMap<>();
-            String outType = pdStockRecord.getOutType(); //出库类型
-            PdStockRecordDetail pdStockRecordDetail = new PdStockRecordDetail();
-            pdStockRecordDetail.setRecordId(pdStockRecord.getId());
-            List<PdStockRecordDetail> pdStockRecordDetailList = pdStockRecordDetailMapper.selectByMainId(pdStockRecordDetail);
-            pdStockRecord.setPdStockRecordDetailList(pdStockRecordDetailList);
-            Set<String> packageRecordIdSet = new HashSet<>();
-            if (CollectionUtils.isNotEmpty(pdStockRecordDetailList)) {
-                //0.0校验唯一码是否已被出库
-                boolean bool = true;
-                List<String> message = new ArrayList<>();
-                for (PdStockRecordDetail entity : pdStockRecordDetailList) {
-                    if (PdConstant.CODE_PRINT_TYPE_1.equals(pdStockRecord.getBarCodeType())) {
-                        PdProductStockUniqueCode code = new PdProductStockUniqueCode();
-                        code.setId(entity.getRefBarCode());
-                        code.setProductStockId(entity.getProductStockId());
-                        List<PdProductStockUniqueCode> codeList = pdProductStockUniqueCodeService.selectList(code);
-                        if (codeList == null || codeList.size() <= 0) {
-                            bool = false;
-                            message.add(entity.getRefBarCode());
-                        }
+//        String outType = pdStockRecord.getOutType(); //出库类型
+        PdStockRecordDetail pdStockRecordDetail = new PdStockRecordDetail();
+        pdStockRecordDetail.setRecordId(pdStockRecord.getId());
+        List<PdStockRecordDetail> pdStockRecordDetailList = pdStockRecordDetailMapper.selectByMainId(pdStockRecordDetail);
+        pdStockRecord.setPdStockRecordDetailList(pdStockRecordDetailList);
+        Set<String> packageRecordIdSet = new HashSet<>();
+        if (CollectionUtils.isNotEmpty(pdStockRecordDetailList)) {
+            //0.0校验唯一码是否已被出库
+            boolean bool = true;
+            List<String> message = new ArrayList<>();
+            for (PdStockRecordDetail entity : pdStockRecordDetailList) {
+                if (PdConstant.CODE_PRINT_TYPE_1.equals(pdStockRecord.getBarCodeType())) {
+                    PdProductStockUniqueCode code = new PdProductStockUniqueCode();
+                    code.setId(entity.getRefBarCode());
+                    code.setProductStockId(entity.getProductStockId());
+                    List<PdProductStockUniqueCode> codeList = pdProductStockUniqueCodeService.selectList(code);
+                    if (codeList == null || codeList.size() <= 0) {
+                        bool = false;
+                        message.add(entity.getRefBarCode());
                     }
                 }
-                if(!bool){
-                    result.put("code", PdConstant.FAIL_500);
-                    result.put("message", "唯一码[" + String.join(",", message) + "]已被出库，不能再次出库！");
-                    return result;
-                }
             }
-
-            //1.处理出库库存
-            String inStr = pdProductStockTotalService.updateOutStock(pdStockRecord);
-
-            //2.保存出库日志记录
-            this.saveStockLog(pdStockRecord);
-
-            //3.更新申领单 调拨单出库状态  这步暂时没有
-
-            //4.生成入库单
-            String recordId = this.saveInStockRecordInterface(pdStockRecord, pdStockRecordDetailList, outType);
-
-            // 查询入库单
-            PdStockRecord query = new PdStockRecord();
-            query.setId(recordId);
-            PdStockRecord inRecord = this.getOne(query);
-            PdStockRecordDetail queryDetail = new PdStockRecordDetail();
-            queryDetail.setRecordId(recordId);
-            List<PdStockRecordDetail> inRecordDetailList = pdStockRecordDetailMapper.selectByMainId(queryDetail);
-            inRecord.setPdStockRecordDetailList(inRecordDetailList);
-
-            //5.处理入库库存
-            String inStr2 = pdProductStockTotalService.updateInStock(inRecord);
-
-            //6.处理套包记录（修改状态为已出库）
-            if(packageRecordIdSet != null && packageRecordIdSet.size() > 0){
-                List<String> packageRecordIdList = new ArrayList<>(packageRecordIdSet);
-                for (String id : packageRecordIdList) {
-                    PdPackageRecord pdPackageRecord = new PdPackageRecord();
-                    pdPackageRecord.setId(id);
-                    pdPackageRecord.setStatus(PdConstant.PACKAGE_RECORD_STATUS_0);//已出库
-                    pdPackageRecordMapper.updateById(pdPackageRecord);
-                }
-            }
-
-            //7.保存入库日志记录
-            this.saveStockLog(inRecord);
-
-            if (PdConstant.TRUE.equals(inStr) && PdConstant.TRUE.equals(inStr2)) {
-                result.put("code", PdConstant.SUCCESS_200);
-                result.put("message", "审核成功！");
-            } else {
+            if(!bool){
                 result.put("code", PdConstant.FAIL_500);
-                result.put("message", inStr);
-                throw new RuntimeException(inStr);
+                result.put("message", "唯一码[" + String.join(",", message) + "]已被出库，不能再次出库！");
+                return result;
             }
+        }
+
+        //1.处理出库库存
+        String inStr = pdProductStockTotalService.updateOutStock(pdStockRecord);
+
+        //2.保存出库日志记录
+        this.saveStockLog(pdStockRecord);
+
+        //3.更新申领单 调拨单出库状态  这步暂时没有
+
+        /*
+        一级科室出库 二级科室不再生成入库单  midified by jiangxz 2020年8月20日 14:58:14
+        //4.生成入库单
+        String recordId = this.saveInStockRecordInterface(pdStockRecord, pdStockRecordDetailList, outType);
+
+        // 查询入库单
+        PdStockRecord query = new PdStockRecord();
+        query.setId(recordId);
+        PdStockRecord inRecord = this.getOne(query);
+        PdStockRecordDetail queryDetail = new PdStockRecordDetail();
+        queryDetail.setRecordId(recordId);
+        List<PdStockRecordDetail> inRecordDetailList = pdStockRecordDetailMapper.selectByMainId(queryDetail);
+        inRecord.setPdStockRecordDetailList(inRecordDetailList);
+
+        //5.处理入库库存
+        String inStr2 = pdProductStockTotalService.updateInStock(inRecord);
+        */
+
+        //5.处理入库库存
+        String inStr2 = pdProductStockTotalService.updateInStock(pdStockRecord);
+
+        //6.处理套包记录（修改状态为已出库）
+        if(packageRecordIdSet != null && packageRecordIdSet.size() > 0){
+            List<String> packageRecordIdList = new ArrayList<>(packageRecordIdSet);
+            for (String id : packageRecordIdList) {
+                PdPackageRecord pdPackageRecord = new PdPackageRecord();
+                pdPackageRecord.setId(id);
+                pdPackageRecord.setStatus(PdConstant.PACKAGE_RECORD_STATUS_0);//已出库
+                pdPackageRecordMapper.updateById(pdPackageRecord);
+            }
+        }
+
+        //7.保存入库日志记录
+//        this.saveStockLog(inRecord);  一级科室出库 二级科室不再生成入库单  midified by jiangxz 2020年8月20日 14:58:14
+
+        if (PdConstant.TRUE.equals(inStr) && PdConstant.TRUE.equals(inStr2)) {
+            result.put("code", PdConstant.SUCCESS_200);
+            result.put("message", "审核成功！");
+        } else {
+            result.put("code", PdConstant.FAIL_500);
+            result.put("message", inStr);
+            throw new RuntimeException(inStr);
+        }
 
 
         //6.变更审批意见 以及 审批状态
@@ -2136,9 +2102,7 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
      * @param pdStockRecordDetailList
      * @param outType
      * @return
-     */
-    @Transactional(rollbackFor = Exception.class)
-    public String saveInStockRecordInterface(PdStockRecord pdStockRecord, List<PdStockRecordDetail> pdStockRecordDetailList, String outType) {
+    private String saveInStockRecordInterface(PdStockRecord pdStockRecord, List<PdStockRecordDetail> pdStockRecordDetailList, String outType) {
 
         List<PdStockRecordDetail> newDetailList = new ArrayList<>();
         if (oConvertUtils.isNotEmpty(outType)) {
@@ -2203,6 +2167,7 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
         }
         return pdStockRecord.getId();
     }
+     */
 
     /**
      * 耗材柜出库接口实现
@@ -2259,5 +2224,50 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
         auditEntity.setRefuseReason("系统自动审批通过");
         this.forcerAuditOut(auditEntity,pdStockRecord);
         return recordId;
+    }
+
+    /**
+     * 保存发票信息，目前只用于赣州肿瘤医院
+     * @param pdStockRecord
+     */
+    private void saveInvoice(PdStockRecord pdStockRecord){
+        // 发票相关（赣州肿瘤医院）
+        List<String> invoiceNoList = pdStockRecordDetailMapper.selectInvoiceNoByRecordId(pdStockRecord.getId());
+        if(CollectionUtils.isNotEmpty(invoiceNoList)){
+            for(String invoiceNo : invoiceNoList){
+                if(StringUtils.isNotBlank(invoiceNo)){
+                    PdStockRecordDetail queryDetail = new PdStockRecordDetail();
+                    queryDetail.setRecordId(pdStockRecord.getId());
+                    queryDetail.setInvoiceNo(invoiceNo);
+                    List<PdStockRecordDetail> recordDetailList = pdStockRecordDetailMapper.selectRecordDetailByInvoiceNo(queryDetail);
+                    for(PdStockRecordDetail recordDetail : recordDetailList){
+                        PdInvoice invoice = new PdInvoice();
+                        invoice.setInvoiceRegNo(UUIDUtil.generateOrderNoByType(PdConstant.ORDER_NO_FIRST_LETTER_FP));
+                        invoice.setInvoiceNo(invoiceNo);
+//                    invoice.setInvoiceType(PdConstant.INVOICE_TYPE_1);
+//                    invoice.setInvoiceStatus(PdConstant.INVOICE_STATUS_1);
+//                    invoice.setBillBy(pdStockRecord.getCreateBy());
+                        pdInvoiceMapper.insert(invoice);
+
+                        PdInvoiceDetail invoiceDetail = new PdInvoiceDetail();
+                        BigDecimal purchasePrice = recordDetail.getPurchasePrice() == null ? new BigDecimal(0) : recordDetail.getPurchasePrice();
+                        BigDecimal inTotalPrice = purchasePrice.multiply(BigDecimal.valueOf(recordDetail.getProductNum())).setScale(4, BigDecimal.ROUND_HALF_UP);
+                        //外键设置
+                        invoiceDetail.setInvoiceId(invoice.getId());
+                        invoiceDetail.setBillNo(pdStockRecord.getRecordNo());
+                        invoiceDetail.setBillId(pdStockRecord.getId());
+                        invoiceDetail.setBillDetailId(recordDetail.getId());
+                        invoiceDetail.setBillDate(DateUtils.getDate());
+                        invoiceDetail.setProductId(recordDetail.getProductId());
+                        invoiceDetail.setProductStockId(recordDetail.getProductStockId());
+                        invoiceDetail.setNum(recordDetail.getProductNum());
+                        invoiceDetail.setPrice(purchasePrice);
+                        invoiceDetail.setMoney(inTotalPrice);
+                        invoiceDetail.setStatus(PdConstant.INVOICE_STATUS_1);
+                        pdInvoiceDetailMapper.insert(invoiceDetail);
+                    }
+                }
+            }
+        }
     }
 }

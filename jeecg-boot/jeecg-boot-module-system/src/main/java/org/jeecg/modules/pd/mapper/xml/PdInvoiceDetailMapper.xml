@@ -163,7 +163,7 @@
 		FROM
 			pd_stock_record_detail a
 		LEFT JOIN pd_stock_record b ON b.id = a.record_id
-		LEFT JOIN pd_product_stock c ON a.id = c.record_detail_id
+		LEFT JOIN pd_product_stock c ON a.id = c.record_detail_id and b.in_depart_id = c.depart_id
 		LEFT JOIN (select * from pd_invoice_detail where del_flag = '0') d  ON d.bill_detail_id = a.id
 		LEFT JOIN (select * from pd_invoice where del_flag = '0') e ON d.invoice_id = e.id
 		LEFT JOIN pd_product f ON a.product_id = f.id
@@ -172,6 +172,7 @@
 		LEFT JOIN pd_unit i ON f.unit_id = i.id
 		<where>
 			a.del_flag = #{entity.DEL_FLAG_NORMAL}
+			and c.del_flag = #{entity.DEL_FLAG_NORMAL}
 			and b.record_type = '1'
 			and b.supplier_id is not null
 			and b.supplier_id &lt;&gt; ''
