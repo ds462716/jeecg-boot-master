@@ -672,7 +672,7 @@
         divNumber:0,
         batchPrint:false,
         tableNumber:[],
-        tableLength:10,
+        tableLength:8,
         labelCol: {
           xs: { span: 24 },
           sm: { span: 2 },
