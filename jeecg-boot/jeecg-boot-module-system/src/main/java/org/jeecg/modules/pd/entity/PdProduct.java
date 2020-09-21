@@ -96,9 +96,11 @@ public class PdProduct  extends BaseEntity {
 	@Excel(name = "供应商", width = 15)
 	private java.lang.String supplierName;
 	/**进价*/
+	@TableField(strategy = FieldStrategy.IGNORED)//修改更新null字段
 	@Excel(name = "进价", width = 15)
     private java.math.BigDecimal purchasePrice;
 	/**出价*/
+	@TableField(strategy = FieldStrategy.IGNORED)//修改更新null字段
 	@Excel(name = "出价", width = 15)
     private java.math.BigDecimal sellingPrice;
 	/**注册证*/
