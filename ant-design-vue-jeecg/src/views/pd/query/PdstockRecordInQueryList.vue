@@ -202,7 +202,7 @@
             }
           },*/
           {
-            title:'入库单号',
+            title:'单号',
             align:"center",
             width:'100px',
             dataIndex: 'recordNo'
@@ -301,12 +301,12 @@
             width:'90px',
             dataIndex: 'productNum'
           },
-          {
-            title:'库存数量',
-            align:"center",
-            width:'90px',
-            dataIndex: 'stockNum'
-          },
+          // {
+          //   title:'库存数量',
+          //   align:"center",
+          //   width:'90px',
+          //   dataIndex: 'stockNum'
+          // },
           {
             title:'单位',
             align:"center",

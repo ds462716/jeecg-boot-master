@@ -783,7 +783,7 @@
         packageData.forEach((item, idx) => {
           productIdList.push(item.productId)
         })
-        this.$refs.pdChooseProductStockListModel.show({productIdList:productIdList,nestatStatus:"1"});
+        this.$refs.pdChooseProductStockListModel.show({productIdList:productIdList,nestatStatus:"1",barCodeType:"0"});
       },
       // 选择产品后返回
       returnProductStockData(data) {
@@ -836,6 +836,7 @@
         let params = {};
         params.productIds = productIdList.join(",");//产品id
         params.nestatStatus = "1"; //未使用
+        params.barCodeType = "0"; // 批次码（非唯一码）
         this.pdPackageRecordDetailTable.loading = true;
         getAction(this.url.stockList, params).then((res) => {
           if (res.success && res.result.length > 0) {

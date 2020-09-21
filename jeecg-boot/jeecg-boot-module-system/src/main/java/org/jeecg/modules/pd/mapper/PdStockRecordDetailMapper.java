@@ -31,11 +31,31 @@ public interface PdStockRecordDetailMapper extends BaseMapper<PdStockRecordDetai
 
 	public List<PdStockRecordDetail> selectByMainId(PdStockRecordDetail pdStockRecordDetail);
 
-	public List<PdStockRecordDetail> selectList(@Param("entity") PdStockRecordDetail pdStockRecordDetail);
-
 	public List<PdStockRecordDetail> selectListForRefBarCodeCheck(@Param("entity") PdStockRecordDetail pdStockRecordDetail);
 
+	/**
+	 * 查询出入库记录明细
+	 * @param pdStockRecordDetail
+	 * @return
+	 */
+	public List<PdStockRecordDetail> selectList(@Param("entity") PdStockRecordDetail pdStockRecordDetail);
 	IPage<PdStockRecordDetail> selectList(Page<PdStockRecordDetail> page, @Param("entity") PdStockRecordDetail pdStockRecordDetail);
+
+	/**
+	 * 查询入库单明细
+	 * @param pdStockRecordDetail
+	 * @return
+	 */
+	public List<PdStockRecordDetail> selectInList(@Param("entity") PdStockRecordDetail pdStockRecordDetail);
+	IPage<PdStockRecordDetail> selectInList(Page<PdStockRecordDetail> page, @Param("entity") PdStockRecordDetail pdStockRecordDetail);
+
+	/**
+	 * 查询出库单明细
+	 * @param pdStockRecordDetail
+	 * @return
+	 */
+	public List<PdStockRecordDetail> selectOutList(@Param("entity") PdStockRecordDetail pdStockRecordDetail);
+	IPage<PdStockRecordDetail> selectOutList(Page<PdStockRecordDetail> page, @Param("entity") PdStockRecordDetail pdStockRecordDetail);
 
 
 	void updateInHuoweiCode(PdStockRecordDetail detail);
@@ -55,4 +75,17 @@ public interface PdStockRecordDetailMapper extends BaseMapper<PdStockRecordDetai
 
 	public List<PdStockRecordDetail> selectStockRecordList(@Param("entity") PdStockRecordDetail pdStockRecordDetail);
 
+	/**
+	 * 根据入库id查询发票号
+	 * @param recordId
+	 * @return
+	 */
+	public List<String> selectInvoiceNoByRecordId(@Param("recordId") String recordId);
+
+	/**
+	 * 根据发票号和入库id查询入库明细
+	 * @param pdStockRecordDetail
+	 * @return
+	 */
+	public List<PdStockRecordDetail> selectRecordDetailByInvoiceNo(PdStockRecordDetail pdStockRecordDetail);
 }

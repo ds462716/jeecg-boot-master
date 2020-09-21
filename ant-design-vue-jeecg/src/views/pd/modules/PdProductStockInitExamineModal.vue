@@ -349,21 +349,17 @@
             },
             { title: '金额', key: 'inTotalPrice', width:"90px" },
             // {
-            //   title: '货区', key: 'huoquId', type: FormTypes.select, width:"150px", options: this.huoquOptions,allowSearch:true,
+            //   title: '货位', key: 'inHuoweiCode', type: FormTypes.select, width:"150px", options: [],allowSearch:true,
             //   placeholder: '${title}', validateRules: [{ required: true, message: '${title}不能为空' }]
             // },
-            {
-              title: '货位', key: 'inHuoweiCode', type: FormTypes.select, width:"150px", options: [],allowSearch:true,
-              placeholder: '${title}', validateRules: [{ required: true, message: '${title}不能为空' }]
-            },
           ]
         },
         url: {
-          init:"/pd/pdStockRecordIn/initModal",
-          audit: "/pd/pdStockRecordIn/audit",
+          init:"/pd/pdProductStockInit/initModal",
+          audit: "/pd/pdProductStockInit/audit",
           querySupplier:"/pd/pdSupplier/getSupplierList",
-          queryById: "/pd/pdStockRecordIn/queryById",
-          getOnOff:"/pd/pdStockRecordIn/getOnOff",
+          queryById: "/pd/pdProductStockInit/queryById",
+          getOnOff:"/pd/pdProductStockInit/getOnOff",
         },
         popModal: {
           title: '这里是标题',

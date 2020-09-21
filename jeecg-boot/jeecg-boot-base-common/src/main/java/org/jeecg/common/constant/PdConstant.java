@@ -337,6 +337,9 @@ public interface PdConstant {
 	public final static String INVOICE_STATUS_1 ="1";//1-未完成
 	public final static String INVOICE_STATUS_2 ="2";//2-已完成
 
+	public final static String INVOICE_TYPE_1 ="1";//1-入库单发票
+	public final static String INVOICE_TYPE_2 ="2";//2-出库单发票
+
 	//盘点冻结权限的名称
 	public final static String IN_RECORD_EXAMINE = "入库审核按钮";//入库审核按钮
 	public final static String OUT_RECORD_EXAMINE = "出库审核按钮";//出库审核按钮

@@ -7,8 +7,10 @@ import org.jeecg.common.constant.PdConstant;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.pd.entity.PdInvoice;
 import org.jeecg.modules.pd.entity.PdInvoiceDetail;
+import org.jeecg.modules.pd.entity.PdStockRecordDetail;
 import org.jeecg.modules.pd.mapper.PdInvoiceDetailMapper;
 import org.jeecg.modules.pd.mapper.PdInvoiceMapper;
+import org.jeecg.modules.pd.mapper.PdStockRecordDetailMapper;
 import org.jeecg.modules.pd.service.IPdInvoiceDetailService;
 import org.jeecg.modules.pd.service.IPdInvoiceService;
 import org.jeecg.modules.pd.util.UUIDUtil;
@@ -36,6 +38,8 @@ public class PdInvoiceServiceImpl extends ServiceImpl<PdInvoiceMapper, PdInvoice
 	@Autowired
 	private PdInvoiceDetailMapper pdInvoiceDetailMapper;
 	@Autowired
+	private PdStockRecordDetailMapper pdStockRecordDetailMapper;
+	@Autowired
 	private IPdInvoiceDetailService pdInvoiceDetailService;
 
 	/**
@@ -62,6 +66,12 @@ public class PdInvoiceServiceImpl extends ServiceImpl<PdInvoiceMapper, PdInvoice
 				//外键设置
 				entity.setInvoiceId(pdInvoice.getId());
 				pdInvoiceDetailMapper.insert(entity);
+
+				// 发票号更新到入库明细
+				PdStockRecordDetail recordDetail = new PdStockRecordDetail();
+				recordDetail.setId(entity.getBillDetailId());
+				recordDetail.setInvoiceNo(pdInvoice.getInvoiceNo());
+				pdStockRecordDetailMapper.updateById(recordDetail);
 			}
 		}
 	}
@@ -93,10 +103,17 @@ public class PdInvoiceServiceImpl extends ServiceImpl<PdInvoiceMapper, PdInvoice
 				PdInvoice pdInvoice = pdInvoiceMapper.selectById(id);
 				throw new RuntimeException("该发票登记号["+pdInvoice.getInvoiceRegNo()+"]下有已完成的明细，不能删除");
 			}
+
+			// 发票号更新到入库明细
+			PdStockRecordDetail recordDetail = new PdStockRecordDetail();
+			recordDetail.setId(detail.getBillDetailId());
+			recordDetail.setInvoiceNo("");
+			pdStockRecordDetailMapper.updateById(recordDetail);
 		}
 
 		pdInvoiceDetailMapper.deleteByMainId(id);
 		pdInvoiceMapper.deleteById(id);
+
 	}
 
 	@Override

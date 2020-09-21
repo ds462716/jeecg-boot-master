@@ -611,7 +611,13 @@
                     </div>
 
                     <!-- else (normal) -->
-                    <span v-else :key="i" v-bind="buildProps(row,col)">{{ inputValues[rowIndex][col.key] }}</span>
+                    <!--<span v-else :key="i" v-bind="buildProps(row,col)">{{ inputValues[rowIndex][col.key] }}</span>-->
+                    <a-tooltip v-else placement="topLeft">
+                      <template slot="title">
+                        <span  :key="i" v-bind="buildProps(row,col)">{{inputValues[rowIndex][col.key]}}</span>
+                      </template>
+                      {{ inputValues[rowIndex][col.key] | ellipsis(20) }}
+                    </a-tooltip>
                   </template>
                 </div>
               </div>

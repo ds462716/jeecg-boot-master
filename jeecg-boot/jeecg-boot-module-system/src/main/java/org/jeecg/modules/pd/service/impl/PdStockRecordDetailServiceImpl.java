@@ -35,17 +35,6 @@ public class PdStockRecordDetailServiceImpl extends ServiceImpl<PdStockRecordDet
 
 	/**
 	 * 分页查询列表
-	 * @param page
-	 * @param pdStockRecordDetail
-	 * @return
-	 */
-	@Override
-	public IPage<PdStockRecordDetail> selectList(Page<PdStockRecordDetail> page, PdStockRecordDetail pdStockRecordDetail) {
-		return pdStockRecordDetailMapper.selectList(page, pdStockRecordDetail);
-	}
-
-	/**
-	 * 查询列表
 	 * @param pdStockRecordDetail
 	 * @return
 	 */
@@ -53,6 +42,39 @@ public class PdStockRecordDetailServiceImpl extends ServiceImpl<PdStockRecordDet
 	public List<PdStockRecordDetail> selectList(PdStockRecordDetail pdStockRecordDetail) {
 		return pdStockRecordDetailMapper.selectList(pdStockRecordDetail);
 	}
+	@Override
+	public IPage<PdStockRecordDetail> selectList(Page<PdStockRecordDetail> pageList, PdStockRecordDetail pdStockRecordDetail) {
+		return pdStockRecordDetailMapper.selectList(pageList, pdStockRecordDetail);
+	}
+
+	/**
+	 * 查询入库单明细
+	 * @param pdStockRecordDetail
+	 * @return
+	 */
+	@Override
+	public List<PdStockRecordDetail> selectInList(PdStockRecordDetail pdStockRecordDetail) {
+		return pdStockRecordDetailMapper.selectInList(pdStockRecordDetail);
+	}
+	@Override
+	public IPage<PdStockRecordDetail> selectInList(Page<PdStockRecordDetail> pageList, PdStockRecordDetail pdStockRecordDetail) {
+		return pdStockRecordDetailMapper.selectInList(pageList, pdStockRecordDetail);
+	}
+
+	/**
+	 * 查询出库单明细
+	 * @param pdStockRecordDetail
+	 * @return
+	 */
+	@Override
+	public List<PdStockRecordDetail> selectOutList(PdStockRecordDetail pdStockRecordDetail) {
+		return pdStockRecordDetailMapper.selectOutList( pdStockRecordDetail);
+	}
+	@Override
+	public IPage<PdStockRecordDetail> selectOutList(Page<PdStockRecordDetail> pageList, PdStockRecordDetail pdStockRecordDetail) {
+		return pdStockRecordDetailMapper.selectOutList(pageList, pdStockRecordDetail);
+	}
+
 
 	/**
 	 * 查询明细

@@ -87,6 +87,12 @@
                     有效期
                   </th>
                   <th style="border: 1px solid #000000;text-align: center;padding: 3px 3px;width:10%">
+                    单据号
+                  </th>
+                  <th style="border: 1px solid #000000;text-align: center;padding: 3px 3px;width:10%">
+                    发票号
+                  </th>
+                  <th style="border: 1px solid #000000;text-align: center;padding: 3px 3px;width:10%">
                     注册证号
                   </th>
                 </tr>
@@ -127,6 +133,12 @@
                   </td>-->
                   <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: medium;">
                     {{ item.expDate }}
+                  </td>
+                  <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: medium;">
+                    {{ item.supplierBillNo }}
+                  </td>
+                  <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: medium;">
+                    {{ item.invoiceNo }}
                   </td>
                   <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: xx-small;">
                     <a-form-item label="" style="width: 100%;height: 100%;padding: 0px;margin: 0px;line-height: 0px">
@@ -224,6 +236,12 @@
                     有效期
                   </th>
                   <th style="border: 1px solid #000000;text-align: center;padding: 3px 3px;width:10%">
+                    单据号
+                  </th>
+                  <th style="border: 1px solid #000000;text-align: center;padding: 3px 3px;width:10%">
+                    发票号
+                  </th>
+                  <th style="border: 1px solid #000000;text-align: center;padding: 3px 3px;width:10%">
                     注册证号
                   </th>
                 </tr>
@@ -265,6 +283,12 @@
                   <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: medium;">
                     {{ item.expDate }}
                   </td>
+                  <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: medium;">
+                    {{ item.supplierBillNo }}
+                  </td>
+                  <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: medium;">
+                    {{ item.invoiceNo }}
+                  </td>
                   <td style="text-align: center;border: 1px solid #000000;padding: 3px 3px;font-size: xx-small;">
                     <a-form-item label="" style="width: 100%;height: 100%;padding: 0px;margin: 0px;line-height: 0px">
                       <a-select
@@ -296,6 +320,8 @@
                   </td>
                   <td style="border-bottom: 1px solid #000000;text-align: center;padding: 3px 3px;font-size: medium;;">
                     {{ record.inTotalPrice }}
+                  </td>
+                  <td style="border-bottom: 1px solid #000000;text-align: center;padding: 3px 3px;font-size: small">
                   </td>
                   <td style="border-bottom: 1px solid #000000;text-align: center;padding: 3px 3px;font-size: small">
                   </td>
@@ -646,7 +672,7 @@
         divNumber:0,
         batchPrint:false,
         tableNumber:[],
-        tableLength:10,
+        tableLength:8,
         labelCol: {
           xs: { span: 24 },
           sm: { span: 2 },

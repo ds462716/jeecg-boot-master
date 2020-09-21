@@ -14,6 +14,7 @@
 			a.*,
 			a.package_num as productNum,
 			a.record_id as package_record_id,
+			a.id as package_record_detail_id,
 			b.number AS productNumber,
 			b.NAME AS productName,
 			b.spec,
@@ -24,16 +25,18 @@
 			d.stock_num,
 			d.product_bar_code,
 			d.huowei_code AS outHuoweiCode,
-			h.NAME AS outHuoweiName,
+			d.record_id as in_record_id,
+			d.record_detail_id as in_record_detail_id,
 			d.spec_unit_id,
 			d.spec_quantity,
 			d.supplier_id,
 			d.produce_date,
 			g.purchase_price,
-			g.distributor_id,
 			IFNULL( g.purchase_price, 0 ) * a.package_num AS inTotalPrice,
 			b.selling_price,
-			IFNULL( b.selling_price, 0 ) * a.package_num AS outTotalPrice
+			IFNULL( b.selling_price, 0 ) * a.package_num AS outTotalPrice,
+			g.distributor_id,
+			h.NAME AS outHuoweiName
 		FROM
 			pd_package_record_detail a
 			LEFT JOIN pd_product b ON a.product_id = b.id

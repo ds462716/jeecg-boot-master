@@ -243,11 +243,6 @@
             align:"center",
             dataIndex: 'deptName'
           },
-          /*{
-            title:'货位',
-            align:"center",
-            dataIndex: 'huoweiName'
-          },*/
           {
             title:'产品名称',
             align:"center",

@@ -38,7 +38,8 @@
             <div class="card-box" :class="imgIsValidity[index]">
               <div class="card-box-code" style="margin-top:10px;margin-left:10px;">
                 <a-form-item label="证照名称" :labelCol="labelCol2" :wrapperCol="wrapperCol2">
-                  <a-input :disabled="disableSubmit" autocomplete="off" v-decorator="[ 'licenceName'+index, validatorRules['licenceNum'+index]]" ></a-input>
+                  <!--<a-input :disabled="disableSubmit" autocomplete="off" v-decorator="[ 'licenceName'+index, validatorRules['licenceNum'+index]]" ></a-input>-->
+                  <j-dict-select-tag-expand  :disabled="disableSubmit" :trigger-change="true" dictCode="license_name" v-decorator="['licenceName'+index,validatorRules['licenceNum'+index]]"  placeholder="证照名称"/>
                 </a-form-item>
                 <a-form-item label="证照号码" :labelCol="labelCol2" :wrapperCol="wrapperCol2">
                   <a-input :disabled="disableSubmit" autocomplete="off" v-decorator="[ 'licenceNum'+index, validatorRules['licenceNum'+index]]" ></a-input>

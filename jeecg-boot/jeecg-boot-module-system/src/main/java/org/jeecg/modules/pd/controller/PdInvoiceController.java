@@ -7,6 +7,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.jeecg.common.constant.PdConstant;
+import org.jeecg.modules.pd.entity.PdStockRecordDetail;
+import org.jeecg.modules.pd.service.IPdStockRecordDetailService;
 import org.jeecg.modules.pd.util.UUIDUtil;
 import org.jeecg.modules.pd.vo.PdInvoiceDetailPage;
 import org.jeecg.modules.system.entity.SysDepart;
@@ -56,6 +58,8 @@ public class PdInvoiceController {
     private IPdInvoiceService pdInvoiceService;
     @Autowired
     private IPdInvoiceDetailService pdInvoiceDetailService;
+    @Autowired
+    private IPdStockRecordDetailService pdStockRecordDetailService;
     @Autowired
     private ISysDepartService sysDepartService;
 
@@ -187,6 +191,7 @@ public class PdInvoiceController {
 
         List<PdInvoiceDetail> detailList = pdInvoiceDetailService.selectByMainId(pdInvoiceEntity.getId());
         List<PdInvoiceDetail> updateDetailList = new ArrayList<>();
+        List<PdStockRecordDetail> updateRecordDetailList = new ArrayList<>();
         //        for(PdInvoiceDetail detail : detailList){
 //            if(PdConstant.INVOICE_STATUS_2.equals(detail.getStatus())){
 //                PdInvoice invoice = pdInvoiceService.getById(pdInvoiceEntity.getId());
@@ -197,13 +202,22 @@ public class PdInvoiceController {
         pdInvoice.setId(pdInvoiceEntity.getId());
         pdInvoiceService.updateById(pdInvoice);
 
-        for(PdInvoiceDetail detail:detailList){
+        for(PdInvoiceDetail detail : detailList){
             PdInvoiceDetail updateDetail = new PdInvoiceDetail();
             updateDetail.setId(detail.getId());
             updateDetail.setStatus(PdConstant.INVOICE_STATUS_1);
             updateDetailList.add(updateDetail);
+
+            PdStockRecordDetail recordDetail = new PdStockRecordDetail();
+            recordDetail.setId(detail.getBillDetailId());
+            recordDetail.setInvoiceNo(pdInvoice.getInvoiceNo());
+            updateRecordDetailList.add(recordDetail);
         }
         pdInvoiceDetailService.updateBatchById(updateDetailList);
+
+        // 发票号更新到入库明细
+        pdStockRecordDetailService.updateBatchById(updateRecordDetailList);
+
         return Result.ok("编辑成功!");
     }
 

@@ -337,6 +337,30 @@
               return obj;
             },
           },
+          {
+            title: 'inRecordId',
+            align:"center",
+            dataIndex: 'inRecordId',
+            colSpan: 0,
+            customRender: (value, row, index) => {
+              const obj = {
+                attrs: {colSpan:0},
+              };
+              return obj;
+            },
+          },
+          {
+            title: 'inRecordDetailId',
+            align:"center",
+            dataIndex: 'inRecordDetailId',
+            colSpan: 0,
+            customRender: (value, row, index) => {
+              const obj = {
+                attrs: {colSpan:0},
+              };
+              return obj;
+            },
+          },
         ],
         url: {
           list: "/pd/pdProductStockTotal/chooseProductStockListPage",

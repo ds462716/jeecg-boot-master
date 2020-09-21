@@ -60,8 +60,11 @@ public class PdStockRecordDetail extends BaseEntity {
 	private Date expDate;
 
 	private String registration;//注册证号
+    private String inRecordId;  //入库id
+    private String inRecordDetailId;//入库明细id
 	/**套包 打包记录ID*/
 	private String packageRecordId;
+	private String packageRecordDetailId;//套包明细id
 	/**高低值耗材标志 1-高值；2-低值*/
 	private String highLowSupplies;
 	/**导入单号*/
@@ -101,6 +104,10 @@ public class PdStockRecordDetail extends BaseEntity {
 	private String productStockId;
 	/**条码类型**/
 	private String barCodeType;
+	/**供应商单据号**/
+	private String supplierBillNo;
+	/**发票号*/
+	private String invoiceNo;
 
     /*不是明细表字段*/
 	@TableField(exist = false)
@@ -226,8 +233,8 @@ public class PdStockRecordDetail extends BaseEntity {
 	@TableField(exist = false)
 	private String productRegistration; //产品表中的注册证
 
-	@TableField(exist = false)
-	private String invoiceNo; // 发票号
+//	@TableField(exist = false)
+//	private String invoiceNo; // 发票号
 	@TableField(exist = false)
 	private String invoiceCode; //发票代码
 	@TableField(exist = false)

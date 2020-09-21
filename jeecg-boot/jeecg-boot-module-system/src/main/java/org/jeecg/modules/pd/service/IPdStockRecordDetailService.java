@@ -21,9 +21,25 @@ public interface IPdStockRecordDetailService extends IService<PdStockRecordDetai
 
 	public List<PdStockRecordDetail> selectByMainId(PdStockRecordDetail pdStockRecordDetail);
 
+	List<PdStockRecordDetail> selectList(PdStockRecordDetail pdStockRecordDetail);
 	IPage<PdStockRecordDetail> selectList(Page<PdStockRecordDetail> pageList, PdStockRecordDetail pdStockRecordDetail);
 
-	List<PdStockRecordDetail> selectList(PdStockRecordDetail pdStockRecordDetail);
+	/**
+	 * 查询入库单明细
+	 * @param pdStockRecordDetail
+	 * @return
+	 */
+	List<PdStockRecordDetail> selectInList(PdStockRecordDetail pdStockRecordDetail);
+	IPage<PdStockRecordDetail> selectInList(Page<PdStockRecordDetail> pageList, PdStockRecordDetail pdStockRecordDetail);
+
+	/**
+	 * 查询出库单明细
+	 * @param pdStockRecordDetail
+	 * @return
+	 */
+	List<PdStockRecordDetail> selectOutList(PdStockRecordDetail pdStockRecordDetail);
+	IPage<PdStockRecordDetail> selectOutList(Page<PdStockRecordDetail> pageList, PdStockRecordDetail pdStockRecordDetail);
+
 
 	/**
 	 * 通过条件查询出入库明细

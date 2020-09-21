@@ -535,7 +535,7 @@
                 return obj;
               },
             },
-            { title: '出库货位', align:"center", dataIndex: 'outHuoweiName' },
+            // { title: '出库货位', align:"center", dataIndex: 'outHuoweiName' },
             { title: '生产日期', align:"center", dataIndex: 'produceDate',
               customRender:function (text) {
                 return !text?"":(text.length>10?text.substr(0,10):text)
@@ -544,6 +544,14 @@
             { title: '打包记录ID', align:"center", dataIndex: 'packageRecordId', colSpan: 0,
               customRender: (value, row, index) => {
                 const obj = { attrs: {colSpan:0}, };
+                return obj;
+              },
+            },
+            { title: '打包记录明细ID', align:"center", dataIndex: 'packageRecordDetailId',colSpan: 0,
+              customRender: (value, row, index) => {
+                const obj = {
+                  attrs: {colSpan:0},
+                };
                 return obj;
               },
             },
@@ -559,12 +567,12 @@
                 return obj;
               },
             },
-            { title: '出库货位编号', align:"center", dataIndex: 'outHuoweiCode', colSpan: 0,
-              customRender: (value, row, index) => {
-                const obj = { attrs: {colSpan:0}, };
-                return obj;
-              },
-            },
+            // { title: '出库货位编号', align:"center", dataIndex: 'outHuoweiCode', colSpan: 0,
+            //   customRender: (value, row, index) => {
+            //     const obj = { attrs: {colSpan:0}, };
+            //     return obj;
+            //   },
+            // },
             { title: '供应商id', align:"center", dataIndex: 'supplierId', colSpan: 0,
               customRender: (value, row, index) => {
                 const obj = { attrs: {colSpan:0}, };
@@ -612,10 +620,23 @@
           loading: false,
           dataSource: [],
           columns: [
-            { title: '产品名称', key: 'productName', type: FormTypes.normal,width:"220px" },
+            { title: '入库id', key: 'inRecordId', type: FormTypes.hidden },
+            { title: '入库明细id', key: 'inRecordDetailId', type: FormTypes.hidden },
+            { title: '库存明细ID', key: 'productStockId', type: FormTypes.hidden },
+            { title: '产品ID', key: 'productId', type: FormTypes.hidden },
+            // { title: '出库货位编号', key: 'outHuoweiCode', type: FormTypes.hidden },
+            { title: '供应商id', key: 'supplierId', type: FormTypes.hidden },
+            { title: '配送商id', key: 'distributorId', type: FormTypes.hidden },
+            { title: '规格单位ID', key: 'specUnitId', type: FormTypes.hidden },
+            { title: '规格数量', key: 'specQuantity', type: FormTypes.hidden },
+            { title: '注册证号', key: 'registration', type: FormTypes.hidden },
+            { title: '生产厂家', key: 'venderName', type: FormTypes.hidden },
+
+
+            { title: '产品名称', key: 'productName', type: FormTypes.normal,width:"250px" },
             { title: '产品编号', key: 'productNumber', width:"200px" },
             { title: '产品条码', key: 'productBarCode', type: FormTypes.input, disabled:true, width:"200px" },
-            { title: '规格', key: 'spec', width:"150px" },
+            { title: '规格', key: 'spec', width:"200px" },
             { title: '批号', key: 'batchNo', width:"100px" },
             { title: '单位', key: 'unitName', width:"60px" },
             { title: '有效期', key: 'expDate', width:"100px" },
@@ -628,19 +649,10 @@
             },
             { title: '出库金额', key: 'outTotalPrice', type: FormTypes.input, disabled:true, width:"100px" },
             { title: '库存数量', key: 'stockNum', width:"90px" },
-            { title: '出库货位', key: 'outHuoweiName', width:"100px" },
+            // { title: '出库货位', key: 'outHuoweiName', width:"100px" },
             { title: '生产日期', key: 'produceDate',  },
-            { title: '入库货位', key: 'inHuoweiCode', type: FormTypes.select, width:"150px", options: [],allowSearch:true, placeholder: '${title}' },
+            // { title: '入库货位', key: 'inHuoweiCode', type: FormTypes.select, width:"150px", options: [],allowSearch:true, placeholder: '${title}' },
             { title: '批次码', key: 'refBarCode', width:"160px" },
-            { title: '库存明细ID', key: 'productStockId', type: FormTypes.hidden },
-            { title: '产品ID', key: 'productId', type: FormTypes.hidden },
-            { title: '出库货位编号', key: 'outHuoweiCode', type: FormTypes.hidden },
-            { title: '供应商id', key: 'supplierId', type: FormTypes.hidden },
-            { title: '配送商id', key: 'distributorId', type: FormTypes.hidden },
-            { title: '规格单位ID', key: 'specUnitId', type: FormTypes.hidden },
-            { title: '规格数量', key: 'specQuantity', type: FormTypes.hidden },
-            { title: '注册证号', key: 'registration', type: FormTypes.hidden },
-            { title: '生产厂家', key: 'venderName', type: FormTypes.hidden },
           ]
         },
         url: {
@@ -1438,7 +1450,9 @@
           inHuoweiCode:"",
           supplierId:row.supplierId,
           distributorId:row.distributorId,
-          produceDate:row.produceDate
+          produceDate:row.produceDate,
+          inRecordId:row.inRecordId,
+          inRecordDetailId:row.inRecordDetailId
         }
         this.pdStockRecordDetailTable.dataSource.push(data);
         // this.$refs.pdStockRecordDetail.add();

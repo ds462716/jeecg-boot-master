@@ -485,7 +485,7 @@ public class PdStockRecordOutController {
             pdStockRecordDetail.setInDepartIdList(departList);
         }
 
-        List<PdStockRecordDetail> detailList =  pdStockRecordDetailService.selectList(pdStockRecordDetail);
+        List<PdStockRecordDetail> detailList =  pdStockRecordDetailService.selectOutList(pdStockRecordDetail);
         List<PdStockRecordOutPage> exportList = JSON.parseArray(JSON.toJSONString(detailList), PdStockRecordOutPage.class);
 
         // Step.4 AutoPoi 导出Excel
@@ -537,7 +537,7 @@ public class PdStockRecordOutController {
 //            List<String> departList=pdDepartService.selectListDepart(sysDepart);
 //            pdStockRecordDetail.setInDepartIdList(departList);
         }
-        IPage<PdStockRecordDetail> pageList = pdStockRecordDetailService.selectList(page, pdStockRecordDetail);
+        IPage<PdStockRecordDetail> pageList = pdStockRecordDetailService.selectOutList(page, pdStockRecordDetail);
         return Result.ok(pageList);
     }
 }
