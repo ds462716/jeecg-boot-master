@@ -249,3 +249,4 @@ MODIFY COLUMN `is_disable` varchar(4) CHARACTER SET utf8 COLLATE utf8_bin NOT NU
 ALTER TABLE  `h_forcer_info`
 MODIFY COLUMN `kf_id` varchar(64) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL COMMENT '当前库房' AFTER `link_phone`,
 MODIFY COLUMN `sjkf_id` varchar(64) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL COMMENT '关联库房' AFTER `kf_id`;
+-- 赣州肿瘤截止 2020年9月21日15:38:01

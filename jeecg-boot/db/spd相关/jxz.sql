@@ -170,3 +170,5 @@ ADD COLUMN `supplier_bill_no` varchar(64) NULL COMMENT '供应商单据号' AFTE
 -- 2020年9月16日 09:10:17  入库明细增加发票号字段
 ALTER TABLE `pd_stock_record_detail`
 ADD COLUMN `invoice_no` varchar(640) NULL COMMENT '发票号' AFTER `supplier_bill_no`;
+
+-- 赣州肿瘤截止 2020年9月21日15:38:01
