@@ -220,6 +220,11 @@
             dataIndex: 'dosageNo'
           },
           {
+            title:'用量科室',
+            align:"center",
+            dataIndex: 'departName'
+          },
+          {
             title:'用量日期',
             align:"center",
             dataIndex: 'dosageDate'
