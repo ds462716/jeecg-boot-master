@@ -101,8 +101,10 @@
 	  end as "inType",
 	  g.out_type AS "outType",
       g.remarks as "remarks",
-	(select r.depart_name from sys_depart r where r.id=g.in_depart_id) AS "inDepartName",
-	(select r.depart_name from sys_depart r where r.id=g.out_depart_id) AS "outDepartName"
+      g.in_depart_id as inDepartId,
+	  (select r.depart_name from sys_depart r where r.id=g.in_depart_id) AS "inDepartName",
+	  g.out_depart_id as outDepartId,
+	  (select r.depart_name from sys_depart r where r.id=g.out_depart_id) AS "outDepartName"
     </sql>
 	<sql id="PdStockRecordJoins">
       LEFT JOIN pd_stock_record g ON g.id = a.record_id
@@ -838,8 +840,7 @@
 				AND g.out_type = #{entity.outType}
 			</if>
 			<if test="entity.deptId != null and entity.deptId != ''">
-				AND ((g.record_type = '2' AND g.out_depart_id = #{entity.deptId})
-				OR (g.record_type = '1' AND g.in_depart_id =#{entity.deptId}))
+				AND (g.out_depart_id = #{entity.deptId} OR g.in_depart_id =#{entity.deptId})
 			</if>
 			<if test='entity.recordType == "1" and entity.inDepartIdList != null and entity.inDepartIdList.size() > 0'>
 				AND g.record_type = '1'

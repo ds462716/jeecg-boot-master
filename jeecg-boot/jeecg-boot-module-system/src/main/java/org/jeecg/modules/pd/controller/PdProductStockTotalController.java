@@ -291,6 +291,16 @@ public class PdProductStockTotalController {
         LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
         pdStockRecordDetail.setDepartParentId(sysUser.getDepartParentId());
         IPage<PdStockRecordDetail> pageList = pdStockRecordDetailService.selectStockRecordListPage(page, pdStockRecordDetail);
+        if(CollectionUtils.isNotEmpty(pageList.getRecords())){
+            for (PdStockRecordDetail detail : pageList.getRecords()){
+                if (stockTotalPage.getDepartId().equals(detail.getInDepartId())){//入库
+                    detail.setRecordType(PdConstant.RECODE_TYPE_1);
+                } else if (stockTotalPage.getDepartId().equals(detail.getOutDepartId())) {//出库
+                    detail.setRecordType(PdConstant.RECODE_TYPE_2);
+                }
+            }
+        }
+
         Double productTotNum = 0.00;//入库总数量
         Double productOutTotNum = 0.00;//出库总数量
         BigDecimal inPrice = new BigDecimal(0);//入库总金额
@@ -298,13 +308,20 @@ public class PdProductStockTotalController {
         List<PdStockRecordDetail> list = pdStockRecordDetailService.selectStockRecordList(pdStockRecordDetail);
         if (CollectionUtils.isNotEmpty(list) && list.size() > 0) {
             for (PdStockRecordDetail item : list) {
-                if (PdConstant.RECODE_TYPE_1.equals(item.getRecordType())) {//入库
+                if (stockTotalPage.getDepartId().equals(item.getInDepartId())){//入库
                     inPrice = inPrice.add(item.getInTotalPrice());
                     productTotNum += item.getProductNum();
-                } else if (PdConstant.RECODE_TYPE_2.equals(item.getRecordType())) {//出库
+                } else if (stockTotalPage.getDepartId().equals(item.getOutDepartId())) {//出库
                     productOutTotNum += item.getProductNum();
                     outPrice = outPrice.add(item.getOutTotalPrice());
                 }
+//                if (PdConstant.RECODE_TYPE_1.equals(item.getRecordType())) {//入库
+//                    inPrice = inPrice.add(item.getInTotalPrice());
+//                    productTotNum += item.getProductNum();
+//                } else if (PdConstant.RECODE_TYPE_2.equals(item.getRecordType())) {//出库
+//                    productOutTotNum += item.getProductNum();
+//                    outPrice = outPrice.add(item.getOutTotalPrice());
+//                }
             }
         }
 

@@ -113,7 +113,7 @@
         // 表头
         columns: [
           {
-            title:'入库单号',
+            title:' 单号',
             align:"center",
             dataIndex: 'recordNo'
           },

@@ -141,6 +141,8 @@ public class PdStockRecordDetail extends BaseEntity {
 	@TableField(exist = false)
 	private String inDepartName;//入库科室名称
 	@TableField(exist = false)
+	private String outDepartId;//出库科室Id
+	@TableField(exist = false)
 	private String outDepartName;//出库科室名称
 	@TableField(exist = false)
 	@JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd HH:mm:ss")
