@@ -3,6 +3,7 @@ package org.jeecg.modules.pd.service.impl;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.jeecg.common.util.DateUtils;
 import org.jeecg.common.util.oConvertUtils;
@@ -390,7 +391,7 @@ public class PdPdStatisticalReportImpl extends ServiceImpl<PdStatisticalReportMa
                 //上个月金额
                 String amout_i = "0";
                 String amout_ii = "0";
-                String series_hb = "0%";
+                String series_hb = "0";
                 for(RpPurchaseUseReportPage ps :pdPurchaseAmountMomReportPages){
                     if(ps.getDepartName().equals(str)){
                         amout_i = ps.getAmount();
@@ -409,12 +410,17 @@ public class PdPdStatisticalReportImpl extends ServiceImpl<PdStatisticalReportMa
                 //如果当前科室当前月没有则补0
                 seriesData2.add(amout_ii);
                 //获得环比率
-                if(!"0".equals(amout_ii)){
+                if(!"0".equals(amout_ii) && !"0.00".equals(amout_ii)){
                     BigDecimal bd1=new BigDecimal(amout_i);
                     BigDecimal bd2=new BigDecimal(amout_ii);
                     series_hb = String.format("%.2f", (bd1.doubleValue()-bd2.doubleValue())/bd2.doubleValue()*100);
                 }else{
-                    series_hb = "100";
+                    if("0".equals(amout_i) || "0.00".equals(amout_i)){
+                        series_hb = "0";
+                    }else{
+                        series_hb = "100";
+                    }
+
                 }
                 seriesData3.add(series_hb);
             }
@@ -462,5 +468,166 @@ public class PdPdStatisticalReportImpl extends ServiceImpl<PdStatisticalReportMa
         map.put("dataSource",list_1);
         map.put("visitFields",str);
         return map;
+    }
+
+
+
+    /**
+     *  科室采购环比-同比报表
+     * @param purchaseUseReportPage
+     * @return
+     */
+    @Override
+    public IPage<RpPurchaseUseReportPage> queryMoOnMoView(Page<RpPurchaseUseReportPage> page,RpPurchaseUseReportPage purchaseUseReportPage) {
+        String date_i = "";//当前月的上个月
+        String date_ii = "";//当前月的上上个月
+        String selectType = purchaseUseReportPage.getSelectType();
+        try {
+            if (StringUtils.isNotEmpty(purchaseUseReportPage.getYearMonth())) {
+                if ("1".equals(selectType)) {
+                    //获得选择月份和对应上个月的值
+                    date_i = DateUtils.getLastMonth(0, purchaseUseReportPage.getYearMonth());
+                    date_ii = DateUtils.getLastMonth(12, purchaseUseReportPage.getYearMonth());
+                } else {
+                    date_i = DateUtils.getLastMonth(0, purchaseUseReportPage.getYearMonth());
+                    date_ii = DateUtils.getLastMonth(1, purchaseUseReportPage.getYearMonth());
+                }
+            } else {
+                if ("1".equals(selectType)) {
+                    date_i = DateUtils.getLastMonth(1, null);
+                    date_ii = DateUtils.getLastMonth(13, null);
+                } else {
+                    date_i = DateUtils.getLastMonth(1, null);
+                    date_ii = DateUtils.getLastMonth(2, null);
+                }
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        purchaseUseReportPage.setLastMonth(date_i);
+        purchaseUseReportPage.setTheLastYearMonth(date_ii);
+        List<RpPurchaseUseReportPage>  pageList=null;
+        IPage<RpPurchaseUseReportPage> pages =null;
+        if (page!=null) {
+              pages = baseMapper.queryMoOnMoView(page, purchaseUseReportPage);
+              pageList=pages.getRecords();
+        }else {
+            pageList = baseMapper.queryMoOnMoView(purchaseUseReportPage);
+            pages.setRecords(pageList);
+        }
+        if(CollectionUtils.isNotEmpty(pageList)){
+            for(RpPurchaseUseReportPage info:pageList){
+              Double sPrice=  info.getLastPrice();//上个月采购金额
+              Double ssPrice=  info.getTheLastPrice();//上上个月采购金额
+                String series_hb="";
+                if(ssPrice !=0 && ssPrice !=0.00){
+                    series_hb = String.format("%.2f", (sPrice -ssPrice) / ssPrice * 100);
+                }else{
+                    if(sPrice==0 || sPrice==0.00){
+                        series_hb = "0";
+                    }else{
+                        series_hb = "100";
+                    }
+                }
+                if("1".equals(selectType)){
+                    info.setYrOnYr(series_hb+"%");//同比
+                }else{
+                    info.setMoOnMo(series_hb+"%");//同比
+                }
+            }
+        }
+        return pages;
+    }
+
+
+    /**
+     *  科室采购环比-同比报表
+     * @param purchaseUseReportPage
+     * @return
+     */
+    @Override
+    public List<RpPurchaseUseReportPage> queryMoOnMoView(RpPurchaseUseReportPage purchaseUseReportPage) {
+        String date_i = "";//当前月的上个月
+        String date_ii = "";//当前月的上上个月
+        String selectType = purchaseUseReportPage.getSelectType();
+        try {
+            if (StringUtils.isNotEmpty(purchaseUseReportPage.getYearMonth())) {
+                if ("1".equals(selectType)) {
+                    //获得选择月份和对应上个月的值
+                    date_i = DateUtils.getLastMonth(0, purchaseUseReportPage.getYearMonth());
+                    date_ii = DateUtils.getLastMonth(12, purchaseUseReportPage.getYearMonth());
+                } else {
+                    date_i = DateUtils.getLastMonth(0, purchaseUseReportPage.getYearMonth());
+                    date_ii = DateUtils.getLastMonth(1, purchaseUseReportPage.getYearMonth());
+                }
+            } else {
+                if ("1".equals(selectType)) {
+                    date_i = DateUtils.getLastMonth(1, null);
+                    date_ii = DateUtils.getLastMonth(13, null);
+                } else {
+                    date_i = DateUtils.getLastMonth(1, null);
+                    date_ii = DateUtils.getLastMonth(2, null);
+                }
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        purchaseUseReportPage.setLastMonth(date_i);
+        purchaseUseReportPage.setTheLastYearMonth(date_ii);
+        List<RpPurchaseUseReportPage>  pageList = baseMapper.queryMoOnMoView(purchaseUseReportPage);
+        if(CollectionUtils.isNotEmpty(pageList)){
+            for(RpPurchaseUseReportPage info:pageList){
+                Double sPrice=  info.getLastPrice();//上个月采购金额
+                Double ssPrice=  info.getTheLastPrice();//上上个月采购金额
+                String series_hb="";
+                if(ssPrice !=0 && ssPrice !=0.00){
+                    series_hb = String.format("%.2f", (sPrice -ssPrice) / ssPrice * 100);
+                }else{
+                    if(sPrice==0 || sPrice==0.00){
+                        series_hb = "0";
+                    }else{
+                        series_hb = "100";
+                    }
+                }
+                if("1".equals(selectType)){
+                    info.setYrOnYr(series_hb+"%");//同比
+                }else{
+                    info.setMoOnMo(series_hb+"%");//同比
+                }
+            }
+        }
+        return pageList;
+    }
+
+
+
+    /**
+     *  获取前12个月的年月值
+     * @param purchaseUseReportPage
+     * @return
+     */
+    @Override
+    public List<RpPurchaseUseReportPage> getYearMonth(RpPurchaseUseReportPage purchaseUseReportPage) {
+        return baseMapper.getYearMonth(purchaseUseReportPage);
+     }
+    /**
+     *  根据月份获取各个科室的采购金额，收费金额，不可收费金额数据
+     * @param purchaseMoneyReportPage
+     * @return
+     */
+    @Override
+    public IPage<RpPurchaseMoneyReportPage> queryMonthMoneyList(Page<RpPurchaseMoneyReportPage> page,RpPurchaseMoneyReportPage purchaseMoneyReportPage) {
+        return baseMapper.queryMonthMoneyList(page,purchaseMoneyReportPage);
+    }
+
+
+    /**
+     *  (不分页)根据月份获取各个科室的采购金额，收费金额，不可收费金额数据
+     * @param purchaseMoneyReportPage
+     * @return
+     */
+    @Override
+    public List<RpPurchaseMoneyReportPage> queryMonthMoneyList(RpPurchaseMoneyReportPage purchaseMoneyReportPage) {
+        return baseMapper.queryMonthMoneyList(purchaseMoneyReportPage);
     }
 }

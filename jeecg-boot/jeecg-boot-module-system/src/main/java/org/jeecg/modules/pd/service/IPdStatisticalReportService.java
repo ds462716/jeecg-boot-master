@@ -91,4 +91,15 @@ public interface IPdStatisticalReportService extends IService<PdStatisticalRepor
     Map<String, Object> queryPurchaseAmountMomTableView(RpPurchaseUseReportPage entity);
 
     Map<String, Object> queryItemMoneyCountView(RpPurchaseUseReportPage entity);
+
+    IPage<RpPurchaseUseReportPage> queryMoOnMoView(Page<RpPurchaseUseReportPage> page, RpPurchaseUseReportPage entity);
+
+    List<RpPurchaseUseReportPage> queryMoOnMoView(RpPurchaseUseReportPage entity);
+
+    List<RpPurchaseUseReportPage> getYearMonth(RpPurchaseUseReportPage entity);
+
+    IPage<RpPurchaseMoneyReportPage> queryMonthMoneyList(Page<RpPurchaseMoneyReportPage> page, RpPurchaseMoneyReportPage entity);
+
+    List<RpPurchaseMoneyReportPage> queryMonthMoneyList(RpPurchaseMoneyReportPage entity);
+
 }
