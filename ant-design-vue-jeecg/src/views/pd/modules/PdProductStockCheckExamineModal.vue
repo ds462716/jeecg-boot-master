@@ -28,7 +28,7 @@
                     @change="sysDeptHandleChange"
                     @focus="sysDeptHandleSearch"
                     :notFoundContent="notFoundContent"
-                    v-decorator="[ 'departId', validatorRules.departId]"
+                    v-decorator="[ 'targetDepartId', validatorRules.targetDepartId]"
                   >
                     <a-select-option v-for="d in deptData" :key="d.value">{{d.text}}</a-select-option>
                   </a-select>
@@ -345,7 +345,7 @@
           if (this.model.auditStatus == "2" || this.model.auditStatus == "3") {
             this.showRefuseReason = true;
           }
-          let fieldval = pick(this.model, 'checkNo', 'departId', 'checkDate', 'checkName', 'checkBy', 'refuseReason', 'shouldCount', 'checkCount', 'profitLossCount', 'remarks');
+          let fieldval = pick(this.model, 'checkNo', 'targetDepartId', 'checkDate', 'checkName', 'checkBy', 'refuseReason', 'shouldCount', 'checkCount', 'profitLossCount', 'remarks');
           this.$nextTick(() => {
             this.form.setFieldsValue(fieldval);
           })
@@ -361,7 +361,7 @@
                 this.pdProductStockCheckTable.dataSource = res.result.pdProductStockCheckChildList || [];
               } else {
                 this.initData = res.result;
-                let fieldval = pick(this.initData, 'checkNo', 'departId', 'checkDate', 'checkName', 'checkBy', 'refuseReason', 'shouldCount', 'checkCount', 'profitLossCount', 'remarks');
+                let fieldval = pick(this.initData, 'checkNo', 'targetDepartId', 'checkDate', 'checkName', 'checkBy', 'refuseReason', 'shouldCount', 'checkCount', 'profitLossCount', 'remarks');
                 this.form.setFieldsValue(fieldval);
               }
             })
@@ -407,7 +407,7 @@
     currentValue = value;
 
     function fake() {
-      getAction(url, {deptName: value, parentFlag: "0"}).then((res) => {
+      getAction(url, {departName: value, parentFlag: "0"}).then((res) => {
         if (!res.success) {
           this.cmsFailed(res.message);
         }

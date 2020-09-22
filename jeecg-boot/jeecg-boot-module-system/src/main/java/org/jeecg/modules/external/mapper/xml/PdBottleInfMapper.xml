@@ -155,7 +155,7 @@
 		count(*) as "num",
 		d.name as "specUnitName",
         e.name as "unitName",
-		f.selling_price * count(1) as "totalPrice"
+        IFNULL(f.selling_price,0) * count(1) as "totalPrice"
 	from pd_bottle_inf a
 	left join pd_product_stock b on a.stock_id=b.id
     left join pd_stock_record_detail f on f.id=b.record_detail_id and f.del_flag="0"

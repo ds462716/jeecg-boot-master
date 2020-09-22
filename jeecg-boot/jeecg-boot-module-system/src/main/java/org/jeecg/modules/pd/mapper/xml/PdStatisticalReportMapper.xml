@@ -10,173 +10,165 @@
         rep.*
         FROM
         (
-        SELECT
-        in_table.audit_date,
-        in_table.supplier_id,
-        in_table.supplierName,
-        IFNULL(in_table.inProductNum, 0) AS inProductNum,
-        IFNULL(in_table.inTotalPrice, 0) AS inTotalPrice,
-        IFNULL(do_table.dosageNum, 0) AS dosageNum,
-        IFNULL(do_table.dosagePrice, 0) AS dosagePrice,
-        IFNULL(re_table.rejectedNum, 0) AS rejectedNum,
-        IFNULL(re_table.rejectedPrice, 0) AS rejectedPrice
-        FROM
-        (
-        SELECT
-        sum(t1.product_num) AS inProductNum,
-        sum(t1.sum_purchase_price) AS inTotalPrice,
-        t1.audit_date,
-        t1.supplier_id,
-        t1.supplierName
-        FROM
-        (
-        SELECT
-        a.id,
-        a.record_id,
-        b.record_no,
-        b.record_type,
-        b.in_type,
-        b.out_type,
-        a.product_id,
-        a.product_num,
-        a.purchase_price,
-        a.selling_price,
-        a.purchase_price * a.product_num AS sum_purchase_price,
-        date_format(b.audit_date, '%Y-%m') AS audit_date,
-        b.supplier_id,
-        s.`name` AS supplierName
-        FROM
-        pd_stock_record_detail a
-        LEFT JOIN pd_stock_record b ON a.record_id = b.id
-        LEFT JOIN pd_supplier s ON b.supplier_id = s.id
-        LEFT JOIN pd_product pp on a.product_id = pp.id
-        AND b.audit_status = '2'
-        WHERE
-        b.del_flag = '0'
-        AND b.record_type = '1'
-        AND (
-        b.in_type IS NOT NULL
-        AND b.in_type &lt;&gt; ''
-        )
-        AND (
-        b.supplier_id IS NOT NULL
-        AND b.supplier_id &lt;&gt; ''
-        )
-        AND pp.product_flag = '0'
-        <if test="entity.yearMonth != null and entity.yearMonth != ''">
-            AND date_format(b.audit_date,'%Y-%m') = #{entity.yearMonth}
-        </if>
-        <if test="entity.querySupplierId != null and entity.querySupplierId != ''">
-            AND b.supplier_id = #{entity.querySupplierId}
-        </if>
-        <if test="entity.departParentId != null and entity.departParentId != ''">
-            AND a.depart_parent_id = #{entity.departParentId}
-        </if>
-        ) AS t1
-        GROUP BY
-        t1.audit_date,
-        t1.supplier_id
-        ) AS in_table
-        LEFT JOIN (
-        SELECT
-        sum(t2.left_refund_num) AS dosageNum,
-        sum(t2.amount_money) AS dosagePrice,
-        t2.audit_date,
-        t2.supplier_id,
-        t2.supplierName
-        FROM
-        (
-        SELECT
-        a.id,
-        a.dosage_id,
-        b.dosage_no,
-        a.product_id,
-        a.left_refund_num,
-        a.selling_price,
-        a.amount_money,
-        date_format(b.create_time, '%Y-%m') AS audit_date,
-        ps.supplier_id,
-        s.`name` AS supplierName
-        FROM
-        pd_dosage_detail a
-        LEFT JOIN pd_dosage b ON a.dosage_id = b.id
-        LEFT JOIN pd_product_stock ps ON a.product_stock_id = ps.id
-        LEFT JOIN pd_supplier s ON ps.supplier_id = s.id
-        LEFT JOIN pd_product pp on a.product_id = pp.id
-        WHERE
-        b.del_flag = '0'
-        AND a.left_refund_num > 0
-        AND (
-        ps.supplier_id IS NOT NULL
-        AND ps.supplier_id &lt;&gt; ''
-        )
-        AND pp.product_flag = '0'
-        <if test="entity.yearMonth != null and entity.yearMonth != ''">
-            AND date_format(b.create_time,'%Y-%m') = #{entity.yearMonth}
-        </if>
-        <if test="entity.querySupplierId != null and entity.querySupplierId != ''">
-            AND ps.supplier_id = #{entity.querySupplierId}
-        </if>
-        <if test="entity.departParentId != null and entity.departParentId != ''">
-            AND a.depart_parent_id = #{entity.departParentId}
-        </if>
-        ) AS t2
-        GROUP BY
-        t2.audit_date,
-        t2.supplier_id
-        ) AS do_table ON in_table.supplier_id = do_table.supplier_id
-        AND in_table.audit_date = do_table.audit_date
-        LEFT JOIN (
-        SELECT
-        sum(t3.rejected_count) AS rejectedNum,
-        sum(t3.amount_money) AS rejectedPrice,
-        t3.audit_date,
-        t3.supplier_id,
-        t3.supplierName,
-        t3.purchase_price
-        FROM
-        (
-        SELECT
-        a.id,
-        a.rejected_id,
-        b.rejected_no,
-        a.product_id,
-        a.rejected_count,
-        srd.purchase_price,
-        srd.purchase_price * a.rejected_count AS amount_money,
-        date_format(b.rejected_date, '%Y-%m') AS audit_date,
-        b.supplier_id,
-        s.`name` AS supplierName
-        FROM
-        pd_rejected_detail a
-        LEFT JOIN pd_rejected b ON a.rejected_id = b.id
-        LEFT JOIN pd_supplier s ON b.supplier_id = s.id
-        LEFT JOIN pd_product_stock ps ON a.product_stock_id = ps.id
-        LEFT JOIN pd_stock_record_detail srd ON ps.record_detail_id = srd.id
-        LEFT JOIN pd_product pp on a.product_id = pp.id
-        WHERE
-        b.del_flag = '0'
-        AND a.rejected_count > 0
-        AND (
-        b.supplier_id IS NOT NULL
-        AND b.supplier_id &lt;&gt; ''
-        )
-        AND pp.product_flag = '0'
-        <if test="entity.yearMonth != null and entity.yearMonth != ''">
-            AND date_format(b.rejected_date,'%Y-%m') = #{entity.yearMonth}
-        </if>
-        <if test="entity.querySupplierId != null and entity.querySupplierId != ''">
-            AND b.supplier_id = #{entity.querySupplierId}
-        </if>
-        <if test="entity.departParentId != null and entity.departParentId != ''">
-            AND a.depart_parent_id = #{entity.departParentId}
-        </if>
-        ) AS t3
-        GROUP BY
-        t3.audit_date,
-        t3.supplier_id
-        ) AS re_table ON in_table.supplier_id = re_table.supplier_id
-        AND in_table.audit_date = re_table.audit_date
+            SELECT
+                in_table.audit_date,
+                in_table.supplier_id,
+                in_table.supplierName,
+                IFNULL(in_table.inProductNum, 0) AS inProductNum,
+                IFNULL(in_table.inTotalPrice, 0) AS inTotalPrice,
+                IFNULL(do_table.dosageNum, 0) AS dosageNum,
+                IFNULL(do_table.dosagePrice, 0) AS dosagePrice,
+                IFNULL(re_table.rejectedNum, 0) AS rejectedNum,
+                IFNULL(re_table.rejectedPrice, 0) AS rejectedPrice
+            FROM
+            (
+                SELECT
+                    sum(t1.product_num) AS inProductNum,
+                    sum(t1.sum_purchase_price) AS inTotalPrice,
+                    t1.audit_date,
+                    t1.supplier_id,
+                    t1.supplierName
+                FROM
+                (
+                    SELECT
+                        a.id,
+                        a.record_id,
+                        b.record_no,
+                        b.record_type,
+                        b.in_type,
+                        b.out_type,
+                        a.product_id,
+                        a.product_num,
+                        a.purchase_price,
+                        a.selling_price,
+                        a.purchase_price * a.product_num AS sum_purchase_price,
+                        date_format(b.audit_date, '%Y-%m') AS audit_date,
+                        b.supplier_id,
+                        s.`name` AS supplierName
+                    FROM
+                    pd_stock_record_detail a
+                    LEFT JOIN pd_stock_record b ON a.record_id = b.id
+                    LEFT JOIN pd_supplier s ON b.supplier_id = s.id
+                    LEFT JOIN pd_product pp on a.product_id = pp.id AND b.audit_status = '2'
+                    WHERE
+                        b.del_flag = '0'
+                        AND b.record_type = '1'
+                        AND (
+                        b.in_type IS NOT NULL
+                        AND b.in_type &lt;&gt; ''
+                        )
+                        AND (
+                        b.supplier_id IS NOT NULL
+                        AND b.supplier_id &lt;&gt; ''
+                        )
+                        AND pp.product_flag = '0'
+                        <if test="entity.yearMonth != null and entity.yearMonth != ''">
+                            AND date_format(b.audit_date,'%Y-%m') = #{entity.yearMonth}
+                        </if>
+                        <if test="entity.querySupplierId != null and entity.querySupplierId != ''">
+                            AND b.supplier_id = #{entity.querySupplierId}
+                        </if>
+                        <if test="entity.departParentId != null and entity.departParentId != ''">
+                            AND a.depart_parent_id = #{entity.departParentId}
+                        </if>
+                ) AS t1
+                GROUP BY t1.audit_date, t1.supplier_id
+            ) AS in_table
+            LEFT JOIN (
+                SELECT
+                    sum(t2.left_refund_num) AS dosageNum,
+                    sum(t2.amount_money) AS dosagePrice,
+                    t2.audit_date,
+                    t2.supplier_id,
+                    t2.supplierName
+                FROM
+                (
+                SELECT
+                    a.id,
+                    a.dosage_id,
+                    b.dosage_no,
+                    a.product_id,
+                    a.left_refund_num,
+                    a.selling_price,
+                    a.amount_money,
+                    date_format(b.create_time, '%Y-%m') AS audit_date,
+                    ps.supplier_id,
+                    s.`name` AS supplierName
+                FROM
+                pd_dosage_detail a
+                LEFT JOIN pd_dosage b ON a.dosage_id = b.id
+                LEFT JOIN pd_product_stock ps ON a.product_stock_id = ps.id
+                LEFT JOIN pd_supplier s ON ps.supplier_id = s.id
+                LEFT JOIN pd_product pp on a.product_id = pp.id
+                WHERE
+                    b.del_flag = '0'
+                    AND a.left_refund_num > 0
+                    AND (
+                    ps.supplier_id IS NOT NULL
+                    AND ps.supplier_id &lt;&gt; ''
+                    )
+                    AND pp.product_flag = '0'
+                    <if test="entity.yearMonth != null and entity.yearMonth != ''">
+                        AND date_format(b.create_time,'%Y-%m') = #{entity.yearMonth}
+                    </if>
+                    <if test="entity.querySupplierId != null and entity.querySupplierId != ''">
+                        AND ps.supplier_id = #{entity.querySupplierId}
+                    </if>
+                    <if test="entity.departParentId != null and entity.departParentId != ''">
+                        AND a.depart_parent_id = #{entity.departParentId}
+                    </if>
+                    ) AS t2
+                GROUP BY t2.audit_date, t2.supplier_id
+            ) AS do_table ON in_table.supplier_id = do_table.supplier_id
+                         AND in_table.audit_date = do_table.audit_date
+            LEFT JOIN (
+                SELECT
+                    sum(t3.rejected_count) AS rejectedNum,
+                    sum(t3.amount_money) AS rejectedPrice,
+                    t3.audit_date,
+                    t3.supplier_id,
+                    t3.supplierName,
+                    t3.purchase_price
+                FROM
+                (
+                    SELECT
+                        a.id,
+                        a.rejected_id,
+                        b.rejected_no,
+                        a.product_id,
+                        a.rejected_count,
+                        ps.purchase_price,
+                        ps.purchase_price * a.rejected_count AS amount_money,
+                        date_format(b.rejected_date, '%Y-%m') AS audit_date,
+                        b.supplier_id,
+                        s.`name` AS supplierName
+                    FROM
+                    pd_rejected_detail a
+                    LEFT JOIN pd_rejected b ON a.rejected_id = b.id
+                    LEFT JOIN pd_supplier s ON b.supplier_id = s.id
+                    LEFT JOIN pd_product_stock ps ON a.product_stock_id = ps.id
+                    LEFT JOIN pd_product pp on a.product_id = pp.id
+                    WHERE
+                        b.del_flag = '0'
+                        AND a.rejected_count > 0
+                        AND (
+                        b.supplier_id IS NOT NULL
+                        AND b.supplier_id &lt;&gt; ''
+                        )
+                        AND pp.product_flag = '0'
+                        <if test="entity.yearMonth != null and entity.yearMonth != ''">
+                            AND date_format(b.rejected_date,'%Y-%m') = #{entity.yearMonth}
+                        </if>
+                        <if test="entity.querySupplierId != null and entity.querySupplierId != ''">
+                            AND b.supplier_id = #{entity.querySupplierId}
+                        </if>
+                        <if test="entity.departParentId != null and entity.departParentId != ''">
+                            AND a.depart_parent_id = #{entity.departParentId}
+                        </if>
+                ) AS t3
+                GROUP BY t3.audit_date, t3.supplier_id
+            ) AS re_table ON in_table.supplier_id = re_table.supplier_id
+                         AND in_table.audit_date = re_table.audit_date
         ) AS rep,
         (SELECT @rowNum := 0) n
         ORDER BY
@@ -185,42 +177,42 @@
     <!-- zxh供应商用量统计查询入库明细 -->
     <select id="supplierInDetailReport" resultType="org.jeecg.modules.pd.entity.PdStockRecordDetail">
         SELECT
-        a.id,
-        a.record_id,
-        s.`name` AS supplierName,
-        b.audit_date,
-        b.record_no,
-        b.record_type,
-        b.in_type,
-        b.out_type,
-        b.remarks as "remarks",
-        b.supplier_id,
-        pp.number as productNumber,
-        pp.`name` as productName,
-        pp.spec,
-        pp.version,
-        a.batch_no,
-        a.produce_date,
-        a.exp_date,
-        a.product_num,
-        pp.unit_id,
-        pu.`name` AS unitName,
-        a.product_id,
-        a.selling_price,
-        a.purchase_price,
-        a.purchase_price * a.product_num AS inTotalPrice,
-        pv.`name` AS venderName,
-        g. NAME AS distributorName,
-        pp.registration as productRegistration,
-        pp.charge_code,
-        m.invoice_no AS invoiceNo,
-        m.invoice_code AS invoiceCode,
-        m.invoice_data AS invoiceData,
-        pp.jde_code AS jdeCode,
-        pp.dart_code AS dartCode,
-        pp.biding_number as bidingNumber,
-        pv.jde_code AS "venderJdeCode",
-        s.jde_code AS "supplierJdeCode"
+            a.id,
+            a.record_id,
+            s.`name` AS supplierName,
+            b.audit_date,
+            b.record_no,
+            b.record_type,
+            b.in_type,
+            b.out_type,
+            b.remarks as "remarks",
+            b.supplier_id,
+            pp.number as productNumber,
+            pp.`name` as productName,
+            pp.spec,
+            pp.version,
+            a.batch_no,
+            a.produce_date,
+            a.exp_date,
+            a.product_num,
+            pp.unit_id,
+            pu.`name` AS unitName,
+            a.product_id,
+            a.selling_price,
+            a.purchase_price,
+            a.purchase_price * a.product_num AS inTotalPrice,
+            pv.`name` AS venderName,
+            g. NAME AS distributorName,
+            pp.registration as productRegistration,
+            pp.charge_code,
+            m.invoice_no AS invoiceNo,
+            m.invoice_code AS invoiceCode,
+            m.invoice_data AS invoiceData,
+            pp.jde_code AS jdeCode,
+            pp.dart_code AS dartCode,
+            pp.biding_number as bidingNumber,
+            pv.jde_code AS "venderJdeCode",
+            s.jde_code AS "supplierJdeCode"
         FROM
         pd_stock_record_detail a
         LEFT JOIN pd_stock_record b ON a.record_id = b.id
@@ -233,107 +225,107 @@
         LEFT JOIN pd_invoice m ON m.id = l.invoice_id
         AND b.audit_status = '2'
         WHERE
-        b.del_flag = '0'
-        AND b.record_type = '1'  and b.in_type='1'
-        AND (
-        b.in_type IS NOT NULL
-        AND b.in_type &lt;&gt; ''
-        )
-        AND (
-        b.supplier_id IS NOT NULL
-        AND b.supplier_id &lt;&gt; ''
-        )
-        <if test="entity.productFlag != null and entity.productFlag != ''">
-            AND pp.product_flag = #{entity.productFlag}
-        </if>
-        <if test="entity.yearMonth != null and entity.yearMonth != ''">
-            AND date_format(b.audit_date,'%Y-%m') = #{entity.yearMonth}
-        </if>
-        <if test="entity.supplierId != null and entity.supplierId != ''">
-            AND b.supplier_id = #{entity.supplierId}
-        </if>
-        <if test="entity.departParentId != null and entity.departParentId != ''">
-            AND a.depart_parent_id = #{entity.departParentId}
-        </if>
-        <if test="entity.queryExpDateStart != null and entity.queryExpDateStart != ''">
-            AND date_format( a.exp_date, '%Y-%m-%d') &gt;= #{entity.queryExpDateStart}
-        </if>
-        <if test="entity.queryExpDateEnd != null and entity.queryExpDateEnd != ''">
-            AND date_format( a.exp_date, '%Y-%m-%d') &lt;= #{entity.queryExpDateEnd}
-        </if>
-        <if test="entity.batchNo != null and entity.batchNo != ''">
-            AND a.batch_no LIKE concat('%',#{entity.batchNo},'%')
-        </if>
-        <if test="entity.recordNo != null and entity.recordNo != ''">
-            AND b.record_no LIKE concat('%',#{entity.recordNo},'%')
-        </if>
-        <if test="entity.queryDateStart != null and entity.queryDateStart != ''">
-            AND date_format( b.audit_date, '%Y-%m-%d') &gt;= #{entity.queryDateStart}
-        </if>
-        <if test="entity.queryDateEnd != null and entity.queryDateEnd != ''">
-            AND date_format( b.audit_date, '%Y-%m-%d') &lt;= #{entity.queryDateEnd}
-        </if>
-        <if test="entity.distributorId != null and entity.distributorId != ''">
-            AND b.distributor_id = #{entity.distributorId}
-        </if>
-        <if test="entity.productNumber != null and entity.productNumber != ''">
-            AND pp.number LIKE concat('%',#{entity.productNumber},'%')
-        </if>
-        <if test="entity.venderId != null and entity.venderId != ''">
-            AND pp.vender_id = #{entity.venderId}
-        </if>
-        <if test="entity.spec != null and entity.spec != ''">
-            AND pp.spec LIKE concat('%',#{entity.spec},'%')
-        </if>
-        <if test="entity.version != null and entity.version != ''">
-            AND pp.version LIKE concat('%',#{entity.version},'%')
-        </if>
-        <if test="entity.registration != null and entity.registration != ''">
-            AND pp.registration LIKE concat('%',#{entity.registration},'%')
-        </if>
-        <if test="entity.productName != null and entity.productName != ''">
+            b.del_flag = '0'
+            AND b.record_type = '1'  and b.in_type='1'
             AND (
-            pp.number LIKE concat('%',#{entity.productName},'%')
-            or pp.name LIKE concat('%',#{entity.productName},'%')
-            or pp.py LIKE concat('%',#{entity.productName},'%')
-            or pp.wb LIKE concat('%',#{entity.productName},'%')
-            or pp.bname LIKE concat('%',#{entity.productName},'%')
-            or pp.bpy LIKE concat('%',#{entity.productName},'%')
-            or pp.bwb LIKE concat('%',#{entity.productName},'%')
-            or pp.zdy LIKE concat('%',#{entity.productName},'%')
+            b.in_type IS NOT NULL
+            AND b.in_type &lt;&gt; ''
             )
-        </if>
+            AND (
+            b.supplier_id IS NOT NULL
+            AND b.supplier_id &lt;&gt; ''
+            )
+            <if test="entity.productFlag != null and entity.productFlag != ''">
+                AND pp.product_flag = #{entity.productFlag}
+            </if>
+            <if test="entity.yearMonth != null and entity.yearMonth != ''">
+                AND date_format(b.audit_date,'%Y-%m') = #{entity.yearMonth}
+            </if>
+            <if test="entity.supplierId != null and entity.supplierId != ''">
+                AND b.supplier_id = #{entity.supplierId}
+            </if>
+            <if test="entity.departParentId != null and entity.departParentId != ''">
+                AND a.depart_parent_id = #{entity.departParentId}
+            </if>
+            <if test="entity.queryExpDateStart != null and entity.queryExpDateStart != ''">
+                AND date_format( a.exp_date, '%Y-%m-%d') &gt;= #{entity.queryExpDateStart}
+            </if>
+            <if test="entity.queryExpDateEnd != null and entity.queryExpDateEnd != ''">
+                AND date_format( a.exp_date, '%Y-%m-%d') &lt;= #{entity.queryExpDateEnd}
+            </if>
+            <if test="entity.batchNo != null and entity.batchNo != ''">
+                AND a.batch_no LIKE concat('%',#{entity.batchNo},'%')
+            </if>
+            <if test="entity.recordNo != null and entity.recordNo != ''">
+                AND b.record_no LIKE concat('%',#{entity.recordNo},'%')
+            </if>
+            <if test="entity.queryDateStart != null and entity.queryDateStart != ''">
+                AND date_format( b.audit_date, '%Y-%m-%d') &gt;= #{entity.queryDateStart}
+            </if>
+            <if test="entity.queryDateEnd != null and entity.queryDateEnd != ''">
+                AND date_format( b.audit_date, '%Y-%m-%d') &lt;= #{entity.queryDateEnd}
+            </if>
+            <if test="entity.distributorId != null and entity.distributorId != ''">
+                AND b.distributor_id = #{entity.distributorId}
+            </if>
+            <if test="entity.productNumber != null and entity.productNumber != ''">
+                AND pp.number LIKE concat('%',#{entity.productNumber},'%')
+            </if>
+            <if test="entity.venderId != null and entity.venderId != ''">
+                AND pp.vender_id = #{entity.venderId}
+            </if>
+            <if test="entity.spec != null and entity.spec != ''">
+                AND pp.spec LIKE concat('%',#{entity.spec},'%')
+            </if>
+            <if test="entity.version != null and entity.version != ''">
+                AND pp.version LIKE concat('%',#{entity.version},'%')
+            </if>
+            <if test="entity.registration != null and entity.registration != ''">
+                AND pp.registration LIKE concat('%',#{entity.registration},'%')
+            </if>
+            <if test="entity.productName != null and entity.productName != ''">
+                AND (
+                pp.number LIKE concat('%',#{entity.productName},'%')
+                or pp.name LIKE concat('%',#{entity.productName},'%')
+                or pp.py LIKE concat('%',#{entity.productName},'%')
+                or pp.wb LIKE concat('%',#{entity.productName},'%')
+                or pp.bname LIKE concat('%',#{entity.productName},'%')
+                or pp.bpy LIKE concat('%',#{entity.productName},'%')
+                or pp.bwb LIKE concat('%',#{entity.productName},'%')
+                or pp.zdy LIKE concat('%',#{entity.productName},'%')
+                )
+            </if>
     </select>
     <!-- zxh供应商用量统计查询用量明细 -->
     <select id="rpUseDetailReport" resultType="org.jeecg.modules.pd.vo.RpUseDetailReportPage">
         SELECT
-        a.id,
-        a.dosage_id,
-        s.`name` AS supplierName,
-        b.dosage_date,
-        b.dosage_no,
-        b.remarks as "remarks",
-        a.product_id,
-        a.left_refund_num,
-        a.selling_price ,
-        a.selling_price * a.left_refund_num AS dosagePrice,
-        ps.supplier_id,
-        pp.number as productNumber,
-        pp.`name` as productName,
-        pp.spec,
-        pp.version,
-        a.batch_no,
-        a.exp_date,
-        pp.unit_id,
-        pu.`name` AS unitName,
-        pv.`name` AS venderName,
-        pp.registration as productRegistration,
-        pp.charge_code,
-        pp.jde_code AS jdeCode,
-        pp.dart_code AS dartCode,
-        pp.biding_number as bidingNumber,
-        pv.jde_code AS "venderJdeCode",
-        s.jde_code AS "supplierJdeCode"
+            a.id,
+            a.dosage_id,
+            s.`name` AS supplierName,
+            b.dosage_date,
+            b.dosage_no,
+            b.remarks as "remarks",
+            a.product_id,
+            a.left_refund_num,
+            a.selling_price ,
+            a.selling_price * a.left_refund_num AS dosagePrice,
+            ps.supplier_id,
+            pp.number as productNumber,
+            pp.`name` as productName,
+            pp.spec,
+            pp.version,
+            a.batch_no,
+            a.exp_date,
+            pp.unit_id,
+            pu.`name` AS unitName,
+            pv.`name` AS venderName,
+            pp.registration as productRegistration,
+            pp.charge_code,
+            pp.jde_code AS jdeCode,
+            pp.dart_code AS dartCode,
+            pp.biding_number as bidingNumber,
+            pv.jde_code AS "venderJdeCode",
+            s.jde_code AS "supplierJdeCode"
         FROM
         pd_dosage_detail a
         LEFT JOIN pd_dosage b ON a.dosage_id = b.id
@@ -343,171 +335,170 @@
         LEFT JOIN pd_unit pu ON pp.unit_id = pu.id
         LEFT JOIN pd_vender pv ON pp.vender_id = pv.id
         WHERE
-        b.del_flag = '0'
-        AND pp.product_flag = '0'
-        AND a.left_refund_num >0
-        AND (
-        ps.supplier_id IS NOT NULL
-        AND ps.supplier_id &lt;&gt;''
-        )
-        <if test="entity.yearMonth != null and entity.yearMonth != ''">
-            AND date_format(b.dosage_date,'%Y-%m') = #{entity.yearMonth}
-        </if>
-        <if test="entity.supplierId != null and entity.supplierId != ''">
-            AND ps.supplier_id = #{entity.supplierId}
-        </if>
-        <if test="entity.departParentId != null and entity.departParentId != ''">
-            AND a.depart_parent_id = #{entity.departParentId}
-        </if>
-        <if test="entity.queryExpDateStart != null and entity.queryExpDateStart != ''">
-            AND date_format( a.exp_date, '%Y-%m-%d') &gt;= #{entity.queryExpDateStart}
-        </if>
-        <if test="entity.queryExpDateEnd != null and entity.queryExpDateEnd != ''">
-            AND date_format( a.exp_date, '%Y-%m-%d') &lt;= #{entity.queryExpDateEnd}
-        </if>
-        <if test="entity.batchNo != null and entity.batchNo != ''">
-            AND a.batch_no LIKE concat('%',#{entity.batchNo},'%')
-        </if>
-        <if test="entity.dosageNo != null and entity.dosageNo != ''">
-            AND b.dosage_no LIKE concat('%',#{entity.dosageNo},'%')
-        </if>
-        <if test="entity.queryDateStart != null and entity.queryDateStart != ''">
-            AND date_format( b.create_time, '%Y-%m-%d') &gt;= #{entity.queryDateStart}
-        </if>
-        <if test="entity.queryDateEnd != null and entity.queryDateEnd != ''">
-            AND date_format( b.create_time, '%Y-%m-%d') &lt;= #{entity.queryDateEnd}
-        </if>
-        <if test="entity.productNumber != null and entity.productNumber != ''">
-            AND pp.number LIKE concat('%',#{entity.productNumber},'%')
-        </if>
-        <if test="entity.venderId != null and entity.venderId != ''">
-            AND pp.vender_id = #{entity.venderId}
-        </if>
-        <if test="entity.spec != null and entity.spec != ''">
-            AND pp.spec LIKE concat('%',#{entity.spec},'%')
-        </if>
-        <if test="entity.version != null and entity.version != ''">
-            AND pp.version LIKE concat('%',#{entity.version},'%')
-        </if>
-        <if test="entity.registration != null and entity.registration != ''">
-            AND pp.registration LIKE concat('%',#{entity.registration},'%')
-        </if>
-        <if test="entity.productName != null and entity.productName != ''">
+            b.del_flag = '0'
+            AND pp.product_flag = '0'
+            AND a.left_refund_num >0
             AND (
-            pp.number LIKE concat('%',#{entity.productName},'%')
-            or pp.name LIKE concat('%',#{entity.productName},'%')
-            or pp.py LIKE concat('%',#{entity.productName},'%')
-            or pp.wb LIKE concat('%',#{entity.productName},'%')
-            or pp.bname LIKE concat('%',#{entity.productName},'%')
-            or pp.bpy LIKE concat('%',#{entity.productName},'%')
-            or pp.bwb LIKE concat('%',#{entity.productName},'%')
-            or pp.zdy LIKE concat('%',#{entity.productName},'%')
+            ps.supplier_id IS NOT NULL
+            AND ps.supplier_id &lt;&gt;''
             )
-        </if>
+            <if test="entity.yearMonth != null and entity.yearMonth != ''">
+                AND date_format(b.dosage_date,'%Y-%m') = #{entity.yearMonth}
+            </if>
+            <if test="entity.supplierId != null and entity.supplierId != ''">
+                AND ps.supplier_id = #{entity.supplierId}
+            </if>
+            <if test="entity.departParentId != null and entity.departParentId != ''">
+                AND a.depart_parent_id = #{entity.departParentId}
+            </if>
+            <if test="entity.queryExpDateStart != null and entity.queryExpDateStart != ''">
+                AND date_format( a.exp_date, '%Y-%m-%d') &gt;= #{entity.queryExpDateStart}
+            </if>
+            <if test="entity.queryExpDateEnd != null and entity.queryExpDateEnd != ''">
+                AND date_format( a.exp_date, '%Y-%m-%d') &lt;= #{entity.queryExpDateEnd}
+            </if>
+            <if test="entity.batchNo != null and entity.batchNo != ''">
+                AND a.batch_no LIKE concat('%',#{entity.batchNo},'%')
+            </if>
+            <if test="entity.dosageNo != null and entity.dosageNo != ''">
+                AND b.dosage_no LIKE concat('%',#{entity.dosageNo},'%')
+            </if>
+            <if test="entity.queryDateStart != null and entity.queryDateStart != ''">
+                AND date_format( b.create_time, '%Y-%m-%d') &gt;= #{entity.queryDateStart}
+            </if>
+            <if test="entity.queryDateEnd != null and entity.queryDateEnd != ''">
+                AND date_format( b.create_time, '%Y-%m-%d') &lt;= #{entity.queryDateEnd}
+            </if>
+            <if test="entity.productNumber != null and entity.productNumber != ''">
+                AND pp.number LIKE concat('%',#{entity.productNumber},'%')
+            </if>
+            <if test="entity.venderId != null and entity.venderId != ''">
+                AND pp.vender_id = #{entity.venderId}
+            </if>
+            <if test="entity.spec != null and entity.spec != ''">
+                AND pp.spec LIKE concat('%',#{entity.spec},'%')
+            </if>
+            <if test="entity.version != null and entity.version != ''">
+                AND pp.version LIKE concat('%',#{entity.version},'%')
+            </if>
+            <if test="entity.registration != null and entity.registration != ''">
+                AND pp.registration LIKE concat('%',#{entity.registration},'%')
+            </if>
+            <if test="entity.productName != null and entity.productName != ''">
+                AND (
+                pp.number LIKE concat('%',#{entity.productName},'%')
+                or pp.name LIKE concat('%',#{entity.productName},'%')
+                or pp.py LIKE concat('%',#{entity.productName},'%')
+                or pp.wb LIKE concat('%',#{entity.productName},'%')
+                or pp.bname LIKE concat('%',#{entity.productName},'%')
+                or pp.bpy LIKE concat('%',#{entity.productName},'%')
+                or pp.bwb LIKE concat('%',#{entity.productName},'%')
+                or pp.zdy LIKE concat('%',#{entity.productName},'%')
+                )
+            </if>
     </select>
     <!-- zxh供应商用量统计查询退货明细 -->
     <select id="rpReDetailReport" resultType="org.jeecg.modules.pd.vo.RpReDetailReportPage">
         SELECT
-        a.id,
-        a.rejected_id,
-        s.`name` AS supplierName,
-        b.rejected_date,
-        b.rejected_no,
-        b.remarks as "remarks",
-        a.product_id,
-        a.rejected_count,
-        srd.purchase_price,
-        srd.purchase_price * a.rejected_count AS amount_money,
-        ps.supplier_id,
-        pp.number as productNumber,
-        pp.`name` as productName,
-        pp.spec,
-        pp.version,
-        a.batch_no,
-        ps.exp_date,
-        pp.unit_id,
-        pu.`name` AS unitName,
-        pv.`name` AS venderName,
-        pp.registration as productRegistration,
-        pp.charge_code,
-        pp.jde_code AS jdeCode,
-        pp.dart_code AS dartCode,
-        pp.biding_number as bidingNumber,
-        pv.jde_code AS "venderJdeCode",
-        s.jde_code AS "supplierJdeCode"
+            a.id,
+            a.rejected_id,
+            s.`name` AS supplierName,
+            b.rejected_date,
+            b.rejected_no,
+            b.remarks as "remarks",
+            a.product_id,
+            a.rejected_count,
+            ps.purchase_price,
+            ps.purchase_price * a.rejected_count AS amount_money,
+            ps.supplier_id,
+            pp.number as productNumber,
+            pp.`name` as productName,
+            pp.spec,
+            pp.version,
+            a.batch_no,
+            ps.exp_date,
+            pp.unit_id,
+            pu.`name` AS unitName,
+            pv.`name` AS venderName,
+            pp.registration as productRegistration,
+            pp.charge_code,
+            pp.jde_code AS jdeCode,
+            pp.dart_code AS dartCode,
+            pp.biding_number as bidingNumber,
+            pv.jde_code AS "venderJdeCode",
+            s.jde_code AS "supplierJdeCode"
         FROM
         pd_rejected_detail a
         LEFT JOIN pd_rejected b ON a.rejected_id = b.id
         LEFT JOIN pd_supplier s on b.supplier_id = s.id
         LEFT JOIN pd_product_stock ps on a.product_stock_id = ps.id
-        LEFT JOIN pd_stock_record_detail srd on ps.record_detail_id = srd.id
         LEFT JOIN pd_product pp ON a.product_id = pp.id
         LEFT JOIN pd_unit pu ON pp.unit_id = pu.id
         LEFT JOIN pd_vender pv ON pp.vender_id = pv.id
         WHERE
-        b.del_flag = '0'
-        AND a.rejected_count >0
-        AND (
-        b.supplier_id IS NOT NULL
-        AND b.supplier_id &lt;&gt; ''
-        )
-        <if test="entity.productFlag != null and entity.productFlag != ''">
-            AND pp.product_flag = #{entity.productFlag}
-        </if>
-        <if test="entity.yearMonth != null and entity.yearMonth != ''">
-            AND date_format(b.create_time,'%Y-%m') = #{entity.yearMonth}
-        </if>
-        <if test="entity.supplierId != null and entity.supplierId != ''">
-            AND b.supplier_id = #{entity.supplierId}
-        </if>
-        <if test="entity.departParentId != null and entity.departParentId != ''">
-            AND a.depart_parent_id = #{entity.departParentId}
-        </if>
-        <if test="entity.queryExpDateStart != null and entity.queryExpDateStart != ''">
-            AND date_format( ps.exp_date, '%Y-%m-%d') &gt;= #{entity.queryExpDateStart}
-        </if>
-        <if test="entity.queryExpDateEnd != null and entity.queryExpDateEnd != ''">
-            AND date_format( ps.exp_date, '%Y-%m-%d') &lt;= #{entity.queryExpDateEnd}
-        </if>
-        <if test="entity.batchNo != null and entity.batchNo != ''">
-            AND a.batch_no LIKE concat('%',#{entity.batchNo},'%')
-        </if>
-        <if test="entity.rejectedNo != null and entity.rejectedNo != ''">
-            AND b.rejected_no LIKE concat('%',#{entity.rejectedNo},'%')
-        </if>
-        <if test="entity.queryDateStart != null and entity.queryDateStart != ''">
-            AND date_format( b.create_time, '%Y-%m-%d') &gt;= #{entity.queryDateStart}
-        </if>
-        <if test="entity.queryDateEnd != null and entity.queryDateEnd != ''">
-            AND date_format( b.create_time, '%Y-%m-%d') &lt;= #{entity.queryDateEnd}
-        </if>
-        <if test="entity.productNumber != null and entity.productNumber != ''">
-            AND pp.number LIKE concat('%',#{entity.productNumber},'%')
-        </if>
-        <if test="entity.venderId != null and entity.venderId != ''">
-            AND pp.vender_id = #{entity.venderId}
-        </if>
-        <if test="entity.spec != null and entity.spec != ''">
-            AND pp.spec LIKE concat('%',#{entity.spec},'%')
-        </if>
-        <if test="entity.version != null and entity.version != ''">
-            AND pp.version LIKE concat('%',#{entity.version},'%')
-        </if>
-        <if test="entity.registration != null and entity.registration != ''">
-            AND pp.registration LIKE concat('%',#{entity.registration},'%')
-        </if>
-        <if test="entity.productName != null and entity.productName != ''">
+            b.del_flag = '0'
+            AND a.rejected_count >0
             AND (
-            pp.number LIKE concat('%',#{entity.productName},'%')
-            or pp.name LIKE concat('%',#{entity.productName},'%')
-            or pp.py LIKE concat('%',#{entity.productName},'%')
-            or pp.wb LIKE concat('%',#{entity.productName},'%')
-            or pp.bname LIKE concat('%',#{entity.productName},'%')
-            or pp.bpy LIKE concat('%',#{entity.productName},'%')
-            or pp.bwb LIKE concat('%',#{entity.productName},'%')
-            or pp.zdy LIKE concat('%',#{entity.productName},'%')
+            b.supplier_id IS NOT NULL
+            AND b.supplier_id &lt;&gt; ''
             )
-        </if>
+            <if test="entity.productFlag != null and entity.productFlag != ''">
+                AND pp.product_flag = #{entity.productFlag}
+            </if>
+            <if test="entity.yearMonth != null and entity.yearMonth != ''">
+                AND date_format(b.create_time,'%Y-%m') = #{entity.yearMonth}
+            </if>
+            <if test="entity.supplierId != null and entity.supplierId != ''">
+                AND b.supplier_id = #{entity.supplierId}
+            </if>
+            <if test="entity.departParentId != null and entity.departParentId != ''">
+                AND a.depart_parent_id = #{entity.departParentId}
+            </if>
+            <if test="entity.queryExpDateStart != null and entity.queryExpDateStart != ''">
+                AND date_format( ps.exp_date, '%Y-%m-%d') &gt;= #{entity.queryExpDateStart}
+            </if>
+            <if test="entity.queryExpDateEnd != null and entity.queryExpDateEnd != ''">
+                AND date_format( ps.exp_date, '%Y-%m-%d') &lt;= #{entity.queryExpDateEnd}
+            </if>
+            <if test="entity.batchNo != null and entity.batchNo != ''">
+                AND a.batch_no LIKE concat('%',#{entity.batchNo},'%')
+            </if>
+            <if test="entity.rejectedNo != null and entity.rejectedNo != ''">
+                AND b.rejected_no LIKE concat('%',#{entity.rejectedNo},'%')
+            </if>
+            <if test="entity.queryDateStart != null and entity.queryDateStart != ''">
+                AND date_format( b.create_time, '%Y-%m-%d') &gt;= #{entity.queryDateStart}
+            </if>
+            <if test="entity.queryDateEnd != null and entity.queryDateEnd != ''">
+                AND date_format( b.create_time, '%Y-%m-%d') &lt;= #{entity.queryDateEnd}
+            </if>
+            <if test="entity.productNumber != null and entity.productNumber != ''">
+                AND pp.number LIKE concat('%',#{entity.productNumber},'%')
+            </if>
+            <if test="entity.venderId != null and entity.venderId != ''">
+                AND pp.vender_id = #{entity.venderId}
+            </if>
+            <if test="entity.spec != null and entity.spec != ''">
+                AND pp.spec LIKE concat('%',#{entity.spec},'%')
+            </if>
+            <if test="entity.version != null and entity.version != ''">
+                AND pp.version LIKE concat('%',#{entity.version},'%')
+            </if>
+            <if test="entity.registration != null and entity.registration != ''">
+                AND pp.registration LIKE concat('%',#{entity.registration},'%')
+            </if>
+            <if test="entity.productName != null and entity.productName != ''">
+                AND (
+                pp.number LIKE concat('%',#{entity.productName},'%')
+                or pp.name LIKE concat('%',#{entity.productName},'%')
+                or pp.py LIKE concat('%',#{entity.productName},'%')
+                or pp.wb LIKE concat('%',#{entity.productName},'%')
+                or pp.bname LIKE concat('%',#{entity.productName},'%')
+                or pp.bpy LIKE concat('%',#{entity.productName},'%')
+                or pp.bwb LIKE concat('%',#{entity.productName},'%')
+                or pp.zdy LIKE concat('%',#{entity.productName},'%')
+                )
+            </if>
     </select>
 
     <!-- 出入库统计报表  add by jiangxz 2020年8月14日 10:23:50 -->
@@ -1039,33 +1030,33 @@ ORDER BY
     <!-- 部门用量统计详情报表 -->
     <select id="rpDepartUseDetailReport" resultType="org.jeecg.modules.pd.vo.RpDepartUseDetailReportPage">
         SELECT
-        a.id,
-        a.dosage_id,
-        s.`name` AS supplierName,
-        b.dosage_date,
-        b.dosage_no,
-        b.remarks as "remarks",
-        a.product_id,
-        a.left_refund_num,
-        a.selling_price ,
-        a.selling_price * a.left_refund_num AS dosagePrice,
-        ps.supplier_id,
-        pp.number as productNumber,
-        pp.`name` as productName,
-        pp.spec,
-        pp.version,
-        a.batch_no,
-        a.exp_date,
-        pp.unit_id,
-        pu.`name` AS unitName,
-        pv.`name` AS venderName,
-        pp.registration as productRegistration,
-        pp.charge_code,
-        pp.jde_code AS jdeCode,
-        pp.dart_code AS dartCode,
-        pp.biding_number as bidingNumber,
-        pv.jde_code AS "venderJdeCode",
-        s.jde_code AS "supplierJdeCode"
+            a.id,
+            a.dosage_id,
+            s.`name` AS supplierName,
+            b.dosage_date,
+            b.dosage_no,
+            b.remarks as "remarks",
+            a.product_id,
+            a.left_refund_num,
+            a.selling_price ,
+            a.selling_price * a.left_refund_num AS dosagePrice,
+            ps.supplier_id,
+            pp.number as productNumber,
+            pp.`name` as productName,
+            pp.spec,
+            pp.version,
+            a.batch_no,
+            a.exp_date,
+            pp.unit_id,
+            pu.`name` AS unitName,
+            pv.`name` AS venderName,
+            pp.registration as productRegistration,
+            pp.charge_code,
+            pp.jde_code AS jdeCode,
+            pp.dart_code AS dartCode,
+            pp.biding_number as bidingNumber,
+            pv.jde_code AS "venderJdeCode",
+            s.jde_code AS "supplierJdeCode"
         FROM
         pd_dosage_detail a
         LEFT JOIN pd_dosage b ON a.dosage_id = b.id
@@ -1199,30 +1190,30 @@ ORDER BY
     <!-- 部门用量统计详情报表 -->
     <select id="rpDepartStockDetailReport" resultType="org.jeecg.modules.pd.vo.RpDepartStockDetailReportPage">
         SELECT
-        a.id,
-        a.batch_no,
-        a.exp_date,
-        a.stock_num,
-        a.supplier_id,
-        b.selling_price,
-        b.purchase_price,
-        a.stock_num * IFNULL(b.selling_price, 0) AS sellingAmount,
-        a.stock_num * IFNULL(b.purchase_price, 0) AS purchaseAmount,
-        a.produce_date,
-        pp.number AS productNumber,
-        pp.`name` AS productName,
-        pp.spec,
-        pp.version,
-        pp.unit_id,
-        pu.`name` AS unitName,
-        pv.`name` AS venderName,
-        pp.registration AS productRegistration,
-        pp.charge_code,
-        pp.jde_code AS jdeCode,
-        pp.dart_code AS dartCode,
-        pp.biding_number AS bidingNumber,
-        pv.jde_code AS "venderJdeCode",
-        s.jde_code AS "supplierJdeCode"
+            a.id,
+            a.batch_no,
+            a.exp_date,
+            a.stock_num,
+            a.supplier_id,
+            b.selling_price,
+            b.purchase_price,
+            a.stock_num * IFNULL(b.selling_price, 0) AS sellingAmount,
+            a.stock_num * IFNULL(b.purchase_price, 0) AS purchaseAmount,
+            a.produce_date,
+            pp.number AS productNumber,
+            pp.`name` AS productName,
+            pp.spec,
+            pp.version,
+            pp.unit_id,
+            pu.`name` AS unitName,
+            pv.`name` AS venderName,
+            pp.registration AS productRegistration,
+            pp.charge_code,
+            pp.jde_code AS jdeCode,
+            pp.dart_code AS dartCode,
+            pp.biding_number AS bidingNumber,
+            pv.jde_code AS "venderJdeCode",
+            s.jde_code AS "supplierJdeCode"
         FROM
         pd_product_stock a
         LEFT JOIN pd_stock_record_detail b on a.record_detail_id = b.id
@@ -1295,167 +1286,164 @@ ORDER BY
         rep.*
         FROM
         (
-        SELECT
-        in_table.audit_date,
-        in_table.supplier_id,
-        in_table.supplierName,
-        IFNULL(in_table.inProductNum, 0) AS inProductNum,
-        IFNULL(in_table.inTotalPrice, 0) AS inTotalPrice,
-        IFNULL(do_table.dosageNum, 0) AS dosageNum,
-        IFNULL(do_table.dosagePrice, 0) AS dosagePrice,
-        IFNULL(re_table.rejectedNum, 0) AS rejectedNum,
-        IFNULL(re_table.rejectedPrice, 0) AS rejectedPrice
-        FROM
-        (
-        SELECT
-        sum(t1.product_num) AS inProductNum,
-        sum(t1.sum_purchase_price) AS inTotalPrice,
-        t1.audit_date,
-        t1.supplier_id,
-        t1.supplierName
-        FROM
-        (
-        SELECT
-        a.id,
-        a.record_id,
-        b.record_no,
-        b.record_type,
-        b.in_type,
-        b.out_type,
-        a.product_id,
-        a.product_num,
-        a.purchase_price,
-        a.selling_price,
-        a.purchase_price * a.product_num AS sum_purchase_price,
-        date_format(b.audit_date, '%Y-%m') AS audit_date,
-        b.supplier_id,
-        s.`name` AS supplierName
-        FROM
-        pd_stock_record_detail a
-        LEFT JOIN pd_stock_record b ON a.record_id = b.id
-        LEFT JOIN pd_supplier s ON b.supplier_id = s.id
-        LEFT JOIN pd_product pp on a.product_id = pp.id
-        AND b.audit_status = '2'
-        WHERE
-        b.del_flag = '0'
-        AND b.record_type = '1' AND b.in_type = '1'
-        AND (
-        b.in_type IS NOT NULL
-        AND b.in_type &lt;&gt; ''
-        )
-        AND (
-        b.supplier_id IS NOT NULL
-        AND b.supplier_id &lt;&gt; ''
-        )
-        AND pp.product_flag = '1'
-        <if test="entity.yearMonth != null and entity.yearMonth != ''">
-            AND date_format(b.audit_date,'%Y-%m') = #{entity.yearMonth}
-        </if>
-        <if test="entity.querySupplierId != null and entity.querySupplierId != ''">
-            AND b.supplier_id = #{entity.querySupplierId}
-        </if>
-        <if test="entity.departParentId != null and entity.departParentId != ''">
-            AND a.depart_parent_id = #{entity.departParentId}
-        </if>
-        ) AS t1
-        GROUP BY
-        t1.audit_date,
-        t1.supplier_id
-        ) AS in_table
-        LEFT JOIN (
-        SELECT
-        sum(t2.purchase_price) AS dosagePrice,
-        sum(t2.dosageNum) AS dosageNum,
-        t2.audit_date,
-        t2.supplier_id,
-        t2.supplierName
-        FROM
-        (
-        SELECT
-        a.id,
-        a.ref_bar_code,
-        a.purchase_price,
-        date_format(a.boottle_date, '%Y-%m') AS audit_date,
-        1 AS dosageNum,
-        ps.supplier_id,
-        s.`name` AS supplierName
-        FROM
-        pd_bottle_inf a
-        LEFT JOIN pd_product_stock ps ON a.stock_id = ps.id
-        LEFT JOIN pd_supplier s ON ps.supplier_id = s.id
-        LEFT JOIN pd_product pp on ps.product_id = pp.id
-        WHERE  a.del_flag = '0'  AND  (a.close_remarks  is null  or  close_remarks !=2)
-        AND (
-        ps.supplier_id IS NOT NULL
-        AND ps.supplier_id &lt;&gt; ''
-        )
-        AND pp.product_flag = '1'
-        <if test="entity.yearMonth != null and entity.yearMonth != ''">
-            AND date_format(a.boottle_date,'%Y-%m') = #{entity.yearMonth}
-        </if>
-        <if test="entity.querySupplierId != null and entity.querySupplierId != ''">
-            AND ps.supplier_id = #{entity.querySupplierId}
-        </if>
-        <if test="entity.departParentId != null and entity.departParentId != ''">
-            AND a.depart_parent_id = #{entity.departParentId}
-        </if>
-        ) AS t2
-        GROUP BY
-        t2.audit_date,
-        t2.supplier_id
-        ) AS do_table ON in_table.supplier_id = do_table.supplier_id
-        AND in_table.audit_date = do_table.audit_date
-        LEFT JOIN (
-        SELECT
-        sum(t3.rejected_count) AS rejectedNum,
-        sum(t3.amount_money) AS rejectedPrice,
-        t3.audit_date,
-        t3.supplier_id,
-        t3.supplierName,
-        t3.purchase_price
-        FROM
-        (
-        SELECT
-        a.id,
-        a.rejected_id,
-        b.rejected_no,
-        a.product_id,
-        a.rejected_count,
-        srd.purchase_price,
-        srd.purchase_price * a.rejected_count AS amount_money,
-        date_format(b.rejected_date, '%Y-%m') AS audit_date,
-        b.supplier_id,
-        s.`name` AS supplierName
-        FROM
-        pd_rejected_detail a
-        LEFT JOIN pd_rejected b ON a.rejected_id = b.id
-        LEFT JOIN pd_supplier s ON b.supplier_id = s.id
-        LEFT JOIN pd_product_stock ps ON a.product_stock_id = ps.id
-        LEFT JOIN pd_stock_record_detail srd ON ps.record_detail_id = srd.id
-        LEFT JOIN pd_product pp on a.product_id = pp.id
-        WHERE
-        b.del_flag = '0'
-        AND a.rejected_count > 0
-        AND (
-        b.supplier_id IS NOT NULL
-        AND b.supplier_id &lt;&gt; ''
-        )
-        AND pp.product_flag = '1'
-        <if test="entity.yearMonth != null and entity.yearMonth != ''">
-            AND date_format(b.rejected_date,'%Y-%m') = #{entity.yearMonth}
-        </if>
-        <if test="entity.querySupplierId != null and entity.querySupplierId != ''">
-            AND b.supplier_id = #{entity.querySupplierId}
-        </if>
-        <if test="entity.departParentId != null and entity.departParentId != ''">
-            AND a.depart_parent_id = #{entity.departParentId}
-        </if>
-        ) AS t3
-        GROUP BY
-        t3.audit_date,
-        t3.supplier_id
-        ) AS re_table ON in_table.supplier_id = re_table.supplier_id
-        AND in_table.audit_date = re_table.audit_date
+            SELECT
+                in_table.audit_date,
+                in_table.supplier_id,
+                in_table.supplierName,
+                IFNULL(in_table.inProductNum, 0) AS inProductNum,
+                IFNULL(in_table.inTotalPrice, 0) AS inTotalPrice,
+                IFNULL(do_table.dosageNum, 0) AS dosageNum,
+                IFNULL(do_table.dosagePrice, 0) AS dosagePrice,
+                IFNULL(re_table.rejectedNum, 0) AS rejectedNum,
+                IFNULL(re_table.rejectedPrice, 0) AS rejectedPrice
+            FROM
+            (
+                SELECT
+                    sum(t1.product_num) AS inProductNum,
+                    sum(t1.sum_purchase_price) AS inTotalPrice,
+                    t1.audit_date,
+                    t1.supplier_id,
+                    t1.supplierName
+                FROM
+                (
+                    SELECT
+                        a.id,
+                        a.record_id,
+                        b.record_no,
+                        b.record_type,
+                        b.in_type,
+                        b.out_type,
+                        a.product_id,
+                        a.product_num,
+                        a.purchase_price,
+                        a.selling_price,
+                        a.purchase_price * a.product_num AS sum_purchase_price,
+                        date_format(b.audit_date, '%Y-%m') AS audit_date,
+                        b.supplier_id,
+                        s.`name` AS supplierName
+                    FROM
+                    pd_stock_record_detail a
+                    LEFT JOIN pd_stock_record b ON a.record_id = b.id
+                    LEFT JOIN pd_supplier s ON b.supplier_id = s.id
+                    LEFT JOIN pd_product pp on a.product_id = pp.id
+                    AND b.audit_status = '2'
+                    WHERE
+                        b.del_flag = '0'
+                        AND b.record_type = '1' AND b.in_type = '1'
+                        AND (
+                        b.in_type IS NOT NULL
+                        AND b.in_type &lt;&gt; ''
+                        )
+                        AND (
+                        b.supplier_id IS NOT NULL
+                        AND b.supplier_id &lt;&gt; ''
+                        )
+                        AND pp.product_flag = '1'
+                        <if test="entity.yearMonth != null and entity.yearMonth != ''">
+                            AND date_format(b.audit_date,'%Y-%m') = #{entity.yearMonth}
+                        </if>
+                        <if test="entity.querySupplierId != null and entity.querySupplierId != ''">
+                            AND b.supplier_id = #{entity.querySupplierId}
+                        </if>
+                        <if test="entity.departParentId != null and entity.departParentId != ''">
+                            AND a.depart_parent_id = #{entity.departParentId}
+                        </if>
+                ) AS t1
+                GROUP BY t1.audit_date, t1.supplier_id
+            ) AS in_table
+            LEFT JOIN (
+                SELECT
+                    sum(t2.purchase_price) AS dosagePrice,
+                    sum(t2.dosageNum) AS dosageNum,
+                    t2.audit_date,
+                    t2.supplier_id,
+                    t2.supplierName
+                FROM
+                (
+                    SELECT
+                        a.id,
+                        a.ref_bar_code,
+                        a.purchase_price,
+                        date_format(a.boottle_date, '%Y-%m') AS audit_date,
+                        1 AS dosageNum,
+                        ps.supplier_id,
+                        s.`name` AS supplierName
+                    FROM
+                    pd_bottle_inf a
+                    LEFT JOIN pd_product_stock ps ON a.stock_id = ps.id
+                    LEFT JOIN pd_supplier s ON ps.supplier_id = s.id
+                    LEFT JOIN pd_product pp on ps.product_id = pp.id
+                    WHERE  a.del_flag = '0'  AND  (a.close_remarks  is null  or  close_remarks !=2)
+                        AND (
+                        ps.supplier_id IS NOT NULL
+                        AND ps.supplier_id &lt;&gt; ''
+                        )
+                        AND pp.product_flag = '1'
+                        <if test="entity.yearMonth != null and entity.yearMonth != ''">
+                            AND date_format(a.boottle_date,'%Y-%m') = #{entity.yearMonth}
+                        </if>
+                        <if test="entity.querySupplierId != null and entity.querySupplierId != ''">
+                            AND ps.supplier_id = #{entity.querySupplierId}
+                        </if>
+                        <if test="entity.departParentId != null and entity.departParentId != ''">
+                            AND a.depart_parent_id = #{entity.departParentId}
+                        </if>
+                ) AS t2
+                GROUP BY
+                t2.audit_date,
+                t2.supplier_id
+            ) AS do_table ON in_table.supplier_id = do_table.supplier_id
+                         AND in_table.audit_date = do_table.audit_date
+            LEFT JOIN (
+                SELECT
+                    sum(t3.rejected_count) AS rejectedNum,
+                    sum(t3.amount_money) AS rejectedPrice,
+                    t3.audit_date,
+                    t3.supplier_id,
+                    t3.supplierName,
+                    t3.purchase_price
+                FROM
+                (
+                    SELECT
+                        a.id,
+                        a.rejected_id,
+                        b.rejected_no,
+                        a.product_id,
+                        a.rejected_count,
+                        ps.purchase_price,
+                        ps.purchase_price * a.rejected_count AS amount_money,
+                        date_format(b.rejected_date, '%Y-%m') AS audit_date,
+                        b.supplier_id,
+                        s.`name` AS supplierName
+                    FROM
+                    pd_rejected_detail a
+                    LEFT JOIN pd_rejected b ON a.rejected_id = b.id
+                    LEFT JOIN pd_supplier s ON b.supplier_id = s.id
+                    LEFT JOIN pd_product_stock ps ON a.product_stock_id = ps.id
+                    LEFT JOIN pd_product pp on a.product_id = pp.id
+                    WHERE
+                        b.del_flag = '0'
+                        AND a.rejected_count > 0
+                        AND (
+                        b.supplier_id IS NOT NULL
+                        AND b.supplier_id &lt;&gt; ''
+                        )
+                        AND pp.product_flag = '1'
+                        <if test="entity.yearMonth != null and entity.yearMonth != ''">
+                            AND date_format(b.rejected_date,'%Y-%m') = #{entity.yearMonth}
+                        </if>
+                        <if test="entity.querySupplierId != null and entity.querySupplierId != ''">
+                            AND b.supplier_id = #{entity.querySupplierId}
+                        </if>
+                        <if test="entity.departParentId != null and entity.departParentId != ''">
+                            AND a.depart_parent_id = #{entity.departParentId}
+                        </if>
+                ) AS t3
+                GROUP BY
+                t3.audit_date,
+                t3.supplier_id
+            ) AS re_table ON in_table.supplier_id = re_table.supplier_id
+            AND in_table.audit_date = re_table.audit_date
         ) AS rep,
         (SELECT @rowNum := 0) n
         ORDER BY
@@ -1465,15 +1453,15 @@ ORDER BY
     <!-- zxh供应商试剂用量统计查询用量明细 -->
     <select id="rpReagentUseDetailReport" resultType="org.jeecg.modules.pd.vo.RpReagentUseDetailReportPage">
         SELECT
-        a.*,
-        c.name as "productName",
-        b.spec_quantity as "specQuantity",
-        (IFNULL(b.spec_quantity,0)  - IFNULL(a.spec_num,0))  as "sySpecNum",
-        b.batch_no as "batchNo",
-        b.exp_date as "expDate",
-        e.name as "unitName",
-        d.depart_name as "departName",
-        f.instr_name as "instrName"
+            a.*,
+            c.name as "productName",
+            b.spec_quantity as "specQuantity",
+            (IFNULL(b.spec_quantity,0)  - IFNULL(a.spec_num,0))  as "sySpecNum",
+            b.batch_no as "batchNo",
+            b.exp_date as "expDate",
+            e.name as "unitName",
+            d.depart_name as "departName",
+            f.instr_name as "instrName"
         from pd_bottle_inf a
         left join  pd_product_stock  b on b.id=a.stock_id
         left join pd_product c on c.id=b.product_id
@@ -1876,6 +1864,9 @@ ORDER BY
 		 left join pd_stock_record b on a.record_id=b.id
 		 left join pd_product c  on c.id=a.product_id
 		 where 	1=1
+            and b.del_flag='0'
+            and a.del_flag='0'
+            AND b.audit_status ='2'
         <if test="entity.departIdList != null and entity.departIdList.size() > 0">
             AND b.in_depart_id IN
             <foreach collection="entity.departIdList" item="item" separator="," open="(" close=")">

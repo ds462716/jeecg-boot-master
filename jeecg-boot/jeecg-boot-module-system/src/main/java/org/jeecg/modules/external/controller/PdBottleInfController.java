@@ -184,7 +184,7 @@ public class PdBottleInfController extends JeecgController<PdBottleInf, IPdBottl
 	/**
 	 * 试剂消耗报表  mcb  --20200616 用于统计查询  试剂消耗报表
 	 */
-	@GetMapping(value = "bottleInfReportQuery")
+	@GetMapping(value = "/bottleInfReportQuery")
 	public Result<?> bottleInfReportQuery(PdBottleInf pdBottleInf,
 											@RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
 											@RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize) {

@@ -473,7 +473,7 @@ public class PdStockRecordInController {
     /**
      * 入库统计报表  mcb  --20200616 用于统计查询  入库统计报表
      */
-    @GetMapping(value = "stockRecordReportQuery")
+    @GetMapping(value = "/stockRecordReportQuery")
     public Result<?> stockRecordReportQuery(PdStockRecord stockRecord,
                                             @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
                                             @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize) {

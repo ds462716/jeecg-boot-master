@@ -10,7 +10,7 @@ import java.util.List;
 /**
  * @Description: 耗材/试剂使用统计报表
  * @Author: jeecg-boot
- * @Date:  2020-4-29
+ * @Date: 2020-4-29
  * @Version: V1.0
  */
 public interface IPdNumericalInfService extends IService<PdNumericalInf> {
@@ -25,27 +25,27 @@ public interface IPdNumericalInfService extends IService<PdNumericalInf> {
     PdNumericalInf getOne(PdNumericalInf inf);
 
     /*根据月份统计  所属科室   试剂入库数量   试剂入库金额   耗材入库数量   耗材入库金额*/
-     HashMap selectItemOrRecordNum(PdNumericalInf  numericalInf);
+    HashMap selectInItemOrRecordNum(PdNumericalInf numericalInf);
 
-     /*根据月份统计  所属科室   试剂出库数量   试剂出库金额   耗材出库数量   耗材出库金额*/
-    HashMap selectOutRecordNum(PdNumericalInf  numericalInf);
+    /*根据月份统计  所属科室   试剂出库数量   试剂出库金额   耗材出库数量   耗材出库金额*/
+    HashMap selectOutRecordNum(PdNumericalInf numericalInf);
 
     /*根据月份统计试剂使用金额	试剂使用数量*/
-     HashMap selectItemNumOrItemPrice(PdNumericalInf  numericalInf);
+    HashMap selectItemNumOrItemPrice(PdNumericalInf numericalInf);
 
     /*统计试剂库存数量	试剂库存金额     耗材库存数量    耗材库存金额*/
-     HashMap  selectStockNumOrStockPrice(PdNumericalInf  numericalInf);
+    HashMap selectStockNumOrStockPrice(PdNumericalInf numericalInf);
 
     /*统计检验项目收入金额	  检验项目数量*/
-     HashMap selectExInspectionPrice(PdNumericalInf  numericalInf);
+    HashMap selectExInspectionPrice(PdNumericalInf numericalInf);
 
     /*统计耗材使用数量    耗材使用金额*/
-     HashMap  selectDosageNumOrPrice(PdNumericalInf  numericalInf);
+    HashMap selectDosageNumOrPrice(PdNumericalInf numericalInf);
 
 
     /*根据月份统计  退货数量   退货金额*/
-    HashMap selectrejectedNumOrPrice(PdNumericalInf  numericalInf);
+    HashMap selectrejectedNumOrPrice(PdNumericalInf numericalInf);
 
     /*统计试剂理论使用规格数量   实际使用规格数量*/
-    HashMap selectItemSpecNum(PdNumericalInf  numericalInf);
+    HashMap selectItemSpecNum(PdNumericalInf numericalInf);
 }
