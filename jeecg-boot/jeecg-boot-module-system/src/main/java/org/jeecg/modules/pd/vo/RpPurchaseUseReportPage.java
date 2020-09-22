@@ -13,7 +13,7 @@ import java.util.List;
 public class RpPurchaseUseReportPage {
 
     private String departIds;// 科室ID集合
-    private String prpductFlag;// 是否试剂
+    private String productFlag;// 是否试剂
     private String yearMonth;//年月
     private List<String> departIdList; /*多个部门集合*/
 
@@ -33,5 +33,10 @@ public class RpPurchaseUseReportPage {
     private String departId;// 科室Id
     private String parentId;// 上级科室ID
     private String departType;// 科室类型
-
+    private String lastMonth;//上个月
+    private Double lastPrice;//上个月采购金额
+    private String theLastYearMonth;//上上个月
+    private Double theLastPrice;//上上个月采购金额
+    private String moOnMo;//环比涨幅率
+    private String yrOnYr;//同比涨幅率
 }

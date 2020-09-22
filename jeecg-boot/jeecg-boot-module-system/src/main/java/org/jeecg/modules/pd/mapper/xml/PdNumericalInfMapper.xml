@@ -179,7 +179,7 @@
                 a.out_depart_id as "departId"
             from pd_stock_record a
             left join pd_stock_record_detail b on a.id=b.record_id
-            left join sys_depart t on t.id=a.out_depart_id
+            left join sys_depart t on t.id=a.in_depart_id
             left join pd_product c on c.id=b.product_id
             where t.depart_type in('1','2')
                 and a.del_flag ='0'

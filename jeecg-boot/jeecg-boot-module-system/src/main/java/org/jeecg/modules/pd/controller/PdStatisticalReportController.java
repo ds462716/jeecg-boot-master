@@ -31,10 +31,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
 * @Description: 统计报表
@@ -54,9 +51,13 @@ public class PdStatisticalReportController extends JeecgController<PdStatistical
     @Autowired
     private IPdNumericalInfService pdNumericalInfService;
 
+
+
     //供应商用量使用统计 start
+
     /**
      * 供应商用量使用统计
+     *
      * @param rpSupplierUseReportPage
      * @param pageNo
      * @param pageSize
@@ -93,7 +94,8 @@ public class PdStatisticalReportController extends JeecgController<PdStatistical
     }
 
     /**
-     * zxh供应商用量统计查询入库明细and f.in_type = '1'
+     * zxh供应商用量统计查询入库明细
+     *
      * @param inDetail
      * @param pageNo
      * @param pageSize
@@ -101,8 +103,8 @@ public class PdStatisticalReportController extends JeecgController<PdStatistical
      */
     @GetMapping(value = "/supplierInDetailReport")
     public Result<?> supplierInDetailReport(PdStockRecordDetail inDetail,
-                                      @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
-                                      @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize) {
+                                            @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
+                                            @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize) {
         LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
         inDetail.setDepartParentId(sysUser.getDepartParentId());
         Page<PdStockRecordDetail> inPageDetail = new Page<PdStockRecordDetail>(pageNo, pageSize);
@@ -117,9 +119,9 @@ public class PdStatisticalReportController extends JeecgController<PdStatistical
         return Result.ok(inPage);
     }
 
-
     /**
      * zxh用量明细统计报表
+     *
      * @param rpUseDetailReportPage
      * @param pageNo
      * @param pageSize
@@ -145,6 +147,7 @@ public class PdStatisticalReportController extends JeecgController<PdStatistical
 
     /**
      * zxh用量明细统计报表
+     *
      * @param rpReDetailReportPage
      * @param pageNo
      * @param pageSize
@@ -174,6 +177,7 @@ public class PdStatisticalReportController extends JeecgController<PdStatistical
 
     /**
      * zxh部门用量使用统计报表
+     *
      * @param rpDepartUseReportPage
      * @param pageNo
      * @param pageSize
@@ -181,14 +185,14 @@ public class PdStatisticalReportController extends JeecgController<PdStatistical
      */
     @GetMapping(value = "/departUseReport")
     public Result<?> departUseReport(RpDepartUseReportPage rpDepartUseReportPage,
-                                       @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
-                                       @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize) {
+                                     @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
+                                     @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize) {
         Page<RpDepartUseReportPage> page = new Page<RpDepartUseReportPage>(pageNo, pageSize);
         LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
         rpDepartUseReportPage.setDepartParentId(sysUser.getDepartParentId());
-        if(oConvertUtils.isNotEmpty(rpDepartUseReportPage.getDepartIds()) && !"undefined".equals(rpDepartUseReportPage.getDepartIds())){
+        if (oConvertUtils.isNotEmpty(rpDepartUseReportPage.getDepartIds()) && !"undefined".equals(rpDepartUseReportPage.getDepartIds())) {
             rpDepartUseReportPage.setDepartIdList(Arrays.asList(rpDepartUseReportPage.getDepartIds().split(",")));
-        }else{
+        } else {
             //查询科室下所有下级科室的ID
             SysDepart sysDepart = new SysDepart();
             List<String> departList = pdDepartService.selectListDepart(sysDepart);
@@ -208,9 +212,9 @@ public class PdStatisticalReportController extends JeecgController<PdStatistical
     public ModelAndView exportDepartUseReportXls(HttpServletRequest request, RpDepartUseReportPage rpDepartUseReportPage) {
         LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
         rpDepartUseReportPage.setDepartParentId(sysUser.getDepartParentId());
-        if(oConvertUtils.isNotEmpty(rpDepartUseReportPage.getDepartIds()) && !"undefined".equals(rpDepartUseReportPage.getDepartIds())){
+        if (oConvertUtils.isNotEmpty(rpDepartUseReportPage.getDepartIds()) && !"undefined".equals(rpDepartUseReportPage.getDepartIds())) {
             rpDepartUseReportPage.setDepartIdList(Arrays.asList(rpDepartUseReportPage.getDepartIds().split(",")));
-        }else{
+        } else {
             //查询科室下所有下级科室的ID
             SysDepart sysDepart = new SysDepart();
             List<String> departList = pdDepartService.selectListDepart(sysDepart);
@@ -227,6 +231,7 @@ public class PdStatisticalReportController extends JeecgController<PdStatistical
 
     /**
      * zxh部门用量明细统计报表
+     *
      * @param rpDepartUseDetailReportPage
      * @param pageNo
      * @param pageSize
@@ -234,8 +239,8 @@ public class PdStatisticalReportController extends JeecgController<PdStatistical
      */
     @GetMapping(value = "/rpDepartUseDetailReport")
     public Result<?> rpDepartUseDetailReport(RpDepartUseDetailReportPage rpDepartUseDetailReportPage,
-                                       @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
-                                       @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize) {
+                                             @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
+                                             @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize) {
         LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
         rpDepartUseDetailReportPage.setDepartParentId(sysUser.getDepartParentId());
         Page<RpDepartUseDetailReportPage> usePageDetail = new Page<RpDepartUseDetailReportPage>(pageNo, pageSize);
@@ -253,8 +258,10 @@ public class PdStatisticalReportController extends JeecgController<PdStatistical
     //部门用量使用统计 end
 
     //出入库统计报表 jiangxz  20200814  start
+
     /**
      * 出入库统计报表
+     *
      * @param rpInAndOutReportPage
      * @param pageNo
      * @param pageSize
@@ -267,9 +274,9 @@ public class PdStatisticalReportController extends JeecgController<PdStatistical
         LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
         rpInAndOutReportPage.setDepartParentId(sysUser.getDepartParentId());
 
-        if(oConvertUtils.isNotEmpty(rpInAndOutReportPage.getDepartIds()) && !"undefined".equals(rpInAndOutReportPage.getDepartIds())){
+        if (oConvertUtils.isNotEmpty(rpInAndOutReportPage.getDepartIds()) && !"undefined".equals(rpInAndOutReportPage.getDepartIds())) {
             rpInAndOutReportPage.setDepartIdList(Arrays.asList(rpInAndOutReportPage.getDepartIds().split(",")));
-        }else{
+        } else {
             //查询科室下所有下级科室的ID
             SysDepart sysDepart = new SysDepart();
             List<String> departList = pdDepartService.selectListDepart(sysDepart);
@@ -283,6 +290,7 @@ public class PdStatisticalReportController extends JeecgController<PdStatistical
 
     /**
      * 出入库明细统计报表
+     *
      * @param inDetail
      * @param pageNo
      * @param pageSize
@@ -295,7 +303,7 @@ public class PdStatisticalReportController extends JeecgController<PdStatistical
         LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
 
         //查询入库明细
-        if(oConvertUtils.isNotEmpty(inDetail.getDepartId())){
+        if (oConvertUtils.isNotEmpty(inDetail.getDepartId())) {
             List<String> inDepartList = new ArrayList<>();
             inDepartList.add(inDetail.getDepartId());
             inDetail.setInDepartIdList(inDepartList);
@@ -310,13 +318,14 @@ public class PdStatisticalReportController extends JeecgController<PdStatistical
 
         return Result.ok(inPageDetailList);
     }
+
     @GetMapping(value = "/rpOutDetailReport")
     public Result<?> rpOutDetailReport(RpInAndOutDetailReportPage outDetail,
                                        @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
                                        @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize) {
         LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
 
-        if(oConvertUtils.isEmpty(outDetail.getDepartId())){
+        if (oConvertUtils.isEmpty(outDetail.getDepartId())) {
             return Result.error("参数不正确，请重新查询！");
         }
         // 查询出库明细
@@ -336,6 +345,7 @@ public class PdStatisticalReportController extends JeecgController<PdStatistical
 
     /**
      * 出入库报表导出
+     *
      * @param request
      * @param rpInAndOutReportPage
      * @return
@@ -345,12 +355,12 @@ public class PdStatisticalReportController extends JeecgController<PdStatistical
         LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
         rpInAndOutReportPage.setDepartParentId(sysUser.getDepartParentId());
 
-        if(oConvertUtils.isNotEmpty(rpInAndOutReportPage.getDepartIds()) && !"undefined".equals(rpInAndOutReportPage.getDepartIds())){
+        if (oConvertUtils.isNotEmpty(rpInAndOutReportPage.getDepartIds()) && !"undefined".equals(rpInAndOutReportPage.getDepartIds())) {
             rpInAndOutReportPage.setDepartIdList(Arrays.asList(rpInAndOutReportPage.getDepartIds().split(",")));
-        }else{
+        } else {
             //查询科室下所有下级科室的ID
-            SysDepart sysDepart=new SysDepart();
-            List<String> departList=pdDepartService.selectListDepart(sysDepart);
+            SysDepart sysDepart = new SysDepart();
+            List<String> departList = pdDepartService.selectListDepart(sysDepart);
             rpInAndOutReportPage.setDepartIdList(departList);
         }
 
@@ -366,6 +376,7 @@ public class PdStatisticalReportController extends JeecgController<PdStatistical
 
     /**
      * 入库明细报表导出
+     *
      * @param request
      * @param inDetail
      * @return
@@ -398,6 +409,7 @@ public class PdStatisticalReportController extends JeecgController<PdStatistical
 
     /**
      * 出库明细报表导出
+     *
      * @param request
      * @param outDetail
      * @return
@@ -428,26 +440,24 @@ public class PdStatisticalReportController extends JeecgController<PdStatistical
     }
     //出入库统计报表 jiangxz  20200814  end
 
-
-
-
     /**
      * 试剂/耗材消耗月统计报表查询
+     *
      * @param pdNumericalInf
      * @return
      */
     @GetMapping(value = "/queryNumericalInfList")
     public Result<?> queryPageList(PdNumericalInf pdNumericalInf,
-                                   @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
-                                   @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
+                                   @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
+                                   @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
                                    HttpServletRequest req) {
         Page<PdNumericalInf> page = new Page<PdNumericalInf>(pageNo, pageSize);
-        if(oConvertUtils.isNotEmpty(pdNumericalInf.getDepartIds()) && !"undefined".equals(pdNumericalInf.getDepartIds())) {
+        if (oConvertUtils.isNotEmpty(pdNumericalInf.getDepartIds()) && !"undefined".equals(pdNumericalInf.getDepartIds())) {
             pdNumericalInf.setDepartIdList(Arrays.asList(pdNumericalInf.getDepartIds().split(",")));
-        }else{
+        } else {
             //查询科室下所有下级科室的ID
-            SysDepart sysDepart=new SysDepart();
-            List<String> departList=pdDepartService.selectListDepart(sysDepart);
+            SysDepart sysDepart = new SysDepart();
+            List<String> departList = pdDepartService.selectListDepart(sysDepart);
             pdNumericalInf.setDepartIdList(departList);
         }
         IPage<PdNumericalInf> pageList = pdNumericalInfService.selectListByPage(page, pdNumericalInf);
@@ -456,6 +466,7 @@ public class PdStatisticalReportController extends JeecgController<PdStatistical
 
     /**
      * 导出excel(试剂/耗材月消耗统计报表)
+     *
      * @param request
      * @param pdNumericalInf
      */
@@ -463,28 +474,28 @@ public class PdStatisticalReportController extends JeecgController<PdStatistical
     public ModelAndView exportXls(HttpServletRequest request, PdNumericalInf pdNumericalInf) {
 
         LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
-        if(oConvertUtils.isNotEmpty(pdNumericalInf.getDepartIds()) && !"undefined".equals(pdNumericalInf.getDepartIds())) {
+        if (oConvertUtils.isNotEmpty(pdNumericalInf.getDepartIds()) && !"undefined".equals(pdNumericalInf.getDepartIds())) {
             pdNumericalInf.setDepartIdList(Arrays.asList(pdNumericalInf.getDepartIds().split(",")));
-        }else{
+        } else {
             //查询科室下所有下级科室的ID
-            SysDepart sysDepart=new SysDepart();
-            List<String> departList=pdDepartService.selectListDepart(sysDepart);
+            SysDepart sysDepart = new SysDepart();
+            List<String> departList = pdDepartService.selectListDepart(sysDepart);
             pdNumericalInf.setDepartIdList(departList);
         }
         List<PdNumericalInf> list = pdNumericalInfService.selectList(pdNumericalInf);//
-        String tjType=pdNumericalInf.getTjType();
+        String tjType = pdNumericalInf.getTjType();
         // Step.4 AutoPoi 导出Excel
         ModelAndView mv = new ModelAndView(new JeecgEntityExcelView());
-        List<PdNumericalInfHcExlce> exportHcList =new ArrayList<>();
-        List<PdNumericalInfSjExlce> exportSjList =new ArrayList<>();
-        if("0".equals(tjType)){ //耗材统计导出
+        List<PdNumericalInfHcExlce> exportHcList = new ArrayList<>();
+        List<PdNumericalInfSjExlce> exportSjList = new ArrayList<>();
+        if ("0".equals(tjType)) { //耗材统计导出
             exportHcList = JSON.parseArray(JSON.toJSONString(list), PdNumericalInfHcExlce.class);
             mv.addObject(NormalExcelConstants.FILE_NAME, "耗材月统计报表");
             mv.addObject(NormalExcelConstants.CLASS, PdNumericalInfHcExlce.class);
             mv.addObject(NormalExcelConstants.PARAMS, new ExportParams("耗材月统计报表", "导出人:" + sysUser.getRealname(), "耗材月统计报表"));
             mv.addObject(NormalExcelConstants.DATA_LIST, exportHcList);
 
-        }else{ //试剂统计导出
+        } else { //试剂统计导出
             exportSjList = JSON.parseArray(JSON.toJSONString(list), PdNumericalInfSjExlce.class);
             mv.addObject(NormalExcelConstants.FILE_NAME, "试剂月统计报表");
             mv.addObject(NormalExcelConstants.CLASS, PdNumericalInfSjExlce.class);
@@ -494,11 +505,11 @@ public class PdStatisticalReportController extends JeecgController<PdStatistical
         return mv;
     }
 
-
     //库存统计报表 start
 
     /**
      * zxh库存统计报表
+     *
      * @param rpDepartStockReportPage
      * @param pageNo
      * @param pageSize
@@ -506,14 +517,14 @@ public class PdStatisticalReportController extends JeecgController<PdStatistical
      */
     @GetMapping(value = "/departStockReport")
     public Result<?> departStockReport(RpDepartStockReportPage rpDepartStockReportPage,
-                                     @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
-                                     @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize) {
+                                       @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
+                                       @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize) {
         Page<RpDepartStockReportPage> page = new Page<RpDepartStockReportPage>(pageNo, pageSize);
         LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
         rpDepartStockReportPage.setDepartParentId(sysUser.getDepartParentId());
-        if(oConvertUtils.isNotEmpty(rpDepartStockReportPage.getDepartIds()) && !"undefined".equals(rpDepartStockReportPage.getDepartIds())){
+        if (oConvertUtils.isNotEmpty(rpDepartStockReportPage.getDepartIds()) && !"undefined".equals(rpDepartStockReportPage.getDepartIds())) {
             rpDepartStockReportPage.setDepartIdList(Arrays.asList(rpDepartStockReportPage.getDepartIds().split(",")));
-        }else{
+        } else {
             //查询科室下所有下级科室的ID
             SysDepart sysDepart = new SysDepart();
             List<String> departList = pdDepartService.selectListDepart(sysDepart);
@@ -533,9 +544,9 @@ public class PdStatisticalReportController extends JeecgController<PdStatistical
     public ModelAndView exportDepartStockReportXls(HttpServletRequest request, RpDepartStockReportPage rpDepartStockReportPage) {
         LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
         rpDepartStockReportPage.setDepartParentId(sysUser.getDepartParentId());
-        if(oConvertUtils.isNotEmpty(rpDepartStockReportPage.getDepartIds()) && !"undefined".equals(rpDepartStockReportPage.getDepartIds())){
+        if (oConvertUtils.isNotEmpty(rpDepartStockReportPage.getDepartIds()) && !"undefined".equals(rpDepartStockReportPage.getDepartIds())) {
             rpDepartStockReportPage.setDepartIdList(Arrays.asList(rpDepartStockReportPage.getDepartIds().split(",")));
-        }else{
+        } else {
             //查询科室下所有下级科室的ID
             SysDepart sysDepart = new SysDepart();
             List<String> departList = pdDepartService.selectListDepart(sysDepart);
@@ -552,6 +563,7 @@ public class PdStatisticalReportController extends JeecgController<PdStatistical
 
     /**
      * zxh部门用量明细统计报表
+     *
      * @param rpDepartStockDetailReportPage
      * @param pageNo
      * @param pageSize
@@ -559,8 +571,8 @@ public class PdStatisticalReportController extends JeecgController<PdStatistical
      */
     @GetMapping(value = "/rpDepartStockDetailReport")
     public Result<?> rpDepartStockDetailReport(RpDepartStockDetailReportPage rpDepartStockDetailReportPage,
-                                             @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
-                                             @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize) {
+                                               @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
+                                               @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize) {
         LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
         rpDepartStockDetailReportPage.setDepartParentId(sysUser.getDepartParentId());
         Page<RpDepartStockDetailReportPage> stockPageDetail = new Page<RpDepartStockDetailReportPage>(pageNo, pageSize);
@@ -577,8 +589,10 @@ public class PdStatisticalReportController extends JeecgController<PdStatistical
     //库存统计报表 end
 
     //供应商用量使用统计 start
+
     /**
      * 供应商用量使用统计
+     *
      * @param rpSupplierUseReportPage
      * @param pageNo
      * @param pageSize
@@ -586,8 +600,8 @@ public class PdStatisticalReportController extends JeecgController<PdStatistical
      */
     @GetMapping(value = "/supplierReagentUseReport")
     public Result<?> supplierReagentUseReport(RpSupplierUseReportPage rpSupplierUseReportPage,
-                                       @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
-                                       @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize) {
+                                              @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
+                                              @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize) {
         Page<RpSupplierUseReportPage> page = new Page<RpSupplierUseReportPage>(pageNo, pageSize);
         LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
         rpSupplierUseReportPage.setDepartParentId(sysUser.getDepartParentId());
@@ -597,6 +611,7 @@ public class PdStatisticalReportController extends JeecgController<PdStatistical
 
     /**
      * zxh用量明细统计报表
+     *
      * @param rpReagentUseDetailReportPage
      * @param pageNo
      * @param pageSize
@@ -604,8 +619,8 @@ public class PdStatisticalReportController extends JeecgController<PdStatistical
      */
     @GetMapping(value = "/rpReagentUseDetailReport")
     public Result<?> rpReagentUseDetailReport(RpReagentUseDetailReportPage rpReagentUseDetailReportPage,
-                                       @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
-                                       @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize) {
+                                              @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
+                                              @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize) {
         LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
         rpReagentUseDetailReportPage.setDepartParentId(sysUser.getDepartParentId());
         Page<RpReagentUseDetailReportPage> usePageDetail = new Page<RpReagentUseDetailReportPage>(pageNo, pageSize);
@@ -624,11 +639,11 @@ public class PdStatisticalReportController extends JeecgController<PdStatistical
      * 综合统计   ---全院耗材占比  mcb  --20200907
      */
     @GetMapping(value = "queryConsumptionView")
-    public Result<?> queryConsumptionView(RpPurchaseUseReportPage purchaseUseReportPage){
+    public Result<?> queryConsumptionView(RpPurchaseUseReportPage purchaseUseReportPage) {
         if (oConvertUtils.isNotEmpty(purchaseUseReportPage.getDepartIds()) && !"undefined".equals(purchaseUseReportPage.getDepartIds())) {
             purchaseUseReportPage.setDepartIdList(Arrays.asList(purchaseUseReportPage.getDepartIds().split(",")));
         }
-        List<RpPurchaseUseReportPage> list= pdStatisticalReportService.queryConsumptionView(purchaseUseReportPage);
+        List<RpPurchaseUseReportPage> list = pdStatisticalReportService.queryConsumptionView(purchaseUseReportPage);
         return Result.ok(list);
     }
 
@@ -636,18 +651,17 @@ public class PdStatisticalReportController extends JeecgController<PdStatistical
      * 综合统计   ---科室采购消耗表 mcb  --20200907
      */
     @GetMapping(value = "queryDepartContionView")
-    public Result<?> queryDepartContionView(RpPurchaseUseReportPage purchaseUseReportPage){
-        Map<String,Object> map=pdStatisticalReportService.queryDepartPurchaseCountView(purchaseUseReportPage);
+    public Result<?> queryDepartContionView(RpPurchaseUseReportPage purchaseUseReportPage) {
+        Map<String, Object> map = pdStatisticalReportService.queryDepartPurchaseCountView(purchaseUseReportPage);
         return Result.ok(map);
     }
-
 
     /**
      * 综合统计   ---科室采购趋势图表  mcb  --20200907
      */
     @GetMapping(value = "queryPurchaseCountView")
-    public Result<?> queryPurchaseCountView(RpPurchaseUseReportPage purchaseUseReportPage){
-        Map<String,Object> map= pdStatisticalReportService.queryPurchaseCountView(purchaseUseReportPage);
+    public Result<?> queryPurchaseCountView(RpPurchaseUseReportPage purchaseUseReportPage) {
+        Map<String, Object> map = pdStatisticalReportService.queryPurchaseCountView(purchaseUseReportPage);
         return Result.ok(map);
     }
 
@@ -655,8 +669,8 @@ public class PdStatisticalReportController extends JeecgController<PdStatistical
      * zxh采购金额环比
      */
     @GetMapping(value = "queryPurchaseAmountMomTableView")
-    public Result<?> queryPurchaseAmountMomTableView(RpPurchaseUseReportPage purchaseUseReportPage){
-        Map<String,Object> map =pdStatisticalReportService.queryPurchaseAmountMomTableView(purchaseUseReportPage);
+    public Result<?> queryPurchaseAmountMomTableView(RpPurchaseUseReportPage purchaseUseReportPage) {
+        Map<String, Object> map = pdStatisticalReportService.queryPurchaseAmountMomTableView(purchaseUseReportPage);
         return Result.ok(map);
     }
 
@@ -664,8 +678,130 @@ public class PdStatisticalReportController extends JeecgController<PdStatistical
      * 综合统计   ---检验收入金额统计表  mcb  --20200907
      */
     @GetMapping(value = "queryItemMoneyCountView")
-    public Result<?> queryItemMoneyCountView(RpPurchaseUseReportPage purchaseUseReportPage){
-        Map<String,Object> map= pdStatisticalReportService.queryItemMoneyCountView(purchaseUseReportPage);
+    public Result<?> queryItemMoneyCountView(RpPurchaseUseReportPage purchaseUseReportPage) {
+        Map<String, Object> map = pdStatisticalReportService.queryItemMoneyCountView(purchaseUseReportPage);
         return Result.ok(map);
+    }
+
+    /**
+     * 综合统计   ---科室采购环比-同比报表  mcb  --20200917
+     */
+    @GetMapping(value = "queryMoOnMoView")
+    public Result<?> queryMoOnMoView(RpPurchaseUseReportPage purchaseUseReportPage,
+                                     @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
+                                     @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize) {
+        if (oConvertUtils.isNotEmpty(purchaseUseReportPage.getDepartIds()) && !"undefined".equals(purchaseUseReportPage.getDepartIds())) {
+            purchaseUseReportPage.setDepartIdList(Arrays.asList(purchaseUseReportPage.getDepartIds().split(",")));
+        }
+        Page<RpPurchaseUseReportPage> pagePage = new Page<RpPurchaseUseReportPage>(pageNo, pageSize);
+        IPage<RpPurchaseUseReportPage> list = pdStatisticalReportService.queryMoOnMoView(pagePage,purchaseUseReportPage);
+        return Result.ok(list);
+    }
+
+
+    /**
+     * 导出excel(科室采购环比-同比报表)
+     *
+     * @param request
+     * @param purchaseUseReportPage
+     */
+    @RequestMapping(value = "/exportReportXls")
+    public ModelAndView exportReportXls(HttpServletRequest request, RpPurchaseUseReportPage purchaseUseReportPage) {
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        String selectType=purchaseUseReportPage.getSelectType();
+        if (oConvertUtils.isNotEmpty(purchaseUseReportPage.getDepartIds()) && !"undefined".equals(purchaseUseReportPage.getDepartIds())) {
+            purchaseUseReportPage.setDepartIdList(Arrays.asList(purchaseUseReportPage.getDepartIds().split(",")));
+        }
+        List<RpPurchaseUseReportPage> pageList = pdStatisticalReportService.queryMoOnMoView(purchaseUseReportPage);
+        String fileName="采购费用环比报表";
+        ModelAndView mv = new ModelAndView(new JeecgEntityExcelView());
+        if("1".equals(selectType)){//同比
+             fileName="采购费用同比报表";
+            List<RpYrUseReportExcel> exportList = JSON.parseArray(JSON.toJSONString(pageList), RpYrUseReportExcel.class);
+            mv.addObject(NormalExcelConstants.CLASS, RpYrUseReportExcel.class);
+            mv.addObject(NormalExcelConstants.DATA_LIST, exportList);
+        }else{//环比
+            List<RpMoUseReportExcel> exportList = JSON.parseArray(JSON.toJSONString(pageList), RpMoUseReportExcel.class);
+            mv.addObject(NormalExcelConstants.CLASS, RpMoUseReportExcel.class);
+            mv.addObject(NormalExcelConstants.DATA_LIST, exportList);
+        }
+        mv.addObject(NormalExcelConstants.FILE_NAME, fileName);
+        mv.addObject(NormalExcelConstants.PARAMS, new ExportParams(fileName, "导出人:" + sysUser.getRealname(), fileName));
+        return mv;
+    }
+
+
+    /**
+     * 综合统计   ---科室采购数据报表（前12各月份的数据）  mcb  --20200917
+     */
+    @GetMapping(value = "queryPurchaseTableView")
+    public Result<?> queryPurchaseTableView(RpPurchaseUseReportPage purchaseUseReportPage,
+                                     @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
+                                     @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize) {
+        RpPurchaseMoneyReportPage moneyReport=new RpPurchaseMoneyReportPage();
+
+        if (oConvertUtils.isNotEmpty(purchaseUseReportPage.getDepartIds()) && !"undefined".equals(purchaseUseReportPage.getDepartIds())) {
+            moneyReport.setDepartIdList(Arrays.asList(purchaseUseReportPage.getDepartIds().split(",")));
+        }
+        Page<RpPurchaseMoneyReportPage> pagePage = new Page<RpPurchaseMoneyReportPage>(pageNo, pageSize);
+        //先获取前12个月的月份数据
+        List<RpPurchaseUseReportPage> monthList = pdStatisticalReportService.getYearMonth(purchaseUseReportPage);
+        //在根据每个月作为条件，查询每个月的采购金额，收费金额，不可收费金额，然后在组装
+        moneyReport.setMonth1(monthList.get(0).getYearMonth());
+        moneyReport.setMonth2(monthList.get(1).getYearMonth());
+        moneyReport.setMonth3(monthList.get(2).getYearMonth());
+        moneyReport.setMonth4(monthList.get(3).getYearMonth());
+        moneyReport.setMonth5(monthList.get(4).getYearMonth());
+        moneyReport.setMonth6(monthList.get(5).getYearMonth());
+        moneyReport.setMonth7(monthList.get(6).getYearMonth());
+        moneyReport.setMonth8(monthList.get(7).getYearMonth());
+        moneyReport.setMonth9(monthList.get(8).getYearMonth());
+        moneyReport.setMonth10(monthList.get(9).getYearMonth());
+        moneyReport.setMonth11(monthList.get(10).getYearMonth());
+        moneyReport.setMonth12(monthList.get(11).getYearMonth());
+        IPage<RpPurchaseMoneyReportPage> pageList=  pdStatisticalReportService.queryMonthMoneyList(pagePage,moneyReport);
+        return Result.ok(pageList);
+    }
+
+
+
+
+    /**
+     * 导出excel(科室采购环比-同比报表)
+     *
+     * @param request
+     * @param purchaseUseReportPage
+     */
+    @RequestMapping(value = "/purchaseExportReportXls")
+    public ModelAndView purchaseExportReportXls(HttpServletRequest request, RpPurchaseUseReportPage purchaseUseReportPage) {
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        RpPurchaseMoneyReportPage moneyReport=new RpPurchaseMoneyReportPage();
+        if (oConvertUtils.isNotEmpty(purchaseUseReportPage.getDepartIds()) && !"undefined".equals(purchaseUseReportPage.getDepartIds())) {
+            moneyReport.setDepartIdList(Arrays.asList(purchaseUseReportPage.getDepartIds().split(",")));
+        }
+        //先获取前12个月的月份数据
+        List<RpPurchaseUseReportPage> monthList = pdStatisticalReportService.getYearMonth(purchaseUseReportPage);
+        //在根据每个月作为条件，查询每个月的采购金额，收费金额，不可收费金额，然后在组装
+
+        moneyReport.setMonth1(monthList.get(0).getYearMonth());
+        moneyReport.setMonth2(monthList.get(1).getYearMonth());
+        moneyReport.setMonth3(monthList.get(2).getYearMonth());
+        moneyReport.setMonth4(monthList.get(3).getYearMonth());
+        moneyReport.setMonth5(monthList.get(4).getYearMonth());
+        moneyReport.setMonth6(monthList.get(5).getYearMonth());
+        moneyReport.setMonth7(monthList.get(6).getYearMonth());
+        moneyReport.setMonth8(monthList.get(7).getYearMonth());
+        moneyReport.setMonth9(monthList.get(8).getYearMonth());
+        moneyReport.setMonth10(monthList.get(9).getYearMonth());
+        moneyReport.setMonth11(monthList.get(10).getYearMonth());
+        moneyReport.setMonth12(monthList.get(11).getYearMonth());
+        List<RpPurchaseMoneyReportPage> exportList=  pdStatisticalReportService.queryMonthMoneyList(moneyReport);
+        String fileName="采购费用统计报表";
+        ModelAndView mv = new ModelAndView(new JeecgEntityExcelView());
+        mv.addObject(NormalExcelConstants.CLASS, RpPurchaseMoneyReportPage.class);
+        mv.addObject(NormalExcelConstants.DATA_LIST, exportList);
+        mv.addObject(NormalExcelConstants.FILE_NAME, fileName);
+        mv.addObject(NormalExcelConstants.PARAMS, new ExportParams(fileName, "导出人:" + sysUser.getRealname(), fileName));
+        return mv;
     }
 }

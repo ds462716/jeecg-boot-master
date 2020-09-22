@@ -22,19 +22,19 @@ import java.util.List;
  */
 public interface PdStatisticalReportMapper extends BaseMapper<PdStatisticalReport> {
 
-    IPage<PdStockRecordDetail> supplierInDetailReport(Page<PdStockRecordDetail> page, @Param("entity")PdStockRecordDetail inDetail);
+    IPage<PdStockRecordDetail> supplierInDetailReport(Page<PdStockRecordDetail> page, @Param("entity") PdStockRecordDetail inDetail);
 
     IPage<RpUseDetailReportPage> rpUseDetailReport(Page<RpUseDetailReportPage> usePageDetail, @Param("entity") RpUseDetailReportPage rpUseDetailReportPage);
 
-    IPage<RpReDetailReportPage> rpReDetailReport(Page<RpReDetailReportPage> rePageDetail, @Param("entity")RpReDetailReportPage rpReDetailReportPage);
+    IPage<RpReDetailReportPage> rpReDetailReport(Page<RpReDetailReportPage> rePageDetail, @Param("entity") RpReDetailReportPage rpReDetailReportPage);
 
-    IPage<RpSupplierUseReportPage> supplierUseReport(Page<RpSupplierUseReportPage> page, @Param("entity")RpSupplierUseReportPage rpSupplierUseReportPage);
+    IPage<RpSupplierUseReportPage> supplierUseReport(Page<RpSupplierUseReportPage> page, @Param("entity") RpSupplierUseReportPage rpSupplierUseReportPage);
 
-    List<RpSupplierUseReportPage> supplierUseReport(@Param("entity")RpSupplierUseReportPage rpSupplierUseReportPage);
+    List<RpSupplierUseReportPage> supplierUseReport(@Param("entity") RpSupplierUseReportPage rpSupplierUseReportPage);
 
-    IPage<RpDepartUseReportPage> departUseReport(Page<RpDepartUseReportPage> page, @Param("entity")RpDepartUseReportPage rpDepartUseReportPage);
+    IPage<RpDepartUseReportPage> departUseReport(Page<RpDepartUseReportPage> page, @Param("entity") RpDepartUseReportPage rpDepartUseReportPage);
 
-    List<RpDepartUseReportPage> departUseReport(@Param("entity")RpDepartUseReportPage rpDepartUseReportPage);
+    List<RpDepartUseReportPage> departUseReport(@Param("entity") RpDepartUseReportPage rpDepartUseReportPage);
 
     /**
      * 出入库统计报表查询——分页
@@ -69,30 +69,40 @@ public interface PdStatisticalReportMapper extends BaseMapper<PdStatisticalRepor
      */
     List<RpInAndOutDetailReportPage> rpInAndOutDetailReport(@Param("entity") RpInAndOutDetailReportPage entity);
 
-    IPage<RpDepartUseDetailReportPage> rpDepartUseDetailReport(Page<RpDepartUseDetailReportPage> usePageDetail, @Param("entity")RpDepartUseDetailReportPage rpDepartUseDetailReportPage);
+    IPage<RpDepartUseDetailReportPage> rpDepartUseDetailReport(Page<RpDepartUseDetailReportPage> usePageDetail, @Param("entity") RpDepartUseDetailReportPage rpDepartUseDetailReportPage);
 
-    IPage<RpDepartStockReportPage> departStockReport(Page<RpDepartStockReportPage> page, @Param("entity")RpDepartStockReportPage rpDepartStockReportPage);
+    IPage<RpDepartStockReportPage> departStockReport(Page<RpDepartStockReportPage> page, @Param("entity") RpDepartStockReportPage rpDepartStockReportPage);
 
-    List<RpDepartStockReportPage> departStockReport(@Param("entity")RpDepartStockReportPage rpDepartStockReportPage);
+    List<RpDepartStockReportPage> departStockReport(@Param("entity") RpDepartStockReportPage rpDepartStockReportPage);
 
-    IPage<RpDepartStockDetailReportPage> rpDepartStockDetailReport(Page<RpDepartStockDetailReportPage> stockPageDetail, @Param("entity")RpDepartStockDetailReportPage rpDepartStockDetailReportPage);
+    IPage<RpDepartStockDetailReportPage> rpDepartStockDetailReport(Page<RpDepartStockDetailReportPage> stockPageDetail, @Param("entity") RpDepartStockDetailReportPage rpDepartStockDetailReportPage);
 
-    IPage<RpSupplierUseReportPage> supplierReagentUseReport(Page<RpSupplierUseReportPage> page, @Param("entity")RpSupplierUseReportPage rpSupplierUseReportPage);
+    IPage<RpSupplierUseReportPage> supplierReagentUseReport(Page<RpSupplierUseReportPage> page, @Param("entity") RpSupplierUseReportPage rpSupplierUseReportPage);
 
-    IPage<RpReagentUseDetailReportPage> rpReagentUseDetailReport(Page<RpReagentUseDetailReportPage> usePageDetail, @Param("entity")RpReagentUseDetailReportPage rpReagentUseDetailReportPage);
+    IPage<RpReagentUseDetailReportPage> rpReagentUseDetailReport(Page<RpReagentUseDetailReportPage> usePageDetail, @Param("entity") RpReagentUseDetailReportPage rpReagentUseDetailReportPage);
 
-    List<RpPurchaseUseReportPage> queryPurchaseCountView(@Param("entity")RpPurchaseUseReportPage rpPurchaseUseReportPage);
+    List<RpPurchaseUseReportPage> queryPurchaseCountView(@Param("entity") RpPurchaseUseReportPage rpPurchaseUseReportPage);
 
-    List<RpPurchaseUseReportPage> queryConsumptionView(@Param("entity")RpPurchaseUseReportPage rpPurchaseUseReportPage);
+    List<RpPurchaseUseReportPage> queryConsumptionView(@Param("entity") RpPurchaseUseReportPage rpPurchaseUseReportPage);
 
-    List<RpPurchaseUseReportPage> queryDepartContionView(@Param("entity")RpPurchaseUseReportPage rpPurchaseUseReportPage);
+    List<RpPurchaseUseReportPage> queryDepartContionView(@Param("entity") RpPurchaseUseReportPage rpPurchaseUseReportPage);
 
-    List<RpPurchaseUseReportPage> queryDepartChargeView(@Param("entity")RpPurchaseUseReportPage rpPurchaseUseReportPage);
+    List<RpPurchaseUseReportPage> queryDepartChargeView(@Param("entity") RpPurchaseUseReportPage rpPurchaseUseReportPage);
 
-    List<RpPurchaseUseReportPage> queryDepartPurchaseCountView(@Param("entity")RpPurchaseUseReportPage rpPurchaseUseReportPage);
+    List<RpPurchaseUseReportPage> queryDepartPurchaseCountView(@Param("entity") RpPurchaseUseReportPage rpPurchaseUseReportPage);
 
-    List<RpPurchaseUseReportPage> queryPurchaseAmountMomTableView(@Param("entity")RpPurchaseUseReportPage rpPurchaseUseReportPage);
+    List<RpPurchaseUseReportPage> queryPurchaseAmountMomTableView(@Param("entity") RpPurchaseUseReportPage rpPurchaseUseReportPage);
 
-    List<RpPurchaseUseReportPage> queryItemMoneyCountView(@Param("entity")RpPurchaseUseReportPage rpPurchaseUseReportPage);
+    List<RpPurchaseUseReportPage> queryItemMoneyCountView(@Param("entity") RpPurchaseUseReportPage rpPurchaseUseReportPage);
+
+    IPage<RpPurchaseUseReportPage> queryMoOnMoView(Page<RpPurchaseUseReportPage> page, @Param("entity") RpPurchaseUseReportPage rpPurchaseUseReportPage);
+    /*不分页*/
+    List<RpPurchaseUseReportPage> queryMoOnMoView(@Param("entity") RpPurchaseUseReportPage rpPurchaseUseReportPage);
+
+    List<RpPurchaseUseReportPage> getYearMonth(@Param("entity") RpPurchaseUseReportPage rpPurchaseUseReportPage);
+
+    IPage<RpPurchaseMoneyReportPage> queryMonthMoneyList(Page<RpPurchaseMoneyReportPage> page, @Param("entity") RpPurchaseMoneyReportPage purchaseMoneyReportPage);
+
+    List<RpPurchaseMoneyReportPage> queryMonthMoneyList(@Param("entity") RpPurchaseMoneyReportPage purchaseMoneyReportPage);
 
 }

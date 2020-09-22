@@ -255,7 +255,7 @@
         </a-tab-pane>
 
 
-        <a-tab-pane tab="综合统计数据报表" key="6">
+        <a-tab-pane tab="科室采购环比-同比报表" key="6">
             <a-card :bordered="false">
               <!-- 查询区域 -->
               <div class="table-page-search-wrapper">
@@ -264,19 +264,16 @@
 
                     <a-col :md="6" :sm="8">
                       <a-form-item label="年月">
-                        <a-month-picker placeholder="选择年月" @change="monthChangeAllConion" v-model="queryParam4.ym"/>
+                        <a-month-picker placeholder="选择年月" @change="monthChangeConion" v-model="queryParam6.ym"/>
                       </a-form-item>
                     </a-col>
-
-
-
                     <template v-if="toggleSearchStatus">
                     </template>
 
                     <a-col :md="6" :sm="8">
             <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
               <a-button type="primary" @click="searchQuery(6)" icon="search">查询</a-button>
-              <a-button type="primary" @click="searchQuery(6)" icon="reload" style="margin-left: 8px">重置</a-button>
+              <a-button type="primary" @click="searchReset(6)" icon="reload" style="margin-left: 8px">重置</a-button>
               <a  @click="handleToggleSearch" style="margin-left: 8px">
                 {{ toggleSearchStatus ? '收起' : '展开' }}
                 <a-icon :type="toggleSearchStatus ? 'up' : 'down'"/>
@@ -289,7 +286,7 @@
               <!-- 查询区域-END -->
               <!-- 操作按钮区域 -->
               <div class="table-operator">
-                <a-button type="primary" icon="download" @click="handleExportXls()">导出</a-button>
+                <a-button type="primary" icon="download" @click="handleExportXls(0)">导出</a-button>
               </div>
               <!-- table区域-begin -->
               <div>
@@ -298,11 +295,11 @@
                   size="small"
                   bordered
                   rowKey="id"
-                  :columns="inTable.columns"
-                  :dataSource="inTable.dataSource"
-                  :pagination="inTable.ipagination"
-                  :loading="inTable.loading"
-                  @change="inHandleTableChange"
+                  :columns="hTable.columns"
+                  :dataSource="hTable.dataSource"
+                  :pagination="hTable.ipagination"
+                  :loading="hTable.loading"
+                  @change="hHandleTableChange"
                 >
                 </a-table>
               </div>
@@ -311,13 +308,13 @@
 
           <a-card :bordered="false">
             <!-- 查询区域 -->
-            <div class="table-page-search-wrapper">
+            <!--<div class="table-page-search-wrapper">
               <a-form layout="inline" @keyup.enter.native="inSearchQuery">
                 <a-row :gutter="24">
 
                   <a-col :md="6" :sm="8">
                     <a-form-item label="年月">
-                      <a-month-picker placeholder="选择年月" @change="monthChangeAllConion" v-model="queryParam4.ym"/>
+                      <a-month-picker placeholder="选择年月" @change="monthChangeAllConion" v-model="queryParam6.ym"/>
                     </a-form-item>
                   </a-col>
 
@@ -328,8 +325,76 @@
 
                   <a-col :md="6" :sm="8">
             <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
-              <a-button type="primary" @click="searchQuery(6)" icon="search">查询</a-button>
-              <a-button type="primary" @click="searchQuery(6)" icon="reload" style="margin-left: 8px">重置</a-button>
+              <a-button type="primary" @click="searchQuery(7)" icon="search">查询</a-button>
+              <a-button type="primary" @click="searchQuery(7)" icon="reload" style="margin-left: 8px">重置</a-button>
+              <a  @click="handleToggleSearch" style="margin-left: 8px">
+                {{ toggleSearchStatus ? '收起' : '展开' }}
+                <a-icon :type="toggleSearchStatus ? 'up' : 'down'"/>
+              </a>
+            </span>
+                  </a-col>
+                </a-row>
+              </a-form>
+            </div>-->
+            <!-- 查询区域-END -->
+            <!-- 操作按钮区域 -->
+            <div class="table-operator">
+              <a-button type="primary" icon="download" @click="handleExportXls(1)">导出</a-button>
+            </div>
+            <!-- table区域-begin -->
+            <div>
+              <a-table
+                ref="in_table"
+                size="small"
+                bordered
+                rowKey="id"
+                :columns="tTable.columns"
+                :dataSource="tTable.dataSource"
+                :pagination="tTable.ipagination"
+                :loading="tTable.loading"
+                @change="tHandleTableChange"
+              >
+              </a-table>
+            </div>
+          </a-card>
+        </a-tab-pane>
+
+
+
+        <a-tab-pane tab="科室采购统计报表" key="7">
+          <a-card :bordered="false">
+            <!-- 查询区域 -->
+            <div class="table-page-search-wrapper">
+              <a-form layout="inline" @keyup.enter.native="inSearchQuery">
+                <a-row :gutter="24">
+                  <a-col :md="6" :sm="8">
+                    <a-form-item label="科室">
+                      <a-select
+                        mode="multiple"
+                        showSearch
+                        :departId="departValue"
+                        :defaultActiveFirstOption="false"
+                        :allowClear="true"
+                        :showArrow="true"
+                        :filterOption="false"
+                        @search="departHandleSearch"
+                        @focus="departHandleSearch"
+                        :notFoundContent="notFoundContent"
+                        v-model="queryParam7.departIds"
+                        placeholder="请选择科室"
+                      >
+                        <a-select-option v-for="d in departData" :key="d.id">{{d.departName}}</a-select-option>
+                      </a-select>
+                    </a-form-item>
+                  </a-col>
+
+                  <template v-if="toggleSearchStatus">
+                  </template>
+
+                  <a-col :md="6" :sm="8">
+            <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
+              <a-button type="primary" @click="searchQuery(7)" icon="search">查询</a-button>
+              <a-button type="primary" @click="searchReset(7)" icon="reload" style="margin-left: 8px">重置</a-button>
               <a  @click="handleToggleSearch" style="margin-left: 8px">
                 {{ toggleSearchStatus ? '收起' : '展开' }}
                 <a-icon :type="toggleSearchStatus ? 'up' : 'down'"/>
@@ -342,7 +407,7 @@
             <!-- 查询区域-END -->
             <!-- 操作按钮区域 -->
             <div class="table-operator">
-              <a-button type="primary" icon="download" @click="handleExportXls()">导出1</a-button>
+              <a-button type="primary" icon="download" @click="purchaseHandleExportXls()">导出</a-button>
             </div>
             <!-- table区域-begin -->
             <div>
@@ -351,16 +416,20 @@
                 size="small"
                 bordered
                 rowKey="id"
-                :columns="inTable.columns"
-                :dataSource="inTable.dataSource"
-                :pagination="inTable.ipagination"
-                :loading="inTable.loading"
-                @change="inHandleTableChange"
+                :columns="purchaseTable.columns"
+                :dataSource="purchaseTable.dataSource"
+                :pagination="purchaseTable.ipagination"
+                :loading="purchaseTable.loading"
+                :scroll="purchaseTable.tableScroll"
+                @change="purchaseHandleTableChange"
               >
               </a-table>
             </div>
           </a-card>
+
         </a-tab-pane>
+
+
       </a-tabs>
 
     </a-card>
@@ -420,6 +489,7 @@
         queryParam4: {},
         queryParam5: {},
         queryParam6: {},
+        queryParam7: {},
         departData: [],
         departValue: undefined,
         visible: false,
@@ -431,8 +501,8 @@
           fullscreen: true,
         },
 //----------------------------------------
-        // 表头
-        inTable: {
+        //采购环比表头
+        hTable: {
           loading:false,
           dataSource: [],
           ipagination:{
@@ -452,15 +522,119 @@
                 return parseInt(index)+1;
               }
             },
-            { title:'月份', align:"center", width:'150px', dataIndex: 'batchNo' },
-            { title:'采购金额', align:"center", width:'100px', dataIndex: 'productNum' },
-            { title:'收费金额', align:"center", width:'60px', dataIndex: 'unitName' },
-            { title:'不可收费金额', align:"center", width:'100px', dataIndex: 'purchasePrice' },
-            { title:'检验收入金额', align:"center", width:'100px', dataIndex: 'inTotalPrice' },
+            { title:'科室', align:"center", width:'150px', dataIndex: 'departName' },
+            { title:'月份', align:"center", width:'150px', dataIndex: 'theLastYearMonth' },
+            { title:'采购金额', align:"center", width:'60px', dataIndex: 'theLastPrice' },
+            { title:'月份', align:"center", width:'150px', dataIndex: 'lastMonth' },
+            { title:'采购金额', align:"center", width:'100px', dataIndex: 'lastPrice' },
+            { title:'环比增长率', align:"center", width:'60px', dataIndex: 'moOnMo' },
           ],
         },
-
 //--------------------
+        //采购同比表头
+        tTable: {
+          loading:false,
+          dataSource: [],
+          ipagination:{
+            current: 1,
+            pageSize: 10,
+            pageSizeOptions: ['10', '20', '30', '50', '100'],
+            showTotal: (total, range) => {
+              return range[0] + "-" + range[1] + " 共" + total + "条"
+            },
+            showQuickJumper: true,
+            showSizeChanger: true,
+            total: 0
+          },
+          columns: [
+            { title: '序号', dataIndex: '', key:'rowIndex', width:60, align:"center",
+              customRender:function (t,r,index) {
+                return parseInt(index)+1;
+              }
+            },
+            { title:'科室', align:"center", width:'150px', dataIndex: 'departName' },
+            { title:'月份', align:"center", width:'150px', dataIndex: 'theLastYearMonth' },
+            { title:'采购金额', align:"center", width:'60px', dataIndex: 'theLastPrice' },
+            { title:'月份', align:"center", width:'150px', dataIndex: 'lastMonth' },
+            { title:'采购金额', align:"center", width:'100px', dataIndex: 'lastPrice' },
+            { title:'同比增长率', align:"center", width:'60px', dataIndex: 'yrOnYr' },
+          ],
+        },
+ //---------------------------
+        //采购科室统计数据报表
+        purchaseTable: {
+          loading:false,
+          dataSource: [],
+          tableScroll:{x:4800},
+          ipagination:{
+            current: 1,
+            pageSize: 10,
+            pageSizeOptions: ['10', '20', '30', '50', '100'],
+            showTotal: (total, range) => {
+              return range[0] + "-" + range[1] + " 共" + total + "条"
+            },
+            showQuickJumper: true,
+            showSizeChanger: true,
+            total: 0
+          },
+          columns: [
+            { title: '序号', dataIndex: '', key:'rowIndex', width:60, align:"center",
+              customRender:function (t,r,index) {
+                return parseInt(index)+1;
+              }
+            },
+            { title:'科室', align:"center", width:'150px', dataIndex: 'departName' },
+            { title:'月份', align:"center", width:'150px', dataIndex: 'month1' },
+            { title:'采购金额', align:"center", width:'100px', dataIndex: 'purchaseMoney1' },
+            { title:'收费金额', align:"center", width:'100px', dataIndex: 'dosageMoney1' },
+            { title:'不可收费金额', align:"center", width:'100px', dataIndex: 'noDosageMoney1' },
+            { title:'月份', align:"center", width:'150px', dataIndex: 'month2' },
+            { title:'采购金额', align:"center", width:'100px', dataIndex: 'purchaseMoney2' },
+            { title:'收费金额', align:"center", width:'100px', dataIndex: 'dosageMoney2' },
+            { title:'不可收费金额', align:"center", width:'100px', dataIndex: 'noDosageMoney2' },
+            { title:'月份', align:"center", width:'150px', dataIndex: 'month3' },
+            { title:'采购金额', align:"center", width:'100px', dataIndex: 'purchaseMoney3' },
+            { title:'收费金额', align:"center", width:'100px', dataIndex: 'dosageMoney3' },
+            { title:'不可收费金额', align:"center", width:'100px', dataIndex: 'noDosageMoney3' },
+            { title:'月份', align:"center", width:'150px', dataIndex: 'month4' },
+            { title:'采购金额', align:"center", width:'100px', dataIndex: 'purchaseMoney4' },
+            { title:'收费金额', align:"center", width:'100px', dataIndex: 'dosageMoney4' },
+            { title:'不可收费金额', align:"center", width:'100px', dataIndex: 'noDosageMoney4' },
+            { title:'月份', align:"center", width:'150px', dataIndex: 'month5' },
+            { title:'采购金额', align:"center", width:'100px', dataIndex: 'purchaseMoney5' },
+            { title:'收费金额', align:"center", width:'100px', dataIndex: 'dosageMoney5' },
+            { title:'不可收费金额', align:"center", width:'100px', dataIndex: 'noDosageMoney5' },
+            { title:'月份', align:"center", width:'150px', dataIndex: 'month6' },
+            { title:'采购金额', align:"center", width:'100px', dataIndex: 'purchaseMoney6' },
+            { title:'收费金额', align:"center", width:'100px', dataIndex: 'dosageMoney6' },
+            { title:'不可收费金额', align:"center", width:'100px', dataIndex: 'noDosageMoney6' },
+            { title:'月份', align:"center", width:'150px', dataIndex: 'month7' },
+            { title:'采购金额', align:"center", width:'100px', dataIndex: 'purchaseMoney7' },
+            { title:'收费金额', align:"center", width:'100px', dataIndex: 'dosageMoney7' },
+            { title:'不可收费金额', align:"center", width:'100px', dataIndex: 'noDosageMoney7' },
+            { title:'月份', align:"center", width:'150px', dataIndex: 'month8' },
+            { title:'采购金额', align:"center", width:'100px', dataIndex: 'purchaseMoney8' },
+            { title:'收费金额', align:"center", width:'100px', dataIndex: 'dosageMoney8' },
+            { title:'不可收费金额', align:"center", width:'100px', dataIndex: 'noDosageMoney8' },
+            { title:'月份', align:"center", width:'150px', dataIndex: 'month9' },
+            { title:'采购金额', align:"center", width:'100px', dataIndex: 'purchaseMoney9' },
+            { title:'收费金额', align:"center", width:'100px', dataIndex: 'dosageMoney9' },
+            { title:'不可收费金额', align:"center", width:'100px', dataIndex: 'noDosageMoney9' },
+            { title:'月份', align:"center", width:'150px', dataIndex: 'month10' },
+            { title:'采购金额', align:"center", width:'100px', dataIndex: 'purchaseMoney10' },
+            { title:'收费金额', align:"center", width:'100px', dataIndex: 'dosageMoney10' },
+            { title:'不可收费金额', align:"center", width:'100px', dataIndex: 'noDosageMoney10' },
+            { title:'月份', align:"center", width:'150px', dataIndex: 'month11' },
+            { title:'采购金额', align:"center", width:'100px', dataIndex: 'purchaseMoney11' },
+            { title:'收费金额', align:"center", width:'100px', dataIndex: 'dosageMoney11' },
+            { title:'不可收费金额', align:"center", width:'100px', dataIndex: 'noDosageMoney11' },
+            { title:'月份', align:"center", width:'150px', dataIndex: 'month12' },
+            { title:'采购金额', align:"center", width:'100px', dataIndex: 'purchaseMoney12' },
+            { title:'收费金额', align:"center", width:'100px', dataIndex: 'dosageMoney12' },
+            { title:'不可收费金额', align:"center", width:'100px', dataIndex: 'noDosageMoney12' },
+          ],
+        },
+//------------------------------
         polar1: {
           //title:"采购收费对照图",
           tooltip: {trigger: 'axis'},
@@ -661,7 +835,7 @@
               name: '涨幅(%)',
               min: -100,
               max: 100,
-              interval: 20,
+              interval: 50,
               axisLabel: {
                 formatter: '{value}%'
               },
@@ -814,6 +988,10 @@
           queryDepartContionView: "/pd/pdStatisticalReport/queryDepartContionView",
           queryPurchaseAmountMomTableView: "/pd/pdStatisticalReport/queryPurchaseAmountMomTableView",
           queryItemMoneyCountView: "/pd/pdStatisticalReport/queryItemMoneyCountView",
+          queryMoOnMoView: "/pd/pdStatisticalReport/queryMoOnMoView",
+          exportReportXls: "/pd/pdStatisticalReport/exportReportXls",
+          queryPurchaseTableView: "/pd/pdStatisticalReport/queryPurchaseTableView",
+          purchaseExportReportXls: "/pd/pdStatisticalReport/purchaseExportReportXls",
         },
         dictOptions: {},
       }
@@ -823,10 +1001,20 @@
     },
     methods: {
 
-      //表格分页事件
-      inHandleTableChange(pagination, filters, sorter) {
-        this.inTable.ipagination = pagination;
-        this.inLoadData();
+      //环比表格分页事件
+      hHandleTableChange(pagination, filters, sorter) {
+        this.hTable.ipagination = pagination;
+        this.queryMoData();
+      },
+     //同比表格分页事件
+      tHandleTableChange(pagination, filters, sorter) {
+        this.tTable.ipagination = pagination;
+        this.queryNoData();
+      },
+      //采购费用数据统计表格分页事件
+      purchaseHandleTableChange(pagination, filters, sorter) {
+        this.purchaseTable.ipagination = pagination;
+        this.tablePurchaseData();
       },
 
       loadData() {
@@ -853,7 +1041,9 @@
         }else if (key == 5) {
           this.itemConsumptionData(1); //检验收入金额柱状图
         }else if (key == 6) {
-          this.tableConsumptionData(1); //全院耗材占比
+          this.tableConsumptionData(1); //科室采购环比-同比报表
+        }else if (key == 7) {
+          this.tablePurchaseData(1); //科室采购统计报表
         }
       },
 
@@ -865,6 +1055,9 @@
       },
       monthChangeAllConion(date, dateString) {
         this.queryParam4.yearMonth = dateString;
+      },
+      monthChangeConion(date, dateString) {
+        this.queryParam6.yearMonth = dateString;
       },
 
 //科室查询start
@@ -904,6 +1097,9 @@
         }else if(num==6){
           param = Object.assign(sqp, this.queryParam6, this.isorter ,this.filters);
           param.departIds = this.queryParam6.departIds+"";
+        }else if(num==7){
+          param = Object.assign(sqp, this.queryParam7, this.isorter ,this.filters);
+          param.departIds = this.queryParam7.departIds+"";
         }
         return filterObj(param);
       },
@@ -946,7 +1142,9 @@
         }else if(num==5){
           this.itemConsumptionData();//检验收入金额统计表
         }else if(num==6){
-          this.tableConsumptionData();
+          this.tableConsumptionData();//科室采购环比-同比报表
+        }else if(num==7){
+          this.tablePurchaseData();//科室采购统计报表
         }
       },
 
@@ -1052,9 +1250,74 @@
 
 
 
-      //综合统计报表数据
+      //科室采购环比-同比报表
       tableConsumptionData(arg) {
+        this.queryMoData(arg);//查询环比
+        this.queryNoData(arg);//查询同比
+      },
 
+     //查询环比
+      queryMoData(arg) {
+        var params = {};
+        if (arg === 1) {
+          this.hTable.ipagination.current = 1;
+        }
+        params = this.getQueryParams(6);//查询条件
+        params.pageNo = this.hTable.ipagination.current;
+        params.pageSize = this.hTable.ipagination.pageSize;
+        this.hTable.loading = true;
+        getAction(this.url.queryMoOnMoView, params).then((res) => {
+          if (res.success) {
+            this.hTable.dataSource = res.result.records;
+            this.hTable.ipagination.total = res.result.total;
+          } else {
+            this.$message.warning(res.message)
+          }
+          this.hTable.loading = false;
+        })
+      },
+
+      //查询同比数据
+      queryNoData(arg) {
+        var params = {};
+        if (arg === 1) {
+          this.tTable.ipagination.current = 1;
+        }
+        params = this.getQueryParams(6);//查询条件
+        params.pageNo = this.tTable.ipagination.current;
+        params.pageSize = this.tTable.ipagination.pageSize;
+        params.selectType="1";
+        this.tTable.loading = true;
+        getAction(this.url.queryMoOnMoView, params).then((res) => {
+          if (res.success) {
+            this.tTable.dataSource = res.result.records;
+            this.tTable.ipagination.total = res.result.total;
+          } else {
+            this.$message.warning(res.message)
+          }
+          this.tTable.loading = false;
+        })
+      },
+
+      //科室采购统计报表
+      tablePurchaseData(arg) {
+        var params = {};
+        if (arg == 1) {
+          this.purchaseTable.ipagination.current = 1;
+        }
+        params = this.getQueryParams(7);//查询条件
+        params.pageNo = this.purchaseTable.ipagination.current;
+        params.pageSize = this.purchaseTable.ipagination.pageSize;
+        this.purchaseTable.loading = true;
+        getAction(this.url.queryPurchaseTableView, params).then((res) => {
+          if (res.success) {
+            this.purchaseTable.dataSource = res.result.records;
+            this.purchaseTable.ipagination.total = res.result.total;
+          } else {
+            this.$message.warning(res.message)
+          }
+          this.purchaseTable.loading = false;
+        })
       },
 
       /** 关闭按钮 **/
@@ -1070,6 +1333,7 @@
         this.queryParam4 = {};
         this.queryParam5 = {};
         this.queryParam6 = {};
+        this.queryParam7 = {};
         this.visible = false;
         this.$emit('close');
       },
@@ -1087,7 +1351,71 @@
           this.queryParam5 = {};
         }else if(num==6){
           this.queryParam6 = {};
+        }else if(num==7){
+          this.queryParam7 = {};
         }
+      },
+
+
+
+      /**采购金额环比-同比导出（重写导出方法）**/
+      handleExportXls(num){
+        //入库明细导出
+        let fileName = "";
+        let params =   this.getQueryParams(6);//查询条件
+        if(num==1){
+          params.selectType="1";
+          fileName= "采购同比统计报表" + "_" + new Date().toLocaleString();
+        }else{
+          params.selectType="0";
+          fileName= "采购环比统计报表" + "_" + new Date().toLocaleString();
+        }
+        downFile(this.url.exportReportXls,params).then((data)=>{
+          if (!data) {
+            this.$message.warning("文件下载失败")
+            return
+          }
+          if (typeof window.navigator.msSaveBlob !== 'undefined') {
+            window.navigator.msSaveBlob(new Blob([data],{type: 'application/vnd.ms-excel'}), fileName+'.xls')
+          }else{
+            let url = window.URL.createObjectURL(new Blob([data],{type: 'application/vnd.ms-excel'}))
+            let link = document.createElement('a')
+            link.style.display = 'none'
+            link.href = url
+            link.setAttribute('download', fileName+'.xls')
+            document.body.appendChild(link)
+            link.click()
+            document.body.removeChild(link); //下载完成移除元素
+            window.URL.revokeObjectURL(url); //释放掉blob对象
+          }
+        });
+      },
+
+
+      /**采购数据统计导出（重写导出方法）**/
+      purchaseHandleExportXls(num){
+        //入库明细导出
+        let fileName = "采购统计报表" + "_" + new Date().toLocaleString();
+        let params =   this.getQueryParams(7);//查询条件
+        downFile(this.url.purchaseExportReportXls,params).then((data)=>{
+          if (!data) {
+            this.$message.warning("文件下载失败")
+            return
+          }
+          if (typeof window.navigator.msSaveBlob !== 'undefined') {
+            window.navigator.msSaveBlob(new Blob([data],{type: 'application/vnd.ms-excel'}), fileName+'.xls')
+          }else{
+            let url = window.URL.createObjectURL(new Blob([data],{type: 'application/vnd.ms-excel'}))
+            let link = document.createElement('a')
+            link.style.display = 'none'
+            link.href = url
+            link.setAttribute('download', fileName+'.xls')
+            document.body.appendChild(link)
+            link.click()
+            document.body.removeChild(link); //下载完成移除元素
+            window.URL.revokeObjectURL(url); //释放掉blob对象
+          }
+        });
       },
     },
   }
