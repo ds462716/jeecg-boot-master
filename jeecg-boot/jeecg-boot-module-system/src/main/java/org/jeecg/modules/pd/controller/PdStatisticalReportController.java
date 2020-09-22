@@ -93,7 +93,7 @@ public class PdStatisticalReportController extends JeecgController<PdStatistical
     }
 
     /**
-     * zxh供应商用量统计查询入库明细
+     * zxh供应商用量统计查询入库明细and f.in_type = '1'
      * @param inDetail
      * @param pageNo
      * @param pageSize

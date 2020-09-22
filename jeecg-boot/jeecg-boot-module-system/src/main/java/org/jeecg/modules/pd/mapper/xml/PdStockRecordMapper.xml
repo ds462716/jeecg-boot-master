@@ -241,6 +241,7 @@
         where a.del_flag=#{entity.DEL_FLAG_NORMAL}
         and a.create_time > DATE_SUB(CURDATE(), INTERVAL 1 YEAR)
         and substr(a.create_time,1,7) &lt;=substr(CURDATE(),1,7)
+        and f.in_type = '1'
         <if test="entity.departParentId != null and entity.departParentId != ''">
             AND f.depart_parent_id = #{entity.departParentId}
         </if>

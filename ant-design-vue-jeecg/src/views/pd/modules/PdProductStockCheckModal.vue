@@ -594,7 +594,7 @@
     currentValue = value;
 
     function fake() {
-      getAction(url, {deptName: value, parentFlag: "0"}).then((res) => {
+      getAction(url, {departName: value, parentFlag: "0"}).then((res) => {
         if (!res.success) {
           this.cmsFailed(res.message);
         }

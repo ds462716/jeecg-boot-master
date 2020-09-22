@@ -550,14 +550,12 @@
 				OR (g.record_type = '1' AND g.in_depart_id =#{entity.deptId}))
 			</if>
 			<if test='entity.outDepartIdList != null and entity.outDepartIdList.size() > 0'>
-				AND g.record_type = '2'
 				AND g.out_depart_id in
 				<foreach item="id" collection="entity.outDepartIdList" open="(" separator="," close=")">
 					#{id}
 				</foreach>
 			</if>
 			<if test='entity.inDepartIdList != null and entity.inDepartIdList.size() > 0'>
-				AND g.record_type = '2'
 				AND g.in_depart_id in
 				<foreach item="id" collection="entity.inDepartIdList" open="(" separator="," close=")">
 					#{id}
