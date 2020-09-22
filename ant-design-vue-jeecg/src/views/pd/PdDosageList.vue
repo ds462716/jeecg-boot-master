@@ -38,6 +38,7 @@
     <!-- 操作按钮区域 -->
     <div class="table-operator">
       <a-button @click="handleAdd" type="primary" icon="plus">新增</a-button>
+      <a-button @click="handleUniqueAdd" type="primary" icon="plus">唯一码使用</a-button>
       <!--<a-button type="primary" icon="download" @click="handleExportXls('用量表')">导出</a-button>-->
       <!--<a-dropdown v-if="selectedRowKeys.length > 0">
         <a-menu slot="overlay">
@@ -123,6 +124,13 @@
     <pd-dosage-fee-modal-g-z-w-y ref="pdDosageFeeModalGZWY" @ok="modalFormOk"></pd-dosage-fee-modal-g-z-w-y>
     <pd-dosage-cncl-fee-modal-g-z-w-y  ref="pdDosageCnclFeeModalGZWY" @ok="modalFormOk"></pd-dosage-cncl-fee-modal-g-z-w-y>
 
+    <pd-gzwy-dosage-modal ref="modalUniqueForm" @ok="modalFormOk"></pd-gzwy-dosage-modal>
+    <pd-gzwy-dosage-unique-cncl-fee-modal ref="uniqueCnclFeeModal" @ok="modalFormOk"></pd-gzwy-dosage-unique-cncl-fee-modal>
+    <pd-gzwy-returned-dosage-modal ref="uniqueReturnedModal" @ok="modalFormOk"></pd-gzwy-returned-dosage-modal>
+
+
+
+
     <!-- 赣州肿瘤医院收费模组 -->
     <pd-dosage-modal-g-z-z-l ref="pdDosageModalGZZL" @ok="modalFormOk"></pd-dosage-modal-g-z-z-l>
     <pd-dosage-returned-modal-g-z-z-l ref="pdDosageReturnedModalGZZL" @ok="modalFormOk"></pd-dosage-returned-modal-g-z-z-l>
@@ -157,6 +165,11 @@
   import PdDosageReturnedModalGZZL from '../external/ganzhouzhongliu/modules/PdDosageReturnedModalGZZL'
   import PdDosageFeeModalGZZL from '../external/ganzhouzhongliu/modules/PdDosageFeeModalGZZL'
   import PdDosageCnclFeeModalGZZL from '../external/ganzhouzhongliu/modules/PdDosageCnclFeeModalGZZL'
+
+  import PdGzwyDosageModal from '../external/ganzhouwuyuan/modules/PdDosageModalRefGZWY'
+  import PdGzwyDosageUniqueCnclFeeModal from '../external/ganzhouwuyuan/modules/PdDosageUniqueCnclFeeModalGZWY'
+  import PdGzwyReturnedDosageModal from '../external/ganzhouwuyuan/modules/PdDosageUniqueReturnedModalGZWY'
+
   export default {
     name: "PdDosageList",
     mixins:[JeecgListMixin],
@@ -181,6 +194,9 @@
       PdDosageReturnedModalGZZL,
       PdDosageFeeModalGZZL,
       PdDosageCnclFeeModalGZZL,
+      PdGzwyDosageModal,
+      PdGzwyDosageUniqueCnclFeeModal,
+      PdGzwyReturnedDosageModal
     },
     data () {
       return {
@@ -300,9 +316,9 @@
           this.$refs.pdDosageModalFCRMYY.title = "新增";
           this.$refs.pdDosageModalFCRMYY.disableSubmit = false;
         }else if(this.hospitalCode=="GZWY"){//赣州五院
-          this.$refs.pdDosageModalGZWY.add();
-          this.$refs.pdDosageModalGZWY.title = "新增";
-          this.$refs.pdDosageModalGZWY.disableSubmit = false;
+            this.$refs.pdDosageModalGZWY.add();
+            this.$refs.pdDosageModalGZWY.title = "新增";
+            this.$refs.pdDosageModalGZWY.disableSubmit = false;
         }else if(this.hospitalCode=="GZZLYY"){//赣州肿瘤医院
           this.$refs.pdDosageModalGZZL.add();
           this.$refs.pdDosageModalGZZL.title = "新增";
@@ -344,9 +360,16 @@
           this.$refs.pdDosageCnclFeeModalFCRMYY.title="取消收费";
           this.$refs.pdDosageCnclFeeModalFCRMYY.disableSubmit = false;
         }else if(this.hospitalCode=="GZWY"){ // 赣州五院
-          this.$refs.pdDosageCnclFeeModalGZWY.edit(record);
-          this.$refs.pdDosageCnclFeeModalGZWY.title="取消收费";
-          this.$refs.pdDosageCnclFeeModalGZWY.disableSubmit = false;
+          if(record.dosageType=="0"){
+            //唯一码取消收费
+            this.$refs.uniqueCnclFeeModal.edit(record);
+            this.$refs.uniqueCnclFeeModal.title="取消收费";
+            this.$refs.uniqueCnclFeeModal.disableSubmit = false;
+          }else{
+            this.$refs.pdDosageCnclFeeModalGZWY.edit(record);
+            this.$refs.pdDosageCnclFeeModalGZWY.title = "取消收费";
+            this.$refs.pdDosageCnclFeeModalGZWY.disableSubmit = false;
+          }
         }else{
           this.$refs.pdDosageCnclFeeForm.edit(record);
           this.$refs.pdDosageCnclFeeForm.title="取消收费";
@@ -366,9 +389,16 @@
           this.$refs.pdDosageReturnedModalFCRMYY.title = "库存还回";
           this.$refs.pdDosageReturnedModalFCRMYY.disableSubmit = false;
         }else if(this.hospitalCode=="GZWY"){ // 赣州五院
-          this.$refs.pdDosageReturnedModalGZWY.edit(record);
-          this.$refs.pdDosageReturnedModalGZWY.title="库存还回";
-          this.$refs.pdDosageReturnedModalGZWY.disableSubmit = false;
+          if(record.dosageType=="0"){
+            //唯一码还回
+            this.$refs.uniqueReturnedModal.edit(record);
+            this.$refs.uniqueReturnedModal.title="库存还回";
+            this.$refs.uniqueReturnedModal.disableSubmit = false;
+          }else {
+            this.$refs.pdDosageReturnedModalGZWY.edit(record);
+            this.$refs.pdDosageReturnedModalGZWY.title = "库存还回";
+            this.$refs.pdDosageReturnedModalGZWY.disableSubmit = false;
+          }
         }else{
           this.$refs.pdDosageReturnedForm.edit(record);
           this.$refs.pdDosageReturnedForm.title="库存还回";
@@ -388,15 +418,29 @@
           this.$refs.pdDosageReturnedModalFCRMYY.title = "详情";
           this.$refs.pdDosageReturnedModalFCRMYY.disableSubmit = true;
         }else if(this.hospitalCode=="GZWY"){
-          this.$refs.pdDosageReturnedModalGZWY.edit(record);
-          this.$refs.pdDosageReturnedModalGZWY.title="详情";
-          this.$refs.pdDosageReturnedModalGZWY.disableSubmit = true;
+          if(record.dosageType=="0"){
+            //唯一码详情
+            this.$refs.modalUniqueForm.edit(record);
+            this.$refs.modalUniqueForm.title="详情";
+            this.$refs.modalUniqueForm.disableSubmit = true;
+          }else {
+            this.$refs.pdDosageReturnedModalGZWY.edit(record);
+            this.$refs.pdDosageReturnedModalGZWY.title = "详情";
+            this.$refs.pdDosageReturnedModalGZWY.disableSubmit = true;
+          }
         }else{
           this.$refs.pdDosageReturnedForm.edit(record);
           this.$refs.pdDosageReturnedForm.title="详情";
           this.$refs.pdDosageReturnedForm.disableSubmit = true;
         }
-      }
+      },
+
+      //唯一码使用
+      handleUniqueAdd(){
+        this.$refs.modalUniqueForm.add();
+        this.$refs.modalUniqueForm.title = "唯一码使用";
+        this.$refs.modalUniqueForm.disableSubmit = false;
+      },
     }
   }
 </script>
