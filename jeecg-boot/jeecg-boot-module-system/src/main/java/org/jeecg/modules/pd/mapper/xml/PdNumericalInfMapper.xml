@@ -123,18 +123,15 @@
             where t.depart_type in ('1','2')
                 and a.del_flag ='0'
                 and b.del_flag ='0'
-                <if test=" inTypeList != null and inTypeList.size() > 0">
-                    and a.in_type  IN
-                    <foreach collection=" inTypeList" item="item" separator="," open="(" close=")">
-                        #{item}
-                    </foreach>
-                </if>
-                <if test=" outTypeList != null and outTypeList.size() > 0">
-                    and a.out_type  IN
-                    <foreach collection=" outTypeList" item="item" separator="," open="(" close=")">
-                        #{item}
-                    </foreach>
-                </if>
+                and (a.in_type IN
+                <foreach collection="inTypeList" item="item" separator="," open="(" close=")">
+                    #{item}
+                </foreach>
+                  or a.out_type IN
+                <foreach collection="outTypeList" item="item" separator="," open="(" close=")">
+                    #{item}
+                </foreach>
+                )
                 <if test="auditStatus != null and auditStatus != ''">
                     AND a.audit_status= #{auditStatus}
                 </if>
