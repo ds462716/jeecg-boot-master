@@ -51,6 +51,8 @@ public class PdDosageGZWYServiceImpl extends ServiceImpl<PdDosageMapper, PdDosag
     private PdDosageMapper pdDosageMapper;
     @Autowired
     private IPdOnOffService pdOnOffService;
+    @Autowired
+    private IPdProductStockUniqueCodeService pdProductStockUniqueCodeService;
 
     private static Logger logger = LoggerFactory.getLogger(PdDosageGZWYServiceImpl.class);
 
@@ -60,7 +62,8 @@ public class PdDosageGZWYServiceImpl extends ServiceImpl<PdDosageMapper, PdDosag
         SysDepart sysDepart = pdDepartService.getById(sysUser.getCurrentDepartId());
         PdDosage pdDosage = new PdDosage();
         if (pdDosage !=null && oConvertUtils.isNotEmpty(param.getId())) { // 查看页面
-            pdDosage = this.getById(param.getId());
+            pdDosage.setId(param.getId());
+            pdDosage = baseMapper.getByOne(pdDosage);
             // 新增页面
             pdDosage.setDepartName(sysDepart.getDepartName());
             pdDosage.setDosageByName(sysUser.getRealname());
@@ -235,18 +238,11 @@ public class PdDosageGZWYServiceImpl extends ServiceImpl<PdDosageMapper, PdDosag
                     for(PdDosageDetail detail :chargeArray){
 
                     JSONObject result = AxisGZWYUtils.exeCharge(pdDosage,detail);
-                    if(result == null || result.getJSONArray("data") == null || result.getJSONArray("data").size() <= 0){
-                        logger.error("HIS返回数据为空，请重新计费或联系管理员！！");
-                        throw new RuntimeException("HIS返回数据为空，请重新计费或联系管理员！！");
-                    }
                     if(!PdConstant.SUCCESS_0.equals(result.getString("code"))){
                         logger.error("执行HIS收费接口失败！HIS返回："+result.getString("msg"));
                         throw new RuntimeException("执行HIS收费接口失败！HIS返回："+result.getString("msg"));
                     }
                     }
-
-
-
                     pdDosageDetailService.saveBatch(chargeArray);
                 }
                 if(!tempArray.isEmpty()){
@@ -259,6 +255,127 @@ public class PdDosageGZWYServiceImpl extends ServiceImpl<PdDosageMapper, PdDosag
                 this.save(pdDosage);
                 //扣减当前库房的库存
                 pdProductStockTotalService.updateUseStock(sysUser.getCurrentDepartId(),detailList);
+            }
+        }
+        return chargeArray;
+    }
+
+
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public List<PdDosageDetail> saveUniqueMain(PdDosage pdDosage, String displayFlag) {
+        List<PdDosageDetail> detailList = pdDosage.getPdDosageDetails();
+        pdDosage.setId(UUIDUtil.getUuid());
+        //校验数据的合法性
+        Iterator<PdDosageDetail> it = detailList.iterator();
+        while(it.hasNext()){
+            PdDosageDetail child = it.next();
+            if(child.getDosageCount()==null || child.getProductId()==null){
+                it.remove();
+            }
+        }
+        List<PdDosageDetail> tempArray = new ArrayList<>();
+        List<PdDosageDetail> chargeArray = new ArrayList<>();
+        if(detailList != null && detailList.size() > 0) {
+            //总数量
+            BigDecimal dosageTotal = new BigDecimal(0);
+            //总金额
+            BigDecimal moneyTotal = new BigDecimal(0);
+            //产品物流
+            List<PdStockLog> logList = new ArrayList<PdStockLog>();
+            //唯一码
+            List<PdProductStockUniqueCode> productStockUniqueCodes = new ArrayList<>();
+            //数据合并
+//            List<PdDosageDetail> afterDealList = dealRepeatData(detailList);
+            JSONObject json = new JSONObject();
+            int i = 0;
+            boolean validFlag = true;
+            for(PdDosageDetail pdd : detailList){
+                //校验不合法数据和大于库存数据
+                PdProductStock pps = new PdProductStock();
+                pps.setId(pdd.getProductStockId());
+                PdProductStock tempPps = pdProductStockService.getById(pps);
+                if( null == tempPps || pdd.getDosageCount() > tempPps.getStockNum()){
+                    validFlag = false;
+                    json.put(String.valueOf(i), pdd);
+                    i = i + 1;
+                    continue;
+                }
+
+                BigDecimal sprice = pdd.getSellingPrice()==null?new BigDecimal(0):pdd.getSellingPrice();
+                BigDecimal pdMoney = new BigDecimal(pdd.getDosageCount()).multiply(sprice);
+                BigDecimal dosageCount = new BigDecimal(pdd.getDosageCount());
+                dosageTotal = dosageCount.add(dosageTotal);
+                moneyTotal = pdMoney.add(moneyTotal);
+                pdd.setDosageId(pdDosage.getId());
+                pdd.setAmountMoney(pdMoney);
+                pdd.setLeftRefundNum(pdd.getDosageCount());
+                //产品追踪信息
+                PdStockLog prodLog = new PdStockLog();
+                //需要收费的产品集合
+                if(PdConstant.CHARGE_FLAG_0.equals(pdDosage.getHyCharged()) && PdConstant.CHARGE_FLAG_0.equals(pdd.getIsCharge()) && !"".equals(pdd.getChargeCode())){
+                    pdd.setHyCharged(PdConstant.CHARGE_FLAG_0);
+                    prodLog.setLogType(PdConstant.STOCK_LOG_TYPE_6);
+                    chargeArray.add(pdd);
+                }else{
+                    //不收费的产品集合
+                    pdd.setHyCharged(PdConstant.CHARGE_FLAG_1);
+                    prodLog.setLogType(PdConstant.STOCK_LOG_TYPE_3);
+                    tempArray.add(pdd);
+                }
+                prodLog.setBatchNo(pdd.getBatchNo());
+                prodLog.setProductBarCode(pdd.getProductBarCode());
+                prodLog.setExpDate(pdd.getExpDate());
+                prodLog.setProductId(pdd.getProductId());
+                prodLog.setProductNum(pdd.getDosageCount());
+                prodLog.setInFrom(pdDosage.getDepartName());
+                prodLog.setOutTo("病人:"+pdDosage.getPatientInfo()!=null?pdDosage.getPatientInfo():"");
+                prodLog.setPatientInfo(pdDosage.getPatientDetailInfo());
+                prodLog.setInvoiceNo(pdDosage.getDosageNo());
+                prodLog.setChargeDeptName(pdDosage.getExeDeptName());
+                prodLog.setRecordTime(DateUtils.getDate());
+                logList.add(prodLog);
+                PdProductStockUniqueCode pdProductStockUniqueCode = new PdProductStockUniqueCode();
+                pdProductStockUniqueCode.setId(pdd.getRefBarCode());
+                pdProductStockUniqueCode.setCodeState(PdConstant.CODE_PRINT_STATE_2);//已用完状态
+                productStockUniqueCodes.add(pdProductStockUniqueCode);
+            }
+            if (!validFlag) {//数据校验没通过
+                throw new JeecgBootException("数据校验失败");
+            } else {
+
+                LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+                pdDosage.setDisplayFlag(displayFlag);//是否有收费接口标识，0有1没有
+                pdDosage.setTotalSum(dosageTotal.doubleValue());
+                pdDosage.setUpdateTime(DateUtils.getDate());
+                pdDosage.setTotalPrice(moneyTotal);
+                pdDosage.setDosageBy(sysUser.getId());
+                pdDosage.setDosageDate(DateUtils.getDate());
+                pdDosage.setDosageType(PdConstant.DOSAGE_TYPE_0);//唯一码使用
+                if (PdConstant.CHARGE_FLAG_0.equals(pdDosage.getHyCharged()) && chargeArray.size() > 0){
+                    // 计费接口
+                    for(PdDosageDetail detail :chargeArray){
+                        JSONObject result = AxisGZWYUtils.exeCharge(pdDosage,detail);
+                        if(!PdConstant.SUCCESS_0.equals(result.getString("code"))){
+                            logger.error("执行HIS收费接口失败！HIS返回："+result.getString("msg"));
+                            throw new RuntimeException("执行HIS收费接口失败！HIS返回："+result.getString("msg"));
+                        }
+                    }
+                    pdDosageDetailService.saveBatch(chargeArray);
+                }
+                if(!tempArray.isEmpty()){
+                    pdDosageDetailService.saveBatch(tempArray);
+                }
+                if(!logList.isEmpty()){
+                    pdStockLogService.saveBatch(logList);
+                }
+                //保存用量
+                this.save(pdDosage);
+                //扣减当前库房的库存
+                pdProductStockTotalService.updateUseStock(sysUser.getCurrentDepartId(),detailList);
+                //批量更新条码状态
+                 pdProductStockUniqueCodeService.updateBatchById(productStockUniqueCodes);
             }
         }
         return chargeArray;

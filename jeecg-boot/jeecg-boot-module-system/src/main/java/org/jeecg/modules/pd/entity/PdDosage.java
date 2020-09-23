@@ -10,6 +10,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
+import org.apache.commons.lang.StringUtils;
 import org.jeecg.modules.pd.vo.PdGoodsAllocationPage;
 import org.jeecgframework.poi.excel.annotation.Excel;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -352,7 +353,7 @@ public class PdDosage extends BaseEntity {
     }
 
     public void setCardId(String cardId) {
-        if(!"".equals(cardId)){
+        if(!StringUtils.isEmpty(cardId)){
             if(cardId.length()!=18){
                 String str = cardId;
                 String str1 = cardId;

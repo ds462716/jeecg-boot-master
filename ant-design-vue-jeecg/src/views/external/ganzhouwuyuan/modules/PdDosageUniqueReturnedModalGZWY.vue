@@ -113,38 +113,21 @@
                   </a-col>
                 </a-row>
                 <a-row>
-                  <a-col :md="6" :sm="8" v-if="hyCharged">
-                    <a-form-item label="住院号" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                      <a-input :disabled="disableSubmit" v-decorator="[ 'inHospitalNo', validatorRules.inHospitalNo]"  @keyup.enter.native="selectHis(0)"></a-input>
-                    </a-form-item>
-                  </a-col>
-                  <a-col :md="6" :sm="8" v-else="!hyCharged">
-                    <a-form-item label="住院号" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                      <a-input :disabled="disableSubmit" v-decorator="[ 'inHospitalNo']" @keyup.enter.native="selectHis(0)"></a-input>
-                    </a-form-item>
-                  </a-col>
-                  <a-col :md="6" :sm="8" v-if="hyCharged">
-                    <a-form-item label="申请号" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                      <a-input :disabled="disableSubmit" v-decorator="[ 'applicationNumber', validatorRules.applicationNumber]"  @keyup.enter.native="selectHis(1)"></a-input>
-                    </a-form-item>
-                  </a-col>
-                  <a-col :md="6" :sm="8" v-else="!hyCharged">
-                    <a-form-item label="申请号" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                      <a-input :disabled="disableSubmit" v-decorator="[ 'applicationNumber']" @keyup.enter.native="selectHis(1)"></a-input>
-                    </a-form-item>
-                  </a-col>
-                </a-row>
-                <a-row>
                   <a-col :md="6" :sm="8">
                     <a-form-item label="病人姓名" :labelCol="labelCol" :wrapperCol="wrapperCol">
                       <a-input :disabled="true" v-decorator="[ 'patientInfo', validatorRules.patientInfo]" ></a-input>
                     </a-form-item>
                   </a-col>
-                  <a-col :md="6" :sm="8">
+                  <a-col :md="6" :sm="8" v-if="hyCharged">
+                    <a-form-item label="住院号" :labelCol="labelCol" :wrapperCol="wrapperCol">
+                      <a-input :disabled="true" v-decorator="[ 'inHospitalNo', validatorRules.inHospitalNo]"  @keyup.enter.native="selectHis(0)"></a-input>
+                    </a-form-item>
+                  </a-col>
+                <!--  <a-col :md="6" :sm="8">
                     <a-form-item label="门诊号" :labelCol="labelCol" :wrapperCol="wrapperCol">
                       <a-input :disabled="true" v-decorator="[ 'outpatientNumber', validatorRules.outpatientNumber]" ></a-input>
                     </a-form-item>
-                  </a-col>
+                  </a-col>-->
                   <a-col :md="6" :sm="8">
                     <a-form-item label="手术编号" :labelCol="labelCol" :wrapperCol="wrapperCol">
                       <a-input :disabled="true" v-decorator="[ 'operativeNumber', validatorRules.operativeNumber]" ></a-input>
@@ -379,7 +362,7 @@
         },
         url: {
           init:"/pd/pdDosage/initModal",
-          uniqueDosageReturned: "/pd/newPdDosage/uniqueDosageReturned",
+          uniqueDosageReturned: "/pd/pdDosageGZWY/uniqueDosageReturned",//库存返回
           add: "/pd/pdDosage/add",
           edit: "/pd/pdDosage/edit",
           departList:"/pd/pdDepart/getSysDepartList",
@@ -424,14 +407,14 @@
                 this.totalSum = res.result.totalSum;
                 this.totalPrice = res.result.totalPrice;
                 this.pdDosageDetailTable.dataSource = res.result.pdDosageDetails || [];
-                let fieldval = pick(this.initData,'dosageNo','dosageDate','departName','outHuoweiCode','dosageByName','inHospitalNo','patientInfo','patientDetailInfo','outpatientNumber','operativeNumber','exeDeptName','exeDeptId','oprDeptName','oprDeptId','surgeonName','surgeonId','sqrtDoctorName','sqrtDoctorId','subordinateWardName','subordinateWardId','remarks');
+                let fieldval = pick(this.initData,'dosageNo','operationName','dosageDate','departName','outHuoweiCode','dosageByName','inHospitalNo','patientInfo','patientDetailInfo','outpatientNumber','operativeNumber','exeDeptName','exeDeptId','oprDeptName','oprDeptId','surgeonName','surgeonId','sqrtDoctorName','sqrtDoctorId','subordinateWardName','subordinateWardId','remarks');
                  this.form.setFieldsValue(fieldval);
                 this.goodsAllocationList = res.result.goodsAllocationList;
                 //获取光标
                 this.$refs['productNumberInput'].focus();
               }else{  // 新增页
                 this.initData = res.result;
-                let fieldval = pick(this.initData,'dosageNo','dosageDate','departName','outHuoweiCode','dosageByName','inHospitalNo','patientInfo','patientDetailInfo','outpatientNumber','operativeNumber','exeDeptName','exeDeptId','oprDeptName','oprDeptId','surgeonName','surgeonId','sqrtDoctorName','sqrtDoctorId','subordinateWardName','subordinateWardId','remarks');
+                let fieldval = pick(this.initData,'dosageNo','operationName','dosageDate','departName','outHuoweiCode','dosageByName','inHospitalNo','patientInfo','patientDetailInfo','outpatientNumber','operativeNumber','exeDeptName','exeDeptId','oprDeptName','oprDeptId','surgeonName','surgeonId','sqrtDoctorName','sqrtDoctorId','subordinateWardName','subordinateWardId','remarks');
                  this.form.setFieldsValue(fieldval);
                 this.goodsAllocationList = res.result.goodsAllocationList;
                 //获取光标

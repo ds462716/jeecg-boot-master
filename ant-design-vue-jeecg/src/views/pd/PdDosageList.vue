@@ -395,7 +395,7 @@
           this.$refs.pdDosageReturnedModalFCRMYY.disableSubmit = false;
         }else if(this.hospitalCode=="GZWY"){ // 赣州五院
           if(record.dosageType=="0"){
-            //唯一码还回
+            //唯一码库存还回
             this.$refs.uniqueReturnedModal.edit(record);
             this.$refs.uniqueReturnedModal.title="库存还回";
             this.$refs.uniqueReturnedModal.disableSubmit = false;

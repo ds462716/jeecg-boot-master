@@ -135,11 +135,11 @@
                       <a-input :disabled="true" v-decorator="[ 'patientInfo', validatorRules.patientInfo]" ></a-input>
                     </a-form-item>
                   </a-col>
-                  <a-col :md="6" :sm="8">
+                  <!--<a-col :md="6" :sm="8">
                     <a-form-item label="门诊号" :labelCol="labelCol" :wrapperCol="wrapperCol">
                       <a-input :disabled="true" v-decorator="[ 'outpatientNumber', validatorRules.outpatientNumber]" ></a-input>
                     </a-form-item>
-                  </a-col>
+                  </a-col>-->
                   <a-col :md="6" :sm="8">
                     <a-form-item label="手术编号" :labelCol="labelCol" :wrapperCol="wrapperCol">
                       <a-input :disabled="true" v-decorator="[ 'operativeNumber', validatorRules.operativeNumber]" ></a-input>
@@ -154,14 +154,13 @@
                       <a-input type="hidden" v-decorator="[ 'oprDeptId']"></a-input>
                     </a-form-item>
                   </a-col>
-                </a-row>
-
-                <a-row>
                   <a-col :md="6" :sm="8">
                     <a-form-item label="手术名称" :labelCol="labelCol" :wrapperCol="wrapperCol">
                       <a-input :disabled="true" v-decorator="[ 'operationName', validatorRules.operationName]" ></a-input>
                     </a-form-item>
                   </a-col>
+                </a-row>
+                <a-row>
                   <a-col :md="6" :sm="8">
                     <a-form-item label="所属科室" :labelCol="labelCol" :wrapperCol="wrapperCol">
                       <a-input :disabled="true" v-decorator="[ 'exeDeptName', validatorRules.exeDeptName]" ></a-input>
@@ -227,7 +226,7 @@
   import {stockScanCode} from '@/utils/barcode'
   import {httpAction, deleteAction, getAction} from '@/api/manage'
   import { JEditableTableMixin } from '@/mixins/JEditableTableMixin'
-  import PdChooseDosageListModel from "../../../pd/modules/PdChooseDosageListModel"
+  import PdChooseDosageListModel from "../../../external/ganzhouwuyuan/modules/PdChooseDosageListModelGZWY"
   import {uniqueScanCode} from '@/utils/barcode'
 
   const VALIDATE_NO_PASSED = Symbol()
@@ -344,6 +343,7 @@
           subordinateWardId: {rules: []},
           subordinateWardName: {rules: []},
           outpatientNumber: {rules: []},
+          applicationNumber: {rules: []},
           operativeNumber: {rules: []},
           displayFlag: {rules: []},
           remarks: {rules: []},
@@ -351,12 +351,12 @@
           departParentId: {rules: [{required: true, message: '请输入所属医院!'},]},
         },
         url: {
-          init:"/pd/pdDosage/initModal",
-          submit: "/pd/newPdDosage/uniqueSubmit",
+          init:"/pd/pdDosageGZWY/initModal",
+          submit: "/pd/pdDosageGZWY/uniqueSubmit",//唯一码提交
           add: "/pd/pdDosage/add",
           edit: "/pd/pdDosage/edit",
           departList:"/pd/pdDepart/getSysDepartList",
-          queryPatientInfoList:"/pd/newPdDosage/queryPatientInfoList",
+          queryPatientInfoList:"/pd/pdDosageGZWY/queryPatientInfoList",
         }
       }
     },
@@ -398,7 +398,7 @@
                 this.totalSum = res.result.totalSum;
                 this.totalPrice = res.result.totalPrice;
                 this.pdDosageDetailTable.dataSource = res.result.pdDosageDetails || [];
-                let fieldval = pick(this.initData,'dosageNo','dosageDate','departName','outHuoweiCode','dosageByName','inHospitalNo','patientInfo','patientDetailInfo','outpatientNumber','operativeNumber','exeDeptName','exeDeptId','oprDeptName','oprDeptId','surgeonName','surgeonId','sqrtDoctorName','sqrtDoctorId','subordinateWardName','subordinateWardId','remarks');
+                let fieldval = pick(this.initData,'dosageNo','dosageDate','operationName','departName','outHuoweiCode','dosageByName','inHospitalNo','patientInfo','patientDetailInfo','outpatientNumber','operativeNumber','exeDeptName','exeDeptId','oprDeptName','oprDeptId','surgeonName','surgeonId','sqrtDoctorName','sqrtDoctorId','subordinateWardName','subordinateWardId','remarks');
                 this.form.setFieldsValue(fieldval);
                 this.goodsAllocationList = res.result.goodsAllocationList;
                 //获取光标
@@ -407,7 +407,7 @@
                 this.hyCharged = true;
                 this.prjType = "1";
                 this.initData = res.result;
-                let fieldval = pick(this.initData,'dosageNo','dosageDate','departName','outHuoweiCode','dosageByName','inHospitalNo','patientInfo','patientDetailInfo','outpatientNumber','operativeNumber','exeDeptName','exeDeptId','oprDeptName','oprDeptId','surgeonName','surgeonId','sqrtDoctorName','sqrtDoctorId','subordinateWardName','subordinateWardId','remarks');
+                let fieldval = pick(this.initData,'dosageNo','dosageDate','operationName','departName','outHuoweiCode','dosageByName','inHospitalNo','patientInfo','patientDetailInfo','outpatientNumber','operativeNumber','exeDeptName','exeDeptId','oprDeptName','oprDeptId','surgeonName','surgeonId','sqrtDoctorName','sqrtDoctorId','subordinateWardName','subordinateWardId','remarks');
                 this.form.setFieldsValue(fieldval);
                 this.goodsAllocationList = res.result.goodsAllocationList;
                 //开关-是否根据规格数量扣减库存 1-是；0-否
@@ -453,8 +453,8 @@
 
 
       selectHis(num){//查詢病人信息   num:0：住院病人查詢   1：門診病人查詢
-        let  medicalRecordNo='';
-        let  outpatientNumber='';
+        let  inHospitalNo='';
+        let  applicationNumber='';
         if(num=='0'){
           inHospitalNo=this.form.getFieldValue('inHospitalNo');
           if(inHospitalNo=="" || inHospitalNo==null){
@@ -473,8 +473,8 @@
         getAction(this.url.queryPatientInfoList,formData).then((res)=>{
           if (res.success) {
             if(res.result.length==1){
-              res.result[0].patientDetailInfo="姓名:"+res.result[0].patientInfo+",性别:"+res.result[0].fsfXb+",出生日期:"+res.result[0].fsfCsrq;
-              let fieldval = pick(res.result[0],'inHospitalNo','patientInfo','operativeNumber','operationName','outpatientNumber','medicalRecordNo','sqrtDoctorName','sqrtDoctorId','oprDeptId','oprDeptName','exeDeptId','exeDeptName','surgeonName','patientDetailInfo','hospitalizationsNum','remarks','extension1','extension2','subordinateWardName');
+              res.result[0].patientDetailInfo="姓名:"+res.result[0].patientInfo+",性别:"+res.result[0].fsfXb+",登记日期:"+res.result[0].oprDate;
+              let fieldval = pick(res.result[0],'inHospitalNo','applicationNumber','patientInfo','operativeNumber','operationName','outpatientNumber','medicalRecordNo','sqrtDoctorName','sqrtDoctorId','oprDeptId','oprDeptName','exeDeptId','exeDeptName','surgeonName','patientDetailInfo','hospitalizationsNum','remarks','extension1','extension2','subordinateWardName');
                this.form.setFieldsValue(fieldval);
             }else{
               this.$refs.PdChooseDosageListModel.width = 1550;
@@ -489,8 +489,8 @@
 
 
       modalFormOk (formData) { //选择病人信息确定后返回所选择的数据
-        formData.patientDetailInfo="姓名:"+formData.patientInfo+",性别:"+formData.fsfXb+",出生日期:"+formData.fsfCsrq;
-        let fieldval = pick(formData,'inHospitalNo','patientInfo','operativeNumber','operationName','outpatientNumber','medicalRecordNo','sqrtDoctorName','sqrtDoctorId','oprDeptId','oprDeptName','exeDeptId','exeDeptName','surgeonName','patientDetailInfo','hospitalizationsNum','remarks','extension1','extension2','subordinateWardName');
+        formData.patientDetailInfo="姓名:"+formData.patientInfo+",性别:"+formData.fsfXb+",登记日期:"+formData.oprDate;
+        let fieldval = pick(formData,'inHospitalNo','patientInfo','applicationNumber','operativeNumber','operationName','outpatientNumber','medicalRecordNo','sqrtDoctorName','sqrtDoctorId','oprDeptId','oprDeptName','exeDeptId','exeDeptName','surgeonName','patientDetailInfo','hospitalizationsNum','remarks','extension1','extension2','subordinateWardName');
         this.form.setFieldsValue(fieldval);
       },
 
@@ -687,8 +687,8 @@
 
       // 保存 提交 修改 请求函数
       request(formData) {
-        if(formData.inHospitalNo && formData.outpatientNumber){
-          this.$message.error("请先根据住院号或门诊号查询病人信息！");
+        if(formData.inHospitalNo && formData.applicationNumber){
+          this.$message.error("请先根据住院号或申请号查询病人信息！");
           return;
         }
         let url = this.url.submit, method = 'post'

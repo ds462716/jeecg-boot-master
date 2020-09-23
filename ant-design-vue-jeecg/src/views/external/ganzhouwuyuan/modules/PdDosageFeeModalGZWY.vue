@@ -122,8 +122,8 @@
                     </a-form-item>
                   </a-col>
                   <a-col :md="6" :sm="8">
-                    <a-form-item label="门诊号" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                      <a-input :disabled="true" v-decorator="[ 'outpatientNumber', validatorRules.outpatientNumber]" ></a-input>
+                    <a-form-item label="住院号" :labelCol="labelCol" :wrapperCol="wrapperCol">
+                      <a-input :disabled="true" v-decorator="[ 'inHospitalNo', validatorRules.inHospitalNo]" ></a-input>
                     </a-form-item>
                   </a-col>
                   <a-col :md="6" :sm="8">
@@ -360,7 +360,7 @@
             ]},
         },
         url: {
-          init:"/pd/pdDosage/initModal",
+          init:"/pd/pdDosageGZWY/initModal",
           dosageCnclFee: "/pd/newPdDosage/dosageCnclFee",//取消收费
           dosageFee: "/pd/newPdDosage/dosageFee",//收费
           add: "/pd/pdDosage/add",

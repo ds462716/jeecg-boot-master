@@ -74,6 +74,22 @@ public class PdDosageGZWYController {
     }
 
     /**
+     * 唯一码提交(收费)
+     * @param pdDosage
+     * @return
+     */
+    @PostMapping(value = "/uniqueSubmit")
+    public Result<?> uniqueSubmit(@RequestBody PdDosage pdDosage) {
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        List<PdProductStockCheckPermission> checkList = pdProductStockCheckPermissionService.list(new LambdaQueryWrapper<PdProductStockCheckPermission>().eq(PdProductStockCheckPermission::getTargetDepartId, sysUser.getCurrentDepartId()));
+        if(org.apache.commons.collections.CollectionUtils.isNotEmpty(checkList)){
+            return Result.error("本库房正在盘点，不能使用！");
+        }
+        List<PdDosageDetail> list = pdDosageGZWYService.saveUniqueMain(pdDosage, PdConstant.IS_CHARGE_FLAG_0);
+        return Result.ok("添加成功！");
+    }
+
+    /**
      * 用量退回
      * @param pdDosage
      * @return
@@ -83,10 +99,28 @@ public class PdDosageGZWYController {
         LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
         List<PdProductStockCheckPermission> checkList = pdProductStockCheckPermissionService.list(new LambdaQueryWrapper<PdProductStockCheckPermission>().eq(PdProductStockCheckPermission::getTargetDepartId, sysUser.getCurrentDepartId()));
         if(org.apache.commons.collections.CollectionUtils.isNotEmpty(checkList)){
-            return Result.error("本库房正在盘点，不能使用！");
+            return Result.error("本库房正在盘点，不能操作！");
         }
         //不收费
         pdDosageGZWYService.dosageReturned(pdDosage);
+        return Result.ok("退回成功！");
+    }
+
+
+    /**
+     * 唯一码用量退回
+     * @param pdDosage
+     * @return
+     */
+    @PostMapping(value = "/uniqueDosageReturned")
+    public Result<?> uniqueDosageReturned(@RequestBody PdDosage pdDosage) {
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        List<PdProductStockCheckPermission> checkList = pdProductStockCheckPermissionService.list(new LambdaQueryWrapper<PdProductStockCheckPermission>().eq(PdProductStockCheckPermission::getTargetDepartId, sysUser.getCurrentDepartId()));
+        if(org.apache.commons.collections.CollectionUtils.isNotEmpty(checkList)){
+            return Result.error("本库房正在盘点，不能操作！");
+        }
+        //不收费
+        pdDosageService.uniqueDosageReturned(pdDosage);
         return Result.ok("退回成功！");
     }
 
@@ -137,6 +171,36 @@ public class PdDosageGZWYController {
         }
         return Result.ok("操作成功！");
     }
+
+    /**
+     * 唯一码取消收费
+     * @param pdDosage
+     * @return
+     */
+    @PostMapping(value = "/uniqueDosageCnclFee")
+    public Result<?> uniqueDosageCnclFee(@RequestBody PdDosage pdDosage) {
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        List<PdProductStockCheckPermission> checkList = pdProductStockCheckPermissionService.list(new LambdaQueryWrapper<PdProductStockCheckPermission>().eq(PdProductStockCheckPermission::getTargetDepartId, sysUser.getCurrentDepartId()));
+        if(org.apache.commons.collections.CollectionUtils.isNotEmpty(checkList)){
+            return Result.error("本库房正在盘点，不能使用！");
+        }
+        List<PdDosageDetail> detailList = pdDosage.getPdDosageDetails();
+        if (CollectionUtils.isNotEmpty(detailList)) {
+            //HIS退费接口
+            for(PdDosageDetail detail : detailList) {
+                JSONObject result = AxisGZWYUtils.exeRefund(pdDosage, detail);
+                if (!PdConstant.SUCCESS_0.equals(result.getString("code"))) {
+                    logger.error("执行HIS退费接口失败！HIS返回：" + result.getString("msg"));
+                    return Result.error("执行HIS退费接口失败！HIS返回：" + result.getString("msg"));
+                }
+            }
+            pdDosageService.uniqueDosageCnclFee(pdDosage);
+        }
+        return Result.ok("操作成功！");
+    }
+
+
+
 
     /**
      * 补收费
