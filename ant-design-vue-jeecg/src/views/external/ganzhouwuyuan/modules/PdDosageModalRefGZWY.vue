@@ -456,20 +456,20 @@
         let  medicalRecordNo='';
         let  outpatientNumber='';
         if(num=='0'){
-          medicalRecordNo=this.form.getFieldValue('medicalRecordNo');
-          if(medicalRecordNo=="" || medicalRecordNo==null){
-            this.$message.error("请输入病历号！");
+          inHospitalNo=this.form.getFieldValue('inHospitalNo');
+          if(inHospitalNo=="" || inHospitalNo==null){
+            this.$message.error("请输入住院号！");
             return;
           }
         }else{
-          outpatientNumber=this.form.getFieldValue('outpatientNumber');
-          if(outpatientNumber=="" || outpatientNumber==null){
-            this.$message.error("请输入门诊号！");
+          applicationNumber=this.form.getFieldValue('applicationNumber');
+          if(applicationNumber=="" || applicationNumber==null){
+            this.$message.error("请输入申请号！");
             return;
           }
         }
-        let  formData={medicalRecordNo:medicalRecordNo,
-          outpatientNumber:outpatientNumber,prjType:num};
+        let  formData={inHospitalNo:inHospitalNo,
+          applicationNumber:applicationNumber,prjType:num};
         getAction(this.url.queryPatientInfoList,formData).then((res)=>{
           if (res.success) {
             if(res.result.length==1){
