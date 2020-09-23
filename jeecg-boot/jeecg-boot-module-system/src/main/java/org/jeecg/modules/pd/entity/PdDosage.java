@@ -344,6 +344,7 @@ public class PdDosage extends BaseEntity {
     private String admissionDiagnosis;//入院诊断
     @TableField(exist = false)
     private String inspectioniItemsNumber;//检查项目
+    @TableField(exist = false)
     private String inspectioniItemsName;//检查项目
 
     public String getCardId() {
