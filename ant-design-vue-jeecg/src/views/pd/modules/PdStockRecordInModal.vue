@@ -71,12 +71,32 @@
                   <a-input disabled v-decorator="[ 'supplierName', validatorRules.supplierName]"></a-input>
                 </a-form-item>
               </a-col>
-              <a-col :span="6">
-                <a-form-item label="业态" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                  <j-dict-select-tag-expand :disabled="disableSubmit" type="list" v-decorator="['format', validatorRules.format]" :trigger-change="true" dictCode="format" placeholder="请选择入库类型"/>
+              <a-col :span="6" v-show="showFormatInDepart">
+                <a-form-item label="库房" :labelCol="labelCol" :wrapperCol="wrapperCol">
+                  <a-select
+                    showSearch
+                    placeholder="请选择库房"
+                    :disabled="disableSubmit"
+                    :defaultActiveFirstOption="false"
+                    :showArrow="true"
+                    :filterOption="false"
+                    :allowClear="true"
+                    @search="departHandleSearch"
+                    @change="departHandleChange"
+                    @focus="departHandleSearch"
+                    :notFoundContent="notFoundContent"
+                    v-decorator="[ 'inOtherDepartId', validatorRules.inOtherDepartId]"
+                  >
+                    <a-select-option v-for="d in departList" :key="d.id" :text="d.departName" >{{d.departName}}</a-select-option>
+                  </a-select>
                 </a-form-item>
               </a-col>
-              <a-col :span="6">
+              <a-col :span="6" v-show="showFormat">
+                <a-form-item label="业态" :labelCol="labelCol" :wrapperCol="wrapperCol">
+                  <j-dict-select-tag-expand :disabled="disableSubmit" type="list" v-decorator="['format', validatorRules.format]" :trigger-change="true" dictCode="format" placeholder="请选择业态"/>
+                </a-form-item>
+              </a-col>
+              <a-col :span="6" v-show="showDistributor">
                 <a-form-item label="配送商" :labelCol="labelCol" :wrapperCol="wrapperCol" v-show="!disableSubmit">
                   <a-select
                     showSearch
@@ -371,6 +391,11 @@
         showPrintBtn:false,
         showRefuseReason:false,
         showSubmitAndPrint:false,
+        showOrderTable:false,
+        showUniqueTab:false,
+        showFormat:false,// 是否显示业态
+        showDistributor:false,//是否显示配送商
+        showFormatInDepart:false,//是否显示入库库房，目前只用于赣州肿瘤医院，入库后直接生成出库单
 
         initData:{},
         queryParam:{},
@@ -380,7 +405,7 @@
         allowEditPrice:"",         //开关-是否允许出入库时可修改进价和出价   1-允许；0不允许
         allowStockInExpProduct:"", //开关-是否允许入库证照过期的产品   1-允许；0不允许
         allowStockInExpSupplier:"",//开关-是否允许入库证照过期的供应商   1-允许；0不允许
-        showSBarcode:false,           //开关-是否显示二级条码框（入库、出库、退货） 1-显示；0-不显示
+        showSBarcode:false,        //开关-是否显示二级条码框（入库、出库、退货） 1-显示；0-不显示
         inDepartName:"",
         supplierName:"",
         distributorName:"",
@@ -393,8 +418,11 @@
         distributorValue: undefined,
         distributorData: [],
         //配送商下拉列表 end
-        showOrderTable:false,
-        showUniqueTab:false,
+        //部门下拉列表 start
+        departValue: undefined,
+        departList:[],
+        inDepartName:"",
+        //部门下拉列表 end
         // orderNo:"",
         mergeOrderNo:"",
         totalSum:'0',
@@ -440,6 +468,7 @@
           humidity:{rules: [{required: true, message: '请输入湿度!'},{pattern: '^-?\\d+\\.?\\d*$',message: '只能输入数字' }]},
           outDepartId:{},
           inDepartId:{},
+          inOtherDepartId:{},
           distributorId:{},
           supplierId:{rules: [{required: true, message: '请选择供应商!'}]},
           distributorName:{},
@@ -512,6 +541,7 @@
           querySupplier:"/pd/pdSupplier/getSupplierList",
           queryDistributor:"/pd/pdDistributor/getDistributorList",
           querySupplierById:"/pd/pdSupplier/queryById",
+          departList:"/pd/pdDepart/getSysDepartList",
           pdStockRecordDetail: {
             list: "/pd/pdStockRecordIn/queryPdStockRecordDetailByMainId",
             uniqueList: "/pd/pdStockRecordIn/queryUniqueDetailPageList"
@@ -567,6 +597,7 @@
         //初始化供应商，用于回显供应商
         this.supplierHandleSearch();
         this.distributorHandleSearch();
+        this.departHandleSearch();
 
         let params = {};
         if(this.model.id){
@@ -582,7 +613,7 @@
           }
 
           this.popModal.title="入库明细";
-          let fieldval = pick(this.model,'recordNo','mergeOrderNo','inType','submitBy','submitByName','submitDate','remarks','inDepartId','supplierId','distributorId','supplierName','distributorName',
+          let fieldval = pick(this.model,'recordNo','mergeOrderNo','inType','submitBy','submitByName','submitDate','remarks','inDepartId','inOtherDepartId','supplierId','distributorId','supplierName','distributorName',
             'testResult','storageResult','temperature','humidity','remarks','refuseReason','format')
           this.$nextTick(() => {
             this.form.setFieldsValue(fieldval);
@@ -618,7 +649,7 @@
                 this.initData.humidity = "50";
                 this.submitDateStr = res.result.submitDateStr;
                 this.inDepartName = res.result.inDepartName;
-                let fieldval = pick(this.initData,'recordNo','mergeOrderNo','inType','submitBy','submitByName','submitDate','remarks','inDepartId','supplierId','distributorId','supplierName','distributorName',
+                let fieldval = pick(this.initData,'recordNo','mergeOrderNo','inType','submitBy','submitByName','submitDate','remarks','inDepartId','inOtherDepartId','supplierId','distributorId','supplierName','distributorName',
                   'testResult','storageResult','temperature','humidity','remarks','refuseReason','format');
                 this.form.setFieldsValue(fieldval);
                 // //获取光标
@@ -640,9 +671,15 @@
               if(res.result.hospitalCode == 'GZZLYY'){
                 // 赣州肿瘤医院——出入库明细表列表（比通用多了“供应商单据号”和“发票号”）
                 this.pdStockRecordDetailTable.columns = gzzlyyColumns;
+                this.showFormat = false;     // 不显示业态
+                this.showDistributor = false;// 不显示配送商
+                this.showFormatInDepart = true;// 显示入库库房
               }else{
                 // 通用——出入库明细表列表
                 this.pdStockRecordDetailTable.columns = currencyColumns;
+                this.showFormat = true;
+                this.showDistributor = true;
+                this.showFormatInDepart = false;// 不显示入库库房
               }
               //开关-是否需要入库审批  1-是；0-否
               // if(res.result.allowStockInAudit == "0" && this.disableSubmit == false){
@@ -964,7 +1001,7 @@
         this.$message.error(msg)
       },
       popupCallback(row){
-        this.form.setFieldsValue(pick(row,'recordNo','mergeOrderNo','inType','submitBy','submitByName','submitDate','remarks','inDepartId','supplierId','distributorId','supplierName','distributorName',
+        this.form.setFieldsValue(pick(row,'recordNo','mergeOrderNo','inType','submitBy','submitByName','submitDate','remarks','inDepartId','inOtherDepartId','supplierId','distributorId','supplierName','distributorName',
           'testResult','storageResult','temperature','humidity','remarks','refuseReason','format'))
       },
 
@@ -1631,6 +1668,21 @@
        */
       isDisabledAuth(code){
         return !disabledAuthFilter(code);
+      },
+      // 部门下拉框搜索
+      departHandleSearch(value){
+        getAction(this.url.departList,{departName:value}).then((res)=>{
+          if (!res.success) {
+            this.cmsFailed(res.message);
+          }
+          this.departList = res.result;
+        })
+      },
+      // 部门下拉框变更
+      departHandleChange(value,option){
+        if(option){
+          this.inDepartName = option.data.attrs.text;
+        }
       },
     },
   }

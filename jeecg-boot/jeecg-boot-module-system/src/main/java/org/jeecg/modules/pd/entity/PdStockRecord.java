@@ -148,6 +148,7 @@ public class PdStockRecord extends BaseEntity {
     private String departId;
     private String departParentId;
     private String barCodeType;
+    private String inOtherDepartId;//入库库房，用于器械科入库直接出库到该库房（赣州肿瘤医院）
 
     // pd_stock_record表外字段 ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
     @ExcelCollection(name="出入库明细表")
@@ -217,6 +218,8 @@ public class PdStockRecord extends BaseEntity {
     /** 出库部门名称 **/
     @TableField(exist = false)
     private String outDepartName;
+    @TableField(exist = false)
+    private String inOtherDepartName;
     /** 供应商名称 **/
     @TableField(exist = false)
     private String supplierName;

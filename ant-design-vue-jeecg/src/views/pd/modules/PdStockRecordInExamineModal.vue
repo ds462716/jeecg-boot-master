@@ -48,42 +48,21 @@
               <a-col :span="6">
                 <a-form-item label="供应商" :labelCol="labelCol" :wrapperCol="wrapperCol">
                   <a-input disabled v-decorator="[ 'supplierName', validatorRules.supplierName]"></a-input>
-                  <!--<a-select-->
-                    <!--showSearch-->
-                    <!--placeholder="请选择供应商"-->
-                    <!--disabled-->
-                    <!--:supplierId="supplierValue"-->
-                    <!--:defaultActiveFirstOption="false"-->
-                    <!--:showArrow="true"-->
-                    <!--:filterOption="false"-->
-                    <!--:notFoundContent="notFoundContent"-->
-                    <!--v-decorator="[ 'supplierId', validatorRules.supplierId]"-->
-                  <!--&gt;-->
-                    <!--<a-select-option v-for="d in supplierData" :key="d.value">{{d.text}}</a-select-option>-->
-                  <!--</a-select>-->
                 </a-form-item>
               </a-col>
-              <a-col :span="6">
+              <a-col :span="6" v-show="showFormatInDepart">
+                <a-form-item label="库房" :labelCol="labelCol" :wrapperCol="wrapperCol">
+                  <a-input disabled v-decorator="[ 'inOtherDepartName']"></a-input>
+                </a-form-item>
+              </a-col>
+              <a-col :span="6" v-show="showFormat">
                 <a-form-item label="业态" :labelCol="labelCol" :wrapperCol="wrapperCol">
                   <j-dict-select-tag-expand disabled type="list" v-decorator="['format', validatorRules.format]" :trigger-change="true" dictCode="format" placeholder="请选择入库类型"/>
                 </a-form-item>
               </a-col>
-              <a-col :span="6">
+              <a-col :span="6" v-show="showDistributor">
                 <a-form-item label="配送商" :labelCol="labelCol" :wrapperCol="wrapperCol">
                   <a-input disabled v-decorator="[ 'distributorName', validatorRules.distributorName]"></a-input>
-                  <!--<a-select-->
-                    <!--showSearch-->
-                    <!--placeholder="请选择配送商"-->
-                    <!--disabled-->
-                    <!--:supplierId="distributorValue"-->
-                    <!--:defaultActiveFirstOption="false"-->
-                    <!--:showArrow="true"-->
-                    <!--:filterOption="false"-->
-                    <!--:notFoundContent="notFoundContent"-->
-                    <!--v-decorator="[ 'distributorId', validatorRules.distributorId]"-->
-                  <!--&gt;-->
-                    <!--<a-select-option v-for="d in distributorData" :key="d.value">{{d.text}}</a-select-option>-->
-                  <!--</a-select>-->
                 </a-form-item>
               </a-col>
             </a-row>
@@ -275,6 +254,10 @@
         labelCol4: {span: 13},
         wrapperCol4: {span: 5},
         disableSubmit:false,
+        showOrderTable:false,
+        showFormat:false,// 是否显示业态
+        showDistributor:false,//是否显示配送商
+        showFormatInDepart:false,//是否显示入库库房，目前只用于赣州肿瘤医院，入库后直接生成出库单
 
         initData:{},
         queryParam:{},
@@ -287,7 +270,11 @@
         distributorValue: undefined,
         distributorData: [],
         //供应商下拉列表 end
-        showOrderTable:false,
+        //部门下拉列表 start
+        departValue: undefined,
+        departList:[],
+        inDepartName:"",
+        //部门下拉列表 end
         orderNo:"",
         totalSum:'0',
         inTotalPrice:'0.0000',
@@ -398,7 +385,7 @@
         // this.distributorHandleSearch();
         // this.supplierHandleSearch();
 
-        let fieldval = pick(this.model,'recordNo','inType','submitBy','submitByName','submitDate','inDepartId','supplierName','distributorName',
+        let fieldval = pick(this.model,'recordNo','inType','submitBy','submitByName','submitDate','inDepartId','inOtherDepartName','supplierName','distributorName',
           'testResult','storageResult','temperature','humidity','remarks','refuseReason','format')
 
         let params = { id: this.model.id }
@@ -425,9 +412,15 @@
               if(res.result.hospitalCode == 'GZZLYY'){
                 // 赣州肿瘤医院——出入库明细表列表（比通用多了“供应商单据号”和“发票号”）
                 this.pdStockRecordDetailTable.columns = gzzlyyColumns;
+                this.showFormat = false;     // 不显示业态
+                this.showDistributor = false;// 不显示配送商
+                this.showFormatInDepart = true;// 显示入库库房
               }else{
                 // 通用——出入库明细表列表
                 this.pdStockRecordDetailTable.columns = currencyColumns;
+                this.showFormat = true;
+                this.showDistributor = true;
+                this.showFormatInDepart = false;// 不显示入库库房
               }
               this.goodsAllocationList = res.result.goodsAllocationList;
               this.pdStockRecordDetailTable.columns.forEach((item, idx) => {
@@ -598,7 +591,7 @@
         this.$message.error(msg)
       },
       popupCallback(row){
-        this.form.setFieldsValue(pick(row,'recordNo','inType','submitBy','submitByName','submitDate','inDepartId','supplierName','distributorName',
+        this.form.setFieldsValue(pick(row,'recordNo','inType','submitBy','submitByName','submitDate','inDepartId','inOtherDepartName','supplierName','distributorName',
           'testResult','storageResult','temperature','humidity','remarks','refuseReason','format'))
       },
 

@@ -24,6 +24,7 @@
         a.humidity,
         a.out_depart_id,
         a.in_depart_id,
+        a.in_other_depart_id,
         a.supplier_id,
         a.distributor_id,
         a.audit_by,
@@ -53,6 +54,7 @@
         <include refid="PdStockRecordDetailColumns"/>,
         b.depart_name as inDepartName,
         c.depart_name as outDepartName,
+        c1.depart_name as inOtherDepartName,
         d.name as supplierName,
         e.realname as submitByName,
         f.realname as auditByName,
@@ -61,6 +63,7 @@
         pd_stock_record a
         left join sys_depart b on a.in_depart_id = b.id
         left join sys_depart c on a.out_depart_id = c.id
+        left join sys_depart c1 on a.in_other_depart_id = c1.id
         left join pd_supplier d on a.supplier_id = d.id
         left join sys_user e on a.submit_by = e.id
         left join sys_user f on a.audit_by = f.id

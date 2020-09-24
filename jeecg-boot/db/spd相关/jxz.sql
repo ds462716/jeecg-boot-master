@@ -172,3 +172,8 @@ ALTER TABLE `pd_stock_record_detail`
 ADD COLUMN `invoice_no` varchar(640) NULL COMMENT '发票号' AFTER `supplier_bill_no`;
 
 -- 赣州肿瘤截止 2020年9月21日15:38:01
+
+-- 2020年9月23日 14:43:12
+ALTER TABLE `pd_stock_record`
+ADD COLUMN `in_other_depart_id` varchar(64) NULL COMMENT '其他入库部门ID，用于器械科入库直接生成出库单出库到该库房' AFTER `in_depart_id`;
+

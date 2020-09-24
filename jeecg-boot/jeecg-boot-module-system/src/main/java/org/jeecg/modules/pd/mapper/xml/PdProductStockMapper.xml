@@ -321,6 +321,9 @@
 			<if test="barCodeType != null and barCodeType != ''">
 				AND a.bar_code_type = #{barCodeType}
 			</if>
+			<if test="recordDetailId != null and recordDetailId != ''">
+				AND a.record_detail_id = #{recordDetailId}
+			</if>
 		</where>
 
 	</select>
