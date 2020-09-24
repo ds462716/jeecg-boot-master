@@ -256,8 +256,18 @@ public class PdPdStatisticalReportImpl extends ServiceImpl<PdStatisticalReportMa
      * @return
      */
     @Override
-    public List<RpPurchaseUseReportPage> queryConsumptionView(RpPurchaseUseReportPage purchaseUseReportPage) {
-        return baseMapper.queryConsumptionView(purchaseUseReportPage);
+    public Map<String, Object> queryConsumptionView(RpPurchaseUseReportPage purchaseUseReportPage) {
+        Map<String,Object> resultMap = new HashMap<>();
+        List<RpPurchaseUseReportPage> list= baseMapper.queryConsumptionView(purchaseUseReportPage);
+        List<String> str = new ArrayList<>();
+        if(CollectionUtils.isNotEmpty(list)){
+            for(RpPurchaseUseReportPage info:list){
+                str.add(info.getName());
+            }
+        }
+        resultMap.put("dataSource8",list);
+        resultMap.put("visitFields7",str);
+        return resultMap;
     }
     /**
      *  综合统计报表    采购收费柱状图(根据科室统计)
@@ -272,10 +282,24 @@ public class PdPdStatisticalReportImpl extends ServiceImpl<PdStatisticalReportMa
         }
         //采购科室金额占比
         List<RpPurchaseUseReportPage> contionList= baseMapper.queryDepartContionView(purchaseUseReportPage);
+        List<String> str1 = new ArrayList<>();
+        if(CollectionUtils.isNotEmpty(contionList)){
+        for(RpPurchaseUseReportPage info:contionList){
+            str1.add(info.getName());
+           }
+        }
         resultMap.put("dataSource5",contionList);
+        resultMap.put("visitFields5",str1);
         //收费金额占比
         List<RpPurchaseUseReportPage> chargeList= baseMapper.queryDepartChargeView(purchaseUseReportPage);
+        List<String> str2 = new ArrayList<>();
+        if(CollectionUtils.isNotEmpty(chargeList)){
+            for(RpPurchaseUseReportPage info:chargeList){
+                str2.add(info.getName());
+            }
+        }
         resultMap.put("dataSource6",chargeList);
+        resultMap.put("visitFields6",str2);
         List<RpPurchaseUseReportPage> list= baseMapper.queryDepartPurchaseCountView(purchaseUseReportPage);
         Map<String,Object> map1=new HashMap<>();
         map1.put("name","采购金额");
@@ -288,17 +312,9 @@ public class PdPdStatisticalReportImpl extends ServiceImpl<PdStatisticalReportMa
         List<Double> list3=new ArrayList<>();
         List<Double> list4=new ArrayList<>();
         List<Double> list5=new ArrayList<>();
-        List<String> list6=new ArrayList<>();
         for(RpPurchaseUseReportPage info:list){
             //采购金额
             String type=info.getType();
-            /*String departType=info.getDepartType();
-            String parentId=info.getParentId();
-            SysDepart sys=null;
-                  if(departType.equals("3")){//如果是三级科室，则将数据计入在上级科室中
-                       sys=sysDepartMapper.getParentDepartId(parentId);
-                      type=sys.getDepartName();
-                  }*/
             list3.add(info.getY());
             list4.add(info.getX());
             list5.add(info.getS());
