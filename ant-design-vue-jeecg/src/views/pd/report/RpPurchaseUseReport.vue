@@ -97,9 +97,11 @@
             </div>-->
           <!--  <div :style="{ padding: '0 0 32px 32px' }"  >-->
 
-            <div>
+            <div :style="{ float : 'left' }"  >
               <h4 :style="{ marginBottom: '20px' }">采购科室金额占比</h4>
               <v-chart :options="polar9"/>
+            </div>
+            <div :style="{ float : 'right' }"  >
               <h4 :style="{ marginBottom: '20px' }">收费金额占比</h4>
               <v-chart :options="polar10"/>
             </div>
@@ -217,9 +219,9 @@
             <a-button type="primary" icon="download" @click="handleClickExportEcharts('8')">导出图表</a-button>
           </div>
           <a-card :bordered="false">
-            <div :style="{ padding: '0 0 320px 32px'}"  >
+            <div>
             <h4 :style="{ marginBottom: '20px' }">全院耗材占比</h4>
-            <v-chart :options="polar11"  :height="height"/>
+            <v-chart  :options="polar11"/>
             </div>
             <div class="table-operator">
             </div>
@@ -1031,7 +1033,7 @@
           },
           tooltip: {
             trigger: 'item',
-            formatter: '{a} <br/>{b} : {c} ({d}%)'
+            formatter: '{b}:{d}%'
           },
           series: [
             {
@@ -1040,11 +1042,23 @@
               center: ['50%', '50%'],
               selectedMode: 'single',
               data: [],
+              label : {
+                normal : {
+                  formatter: '{b}:{d}%',
+                  textStyle : {
+                    fontWeight : 'normal',
+                    fontSize : 15
+                  }
+                }
+              },
               emphasis: {
                 itemStyle: {
                   shadowBlur: 10,
                   shadowOffsetX: 0,
-                  shadowColor: 'rgba(0, 0, 0, 0.5)'
+                  shadowColor: 'rgba(0, 0, 0, 0.5)',
+
+
+
                 }
               }
             }
@@ -1061,7 +1075,7 @@
           },
           tooltip: {
             trigger: 'item',
-            formatter: '{a} <br/>{b} : {c} ({d}%)'
+            formatter: '{b}:{d}%'
           },
           legend: {
              bottom: 10,
@@ -1075,6 +1089,15 @@
               center: ['50%', '50%'],
               selectedMode: 'single',
               data: [],
+              label : {
+                normal : {
+                  formatter:  '{b}:{d}%',
+                  textStyle : {
+                    fontWeight : 'normal',
+                    fontSize : 15
+                  }
+                }
+              },
               emphasis: {
                 itemStyle: {
                   shadowBlur: 10,
@@ -1089,6 +1112,7 @@
 //--------------------------
         polar11: {
           bottom: 300,
+          color: ['#c23531',  '#61a0a8'],
           backgroundColor: '#ffffff',
           title: {
             text: '全院耗材费用占比',
@@ -1097,7 +1121,7 @@
           },
           tooltip: {
             trigger: 'item',
-            formatter: '{a} <br/>{b} : {c} ({d}%)'
+            formatter: '{b}:{d}%'
           },
           legend: {
             bottom: 10,
@@ -1111,6 +1135,15 @@
               center: ['50%', '50%'],
               selectedMode: 'single',
               data: [],
+              label : {
+                normal : {
+                  formatter:  '{b}:{d}%',
+                  textStyle : {
+                    fontWeight : 'normal',
+                    fontSize : 15
+                  }
+                }
+              },
               emphasis: {
                 itemStyle: {
                   shadowBlur: 10,
