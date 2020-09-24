@@ -42,9 +42,9 @@
           </div>
           <a-card :bordered="false">
             <!--采购收费对照图-->
-            <div :style="{ padding: '0 0 32px 32px' }"  >
-              <h4 :style="{ marginBottom: '20px' }">采购收费对照图</h4>
-              <v-chart :options="polar1"  :style="{width:'1600px'}"  />
+            <div :style="{ padding: '0 0 32px 32px' }" >
+               <h4 :style="{ marginBottom: '20px' }">采购收费对照图</h4>
+              <v-chart   :options="polar1"  :style="{width:'1600px'}"  />
             </div>
             <!--采购收费趋势图-->
             <div :style="{ padding: '0 0 32px 32px' }"  >
@@ -84,7 +84,7 @@
             <!--采购收费柱状图-->
             <div :style="{ padding: '0 0 32px 32px' }"  >
               <h4 :style="{ marginBottom: '20px' }">采购收费柱状图</h4>
-              <v-chart :options="polar3"  :style="{ width:'1600px'}"  />
+              <v-chart  :options="polar3"  :style="{ width:'1600px'}"  />
             </div>
             <!--采购收费趋势图-->
             <div :style="{ padding: '0 0 32px 32px' }"  >
@@ -221,7 +221,7 @@
           <a-card :bordered="false">
             <div>
             <h4 :style="{ marginBottom: '20px' }">全院耗材占比</h4>
-            <v-chart  :options="polar11"/>
+            <v-chart  :options="polar11"  :style="{ width:'1000px'}"/>
             </div>
             <div class="table-operator">
             </div>
@@ -281,6 +281,7 @@
           <div :style="{ padding: '0 0 32px 32px' }"  >
             <h4 :style="{ marginBottom: '20px' }">检验收费趋势图</h4>
             <v-chart :options="polar8"  :style="{ width:'1600px'}"  />
+
           </div>
         </a-tab-pane>
 
@@ -669,7 +670,8 @@
           backgroundColor: '#ffffff',
           //title:"采购收费对照图",
           tooltip: {trigger: 'axis'},
-          legend: {data: ['采购金额', '收费金额','不可收费金额'],
+          legend: {
+            data: ['采购金额', '收费金额','不可收费金额'],
             textStyle: { //图例文字的样式
               fontSize: 16
             },},
@@ -1195,7 +1197,7 @@
       loadData() {
         this.visible = true;
         this.activeKey = "1";
-        this.handleChangeTabs(1)
+        this.handleChangeTabs(1);
       },
 
       //tabs 切换事件
@@ -1624,12 +1626,10 @@
           }else if(str=='10'){
             fileName="检验收费趋势图";
           }
-          var a=document.getElementsByTagName('canvas');
-          var canvas = document.getElementsByTagName('canvas')[str];
-          let image = canvas.toDataURL({
-            type:"png",
-            pixelRatio: 2,
-            // backgroundColor:'#f1f6f9',//有人说不设置此项，导出图片的底色是黑色。我个人设置了也并没有什么卵用 要想设置导出图片有底色，就要设置Echart的背景色，不设置就是透明的。
+          var canvas=document.getElementsByTagName('canvas')[str];
+            let image = canvas.toDataURL({
+             type:"png",
+             pixelRatio: 2,
           });
           let alink = document.createElement("a");
           alink.href = image;

@@ -1653,7 +1653,7 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
         pdStockRecord.setRecordType(PdConstant.RECODE_TYPE_2); // 出库
         pdStockRecord.setSubmitStatus(PdConstant.SUBMIT_STATE_2); // 已提交
         pdStockRecord.setAuditStatus(PdConstant.AUDIT_STATE_2);//审核通过
-        pdStockRecord.setRemarks("高值耗材智能柜出库");
+        pdStockRecord.setRemarks("一体机出库");
         pdStockRecord.setBarCodeType(PdConstant.CODE_PRINT_TYPE_1);
         // 2、封装出库明细
         List<PdStockRecordDetail> detailList = new ArrayList<>();
@@ -1677,7 +1677,7 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
             detail.setDistributorId(stock.getDistributorId());
             detail.setProduceDate(stock.getProduceDate());
             detail.setBarCodeType(pdStockRecord.getBarCodeType());
-            detail.setRemarks("高值耗材智能柜出库");
+            detail.setRemarks("一体机出库");
             detailList.add(detail);
         }
         // 4、保存出库
@@ -1706,7 +1706,7 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
 
         pdStockRecord.setOutType(PdConstant.OUT_TYPE_2);//出库类型  2:科室出库
         pdStockRecord.setSubmitDate(new Date());//出入库时间
-        pdStockRecord.setRemarks("高值耗材柜出/入库单");
+        pdStockRecord.setRemarks("高值耗材柜出库");
         pdStockRecord.setDelFlag(PdConstant.DEL_FLAG_0);
 
         List<PdStockRecordDetail> list=pdStockRecord.getPdStockRecordDetailList();
@@ -1735,7 +1735,7 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
              detailInfo.setDistributorId(stock.getDistributorId());
              detailInfo.setProduceDate(stock.getProduceDate());
              detailInfo.setBarCodeType(pdStockRecord.getBarCodeType());
-             detailInfo.setRemarks("智能柜出库");
+             detailInfo.setRemarks("高值耗材柜出库");
              detailList.add(detailInfo);
          }
         String recordId = this.saveOutInterface(pdStockRecord, detailList);
