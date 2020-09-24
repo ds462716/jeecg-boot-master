@@ -121,10 +121,15 @@
                     </a-form-item>
                   </a-col>
                   <a-col :md="6" :sm="8">
-                    <a-form-item label="门诊号" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                      <a-input :disabled="true" v-decorator="[ 'outpatientNumber', validatorRules.outpatientNumber]" ></a-input>
+                    <a-form-item label="住院号" :labelCol="labelCol" :wrapperCol="wrapperCol">
+                      <a-input :disabled="true" v-decorator="[ 'inHospitalNo', validatorRules.inHospitalNo]" ></a-input>
                     </a-form-item>
                   </a-col>
+                  <!--<a-col :md="6" :sm="8">
+                    <a-form-item label="申请编号" :labelCol="labelCol" :wrapperCol="wrapperCol">
+                      <a-input :disabled="true" v-decorator="[ 'applicationNumber', validatorRules.applicationNumber]" ></a-input>
+                    </a-form-item>
+                  </a-col>-->
                   <a-col :md="6" :sm="8">
                     <a-form-item label="手术编号" :labelCol="labelCol" :wrapperCol="wrapperCol">
                       <a-input :disabled="true" v-decorator="[ 'operativeNumber', validatorRules.operativeNumber]" ></a-input>
@@ -359,7 +364,7 @@
         },
         url: {
           init:"/pd/pdDosageGZWY/initModal",
-          dosageReturned: "/pd/pdDosageGZWY/dosageReturned",
+          dosageReturned: "/pd/pdDosageGZWY/uniqueDosageReturned",//唯一码用量退回
           add: "/pd/pdDosageGZWY/add",
           edit: "/pd/pdDosage/edit",
           departList:"/pd/pdDepart/getSysDepartList",
@@ -404,14 +409,14 @@
                 this.totalSum = res.result.totalSum;
                 this.totalPrice = res.result.totalPrice;
                 this.pdDosageDetailTable.dataSource = res.result.pdDosageDetails || [];
-                let fieldval = pick(this.initData,'dosageNo','dosageDate','departName','dosageByName','inHospitalNo','operationName','patientInfo','patientDetailInfo','outpatientNumber','operativeNumber','exeDeptName','exeDeptId','oprDeptName','oprDeptId','surgeonName','surgeonId','sqrtDoctorName','sqrtDoctorId','subordinateWardName','subordinateWardId','remarks');
+                let fieldval = pick(this.initData,'dosageNo','operationName','dosageDate','departName','dosageByName','inHospitalNo','operationName','patientInfo','patientDetailInfo','outpatientNumber','operativeNumber','exeDeptName','exeDeptId','oprDeptName','oprDeptId','surgeonName','surgeonId','sqrtDoctorName','sqrtDoctorId','subordinateWardName','subordinateWardId','remarks');
                 this.form.setFieldsValue(fieldval);
                 this.goodsAllocationList = res.result.goodsAllocationList;
                 //获取光标
                 this.$refs['productNumberInput'].focus();
               }else{  // 新增页
                 this.initData = res.result;
-                let fieldval = pick(this.initData,'dosageNo','dosageDate','departName','dosageByName','inHospitalNo','operationName','patientInfo','patientDetailInfo','outpatientNumber','operativeNumber','exeDeptName','exeDeptId','oprDeptName','oprDeptId','surgeonName','surgeonId','sqrtDoctorName','sqrtDoctorId','subordinateWardName','subordinateWardId','remarks');
+                let fieldval = pick(this.initData,'dosageNo','operationName','dosageDate','departName','dosageByName','inHospitalNo','operationName','patientInfo','patientDetailInfo','outpatientNumber','operativeNumber','exeDeptName','exeDeptId','oprDeptName','oprDeptId','surgeonName','surgeonId','sqrtDoctorName','sqrtDoctorId','subordinateWardName','subordinateWardId','remarks');
                 this.form.setFieldsValue(fieldval);
                 this.goodsAllocationList = res.result.goodsAllocationList;
                 //获取光标

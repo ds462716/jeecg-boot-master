@@ -29,4 +29,7 @@ public interface IPdDosageGZWYService extends IService<PdDosage> {
     /*补计费*/
     void dosageFee(PdDosage pdDosage);
 
+    /*唯一码提交收费*/
+    List<PdDosageDetail> saveUniqueMain(PdDosage pdDosage, String displayFlag);
+
 }
