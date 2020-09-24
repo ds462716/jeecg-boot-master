@@ -1761,20 +1761,27 @@
     <!-- 全院耗材占比数据查 -->
     <select id="queryConsumptionView" resultType="org.jeecg.modules.pd.vo.RpPurchaseUseReportPage">
         select
-        ROUND(sum(a.product_num * a.purchase_price),2) as "count",
+        ROUND(sum(a.product_num * a.purchase_price),2) as value,
         case
         when is_charge = '0' then "可收费"
         when is_charge = '1' then "不可收费"
-        end as "item"
+        end as "name"
         from pd_stock_record_detail a
         left join pd_stock_record b on a.record_id=b.id
         left join pd_product c  on c.id=a.product_id
+        left join sys_depart t on t.id=b.in_depart_id
         where 	1=1
+
         <if test="entity.departIdList != null and entity.departIdList.size() > 0">
             AND b.in_depart_id IN
             <foreach collection="entity.departIdList" item="item" separator="," open="(" close=")">
                 #{item}
             </foreach>
+        </if>
+        <if test="entity.departIdList == null || entity.departIdList.size() == 0">
+            AND b.record_type='1'
+            AND b.in_type='1'
+            AND t.depart_type='1'
         </if>
         <if test="entity.yearMonth != null and entity.yearMonth != ''">
             AND DATE_FORMAT(b.create_time, '%Y-%m') = #{entity.yearMonth}
@@ -1785,39 +1792,29 @@
 
     <!-- 采购科室金额占比 -->
     <select id="queryDepartContionView" resultType="org.jeecg.modules.pd.vo.RpPurchaseUseReportPage">
-        select
-        ROUND(SUM(a.product_num * a.purchase_price),2) as "count",
-        d.depart_name as "item"
-        from pd_stock_record_detail a
-        left join pd_stock_record b on a.record_id=b.id
-        left join pd_product c on c.id=a.product_id
-        left join sys_depart d on d.id=b.in_depart_id
-        where
-        b.record_type='1'
-        and b.in_type='1'
-        and b.del_flag='0'
-        and a.del_flag='0'
+        select  t.depart_name as "name",
+        ROUND(sum(a.in_record_price),2) as value
+        from pd_numerical_inf a
+        left join sys_depart t on t.id=a.depart_id
+        where a.tj_type='0'
         <if test="entity.departIdList != null and entity.departIdList.size() > 0">
-            AND b.in_depart_id IN
+            AND a.depart_id IN
             <foreach collection="entity.departIdList" item="item" separator="," open="(" close=")">
                 #{item}
             </foreach>
         </if>
-        <if test="entity.departIdList == null || entity.departIdList.size() == 0">
-            and d.depart_type in('2')
-        </if>
         <if test="entity.yearMonth != null and entity.yearMonth != ''">
-            AND DATE_FORMAT(b.create_time, '%Y-%m') = #{entity.yearMonth}
+            AND a.month  = #{entity.yearMonth}
         </if>
+        group by a.depart_id
+        order by value desc limit 0,10
 
-        group by in_depart_id
-        order by count desc limit 0,10
     </select>
 
     <!-- 科室收费金额占比 -->
     <select id="queryDepartChargeView" resultType="org.jeecg.modules.pd.vo.RpPurchaseUseReportPage">
-        select ROUND(sum(c.count),2) as "count",
-        c.item as "item"
+        select ROUND(sum(c.count),2) as value,
+        c.item as "name"
         from(
         select
         (a.dosage_count * a.selling_price) as "count",
@@ -1842,8 +1839,8 @@
             and d.depart_type in('2')
         </if>
         ) c
-        group by  c.item
-        order by c.count desc limit 0,10
+        group by   c.item
+        order by  c.count desc limit 0,10
     </select>
 
     <!--   zxh采购金额环比-->

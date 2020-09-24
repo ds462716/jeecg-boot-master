@@ -39,4 +39,7 @@ public class RpPurchaseUseReportPage {
     private Double theLastPrice;//上上个月采购金额
     private String moOnMo;//环比涨幅率
     private String yrOnYr;//同比涨幅率
+
+    private Double value;
+    private String name;
 }

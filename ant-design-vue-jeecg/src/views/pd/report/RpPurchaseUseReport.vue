@@ -36,6 +36,10 @@
             </a-form>
           </div>
         <!--查询按钮结束-->
+          <!-- 操作按钮区域 -->
+          <div class="table-operator">
+            <a-button type="primary" icon="download" @click="handleClickExportEcharts('0,1')">导出图表</a-button>
+          </div>
           <a-card :bordered="false">
             <!--采购收费对照图-->
             <div :style="{ padding: '0 0 32px 32px' }"  >
@@ -72,6 +76,10 @@
             </a-form>
           </div>
           <!--查询按钮结束-->
+          <!-- 操作按钮区域 -->
+          <div class="table-operator">
+            <a-button type="primary" icon="download" @click="handleClickExportEcharts('2,3,4,5')">导出图表</a-button>
+          </div>
           <a-card :bordered="false">
             <!--采购收费柱状图-->
             <div :style="{ padding: '0 0 32px 32px' }"  >
@@ -83,14 +91,21 @@
               <h4 :style="{ marginBottom: '20px' }">采购收费趋势图</h4>
               <v-chart :options="polar4"  :style="{ width:'1600px'}"  />
             </div>
-             <div style="width:800px;height:400px;float:left">
-            <pie title="采购科室金额占比"  :height="height"  :dataSource="dataSource5"/>
-               </div>
-            <div style="width:800px;height:400px;float:right">
-            <pie title="收费金额占比" :height="height"  :dataSource="dataSource6"/>
-             </div>
-            <div class="table-operator">
+           <!-- <div :style="{ padding: '0 0 32px 32px' }"  >
+              <h4 :style="{ marginBottom: '20px' }">采购科室金额占比</h4>
+              <v-chart :options="polar9"/>
+            </div>-->
+          <!--  <div :style="{ padding: '0 0 32px 32px' }"  >-->
+
+            <div :style="{ float : 'left' }"  >
+              <h4 :style="{ marginBottom: '20px' }">采购科室金额占比</h4>
+              <v-chart :options="polar9"/>
             </div>
+            <div :style="{ float : 'right' }"  >
+              <h4 :style="{ marginBottom: '20px' }">收费金额占比</h4>
+              <v-chart :options="polar10"/>
+            </div>
+            <div class="table-operator"></div>
           </a-card>
         </a-tab-pane>
 
@@ -136,6 +151,10 @@
             </a-form>
           </div>
           <!--查询按钮结束-->
+          <!-- 操作按钮区域 -->
+          <div class="table-operator">
+            <a-button type="primary" icon="download" @click="handleClickExportEcharts('6,7')">导出图表</a-button>
+          </div>
           <a-card :bordered="false">
             <!--采购环比图-->
             <div :style="{ padding: '0 0 32px 32px' }"  >
@@ -195,8 +214,15 @@
             </a-form>
           </div>
           <!--查询按钮结束-->
+          <!-- 操作按钮区域 -->
+          <div class="table-operator">
+            <a-button type="primary" icon="download" @click="handleClickExportEcharts('8')">导出图表</a-button>
+          </div>
           <a-card :bordered="false">
-            <pie title="全院耗材占比"  :height="height"  :dataSource="dataSource8"/>
+            <div>
+            <h4 :style="{ marginBottom: '20px' }">全院耗材占比</h4>
+            <v-chart  :options="polar11"/>
+            </div>
             <div class="table-operator">
             </div>
           </a-card>
@@ -242,6 +268,10 @@
             </a-form>
           </div>
           <!--查询按钮结束-->
+          <!-- 操作按钮区域 -->
+          <div class="table-operator">
+            <a-button type="primary" icon="download" @click="handleClickExportEcharts('9,10')">导出图表</a-button>
+          </div>
         <!--  采购收费柱状图-->
           <div :style="{ padding: '0 0 32px 32px' }"  >
             <h4 :style="{ marginBottom: '20px' }">采购收费柱状图</h4>
@@ -636,6 +666,7 @@
         },
 //------------------------------
         polar1: {
+          backgroundColor: '#ffffff',
           //title:"采购收费对照图",
           tooltip: {trigger: 'axis'},
           legend: {data: ['采购金额', '收费金额','不可收费金额'],
@@ -673,6 +704,7 @@
         },
  //----------------------
         polar2: {
+          backgroundColor: '#ffffff',
           height: 300,
           tooltip: {trigger: 'axis'},
           legend: {
@@ -702,6 +734,7 @@
         },
 //-----------------
         polar3: {
+          backgroundColor: '#ffffff',
           tooltip: {
             trigger: 'axis'
           },
@@ -750,6 +783,7 @@
         },
 //------------------
         polar4: {
+          backgroundColor: '#ffffff',
           height: 300,
           tooltip: {trigger: 'axis'},
           legend: {data: ['采购金额', '收费金额','不可收费金额'],
@@ -778,6 +812,7 @@
         },
 //-------------------
         polar5: {
+          backgroundColor: '#ffffff',
           tooltip: {
             trigger: 'axis',
             axisPointer: {
@@ -853,6 +888,7 @@
         },
 //-------------------
         polar6: {
+          backgroundColor: '#ffffff',
           tooltip: {trigger: 'axis', axisPointer: {type: 'cross', crossStyle: {color: '#999'}},},
           toolbox: {
             feature: {
@@ -920,6 +956,7 @@
         },
  //--------------------
         polar7: {
+          backgroundColor: '#ffffff',
           tooltip: {trigger: 'axis'},
           legend: {data: ['采购金额','检验收入金额'],
             textStyle: { //图例文字的样式
@@ -954,6 +991,7 @@
         },
  //-------------------------------------------
         polar8: {
+          backgroundColor: '#ffffff',
           height: 300,
           tooltip: {trigger: 'axis'},
           legend: {
@@ -981,6 +1019,143 @@
           label: {show: true}
         },
 //-------------------------------------
+        polar9: {
+          backgroundColor: '#ffffff',
+          title: {
+            text: '科室采购金额占比',
+            subtext: '',
+            left: 'center'
+          },
+          legend: {
+            bottom: 10,
+            left: 'center',
+            data: []
+          },
+          tooltip: {
+            trigger: 'item',
+            formatter: '{b}:{d}%'
+          },
+          series: [
+            {
+              type: 'pie',
+              radius: '65%',
+              center: ['50%', '50%'],
+              selectedMode: 'single',
+              data: [],
+              label : {
+                normal : {
+                  formatter: '{b}:{d}%',
+                  textStyle : {
+                    fontWeight : 'normal',
+                    fontSize : 15
+                  }
+                }
+              },
+              emphasis: {
+                itemStyle: {
+                  shadowBlur: 10,
+                  shadowOffsetX: 0,
+                  shadowColor: 'rgba(0, 0, 0, 0.5)',
+
+
+
+                }
+              }
+            }
+          ],
+          label: {show: true}
+        },
+//-------------------------------------
+        polar10: {
+          backgroundColor: '#ffffff',
+          title: {
+            text: '收费金额占比',
+            subtext: '',
+            left: 'center'
+          },
+          tooltip: {
+            trigger: 'item',
+            formatter: '{b}:{d}%'
+          },
+          legend: {
+             bottom: 10,
+             left: 'center',
+            data: []
+          },
+          series: [
+            {
+              type: 'pie',
+              radius: '65%',
+              center: ['50%', '50%'],
+              selectedMode: 'single',
+              data: [],
+              label : {
+                normal : {
+                  formatter:  '{b}:{d}%',
+                  textStyle : {
+                    fontWeight : 'normal',
+                    fontSize : 15
+                  }
+                }
+              },
+              emphasis: {
+                itemStyle: {
+                  shadowBlur: 10,
+                  shadowOffsetX: 0,
+                  shadowColor: 'rgba(0, 0, 0, 0.5)'
+                }
+              }
+            }
+          ],
+          label: {show: true}
+        },
+//--------------------------
+        polar11: {
+          bottom: 300,
+          color: ['#c23531',  '#61a0a8'],
+          backgroundColor: '#ffffff',
+          title: {
+            text: '全院耗材费用占比',
+            subtext: '',
+            left: 'center'
+          },
+          tooltip: {
+            trigger: 'item',
+            formatter: '{b}:{d}%'
+          },
+          legend: {
+            bottom: 10,
+            left: 'center',
+            data: []
+          },
+          series: [
+            {
+              type: 'pie',
+              radius: '65%',
+              center: ['50%', '50%'],
+              selectedMode: 'single',
+              data: [],
+              label : {
+                normal : {
+                  formatter:  '{b}:{d}%',
+                  textStyle : {
+                    fontWeight : 'normal',
+                    fontSize : 15
+                  }
+                }
+              },
+              emphasis: {
+                itemStyle: {
+                  shadowBlur: 10,
+                  shadowOffsetX: 0,
+                  shadowColor: 'rgba(0, 0, 0, 0.5)'
+                }
+              }
+            }
+          ],
+          label: {show: true}
+        },
+//----------------------
         url: {
           queryDepart: "/pd/pdDepart/queryListTree",
           queryPurchaseCountView: "/pd/pdStatisticalReport/queryPurchaseCountView",
@@ -1160,8 +1335,13 @@
             this.polar3.series  = res.result.dataSource3;//采购收费趋势表
             this.polar4.xAxis.data  = res.result.visitFields2;//采购收费趋势表
             this.polar4.series  = res.result.dataSource3;//采购收费趋势表
-            this.dataSource5 = res.result.dataSource5;//采购科室金额占比
-            this.dataSource6 = res.result.dataSource6;//收费金额占比
+            this.polar3.xAxis[0].data  = res.result.visitFields2;//采购收费趋势表
+            this.polar3.series  = res.result.dataSource3;//采购收费趋势表
+
+            this.polar9.legend.data  = res.result.visitFields5;//科室采购金额占比
+            this.polar9.series[0].data  = res.result.dataSource5;//科室采购金额占比
+            this.polar10.legend.data  = res.result.visitFields6;//收费金额占比
+            this.polar10.series[0].data  = res.result.dataSource6;//收费金额占比
           } else {
             this.$message.warning(res.message)
           }
@@ -1222,7 +1402,9 @@
         this.loading = true;
         getAction(this.url.queryConsumptionView, params).then((res) => {
           if (res.success) {
-            this.dataSource8 = res.result;
+           // this.dataSource8 = res.result;
+            this.polar11.legend.data  = res.result.visitFields7;//全院耗材占比
+            this.polar11.series[0].data  = res.result.dataSource8;//全院耗材占比
           } else {
             this.$message.warning(res.message)
           }
@@ -1415,6 +1597,44 @@
             document.body.removeChild(link); //下载完成移除元素
             window.URL.revokeObjectURL(url); //释放掉blob对象
           }
+        });
+      },
+
+
+      handleClickExportEcharts(nums){ //导出Echart
+        var rows = nums.split(","); //字符串转化为数组
+        rows.forEach((str, value) => {
+          var fileName="";
+          if(str=='0'){
+            fileName="采购收费对照图";
+          }else if(str=='1' || str=='3'){
+            fileName="采购收费趋势图";
+          }else if(str=='2' || str=='9'){
+            fileName="采购收费柱状图";
+          }else if(str=='4'){
+            fileName="采购金额占比图";
+          }else if(str=='5'){
+            fileName="收费金额占比图";
+          }else if(str=='6'){
+            fileName="采购环比图";
+          }else if(str=='7'){
+            fileName="采购同比图";
+          }else if(str=='8'){
+            fileName="全院耗材占比图";
+          }else if(str=='10'){
+            fileName="检验收费趋势图";
+          }
+          var a=document.getElementsByTagName('canvas');
+          var canvas = document.getElementsByTagName('canvas')[str];
+          let image = canvas.toDataURL({
+            type:"png",
+            pixelRatio: 2,
+            // backgroundColor:'#f1f6f9',//有人说不设置此项，导出图片的底色是黑色。我个人设置了也并没有什么卵用 要想设置导出图片有底色，就要设置Echart的背景色，不设置就是透明的。
+          });
+          let alink = document.createElement("a");
+          alink.href = image;
+          alink.download = fileName; //导出的图片名
+          alink.click();
         });
       },
     },

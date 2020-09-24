@@ -643,8 +643,8 @@ public class PdStatisticalReportController extends JeecgController<PdStatistical
         if (oConvertUtils.isNotEmpty(purchaseUseReportPage.getDepartIds()) && !"undefined".equals(purchaseUseReportPage.getDepartIds())) {
             purchaseUseReportPage.setDepartIdList(Arrays.asList(purchaseUseReportPage.getDepartIds().split(",")));
         }
-        List<RpPurchaseUseReportPage> list = pdStatisticalReportService.queryConsumptionView(purchaseUseReportPage);
-        return Result.ok(list);
+        Map<String, Object> map = pdStatisticalReportService.queryConsumptionView(purchaseUseReportPage);
+        return Result.ok(map);
     }
 
     /**
