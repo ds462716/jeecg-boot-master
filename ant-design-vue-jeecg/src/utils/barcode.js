@@ -205,8 +205,22 @@ export function generateNumber(code){
   let second = date.getSeconds(); //秒
   let milliseconds = date.getMilliseconds(); //毫秒
   code = code + year + month+data+hours+minute+second+milliseconds;
+  if(code.length<19){
+    code +=   RndNum(19-code.length);
+  }else{
+    code = code.substr(0,19);
+  }
   return code;
 }
+
+function RndNum(n) {
+  var rnd = "";
+  for (var i = 0; i < n; i++) {
+    rnd += Math.floor(Math.random() * 10);
+  }
+  return rnd;
+}
+
 
 
 
