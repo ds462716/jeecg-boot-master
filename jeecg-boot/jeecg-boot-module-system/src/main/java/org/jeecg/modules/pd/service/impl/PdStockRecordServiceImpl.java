@@ -160,7 +160,8 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
             //开关-是否需要入库审批   1-是；0-否
             query.setCode(PdConstant.ON_OFF_STOCK_IN_AUDIT);
             PdOnOff stockInAudit = pdOnOffService.getOne(query);
-            if (stockInAudit != null && stockInAudit.getValue() == PdConstant.ON_OFF_STOCK_IN_AUDIT_0) {
+            if ((stockInAudit != null && stockInAudit.getValue() == PdConstant.ON_OFF_STOCK_IN_AUDIT_0)
+                    || oConvertUtils.isNotEmpty(pdStockRecord.getInOtherDepartId())) {
                 // 自动审批
                 PdStockRecord auditEntity = new PdStockRecord();
                 BeanUtils.copyProperties(pdStockRecord,auditEntity);
