@@ -155,9 +155,6 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
         List<PdStockRecordDetail> stockRecordDetails = pdStockRecord.getPdStockRecordDetailList();
         String stockId = null;
         for (PdStockRecordDetail stockRecordDetail : stockRecordDetails) {
-            if (StringUtils.isBlank(stockRecordDetail.getInRecordDetailId())) {
-                return "参数有误，入库明细id为空！";
-            }
             String productId = stockRecordDetail.getProductId();            //产品ID
             String productBarCode = stockRecordDetail.getProductBarCode();  //产品条码
             String productName = stockRecordDetail.getProductName();  //产品名称
@@ -190,6 +187,9 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
 //            if(oConvertUtils.isNotEmpty(pdStockRecord.getOutType())){
             if(PdConstant.RECODE_TYPE_2.equals(pdStockRecord.getRecordType())){
                 // 2.1 出库入库 (上级科室出库到下级科室) 合并同一个供应商入库单同批号的产品
+                if (StringUtils.isBlank(stockRecordDetail.getInRecordDetailId())) {
+                    return "参数有误，入库明细id为空！";
+                }
                 PdProductStock i_productStockq = new PdProductStock();
                 i_productStockq.setDepartId(inDeptId);
                 i_productStockq.setRecordDetailId(stockRecordDetail.getInRecordDetailId());
