@@ -1678,6 +1678,8 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
             detail.setDistributorId(stock.getDistributorId());
             detail.setProduceDate(stock.getProduceDate());
             detail.setBarCodeType(pdStockRecord.getBarCodeType());
+            detail.setInRecordId(stock.getRecordId());
+            detail.setInRecordDetailId(stock.getRecordDetailId());
             detail.setRemarks("一体机出库");
             detailList.add(detail);
         }
@@ -1736,6 +1738,8 @@ public class PdStockRecordServiceImpl extends ServiceImpl<PdStockRecordMapper, P
              detailInfo.setDistributorId(stock.getDistributorId());
              detailInfo.setProduceDate(stock.getProduceDate());
              detailInfo.setBarCodeType(pdStockRecord.getBarCodeType());
+             detailInfo.setInRecordId(stock.getRecordId());
+             detailInfo.setInRecordDetailId(stock.getRecordDetailId());
              detailInfo.setRemarks("高值耗材柜出库");
              detailList.add(detailInfo);
          }

@@ -155,6 +155,9 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
         List<PdStockRecordDetail> stockRecordDetails = pdStockRecord.getPdStockRecordDetailList();
         String stockId = null;
         for (PdStockRecordDetail stockRecordDetail : stockRecordDetails) {
+            if (StringUtils.isBlank(stockRecordDetail.getInRecordDetailId())) {
+                return "参数有误，入库明细id为空！";
+            }
             String productId = stockRecordDetail.getProductId();            //产品ID
             String productBarCode = stockRecordDetail.getProductBarCode();  //产品条码
             String productName = stockRecordDetail.getProductName();  //产品名称
