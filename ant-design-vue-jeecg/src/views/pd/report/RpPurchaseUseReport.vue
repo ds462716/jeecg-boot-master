@@ -339,34 +339,7 @@
 
           <a-card :bordered="false">
             <!-- 查询区域 -->
-            <!--<div class="table-page-search-wrapper">
-              <a-form layout="inline" @keyup.enter.native="inSearchQuery">
-                <a-row :gutter="24">
 
-                  <a-col :md="6" :sm="8">
-                    <a-form-item label="年月">
-                      <a-month-picker placeholder="选择年月" @change="monthChangeAllConion" v-model="queryParam6.ym"/>
-                    </a-form-item>
-                  </a-col>
-
-
-
-                  <template v-if="toggleSearchStatus">
-                  </template>
-
-                  <a-col :md="6" :sm="8">
-            <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
-              <a-button type="primary" @click="searchQuery(7)" icon="search">查询</a-button>
-              <a-button type="primary" @click="searchQuery(7)" icon="reload" style="margin-left: 8px">重置</a-button>
-              <a  @click="handleToggleSearch" style="margin-left: 8px">
-                {{ toggleSearchStatus ? '收起' : '展开' }}
-                <a-icon :type="toggleSearchStatus ? 'up' : 'down'"/>
-              </a>
-            </span>
-                  </a-col>
-                </a-row>
-              </a-form>
-            </div>-->
             <!-- 查询区域-END -->
             <!-- 操作按钮区域 -->
             <div class="table-operator">
@@ -398,6 +371,11 @@
             <div class="table-page-search-wrapper">
               <a-form layout="inline" @keyup.enter.native="inSearchQuery">
                 <a-row :gutter="24">
+                  <a-col :md="6" :sm="8">
+                    <a-form-item label="年份">
+                  <year-picker @input="yearChange"     v-model="queryParam7.ym"/>
+                    </a-form-item>
+                  </a-col>
                   <a-col :md="6" :sm="8">
                     <a-form-item label="科室">
                       <a-select
@@ -485,6 +463,7 @@
   import "echarts/lib/component/markLine";
   import "echarts/lib/component/graphic"
   import { DataSet } from '@antv/data-set'
+  import YearPicker from '../modules/YearPicker'
 
   export default {
     name: "RpPurchaseUseReport",
@@ -493,6 +472,7 @@
       'v-chart': ECharts,
       Pie,
       JDictSelectTagExpand,
+      YearPicker
     },
     data() {
       return {
@@ -615,54 +595,45 @@
               }
             },
             { title:'科室', align:"center", width:'150px', dataIndex: 'departName' },
-            { title:'月份', align:"center", width:'150px', dataIndex: 'month1' },
-            { title:'采购金额', align:"center", width:'100px', dataIndex: 'purchaseMoney1' },
-            { title:'收费金额', align:"center", width:'100px', dataIndex: 'dosageMoney1' },
-            { title:'不可收费金额', align:"center", width:'100px', dataIndex: 'noDosageMoney1' },
-            { title:'月份', align:"center", width:'150px', dataIndex: 'month2' },
-            { title:'采购金额', align:"center", width:'100px', dataIndex: 'purchaseMoney2' },
-            { title:'收费金额', align:"center", width:'100px', dataIndex: 'dosageMoney2' },
-            { title:'不可收费金额', align:"center", width:'100px', dataIndex: 'noDosageMoney2' },
-            { title:'月份', align:"center", width:'150px', dataIndex: 'month3' },
-            { title:'采购金额', align:"center", width:'100px', dataIndex: 'purchaseMoney3' },
-            { title:'收费金额', align:"center", width:'100px', dataIndex: 'dosageMoney3' },
-            { title:'不可收费金额', align:"center", width:'100px', dataIndex: 'noDosageMoney3' },
-            { title:'月份', align:"center", width:'150px', dataIndex: 'month4' },
-            { title:'采购金额', align:"center", width:'100px', dataIndex: 'purchaseMoney4' },
-            { title:'收费金额', align:"center", width:'100px', dataIndex: 'dosageMoney4' },
-            { title:'不可收费金额', align:"center", width:'100px', dataIndex: 'noDosageMoney4' },
-            { title:'月份', align:"center", width:'150px', dataIndex: 'month5' },
-            { title:'采购金额', align:"center", width:'100px', dataIndex: 'purchaseMoney5' },
-            { title:'收费金额', align:"center", width:'100px', dataIndex: 'dosageMoney5' },
-            { title:'不可收费金额', align:"center", width:'100px', dataIndex: 'noDosageMoney5' },
-            { title:'月份', align:"center", width:'150px', dataIndex: 'month6' },
-            { title:'采购金额', align:"center", width:'100px', dataIndex: 'purchaseMoney6' },
-            { title:'收费金额', align:"center", width:'100px', dataIndex: 'dosageMoney6' },
-            { title:'不可收费金额', align:"center", width:'100px', dataIndex: 'noDosageMoney6' },
-            { title:'月份', align:"center", width:'150px', dataIndex: 'month7' },
-            { title:'采购金额', align:"center", width:'100px', dataIndex: 'purchaseMoney7' },
-            { title:'收费金额', align:"center", width:'100px', dataIndex: 'dosageMoney7' },
-            { title:'不可收费金额', align:"center", width:'100px', dataIndex: 'noDosageMoney7' },
-            { title:'月份', align:"center", width:'150px', dataIndex: 'month8' },
-            { title:'采购金额', align:"center", width:'100px', dataIndex: 'purchaseMoney8' },
-            { title:'收费金额', align:"center", width:'100px', dataIndex: 'dosageMoney8' },
-            { title:'不可收费金额', align:"center", width:'100px', dataIndex: 'noDosageMoney8' },
-            { title:'月份', align:"center", width:'150px', dataIndex: 'month9' },
-            { title:'采购金额', align:"center", width:'100px', dataIndex: 'purchaseMoney9' },
-            { title:'收费金额', align:"center", width:'100px', dataIndex: 'dosageMoney9' },
-            { title:'不可收费金额', align:"center", width:'100px', dataIndex: 'noDosageMoney9' },
-            { title:'月份', align:"center", width:'150px', dataIndex: 'month10' },
-            { title:'采购金额', align:"center", width:'100px', dataIndex: 'purchaseMoney10' },
-            { title:'收费金额', align:"center", width:'100px', dataIndex: 'dosageMoney10' },
-            { title:'不可收费金额', align:"center", width:'100px', dataIndex: 'noDosageMoney10' },
-            { title:'月份', align:"center", width:'150px', dataIndex: 'month11' },
-            { title:'采购金额', align:"center", width:'100px', dataIndex: 'purchaseMoney11' },
-            { title:'收费金额', align:"center", width:'100px', dataIndex: 'dosageMoney11' },
-            { title:'不可收费金额', align:"center", width:'100px', dataIndex: 'noDosageMoney11' },
-            { title:'月份', align:"center", width:'150px', dataIndex: 'month12' },
-            { title:'采购金额', align:"center", width:'100px', dataIndex: 'purchaseMoney12' },
-            { title:'收费金额', align:"center", width:'100px', dataIndex: 'dosageMoney12' },
-            { title:'不可收费金额', align:"center", width:'100px', dataIndex: 'noDosageMoney12' },
+            { title:'01月采购金额', align:"center", width:'100px', dataIndex: 'janPurchaseMoney' },
+            { title:'01月收费金额', align:"center", width:'100px', dataIndex: 'janDosageMoney' },
+            { title:'01月不收费金额', align:"center", width:'100px', dataIndex: 'janNoDosageMoney' },
+            { title:'02月采购金额', align:"center", width:'100px', dataIndex: 'febPurchaseMoney' },
+            { title:'02月收费金额', align:"center", width:'100px', dataIndex: 'febDosageMoney' },
+            { title:'02月不收费金额', align:"center", width:'100px', dataIndex: 'febNoDosageMoney' },
+            { title:'03月采购金额', align:"center", width:'100px', dataIndex: 'marPurchaseMoney' },
+            { title:'03月收费金额', align:"center", width:'100px', dataIndex: 'marDosageMoney' },
+            { title:'03月不收费金额', align:"center", width:'100px', dataIndex: 'marNoDosageMoney' },
+            { title:'04月采购金额', align:"center", width:'100px', dataIndex: 'aprPurchaseMoney' },
+            { title:'04月收费金额', align:"center", width:'100px', dataIndex: 'aprDosageMoney' },
+            { title:'04月不收费金额', align:"center", width:'100px', dataIndex: 'aprNoDosageMoney' },
+            { title:'05月采购金额', align:"center", width:'100px', dataIndex: 'mayPurchaseMoney' },
+            { title:'05月收费金额', align:"center", width:'100px', dataIndex: 'mayDosageMoney' },
+            { title:'05月不收费金额', align:"center", width:'100px', dataIndex: 'mayNoDosageMoney' },
+            { title:'06月采购金额', align:"center", width:'100px', dataIndex: 'junPurchaseMoney' },
+            { title:'06月收费金额', align:"center", width:'100px', dataIndex: 'junDosageMoney' },
+            { title:'06月不收费金额', align:"center", width:'100px', dataIndex: 'junNoDosageMoney' },
+            { title:'07月采购金额', align:"center", width:'100px', dataIndex: 'julPurchaseMoney' },
+            { title:'07月收费金额', align:"center", width:'100px', dataIndex: 'julDosageMoney' },
+            { title:'07月不收费金额', align:"center", width:'100px', dataIndex: 'julNoDosageMoney' },
+            { title:'08月采购金额', align:"center", width:'100px', dataIndex: 'augPurchaseMoney' },
+            { title:'08月收费金额', align:"center", width:'100px', dataIndex: 'augDosageMoney' },
+            { title:'08月不收费金额', align:"center", width:'100px', dataIndex: 'augNoDosageMoney' },
+            { title:'09月采购金额', align:"center", width:'100px', dataIndex: 'septPurchaseMoney' },
+            { title:'09月收费金额', align:"center", width:'100px', dataIndex: 'septDosageMoney' },
+            { title:'09月不收费金额', align:"center", width:'100px', dataIndex: 'septNoDosageMoney' },
+            { title:'10月采购金额', align:"center", width:'100px', dataIndex: 'octPurchaseMoney' },
+            { title:'10月收费金额', align:"center", width:'100px', dataIndex: 'octDosageMoney' },
+            { title:'10月不收费金额', align:"center", width:'100px', dataIndex: 'octNoDosageMoney' },
+            { title:'11月采购金额', align:"center", width:'100px', dataIndex: 'novPurchaseMoney' },
+            { title:'11月收费金额', align:"center", width:'100px', dataIndex: 'novDosageMoney' },
+            { title:'11月不收费金额', align:"center", width:'100px', dataIndex: 'novNoDosageMoney' },
+            { title:'12月采购金额', align:"center", width:'100px', dataIndex: 'decPurchaseMoney' },
+            { title:'12月收费金额', align:"center", width:'100px', dataIndex: 'decDosageMoney' },
+            { title:'12月不收费金额', align:"center", width:'100px', dataIndex: 'decNoDosageMoney' },
+            { title:'合计采购金额', align:"center", width:'100px', dataIndex: 'countPurchaseMoney' },
+            { title:'合计收费金额', align:"center", width:'100px', dataIndex: 'countDosageMoney' },
+            { title:'合计不收费金额', align:"center", width:'100px', dataIndex: 'countNoDosageMoney' },
           ],
         },
 //------------------------------
@@ -1235,6 +1206,9 @@
       },
       monthChangeConion(date, dateString) {
         this.queryParam6.yearMonth = dateString;
+      },
+      yearChange(dateString) {//获取年份
+        this.queryParam7.year = dateString;
       },
 
 //科室查询start

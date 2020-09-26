@@ -13,105 +13,91 @@ import java.util.List;
  */
 @Data
 public class RpPurchaseMoneyReportPage {
+    private String id;
     @Excel(name = "科室名称", width = 15)
     private String departName;// 科室名称
-    @Excel(name = "月份", width = 15)
-    private String month1;// 月份1
-    @Excel(name = "采购金额", width = 15)
-    private BigDecimal purchaseMoney1;// 采购金额1
-    @Excel(name = "收费金额", width = 15)
-    private BigDecimal dosageMoney1;// 收费金额1
-    @Excel(name = "不可收费金额", width = 15)
-    private BigDecimal noDosageMoney1;// 不可收费金额1
-    @Excel(name = "月份", width = 15)
-    private String month2;// 月份2
-    @Excel(name = "采购金额", width = 15)
-    private BigDecimal purchaseMoney2;// 采购金额2
-    @Excel(name = "收费金额", width = 15)
-    private BigDecimal dosageMoney2;// 收费金额2
-    @Excel(name = "不可收费金额", width = 15)
-    private BigDecimal noDosageMoney2;// 不可收费金额2
-    @Excel(name = "月份", width = 15)
-    private String month3;// 月份3
-    @Excel(name = "采购金额", width = 15)
-    private BigDecimal purchaseMoney3;// 采购金额3
-    @Excel(name = "收费金额", width = 15)
-    private BigDecimal dosageMoney3;// 收费金额3
-    @Excel(name = "不可收费金额", width = 15)
-    private BigDecimal noDosageMoney3;// 不可收费金额3
-    @Excel(name = "月份", width = 15)
-    private String month4;// 月份4
-    @Excel(name = "采购金额", width = 15)
-    private BigDecimal purchaseMoney4;// 采购金额4
-    @Excel(name = "收费金额", width = 15)
-    private BigDecimal dosageMoney4;// 收费金额4
-    @Excel(name = "不可收费金额", width = 15)
-    private BigDecimal noDosageMoney4;// 不可收费金额4
-    @Excel(name = "月份", width = 15)
-    private String month5;// 月份5
-    @Excel(name = "采购金额", width = 15)
-    private BigDecimal purchaseMoney5;// 采购金额5
-    @Excel(name = "收费金额", width = 15)
-    private BigDecimal dosageMoney5;// 收费金额5
-    @Excel(name = "不可收费金额", width = 15)
-    private BigDecimal noDosageMoney5;// 不可收费金额5
-    @Excel(name = "月份", width = 15)
-    private String month6;// 月份6
-    @Excel(name = "采购金额", width = 15)
-    private BigDecimal purchaseMoney6;// 采购金额6
-    @Excel(name = "收费金额", width = 15)
-    private BigDecimal dosageMoney6;// 收费金额6
-    @Excel(name = "不可收费金额", width = 15)
-    private BigDecimal noDosageMoney6;// 不可收费金额6
-    @Excel(name = "月份", width = 15)
-    private String month7;// 月份7
-    @Excel(name = "采购金额", width = 15)
-    private BigDecimal purchaseMoney7;// 采购金额7
-    @Excel(name = "收费金额", width = 15)
-    private BigDecimal dosageMoney7;// 收费金额7
-    @Excel(name = "不可收费金额", width = 15)
-    private BigDecimal noDosageMoney7;// 不可收费金额7
-    @Excel(name = "月份", width = 15)
-    private String month8;// 月份8
-    @Excel(name = "采购金额", width = 15)
-    private BigDecimal purchaseMoney8;// 采购金额8
-    @Excel(name = "收费金额", width = 15)
-    private BigDecimal dosageMoney8;// 收费金额8
-    @Excel(name = "不可收费金额", width = 15)
-    private BigDecimal noDosageMoney8;// 不可收费金额8
-    @Excel(name = "月份", width = 15)
-    private String month9;// 月份9
-    @Excel(name = "采购金额", width = 15)
-    private BigDecimal purchaseMoney9;// 采购金额9
-    @Excel(name = "收费金额", width = 15)
-    private BigDecimal dosageMoney9;// 收费金额9
-    @Excel(name = "不可收费金额", width = 15)
-    private BigDecimal noDosageMoney9;// 不可收费金额9
-    @Excel(name = "月份", width = 15)
-    private String month10;// 月份10
-    @Excel(name = "采购金额", width = 15)
-    private BigDecimal purchaseMoney10;// 采购金额10
-    @Excel(name = "收费金额", width = 15)
-    private BigDecimal dosageMoney10;// 收费金额10
-    @Excel(name = "不可收费金额", width = 15)
-    private BigDecimal noDosageMoney10;// 不可收费金额10
-    @Excel(name = "月份", width = 15)
-    private String month11;// 月份11
-    @Excel(name = "采购金额", width = 15)
-    private BigDecimal purchaseMoney11;// 采购金额11
-    @Excel(name = "收费金额", width = 15)
-    private BigDecimal dosageMoney11;// 收费金额11
-    @Excel(name = "不可收费金额", width = 15)
-    private BigDecimal noDosageMoney11;// 不可收费金额11
-    @Excel(name = "月份", width = 15)
-    private String month12;// 月份12
-    @Excel(name = "采购金额", width = 15)
-    private BigDecimal purchaseMoney12;// 采购金额12
-    @Excel(name = "收费金额", width = 15)
-    private BigDecimal dosageMoney12;// 收费金额12
-    @Excel(name = "不可收费金额", width = 15)
-    private BigDecimal noDosageMoney12;// 不可收费金额12
+    @Excel(name = "01月采购金额", width = 15)
+    private BigDecimal janPurchaseMoney;
+    @Excel(name = "01月收费金额", width = 15)
+    private BigDecimal janDosageMoney;
+    @Excel(name = "01月不收费金额", width = 15)
+    private BigDecimal janNoDosageMoney;
+    @Excel(name = "02月采购金额", width = 15)
+    private BigDecimal febPurchaseMoney;
+    @Excel(name = "02月收费金额", width = 15)
+    private BigDecimal febDosageMoney;
+    @Excel(name = "02月不收费金额", width = 15)
+    private BigDecimal febNoDosageMoney;
+    @Excel(name = "03月采购金额", width = 15)
+    private BigDecimal marPurchaseMoney;
+    @Excel(name = "03月收费金额", width = 15)
+    private BigDecimal marDosageMoney;
+    @Excel(name = "03月不收费金额", width = 15)
+    private BigDecimal marNoDosageMoney;
+    @Excel(name = "04月采购金额", width = 15)
+    private BigDecimal aprPurchaseMoney;
+    @Excel(name = "04月收费金额", width = 15)
+    private BigDecimal aprDosageMoney;
+    @Excel(name = "04月不收费金额", width = 15)
+    private BigDecimal aprNoDosageMoney;
+    @Excel(name = "05月采购金额", width = 15)
+    private BigDecimal mayPurchaseMoney;
+    @Excel(name = "05月收费金额", width = 15)
+    private BigDecimal mayDosageMoney;
+    @Excel(name = "05月不收费金额", width = 15)
+    private BigDecimal mayNoDosageMoney;
+    @Excel(name = "06月采购金额", width = 15)
+    private BigDecimal junPurchaseMoney;
+    @Excel(name = "06月收费金额", width = 15)
+    private BigDecimal junDosageMoney;
+    @Excel(name = "06月不收费金额", width = 15)
+    private BigDecimal junNoDosageMoney;
+    @Excel(name = "07月采购金额", width = 15)
+    private BigDecimal julPurchaseMoney;
+    @Excel(name = "07月收费金额", width = 15)
+    private BigDecimal julDosageMoney;
+    @Excel(name = "07月不收费金额", width = 15)
+    private BigDecimal julNoDosageMoney;
+    @Excel(name = "08月采购金额", width = 15)
+    private BigDecimal augPurchaseMoney;
+    @Excel(name = "08月收费金额", width = 15)
+    private BigDecimal augDosageMoney;
+    @Excel(name = "08月不收费金额", width = 15)
+    private BigDecimal augNoDosageMoney;
+    @Excel(name = "09月采购金额", width = 15)
+    private BigDecimal septPurchaseMoney;
+    @Excel(name = "09月收费金额", width = 15)
+    private BigDecimal septDosageMoney;
+    @Excel(name = "09月不收费金额", width = 15)
+    private BigDecimal septNoDosageMoney;
+    @Excel(name = "10月采购金额", width = 15)
+    private BigDecimal octPurchaseMoney;
+    @Excel(name = "10月收费金额", width = 15)
+    private BigDecimal octDosageMoney;
+    @Excel(name = "10月不收费金额", width = 15)
+    private BigDecimal octNoDosageMoney;
+    @Excel(name = "11月采购金额", width = 15)
+    private BigDecimal novPurchaseMoney;
+    @Excel(name = "11月收费金额", width = 15)
+    private BigDecimal novDosageMoney;
+    @Excel(name = "11月不收费金额", width = 15)
+    private BigDecimal novNoDosageMoney;
+    @Excel(name = "12月采购金额", width = 15)
+    private BigDecimal decPurchaseMoney;
+    @Excel(name = "12月收费金额", width = 15)
+    private BigDecimal decDosageMoney;
+    @Excel(name = "12月不收费金额", width = 15)
+    private BigDecimal decNoDosageMoney;
+    @Excel(name = "合计采购金额", width = 15)
+    private BigDecimal countPurchaseMoney;
+    @Excel(name = "合计收费金额", width = 15)
+    private BigDecimal countDosageMoney;
+    @Excel(name = "合计不收费金额", width = 15)
+    private BigDecimal countNoDosageMoney;
 
 
+    private String productFlag;
+    private String departIds;
+    private String year;// 年份
     private List<String> departIdList; /*多个部门集合*/
 }

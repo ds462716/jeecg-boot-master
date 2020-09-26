@@ -752,33 +752,21 @@ public class PdStatisticalReportController extends JeecgController<PdStatistical
 
 
     /**
-     * 综合统计   ---科室采购数据报表（前12各月份的数据）  mcb  --20200917
+     * 综合统计   ---科室采购数据报表  mcb  --20200917
      */
     @GetMapping(value = "queryPurchaseTableView")
-    public Result<?> queryPurchaseTableView(RpPurchaseUseReportPage purchaseUseReportPage,
+    public Result<?> queryPurchaseTableView(RpPurchaseMoneyReportPage moneyReport,
                                      @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
                                      @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize) {
-        RpPurchaseMoneyReportPage moneyReport=new RpPurchaseMoneyReportPage();
-
-        if (oConvertUtils.isNotEmpty(purchaseUseReportPage.getDepartIds()) && !"undefined".equals(purchaseUseReportPage.getDepartIds())) {
-            moneyReport.setDepartIdList(Arrays.asList(purchaseUseReportPage.getDepartIds().split(",")));
+         if (oConvertUtils.isNotEmpty(moneyReport.getDepartIds()) && !"undefined".equals(moneyReport.getDepartIds())) {
+             moneyReport.setDepartIdList(Arrays.asList(moneyReport.getDepartIds().split(",")));
         }
         Page<RpPurchaseMoneyReportPage> pagePage = new Page<RpPurchaseMoneyReportPage>(pageNo, pageSize);
-        //先获取前12个月的月份数据
-        List<RpPurchaseUseReportPage> monthList = pdStatisticalReportService.getYearMonth(purchaseUseReportPage);
-        //在根据每个月作为条件，查询每个月的采购金额，收费金额，不可收费金额，然后在组装
-        moneyReport.setMonth1(monthList.get(0).getYearMonth());
-        moneyReport.setMonth2(monthList.get(1).getYearMonth());
-        moneyReport.setMonth3(monthList.get(2).getYearMonth());
-        moneyReport.setMonth4(monthList.get(3).getYearMonth());
-        moneyReport.setMonth5(monthList.get(4).getYearMonth());
-        moneyReport.setMonth6(monthList.get(5).getYearMonth());
-        moneyReport.setMonth7(monthList.get(6).getYearMonth());
-        moneyReport.setMonth8(monthList.get(7).getYearMonth());
-        moneyReport.setMonth9(monthList.get(8).getYearMonth());
-        moneyReport.setMonth10(monthList.get(9).getYearMonth());
-        moneyReport.setMonth11(monthList.get(10).getYearMonth());
-        moneyReport.setMonth12(monthList.get(11).getYearMonth());
+        //获取当前年份
+        Integer year= DateUtils.getNowYear();
+        if(oConvertUtils.isEmpty(moneyReport.getYear())){
+            moneyReport.setYear(String.valueOf(year));
+        }
         IPage<RpPurchaseMoneyReportPage> pageList=  pdStatisticalReportService.queryMonthMoneyList(pagePage,moneyReport);
         return Result.ok(pageList);
     }
@@ -790,33 +778,24 @@ public class PdStatisticalReportController extends JeecgController<PdStatistical
      * 导出excel(科室采购环比-同比报表)
      *
      * @param request
-     * @param purchaseUseReportPage
+     * @param moneyReport
      */
     @RequestMapping(value = "/purchaseExportReportXls")
-    public ModelAndView purchaseExportReportXls(HttpServletRequest request, RpPurchaseUseReportPage purchaseUseReportPage) {
+    public ModelAndView purchaseExportReportXls(HttpServletRequest request, RpPurchaseMoneyReportPage moneyReport) {
         LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
-        RpPurchaseMoneyReportPage moneyReport=new RpPurchaseMoneyReportPage();
-        if (oConvertUtils.isNotEmpty(purchaseUseReportPage.getDepartIds()) && !"undefined".equals(purchaseUseReportPage.getDepartIds())) {
-            moneyReport.setDepartIdList(Arrays.asList(purchaseUseReportPage.getDepartIds().split(",")));
+         if (oConvertUtils.isNotEmpty(moneyReport.getDepartIds()) && !"undefined".equals(moneyReport.getDepartIds())) {
+            moneyReport.setDepartIdList(Arrays.asList(moneyReport.getDepartIds().split(",")));
         }
-        //先获取前12个月的月份数据
-        List<RpPurchaseUseReportPage> monthList = pdStatisticalReportService.getYearMonth(purchaseUseReportPage);
-        //在根据每个月作为条件，查询每个月的采购金额，收费金额，不可收费金额，然后在组装
-
-        moneyReport.setMonth1(monthList.get(0).getYearMonth());
-        moneyReport.setMonth2(monthList.get(1).getYearMonth());
-        moneyReport.setMonth3(monthList.get(2).getYearMonth());
-        moneyReport.setMonth4(monthList.get(3).getYearMonth());
-        moneyReport.setMonth5(monthList.get(4).getYearMonth());
-        moneyReport.setMonth6(monthList.get(5).getYearMonth());
-        moneyReport.setMonth7(monthList.get(6).getYearMonth());
-        moneyReport.setMonth8(monthList.get(7).getYearMonth());
-        moneyReport.setMonth9(monthList.get(8).getYearMonth());
-        moneyReport.setMonth10(monthList.get(9).getYearMonth());
-        moneyReport.setMonth11(monthList.get(10).getYearMonth());
-        moneyReport.setMonth12(monthList.get(11).getYearMonth());
+       /* //先获取前12个月的月份数据
+       //List<RpPurchaseUseReportPage> monthList = pdStatisticalReportService.getYearMonth(purchaseUseReportPage);
+        //在根据每个月作为条件，查询每个月的采购金额，收费金额，不可收费金额，然后在组装*/
+        //获取当前年份
+        Integer year= DateUtils.getNowYear();
+        if(oConvertUtils.isEmpty(moneyReport.getYear())){
+            moneyReport.setYear(String.valueOf(year));
+        }
         List<RpPurchaseMoneyReportPage> exportList=  pdStatisticalReportService.queryMonthMoneyList(moneyReport);
-        String fileName="采购费用统计报表";
+        String fileName="采购费用统计报表("+moneyReport.getYear()+")";
         ModelAndView mv = new ModelAndView(new JeecgEntityExcelView());
         mv.addObject(NormalExcelConstants.CLASS, RpPurchaseMoneyReportPage.class);
         mv.addObject(NormalExcelConstants.DATA_LIST, exportList);
