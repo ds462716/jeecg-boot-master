@@ -176,4 +176,5 @@ ADD COLUMN `invoice_no` varchar(640) NULL COMMENT '发票号' AFTER `supplier_bi
 -- 2020年9月23日 14:43:12
 ALTER TABLE `pd_stock_record`
 ADD COLUMN `in_other_depart_id` varchar(64) NULL COMMENT '其他入库部门ID，用于器械科入库直接生成出库单出库到该库房' AFTER `in_depart_id`;
+-- ***************德兴医院部署截止 2020年9月26日 16:18:49
 

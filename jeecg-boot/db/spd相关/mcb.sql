@@ -214,7 +214,7 @@ ADD COLUMN `purchase_price` decimal(20, 4) NULL COMMENT '产品单价' AFTER `st
 -- 2020年9月7日 10:22:59   批量更新历史数据
 update  pd_product_stock  a
   left join pd_stock_record_detail b on a.record_detail_id=b.id
-	set a.purchase_price=b.purchase_price
+	set a.purchase_price=b.purchase_price;
 
 -- 2020年9月7日 10:22:59   增加采购统计报表菜单
 INSERT INTO  `sys_permission`    VALUES ('1302806183652024322', 'f0675b52d89100ee88472b6800754a08', '采购统计报表', '/pd/report/RpPurchaseUseReport', 'pd/report/RpPurchaseUseReport', NULL, NULL, 1, '0', NULL, '1', 12.00, 0, NULL, 1, 1, 0, 0, NULL, 'admin', '2020-09-07 11:09:34', NULL, '2020-09-07 11:09:34', 0, 0, '1', 0);
@@ -253,7 +253,7 @@ MODIFY COLUMN `sjkf_id` varchar(64) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL
 
 
 
---明细查询及统计报表菜单名称更新
+-- 明细查询及统计报表菜单名称更新
 update  	sys_permission set name='明细查询'  where id='1218785597982052353';
 
 delete  from sys_permission where parent_id='1218785597982052353';
@@ -283,4 +283,4 @@ INSERT INTO `sys_permission` VALUES ('1295920023274373121', 'f0675b52d89100ee884
 INSERT INTO `sys_permission` VALUES ('1295987290456567810', 'f0675b52d89100ee88472b6800754a08', '供应商试剂用量统计报表', '/pd/report/RpSupplierReagentUseReport', 'pd/report/RpSupplierReagentUseReport', NULL, NULL, 1, '0', NULL, '1', 4.00, 0, NULL, 1, 1, 0, 0, NULL, 'admin', '2020-08-19 15:33:43', 'admin', '2020-08-27 15:01:18', 0, 0, '1', 0);
 INSERT INTO `sys_permission` VALUES ('1302806183652024322', 'f0675b52d89100ee88472b6800754a08', '综合统计报表', '/pd/report/RpPurchaseUseReport', 'pd/report/RpPurchaseUseReport', NULL, NULL, 1, '0', NULL, '1', 12.00, 0, NULL, 1, 1, 0, 0, NULL, 'admin', '2020-09-07 11:09:34', 'admin', '2020-09-14 09:35:31', 0, 0, '1', 0);
 INSERT INTO `sys_permission` VALUES ('2aeddae571695cd6380f6d6d334d6e7d', 'f0675b52d89100ee88472b6800754a08', '布局统计报表', '/report/ArchivesStatisticst', 'jeecg/report/ArchivesStatisticst', NULL, NULL, 1, '1', NULL, NULL, 13.00, 0, NULL, 1, 1, 0, 0, NULL, 'admin', '2019-04-03 18:32:48', 'admin', '2020-08-27 15:00:14', 0, 0, NULL, 0);
-
+-- ***************德兴医院部署截止 2020年9月26日 16:18:49
