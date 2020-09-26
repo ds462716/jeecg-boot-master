@@ -174,16 +174,16 @@
             align:"center",
             dataIndex: 'rejectedNum'
           },*/
-         /* {
+           {
             title:'退货金额',
             align:"center",
             dataIndex: 'rejectedPrice'
-          },*/
-          {
+          },
+          /*{
             title:'库存数量',
             align:"center",
             dataIndex: 'stockNum'
-          },
+          },*/
           {
             title:'库存金额',
             align:"center",
