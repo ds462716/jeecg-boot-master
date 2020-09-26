@@ -105,4 +105,8 @@ public interface PdStatisticalReportMapper extends BaseMapper<PdStatisticalRepor
 
     List<RpPurchaseMoneyReportPage> queryMonthMoneyList(@Param("entity") RpPurchaseMoneyReportPage purchaseMoneyReportPage);
 
+    IPage<RpDepartApplyPage> departApplyUseReportPage(Page<RpDepartApplyPage> page, @Param("entity") RpDepartApplyPage departApplyPage);
+
+    List<RpDepartApplyPage> departApplyUseReportPage(@Param("entity") RpDepartApplyPage departApplyPage);
+
 }

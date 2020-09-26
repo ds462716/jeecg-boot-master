@@ -131,87 +131,77 @@
             width:'200px',
             dataIndex: 'departName'
           },
-          {
+         /* {
             title:'入库数量',
             align:"center",
             dataIndex: 'inRecordNum'
-          },
+          },*/
           {
             title:'入库金额',
             align:"center",
             dataIndex: 'inRecordPrice'
           },
-          {
+          /*{
             title:'出库数量',
             align:"center",
             dataIndex: 'callOutNum'
-          },
+          },*/
           {
             title:'出库金额',
             align:"center",
             dataIndex: 'callOutPrice'
           },
-          {
+          /*{
             title:'使用数量',
             align:"center",
             dataIndex: 'purchaseNum'
-          },
+          },*/
           {
             title:'使用金额',
             align:"center",
             dataIndex: 'purchasePrice'
           },
-          {
+          /*{
             title:'调入数量',
             align:"center",
             dataIndex: 'callInNum'
-          },
+          },*/
           {
             title:'调入金额',
             align:"center",
             dataIndex: 'callInPrice'
           },
-          {
+         /* {
             title:'退货数量',
             align:"center",
             dataIndex: 'rejectedNum'
-          },
+          },*/
           {
             title:'退货金额',
             align:"center",
             dataIndex: 'rejectedPrice'
           },
-          {
+          /*{
             title:'库存数量',
             align:"center",
             dataIndex: 'stockNum'
-          },
+          },*/
           {
             title:'库存金额',
             align:"center",
             dataIndex: 'stockPrice'
           },
-          {
+          /*{
             title:'差异数量',
             align:"center",
             dataIndex: 'disNum'
-          },
+          },*/
           {
             title:'差异金额 ',
             align:"center",
             dataIndex: 'disPrice'
           },
-         /* {
-            title:'库存耗占比',
-            align:"center",
-            dataIndex: 'proportion'
-          },*/
-         /* {
-            title: '操作',
-            dataIndex: 'action',
-            align:"center",
-            scopedSlots: { customRender: 'action' }
-          }*/
+
         ],
         url: {
           list: "/pd/pdStatisticalReport/queryNumericalInfList",

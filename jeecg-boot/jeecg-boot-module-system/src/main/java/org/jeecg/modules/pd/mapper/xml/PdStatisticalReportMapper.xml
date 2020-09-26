@@ -1655,7 +1655,7 @@
         "" as "s"
         from pd_numerical_inf a
         left join sys_depart t on t.id=a.depart_id
-        where a.tj_type='0'
+        where a.tj_type='0'  and t.depart_type in('2')
         <if test="entity.departIdList != null and entity.departIdList.size() > 0">
             AND a.depart_id IN
             <foreach collection="entity.departIdList" item="item" separator="," open="(" close=")">
@@ -1676,7 +1676,7 @@
         left join sys_depart c on c.id=e.depart_id
         where d.hy_charged='0'
         and d.del_flag='0'
-        and c.depart_type in('1','2')
+        and c.depart_type in('2')
         <if test="entity.departIdList != null and entity.departIdList.size() > 0">
             AND e.depart_id IN
             <foreach collection="entity.departIdList" item="item" separator="," open="(" close=")">
@@ -1698,6 +1698,7 @@
         (select t.parent_id from sys_depart t where t.id=e.depart_id  and t.depart_type in('3')))
         where d.hy_charged='0'
         and d.del_flag='0'
+        and c.depart_type in('2')
         and c.depart_name is not  null
         <if test="entity.departIdList != null and entity.departIdList.size() > 0">
             AND e.depart_id IN
@@ -1719,7 +1720,7 @@
         left join sys_depart c on c.id=e.depart_id
         where d.hy_charged='1'
         and d.del_flag='0'
-        and c.depart_type in('1','2')
+        and c.depart_type in('2')
         <if test="entity.departIdList != null and entity.departIdList.size() > 0">
             AND e.depart_id IN
             <foreach collection="entity.departIdList" item="item" separator="," open="(" close=")">
@@ -1742,6 +1743,7 @@
         where d.hy_charged='1'
         and d.del_flag='0'
         and e.del_flag='0'
+        and c.depart_type in('2')
         and c.depart_name is not  null
         <if test="entity.departIdList != null and entity.departIdList.size() > 0">
             AND e.depart_id IN
@@ -1797,6 +1799,7 @@
         from pd_numerical_inf a
         left join sys_depart t on t.id=a.depart_id
         where a.tj_type='0'
+        and t.depart_type='2'
         <if test="entity.departIdList != null and entity.departIdList.size() > 0">
             AND a.depart_id IN
             <foreach collection="entity.departIdList" item="item" separator="," open="(" close=")">
@@ -1852,6 +1855,9 @@
         where 1=1
         <if test="entity.productFlag != null and entity.productFlag != ''">
             AND tj_type=#{entity.productFlag}
+        </if>
+        <if test="entity.departType != null and entity.departType != ''">
+            AND t.depart_type=#{entity.departType}
         </if>
         AND a.month= #{entity.yearMonth}
         group by a.depart_id
@@ -4805,5 +4811,48 @@ group by m.depart_name,m.type1,m.type2
 
 
 
+    </select>
+
+
+
+
+
+    <!--  科室领用情况统计报表-->
+    <select id="departApplyUseReportPage" resultType="org.jeecg.modules.pd.vo.RpDepartApplyPage">
+        select c.*,
+        (c.janPrice+c.febPrice+c.marPrice+c.aprPrice+c.mayPrice
+        +c.junPrice+c.julPrice+c.augPrice+c.septPrice+c.octPrice
+        +c.novPrice+c.decPrice) as "countPrice"
+        from (
+        select
+        a.id,
+        t.depart_name as "departName",
+        sum(case when month=concat(#{entity.year},'-01') then in_record_price else 0 end ) as "janPrice",
+        sum(case when month=concat(#{entity.year},'-02') then in_record_price else 0 end ) as "febPrice",
+        sum(case when month=concat(#{entity.year},'-03') then in_record_price else 0 end ) as "marPrice",
+        sum(case when month=concat(#{entity.year},'-04') then in_record_price else 0 end ) as "aprPrice",
+        sum(case when month=concat(#{entity.year},'-05') then in_record_price else 0 end ) as "mayPrice",
+        sum(case when month=concat(#{entity.year},'-06') then in_record_price else 0 end ) as "junPrice",
+        sum(case when month=concat(#{entity.year},'-07') then in_record_price else 0 end ) as "julPrice",
+        sum(case when month=concat(#{entity.year},'-08') then in_record_price else 0 end ) as "augPrice",
+        sum(case when month=concat(#{entity.year},'-09') then in_record_price else 0 end ) as "septPrice",
+        sum(case when month=concat(#{entity.year},'-10') then in_record_price else 0 end ) as "octPrice",
+        sum(case when month=concat(#{entity.year},'-11') then in_record_price else 0 end ) as "novPrice",
+        sum(case when month=concat(#{entity.year},'-12') then in_record_price else 0 end ) as "decPrice"
+        from pd_numerical_inf a
+        left join sys_depart t on a.depart_id=t.id
+        where 1=1
+        <if test="entity.productFlag != null and entity.productFlag != ''">
+            AND a.tj_type = #{entity.productFlag}
+        </if>
+        <if test="entity.departIdList  != null and entity.departIdList.size() > 0">
+            AND t.id IN
+            <foreach collection="entity.departIdList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+    group by t.id
+    order by in_record_price desc
+        ) c
     </select>
 </mapper>

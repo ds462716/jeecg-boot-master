@@ -102,4 +102,8 @@ public interface IPdStatisticalReportService extends IService<PdStatisticalRepor
 
     List<RpPurchaseMoneyReportPage> queryMonthMoneyList(RpPurchaseMoneyReportPage entity);
 
+    IPage<RpDepartApplyPage> departApplyUseReportPage(Page<RpDepartApplyPage> inPageDetail, RpDepartApplyPage departApplyPage);
+
+    List<RpDepartApplyPage> departApplyUseReportList(RpDepartApplyPage departApplyPage);
+
 }

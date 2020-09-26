@@ -6,9 +6,28 @@
         <a-row :gutter="24">
         <a-col :md="6" :sm="8">
           <a-form-item label="年月">
-            <a-month-picker placeholder="选择年月" @change="monthChange"  v-model="queryParam.ym"/>
+<!--
+            <a-month-picker placeholder="选择年月" @change="monthChange" v-model="queryParam.ym"/>
+-->
+
+<!--
+            <a-year-panel  placeholder="选择年月" @change="monthChange" v-model="queryParam.ym"/>
+-->
+
+             <year-picker @input="monthChange"     v-model="queryParam.ym"/>
+
+
           </a-form-item>
         </a-col>
+          <a-col :md="6" :sm="8">
+          <a-form-item label="统计产品类型">
+            <a-select placeholder="产品类型" :allowClear="true" v-model="queryParam.productFlag" >
+              <a-select-option value="">试剂+耗材</a-select-option>
+              <a-select-option value="0">耗材</a-select-option>
+              <a-select-option value="1">试剂</a-select-option>
+            </a-select>
+          </a-form-item>
+          </a-col>
           <a-col :md="6" :sm="8">
           <a-form-item label="科室">
             <!--<a-input placeholder="请选择科室" v-model="queryParam.deptName"></a-input>-->
@@ -50,7 +69,7 @@
     <!-- 查询区域-END -->
     <!-- 操作按钮区域 -->
     <div class="table-operator">
-      <a-button type="primary" icon="download" @click="handleExportXls('试剂消耗报表')">导出</a-button>
+      <a-button type="primary" icon="download" @click="handleExportXls('科室领用报表')">导出</a-button>
     </div>
     <!-- table区域-begin -->
     <div>
@@ -67,9 +86,7 @@
         :scroll="tableScroll"
          @change="handleTableChange">
         <span slot="action" slot-scope="text, record">
-          <a @click="queryBottleDetail(record)">试剂消耗明细</a>
-           <a-divider type="vertical" />
-            <a @click="queryItemDetail(record)">检验项目明细</a>
+
         </span>
 
       </a-table>
@@ -87,19 +104,20 @@
   import JDictSelectTagExpand from "@/components/dict/JDictSelectTagExpand"
   import pdBottleInfModal from '../modules/PdBottleInfModal'
   import pdInspectionItemModal from '../modules/PdInspectionItemModal'
-
+  import YearPicker from '../modules/YearPicker'
 
   export default {
-    name: "PdCallMonthQuery",
+    name: "PdDepartApplyQuery",
     mixins:[JeecgListMixin],
     components: {
+      YearPicker,
       pdBottleInfModal,
       pdInspectionItemModal,
       JDictSelectTagExpand
     },
     data () {
       return {
-        description: '试剂月统计报表',
+        description: '科室耗材领用情况统计表',
         notFoundContent:"未找到内容",
         venderValue: undefined,
         venderData: [],
@@ -120,115 +138,81 @@
             }
           },
           {
-            title:'统计月份',
+            title:'科室',
             align:"center",
-            dataIndex: 'month'
-          },
-          {
-            title:'统计科室',
-            align:"center",
+            width:'200px',
             dataIndex: 'departName'
           },
-          /*{
-            title:'入库数量',
-            align:"center",
-            dataIndex: 'inRecordNum'
-          },*/
           {
-            title:'入库金额',
+            title:'01月金额',
             align:"center",
-            dataIndex: 'inRecordPrice'
-          },
-         /* {
-            title:'出库数量',
-            align:"center",
-            dataIndex: 'callOutNum'
-          },*/
-          {
-            title:'出库金额',
-            align:"center",
-            dataIndex: 'callOutPrice'
-          },
-         /* {
-            title:'使用数量',
-            align:"center",
-            dataIndex: 'purchaseNum'
-          },*/
-          {
-            title:'使用金额',
-            align:"center",
-            dataIndex: 'purchasePrice'
-          },
-         /* {
-            title:'调入数量',
-            align:"center",
-            dataIndex: 'callInNum'
-          },*/
-          {
-            title:'调入金额',
-            align:"center",
-            dataIndex: 'callInPrice'
-          },
-          /*{
-            title:'退货数量',
-            align:"center",
-            dataIndex: 'rejectedNum'
-          },*/
-         /* {
-            title:'退货金额',
-            align:"center",
-            dataIndex: 'rejectedPrice'
-          },*/
-          {
-            title:'库存数量',
-            align:"center",
-            dataIndex: 'stockNum'
+            dataIndex: 'janPrice'
           },
           {
-            title:'库存金额',
+            title:'02月金额',
             align:"center",
-            dataIndex: 'stockPrice'
-          },
-         /* {
-            title:'差异数量',
-            align:"center",
-            dataIndex: 'disNum'
-          },*/
-          {
-            title:'差异金额 ',
-            align:"center",
-            dataIndex: 'disPrice'
+            dataIndex: 'febPrice'
           },
           {
-            title:'理论使用人份数量',
+            title:'03月金额',
             align:"center",
-            dataIndex: 'specQuantityNum'
+            dataIndex: 'marPrice'
           },
           {
-            title:'实际使用人份数量',
+            title:'04月金额',
             align:"center",
-            dataIndex: 'specRealityNum'
+            dataIndex: 'aprPrice'
           },
           {
-            title:'差异人份数量',
+            title:'05月金额',
             align:"center",
-            dataIndex: 'disSpecNum'
+            dataIndex: 'mayPrice'
           },
           {
-            title:' 检验项目数量',
+            title:'06月金额',
             align:"center",
-            dataIndex: 'itemNum'
+            dataIndex: 'junPrice'
           },
           {
-            title:'检验项目收入金额',
+            title:'07月金额',
             align:"center",
-            dataIndex: 'itemPrice'
+            dataIndex: 'julPrice'
+          },
+          {
+            title:'08月金额',
+            align:"center",
+            dataIndex: 'augPrice'
+          },
+          {
+            title:'09月金额',
+            align:"center",
+            dataIndex: 'septPrice'
+          },
+          {
+            title:'10月金额',
+            align:"center",
+            dataIndex: 'octPrice'
+          },
+          {
+            title:'11月金额',
+            align:"center",
+            dataIndex: 'novPrice'
+          },
+          {
+            title:'12月金额',
+            align:"center",
+            dataIndex: 'decPrice'
+          },
+          {
+            title:'合计金额',
+            align:"center",
+            dataIndex: 'countPrice'
           },
         ],
         url: {
-          list: "/pd/pdStatisticalReport/queryNumericalInfList",
+          list: "/pd/pdStatisticalReport/departApplyUseReport",
           queryDepart: "/pd/pdDepart/queryListTree",
-          exportXlsUrl: "/pd/pdStatisticalReport/numericalInfExportXls",
+          exportXlsUrl: "/pd/pdStatisticalReport/departApplyExportXls",
         },
         dictOptions:{
 
@@ -245,8 +229,8 @@
       initDictConfig(){ //静态字典值加载
 
       },
-      monthChange(date, dateString){
-        this.queryParam.month=dateString;
+      monthChange(dateString){
+        this.queryParam.year=dateString;
       },
       //科室查询start
       departHandleSearch(value) {
@@ -265,7 +249,7 @@
           this.ipagination.current = 1;
         }
         var params = this.getQueryParams();//查询条件
-        params.tjType='1';
+        //params.tjType='0';
         this.loading = true;
         getAction(this.url.list, params).then((res) => {
           if (res.success) {
@@ -298,7 +282,7 @@
         if(this.selectedRowKeys && this.selectedRowKeys.length>0){
           param['selections'] = this.selectedRowKeys.join(",")
         }
-        param.tjType="1";
+        param.tjType="0";
         console.log("导出参数",param)
         downFile(this.url.exportXlsUrl,param).then((data)=>{
           if (!data) {
@@ -320,16 +304,8 @@
           }
         })
       },
-      //试剂消耗明细
-      queryBottleDetail(record){
-          this.$refs.modalForm.edit(record);
-          this.$refs.modalForm.disableSubmit = false;
-      },
-      //检验项目明细
-      queryItemDetail(record){
-        this.$refs.modalForm1.edit(record);
-        this.$refs.modalForm1.disableSubmit = false;
-      },
+
+
     }
   }
 </script>

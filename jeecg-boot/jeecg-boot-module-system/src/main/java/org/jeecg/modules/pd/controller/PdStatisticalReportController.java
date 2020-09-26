@@ -9,9 +9,12 @@ import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.PdConstant;
 import org.jeecg.common.system.base.controller.JeecgController;
 import org.jeecg.common.system.vo.LoginUser;
+import org.jeecg.common.util.DateUtils;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.external.vo.PdNumericalInfHcExlce;
+import org.jeecg.modules.external.vo.PdNumericalInfHcExlceGZSLYY;
 import org.jeecg.modules.external.vo.PdNumericalInfSjExlce;
+import org.jeecg.modules.external.vo.PdNumericalInfSjExlceGZSLYY;
 import org.jeecg.modules.pd.entity.PdNumericalInf;
 import org.jeecg.modules.pd.entity.PdStatisticalReport;
 import org.jeecg.modules.pd.entity.PdStockRecordDetail;
@@ -31,7 +34,10 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 /**
 * @Description: 统计报表
@@ -474,6 +480,7 @@ public class PdStatisticalReportController extends JeecgController<PdStatistical
     public ModelAndView exportXls(HttpServletRequest request, PdNumericalInf pdNumericalInf) {
 
         LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        String hospitalCode=sysUser.getHospitalCode();
         if (oConvertUtils.isNotEmpty(pdNumericalInf.getDepartIds()) && !"undefined".equals(pdNumericalInf.getDepartIds())) {
             pdNumericalInf.setDepartIdList(Arrays.asList(pdNumericalInf.getDepartIds().split(",")));
         } else {
@@ -488,19 +495,32 @@ public class PdStatisticalReportController extends JeecgController<PdStatistical
         ModelAndView mv = new ModelAndView(new JeecgEntityExcelView());
         List<PdNumericalInfHcExlce> exportHcList = new ArrayList<>();
         List<PdNumericalInfSjExlce> exportSjList = new ArrayList<>();
+        List<PdNumericalInfHcExlceGZSLYY> exportHcGzslList = new ArrayList<>();
+        List<PdNumericalInfSjExlceGZSLYY> exportSjGzslList = new ArrayList<>();
         if ("0".equals(tjType)) { //耗材统计导出
-            exportHcList = JSON.parseArray(JSON.toJSONString(list), PdNumericalInfHcExlce.class);
+            if("GZSLYY".equals(hospitalCode)){ //如果是市立医院，则只导出金额，数量不导出
+                exportHcGzslList = JSON.parseArray(JSON.toJSONString(list), PdNumericalInfHcExlceGZSLYY.class);
+                mv.addObject(NormalExcelConstants.CLASS, PdNumericalInfHcExlceGZSLYY.class);
+                mv.addObject(NormalExcelConstants.DATA_LIST, exportHcGzslList);
+            }else{
+                exportHcList = JSON.parseArray(JSON.toJSONString(list), PdNumericalInfHcExlce.class);
+                mv.addObject(NormalExcelConstants.CLASS, PdNumericalInfHcExlce.class);
+                mv.addObject(NormalExcelConstants.DATA_LIST, exportHcList);
+            }
             mv.addObject(NormalExcelConstants.FILE_NAME, "耗材月统计报表");
-            mv.addObject(NormalExcelConstants.CLASS, PdNumericalInfHcExlce.class);
             mv.addObject(NormalExcelConstants.PARAMS, new ExportParams("耗材月统计报表", "导出人:" + sysUser.getRealname(), "耗材月统计报表"));
-            mv.addObject(NormalExcelConstants.DATA_LIST, exportHcList);
-
         } else { //试剂统计导出
-            exportSjList = JSON.parseArray(JSON.toJSONString(list), PdNumericalInfSjExlce.class);
+            if("GZSLYY".equals(hospitalCode)){ //如果是市立医院，则只导出金额，数量不导出
+                exportSjGzslList = JSON.parseArray(JSON.toJSONString(list), PdNumericalInfSjExlceGZSLYY.class);
+                mv.addObject(NormalExcelConstants.CLASS, PdNumericalInfSjExlceGZSLYY.class);
+                mv.addObject(NormalExcelConstants.DATA_LIST, exportSjGzslList);
+            }else{
+                exportSjList = JSON.parseArray(JSON.toJSONString(list), PdNumericalInfSjExlce.class);
+                mv.addObject(NormalExcelConstants.CLASS, PdNumericalInfSjExlce.class);
+                mv.addObject(NormalExcelConstants.DATA_LIST, exportSjList);
+            }
             mv.addObject(NormalExcelConstants.FILE_NAME, "试剂月统计报表");
-            mv.addObject(NormalExcelConstants.CLASS, PdNumericalInfSjExlce.class);
             mv.addObject(NormalExcelConstants.PARAMS, new ExportParams("试剂月统计报表", "导出人:" + sysUser.getRealname(), "试剂月统计报表"));
-            mv.addObject(NormalExcelConstants.DATA_LIST, exportSjList);
         }
         return mv;
     }
@@ -802,6 +822,62 @@ public class PdStatisticalReportController extends JeecgController<PdStatistical
         mv.addObject(NormalExcelConstants.DATA_LIST, exportList);
         mv.addObject(NormalExcelConstants.FILE_NAME, fileName);
         mv.addObject(NormalExcelConstants.PARAMS, new ExportParams(fileName, "导出人:" + sysUser.getRealname(), fileName));
+        return mv;
+    }
+
+
+
+    /**
+     * 科室领用情况统计报表
+     *
+     * @param rpDepartApplyPage
+     * @param pageNo
+     * @param pageSize
+     * @return
+     */
+    @GetMapping(value = "/departApplyUseReport")
+    public Result<?> departApplyUseReport(RpDepartApplyPage rpDepartApplyPage,
+                                       @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
+                                       @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize) {
+        Page<RpDepartApplyPage> page = new Page<RpDepartApplyPage>(pageNo, pageSize);
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        rpDepartApplyPage.setDepartParentId(sysUser.getDepartParentId());
+        if (oConvertUtils.isNotEmpty(rpDepartApplyPage.getDepartIds()) && !"undefined".equals(rpDepartApplyPage.getDepartIds())) {
+            rpDepartApplyPage.setDepartIdList(Arrays.asList(rpDepartApplyPage.getDepartIds().split(",")));
+        }
+        //获取当前年份
+        Integer year= DateUtils.getNowYear();
+        if(oConvertUtils.isEmpty(rpDepartApplyPage.getYear())){
+            rpDepartApplyPage.setYear(String.valueOf(year));
+        }
+        IPage<RpDepartApplyPage> pageList = pdStatisticalReportService.departApplyUseReportPage(page, rpDepartApplyPage);
+        return Result.ok(pageList);
+    }
+
+
+    /**
+     * 导出excel(科室领用情况统计报表)
+     *
+     * @param request
+     * @param rpDepartApplyPage
+     */
+    @RequestMapping(value = "/departApplyExportXls")
+    public ModelAndView departApplyExportXls(HttpServletRequest request, RpDepartApplyPage rpDepartApplyPage) {
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+         if (oConvertUtils.isNotEmpty(rpDepartApplyPage.getDepartIds()) && !"undefined".equals(rpDepartApplyPage.getDepartIds())) {
+            rpDepartApplyPage.setDepartIdList(Arrays.asList(rpDepartApplyPage.getDepartIds().split(",")));
+        }
+        //获取当前年份
+        Integer year= DateUtils.getNowYear();
+        if(oConvertUtils.isEmpty(rpDepartApplyPage.getYear())){
+            rpDepartApplyPage.setYear(String.valueOf(year));
+        }
+        List<RpDepartApplyPage> exportList=  pdStatisticalReportService.departApplyUseReportList(rpDepartApplyPage);
+        ModelAndView mv = new ModelAndView(new JeecgEntityExcelView());
+        mv.addObject(NormalExcelConstants.CLASS, RpDepartApplyPage.class);
+        mv.addObject(NormalExcelConstants.DATA_LIST, exportList);
+        mv.addObject(NormalExcelConstants.FILE_NAME, "科室领用情况统计报表");
+        mv.addObject(NormalExcelConstants.PARAMS, new ExportParams("科室领用情况统计报表("+rpDepartApplyPage.getYear()+")", "导出人:" + sysUser.getRealname(), "科室领用情况统计报表"));
         return mv;
     }
 }

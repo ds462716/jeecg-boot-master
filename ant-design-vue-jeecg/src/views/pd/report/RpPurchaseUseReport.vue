@@ -43,12 +43,12 @@
           <a-card :bordered="false">
             <!--采购收费对照图-->
             <div :style="{ padding: '0 0 32px 32px' }" >
-               <h4 :style="{ marginBottom: '20px' }">采购收费对照图</h4>
+               <h4 :style="{ marginBottom: '20px' }">采购收费对照图(耗材)</h4>
               <v-chart   :options="polar1"  :style="{width:'1600px'}"  />
             </div>
             <!--采购收费趋势图-->
             <div :style="{ padding: '0 0 32px 32px' }"  >
-              <h4 :style="{ marginBottom: '20px' }">采购收费趋势图</h4>
+              <h4 :style="{ marginBottom: '20px' }">采购收费趋势图(耗材)</h4>
               <v-chart :options="polar2"  :style="{ width:'1600px'}"  />
             </div>
             <div class="table-operator">
@@ -83,12 +83,12 @@
           <a-card :bordered="false">
             <!--采购收费柱状图-->
             <div :style="{ padding: '0 0 32px 32px' }"  >
-              <h4 :style="{ marginBottom: '20px' }">采购收费柱状图</h4>
+              <h4 :style="{ marginBottom: '20px' }">采购收费柱状图(耗材)</h4>
               <v-chart  :options="polar3"  :style="{ width:'1600px'}"  />
             </div>
             <!--采购收费趋势图-->
             <div :style="{ padding: '0 0 32px 32px' }"  >
-              <h4 :style="{ marginBottom: '20px' }">采购收费趋势图</h4>
+              <h4 :style="{ marginBottom: '20px' }">采购收费趋势图(耗材)</h4>
               <v-chart :options="polar4"  :style="{ width:'1600px'}"  />
             </div>
            <!-- <div :style="{ padding: '0 0 32px 32px' }"  >
@@ -98,11 +98,11 @@
           <!--  <div :style="{ padding: '0 0 32px 32px' }"  >-->
 
             <div :style="{ float : 'left' }"  >
-              <h4 :style="{ marginBottom: '20px' }">采购科室金额占比</h4>
+              <h4 :style="{ marginBottom: '20px' }">采购科室金额占比(耗材)</h4>
               <v-chart :options="polar9"/>
             </div>
             <div :style="{ float : 'right' }"  >
-              <h4 :style="{ marginBottom: '20px' }">收费金额占比</h4>
+              <h4 :style="{ marginBottom: '20px' }">收费金额占比(耗材)</h4>
               <v-chart :options="polar10"/>
             </div>
             <div class="table-operator"></div>
@@ -158,13 +158,13 @@
           <a-card :bordered="false">
             <!--采购环比图-->
             <div :style="{ padding: '0 0 32px 32px' }"  >
-              <h4 :style="{ marginBottom: '20px' }">采购环比图</h4>
+              <h4 :style="{ marginBottom: '20px' }">采购环比图(耗材)</h4>
               <v-chart :options="polar5"  :style="{ width:'1600px'}"  />
             </div>
 
             <!--采购同比图-->
             <div :style="{ padding: '0 0 32px 32px' }"  >
-              <h4 :style="{ marginBottom: '20px' }">采购同比图</h4>
+              <h4 :style="{ marginBottom: '20px' }">采购同比图(耗材)</h4>
               <v-chart :options="polar6"  :style="{ width:'1600px'}"  />
             </div>
             <div class="table-operator">
@@ -274,7 +274,7 @@
           </div>
         <!--  采购收费柱状图-->
           <div :style="{ padding: '0 0 32px 32px' }"  >
-            <h4 :style="{ marginBottom: '20px' }">采购收费柱状图</h4>
+            <h4 :style="{ marginBottom: '20px' }">采购收费柱状图(试剂)</h4>
             <v-chart :options="polar7"  :style="{ width:'1600px'}"  />
           </div>
           <!-- 采购收费趋势图-->

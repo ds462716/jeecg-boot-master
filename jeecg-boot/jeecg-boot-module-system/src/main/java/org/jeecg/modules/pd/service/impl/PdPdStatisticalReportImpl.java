@@ -368,11 +368,13 @@ public class PdPdStatisticalReportImpl extends ServiceImpl<PdStatisticalReportMa
             e.printStackTrace();
         }
         purchaseUseReportPage.setYearMonth(date_i);
+        purchaseUseReportPage.setDepartType("2");
         List<RpPurchaseUseReportPage>  pdPurchaseAmountMomReportPages = baseMapper.queryPurchaseAmountMomTableView(purchaseUseReportPage);
             //获得当前月的上上个月
             purchaseUseReportPage = new RpPurchaseUseReportPage();
              purchaseUseReportPage.setYearMonth(date_ii);
-            List<RpPurchaseUseReportPage> pdPurchaseAmountMomReportPages_i = baseMapper.queryPurchaseAmountMomTableView(purchaseUseReportPage);
+            purchaseUseReportPage.setDepartType("2");
+        List<RpPurchaseUseReportPage> pdPurchaseAmountMomReportPages_i = baseMapper.queryPurchaseAmountMomTableView(purchaseUseReportPage);
             //获得横坐标
             List<String> xAxis = new ArrayList<>();
             List<String> legends = new ArrayList<>();
@@ -645,5 +647,26 @@ public class PdPdStatisticalReportImpl extends ServiceImpl<PdStatisticalReportMa
     @Override
     public List<RpPurchaseMoneyReportPage> queryMonthMoneyList(RpPurchaseMoneyReportPage purchaseMoneyReportPage) {
         return baseMapper.queryMonthMoneyList(purchaseMoneyReportPage);
+    }
+
+
+    /**
+     *  科室领用情况统计报表
+     * @param departApplyPage
+     * @return
+     */
+    @Override
+    public IPage<RpDepartApplyPage> departApplyUseReportPage(Page<RpDepartApplyPage> page,RpDepartApplyPage departApplyPage) {
+        return baseMapper.departApplyUseReportPage(page,departApplyPage);
+    }
+
+    /**
+     *  (不分页)科室领用情况统计报表
+     * @param departApplyPage
+     * @return
+     */
+    @Override
+    public List<RpDepartApplyPage> departApplyUseReportList(RpDepartApplyPage departApplyPage) {
+        return baseMapper.departApplyUseReportPage(departApplyPage);
     }
 }
