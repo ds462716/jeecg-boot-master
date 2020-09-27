@@ -963,9 +963,9 @@ WHERE d.del_flag = '0'
 		<if test="entity.queryDateEnd != null and entity.queryDateEnd != ''">
 			AND date_format( c.audit_date, '%Y-%m-%d') &lt;= #{entity.queryDateEnd}
 		</if>
-		<if test="departIdList != null and departIdList.size() > 0">
+		<if test="entity.inDepartIdList != null and entity.inDepartIdList.size() > 0">
 			AND t.id IN
-			<foreach collection="departIdList" item="item" separator="," open="(" close=")">
+			<foreach collection="entity.inDepartIdList" item="item" separator="," open="(" close=")">
 				#{item}
 			</foreach>
 		</if>
