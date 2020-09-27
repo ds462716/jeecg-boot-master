@@ -195,20 +195,20 @@ public class AxisGZWYUtils {
 		params.put("cxappno", pdDosage.getApplicationNumber());
 		try {
 			//String result = getJsonDataFromWebservice(chargeUrl, defaultNamespace, "GetSurgInfo", params);
-			 // String result = getJsonDataFromWebservice(chargeUrl, defaultNamespace, "GetApplication", params);
+			   String result = getJsonDataFromWebservice(chargeUrl, defaultNamespace, "GetApplication", params);
 			 //String result="{'code':'0','msg':'查询成功','data':[{'手术编号':'','所属病区编码':'','手术名称':'','所属病区':'','所属科室编码':'','所属科室':'','手术科室':'','申请医生姓名编码':'','申请医生姓名':'','门诊号':'00070278','姓名':'许金连','住院号':'00070278','床位号':'9938','性别':'女','登记日期':'','申请编号':'','住院标识':'1'}]}";
-             String result="{'code':'0','msg':'查询成功','data':[{'手术编号':'15266','所属病区编码':'469','手术名称':'无痛内科胸腔镜检查','所属病区':'结核科一病区','所属科室编码':'469','所属科室':'结核科一病区','手术科室':'手术室','申请医生姓名编码':'410','申请医生姓名':'蒋凛','门诊号':'00071815','姓名':'蔡金生','住院号':'00071815','床位号':'9931','性别':'男','登记日期':'2020/7/28 12:13:00'},{'手术编号':'15591','所属病区编码':'390','手术名称':'胸腔镜下胸膜病损切除术','所属病区':'胸外科','所属科室编码':'390','所属科室':'胸外科','手术科室':'手术室','申请医生姓名编码':'417','申请医生姓名':'王传才','门诊号':'00071815','姓名':'蔡金生','住院号':'00071815','床位号':'9931','性别':'男','登记日期':'2020/8/12 10:07:00'}]}";
+             //String result="{'code':'0','msg':'查询成功','data':[{'手术编号':'15266','所属病区编码':'469','手术名称':'无痛内科胸腔镜检查','所属病区':'结核科一病区','所属科室编码':'469','所属科室':'结核科一病区','手术科室':'手术室','申请医生姓名编码':'410','申请医生姓名':'蒋凛','门诊号':'00071815','姓名':'蔡金生','住院号':'00071815','床位号':'9931','性别':'男','登记日期':'2020/7/28 12:13:00'},{'手术编号':'15591','所属病区编码':'390','手术名称':'胸腔镜下胸膜病损切除术','所属病区':'胸外科','所属科室编码':'390','所属科室':'胸外科','手术科室':'手术室','申请医生姓名编码':'417','申请医生姓名':'王传才','门诊号':'00071815','姓名':'蔡金生','住院号':'00071815','床位号':'9931','性别':'男','登记日期':'2020/8/12 10:07:00'}]}";
             json = JSONObject.parseObject(result);
 			if (!"0".equals(json.get("code"))) {
 				json.put("code", "-200");
 				json.put("msg","查询失败，未找到记录");
 			}
-		} /*catch (AxisFault e) {
+		} catch (AxisFault e) {
 			e.printStackTrace();
 			logger.info("******调用HIS根据住院号查询病人信息接口出现错误！******");
 			json.put("code", "-200");
 			json.put("msg","调用HIS根据住院号查询病人信息接口出现错误！");
-		}  */catch  (JSONException ee) {
+		} catch  (JSONException ee) {
 			ee.printStackTrace();
 			json.put("code", "-200");
 			logger.info("******调用HIS根据住院号查询病人信息接口JSON转换返回信息出现错误！******");
@@ -232,6 +232,8 @@ public class AxisGZWYUtils {
 		String chargeCode=dosageDetail.getChargeCode();
 		String inHospitalNo=pdDosage.getInHospitalNo();
 		Double productNum=dosageDetail.getDosageCount();
+		int num=productNum.intValue();
+
 		 if(chargeCode==null ||"".equals(chargeCode)|| productNum==null ||"".equals(productNum) ||
 				inHospitalNo==null ||"".equals(inHospitalNo)){
 			json.put("code", "-200");
@@ -241,7 +243,7 @@ public class AxisGZWYUtils {
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("cxbm", chargeCode);
 		params.put("cxlx", dosageDetail.getProductNumber());
-		params.put("cxsl", String.valueOf(productNum));
+		params.put("cxsl", String.valueOf(num));
 		params.put("zyh", inHospitalNo);
 		if("ed88fae1d871426ba8df883dedcb9bd9".equals(departId)
 				|| "2c7f3452b92f40c3a88f0cfa40d438ad".equals(departId)
@@ -263,8 +265,9 @@ public class AxisGZWYUtils {
 		params.put("token",System.currentTimeMillis()+sysUser.getWorkNo());
 		String result = null;
 		try {
-			result = getJsonDataFromWebservice(chargeUrl, defaultNamespace, "Charges", params);
-            //result="{'data':[],'code':'0','msg':'查询成功'}";
+			logger.info("HIS收费接口请求参数：", params);
+			 result = getJsonDataFromWebservice(chargeUrl, defaultNamespace, "Charges", params);
+             //result="{'data':[],'code':'0','msg':'执行成功'}";
 			logger.info("HIS收费接口返回报文：", result);
             json = JSONObject.parseObject(result);
 			if (!"0".equals(json.get("code"))) {
@@ -276,7 +279,7 @@ public class AxisGZWYUtils {
 			logger.info("******调用HIS收费接口出现错误！--->{}******", result);
 			json.put("code", "-200");
 			json.put("msg", "调用HIS收费接口出现错误");
-		}  catch (Exception ee) {
+		} catch (Exception ee) {
 			ee.printStackTrace();
 			logger.info("******调用HIS收费接口JSON转换返回信息出现错误！--->{}******", result);
 			json.put("code", "-200");
@@ -313,9 +316,9 @@ public class AxisGZWYUtils {
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("cxbm", chargeCode);
 		params.put("cxlx", dosageDetail.getProductNumber());
-		params.put("cxsl", "-"+productNum);
+		int num=productNum.intValue();
+		params.put("cxsl", "-"+num);
 		params.put("zyh", inHospitalNo);
-
 		if("ed88fae1d871426ba8df883dedcb9bd9".equals(departId)
 				|| "2c7f3452b92f40c3a88f0cfa40d438ad".equals(departId)
 				|| "12c7393a5ddc4737ac73de425fd805a7".equals(departId)){
@@ -333,12 +336,11 @@ public class AxisGZWYUtils {
 		params.put("czr", sysUser.getWorkNo());
 		params.put("czsj", DateUtils.date2Str(DateUtils.datetimeFormat.get()));
 		params.put("remark", "");
-		//params.put("token",System.currentTimeMillis()+(Math.random()*100));
 		params.put("token",System.currentTimeMillis()+sysUser.getWorkNo());
 		String result = null;
 		try {
-			 result = getJsonDataFromWebservice(chargeUrl, defaultNamespace, "Charges", params);
-            //result="{'code':'0','msg':'查询成功'}";
+			  result = getJsonDataFromWebservice(chargeUrl, defaultNamespace, "Charges", params);
+             //result="{'code':'0','msg':'执行成功'}";
 			json = JSONObject.parseObject(result);
 			if (!"0".equals(json.get("code"))) {
 				json.put("code", "-200");
@@ -347,7 +349,7 @@ public class AxisGZWYUtils {
 			e.printStackTrace();
 			json.put("code", "-200");
 			logger.info("******调用HIS退费接口出现错误！--->{}******", result);
-		}  catch (Exception ee) {
+		} catch (Exception ee) {
 			ee.printStackTrace();
 			logger.info("******调用HIS退费接口JSON转换返回信息出现错误！--->{}******", result);
 			json.put("code", "-200");
