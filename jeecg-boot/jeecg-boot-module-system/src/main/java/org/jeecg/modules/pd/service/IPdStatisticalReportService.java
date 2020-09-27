@@ -106,4 +106,7 @@ public interface IPdStatisticalReportService extends IService<PdStatisticalRepor
 
     List<RpDepartApplyPage> departApplyUseReportList(RpDepartApplyPage departApplyPage);
 
+    Map<String, Object> queryConsolidatedDataView(RpPurchaseUseReportPage purchaseUseReportPage);
+
+    Map<String, Object> queryConsolidatedExportXls(RpPurchaseUseReportPage purchaseUseReportPage);
 }

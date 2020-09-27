@@ -2194,4 +2194,39 @@ union  all
     order by in_record_price desc
         ) c
     </select>
+
+    <!-- zxh综合交易数据报表 -->
+    <select id="queryConsolidatedDataView" resultType="org.jeecg.modules.pd.vo.RpPurchaseUseReportPage">
+        SELECT
+            xx.`month` as yearMonth , sum(xx.amount) as amount
+            FROM
+            (
+            SELECT
+            DATE_FORMAT(x. MONTH, '%Y-%m') AS "month",
+            0 AS "amount"
+            FROM
+            XNumber x
+            WHERE
+            x. MONTH > DATE_SUB(CURDATE(), INTERVAL 2 YEAR)
+            AND substr(x. MONTH, 1, 7) &lt;= substr(CURDATE(), 1, 7)
+            UNION ALL
+            SELECT
+            a.`month`,
+            ROUND(SUM(a.in_record_price), 2) AS "amount"
+            FROM
+            pd_numerical_inf a
+            LEFT JOIN sys_depart t ON a.depart_id = t.id
+            WHERE
+            1 = 1
+            AND t.depart_type = '1'
+            <if test="entity.departParentId != null and entity.departParentId != ''">
+                AND t.depart_parent_id = #{entity.departParentId}
+            </if>
+            GROUP BY
+            a. MONTH
+            ) xx
+            GROUP BY xx. MONTH
+            ORDER BY
+            xx. MONTH
+    </select>
 </mapper>

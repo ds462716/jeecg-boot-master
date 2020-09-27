@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.PdConstant;
@@ -23,8 +24,11 @@ import org.jeecg.modules.pd.service.IPdNumericalInfService;
 import org.jeecg.modules.pd.service.IPdStatisticalReportService;
 import org.jeecg.modules.pd.vo.*;
 import org.jeecg.modules.system.entity.SysDepart;
+import org.jeecgframework.poi.excel.ExcelExportUtil;
 import org.jeecgframework.poi.excel.def.NormalExcelConstants;
 import org.jeecgframework.poi.excel.entity.ExportParams;
+import org.jeecgframework.poi.excel.entity.params.ExcelExportEntity;
+import org.jeecgframework.poi.excel.export.ExcelExportServer;
 import org.jeecgframework.poi.excel.view.JeecgEntityExcelView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,12 +36,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
-
+import org.apache.poi.ss.usermodel.Workbook;
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import javax.servlet.http.HttpServletResponse;
+import java.util.*;
 
 /**
 * @Description: 统计报表
@@ -858,5 +861,38 @@ public class PdStatisticalReportController extends JeecgController<PdStatistical
         mv.addObject(NormalExcelConstants.FILE_NAME, "科室领用情况统计报表");
         mv.addObject(NormalExcelConstants.PARAMS, new ExportParams("科室领用情况统计报表("+rpDepartApplyPage.getYear()+")", "导出人:" + sysUser.getRealname(), "科室领用情况统计报表"));
         return mv;
+    }
+
+    /**
+     * zxh综合交易数据报表
+     */
+    @GetMapping(value = "queryConsolidatedDataView")
+    public Result<?> queryConsolidatedDataView(RpPurchaseUseReportPage purchaseUseReportPage) {
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        purchaseUseReportPage.setDepartParentId(sysUser.getDepartParentId());
+        Map<String, Object> map = pdStatisticalReportService.queryConsolidatedDataView(purchaseUseReportPage);
+        return Result.ok(map);
+    }
+
+    /**
+     * 导出excel(供应商用量使用统计导出)
+     *
+     * @param request
+     * @param rpSupplierUseReportPage
+     */
+    @RequestMapping(value = "/queryConsolidatedExportXls")
+    public void queryConsolidatedExportXls(RpPurchaseUseReportPage purchaseUseReportPage,HttpServletRequest request, HttpServletResponse response) throws Exception{
+        String codedFileName = "综合交易数据报表";
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        purchaseUseReportPage.setDepartParentId(sysUser.getDepartParentId());
+        Map<String, Object> resultMap = pdStatisticalReportService.queryConsolidatedExportXls(purchaseUseReportPage);
+        List<ExcelExportEntity> entity = (List<ExcelExportEntity>) resultMap.get("entity");
+        List<Map<String,String>> list = (List<Map<String,String>>) resultMap.get("list");
+        Workbook workbook = ExcelExportUtil.exportExcel(new ExportParams(
+                "综合交易数据报表", "综合交易数据报表"), entity, list);
+        response.setHeader("content-disposition", "attachment;filename=" + codedFileName);
+        ServletOutputStream out = response.getOutputStream();
+        workbook.write(out);
+        out.flush();
     }
 }

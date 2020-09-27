@@ -11,12 +11,15 @@ import org.jeecg.modules.pd.entity.PdStatisticalReport;
 import org.jeecg.modules.pd.entity.PdStockRecordDetail;
 import org.jeecg.modules.pd.mapper.PdStatisticalReportMapper;
 import org.jeecg.modules.pd.service.IPdStatisticalReportService;
+import org.jeecg.modules.pd.util.moneyUtil;
 import org.jeecg.modules.pd.vo.*;
 import org.jeecg.modules.system.mapper.SysDepartMapper;
+import org.jeecgframework.poi.excel.entity.params.ExcelExportEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.sql.Array;
 import java.text.ParseException;
 import java.util.*;
 
@@ -668,5 +671,53 @@ public class PdPdStatisticalReportImpl extends ServiceImpl<PdStatisticalReportMa
     @Override
     public List<RpDepartApplyPage> departApplyUseReportList(RpDepartApplyPage departApplyPage) {
         return baseMapper.departApplyUseReportPage(departApplyPage);
+    }
+
+    /**
+     *  zxh综合交易数据报表
+     * @param purchaseUseReportPage
+     * @return
+     */
+    @Override
+    public Map<String, Object> queryConsolidatedDataView(RpPurchaseUseReportPage purchaseUseReportPage) {
+        Map<String,Object> map=new HashMap<>();
+        List<RpPurchaseUseReportPage>  list= baseMapper.queryConsolidatedDataView(purchaseUseReportPage);
+        //数据格式
+        //x轴日期
+        List<String> xAxis = new ArrayList<>();
+        //金额
+        List<Double> series = new ArrayList<>();
+        if(CollectionUtils.isNotEmpty(list)){
+            for(RpPurchaseUseReportPage rpPurchaseUseReportPage :list){
+                xAxis.add(rpPurchaseUseReportPage.getYearMonth());
+                series.add(moneyUtil.getNumberWan(rpPurchaseUseReportPage.getAmount()));//转化成万元
+            }
+        }
+        map.put("xAxis",xAxis);
+        map.put("series",series);
+        return map;
+    }
+    /**
+     *  zxh综合交易数据报表导出
+     * @param purchaseUseReportPage
+     * @return
+     */
+    @Override
+    public Map<String, Object> queryConsolidatedExportXls(RpPurchaseUseReportPage purchaseUseReportPage) {
+        Map<String,Object> resultMap = new HashMap<>();
+        List<RpPurchaseUseReportPage>  list= baseMapper.queryConsolidatedDataView(purchaseUseReportPage);
+        List<Map<String, String>> titleMap = new ArrayList<>();
+        List<ExcelExportEntity> entity = new ArrayList<>();
+        if(CollectionUtils.isNotEmpty(list)){
+            Map<String, String> map = new HashMap<>();
+            for (int i = 0;i< list.size();i++){
+                entity.add(new ExcelExportEntity(list.get(i).getYearMonth(), list.get(i).getYearMonth()));
+                map.put(list.get(i).getYearMonth(),list.get(i).getAmount());
+            }
+            titleMap.add(map);
+            resultMap.put("entity",entity);
+            resultMap.put("list",titleMap);
+        }
+        return resultMap;
     }
 }

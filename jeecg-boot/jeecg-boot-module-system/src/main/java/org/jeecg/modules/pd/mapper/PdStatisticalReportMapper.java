@@ -13,6 +13,7 @@ import org.jeecg.modules.pd.vo.RpUseDetailReportPage;
 import org.jeecg.modules.pd.vo.*;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Description: 报表统计
@@ -109,4 +110,5 @@ public interface PdStatisticalReportMapper extends BaseMapper<PdStatisticalRepor
 
     List<RpDepartApplyPage> departApplyUseReportPage(@Param("entity") RpDepartApplyPage departApplyPage);
 
+    List<RpPurchaseUseReportPage> queryConsolidatedDataView(@Param("entity")RpPurchaseUseReportPage purchaseUseReportPage);
 }

@@ -2,16 +2,16 @@
   <a-modal
     :visible="visible"
     :width="400"
-    :height="150"
+    :height="300"
     @cancel="handleCancel"
     :closable="false"
   >
     <div class="no-print" style="text-align: right">
       <a-button v-print="'#printContent'" @click="savePintRecord()" ghost type="primary">打印</a-button>
     </div>
-    <section  id="printContent">
-      <div v-for="(item, index) in printData.length" style="page-break-after:always;width: 400px;">
-          <svg :id="['barcode'+index]" style="margin-top:5px;" />
+    <section  id="printContent" style="width: 320px;">
+      <div v-for="(item, index) in printData.length" style="page-break-after:always;margin-left: 15px;">
+          <svg :id="['barcode'+index]" style="margin-top:5px;"/>
           <div class="codeListBox"><p>批号:</p><div>{{ printData[index].batchNo }}</div></div>
         <div class="codeListBox"><p>效期:</p><div>{{ printData[index].expDate }}</div>&nbsp;&nbsp;&nbsp;<p>类型:</p><div>{{ printData[index].productFlagName }}</div></div>
           <div v-if="printData[index].productName.length < 12" class="codeListBox"><p>名称：</p><div>{{ printData[index].productName }}</div></div>

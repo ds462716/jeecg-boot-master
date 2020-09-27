@@ -42,4 +42,7 @@ public class RpPurchaseUseReportPage {
 
     private Double value;
     private String name;
+
+    private String departParentId;//医院id
+
 }
