@@ -375,8 +375,8 @@ public class PdProductStockTotalController {
         PdProductStock pdProductStock= pdProductStockService.queryStockCount(productStock);
         Map map = new HashMap();
         map.put("page", pageList);
-        map.put("stockCount", pdProductStock.getStockCount());//库存总数量
-        map.put("stockPrice", pdProductStock.getStockPrice());//库存总金额
+        map.put("stockCount", pdProductStock==null?"0":pdProductStock.getStockCount());//库存总数量
+        map.put("stockPrice", pdProductStock==null?"0":pdProductStock.getStockPrice());//库存总金额
         return Result.ok(map);
     }
 
