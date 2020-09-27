@@ -3,12 +3,10 @@ package org.jeecg.modules.pd.service.impl;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import org.jeecg.modules.pd.entity.PdDosageDetail;
 import org.jeecg.modules.pd.entity.PdStockRecord;
 import org.jeecg.modules.pd.entity.PdStockRecordDetail;
 import org.jeecg.modules.pd.mapper.PdStockRecordDetailMapper;
 import org.jeecg.modules.pd.service.IPdStockRecordDetailService;
-import org.jeecg.modules.pd.vo.RpUseDetailReportPage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -115,6 +113,23 @@ public class PdStockRecordDetailServiceImpl extends ServiceImpl<PdStockRecordDet
 	@Override
 	public List<PdStockRecordDetail> selectStockRecordList( PdStockRecordDetail pdStockRecordDetail) {
 		return pdStockRecordDetailMapper.selectStockRecordList(pdStockRecordDetail);
+	}
+
+
+	/**
+	 * 用于市立医院供应室查询出库明细
+	 * @param page
+	 * @param pdStockRecordDetail
+	 * @return
+	 */
+	@Override
+	public IPage<PdStockRecordDetail> selectGZSLRecordDetailPage(Page<PdStockRecordDetail> page, PdStockRecordDetail pdStockRecordDetail) {
+		return pdStockRecordDetailMapper.selectGZSLRecordDetailList(page, pdStockRecordDetail);
+	}
+
+	@Override
+	public List<PdStockRecordDetail> selectGZSLRecordDetailList( PdStockRecordDetail pdStockRecordDetail) {
+		return pdStockRecordDetailMapper.selectGZSLRecordDetailList(pdStockRecordDetail);
 	}
 
 }

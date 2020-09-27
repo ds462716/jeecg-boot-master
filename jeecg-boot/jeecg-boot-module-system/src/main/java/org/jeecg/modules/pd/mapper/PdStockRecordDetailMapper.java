@@ -4,10 +4,8 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Param;
-import org.jeecg.modules.pd.entity.PdDosageDetail;
 import org.jeecg.modules.pd.entity.PdStockRecord;
 import org.jeecg.modules.pd.entity.PdStockRecordDetail;
-import org.jeecg.modules.pd.vo.RpUseDetailReportPage;
 
 import java.util.List;
 import java.util.Map;
@@ -88,4 +86,19 @@ public interface PdStockRecordDetailMapper extends BaseMapper<PdStockRecordDetai
 	 * @return
 	 */
 	public List<PdStockRecordDetail> selectRecordDetailByInvoiceNo(PdStockRecordDetail pdStockRecordDetail);
+
+	/**
+	 * 用于市立医院供应室查询出库明细
+	 * @param pdStockRecordDetail
+	 * @return
+	 */
+	IPage<PdStockRecordDetail> selectGZSLRecordDetailList(Page<PdStockRecordDetail> page, @Param("entity") PdStockRecordDetail pdStockRecordDetail);
+	/**
+	 * 用于市立医院供应室查询出库明细(不分页)
+	 * @param pdStockRecordDetail
+	 * @return
+	 */
+	public List<PdStockRecordDetail> selectGZSLRecordDetailList( @Param("entity") PdStockRecordDetail pdStockRecordDetail);
+
+
 }

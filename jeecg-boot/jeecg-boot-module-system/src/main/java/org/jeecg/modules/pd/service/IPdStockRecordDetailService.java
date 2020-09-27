@@ -3,10 +3,8 @@ package org.jeecg.modules.pd.service;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
-import org.jeecg.modules.pd.entity.PdDosageDetail;
 import org.jeecg.modules.pd.entity.PdStockRecord;
 import org.jeecg.modules.pd.entity.PdStockRecordDetail;
-import org.jeecg.modules.pd.vo.RpUseDetailReportPage;
 
 import java.util.List;
 import java.util.Map;
@@ -68,5 +66,15 @@ public interface IPdStockRecordDetailService extends IService<PdStockRecordDetai
 	IPage<PdStockRecordDetail> selectStockRecordListPage(Page<PdStockRecordDetail> pageList, PdStockRecordDetail pdStockRecordDetail);
 
 	List<PdStockRecordDetail> selectStockRecordList(PdStockRecordDetail pdStockRecordDetail);
+
+	/**
+	 * 用于市立医院供应室查询出库明细
+	 * @param pageList
+	 * @param pdStockRecordDetail
+	 * @return
+	 */
+	IPage<PdStockRecordDetail> selectGZSLRecordDetailPage(Page<PdStockRecordDetail> pageList, PdStockRecordDetail pdStockRecordDetail);
+
+	List<PdStockRecordDetail> selectGZSLRecordDetailList(PdStockRecordDetail pdStockRecordDetail);
 
 }

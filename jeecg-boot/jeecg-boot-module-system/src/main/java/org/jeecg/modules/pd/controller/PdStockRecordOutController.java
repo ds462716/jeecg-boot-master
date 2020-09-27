@@ -2,53 +2,39 @@ package org.jeecg.modules.pd.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.jeecg.common.api.vo.Result;
-import org.jeecg.common.constant.MessageConstant;
 import org.jeecg.common.constant.PdConstant;
-import org.jeecg.common.system.query.QueryGenerator;
-import org.jeecg.common.system.vo.DictModel;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.DateUtils;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.message.util.PushMsgUtil;
-import org.jeecg.modules.pd.entity.*;
+import org.jeecg.modules.pd.entity.PdProductStock;
+import org.jeecg.modules.pd.entity.PdProductStockCheckPermission;
+import org.jeecg.modules.pd.entity.PdStockRecord;
+import org.jeecg.modules.pd.entity.PdStockRecordDetail;
 import org.jeecg.modules.pd.service.*;
-import org.jeecg.modules.pd.util.BarCodeUtil;
-import org.jeecg.modules.pd.util.UUIDUtil;
-import org.jeecg.modules.pd.vo.PdGoodsAllocationPage;
+import org.jeecg.modules.pd.vo.PdStockRecordOutGYSPage;
 import org.jeecg.modules.pd.vo.PdStockRecordOutPage;
 import org.jeecg.modules.system.entity.SysDepart;
-import org.jeecg.modules.system.entity.SysPermission;
 import org.jeecg.modules.system.service.ISysDepartService;
 import org.jeecg.modules.system.service.ISysDictService;
 import org.jeecg.modules.system.service.ISysPermissionService;
-import org.jeecgframework.poi.excel.ExcelImportUtil;
 import org.jeecgframework.poi.excel.def.NormalExcelConstants;
 import org.jeecgframework.poi.excel.entity.ExportParams;
-import org.jeecgframework.poi.excel.entity.ImportParams;
 import org.jeecgframework.poi.excel.view.JeecgEntityExcelView;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * @Description: 出入库记录表
@@ -147,7 +133,7 @@ public class PdStockRecordOutController {
     /**
      * 保存
      *
-     * @param PdStockRecord
+     * @param pdStockRecord
      * @return
      */
     @PostMapping(value = "/add")
@@ -252,7 +238,7 @@ public class PdStockRecordOutController {
     /**
      * 提交
      *
-     * @param PdStockRecord
+     * @param pdStockRecord
      * @return
      */
     @PostMapping(value = "/submit")
@@ -539,5 +525,57 @@ public class PdStockRecordOutController {
         }
         IPage<PdStockRecordDetail> pageList = pdStockRecordDetailService.selectOutList(page, pdStockRecordDetail);
         return Result.ok(pageList);
+    }
+
+
+    /**
+     * 查询出库明细(市立医院供应室专用)mcb
+     *
+     * @param pdStockRecordDetail
+     * @param pageNo
+     * @param pageSize
+     * @param req
+     * @return
+     */
+    @GetMapping(value = "/queryPdStockRecordOutGzslList")
+    public Result<?> queryPdStockRecordOutGzslList(PdStockRecordDetail pdStockRecordDetail,
+                                               @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
+                                               @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
+                                               HttpServletRequest req) {
+
+        Page<PdStockRecordDetail> page = new Page<PdStockRecordDetail>(pageNo, pageSize);
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        pdStockRecordDetail.setDepartParentId(sysUser.getDepartParentId());
+        if(oConvertUtils.isNotEmpty(pdStockRecordDetail.getInDepartIds()) && !"undefined".equals(pdStockRecordDetail.getInDepartIds())){
+            pdStockRecordDetail.setInDepartIdList(Arrays.asList(pdStockRecordDetail.getInDepartIds().split(",")));
+        }
+        IPage<PdStockRecordDetail> pageList = pdStockRecordDetailService.selectGZSLRecordDetailPage(page, pdStockRecordDetail);
+        return Result.ok(pageList);
+    }
+
+
+    /**
+     * 导出excel(市立医院供应室专用)
+     *
+     * @param request
+     * @param pdStockRecordDetail
+     */
+    @RequestMapping(value = "/exportGzslXls")
+    public ModelAndView exportGzslXls(HttpServletRequest request, PdStockRecordDetail pdStockRecordDetail) {
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        pdStockRecordDetail.setDepartParentId(sysUser.getDepartParentId());
+
+        if(oConvertUtils.isNotEmpty(pdStockRecordDetail.getInDepartIds()) && !"undefined".equals(pdStockRecordDetail.getInDepartIds())){
+            pdStockRecordDetail.setInDepartIdList(Arrays.asList(pdStockRecordDetail.getInDepartIds().split(",")));
+        }
+        List<PdStockRecordDetail> detailList =  pdStockRecordDetailService.selectGZSLRecordDetailList(pdStockRecordDetail);
+        List<PdStockRecordOutGYSPage> exportList = JSON.parseArray(JSON.toJSONString(detailList), PdStockRecordOutGYSPage.class);
+        // Step.4 AutoPoi 导出Excel
+        ModelAndView mv = new ModelAndView(new JeecgEntityExcelView());
+        mv.addObject(NormalExcelConstants.FILE_NAME, "出库记录表");
+        mv.addObject(NormalExcelConstants.CLASS, PdStockRecordOutGYSPage.class);
+        mv.addObject(NormalExcelConstants.PARAMS, new ExportParams("出库记录表数据", "导出人:" + sysUser.getRealname(), "出库记录表"));
+        mv.addObject(NormalExcelConstants.DATA_LIST, exportList);
+        return mv;
     }
 }

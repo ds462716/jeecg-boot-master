@@ -910,4 +910,66 @@
 		left join pd_product_stock c on c.record_detail_id = a.id and b.in_depart_id = c.depart_id
 		where a.del_flag = '0' and b.record_type='1' and a.record_id = #{recordId} and a.invoice_no = #{invoiceNo}
 	</select>
+
+
+
+
+
+
+
+	<!--  用于市立医院供应室查询出库明细 -->
+	<select id="selectGZSLRecordDetailList" resultType="org.jeecg.modules.pd.entity.PdStockRecordDetail">
+	 SELECT
+		c.record_no as "recordNo",
+		c.out_type as "outType",
+	    t.depart_name AS "inDepartName",
+		e.number as "number",
+	e. NAME AS "productName",
+	e.spec AS "spec",
+	d.batch_no AS "batchNo",
+	 d.exp_Date as "expDate",
+	d.product_num AS "productNum",
+	d.selling_price AS " sellingPrice",
+	d.purchase_price AS " purchasePrice",
+	c.audit_date AS "auditDate",
+	r.realname AS "realname",
+	u.name as "unitName"
+      FROM
+	( SELECT a.* FROM pd_stock_record a
+		WHERE a.record_type = '2'
+		AND a.out_type = '2'
+		AND audit_status = '2'
+		AND a.out_depart_id = 'dea5919617234ef9854c5806d4b44efa'
+		AND a.audit_by IN ( SELECT user_id FROM sys_user_depart WHERE dep_id = 'b85b672a97514ecaa839e9030d42b511')
+		UNION ALL
+			SELECT a.* FROM pd_stock_record a
+			WHERE 	a.record_type = '2'
+			AND a.out_type = '2'
+			AND a.audit_status = '2'
+			AND a.out_depart_id = 'b85b672a97514ecaa839e9030d42b511'
+			) c
+LEFT JOIN pd_stock_record_detail d ON d.record_id = c.id
+LEFT JOIN sys_depart t ON t.id = c.in_depart_id
+LEFT JOIN pd_product e ON e.id = d.product_id
+LEFT JOIN sys_user r ON r.id = c.audit_by
+LEFT JOIN pd_unit u ON e.unit_id = u.id
+WHERE d.del_flag = '0'
+		<if test="entity.recordNo != null and entity.recordNo != ''">
+			 AND c.record_no  LIKE concat('%',#{entity.recordNo},'%')
+		</if>
+		<if test="entity.queryDateStart != null and entity.queryDateStart != ''">
+			AND date_format( c.audit_date, '%Y-%m-%d') &gt;= #{entity.queryDateStart}
+		</if>
+		<if test="entity.queryDateEnd != null and entity.queryDateEnd != ''">
+			AND date_format( c.audit_date, '%Y-%m-%d') &lt;= #{entity.queryDateEnd}
+		</if>
+		<if test="departIdList != null and departIdList.size() > 0">
+			AND t.id IN
+			<foreach collection="departIdList" item="item" separator="," open="(" close=")">
+				#{item}
+			</foreach>
+		</if>
+
+ORDER BY c.create_time DESC
+	</select>
 </mapper>

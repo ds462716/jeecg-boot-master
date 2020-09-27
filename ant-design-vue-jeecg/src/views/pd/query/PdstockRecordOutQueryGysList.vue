@@ -1,0 +1,359 @@
+<template>
+  <a-card :bordered="false">
+    <!-- 查询区域 -->
+    <div class="table-page-search-wrapper">
+      <a-form layout="inline" @keyup.enter.native="searchQuery">
+        <a-row :gutter="24">
+
+          <a-col :md="6" :sm="8">
+            <a-form-item label="出库单号">
+              <a-input placeholder="请输出单号" v-model="queryParam.recordNo"></a-input>
+            </a-form-item>
+          </a-col>
+          <a-col :span="6">
+            <a-form-item label="入库库房">
+              <a-select
+                mode="multiple"
+                showSearch
+                placeholder="请选择入库库房"
+                :supplierId="allDepartValue"
+                :defaultActiveFirstOption="false"
+                :allowClear="true"
+                :showArrow="true"
+                :filterOption="false"
+                @search="allDepartHandleSearch"
+                @focus="allDepartHandleSearch"
+                :notFoundContent="notFoundContent"
+                v-model="queryParam.inDepartIds"
+              >
+                <a-select-option v-for="d in allDepartList" :key="d.id">{{d.departName}}</a-select-option>
+              </a-select>
+            </a-form-item>
+          </a-col>
+          <a-col :md="6" :sm="8">
+            <a-form-item label="出库日期">
+              <a-range-picker @change="outDateChange" v-model="queryParam.queryOutDate"/>
+            </a-form-item>
+          </a-col>
+          <template v-if="toggleSearchStatus">
+          </template>
+
+          <a-col :md="6" :sm="8">
+            <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
+              <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
+              <a-button type="primary" @click="searchReset" icon="reload" style="margin-left: 8px">重置</a-button>
+              <a @click="handleToggleSearch" style="margin-left: 8px">
+                {{ toggleSearchStatus ? '收起' : '展开' }}
+                <a-icon :type="toggleSearchStatus ? 'up' : 'down'"/>
+              </a>
+            </span>
+          </a-col>
+        </a-row>
+      </a-form>
+    </div>
+    <!-- 查询区域-END -->
+    <!-- 操作按钮区域 -->
+    <div class="table-operator">
+      <a-button type="primary" icon="download" @click="handleExportXls('出库明细')">导出</a-button>
+    </div>
+    <!-- table区域-begin -->
+    <div>
+      <a-table
+        CLASS="changeColor"
+        ref="table"
+        size="middle"
+        bordered
+        rowKey="id"
+        :columns="columns"
+        :dataSource="dataSource"
+        :pagination="ipagination"
+        :loading="loading"
+        :scroll="tableScroll"
+        @change="handleTableChange">
+      </a-table>
+    </div>
+  </a-card>
+</template>
+<script>
+
+  import { httpAction,getAction,downFile } from '@/api/manage'
+  import { filterObj } from '@/utils/util';
+  import { JeecgListMixin} from '@/mixins/JeecgListMixin'
+  import {initDictOptions, filterMultiDictText} from '@/components/dict/JDictSelectUtil'
+  import JDictSelectTagExpand from "@/components/dict/JDictSelectTagExpand"
+
+  export default {
+    name: "PdstockRecordOutQueryList",
+    mixins:[JeecgListMixin],
+    components: {
+      JDictSelectTagExpand
+    },
+    data () {
+      return {
+        description: '出库明细查询',
+
+        notFoundContent:"未找到内容",
+        supplierValue: undefined,
+        supplierData: [],
+
+        venderValue: undefined,
+        venderData: [],
+
+        departValue: undefined,
+        departList:[],
+
+        allDepartValue: undefined,
+        allDepartList:[],
+        // 表头
+        columns: [
+        /*  {
+            title: '序号',
+            dataIndex: '',
+            key:'rowIndex',
+            width:60,
+            align:"center",
+            customRender:function (t,r,index) {
+              return parseInt(index)+1;
+            }
+          },*/
+          {
+            title:'单号',
+            align:"center",
+            width:'100px',
+            dataIndex: 'recordNo'
+          },
+          {
+            title:'出库日期',
+            align:"center",
+            dataIndex: 'auditDate',
+            width:'90px',
+            customRender:function (text) {
+              return !text?"":(text.length>10?text.substr(0,10):text)
+            }
+          },
+          {
+            title:'出库类型',
+            align:"center",
+            dataIndex: 'outType',
+            width:'90px',
+            customRender:(text)=>{
+              if(!text){
+                return ''
+              }else{
+                return filterMultiDictText(this.dictOptions['outType'], text+"")
+              }
+            }
+          },
+          {
+            title:'入库科室',
+            align:"center",
+            width:'80px',
+            dataIndex: 'inDepartName'
+          },
+          {
+            title:'产品编号',
+            align:"center",
+            width:'150px',
+            dataIndex: 'number'
+          },
+          {
+            title:'产品名称',
+            align:"center",
+            width:'250px',
+            dataIndex: 'productName'
+          },
+          {
+            title:'规格',
+            align:"center",
+            width:'150px',
+            dataIndex: 'spec'
+          },
+          {
+            title:'批号',
+            align:"center",
+            width:'150px',
+            dataIndex: 'batchNo'
+          },
+          {
+            title:'有效期',
+            align:"center",
+            dataIndex: 'expDate',
+            width:'90px',
+            customRender:function (text) {
+              return !text?"":(text.length>10?text.substr(0,10):text)
+            }
+          },
+          {
+            title:'数量',
+            align:"center",
+            width:'90px',
+            dataIndex: 'productNum'
+          },
+          {
+            title:'单位',
+            align:"center",
+            width:'60px',
+            dataIndex: 'unitName'
+          },
+          {
+            title:'入库单价',
+            align:"center",
+            width:'90px',
+            dataIndex: 'purchasePrice'
+          },
+          {
+            title:'出库单价',
+            align:"center",
+            width:'90px',
+            dataIndex: 'sellingPrice'
+          },
+          {
+            title:'操作人',
+            align:"center",
+            width:'80px',
+            dataIndex: 'realname'
+          }
+        ],
+        url: {
+          list: "/pd/pdStockRecordOut/queryPdStockRecordOutGzslList",
+          querySupplier:"/pd/pdSupplier/getSupplierList",
+          queryVender:"/pd/pdVender/getVenderList",
+          allDepartList:"/pd/pdDepart/getSysDepartList",
+          departList: "/pd/pdDepart/queryListTree",
+          exportXlsUrl: "/pd/pdStockRecordOut/exportGzslXls",
+        },
+        dictOptions:{
+          outType:[],
+        },
+        tableScroll:{x :2000},
+      }
+    },
+    computed: {
+      importExcelUrl: function(){
+        return `${window._CONFIG['domianURL']}/${this.url.importExcelUrl}`;
+      }
+    },
+    methods: {
+      initDictConfig(){ //静态字典值加载
+        initDictOptions('out_type').then((res) => { //入库类型
+          if (res.success) {
+            this.$set(this.dictOptions, 'outType', res.result)
+          }
+        })
+      },
+      // 部门下拉框搜索
+      departHandleSearch(value){
+        getAction(this.url.departList,{departName:value}).then((res)=>{
+          if (!res.success) {
+            this.cmsFailed(res.message);
+          }
+          this.departList = res.result;
+        })
+      },
+      // 部门下拉框搜索
+      allDepartHandleSearch(value){
+        getAction(this.url.allDepartList,{departName:value,parentFlag:"0"}).then((res)=>{
+          if (!res.success) {
+            this.cmsFailed(res.message);
+          }
+          this.allDepartList = res.result;
+        })
+      },
+      //供应商查询start
+      supplierHandleSearch(value) {
+        this.getList(value,this.url.querySupplier,"1");
+      },
+      supplierHandleChange(value) {
+        this.supplierValue = value;
+        this.getList(value,this.url.querySupplier,"1");
+      },
+      //供应商查询end
+      //生产厂家查询start
+      venderHandleSearch(value) {
+        this.getList(value,this.url.queryVender,"2");
+      },
+      venderHandleChange(value) {
+        this.venderValue = value;
+        this.getList(value,this.url.queryVender,"2");
+      },
+      //生产厂家查询end
+      getList(value,url,flag){
+        getAction(url,{name:value}).then((res)=>{
+          if (!res.success) {
+            this.cmsFailed(res.message);
+          }
+          const result = res.result;
+          const data = [];
+          result.forEach(r => {
+            data.push({
+              value: r.id,
+              text: r.name,
+            });
+          });
+          if(flag == "1"){
+            this.supplierData = data;
+          }else if(flag == "2"){
+            this.venderData = data;
+          }
+        })
+      },
+      expDateChange: function (value, dateString) {
+        this.queryParam.queryExpDateStart=dateString[0];
+        this.queryParam.queryExpDateEnd=dateString[1];
+      },
+      outDateChange: function (value, dateString) {
+        this.queryParam.queryDateStart=dateString[0];
+        this.queryParam.queryDateEnd=dateString[1];
+      },
+      getQueryParams() {
+        //获取查询条件
+        let sqp = {}
+        if(this.superQueryParams){
+          sqp['superQueryParams']=encodeURI(this.superQueryParams)
+        }
+        var param = Object.assign(sqp, this.queryParam, this.isorter ,this.filters);
+        param.field = this.getQueryField();
+        param.pageNo = this.ipagination.current;
+        param.pageSize = this.ipagination.pageSize;
+        param.inDepartIds = this.queryParam.inDepartIds+"";
+        param.outDepartIds = this.queryParam.outDepartIds+"";
+        delete param.queryExpDate; //范围参数不传递后台，传后台会报错
+        delete param.queryOutDate;
+        return filterObj(param);
+      },
+      /**重写导出方法**/
+      handleExportXls(fileName){
+        if(!fileName || typeof fileName != "string"){
+          fileName = "导出文件"
+        }
+        fileName = fileName + "_" + new Date().toLocaleString();
+        let param = this.getQueryParams();//查询条件
+        if(this.selectedRowKeys && this.selectedRowKeys.length>0){
+          param['selections'] = this.selectedRowKeys.join(",")
+        }
+        console.log("导出参数",param)
+        downFile(this.url.exportXlsUrl,param).then((data)=>{
+          if (!data) {
+            this.$message.warning("文件下载失败")
+            return
+          }
+          if (typeof window.navigator.msSaveBlob !== 'undefined') {
+            window.navigator.msSaveBlob(new Blob([data],{type: 'application/vnd.ms-excel'}), fileName+'.xls')
+          }else{
+            let url = window.URL.createObjectURL(new Blob([data],{type: 'application/vnd.ms-excel'}))
+            let link = document.createElement('a')
+            link.style.display = 'none'
+            link.href = url
+            link.setAttribute('download', fileName+'.xls')
+            document.body.appendChild(link)
+            link.click()
+            document.body.removeChild(link); //下载完成移除元素
+            window.URL.revokeObjectURL(url); //释放掉blob对象
+          }
+        })
+      },
+    }
+  }
+</script>
+<style scoped>
+</style>
