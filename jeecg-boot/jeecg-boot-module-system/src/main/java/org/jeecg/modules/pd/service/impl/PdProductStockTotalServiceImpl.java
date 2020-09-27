@@ -122,6 +122,8 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
             productStock.setRecordId(pdStockRecord.getId());
             productStock.setRecordDetailId(stockRecordDetail.getId()); //入库明细ID
         }
+        productStock.setPackageRecordId(stockRecordDetail.getPackageRecordId());
+        productStock.setPackageRecordDetailId(stockRecordDetail.getPackageRecordDetailId());
         productStock.setSupplierId(stockRecordDetail.getSupplierId());
         productStock.setDistributorId(stockRecordDetail.getDistributorId());
         productStock.setSpecQuantity(stockRecordDetail.getSpecQuantity());
@@ -192,11 +194,12 @@ public class PdProductStockTotalServiceImpl extends ServiceImpl<PdProductStockTo
                 }
                 PdProductStock i_productStockq = new PdProductStock();
                 i_productStockq.setDepartId(inDeptId);
-                i_productStockq.setRecordDetailId(stockRecordDetail.getInRecordDetailId());
+                i_productStockq.setRecordDetailId(stockRecordDetail.getInRecordDetailId()); //入库明细id
+                i_productStockq.setPackageRecordDetailId(stockRecordDetail.getPackageRecordDetailId());// 套包记录明细id
                 i_productStockq.setHuoweiCode(inHuoweiCode);
                 i_productStockq.setBarCodeType(pdStockRecord.getBarCodeType()); // 0：普通条码 1：唯一码
                 i_productStockq.setNestatStatus(PdConstant.STOCK_NESTAT_STATUS_1);//未使用
-                List<PdProductStock> i_productStocks = pdProductStockMapper.findForUpdate(i_productStockq);
+                List<PdProductStock> i_productStocks = pdProductStockMapper.findForInsert(i_productStockq);
                 if(CollectionUtils.isEmpty(i_productStocks)){
                     // 若库存明细表不存在，则新增入库
                     productStock = this.saveStock(pdStockRecord,stockRecordDetail);
