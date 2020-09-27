@@ -62,6 +62,14 @@ public interface PdProductStockMapper extends BaseMapper<PdProductStock> {
      * @param pdProductStock
      */
     public List<PdProductStock> findForUpdate(PdProductStock pdProductStock);
+    /**
+     * 入库时调用
+     * 库存明细锁表查询
+     * 注意：带事务方法调用时使用
+     *
+     * @param pdProductStock
+     */
+    public List<PdProductStock> findForInsert(PdProductStock pdProductStock);
 
     /**
      * 更新库存明细库存数量
