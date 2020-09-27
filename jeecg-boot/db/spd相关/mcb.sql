@@ -284,3 +284,7 @@ INSERT INTO `sys_permission` VALUES ('1295987290456567810', 'f0675b52d89100ee884
 INSERT INTO `sys_permission` VALUES ('1302806183652024322', 'f0675b52d89100ee88472b6800754a08', '综合统计报表', '/pd/report/RpPurchaseUseReport', 'pd/report/RpPurchaseUseReport', NULL, NULL, 1, '0', NULL, '1', 12.00, 0, NULL, 1, 1, 0, 0, NULL, 'admin', '2020-09-07 11:09:34', 'admin', '2020-09-14 09:35:31', 0, 0, '1', 0);
 INSERT INTO `sys_permission` VALUES ('2aeddae571695cd6380f6d6d334d6e7d', 'f0675b52d89100ee88472b6800754a08', '布局统计报表', '/report/ArchivesStatisticst', 'jeecg/report/ArchivesStatisticst', NULL, NULL, 1, '1', NULL, NULL, 13.00, 0, NULL, 1, 1, 0, 0, NULL, 'admin', '2019-04-03 18:32:48', 'admin', '2020-08-27 15:00:14', 0, 0, NULL, 0);
 -- ***************德兴医院部署截止 2020年9月26日 16:18:49
+
+
+-- 2020-09-26 科室领用统计报表菜单
+ INSERT INTO  `sys_permission`  VALUES ('1309438878907699201', 'f0675b52d89100ee88472b6800754a08', '科室领用报表', '/pd/query/PdDepartApplyQuery', 'pd/query/PdDepartApplyQuery', NULL, NULL, 1, '0', NULL, '1', 1.00, 0, NULL, 1, 1, 0, 0, NULL, 'admin', '2020-09-25 18:25:32', NULL, '2020-09-25 18:25:32', 0, 0, '1', 0);
