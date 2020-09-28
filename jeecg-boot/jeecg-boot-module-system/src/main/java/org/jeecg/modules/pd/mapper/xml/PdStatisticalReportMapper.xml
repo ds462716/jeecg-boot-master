@@ -2147,7 +2147,7 @@ union  all
         sum(case when month=concat(#{entity.year},'-12') then in_record_price else 0 end ) as "decPrice"
         from pd_numerical_inf a
         left join sys_depart t on a.depart_id=t.id
-        where 1=1
+        where 1=1 and t.depart_type in('2','3')
         <if test="entity.productFlag != null and entity.productFlag != ''">
             AND a.tj_type = #{entity.productFlag}
         </if>
@@ -2174,7 +2174,7 @@ union  all
             FROM
             XNumber x
             WHERE
-            x. MONTH > DATE_SUB(CURDATE(), INTERVAL 2 YEAR)
+            x. MONTH > DATE_SUB(CURDATE(), INTERVAL 18 MONTH)
             AND substr(x. MONTH, 1, 7) &lt;= substr(CURDATE(), 1, 7)
             UNION ALL
             SELECT
