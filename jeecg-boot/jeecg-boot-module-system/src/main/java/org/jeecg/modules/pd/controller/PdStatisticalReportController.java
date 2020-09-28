@@ -28,7 +28,6 @@ import org.jeecgframework.poi.excel.ExcelExportUtil;
 import org.jeecgframework.poi.excel.def.NormalExcelConstants;
 import org.jeecgframework.poi.excel.entity.ExportParams;
 import org.jeecgframework.poi.excel.entity.params.ExcelExportEntity;
-import org.jeecgframework.poi.excel.export.ExcelExportServer;
 import org.jeecgframework.poi.excel.view.JeecgEntityExcelView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -36,11 +35,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
-import org.apache.poi.ss.usermodel.Workbook;
+
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 /**
 * @Description: 统计报表
@@ -717,8 +719,9 @@ public class PdStatisticalReportController extends JeecgController<PdStatistical
             purchaseUseReportPage.setDepartIdList(Arrays.asList(purchaseUseReportPage.getDepartIds().split(",")));
         }
         Page<RpPurchaseUseReportPage> pagePage = new Page<RpPurchaseUseReportPage>(pageNo, pageSize);
-        IPage<RpPurchaseUseReportPage> list = pdStatisticalReportService.queryMoOnMoView(pagePage,purchaseUseReportPage);
-        return Result.ok(list);
+        Map<String,Object> map = pdStatisticalReportService.queryMoOnMoView(pagePage,purchaseUseReportPage);
+       // IPage<Map<String,Object>> list = pdStatisticalReportService.queryMoOnMoView(pagePage,purchaseUseReportPage);
+        return Result.ok(map);
     }
 
 
@@ -729,13 +732,13 @@ public class PdStatisticalReportController extends JeecgController<PdStatistical
      * @param purchaseUseReportPage
      */
     @RequestMapping(value = "/exportReportXls")
-    public ModelAndView exportReportXls(HttpServletRequest request, RpPurchaseUseReportPage purchaseUseReportPage) {
-        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+    public void exportReportXls(RpPurchaseUseReportPage purchaseUseReportPage,HttpServletRequest request, HttpServletResponse response) throws Exception{
+       /* LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
         String selectType=purchaseUseReportPage.getSelectType();
         if (oConvertUtils.isNotEmpty(purchaseUseReportPage.getDepartIds()) && !"undefined".equals(purchaseUseReportPage.getDepartIds())) {
             purchaseUseReportPage.setDepartIdList(Arrays.asList(purchaseUseReportPage.getDepartIds().split(",")));
         }
-        List<RpPurchaseUseReportPage> pageList = pdStatisticalReportService.queryMoOnMoView(purchaseUseReportPage);
+        List<RpPurchaseUseReportPage> pageList = null;//pdStatisticalReportService.queryMoOnMoView(purchaseUseReportPage);
         String fileName="采购费用环比报表";
         ModelAndView mv = new ModelAndView(new JeecgEntityExcelView());
         if("1".equals(selectType)){//同比
@@ -750,7 +753,22 @@ public class PdStatisticalReportController extends JeecgController<PdStatistical
         }
         mv.addObject(NormalExcelConstants.FILE_NAME, fileName);
         mv.addObject(NormalExcelConstants.PARAMS, new ExportParams(fileName, "导出人:" + sysUser.getRealname(), fileName));
-        return mv;
+        return mv;*/
+
+        String codedFileName = "采购费用环比-同比报表";
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        purchaseUseReportPage.setDepartParentId(sysUser.getDepartParentId());
+        Map<String, Object> resultMap = pdStatisticalReportService.queryMoOnMoViewExportXls(purchaseUseReportPage);
+        List<ExcelExportEntity> entity = (List<ExcelExportEntity>) resultMap.get("entity");
+        List<Map<String,Object>> list = (List<Map<String,Object>>) resultMap.get("list");
+        Workbook workbook = ExcelExportUtil.exportExcel(new ExportParams(
+                "采购费用环比-同比报表", "采购费用环比-同比报表"), entity, list);
+        response.setHeader("content-disposition", "attachment;filename=" + codedFileName);
+        ServletOutputStream out = response.getOutputStream();
+        workbook.write(out);
+        out.flush();
+
+
     }
 
 
@@ -878,7 +896,7 @@ public class PdStatisticalReportController extends JeecgController<PdStatistical
      * 导出excel(供应商用量使用统计导出)
      *
      * @param request
-     * @param rpSupplierUseReportPage
+     * @param purchaseUseReportPage
      */
     @RequestMapping(value = "/queryConsolidatedExportXls")
     public void queryConsolidatedExportXls(RpPurchaseUseReportPage purchaseUseReportPage,HttpServletRequest request, HttpServletResponse response) throws Exception{

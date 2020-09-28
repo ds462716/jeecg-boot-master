@@ -7,7 +7,6 @@
         <a-col :md="6" :sm="8">
           <a-form-item label="年份">
            <year-picker @input="monthChange"     v-model="queryParam.ym"/>
-
           </a-form-item>
         </a-col>
           <a-col :md="6" :sm="8">
