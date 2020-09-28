@@ -37,6 +37,8 @@ public class RpPurchaseUseReportPage {
     private Double lastPrice;//上个月采购金额
     private String theLastYearMonth;//上上个月
     private Double theLastPrice;//上上个月采购金额
+    private String theYearMonth;//去年同比月份
+    private Double thePrice;//去年同比月份采购金额
     private String moOnMo;//环比涨幅率
     private String yrOnYr;//同比涨幅率
 

@@ -19,7 +19,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.sql.Array;
 import java.text.ParseException;
 import java.util.*;
 
@@ -499,127 +498,182 @@ public class PdPdStatisticalReportImpl extends ServiceImpl<PdStatisticalReportMa
      * @return
      */
     @Override
-    public IPage<RpPurchaseUseReportPage> queryMoOnMoView(Page<RpPurchaseUseReportPage> page,RpPurchaseUseReportPage purchaseUseReportPage) {
+    public Map<String,Object> queryMoOnMoView(Page<RpPurchaseUseReportPage> page,RpPurchaseUseReportPage purchaseUseReportPage) {
+        Map<String,Object> param=new HashMap<>();
         String date_i = "";//当前月的上个月
         String date_ii = "";//当前月的上上个月
-        String selectType = purchaseUseReportPage.getSelectType();
+        String date_iii = "";//对应去年月份
         try {
             if (StringUtils.isNotEmpty(purchaseUseReportPage.getYearMonth())) {
-                if ("1".equals(selectType)) {
                     //获得选择月份和对应上个月的值
                     date_i = DateUtils.getLastMonth(0, purchaseUseReportPage.getYearMonth());
-                    date_ii = DateUtils.getLastMonth(12, purchaseUseReportPage.getYearMonth());
-                } else {
-                    date_i = DateUtils.getLastMonth(0, purchaseUseReportPage.getYearMonth());
                     date_ii = DateUtils.getLastMonth(1, purchaseUseReportPage.getYearMonth());
-                }
+                    date_iii = DateUtils.getLastMonth(12, purchaseUseReportPage.getYearMonth());
             } else {
-                if ("1".equals(selectType)) {
-                    date_i = DateUtils.getLastMonth(1, null);
-                    date_ii = DateUtils.getLastMonth(13, null);
-                } else {
                     date_i = DateUtils.getLastMonth(1, null);
                     date_ii = DateUtils.getLastMonth(2, null);
-                }
+                    date_iii = DateUtils.getLastMonth(13, null);
             }
         } catch (ParseException e) {
             e.printStackTrace();
         }
         purchaseUseReportPage.setLastMonth(date_i);
         purchaseUseReportPage.setTheLastYearMonth(date_ii);
-        List<RpPurchaseUseReportPage>  pageList=null;
-        IPage<RpPurchaseUseReportPage> pages =null;
-        if (page!=null) {
-              pages = baseMapper.queryMoOnMoView(page, purchaseUseReportPage);
-              pageList=pages.getRecords();
-        }else {
-            pageList = baseMapper.queryMoOnMoView(purchaseUseReportPage);
-            pages.setRecords(pageList);
-        }
-        if(CollectionUtils.isNotEmpty(pageList)){
-            for(RpPurchaseUseReportPage info:pageList){
-              Double sPrice=  info.getLastPrice();//上个月采购金额
-              Double ssPrice=  info.getTheLastPrice();//上上个月采购金额
-                String series_hb="";
-                if(ssPrice !=0 && ssPrice !=0.00){
-                    series_hb = String.format("%.2f", (sPrice -ssPrice) / ssPrice * 100);
-                }else{
-                    if(sPrice==0 || sPrice==0.00){
+        purchaseUseReportPage.setTheYearMonth(date_iii);
+
+        IPage<RpPurchaseUseReportPage> pages = baseMapper.queryMoOnMoView(page, purchaseUseReportPage);
+        List<RpPurchaseUseReportPage> list = pages.getRecords();
+        if (CollectionUtils.isNotEmpty(list)) {
+            for (RpPurchaseUseReportPage map : list) {
+                Double sPrice =map.getLastPrice();
+                Double ssPrice =map.getTheLastPrice();
+                Double thePrice =map.getThePrice();
+                String series_hb = "";//环比
+                String series_tb = "";//同比
+                if (ssPrice != 0 && ssPrice != 0.00) {
+                    series_hb = String.format("%.2f", (sPrice - ssPrice) / ssPrice * 100);
+                } else {
+                    if (sPrice == 0 || sPrice == 0.00) {
                         series_hb = "0";
-                    }else{
+                    } else {
                         series_hb = "100";
                     }
                 }
-                if("1".equals(selectType)){
-                    info.setYrOnYr(series_hb+"%");//同比
-                }else{
-                    info.setMoOnMo(series_hb+"%");//同比
+                if (thePrice != 0 && thePrice != 0.00) {
+                    series_tb = String.format("%.2f", (sPrice - thePrice) / thePrice * 100);
+                } else {
+                    if (sPrice == 0 || sPrice == 0.00) {
+                        series_tb = "0";
+                    } else {
+                        series_tb = "100";
+                    }
+                }
+                map.setMoOnMo(series_hb + "%");
+                map.setYrOnYr( series_tb + "%");
                 }
             }
-        }
-        return pages;
+           //表头表头组装
+      List<Map<String,Object>> columns=new ArrayList<>();
+        Map<String,Object> map1=new HashMap<>();
+        Map<String,Object> map2=new HashMap<>();
+        map2.put("title","科室");
+        map2.put("align","center");
+        map2.put("dataIndex","departName");
+        columns.add(map2);
+        Map<String,Object> map3=new HashMap<>();
+        map3.put("title",date_i+"采购金额");
+        map3.put("align","center");
+        map3.put("dataIndex","lastPrice");
+        columns.add(map3);
+        Map<String,Object> map4=new HashMap<>();
+        map4.put("title",date_ii+"采购金额");
+        map4.put("align","center");
+        map4.put("dataIndex","theLastPrice");
+        columns.add(map4);
+        Map<String,Object> map5=new HashMap<>();
+        map5.put("title",date_iii+"采购金额");
+        map5.put("align","center");
+        map5.put("dataIndex","thePrice");
+        columns.add(map5);
+        Map<String,Object> map6=new HashMap<>();
+        map6.put("title","环比增长率");
+        map6.put("align","center");
+        map6.put("dataIndex","moOnMo");
+        columns.add(map6);
+        Map<String,Object> map7=new HashMap<>();
+        map7.put("title","同比增长率");
+        map7.put("align","center");
+        map7.put("dataIndex","yrOnYr");
+        columns.add(map7);
+        param.put("pages",pages);
+        param.put("columns",columns);
+        return param;
     }
 
-
     /**
-     *  科室采购环比-同比报表
+     *  科室采购环比-同比报表导出
      * @param purchaseUseReportPage
      * @return
      */
     @Override
-    public List<RpPurchaseUseReportPage> queryMoOnMoView(RpPurchaseUseReportPage purchaseUseReportPage) {
+    public Map<String, Object> queryMoOnMoViewExportXls(RpPurchaseUseReportPage purchaseUseReportPage) {
+        Map<String,Object> resultMap = new HashMap<>();
+        Map<String,Object> param=new HashMap<>();
         String date_i = "";//当前月的上个月
         String date_ii = "";//当前月的上上个月
-        String selectType = purchaseUseReportPage.getSelectType();
+        String date_iii = "";//对应去年月份
         try {
             if (StringUtils.isNotEmpty(purchaseUseReportPage.getYearMonth())) {
-                if ("1".equals(selectType)) {
-                    //获得选择月份和对应上个月的值
-                    date_i = DateUtils.getLastMonth(0, purchaseUseReportPage.getYearMonth());
-                    date_ii = DateUtils.getLastMonth(12, purchaseUseReportPage.getYearMonth());
-                } else {
-                    date_i = DateUtils.getLastMonth(0, purchaseUseReportPage.getYearMonth());
-                    date_ii = DateUtils.getLastMonth(1, purchaseUseReportPage.getYearMonth());
-                }
+                //获得选择月份和对应上个月的值
+                date_i = DateUtils.getLastMonth(0, purchaseUseReportPage.getYearMonth());
+                date_ii = DateUtils.getLastMonth(1, purchaseUseReportPage.getYearMonth());
+                date_iii = DateUtils.getLastMonth(12, purchaseUseReportPage.getYearMonth());
             } else {
-                if ("1".equals(selectType)) {
-                    date_i = DateUtils.getLastMonth(1, null);
-                    date_ii = DateUtils.getLastMonth(13, null);
-                } else {
-                    date_i = DateUtils.getLastMonth(1, null);
-                    date_ii = DateUtils.getLastMonth(2, null);
-                }
+                date_i = DateUtils.getLastMonth(1, null);
+                date_ii = DateUtils.getLastMonth(2, null);
+                date_iii = DateUtils.getLastMonth(13, null);
             }
         } catch (ParseException e) {
             e.printStackTrace();
         }
         purchaseUseReportPage.setLastMonth(date_i);
         purchaseUseReportPage.setTheLastYearMonth(date_ii);
-        List<RpPurchaseUseReportPage>  pageList = baseMapper.queryMoOnMoView(purchaseUseReportPage);
-        if(CollectionUtils.isNotEmpty(pageList)){
-            for(RpPurchaseUseReportPage info:pageList){
-                Double sPrice=  info.getLastPrice();//上个月采购金额
-                Double ssPrice=  info.getTheLastPrice();//上上个月采购金额
-                String series_hb="";
-                if(ssPrice !=0 && ssPrice !=0.00){
-                    series_hb = String.format("%.2f", (sPrice -ssPrice) / ssPrice * 100);
-                }else{
-                    if(sPrice==0 || sPrice==0.00){
+        purchaseUseReportPage.setTheYearMonth(date_iii);
+
+        List<RpPurchaseUseReportPage> list = baseMapper.queryMoOnMoView(purchaseUseReportPage);
+         if (CollectionUtils.isNotEmpty(list)) {
+            for (RpPurchaseUseReportPage map : list) {
+                Double sPrice =map.getLastPrice();
+                Double ssPrice =map.getTheLastPrice();
+                Double thePrice =map.getThePrice();
+                String series_hb = "";//环比
+                String series_tb = "";//同比
+                if (ssPrice != 0 && ssPrice != 0.00) {
+                    series_hb = String.format("%.2f", (sPrice - ssPrice) / ssPrice * 100);
+                } else {
+                    if (sPrice == 0 || sPrice == 0.00) {
                         series_hb = "0";
-                    }else{
+                    } else {
                         series_hb = "100";
                     }
                 }
-                if("1".equals(selectType)){
-                    info.setYrOnYr(series_hb+"%");//同比
-                }else{
-                    info.setMoOnMo(series_hb+"%");//同比
+                if (thePrice != 0 && thePrice != 0.00) {
+                    series_tb = String.format("%.2f", (sPrice - thePrice) / thePrice * 100);
+                } else {
+                    if (sPrice == 0 || sPrice == 0.00) {
+                        series_tb = "0";
+                    } else {
+                        series_tb = "100";
+                    }
                 }
+                map.setMoOnMo(series_hb + "%");
+                map.setYrOnYr( series_tb + "%");
             }
         }
-        return pageList;
+        List<Map<String,Object>> titleMap = new ArrayList<>();
+        List<ExcelExportEntity> entity = new ArrayList<>();
+        if(CollectionUtils.isNotEmpty(list)){
+            entity.add(new ExcelExportEntity("科室","科室"));
+            entity.add(new ExcelExportEntity(date_i+"采购金额",date_i+"采购金额"));
+            entity.add(new ExcelExportEntity(date_ii+"采购金额",date_ii+"采购金额"));
+            entity.add(new ExcelExportEntity(date_iii+"采购金额",date_iii+"采购金额"));
+            entity.add(new ExcelExportEntity("环比增长率","环比增长率"));
+            entity.add(new ExcelExportEntity("同比增长率","同比增长率"));
+            for (int i = 0;i< list.size();i++){
+                Map<String,Object> map = new HashMap<>();
+                map.put("科室",list.get(i).getDepartName());
+                map.put(date_i+"采购金额",list.get(i).getLastPrice());
+                map.put(date_ii+"采购金额",list.get(i).getTheLastPrice());
+                map.put(date_iii+"采购金额",list.get(i).getThePrice());
+                map.put("环比增长率",list.get(i).getMoOnMo());
+                map.put("同比增长率",list.get(i).getYrOnYr());
+                titleMap.add(map);
+            }
+            resultMap.put("entity",entity);
+            resultMap.put("list",titleMap);
+        }
+        return resultMap;
     }
-
 
 
     /**
