@@ -13,9 +13,9 @@
           </div>
           <a-card :bordered="false">
             <!--综合交易数据报表-->
-            <div :style="{ padding: '0 0 32px 32px' }" >
-               <h4 :style="{ marginBottom: '20px' }">综合交易数据报表</h4>
-              <v-chart   :options="polar1"  :style="{width:'1600px'}"  />
+            <div :style="{ padding: '2px 2px 2px 2px' }" >
+               <h4 :style="{ marginBottom: '2px' }">综合交易数据报表</h4>
+              <v-chart   :options="polar1"  :style="{width:'1700px'}"  />
             </div>
             <div v-show="disableSubmit" style="width: 1600px;overflow-x: scroll;white-space: nowrap;" >
               <table id="contentTable" class="tableStyle">
@@ -105,7 +105,9 @@
             axisLabel: {
               fontFamily:'微软雅黑',
               interval: 0,
+              fontSize:'16',
             },
+
             data: []
           },
           yAxis: {
@@ -150,6 +152,42 @@
 
     },
     methods: {
+      /** 重写导出方法 **/
+      handleExportXls(fileName){
+         fileName =  fileName + "_" + new Date().toLocaleString();
+        let params ={};
+        downFile(this.url.exportXlsUrl,params).then((data)=>{
+          if (!data) {
+            this.$message.warning("文件下载失败")
+            return
+          }
+          if (typeof window.navigator.msSaveBlob !== 'undefined') {
+            window.navigator.msSaveBlob(new Blob([data],{type: 'application/vnd.ms-excel'}), fileName+'.xls')
+          }else{
+            let url = window.URL.createObjectURL(new Blob([data],{type: 'application/vnd.ms-excel'}))
+            let link = document.createElement('a')
+            link.style.display = 'none'
+            link.href = url
+            link.setAttribute('download', fileName+'.xls')
+            document.body.appendChild(link)
+            link.click()
+            document.body.removeChild(link); //下载完成移除元素
+            window.URL.revokeObjectURL(url); //释放掉blob对象
+          }
+        });
+
+        var canvas=document.getElementsByTagName('canvas')[0];
+        let image = canvas.toDataURL({
+          type:"png",
+          pixelRatio: 2,
+        });
+        let alink = document.createElement("a");
+        alink.href = image;
+        alink.download = "综合交易数据趋势图"; //导出的图片名
+        alink.click();
+      },
+
+
       loadData() {
         this.visible = true;
         this.activeKey = "1";
