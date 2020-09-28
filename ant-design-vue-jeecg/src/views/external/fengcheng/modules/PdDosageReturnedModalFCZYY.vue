@@ -250,6 +250,7 @@
     },
     data () {
       return {
+        formOne: this.$form.createForm(this),
         width:800,
         visible: false,
         model: {},
