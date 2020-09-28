@@ -14,7 +14,7 @@
       <!-- 主表单区域 -->
       <div style="background:#ECECEC; padding:20px">
         <a-card title="" style="margin-bottom: 10px;">
-          <a-form :form="form">
+          <a-form :form="form" :selfUpdate = "true">
             <a-row>
               <a-col :span="6">
                 <a-form-item label="初始化单号" :labelCol="labelCol" :wrapperCol="wrapperCol">
@@ -105,11 +105,11 @@
         <a-card style="margin-bottom: 10px;">
           <a-tabs v-model="activeKey" @change="handleChangeTabs"> <!-- @change="handleChangeTabs"  v-show="!showSBarcode" v-show="showSBarcode"-->
             <a-tab-pane tab="产品明细" :key="refKeys[0]" :forceRender="true">
-              <a-form v-show="!disableSubmit" :selfUpdate = "true">
+              <a-form v-show="!disableSubmit" :form="formOne" :selfUpdate = "true">
                 <a-row v-if="!showSBarcode">
                   <a-col :md="6" :sm="8">
                     <a-form-item label="产品编号" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                      <a-input ref="productNumberInput" v-focus placeholder="请输入产品编号" v-model="queryParam.productNumber" @keyup.enter.native="onlyNumbersearchQuery"></a-input>
+                      <a-input ref="productNumberInput" v-focus placeholder="请输入产品编号" v-decorator="[ 'productNumber']" @keyup.enter.native="onlyNumbersearchQuery"></a-input>
                     </a-form-item>
                   </a-col>
                   <a-col :md="12" :sm="8">
@@ -121,12 +121,12 @@
                 <a-row v-if="showSBarcode">
                   <a-col :md="6" :sm="8">
                     <a-form-item label="产品编号" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                      <a-input ref="productNumberInput" v-focus placeholder="请输入产品编号" v-model="queryParam.productNumber" @keyup.enter.native="searchQuery(0)"></a-input>
+                      <a-input ref="productNumberInput" v-focus placeholder="请输入产品编号" v-decorator="[ 'productNumber']" @keyup.enter.native="searchQuery(0)"></a-input>
                     </a-form-item>
                   </a-col>
                   <a-col :md="6" :sm="8">
                     <a-form-item label="二级条码" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                      <a-input ref="productBarCodeInput" placeholder="请输入二级条码" v-model="queryParam.productBarCode" @keyup.enter.native="searchQuery(1)"></a-input>
+                      <a-input ref="productBarCodeInput" placeholder="请输入二级条码" v-decorator="[ 'productBarCode']" @keyup.enter.native="searchQuery(1)"></a-input>
                     </a-form-item>
                   </a-col>
                   <a-col :md="12" :sm="8">
@@ -191,7 +191,7 @@
 
         <!-- 验收区域 -->
         <a-card style="">
-          <a-form :form="form">
+          <a-form :form="form" :selfUpdate = "true">
             <a-row v-show="false">
               <a-col :span="6">
                 <a-form-item label="验收结果" :labelCol="labelCol" :wrapperCol="wrapperCol">
@@ -227,7 +227,7 @@
         </a-card>
 
         <a-card style="margin-top: 10px;" v-show="showRefuseReason">
-          <a-form :form="form">
+          <a-form :form="form" :selfUpdate = "true">
             <a-col :span="12">
               <a-form-item label="审批意见" :labelCol="labelCol2" :wrapperCol="wrapperCol2" style="text-align: left">
                 <a-textarea disabled v-decorator="[ 'refuseReason', validatorRules.refuseReason]" placeholder="请输入审批意见"></a-textarea>
@@ -309,6 +309,7 @@
     },
     data() {
       return {
+        formOne: this.$form.createForm(this),
         labelCol: {span: 6},
         wrapperCol: {span: 16},
 
@@ -516,7 +517,7 @@
         this.visible = false;
         this.showOrderTable = false;
         this.pdPurchaseOrderDetailTable.dataSource = [];
-        this.queryParam = {};
+        this.formOne.resetFields();
         // this.orderNo = "";
         // this.form.setFieldsValue({orderNo:""});
         this.mergeOrderNo = "";
@@ -1128,7 +1129,7 @@
       },
       //清空扫码框
       clearQueryParam(){
-        this.queryParam = {};
+        this.formOne.resetFields();
         this.$refs.productNumberInput.focus();
       },
       onClickRow(record) {
@@ -1182,19 +1183,19 @@
       },
       // 只扫产品编号查询
       onlyNumbersearchQuery(){
-        let productNumber = this.queryParam.productNumber;
+        let productNumber = this.formOne.getFieldValue("productNumber");
         if(!productNumber){
           this.$message.error("请输入产品编号！");
           this.$refs.productNumberInput.focus();
           return;
         }
-        this.queryParam.productBarCode = productNumber;
+        this.formOne.setFieldsValue({productBarCode:productNumber});
         this.searchQuery(1);
       },
       // 扫码查询
       searchQuery(num) {
         let that = this;
-        let productNumber = this.queryParam.productNumber;
+        let productNumber = this.formOne.getFieldValue("productNumber");
         if(!productNumber){
           this.$message.error("请输入产品编号！");
           this.$refs.productNumberInput.focus();
@@ -1206,7 +1207,7 @@
           this.$refs.productBarCodeInput.focus();
 
         }else if(num == 1){ //条码扫码
-          let productBarCode = this.queryParam.productBarCode;
+          let productBarCode = this.formOne.getFieldValue("productBarCode");
           if(!productBarCode){
             this.$message.error("请输入二级条码！");
             return;

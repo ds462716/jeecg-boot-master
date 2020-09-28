@@ -12,7 +12,7 @@
     <a-spin :spinning="confirmLoading">
       <div style="background:#ECECEC; padding:20px">
         <a-card title="" style="margin-bottom: 10px;">
-          <a-form :form="form">
+          <a-form :form="form" :selfUpdate = "true">
             <a-row>
               <a-col :span="6">
                 <a-form-item label="用量单号" :labelCol="labelCol" :wrapperCol="wrapperCol">
@@ -42,16 +42,16 @@
         <a-card style="margin-bottom: 10px;">
           <a-tabs v-model="activeKey" @change="handleChangeTabs">
             <a-tab-pane tab="产品明细" :key="refKeys[0]"  :forceRender="true">
-              <a-form v-show="false">
+              <a-form v-show="false" :form="formOne" :selfUpdate = "true">
                 <a-row>
                   <a-col :md="6" :sm="8">
                     <a-form-item label="产品编号" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                      <a-input ref="productNumberInput" v-focus placeholder="请输入产品编号" v-model="queryParam.productNumber" @keyup.enter.native="searchQuery(0)"></a-input>
+                      <a-input ref="productNumberInput" v-focus placeholder="请输入产品编号" v-decorator="[ 'productNumber']" @keyup.enter.native="searchQuery(0)"></a-input>
                     </a-form-item>
                   </a-col>
                   <a-col :md="6" :sm="8">
                     <a-form-item label="二级条码" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                      <a-input ref="productBarCodeInput" placeholder="请输入二级条码" v-model="queryParam.productBarCode" @keyup.enter.native="searchQuery(1)"></a-input>
+                      <a-input ref="productBarCodeInput" placeholder="请输入二级条码" v-decorator="[ 'productBarCode']" @keyup.enter.native="searchQuery(1)"></a-input>
                     </a-form-item>
                   </a-col>
                   <a-col :md="12" :sm="8">
@@ -101,7 +101,7 @@
         <a-card style="margin-bottom: 10px;">
           <a-tabs v-model="activeKey" @change="handleChangeTabs">
             <a-tab-pane tab="收费信息" :key="refKeys[0]"  :forceRender="true">
-              <a-form :form="form">
+              <a-form :form="form" :selfUpdate = "true">
                 <a-row>
                   <a-col :md="6" :sm="8" v-if="hyCharged">
                     <a-form-item label="住院号" :labelCol="labelCol" :wrapperCol="wrapperCol">
@@ -269,6 +269,7 @@
     },
     data () {
       return {
+        formOne: this.$form.createForm(this),
         width:800,
         visible: false,
         model: {},
@@ -458,6 +459,7 @@
         this.jfTotalPrice = "0.0000";
         this.visible = false;
         this.sRowIds = [];
+        this.formOne.resetFields();
         this.pdDosageDetailTable.dataSource = [];
         this.eachAllTable((item) => {
           item.initialize()
@@ -511,7 +513,7 @@
       // 扫码查询
       searchQuery(num) {
         let that = this;
-        let productNumber = this.queryParam.productNumber;
+        let productNumber = this.formOne.getFieldValue("productNumber");
         if(!productNumber){
           //清空扫码框
           this.clearQueryParam();
@@ -525,7 +527,7 @@
           this.$refs.productBarCodeInput.focus();
 
         }else if(num == 1){ //条码扫码
-          let productBarCode = this.queryParam.productBarCode;
+          let productBarCode = this.formOne.getFieldValue("productBarCode");
           if(!productBarCode){
             this.$message.error("请输入二级条码！");
             return;
@@ -676,8 +678,7 @@
       },
       //清空扫码框
       clearQueryParam(){
-        this.queryParam.productNumber = "";
-        this.queryParam.productBarCode = "";
+        this.formOne.resetFields();
         this.$refs.productNumberInput.focus();
       },
       // 扫码 调用 新增一行

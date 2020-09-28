@@ -14,7 +14,7 @@
       <!-- 主表单区域 -->
       <div style="background:#ECECEC; padding:20px">
         <a-card title="" style="margin-bottom: 10px;">
-          <a-form :form="form">
+          <a-form :form="form" :selfUpdate = "true">
             <a-row>
               <a-col :span="6">
                 <a-form-item label="出库单号" :labelCol="labelCol" :wrapperCol="wrapperCol">
@@ -127,7 +127,7 @@
         <a-card style="margin-bottom: 10px;" v-show="false"> <!-- v-show="showPackageCard" -->
           <a-tabs v-model="activeKey">
             <a-tab-pane tab="套包明细" :key="refKeys[0]" :forceRender="true">
-              <a-form v-show="!disableSubmit">
+              <a-form v-show="!disableSubmit" :selfUpdate = "true">
                 <a-row>
                   <a-col :md="6" :sm="8">
                     <a-form-item label="套包条码" :labelCol="labelCol" :wrapperCol="wrapperCol">
@@ -183,7 +183,7 @@
         <a-card style="margin-bottom: 10px;">
           <a-tabs v-model="activeKey">
             <a-tab-pane tab="产品明细" :key="refKeys[0]" :forceRender="true">
-              <a-form v-show="!disableSubmit">
+              <a-form v-show="!disableSubmit" :form="formOne" :selfUpdate = "true">
                 <a-row>
                   <!--<a-col :md="6" :sm="8">-->
                     <!--<a-form-item label="产品编号" :labelCol="labelCol" :wrapperCol="wrapperCol">-->
@@ -197,7 +197,7 @@
                   <!--</a-col>-->
                   <a-col :md="6" :sm="8">
                     <a-form-item label="唯一码编号" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                      <a-input ref="productNumberInput" v-focus placeholder="请输入唯一码编号" v-model="queryParam.productNumber" @keyup.enter.native="searchQuery(0)"></a-input>
+                      <a-input ref="productNumberInput" v-focus placeholder="请输入唯一码编号" v-decorator="[ 'productNumber']" @keyup.enter.native="searchQuery(0)"></a-input>
                     </a-form-item>
                   </a-col>
                   <a-col :md="12" :sm="8">
@@ -243,7 +243,7 @@
         </a-card>
 
         <a-card style="">
-          <a-form :form="form">
+          <a-form :form="form" :selfUpdate = "true">
             <a-row>
               <a-col :span="12">
                 <a-form-item label="备注" :labelCol="labelCol2" :wrapperCol="wrapperCol2" style="text-align: left">
@@ -255,7 +255,7 @@
         </a-card>
 
         <a-card style="margin-top: 10px;" v-show="showRefuseReason">
-          <a-form :form="form">
+          <a-form :form="form" :selfUpdate = "true">
             <a-col :span="12">
               <a-form-item label="审批意见" :labelCol="labelCol2" :wrapperCol="wrapperCol2" style="text-align: left">
                 <a-textarea disabled v-decorator="[ 'refuseReason', validatorRules.refuseReason]" placeholder="请输入审批意见"></a-textarea>
@@ -334,6 +334,7 @@
     },
     data() {
       return {
+        formOne: this.$form.createForm(this),
         labelCol: {span: 6},
         wrapperCol: {span: 16},
 
@@ -670,7 +671,7 @@
         this.showOrderTable = false;
         this.showPackageTable = false;
         this.pdOrderDetailTable.dataSource = [];
-        this.queryParam = {};
+        this.formOne.resetFields();
         this.packageQueryParam = {};
         this.applyNo = "";
         this.allocationNo = "";
@@ -1387,7 +1388,7 @@
       },
       //清空扫码框
       clearQueryParam(){
-        this.queryParam = {};
+        this.formOne.resetFields();
         this.$refs.productNumberInput.focus();
       },
       clearPackageQueryParam(){
@@ -1443,7 +1444,7 @@
           this.$message.error("请选择入库科室！");
           return;
         }
-        let productNumber = this.queryParam.productNumber;
+        let productNumber = this.formOne.getFieldValue("productNumber");
         if(!productNumber){
           //清空扫码框
           this.clearQueryParam();

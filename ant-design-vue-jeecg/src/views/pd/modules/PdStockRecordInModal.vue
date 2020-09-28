@@ -242,7 +242,7 @@
 
         <!-- 验收区域 -->
         <a-card style="">
-          <a-form :form="form">
+          <a-form :form="form" :selfUpdate = "true">
             <a-row>
               <a-col :span="6">
                 <a-form-item label="验收结果" :labelCol="labelCol" :wrapperCol="wrapperCol">
@@ -278,7 +278,7 @@
         </a-card>
 
         <a-card style="margin-top: 10px;" v-show="showRefuseReason">
-          <a-form :form="form">
+          <a-form :form="form" :selfUpdate = "true">
             <a-col :span="12">
               <a-form-item label="审批意见" :labelCol="labelCol2" :wrapperCol="wrapperCol2" style="text-align: left">
                 <a-textarea disabled v-decorator="[ 'refuseReason', validatorRules.refuseReason]" placeholder="请输入审批意见"></a-textarea>

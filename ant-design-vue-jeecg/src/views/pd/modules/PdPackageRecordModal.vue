@@ -14,7 +14,7 @@
       <!-- 主表单区域 -->
       <div style="background:#ECECEC; padding:20px">
         <a-card  title="套包信息" style="margin-bottom: 10px;">
-          <a-form :form="form">
+          <a-form :form="form" :selfUpdate = "true">
             <a-row>
               <a-col :span="5">
                 <a-form-item label="打包编号" :labelCol="labelCol" :wrapperCol="wrapperCol">
@@ -72,11 +72,11 @@
         </a-card>
 
         <a-card style="margin-bottom: 10px;" title="选择库存">
-          <a-form v-show="!disableSubmit">
+          <a-form v-show="!disableSubmit" :form="formOne" :selfUpdate = "true">
             <a-row v-if="!showSBarcode">
               <a-col :md="6" :sm="8">
                 <a-form-item label="产品编号" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                  <a-input ref="productNumberInput" v-focus placeholder="请输入产品编号" v-model="queryParam.productNumber" @keyup.enter.native="onlyNumbersearchQuery"></a-input>
+                  <a-input ref="productNumberInput" v-focus placeholder="请输入产品编号" v-decorator="[ 'productNumber']" @keyup.enter.native="onlyNumbersearchQuery"></a-input>
                 </a-form-item>
               </a-col>
               <a-col :md="12" :sm="8">
@@ -88,12 +88,12 @@
             <a-row v-if="showSBarcode">
               <a-col :md="6" :sm="8">
                 <a-form-item label="产品编号" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                  <a-input ref="productNumberInput" v-focus placeholder="请输入产品编号" v-model="queryParam.productNumber" @keyup.enter.native="searchQuery(0)"></a-input>
+                  <a-input ref="productNumberInput" v-focus placeholder="请输入产品编号" v-decorator="[ 'productNumber']" @keyup.enter.native="searchQuery(0)"></a-input>
                 </a-form-item>
               </a-col>
               <a-col :md="6" :sm="8">
                 <a-form-item label="二级条码" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                  <a-input ref="productBarCodeInput" placeholder="请输入二级条码" v-model="queryParam.productBarCode" @keyup.enter.native="searchQuery(1)"></a-input>
+                  <a-input ref="productBarCodeInput" placeholder="请输入二级条码" v-decorator="[ 'productBarCode']" @keyup.enter.native="searchQuery(1)"></a-input>
                 </a-form-item>
               </a-col>
               <a-col :md="12" :sm="8">
@@ -105,7 +105,7 @@
           </a-form>
 
           <div style="margin-bottom: -5px;">
-            <a-form :form="form" >
+            <a-form :form="form" :selfUpdate = "true">
               <a-row>
                 <a-col :md="6" :sm="8">
                   <a-button type="primary" icon="plus" @click="chooseProductList">选择库存产品</a-button>
@@ -230,6 +230,7 @@
     },
     data() {
       return {
+        formOne: this.$form.createForm(this),
         labelCol: {span: 6},
         wrapperCol: {span: 16},
         labelCol2: {span: 3},
@@ -489,6 +490,7 @@
         this.packageTotalPrice = 0;
         this.recordTotalSum = 0;
         this.recordTotalPrice = 0;
+        this.formOne.resetFields();
         this.eachAllTable((item) => {
           item.initialize()
         })
@@ -902,23 +904,23 @@
       },
       //清空扫码框
       clearQueryParam(){
-        this.queryParam = {};
+        this.formOne.resetFields();
         this.$refs.productNumberInput.focus();
       },
       // 只扫产品编号查询
       onlyNumbersearchQuery(){
-        let productNumber = this.queryParam.productNumber;
+        let productNumber = this.formOne.getFieldValue("productNumber");
         if(!productNumber){
           this.$message.error("请输入产品编号！");
           this.$refs.productNumberInput.focus();
           return;
         }
-        this.queryParam.productBarCode = productNumber;
+        this.formOne.setFieldsValue({productBarCode:productNumber});
         this.searchQuery(1);
       },
       // 扫码查询
       searchQuery(num) {
-        let productNumber = this.queryParam.productNumber;
+        let productNumber = this.formOne.getFieldValue("productNumber");
         if(!productNumber){
           //清空扫码框
           this.clearQueryParam();
@@ -931,7 +933,7 @@
           this.$refs.productBarCodeInput.focus();
 
         }else if(num == 1){ //条码扫码
-          let productBarCode = this.queryParam.productBarCode;
+          let productBarCode = this.formOne.getFieldValue("productBarCode");
           if(!productBarCode){
             this.$message.error("请输入二级条码！");
             return;

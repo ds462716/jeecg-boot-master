@@ -14,7 +14,7 @@
     <a-spin :spinning="confirmLoading">
       <div style="background:#ECECEC; padding:20px">
       <a-card title="" style="margin-bottom: 10px;">
-        <a-form :form="form">
+        <a-form :form="form" :selfUpdate = "true">
 
           <a-row class="form-row" :gutter="{ xs: 8, sm: 16, md: 24, lg: 32 }">
             <a-col :md="6" :sm="8">
@@ -50,16 +50,16 @@
         <a-card style="margin-bottom: 10px;">
           <a-tabs v-model="activeKey">
             <a-tab-pane tab="产品明细" :key="refKeys[0]" :forceRender="true">
-              <a-form v-show="!disableSubmit">
+              <a-form v-show="!disableSubmit" :form="formOne" :selfUpdate = "true">
                 <a-row>
                   <a-col :md="6" :sm="8">
                     <a-form-item label="产品编号" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                      <a-input ref="productNumberInput" v-focus placeholder="请输入产品编号" v-model="queryParam.productNumber" @keyup.enter.native="searchQuery(0)"></a-input>
+                      <a-input ref="productNumberInput" v-focus placeholder="请输入产品编号" v-decorator="[ 'productNumber']" @keyup.enter.native="searchQuery(0)"></a-input>
                     </a-form-item>
                   </a-col>
                   <a-col :md="6" :sm="8">
                     <a-form-item label="二级条码" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                      <a-input ref="productBarCodeInput" placeholder="请输入二级条码" v-model="queryParam.productBarCode" @keyup.enter.native="searchQuery(1)"></a-input>
+                      <a-input ref="productBarCodeInput" placeholder="请输入二级条码" v-decorator="[ 'productBarCode']" @keyup.enter.native="searchQuery(1)"></a-input>
                     </a-form-item>
                   </a-col>
                   <a-col :md="12" :sm="8">
@@ -147,7 +147,7 @@
         </a-card>
 
         <a-card style="">
-          <a-form :form="form">
+          <a-form :form="form" :selfUpdate = "true">
             <a-row>
               <a-col :span="12">
                 <a-form-item label="备注" :labelCol="labelCol2" :wrapperCol="wrapperCol2" style="text-align: left">
@@ -210,6 +210,7 @@
     data () {
       return {
         form: this.$form.createForm(this),
+        formOne: this.$form.createForm(this),
         title:"操作",
         width:800,
         visible: false,
@@ -404,6 +405,7 @@
       },
       close () {
         this.$emit('close');
+        this.formOne.resetFields();
         this.visible = false;
         this.pdPackageTable.dataSource = [];
         this.exInspectionItemsUseDetailTable.dataSource = [];
@@ -660,7 +662,7 @@
           this.$message.warning("请先选择检验类型");
           return;
         }
-        let productNumber = this.queryParam.productNumber;
+        let productNumber = this.formOne.getFieldValue("productNumber");
         if(!productNumber){
           //清空扫码框
           this.clearQueryParam();
@@ -672,7 +674,7 @@
           this.$refs.productBarCodeInput.focus();
 
         }else if(num == 1){ //条码扫码
-          let productBarCode = this.queryParam.productBarCode;
+          let productBarCode = this.formOne.getFieldValue("productBarCode");
           if(!productBarCode){
             this.$message.error("请输入二级条码！");
             return;
@@ -853,7 +855,7 @@
       },
       //清空扫码框
       clearQueryParam(){
-        this.queryParam = {};
+        this.formOne.resetFields();
         this.$refs.productNumberInput.focus();
       },
       //删除行
