@@ -1577,8 +1577,7 @@
         SELECT DATE_FORMAT(x.Month, '%Y-%m') as "type" ,
         "0" as "y","0" as "x", "" as "s"
         FROM XNumber x
-        where x.Month > DATE_SUB(CURDATE(), INTERVAL 1 YEAR)
-        and substr(x.Month,1,7) &lt;=substr(CURDATE(),1,7)
+        where  DATE_FORMAT(x.Month, '%Y')=#{entity.year}
         UNION ALL
         select
         a.month as "type",
@@ -1597,8 +1596,7 @@
         <if test="entity.departIdList == null || entity.departIdList.size() == 0">
             and t.depart_type in('1')
         </if>
-        AND a.create_time > DATE_SUB(CURDATE(), INTERVAL 1 YEAR)
-        AND substr(a.create_time,1,7) &lt;=substr(CURDATE(),1,7)
+        AND  DATE_FORMAT(a.create_time, '%Y')=#{entity.year}
         UNION ALL
         select  DATE_FORMAT(e.create_time, '%Y-%m') AS "type",
         "" AS "y",
@@ -1614,9 +1612,7 @@
                 #{item}
             </foreach>
         </if>
-        AND e.create_time > DATE_SUB(CURDATE(), INTERVAL 1 YEAR)
-        AND substr(e.create_time,1,7) &lt;=substr(CURDATE(),1,7)
-
+        AND  DATE_FORMAT(e.create_time, '%Y')=#{entity.year}
         UNION ALL
         select  DATE_FORMAT(e.create_time, '%Y-%m') AS "type",
         "" AS "y",
@@ -1632,8 +1628,7 @@
                 #{item}
             </foreach>
         </if>
-        AND e.create_time > DATE_SUB(CURDATE(), INTERVAL 1 YEAR)
-        AND substr(e.create_time,1,7) &lt;=substr(CURDATE(),1,7)
+        AND  DATE_FORMAT(e.create_time, '%Y')=#{entity.year}
         ) c
         GROUP BY type;
     </select>
@@ -1878,8 +1873,7 @@
         SELECT DATE_FORMAT(x.Month, '%Y-%m') as "type" ,
         "0" as "y","0" as "x"
         FROM XNumber x
-        where x.Month > DATE_SUB(CURDATE(), INTERVAL 1 YEAR)
-        and substr(x.Month,1,7) &lt;=substr(CURDATE(),1,7)
+        where  DATE_FORMAT(X.Month, '%Y')=#{entity.year}
 
         UNION ALL
         select  a.month  as "type",
@@ -1888,8 +1882,8 @@
         from pd_numerical_inf a
         where tj_type='1'
         and a.depart_id='743dc34c1bcd4e4fa9503ccebce7edc6'
-        AND a.create_time > DATE_SUB(CURDATE(), INTERVAL 1 YEAR)
-        AND substr(a.create_time,1,7) &lt;=substr(CURDATE(),1,7)
+        AND  DATE_FORMAT(a.create_time, '%Y')=#{entity.year}
+
 
         UNION ALL
 
@@ -1900,8 +1894,7 @@
         from pd_numerical_inf a
         where a.tj_type='1'
          AND a.depart_id='743dc34c1bcd4e4fa9503ccebce7edc6'
-        AND a.create_time > DATE_SUB(CURDATE(), INTERVAL 1 YEAR)
-        AND substr(a.create_time,1,7)&lt;=substr(CURDATE(),1,7)
+        AND  DATE_FORMAT(a.create_time, '%Y')=#{entity.year}
         ) c
         GROUP BY type;
     </select>
@@ -1915,9 +1908,9 @@
   sum(case when  month=#{entity.lastMonth} then   in_record_price else 0 end ) as "lastPrice",
   sum(case when  month=#{entity.theLastYearMonth} then   in_record_price else 0 end ) as "theLastPrice",
   sum(case when  month=#{entity.theYearMonth} then   in_record_price else 0 end ) as "thePrice"
-from pd_numerical_inf a
-left join sys_depart t on a.depart_id=t.id
-where 1=1
+     from pd_numerical_inf a
+     left join sys_depart t on a.depart_id=t.id
+     where 1=1
         <if test="entity.productFlag != null and entity.productFlag != ''">
             AND a.tj_type = #{entity.productFlag}
         </if>

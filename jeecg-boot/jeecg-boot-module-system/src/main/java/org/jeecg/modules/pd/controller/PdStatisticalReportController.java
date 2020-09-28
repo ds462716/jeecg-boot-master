@@ -720,7 +720,6 @@ public class PdStatisticalReportController extends JeecgController<PdStatistical
         }
         Page<RpPurchaseUseReportPage> pagePage = new Page<RpPurchaseUseReportPage>(pageNo, pageSize);
         Map<String,Object> map = pdStatisticalReportService.queryMoOnMoView(pagePage,purchaseUseReportPage);
-       // IPage<Map<String,Object>> list = pdStatisticalReportService.queryMoOnMoView(pagePage,purchaseUseReportPage);
         return Result.ok(map);
     }
 
@@ -733,28 +732,6 @@ public class PdStatisticalReportController extends JeecgController<PdStatistical
      */
     @RequestMapping(value = "/exportReportXls")
     public void exportReportXls(RpPurchaseUseReportPage purchaseUseReportPage,HttpServletRequest request, HttpServletResponse response) throws Exception{
-       /* LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
-        String selectType=purchaseUseReportPage.getSelectType();
-        if (oConvertUtils.isNotEmpty(purchaseUseReportPage.getDepartIds()) && !"undefined".equals(purchaseUseReportPage.getDepartIds())) {
-            purchaseUseReportPage.setDepartIdList(Arrays.asList(purchaseUseReportPage.getDepartIds().split(",")));
-        }
-        List<RpPurchaseUseReportPage> pageList = null;//pdStatisticalReportService.queryMoOnMoView(purchaseUseReportPage);
-        String fileName="采购费用环比报表";
-        ModelAndView mv = new ModelAndView(new JeecgEntityExcelView());
-        if("1".equals(selectType)){//同比
-             fileName="采购费用同比报表";
-            List<RpYrUseReportExcel> exportList = JSON.parseArray(JSON.toJSONString(pageList), RpYrUseReportExcel.class);
-            mv.addObject(NormalExcelConstants.CLASS, RpYrUseReportExcel.class);
-            mv.addObject(NormalExcelConstants.DATA_LIST, exportList);
-        }else{//环比
-            List<RpMoUseReportExcel> exportList = JSON.parseArray(JSON.toJSONString(pageList), RpMoUseReportExcel.class);
-            mv.addObject(NormalExcelConstants.CLASS, RpMoUseReportExcel.class);
-            mv.addObject(NormalExcelConstants.DATA_LIST, exportList);
-        }
-        mv.addObject(NormalExcelConstants.FILE_NAME, fileName);
-        mv.addObject(NormalExcelConstants.PARAMS, new ExportParams(fileName, "导出人:" + sysUser.getRealname(), fileName));
-        return mv;*/
-
         String codedFileName = "采购费用环比-同比报表";
         LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
         purchaseUseReportPage.setDepartParentId(sysUser.getDepartParentId());

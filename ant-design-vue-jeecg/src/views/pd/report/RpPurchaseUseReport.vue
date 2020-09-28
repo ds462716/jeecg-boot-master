@@ -7,6 +7,11 @@
             <a-form layout="inline" @keyup.enter.native="searchQuery(1)">
               <a-row :gutter="24">
                 <a-col :md="6" :sm="8">
+                <a-form-item label="年份">
+                  <year-picker @input="yearChangeOne"     v-model="queryParam1.ym"/>
+                </a-form-item>
+                </a-col>
+                <a-col :md="6" :sm="8">
                   <a-form-item label="科室">
                     <a-select
                       mode="multiple"
@@ -207,30 +212,10 @@
           <!--查询按钮开始-->
           <div class="table-page-search-wrapper">
             <a-form layout="inline" @keyup.enter.native="searchQuery(5)">
-              <!--<a-row :gutter="24">
+              <a-row :gutter="24">
                 <a-col :md="6" :sm="8">
-                  <a-form-item label="年月">
-                    <a-month-picker placeholder="选择年月" @change="monthChangeAllConion" v-model="queryParam4.ym"/>
-                  </a-form-item>
-                </a-col>
-                <a-col :md="6" :sm="8">
-                  <a-form-item label="科室">
-                    <a-select
-                      mode="multiple"
-                      showSearch
-                      :departId="departValue"
-                      :defaultActiveFirstOption="false"
-                      :allowClear="true"
-                      :showArrow="true"
-                      :filterOption="false"
-                      @search="departHandleSearch"
-                      @focus="departHandleSearch"
-                      :notFoundContent="notFoundContent"
-                      v-model="queryParam4.departIds"
-                      placeholder="请选择科室"
-                    >
-                      <a-select-option v-for="d in departData" :key="d.id">{{d.departName}}</a-select-option>
-                    </a-select>
+                  <a-form-item label="年份">
+                    <year-picker @input="yearChangeFive"     v-model="queryParam5.ym"/>
                   </a-form-item>
                 </a-col>
                 <a-col :md="6" :sm="8">
@@ -239,7 +224,7 @@
               <a-button type="primary" @click="searchReset(5)" icon="reload" style="margin-left: 8px">重置</a-button>
             </span>
                 </a-col>
-              </a-row>-->
+              </a-row>
             </a-form>
           </div>
           <!--查询按钮结束-->
@@ -352,7 +337,7 @@
                 <a-row :gutter="24">
                   <a-col :md="6" :sm="8">
                     <a-form-item label="年份">
-                  <year-picker @input="yearChange"     v-model="queryParam7.ym"/>
+                  <year-picker @input="yearChange(7)"     v-model="queryParam7.ym"/>
                     </a-form-item>
                   </a-col>
                   <a-col :md="6" :sm="8">
@@ -1130,6 +1115,9 @@
         }
       },
 
+      yearChangeOne(dateString) {
+        this.queryParam1.year = dateString;
+      },
       monthChange(date, dateString) {
         this.queryParam2.yearMonth = dateString;
       },
@@ -1139,12 +1127,16 @@
       monthChangeAllConion(date, dateString) {
         this.queryParam4.yearMonth = dateString;
       },
+      yearChangeFive(dateString) {
+        this.queryParam5.year = dateString;
+      },
       monthChangeConion(date, dateString) {
         this.queryParam6.yearMonth = dateString;
       },
       yearChange(dateString) {//获取年份
         this.queryParam7.year = dateString;
       },
+
 
 //科室查询start
       departHandleSearch(value) {

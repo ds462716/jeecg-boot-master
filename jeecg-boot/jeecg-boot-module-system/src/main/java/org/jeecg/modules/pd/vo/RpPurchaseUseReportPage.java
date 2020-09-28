@@ -44,7 +44,7 @@ public class RpPurchaseUseReportPage {
 
     private Double value;
     private String name;
-
+    private String year;//年份
     private String departParentId;//医院id
 
 }

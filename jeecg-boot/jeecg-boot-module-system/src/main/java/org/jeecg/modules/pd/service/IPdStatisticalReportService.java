@@ -94,7 +94,6 @@ public interface IPdStatisticalReportService extends IService<PdStatisticalRepor
 
      Map<String,Object>  queryMoOnMoView(Page<RpPurchaseUseReportPage> page, RpPurchaseUseReportPage entity);
 
-  //  List<Map<String,Object>> queryMoOnMoView(RpPurchaseUseReportPage entity);
 
     List<RpPurchaseUseReportPage> getYearMonth(RpPurchaseUseReportPage entity);
 

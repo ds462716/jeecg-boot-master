@@ -221,6 +221,11 @@ public class PdPdStatisticalReportImpl extends ServiceImpl<PdStatisticalReportMa
         if (oConvertUtils.isNotEmpty(purchaseUseReportPage.getDepartIds()) && !"undefined".equals(purchaseUseReportPage.getDepartIds())) {
             purchaseUseReportPage.setDepartIdList(Arrays.asList(purchaseUseReportPage.getDepartIds().split(",")));
         }
+        //获取当前年份
+        Integer year= DateUtils.getNowYear();
+        if(oConvertUtils.isEmpty(purchaseUseReportPage.getYear())){
+            purchaseUseReportPage.setYear(String.valueOf(year));
+        }
         List<RpPurchaseUseReportPage>  list= baseMapper.queryPurchaseCountView(purchaseUseReportPage);
         //数据格式
         Map<String,Object> map1=new HashMap<>();
@@ -464,6 +469,12 @@ public class PdPdStatisticalReportImpl extends ServiceImpl<PdStatisticalReportMa
         Map<String,Object> map=new HashMap<String, Object>();
         if (oConvertUtils.isNotEmpty(purchaseUseReportPage.getDepartIds()) && !"undefined".equals(purchaseUseReportPage.getDepartIds())) {
             purchaseUseReportPage.setDepartIdList(Arrays.asList(purchaseUseReportPage.getDepartIds().split(",")));
+        }
+
+        //获取当前年份
+        Integer year= DateUtils.getNowYear();
+        if(oConvertUtils.isEmpty(purchaseUseReportPage.getYear())){
+            purchaseUseReportPage.setYear(String.valueOf(year));
         }
         List<RpPurchaseUseReportPage>  list= baseMapper.queryItemMoneyCountView(purchaseUseReportPage);
         //数据格式
