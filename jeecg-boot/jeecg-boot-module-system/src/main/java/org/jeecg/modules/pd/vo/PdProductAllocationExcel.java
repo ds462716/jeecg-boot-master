@@ -44,7 +44,7 @@ public class PdProductAllocationExcel {
     @Excel(name = "单价", width = 15)
     private BigDecimal purchasePrice;
     /**库存占用状态  0:使用中   1:未使用 2:已用完*/
-    @Excel(name = "库存占用状态 0:使用中   1:未使用", width = 15)
+    @Excel(name = "库存占用状态", width = 15,dicCode = "nestat_status")
     private String nestatStatus;
     @Excel(name = "生产厂家", width = 15)
     private String venderName;
