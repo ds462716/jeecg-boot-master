@@ -393,7 +393,6 @@ public class PdProductController extends JeecgController<PdProduct, IPdProductSe
      * 唯一码扫码
      *
      * @param Barcode
-     * @param req
      * @return
      */
     @PostMapping(value = "uniqueScanCodeUrl")
@@ -618,12 +617,15 @@ public class PdProductController extends JeecgController<PdProduct, IPdProductSe
                                        @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
                                        @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
                                        HttpServletRequest req) {
-        Page<PdProductPage> page = new Page<PdProductPage>(pageNo, pageSize);
-        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
-        pdProduct.setStatus(PdConstant.DISABLE_ENABLE_STATUS_0);//只查启用
-        pdProduct.setDepartParentId(sysUser.getDepartParentId());
-        IPage<PdProductPage> pageList = pdProductService.chooseProductList(page, pdProduct);
-        return Result.ok(pageList);
+        synchronized(this){
+            Page<PdProductPage> page = new Page<PdProductPage>(pageNo, pageSize);
+            LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+            pdProduct.setStatus(PdConstant.DISABLE_ENABLE_STATUS_0);//只查启用
+            pdProduct.setDepartParentId(sysUser.getDepartParentId());
+
+            IPage<PdProductPage> pageList = pdProductService.chooseProductList(page, pdProduct);
+            return Result.ok(pageList);
+        }
     }
 
     /**
