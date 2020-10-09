@@ -75,7 +75,7 @@
           <div style="margin-bottom: 8px;">
             <a-button v-show="!disableSubmit" type="primary" icon="plus" @click="choice">选择产品</a-button>
             <span style="padding-left: 8px;"></span>
-            <!--<a-button v-show="!disableSubmit" type="primary" icon="plus" @click="choicePackage">选择定数包</a-button>
+            <!--<a-button v-show="!disableSubmit" type="primary" icon="plus" @click="choicePackage">选择套包</a-button>
             <span style="padding-left: 8px;"></span>-->
             <a-popconfirm
               :title="`确定要删除吗?`"
@@ -195,10 +195,10 @@
           loading: false,
           dataSource: [],
           columns: [
-            { title: '定数包编号', width:"130px",   key: 'packageCode' },
-            { title: '定数包名称', width:"130px",   key: 'packageName' },
-            { title: '定数包产品数量',  width:"130px", key: 'packageNum' },
-            { title: '定数包Id', key: 'packageId', type: FormTypes.hidden },
+            { title: '套包编号', width:"130px",   key: 'packageCode' },
+            { title: '套包名称', width:"130px",   key: 'packageName' },
+            { title: '套包产品数量',  width:"130px", key: 'packageNum' },
+            { title: '套包Id', key: 'packageId', type: FormTypes.hidden },
             { title: '产品ID', key: 'productId', type: FormTypes.hidden },
             { title: '产品名称', width:"250px",  key: 'productName' },
             { title: '产品编号',width:"200px",  key: 'number' },
@@ -258,10 +258,10 @@
         this.$refs.PdAllocationDetailAddModal.show({departId:outDeptId,code:"1"});
       },
 
-      //选择定数包产品
+      //选择套包产品
       choicePackage() {
         this.$refs.PdAllocationPackageAddModal.show();
-        this.$refs.PdAllocationPackageAddModal.title = "选择定数包";
+        this.$refs.PdAllocationPackageAddModal.title = "选择套包";
       },
 
       handleConfirmDelete() {
@@ -373,7 +373,7 @@
 
 
 
-      modalFormInfoOk (formData) { //选择定数包产品确定后返回所选择的数据
+      modalFormInfoOk (formData) { //选择套包产品确定后返回所选择的数据
         let data = [];
         this.$refs.pdAllocationDetail.getValues((error, values) => {
           formData.forEach((item, idx) => {

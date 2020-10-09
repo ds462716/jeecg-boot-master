@@ -14,13 +14,13 @@
         <a-form layout="inline" @keyup.enter.native="searchQuery">
           <a-row :gutter="24">
             <a-col :md="5" :sm="8">
-              <a-form-item label="定数包编号">
-                <a-input placeholder="请输入定数包编号" v-model="queryParam.code"></a-input>
+              <a-form-item label="套包编号">
+                <a-input placeholder="请输入套包编号" v-model="queryParam.packageCode"></a-input>
               </a-form-item>
             </a-col>
             <a-col :md="5" :sm="8">
-              <a-form-item label="定数包名称">
-                <a-input placeholder="请输入定数包名称" v-model="queryParam.name"></a-input>
+              <a-form-item label="套包名称">
+                <a-input placeholder="请输入套包名称" v-model="queryParam.packageName"></a-input>
               </a-form-item>
             </a-col>
             <!--<template v-if="toggleSearchStatus">-->
@@ -35,15 +35,15 @@
                 </a-form-item>
               </a-col>
             <!--</template>-->
-            <a-col :md="6" :sm="8">
-            <span style="float: right;overflow: hidden;" class="table-page-search-submitButtons">
-              <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
-              <a-button type="primary" @click="searchReset" icon="reload" style="margin-left: 8px">重置</a-button>
-              <!--<a @click="handleToggleSearch" style="margin-left: 8px">-->
-                <!--{{ toggleSearchStatus ? '收起' : '展开' }}-->
-                <!--<a-icon :type="toggleSearchStatus ? 'up' : 'down'"/>-->
-              <!--</a>-->
-            </span>
+            <a-col :md="4" :sm="8">
+              <span style="float: right;overflow: hidden;" class="table-page-search-submitButtons">
+                <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
+                <a-button type="primary" @click="searchReset" icon="reload" style="margin-left: 8px">重置</a-button>
+                <!--<a @click="handleToggleSearch" style="margin-left: 8px">-->
+                  <!--{{ toggleSearchStatus ? '收起' : '展开' }}-->
+                  <!--<a-icon :type="toggleSearchStatus ? 'up' : 'down'"/>-->
+                <!--</a>-->
+              </span>
             </a-col>
 
           </a-row>
@@ -60,7 +60,7 @@
         :loading="loading"
         :expandedRowKeys= "expandedRowKeys"
         :customRow="onClickRow"
-        :rowSelection="{fixed:false,selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
+        :rowSelection="{fixed:false,selectedRowKeys: selectedRowKeys, onSelectAll:onSelectAll,onSelect:onSelect,onChange: onSelectChange}"
         @expand="handleExpand"
         @change="handleTableChange">
 
@@ -100,13 +100,17 @@
     data () {
       return {
         form: this.$form.createForm(this),
-        title:"选择定数包",
+        title:"选择套包",
         width:1200,
         visible: false,
         innerData:[],
         expandedRowKeys:[],
         subloading:false,
         confirmLoading: false,
+
+        dataSource2: [],
+        selectedRowKeys: [],
+        selectedRows: [],
         // 表头
         columns: [
           {
@@ -119,10 +123,10 @@
               return parseInt(index)+1;
             }
           },
-          { title:'定数包编号', align:"center", dataIndex: 'code' },
-          { title:'定数包条码', align:"center", dataIndex: 'packageBarCode' },
-          { title:'定数包名称', align:"center", dataIndex: 'name' },
-          { title:'产品总数', align:"center", dataIndex: 'sum' },
+          { title:'套包编号', align:"center", dataIndex: 'packageCode' },
+          { title:'套包条码', align:"center", dataIndex: 'packageBarCode' },
+          { title:'套包名称', align:"center", dataIndex: 'packageName' },
+          { title:'产品总数', align:"center", dataIndex: 'packageSum' },
           { title:'打包人', align:"center", dataIndex: 'createBy' },
           { title:'打包时间', align:"center", dataIndex: 'createTime',
             customRender:function (text) {
@@ -142,7 +146,7 @@
               return parseInt(index)+1;
             }
           },
-          { title:'产品名称', align:"center", dataIndex: 'productName' },
+          { title:'产品名称1', align:"center", dataIndex: 'productName' },
           { title:'产品编号', align:"center", dataIndex: 'productNumber' },
           { title:'产品条码', align:"center",dataIndex: 'productBarCode' },
           { title:'规格', align:"center", dataIndex: 'spec' },
@@ -156,7 +160,7 @@
           },
           { title:'入库单价', align:"center", dataIndex: 'purchasePrice' },
           { title:'出库单价', align:"center", dataIndex: 'sellingPrice' },
-          { title:'定数包产品数量', align:"center", dataIndex: 'productNum' },
+          { title:'产品数量', align:"center", dataIndex: 'productNum' },
           { title:'出库金额', align:"center", dataIndex: 'outTotalPrice' },
           { title:'库存数量', align:"center", dataIndex: 'stockNum' },
           { title: '出库货位', align:"center", dataIndex: 'outHuoweiName' },
@@ -167,6 +171,14 @@
           },
           { title: '打包记录ID', align:"center", dataIndex: 'packageRecordId',
             colSpan: 0,
+            customRender: (value, row, index) => {
+              const obj = {
+                attrs: {colSpan:0},
+              };
+              return obj;
+            },
+          },
+          { title: '打包记录明细ID', align:"center", dataIndex: 'packageRecordDetailId', colSpan: 0,
             customRender: (value, row, index) => {
               const obj = {
                 attrs: {colSpan:0},
@@ -222,6 +234,22 @@
               return obj;
             },
           },
+          { title: '注册证号', align:"center", dataIndex: 'registration', colSpan: 0,
+            customRender: (value, row, index) => {
+              const obj = {
+                attrs: {colSpan:0},
+              };
+              return obj;
+            },
+          },
+          { title: '配送商id', align:"center", dataIndex: 'distributorId', colSpan: 0,
+            customRender: (value, row, index) => {
+              const obj = {
+                attrs: {colSpan:0},
+              };
+              return obj;
+            },
+          },
         ],
         url: {
           list: "/pd/pdPackageRecord/pdChoosePackageRecordList",
@@ -260,6 +288,7 @@
       close () {
         this.selectedRowKeys = [];
         this.selectionRows = [];
+        this.dataSource2 = [];
         this.$emit('close');
         this.visible = false;
       },
@@ -294,7 +323,6 @@
 
       },
 
-
       getQueryParams() {
         //获取查询条件
         let sqp = {}
@@ -307,6 +335,41 @@
         param.pageSize = this.ipagination.pageSize;
         delete param.queryDate; //范围参数不传递后台，传后台会报错
         return filterObj(param);
+      },
+
+      onSelectAll(selected, selectedRows, changeRows) {
+        if (selected === true) {
+          for (var a = 0; a < changeRows.length; a++) {
+            this.dataSource2.push(changeRows[a]);
+          }
+        } else {
+          for (var b = 0; b < changeRows.length; b++) {
+            this.dataSource2.splice(this.dataSource2.indexOf(changeRows[b]), 1);
+          }
+        }
+      },
+      onSelect(record, selected) {
+        if (selected === true) {
+          this.dataSource2.push(record);
+        } else {
+          var index = this.dataSource2.indexOf(record);
+          if (index >= 0) {
+            this.dataSource2.splice(this.dataSource2.indexOf(record), 1);
+          }
+
+        }
+      },
+      onSelectChange(selectedRowKeys, selectedRows) {
+        this.selectedRowKeys = selectedRowKeys;
+        this.selectionRows = selectedRows;
+      },
+      onClearSelected() {
+        this.selectedRowKeys = [];
+        this.selectionRows = [];
+        this.dataSource2 = [];
+      },
+      handleDelete: function (record) {
+        this.dataSource2.splice(this.dataSource2.indexOf(record), 1);
       },
       /**
        * 点击行选中checkbox

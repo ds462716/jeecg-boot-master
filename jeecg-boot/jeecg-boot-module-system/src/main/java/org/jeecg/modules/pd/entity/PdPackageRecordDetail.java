@@ -61,6 +61,8 @@ public class PdPackageRecordDetail implements Serializable {
 	@TableField(exist = false)
 	private String packageRecordId;// 打包记录ID
 	@TableField(exist = false)
+	private String packageRecordDetailId;//打包记录明细id
+	@TableField(exist = false)
 	private String productNumber;//产品编号
 	@TableField(exist = false)
 	private String productName;//产品名称
@@ -77,7 +79,7 @@ public class PdPackageRecordDetail implements Serializable {
 	@TableField(exist = false)
 	private String productBarCode;// 产品条码
 	@TableField(exist = false)
-	private String productNum;//定数包产品数量
+	private Double productNum;//套包产品数量
 	@TableField(exist = false)
 	private BigDecimal purchasePrice; //采购价
 	@TableField(exist = false)
@@ -98,4 +100,14 @@ public class PdPackageRecordDetail implements Serializable {
 	private String supplierId;//供应商ID
 	@TableField(exist = false)
 	private String produceDate;//生产日期
+	@TableField(exist = false)
+	private String registration;//注册号
+	@TableField(exist = false)
+	private String venderName;//生产厂家名称
+	@TableField(exist = false)
+	private String distributorId;//配送商id
+	@TableField(exist = false)
+	private String inRecordId;  //入库id
+	@TableField(exist = false)
+	private String inRecordDetailId;//入库明细id
 }

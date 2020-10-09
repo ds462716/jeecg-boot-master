@@ -24,4 +24,6 @@ public interface IPdUnitService extends IService<PdUnit> {
     Result<Object> deleteV(String id);
 
     Result<Object> deleteBatchV(String ids);
+
+    Result<Object> generateUnitPyWb();
 }

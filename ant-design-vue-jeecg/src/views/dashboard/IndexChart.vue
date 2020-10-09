@@ -89,13 +89,13 @@
       <div class="salesCard">
         <a-tabs default-active-key="1" size="large" :tab-bar-style="{marginBottom: '24px', paddingLeft: '16px'}">
           <div class="extra-wrapper" slot="tabBarExtraContent">
-            <div class="extra-item">
-              <a>今日</a>
-              <a>本周</a>
-              <a>本月</a>
-              <a>本年</a>
+            <div  id="divCSS" class="extra-item">
+              <a-button @click="query('day')" >今日</a-button>
+              <a-button @click="query('week')">本周</a-button>
+              <a-button @click="query('month')">本月</a-button>
+              <a-button @click="query('year')">本年</a-button>
             </div>
-            <a-range-picker :style="{width: '256px'}" />
+           <!-- <a-range-picker :style="{width: '256px'}" /> 日期查询-->
           </div>
           <a-tab-pane loading="true" tab="金额" key="1">
             <a-row>
@@ -237,8 +237,8 @@
     created() {
       setTimeout(() => {
         this.loading = !this.loading}, 1000)
-      this.initLogInfo();
-      this.initOrderTotalList();
+      this.initLogInfo("year");//默认根据年查询
+      this.initOrderTotalList("","year");
     },
     methods: {
       deomtest(type){
@@ -255,13 +255,25 @@
           this.totalTitle="采购金额统计(单位:元)";
           this.countTitle="采购数量统计";
         }
-
-        this.initOrderTotalList(type);
+        this.initOrderTotalList(type,"year");
       },
 
-      initLogInfo () {
+      query(dayType){//根据年/月/周/日查询
+
+
+
+        this.initLogInfo (dayType); //加载总数量和日统计量
+        this.initOrderTotalList("",dayType);
+
+
+
+      },
+
+
+
+      initLogInfo (dayType) {
         //加载总数量和日统计量
-        getAction("/pd/IndexChart/list",{}).then((res) => {
+        getAction("/pd/IndexChart/list",{dayType:dayType}).then((res) => {
           if (res.success) {
             this.model = res.result;
           }else{
@@ -286,9 +298,9 @@
 
 
 
-      initOrderTotalList (type) {
+      initOrderTotalList (type,dayType) {
         //加载条柱形数据  根据类别统计采购数量和金额
-        getAction("/pd/IndexChart/orderTotalList",{type:type}).then((res) => {
+        getAction("/pd/IndexChart/orderTotalList",{type:type,dayType:dayType}).then((res) => {
           if (res.success) {
              this.barData = res.result.orderCountDate;
              this.rankList = res.result.orderCountDate;

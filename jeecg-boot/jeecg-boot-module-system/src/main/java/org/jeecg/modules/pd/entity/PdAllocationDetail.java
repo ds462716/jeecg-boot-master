@@ -60,12 +60,14 @@ public class PdAllocationDetail extends BaseEntity {
 	/**本科室库存数量*/
 	@Excel(name = "调拨科室库存数量", width = 15)
 	private Double currentStockNum;
-	/**产品属性：1、产品 2、定数包*/
-	@Excel(name = "产品属性：1、产品 2、定数包", width = 15)
+	/**产品属性：1、产品 2、套包*/
+	@Excel(name = "产品属性：1、产品 2、套包", width = 15)
 	private String productAttr;
-	/**所属定数包ID*/
+	/**所属套包ID*/
 	private String packageId;
-	/**'调拨时定数包产品数量'*/
+	/**套包打包记录ID*/
+	private String packageRecordId;
+	/**'调拨时套包产品数量'*/
 	private Double packageNum;
 	/**实际发货数量*/
 	@Excel(name = "实际发货数量", width = 15)
@@ -88,9 +90,13 @@ public class PdAllocationDetail extends BaseEntity {
 	@Excel(name = "单位名称", width = 15)
 	private String unitName;//单位名称
 	@TableField(exist = false)
-	@Excel(name = "定数包名称", width = 15)
-	private String packageName;//定数包名称
+	@Excel(name = "套包名称", width = 15)
+	private String packageName;//套包名称
 	@TableField(exist = false)
-	@Excel(name = "定数包编号", width = 15)
-	private String packageCode;//定数包编号
+	@Excel(name = "套包编号", width = 15)
+	private String packageCode;//套包编号
+	@TableField(exist = false)
+	private String packageBarCode;//套包条码
+	@TableField(exist = false)
+	private String packageSum;//套包产品总数
 }

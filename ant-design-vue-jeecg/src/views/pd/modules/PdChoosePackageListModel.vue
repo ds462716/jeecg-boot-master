@@ -13,13 +13,32 @@
         <a-form layout="inline" @keyup.enter.native="searchQuery">
           <a-row :gutter="24">
             <a-col :md="6" :sm="8">
-              <a-form-item label="定数包编号">
-                <a-input placeholder="请输入定数包编号" v-model="queryParam.code"></a-input>
+              <a-form-item label="套包编号">
+                <a-input placeholder="请输入套包编号" v-model="queryParam.packageCode"></a-input>
               </a-form-item>
             </a-col>
             <a-col :md="6" :sm="8">
-              <a-form-item label="定数包名称">
-                <a-input placeholder="请输入定数包名称" v-model="queryParam.name"></a-input>
+              <a-form-item label="套包名称">
+                <a-input placeholder="请输入套包名称" v-model="queryParam.packageName"></a-input>
+              </a-form-item>
+            </a-col>
+            <a-col :span="6">
+              <a-form-item label="所属科室">
+                <a-select
+                  showSearch
+                  placeholder="请选择科室"
+                  :supplierId="departValue"
+                  :defaultActiveFirstOption="false"
+                  :showArrow="true"
+                  :filterOption="false"
+                  :allowClear="true"
+                  @search="departHandleSearch"
+                  @focus="departHandleSearch"
+                  :notFoundContent="notFoundContent"
+                  v-model="queryParam.departId"
+                >
+                  <a-select-option v-for="d in departList" :key="d.id">{{d.departName}}</a-select-option>
+                </a-select>
               </a-form-item>
             </a-col>
             <template v-if="toggleSearchStatus">
@@ -59,6 +78,7 @@
         :loading="loading"
         :expandedRowKeys= "expandedRowKeys"
         :rowSelection="{type:'radio',selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
+        :customRow="onClickRow"
         @expand="handleExpand"
         @change="handleTableChange">
 
@@ -94,13 +114,18 @@
     data () {
       return {
         form: this.$form.createForm(this),
-        title:"选择定数包",
+        title:"选择套包",
         width:1200,
         visible: false,
         innerData:[],
         expandedRowKeys:[],
         subloading:false,
         confirmLoading: false,
+
+        notFoundContent:"未找到内容",
+        departValue: undefined,
+        departList:[],
+
         // 表头
         columns: [
           {
@@ -114,14 +139,14 @@
             }
           },
           {
-            title:'定数包编号',
+            title:'套包编号',
             align:"center",
-            dataIndex: 'code'
+            dataIndex: 'packageCode'
           },
           {
-            title:'定数包名称',
+            title:'套包名称',
             align:"center",
-            dataIndex: 'name',
+            dataIndex: 'packageName',
             customRender:function (text) {
               return !text?"":(text.length>10?text.substr(0,10):text)
             }
@@ -129,7 +154,12 @@
           {
             title:'产品总数',
             align:"center",
-            dataIndex: 'sum'
+            dataIndex: 'packageSum'
+          },
+          {
+            title:'所属科室',
+            align:"center",
+            dataIndex: 'departName'
           },
           {
             title:'备注',
@@ -138,23 +168,6 @@
           }
         ],
         innerColumns:[
-          {
-            title:'定数包编号',
-            align:"center",
-            width: 100,
-            dataIndex: 'code'
-          }, {
-            title:'定数包名称',
-            align:"center",
-            width: 100,
-            dataIndex: 'name'
-          },
-          {
-            title:'定数包产品数量',
-            align:"center",
-            width: 100,
-            dataIndex: 'count'
-          },
           {
             title:'产品编号',
             align:"center",
@@ -182,14 +195,33 @@
             dataIndex: 'unitName'
           },
           {
+            title:'套包产品数量',
+            align:"center",
+            width: 100,
+            dataIndex: 'count'
+          },
+          {
             title:'库存数量',
             align:"center",
             dataIndex: 'stockNum'
+          },
+          {
+            title:'产品ID',
+            align:"center",
+            dataIndex: 'productId',
+            colSpan: 0,
+            customRender: (value, row, index) => {
+              const obj = {
+                attrs: {colSpan:0},
+              };
+              return obj;
+            },
           },
         ],
         url: {
           list: "/pd/pdPackage/queryPackgeList",
           chooseDetailList:"/pd/pdPackage/queryPdPackageDetailList",
+          departList:"/pd/pdDepart/getSysDepartList",
         },
         dictOptions:{
         },
@@ -211,6 +243,7 @@
         }
       },
       close () {
+        this.expandedRowKeys=[];
         this.selectedRowKeys = [];
         this.selectionRows = [];
         this.$emit('close');
@@ -220,18 +253,20 @@
         this.visible = true;
       },
       handleOk () {
-        if(this.selectionRows.length > 0){
-          /*let params = { packageId: this.selectionRows[0].id }
+        if(this.selectionRows.length == 1){
+          let params = { packageId: this.selectionRows[0].id }
           getAction(this.url.chooseDetailList, params).then((res) => {
             if (res.success) {
               let data = res.result;
-              this.$emit('ok', data);
+              let rows = this.selectionRows;
+              rows[0].pdPackageDetailList = data;
+              this.$emit('ok', rows);
               this.close();
             }
-          });*/
-          let rows = this.selectionRows;
-          this.$emit('ok', rows);
-          this.close();
+          });
+          // let rows = this.selectionRows;
+          // this.$emit('ok', rows);
+          // this.close();
         }else{
           this.$message.error("请选择一行数据!")
         }
@@ -245,8 +280,36 @@
       initDictConfig(){ //静态字典值加载
 
       },
-
-
+      onClickRow(record) {
+        return {
+          on: {
+            click: (e) => {
+              //点击操作那一行不选中表格的checkbox
+              let pathArray = e.path;
+              let td = pathArray[0];//获取当前点击的是第几列
+              let cellIndex = td.cellIndex;
+              let tr = pathArray[1];//获取tr
+              let lie = tr.childElementCount;//获取一共多少列
+              this.selectedRowKeys = [];
+              this.selectionRows = [];
+              if(lie && cellIndex){
+                if(parseInt(lie)-parseInt(cellIndex) > 0){
+                  //操作那一行
+                  let recordId = record.id;
+                  let index = this.selectedRowKeys.indexOf(recordId);
+                  if(index>=0){
+                    this.selectedRowKeys.splice(index, 1);
+                    this.selectionRows.splice(index, 1);
+                  }else{
+                    this.selectedRowKeys.push(recordId);
+                    this.selectionRows.push(record);
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
       getQueryParams() {
         //获取查询条件
         let sqp = {}
@@ -259,6 +322,15 @@
         param.pageSize = this.ipagination.pageSize;
         delete param.queryDate; //范围参数不传递后台，传后台会报错
         return filterObj(param);
+      },
+      // 部门下拉框搜索
+      departHandleSearch(value){
+        getAction(this.url.departList,{departName:value,parentFlag:"0"}).then((res)=>{
+          if (!res.success) {
+            this.cmsFailed(res.message);
+          }
+          this.departList = res.result;
+        })
       },
     }
   }

@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.modules.system.entity.SysDepart;
+import org.jeecg.modules.system.entity.SysDepartRolePermission;
 import org.jeecg.modules.system.entity.SysUser;
 import org.jeecg.modules.system.entity.SysUserDepart;
 import org.jeecg.modules.system.model.SysDepartTreeModel;
@@ -29,6 +30,8 @@ public interface IPdDepartService extends IService<SysDepart> {
 
     IPage<SysUser> findUserList(Page<SysUser> page, Map<String, Object> parMap);
 
+    List<SysUser> findUserList(Map<String, Object> parMap);
+
     List<SysDepart> selectList(SysDepart sysDepart);
 
     List<SysUserDepart> queryUserDepart(LambdaQueryWrapper<SysUserDepart> eq);
@@ -48,4 +51,17 @@ public interface IPdDepartService extends IService<SysDepart> {
     List<String> selectListDepart(SysDepart sysDepart);
 
     Result<Object> copyPermission(String copyId, String pasteId, Result<Object> result);
+
+    Result<Object> generatePyWb();
+
+    Result<Object> generateUserPyWb();
+
+    List<SysDepartRolePermission> findDepartRolePermissionByName(Map<String,Object> map);
+
+    List<Map<String,Object>> findDepartList(SysDepart sysDepart);
+
+    void refreshShiro();
+
+    List<String> queryDepartIdByParentId(String parentId);
+
 }

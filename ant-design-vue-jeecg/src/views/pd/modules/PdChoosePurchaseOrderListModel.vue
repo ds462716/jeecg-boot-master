@@ -30,6 +30,7 @@
                   :supplierId="supplierValue"
                   placeholder="请选择供应商"
                   :defaultActiveFirstOption="false"
+                  :allowClear="true"
                   :showArrow="true"
                   :filterOption="false"
                   @search="supplierHandleSearch"

@@ -48,59 +48,59 @@
             LEFT JOIN pd_vender h ON c.vender_id = h.id
             LEFT JOIN sys_depart g ON b.depart_id = g.id
         <where>
-            <if test="batchNo != null and batchNo != ''">
-                AND a.batch_no LIKE concat('%',#{batchNo},'%')
+            <if test="entity.batchNo != null and entity.batchNo != ''">
+                AND a.batch_no LIKE concat('%',#{entity.batchNo},'%')
             </if>
-            <if test="departId != null and departId != ''">
-                AND b.depart_id = #{departId}
+            <if test="entity.departId != null and entity.departId != ''">
+                AND b.depart_id = #{entity.departId}
             </if>
-            <if test="departParentId != null and departParentId != ''">
-                AND b.depart_parent_id = #{departParentId}
+            <if test="entity.departParentId != null and entity.departParentId != ''">
+                AND b.depart_parent_id = #{entity.departParentId}
             </if>
-            <if test="supplierId != null and supplierId != ''">
-                AND b.supplier_id = #{supplierId}
+            <if test="entity.supplierId != null and entity.supplierId != ''">
+                AND b.supplier_id = #{entity.supplierId}
             </if>
-            <if test="queryDateStart != null and queryDateStart != ''">
-                AND b.rejected_date &gt;= #{queryDateStart}
+            <if test="entity.queryDateStart != null and entity.queryDateStart != ''">
+                AND b.rejected_date &gt;= #{entity.queryDateStart}
             </if>
-            <if test="queryDateEnd != null and queryDateEnd != ''">
-                AND b.rejected_date &lt;= #{queryDateEnd}
+            <if test="entity.queryDateEnd != null and entity.queryDateEnd != ''">
+                AND b.rejected_date &lt;= #{entity.queryDateEnd}
             </if>
-            <if test="rejectedNo != null and rejectedNo != ''">
-                AND b.rejected_no LIKE concat('%',#{rejectedNo},'%')
+            <if test="entity.rejectedNo != null and entity.rejectedNo != ''">
+                AND b.rejected_no LIKE concat('%',#{entity.rejectedNo},'%')
             </if>
-            <if test="productNumber != null and productNumber != ''">
-                AND c.number LIKE concat('%',#{productNumber},'%')
+            <if test="entity.productNumber != null and entity.productNumber != ''">
+                AND c.number LIKE concat('%',#{entity.productNumber},'%')
             </if>
-            <if test="productName != null and productName != ''">
+            <if test="entity.productName != null and entity.productName != ''">
                 AND (
-                c.number LIKE concat('%',#{productName},'%')
-                or c.name LIKE concat('%',#{productName},'%')
-                or c.py LIKE concat('%',#{productName},'%')
-                or c.wb LIKE concat('%',#{productName},'%')
-                or c.bname LIKE concat('%',#{productName},'%')
-                or c.bpy LIKE concat('%',#{productName},'%')
-                or c.bwb LIKE concat('%',#{productName},'%')
-                or c.zdy LIKE concat('%',#{productName},'%')
+                c.number LIKE concat('%',#{entity.productName},'%')
+                or c.name LIKE concat('%',#{entity.productName},'%')
+                or c.py LIKE concat('%',#{entity.productName},'%')
+                or c.wb LIKE concat('%',#{entity.productName},'%')
+                or c.bname LIKE concat('%',#{entity.productName},'%')
+                or c.bpy LIKE concat('%',#{entity.productName},'%')
+                or c.bwb LIKE concat('%',#{entity.productName},'%')
+                or c.zdy LIKE concat('%',#{entity.productName},'%')
                 )
             </if>
-            <if test="spec != null and spec != ''">
-                AND c.spec LIKE concat('%',#{spec},'%')
+            <if test="entity.spec != null and entity.spec != ''">
+                AND c.spec LIKE concat('%',#{entity.spec},'%')
             </if>
-            <if test="version != null and version != ''">
-                AND c.version LIKE concat('%',#{version},'%')
+            <if test="entity.version != null and entity.version != ''">
+                AND c.version LIKE concat('%',#{entity.version},'%')
             </if>
-            <if test="registration != null and registration != ''">
-                AND c.registration LIKE concat('%',#{registration},'%')
+            <if test="entity.registration != null and entity.registration != ''">
+                AND c.registration LIKE concat('%',#{entity.registration},'%')
             </if>
-            <if test="venderId != null and venderId != ''">
-                AND c.vender_id = #{venderId}
+            <if test="entity.venderId != null and entity.venderId != ''">
+                AND c.vender_id = #{entity.venderId}
             </if>
-            <if test="queryExpDateStart != null and queryExpDateStart != ''">
-                AND d.exp_date &gt;= #{queryExpDateStart}
+            <if test="entity.queryExpDateStart != null and entity.queryExpDateStart != ''">
+                AND d.exp_date &gt;= #{entity.queryExpDateStart}
             </if>
-            <if test="queryExpDateEnd != null and queryExpDateEnd != ''">
-                AND d.exp_date &lt;= #{queryExpDateEnd}
+            <if test="entity.queryExpDateEnd != null and entity.queryExpDateEnd != ''">
+                AND d.exp_date &lt;= #{entity.queryExpDateEnd}
             </if>
         </where>
         order by b.rejected_date desc

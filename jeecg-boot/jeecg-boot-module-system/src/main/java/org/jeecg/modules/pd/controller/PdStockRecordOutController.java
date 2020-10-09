@@ -1,51 +1,40 @@
 package org.jeecg.modules.pd.controller;
 
 import com.alibaba.fastjson.JSON;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.PdConstant;
-import org.jeecg.common.system.query.QueryGenerator;
-import org.jeecg.common.system.vo.DictModel;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.DateUtils;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.message.util.PushMsgUtil;
-import org.jeecg.modules.pd.entity.PdGoodsAllocation;
-import org.jeecg.modules.pd.entity.PdPurchaseDetail;
+import org.jeecg.modules.pd.entity.PdProductStock;
+import org.jeecg.modules.pd.entity.PdProductStockCheckPermission;
 import org.jeecg.modules.pd.entity.PdStockRecord;
 import org.jeecg.modules.pd.entity.PdStockRecordDetail;
 import org.jeecg.modules.pd.service.*;
-import org.jeecg.modules.pd.util.UUIDUtil;
-import org.jeecg.modules.pd.vo.PdGoodsAllocationPage;
+import org.jeecg.modules.pd.vo.PdStockRecordOutGYSPage;
 import org.jeecg.modules.pd.vo.PdStockRecordOutPage;
 import org.jeecg.modules.system.entity.SysDepart;
-import org.jeecg.modules.system.entity.SysPermission;
 import org.jeecg.modules.system.service.ISysDepartService;
 import org.jeecg.modules.system.service.ISysDictService;
 import org.jeecg.modules.system.service.ISysPermissionService;
-import org.jeecgframework.poi.excel.ExcelImportUtil;
 import org.jeecgframework.poi.excel.def.NormalExcelConstants;
 import org.jeecgframework.poi.excel.entity.ExportParams;
-import org.jeecgframework.poi.excel.entity.ImportParams;
 import org.jeecgframework.poi.excel.view.JeecgEntityExcelView;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * @Description: 出入库记录表
@@ -62,6 +51,8 @@ public class PdStockRecordOutController {
     @Autowired
     private IPdStockRecordDetailService pdStockRecordDetailService;
     @Autowired
+    private IPdProductStockService pdProductStockService;
+    @Autowired
     private ISysDepartService sysDepartService;
     @Autowired
     private IPdGoodsAllocationService pdGoodsAllocationService;
@@ -77,6 +68,10 @@ public class PdStockRecordOutController {
     private ISysPermissionService sysPermissionService;
     @Autowired
     private PushMsgUtil pushMsgUtil;
+    @Autowired
+    private IPdProductStockUniqueCodeService pdProductStockUniqueCodeService;
+    @Autowired
+    private IPdProductStockCheckPermissionService pdProductStockCheckPermissionService;
 
     /**
      * 初始化Modal页面
@@ -86,7 +81,9 @@ public class PdStockRecordOutController {
      */
     @GetMapping(value = "/initModal")
     public Result<?> initModal(@RequestParam(name = "id") String id, HttpServletRequest req) {
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
         PdStockRecord pdStockRecord = pdStockRecordService.initOutModal(id);
+        pdStockRecord.setHospitalCode(sysUser.getHospitalCode());
         return Result.ok(pdStockRecord);
     }
 
@@ -106,6 +103,7 @@ public class PdStockRecordOutController {
                                    HttpServletRequest req) {
         Page<PdStockRecord> page = new Page<PdStockRecord>(pageNo, pageSize);
         pdStockRecord.setRecordType(PdConstant.RECODE_TYPE_2);
+        pdStockRecord.setExceptReturn("1");//查询 除了退货出库之外的出库类型
         IPage<PdStockRecord> pageList = pdStockRecordService.queryList(page, pdStockRecord, PdConstant.RECODE_TYPE_2);
         return Result.ok(pageList);
     }
@@ -127,6 +125,7 @@ public class PdStockRecordOutController {
         Page<PdStockRecord> page = new Page<PdStockRecord>(pageNo, pageSize);
         pdStockRecord.setRecordType(PdConstant.RECODE_TYPE_2);
         pdStockRecord.setSubmitStatus(PdConstant.SUBMIT_STATE_2); //已提交状态
+        pdStockRecord.setExceptReturn("1");//查询 除了退货出库之外的出库类型
         IPage<PdStockRecord> pageList = pdStockRecordService.queryList(page, pdStockRecord, PdConstant.RECODE_TYPE_2);
         return Result.ok(pageList);
     }
@@ -134,25 +133,112 @@ public class PdStockRecordOutController {
     /**
      * 保存
      *
-     * @param PdStockRecord
+     * @param pdStockRecord
      * @return
      */
     @PostMapping(value = "/add")
     public Result<?> add(@RequestBody PdStockRecord pdStockRecord) {
-        if (oConvertUtils.isNotEmpty(pdStockRecord.getId())) {
+        if(oConvertUtils.isEmpty(pdStockRecord.getId())){
+            pdStockRecord.setExceptReturn("1");//查询 除了退货出库之外的出库类型
+            List<PdStockRecord> list = pdStockRecordService.queryList(pdStockRecord,PdConstant.RECODE_TYPE_2);
+            if(CollectionUtils.isNotEmpty(list)){
+                return Result.error("出库单已被保存或提交，不能保存草稿！");
+            }
+        }else{
             PdStockRecord entity = pdStockRecordService.getById(pdStockRecord.getId());
             if(entity != null && PdConstant.SUBMIT_STATE_2.equals(entity.getSubmitStatus())){
                 return Result.error("出库单已被提交，不能保存草稿！");
             }
         }
-        pdStockRecordService.saveMain(pdStockRecord, pdStockRecord.getPdStockRecordDetailList(), PdConstant.RECODE_TYPE_2);
-        return Result.ok("添加成功！");
+
+//        // 出库库房盘点校验
+//        List<PdProductStockCheckPermission> checkList1 = pdProductStockCheckPermissionService.list(
+//                new LambdaQueryWrapper<PdProductStockCheckPermission>()
+//                        .eq(PdProductStockCheckPermission::getTargetDepartId, pdStockRecord.getOutDepartId()));
+//        if(CollectionUtils.isNotEmpty(checkList1)){
+//            return Result.error("本库房正在盘点，不能出库！");
+//        }
+//        // 入库库房盘点校验
+//        List<PdProductStockCheckPermission> checkList2 = pdProductStockCheckPermissionService.list(
+//                new LambdaQueryWrapper<PdProductStockCheckPermission>()
+//                        .eq(PdProductStockCheckPermission::getTargetDepartId, pdStockRecord.getInDepartId()));
+//        if(CollectionUtils.isNotEmpty(checkList2)){
+//            return Result.error("["+pdStockRecord.getInDepartName()+"]正在盘点，不能出库！");
+//        }
+
+        String recordId = pdStockRecordService.saveMain(pdStockRecord, pdStockRecord.getPdStockRecordDetailList(), PdConstant.RECODE_TYPE_2);
+
+        Map<String,Object> result = new HashMap<>();
+        result.put("recordId",recordId);
+        result.put("message","保存成功！");
+        return Result.ok(result);
     }
+
+//    /**
+//     * 一体机终端出库接口 （只适配唯一码）
+//     * @param pdStockRecord
+//     * @return
+//     */
+//    @PostMapping(value = "/addOutForTerminal")
+//    public Result<?> addOutForTerminal(@RequestBody PdStockRecord pdStockRecord) {
+//        Result<PdProductStock> result = new Result<>();
+//        if(CollectionUtils.isEmpty(pdStockRecord.getUniqueCode())){
+//            result.setCode(MessageConstant.ICODE_STATE_500);
+//            result.setMessage("请扫描正确的条码");
+//            return result;
+//        }
+//        if(oConvertUtils.isEmpty(pdStockRecord.getInDepartId())){
+//            result.setCode(MessageConstant.ICODE_STATE_500);
+//            result.setMessage("出库失败，入库库房为空！");
+//            return result;
+//        }
+//        List<PdProductStock> stockList = new ArrayList<>();
+//
+//        for (String Barcode : pdStockRecord.getUniqueCode()) {
+//            if(StringUtils.isNotBlank(Barcode)){
+//                LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+//                LambdaQueryWrapper<PdProductStockUniqueCode> query = new LambdaQueryWrapper<PdProductStockUniqueCode>()
+//                        .eq(PdProductStockUniqueCode::getId, Barcode)
+//                        .eq(PdProductStockUniqueCode::getPrintType, PdConstant.CODE_PRINT_TYPE_1)
+//                        .eq(PdProductStockUniqueCode::getCodeState,PdConstant.CODE_PRINT_STATE_0)//正常状态不包括已退货和已用完的
+//                        /* .eq(PdProductStockUniqueCode::getDepartId,sysUser.getCurrentDepartId())*/;//当前科室下的
+//                //查询状态是正常状态且是当前科室下的
+//                PdProductStockUniqueCode pdProductStockUniqueCode = pdProductStockUniqueCodeService.getOne(query);
+//                if(pdProductStockUniqueCode!=null){
+//                    PdProductStock ps = new PdProductStock();
+//                    ps.setId(pdProductStockUniqueCode.getProductStockId());
+//                    ps.setBarCodeType(PdConstant.CODE_PRINT_TYPE_1);
+//                    ps.setProductFlag("");//产品类型0耗材1试剂
+//                    ps.setNestatStatus(PdConstant.STOCK_NESTAT_STATUS_1);//状态 未使用
+//                    ps.setDepartId(sysUser.getCurrentDepartId());
+//                    // 唯一码查库存
+//                    List<PdProductStock> pds = pdProductStockService.queryUniqueProductStockList(ps);
+//                    if(CollectionUtils.isNotEmpty(pds)){
+//                        ps = pds.get(0);
+//                        ps.setRefBarCode(Barcode);
+//                        stockList.add(ps);
+//                    }
+//                }
+//            }
+//        }
+//        if(CollectionUtils.isEmpty(stockList)){
+//            result.setCode(MessageConstant.ICODE_STATE_500);
+//            result.setMessage("出库失败，出库明细为空！");
+//            return result;
+//        }
+//
+//        //自动出库操作
+//        String recordId = pdStockRecordService.addOutForTerminal(pdStockRecord, stockList);
+//
+//        result.setCode(MessageConstant.ICODE_STATE_200);
+//        result.setMessage(MessageConstant.PACKAGE_CODE_MESSAGE_2+"，并成功出库");
+//        return result;
+//    }
 
     /**
      * 提交
      *
-     * @param PdStockRecord
+     * @param pdStockRecord
      * @return
      */
     @PostMapping(value = "/submit")
@@ -163,17 +249,37 @@ public class PdStockRecordOutController {
                 return Result.error("出库单已被提交，不能再次提交！");
             }
         }
-        pdStockRecordService.submit(pdStockRecord, pdStockRecord.getPdStockRecordDetailList(), PdConstant.RECODE_TYPE_2);
-        return Result.ok("添加成功！");
+
+        // 出库库房盘点校验
+        List<PdProductStockCheckPermission> checkList1 = pdProductStockCheckPermissionService.list(
+                new LambdaQueryWrapper<PdProductStockCheckPermission>()
+                        .eq(PdProductStockCheckPermission::getTargetDepartId, pdStockRecord.getOutDepartId()));
+        if(CollectionUtils.isNotEmpty(checkList1)){
+            return Result.error("["+pdStockRecord.getOutDepartName()+"]正在盘点，不能出库！");
+        }
+        // 入库库房盘点校验
+        List<PdProductStockCheckPermission> checkList2 = pdProductStockCheckPermissionService.list(
+                new LambdaQueryWrapper<PdProductStockCheckPermission>()
+                        .eq(PdProductStockCheckPermission::getTargetDepartId, pdStockRecord.getInDepartId()));
+        if(CollectionUtils.isNotEmpty(checkList2)){
+            return Result.error("["+pdStockRecord.getInDepartName()+"]正在盘点，不能出库！");
+        }
+
+        String recordId = pdStockRecordService.submit(pdStockRecord, pdStockRecord.getPdStockRecordDetailList(), PdConstant.RECODE_TYPE_2);
+        Map<String,Object> result = new HashMap<>();
+        result.put("recordId",recordId);
+        result.put("message","提交成功！");
+        return Result.ok(result);
     }
 
     /**
      * 审批
      *
-     * @param PdStockRecord
+     * @param pdStockRecord
      * @return
      */
     @PostMapping(value = "/audit")
+    @RequiresPermissions("stock:form:outRecordExamine")
     public Result<?> audit(@RequestBody PdStockRecord pdStockRecord) {
         PdStockRecord entity = pdStockRecordService.getOne(pdStockRecord);
         if (entity == null) {
@@ -182,6 +288,22 @@ public class PdStockRecordOutController {
         if(PdConstant.AUDIT_STATE_2.equals(entity.getAuditStatus()) || PdConstant.AUDIT_STATE_3.equals(entity.getAuditStatus())){
             return Result.error("出库单已被审批，不能再次审批！");
         }
+
+        // 出库库房盘点校验
+        List<PdProductStockCheckPermission> checkList1 = pdProductStockCheckPermissionService.list(
+                new LambdaQueryWrapper<PdProductStockCheckPermission>()
+                        .eq(PdProductStockCheckPermission::getTargetDepartId, entity.getOutDepartId()));
+        if(CollectionUtils.isNotEmpty(checkList1)){
+            return Result.error("["+entity.getOutDepartName()+"]正在盘点，不能出库！");
+        }
+        // 入库库房盘点校验
+        List<PdProductStockCheckPermission> checkList2 = pdProductStockCheckPermissionService.list(
+                new LambdaQueryWrapper<PdProductStockCheckPermission>()
+                        .eq(PdProductStockCheckPermission::getTargetDepartId, entity.getInDepartId()));
+        if(CollectionUtils.isNotEmpty(checkList2)){
+            return Result.error("["+entity.getInDepartName()+"]正在盘点，不能出库！");
+        }
+
         Map<String,String> result = pdStockRecordService.audit(pdStockRecord,entity, PdConstant.RECODE_TYPE_2);
         if(PdConstant.SUCCESS_200.equals(result.get("code"))) {
             return Result.ok(result.get("message"));
@@ -207,6 +329,37 @@ public class PdStockRecordOutController {
         }else{
             return Result.error("当前出库单状态已被审批或已撤回，不能撤回！");
         }
+    }
+
+    /**
+     * 目前只用于打印后更新注册号
+     * @param pdStockRecord
+     * @return
+     */
+    @PutMapping(value = "/edit")
+    public Result<?> edit(@RequestBody PdStockRecord pdStockRecord) {
+
+        if(CollectionUtils.isNotEmpty(pdStockRecord.getPdStockRecordDetailList())){
+            Date date = DateUtils.getDate();
+            for(PdStockRecordDetail item : pdStockRecord.getPdStockRecordDetailList()){
+                item.setUpdateTime(date);
+
+                // 更新对应的入库单注册证号
+                PdStockRecordDetail detail = pdStockRecordDetailService.getById(item.getId());
+                if(oConvertUtils.isNotEmpty(detail.getProductStockId())){
+                    PdProductStock stock = pdProductStockService.getById(detail.getProductStockId());
+                    if(stock != null && oConvertUtils.isNotEmpty(stock.getRecordDetailId())){
+                        PdStockRecordDetail inRecord = new PdStockRecordDetail();
+                        inRecord.setId(stock.getRecordDetailId());
+                        inRecord.setRegistration(item.getRegistration());
+                        inRecord.setUpdateTime(date);
+                        pdStockRecordDetailService.updateById(inRecord);
+                    }
+                }
+            }
+            pdStockRecordDetailService.updateBatchById(pdStockRecord.getPdStockRecordDetailList());
+        }
+        return Result.ok("编辑成功!");
     }
 
     /**
@@ -250,7 +403,31 @@ public class PdStockRecordOutController {
      */
     @GetMapping(value = "/queryById")
     public Result<?> queryById(@RequestParam(name = "id", required = true) String id) {
-        PdStockRecord pdStockRecord = pdStockRecordService.getById(id);
+
+        PdStockRecord pdStockRecord = new PdStockRecord();
+        pdStockRecord.setId(id);
+        pdStockRecord = pdStockRecordService.getOne(pdStockRecord);
+
+        PdStockRecordDetail pdStockRecordDetail = new PdStockRecordDetail();
+        pdStockRecordDetail.setRecordId(id);
+        List<PdStockRecordDetail> pdStockRecordDetailList = pdStockRecordDetailService.selectByMainId(pdStockRecordDetail);
+        pdStockRecord.setPdStockRecordDetailList(pdStockRecordDetailList);
+
+
+        BigDecimal inTotalPrice = new BigDecimal(0);//总金额
+        BigDecimal outTotalPrice = new BigDecimal(0);//总金额
+        Double totalSum = new Double(0);//总数量
+        for (PdStockRecordDetail item : pdStockRecordDetailList) {
+            totalSum = totalSum + item.getProductNum();
+            BigDecimal purchasePrice = item.getPurchasePrice() == null ? new BigDecimal(0) : item.getPurchasePrice();
+            BigDecimal sellingPrice = item.getSellingPrice() == null ? new BigDecimal(0) : item.getSellingPrice();
+            inTotalPrice = inTotalPrice.add(purchasePrice.multiply(BigDecimal.valueOf(item.getProductNum())).setScale(4, BigDecimal.ROUND_HALF_UP));
+            outTotalPrice = outTotalPrice.add(sellingPrice.multiply(BigDecimal.valueOf(item.getProductNum())).setScale(4, BigDecimal.ROUND_HALF_UP));
+        }
+        pdStockRecord.setTotalSum(totalSum);
+        pdStockRecord.setInTotalPrice(inTotalPrice);
+        pdStockRecord.setOutTotalPrice(outTotalPrice);
+
         if (pdStockRecord == null) {
             return Result.error("未找到对应数据");
         }
@@ -294,7 +471,7 @@ public class PdStockRecordOutController {
             pdStockRecordDetail.setInDepartIdList(departList);
         }
 
-        List<PdStockRecordDetail> detailList =  pdStockRecordDetailService.selectList(pdStockRecordDetail);
+        List<PdStockRecordDetail> detailList =  pdStockRecordDetailService.selectOutList(pdStockRecordDetail);
         List<PdStockRecordOutPage> exportList = JSON.parseArray(JSON.toJSONString(detailList), PdStockRecordOutPage.class);
 
         // Step.4 AutoPoi 导出Excel
@@ -346,7 +523,59 @@ public class PdStockRecordOutController {
 //            List<String> departList=pdDepartService.selectListDepart(sysDepart);
 //            pdStockRecordDetail.setInDepartIdList(departList);
         }
-        page = pdStockRecordDetailService.selectList(page, pdStockRecordDetail);
-        return Result.ok(page);
+        IPage<PdStockRecordDetail> pageList = pdStockRecordDetailService.selectOutList(page, pdStockRecordDetail);
+        return Result.ok(pageList);
+    }
+
+
+    /**
+     * 查询出库明细(市立医院供应室专用)mcb
+     *
+     * @param pdStockRecordDetail
+     * @param pageNo
+     * @param pageSize
+     * @param req
+     * @return
+     */
+    @GetMapping(value = "/queryPdStockRecordOutGzslList")
+    public Result<?> queryPdStockRecordOutGzslList(PdStockRecordDetail pdStockRecordDetail,
+                                               @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
+                                               @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
+                                               HttpServletRequest req) {
+
+        Page<PdStockRecordDetail> page = new Page<PdStockRecordDetail>(pageNo, pageSize);
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        pdStockRecordDetail.setDepartParentId(sysUser.getDepartParentId());
+        if(oConvertUtils.isNotEmpty(pdStockRecordDetail.getInDepartIds()) && !"undefined".equals(pdStockRecordDetail.getInDepartIds())){
+            pdStockRecordDetail.setInDepartIdList(Arrays.asList(pdStockRecordDetail.getInDepartIds().split(",")));
+        }
+        IPage<PdStockRecordDetail> pageList = pdStockRecordDetailService.selectGZSLRecordDetailPage(page, pdStockRecordDetail);
+        return Result.ok(pageList);
+    }
+
+
+    /**
+     * 导出excel(市立医院供应室专用)
+     *
+     * @param request
+     * @param pdStockRecordDetail
+     */
+    @RequestMapping(value = "/exportGzslXls")
+    public ModelAndView exportGzslXls(HttpServletRequest request, PdStockRecordDetail pdStockRecordDetail) {
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        pdStockRecordDetail.setDepartParentId(sysUser.getDepartParentId());
+
+        if(oConvertUtils.isNotEmpty(pdStockRecordDetail.getInDepartIds()) && !"undefined".equals(pdStockRecordDetail.getInDepartIds())){
+            pdStockRecordDetail.setInDepartIdList(Arrays.asList(pdStockRecordDetail.getInDepartIds().split(",")));
+        }
+        List<PdStockRecordDetail> detailList =  pdStockRecordDetailService.selectGZSLRecordDetailList(pdStockRecordDetail);
+        List<PdStockRecordOutGYSPage> exportList = JSON.parseArray(JSON.toJSONString(detailList), PdStockRecordOutGYSPage.class);
+        // Step.4 AutoPoi 导出Excel
+        ModelAndView mv = new ModelAndView(new JeecgEntityExcelView());
+        mv.addObject(NormalExcelConstants.FILE_NAME, "出库记录表");
+        mv.addObject(NormalExcelConstants.CLASS, PdStockRecordOutGYSPage.class);
+        mv.addObject(NormalExcelConstants.PARAMS, new ExportParams("出库记录表数据", "导出人:" + sysUser.getRealname(), "出库记录表"));
+        mv.addObject(NormalExcelConstants.DATA_LIST, exportList);
+        return mv;
     }
 }

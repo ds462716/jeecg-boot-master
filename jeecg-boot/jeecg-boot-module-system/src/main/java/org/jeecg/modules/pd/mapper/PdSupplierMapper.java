@@ -1,6 +1,8 @@
 package org.jeecg.modules.pd.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import org.apache.ibatis.annotations.Param;
 import org.jeecg.modules.pd.entity.PdSupplier;
 
 import java.util.List;
@@ -17,7 +19,9 @@ public interface PdSupplierMapper extends BaseMapper<PdSupplier> {
 
     List<PdSupplier> selectList(PdSupplier pdSupplier);
 
-    public void updateValidityFlag(PdSupplier pdSupplier);
+    void updateValidityFlag(PdSupplier pdSupplier);
 
     List<PdSupplier> selectAllList(PdSupplier pdSupplier);
+
+    Page<PdSupplier> selectListByPage(Page<PdSupplier> page, @Param("entity") PdSupplier entity);
 }

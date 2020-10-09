@@ -7,7 +7,7 @@
 
           <a-col :md="6" :sm="8">
             <a-form-item label="出库单号">
-              <a-input placeholder="请输入单号" v-model="queryParam.recordNo"></a-input>
+              <a-input placeholder="请输出单号" v-model="queryParam.recordNo"></a-input>
             </a-form-item>
           </a-col>
           <a-col :span="6">
@@ -18,6 +18,7 @@
                 placeholder="请选择出库库房"
                 :supplierId="departValue"
                 :defaultActiveFirstOption="false"
+                :allowClear="true"
                 :showArrow="true"
                 :filterOption="false"
                 @search="departHandleSearch"
@@ -37,6 +38,7 @@
                 placeholder="请选择入库库房"
                 :supplierId="allDepartValue"
                 :defaultActiveFirstOption="false"
+                :allowClear="true"
                 :showArrow="true"
                 :filterOption="false"
                 @search="allDepartHandleSearch"
@@ -92,29 +94,29 @@
             </a-col>
             <a-col :md="6" :sm="8">
               <a-form-item label="出库类型">
-                <j-dict-select-tag v-model="queryParam.outType" dictCode="out_type"/>
+                <j-dict-select-tag-expand v-model="queryParam.outType" dictCode="out_type"/>
               </a-form-item>
             </a-col>
             <!--<a-col :md="6" :sm="8">-->
-              <!--<a-form-item label="供应商">-->
-                <!--<a-select-->
-                  <!--ref="supplierSelect"-->
-                  <!--showSearch-->
-                  <!--:supplierId="supplierValue"-->
-                  <!--placeholder="请选择供应商"-->
-                  <!--:defaultActiveFirstOption="false"-->
-                  <!--:showArrow="true"-->
-                  <!--:allowClear="true"-->
-                  <!--:filterOption="false"-->
-                  <!--@search="supplierHandleSearch"-->
-                  <!--@change="supplierHandleChange"-->
-                  <!--@focus="supplierHandleSearch"-->
-                  <!--:notFoundContent="notFoundContent"-->
-                  <!--v-model="queryParam.supplierId"-->
-                <!--&gt;-->
-                  <!--<a-select-option v-for="d in supplierData" :key="d.value">{{d.text}}</a-select-option>-->
-                <!--</a-select>-->
-              <!--</a-form-item>-->
+            <!--<a-form-item label="供应商">-->
+            <!--<a-select-->
+            <!--ref="supplierSelect"-->
+            <!--showSearch-->
+            <!--:supplierId="supplierValue"-->
+            <!--placeholder="请选择供应商"-->
+            <!--:defaultActiveFirstOption="false"-->
+            <!--:showArrow="true"-->
+            <!--:allowClear="true"-->
+            <!--:filterOption="false"-->
+            <!--@search="supplierHandleSearch"-->
+            <!--@change="supplierHandleChange"-->
+            <!--@focus="supplierHandleSearch"-->
+            <!--:notFoundContent="notFoundContent"-->
+            <!--v-model="queryParam.supplierId"-->
+            <!--&gt;-->
+            <!--<a-select-option v-for="d in supplierData" :key="d.value">{{d.text}}</a-select-option>-->
+            <!--</a-select>-->
+            <!--</a-form-item>-->
             <!--</a-col>-->
             <a-col :md="6" :sm="8">
               <a-form-item label="生产厂家">
@@ -180,11 +182,13 @@
   import { filterObj } from '@/utils/util';
   import { JeecgListMixin} from '@/mixins/JeecgListMixin'
   import {initDictOptions, filterMultiDictText} from '@/components/dict/JDictSelectUtil'
+  import JDictSelectTagExpand from "@/components/dict/JDictSelectTagExpand"
 
   export default {
     name: "PdstockRecordOutQueryList",
     mixins:[JeecgListMixin],
     components: {
+      JDictSelectTagExpand
     },
     data () {
       return {
@@ -215,7 +219,7 @@
             }
           },*/
           {
-            title:'出库单号',
+            title:'单号',
             align:"center",
             width:'100px',
             dataIndex: 'recordNo'
@@ -227,6 +231,19 @@
             width:'90px',
             customRender:function (text) {
               return !text?"":(text.length>10?text.substr(0,10):text)
+            }
+          },
+          {
+            title:'出库类型',
+            align:"center",
+            dataIndex: 'outType',
+            width:'90px',
+            customRender:(text)=>{
+              if(!text){
+                return ''
+              }else{
+                return filterMultiDictText(this.dictOptions['outType'], text+"")
+              }
             }
           },
           {
@@ -338,16 +355,36 @@
             dataIndex: 'venderName'
           },
           {
+            title:'生产厂家JDE编号',
+            align:"center",
+            width:'80px',
+            scopedSlots: {customRender: "ellipsisText"},
+            dataIndex: 'venderJdeCode'
+          },
+          {
             title:'供应商',
             align:"center",
-            width:'250px',
+            width:'230px',
             dataIndex: 'supplierName'
+          },
+          {
+            title:'供应商JDE编号',
+            align:"center",
+            width:'80px',
+            scopedSlots: {customRender: "ellipsisText"},
+            dataIndex: 'supplierJdeCode'
+          },
+          {
+            title:'配送商',
+            align:"center",
+            width:'230px',
+            dataIndex: 'distributorName'
           },
           {
             title:'注册证号',
             align:"center",
-            width:'250px',
-            dataIndex: 'registration'
+            width:'200px',
+            dataIndex: 'productRegistration'
           },
           {
             title:'备注',
@@ -355,28 +392,15 @@
             dataIndex: 'remarks'
           },
           {
-            title:'出库类型',
+            title:'产品JDE编号',
             align:"center",
-            dataIndex: 'outType',
-            width:'90px',
-            customRender:(text)=>{
-              if(!text){
-                return ''
-              }else{
-                return filterMultiDictText(this.dictOptions['outType'], text+"")
-              }
-            }
-          },
-          {
-            title:'JDE编号',
-            align:"center",
-            width:'100px',
+            width:'80px',
             dataIndex: 'jdeCode'
           },
           {
             title:'操作人',
             align:"center",
-            width:'100px',
+            width:'80px',
             dataIndex: 'realname'
           }
         ],
@@ -391,7 +415,7 @@
         dictOptions:{
           outType:[],
         },
-        tableScroll:{x :3500},
+        tableScroll:{x :4000},
       }
     },
     computed: {

@@ -1,31 +1,41 @@
 <template>
-  <a-modal
-    :title="title"
-    :width="width"
+  <j-modal
     :visible="visible"
-    :confirmLoading="confirmLoading"
-    @ok="handleOk"
+    :width="popModal.width"
+    :title="popModal.title"
+    :lockScroll="popModal.lockScroll"
+    :fullscreen="popModal.fullscreen"
+    :switchFullscreen="popModal.switchFullscreen"
     @cancel="handleCancel"
-    :footer="null"
-     >
+  >
     <a-spin :spinning="confirmLoading">
       <!-- 查询区域 -->
       <div class="table-page-search-wrapper">
         <a-form layout="inline" @keyup.enter.native="searchQuery">
           <a-row :gutter="24">
             <a-col :md="6" :sm="8">
-              <a-form-item label="产品编号">
-                <a-input placeholder="请输入产品编号" v-model="queryParam.number"></a-input>
-              </a-form-item>
-            </a-col>
-            <a-col :md="6" :sm="8">
               <a-form-item label="产品名称">
                 <a-input placeholder="请输入产品名称" v-model="queryParam.productName"></a-input>
               </a-form-item>
             </a-col>
             <a-col :md="6" :sm="8">
+              <a-form-item label="产品编号">
+                <a-input placeholder="请输入产品编号" v-model="queryParam.number"></a-input>
+              </a-form-item>
+            </a-col>
+            <a-col :md="5" :sm="8">
+              <a-form-item label="注册证">
+                <a-input placeholder="请输入注册证" v-model="queryParam.registration"></a-input>
+              </a-form-item>
+            </a-col>
+            <a-col :md="6" :sm="8">
               <a-form-item label="规格">
                 <a-input placeholder="请输入规格" v-model="queryParam.spec"></a-input>
+              </a-form-item>
+            </a-col>
+            <a-col :md="5" :sm="8">
+              <a-form-item label="收费代码">
+                <a-input placeholder="请输入收费代码" v-model="queryParam.chargeCode"></a-input>
               </a-form-item>
             </a-col>
             <template v-if="toggleSearchStatus">
@@ -37,6 +47,7 @@
                     :supplierId="supplierValue"
                     placeholder="请选择供应商"
                     :defaultActiveFirstOption="false"
+                    :allowClear="true"
                     :showArrow="true"
                     :filterOption="false"
                     @search="supplierHandleSearch"
@@ -96,16 +107,16 @@
         :dataSource="dataSource"
         :pagination="ipagination"
         :loading="loading"
-        >
-          <span slot="action" slot-scope="text, record">
-          <a @click="handleOk(record)">选中</a>
-        </span>
+        :customRow="onClickRow"
+        :rowSelection="{fixed:false,selectedRowKeys: selectedRowKeys, onSelectAll:onSelectAll,onSelect:onSelect,onChange: onSelectChange}"
+        @change="handleTableChange">
       </a-table>
     </a-spin>
-    <div class="drawer-bootom-button">
-        <a-button style="margin-right: 15px;" @click="handleCancel">返回</a-button>
-    </div>
-  </a-modal>
+    <template slot="footer">
+      <a-button @click="handleCancel" style="margin-right: 15px;">取  消</a-button>
+      <a-button @click="handleOk" type="primary" style="margin-right: 15px;">确定</a-button>
+    </template>
+  </j-modal>
 </template>
 
 <script>
@@ -129,13 +140,15 @@
         supplierId:"", //供应商ID 用于入库时查询产品
         // model: {},
         venderData: [],
+        dataSource2: [],
+        selectedRowKeys: [],
+        selectedRows: [],
         venderValue: undefined,
         confirmLoading: false,
         supplierSelecDisabled:false,
         supplierValue: undefined,
         notFoundContent:"未找到内容",
         supplierData: [],
-
         // 表头
         columns: [
           /*{
@@ -197,24 +210,28 @@
             align:"center",
             dataIndex: 'venderName'
           },
-          {
-            title: '操作',
-            dataIndex: 'action',
-            scopedSlots: {customRender: 'action'},
-            align: "center",
-            width: 100
-          }
         ],
         url: {
           list: "/pd/pdProductStockTotal/queryCheckStockList",
           querySupplier:"/pd/pdSupplier/getSupplierList",
           queryVender:"/pd/pdVender/getVenderList",
-        }
+        },
+        popModal: {
+          title: '选择产品',
+          visible: false,
+          width: '100%',
+          // width: '1200',
+          style: { top: '20px' },
+          lockScroll: false,
+          fullscreen: true,
+          switchFullscreen: false,
+        },
       }
     },
     methods: {
       close () {
         this.selectedRowKeys = [];
+        this.dataSource2 = [];
         this.selectionRows = [];
         this.queryParam = {};
         this.dataSource=[];
@@ -232,8 +249,10 @@
         this.loadData(1);
         this.visible = true;
       },
-      handleOk (record) {
-        this.$emit('ok', record);
+      handleOk () {
+        let rows = this.dataSource2;
+        this.$emit('ok', rows);
+        this.close();
       },
       handleCancel () {
         this.close();
@@ -265,6 +284,76 @@
           }
           this.loading = false;
         })
+      },
+      onSelectAll(selected, selectedRows, changeRows) {
+        if (selected === true) {
+          for (var a = 0; a < changeRows.length; a++) {
+            this.dataSource2.push(changeRows[a]);
+          }
+        } else {
+          for (var b = 0; b < changeRows.length; b++) {
+            this.dataSource2.splice(this.dataSource2.indexOf(changeRows[b]), 1);
+          }
+        }
+      },
+      onSelect(record, selected) {
+        if (selected === true) {
+          this.dataSource2.push(record);
+        } else {
+          var index = this.dataSource2.indexOf(record);
+          if (index >= 0) {
+            this.dataSource2.splice(this.dataSource2.indexOf(record), 1);
+          }
+
+        }
+      },
+      onSelectChange(selectedRowKeys, selectedRows) {
+        this.selectedRowKeys = selectedRowKeys;
+        this.selectionRows = selectedRows;
+      },
+      onClearSelected() {
+        this.selectedRowKeys = [];
+        this.selectionRows = [];
+        this.dataSource2 = [];
+      },
+      handleDelete: function (record) {
+        this.dataSource2.splice(this.dataSource2.indexOf(record), 1);
+      },
+      /**
+       * 点击行选中checkbox
+       * @param record
+       * @returns {{on: {click: on.click}}}
+       */
+      onClickRow(record) {
+        return {
+          on: {
+            click: (e) => {
+              //点击操作那一行不选中表格的checkbox
+              let pathArray = e.path;
+              //获取当前点击的是第几列
+              let td = pathArray[0];
+              let cellIndex = td.cellIndex;
+              //获取tr
+              let tr = pathArray[1];
+              //获取一共多少列
+              let lie = tr.childElementCount;
+              if(lie && cellIndex){
+                if(parseInt(lie)-parseInt(cellIndex) > 0){
+                  //操作那一行
+                  let recordId = record.id;
+                  let index = this.selectedRowKeys.indexOf(recordId);
+                  if(index>=0){
+                    this.selectedRowKeys.splice(index, 1);
+                    this.dataSource2.splice(index, 1);
+                  }else{
+                    this.selectedRowKeys.push(recordId);
+                    this.dataSource2.push(record);
+                  }
+                }
+              }
+            }
+          }
+        }
       },
       //生产厂家查询start
       venderHandleSearch(value) {

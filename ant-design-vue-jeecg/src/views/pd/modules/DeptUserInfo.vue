@@ -294,6 +294,8 @@
           this.$message.error("请选择一个部门!")
         } else {
           this.$refs.selectUserModal.visible = true;
+          this.$refs.selectUserModal.selectedRowKeys = [];
+          this.$refs.selectUserModal.selectionRows = [];
         }
       },
       handleEdit: function (record) {

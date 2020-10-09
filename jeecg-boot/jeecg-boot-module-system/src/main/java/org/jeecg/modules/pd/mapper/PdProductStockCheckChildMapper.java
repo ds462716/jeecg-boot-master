@@ -1,6 +1,8 @@
 package org.jeecg.modules.pd.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Param;
 import org.jeecg.modules.pd.entity.PdProductStockCheckChild;
 
@@ -22,4 +24,7 @@ public interface PdProductStockCheckChildMapper extends BaseMapper<PdProductStoc
 
 	public List<PdProductStockCheckChild> selectByCheckNo(@Param("checkNo") String checkNo);
 
+	Page<PdProductStockCheckChild> pdProductStockCheckQueryList(Page<PdProductStockCheckChild> page, @Param("entity") PdProductStockCheckChild child);
+
+	List<PdProductStockCheckChild> pdProductStockCheckQueryList(@Param("entity") PdProductStockCheckChild child);
 }

@@ -14,7 +14,7 @@
       <!-- 主表单区域 -->
       <div style="background:#ECECEC; padding:20px">
         <a-card title="" style="margin-bottom: 10px;">
-          <a-form :form="form">
+          <a-form :form="form" :selfUpdate = "true">
             <a-row>
               <a-col :span="6">
                 <a-form-item label="入库单号" :labelCol="labelCol" :wrapperCol="wrapperCol">
@@ -49,7 +49,7 @@
                 </a-form-item>
               </a-col>
               <a-col :span="6">
-                <a-form-item label="供应商" :labelCol="labelCol" :wrapperCol="wrapperCol">
+                <a-form-item label="供应商" :labelCol="labelCol" :wrapperCol="wrapperCol"  v-show="!disableSubmit">
                   <a-select
                     showSearch
                     placeholder="请选择供应商"
@@ -64,13 +64,59 @@
                     :notFoundContent="notFoundContent"
                     v-decorator="[ 'supplierId', validatorRules.supplierId]"
                   >
-                    <a-select-option v-for="d in supplierData" :key="d.value">{{d.text}}</a-select-option>
+                    <a-select-option v-for="d in supplierData" :key="d.value" :text="d.text" >{{d.text}}</a-select-option>
+                  </a-select>
+                </a-form-item>
+                <a-form-item label="供应商" :labelCol="labelCol" :wrapperCol="wrapperCol"  v-show="disableSubmit">
+                  <a-input disabled v-decorator="[ 'supplierName', validatorRules.supplierName]"></a-input>
+                </a-form-item>
+              </a-col>
+              <a-col :span="6" v-show="showFormatInDepart">
+                <a-form-item label="库房" :labelCol="labelCol" :wrapperCol="wrapperCol">
+                  <a-select
+                    showSearch
+                    placeholder="请选择库房"
+                    :disabled="disableSubmit"
+                    :defaultActiveFirstOption="false"
+                    :showArrow="true"
+                    :filterOption="false"
+                    :allowClear="true"
+                    @search="departHandleSearch"
+                    @change="departHandleChange"
+                    @focus="departHandleSearch"
+                    :notFoundContent="notFoundContent"
+                    v-decorator="[ 'inOtherDepartId', validatorRules.inOtherDepartId]"
+                  >
+                    <a-select-option v-for="d in departList" :key="d.id" :text="d.departName" >{{d.departName}}</a-select-option>
                   </a-select>
                 </a-form-item>
               </a-col>
-              <a-col :span="6">
+              <a-col :span="6" v-show="showFormat">
                 <a-form-item label="业态" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                  <j-dict-select-tag-expand :disabled="disableSubmit" type="list" v-decorator="['format', validatorRules.format]" :trigger-change="true" dictCode="format" placeholder="请选择入库类型"/>
+                  <j-dict-select-tag-expand :disabled="disableSubmit" type="list" v-decorator="['format', validatorRules.format]" :trigger-change="true" dictCode="format" placeholder="请选择业态"/>
+                </a-form-item>
+              </a-col>
+              <a-col :span="6" v-show="showDistributor">
+                <a-form-item label="配送商" :labelCol="labelCol" :wrapperCol="wrapperCol" v-show="!disableSubmit">
+                  <a-select
+                    showSearch
+                    placeholder="请选择配送商"
+                    :disabled="disableSubmit"
+                    :distributorId="distributorValue"
+                    :defaultActiveFirstOption="false"
+                    :showArrow="true"
+                    :filterOption="false"
+                    @search="distributorHandleSearch"
+                    @change="distributorHandleChange"
+                    @focus="distributorHandleSearch"
+                    :notFoundContent="notFoundContent"
+                    v-decorator="[ 'distributorId', validatorRules.distributorId]"
+                  >
+                    <a-select-option v-for="d in distributorData" :key="d.value" :text="d.text" >{{d.text}}</a-select-option>
+                  </a-select>
+                </a-form-item>
+                <a-form-item label="配送商" :labelCol="labelCol" :wrapperCol="wrapperCol" v-show="disableSubmit">
+                  <a-input disabled v-decorator="[ 'distributorName', validatorRules.distributorName]"></a-input>
                 </a-form-item>
               </a-col>
             </a-row>
@@ -102,18 +148,30 @@
 
         <!-- 产品列表区域 -->
         <a-card style="margin-bottom: 10px;">
-          <a-tabs v-model="activeKey" @change="handleChangeTabs">
+          <a-tabs v-model="activeKey" @change="handleChangeTabs"> <!-- @change="handleChangeTabs"  v-show="!showSBarcode" v-show="showSBarcode"-->
             <a-tab-pane tab="产品明细" :key="refKeys[0]" :forceRender="true">
-              <a-form v-show="!disableSubmit">
-                <a-row>
+              <a-form v-show="!disableSubmit" :form="formOne" :selfUpdate = "true">
+                <a-row v-if="!showSBarcode">
                   <a-col :md="6" :sm="8">
                     <a-form-item label="产品编号" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                      <a-input ref="productNumberInput" v-focus placeholder="请输入产品编号" v-model="queryParam.productNumber" @keyup.enter.native="searchQuery(0)"></a-input>
+                      <a-input ref="productNumberInput" v-focus placeholder="请输入产品编号" v-decorator="[ 'productNumber']" @keyup.enter.native="onlyNumbersearchQuery"></a-input>
+                    </a-form-item>
+                  </a-col>
+                  <a-col :md="12" :sm="8">
+                    <a-form-item label="" :labelCol="labelCol" :wrapperCol="wrapperCol" style="text-align: left;padding-left: 15px;">
+                      提示：按<span style="color: red">Ctrl+Alt</span>键快速定位到扫码输入框
+                    </a-form-item>
+                  </a-col>
+                </a-row>
+                <a-row v-if="showSBarcode">
+                  <a-col :md="6" :sm="8">
+                    <a-form-item label="产品编号" :labelCol="labelCol" :wrapperCol="wrapperCol">
+                      <a-input ref="productNumberInput" v-focus placeholder="请输入产品编号" v-decorator="[ 'productNumber']" @keyup.enter.native="searchQuery(0)"></a-input>
                     </a-form-item>
                   </a-col>
                   <a-col :md="6" :sm="8">
                     <a-form-item label="二级条码" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                      <a-input ref="productBarCodeInput" placeholder="请输入二级条码" v-model="queryParam.productBarCode" @keyup.enter.native="searchQuery(1)"></a-input>
+                      <a-input ref="productBarCodeInput" placeholder="请输入二级条码" v-decorator="[ 'productBarCode']" @keyup.enter.native="searchQuery(1)"></a-input>
                     </a-form-item>
                   </a-col>
                   <a-col :md="12" :sm="8">
@@ -124,7 +182,7 @@
                 </a-row>
               </a-form>
 
-              <div style="margin-bottom: 8px;" v-show="!disableSubmit">
+              <div style="margin-bottom: 8px;" v-if="!disableSubmit">
                 <a-button type="primary" icon="plus" @click="chooseProductList">选择产品</a-button>
                 <span style="padding-left: 8px;"></span>
                 <a-popconfirm
@@ -133,6 +191,12 @@
                   <a-button type="primary" icon="minus">删除</a-button>
                   <span class="gap"></span>
                 </a-popconfirm>
+                <span style="padding-left: 8px;"></span>
+                <a-button type="primary" icon="printer" @click="printNumber" v-show="isDisabledAuth('instock:printProductNumber')">打印编号</a-button>
+              </div>
+
+              <div style="margin-bottom: 8px;" v-if="disableSubmit">
+                <a-button type="primary" icon="printer" @click="printNumber" v-show="isDisabledAuth('instock:printProductNumber')">打印编号</a-button>
               </div>
 
               <j-editable-table
@@ -147,9 +211,9 @@
                 :actionButton="false"
                 :customRow="onClickRow"
                 :disabled="disableSubmit"
+                @selectRowChange="handleSelectRowChange"
                 @valueChange="valueChange"
                 @added="setPriceDisabled"
-                style="text-overflow: ellipsis;"
               >
               </j-editable-table>
               <a-row style="margin-top:10px;text-align: right;padding-right: 5%">
@@ -157,12 +221,28 @@
                   <span style="font-weight: bold;font-size: large">总金额：{{ inTotalPrice }}</span>
               </a-row>
             </a-tab-pane>
+
+            <a-tab-pane tab="唯一码明细" :forceRender="true" v-if="showUniqueTab">
+              <a-table
+                size="middle"
+                bordered
+                rowKey="id"
+                :pagination="ipagination"
+                :columns="pdStockRecordDetailUnique.columns"
+                :dataSource="pdStockRecordDetailUnique.dataSource"
+                :loading="pdStockRecordDetailUnique.loading"
+                @change="handleTableChange">
+                <template slot="htmlSlot" slot-scope="text">
+                  <div v-html="text"></div>
+                </template>
+              </a-table>
+            </a-tab-pane>
           </a-tabs>
         </a-card>
 
         <!-- 验收区域 -->
         <a-card style="">
-          <a-form :form="form">
+          <a-form :form="form" :selfUpdate = "true">
             <a-row>
               <a-col :span="6">
                 <a-form-item label="验收结果" :labelCol="labelCol" :wrapperCol="wrapperCol">
@@ -198,7 +278,7 @@
         </a-card>
 
         <a-card style="margin-top: 10px;" v-show="showRefuseReason">
-          <a-form :form="form">
+          <a-form :form="form" :selfUpdate = "true">
             <a-col :span="12">
               <a-form-item label="审批意见" :labelCol="labelCol2" :wrapperCol="wrapperCol2" style="text-align: left">
                 <a-textarea disabled v-decorator="[ 'refuseReason', validatorRules.refuseReason]" placeholder="请输入审批意见"></a-textarea>
@@ -219,6 +299,8 @@
         <a-button style="margin-right: 15px;" :loading="confirmLoading" type="danger">撤  回</a-button>
       </a-popconfirm>
       <a-button @click="printBtn('1')" style="margin-right: 15px;" type="primary" v-show="showPrintBtn">打  印</a-button>
+      <!-- 九江医院加入打印发货单 -->
+      <a-button v-if="hospitalCode=='JJFSYY'" @click="printInvoiceBtn()" style="margin-right: 15px;" type="primary" v-show="showPrintBtn">打印发货单</a-button>
       <a-button @click="saveBtn" v-show="!disableSubmit" type="primary" :loading="confirmLoading" style="margin-right: 15px;">保存草稿</a-button>
       <a-button @click="submitBtn('1')" v-show="!disableSubmit" type="primary" :loading="confirmLoading" style="margin-right: 15px;">提  交</a-button>
       <!--<a-button @click="submitBtn('2')" v-show="showSubmitAndPrint" type="primary" :loading="confirmLoading" style="margin-right: 15px;">提交并打印</a-button>-->
@@ -228,7 +310,11 @@
     <pd-choose-purchase-order-list-model  ref="pdChoosePurchaseOrderListModel" @ok="returnPurchaseOrderData" ></pd-choose-purchase-order-list-model>
     <pd-choose-product-list-model  ref="pdChooseProductListModel" @ok="returnProductData" ></pd-choose-product-list-model>
     <pd-stock-record-in-print-modal ref="pdStockRecordInPrintModal" ></pd-stock-record-in-print-modal>
-
+    <pd-stock-record-in-print-modal-j-j-f-s-y-y ref="PdStockRecordInPrintModalJJFSYY"></pd-stock-record-in-print-modal-j-j-f-s-y-y>
+    <pd-invoice-print-modal-j-j-f-s-y-y ref="PdInvoicePrintModalJJFSYY"></pd-invoice-print-modal-j-j-f-s-y-y>
+    <ex-stock-record-in-print-modal ref="exStockRecordInPrintModal" ></ex-stock-record-in-print-modal>
+    <pd-product-number-print ref="printModalForm"></pd-product-number-print>
+    <pd-stock-record-in-print-modal-g-z-z-l-y-y ref="PdStockRecordInPrintModalGZZLYY"></pd-stock-record-in-print-modal-g-z-z-l-y-y>
   </j-modal>
 </template>
 
@@ -246,6 +332,13 @@
   import ATextarea from "ant-design-vue/es/input/TextArea";
   import {scanCode} from '@/utils/barcode'
   import PdStockRecordInPrintModal from "../print/PdStockRecordInPrintModal";
+  import ExStockRecordInPrintModal from "../../external/print/ExStockRecordInPrintModal";
+  import PdStockRecordInPrintModalJJFSYY from "../../external/jiujiang/print/PdStockRecordInPrintModalJJFSYY";
+  import PdInvoicePrintModalJJFSYY from "../../external/jiujiang/print/PdInvoicePrintModalJJFSYY";
+  import PdStockRecordInPrintModalGZZLYY from "../../external/ganzhouzhongliu/print/PdStockRecordInPrintModalGZZLYY";
+  import { disabledAuthFilter } from "@/utils/authFilter"
+  import PdProductNumberPrint from "../print/PdProductNumberPrint";
+
 
   const VALIDATE_NO_PASSED = Symbol()
   export { FormTypes, VALIDATE_NO_PASSED }
@@ -268,15 +361,21 @@
     name: 'PdStockRecordInModal',
     mixins: [JEditableTableMixin],
     components: {
+      PdProductNumberPrint,
+      ExStockRecordInPrintModal,
       PdStockRecordInPrintModal,
       ATextarea,
       PdChooseProductListModel,
       PdChoosePurchaseOrderListModel,
+      PdStockRecordInPrintModalJJFSYY,
+      PdInvoicePrintModalJJFSYY,
+      PdStockRecordInPrintModalGZZLYY,
       JDate,
       JDictSelectTagExpand
     },
     data() {
       return {
+        formOne: this.$form.createForm(this),
         labelCol: {span: 6},
         wrapperCol: {span: 16},
 
@@ -293,6 +392,11 @@
         showPrintBtn:false,
         showRefuseReason:false,
         showSubmitAndPrint:false,
+        showOrderTable:false,
+        showUniqueTab:false,
+        showFormat:false,// 是否显示业态
+        showDistributor:false,//是否显示配送商
+        showFormatInDepart:false,//是否显示入库库房，目前只用于赣州肿瘤医院，入库后直接生成出库单
 
         initData:{},
         queryParam:{},
@@ -302,13 +406,24 @@
         allowEditPrice:"",         //开关-是否允许出入库时可修改进价和出价   1-允许；0不允许
         allowStockInExpProduct:"", //开关-是否允许入库证照过期的产品   1-允许；0不允许
         allowStockInExpSupplier:"",//开关-是否允许入库证照过期的供应商   1-允许；0不允许
-
+        showSBarcode:false,        //开关-是否显示二级条码框（入库、出库、退货） 1-显示；0-不显示
+        inDepartName:"",
+        supplierName:"",
+        distributorName:"",
         //供应商下拉列表 start
         supplierValue: undefined,
         notFoundContent:"未找到内容",
         supplierData: [],
         //供应商下拉列表 end
-        showOrderTable:false,
+        //配送商下拉列表 start
+        distributorValue: undefined,
+        distributorData: [],
+        //配送商下拉列表 end
+        //部门下拉列表 start
+        departValue: undefined,
+        departList:[],
+        inDepartName:"",
+        //部门下拉列表 end
         // orderNo:"",
         mergeOrderNo:"",
         totalSum:'0',
@@ -319,6 +434,22 @@
         goodsAllocationList:[],
         huoquOptions:[],
         huoweiOptions:[],
+        hospitalCode:"",
+
+        sRowIds:[],//选中行id
+
+        //分页参数
+        ipagination:{
+          current: 1,
+          pageSize: 10,
+          pageSizeOptions: ['10', '20', '30'],
+          showTotal: (total, range) => {
+            return range[0] + "-" + range[1] + " 共" + total + "条"
+          },
+          showQuickJumper: true,
+          showSizeChanger: true,
+          total: 0
+        },
 
         // 新增时子表默认添加几行空数据
         addDefaultRowNum: 0,
@@ -338,10 +469,14 @@
           humidity:{rules: [{required: true, message: '请输入湿度!'},{pattern: '^-?\\d+\\.?\\d*$',message: '只能输入数字' }]},
           outDepartId:{},
           inDepartId:{},
+          inOtherDepartId:{},
+          distributorId:{},
           supplierId:{rules: [{required: true, message: '请选择供应商!'}]},
+          distributorName:{},
+          supplierName:{},
         },
         refKeys: ['pdStockRecordDetail',],
-        tableKeys:['pdStockRecordDetail', ],
+        tableKeys:['pdStockRecordDetail',],
         activeKey: 'pdStockRecordDetail',
         // 申购订单明细表
         pdPurchaseOrderDetailTable: {
@@ -375,56 +510,42 @@
         pdStockRecordDetailTable: {
           loading: false,
           dataSource: [],
+          columns: []
+        },
+        pdStockRecordDetailUnique: {
+          loading: false,
+          dataSource: [],
           columns: [
-            { title: '产品ID', key: 'productId', type: FormTypes.hidden },
-            { title: '产品名称', key: 'productName', type: FormTypes.normal,width:"220px" },
-            { title: '产品编号', key: 'productNumber', width:"150px" },
-            { title: '产品条码', key: 'productBarCode', type: FormTypes.input, disabled:true, width:"200px" },
-            { title: '规格', key: 'spec', width:"150px" },
-            // { title: '型号', key: 'version', width:"150px"  disabled },
-            { title: '单位', key: 'unitName', width:"50px" },
-            {
-              title: '生产日期', key: 'produceDate', type: FormTypes.date, width:"130px",
-              placeholder: '${title}', defaultValue: '',
-            },
-            {
-              title: '有效期', key: 'expDate', type: FormTypes.date, width:"130px",
-              placeholder: '${title}', defaultValue: '',
-              validateRules: [{ required: true, message: '${title}不能为空' }]
-            },
-            {
-              title: '批号', key: 'batchNo', width:"120px", type: FormTypes.input,
-              placeholder: '${title}', defaultValue: '',
-              validateRules: [{ required: true, message: '${title}不能为空' }]
-            },
-            { title: '入库单价', key: 'purchasePrice', type: FormTypes.input, disabled:true, width:"80px" },
-            {
-              title: '数量', key: 'productNum', type: FormTypes.input, width:"80px",
-              placeholder: '${title}', defaultValue: '1',
-              validateRules: [{ required: true, message: '${title}不能为空' },{ pattern: '^-?\\d+\\.?\\d*$',message: '${title}的格式不正确' }]
-            },
-            { title: '金额', key: 'inTotalPrice', type: FormTypes.input, disabled:true, width:"100px" },
-            { title: '货位', key: 'inHuoweiCode', type: FormTypes.select, width:"150px", options: [],allowSearch:true, placeholder: '${title}' },
-            // { title: '申购单号', key: 'orderNo', },
-            { title: '合并申购单号', key: 'mergeOrderNo', type: FormTypes.input, disabled:true, width:"180px" },
-            { title: '生产厂家', key: 'venderName', type: FormTypes.hidden },
-            { title: '紧急产品-0是1不是', key: 'isUrgent', type: FormTypes.hidden },
-            { title: '紧急产品需要采购数量', key: 'upQuantity', type: FormTypes.hidden },
-            { title: '紧急产品已采购数量', key: 'purchasedQuantity', type: FormTypes.hidden },
-            { title: '规格单位ID', key: 'specUnitId', type: FormTypes.hidden },
-            { title: '规格数量', key: 'specQuantity', type: FormTypes.hidden },
-          ]
+            { title: '唯一码', align:"center", dataIndex: 'refBarCode' },
+            { title: '产品名称', align:"center", dataIndex: 'productName' },
+            { title: '产品编码', align:"center", dataIndex: 'productNumber' },
+            { title: '产品条码', align:"center", dataIndex: 'productBarCode' },
+            { title: '规格', align:"center", dataIndex: 'spec' },
+            { title: '单位', align:"center", dataIndex: 'unitName' },
+            { title: '生产日期', align:"center", dataIndex: 'produceDate' },
+            { title:'有效期', align:"center", dataIndex: 'expDate' },
+            { title: '批号', align:"center", dataIndex: 'batchNo' },
+            { title: '入库单价', align:"center", dataIndex: 'purchasePrice' },
+            { title: '数量', align:"center", dataIndex: 'productNum' },
+            // { title: '金额', align:"center", dataIndex: 'inTotalPrice' },
+            // { title: '货位', align:"center", dataIndex: 'inHuoweiCode' },
+            // { title: '合并申购单号', align:"center", dataIndex: 'mergeOrderNo' },
+          ],
         },
         url: {
           init:"/pd/pdStockRecordIn/initModal",
+          getOnOff:"/pd/pdStockRecordIn/getOnOff",
           submit: "/pd/pdStockRecordIn/submit",
           add: "/pd/pdStockRecordIn/add",
-          // edit: "/pd/pdStockRecordIn/edit",
+          queryById: "/pd/pdStockRecordIn/queryById",
           cancel: "/pd/pdStockRecordIn/cancel",
           querySupplier:"/pd/pdSupplier/getSupplierList",
+          queryDistributor:"/pd/pdDistributor/getDistributorList",
           querySupplierById:"/pd/pdSupplier/queryById",
+          departList:"/pd/pdDepart/getSysDepartList",
           pdStockRecordDetail: {
-            list: "/pd/pdStockRecordIn/queryPdStockRecordDetailByMainId"
+            list: "/pd/pdStockRecordIn/queryPdStockRecordDetailByMainId",
+            uniqueList: "/pd/pdStockRecordIn/queryUniqueDetailPageList"
           },
           pdPurchaseDetail: {
             list: "/pd/pdPurchaseOrder/queryPdPurchaseDetail"
@@ -448,7 +569,8 @@
         this.visible = false;
         this.showOrderTable = false;
         this.pdPurchaseOrderDetailTable.dataSource = [];
-        this.queryParam = {};
+        //this.queryParam = {};
+        this.formOne.resetFields();
         // this.orderNo = "";
         // this.form.setFieldsValue({orderNo:""});
         this.mergeOrderNo = "";
@@ -469,44 +591,50 @@
         this.loadData();
       },
       loadData() {
-        this.loading = true;
+        // this.loading = true;
         this.showCancelBtn = false;
         this.showPrintBtn = false;
         this.showRefuseReason = false;
         this.showSubmitAndPrint = false;
         //初始化供应商，用于回显供应商
         this.supplierHandleSearch();
+        this.distributorHandleSearch();
+        this.departHandleSearch();
 
         let params = {};
-          if(this.model.id){
-            if(this.model.auditStatus == "1" && this.model.submitStatus == "2"){
-              this.showCancelBtn = true;
-            }
-            // if(this.model.auditStatus == "2"){ // 审核完可打印
-            if(this.model.submitStatus == "2"){ // 提交完可打印
-              this.showPrintBtn = true;
-            }
-            if(this.model.auditStatus == "2" || this.model.auditStatus == "3"){
-              this.showRefuseReason = true;
-            }
+        if(this.model.id){
+          if(this.model.auditStatus == "1" && this.model.submitStatus == "2"){
+            this.showCancelBtn = true;
+          }
+          // if(this.model.auditStatus == "2"){ // 审核完可打印
+          if(this.model.submitStatus == "2"){ // 提交完可打印
+            this.showPrintBtn = true;
+          }
+          if(this.model.auditStatus == "2" || this.model.auditStatus == "3"){
+            this.showRefuseReason = true;
+          }
 
-            this.popModal.title="入库明细";
-          let fieldval = pick(this.model,'recordNo','mergeOrderNo','inType','submitBy','submitByName','submitDate','remarks','inDepartId','supplierId',
+          this.popModal.title="入库明细";
+          let fieldval = pick(this.model,'recordNo','mergeOrderNo','inType','submitBy','submitByName','submitDate','remarks','inDepartId','inOtherDepartId','supplierId','distributorId','supplierName','distributorName',
             'testResult','storageResult','temperature','humidity','remarks','refuseReason','format')
           this.$nextTick(() => {
             this.form.setFieldsValue(fieldval);
           })
-          params = { id: this.model.id }
+          params = { id: this.model.id };
+          this.showUniqueTab = true;
         }else{
           this.popModal.title="新增入库";
-          params = { id: "" }
+          params = { id: "" };
+          this.showUniqueTab = false;
         }
+        this.pdStockRecordDetailTable.loading = true;
         getAction(this.url.init, params).then((res) => {
           if (res.success) {
             this.$nextTick(() => {
               if(this.model.id){
                 this.pdPurchaseOrderDetailTable.dataSource = res.result.pdPurchaseOrderMergeDetail || [];
                 this.pdStockRecordDetailTable.dataSource = res.result.pdStockRecordDetailList || [];
+                this.pdStockRecordDetailUnique.dataSource = res.result.pdStockRecordDetailUniqueList || [];
                 this.totalSum = res.result.totalSum;
                 this.inTotalPrice = res.result.inTotalPrice.toString();
                 this.showOrderTable = false;
@@ -522,28 +650,43 @@
                 this.initData.temperature = "25";
                 this.initData.humidity = "50";
                 this.submitDateStr = res.result.submitDateStr;
-                let fieldval = pick(this.initData,'recordNo','mergeOrderNo','inType','submitBy','submitByName','submitDate','remarks','inDepartId','supplierId',
+                this.inDepartName = res.result.inDepartName;
+                let fieldval = pick(this.initData,'recordNo','mergeOrderNo','inType','submitBy','submitByName','submitDate','remarks','inDepartId','inOtherDepartId','supplierId','distributorId','supplierName','distributorName',
                   'testResult','storageResult','temperature','humidity','remarks','refuseReason','format');
                 this.form.setFieldsValue(fieldval);
-                //获取光标
+                // //获取光标
                 this.$refs['productNumberInput'].focus();
               }
 
-              this.stockInText = res.result.stockInText;
-              this.allowInMoreOrder = res.result.allowInMoreOrder;
-              this.allowNotOrderProduct = res.result.allowNotOrderProduct;
-              this.allowSupplier = res.result.allowSupplier;
-              this.allowEditPrice = res.result.allowEditPrice;
-              this.allowStockInExpProduct = res.result.allowStockInExpProduct;
-              this.allowStockInExpSupplier = res.result.allowStockInExpSupplier;
-              if(this.disableSubmit){
-                this.allowEditPrice = "0";
-              }
+              // this.stockInText = res.result.stockInText;
+              // this.allowInMoreOrder = res.result.allowInMoreOrder;
+              // this.allowNotOrderProduct = res.result.allowNotOrderProduct;
+              // this.allowSupplier = res.result.allowSupplier;
+              // this.allowEditPrice = res.result.allowEditPrice;
+              // this.allowStockInExpProduct = res.result.allowStockInExpProduct;
+              // this.allowStockInExpSupplier = res.result.allowStockInExpSupplier;
+              // if(this.disableSubmit){
+              //   this.allowEditPrice = "0";
+              // }
               this.goodsAllocationList = res.result.goodsAllocationList;
-              //开关-是否需要入库审批  1-是；0-否
-              if(res.result.allowStockInAudit == "0" && this.disableSubmit == false){
-                this.showSubmitAndPrint = true;
+              this.hospitalCode = res.result.hospitalCode;
+              if(res.result.hospitalCode == 'GZZLYY'){
+                // 赣州肿瘤医院——出入库明细表列表（比通用多了“供应商单据号”和“发票号”）
+                this.pdStockRecordDetailTable.columns = gzzlyyColumns;
+                this.showFormat = false;     // 不显示业态
+                this.showDistributor = false;// 不显示配送商
+                this.showFormatInDepart = true;// 显示入库库房
+              }else{
+                // 通用——出入库明细表列表
+                this.pdStockRecordDetailTable.columns = currencyColumns;
+                this.showFormat = true;
+                this.showDistributor = true;
+                this.showFormatInDepart = false;// 不显示入库库房
               }
+              //开关-是否需要入库审批  1-是；0-否
+              // if(res.result.allowStockInAudit == "0" && this.disableSubmit == false){
+              //   this.showSubmitAndPrint = true;
+              // }
 
               this.pdStockRecordDetailTable.columns.forEach((item, idx) => {
                 if(item.key == "inHuoweiCode"){
@@ -555,8 +698,77 @@
           if(res.code==510){
             this.$message.warning(res.message)
           }
-          this.loading = false;
+          // this.loading = false;
+          this.pdStockRecordDetailTable.loading = false;
         })
+        //开关
+        getAction(this.url.getOnOff, params).then((res) => {
+          if (res.success) {
+            this.$nextTick(() => {
+
+              this.stockInText = res.result.stockInText;
+              this.allowInMoreOrder = res.result.allowInMoreOrder;
+              this.allowNotOrderProduct = res.result.allowNotOrderProduct;
+              this.allowSupplier = res.result.allowSupplier;
+              this.allowEditPrice = res.result.allowEditPrice;
+              this.allowStockInExpProduct = res.result.allowStockInExpProduct;
+              this.allowStockInExpSupplier = res.result.allowStockInExpSupplier;
+              if(this.disableSubmit){
+                this.allowEditPrice = "0";
+              }
+              //开关-是否需要入库审批  1-是；0-否
+              if(res.result.allowStockInAudit == "0" && this.disableSubmit == false){
+                this.showSubmitAndPrint = true;
+              }
+              //开关-是否显示二级条码框（入库、出库、退货） 1-显示；0-不显示
+              if(res.result.showSBarcode && res.result.showSBarcode == "0"){
+                this.showSBarcode = false;
+              }else{
+                this.showSBarcode = true;
+              }
+            })
+          }
+          if(res.code==510){
+            this.$message.warning(res.message)
+          }
+        })
+      },
+      loadUniqueData(pageNo){
+        var params = {};//查询条件
+        params.id = this.model.id;
+        if(pageNo == 1){
+          this.ipagination.current = 1;
+        }
+        params.pageNo = this.ipagination.current;
+        params.pageSize = this.ipagination.pageSize;
+
+        this.pdStockRecordDetailUnique.loading = true;
+        getAction(this.url.pdStockRecordDetail.uniqueList, params).then((res) => {
+          if (res.success) {
+            this.pdStockRecordDetailUnique.dataSource = res.result.records;
+            this.ipagination.total = res.result.total;
+          }
+          if(res.code===510){
+            this.$message.warning(res.message)
+          }
+          this.pdStockRecordDetailUnique.loading = false;
+        })
+
+      },
+      handleChangeTabs(){
+        if(this.pdStockRecordDetailUnique.dataSource.length <= 0){
+          this.loadUniqueData(1);
+        }
+      },
+      handleTableChange(pagination, filters, sorter) {
+        //分页、排序、筛选变化时触发
+        //TODO 筛选
+        if (Object.keys(sorter).length > 0) {
+          this.isorter.column = sorter.field;
+          this.isorter.order = "ascend" == sorter.order ? "asc" : "desc"
+        }
+        this.ipagination = pagination;
+        this.loadUniqueData();
       },
       /** 关闭按钮 **/
       closeBtn(){
@@ -565,17 +777,74 @@
       },
       /**打印按钮**/
       printBtn(flag){
-        if(flag == "2"){
-          this.model.auditDate = this.form.getFieldValue("submitDate");
+        let recordId = this.model.id;
+        if(!recordId){
+          this.$message.warning("参数不正确，请重新打印！");
+          return;
         }
-        let { values } = this.$refs.pdStockRecordDetail.getValuesSync({ validate: false });
-        this.model.totalSum = this.totalSum;
-        this.model.inTotalPrice = this.inTotalPrice;
-        // this.model.pdStockRecordDetailList = this.pdStockRecordDetailTable.dataSource;
-        this.model.pdStockRecordDetailList = values;
-        this.model.remarks = this.form.getFieldValue("remarks");
-        this.$refs.pdStockRecordInPrintModal.show(this.model);
-        this.$refs.pdStockRecordInPrintModal.title = this.stockInText + "入库单";
+        getAction(this.url.queryById, {id:this.model.id}).then((res) => {
+
+          if(!res.result.auditDate){
+            res.result.auditDate = res.result.submitDate;
+          }
+          if(this.hospitalCode == "FCZYY" || this.hospitalCode == "FCRMYY"){
+            this.$refs.pdStockRecordInPrintModal.show(res.result);
+            this.$refs.pdStockRecordInPrintModal.title = this.stockInText + "入库单";
+          }else if(this.hospitalCode == "GZSLYY"){
+            this.$refs.exStockRecordInPrintModal.show(res.result);
+            this.$refs.exStockRecordInPrintModal.title = this.stockInText + "入库单";
+          }else if(this.hospitalCode == "JJFSYY"){
+            this.$refs.PdStockRecordInPrintModalJJFSYY.show(res.result);
+            this.$refs.PdStockRecordInPrintModalJJFSYY.title = this.stockInText;
+          }else if(this.hospitalCode == "GZZLYY"){
+            this.$refs.PdStockRecordInPrintModalGZZLYY.show(res.result);
+            this.$refs.PdStockRecordInPrintModalGZZLYY.title = this.stockInText;
+          }else{
+            this.$refs.pdStockRecordInPrintModal.show(res.result);
+            this.$refs.pdStockRecordInPrintModal.title = this.stockInText + "入库单";
+          }
+        })
+      },
+      //九江医院发货单打印
+      printInvoiceBtn(){
+        let recordId = this.model.id;
+        if(!recordId){
+          this.$message.warning("参数不正确，请重新打印！");
+          return;
+        }
+        getAction(this.url.queryById, {id:this.model.id}).then((res) => {
+          if(!res.result.auditDate){
+            res.result.auditDate = res.result.submitDate;
+          }
+          this.$refs.PdInvoicePrintModalJJFSYY.show(res.result);
+        })
+      },
+      //产品编号打印，add by jiangxz 2020年7月15日 09:40:00
+      printNumber(){
+        if(this.sRowIds.length > 0){
+          let dataSource = this.pdStockRecordDetailTable.dataSource;
+          let printData = [];
+          for(let item of dataSource){
+            if(this.sRowIds.indexOf(item.id)>=0){
+              let data = {};
+              data.number = item.productNumber;
+              data.name = item.productName;
+              data.spec = item.spec;
+              data.venderName = item.venderName;
+              printData.push(data);
+            }
+          }
+          if(printData.length > 0){
+            this.$refs.printModalForm.init(printData);
+          }else{
+            this.$message.error("选择产品数据有误，请刷新页面后重新选择打印！")
+          }
+        }else{
+          this.$message.error("请选择需要打印的产品！")
+        }
+      },
+      handleSelectRowChange(selectedIds){
+        this.sRowIds = selectedIds;
       },
       /** 关闭按钮点击事件 */
       handleCancel() {
@@ -627,7 +896,6 @@
 
           let isexp = false, iszero = false, isproduce = false, bool = false;
           let name = "", name1 = "", name2 = "";
-
 
           let { values } = this.$refs.pdStockRecordDetail.getValuesSync({ validate: false });
           for(let row of values){
@@ -699,14 +967,15 @@
           this.confirmLoading = true
           httpAction(url, formData, method).then((res) => {
             if (res.success) {
-              this.$message.success(res.message)
-              this.$emit('ok')
+              this.model.id = res.result.recordId;
+              this.$message.success(res.result.message);
+              this.$emit('ok');
+              this.close();
               if(flag == "2"){
                 this.printBtn("2"); //通过并打印
               }
-              this.close();
             } else {
-              this.$message.warning(res.message)
+              this.$message.warning(res.message);
             }
           }).finally(() => {
             this.confirmLoading = false
@@ -734,7 +1003,7 @@
         this.$message.error(msg)
       },
       popupCallback(row){
-        this.form.setFieldsValue(pick(row,'recordNo','mergeOrderNo','inType','submitBy','submitByName','submitDate','remarks','inDepartId','supplierId',
+        this.form.setFieldsValue(pick(row,'recordNo','mergeOrderNo','inType','submitBy','submitByName','submitDate','remarks','inDepartId','inOtherDepartId','supplierId','distributorId','supplierName','distributorName',
           'testResult','storageResult','temperature','humidity','remarks','refuseReason','format'))
       },
 
@@ -742,7 +1011,7 @@
       supplierHandleSearch(value) {
         fetch(value, data => (this.supplierData = data),this.url.querySupplier);
       },
-      supplierHandleChange(value) {
+      supplierHandleChange(value,option) {
         if(this.allowSupplier == "0"){ // 是否允许入库非本供应商产品 1-允许；0-不允许
           this.totalSum = '0';
           this.inTotalPrice = '0.0000';
@@ -755,9 +1024,25 @@
         if(this.allowStockInExpSupplier == "0"){ //开关-是否允许入库证照过期的供应商   1-允许；0不允许
           this.checkSupplierIsExp(value);
         }
+
+        if(option){
+          this.supplierName = option.data.attrs.text;
+          // console.log(this.supplierName);
+        }
       },
       //----------------供应商查询end
 
+      //-----------------配送商查询start
+      distributorHandleSearch(value) {
+        fetch(value, data => (this.distributorData = data),this.url.queryDistributor);
+      },
+      distributorHandleChange(value,option) {
+        this.distributorValue = value;
+        if(option){
+          this.distributorName = option.data.attrs.text;
+        }
+      },
+      //----------------配送商查询end
       //选择采购单
       choosePurchaseOrder() {
         this.$refs.pdChoosePurchaseOrderListModel.show();
@@ -825,7 +1110,9 @@
               products.push(item)
             }
           })
-          this.$message.error("产品[" + name + "]证照已过期，请更新证照信息！");
+          if(name){
+            this.$message.error("产品[" + name + "]证照已过期，请更新证照信息！");
+          }
         }else{
           products = data;
         }
@@ -890,6 +1177,7 @@
           supplierName: row.supplierName,
           specUnitId: row.specUnitId,
           specQuantity: row.specQuantity,
+          // registration: row.registration,
           productBarCode:"",
           produceDate:"",
           expDate:"",
@@ -926,6 +1214,7 @@
           supplierName: row.pdProduct.supplierName,
           specUnitId: row.pdProduct.specUnitId,
           specQuantity: row.pdProduct.specQuantity,
+          // registration: row.pdProduct.registration,
           productBarCode:row.productBarCode,
           produceDate:row.produceDate,
           expDate:row.expDate,
@@ -966,7 +1255,8 @@
       },
       //清空扫码框
       clearQueryParam(){
-        this.queryParam = {};
+        //this.queryParam = {};
+        this.formOne.resetFields();
         this.$refs.productNumberInput.focus();
       },
       onClickRow(record) {
@@ -1018,10 +1308,24 @@
         // 计算总数量和总价格
         this.getTotalNumAndPrice([]);
       },
+      // 只扫产品编号查询
+      onlyNumbersearchQuery(){
+        //let productNumber = this.queryParam.productNumber;
+        let productNumber = this.formOne.getFieldValue("productNumber");
+        if(!productNumber){
+          this.$message.error("请输入产品编号！");
+          this.$refs.productNumberInput.focus();
+          return;
+        }
+        //this.queryParam.productBarCode = productNumber;
+        this.formOne.setFieldsValue({productBarCode:productNumber});
+        this.searchQuery(1);
+      },
       // 扫码查询
       searchQuery(num) {
         let that = this;
-        let productNumber = this.queryParam.productNumber.trim();
+        //let productNumber = this.queryParam.productNumber;
+        let productNumber = this.formOne.getFieldValue("productNumber");
         if(!productNumber){
           this.$message.error("请输入产品编号！");
           this.$refs.productNumberInput.focus();
@@ -1033,7 +1337,8 @@
           this.$refs.productBarCodeInput.focus();
 
         }else if(num == 1){ //条码扫码
-          let productBarCode = this.queryParam.productBarCode.trim();
+          //let productBarCode = this.queryParam.productBarCode;
+          let productNumber = this.formOne.getFieldValue("productBarCode")
           if(!productBarCode){
             this.$message.error("请输入二级条码！");
             return;
@@ -1157,6 +1462,7 @@
         }else{
           //默认选中扫码产品的供应商
           this.form.setFieldsValue({supplierId:product.supplierId});
+          this.supplierName = product.supplierName;
           if(this.allowStockInExpSupplier == "0"){ //开关-是否允许入库证照过期的供应商   1-允许；0不允许
             let bool = this.checkSupplierIsExp(product.supplierId);
             if(this.allowSupplier == "0" && !bool){
@@ -1362,39 +1668,144 @@
         }
         return true;
       },
+      /**
+       * 校验权限
+       * @param code
+       * @returns {boolean|*}
+       */
+      isDisabledAuth(code){
+        return !disabledAuthFilter(code);
+      },
+      // 部门下拉框搜索
+      departHandleSearch(value){
+        getAction(this.url.departList,{departName:value}).then((res)=>{
+          if (!res.success) {
+            this.cmsFailed(res.message);
+          }
+          this.departList = res.result;
+        })
+      },
+      // 部门下拉框变更
+      departHandleChange(value,option){
+        if(option){
+          this.inDepartName = option.data.attrs.text;
+        }
+      },
     },
   }
 
   let timeout;
   let currentValue;
-
   function fetch(value, callback,url) {
-    if (timeout) {
-      clearTimeout(timeout);
-      timeout = null;
-    }
     currentValue = value;
-
-    function fake() {
-      getAction(url,{name:value}).then((res)=>{
-        if (!res.success) {
-          this.cmsFailed(res.message);
-        }
-        if (currentValue == value) {
-          const result = res.result;
-          const data = [];
-          result.forEach(r => {
-            data.push({
-              value: r.id,
-              text: r.name,
-            });
+    getAction(url,{name:value}).then((res)=>{
+      if (!res.success) {
+        this.cmsFailed(res.message);
+      }
+      if (currentValue == value) {
+        const result = res.result;
+        const data = [];
+        result.forEach(r => {
+          data.push({
+            value: r.id,
+            text: r.name,
           });
-          callback(data);
-        }
-      })
-    }
-    timeout = setTimeout(fake, 0); //这边不延迟
-  }
+        });
+        callback(data);
+      }
+    })
+  };
+
+  // 通用——出入库明细表列表
+  let currencyColumns = [
+    { title: '产品ID', key: 'productId', type: FormTypes.hidden },
+    { title: '生产厂家', key: 'venderName', type: FormTypes.hidden },
+    { title: '紧急产品-0是1不是', key: 'isUrgent', type: FormTypes.hidden },
+    { title: '紧急产品需要采购数量', key: 'upQuantity', type: FormTypes.hidden },
+    { title: '紧急产品已采购数量', key: 'purchasedQuantity', type: FormTypes.hidden },
+    { title: '规格单位ID', key: 'specUnitId', type: FormTypes.hidden },
+    { title: '规格数量', key: 'specQuantity', type: FormTypes.hidden },
+    { title: '注册证号', key: 'registration', type: FormTypes.hidden },
+
+    { title: '产品名称', key: 'productName', type: FormTypes.normal,width:"250px" },
+    { title: '产品编号', key: 'productNumber', width:"200px" },
+    { title: '规格', key: 'spec', width:"200px" },
+    // { title: '型号', key: 'version', width:"150px"  disabled },
+    { title: '单位', key: 'unitName', width:"50px" },
+    {
+      title: '生产日期', key: 'produceDate', type: FormTypes.date, width:"130px",
+      placeholder: '${title}', defaultValue: '',
+      //validateRules: [{ required: true, message: '${title}不能为空' }]
+    },
+    {
+      title: '批号', key: 'batchNo', width:"120px", type: FormTypes.input,
+      placeholder: '${title}', defaultValue: '',
+      validateRules: [{ required: true, message: '${title}不能为空' }]
+    },
+    {
+      title: '有效期', key: 'expDate', type: FormTypes.date, width:"130px",
+      placeholder: '${title}', defaultValue: '',
+      validateRules: [{ required: true, message: '${title}不能为空' }]
+    },
+    { title: '入库单价', key: 'purchasePrice', type: FormTypes.input, disabled:true, width:"80px" },
+    {
+      title: '数量', key: 'productNum', type: FormTypes.input, width:"80px",
+      placeholder: '${title}', defaultValue: '1',
+      validateRules: [{ required: true, message: '${title}不能为空' },{ pattern: '^-?\\d+\\.?\\d*$',message: '${title}的格式不正确' }]
+    },
+    { title: '金额', key: 'inTotalPrice', type: FormTypes.input, disabled:true, width:"100px" },
+    // { title: '货位', key: 'inHuoweiCode', type: FormTypes.select, width:"150px", options: [],allowSearch:true, placeholder: '${title}' },
+    // { title: '申购单号', key: 'orderNo', },
+    { title: '产品条码', key: 'productBarCode', type: FormTypes.input, disabled:true, width:"150px" },
+    { title: '合并申购单号', key: 'mergeOrderNo', type: FormTypes.input, disabled:true, width:"150px" },
+  ];
+
+  // 赣州肿瘤医院——出入库明细表列表（比通用多了“供应商单据号”和“发票号”）
+  let gzzlyyColumns = [
+    { title: '产品ID', key: 'productId', type: FormTypes.hidden },
+    { title: '生产厂家', key: 'venderName', type: FormTypes.hidden },
+    { title: '紧急产品-0是1不是', key: 'isUrgent', type: FormTypes.hidden },
+    { title: '紧急产品需要采购数量', key: 'upQuantity', type: FormTypes.hidden },
+    { title: '紧急产品已采购数量', key: 'purchasedQuantity', type: FormTypes.hidden },
+    { title: '规格单位ID', key: 'specUnitId', type: FormTypes.hidden },
+    { title: '规格数量', key: 'specQuantity', type: FormTypes.hidden },
+    { title: '注册证号', key: 'registration', type: FormTypes.hidden },
+
+    { title: '产品名称', key: 'productName', type: FormTypes.normal,width:"250px" },
+    { title: '产品编号', key: 'productNumber', width:"200px" },
+    { title: '规格', key: 'spec', width:"200px" },
+    // { title: '型号', key: 'version', width:"150px"  disabled },
+    { title: '单位', key: 'unitName', width:"50px" },
+    {
+      title: '生产日期', key: 'produceDate', type: FormTypes.date, width:"130px",
+      placeholder: '${title}', defaultValue: '',
+      //validateRules: [{ required: true, message: '${title}不能为空' }]
+    },
+    {
+      title: '批号', key: 'batchNo', width:"120px", type: FormTypes.input,
+      placeholder: '${title}', defaultValue: '',
+      validateRules: [{ required: true, message: '${title}不能为空' }]
+    },
+    {
+      title: '有效期', key: 'expDate', type: FormTypes.date, width:"130px",
+      placeholder: '${title}', defaultValue: '',
+      validateRules: [{ required: true, message: '${title}不能为空' }]
+    },
+    { title: '入库单价', key: 'purchasePrice', type: FormTypes.input, disabled:true, width:"80px" },
+    {
+      title: '数量', key: 'productNum', type: FormTypes.input, width:"80px",
+      placeholder: '${title}', defaultValue: '1',
+      validateRules: [{ required: true, message: '${title}不能为空' },{ pattern: '^-?\\d+\\.?\\d*$',message: '${title}的格式不正确' }]
+    },
+    { title: '金额', key: 'inTotalPrice', type: FormTypes.input, disabled:true, width:"100px" },
+    { title: '供应商单据号', key: 'supplierBillNo', type: FormTypes.input, width:"150px" },
+    { title: '发票号', key: 'invoiceNo', type: FormTypes.input, width:"150px" },
+    // { title: '货位', key: 'inHuoweiCode', type: FormTypes.select, width:"150px", options: [],allowSearch:true, placeholder: '${title}' },
+    // { title: '申购单号', key: 'orderNo', },
+    { title: '产品条码', key: 'productBarCode', type: FormTypes.input, disabled:true, width:"150px" },
+    { title: '合并申购单号', key: 'mergeOrderNo', type: FormTypes.input, disabled:true, width:"150px" },
+  ];
+
 </script>
 
 <style scoped>

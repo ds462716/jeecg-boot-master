@@ -118,6 +118,12 @@ public class QuartPdExpireJob implements Job {
                             p.put(deptId, names);
                         }
                     }
+                }else{
+                    PdProductStockTotal stockTotal = new PdProductStockTotal();
+                    stockTotal.setExpStatus(PdConstant.PD_STATE_0);
+                    stockTotal.setProductId(pdProductStock.getProductId());
+                    stockTotal.setDepartId(deptId);
+                    pdProductStockTotalService.updateProductStockTotal(stockTotal);
                 }
             }
         }
@@ -135,14 +141,16 @@ public class QuartPdExpireJob implements Job {
                 productStock.setDepartId(deptId);
                 productStock.setProductId(pid);
                 List<PdProductStock> l = pdProductStockService.selectList(productStock);
-                PdProductStock pk = l.get(0);
-                PdProductStockTotal stockTotal = new PdProductStockTotal();
-                stockTotal.setExpStatus(pk.getExpStatus());
-                stockTotal.setProductId(pid);
-                stockTotal.setDepartId(deptId);
-                pdProductStockTotalService.updateProductStockTotal(stockTotal);
-                prodNames.add(pk.getProductName());
-                deptName=pk.getDeptName();
+                if(CollectionUtils.isNotEmpty(l)) {
+                    PdProductStock pk = l.get(0);
+                    PdProductStockTotal stockTotal = new PdProductStockTotal();
+                    stockTotal.setExpStatus(pk.getExpStatus());
+                    stockTotal.setProductId(pid);
+                    stockTotal.setDepartId(deptId);
+                    pdProductStockTotalService.updateProductStockTotal(stockTotal);
+                    prodNames.add(pk.getProductName());
+                    deptName = pk.getDeptName();
+                }
             }
         }
 

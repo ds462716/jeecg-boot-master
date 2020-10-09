@@ -3,6 +3,8 @@ package org.jeecg.modules.pd.mapper;
 import java.util.List;
 import java.util.Map;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Param;
 import org.jeecg.modules.pd.entity.PdProduct;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
@@ -16,7 +18,7 @@ import org.jeecg.modules.pd.vo.PdProductPage;
  */
 public interface PdProductMapper extends BaseMapper<PdProduct> {
 
-    List<PdProductPage> chooseProductList(PdProduct pdProduct);
+    Page<PdProductPage> chooseProductList(Page<PdProductPage> page, @Param("entity") PdProduct entity);
 
     List<PdProduct> selectList(PdProduct pdProduct);
 
@@ -28,5 +30,17 @@ public interface PdProductMapper extends BaseMapper<PdProduct> {
 
     List<PdProduct> selectListByCTs(@Param("parMap")Map<String,Object> map);
 
+    List<PdProduct> selectListByChargeCode(@Param("entity") PdProduct entity);
+
     void updateValidityFlag(PdProduct pdProduct);
+
+    Page<PdProduct> selectListByPage(Page<PdProduct> page, @Param("entity") PdProduct entity);
+
+    List<PdProduct> selectListForHisCharge(@Param("entity") PdProduct entity);
+
+    Page<PdProduct> selectListForHisCharge(Page<PdProduct> page, @Param("entity") PdProduct entity);
+
+    List<PdProduct> queryList(PdProduct pdProduct);
+
+    IPage<PdProduct> queryPageListForHisCharge(Page<PdProduct> page, @Param("entity")PdProduct pdProduct);
 }

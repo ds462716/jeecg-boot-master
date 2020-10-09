@@ -13,24 +13,27 @@
             LEFT JOIN sys_depart b ON a.depart_id = b.id
             LEFT JOIN pd_supplier c ON a.supplier_id = c.id
         <where>
-            a.del_flag = #{DEL_FLAG_NORMAL}
-            <if test="rejectedNo != null and rejectedNo != ''">
-                AND a.rejected_no LIKE concat('%',#{rejectedNo},'%')
+            a.del_flag = #{entity.DEL_FLAG_NORMAL}
+            <if test="entity.rejectedNo != null and entity.rejectedNo != ''">
+                AND a.rejected_no LIKE concat('%',#{entity.rejectedNo},'%')
             </if>
-            <if test="supplierId != null and supplierId != ''">
-                AND a.supplier_id = #{supplierId}
+            <if test="entity.supplierId != null and entity.supplierId != ''">
+                AND a.supplier_id = #{entity.supplierId}
             </if>
-            <if test="departId != null and departId != ''">
-                AND a.depart_id = #{departId}
+            <if test="entity.rejectedType != null and entity.rejectedType != ''">
+                AND a.rejected_type = #{entity.rejectedType}
             </if>
-            <if test="departParentId != null and departParentId != ''">
-                AND a.depart_parent_id = #{departParentId}
+            <if test="entity.departId != null and entity.departId != ''">
+                AND a.depart_id = #{entity.departId}
             </if>
-            <if test="queryDateStart != null and queryDateStart != ''">
-                AND a.rejected_date &gt;= #{queryDateStart}
+            <if test="entity.departParentId != null and entity.departParentId != ''">
+                AND a.depart_parent_id = #{entity.departParentId}
             </if>
-            <if test="queryDateEnd != null and queryDateEnd != ''">
-                AND a.rejected_date &lt;= #{queryDateEnd}
+            <if test="entity.queryDateStart != null and entity.queryDateStart != ''">
+                AND a.rejected_date &gt;= #{entity.queryDateStart}
+            </if>
+            <if test="entity.queryDateEnd != null and entity.queryDateEnd != ''">
+                AND a.rejected_date &lt;= #{entity.queryDateEnd}
             </if>
         </where>
         order by a.create_time desc

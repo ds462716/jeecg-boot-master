@@ -1,0 +1,373 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.pd.mapper.PdNumericalInfMapper">
+
+	<sql id="PdNumericalInfColumns">
+         a.id,
+         a.create_by,
+		 a.create_time,
+		 a.update_by,
+		 a.update_time,
+		 a.sys_org_code,
+         a.month,
+		 a.depart_id,
+         a.in_record_num,
+         a.in_record_price,
+         a.purchase_num,
+         a.purchase_price,
+         a.stock_num,
+         a.stock_price,
+         a.call_in_num,
+         a.call_in_price,
+         a.call_out_num,
+         a.call_out_price,
+         a.dis_num,
+         a.dis_price,
+         a.item_price,
+         a.item_num,
+        (a.the_stock_num +
+         a.in_record_num +
+         a.call_in_num -
+         a.purchase_num  -
+         a.call_out_num -
+         a.stock_num-
+         a.rejected_num) as the_stock_num,
+         (a.the_stock_price +
+         a.in_record_price +
+         a.call_in_price -
+         a.purchase_price  -
+         a.call_out_price -
+         a.stock_price-
+         a.rejected_price) as the_stock_price,
+         ROUND(((a.stock_price-a.call_out_price) / a.purchase_price),2)  as "proportion",
+         a.spec_quantity_num,
+         a.spec_reality_num,
+         a.dis_spec_num,
+         a.rejected_num,
+         a.rejected_price,
+	     a.tj_type,
+         a.del_flag
+	</sql>
+    <!--查询统计列表-->
+	<select id="selectList"   resultType="org.jeecg.modules.pd.entity.PdNumericalInf">
+		 select
+         <include refid="PdNumericalInfColumns"/>,
+        t.depart_name as "departName"
+        from pd_numerical_inf a
+        left join sys_depart t on t.id=a.depart_id
+        <where> 1=1
+        <if test="entity.month != null and entity.month != ''">
+            AND a.month LIKE concat('%',#{entity.month},'%')
+        </if>
+            <if test="entity.tjType != null and entity.tjType != ''">
+                AND a.tj_type=#{entity.tjType}
+            </if>
+        <if test="entity.departIdList != null and entity.departIdList.size() > 0">
+             and a.depart_id  IN
+              <foreach collection="entity.departIdList" item="item" separator="," open="(" close=")">
+                  #{item}
+             </foreach>
+        </if>
+            order by a.month desc,t.depart_type,a.in_record_num  desc
+        </where>
+	</select>
+
+
+    <select id="getOne" resultType="org.jeecg.modules.pd.entity.PdNumericalInf" parameterType="org.jeecg.modules.pd.entity.PdNumericalInf">
+        SELECT
+        <include refid="PdNumericalInfColumns"/>
+        FROM
+        pd_numerical_inf a
+        <where>
+            1=1
+            <if test="month != null and month != ''">
+                AND a.month = #{month}
+            </if>
+            <if test="tjType != null and tjType != ''">
+                AND a.tj_type = #{tjType}
+            </if>
+            <if test=" departIdList != null and departIdList.size() > 0">
+                and a.depart_id  IN
+                <foreach collection=" departIdList" item="item" separator="," open="(" close=")">
+                    #{item}
+                </foreach>
+            </if>
+        </where>
+    </select>
+
+    <select id="getMonth"  resultType="org.jeecg.modules.pd.entity.PdNumericalInf" >
+          SELECT  DATE_FORMAT(x.Month, '%Y-%m') as month FROM   XNumber x
+          where   DATE_FORMAT(x.Month, '%Y-%m')=substr(CURDATE(),1,7)
+    </select>
+
+
+    <!--根据月份统计入库数量、入库金额-->
+    <select id="selectInItemOrRecordNum"   resultType="java.util.Map">
+        select
+            tt.month as "month",
+            tt.departName as "departName",
+            IFNULL(sum(tt.productNum),0) as "productNum",
+            IFNULL(sum(tt.productNum * tt.purchasePrice),0) as "purchasePrice",
+            tt.departId as "departId"
+        from (
+            select
+                DATE_FORMAT(a.submit_date, '%Y-%m') AS month,
+                t.depart_name as "departName",
+                b.product_num as "productNum",
+                b.purchase_price as "purchasePrice",
+                a.in_depart_id as "departId"
+            from pd_stock_record a
+            left join pd_stock_record_detail b on a.id=b.record_id
+            left join sys_depart t on t.id=a.in_depart_id
+            left join pd_product c on c.id=b.product_id
+            where t.depart_type in ('1','2')
+                and a.del_flag ='0'
+                and b.del_flag ='0'
+                and (a.in_type IN
+                <foreach collection="inTypeList" item="item" separator="," open="(" close=")">
+                    #{item}
+                </foreach>
+                  or a.out_type IN
+                <foreach collection="outTypeList" item="item" separator="," open="(" close=")">
+                    #{item}
+                </foreach>
+                )
+                <if test="auditStatus != null and auditStatus != ''">
+                    AND a.audit_status= #{auditStatus}
+                </if>
+                <if test=" departIdList != null and departIdList.size() > 0">
+                    and a.in_depart_id  IN
+                    <foreach collection=" departIdList" item="item" separator="," open="(" close=")">
+                        #{item}
+                    </foreach>
+                </if>
+                <if test=" outDepartIdList != null and outDepartIdList.size() > 0">
+                    and a.out_depart_id  IN
+                    <foreach collection=" outDepartIdList" item="item" separator="," open="(" close=")">
+                        #{item}
+                    </foreach>
+                </if>
+                <if test="productFlag != null and productFlag != ''">
+                    AND c.product_flag= #{productFlag}
+                </if>
+                <if test="month != null and month != ''">
+                    AND DATE_FORMAT(a.submit_date, '%Y-%m')= #{month}
+                </if>
+                and  a.create_time > DATE_SUB(CURDATE(), INTERVAL 1 YEAR)
+                AND substr(a.submit_date,1,7) &lt;=substr(CURDATE(),1,7)
+        ) tt
+        where tt.departName is not  null
+        GROUP BY tt.month,tt.departId
+    </select>
+
+
+
+    <!--根据月份统计出库数量、出库金额-->
+    <select id="selectOutRecordNum"   resultType="java.util.Map">
+        select
+            tt.month as "month",
+            tt.departName as "departName",
+            IFNULL(sum(tt.productNum),0) as "productNum",
+            IFNULL(sum(tt.productNum * tt.purchasePrice),0) as "purchasePrice",
+            tt.departId as "departId"
+        from (
+            select
+                DATE_FORMAT(a.submit_date, '%Y-%m') AS month,
+                t.depart_name as "departName",
+                b.product_num as "productNum",
+                b.purchase_price as "purchasePrice",
+                a.out_depart_id as "departId"
+            from pd_stock_record a
+            left join pd_stock_record_detail b on a.id=b.record_id
+            left join sys_depart t on t.id=a.in_depart_id
+            left join pd_product c on c.id=b.product_id
+            where t.depart_type in('1','2')
+                and a.del_flag ='0'
+                and b.del_flag ='0'
+                AND a.record_type= '2'
+                AND a.audit_status= '2'
+                <if test=" outTypeList != null and outTypeList.size() > 0">
+                    and a.out_type  IN
+                    <foreach collection=" outTypeList" item="item" separator="," open="(" close=")">
+                        #{item}
+                    </foreach>
+                </if>
+                <if test=" outDepartIdList != null and outDepartIdList.size() > 0">
+                    and a.out_depart_id  IN
+                    <foreach collection=" outDepartIdList" item="item" separator="," open="(" close=")">
+                        #{item}
+                    </foreach>
+                </if>
+                <if test="productFlag != null and productFlag != ''">
+                    AND c.product_flag= #{productFlag}
+                </if>
+                <if test="month != null and month != ''">
+                    AND DATE_FORMAT(a.submit_date, '%Y-%m')= #{month}
+                </if>
+                and  a.create_time > DATE_SUB(CURDATE(), INTERVAL 1 YEAR)
+                AND substr(a.submit_date,1,7) &lt;=substr(CURDATE(),1,7)
+        ) tt
+        where tt.departName is not  null
+        GROUP BY tt.month,tt.departId
+    </select>
+
+
+    <!--根据月份统计试剂使用金额、试剂使用数量-->
+    <select id="selectItemNumOrItemPrice"   resultType="java.util.Map">
+        select
+        tt.month as "month",
+        IFNULL(sum(tt.je),0) as  "itemPrice" ,
+        IFNULL(sum(tt.num),0) as  "itemNum" ,
+        tt.departName as "departName",
+        tt.departId as "departId"
+        from (
+        SELECT  DATE_FORMAT(x.Month, '%Y-%m') as month,
+        null as je,
+        null as num,
+        null as "departName",
+        null as "departId"
+          FROM   XNumber x
+        where  x.Month > DATE_SUB(CURDATE(), INTERVAL 1 YEAR)
+        and substr(x.Month,1,7) &lt;=substr(CURDATE(),1,7)
+        union all
+        select DATE_FORMAT(a.create_time, '%Y-%m') AS month,
+        b.purchase_price  AS je,
+        "1" as num,
+        t.depart_name as "departName",
+        a.depart_id as "departId"
+        from pd_bottle_inf a
+        left join pd_product_stock b on a.stock_id=b.id
+        left join pd_product c on c.id=b.product_id
+        left join sys_depart t on t.id=a.depart_id
+        where  (close_remarks !='2'  or close_remarks is null)
+        AND a.create_time > DATE_SUB(CURDATE(), INTERVAL 1 YEAR)
+        AND substr(a.create_time,1,7) &lt;=substr(CURDATE(),1,7)
+        <if test="month != null and month != ''">
+            AND DATE_FORMAT(a.create_time, '%Y-%m')= #{month}
+        </if>
+        <if test="departIdList != null and departIdList.size() > 0">
+            and a.depart_id  IN
+            <foreach collection="departIdList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        ) tt
+
+    </select>
+
+
+    <!--根据月份统计试剂理论使用规格数量   实际使用规格数量-->
+    <select id="selectItemSpecNum"   resultType="java.util.Map">
+        select
+        DATE_FORMAT(a.create_time, '%Y-%m') AS month,
+        a.depart_id as "departId",
+        IFNULL(sum(b.spec_quantity),0) as "specQuantityNum",
+        IFNULL(sum(a.spec_num),0)  as "specRealityNum",
+        sum(a.spec_num) - sum(b.spec_quantity)     as "disSpecNum"
+        from pd_bottle_inf a
+        left join pd_product_stock b on a.stock_id=b.id
+        where    status='1'
+        AND a.create_time > DATE_SUB(CURDATE(), INTERVAL 1 YEAR)
+        AND a.spec_num>0
+        <if test="month != null and month != ''">
+            AND DATE_FORMAT(a.create_time, '%Y-%m')= #{month}
+        </if>
+        <if test="departIdList != null and departIdList.size() > 0">
+            and a.depart_id  IN
+            <foreach collection="departIdList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+    </select>
+
+
+    <!--统计试剂库存数量	试剂库存金额     耗材库存数量    耗材库存金额-->
+    <select id="selectStockNumOrStockPrice"   resultType="java.util.Map">
+        SELECT  IFNULL(sum(a.stock_num),0) as "stockCount",
+        IFNULL(sum(a.purchase_price * a.stock_num),0) as "stockPrice",
+      t.depart_name as "departName",
+      a.depart_id as "departId"
+       FROM PD_PRODUCT_STOCK a
+       left join pd_product c on c.id=a.product_id
+       left join sys_depart t on t.id=a.depart_id
+        WHERE  a.del_flag='0'
+        AND a.STOCK_NUM >0
+        AND a.nestat_status='1'
+        <if test="productFlag != null and productFlag != ''">
+            AND c.product_flag=#{productFlag}
+        </if>
+        <if test="departIdList != null and departIdList.size() > 0">
+            and a.depart_id  IN
+            <foreach collection="departIdList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+    </select>
+
+    <!--统计检验项目收入金额	  检验项目数量-->
+    <select id="selectExInspectionPrice"  resultType="java.util.Map">
+        select
+         DATE_FORMAT(a.create_time, '%Y-%m') AS "month",
+        IFNULL(sum(test_item_cost),0) as "price",
+        IFNULL(sum(1),0)  as "num"
+        from ex_inspection_items a
+        left join ex_lab_instr_inf b on b.instr_code=a.instr_code
+        where 1=1
+        <if test="month != null and month != ''">
+            AND DATE_FORMAT(a.create_time, '%Y-%m')= #{month}
+        </if>
+        <if test="departIdList != null and departIdList.size() > 0">
+            and b.depart_id  IN
+            <foreach collection="departIdList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+    </select>
+
+    <!--统计耗材使用数量    耗材使用金额-->
+    <select id="selectDosageNumOrPrice"   resultType="java.util.Map">
+       SELECT
+        IFNULL(sum(dosage_count),0) as "dosageCount",
+        IFNULL(sum(b.selling_price),0) as "dosagePrice",
+       t.depart_name as "departName",
+       a.depart_id as "departId"
+       FROM pd_dosage  a
+	    left join pd_dosage_detail b on a.id=b.dosage_id
+	     left join sys_depart t on t.id=a.depart_id
+	     where b.hy_charged !='3' and b.hy_charged !='2'
+        <if test="month != null and month != ''">
+            AND DATE_FORMAT(a.create_time, '%Y-%m')= #{month}
+        </if>
+        <if test="departIdList != null and departIdList.size() > 0">
+            and a.depart_id  IN
+            <foreach collection="departIdList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+    </select>
+
+    <!--统计退货数量    退货金额-->
+    <select id="selectrejectedNumOrPrice"   resultType="java.util.Map">
+        select
+        sum(b.rejected_count) as "rejectedNum",
+        sum(d.purchase_price) as "rejectedPrice"
+        from pd_rejected a
+	left join pd_rejected_detail  b on b.rejected_id=a.id
+	left join pd_product c on c.id=b.product_id
+	left join pd_product_stock d on d.id=b.product_stock_id
+ 	where   b.del_flag='0'
+	    and  a.del_flag='0'
+        <if test="month != null and month != ''">
+            AND DATE_FORMAT(a.create_time, '%Y-%m')= #{month}
+        </if>
+        <if test="productFlag != null and productFlag != ''">
+            AND c.product_flag=#{productFlag}
+        </if>
+        <if test="departIdList != null and departIdList.size() > 0">
+            AND a.depart_id  IN
+            <foreach collection="departIdList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+     </select>
+</mapper>

@@ -13,6 +13,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.jeecg.common.constant.PdConstant;
+import org.jeecg.common.util.DateUtils;
+import org.jeecg.modules.pd.entity.PdOnOff;
+import org.jeecg.modules.pd.service.IPdOnOffService;
+import org.jeecg.modules.pd.service.IPdStockRecordService;
 import org.jeecgframework.poi.excel.ExcelImportUtil;
 import org.jeecgframework.poi.excel.def.NormalExcelConstants;
 import org.jeecgframework.poi.excel.entity.ExportParams;
@@ -57,6 +61,36 @@ public class PdPackageRecordController {
     private IPdPackageRecordService pdPackageRecordService;
     @Autowired
     private IPdPackageRecordDetailService pdPackageRecordDetailService;
+    @Autowired
+    private IPdOnOffService pdOnOffService;
+
+    /**
+     * 初始化Modal页面
+     *
+     * @param req
+     * @return
+     */
+    @GetMapping(value = "/initModal")
+    public Result<?> initModal(@RequestParam(name = "id") String id, HttpServletRequest req) {
+        PdPackageRecord pdPackageRecord = new PdPackageRecord();
+
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+
+        pdPackageRecord.setCreateTime(DateUtils.getDate());
+        pdPackageRecord.setCreateBy(sysUser.getRealname());
+        pdPackageRecord.setRecordNo(DateUtils.date2Str(DateUtils.getDate(),DateUtils.yymmddhhmmssSSS.get()));;
+
+        PdOnOff query = new PdOnOff();
+        query.setDepartParentId(sysUser.getDepartParentId());
+        //开关-是否显示二级条码框（入库、出库、退货）   1-显示；0-不显示
+        query.setCode(PdConstant.ON_OFF_SHOW_S_BARCODE);
+        PdOnOff showSBarcode = pdOnOffService.getOne(query);
+        if (showSBarcode != null && showSBarcode.getValue() != null) {
+            pdPackageRecord.setShowSBarcode(showSBarcode.getValue().toString());
+        }
+
+        return Result.ok(pdPackageRecord);
+    }
 
     /**
      * 分页列表查询
@@ -82,7 +116,7 @@ public class PdPackageRecordController {
     }
 
     /**
-     * 定数包选择器用
+     * 套包选择器用
      * @param pdPackageRecord
      * @param pageNo
      * @param pageSize
@@ -103,7 +137,7 @@ public class PdPackageRecordController {
     }
 
     /**
-     * 定数包打包记录扫码
+     * 套包打包记录扫码
      * @param Barcode1
      * @param req
      * @return
@@ -151,8 +185,14 @@ public class PdPackageRecordController {
     @ApiOperation(value = "pd_package_record-添加", notes = "pd_package_record-添加")
     @PostMapping(value = "/add")
     public Result<?> add(@RequestBody PdPackageRecord pdPackageRecord) {
-        pdPackageRecordService.saveMain(pdPackageRecord, pdPackageRecord.getPdPackageRecordDetailList());
-        return Result.ok("添加成功！");
+
+        Map<String, String> result = pdPackageRecordService.saveMain(pdPackageRecord, pdPackageRecord.getPdPackageRecordDetailList());
+
+        if (PdConstant.SUCCESS_200.equals(result.get("code"))) {
+            return Result.ok(result.get("message"));
+        } else {
+            return Result.error(result.get("message"));
+        }
     }
 
     /**
@@ -174,7 +214,7 @@ public class PdPackageRecordController {
     }
 
     /**
-     * 通过id删除
+     * 套包拆包
      *
      * @param id
      * @return
@@ -184,7 +224,7 @@ public class PdPackageRecordController {
     @DeleteMapping(value = "/delete")
     public Result<?> delete(@RequestParam(name = "id", required = true) String id) {
         pdPackageRecordService.delMain(id);
-        return Result.ok("删除成功!");
+        return Result.ok("拆包成功!");
     }
 
     /**
@@ -193,12 +233,15 @@ public class PdPackageRecordController {
      * @param ids
      * @return
      */
-    @AutoLog(value = "pd_package_record-批量删除")
-    @ApiOperation(value = "pd_package_record-批量删除", notes = "pd_package_record-批量删除")
+    @AutoLog(value = "pd_package_record-批量拆包")
+    @ApiOperation(value = "pd_package_record-批量拆包", notes = "pd_package_record-批量拆包")
     @DeleteMapping(value = "/deleteBatch")
     public Result<?> deleteBatch(@RequestParam(name = "ids", required = true) String ids) {
-        this.pdPackageRecordService.delBatchMain(Arrays.asList(ids.split(",")));
-        return Result.ok("批量删除成功！");
+        String message = this.pdPackageRecordService.delBatchMain(Arrays.asList(ids.split(",")));
+        if(oConvertUtils.isNotEmpty(message)){
+            return Result.ok("流水码："+message+"已出库，不能拆包！");
+        }
+        return Result.ok("批量拆包成功！");
     }
 
     /**

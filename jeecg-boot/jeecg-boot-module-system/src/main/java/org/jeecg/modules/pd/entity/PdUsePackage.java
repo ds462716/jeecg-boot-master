@@ -51,6 +51,10 @@ public class PdUsePackage extends BaseEntity {
     private Date updateTime;
 	/**所属部门*/
     private String sysOrgCode;
+    /**检验科室ID*/
+    private String testDepartId;
+    /**扣减类型*/
+    private String deductuinType;
 
     /**
      * 所属部门
@@ -67,4 +71,28 @@ public class PdUsePackage extends BaseEntity {
     @TableField(exist = false)
     @ExcelCollection(name="检验项目明细")
     private List<PdUsePackageDetail> pdUsePackageDetailList;
+
+    @TableField(exist = false)
+    private List<String> idList;
+
+    @TableField(exist = false)
+    private String number;
+
+    @TableField(exist = false)
+    private String productName;
+
+    /**检验科室名称*/
+    @TableField(exist = false)
+    private String testDepartName;
+
+    @TableField(exist = false)
+    private String departIds; //批量查询用
+
+    /*多个部门集合*/
+    @TableField(exist = false)
+    private List<String> departIdList;
+
+    /**检验科室名称*/
+    @TableField(exist = false)
+    private String testDepartNames;
 }

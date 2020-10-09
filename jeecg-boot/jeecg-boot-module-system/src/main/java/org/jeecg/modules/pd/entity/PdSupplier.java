@@ -23,7 +23,6 @@ public class PdSupplier extends BaseEntity {
 	@TableId(type = IdType.ID_WORKER_STR)
     private String id;
 	/**名称*/
-	@TableField(value="`name`")
 	@Excel(name = "名称", width = 15)
     private String name;
 	/**拼音简码*/
@@ -35,6 +34,9 @@ public class PdSupplier extends BaseEntity {
 	/**自定义码*/
 	@Excel(name = "自定义码", width = 15)
     private String zdy;
+	/**供应商类别*/
+	@Excel(name = "供应商类别", width = 15)
+	private String supplierType;
 	/**证照名称0*/
 	private String licenceName0;
 	/**证照号码0*/
@@ -213,4 +215,21 @@ public class PdSupplier extends BaseEntity {
 	/**备注*/
 	@Excel(name = "备注", width = 15)
 	private String remarks;
+
+	/**
+	 * 停用或启用0启用，1停用
+	 */
+	private String status;
+
+	/**
+	 * 树节点的父类
+	 */
+	@TableField(exist = false)
+	private String parentId;
+
+	/**
+	 * jde编码
+	 */
+	@Excel(name = "JDE编码", width = 15)
+	private String jdeCode;
 }

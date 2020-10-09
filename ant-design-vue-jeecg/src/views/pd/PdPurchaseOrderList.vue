@@ -9,11 +9,15 @@
               <a-input placeholder="请输入申购编号" v-model="queryParam.orderNo"></a-input>
             </a-form-item>
           </a-col>
-          <!--<a-col :md="6" :sm="8">
-            <a-form-item label="申购科室">
-              <a-input placeholder="请输入申购科室名称" v-model="queryParam.deptName"></a-input>
+          <a-col :md="6" :sm="8">
+            <a-form-item label="审核状态">
+              <a-select v-model="queryParam.auditStatus" :allowClear="true" placeholder="请选择审核状态">
+                <a-select-option value="1">待审核</a-select-option>
+                <a-select-option value="2">审核通过</a-select-option>
+                <a-select-option value="3">已驳回</a-select-option>
+              </a-select>
             </a-form-item>
-          </a-col>-->
+          </a-col>
           <a-col  :md="6" :sm="8">
             <a-form-item label="申购日期">
               <a-range-picker @change="rejectedDateChange" v-model="queryParam.queryDate"/>
@@ -21,12 +25,8 @@
           </a-col>
           <template :md="6" v-if="toggleSearchStatus">
             <a-col :md="6" :sm="8">
-              <a-form-item label="审核状态">
-                <a-select v-model="queryParam.auditStatus" placeholder="请选择审核状态">
-                  <a-select-option value="1">待审核</a-select-option>
-                  <a-select-option value="2">审核通过</a-select-option>
-                  <a-select-option value="3">已驳回</a-select-option>
-                </a-select>
+              <a-form-item label="申购类型">
+                <j-dict-select-tag-expand v-model="queryParam.purchaseType" dictCode="purchase_type"/>
               </a-form-item>
             </a-col>
           </template>
@@ -49,12 +49,14 @@
     <!-- 操作按钮区域 -->
     <div class="table-operator">
       <a-button @click="handleAdd" type="primary" icon="plus">新增</a-button>
-       <!--<a-dropdown v-if="selectedRowKeys.length > 0">
-        <a-menu slot="overlay">
-          <a-menu-item key="1" @click="batchDel"><a-icon type="delete"/>删除</a-menu-item>
-        </a-menu>
-        <a-button style="margin-left: 8px"> 批量操作 <a-icon type="down" /></a-button>
-      </a-dropdown>-->
+      <a-divider type="vertical" />
+      <a-button @click="automaticRep()" type="primary" v-show="isDisabledAuth('purchase:form:autoAdd')" icon="plus">自动生成采购计划</a-button>
+      <!--<a-dropdown v-if="selectedRowKeys.length > 0">
+       <a-menu slot="overlay">
+         <a-menu-item key="1" @click="batchDel"><a-icon type="delete"/>删除</a-menu-item>
+       </a-menu>
+       <a-button style="margin-left: 8px"> 批量操作 <a-icon type="down" /></a-button>
+     </a-dropdown>-->
     </div>
 
     <!-- table区域-begin -->
@@ -97,6 +99,7 @@
     </div>
 
     <pdPurchaseOrder-modal ref="modalForm" @ok="modalFormOk"></pdPurchaseOrder-modal>
+    <pd-purchase-rep-modal ref="modalForm1" @ok="modalFormOk"></pd-purchase-rep-modal>
   </a-card>
 </template>
 
@@ -107,12 +110,16 @@
   import { filterObj } from '@/utils/util';
   import PdPurchaseOrderModal from './modules/PdPurchaseOrderModal'
   import {initDictOptions, filterMultiDictText} from '@/components/dict/JDictSelectUtil'
-
+  import JDictSelectTagExpand from "@/components/dict/JDictSelectTagExpand"
+  import PdPurchaseRepModal from './modules/PdPurchaseRepModal'
+  import { disabledAuthFilter } from "@/utils/authFilter"
   export default {
     name: "PdPurchaseOrderList",
     mixins:[JeecgListMixin],
     components: {
-      PdPurchaseOrderModal
+      PdPurchaseOrderModal,
+      JDictSelectTagExpand,
+      PdPurchaseRepModal
     },
     data () {
       return {
@@ -138,6 +145,18 @@
             title:'申购人',
             align:"center",
             dataIndex: 'purchaseName'
+          },
+          {
+            title:'申购类型',
+            align:"center",
+            dataIndex: 'purchaseType',
+            customRender:(text)=>{
+              if(!text){
+                return ''
+              }else{
+                return filterMultiDictText(this.dictOptions['purchaseType'], text+"")
+              }
+            }
           },
           {
             title:'申购日期',
@@ -200,16 +219,15 @@
           deleteBatch: "/pd/pdPurchaseOrder/deleteBatch"
         },
         dictOptions:{
+          purchaseType:[],
           auditStatus:[],
-         submitStatus:[],
+          submitStatus:[],
         },
 
       }
     },
     computed: {
-      /*importExcelUrl: function(){
-        return `${window._CONFIG['domianURL']}/${this.url.importExcelUrl}`;
-      }*/
+
     },
     methods: {
       /*batchDel: function () { //批量删除
@@ -269,7 +287,45 @@
         delete param.queryDate; //范围参数不传递后台，传后台会报错
         return filterObj(param);
       },
+
+
+      automaticRep() { //自动补货
+        this.$refs.modalForm1.add();
+        this.$refs.modalForm1.title = "自动生成采购计划";
+        this.$refs.modalForm1.disableSubmit = false;
+      },
+
+      handleEdit: function (record) { //编辑
+        if(record.repType){
+          this.$refs.modalForm1.edit(record);
+          this.$refs.modalForm1.title = "编辑";
+          this.$refs.modalForm1.disableSubmit = false;
+        }else{
+          this.$refs.modalForm.edit(record);
+          this.$refs.modalForm.title = "编辑";
+          this.$refs.modalForm.disableSubmit = false;
+        }
+      },
+
+      handleDetail:function(record){  //详情
+        if(record.repType){
+          this.$refs.modalForm1.edit(record);
+          this.$refs.modalForm1.title="详情";
+          this.$refs.modalForm1.disableSubmit = true;
+        }else{
+          this.$refs.modalForm.edit(record);
+          this.$refs.modalForm.title="详情";
+          this.$refs.modalForm.disableSubmit = true;
+        }
+      },
+
+
       initDictConfig(){ //静态字典值加载
+        initDictOptions('purchase_type').then((res) => {
+          if (res.success) {
+            this.$set(this.dictOptions, 'purchaseType', res.result)
+          }
+        })
         initDictOptions('audit_status').then((res) => {
           if (res.success) {
             this.$set(this.dictOptions, 'auditStatus', res.result)
@@ -309,7 +365,15 @@
             }
           }
         }
-      }
+      },
+      /**
+       * 校验权限
+       * @param code
+       * @returns {boolean|*}
+       */
+      isDisabledAuth(code){
+        return !disabledAuthFilter(code);
+      },
        
     }
   }

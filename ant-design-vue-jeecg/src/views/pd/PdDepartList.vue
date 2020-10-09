@@ -197,6 +197,7 @@
     },
     methods: {
       loadData() {
+        this.loading = true;
         this.dataSource = [];
         this.expandedRowKeys = [];
         this.expandedRowKeys = [];
@@ -208,6 +209,7 @@
              this.recursion(resultData);
             }
           }
+          this.loading = false;
         })
       },
       initDictConfig(){

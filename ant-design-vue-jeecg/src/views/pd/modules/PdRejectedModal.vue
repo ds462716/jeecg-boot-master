@@ -14,11 +14,11 @@
       <!-- 主表单区域 -->
       <div style="background:#ECECEC; padding:20px">
         <a-card title="" style="margin-bottom: 10px;">
-          <a-form :form="form">
+          <a-form :form="form" :selfUpdate = "true">
             <a-row>
               <a-col :md="6" :sm="8">
-                <a-form-item label="退货编号" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                  <a-input disabled v-decorator="[ 'rejectedNo', {}]" placeholder="请输入退货编号"></a-input>
+                <a-form-item label="退货单号" :labelCol="labelCol" :wrapperCol="wrapperCol">
+                  <a-input disabled v-decorator="[ 'rejectedNo', {}]" placeholder="请输入退货单号"></a-input>
                 </a-form-item>
               </a-col>
               <a-col :span="6">
@@ -50,16 +50,28 @@
         <a-card style="margin-bottom: 10px;">
           <a-tabs v-model="activeKey" @change="handleChangeTabs">
             <a-tab-pane tab="产品明细" :key="refKeys[0]" :forceRender="true">
-              <a-form v-show="!disableSubmit">
-                <a-row>
+              <a-form v-show="!disableSubmit" :form="formOne" :selfUpdate = "true">
+                <a-row v-if="!showSBarcode">
                   <a-col :md="6" :sm="8">
                     <a-form-item label="产品编号" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                      <a-input ref="productNumberInput" v-focus placeholder="请输入产品编号" v-model="queryParam.productNumber" @keyup.enter.native="searchQuery(0)"></a-input>
+                      <a-input ref="productNumberInput" v-focus placeholder="请输入产品编号" v-decorator="[ 'productNumber']" @keyup.enter.native="onlyNumbersearchQuery"></a-input>
+                    </a-form-item>
+                  </a-col>
+                  <a-col :md="12" :sm="8">
+                    <a-form-item label="" :labelCol="labelCol" :wrapperCol="wrapperCol" style="text-align: left;padding-left: 15px;">
+                      提示：按<span style="color: red">Ctrl+Alt</span>键快速定位到扫码输入框
+                    </a-form-item>
+                  </a-col>
+                </a-row>
+                <a-row v-if="showSBarcode">
+                  <a-col :md="6" :sm="8">
+                    <a-form-item label="产品编号" :labelCol="labelCol" :wrapperCol="wrapperCol">
+                      <a-input ref="productNumberInput" v-focus placeholder="请输入产品编号" v-decorator="[ 'productNumber']" @keyup.enter.native="searchQuery(0)"></a-input>
                     </a-form-item>
                   </a-col>
                   <a-col :md="6" :sm="8">
                     <a-form-item label="二级条码" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                      <a-input ref="productBarCodeInput" placeholder="请输入二级条码" v-model="queryParam.productBarCode" @keyup.enter.native="searchQuery(1)"></a-input>
+                      <a-input ref="productBarCodeInput" placeholder="请输入二级条码" v-decorator="[ 'productBarCode']" @keyup.enter.native="searchQuery(1)"></a-input>
                     </a-form-item>
                   </a-col>
                   <a-col :md="12" :sm="8">
@@ -85,7 +97,7 @@
               <j-editable-table
                 bordered
                 :ref="refKeys[0]"
-                :loading="pdRejectedDetailTable.loading"
+                :loading="loading"
                 :columns="pdRejectedDetailTable.columns"
                 :dataSource="pdRejectedDetailTable.dataSource"
                 :maxHeight="500"
@@ -106,7 +118,7 @@
         </a-card>
 
         <a-card style="">
-          <a-form :form="form">
+          <a-form :form="form" :selfUpdate = "true">
             <a-row>
               <a-col :span="12">
                 <a-form-item label="备注" :labelCol="labelCol2" :wrapperCol="wrapperCol2" style="text-align: left">
@@ -125,7 +137,7 @@
         <a-button style="margin-right: 15px;">取  消</a-button>
       </a-popconfirm>
       <!--<a-button @click="saveBtn" v-show="!disableSubmit" type="primary" :loading="confirmLoading" style="margin-right: 15px;">保存草稿</a-button>-->
-      <a-button @click="submitBtn" v-show="!disableSubmit" type="primary" :loading="confirmLoading" style="margin-right: 15px;">提  交</a-button>
+      <a-button @click="submitBtn" v-show="isDisabledAuth('stock:rejectedSave')" type="primary" :loading="confirmLoading" style="margin-right: 15px;">提  交</a-button>
     </template>
 
     <pd-choose-product-stock-list-model ref="pdChooseProductStockListModel" @ok="returnProductStockData" ></pd-choose-product-stock-list-model>
@@ -147,6 +159,7 @@
   import {stockScanCode} from '@/utils/barcode'
   import PdChooseProductStockListModel from "./PdChooseProductStockListModel";
   import PdChoosePurchaseOrderListModel from "./PdChoosePurchaseOrderListModel";
+  import { disabledAuthFilter } from "@/utils/authFilter"
 
   const VALIDATE_NO_PASSED = Symbol()
   export { FormTypes, VALIDATE_NO_PASSED }
@@ -177,6 +190,7 @@
     },
     data() {
       return {
+        formOne: this.$form.createForm(this),
         labelCol: {span: 6},
         wrapperCol: {span: 16},
 
@@ -191,7 +205,7 @@
         disableSubmit:false,
         disableSubmit2:false,
         title: '这里是标题',
-
+        loading:false,
         initData:{},
         queryParam:{},
 
@@ -200,6 +214,8 @@
         notFoundContent:"未找到内容",
         supplierData: [],
         //供应商下拉列表 end
+
+        showSBarcode:false,           //开关-是否显示二级条码框（入库、出库、退货） 1-显示；0-不显示
 
         totalSum:'0',
         args:{},
@@ -266,6 +282,7 @@
       // 重写close方法
       close() {
         this.visible = false;
+        this.formOne.resetFields();
         this.pdRejectedDetailTable.dataSource = [];
         this.queryParam = {};
         this.eachAllTable((item) => {
@@ -305,10 +322,16 @@
           if (res.success) {
             this.$nextTick(() => {
               if(this.model.id){ //详情页
-
                 this.pdRejectedDetailTable.dataSource = res.result.pdRejectedDetailList || [];
               }else{  // 新增页
                 this.form.setFieldsValue({rejectedNo:res.result.rejectedNo}); // 退货单号
+
+                //开关-是否显示二级条码框（入库、出库、退货） 1-显示；0-不显示
+                if(res.result.showSBarcode && res.result.showSBarcode == "0"){
+                  this.showSBarcode = false;
+                }else{
+                  this.showSBarcode = true;
+                }
               }
             })
           }
@@ -435,7 +458,7 @@
           this.$message.error("请选择供应商！");
           return;
         }
-        this.$refs.pdChooseProductStockListModel.show({supplierId:supplierId});
+        this.$refs.pdChooseProductStockListModel.show({supplierId:supplierId,nestatStatus:"1",barCodeType:"0",recordNoType:"in"});
       },
       // 选择产品后返回
       returnProductStockData(data) {
@@ -503,7 +526,7 @@
       },
       //清空扫码框
       clearQueryParam(){
-        this.queryParam = {};
+        this.formOne.resetFields();
         this.$refs.productNumberInput.focus();
       },
       // 表格数据变更
@@ -526,6 +549,17 @@
           }
         }
       },
+      // 只扫产品编号查询
+      onlyNumbersearchQuery(){
+        let productNumber = this.formOne.getFieldValue("productNumber");
+        if(!productNumber){
+          this.$message.error("请输入产品编号！");
+          this.$refs.productNumberInput.focus();
+          return;
+        }
+        this.formOne.setFieldsValue({productBarCode:productNumber});
+        this.searchQuery(1);
+      },
       // 扫码查询
       searchQuery(num) {
         let supplierId = this.form.getFieldValue("supplierId")
@@ -535,7 +569,7 @@
           this.$message.error("请选择供应商！");
           return;
         }
-        let productNumber = this.queryParam.productNumber;
+        let productNumber = this.formOne.getFieldValue("productNumber");
         if(!productNumber){
           //清空扫码框
           this.clearQueryParam();
@@ -546,25 +580,34 @@
           // 焦点条码输入框
           this.$refs.productBarCodeInput.focus();
         }else if(num == 1) { //条码扫码
-          let productBarCode = this.queryParam.productBarCode;
+          let productBarCode = this.formOne.getFieldValue("productBarCode");
           if(!productBarCode){
             this.$message.error("请输入二级条码！");
             return;
           }
           //解析条码
-          stockScanCode(productNumber,productBarCode).then((res) => {
+          stockScanCode(productNumber,productBarCode,"","1","0").then((res) => {
             if(res.code == "200" || res.code == "203"){
-              let pdProductStockList = res.result;
-              if(!pdProductStockList){
+              let result = res.result;
+              if(!result){
                 //清空扫码框
                 this.clearQueryParam();
                 this.$message.error("条码解析失败，请校验条码是否正确！");
                 return;
               }
+              let pdProductStockList = [];
+
+              // 过滤非当前供应商产品
+              for(let pdProductStock of result){
+                if(pdProductStock.supplierId == supplierId){
+                  pdProductStockList.push(pdProductStock);
+                }
+              }
+
               if(pdProductStockList.length <= 0){
                 //清空扫码框
                 this.clearQueryParam();
-                this.$message.error("库存中没有该产品！");
+                this.$message.error("当前科室中没有该产品！");
                 return;
               }
               let { values } = this.$refs.pdRejectedDetail.getValuesSync({ validate: false });
@@ -639,7 +682,18 @@
         })
       },
       //----------------供应商查询end
-
+      /**
+       * 校验权限
+       * @param code
+       * @returns {boolean|*}
+       */
+      isDisabledAuth(code){
+        if(!this.disableSubmit){
+          return !disabledAuthFilter(code);
+        }else{
+          return false
+        }
+      },
     },
   }
 

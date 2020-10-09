@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.pd.mapper.PdSpecLogMapper">
+
+
+    <select id="selectList" resultType="org.jeecg.modules.pd.entity.PdSpecLog" parameterType="org.jeecg.modules.pd.entity.PdSpecLog">
+        SELECT
+        a.id,
+        a.person_name,
+        a.spec_num,
+        a.stock_id,
+        a.create_time,
+        a.reason,
+        a.spec_quantity,
+        b.name as "productName",
+        c.depart_name AS "departName",
+        d.name AS "specUnitName"
+        FROM pd_spec_log a
+        LEFT JOIN pd_product b on a.product_id = b.id
+        LEFT JOIN sys_depart c ON a.depart_id = c.id
+        LEFT JOIN pd_unit d ON a.spec_unit_id = d.id
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+            <if test=" personName != null and personName != ''">
+                AND a.person_name LIKE concat('%',#{personName},'%')
+            </if>
+            <if test=" departName != null and departName != ''">
+                AND c.depart_name LIKE concat('%',#{departName},'%')
+            </if>
+            <if test="productName != null and productName != ''">
+                AND (
+                b.name LIKE concat('%',#{productName},'%')
+                or b.py LIKE concat('%',#{productName},'%')
+                or b.wb LIKE concat('%',#{productName},'%')
+                or b.bname LIKE concat('%',#{productName},'%')
+                or b.bpy LIKE concat('%',#{productName},'%')
+                or b.bwb LIKE concat('%',#{productName},'%')
+                or b.zdy LIKE concat('%',#{productName},'%')
+                )
+            </if>
+        </where>
+        ORDER BY a.create_time desc
+    </select>
+
+</mapper>

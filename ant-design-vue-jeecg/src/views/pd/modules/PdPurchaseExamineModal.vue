@@ -36,15 +36,15 @@
                 </a-form-item>
               </a-col>
               <a-col :span="12">
-                <a-form-item label="申购总数量" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                  <a-input-number disabled="disabled" v-decorator="[ 'totalNum', validatorRules.totalNum]"  style="width: 100%"/>
+                <a-form-item label="申购类型" :labelCol="labelCol" :wrapperCol="wrapperCol">
+                  <j-dict-select-tag-expand  disabled="disabled"  v-decorator="['purchaseType',validatorRules.purchaseType]"   dictCode="purchase_type" :trigger-change="true"  placeholder="请选择类型"/>
                 </a-form-item>
               </a-col>
-              <a-col :span="12">
-                <a-form-item label="申购总金额" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                  <a-input-number disabled="disabled" v-decorator="[ 'totalPrice', validatorRules.totalPrice]"  style="width: 100%"/>
-                </a-form-item>
-              </a-col>
+              <!-- <a-col :span="12">
+                 <a-form-item label="申购总金额" :labelCol="labelCol" :wrapperCol="wrapperCol">
+                   <a-input-number disabled="disabled" v-decorator="[ 'totalPrice', validatorRules.totalPrice]"  style="width: 100%"/>
+                 </a-form-item>
+               </a-col>-->
             </a-row>
           </a-form>
         </a-card>
@@ -65,6 +65,10 @@
                 :actionButton="false"
                 style="text-overflow: ellipsis;"
               />
+              <a-row style="margin-top:10px;text-align: right;padding-right: 5%">
+                <span style="font-weight: bold;font-size: large;padding-right: 5%">总数量：{{this.model.totalNum }}</span>
+                <span style="font-weight: bold;font-size: large">总金额：{{ this.model.totalPrice }}</span>
+              </a-row>
             </a-tab-pane>
           </a-tabs>
         </a-card>
@@ -106,6 +110,7 @@
   import JDictSelectTag from "@/components/dict/JDictSelectTag"
   import PdApplyStockRecordOutModal from './PdStockRecordOutModal'
   import PdPurchaseOrderPrintModal from '../print/PdPurchaseOrderPrintModal'
+  import JDictSelectTagExpand from "@/components/dict/JDictSelectTagExpand"
 
   export default {
     name: 'PdApplyOrderModal',
@@ -114,7 +119,8 @@
       JDate,
       JDictSelectTag,
       PdApplyStockRecordOutModal,
-      PdPurchaseOrderPrintModal
+      PdPurchaseOrderPrintModal,
+      JDictSelectTagExpand
        },
     data() {
       return {
@@ -135,7 +141,8 @@
           totalNum: {},
           realName: {},
           remarks: {},
-          refuseReason: {}
+          refuseReason: {},
+          purchaseType: {},
         },
         refKeys: ['pdPurchaseDetail',],
         tableKeys: ['pdPurchaseDetail',],
@@ -148,7 +155,7 @@
              {title: '产品编号', width: "200px",  key: 'number'},
              {title: '产品名称', width: "240px", key: 'productName'},
              {title: '规格', width: "200px",  key: 'spec'},
-             {title: '型号', width: "200px",  key: 'version'},
+             {title: '中标号', width: "200px",  key: 'bidingNumber'},
              {title: '单位', width: "50px",  key: 'unitName'},
              {title: '库存数量',  key: 'stockNum'},
              {title: '申购数量',  key: 'orderNum'},
@@ -208,6 +215,7 @@
       },
 
       handleOk (type) { //审核提交
+        const that = this;
         this.model.auditStatus='2';//审核通过
         this.model.submitStatus='2';//已提交
         if(type=="no"){
@@ -223,7 +231,6 @@
           }
           this.model.refuseReason= values.refuseReason;
           if (!err) {
-            const that = this;
             this.model.orderNos=this.model.orderNo;
             this.model.oprtSource="1";
             let formData = Object.assign(this.model, values);
@@ -238,6 +245,7 @@
               } else {
                 that.$message.warning(res.message);
               }
+
             }).finally(() => {
               that.confirmLoading = false;
               that.close();
@@ -248,7 +256,7 @@
       },
       /** 调用完edit()方法之后会自动调用此方法 */
       editAfter() {
-        let fieldval = pick(this.model,'orderNo','purchaseName','orderDate','deptName','auditStatus','totalNum','totalPrice','submitStatus','refuseReason')
+        let fieldval = pick(this.model,'orderNo','purchaseName','purchaseType','orderDate','deptName','refuseReason')
         this.$nextTick(() => {
           this.form.setFieldsValue(fieldval)
         })
@@ -272,7 +280,7 @@
         this.$message.error(msg)
       },
       popupCallback(row){
-        this.form.setFieldsValue(pick(row,'orderNo','purchaseName','orderDate','deptName','auditStatus','totalNum','totalPrice','submitStatus','refuseReason'))
+        this.form.setFieldsValue(pick(row,'orderNo','purchaseName','purchaseType','orderDate','deptName','refuseReason'))
       },
       /** 关闭按钮 **/
       closeBtn(){

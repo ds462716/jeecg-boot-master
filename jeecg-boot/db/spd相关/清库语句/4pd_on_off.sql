@@ -1,0 +1,41 @@
+-- ----------------------------
+-- Table structure for pd_on_off
+-- ----------------------------
+DROP TABLE IF EXISTS `pd_on_off`;
+CREATE TABLE `pd_on_off`  (
+  `id` varchar(32) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `name` varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '开关名称',
+  `code` varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '开关编码',
+  `description` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '描述',
+  `remarks` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '备注',
+  `value` int(1) NULL DEFAULT NULL COMMENT '值',
+  `create_by` varchar(32) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '创建人',
+  `create_time` datetime(0) NULL DEFAULT NULL COMMENT '创建时间',
+  `update_by` varchar(32) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '更新人',
+  `update_time` datetime(0) NULL DEFAULT NULL COMMENT '更新时间',
+  `depart_id` varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '所属部门',
+  `depart_parent_id` varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '所属部门的顶级部门',
+  `del_flag` varchar(1) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '删除标识',
+  `sys_org_code` varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '所属部门',
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Compact;
+
+-- ----------------------------
+-- Records of pd_on_off
+-- ----------------------------
+INSERT INTO `pd_on_off` VALUES ('1', '是否允许入库非订单产品', 'on_off_allow_not_order_product', '', '1-允许；0-不允许', 1, NULL, NULL, NULL, NULL, NULL, NULL, '0', NULL);
+INSERT INTO `pd_on_off` VALUES ('10', '是否允许入库证照过期的供应商', 'on_off_stock_in_exp_supplier', '目前只做了提醒，没有限制死必须不能入库', '1-允许；0-不允许', 0, NULL, NULL, NULL, NULL, NULL, NULL, '0', NULL);
+INSERT INTO `pd_on_off` VALUES ('11', '是否显示二级条码框（入库、出库、退货）', 'on_off_show_s_barcode', '用于只扫产品编号，不扫二级条码的情况', '1-显示；0-不显示', 1, NULL, NULL, NULL, NULL, NULL, NULL, '0', NULL);
+INSERT INTO `pd_on_off` VALUES ('12', '是否根据规格数量扣减库存开关', 'on_off_spec_num', NULL, '1:根据规格数量    0:不根据规格数量', 0, NULL, NULL, NULL, NULL, NULL, NULL, '0', NULL);
+INSERT INTO `pd_on_off` VALUES ('2', '是否允许入库量大于订单量', 'on_off_allow_in_more_order', '', '1-允许；0-不允许', 1, NULL, NULL, NULL, NULL, NULL, NULL, '0', NULL);
+INSERT INTO `pd_on_off` VALUES ('3', '是否允许入库非本供应商产品', 'on_off_allow_supplier', '', '1-允许；0-不允许', 1, NULL, NULL, NULL, NULL, NULL, NULL, '0', NULL);
+INSERT INTO `pd_on_off` VALUES ('4', '是否允许出入库时可修改进价和出价', 'on_off_allow_edit_price', '', '1-允许；0-不允许', 0, NULL, NULL, NULL, NULL, NULL, NULL, '0', NULL);
+INSERT INTO `pd_on_off` VALUES ('5', '是否显示入库单抬头', 'on_off_stock_in_text', '国药集团江西医疗器械有限公司——', '1-显示；0-不显示', 0, NULL, NULL, NULL, NULL, NULL, NULL, '0', NULL);
+INSERT INTO `pd_on_off` VALUES ('6', '是否显示出库单抬头', 'on_off_stock_out_text', '国药集团江西医疗器械有限公司——', '1-显示；0-不显示', 0, NULL, NULL, NULL, NULL, NULL, NULL, '0', NULL);
+INSERT INTO `pd_on_off` VALUES ('7', '是否需要入库审批', 'on_off_stock_in_audit', NULL, '1-是；0-否', 1, NULL, NULL, NULL, NULL, NULL, NULL, '0', NULL);
+INSERT INTO `pd_on_off` VALUES ('8', '是否需要出库审批', 'on_off_stock_out_audit', NULL, '1-是；0-否', 1, NULL, NULL, NULL, NULL, NULL, NULL, '0', NULL);
+INSERT INTO `pd_on_off` VALUES ('9', '是否允许入库证照过期的产品', 'on_off_stock_in_exp_product', '目前只做了提醒，没有限制死必须不能入库', '1-允许；0-不允许', 0, NULL, NULL, NULL, NULL, NULL, NULL, '0', NULL);
+
+-- *******************************************************
+-- 注意：部署后 需要点一次“系统管理-开关配置”菜单，来初始化菜单
+-- *******************************************************

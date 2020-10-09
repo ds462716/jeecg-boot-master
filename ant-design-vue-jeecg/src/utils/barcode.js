@@ -1,5 +1,8 @@
 let url ="/pd/pdProduct/scanCode";
 let stockUrl ="/pd/pdProduct/stockScanCode";
+let openingUrl ="/pd/pdProduct/openingQuotation";
+let uniqueScanCodeUrl ="/pd/pdProduct/uniqueScanCodeUrl";
+let closeIngUrl ="/pd/pdProduct/closeIngQuotation";
 let packageRecordUrl ="/pd/pdPackageRecord/packageRecordScanCode";
 import { httpAction } from '@/api/manage'
 
@@ -20,24 +23,76 @@ export async function scanCode(Barcode1, Barcode2){
 }
 
 /**
+ * 开瓶扫码
+ * @param Barcode
+ * @returns {Promise<*>}
+ */
+export async function openingQuotation(Barcode,instrCode){
+  //封装查询参数
+  let formData = new URLSearchParams();
+  formData.append("Barcode",Barcode);
+  formData.append("instrCode",instrCode);
+  let res = await httpAction(openingUrl,formData,"post");
+  return res;
+}
+
+
+/**
+ * 闭瓶扫码
+ * @param Barcode
+ * @returns {Promise<*>}
+ */
+export async function closeQuotation(Barcode,closeRemarks,instrCode){
+  //封装查询参数
+  let formData = new URLSearchParams();
+  formData.append("Barcode",Barcode);
+  formData.append("closeRemarks",closeRemarks);
+  formData.append("instrCode",instrCode);
+  let res = await httpAction(closeIngUrl,formData,"post");
+  return res;
+}
+
+/**
+ * 唯一码扫码
+ * @param Barcode
+ * @param productFlag 产品类型0耗材1试剂
+ * @param nestatStatus 1未使用""查未使用和以使用
+ * @returns {Promise<*>}
+ */
+export async function uniqueScanCode(Barcode,productFlag,nestatStatus){
+  //封装查询参数
+  let formData = new URLSearchParams();
+  formData.append("Barcode",Barcode);
+  formData.append("productFlag",productFlag);
+  formData.append("nestatStatus",nestatStatus);
+  let res = await httpAction(uniqueScanCodeUrl,formData,"post");
+  return res;
+}
+
+/**
  *
  * @param Barcode1 产品编号
  * @param Barcode2 二级条码
+ * @param productFlag 产品类型0耗材1试剂
+ * @param nestatStatus 1未使用""查未使用和以使用
  * @param that
  * @returns {Promise<*>}
  */
-export async function stockScanCode(Barcode1, Barcode2){
+export async function stockScanCode(Barcode1, Barcode2,productFlag,nestatStatus,barCodeType){
   //封装查询参数
   let formData = new URLSearchParams();
   formData.append("Barcode1",Barcode1);
   formData.append("Barcode2",Barcode2);
+  formData.append("productFlag",productFlag);
+  formData.append("nestatStatus",nestatStatus);
+  formData.append("barCodeType",barCodeType);
   let res = await httpAction(stockUrl,formData,"post");
   return res;
 }
 
 /**
- * 定数包记录扫码
- * @param Barcode1  定数包打包记录条码
+ * 套包记录扫码
+ * @param Barcode1  套包打包记录条码
  * @returns {Promise<*>}
  */
 export async function packageRecordScanCode(Barcode1){
@@ -150,8 +205,22 @@ export function generateNumber(code){
   let second = date.getSeconds(); //秒
   let milliseconds = date.getMilliseconds(); //毫秒
   code = code + year + month+data+hours+minute+second+milliseconds;
+  if(code.length<19){
+    code +=   RndNum(19-code.length);
+  }else{
+    code = code.substr(0,19);
+  }
   return code;
 }
+
+function RndNum(n) {
+  var rnd = "";
+  for (var i = 0; i < n; i++) {
+    rnd += Math.floor(Math.random() * 10);
+  }
+  return rnd;
+}
+
 
 
 

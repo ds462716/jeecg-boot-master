@@ -15,23 +15,23 @@
           <a-row :gutter="24">
             <a-col :md="6" :sm="8">
               <a-form-item label="产品名称">
-                <a-input placeholder="请输入产品名称" v-model="queryParam.productName"></a-input>
+                <a-input placeholder="请输入产品名称" v-model="queryParam.productName" @input="searchQuery"></a-input>
               </a-form-item>
             </a-col>
             <a-col :md="6" :sm="8">
               <a-form-item label="产品编号">
-                <a-input placeholder="请输入产品编号" v-model="queryParam.number"></a-input>
+                <a-input placeholder="请输入产品编号" v-model="queryParam.number" @input="searchQuery"></a-input>
               </a-form-item>
             </a-col>
             <a-col :md="6" :sm="8">
               <a-form-item label="批号">
-                <a-input placeholder="请输入批号" v-model="queryParam.batchNo"></a-input>
+                <a-input placeholder="请输入批号" v-model="queryParam.batchNo" @input="searchQuery"></a-input>
               </a-form-item>
             </a-col>
             <template v-if="toggleSearchStatus">
               <a-col :md="6" :sm="8">
                 <a-form-item label="规格">
-                  <a-input placeholder="请输入规格" v-model="queryParam.spec"></a-input>
+                  <a-input placeholder="请输入规格" v-model="queryParam.spec" @input="searchQuery"></a-input>
                 </a-form-item>
               </a-col>
               <a-col :md="6" :sm="8">
@@ -92,6 +92,26 @@
                   </a-select>
                 </a-form-item>
               </a-col>
+              <a-col :md="6" :sm="8" v-show="showOutRecordNo">
+                <a-form-item label="出库单号">
+                  <a-input placeholder="请输入出库单号" v-model="queryParam.outRecordNo" @input="searchQuery"></a-input>
+                </a-form-item>
+              </a-col>
+              <a-col :md="6" :sm="8" v-show="showInRecordNo">
+                <a-form-item label="入库单号">
+                  <a-input placeholder="请输入入库单号" v-model="queryParam.inRecordNo" @input="searchQuery"></a-input>
+                </a-form-item>
+              </a-col>
+              <a-col :md="6" :sm="8">
+                <a-form-item label="产品类型">
+                  <a-checkbox-group :disabled="productFlagDisabled" v-model="productFlagCheckValues" :options="productFlagOptions" @change="productFlagChange" />
+                </a-form-item>
+              </a-col>
+              <a-col :md="6" :sm="8">
+                <a-form-item label="使用状态">
+                  <a-checkbox-group :disabled="nestatStatusDisabled" v-model="nestatStatusCheckValues" :options="nestatStatusOptions" @change="nestatStatusChange" />
+                </a-form-item>
+              </a-col>
             </template>
             <a-col :md="6" :sm="8">
             <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
@@ -123,7 +143,7 @@
         :pagination="ipagination"
         :loading="loading"
         :customRow="onClickRow"
-        :rowSelection="{fixed:false,selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
+        :rowSelection="{fixed:false,selectedRowKeys: selectedRowKeys, onSelectAll:onSelectAll,onSelect:onSelect,onChange: onSelectChange}"
         @change="handleTableChange">
       </a-table>
     </a-spin>
@@ -170,6 +190,27 @@
         applyNo:"",
         allocationNo:"",
         supplierId:"", //供应商ID
+        departId:"",//部门id
+
+        recordNoType:"",//出库类型
+        showOutRecordNo:false,
+        showInRecordNo:false,
+
+        productFlagDisabled:false,
+        productFlag:"", //0-器械；1-试剂
+        productFlagOptions:[ { label: '耗材', value: '0' },{ label: '试剂', value: '1' }],
+        productFlagCheckValues:[],
+
+        nestatStatusDisabled:false,
+        nestatStatus:"", //0:使用中   1:未使用 2:已用完
+        nestatStatusOptions:[ { label: '未使用', value: '1' },{ label: '使用中', value: '0' }],
+        nestatStatusCheckValues:[],
+
+        productIdList: [],
+
+        dataSource2: [],
+        selectedRowKeys: [],
+        selectedRows: [],
 
         // 表头
         columns: [
@@ -185,6 +226,7 @@
           },
           { title:'产品编号', align:"center", dataIndex: 'number' },
           { title:'产品名称', align:"center", dataIndex: 'productName' },
+          { title:'产品类型', align:"center", dataIndex: 'productFlagName' },
           { title:'规格', align:"center", dataIndex: 'spec' },
           { title:'型号', align:"center", dataIndex: 'version' },
           { title:'批号', align:"center", dataIndex: 'batchNo' },
@@ -193,6 +235,7 @@
           { title:'供应商', align:"center", dataIndex: 'supplierName' },
           { title: '生产厂家', align:"center", dataIndex: 'venderName' },
           { title: '库存数量', align:"center", dataIndex: 'stockNum' },
+          { title: '规格数量', align:"center", dataIndex: 'specNum' },
           { title: '进价', align:"center",dataIndex: 'purchasePrice' },
           { title: '出价', align:"center",dataIndex: 'sellingPrice' },
           { title: '货位', align:"center", dataIndex: 'huoweiName' },
@@ -282,9 +325,45 @@
               return obj;
             },
           },
+          {
+            title: 'refBarCode',
+            align:"center",
+            dataIndex: 'refBarCode',
+            colSpan: 0,
+            customRender: (value, row, index) => {
+              const obj = {
+                attrs: {colSpan:0},
+              };
+              return obj;
+            },
+          },
+          {
+            title: 'inRecordId',
+            align:"center",
+            dataIndex: 'inRecordId',
+            colSpan: 0,
+            customRender: (value, row, index) => {
+              const obj = {
+                attrs: {colSpan:0},
+              };
+              return obj;
+            },
+          },
+          {
+            title: 'inRecordDetailId',
+            align:"center",
+            dataIndex: 'inRecordDetailId',
+            colSpan: 0,
+            customRender: (value, row, index) => {
+              const obj = {
+                attrs: {colSpan:0},
+              };
+              return obj;
+            },
+          },
         ],
         url: {
-          list: "/pd/pdProductStockTotal/selectProductStockList",
+          list: "/pd/pdProductStockTotal/chooseProductStockListPage",
           querySupplier:"/pd/pdSupplier/getSupplierList",
           queryVender:"/pd/pdVender/getVenderList",
         },
@@ -304,8 +383,21 @@
       close () {
         this.selectedRowKeys = [];
         this.selectionRows = [];
+        this.dataSource2 = [];
+        this.dataSource = [];
         this.queryParam = {};
-        this.loadData(1);
+        this.productFlag = "";
+        this.productFlagCheckValues = [];
+        this.productIdList = [];
+        this.nestatStatus = "";
+        this.nestatStatusCheckValues = [];
+        this.applyNo = "";
+        this.allocationNo = "";
+        this.supplierId = "";
+        this.departId="";
+        this.showOutRecordNo = false;
+        this.showInRecordNo = false;
+        // this.loadData(1);
         this.$emit('close');
         this.visible = false;
       },
@@ -327,11 +419,40 @@
             this.supplierSelecDisabled = true;
           })
         }
+        if(params && params.productFlag){
+          this.productFlag = params.productFlag;
+          this.productFlagCheckValues.push(params.productFlag);
+          this.productFlagDisabled = true;
+        }
+        if(params && params.nestatStatus){
+          this.nestatStatus = params.nestatStatus;
+          this.nestatStatusCheckValues.push(params.nestatStatus);
+          this.nestatStatusDisabled = true;
+        }
+        if(params && params.productIdList){
+          this.productIdList = params.productIdList;
+        }
+        if(params && params.barCodeType){
+          this.barCodeType = params.barCodeType;
+        }
+        if(params && params.menuType){
+          this.menuType = params.menuType;
+        }
+        if(params && params.departId){
+          this.departId = params.departId;
+        }
+        if(params && params.recordNoType){
+          if(params.recordNoType == "out"){
+            this.showOutRecordNo = true;
+          }else if(params.recordNoType == "in"){
+            this.showInRecordNo = true;
+          }
+        }
         this.loadData(1);
         this.visible = true;
       },
       handleOk () {
-        let rows = this.selectionRows;
+        let rows = this.dataSource2;
         this.$emit('ok', rows);
         this.close();
       },
@@ -340,6 +461,18 @@
       },
       popupCallback(row){
 
+      },
+      searchReset() {
+        this.queryParam = {}
+        if(!this.productFlagDisabled){
+          this.productFlag = "";
+          this.productFlagCheckValues = [];
+        }
+        if(!this.nestatStatusDisabled){
+          this.nestatStatus = "";
+          this.nestatStatusCheckValues = [];
+        }
+        this.loadData(1);
       },
       loadData(arg) {
         if(!this.url.list){
@@ -360,10 +493,29 @@
         if(this.supplierId){
           params.supplierId = this.supplierId;
         }
+        if(this.productFlag){
+          params.productFlag = this.productFlag;
+        }
+        if(this.nestatStatus){
+          params.nestatStatus = this.nestatStatus;
+        }
+        if(this.productIdList){
+          params.productIds = this.productIdList.join(",");
+        }
+        if(this.menuType){
+          params.menuType = this.menuType;
+        }
+        if(this.barCodeType){
+          params.barCodeType = this.barCodeType;
+        }
+        if(this.departId){
+          params.departId = this.departId;
+        }
         this.loading = true;
         getAction(this.url.list, params).then((res) => {
           if (res.success) {
             this.dataSource = res.result.records;
+            this.ipagination.total = res.result.total;
           }
           if(res.code===510){
             this.$message.warning(res.message)
@@ -372,6 +524,40 @@
         })
       },
 
+      onSelectAll(selected, selectedRows, changeRows) {
+        if (selected === true) {
+          for (var a = 0; a < changeRows.length; a++) {
+            this.dataSource2.push(changeRows[a]);
+          }
+        } else {
+          for (var b = 0; b < changeRows.length; b++) {
+            this.dataSource2.splice(this.dataSource2.indexOf(changeRows[b]), 1);
+          }
+        }
+      },
+      onSelect(record, selected) {
+        if (selected === true) {
+          this.dataSource2.push(record);
+        } else {
+          var index = this.dataSource2.indexOf(record);
+          if (index >= 0) {
+            this.dataSource2.splice(this.dataSource2.indexOf(record), 1);
+          }
+
+        }
+      },
+      onSelectChange(selectedRowKeys, selectedRows) {
+        this.selectedRowKeys = selectedRowKeys;
+        this.selectionRows = selectedRows;
+      },
+      onClearSelected() {
+        this.selectedRowKeys = [];
+        this.selectionRows = [];
+        this.dataSource2 = [];
+      },
+      handleDelete: function (record) {
+        this.dataSource2.splice(this.dataSource2.indexOf(record), 1);
+      },
       /**
        * 点击行选中checkbox
        * @param record
@@ -397,10 +583,10 @@
                   let index = this.selectedRowKeys.indexOf(recordId);
                   if(index>=0){
                     this.selectedRowKeys.splice(index, 1);
-                    this.selectionRows.splice(index, 1);
+                    this.dataSource2.splice(index, 1);
                   }else{
                     this.selectedRowKeys.push(recordId);
-                    this.selectionRows.push(record);
+                    this.dataSource2.push(record);
                   }
                 }
               }
@@ -446,7 +632,18 @@
           }
         })
       },
-
+      productFlagChange(checkList){
+        this.productFlag = "";
+        if(this.productFlagCheckValues.length == 1){
+          this.productFlag = this.productFlagCheckValues[0];
+        }
+      },
+      nestatStatusChange(checkList){
+        this.nestatStatus = "";
+        if(this.nestatStatusCheckValues.length == 1){
+          this.nestatStatus = this.nestatStatusCheckValues[0];
+        }
+      },
       expDateChange: function (value, dateString) {
         this.queryParam.queryDateStart=dateString[0];
         this.queryParam.queryDateEnd=dateString[1];

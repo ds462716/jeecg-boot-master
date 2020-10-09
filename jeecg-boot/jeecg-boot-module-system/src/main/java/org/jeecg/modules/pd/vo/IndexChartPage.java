@@ -15,4 +15,7 @@ public class IndexChartPage {
     /** 查询数据的类型 **/
     private String type;
 
+    /** 根据年/月/周/日查询 **/
+    private String dayType;
+
 }

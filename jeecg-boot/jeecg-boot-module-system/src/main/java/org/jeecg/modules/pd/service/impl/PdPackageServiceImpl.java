@@ -1,5 +1,6 @@
 package org.jeecg.modules.pd.service.impl;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.jeecg.common.constant.PdConstant;
 import org.jeecg.modules.pd.entity.PdPackage;
@@ -16,7 +17,7 @@ import java.util.List;
 import java.util.Collection;
 
 /**
- * @Description: 定数包
+ * @Description: 套包
  * @Author: jiangxz
  * @Date:   2020-02-02
  * @Version: V1.0
@@ -86,8 +87,8 @@ public class PdPackageServiceImpl extends ServiceImpl<PdPackageMapper, PdPackage
 	}
 
 	@Override
-	public Page<PdPackage> queryList(Page<PdPackage> pageList, PdPackage pdPackage) {
-		return pageList.setRecords(pdPackageMapper.queryList(pdPackage));
+	public IPage<PdPackage> queryList(Page<PdPackage> pageList, PdPackage pdPackage) {
+		return pdPackageMapper.queryList(pageList, pdPackage);
 	}
 
 }

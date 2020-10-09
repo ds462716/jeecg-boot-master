@@ -4,7 +4,7 @@
       <a-col :md="2" :sm="4">
         <a-select defaultValue="POST" style="width: 90px" @change="handleChange" size="large">
           <a-select-option value="POST">POST</a-select-option>
-          <!--<a-select-option value="GET">GET</a-select-option>-->
+          <a-select-option value="GET">GET</a-select-option>
         </a-select>
       </a-col>
       <a-col :md="22" :sm="20">

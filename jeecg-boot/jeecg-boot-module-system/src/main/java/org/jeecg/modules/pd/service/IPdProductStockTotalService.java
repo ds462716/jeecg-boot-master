@@ -2,6 +2,7 @@ package org.jeecg.modules.pd.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
+import org.jeecg.modules.external.entity.ExInspectionItems;
 import org.jeecg.modules.pd.entity.*;
 import org.jeecg.modules.pd.vo.PdProductStockTotalPage;
 
@@ -49,6 +50,20 @@ public interface IPdProductStockTotalService extends IService<PdProductStockTota
     public String updateOutStock(PdStockRecord pdStockRecord);
 
     /**
+     * 套包拆包加库存
+     * @param pdPackageRecord
+     * @return
+     */
+    public String updateInStockForPackage(PdPackageRecord pdPackageRecord);
+
+    /**
+     * 套包打包扣库存
+     * @param pdPackageRecord
+     * @return
+     */
+    public String updateOutStockForPackage(PdPackageRecord pdPackageRecord);
+
+    /**
      * 院外退货更新库存信息
      * @param stockTotal
      * @return
@@ -89,6 +104,15 @@ public interface IPdProductStockTotalService extends IService<PdProductStockTota
 
 
     /**
+     * 唯一码用量退回更新库存
+     * @param departId
+     * @param afterDealList
+     * @return
+     */
+    String updateRefBarCodeRetunuseStock(String departId, List<PdDosageDetail> afterDealList);
+
+
+    /**
      * 库存规格数量清零操作
      * @param productStock
      * @return
@@ -96,12 +120,50 @@ public interface IPdProductStockTotalService extends IService<PdProductStockTota
     public String updateStockSpecNum(PdProductStock productStock);
 
     /**
-     *试剂耗材产品更新库存用量信息(Lis系统推送的数据)
-     * @param param
+     *试剂耗材产品更新库存用量信息(重新扣减及批量扣减调用)
+     * @param detailList
      * @return
      */
-    public String lisUpdateUseStock( Map<String,Object> param);
+    public Map<String,Object> lisUpdateUseStock(ExInspectionItems items,String testDpeartId, List<PdUsePackageDetail> detailList);
+
+    /**
+     *试剂耗材产品更新库存用量信息(根据LIS系统检验项目数据)
+     * @param detailList
+     * @return
+     */
+    public Map<String,Object> lisUpdateUseStockLis(ExInspectionItems items,String testDpeartId, List<PdUsePackageDetail> detailList);
+
+    /**
+     * 检验项目手动扣减库存方法(检验包)
+     * @param departId
+     * @param usePackageDetailList
+     * @return
+     */
+    public List<PdProductStock> jyUpdatePackageStockNum(String departId,List<PdUsePackageDetail> usePackageDetailList);
 
 
+    /**
+     * 查询库存总表（设置了库存下限且自动补货数量大于0的数据）
+     */
+    List<PdProductStockTotalPage> findListForAutoNum(PdProductStockTotal stockTotal);
 
+    String jyUpdateProductStockNum(String departId, List<PdProductStock> exInspectionItemsUseDetails);
+
+
+    public PdProductStock insertProdStock(PdProductStock productStock);
+
+    public PdProductStock insertProdStockSj(PdProductStock productStock);
+    /**
+     * 试剂开瓶用
+     */
+    public PdProductStock closeProdStock(PdProductStock productStock);
+
+    /**
+     * 盘点库存处理
+     * @param pdProductStockCheck
+     * @return
+     */
+    String updateCheckStock(PdProductStockCheck pdProductStockCheck);
+
+    List<PdProductStockTotalPage> chooseStockTotalList(PdProductStockTotalPage stockTotal);
 }

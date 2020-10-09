@@ -5,13 +5,32 @@
       <a-form layout="inline" @keyup.enter.native="searchQuery">
         <a-row :gutter="24">
           <a-col :md="6" :sm="8">
-            <a-form-item label="定数包编号">
-              <a-input placeholder="请输入定数包编号" v-model="queryParam.code"></a-input>
+            <a-form-item label="套包编号">
+              <a-input placeholder="请输入套包编号" v-model="queryParam.packageCode"></a-input>
             </a-form-item>
           </a-col>
           <a-col :md="6" :sm="8">
-            <a-form-item label="定数包名称">
-              <a-input placeholder="定数包名称\拼音码\五笔码\自定义码" v-model="queryParam.name"></a-input>
+            <a-form-item label="套包名称">
+              <a-input placeholder="套包名称\拼音码\五笔码\自定义码" v-model="queryParam.packageName"></a-input>
+            </a-form-item>
+          </a-col>
+          <a-col :span="6">
+            <a-form-item label="所属科室">
+              <a-select
+                showSearch
+                placeholder="请选择科室"
+                :supplierId="departValue"
+                :defaultActiveFirstOption="false"
+                :showArrow="true"
+                :filterOption="false"
+                :allowClear="true"
+                @search="departHandleSearch"
+                @focus="departHandleSearch"
+                :notFoundContent="notFoundContent"
+                v-model="queryParam.departId"
+              >
+                <a-select-option v-for="d in departList" :key="d.id">{{d.departName}}</a-select-option>
+              </a-select>
             </a-form-item>
           </a-col>
           <a-col :md="6" :sm="8">
@@ -33,7 +52,7 @@
     <!-- 操作按钮区域 -->
     <div class="table-operator">
       <a-button @click="handleAdd" type="primary" icon="plus">新增</a-button>
-      <a-button type="primary" icon="download" @click="handleExportXls('定数包')">导出</a-button>
+      <a-button type="primary" icon="download" @click="handleExportXls('套包')">导出</a-button>
       <!--<a-upload name="file" :showUploadList="false" :multiple="false" :headers="tokenHeader" :action="importExcelUrl" @change="handleImportExcel">-->
         <!--<a-button type="primary" icon="import">导入</a-button>-->
       <!--</a-upload>-->
@@ -111,6 +130,7 @@
 
   import { JeecgListMixin } from '@/mixins/JeecgListMixin'
   import PdPackageModal from './modules/PdPackageModal'
+  import {getAction} from '@/api/manage'
 
   export default {
     name: "PdPackageList",
@@ -120,7 +140,10 @@
     },
     data () {
       return {
-        description: '定数包管理页面',
+        description: '套包管理页面',
+        notFoundContent:"未找到内容",
+        departValue: undefined,
+        departList:[],
         // 表头
         columns: [
           {
@@ -134,40 +157,30 @@
             }
           },
           {
-            title:'定数包编号',
+            title:'套包编号',
             align:"center",
-            dataIndex: 'code'
+            dataIndex: 'packageCode'
           },
           {
-            title:'定数包名称',
+            title:'套包名称',
             align:"center",
-            dataIndex: 'name'
+            dataIndex: 'packageName'
           },
           {
             title:'产品总数',
             align:"center",
-            dataIndex: 'sum'
+            dataIndex: 'packageSum'
           },
           {
-            title:'拼音简码',
+            title:'所属科室',
             align:"center",
-            dataIndex: 'py'
+            dataIndex: 'departName'
           },
           {
-            title:'五笔简码',
+            title:'备注',
             align:"center",
-            dataIndex: 'wb'
+            dataIndex: 'remarks'
           },
-          {
-            title:'自定义码',
-            align:"center",
-            dataIndex: 'zdy'
-          },
-          // {
-          //   title:'父机构',
-          //   align:"center",
-          //   dataIndex: 'departParentId'
-          // },
           {
             title: '操作',
             dataIndex: 'action',
@@ -181,6 +194,7 @@
           deleteBatch: "/pd/pdPackage/deleteBatch",
           exportXlsUrl: "/pd/pdPackage/exportXls",
           importExcelUrl: "pd/pdPackage/importExcel",
+          departList:"/pd/pdDepart/getSysDepartList",
         },
         dictOptions:{
         },
@@ -194,7 +208,16 @@
     },
     methods: {
       initDictConfig(){
-      }
+      },
+      // 部门下拉框搜索
+      departHandleSearch(value){
+        getAction(this.url.departList,{departName:value,parentFlag:"0"}).then((res)=>{
+          if (!res.success) {
+            this.cmsFailed(res.message);
+          }
+          this.departList = res.result;
+        })
+      },
        
     }
   }

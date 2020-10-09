@@ -6,16 +6,21 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.CacheConstant;
+import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.constant.PdConstant;
 import org.jeecg.common.system.vo.LoginUser;
+import org.jeecg.common.util.PasswordUtil;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.pd.service.IPdDepartService;
+import org.jeecg.modules.pd.util.JmUtil;
 import org.jeecg.modules.pd.util.UUIDUtil;
 import org.jeecg.modules.system.entity.*;
 import org.jeecg.modules.system.mapper.SysDepartMapper;
+import org.jeecg.modules.system.mapper.SysDepartRolePermissionMapper;
 import org.jeecg.modules.system.mapper.SysUserDepartMapper;
 import org.jeecg.modules.system.mapper.SysUserMapper;
 import org.jeecg.modules.system.model.SysDepartTreeModel;
@@ -23,6 +28,7 @@ import org.jeecg.modules.system.service.*;
 import org.jeecg.modules.system.util.FindsDepartsChildrenUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,6 +42,9 @@ public class PdDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart>
 
     @Autowired
     private SysUserMapper userMapper;
+
+    @Autowired
+    private ISysUserService sysUserService;
 
     @Autowired
     private ISysDepartRolePermissionService sysDepartRolePermissionService;
@@ -57,6 +66,14 @@ public class PdDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart>
 
     @Autowired
     private ISysDepartPermissionService sysDepartPermissionService;
+
+    @Autowired
+    private SysDepartRolePermissionMapper sysDepartRolePermissionMapper;
+
+    @Autowired
+    public RedisTemplate<String, Object> redisTemplate;
+
+
 
 
     @Cacheable(value = CacheConstant.SYS_DEPARTS_CACHE)
@@ -135,12 +152,19 @@ public class PdDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart>
                              );
             }
         }
+        //刷新用户权限
+        this.refreshShiro();
 
     }
 
     @Override
     public IPage<SysUser> findUserList(Page<SysUser> page, Map<String, Object> parMap) {
         return userMapper.findUserList(page,parMap);
+    }
+
+    @Override
+    public List<SysUser> findUserList(Map<String, Object> parMap) {
+        return userMapper.findAllUserList(parMap);
     }
 
     @Override
@@ -246,8 +270,15 @@ public class PdDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart>
         }
         //封装查询参数
         sb = sb.substring(0,sb.length()-1);
+
+       String departType= sysDepart.getDepartType();
+       List<String> departTypeList=null;
+       if(StringUtils.isNotEmpty(departType)){
+           departTypeList= Arrays.asList(departType.split(","));
+       }
         Map<String,Object> map = new HashMap<>();
         map.put("ids",sb);
+        map.put("departTypeList",departTypeList);
         map.put("departName",sysDepart.getDepartName()!=null?sysDepart.getDepartName():"");
         map.put("departParentId",sysUser.getDepartParentId());
         map.put("DEL_FLAG_NORMAL", PdConstant.DEL_FLAG_0);
@@ -340,6 +371,8 @@ public class PdDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart>
                 sysDepartRolePermissionService.remove(new QueryWrapper<SysDepartRolePermission>().lambda().eq(SysDepartRolePermission::getDepartId, departId).eq(SysDepartRolePermission::getPermissionId, permissionId));
             }
         }
+        //刷新用户权限
+        this.refreshShiro();
     }
 
     @Override
@@ -455,5 +488,73 @@ public class PdDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart>
         }else{
             return Result.error("粘贴失败，复制部门没有权限！");
         }
+    }
+
+    /**
+     * 一键生成部门的拼音简码自定义码
+     * @return
+     */
+    @Cacheable(value = CacheConstant.SYS_DEPARTS_CACHE)
+    @Override
+    public Result<Object> generatePyWb() {
+        LambdaQueryWrapper<SysDepart> query = new LambdaQueryWrapper<>();
+        List<SysDepart> list = this.list(query);
+        if(list!=null && list.size()>0){
+            for(SysDepart sysDepart :list){
+                //生成拼音简码
+                sysDepart.setPy(JmUtil.getAllFirstLetter(sysDepart.getDepartName()));
+                //生成五笔简码
+                sysDepart.setWb(JmUtil.getWBCode(sysDepart.getDepartName()));
+            }
+            this.updateBatchById(list);
+        }
+        return Result.ok("生成简码成功");
+    }
+
+    /**
+     * 一键设置密码123生成用户的简码
+     * @return
+     */
+    @Override
+    public Result<Object> generateUserPyWb() {
+        LambdaQueryWrapper<SysUser> query = new LambdaQueryWrapper<>();
+        List<SysUser> list = sysUserService.list(query);
+        if(list!=null && list.size()>0){
+            for(SysUser sysUser :list){
+                //生成拼音简码
+                sysUser.setPy(JmUtil.getAllFirstLetter(sysUser.getRealname()));
+                //生成五笔简码
+                sysUser.setWb(JmUtil.getWBCode(sysUser.getRealname()));
+                String salt = oConvertUtils.randomGen(8);
+                sysUser.setSalt(salt);
+                String password = "123";
+                String passwordEncode = PasswordUtil.encrypt(sysUser.getUsername(), password, salt);
+                sysUser.setPassword(passwordEncode);
+            }
+            sysUserService.updateBatchById(list);
+        }
+        return Result.ok("生成简码成功");
+    }
+
+
+    @Override
+    public List<Map<String,Object>>  findDepartList(SysDepart sysDepart) {
+      return  sysDepartMapper.findDepartList(sysDepart);
+    }
+
+    @Override
+    public List<SysDepartRolePermission> findDepartRolePermissionByName(Map<String,Object> map) {
+        return sysDepartRolePermissionMapper.findDepartRolePermissionByName(map);
+    }
+
+    @Override
+    public void refreshShiro(){
+        Set keys = redisTemplate.keys(CommonConstant.PREFIX_USER_SHIRO_CACHE  + "*");
+        redisTemplate.delete(keys);
+    }
+
+    @Override
+    public List<String> queryDepartIdByParentId(String parentId){
+        return sysDepartMapper.queryDepartIdByParentId(parentId);
     }
 }

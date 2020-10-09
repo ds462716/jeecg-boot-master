@@ -40,11 +40,11 @@
               <a-input disabled="disabled" v-decorator="[ 'inDeptName', validatorRules.inDeptName]"></a-input>
             </a-form-item>
           </a-col>
-          <a-col :span="12">
+         <!-- <a-col :span="12">
             <a-form-item label="调拨总数量" :labelCol="labelCol" :wrapperCol="wrapperCol">
               <a-input-number disabled="disabled" v-decorator="[ 'totalNum', validatorRules.totalNum]" style="width: 100%"/>
             </a-form-item>
-          </a-col>
+          </a-col>-->
           <a-col :span="12">
             <a-form-item label="备注" :labelCol="labelCol" :wrapperCol="wrapperCol">
               <a-input disabled="disabled" v-decorator="[ 'remarks', validatorRules.remarks]"  style="width: 100%;height: 60px"></a-input>
@@ -76,7 +76,7 @@
               <a-table
                 ref="table"
                 bordered
-                rowKey="packageId"
+                rowKey="packageRecordId"
                 :columns="table2.columns"
                 :dataSource="table2.dataSource"
                 :loading="pdAllocationDetailTable.loading"
@@ -95,6 +95,9 @@
                   :loading="subloading">
                 </a-table>
               </a-table>
+              <a-row style="margin-top:10px;text-align: right;padding-right: 5%">
+                <span style="font-weight: bold;font-size: large;padding-right: 5%">总数量：{{this.model.totalNum }}</span>
+              </a-row>
             </a-tab-pane>
           </a-tabs>
         </a-card>
@@ -196,33 +199,48 @@
         table2:{
           dataSource:[],
           columns: [
-            {title: '#', dataIndex: 'packageId', key:'rowIndex', width:60, align:"center",
+            {title: '#', dataIndex: 'packageRecordId', key:'rowIndex', width:60, align:"center",
               customRender:function (t,r,index) {
                 return parseInt(index)+1;
               }
             },
-            {title:'定数包编号', align:"center",key:"packageCode", dataIndex: 'packageCode'},
-            {title:'定数包名称', align:"center", key:"packageName",dataIndex: 'packageName'},
-            {title:'产品总数', align:"center", key:"packageNum",dataIndex: 'packageNum'},
-            {title:'调拨数量', align:"center",key:"allocationNum",width: 100, dataIndex: 'allocationNum',},
+            {title:'套包编号', align:"center",key:"packageCode", dataIndex: 'packageCode'},
+            {title:'套包名称', align:"center", key:"packageName",dataIndex: 'packageName'},
+            { title:'套包条码', align:"center", dataIndex: 'packageBarCode' },
+            {title:'产品总数', align:"center", key:"packageSum",dataIndex: 'packageSum'},
+            {title:'调拨数量', align:"center",key:"allocationNum", dataIndex: 'allocationNum'},
+            { title:'打包人', align:"center", dataIndex: 'createBy' },
             {title:'备注', align:"center", key:"remarks",dataIndex: 'remarks'}
           ]
         },
         innerColumns:[
-          {title:'定数包编号', align:"center", width: 100, dataIndex: 'code'},
-          {title:'定数包名称', align:"center", width: 100, dataIndex: 'name'},
-          {title:'定数包产品数量', align:"center", width: 100, dataIndex: 'count'},
-          {title:'产品编号', align:"center", width: 100, dataIndex: 'number'},
-          {title:'产品名称', align:"center", dataIndex: 'productName'},
-          {title:'规格', align:"center", dataIndex: 'spec'},
-          {title:'型号', align:"center", dataIndex: 'version'},
-          {title:'单位', align:"center", dataIndex: 'unitName'},
-          /*{title:'库存数量', align:"center", dataIndex: 'stockNum'},*/
+          { title:'产品名称', align:"center", dataIndex: 'productName' },
+          { title:'产品编号', align:"center", dataIndex: 'productNumber' },
+          { title:'产品条码', align:"center",dataIndex: 'productBarCode' },
+          { title:'规格', align:"center", dataIndex: 'spec' },
+          { title:'批号', align:"center", dataIndex: 'batchNo' },
+          { title:'单位', align:"center", dataIndex: 'unitName' },
+          { title:'有效期', align:"center", dataIndex: 'expDate',
+            customRender:function (text) {
+              return !text?"":(text.length>10?text.substr(0,10):text)
+            }
+          },
+          { title:'入库单价', align:"center", dataIndex: 'purchasePrice' },
+          { title:'出库单价', align:"center", dataIndex: 'sellingPrice' },
+          { title:'套包产品数量', align:"center", dataIndex: 'productNum' },
+          { title:'出库金额', align:"center", dataIndex: 'outTotalPrice' },
+          { title:'库存数量', align:"center", dataIndex: 'stockNum' },
+          { title: '出库货位', align:"center", dataIndex: 'outHuoweiName' },
+          { title: '生产日期', align:"center", dataIndex: 'produceDate',
+            customRender:function (text) {
+              return !text?"":(text.length>10?text.substr(0,10):text)
+            }}
         ],
         url: {
           edit: "/pd/pdAllocationRecord/editAllocationInf",
           exportXlsUrl: "/pd/pdAllocationRecord/exportXls",
-          chooseDetailList:"/pd/pdPackage/queryPdPackageDetailList",
+          chooseDetailList:"/pd/pdPackageRecord/queryPdPackageRecordDetailByMainId",
+          queryPackageRecordListByIds: "/pd/pdPackageRecord/queryPackageRecordListByIds",
           pdAllocationDetail: {
             list: '/pd/pdAllocationRecord/queryPdAllocationDetailList',
             packList: '/pd/pdAllocationRecord/queryAllocationDetailPack'
@@ -240,8 +258,8 @@
         this.innerData=[];
         if(expanded===true){
           this.subloading = true;
-          this.expandedRowKeys.push(record.packageId);
-          getAction(this.url.chooseDetailList, {packageId: record.packageId}).then((res) => {
+          this.expandedRowKeys.push(record.packageRecordId);
+          getAction(this.url.chooseDetailList, {id: record.packageRecordId}).then((res) => {
             if (res.success) {
               this.subloading = false;
               this.innerData = res.result;
@@ -319,15 +337,8 @@
             httpAction(this.url.edit, formData, 'put').then((res) => {
               if (res.success) {
                  if(type=="yes"){
-                   let args = {};
-                   args.outType = "3";  //  1-申领出库; 2-科室出库; 3-调拨出库
-                   args.data = pdPurchaseDetailList;  // 申领单或调拨单明细 按选择器传值就行
-                   args.inDepartId = this.model.inDeptId; // 入库部门ID
-                   this.$refs.stockForm.add(args);
-                   this.$refs.stockForm.title = "新增出库";
-                   this.$refs.stockForm.disableSubmit = false;
+                   this.recordOut();
                 }
-               // that.$message.success("操作成功");
                 that.$emit('ok');
               } else {
                 that.$message.warning(res.message);
@@ -341,12 +352,31 @@
 
       },
 
-
+      recordOut(){
+        let args = {};
+        args.outType = "3";  //  1-申领出库; 2-科室出库; 3-调拨出库
+        args.data = this.pdAllocationDetailTable.dataSource;  // 申领单或调拨单产品明细 按选择器传值就行
+        var source = this.table2.dataSource;
+        let packageRecordIds="";
+        source.forEach((value, idx) => {
+          packageRecordIds+=value.packageRecordId+",";
+        })
+        getAction(this.url.queryPackageRecordListByIds, {ids:packageRecordIds}).then((res) => {
+          if (res.success) {
+            let data = {};
+            args.pdPackageRecordList = res.result;
+            args.inDepartId = this.model.inDeptId; //入库部门ID
+            this.$refs.stockForm.add(args);
+            this.$refs.stockForm.title = "新增出库";
+            this.$refs.stockForm.disableSubmit = false;
+          }
+        });
+      },
 
  //--------------
       editLound(){
           let params = {allocationNo: this.model.allocationNo}
-           this.requestSubTableData(this.url.pdAllocationDetail.list, params, this.pdAllocationDetailTable)//加载产品及定数包明细
+           this.requestSubTableData(this.url.pdAllocationDetail.list, params, this.pdAllocationDetailTable)//加载产品及套包明细
       },
  //---------------
 
@@ -355,7 +385,7 @@
 
       /** 调用完edit()方法之后会自动调用此方法 */
       editAfter() {
-        let fieldval = pick(this.model,'allocationNo','allocationDate','totalNum','outDeptName','inDeptName','realName','remarks','rejectReason')
+        let fieldval = pick(this.model,'allocationNo','allocationDate','outDeptName','inDeptName','realName','remarks','rejectReason')
          this.$nextTick(() => {
           this.form.setFieldsValue(fieldval)
         })
@@ -364,7 +394,7 @@
           let params = {allocationNo: this.model.allocationNo,productAttr:"1"}
           this.requestSubTableData(this.url.pdAllocationDetail.list, params, this.pdAllocationDetailTable)//加载产品
           params =  {allocationNo: this.model.allocationNo,productAttr:"2" }
-          this.requestSubTableData(this.url.pdAllocationDetail.packList, params, this.table2)//加载定数包
+          this.requestSubTableData(this.url.pdAllocationDetail.packList, params, this.table2)//加载套包
 
 
         }
@@ -383,7 +413,7 @@
         this.$message.error(msg)
       },
       popupCallback(row){
-        this.form.setFieldsValue(pick(row,'allocationNo','allocationDate','totalNum','outDeptName','inDeptName','realName','remarks','rejectReason'))
+        this.form.setFieldsValue(pick(row,'allocationNo','allocationDate','outDeptName','inDeptName','realName','remarks','rejectReason'))
        },
       /** 关闭按钮 **/
       closeBtn(){

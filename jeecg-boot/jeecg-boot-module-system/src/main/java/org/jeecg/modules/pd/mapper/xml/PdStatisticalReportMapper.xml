@@ -1,0 +1,2199 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.pd.mapper.PdStatisticalReportMapper">
+
+    <!-- zxh供应商用量统计查询 -->
+    <select id="supplierUseReport" resultType="org.jeecg.modules.pd.vo.RpSupplierUseReportPage"
+            parameterType="org.jeecg.modules.pd.vo.RpSupplierUseReportPage">
+        SELECT
+        @rowNum :=@rowNum + 1 AS id,
+        rep.*
+        FROM
+        (
+        SELECT
+        in_table.audit_date,
+        in_table.supplier_id,
+        in_table.supplierName,
+        IFNULL(in_table.inProductNum, 0) AS inProductNum,
+        IFNULL(in_table.inTotalPrice, 0) AS inTotalPrice,
+        IFNULL(do_table.dosageNum, 0) AS dosageNum,
+        IFNULL(do_table.dosagePrice, 0) AS dosagePrice,
+        IFNULL(re_table.rejectedNum, 0) AS rejectedNum,
+        IFNULL(re_table.rejectedPrice, 0) AS rejectedPrice
+        FROM
+        (
+        SELECT
+        sum(t1.product_num) AS inProductNum,
+        sum(t1.sum_purchase_price) AS inTotalPrice,
+        t1.audit_date,
+        t1.supplier_id,
+        t1.supplierName
+        FROM
+        (
+        SELECT
+        a.id,
+        a.record_id,
+        b.record_no,
+        b.record_type,
+        b.in_type,
+        b.out_type,
+        a.product_id,
+        a.product_num,
+        a.purchase_price,
+        a.selling_price,
+        a.purchase_price * a.product_num AS sum_purchase_price,
+        date_format(b.audit_date, '%Y-%m') AS audit_date,
+        b.supplier_id,
+        s.`name` AS supplierName
+        FROM
+        pd_stock_record_detail a
+        LEFT JOIN pd_stock_record b ON a.record_id = b.id
+        LEFT JOIN pd_supplier s ON b.supplier_id = s.id
+        LEFT JOIN pd_product pp on a.product_id = pp.id AND b.audit_status = '2'
+        WHERE
+        b.del_flag = '0'
+        AND b.record_type = '1'
+        AND (
+        b.in_type IS NOT NULL
+        AND b.in_type &lt;&gt; ''
+        )
+        AND (
+        b.supplier_id IS NOT NULL
+        AND b.supplier_id &lt;&gt; ''
+        )
+        AND pp.product_flag = '0'
+        <if test="entity.yearMonth != null and entity.yearMonth != ''">
+            AND date_format(b.audit_date,'%Y-%m') = #{entity.yearMonth}
+        </if>
+        <if test="entity.querySupplierId != null and entity.querySupplierId != ''">
+            AND b.supplier_id = #{entity.querySupplierId}
+        </if>
+        <if test="entity.departParentId != null and entity.departParentId != ''">
+            AND a.depart_parent_id = #{entity.departParentId}
+        </if>
+        ) AS t1
+        GROUP BY t1.audit_date, t1.supplier_id
+        ) AS in_table
+        LEFT JOIN (
+        SELECT
+        sum(t2.left_refund_num) AS dosageNum,
+        sum(t2.amount_money) AS dosagePrice,
+        t2.audit_date,
+        t2.supplier_id,
+        t2.supplierName
+        FROM
+        (
+        SELECT
+        a.id,
+        a.dosage_id,
+        b.dosage_no,
+        a.product_id,
+        a.left_refund_num,
+        a.selling_price,
+        a.amount_money,
+        date_format(b.create_time, '%Y-%m') AS audit_date,
+        ps.supplier_id,
+        s.`name` AS supplierName
+        FROM
+        pd_dosage_detail a
+        LEFT JOIN pd_dosage b ON a.dosage_id = b.id
+        LEFT JOIN pd_product_stock ps ON a.product_stock_id = ps.id
+        LEFT JOIN pd_supplier s ON ps.supplier_id = s.id
+        LEFT JOIN pd_product pp on a.product_id = pp.id
+        WHERE
+        b.del_flag = '0'
+        AND a.left_refund_num > 0
+        AND (
+        ps.supplier_id IS NOT NULL
+        AND ps.supplier_id &lt;&gt; ''
+        )
+        AND pp.product_flag = '0'
+        <if test="entity.yearMonth != null and entity.yearMonth != ''">
+            AND date_format(b.create_time,'%Y-%m') = #{entity.yearMonth}
+        </if>
+        <if test="entity.querySupplierId != null and entity.querySupplierId != ''">
+            AND ps.supplier_id = #{entity.querySupplierId}
+        </if>
+        <if test="entity.departParentId != null and entity.departParentId != ''">
+            AND a.depart_parent_id = #{entity.departParentId}
+        </if>
+        ) AS t2
+        GROUP BY t2.audit_date, t2.supplier_id
+        ) AS do_table ON in_table.supplier_id = do_table.supplier_id
+        AND in_table.audit_date = do_table.audit_date
+        LEFT JOIN (
+        SELECT
+        sum(t3.rejected_count) AS rejectedNum,
+        sum(t3.amount_money) AS rejectedPrice,
+        t3.audit_date,
+        t3.supplier_id,
+        t3.supplierName,
+        t3.purchase_price
+        FROM
+        (
+        SELECT
+        a.id,
+        a.rejected_id,
+        b.rejected_no,
+        a.product_id,
+        a.rejected_count,
+        ps.purchase_price,
+        ps.purchase_price * a.rejected_count AS amount_money,
+        date_format(b.rejected_date, '%Y-%m') AS audit_date,
+        b.supplier_id,
+        s.`name` AS supplierName
+        FROM
+        pd_rejected_detail a
+        LEFT JOIN pd_rejected b ON a.rejected_id = b.id
+        LEFT JOIN pd_supplier s ON b.supplier_id = s.id
+        LEFT JOIN pd_product_stock ps ON a.product_stock_id = ps.id
+        LEFT JOIN pd_product pp on a.product_id = pp.id
+        WHERE
+        b.del_flag = '0'
+        AND a.rejected_count > 0
+        AND (
+        b.supplier_id IS NOT NULL
+        AND b.supplier_id &lt;&gt; ''
+        )
+        AND pp.product_flag = '0'
+        <if test="entity.yearMonth != null and entity.yearMonth != ''">
+            AND date_format(b.rejected_date,'%Y-%m') = #{entity.yearMonth}
+        </if>
+        <if test="entity.querySupplierId != null and entity.querySupplierId != ''">
+            AND b.supplier_id = #{entity.querySupplierId}
+        </if>
+        <if test="entity.departParentId != null and entity.departParentId != ''">
+            AND a.depart_parent_id = #{entity.departParentId}
+        </if>
+        ) AS t3
+        GROUP BY t3.audit_date, t3.supplier_id
+        ) AS re_table ON in_table.supplier_id = re_table.supplier_id
+        AND in_table.audit_date = re_table.audit_date
+        ) AS rep,
+        (SELECT @rowNum := 0) n
+        ORDER BY
+        rep.audit_date DESC
+    </select>
+    <!-- zxh供应商用量统计查询入库明细 -->
+    <select id="supplierInDetailReport" resultType="org.jeecg.modules.pd.entity.PdStockRecordDetail">
+        SELECT
+        a.id,
+        a.record_id,
+        s.`name` AS supplierName,
+        b.audit_date,
+        b.record_no,
+        b.record_type,
+        b.in_type,
+        b.out_type,
+        b.remarks as "remarks",
+        b.supplier_id,
+        pp.number as productNumber,
+        pp.`name` as productName,
+        pp.spec,
+        pp.version,
+        a.batch_no,
+        a.produce_date,
+        a.exp_date,
+        a.product_num,
+        pp.unit_id,
+        pu.`name` AS unitName,
+        a.product_id,
+        a.selling_price,
+        a.purchase_price,
+        a.purchase_price * a.product_num AS inTotalPrice,
+        pv.`name` AS venderName,
+        g. NAME AS distributorName,
+        pp.registration as productRegistration,
+        pp.charge_code,
+        m.invoice_no AS invoiceNo,
+        m.invoice_code AS invoiceCode,
+        m.invoice_data AS invoiceData,
+        pp.jde_code AS jdeCode,
+        pp.dart_code AS dartCode,
+        pp.biding_number as bidingNumber,
+        pv.jde_code AS "venderJdeCode",
+        s.jde_code AS "supplierJdeCode"
+        FROM
+        pd_stock_record_detail a
+        LEFT JOIN pd_stock_record b ON a.record_id = b.id
+        LEFT JOIN pd_supplier s ON b.supplier_id = s.id
+        LEFT JOIN pd_product pp ON a.product_id = pp.id
+        LEFT JOIN pd_unit pu ON pp.unit_id = pu.id
+        LEFT JOIN pd_vender pv ON pp.vender_id = pv.id
+        LEFT JOIN pd_distributor g ON a.distributor_id = g.id
+        LEFT JOIN pd_invoice_detail l ON l.bill_detail_id = a.id
+        LEFT JOIN pd_invoice m ON m.id = l.invoice_id
+        AND b.audit_status = '2'
+        WHERE
+        b.del_flag = '0'
+        AND b.record_type = '1'  and b.in_type='1'
+        AND (
+        b.in_type IS NOT NULL
+        AND b.in_type &lt;&gt; ''
+        )
+        AND (
+        b.supplier_id IS NOT NULL
+        AND b.supplier_id &lt;&gt; ''
+        )
+        <if test="entity.productFlag != null and entity.productFlag != ''">
+            AND pp.product_flag = #{entity.productFlag}
+        </if>
+        <if test="entity.yearMonth != null and entity.yearMonth != ''">
+            AND date_format(b.audit_date,'%Y-%m') = #{entity.yearMonth}
+        </if>
+        <if test="entity.supplierId != null and entity.supplierId != ''">
+            AND b.supplier_id = #{entity.supplierId}
+        </if>
+        <if test="entity.departParentId != null and entity.departParentId != ''">
+            AND a.depart_parent_id = #{entity.departParentId}
+        </if>
+        <if test="entity.queryExpDateStart != null and entity.queryExpDateStart != ''">
+            AND date_format( a.exp_date, '%Y-%m-%d') &gt;= #{entity.queryExpDateStart}
+        </if>
+        <if test="entity.queryExpDateEnd != null and entity.queryExpDateEnd != ''">
+            AND date_format( a.exp_date, '%Y-%m-%d') &lt;= #{entity.queryExpDateEnd}
+        </if>
+        <if test="entity.batchNo != null and entity.batchNo != ''">
+            AND a.batch_no LIKE concat('%',#{entity.batchNo},'%')
+        </if>
+        <if test="entity.recordNo != null and entity.recordNo != ''">
+            AND b.record_no LIKE concat('%',#{entity.recordNo},'%')
+        </if>
+        <if test="entity.queryDateStart != null and entity.queryDateStart != ''">
+            AND date_format( b.audit_date, '%Y-%m-%d') &gt;= #{entity.queryDateStart}
+        </if>
+        <if test="entity.queryDateEnd != null and entity.queryDateEnd != ''">
+            AND date_format( b.audit_date, '%Y-%m-%d') &lt;= #{entity.queryDateEnd}
+        </if>
+        <if test="entity.distributorId != null and entity.distributorId != ''">
+            AND b.distributor_id = #{entity.distributorId}
+        </if>
+        <if test="entity.productNumber != null and entity.productNumber != ''">
+            AND pp.number LIKE concat('%',#{entity.productNumber},'%')
+        </if>
+        <if test="entity.venderId != null and entity.venderId != ''">
+            AND pp.vender_id = #{entity.venderId}
+        </if>
+        <if test="entity.spec != null and entity.spec != ''">
+            AND pp.spec LIKE concat('%',#{entity.spec},'%')
+        </if>
+        <if test="entity.version != null and entity.version != ''">
+            AND pp.version LIKE concat('%',#{entity.version},'%')
+        </if>
+        <if test="entity.registration != null and entity.registration != ''">
+            AND pp.registration LIKE concat('%',#{entity.registration},'%')
+        </if>
+        <if test="entity.productName != null and entity.productName != ''">
+            AND (
+            pp.number LIKE concat('%',#{entity.productName},'%')
+            or pp.name LIKE concat('%',#{entity.productName},'%')
+            or pp.py LIKE concat('%',#{entity.productName},'%')
+            or pp.wb LIKE concat('%',#{entity.productName},'%')
+            or pp.bname LIKE concat('%',#{entity.productName},'%')
+            or pp.bpy LIKE concat('%',#{entity.productName},'%')
+            or pp.bwb LIKE concat('%',#{entity.productName},'%')
+            or pp.zdy LIKE concat('%',#{entity.productName},'%')
+            )
+        </if>
+    </select>
+    <!-- zxh供应商用量统计查询用量明细 -->
+    <select id="rpUseDetailReport" resultType="org.jeecg.modules.pd.vo.RpUseDetailReportPage">
+        SELECT
+        a.id,
+        a.dosage_id,
+        s.`name` AS supplierName,
+        b.dosage_date,
+        b.dosage_no,
+        b.remarks as "remarks",
+        a.product_id,
+        a.left_refund_num,
+        a.selling_price ,
+        a.selling_price * a.left_refund_num AS dosagePrice,
+        ps.supplier_id,
+        pp.number as productNumber,
+        pp.`name` as productName,
+        pp.spec,
+        pp.version,
+        a.batch_no,
+        a.exp_date,
+        pp.unit_id,
+        pu.`name` AS unitName,
+        pv.`name` AS venderName,
+        pp.registration as productRegistration,
+        pp.charge_code,
+        pp.jde_code AS jdeCode,
+        pp.dart_code AS dartCode,
+        pp.biding_number as bidingNumber,
+        pv.jde_code AS "venderJdeCode",
+        s.jde_code AS "supplierJdeCode"
+        FROM
+        pd_dosage_detail a
+        LEFT JOIN pd_dosage b ON a.dosage_id = b.id
+        LEFT JOIN	pd_product_stock ps on a.product_stock_id = ps.id
+        LEFT JOIN pd_supplier s ON ps.supplier_id = s.id
+        LEFT JOIN pd_product pp ON a.product_id = pp.id
+        LEFT JOIN pd_unit pu ON pp.unit_id = pu.id
+        LEFT JOIN pd_vender pv ON pp.vender_id = pv.id
+        WHERE
+        b.del_flag = '0'
+        AND pp.product_flag = '0'
+        AND a.left_refund_num >0
+        AND (
+        ps.supplier_id IS NOT NULL
+        AND ps.supplier_id &lt;&gt;''
+        )
+        <if test="entity.yearMonth != null and entity.yearMonth != ''">
+            AND date_format(b.dosage_date,'%Y-%m') = #{entity.yearMonth}
+        </if>
+        <if test="entity.supplierId != null and entity.supplierId != ''">
+            AND ps.supplier_id = #{entity.supplierId}
+        </if>
+        <if test="entity.departParentId != null and entity.departParentId != ''">
+            AND a.depart_parent_id = #{entity.departParentId}
+        </if>
+        <if test="entity.queryExpDateStart != null and entity.queryExpDateStart != ''">
+            AND date_format( a.exp_date, '%Y-%m-%d') &gt;= #{entity.queryExpDateStart}
+        </if>
+        <if test="entity.queryExpDateEnd != null and entity.queryExpDateEnd != ''">
+            AND date_format( a.exp_date, '%Y-%m-%d') &lt;= #{entity.queryExpDateEnd}
+        </if>
+        <if test="entity.batchNo != null and entity.batchNo != ''">
+            AND a.batch_no LIKE concat('%',#{entity.batchNo},'%')
+        </if>
+        <if test="entity.dosageNo != null and entity.dosageNo != ''">
+            AND b.dosage_no LIKE concat('%',#{entity.dosageNo},'%')
+        </if>
+        <if test="entity.queryDateStart != null and entity.queryDateStart != ''">
+            AND date_format( b.create_time, '%Y-%m-%d') &gt;= #{entity.queryDateStart}
+        </if>
+        <if test="entity.queryDateEnd != null and entity.queryDateEnd != ''">
+            AND date_format( b.create_time, '%Y-%m-%d') &lt;= #{entity.queryDateEnd}
+        </if>
+        <if test="entity.productNumber != null and entity.productNumber != ''">
+            AND pp.number LIKE concat('%',#{entity.productNumber},'%')
+        </if>
+        <if test="entity.venderId != null and entity.venderId != ''">
+            AND pp.vender_id = #{entity.venderId}
+        </if>
+        <if test="entity.spec != null and entity.spec != ''">
+            AND pp.spec LIKE concat('%',#{entity.spec},'%')
+        </if>
+        <if test="entity.version != null and entity.version != ''">
+            AND pp.version LIKE concat('%',#{entity.version},'%')
+        </if>
+        <if test="entity.registration != null and entity.registration != ''">
+            AND pp.registration LIKE concat('%',#{entity.registration},'%')
+        </if>
+        <if test="entity.productName != null and entity.productName != ''">
+            AND (
+            pp.number LIKE concat('%',#{entity.productName},'%')
+            or pp.name LIKE concat('%',#{entity.productName},'%')
+            or pp.py LIKE concat('%',#{entity.productName},'%')
+            or pp.wb LIKE concat('%',#{entity.productName},'%')
+            or pp.bname LIKE concat('%',#{entity.productName},'%')
+            or pp.bpy LIKE concat('%',#{entity.productName},'%')
+            or pp.bwb LIKE concat('%',#{entity.productName},'%')
+            or pp.zdy LIKE concat('%',#{entity.productName},'%')
+            )
+        </if>
+    </select>
+    <!-- zxh供应商用量统计查询退货明细 -->
+    <select id="rpReDetailReport" resultType="org.jeecg.modules.pd.vo.RpReDetailReportPage">
+        SELECT
+        a.id,
+        a.rejected_id,
+        s.`name` AS supplierName,
+        b.rejected_date,
+        b.rejected_no,
+        b.remarks as "remarks",
+        a.product_id,
+        a.rejected_count,
+        ps.purchase_price,
+        ps.purchase_price * a.rejected_count AS amount_money,
+        ps.supplier_id,
+        pp.number as productNumber,
+        pp.`name` as productName,
+        pp.spec,
+        pp.version,
+        a.batch_no,
+        ps.exp_date,
+        pp.unit_id,
+        pu.`name` AS unitName,
+        pv.`name` AS venderName,
+        pp.registration as productRegistration,
+        pp.charge_code,
+        pp.jde_code AS jdeCode,
+        pp.dart_code AS dartCode,
+        pp.biding_number as bidingNumber,
+        pv.jde_code AS "venderJdeCode",
+        s.jde_code AS "supplierJdeCode"
+        FROM
+        pd_rejected_detail a
+        LEFT JOIN pd_rejected b ON a.rejected_id = b.id
+        LEFT JOIN pd_supplier s on b.supplier_id = s.id
+        LEFT JOIN pd_product_stock ps on a.product_stock_id = ps.id
+        LEFT JOIN pd_product pp ON a.product_id = pp.id
+        LEFT JOIN pd_unit pu ON pp.unit_id = pu.id
+        LEFT JOIN pd_vender pv ON pp.vender_id = pv.id
+        WHERE
+        b.del_flag = '0'
+        AND a.rejected_count >0
+        AND (
+        b.supplier_id IS NOT NULL
+        AND b.supplier_id &lt;&gt; ''
+        )
+        <if test="entity.productFlag != null and entity.productFlag != ''">
+            AND pp.product_flag = #{entity.productFlag}
+        </if>
+        <if test="entity.yearMonth != null and entity.yearMonth != ''">
+            AND date_format(b.create_time,'%Y-%m') = #{entity.yearMonth}
+        </if>
+        <if test="entity.supplierId != null and entity.supplierId != ''">
+            AND b.supplier_id = #{entity.supplierId}
+        </if>
+        <if test="entity.departParentId != null and entity.departParentId != ''">
+            AND a.depart_parent_id = #{entity.departParentId}
+        </if>
+        <if test="entity.queryExpDateStart != null and entity.queryExpDateStart != ''">
+            AND date_format( ps.exp_date, '%Y-%m-%d') &gt;= #{entity.queryExpDateStart}
+        </if>
+        <if test="entity.queryExpDateEnd != null and entity.queryExpDateEnd != ''">
+            AND date_format( ps.exp_date, '%Y-%m-%d') &lt;= #{entity.queryExpDateEnd}
+        </if>
+        <if test="entity.batchNo != null and entity.batchNo != ''">
+            AND a.batch_no LIKE concat('%',#{entity.batchNo},'%')
+        </if>
+        <if test="entity.rejectedNo != null and entity.rejectedNo != ''">
+            AND b.rejected_no LIKE concat('%',#{entity.rejectedNo},'%')
+        </if>
+        <if test="entity.queryDateStart != null and entity.queryDateStart != ''">
+            AND date_format( b.create_time, '%Y-%m-%d') &gt;= #{entity.queryDateStart}
+        </if>
+        <if test="entity.queryDateEnd != null and entity.queryDateEnd != ''">
+            AND date_format( b.create_time, '%Y-%m-%d') &lt;= #{entity.queryDateEnd}
+        </if>
+        <if test="entity.productNumber != null and entity.productNumber != ''">
+            AND pp.number LIKE concat('%',#{entity.productNumber},'%')
+        </if>
+        <if test="entity.venderId != null and entity.venderId != ''">
+            AND pp.vender_id = #{entity.venderId}
+        </if>
+        <if test="entity.spec != null and entity.spec != ''">
+            AND pp.spec LIKE concat('%',#{entity.spec},'%')
+        </if>
+        <if test="entity.version != null and entity.version != ''">
+            AND pp.version LIKE concat('%',#{entity.version},'%')
+        </if>
+        <if test="entity.registration != null and entity.registration != ''">
+            AND pp.registration LIKE concat('%',#{entity.registration},'%')
+        </if>
+        <if test="entity.productName != null and entity.productName != ''">
+            AND (
+            pp.number LIKE concat('%',#{entity.productName},'%')
+            or pp.name LIKE concat('%',#{entity.productName},'%')
+            or pp.py LIKE concat('%',#{entity.productName},'%')
+            or pp.wb LIKE concat('%',#{entity.productName},'%')
+            or pp.bname LIKE concat('%',#{entity.productName},'%')
+            or pp.bpy LIKE concat('%',#{entity.productName},'%')
+            or pp.bwb LIKE concat('%',#{entity.productName},'%')
+            or pp.zdy LIKE concat('%',#{entity.productName},'%')
+            )
+        </if>
+    </select>
+
+    <!-- 出入库统计报表  add by jiangxz 2020年8月14日 10:23:50 -->
+    <select id="rpInAndOutReport" resultType="org.jeecg.modules.pd.vo.RpInAndOutReportPage" parameterType="org.jeecg.modules.pd.vo.RpInAndOutReportPage">
+        select @rowNum:=@rowNum + 1 as id,rep.* from
+        (
+        SELECT
+        t.audit_date,
+        t.depart_id,
+        t.depart_name,
+        sum(cast(t.in_product_num as decimal(11,4))) AS inProductNum,
+        sum(cast(t.in_purchase_price as decimal(11,4))) AS inTotalPrice,
+        sum(cast(t.out_product_num as decimal(11,4))) AS outProductNum,
+        sum(cast(t.out_purchase_price as decimal(11,4))) AS outTotalPrice
+        FROM
+        (
+        SELECT
+        record.*,
+        de.depart_name
+        FROM
+        (
+        SELECT
+        b.id,
+        b.record_id,
+        a.record_no,
+        a.record_type,
+        a.in_type,
+        a.out_type,
+        b.product_id,
+        IFNULL(b.product_num, 0) AS in_product_num,
+        0 AS out_product_num,
+        IFNULL(b.purchase_price, 0),
+        IFNULL(b.selling_price, 0),
+        IFNULL(b.purchase_price, 0) * IFNULL(b.product_num, 0) AS in_purchase_price,
+        0 AS out_purchase_price,
+        date_format( a.audit_date, '%Y-%m' ) AS audit_date,
+        a.in_depart_id AS depart_id,
+        '1' AS type
+        FROM
+        pd_stock_record a
+        LEFT JOIN pd_stock_record_detail b ON a.id = b.record_id
+        WHERE
+        a.record_type = '1'
+        AND a.audit_status = '2' and a.del_flag = '0'
+        <if test="entity.departParentId != null and entity.departParentId != ''">
+            AND a.depart_parent_id = #{entity.departParentId}
+        </if>
+        <if test="entity.departId != null and entity.departId != ''">
+            AND a.in_depart_id = #{entity.departId}
+        </if>
+        <if test="entity.yearMonth != null and entity.yearMonth != ''">
+            AND date_format(a.audit_date,'%Y-%m') = #{entity.yearMonth}
+        </if>
+        <if test="entity.departIdList != null and entity.departIdList.size() > 0">
+            and a.in_depart_id IN
+            <foreach collection="entity.departIdList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+
+        UNION
+
+        SELECT
+        b.id,
+        b.record_id,
+        a.record_no,
+        a.record_type,
+        a.in_type,
+        a.out_type,
+        b.product_id,
+        IFNULL(b.product_num, 0) AS in_product_num,
+        0 AS out_product_num,
+        IFNULL(b.purchase_price, 0),
+        IFNULL(b.selling_price, 0),
+        IFNULL(b.purchase_price, 0) * IFNULL(b.product_num, 0) AS in_purchase_price,
+        0 AS out_purchase_price,
+        date_format( a.audit_date, '%Y-%m' ) AS audit_date,
+        a.in_depart_id AS depart_id,
+        '1' AS type
+        FROM
+        pd_stock_record a
+        LEFT JOIN pd_stock_record_detail b ON a.id = b.record_id
+        WHERE
+        a.record_type = '2' and a.del_flag = '0'
+        AND a.audit_status = '2'
+        AND a.in_depart_id IS NOT NULL
+        AND a.in_depart_id &lt;&gt; ''
+        <if test="entity.departParentId != null and entity.departParentId != ''">
+            AND a.depart_parent_id = #{entity.departParentId}
+        </if>
+        <if test="entity.departId != null and entity.departId != ''">
+            AND a.in_depart_id = #{entity.departId}
+        </if>
+        <if test="entity.yearMonth != null and entity.yearMonth != ''">
+            AND date_format(a.audit_date,'%Y-%m') = #{entity.yearMonth}
+        </if>
+        <if test="entity.departIdList != null and entity.departIdList.size() > 0">
+            and a.in_depart_id IN
+            <foreach collection="entity.departIdList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+
+        UNION
+
+        SELECT
+        b.id,
+        b.record_id,
+        a.record_no,
+        a.record_type,
+        a.in_type,
+        a.out_type,
+        b.product_id,
+        0 AS in_product_num,
+        IFNULL(b.product_num, 0) AS out_product_num,
+        IFNULL(b.purchase_price, 0),
+        IFNULL(b.selling_price, 0),
+        0 AS in_purchase_price,
+        IFNULL(b.selling_price, 0) * IFNULL(b.product_num, 0) AS out_purchase_price,
+        date_format( a.audit_date, '%Y-%m' ) AS audit_date,
+        a.out_depart_id AS depart_id,
+        '2' AS type
+        FROM
+        pd_stock_record a
+        LEFT JOIN pd_stock_record_detail b ON a.id = b.record_id
+        WHERE
+        a.record_type = '2' and a.del_flag = '0'
+        AND a.audit_status = '2'
+        AND a.out_depart_id IS NOT NULL
+        AND a.out_depart_id &lt;&gt; ''
+        <if test="entity.departParentId != null and entity.departParentId != ''">
+            AND a.depart_parent_id = #{entity.departParentId}
+        </if>
+        <if test="entity.departId != null and entity.departId != ''">
+            AND a.out_depart_id = #{entity.departId}
+        </if>
+        <if test="entity.yearMonth != null and entity.yearMonth != ''">
+            AND date_format(a.audit_date,'%Y-%m') = #{entity.yearMonth}
+        </if>
+        <if test="entity.departIdList != null and entity.departIdList.size() > 0">
+            and a.out_depart_id IN
+            <foreach collection="entity.departIdList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        ) AS record
+        LEFT JOIN sys_depart de ON record.depart_id = de.id
+        ) AS t
+        GROUP BY
+        t.audit_date, t.depart_id, t.depart_name
+        ) as rep , (SELECT @rowNum:=0) n
+        order by rep.audit_date DESC
+    </select>
+
+    <!-- 出入库明细统计报表 add by jiangxz 2020年8月14日 10:24:21 -->
+    <select id="rpInAndOutDetailReport" resultType="org.jeecg.modules.pd.vo.RpInAndOutDetailReportPage" parameterType="org.jeecg.modules.pd.vo.RpInAndOutDetailReportPage">
+        SELECT
+        a.id,
+        a.record_id,
+        a.product_id,
+        a.product_stock_id,
+        a.product_bar_code,
+        a.in_huowei_code,
+        a.out_huowei_code,
+        a.batch_no,
+        a.merge_order_no,
+        a.order_no,
+        a.product_num,
+        IFNULL(a.selling_price,0) as sellingPrice,
+        IFNULL(a.purchase_price,0) as purchasePrice,
+        a.product_num * IFNULL(a.purchase_price,0) as inTotalPrice,
+        a.product_num * IFNULL(a.selling_price,0) as outTotalPrice,
+        a.produce_date,
+        a.exp_date,
+        a.package_record_id,
+        a.high_low_supplies,
+        a.import_no,
+        a.supplier_id,
+        a.distributor_id,
+        a.sys_org_code,
+        a.create_by,
+        a.create_time,
+        a.update_by,
+        a.update_time,
+        a.spec_unit_id,
+        a.spec_quantity,
+        a.registration,
+        a.ref_bar_code,
+        a.bar_code_type,
+        b.name AS "unitName",
+        c.number as "number",
+        c.number as "productNumber",
+        c.name as "productName",
+        c.spec as "spec",
+        c.version as "version",
+        c.jde_code as "jdeCode",
+        c.dart_code as "dartCode",
+        c.registration as "productRegistration",
+        e.name AS "venderName",
+        e.jde_code AS "venderJdeCode",
+        g.submit_date AS "submitDate",
+        g.audit_date AS "auditDate",
+        g.record_type AS "recordType",
+        g.record_no AS "recordNo",
+        case
+        when g.out_type = '1' then '1'
+        when g.out_type = '2' then '1'
+        when g.out_type = '3' then '3'
+        when g.out_type = '4' then '2'
+        when g.out_type is null or g.out_type = '' then '1'
+        end as "inType",
+        g.out_type AS "outType",
+        g.remarks as "remarks",
+        (select r.depart_name from sys_depart r where r.id=g.in_depart_id) AS "inDepartName",
+        (select r.depart_name from sys_depart r where r.id=g.out_depart_id) AS "outDepartName",
+        d.name AS "supplierName",
+        d.jde_code AS "supplierJdeCode",
+        n.name AS "distributorName",
+        h.realname as "realname",
+        m.invoice_no as invoiceNo,
+        m.invoice_code as invoiceCode,
+        m.invoice_data as invoiceData
+        FROM pd_stock_record_detail a
+        LEFT JOIN pd_stock_record g ON g.id = a.record_id
+        LEFT JOIN pd_product c ON c.id = a.product_id
+        LEFT JOIN pd_unit b ON c.unit_id = b.id
+        LEFT join pd_vender e on c.vender_id = e.id
+        LEFT join pd_supplier d on a.supplier_id = d.id
+        LEFT join pd_distributor n on a.distributor_id = n.id
+        LEFT JOIN sys_user h ON h.id = g.submit_by
+        LEFT JOIN pd_invoice_detail l ON l.bill_detail_id = a.id
+        LEFT JOIN pd_invoice m ON m.id = l.invoice_id
+        <where>
+            a.del_flag = '0'
+            <if test="entity.id != null and entity.id != ''">
+                AND a.id = #{entity.id}
+            </if>
+            <if test="entity.queryExpDateStart != null and entity.queryExpDateStart != ''">
+                AND date_format( a.exp_date, '%Y-%m-%d') &gt;= #{entity.queryExpDateStart}
+            </if>
+            <if test="entity.queryExpDateEnd != null and entity.queryExpDateEnd != ''">
+                AND date_format( a.exp_date, '%Y-%m-%d') &lt;= #{entity.queryExpDateEnd}
+            </if>
+            <if test="entity.batchNo != null and entity.batchNo != ''">
+                AND a.batch_no LIKE concat('%',#{entity.batchNo},'%')
+            </if>
+            <if test="entity.productStockId != null and entity.productStockId != ''">
+                AND a.product_stock_id = #{entity.productStockId}
+            </if>
+            <if test="entity.refBarCode != null and entity.refBarCode != ''">
+                AND a.ref_bar_code LIKE concat('%',#{entity.refBarCode},'%')
+            </if>
+            <if test="entity.recordNo != null and entity.recordNo != ''">
+                AND g.record_no LIKE concat('%',#{entity.recordNo},'%')
+            </if>
+            <if test="entity.yearMonth != null and entity.yearMonth != ''">
+                AND date_format( g.audit_date,'%Y-%m') = #{entity.yearMonth}
+            </if>
+            <if test="entity.queryDateStart != null and entity.queryDateStart != ''">
+                AND date_format( g.audit_date, '%Y-%m-%d') &gt;= #{entity.queryDateStart}
+            </if>
+            <if test="entity.queryDateEnd != null and entity.queryDateEnd != ''">
+                AND date_format( g.audit_date, '%Y-%m-%d') &lt;= #{entity.queryDateEnd}
+            </if>
+            <if test="entity.auditStatus != null and entity.auditStatus != ''">
+                AND g.audit_status = #{entity.auditStatus}
+            </if>
+            <if test="entity.submitStatus != null and entity.submitStatus != ''">
+                AND g.submit_status = #{entity.submitStatus}
+            </if>
+            <if test="entity.productId != null and entity.productId != ''">
+                AND a.product_id = #{entity.productId}
+            </if>
+            <if test='entity.recordType == "1"'>
+                AND (g.record_type = '1' or g.record_type = '2')
+            </if>
+            <if test='entity.recordType == "2"'>
+                AND g.record_type = '2'
+            </if>
+            <if test="entity.supplierId != null and entity.supplierId != ''">
+                AND a.supplier_id = #{entity.supplierId}
+            </if>
+            <if test="entity.distributorId != null and entity.distributorId != ''">
+                AND a.distributor_id = #{entity.distributorId}
+            </if>
+            <if test="entity.inType != null and entity.inType != ''">
+                AND g.in_type = #{entity.inType}
+            </if>
+            <if test="entity.outType != null and entity.outType != ''">
+                AND g.out_type = #{entity.outType}
+            </if>
+            <if test="entity.deptId != null and entity.deptId != ''">
+                AND ((g.record_type = '2' AND g.out_depart_id = #{entity.deptId})
+                OR ((g.record_type = '1' or g.record_type = '2') AND g.in_depart_id =#{entity.deptId}))
+            </if>
+            <if test='entity.recordType == "1" and entity.inDepartIdList != null and entity.inDepartIdList.size() > 0'>
+                AND (g.record_type = '1' or g.record_type = '2')
+                AND g.in_depart_id in
+                <foreach item="id" collection="entity.inDepartIdList" open="(" separator="," close=")">
+                    #{id}
+                </foreach>
+            </if>
+            <if test='entity.recordType == "2" and entity.outDepartIdList != null and entity.outDepartIdList.size() > 0'>
+                AND g.record_type = '2'
+                AND g.out_depart_id in
+                <foreach item="id" collection="entity.outDepartIdList" open="(" separator="," close=")">
+                    #{id}
+                </foreach>
+            </if>
+            <if test='entity.recordType == "2" and entity.inDepartIdList != null and entity.inDepartIdList.size() > 0'>
+                AND g.record_type = '2'
+                AND g.in_depart_id in
+                <foreach item="id" collection="entity.inDepartIdList" open="(" separator="," close=")">
+                    #{id}
+                </foreach>
+            </if>
+            <if test="entity.departId != null and entity.departId != ''">
+                AND a.depart_id = #{entity.departId}
+            </if>
+            <if test="entity.departParentId != null and entity.departParentId != ''">
+                AND a.depart_parent_id = #{entity.departParentId}
+            </if>
+            <if test="entity.productNumber != null and entity.productNumber != ''">
+                AND c.number LIKE concat('%',#{entity.productNumber},'%')
+            </if>
+            <if test="entity.venderId != null and entity.venderId != ''">
+                AND c.vender_id = #{entity.venderId}
+            </if>
+            <if test="entity.spec != null and entity.spec != ''">
+                AND c.spec LIKE concat('%',#{entity.spec},'%')
+            </if>
+            <if test="entity.version != null and entity.version != ''">
+                AND c.version LIKE concat('%',#{entity.version},'%')
+            </if>
+            <if test="entity.registration != null and entity.registration != ''">
+                AND c.registration LIKE concat('%',#{entity.registration},'%')
+            </if>
+            <if test="entity.productName != null and entity.productName != ''">
+                AND (
+                c.number LIKE concat('%',#{entity.productName},'%')
+                or c.name LIKE concat('%',#{entity.productName},'%')
+                or c.py LIKE concat('%',#{entity.productName},'%')
+                or c.wb LIKE concat('%',#{entity.productName},'%')
+                or c.bname LIKE concat('%',#{entity.productName},'%')
+                or c.bpy LIKE concat('%',#{entity.productName},'%')
+                or c.bwb LIKE concat('%',#{entity.productName},'%')
+                or c.zdy LIKE concat('%',#{entity.productName},'%')
+                )
+            </if>
+            ORDER BY create_time desc
+        </where>
+    </select>
+
+    <!-- 部门用量统计报表 -->
+    <select id="departUseReport" resultType="org.jeecg.modules.pd.vo.RpDepartUseReportPage" parameterType="org.jeecg.modules.pd.vo.RpDepartUseReportPage">
+        SELECT
+        @rowNum :=@rowNum + 1 AS id,
+        rep.*
+        FROM
+        (
+        SELECT
+        do_table1.audit_date,
+        do_table1.depart_id,
+        IFNULL(do_table1.dosageNum, 0) AS dosageNum,
+        IFNULL(do_table1.dosagePrice, 0) AS dosagePrice,
+        IFNULL(do_table2.dosageNum, 0) AS chargeDosageNum,
+        IFNULL(do_table2.dosagePrice, 0) AS chargeDosagePrice,
+        IFNULL(do_table3.dosageNum, 0) AS noChargeDosageNum,
+        IFNULL(do_table3.dosagePrice, 0) AS noChargeDosagePrice,
+        de.depart_name
+        FROM
+        (
+        SELECT
+        t1.audit_date,
+        sum(t1.left_refund_num) AS dosageNum,
+        sum(t1.dosagePrice) AS dosagePrice,
+        t1.depart_id,
+        t1.dosage_no
+        FROM
+        (
+        SELECT
+        date_format(b.dosage_date, '%Y-%m') AS audit_date,
+        b.depart_id,
+        a.left_refund_num,
+        IFNULL(a.selling_price, 0) AS sellingPrice,
+        a.left_refund_num * IFNULL(a.selling_price, 0) AS dosagePrice,
+        b.dosage_no
+        FROM
+        pd_dosage_detail a
+        LEFT JOIN pd_dosage b ON a.dosage_id = b.id
+        WHERE
+        a.del_flag = '0'
+        AND a.left_refund_num > 0
+        <if test="entity.departParentId != null and entity.departParentId != ''">
+            AND b.depart_parent_id = #{entity.departParentId}
+        </if>
+        <if test="entity.departId != null and entity.departId != ''">
+            AND b.depart_id = #{entity.departId}
+        </if>
+        <if test="entity.yearMonth != null and entity.yearMonth != ''">
+            AND date_format(b.dosage_date,'%Y-%m') = #{entity.yearMonth}
+        </if>
+        <if test="entity.departIdList != null and entity.departIdList.size() > 0">
+            and b.depart_id IN
+            <foreach collection="entity.departIdList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        ) t1
+        GROUP BY
+        t1.audit_date,
+        t1.depart_id
+        ) do_table1
+        LEFT JOIN (
+        SELECT
+        do_table2.audit_date,
+        do_table2.depart_id,
+        IFNULL(do_table2.dosageNum, 0) AS dosageNum,
+        IFNULL(do_table2.dosagePrice, 0) AS dosagePrice,
+        de.depart_name
+        FROM
+        (
+        SELECT
+        t1.audit_date,
+        sum(t1.left_refund_num) AS dosageNum,
+        sum(t1.dosagePrice) AS dosagePrice,
+        t1.depart_id,
+        t1.dosage_no
+        FROM
+        (
+        SELECT
+        date_format(b.dosage_date, '%Y-%m') AS audit_date,
+        b.depart_id,
+        a.left_refund_num,
+        IFNULL(a.selling_price, 0) AS sellingPrice,
+        a.left_refund_num * IFNULL(a.selling_price, 0) AS dosagePrice,
+        b.dosage_no
+        FROM
+        pd_dosage_detail a
+        LEFT JOIN pd_dosage b ON a.dosage_id = b.id
+        WHERE
+        a.del_flag = '0'
+        AND a.left_refund_num > 0
+        AND a.hy_charged = '0'
+        <if test="entity.departParentId != null and entity.departParentId != ''">
+            AND b.depart_parent_id = #{entity.departParentId}
+        </if>
+        <if test="entity.departId != null and entity.departId != ''">
+            AND b.depart_id = #{entity.departId}
+        </if>
+        <if test="entity.yearMonth != null and entity.yearMonth != ''">
+            AND date_format(b.dosage_date,'%Y-%m') = #{entity.yearMonth}
+        </if>
+        <if test="entity.departIdList != null and entity.departIdList.size() > 0">
+            and b.depart_id IN
+            <foreach collection="entity.departIdList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        ) t1
+        GROUP BY
+        t1.audit_date,
+        t1.depart_id
+        ) do_table2
+        LEFT JOIN sys_depart de ON de.id = do_table2.depart_id
+        ) do_table2 ON do_table1.depart_id = do_table2.depart_id
+        AND do_table1.audit_date = do_table2.audit_date
+        LEFT JOIN (
+        SELECT
+        do_table3.audit_date,
+        do_table3.depart_id,
+        IFNULL(do_table3.dosageNum, 0) AS dosageNum,
+        IFNULL(do_table3.dosagePrice, 0) AS dosagePrice,
+        de.depart_name
+        FROM
+        (
+        SELECT
+        t1.audit_date,
+        sum(t1.left_refund_num) AS dosageNum,
+        sum(t1.dosagePrice) AS dosagePrice,
+        t1.depart_id,
+        t1.dosage_no
+        FROM
+        (
+        SELECT
+        date_format(b.dosage_date, '%Y-%m') AS audit_date,
+        b.depart_id,
+        a.left_refund_num,
+        IFNULL(a.selling_price, 0) AS sellingPrice,
+        a.left_refund_num * IFNULL(a.selling_price, 0) AS dosagePrice,
+        b.dosage_no
+        FROM
+        pd_dosage_detail a
+        LEFT JOIN pd_dosage b ON a.dosage_id = b.id
+        WHERE
+        a.del_flag = '0'
+        AND a.left_refund_num > 0
+        AND a.hy_charged != '0'
+        <if test="entity.departParentId != null and entity.departParentId != ''">
+            AND b.depart_parent_id = #{entity.departParentId}
+        </if>
+        <if test="entity.departId != null and entity.departId != ''">
+            AND b.depart_id = #{entity.departId}
+        </if>
+        <if test="entity.yearMonth != null and entity.yearMonth != ''">
+            AND date_format(b.dosage_date,'%Y-%m') = #{entity.yearMonth}
+        </if>
+        <if test="entity.departIdList != null and entity.departIdList.size() > 0">
+            and b.depart_id IN
+            <foreach collection="entity.departIdList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        ) t1
+        GROUP BY
+        t1.audit_date,
+        t1.depart_id
+        ) do_table3
+        LEFT JOIN sys_depart de ON de.id = do_table3.depart_id
+        ) do_table3 ON do_table1.depart_id = do_table3.depart_id
+        AND do_table1.audit_date = do_table3.audit_date
+        LEFT JOIN sys_depart de ON de.id = do_table1.depart_id
+        ) AS rep,
+        (SELECT @rowNum := 0) n
+        ORDER BY
+        rep.audit_date DESC
+    </select>
+    <!-- 部门用量统计详情报表 -->
+    <select id="rpDepartUseDetailReport" resultType="org.jeecg.modules.pd.vo.RpDepartUseDetailReportPage">
+        SELECT
+        a.id,
+        a.dosage_id,
+        s.`name` AS supplierName,
+        b.dosage_date,
+        b.dosage_no,
+        b.remarks as "remarks",
+        a.product_id,
+        a.left_refund_num,
+        a.selling_price ,
+        a.selling_price * a.left_refund_num AS dosagePrice,
+        ps.supplier_id,
+        pp.number as productNumber,
+        pp.`name` as productName,
+        pp.spec,
+        pp.version,
+        a.batch_no,
+        a.exp_date,
+        pp.unit_id,
+        pu.`name` AS unitName,
+        pv.`name` AS venderName,
+        pp.registration as productRegistration,
+        pp.charge_code,
+        pp.jde_code AS jdeCode,
+        pp.dart_code AS dartCode,
+        pp.biding_number as bidingNumber,
+        pv.jde_code AS "venderJdeCode",
+        s.jde_code AS "supplierJdeCode"
+        FROM
+        pd_dosage_detail a
+        LEFT JOIN pd_dosage b ON a.dosage_id = b.id
+        LEFT JOIN	pd_product_stock ps on a.product_stock_id = ps.id
+        LEFT JOIN pd_supplier s ON ps.supplier_id = s.id
+        LEFT JOIN pd_product pp ON a.product_id = pp.id
+        LEFT JOIN pd_unit pu ON pp.unit_id = pu.id
+        LEFT JOIN pd_vender pv ON pp.vender_id = pv.id
+        WHERE
+        b.del_flag = '0'
+        AND pp.product_flag = '0'
+        AND a.left_refund_num >0
+        <if test="entity.yearMonth != null and entity.yearMonth != ''">
+            AND date_format(b.create_time,'%Y-%m') = #{entity.yearMonth}
+        </if>
+        <if test="entity.supplierId != null and entity.supplierId != ''">
+            AND ps.supplier_id = #{entity.supplierId}
+        </if>
+        <if test="entity.departId != null and entity.departId != ''">
+            AND a.depart_id = #{entity.departId}
+        </if>
+        <if test='entity.flag != null and entity.flag == "0"'>
+            AND a.hy_charged = '0'
+        </if>
+        <if test='entity.flag != null and entity.flag == "1"'>
+            AND a.hy_charged != '0'
+        </if>
+        <if test="entity.departParentId != null and entity.departParentId != ''">
+            AND a.depart_parent_id = #{entity.departParentId}
+        </if>
+        <if test="entity.queryExpDateStart != null and entity.queryExpDateStart != ''">
+            AND date_format( a.exp_date, '%Y-%m-%d') &gt;= #{entity.queryExpDateStart}
+        </if>
+        <if test="entity.queryExpDateEnd != null and entity.queryExpDateEnd != ''">
+            AND date_format( a.exp_date, '%Y-%m-%d') &lt;= #{entity.queryExpDateEnd}
+        </if>
+        <if test="entity.batchNo != null and entity.batchNo != ''">
+            AND a.batch_no LIKE concat('%',#{entity.batchNo},'%')
+        </if>
+        <if test="entity.dosageNo != null and entity.dosageNo != ''">
+            AND b.dosage_no LIKE concat('%',#{entity.dosageNo},'%')
+        </if>
+        <if test="entity.queryDateStart != null and entity.queryDateStart != ''">
+            AND date_format( b.create_time, '%Y-%m-%d') &gt;= #{entity.queryDateStart}
+        </if>
+        <if test="entity.queryDateEnd != null and entity.queryDateEnd != ''">
+            AND date_format( b.create_time, '%Y-%m-%d') &lt;= #{entity.queryDateEnd}
+        </if>
+        <if test="entity.productNumber != null and entity.productNumber != ''">
+            AND pp.number LIKE concat('%',#{entity.productNumber},'%')
+        </if>
+        <if test="entity.venderId != null and entity.venderId != ''">
+            AND pp.vender_id = #{entity.venderId}
+        </if>
+        <if test="entity.spec != null and entity.spec != ''">
+            AND pp.spec LIKE concat('%',#{entity.spec},'%')
+        </if>
+        <if test="entity.version != null and entity.version != ''">
+            AND pp.version LIKE concat('%',#{entity.version},'%')
+        </if>
+        <if test="entity.registration != null and entity.registration != ''">
+            AND pp.registration LIKE concat('%',#{entity.registration},'%')
+        </if>
+        <if test="entity.productName != null and entity.productName != ''">
+            AND (
+            pp.number LIKE concat('%',#{entity.productName},'%')
+            or pp.name LIKE concat('%',#{entity.productName},'%')
+            or pp.py LIKE concat('%',#{entity.productName},'%')
+            or pp.wb LIKE concat('%',#{entity.productName},'%')
+            or pp.bname LIKE concat('%',#{entity.productName},'%')
+            or pp.bpy LIKE concat('%',#{entity.productName},'%')
+            or pp.bwb LIKE concat('%',#{entity.productName},'%')
+            or pp.zdy LIKE concat('%',#{entity.productName},'%')
+            )
+        </if>
+    </select>
+
+    <!-- 库存统计报表 -->
+    <select id="departStockReport" resultType="org.jeecg.modules.pd.vo.RpDepartStockReportPage" parameterType="org.jeecg.modules.pd.vo.RpDepartStockReportPage">
+        SELECT
+        @rowNum :=@rowNum + 1 AS id,
+        rep.*
+        FROM
+        (
+        SELECT
+        sum(t1.stock_num) AS stockNum,
+        sum(t1.sellingAmount) AS sellingAmount,
+        sum(t1.purchaseAmount) AS purchaseAmount,
+        t1.depart_id,
+        t1.depart_name,
+        t1.create_time
+        FROM
+        (
+        SELECT
+        a.create_time,
+        a.depart_id,
+        a.stock_num,
+        IFNULL(b.selling_price, 0) AS sellingPrice,
+        IFNULL(b.purchase_price, 0) AS purchasePrice,
+        a.stock_num * IFNULL(b.selling_price, 0) AS sellingAmount,
+        a.stock_num * IFNULL(b.purchase_price, 0) AS purchaseAmount,
+        de.depart_name
+        FROM
+        pd_product_stock a
+        LEFT JOIN pd_stock_record_detail b ON a.record_detail_id = b.id
+        LEFT JOIN sys_depart de ON a.depart_id = de.id
+        WHERE
+        a.del_flag = '0'
+        AND a.stock_num > 0
+        <if test="entity.departParentId != null and entity.departParentId != ''">
+            AND a.depart_parent_id = #{entity.departParentId}
+        </if>
+        <if test="entity.departId != null and entity.departId != ''">
+            AND a.depart_id = #{entity.departId}
+        </if>
+        <if test="entity.departIdList != null and entity.departIdList.size() > 0">
+            and a.depart_id IN
+            <foreach collection="entity.departIdList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        ) t1
+        GROUP BY
+        t1.depart_id
+        ) AS rep,
+        (SELECT @rowNum := 0) n
+        ORDER BY
+        rep.create_time DESC
+    </select>
+
+    <!-- 部门用量统计详情报表 -->
+    <select id="rpDepartStockDetailReport" resultType="org.jeecg.modules.pd.vo.RpDepartStockDetailReportPage">
+        SELECT
+        a.id,
+        a.batch_no,
+        a.exp_date,
+        a.stock_num,
+        a.supplier_id,
+        b.selling_price,
+        b.purchase_price,
+        a.stock_num * IFNULL(b.selling_price, 0) AS sellingAmount,
+        a.stock_num * IFNULL(b.purchase_price, 0) AS purchaseAmount,
+        a.produce_date,
+        pp.number AS productNumber,
+        pp.`name` AS productName,
+        pp.spec,
+        pp.version,
+        pp.unit_id,
+        pu.`name` AS unitName,
+        pv.`name` AS venderName,
+        pp.registration AS productRegistration,
+        pp.charge_code,
+        pp.jde_code AS jdeCode,
+        pp.dart_code AS dartCode,
+        pp.biding_number AS bidingNumber,
+        pv.jde_code AS "venderJdeCode",
+        s.jde_code AS "supplierJdeCode"
+        FROM
+        pd_product_stock a
+        LEFT JOIN pd_stock_record_detail b on a.record_detail_id = b.id
+        LEFT JOIN pd_supplier s ON a.supplier_id = s.id
+        LEFT JOIN pd_product pp ON a.product_id = pp.id
+        LEFT JOIN pd_unit pu ON pp.unit_id = pu.id
+        LEFT JOIN pd_vender pv ON pp.vender_id = pv.id
+        WHERE
+        a.del_flag = '0'
+        and a.stock_num >0
+        <if test="entity.supplierId != null and entity.supplierId != ''">
+            AND a.supplier_id = #{entity.supplierId}
+        </if>
+        <if test="entity.departId != null and entity.departId != ''">
+            AND a.depart_id = #{entity.departId}
+        </if>
+        <if test="entity.departParentId != null and entity.departParentId != ''">
+            AND a.depart_parent_id = #{entity.departParentId}
+        </if>
+        <if test="entity.queryExpDateStart != null and entity.queryExpDateStart != ''">
+            AND date_format( a.exp_date, '%Y-%m-%d') &gt;= #{entity.queryExpDateStart}
+        </if>
+        <if test="entity.queryExpDateEnd != null and entity.queryExpDateEnd != ''">
+            AND date_format( a.exp_date, '%Y-%m-%d') &lt;= #{entity.queryExpDateEnd}
+        </if>
+        <if test="entity.batchNo != null and entity.batchNo != ''">
+            AND a.batch_no LIKE concat('%',#{entity.batchNo},'%')
+        </if>
+        <if test="entity.queryDateStart != null and entity.queryDateStart != ''">
+            AND date_format( a.create_time, '%Y-%m-%d') &gt;= #{entity.queryDateStart}
+        </if>
+        <if test="entity.queryDateEnd != null and entity.queryDateEnd != ''">
+            AND date_format( a.create_time, '%Y-%m-%d') &lt;= #{entity.queryDateEnd}
+        </if>
+        <if test="entity.productNumber != null and entity.productNumber != ''">
+            AND pp.number LIKE concat('%',#{entity.productNumber},'%')
+        </if>
+        <if test="entity.venderId != null and entity.venderId != ''">
+            AND pp.vender_id = #{entity.venderId}
+        </if>
+        <if test="entity.spec != null and entity.spec != ''">
+            AND pp.spec LIKE concat('%',#{entity.spec},'%')
+        </if>
+        <if test="entity.version != null and entity.version != ''">
+            AND pp.version LIKE concat('%',#{entity.version},'%')
+        </if>
+        <if test="entity.registration != null and entity.registration != ''">
+            AND pp.registration LIKE concat('%',#{entity.registration},'%')
+        </if>
+        <if test="entity.productName != null and entity.productName != ''">
+            AND (
+            pp.number LIKE concat('%',#{entity.productName},'%')
+            or pp.name LIKE concat('%',#{entity.productName},'%')
+            or pp.py LIKE concat('%',#{entity.productName},'%')
+            or pp.wb LIKE concat('%',#{entity.productName},'%')
+            or pp.bname LIKE concat('%',#{entity.productName},'%')
+            or pp.bpy LIKE concat('%',#{entity.productName},'%')
+            or pp.bwb LIKE concat('%',#{entity.productName},'%')
+            or pp.zdy LIKE concat('%',#{entity.productName},'%')
+            )
+        </if>
+    </select>
+
+
+    <!-- zxh供应商试剂用量统计查询 -->
+    <select id="supplierReagentUseReport" resultType="org.jeecg.modules.pd.vo.RpSupplierUseReportPage"
+            parameterType="org.jeecg.modules.pd.vo.RpSupplierUseReportPage">
+        SELECT
+        @rowNum :=@rowNum + 1 AS id,
+        rep.*
+        FROM
+        (
+        SELECT
+        in_table.audit_date,
+        in_table.supplier_id,
+        in_table.supplierName,
+        IFNULL(in_table.inProductNum, 0) AS inProductNum,
+        IFNULL(in_table.inTotalPrice, 0) AS inTotalPrice,
+        IFNULL(do_table.dosageNum, 0) AS dosageNum,
+        IFNULL(do_table.dosagePrice, 0) AS dosagePrice,
+        IFNULL(re_table.rejectedNum, 0) AS rejectedNum,
+        IFNULL(re_table.rejectedPrice, 0) AS rejectedPrice
+        FROM
+        (
+        SELECT
+        sum(t1.product_num) AS inProductNum,
+        sum(t1.sum_purchase_price) AS inTotalPrice,
+        t1.audit_date,
+        t1.supplier_id,
+        t1.supplierName
+        FROM
+        (
+        SELECT
+        a.id,
+        a.record_id,
+        b.record_no,
+        b.record_type,
+        b.in_type,
+        b.out_type,
+        a.product_id,
+        a.product_num,
+        a.purchase_price,
+        a.selling_price,
+        a.purchase_price * a.product_num AS sum_purchase_price,
+        date_format(b.audit_date, '%Y-%m') AS audit_date,
+        b.supplier_id,
+        s.`name` AS supplierName
+        FROM
+        pd_stock_record_detail a
+        LEFT JOIN pd_stock_record b ON a.record_id = b.id
+        LEFT JOIN pd_supplier s ON b.supplier_id = s.id
+        LEFT JOIN pd_product pp on a.product_id = pp.id
+        AND b.audit_status = '2'
+        WHERE
+        b.del_flag = '0'
+        AND b.record_type = '1' AND b.in_type = '1'
+        AND (
+        b.in_type IS NOT NULL
+        AND b.in_type &lt;&gt; ''
+        )
+        AND (
+        b.supplier_id IS NOT NULL
+        AND b.supplier_id &lt;&gt; ''
+        )
+        AND pp.product_flag = '1'
+        <if test="entity.yearMonth != null and entity.yearMonth != ''">
+            AND date_format(b.audit_date,'%Y-%m') = #{entity.yearMonth}
+        </if>
+        <if test="entity.querySupplierId != null and entity.querySupplierId != ''">
+            AND b.supplier_id = #{entity.querySupplierId}
+        </if>
+        <if test="entity.departParentId != null and entity.departParentId != ''">
+            AND a.depart_parent_id = #{entity.departParentId}
+        </if>
+        ) AS t1
+        GROUP BY t1.audit_date, t1.supplier_id
+        ) AS in_table
+        LEFT JOIN (
+        SELECT
+        sum(t2.purchase_price) AS dosagePrice,
+        sum(t2.dosageNum) AS dosageNum,
+        t2.audit_date,
+        t2.supplier_id,
+        t2.supplierName
+        FROM
+        (
+        SELECT
+        a.id,
+        a.ref_bar_code,
+        a.purchase_price,
+        date_format(a.boottle_date, '%Y-%m') AS audit_date,
+        1 AS dosageNum,
+        ps.supplier_id,
+        s.`name` AS supplierName
+        FROM
+        pd_bottle_inf a
+        LEFT JOIN pd_product_stock ps ON a.stock_id = ps.id
+        LEFT JOIN pd_supplier s ON ps.supplier_id = s.id
+        LEFT JOIN pd_product pp on ps.product_id = pp.id
+        WHERE  a.del_flag = '0'  AND  (a.close_remarks  is null  or  close_remarks !=2)
+        AND (
+        ps.supplier_id IS NOT NULL
+        AND ps.supplier_id &lt;&gt; ''
+        )
+        AND pp.product_flag = '1'
+        <if test="entity.yearMonth != null and entity.yearMonth != ''">
+            AND date_format(a.boottle_date,'%Y-%m') = #{entity.yearMonth}
+        </if>
+        <if test="entity.querySupplierId != null and entity.querySupplierId != ''">
+            AND ps.supplier_id = #{entity.querySupplierId}
+        </if>
+        <if test="entity.departParentId != null and entity.departParentId != ''">
+            AND a.depart_parent_id = #{entity.departParentId}
+        </if>
+        ) AS t2
+        GROUP BY
+        t2.audit_date,
+        t2.supplier_id
+        ) AS do_table ON in_table.supplier_id = do_table.supplier_id
+        AND in_table.audit_date = do_table.audit_date
+        LEFT JOIN (
+        SELECT
+        sum(t3.rejected_count) AS rejectedNum,
+        sum(t3.amount_money) AS rejectedPrice,
+        t3.audit_date,
+        t3.supplier_id,
+        t3.supplierName,
+        t3.purchase_price
+        FROM
+        (
+        SELECT
+        a.id,
+        a.rejected_id,
+        b.rejected_no,
+        a.product_id,
+        a.rejected_count,
+        ps.purchase_price,
+        ps.purchase_price * a.rejected_count AS amount_money,
+        date_format(b.rejected_date, '%Y-%m') AS audit_date,
+        b.supplier_id,
+        s.`name` AS supplierName
+        FROM
+        pd_rejected_detail a
+        LEFT JOIN pd_rejected b ON a.rejected_id = b.id
+        LEFT JOIN pd_supplier s ON b.supplier_id = s.id
+        LEFT JOIN pd_product_stock ps ON a.product_stock_id = ps.id
+        LEFT JOIN pd_product pp on a.product_id = pp.id
+        WHERE
+        b.del_flag = '0'
+        AND a.rejected_count > 0
+        AND (
+        b.supplier_id IS NOT NULL
+        AND b.supplier_id &lt;&gt; ''
+        )
+        AND pp.product_flag = '1'
+        <if test="entity.yearMonth != null and entity.yearMonth != ''">
+            AND date_format(b.rejected_date,'%Y-%m') = #{entity.yearMonth}
+        </if>
+        <if test="entity.querySupplierId != null and entity.querySupplierId != ''">
+            AND b.supplier_id = #{entity.querySupplierId}
+        </if>
+        <if test="entity.departParentId != null and entity.departParentId != ''">
+            AND a.depart_parent_id = #{entity.departParentId}
+        </if>
+        ) AS t3
+        GROUP BY
+        t3.audit_date,
+        t3.supplier_id
+        ) AS re_table ON in_table.supplier_id = re_table.supplier_id
+        AND in_table.audit_date = re_table.audit_date
+        ) AS rep,
+        (SELECT @rowNum := 0) n
+        ORDER BY
+        rep.audit_date DESC
+    </select>
+
+    <!-- zxh供应商试剂用量统计查询用量明细 -->
+    <select id="rpReagentUseDetailReport" resultType="org.jeecg.modules.pd.vo.RpReagentUseDetailReportPage">
+        SELECT
+        a.*,
+        c.name as "productName",
+        b.spec_quantity as "specQuantity",
+        (IFNULL(b.spec_quantity,0)  - IFNULL(a.spec_num,0))  as "sySpecNum",
+        b.batch_no as "batchNo",
+        b.exp_date as "expDate",
+        e.name as "unitName",
+        d.depart_name as "departName",
+        f.instr_name as "instrName"
+        from pd_bottle_inf a
+        left join  pd_product_stock  b on b.id=a.stock_id
+        left join pd_product c on c.id=b.product_id
+        left join pd_supplier t on t.id=b.supplier_id
+        left join sys_depart d on d.id=a.depart_id
+        LEFT JOIN pd_unit e ON b.spec_unit_id = e.id
+        LEFT JOIN ex_lab_instr_inf f on f.instr_code=a.instr_code
+        where  a.del_flag= '0' and  (a.close_remarks  is null  or  close_remarks !=2)
+        <if test="entity.productName != null and entity.productName != ''">
+            AND (c.name LIKE concat('%',#{entity.productName},'%')
+            or c.py LIKE concat('%',#{entity.productName},'%')
+            or c.wb LIKE concat('%',#{entity.productName},'%')
+            or c.zdy LIKE concat('%',#{entity.productName},'%')
+            or c.bname LIKE concat('%',#{entity.productName},'%')
+            or c.bpy LIKE concat('%',#{entity.productName},'%')
+            or c.bwb LIKE concat('%',#{entity.productName},'%')
+            )
+        </if>
+        <if test="entity.yearMonth != null and entity.yearMonth != ''">
+            AND date_format(a.boottle_date,'%Y-%m') = #{entity.yearMonth}
+        </if>
+        <if test="entity.supplierId != null and entity.supplierId != ''">
+            AND b.supplier_id = #{entity.supplierId}
+        </if>
+        <if test="entity.boottleBy != null and entity.boottleBy != ''">
+            AND a.boottle_by  LIKE concat('%',#{entity.boottleBy},'%')
+        </if>
+        <if test="entity.departId != null and entity.departId != ''">
+            AND a.depart_id = #{entity.departId}
+        </if>
+        <if test="entity.closeRemarks != null and entity.closeRemarks != ''">
+            AND a.close_remarks = #{entity.closeRemarks}
+        </if>
+        <if test="entity.instrCode != null and entity.instrCode != ''">
+            AND a.instr_code = #{entity.instrCode}
+        </if>
+        <if test="entity.instrName != null and entity.instrName != ''">
+            AND f.instr_name = #{entity.instrName}
+        </if>
+        <if test="entity.refBarCode != null and entity.refBarCode != ''">
+            AND a.ref_bar_code   LIKE concat('%',#{entity.refBarCode},'%')
+        </if>
+        <if test="entity.departParentId != null and entity.departParentId != ''">
+            AND a.depart_parent_id = #{entity.departParentId}
+        </if>
+        <if test="entity.status != null and entity.status != ''">
+            AND a.status = #{entity.status}
+        </if>
+        <if test="entity.queryDateStart != null and entity.queryDateStart != ''">
+            AND DATE_FORMAT(a.create_time, '%Y-%m-%d') &gt;= #{entity.queryDateStart}
+        </if>
+        <if test="entity.queryDateEnd != null and entity.queryDateEnd != ''">
+            AND DATE_FORMAT(a.create_time, '%Y-%m-%d') &lt;= #{entity.queryDateEnd}
+        </if>
+        <if test="entity.departIdList != null and entity.departIdList.size() > 0">
+            AND a.depart_id IN
+            <foreach collection="entity.departIdList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="entity.queryExpDateStart != null and entity.queryExpDateStart != ''">
+            AND date_format( a.exp_date, '%Y-%m-%d') &gt;= #{entity.queryExpDateStart}
+        </if>
+        <if test="entity.queryExpDateEnd != null and entity.queryExpDateEnd != ''">
+            AND date_format( a.exp_date, '%Y-%m-%d') &lt;= #{entity.queryExpDateEnd}
+        </if>
+        <if test="entity.batchNo != null and entity.batchNo != ''">
+            AND a.batch_no LIKE concat('%',#{entity.batchNo},'%')
+        </if>
+        <if test="entity.productNumber != null and entity.productNumber != ''">
+            AND c.number LIKE concat('%',#{entity.productNumber},'%')
+        </if>
+        <if test="entity.venderId != null and entity.venderId != ''">
+            AND c.vender_id = #{entity.venderId}
+        </if>
+        <if test="entity.spec != null and entity.spec != ''">
+            AND c.spec LIKE concat('%',#{entity.spec},'%')
+        </if>
+        <if test="entity.version != null and entity.version != ''">
+            AND c.version LIKE concat('%',#{entity.version},'%')
+        </if>
+        <if test="entity.registration != null and entity.registration != ''">
+            AND c.registration LIKE concat('%',#{entity.registration},'%')
+        </if>
+        <if test="entity.productName != null and entity.productName != ''">
+            AND (
+            c.number LIKE concat('%',#{entity.productName},'%')
+            or c.name LIKE concat('%',#{entity.productName},'%')
+            or c.py LIKE concat('%',#{entity.productName},'%')
+            or c.wb LIKE concat('%',#{entity.productName},'%')
+            or c.bname LIKE concat('%',#{entity.productName},'%')
+            or c.bpy LIKE concat('%',#{entity.productName},'%')
+            or c.bwb LIKE concat('%',#{entity.productName},'%')
+            or c.zdy LIKE concat('%',#{entity.productName},'%')
+            )
+        </if>
+        ORDER BY  a.close_remarks , a.CREATE_TIME DESC
+    </select>
+
+
+
+
+    <!-- 采购收费对照柱状图 根据月份统计-->
+    <select id="queryPurchaseCountView" resultType="org.jeecg.modules.pd.vo.RpPurchaseUseReportPage">
+        select
+        c.type as "type",
+        ROUND(sum(c.y),2) as y,
+        ROUND(sum(c.x),2) as x,
+        ROUND(sum(c.s),2) as s,
+        ROUND(sum(c.y),2) as 采购金额,
+        ROUND(sum(c.x),2) as 收费金额,
+        ROUND(sum(c.s),2) as 不可收费金额
+        from(
+        SELECT DATE_FORMAT(x.Month, '%Y-%m') as "type" ,
+        "0" as "y","0" as "x", "" as "s"
+        FROM XNumber x
+        where  DATE_FORMAT(x.Month, '%Y')=#{entity.year}
+        UNION ALL
+        select
+        a.month as "type",
+        a.in_record_price as "y",
+        "" as "x",
+        "" as "s"
+        from pd_numerical_inf a
+        left join sys_depart t on t.id=a.depart_id
+        where a.tj_type='0'
+        <if test="entity.departIdList != null and entity.departIdList.size() > 0">
+            AND a.depart_id IN
+            <foreach collection="entity.departIdList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="entity.departIdList == null || entity.departIdList.size() == 0">
+            and t.depart_type in('1')
+        </if>
+        AND  DATE_FORMAT(a.create_time, '%Y')=#{entity.year}
+        UNION ALL
+        select  DATE_FORMAT(e.create_time, '%Y-%m') AS "type",
+        "" AS "y",
+        (d.selling_price * d.dosage_count) AS "x",
+        "" as "s"
+        from pd_dosage_detail d
+        left join pd_dosage  e on e.id=d.dosage_id
+        where d.hy_charged='0'
+        and d.del_flag='0'
+        <if test="entity.departIdList != null and entity.departIdList.size() > 0">
+            AND e.depart_id IN
+            <foreach collection="entity.departIdList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        AND  DATE_FORMAT(e.create_time, '%Y')=#{entity.year}
+        UNION ALL
+        select  DATE_FORMAT(e.create_time, '%Y-%m') AS "type",
+        "" AS "y",
+        "" AS "x",
+        (d.selling_price * d.dosage_count) as "s"
+        from pd_dosage_detail d
+        left join pd_dosage  e on e.id=d.dosage_id
+        where d.hy_charged='1'
+        and d.del_flag='0'
+        <if test="entity.departIdList != null and entity.departIdList.size() > 0">
+            AND e.depart_id IN
+            <foreach collection="entity.departIdList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        AND  DATE_FORMAT(e.create_time, '%Y')=#{entity.year}
+        ) c
+        GROUP BY type;
+    </select>
+
+    <!-- 采购收费对照柱状图 根据科室统计-->
+    <select id="queryDepartPurchaseCountView" resultType="org.jeecg.modules.pd.vo.RpPurchaseUseReportPage">
+        select
+        c.type as "type",
+        ROUND(sum(c.y),2) as "y",
+        ROUND(sum(c.x),2) as "x",
+        ROUND(sum(c.s),2) as "s",
+        ROUND(sum(c.y),2) as 采购金额 ,
+        ROUND(sum(c.x),2)  as 收费金额,
+        ROUND(sum(c.s),2)  as 不可收费金额
+        from(
+        select  t.depart_name as "type",
+        a.in_record_price as "y",
+        "" as "x",
+        "" as "s"
+        from pd_numerical_inf a
+        left join sys_depart t on t.id=a.depart_id
+        where a.tj_type='0'  and t.depart_type in('2')
+        <if test="entity.departIdList != null and entity.departIdList.size() > 0">
+            AND a.depart_id IN
+            <foreach collection="entity.departIdList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="entity.yearMonth != null and entity.yearMonth != ''">
+            AND a.month  = #{entity.yearMonth}
+        </if>
+        union all
+        select
+        c.depart_name  as "type"  ,
+        "" as "y",
+        d.selling_price * d.dosage_count as "x",
+        "" as "s"
+        from pd_dosage_detail d
+        left join pd_dosage  e on e.id=d.dosage_id
+        left join sys_depart c on c.id=e.depart_id
+        where d.hy_charged='0'
+        and d.del_flag='0'
+        and c.depart_type in('2')
+        <if test="entity.departIdList != null and entity.departIdList.size() > 0">
+            AND e.depart_id IN
+            <foreach collection="entity.departIdList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="entity.yearMonth != null and entity.yearMonth != ''">
+            AND DATE_FORMAT(e.create_time, '%Y-%m') = #{entity.yearMonth}
+        </if>
+        union all
+        select
+        c.depart_name  as "type",
+        "" as "y",
+        d.selling_price * d.dosage_count as "x",
+        "" as "s"
+        from pd_dosage_detail d
+        left join pd_dosage  e on e.id=d.dosage_id
+        left join sys_depart c on c.id in(
+        (select t.parent_id from sys_depart t where t.id=e.depart_id  and t.depart_type in('3')))
+        where d.hy_charged='0'
+        and d.del_flag='0'
+        and c.depart_type in('2')
+        and c.depart_name is not  null
+        <if test="entity.departIdList != null and entity.departIdList.size() > 0">
+            AND e.depart_id IN
+            <foreach collection="entity.departIdList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="entity.yearMonth != null and entity.yearMonth != ''">
+            AND DATE_FORMAT(e.create_time, '%Y-%m') = #{entity.yearMonth}
+        </if>
+        union all
+        select
+        c.depart_name  as "type"  ,
+        "" as "y",
+        "" as "x",
+        d.selling_price * d.dosage_count  as "s"
+        from pd_dosage_detail d
+        left join pd_dosage  e on e.id=d.dosage_id
+        left join sys_depart c on c.id=e.depart_id
+        where d.hy_charged='1'
+        and d.del_flag='0'
+        and c.depart_type in('2')
+        <if test="entity.departIdList != null and entity.departIdList.size() > 0">
+            AND e.depart_id IN
+            <foreach collection="entity.departIdList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="entity.yearMonth != null and entity.yearMonth != ''">
+            AND DATE_FORMAT(e.create_time, '%Y-%m') = #{entity.yearMonth}
+        </if>
+        union all
+        select
+        c.depart_name  as "type",
+        "" as "y",
+        "" as "x",
+        d.selling_price * d.dosage_count as "s"
+        from pd_dosage_detail d
+        left join pd_dosage  e on e.id=d.dosage_id
+        left join sys_depart c on c.id in(
+        (select t.parent_id from sys_depart t where t.id=e.depart_id  and t.depart_type in('3')))
+        where d.hy_charged='1'
+        and d.del_flag='0'
+        and e.del_flag='0'
+        and c.depart_type in('2')
+        and c.depart_name is not  null
+        <if test="entity.departIdList != null and entity.departIdList.size() > 0">
+            AND e.depart_id IN
+            <foreach collection="entity.departIdList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="entity.yearMonth != null and entity.yearMonth != ''">
+            AND DATE_FORMAT(e.create_time, '%Y-%m') = #{entity.yearMonth}
+        </if>
+        ) c
+        group by c.type
+        order by y desc limit 0,10
+    </select>
+
+
+    <!-- 全院耗材占比数据查 -->
+    <select id="queryConsumptionView" resultType="org.jeecg.modules.pd.vo.RpPurchaseUseReportPage">
+        select
+        ROUND(sum(a.product_num * a.purchase_price),2) as value,
+        case
+        when is_charge = '0' then "可收费"
+        when is_charge = '1' then "不可收费"
+        end as "name"
+        from pd_stock_record_detail a
+        left join pd_stock_record b on a.record_id=b.id
+        left join pd_product c  on c.id=a.product_id
+        left join sys_depart t on t.id=b.in_depart_id
+        where 	1=1
+
+        <if test="entity.departIdList != null and entity.departIdList.size() > 0">
+            AND b.in_depart_id IN
+            <foreach collection="entity.departIdList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="entity.departIdList == null || entity.departIdList.size() == 0">
+            AND b.record_type='1'
+            AND b.in_type='1'
+            AND t.depart_type='1'
+        </if>
+        <if test="entity.yearMonth != null and entity.yearMonth != ''">
+            AND DATE_FORMAT(b.create_time, '%Y-%m') = #{entity.yearMonth}
+        </if>
+        group by is_charge
+    </select>
+
+
+    <!-- 采购科室金额占比 -->
+    <select id="queryDepartContionView" resultType="org.jeecg.modules.pd.vo.RpPurchaseUseReportPage">
+        select  t.depart_name as "name",
+        ROUND(sum(a.in_record_price),2) as value
+        from pd_numerical_inf a
+        left join sys_depart t on t.id=a.depart_id
+        where a.tj_type='0'
+        and t.depart_type='2'
+        <if test="entity.departIdList != null and entity.departIdList.size() > 0">
+            AND a.depart_id IN
+            <foreach collection="entity.departIdList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="entity.yearMonth != null and entity.yearMonth != ''">
+            AND a.month  = #{entity.yearMonth}
+        </if>
+        group by a.depart_id
+        order by value desc limit 0,10
+
+    </select>
+
+    <!-- 科室收费金额占比 -->
+    <select id="queryDepartChargeView" resultType="org.jeecg.modules.pd.vo.RpPurchaseUseReportPage">
+        select ROUND(sum(c.count),2) as value,
+        c.item as "name"
+        from(
+        select
+        (a.dosage_count * a.selling_price) as "count",
+        d.depart_name as "item"
+        from pd_dosage_detail a
+        left join pd_dosage b on b.id=a.dosage_id
+        left join pd_product c on c.id=a.product_id
+        left join sys_depart d on d.id=b.depart_id
+        where a.hy_charged='0'
+        and b.del_flag='0'
+        and a.del_flag='0'
+        <if test="entity.yearMonth != null and entity.yearMonth != ''">
+            AND DATE_FORMAT(b.create_time, '%Y-%m') = #{entity.yearMonth}
+        </if>
+        <if test="entity.departIdList != null and entity.departIdList.size() > 0">
+            AND b.depart_id IN
+            <foreach collection="entity.departIdList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="entity.departIdList == null || entity.departIdList.size() == 0">
+            and d.depart_type in('2')
+        </if>
+        ) c
+        group by   c.item
+        order by  c.count desc limit 0,10
+    </select>
+
+    <!--   zxh采购金额环比-->
+    <select id="queryPurchaseAmountMomTableView" resultType="org.jeecg.modules.pd.vo.RpPurchaseUseReportPage">
+        select t.depart_name as "departName",
+        ROUND(SUM(a.in_record_price),2) as "amount"
+        from pd_numerical_inf a
+        left join sys_depart t on a.depart_id=t.id
+        where 1=1
+        <if test="entity.productFlag != null and entity.productFlag != ''">
+            AND tj_type=#{entity.productFlag}
+        </if>
+        <if test="entity.departType != null and entity.departType != ''">
+            AND t.depart_type=#{entity.departType}
+        </if>
+        AND a.month= #{entity.yearMonth}
+        group by a.depart_id
+        order by a.in_record_price desc limit 0,10
+    </select>
+
+
+
+    <!-- 采购，检验收入金额数据 根据月份统计-->
+    <select id="queryItemMoneyCountView" resultType="org.jeecg.modules.pd.vo.RpPurchaseUseReportPage">
+        select
+        c.type as "type",
+        ROUND(sum(c.y),2) as y,
+        ROUND(sum(c.x),2) as x,
+        ROUND(sum(c.y),2) as 采购金额,
+        ROUND(sum(c.x),2) as 检验收入金额
+        from(
+        SELECT DATE_FORMAT(x.Month, '%Y-%m') as "type" ,
+        "0" as "y","0" as "x"
+        FROM XNumber x
+        where  DATE_FORMAT(X.Month, '%Y')=#{entity.year}
+
+        UNION ALL
+        select  a.month  as "type",
+        a.in_record_price as "y",
+        "" as "x"
+        from pd_numerical_inf a
+        where tj_type='1'
+        and a.depart_id='743dc34c1bcd4e4fa9503ccebce7edc6'
+        AND  DATE_FORMAT(a.create_time, '%Y')=#{entity.year}
+
+
+        UNION ALL
+
+        select
+        DATE_FORMAT(a.create_time, '%Y-%m') AS "type",
+        "" as "y",
+        a.item_price as "x"
+        from pd_numerical_inf a
+        where a.tj_type='1'
+         AND a.depart_id='743dc34c1bcd4e4fa9503ccebce7edc6'
+        AND  DATE_FORMAT(a.create_time, '%Y')=#{entity.year}
+        ) c
+        GROUP BY type;
+    </select>
+
+
+
+    <!--   科室采购环比-同比报表-->
+    <select id="queryMoOnMoView"  resultType="org.jeecg.modules.pd.vo.RpPurchaseUseReportPage">
+ select
+        t.depart_name as "departName",
+  sum(case when  month=#{entity.lastMonth} then   in_record_price else 0 end ) as "lastPrice",
+  sum(case when  month=#{entity.theLastYearMonth} then   in_record_price else 0 end ) as "theLastPrice",
+  sum(case when  month=#{entity.theYearMonth} then   in_record_price else 0 end ) as "thePrice"
+     from pd_numerical_inf a
+     left join sys_depart t on a.depart_id=t.id
+     where 1=1
+        <if test="entity.productFlag != null and entity.productFlag != ''">
+            AND a.tj_type = #{entity.productFlag}
+        </if>
+        <if test="entity.departIdList != null and entity.departIdList.size() > 0">
+            AND a.depart_id IN
+            <foreach collection="entity.departIdList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+    group by t.id
+    order by in_record_price desc
+    </select>
+
+
+
+    <!--   获取前12个月的月份-->
+    <select id="getYearMonth" resultType="org.jeecg.modules.pd.vo.RpPurchaseUseReportPage">
+        SELECT
+        DATE_FORMAT(x.Month, '%Y-%m') as "yearMonth"
+        FROM XNumber x
+        where x.Month > DATE_SUB(CURDATE(), INTERVAL 1 YEAR)
+        and substr(x.Month,1,7) &lt;=substr(CURDATE(),1,7)
+        group by yearMonth
+    </select>
+
+
+
+    <!--   根据月份获取各个科室的采购金额，收费金额，不可收费金额数据-->
+    <select id="queryMonthMoneyList" resultType="org.jeecg.modules.pd.vo.RpPurchaseMoneyReportPage">
+      select
+       c.id ,
+       t.depart_name as "departName",
+       ROUND(sum(c.janPurchaseMoney),2) as "janPurchaseMoney",
+       ROUND(sum(c.janDosageMoney),2) as "janDosageMoney",
+       ROUND(sum(c.janNoDosageMoney),2) as "janNoDosageMoney",
+       ROUND(sum(c.febPurchaseMoney),2) as "febPurchaseMoney",
+       ROUND(sum(c.febDosageMoney),2) as "febDosageMoney",
+       ROUND(sum(c.febNoDosageMoney),2) as "febNoDosageMoney",
+       ROUND(sum(c.marPurchaseMoney),2) as "marPurchaseMoney",
+       ROUND(sum(c.marDosageMoney),2) as "marDosageMoney",
+       ROUND(sum(c.marNoDosageMoney),2) as "marNoDosageMoney",
+       ROUND(sum(c.aprPurchaseMoney),2) as "aprPurchaseMoney",
+       ROUND(sum(c.aprDosageMoney),2) as "aprDosageMoney",
+       ROUND(sum(c.aprNoDosageMoney),2) as "aprNoDosageMoney",
+       ROUND(sum(c.mayPurchaseMoney),2) as "mayPurchaseMoney",
+       ROUND(sum(c.mayDosageMoney),2) as "mayDosageMoney",
+       ROUND(sum(c.mayNoDosageMoney),2) as "mayNoDosageMoney",
+       ROUND(sum(c.junPurchaseMoney),2) as "junPurchaseMoney",
+       ROUND(sum(c.junDosageMoney),2) as "junDosageMoney",
+       ROUND(sum(c.junNoDosageMoney),2) as "junNoDosageMoney",
+       ROUND(sum(c.julPurchaseMoney),2) as "julPurchaseMoney",
+       ROUND(sum(c.julDosageMoney),2) as "julDosageMoney",
+       ROUND(sum(c.julNoDosageMoney),2) as "julNoDosageMoney",
+       ROUND(sum(c.augPurchaseMoney),2) as "augPurchaseMoney",
+       ROUND(sum(c.augDosageMoney),2) as "augDosageMoney",
+       ROUND(sum(c.augNoDosageMoney),2) as "augNoDosageMoney",
+       ROUND(sum(c.septPurchaseMoney),2) as "septPurchaseMoney",
+       ROUND(sum(c.septDosageMoney),2) as "septDosageMoney",
+       ROUND(sum(c.septNoDosageMoney),2) as "septNoDosageMoney",
+       ROUND(sum(c.octPurchaseMoney),2) as "octPurchaseMoney",
+       ROUND(sum(c.octDosageMoney),2) as "octDosageMoney",
+       ROUND(sum(c.octNoDosageMoney),2) as "octNoDosageMoney",
+       ROUND(sum(c.novPurchaseMoney),2) as "novPurchaseMoney",
+       ROUND(sum(c.novDosageMoney),2) as "novDosageMoney",
+       ROUND(sum(c.novNoDosageMoney),2) as "novNoDosageMoney",
+       ROUND(sum(c.decPurchaseMoney),2) as "decPurchaseMoney",
+       ROUND(sum(c.decDosageMoney),2) as "decDosageMoney",
+       ROUND(sum(c.decNoDosageMoney),2) as "decNoDosageMoney",
+       ROUND((sum(c.janPurchaseMoney)+sum(c.febPurchaseMoney)+sum(c.marPurchaseMoney)+sum(c.aprPurchaseMoney)+sum(c.mayPurchaseMoney)
+       +sum(c.junPurchaseMoney)+sum(c.julPurchaseMoney)+sum(c.augPurchaseMoney)+sum(c.septPurchaseMoney)+sum(c.octPurchaseMoney)
+       +sum(c.novPurchaseMoney)+sum(c.decPurchaseMoney)),2) as "countPurchaseMoney",
+	   ROUND((sum(c.janDosageMoney)+sum(c.febDosageMoney)+sum(c.marDosageMoney)+sum(c.aprDosageMoney)+sum(c.mayDosageMoney)
+       +sum(c.junDosageMoney)+sum(c.julDosageMoney)+sum(c.augDosageMoney)+sum(c.septDosageMoney)+sum(c.octDosageMoney)
+       +sum(c.novDosageMoney)+sum(c.decDosageMoney)),2)  as "countDosageMoney",
+	   ROUND((sum(c.janNoDosageMoney)+sum(c.febNoDosageMoney)+sum(c.marNoDosageMoney)+sum(c.aprNoDosageMoney)+sum(c.mayNoDosageMoney)
+       +sum(c.junNoDosageMoney)+sum(c.julNoDosageMoney)+sum(c.augNoDosageMoney)+sum(c.septNoDosageMoney)+sum(c.octNoDosageMoney)
+       +sum(c.novNoDosageMoney)+sum(c.decNoDosageMoney)),2)  as "countNoDosageMoney"
+ from (
+ select
+    t.id,
+    sum(case when month=concat(#{entity.year},'-01') then in_record_price else 0 end ) as "janPurchaseMoney",
+	sum(case when month=concat(#{entity.year},'-02') then in_record_price else 0 end ) as "febPurchaseMoney",
+	sum(case when month=concat(#{entity.year},'-03') then in_record_price else 0 end ) as "marPurchaseMoney",
+	sum(case when month=concat(#{entity.year},'-04') then in_record_price else 0 end ) as "aprPurchaseMoney",
+	sum(case when month=concat(#{entity.year},'-05') then in_record_price else 0 end ) as "mayPurchaseMoney",
+	sum(case when month=concat(#{entity.year},'-06') then in_record_price else 0 end ) as "junPurchaseMoney",
+	sum(case when month=concat(#{entity.year},'-07') then in_record_price else 0 end ) as "julPurchaseMoney",
+	sum(case when month=concat(#{entity.year},'-08') then in_record_price else 0 end ) as "augPurchaseMoney",
+	sum(case when month=concat(#{entity.year},'-09') then in_record_price else 0 end ) as "septPurchaseMoney",
+	sum(case when month=concat(#{entity.year},'-10') then in_record_price else 0 end ) as "octPurchaseMoney",
+	sum(case when month=concat(#{entity.year},'-11') then in_record_price else 0 end ) as "novPurchaseMoney",
+	sum(case when month=concat(#{entity.year},'-12') then in_record_price else 0 end ) as "decPurchaseMoney",
+	"0" as "janDosageMoney","0" as "febDosageMoney","0" as "marDosageMoney","0" as "aprDosageMoney",
+	"0" as "mayDosageMoney","0" as "junDosageMoney","0" as "julDosageMoney","0" as "augDosageMoney",
+	"0" as "septDosageMoney","0" as "octDosageMoney","0" as "novDosageMoney","0" as "decDosageMoney",
+	"0" as "janNoDosageMoney","0" as "febNoDosageMoney","0" as "marNoDosageMoney","0" as "aprNoDosageMoney",
+	"0" as "mayNoDosageMoney","0" as "junNoDosageMoney","0" as "julNoDosageMoney","0" as "augNoDosageMoney",
+	"0" as "septNoDosageMoney","0" as "octNoDosageMoney","0" as "novNoDosageMoney","0" as "decNoDosageMoney"
+ from pd_numerical_inf a
+ left join sys_depart t on a.depart_id=t.id
+  group by t.id
+
+union  all
+
+	select
+	 d.id,
+	"0" as "janPurchaseMoney","0" as "febPurchaseMoney","0" as "marPurchaseMoney","0" as "aprPurchaseMoney",
+	"0" as "mayPurchaseMoney","0" as "junPurchaseMoney","0" as "julPurchaseMoney","0" as "augPurchaseMoney",
+	"0" as "septPurchaseMoney","0" as "octPurchaseMoney","0" as "novPurchaseMoney","0" as "decPurchaseMoney",
+	sum(case when DATE_FORMAT(a.create_time, '%Y-%m') =concat(#{entity.year},'-01') then (a.dosage_count * a.selling_price) else 0 end ) as "janDosageMoney" ,
+	sum(case when DATE_FORMAT(a.create_time, '%Y-%m') =concat(#{entity.year},'-02') then (a.dosage_count * a.selling_price) else 0 end ) as "febDosageMoney" ,
+	sum(case when DATE_FORMAT(a.create_time, '%Y-%m') =concat(#{entity.year},'-03') then (a.dosage_count * a.selling_price) else 0 end ) as "marDosageMoney" ,
+	sum(case when DATE_FORMAT(a.create_time, '%Y-%m') =concat(#{entity.year},'-04') then (a.dosage_count * a.selling_price) else 0 end ) as "aprDosageMoney" ,
+	sum(case when DATE_FORMAT(a.create_time, '%Y-%m') =concat(#{entity.year},'-05') then (a.dosage_count * a.selling_price) else 0 end ) as "mayDosageMoney" ,
+	sum(case when DATE_FORMAT(a.create_time, '%Y-%m') =concat(#{entity.year},'-06') then (a.dosage_count * a.selling_price) else 0 end ) as "junDosageMoney" ,
+	sum(case when DATE_FORMAT(a.create_time, '%Y-%m') =concat(#{entity.year},'-07') then (a.dosage_count * a.selling_price) else 0 end ) as "julDosageMoney" ,
+	sum(case when DATE_FORMAT(a.create_time, '%Y-%m') =concat(#{entity.year},'-08') then (a.dosage_count * a.selling_price) else 0 end ) as "augDosageMoney" ,
+	sum(case when DATE_FORMAT(a.create_time, '%Y-%m') =concat(#{entity.year},'-09') then (a.dosage_count * a.selling_price) else 0 end ) as "septDosageMoney" ,
+	sum(case when DATE_FORMAT(a.create_time, '%Y-%m') =concat(#{entity.year},'-10') then (a.dosage_count * a.selling_price) else 0 end ) as "octDosageMoney" ,
+    sum(case when DATE_FORMAT(a.create_time, '%Y-%m') =concat(#{entity.year},'-11') then (a.dosage_count * a.selling_price) else 0 end ) as "novDosageMoney" ,
+    sum(case when DATE_FORMAT(a.create_time, '%Y-%m') =concat(#{entity.year},'-12') then (a.dosage_count * a.selling_price) else 0 end ) as "decDosageMoney" ,
+		"0" as "janNoDosageMoney","0" as "febNoDosageMoney","0" as "marNoDosageMoney","0" as "aprNoDosageMoney",
+	"0" as "mayNoDosageMoney","0" as "junNoDosageMoney","0" as "julNoDosageMoney","0" as "augNoDosageMoney",
+	"0" as "septNoDosageMoney","0" as "octNoDosageMoney","0" as "novNoDosageMoney","0" as "decNoDosageMoney"
+        from pd_dosage_detail a
+        left join pd_dosage b on b.id=a.dosage_id
+        left join pd_product c on c.id=a.product_id
+        left join sys_depart d on d.id=b.depart_id
+        where a.hy_charged='0'
+        and b.del_flag='0'
+        and a.del_flag='0'
+        group by b.depart_id
+
+			union all
+
+		 select
+	 c.id,
+	"0" as "janPurchaseMoney","0" as "febPurchaseMoney","0" as "marPurchaseMoney","0" as "aprPurchaseMoney",
+	"0" as "mayPurchaseMoney","0" as "junPurchaseMoney","0" as "julPurchaseMoney","0" as "augPurchaseMoney",
+	"0" as "septPurchaseMoney","0" as "octPurchaseMoney","0" as "novPurchaseMoney","0" as "decPurchaseMoney",
+	"0" as "janDosageMoney","0" as "febDosageMoney","0" as "marDosageMoney","0" as "aprDosageMoney",
+	"0" as "mayDosageMoney","0" as "junDosageMoney","0" as "julDosageMoney","0" as "augDosageMoney",
+	"0" as "septDosageMoney","0" as "octDosageMoney","0" as "novDosageMoney","0" as "decDosageMoney",
+    sum(case when DATE_FORMAT(a.create_time, '%Y-%m') =concat(#{entity.year},'-01') then (a.dosage_count * a.selling_price) else 0 end ) as "janNoDosageMoney" ,
+	sum(case when DATE_FORMAT(a.create_time, '%Y-%m') =concat(#{entity.year},'-02') then (a.dosage_count * a.selling_price) else 0 end ) as "febNoDosageMoney" ,
+	sum(case when DATE_FORMAT(a.create_time, '%Y-%m') =concat(#{entity.year},'-03') then (a.dosage_count * a.selling_price) else 0 end ) as "marNoDosageMoney" ,
+	sum(case when DATE_FORMAT(a.create_time, '%Y-%m') =concat(#{entity.year},'-04') then (a.dosage_count * a.selling_price) else 0 end ) as "aprNoDosageMoney" ,
+	sum(case when DATE_FORMAT(a.create_time, '%Y-%m') =concat(#{entity.year},'-05') then (a.dosage_count * a.selling_price) else 0 end ) as "mayNoDosageMoney" ,
+	sum(case when DATE_FORMAT(a.create_time, '%Y-%m') =concat(#{entity.year},'-06') then (a.dosage_count * a.selling_price) else 0 end ) as "junNoDosageMoney" ,
+	sum(case when DATE_FORMAT(a.create_time, '%Y-%m') =concat(#{entity.year},'-07') then (a.dosage_count * a.selling_price) else 0 end ) as "julNoDosageMoney" ,
+	sum(case when DATE_FORMAT(a.create_time, '%Y-%m') =concat(#{entity.year},'-08') then (a.dosage_count * a.selling_price) else 0 end ) as "augNoDosageMoney" ,
+	sum(case when DATE_FORMAT(a.create_time, '%Y-%m') =concat(#{entity.year},'-09') then (a.dosage_count * a.selling_price) else 0 end ) as "septNoDosageMoney" ,
+	sum(case when DATE_FORMAT(a.create_time, '%Y-%m') =concat(#{entity.year},'-10') then (a.dosage_count * a.selling_price) else 0 end ) as "octNoDosageMoney" ,
+    sum(case when DATE_FORMAT(a.create_time, '%Y-%m') =concat(#{entity.year},'-11') then (a.dosage_count * a.selling_price) else 0 end ) as "novNoDosageMoney" ,
+    sum(case when DATE_FORMAT(a.create_time, '%Y-%m') =concat(#{entity.year},'-12') then (a.dosage_count * a.selling_price) else 0 end ) as "decNoDosageMoney"
+        from pd_dosage_detail a
+        left join pd_dosage  e on e.id=a.dosage_id
+        left join sys_depart c  on c.id=e.depart_id
+        where a.hy_charged='1'
+        and a.del_flag='0'
+        and c.depart_type in('1','2')
+        group by c.id
+
+
+		union all
+
+
+ select
+    c.id, "0" as "janPurchaseMoney","0" as "febPurchaseMoney","0" as "marPurchaseMoney","0" as "aprPurchaseMoney",
+	"0" as "mayPurchaseMoney","0" as "junPurchaseMoney","0" as "julPurchaseMoney","0" as "augPurchaseMoney",
+	"0" as "septPurchaseMoney","0" as "octPurchaseMoney","0" as "novPurchaseMoney","0" as "decPurchaseMoney",
+	"0" as "janDosageMoney","0" as "febDosageMoney","0" as "marDosageMoney","0" as "aprDosageMoney",
+	"0" as "mayDosageMoney","0" as "junDosageMoney","0" as "julDosageMoney","0" as "augDosageMoney",
+	"0" as "septDosageMoney","0" as "octDosageMoney","0" as "novDosageMoney","0" as "decDosageMoney",
+    sum(case when DATE_FORMAT(a.create_time, '%Y-%m') =concat(#{entity.year},'-01') then (a.dosage_count * a.selling_price) else 0 end ) as "janNoDosageMoney" ,
+	sum(case when DATE_FORMAT(a.create_time, '%Y-%m') =concat(#{entity.year},'-02') then (a.dosage_count * a.selling_price) else 0 end ) as "febNoDosageMoney" ,
+	sum(case when DATE_FORMAT(a.create_time, '%Y-%m') =concat(#{entity.year},'-03') then (a.dosage_count * a.selling_price) else 0 end ) as "marNoDosageMoney" ,
+	sum(case when DATE_FORMAT(a.create_time, '%Y-%m') =concat(#{entity.year},'-04') then (a.dosage_count * a.selling_price) else 0 end ) as "aprNoDosageMoney" ,
+	sum(case when DATE_FORMAT(a.create_time, '%Y-%m') =concat(#{entity.year},'-05') then (a.dosage_count * a.selling_price) else 0 end ) as "mayNoDosageMoney" ,
+	sum(case when DATE_FORMAT(a.create_time, '%Y-%m') =concat(#{entity.year},'-06') then (a.dosage_count * a.selling_price) else 0 end ) as "junNoDosageMoney" ,
+	sum(case when DATE_FORMAT(a.create_time, '%Y-%m') =concat(#{entity.year},'-07') then (a.dosage_count * a.selling_price) else 0 end ) as "julNoDosageMoney" ,
+	sum(case when DATE_FORMAT(a.create_time, '%Y-%m') =concat(#{entity.year},'-08') then (a.dosage_count * a.selling_price) else 0 end ) as "augNoDosageMoney" ,
+	sum(case when DATE_FORMAT(a.create_time, '%Y-%m') =concat(#{entity.year},'-09') then (a.dosage_count * a.selling_price) else 0 end ) as "septNoDosageMoney" ,
+	sum(case when DATE_FORMAT(a.create_time, '%Y-%m') =concat(#{entity.year},'-10') then (a.dosage_count * a.selling_price) else 0 end ) as "octNoDosageMoney" ,
+    sum(case when DATE_FORMAT(a.create_time, '%Y-%m') =concat(#{entity.year},'-11') then (a.dosage_count * a.selling_price) else 0 end ) as "novNoDosageMoney" ,
+    sum(case when DATE_FORMAT(a.create_time, '%Y-%m') =concat(#{entity.year},'-12') then (a.dosage_count * a.selling_price) else 0 end ) as "decNoDosageMoney"
+        from pd_dosage_detail a
+        left join pd_dosage  e on e.id=a.dosage_id
+        left join sys_depart c on c.id in(
+        (select t.parent_id from sys_depart t where t.id=e.depart_id  and t.depart_type in('3')))
+        where a.hy_charged='1'
+        and a.del_flag='0'
+        and e.del_flag='0'
+        and c.depart_name is not  null
+    group by c.id
+		) c
+	left join sys_depart t on t.id=c.id
+        where 1=1
+        <if test="entity.departIdList != null and entity.departIdList.size() > 0">
+            AND c.id IN
+            <foreach collection="entity.departIdList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+	group by t.id
+	order by t.create_time
+    </select>
+
+
+
+
+
+    <!--  科室领用情况统计报表-->
+    <select id="departApplyUseReportPage" resultType="org.jeecg.modules.pd.vo.RpDepartApplyPage">
+        select c.*,
+        (c.janPrice+c.febPrice+c.marPrice+c.aprPrice+c.mayPrice
+        +c.junPrice+c.julPrice+c.augPrice+c.septPrice+c.octPrice
+        +c.novPrice+c.decPrice) as "countPrice"
+        from (
+        select
+        a.id,
+        t.depart_name as "departName",
+        sum(case when month=concat(#{entity.year},'-01') then in_record_price else 0 end ) as "janPrice",
+        sum(case when month=concat(#{entity.year},'-02') then in_record_price else 0 end ) as "febPrice",
+        sum(case when month=concat(#{entity.year},'-03') then in_record_price else 0 end ) as "marPrice",
+        sum(case when month=concat(#{entity.year},'-04') then in_record_price else 0 end ) as "aprPrice",
+        sum(case when month=concat(#{entity.year},'-05') then in_record_price else 0 end ) as "mayPrice",
+        sum(case when month=concat(#{entity.year},'-06') then in_record_price else 0 end ) as "junPrice",
+        sum(case when month=concat(#{entity.year},'-07') then in_record_price else 0 end ) as "julPrice",
+        sum(case when month=concat(#{entity.year},'-08') then in_record_price else 0 end ) as "augPrice",
+        sum(case when month=concat(#{entity.year},'-09') then in_record_price else 0 end ) as "septPrice",
+        sum(case when month=concat(#{entity.year},'-10') then in_record_price else 0 end ) as "octPrice",
+        sum(case when month=concat(#{entity.year},'-11') then in_record_price else 0 end ) as "novPrice",
+        sum(case when month=concat(#{entity.year},'-12') then in_record_price else 0 end ) as "decPrice"
+        from pd_numerical_inf a
+        left join sys_depart t on a.depart_id=t.id
+        where 1=1 and t.depart_type in('2','3')
+        <if test="entity.productFlag != null and entity.productFlag != ''">
+            AND a.tj_type = #{entity.productFlag}
+        </if>
+        <if test="entity.departIdList  != null and entity.departIdList.size() > 0">
+            AND t.id IN
+            <foreach collection="entity.departIdList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+    group by t.id
+    order by in_record_price desc
+        ) c
+    </select>
+
+    <!-- zxh综合交易数据报表 -->
+    <select id="queryConsolidatedDataView" resultType="org.jeecg.modules.pd.vo.RpPurchaseUseReportPage">
+        SELECT
+            xx.`month` as yearMonth , sum(xx.amount) as amount
+            FROM
+            (
+            SELECT
+            DATE_FORMAT(x. MONTH, '%Y-%m') AS "month",
+            0 AS "amount"
+            FROM
+            XNumber x
+            WHERE
+            x. MONTH > DATE_SUB(CURDATE(), INTERVAL 18 MONTH)
+            AND substr(x. MONTH, 1, 7) &lt;= substr(CURDATE(), 1, 7)
+            UNION ALL
+            SELECT
+            a.`month`,
+            ROUND(SUM(a.in_record_price), 2) AS "amount"
+            FROM
+            pd_numerical_inf a
+            LEFT JOIN sys_depart t ON a.depart_id = t.id
+            WHERE
+            1 = 1
+            AND t.depart_type = '1'
+            <if test="entity.departParentId != null and entity.departParentId != ''">
+                AND t.depart_parent_id = #{entity.departParentId}
+            </if>
+            GROUP BY
+            a. MONTH
+            ) xx
+            GROUP BY xx. MONTH
+            ORDER BY
+            xx. MONTH
+    </select>
+</mapper>

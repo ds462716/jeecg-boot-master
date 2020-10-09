@@ -14,7 +14,7 @@
       <!-- 主表单区域 -->
       <div style="background:#ECECEC; padding:20px">
         <a-card title="" style="margin-bottom: 10px;">
-          <a-form :form="form">
+·          <a-form :form="form"  :selfUpdate = "true">
             <a-row>
               <a-col :span="6">
                 <a-form-item label="出库单号" :labelCol="labelCol" :wrapperCol="wrapperCol">
@@ -52,7 +52,12 @@
               </a-col>
               <a-col :span="6">
                 <a-form-item label="出库类型" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                  <j-dict-select-tag-expand :disabled="disableSubmit2" @change="outTypeChange" type="list" v-decorator="['outType', validatorRules.outType]" :trigger-change="true" dictCode="out_type" placeholder="请选择出库类型"/>
+                  <a-select placeholder="出库类型" :allowClear="false" @change="outTypeChange" v-decorator="['outType', validatorRules.outType]" >
+                    <a-select-option value="2">科室出库</a-select-option>
+                    <a-select-option value="1">申领出库</a-select-option>
+                    <a-select-option value="3">调拨出库</a-select-option>
+                  </a-select>
+                  <!--<j-dict-select-tag-expand :disabled="disableSubmit2" @change="outTypeChange" type="list" v-decorator="['outType', validatorRules.outType]" :trigger-change="true" dictCode="out_type" placeholder="请选择出库类型"/>-->
                 </a-form-item>
               </a-col>
               <a-col :span="6">
@@ -72,6 +77,26 @@
                     v-decorator="[ 'inDepartId', validatorRules.inDepartId]"
                   >
                     <a-select-option v-for="d in departList" :key="d.id" :text="d.departName" >{{d.departName}}</a-select-option>
+                  </a-select>
+                </a-form-item>
+              </a-col>
+              <a-col :span="6">
+                <a-form-item label="领用人" :labelCol="labelCol" :wrapperCol="wrapperCol">
+                  <a-select
+                    showSearch
+                    placeholder="请选择领用人"
+                    :disabled="disableSubmit"
+                    :defaultActiveFirstOption="false"
+                    :showArrow="true"
+                    :filterOption="false"
+                    :allowClear="true"
+                    @search="userHandleSearch"
+                    @change="userHandleChange"
+                    @focus="userHandleSearch"
+                    :notFoundContent="notFoundContent"
+                    v-decorator="[ 'applyBy', validatorRules.applyBy]"
+                  >
+                    <a-select-option v-for="d in userList" :key="d.id" :text="d.realname" >{{d.realname}}</a-select-option>
                   </a-select>
                 </a-form-item>
               </a-col>
@@ -103,22 +128,22 @@
           </div>
         </a-card>
 
-        <!-- 定数包区域 -->
-        <a-card style="margin-bottom: 10px;" v-show="showPackageCard">
+        <!-- 套包区域 -->
+        <a-card style="margin-bottom: 10px;" v-show="showPackageCard || !disableSubmit"> <!-- v-show="showPackageCard"   v-show="false"-->
           <a-tabs v-model="activeKey">
-            <a-tab-pane tab="定数包明细" :key="refKeys[0]" :forceRender="true">
-              <a-form v-show="!disableSubmit">
+            <a-tab-pane tab="套包明细" :key="refKeys[0]" :forceRender="true">
+              <a-form v-show="!disableSubmit" :selfUpdate = "true">
                 <a-row>
                   <a-col :md="6" :sm="8">
-                    <a-form-item label="定数包条码" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                      <a-input ref="packageBarCodeInput" placeholder="请输入定数包条码" v-model="packageQueryParam.packageBarCode" @keyup.enter.native="searchQueryPackage(0)"></a-input>
+                    <a-form-item label="套包条码" :labelCol="labelCol" :wrapperCol="wrapperCol">
+                      <a-input ref="packageBarCodeInput" placeholder="请输入套包条码" v-model="packageQueryParam.packageBarCode" @keyup.enter.native="searchQueryPackage(0)"></a-input>
                     </a-form-item>
                   </a-col>
                 </a-row>
               </a-form>
 
-              <div style="margin-bottom: 8px;" v-show="showPackageBtn">
-                <a-button type="primary" icon="plus" @click="choosePackageList">选择定数包</a-button>
+              <div style="margin-bottom: 8px;" v-show="!disableSubmit"> <!-- v-show="showPackageBtn" -->
+                <a-button type="primary" icon="plus" @click="choosePackageList">选择套包</a-button>
                 <a-popconfirm style="margin-left: 8px"
                               :title="`确定要删除吗?`"
                               @confirm="handleConfirmDeletePackage">
@@ -163,16 +188,28 @@
         <a-card style="margin-bottom: 10px;">
           <a-tabs v-model="activeKey">
             <a-tab-pane tab="产品明细" :key="refKeys[0]" :forceRender="true">
-              <a-form v-show="!disableSubmit">
-                <a-row>
+              <a-form v-show="!disableSubmit" :form="formOne" :selfUpdate = "true">
+                <a-row v-if="!showSBarcode">
                   <a-col :md="6" :sm="8">
                     <a-form-item label="产品编号" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                      <a-input ref="productNumberInput" v-focus placeholder="请输入产品编号" v-model="queryParam.productNumber" @keyup.enter.native="searchQuery(0)"></a-input>
+                      <a-input ref="productNumberInput" v-focus placeholder="请输入产品编号" v-decorator="[ 'productNumber']" @keyup.enter.native="onlyNumbersearchQuery"></a-input>
+                    </a-form-item>
+                  </a-col>
+                  <a-col :md="12" :sm="8">
+                    <a-form-item label="" :labelCol="labelCol" :wrapperCol="wrapperCol" style="text-align: left;padding-left: 15px;">
+                      提示：按<span style="color: red">Ctrl+Alt</span>键快速定位到扫码输入框
+                    </a-form-item>
+                  </a-col>
+                </a-row>
+                <a-row v-if="showSBarcode">
+                  <a-col :md="6" :sm="8">
+                    <a-form-item label="产品编号" :labelCol="labelCol" :wrapperCol="wrapperCol">
+                      <a-input ref="productNumberInput" v-focus placeholder="请输入产品编号" v-decorator="[ 'productNumber']" @keyup.enter.native="searchQuery(0)"></a-input>
                     </a-form-item>
                   </a-col>
                   <a-col :md="6" :sm="8">
                     <a-form-item label="二级条码" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                      <a-input ref="productBarCodeInput" placeholder="请输入二级条码" v-model="queryParam.productBarCode" @keyup.enter.native="searchQuery(1)"></a-input>
+                      <a-input ref="productBarCodeInput" placeholder="请输入二级条码" v-decorator="[ 'productBarCode']" @keyup.enter.native="searchQuery(1)"></a-input>
                     </a-form-item>
                   </a-col>
                   <a-col :md="12" :sm="8">
@@ -183,15 +220,21 @@
                 </a-row>
               </a-form>
 
-              <div style="margin-bottom: 8px;" v-show="!disableSubmit">
-                <a-button type="primary" icon="plus" @click="chooseProductList">选择产品</a-button>
-                <a-button type="primary" icon="plus" @click="choosePackageList" style="margin-left: 8px">选择定数包</a-button>
+              <div style="margin-bottom: 8px;" v-if="!disableSubmit">
+                <a-button type="primary" icon="plus" @click="chooseProductList">选择库存产品</a-button>
+                <!--<a-button type="primary" icon="plus" @click="choosePackageList" style="margin-left: 8px">选择套包</a-button>-->
                 <a-popconfirm style="margin-left: 8px"
-                  :title="`确定要删除吗?`"
-                  @confirm="handleConfirmDelete">
+                              :title="`确定要删除吗?`"
+                              @confirm="handleConfirmDelete">
                   <a-button type="primary" icon="minus">删除</a-button>
                   <span class="gap"></span>
                 </a-popconfirm>
+                <span style="padding-left: 8px;"></span>
+                <a-button type="primary" icon="printer" @click="printNumber" v-show="isDisabledAuth('outstock:printProductNumber')">打印编号</a-button>
+              </div>
+
+              <div style="margin-bottom: 8px;" v-if="disableSubmit">
+                <a-button type="primary" icon="printer" @click="printNumber" v-show="isDisabledAuth('outstock:printProductNumber')">打印编号</a-button>
               </div>
 
               <j-editable-table
@@ -200,26 +243,27 @@
                 :loading="pdStockRecordDetailTable.loading"
                 :columns="pdStockRecordDetailTable.columns"
                 :dataSource="pdStockRecordDetailTable.dataSource"
-                :maxHeight="650"
+                :maxHeight="850"
                 :rowNumber="true"
                 :rowSelection="true"
                 :actionButton="false"
                 :disabled="disableSubmit"
+                @selectRowChange="handleSelectRowChange"
                 @valueChange="valueChange"
                 @added="setPriceDisabled"
                 style="text-overflow: ellipsis;"
               >
               </j-editable-table>
               <a-row style="margin-top:10px;text-align: right;padding-right: 5%">
-                  <span style="font-weight: bold;font-size: large;padding-right: 5%">总数量：{{ totalSum }}</span>
-                  <span style="font-weight: bold;font-size: large">总金额：{{ outTotalPrice }}</span>
+                <span style="font-weight: bold;font-size: large;padding-right: 5%">总数量：{{ totalSum }}</span>
+                <span style="font-weight: bold;font-size: large">总金额：{{ outTotalPrice }}</span>
               </a-row>
             </a-tab-pane>
           </a-tabs>
         </a-card>
 
         <a-card style="">
-          <a-form :form="form">
+          <a-form :form="form" :selfUpdate = "true">
             <a-row>
               <a-col :span="12">
                 <a-form-item label="备注" :labelCol="labelCol2" :wrapperCol="wrapperCol2" style="text-align: left">
@@ -231,7 +275,7 @@
         </a-card>
 
         <a-card style="margin-top: 10px;" v-show="showRefuseReason">
-          <a-form :form="form">
+          <a-form :form="form" :selfUpdate = "true">
             <a-col :span="12">
               <a-form-item label="审批意见" :labelCol="labelCol2" :wrapperCol="wrapperCol2" style="text-align: left">
                 <a-textarea disabled v-decorator="[ 'refuseReason', validatorRules.refuseReason]" placeholder="请输入审批意见"></a-textarea>
@@ -262,7 +306,13 @@
     <pd-choose-allocation-list-model ref="pdChooseAllocationListModel" @ok="returnAllocationData" ></pd-choose-allocation-list-model>
     <pd-choose-product-stock-list-model ref="pdChooseProductStockListModel" @ok="returnProductStockData" ></pd-choose-product-stock-list-model>
     <pd-stock-record-out-print-modal ref="pdStockRecordOutPrintModal"></pd-stock-record-out-print-modal>
+    <pd-stock-record-out-print-modal-f-c-z-y-y ref="pdStockRecordOutPrintModalFCZYY"></pd-stock-record-out-print-modal-f-c-z-y-y>
+    <pd-stock-record-out-print-modal-f-c-r-m-y-y ref="pdStockRecordOutPrintModalFCRMYY"></pd-stock-record-out-print-modal-f-c-r-m-y-y>
+    <pd-stock-record-out-print-modal-j-j-f-s-y-y ref="PdStockRecordOutPrintModalJJFSYY"></pd-stock-record-out-print-modal-j-j-f-s-y-y>
+    <pd-stock-record-out-print-modal-g-z-z-l-y-y ref="PdStockRecordOutPrintModalGZZLYY"></pd-stock-record-out-print-modal-g-z-z-l-y-y>
+    <ex-stock-record-out-print-modal ref="exStockRecordOutPrintModal"></ex-stock-record-out-print-modal>
     <pd-choose-package-record-list-model ref="pdChoosePackageRecordListModel" @ok="returnPackageRecordData" ></pd-choose-package-record-list-model>
+    <pd-product-number-print ref="printModalForm"></pd-product-number-print>
   </j-modal>
 </template>
 
@@ -282,6 +332,13 @@
   import PdChooseAllocationListModel from "./PdChooseAllocationListModel";
   import PdStockRecordOutPrintModal from "../print/PdStockRecordOutPrintModal";
   import PdChoosePackageRecordListModel from "./PdChoosePackageRecordListModel";
+  import ExStockRecordOutPrintModal from "../../external/print/ExStockRecordOutPrintModal";
+  import PdStockRecordOutPrintModalFCZYY from "../../external/fengcheng/print/PdStockRecordOutPrintModalFCZYY";
+  import PdStockRecordOutPrintModalFCRMYY from "../../external/fengcheng/print/PdStockRecordOutPrintModalFCRMYY";
+  import PdStockRecordOutPrintModalJJFSYY from "../../external/jiujiang/print/PdStockRecordOutPrintModalJJFSYY";
+  import PdStockRecordOutPrintModalGZZLYY from "../../external/ganzhouzhongliu/print/PdStockRecordOutPrintModalGZZLYY";
+  import PdProductNumberPrint from "../print/PdProductNumberPrint";
+  import { disabledAuthFilter } from "@/utils/authFilter"
 
   const VALIDATE_NO_PASSED = Symbol()
   export { FormTypes, VALIDATE_NO_PASSED }
@@ -290,17 +347,24 @@
     name: 'PdStockRecordOutModal',
     mixins: [JEditableTableMixin],
     components: {
+      PdProductNumberPrint,
+      PdStockRecordOutPrintModalFCRMYY,
+      PdStockRecordOutPrintModalFCZYY,
+      ExStockRecordOutPrintModal,
       PdChoosePackageRecordListModel,
       PdStockRecordOutPrintModal,
       PdChooseAllocationListModel,
       PdChooseApplyOrderListModel,
       PdChooseProductStockListModel,
+      PdStockRecordOutPrintModalJJFSYY,
+      PdStockRecordOutPrintModalGZZLYY,
       ATextarea,
       JDate,
       JDictSelectTagExpand
     },
     data() {
       return {
+        formOne: this.$form.createForm(this),
         labelCol: {span: 6},
         wrapperCol: {span: 16},
 
@@ -326,6 +390,7 @@
 
         allowInMoreOrder:"",		//开关-是否允许入库量大于订单量   1-允许入库量大于订单量；0-不允许入库量大于订单量
         allowEditPrice:"",//关-是否允许出入库时可修改进价和出价   1-允许；0不允许
+        showSBarcode:false,           //开关-是否显示二级条码框（入库、出库、退货） 1-显示；0-不显示
 
         //部门下拉列表 start
         departValue: undefined,
@@ -333,6 +398,14 @@
         departList:[],
         inDepartName:"",
         //部门下拉列表 end
+        //用户拉列表 start
+        // userValue: undefined,
+        // notFoundContent:"未找到内容",
+        userList:[],
+        //用户下拉列表 end
+
+        hospitalCode:"",
+        sRowIds:[],//选中行id
 
         orderTableTitle:"",
         showApplyBtn:false,
@@ -365,6 +438,7 @@
           remarks:{},
           outDepartId:{},
           inDepartId:{rules: [{required: true, message: '请选择入库库房!'}]},
+          applyBy:{},
 
         },
         refKeys: ['pdStockRecordDetail',],
@@ -379,9 +453,7 @@
               title: '产品ID', align:"center", dataIndex: 'productId',
               colSpan: 0,
               customRender: (value, row, index) => {
-                const obj = {
-                  attrs: {colSpan:0},
-                };
+                const obj = { attrs: {colSpan:0}, };
                 return obj;
               },
             },
@@ -393,11 +465,11 @@
             { title: '申请数量', align:"center", dataIndex: 'productNum' },
             { title: '已发货数量', align:"center", dataIndex: 'arrivalNum' },
             { title: '单位', align:"center", dataIndex: 'unitName' },
-            // { title: '定数包名称', align:"center", dataIndex: 'packageName' },
-            // { title: '定数包编号', align:"center", dataIndex: 'packageCode' },
+            // { title: '套包名称', align:"center", dataIndex: 'packageName' },
+            // { title: '套包编号', align:"center", dataIndex: 'packageCode' },
           ],
         },
-        // 定数包列表
+        // 套包列表
         pdPackageTable: {
           loading: false,
           dataSource: [],
@@ -419,10 +491,10 @@
                 return parseInt(index)+1;
               }
             },
-            { title:'定数包编号', align:"center", dataIndex: 'code' },
-            { title:'定数包条码', align:"center", dataIndex: 'packageBarCode' },
-            { title:'定数包名称', align:"center", dataIndex: 'name' },
-            { title:'产品总数', align:"center", dataIndex: 'sum' },
+            { title:'套包编号', align:"center", dataIndex: 'packageCode' },
+            { title:'套包条码', align:"center", dataIndex: 'packageBarCode' },
+            { title:'套包名称', align:"center", dataIndex: 'packageName' },
+            { title:'产品总数', align:"center", dataIndex: 'packageSum' },
             { title:'打包人', align:"center", dataIndex: 'createBy' },
             { title:'打包时间', align:"center", dataIndex: 'createTime',
               customRender:function (text) {
@@ -456,17 +528,27 @@
             },
             { title:'入库单价', align:"center", dataIndex: 'purchasePrice' },
             { title:'出库单价', align:"center", dataIndex: 'sellingPrice' },
-            { title:'定数包产品数量', align:"center", dataIndex: 'productNum' },
+            { title:'产品数量', align:"center", dataIndex: 'productNum' },
             { title:'出库金额', align:"center", dataIndex: 'outTotalPrice' },
-            { title:'库存数量', align:"center", dataIndex: 'stockNum' },
-            { title: '出库货位', align:"center", dataIndex: 'outHuoweiName' },
+            { title:'库存数量', align:"center", dataIndex: 'stockNum', colSpan: 0,
+              customRender: (value, row, index) => {
+                const obj = { attrs: {colSpan:0}, };
+                return obj;
+              },
+            },
+            // { title: '出库货位', align:"center", dataIndex: 'outHuoweiName' },
             { title: '生产日期', align:"center", dataIndex: 'produceDate',
               customRender:function (text) {
                 return !text?"":(text.length>10?text.substr(0,10):text)
               }
             },
-            { title: '打包记录ID', align:"center", dataIndex: 'packageRecordId',
-              colSpan: 0,
+            { title: '打包记录ID', align:"center", dataIndex: 'packageRecordId', colSpan: 0,
+              customRender: (value, row, index) => {
+                const obj = { attrs: {colSpan:0}, };
+                return obj;
+              },
+            },
+            { title: '打包记录明细ID', align:"center", dataIndex: 'packageRecordDetailId',colSpan: 0,
               customRender: (value, row, index) => {
                 const obj = {
                   attrs: {colSpan:0},
@@ -476,45 +558,55 @@
             },
             { title: '库存明细ID', align:"center", dataIndex: 'productStockId', colSpan: 0,
               customRender: (value, row, index) => {
-                const obj = {
-                  attrs: {colSpan:0},
-                };
+                const obj = { attrs: {colSpan:0}, };
                 return obj;
               },
             },
             { title: '产品ID', align:"center", dataIndex: 'productId', colSpan: 0,
               customRender: (value, row, index) => {
-                const obj = {
-                  attrs: {colSpan:0},
-                };
+                const obj = { attrs: {colSpan:0}, };
                 return obj;
               },
             },
-            { title: '出库货位编号', align:"center", dataIndex: 'outHuoweiCode', colSpan: 0,
-              customRender: (value, row, index) => {
-                const obj = {
-                  attrs: {colSpan:0},
-                };
-                return obj;
-              },
-            },
+            // { title: '出库货位编号', align:"center", dataIndex: 'outHuoweiCode', colSpan: 0,
+            //   customRender: (value, row, index) => {
+            //     const obj = { attrs: {colSpan:0}, };
+            //     return obj;
+            //   },
+            // },
             { title: '供应商id', align:"center", dataIndex: 'supplierId', colSpan: 0,
               customRender: (value, row, index) => {
-                const obj = {
-                  attrs: {colSpan:0},
-                };
+                const obj = { attrs: {colSpan:0}, };
+                return obj;
+              },
+            },
+            { title: '配送商id', align:"center", dataIndex: 'distributorId', colSpan: 0,
+              customRender: (value, row, index) => {
+                const obj = { attrs: {colSpan:0}, };
                 return obj;
               },
             },
             { title: '规格单位ID', align:"center", dataIndex: 'specUnitId', colSpan: 0,
               customRender: (value, row, index) => {
+                const obj = { attrs: {colSpan:0}, };
+                return obj;
+              },
+            },
+            { title: '规格数量', align:"center", dataIndex: 'specQuantity', colSpan: 0,
+              customRender: (value, row, index) => {
+                const obj = { attrs: {colSpan:0}, };
+                return obj;
+              },
+            },
+            { title: '注册证号', align:"center", dataIndex: 'registration', colSpan: 0,
+              customRender: (value, row, index) => {
                 const obj = {
                   attrs: {colSpan:0},
                 };
                 return obj;
               },
             },
-            { title: '规格数量', align:"center", dataIndex: 'specQuantity', colSpan: 0,
+            { title: '配送商id', align:"center", dataIndex: 'distributorId', colSpan: 0,
               customRender: (value, row, index) => {
                 const obj = {
                   attrs: {colSpan:0},
@@ -529,32 +621,39 @@
           loading: false,
           dataSource: [],
           columns: [
-            { title: '产品名称', key: 'productName', type: FormTypes.normal,width:"220px" },
-            { title: '产品编号', key: 'productNumber', width:"160px" },
+            { title: '入库id', key: 'inRecordId', type: FormTypes.hidden },
+            { title: '入库明细id', key: 'inRecordDetailId', type: FormTypes.hidden },
+            { title: '库存明细ID', key: 'productStockId', type: FormTypes.hidden },
+            { title: '产品ID', key: 'productId', type: FormTypes.hidden },
+            // { title: '出库货位编号', key: 'outHuoweiCode', type: FormTypes.hidden },
+            { title: '供应商id', key: 'supplierId', type: FormTypes.hidden },
+            { title: '配送商id', key: 'distributorId', type: FormTypes.hidden },
+            { title: '规格单位ID', key: 'specUnitId', type: FormTypes.hidden },
+            { title: '规格数量', key: 'specQuantity', type: FormTypes.hidden },
+            { title: '注册证号', key: 'registration', type: FormTypes.hidden },
+            { title: '生产厂家', key: 'venderName', type: FormTypes.hidden },
+
+
+            { title: '产品名称', key: 'productName', type: FormTypes.normal,width:"250px" },
+            { title: '产品编号', key: 'productNumber', width:"200px" },
             { title: '产品条码', key: 'productBarCode', type: FormTypes.input, disabled:true, width:"200px" },
-            { title: '规格', key: 'spec', width:"150px" },
+            { title: '规格', key: 'spec', width:"200px" },
             { title: '批号', key: 'batchNo', width:"100px" },
-            { title: '单位', key: 'unitName', width:"50px" },
+            { title: '单位', key: 'unitName', width:"60px" },
             { title: '有效期', key: 'expDate', width:"100px" },
-            { title: '入库单价', key: 'purchasePrice', width:"80px" },
-            { title: '出库单价', key: 'sellingPrice', type: FormTypes.input, disabled:true, width:"80px" },
+            { title: '入库单价', key: 'purchasePrice', width:"90px" },
+            { title: '出库单价', key: 'sellingPrice', type: FormTypes.input, disabled:true, width:"90px" },
             {
-              title: '出库数量', key: 'productNum', type: FormTypes.input, width:"80px",
+              title: '出库数量', key: 'productNum', type: FormTypes.input, width:"90px",
               placeholder: '${title}', defaultValue: '1',
               validateRules: [{ required: true, message: '${title}不能为空' },{ pattern: '^-?\\d+\\.?\\d*$',message: '${title}的格式不正确' }]
             },
             { title: '出库金额', key: 'outTotalPrice', type: FormTypes.input, disabled:true, width:"100px" },
-            { title: '库存数量', key: 'stockNum', width:"80px" },
-            { title: '出库货位', key: 'outHuoweiName', width:"100px" },
+            { title: '库存数量', key: 'stockNum', width:"90px" },
+            // { title: '出库货位', key: 'outHuoweiName', width:"100px" },
             { title: '生产日期', key: 'produceDate',  },
-            { title: '入库货位', key: 'inHuoweiCode', type: FormTypes.select, width:"150px", options: [],allowSearch:true, placeholder: '${title}' },
-
-            { title: '库存明细ID', key: 'productStockId', type: FormTypes.hidden },
-            { title: '产品ID', key: 'productId', type: FormTypes.hidden },
-            { title: '出库货位编号', key: 'outHuoweiCode', type: FormTypes.hidden },
-            { title: '供应商id', key: 'supplierId', type: FormTypes.hidden },
-            { title: '规格单位ID', key: 'specUnitId', type: FormTypes.hidden },
-            { title: '规格数量', key: 'specQuantity', type: FormTypes.hidden },
+            // { title: '入库货位', key: 'inHuoweiCode', type: FormTypes.select, width:"150px", options: [],allowSearch:true, placeholder: '${title}' },
+            { title: '批次码', key: 'refBarCode', width:"160px" },
           ]
         },
         url: {
@@ -562,9 +661,11 @@
           submit: "/pd/pdStockRecordOut/submit",
           add: "/pd/pdStockRecordOut/add",
           cancel: "/pd/pdStockRecordOut/cancel",
+          queryById: "/pd/pdStockRecordOut/queryById",
           // edit: "/pd/pdStockRecordOut/edit",
           // querySupplier:"/pd/pdSupplier/getSupplierList",
           departList:"/pd/pdDepart/getSysDepartList",
+          userList:"/pd/pdDepart/queryUserByDepartParentId",
           huoweiList:"/pd/pdGoodsAllocation/getOptions",
           getApplyOrder:"/pd/pdApplyOrder/getOne",
           getAllocationOrder:"/pd/pdAllocationRecord/getOne",
@@ -609,7 +710,8 @@
         this.showOrderTable = false;
         this.showPackageTable = false;
         this.pdOrderDetailTable.dataSource = [];
-        this.queryParam = {};
+        //this.queryParam = {};
+        this.formOne.resetFields();
         this.packageQueryParam = {};
         this.applyNo = "";
         this.allocationNo = "";
@@ -643,19 +745,23 @@
         this.loadData();
       },
       loadData() {
-        this.loading = true;;
+        // this.loading = true;
         this.showCancelBtn = false;
         this.showPrintBtn = false;
         this.showRefuseReason = false;
         this.showSubmitAndPrint = false;
-        // 订书包相关按钮
+        // 套包相关按钮
         this.showPackageCard = false;
         this.showPackageTable = false;
         this.showPackageBtn = false;
 
-        this.departHandleSearch();  // 初始化部门列表 用于数据回显
+        this.$nextTick(() => {
+          this.departHandleSearch();  // 初始化部门列表 用于详情页(有id）、申领出库(无id)、调拨出库(无id)数据回显
+        })
+
         let params = {};
         if(this.model.id){
+
           if(this.model.auditStatus == "1" && this.model.submitStatus == "2"){
             this.showCancelBtn = true;
           }
@@ -668,17 +774,20 @@
           }
           this.popModal.title="出库明细";
           let fieldval = pick(this.model,'recordNo','outType','submitBy','submitByName','submitDate','applyNo','allocationNo',
-            'inDepartId','outDepartId','outDepartName','remarks','refuseReason')
+            'inDepartId','outDepartId','outDepartName','remarks','refuseReason','applyBy')
           this.$nextTick(() => {
             this.applyNo = this.model.applyNo;
             this.allocationNo = this.model.allocationNo;
             this.form.setFieldsValue(fieldval);
+            this.userHandleSearch(); //初始化申领人，用于详情页回显
           })
           params = { id: this.model.id }
         }else{
           this.popModal.title="新增出库";
           params = { id: "" }
         }
+
+        this.pdStockRecordDetailTable.loading = true;
         getAction(this.url.init, params).then((res) => {
           if (res.success) {
             this.$nextTick(() => {
@@ -706,7 +815,7 @@
                   })
                   this.pdOrderDetailTable.dataSource = pdApplyDetailList;
                 }
-                // 定数包打包记录明细
+                // 套包打包记录明细
                 let pdPackageRecordList = res.result.pdPackageRecordList || [];
                 if(pdPackageRecordList.length > 0){
                   this.showPackageCard = true;
@@ -728,7 +837,7 @@
                 this.inTotalPrice = res.result.inTotalPrice.toString();
               }else{  // 新增页
                 this.disableSubmit2 = false;
-                // 订书包相关按钮
+                // 套包相关按钮
                 this.showPackageCard = true;
                 this.showPackageTable = false;
                 this.showPackageBtn = true;
@@ -736,7 +845,7 @@
                 this.initData = res.result;
                 this.submitDateStr = res.result.submitDateStr;
                 let fieldval = pick(this.initData,'recordNo','outType','submitBy','submitByName','submitDate','applyNo','allocationNo',
-                  'inDepartId','outDepartId','outDepartName','remarks','refuseReason');
+                  'inDepartId','outDepartId','outDepartName','remarks','refuseReason','applyBy');
                 this.form.setFieldsValue(fieldval);
                 this.form.setFieldsValue({outType:"2"}); //	1-申领出库; 2-科室出库; 3-调拨出库
                 //获取光标
@@ -760,7 +869,7 @@
                     this.orderTableTitle = "调拨单明细";
                     this.returnAllocationData(data);
                   }
-                  // 定数包打包记录明细
+                  // 套包打包记录明细
                   this.showPackageBtn = false;
                   let pdPackageRecordList = this.args.pdPackageRecordList || [];
                   if(pdPackageRecordList.length > 0){
@@ -770,7 +879,7 @@
                   }
                 }
               }
-
+              this.hospitalCode = res.result.hospitalCode;
               this.allowEditPrice = res.result.allowEditPrice;
               if(this.disableSubmit){
                 this.allowEditPrice = "0";
@@ -780,13 +889,20 @@
               if(res.result.allowStockOutAudit == "0" && this.disableSubmit == false){
                 this.showSubmitAndPrint = true;
               }
+              //开关-是否显示二级条码框（入库、出库、退货） 1-显示；0-不显示
+              if(res.result.showSBarcode && res.result.showSBarcode == "0"){
+                this.showSBarcode = false;
+              }else{
+                this.showSBarcode = true;
+              }
 
             })
           }
           if(res.code===510){
             this.$message.warning(res.message)
           }
-          this.loading = false;
+          // this.loading = false;
+          this.pdStockRecordDetailTable.loading = false;
         })
       },
       outTypeChange(val){
@@ -830,36 +946,68 @@
       },
       /**打印按钮**/
       printBtn(flag){
-        if(flag == "2"){
-          // this.model.auditDate = this.form.getFieldValue("submitDate");
-          this.model.auditByName = this.model.submitByName;
-          // this.model.inDepartName = this.inDepartName;
+        let recordId = this.model.id;
+        if(!recordId){
+          this.$message.warning("参数不正确，请重新打印！");
+          return;
         }
-        if(!this.model.auditDate){
-          this.model.auditDate = this.form.getFieldValue("submitDate");
-        }
-        if(!this.model.inDepartName){
-          this.model.inDepartName = this.inDepartName;
-        }
-
-        let { values } = this.$refs.pdStockRecordDetail.getValuesSync({ validate: false });
-        this.model.totalSum = this.totalSum;
-        this.model.outTotalPrice = this.outTotalPrice;
-        this.model.inTotalPrice = this.inTotalPrice;
-        this.model.remarks = this.form.getFieldValue("remarks");
-        // this.model.pdStockRecordDetailList = this.pdStockRecordDetailTable.dataSource;
-        // 定数包相关
-        if(this.pdPackageTable.dataSource.length > 0){
-          for (let table of this.pdPackageTable.dataSource){
-            for (let item of table.pdPackageRecordDetailList){
-              values.push(item);
+        getAction(this.url.queryById, {id:this.model.id}).then((res) => {
+          if(!res.result.auditDate){
+            res.result.auditDate = res.result.submitDate;
+          }
+          switch(this.hospitalCode) {
+            case "FCZYY":
+              this.$refs.pdStockRecordOutPrintModalFCZYY.show(res.result);
+              this.$refs.pdStockRecordOutPrintModalFCZYY.title = this.stockOutText + "出库单";
+              break;
+            case "FCRMYY":
+              this.$refs.pdStockRecordOutPrintModalFCRMYY.show(res.result);
+              this.$refs.pdStockRecordOutPrintModalFCRMYY.title = this.stockOutText + "出库单";
+              break;
+            case "GZSLYY":
+              this.$refs.exStockRecordOutPrintModal.show(res.result);
+              this.$refs.exStockRecordOutPrintModal.title = this.stockOutText + "出库单";
+              break;
+            case "JJFSYY":
+              this.$refs.PdStockRecordOutPrintModalJJFSYY.show(res.result);
+              this.$refs.PdStockRecordOutPrintModalJJFSYY.title = this.stockOutText;
+              break;
+            case "GZZLYY":
+              this.$refs.PdStockRecordOutPrintModalGZZLYY.show(res.result);
+              this.$refs.PdStockRecordOutPrintModalGZZLYY.title = this.stockOutText;
+              break;
+            default:
+              this.$refs.pdStockRecordOutPrintModal.show(res.result);
+              this.$refs.pdStockRecordOutPrintModal.title = this.stockOutText + "出库单";
+          }
+        })
+      },
+      //产品编号打印，add by jiangxz 2020年7月15日 09:40:00
+      printNumber(){
+        if(this.sRowIds.length > 0){
+          let dataSource = this.pdStockRecordDetailTable.dataSource;
+          let printData = [];
+          for(let item of dataSource){
+            if(this.sRowIds.indexOf(item.id)>=0){
+              let data = {};
+              data.number = item.productNumber;
+              data.name = item.productName;
+              data.spec = item.spec;
+              data.venderName = item.venderName;
+              printData.push(data);
             }
           }
+          if(printData.length > 0){
+            this.$refs.printModalForm.init(printData);
+          }else{
+            this.$message.error("选择产品数据有误，请刷新页面后重新选择打印！")
+          }
+        }else{
+          this.$message.error("请选择需要打印的产品！")
         }
-
-        this.model.pdStockRecordDetailList = values;
-        this.$refs.pdStockRecordOutPrintModal.show(this.model);
-        this.$refs.pdStockRecordOutPrintModal.title = this.stockOutText + "出库单";
+      },
+      handleSelectRowChange(selectedIds){
+        this.sRowIds = selectedIds;
       },
       /**撤回**/
       cancelBtn(){
@@ -902,16 +1050,8 @@
           let formData = this.classifyIntoFormData(allValues);
 
           if(formData.pdStockRecordDetailList.length <= 0 && this.pdPackageTable.dataSource.length <= 0){
-            this.$message.warning("出库产品数据为空，请扫码出库、选择产品或选择定数包");
+            this.$message.warning("出库产品数据为空，请扫码出库、选择产品或选择套包");
             return;
-          }
-          //定数包
-          if(this.pdPackageTable.dataSource.length > 0){
-            for (let data of this.pdPackageTable.dataSource){
-              for(let item of data.pdPackageRecordDetailList){
-                formData.pdStockRecordDetailList.push(item);
-              }
-            }
           }
 
           let list = formData.pdStockRecordDetailList;
@@ -927,18 +1067,28 @@
             }
           }
 
+          //套包   套包在打包时已扣库存，所以无需校验库存数量
+          if(this.pdPackageTable.dataSource.length > 0){
+            for (let data of this.pdPackageTable.dataSource){
+              for(let item of data.pdPackageRecordDetailList){
+                formData.pdStockRecordDetailList.push(item);
+              }
+            }
+          }
+
           // 发起请求
           this.confirmLoading = true
           httpAction(url, formData, method).then((res) => {
             if (res.success) {
-              this.$message.success(res.message)
+              this.model.id = res.result.recordId;
+              this.$message.success(res.message);
               this.$emit('ok');
+              this.close();
               if(flag == "2"){
                 this.printBtn("2"); //通过并打印
               }
-              this.close();
             } else {
-              this.$message.warning(res.message)
+              this.$message.warning(res.message);
             }
           }).finally(() => {
             this.confirmLoading = false
@@ -966,7 +1116,7 @@
       },
       popupCallback(row){
         this.form.setFieldsValue(pick(row,'recordNo','outType','submitBy','submitByName','submitDate','applyNo','allocationNo',
-          'inDepartId','outDepartId','outDepartName','remarks','refuseReason'))
+          'inDepartId','outDepartId','outDepartName','remarks','refuseReason','applyBy'))
       },
       // 部门下拉框搜索
       departHandleSearch(value){
@@ -984,6 +1134,8 @@
         this.form.setFieldsValue({applyNo:""});
         this.form.setFieldsValue({allocationNo:""});
         this.pdOrderDetailTable.dataSource = [];
+        this.userList = [];//清空领用人list
+        this.form.setFieldsValue({applyBy:""});//清空领用人
         if(option){
           this.inDepartName = option.data.attrs.text;
         }
@@ -1006,6 +1158,22 @@
             }
           })
         })
+      },
+      userHandleSearch(value){
+        if(!this.checkInDepart()) {
+          this.$message.error("请选择入库科室！");
+          return;
+        }
+
+        let inDepartId = this.form.getFieldValue("inDepartId");
+        getAction(this.url.userList,{realname:value,currentDepartId:inDepartId}).then((res)=>{
+          if (!res.success) {
+            this.cmsFailed(res.message);
+          }
+          this.userList = res.result;
+        })
+      },
+      userHandleChange(value,option){
       },
       //删除行
       handleConfirmDelete() {
@@ -1097,15 +1265,34 @@
             this.$message.error("请先导入申领单！");
             return;
           }
-          this.$refs.pdChooseProductStockListModel.show({applyNo:this.applyNo});
+          if(this.hospitalCode == "FCZYY" || this.hospitalCode == "FCRMYY"){
+            this.$refs.pdChooseProductStockListModel.show({applyNo:this.applyNo,nestatStatus:"1",barCodeType:"0"});
+          }else if(this.hospitalCode == "GZSLYY"){
+            this.$refs.pdChooseProductStockListModel.show({applyNo:this.applyNo,nestatStatus:"1",barCodeType:"0",productFlag:"0"});//赣州市立医院，普通出库 禁止不能查询试剂
+          }else{
+            this.$refs.pdChooseProductStockListModel.show({applyNo:this.applyNo,nestatStatus:"1",barCodeType:"0"});
+          }
         }else if(outType == "2"){
-          this.$refs.pdChooseProductStockListModel.show({});
+          if(this.hospitalCode == "FCZYY" || this.hospitalCode == "FCRMYY"){
+            this.$refs.pdChooseProductStockListModel.show({nestatStatus:"1",barCodeType:"0"});
+          }else if(this.hospitalCode == "GZSLYY"){
+            this.$refs.pdChooseProductStockListModel.show({nestatStatus:"1",barCodeType:"0",productFlag:"0"}); //赣州市立医院，普通出库 禁止不能查询试剂
+          }else{
+            this.$refs.pdChooseProductStockListModel.show({nestatStatus:"1",barCodeType:"0"});
+          }
         }else if(outType == "3"){  //调拨单
           if(!this.allocationNo){
             this.$message.error("请先导入调拨单！");
             return;
           }
-          this.$refs.pdChooseProductStockListModel.show({allocationNo:this.allocationNo});
+          if(this.hospitalCode == "FCZYY" || this.hospitalCode == "FCRMYY"){
+            this.$refs.pdChooseProductStockListModel.show({allocationNo:this.allocationNo,nestatStatus:"1",barCodeType:"0"});
+          }else if(this.hospitalCode == "GZSLYY"){
+            this.$refs.pdChooseProductStockListModel.show({allocationNo:this.allocationNo,nestatStatus:"1",barCodeType:"0",productFlag:"0"});//赣州市立医院，普通出库 禁止查询试剂
+          }else{
+            this.$refs.pdChooseProductStockListModel.show({allocationNo:this.allocationNo,nestatStatus:"1",barCodeType:"0"});
+          }
+
         }else{
           this.$message.error("请选择出库类型！");
           return;
@@ -1139,7 +1326,7 @@
         // 计算总数量和总价格
         this.getTotalNumAndPrice(values);
       },
-      // 选择定数包
+      // 选择套包
       choosePackageList() {
         // 校验是否选择入库科室
         if(!this.checkInDepart()){
@@ -1148,7 +1335,7 @@
         }
         this.$refs.pdChoosePackageRecordListModel.show();
       },
-      // 选择定数包后返回
+      // 选择套包后返回
       returnPackageRecordData(data){
         this.showPackageTable = true;
         if(this.pdPackageTable.dataSource.length > 0){
@@ -1170,7 +1357,7 @@
         }
         this.getTotalNumAndPrice([]);
       },
-      //定数包展开按钮
+      //套包展开按钮
       handleExpand(expanded, record){
         this.pdPackageTable.expandedRowKeys=[];
         this.pdPackageTable.innerData=[];
@@ -1179,7 +1366,7 @@
           this.pdPackageTable.innerData = record.pdPackageRecordDetailList;
         }
       },
-      //定数包列表选中
+      //套包列表选中
       onSelectChange(selectedRowKeys, selectionRows) {
         this.pdPackageTable.selectedRowKeys = selectedRowKeys;
         this.pdPackageTable.selectionRows = selectionRows;
@@ -1189,7 +1376,7 @@
         this.pdPackageTable.selectedRowKeys = [];
         this.pdPackageTable.selectionRows = [];
       },
-      //定数包删除行
+      //套包删除行
       handleConfirmDeletePackage(){
         if(this.pdPackageTable.selectedRowKeys.length > 0){
           for(let i = 0; i< this.pdPackageTable.selectedRowKeys.length; i++){
@@ -1259,9 +1446,15 @@
           stockNum:row.stockNum,
           outHuoweiName:row.huoweiName,
           outHuoweiCode:row.huoweiCode,
+          registration:row.registration,
+          refBarCode:row.refBarCode,
+          venderName:row.venderName,
           inHuoweiCode:"",
           supplierId:row.supplierId,
-          produceDate:row.produceDate
+          distributorId:row.distributorId,
+          produceDate:row.produceDate,
+          inRecordId:row.inRecordId,
+          inRecordDetailId:row.inRecordDetailId
         }
         this.pdStockRecordDetailTable.dataSource.push(data);
         // this.$refs.pdStockRecordDetail.add();
@@ -1281,7 +1474,7 @@
             outTotalPrice = outTotalPrice + Number(item.outTotalPrice);
           })
 
-          //定数包
+          //套包
           if(this.pdPackageTable.dataSource.length > 0){
             for (let data of this.pdPackageTable.dataSource){
               for(let item of data.pdPackageRecordDetailList){
@@ -1296,7 +1489,8 @@
       },
       //清空扫码框
       clearQueryParam(){
-        this.queryParam = {};
+        //this.queryParam = {};
+        this.formOne.resetFields();
         this.$refs.productNumberInput.focus();
       },
       clearPackageQueryParam(){
@@ -1345,9 +1539,28 @@
           }
         }
       },
+      // 只扫产品编号查询
+      onlyNumbersearchQuery(){
+        //let productNumber = this.queryParam.productNumber;
+        let productNumber = this.formOne.getFieldValue("productNumber");
+        if(!productNumber){
+          this.$message.error("请输入产品编号！");
+          this.$refs.productNumberInput.focus();
+          return;
+        }
+        //this.queryParam.productBarCode = productNumber;
+        this.formOne.setFieldsValue({productBarCode:productNumber});
+        this.searchQuery(1);
+      },
       // 扫码查询
       searchQuery(num) {
-        let productNumber = this.queryParam.productNumber;
+        if(!this.checkInDepart()) {
+          this.clearQueryParam();
+          this.$message.error("请选择入库科室！");
+          return;
+        }
+        //let productNumber = this.queryParam.productNumber;
+        let productNumber = this.formOne.getFieldValue("productNumber");
         if(!productNumber){
           //清空扫码框
           this.clearQueryParam();
@@ -1360,13 +1573,14 @@
           this.$refs.productBarCodeInput.focus();
 
         }else if(num == 1){ //条码扫码
-          let productBarCode = this.queryParam.productBarCode;
+          //let productBarCode = this.queryParam.productBarCode;
+          let productBarCode = this.formOne.getFieldValue("productBarCode");
           if(!productBarCode){
             this.$message.error("请输入二级条码！");
             return;
           }
           //解析条码
-          stockScanCode(productNumber,productBarCode).then((res) => {
+          stockScanCode(productNumber,productBarCode,"0","1","0").then((res) => {
             if(res.code == "200" || res.code == "203"){
               let pdProductStockList = res.result;
               if(!pdProductStockList){
@@ -1430,16 +1644,16 @@
           })
         }
       },
-      // 定数包扫码
+      // 套包扫码
       searchQueryPackage(num){
         let that = this;
-        let packageBarCode = this.packageQueryParam.packageBarCode.trim();
+        let packageBarCode = this.packageQueryParam.packageBarCode;
         if(!packageBarCode){
-          this.$message.error("请输入定数包条码！");
+          this.$message.error("请输入套包条码！");
           return;
         }
 
-        if(num == 0) {       //定数包扫码
+        if(num == 0) {       //套包扫码
           //解析条码
           packageRecordScanCode(packageBarCode).then((res) => {
             if (res.code == "200") {
@@ -1484,6 +1698,14 @@
           return false;
         }
         return true;
+      },
+      /**
+       * 校验权限
+       * @param code
+       * @returns {boolean|*}
+       */
+      isDisabledAuth(code){
+        return !disabledAuthFilter(code);
       },
     },
   }

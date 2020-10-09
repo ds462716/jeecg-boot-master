@@ -31,9 +31,9 @@ public class PdDosageDetail extends BaseEntity {
     private static final long serialVersionUID = 1L;
 
 	/**主键*/
-	@TableId(type = IdType.ID_WORKER_STR)
+	@TableId(type = IdType.AUTO)
     @ApiModelProperty(value = "主键")
-    private String id;
+    private int id;
 	/**用量表id*/
 	@Excel(name = "用量表id", width = 15)
     @ApiModelProperty(value = "用量表id")
@@ -57,9 +57,13 @@ public class PdDosageDetail extends BaseEntity {
     @ApiModelProperty(value = "产品有效期")
     private Date expDate;
 	/**用量数量*/
-	@Excel(name = "用量数量", width = 15)
+    @Excel(name = "用量数量", width = 15)
     @ApiModelProperty(value = "用量数量")
     private Double dosageCount;
+    /**库存规格数量*/
+    @Excel(name = "库存规格数量", width = 15)
+    @ApiModelProperty(value = "库存规格数量")
+    private Double specNum;
 	/**添加用量时库存*/
 	@Excel(name = "添加用量时库存", width = 15)
     @ApiModelProperty(value = "添加用量时库存")
@@ -118,9 +122,16 @@ public class PdDosageDetail extends BaseEntity {
     @ApiModelProperty(value = "所属医院")
     private String departParentId;
 
-
     /**产品库存ID*/
     private String productStockId;
+
+    private String hisChargeId;//His计费ID（丰城中医院）
+    private String hisChargeItemId;//His计费明细ID（丰城中医院）
+
+    private String hisPackageCode;// 打包编号
+    private String hisPackageName;// 打包名称
+    private String hisPackageIndex;// 打包序号(打包索引)
+    private String hisPackageFlag;// 打包标识，标识一样，则算同一个包
 
     //冗余
     @TableField(exist = false)
@@ -149,7 +160,6 @@ public class PdDosageDetail extends BaseEntity {
     private String isChargeText;
     @TableField(exist = false)
     private String hyChargedText;
-    @TableField(exist = false)
     @Excel(name = "出库单价", width = 15)
     private java.math.BigDecimal sellingPrice;//出价
     @TableField(exist = false)
@@ -165,6 +175,8 @@ public class PdDosageDetail extends BaseEntity {
                 return "未收费";
             }else if(this.hyCharged.equals(PdConstant.CHARGE_FLAG_2)){
                 return "已退回";
+            }else if(this.hyCharged.equals(PdConstant.CHARGE_FLAG_3)){
+                return "已退费";
             }
         }
         return hyChargedText;
@@ -173,4 +185,6 @@ public class PdDosageDetail extends BaseEntity {
     public void setHyChargedText(String hyChargedText) {
         this.hyChargedText = hyChargedText;
     }
+
+    private String refBarCode;//唯一码
 }

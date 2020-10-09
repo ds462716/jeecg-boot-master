@@ -13,38 +13,43 @@
       <div class="table-page-search-wrapper">
         <a-form layout="inline" @keyup.enter.native="searchQuery">
           <a-row :gutter="24">
-            <a-col :md="5" :sm="8">
+            <a-col :md="6" :sm="8">
               <a-form-item label="产品名称">
-                <a-input placeholder="请输入产品名称" v-model="queryParam.name"></a-input>
+                <a-input placeholder="请输入产品名称" v-model="queryParam.name" @input="searchQuery"></a-input>
               </a-form-item>
             </a-col>
-            <a-col :md="5" :sm="8">
-              <a-form-item label="产品编号">
-                <a-input placeholder="请输入产品编号" v-model="queryParam.number"></a-input>
+            <a-col :md="6" :sm="8">
+              <a-form-item label="注册证">
+                <a-input placeholder="请输入注册证" v-model="queryParam.registration" @input="searchQuery"></a-input>
               </a-form-item>
             </a-col>
-            <a-col :md="5" :sm="8">
-              <a-form-item label="规格">
-                <a-input placeholder="请输入规格" v-model="queryParam.spec"></a-input>
-              </a-form-item>
-            </a-col>
-            <a-col :md="5" :sm="8">
+            <a-col :md="6" :sm="8">
               <a-form-item label="是否试剂">
-                <j-dict-select-tag type="list" v-model="queryParam.productFlag" dictCode="yn" placeholder="请选择"/>
+                <j-dict-select-tag-expand type="list" v-model="queryParam.productFlag" dictCode="yn" placeholder="请选择"/>
               </a-form-item>
             </a-col>
             <template v-if="toggleSearchStatus">
-              <a-col :md="5" :sm="8">
-                <a-form-item label="注册证">
-                  <a-input placeholder="请输入注册证" v-model="queryParam.registration"></a-input>
+              <a-col :md="6" :sm="8">
+                <a-form-item label="规格">
+                  <a-input placeholder="请输入规格" v-model="queryParam.spec" @input="searchQuery"></a-input>
                 </a-form-item>
               </a-col>
-              <a-col :md="5" :sm="8">
+              <a-col :md="6" :sm="8">
+                <a-form-item label="产品编号">
+                  <a-input placeholder="请输入产品编号" v-model="queryParam.number" @input="searchQuery"></a-input>
+                </a-form-item>
+              </a-col>
+              <a-col :md="6" :sm="8">
                 <a-form-item label="收费代码">
-                  <a-input placeholder="请输入收费代码" v-model="queryParam.chargeCode"></a-input>
+                  <a-input placeholder="请输入收费代码" v-model="queryParam.chargeCode" @input="searchQuery"></a-input>
                 </a-form-item>
               </a-col>
-              <a-col :md="5" :sm="8">
+              <a-col :md="6" :sm="8">
+                <a-form-item label="中标号">
+                  <a-input placeholder="请输入中标号" v-model="queryParam.bidingNumber" @input="searchQuery"></a-input>
+                </a-form-item>
+              </a-col>
+              <a-col :md="6" :sm="8">
                 <a-form-item label="供应商">
                   <a-select
                     ref="supplierSelect"
@@ -66,7 +71,7 @@
                   </a-select>
                 </a-form-item>
               </a-col>
-              <a-col :md="5" :sm="8">
+              <a-col :md="6" :sm="8">
                 <a-form-item label="生产厂家">
                   <a-select
                     showSearch
@@ -87,7 +92,7 @@
                 </a-form-item>
               </a-col>
             </template>
-            <a-col :md="4" :sm="8">
+            <a-col :md="6" :sm="8">
             <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
               <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
               <a-button type="primary" @click="searchReset" icon="reload" style="margin-left: 8px">重置</a-button>
@@ -117,7 +122,7 @@
         :pagination="ipagination"
         :loading="loading"
         :customRow="onClickRow"
-        :rowSelection="{fixed:false,selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
+        :rowSelection="{fixed:false,selectedRowKeys: selectedRowKeys, onSelectAll:onSelectAll,onSelect:onSelect,onChange: onSelectChange}"
         @change="handleTableChange">
       </a-table>
     </a-spin>
@@ -152,6 +157,9 @@
         // model: {},
         confirmLoading: false,
         venderData: [],
+        dataSource2: [],
+        selectedRowKeys: [],
+        selectedRows: [],
         venderValue: undefined,
         supplierSelecDisabled:false,
         supplierValue: undefined,
@@ -181,14 +189,19 @@
             dataIndex: 'productName'
           },
           {
+            title:'产品类型',
+            align:"center",
+            dataIndex: 'productFlagName'
+          },
+          {
             title:'规格',
             align:"center",
             dataIndex: 'spec'
           },
           {
-            title:'型号',
+            title:'中标号',
             align:"center",
-            dataIndex: 'version'
+            dataIndex: 'bidingNumber'
           },
           {
             title:'单位',
@@ -221,33 +234,33 @@
             dataIndex: 'chargeCode'
           },
           {
-            title: '注册证',
-            align:"center",
-            dataIndex: 'registration'
-          },
-          {
             title: '进价',
             align:"center",
-            colSpan: 0,
             dataIndex: 'purchasePrice',
-            customRender: (value, row, index) => {
-              const obj = {
-                attrs: {colSpan:0},
-              };
-              return obj;
-            },
+            // colSpan: 0,
+            // customRender: (value, row, index) => {
+            //   const obj = {
+            //     attrs: {colSpan:0},
+            //   };
+            //   return obj;
+            // },
           },
           {
             title: '出价',
             align:"center",
-            colSpan: 0,
             dataIndex: 'sellingPrice',
-            customRender: (value, row, index) => {
-              const obj = {
-                attrs: {colSpan:0},
-              };
-              return obj;
-            },
+            // colSpan: 0,
+            // customRender: (value, row, index) => {
+            //   const obj = {
+            //     attrs: {colSpan:0},
+            //   };
+            //   return obj;
+            // },
+          },
+          {
+            title: '注册证',
+            align:"center",
+            dataIndex: 'registration'
           },
           {
             title: '证照过期标志',
@@ -331,6 +344,7 @@
       close () {
         this.selectedRowKeys = [];
         this.selectionRows = [];
+        this.dataSource2 = [];
         // this.queryParam.supplierId="";
         this.queryParam = {};
         this.loadData(1);
@@ -352,12 +366,14 @@
         if(params && params.stockDepartId){
           this.stockDepartId = params.stockDepartId;
         }
+        if(params && params.productFlag){
+          this.productFlag = params.productFlag;
+        }
         this.loadData(1);
         this.visible = true;
       },
       handleOk () {
-        let rows = this.selectionRows;
-        this.$emit('ok', rows);
+        this.$emit('ok', this.dataSource2);
         this.close();
       },
       handleCancel () {
@@ -385,6 +401,9 @@
         if(this.stockDepartId){
           params.stockDepartId = this.stockDepartId;
         }
+        if(this.productFlag){
+          params.productFlag = this.productFlag;
+        }
         this.loading = true;
         getAction(this.url.list, params).then((res) => {
           if (res.success) {
@@ -396,6 +415,40 @@
           }
           this.loading = false;
         })
+      },
+      onSelectAll(selected, selectedRows, changeRows) {
+        if (selected === true) {
+          for (var a = 0; a < changeRows.length; a++) {
+            this.dataSource2.push(changeRows[a]);
+          }
+        } else {
+          for (var b = 0; b < changeRows.length; b++) {
+            this.dataSource2.splice(this.dataSource2.indexOf(changeRows[b]), 1);
+          }
+        }
+      },
+      onSelect(record, selected) {
+        if (selected === true) {
+          this.dataSource2.push(record);
+        } else {
+          var index = this.dataSource2.indexOf(record);
+          if (index >= 0) {
+            this.dataSource2.splice(this.dataSource2.indexOf(record), 1);
+          }
+
+        }
+      },
+      onSelectChange(selectedRowKeys, selectedRows) {
+        this.selectedRowKeys = selectedRowKeys;
+        this.selectionRows = selectedRows;
+      },
+      onClearSelected() {
+        this.selectedRowKeys = [];
+        this.selectionRows = [];
+        this.dataSource2 = [];
+      },
+      handleDelete: function (record) {
+        this.dataSource2.splice(this.dataSource2.indexOf(record), 1);
       },
       /**
        * 点击行选中checkbox
@@ -422,10 +475,10 @@
                   let index = this.selectedRowKeys.indexOf(recordId);
                   if(index>=0){
                     this.selectedRowKeys.splice(index, 1);
-                    this.selectionRows.splice(index, 1);
+                    this.dataSource2.splice(index, 1);
                   }else{
                     this.selectedRowKeys.push(recordId);
-                    this.selectionRows.push(record);
+                    this.dataSource2.push(record);
                   }
                 }
               }

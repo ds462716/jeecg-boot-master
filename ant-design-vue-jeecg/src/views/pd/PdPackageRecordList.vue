@@ -4,19 +4,24 @@
     <div class="table-page-search-wrapper">
       <a-form layout="inline" @keyup.enter.native="searchQuery">
         <a-row :gutter="24">
+          <!--<a-col :md="6" :sm="8">-->
+            <!--<a-form-item label="流水码">-->
+              <!--<a-input placeholder="请输入流水码" v-model="queryParam.packageBarCode"></a-input>-->
+            <!--</a-form-item>-->
+          <!--</a-col>-->
           <a-col :md="6" :sm="8">
-            <a-form-item label="定数包编号">
-              <a-input placeholder="请输入定数包编号" v-model="queryParam.code"></a-input>
+            <a-form-item label="套包编号">
+              <a-input placeholder="请输入套包编号" v-model="queryParam.packageCode"></a-input>
             </a-form-item>
           </a-col>
           <a-col :md="6" :sm="8">
-            <a-form-item label="定数包名称">
-              <a-input placeholder="请输入定数包名称" v-model="queryParam.name"></a-input>
+            <a-form-item label="套包名称">
+              <a-input placeholder="请输入套包名称" v-model="queryParam.packageName"></a-input>
             </a-form-item>
           </a-col>
           <a-col :md="6" :sm="8">
             <a-form-item label="状态">
-              <j-dict-select-tag v-model="queryParam.status" dictCode="package_record_status"/>
+              <j-dict-select-tag-expand v-model="queryParam.status" dictCode="package_record_status"/>
             </a-form-item>
           </a-col>
           <template v-if="toggleSearchStatus">
@@ -49,14 +54,10 @@
     
     <!-- 操作按钮区域 -->
     <div class="table-operator">
-      <!--<a-button @click="handleAdd" type="primary" icon="plus">新增</a-button>-->
-      <!--<a-button type="primary" icon="download" @click="handleExportXls('pd_package_record')">导出</a-button>-->
-      <!--<a-upload name="file" :showUploadList="false" :multiple="false" :headers="tokenHeader" :action="importExcelUrl" @change="handleImportExcel">-->
-        <!--<a-button type="primary" icon="import">导入</a-button>-->
-      <!--</a-upload>-->
+      <a-button @click="handleAdd" type="primary" icon="plus">打包</a-button>
       <a-dropdown v-if="selectedRowKeys.length > 0">
         <a-menu slot="overlay">
-          <a-menu-item key="1" @click="batchDel"><a-icon type="delete"/>删除</a-menu-item>
+          <a-menu-item key="1" @click="batchDel"><a-icon type="delete"/>拆包</a-menu-item>
         </a-menu>
         <a-button style="margin-left: 8px"> 批量操作 <a-icon type="down" /></a-button>
       </a-dropdown>
@@ -77,28 +78,17 @@
         :dataSource="dataSource"
         :pagination="ipagination"
         :loading="loading"
-        :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
+        :expandedRowKeys= "expandedRowKeys"
+        :rowSelection="{fixed:false,selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
         :customRow="onClickRow"
         @change="handleTableChange"
         @expand="handleExpand">
 
         <span slot="action" slot-scope="text, record">
           <!--<a @click="handleDelete(record.id)">查看</a>-->
-                <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.id)">
-                  <a>删除</a>
-                </a-popconfirm>
-
-          <!--<a-divider type="vertical" />-->
-          <!--<a-dropdown>-->
-            <!--<a class="ant-dropdown-link">更多 <a-icon type="down" /></a>-->
-            <!--<a-menu slot="overlay">-->
-              <!--<a-menu-item>-->
-                <!--<a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.id)">-->
-                  <!--<a>删除</a>-->
-                <!--</a-popconfirm>-->
-              <!--</a-menu-item>-->
-            <!--</a-menu>-->
-          <!--</a-dropdown>-->
+          <a-popconfirm title="确定拆包吗?" @confirm="() => handleDelete(record.id)" v-bind:disabled="record.status=='0'">
+            <a>拆包</a>
+          </a-popconfirm>
         </span>
 
 
@@ -117,22 +107,25 @@
       </a-table>
     </div>
 
-    <!--<pdPackageRecord-modal ref="modalForm" @ok="modalFormOk"></pdPackageRecord-modal>-->
+    <pd-package-record-modal ref="modalForm" @ok="modalFormOk"></pd-package-record-modal>
   </a-card>
 </template>
 
 <script>
 
   import { JeecgListMixin } from '@/mixins/JeecgListMixin'
-  // import PdPackageRecordModal from './modules/PdPackageRecordModal'
   import {initDictOptions, filterMultiDictText} from '@/components/dict/JDictSelectUtil'
-  import { httpAction,getAction } from '@/api/manage'
+  import {httpAction, deleteAction, getAction} from '@/api/manage'
   import { filterObj } from '@/utils/util';
+  import PdPackageRecordModal from "./modules/PdPackageRecordModal";
+  import JDictSelectTagExpand from "@/components/dict/JDictSelectTagExpand"
 
   export default {
     name: "PdPackageRecordList",
     mixins:[JeecgListMixin],
     components: {
+      PdPackageRecordModal,
+      JDictSelectTagExpand
     },
     data () {
       return {
@@ -153,10 +146,11 @@
               return parseInt(index)+1;
             }
           },
-          { title:'定数包编号', align:"center", dataIndex: 'code' },
-          { title:'定数包条码', align:"center", dataIndex: 'packageBarCode' },
-          { title:'定数包名称', align:"center", dataIndex: 'name' },
-          { title:'产品总数', align:"center", dataIndex: 'sum' },
+          { title:'打包流水码', align:"center", dataIndex: 'packageBarCode' },
+          { title:'套包编号', align:"center", dataIndex: 'packageCode' },
+          { title:'套包名称', align:"center", dataIndex: 'packageName' },
+          { title:'产品总数', align:"center", dataIndex: 'packageSum' },
+          { title:'所属科室', align:"center", dataIndex: 'departName' },
           { title:'状态', align:"center", dataIndex: 'status',
             customRender:(text)=>{
               if(!text){
@@ -167,11 +161,7 @@
             }
           },
           { title:'打包人', align:"center", dataIndex: 'createBy' },
-          { title:'打包时间', align:"center", dataIndex: 'createTime',
-            customRender:function (text) {
-              return !text?"":(text.length>10?text.substr(0,10):text)
-            }
-          },
+          { title:'打包时间', align:"center", dataIndex: 'createTime' },
           { title:'备注', align:"center", dataIndex: 'remarks' },
           {
             title: '操作',
@@ -191,13 +181,18 @@
               return parseInt(index)+1;
             }
           },
-          { title:'产品名称', align:"center", dataIndex: 'productName' },
           { title:'产品编号', align:"center", dataIndex: 'productNumber' },
+          { title:'产品名称', align:"center", dataIndex: 'productName' },
           { title:'产品条码', align:"center",dataIndex: 'productBarCode' },
           { title:'规格', align:"center", dataIndex: 'spec' },
           { title:'批号', align:"center", dataIndex: 'batchNo' },
           // { title:'型号', align:"center", dataIndex: 'version' },
           { title:'单位', align:"center", dataIndex: 'unitName' },
+          { title: '生产日期', align:"center", dataIndex: 'produceDate',
+            customRender:function (text) {
+              return !text?"":(text.length>10?text.substr(0,10):text)
+            }
+          },
           { title:'有效期', align:"center", dataIndex: 'expDate',
             customRender:function (text) {
               return !text?"":(text.length>10?text.substr(0,10):text)
@@ -205,15 +200,10 @@
           },
           { title:'入库单价', align:"center", dataIndex: 'purchasePrice' },
           { title:'出库单价', align:"center", dataIndex: 'sellingPrice' },
-          { title:'定数包产品数量', align:"center", dataIndex: 'productNum' },
-          { title:'出库金额', align:"center", dataIndex: 'outTotalPrice' },
-          { title:'库存数量', align:"center", dataIndex: 'stockNum' },
+          { title:'打包数量', align:"center", dataIndex: 'packageNum' },
+          // { title:'出库金额', align:"center", dataIndex: 'outTotalPrice' },
+          // { title:'库存数量', align:"center", dataIndex: 'stockNum' },
           { title: '出库货位', align:"center", dataIndex: 'outHuoweiName' },
-          { title: '生产日期', align:"center", dataIndex: 'produceDate',
-            customRender:function (text) {
-              return !text?"":(text.length>10?text.substr(0,10):text)
-            }
-          },
           { title: '打包记录ID', align:"center", dataIndex: 'packageRecordId',
             colSpan: 0,
             customRender: (value, row, index) => {
@@ -281,7 +271,9 @@
           queryPackageRecordListByIds: "/pd/pdPackageRecord/queryPackageRecordListByIds",
           chooseDetailList:"/pd/pdPackageRecord/queryPdPackageRecordDetailByMainId",
         },
-        dictOptions:{},
+        dictOptions:{
+          packageRecordStatus:[],
+        },
       }
     },
     computed: {
@@ -307,6 +299,51 @@
             if (res.success) {
               this.subloading = false;
               this.innerData = res.result;
+            }
+          });
+        }
+      },
+      handleDelete(id){
+        if(!this.url.delete){
+          this.$message.error("请设置url.delete属性!")
+          return
+        }
+        // var that = this;
+        deleteAction(this.url.delete, {id: id}).then((res) => {
+          if (res.success) {
+            this.$message.success(res.message);
+            this.loadData();
+          } else {
+            this.$message.warning(res.message);
+          }
+        });
+      },
+      batchDel() {
+        if (this.selectedRowKeys.length <= 0) {
+          this.$message.warning('请选择一条记录！');
+          return;
+        } else {
+          var ids = "";
+          for (var a = 0; a < this.selectedRowKeys.length; a++) {
+            ids += this.selectedRowKeys[a] + ",";
+          }
+          var that = this;
+          this.$confirm({
+            title: "确认拆包",
+            content: "是否拆包选中数据?",
+            onOk: function () {
+              that.loading = true;
+              deleteAction(that.url.deleteBatch, {ids: ids}).then((res) => {
+                if (res.success) {
+                  that.$message.success(res.message);
+                  that.loadData();
+                  that.onClearSelected();
+                } else {
+                  that.$message.warning(res.message);
+                }
+              }).finally(() => {
+                that.loading = false;
+              });
             }
           });
         }

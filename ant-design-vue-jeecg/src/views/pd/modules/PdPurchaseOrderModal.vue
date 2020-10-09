@@ -34,18 +34,19 @@
               <a-input disabled="disabled" v-decorator="[ 'deptName', validatorRules.deptName]" placeholder="请输入库房名称"></a-input>
             </a-form-item>
           </a-col>
-          <a-col :span="12">
-            <a-form-item label="申购总数量" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input-number disabled="disabled" v-decorator="[ 'totalNum', validatorRules.totalNum]"  style="width: 100%"/>
-            </a-form-item>
+           <a-col :span="12">
+               <a-form-item label="申购类型" :labelCol="labelCol" :wrapperCol="wrapperCol">
+                 <j-dict-select-tag-expand  :disabled="disableSubmit"   v-decorator="['purchaseType',validatorRules.purchaseType]"   dictCode="purchase_type" :trigger-change="true"  placeholder="请选择类型"/>
+                </a-form-item>
           </a-col>
-          <a-col :span="12">
+          <!--<a-col :span="12">
             <a-form-item label="申购总金额" :labelCol="labelCol" :wrapperCol="wrapperCol">
               <a-input-number disabled="disabled" v-decorator="[ 'totalPrice', validatorRules.totalPrice]" style="width: 100%"/>
             </a-form-item>
-          </a-col>
+          </a-col>-->
         </a-row>
         <pd-purchase-detail-add-modal  ref="PdPurchaseDetailAddModal" @ok="modalFormOk"></pd-purchase-detail-add-modal>
+        <pd-purchase-temp-add-modal  ref="PdPurchaseTempAddModal" @ok="modalFormOk"></pd-purchase-temp-add-modal>
       </a-form>
         </a-card>
         <a-card style="margin-bottom: 10px;">
@@ -54,6 +55,8 @@
             <a-tab-pane tab="申购明细表" :key="refKeys[0]" :forceRender="true">
               <div style="margin-bottom: 8px;" >
                 <a-button  v-show="!disableSubmit" type="primary" icon="plus" @click="choice">选择产品</a-button>
+                <span style="padding-left: 8px;"></span>
+                <a-button  v-show="!disableSubmit" type="primary" icon="plus" @click="choiceTemp">选择模板</a-button>
                 <span style="padding-left: 8px;"></span>
                 <a-popconfirm
                   :title="`确定要删除吗?`"
@@ -78,6 +81,10 @@
                 @valueChange="valueChange"
                 style="text-overflow: ellipsis;"
               />
+              <a-row style="margin-top:10px;text-align: right;padding-right: 5%">
+                <span style="font-weight: bold;font-size: large;padding-right: 5%">总数量：{{this.model.totalNum }}</span>
+                <span style="font-weight: bold;font-size: large">总金额：{{ this.model.totalPrice }}</span>
+              </a-row>
             </a-tab-pane>
           </a-tabs>
         </a-card>
@@ -112,10 +119,15 @@
   import JDate from '@/components/jeecg/JDate'
   import { FormTypes,getRefPromise,validateFormAndTables } from '@/utils/JEditableTableUtil'
   import PdPurchaseDetailAddModal from './PdChooseProductListModel'
+  import PdPurchaseTempAddModal from './PdChooseTempListModel'
+  import JDictSelectTagExpand from "@/components/dict/JDictSelectTagExpand"
   export default {
     name: 'PdPurchaseOrderModal',
     mixins: [JEditableTableMixin],
-    components: {JDate,PdPurchaseDetailAddModal},
+    components: {JDate,
+      PdPurchaseDetailAddModal,
+      PdPurchaseTempAddModal,
+      JDictSelectTagExpand},
     data() {
       return {
         model:{},
@@ -138,6 +150,9 @@
           totalNum:{},
           totalPrice:{},
           refuseReason:{},
+          purchaseType: {rules: [
+              {required: true, message: '请选择申购类型'},
+            ]},
         },
         refKeys: ['pdPurchaseDetail', ],
         tableKeys:['pdPurchaseDetail', ],
@@ -152,6 +167,7 @@
             { title: '产品名称', width:"250px",  key: 'productName' },
             { title: '规格',width:"240px",   key: 'spec' },
             { title: '单位',width:"50px",  key: 'unitName' },
+            { title: '中标号', width:"100px", key: 'bidingNumber' },
             { title: '库存数量', width:"100px",  key: 'stockNum' },
             {title: '申购数量', key: 'orderNum', type: FormTypes.input, width:"100px",
               placeholder: '${title}', defaultValue: '1',
@@ -218,7 +234,7 @@
           if (res.success) {
               this.model = res.result;
             this.$nextTick(() => {
-              this.form.setFieldsValue(pick(this.model,'orderNo','purchaseName','orderDate','deptName','totalNum','totalPrice','refuseReason'))
+              this.form.setFieldsValue(pick(this.model,'orderNo','purchaseName','orderDate','purchaseType','deptName','refuseReason'))
             })
           }
         })
@@ -255,16 +271,21 @@
             })
             this.model.totalNum = totalNum;
             this.model.totalPrice = totalPrice.toFixed(2);//申购总金额
-            this.form.setFieldsValue(pick(this.model, 'totalNum', 'totalPrice'))
+            //this.form.setFieldsValue(pick(this.model, 'totalNum', 'totalPrice'))
 
         });
       },
 
       //选择产品
       choice() {
-        this.$refs.PdPurchaseDetailAddModal
-          .show({stockDepartId:this.model.departId});
+        this.$refs.PdPurchaseDetailAddModal.show({stockDepartId:this.model.departId});
         this.$refs.PdPurchaseDetailAddModal.title = "选择产品";
+      },
+
+      //选择模板产品
+      choiceTemp() {
+        this.$refs.PdPurchaseTempAddModal.show({});
+       this.$refs.PdPurchaseTempAddModal.title = "选择模板";
       },
 
       handleConfirmDelete() {
@@ -304,13 +325,18 @@
       },
 
       addrows(row) {
+        var orderNum= row.orderNum;
+         if(orderNum=="" || orderNum==null ){
+           orderNum='1';
+         }
         let data = {
           productId: row.productId,
           number: row.number,
           productName: row.productName,
           spec:row.spec,
+          bidingNumber:row.bidingNumber,
           purchasePrice: row.purchasePrice,
-          orderNum: 1.00,//默认1
+          orderNum:orderNum,
           version: row.version,
           stockNum: row.stockNum,
           unitName:row.unitName,
@@ -383,7 +409,7 @@
       },
       /** 调用完edit()方法之后会自动调用此方法 */
       editAfter() {
-        let fieldval = pick(this.model,'orderNo','purchaseName','orderDate','deptName','auditStatus','totalNum','totalPrice','submitStatus','refuseReason')
+        let fieldval = pick(this.model,'orderNo','purchaseName','orderDate','deptName','purchaseType','refuseReason')
         this.$nextTick(() => {
           this.form.setFieldsValue(fieldval)
         })
@@ -406,7 +432,7 @@
         this.$message.error(msg)
       },
       popupCallback(row){
-        this.form.setFieldsValue(pick(row,'orderNo','purchaseName','orderDate','deptName','auditStatus','totalNum','totalPrice','submitStatus','refuseReason'))
+        this.form.setFieldsValue(pick(row,'orderNo','purchaseName','orderDate','deptName','purchaseType','auditStatus','submitStatus','refuseReason'))
       },
     }
   }

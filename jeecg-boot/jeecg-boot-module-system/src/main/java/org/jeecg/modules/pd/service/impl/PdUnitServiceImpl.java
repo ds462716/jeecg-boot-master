@@ -1,5 +1,6 @@
 package org.jeecg.modules.pd.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.ibatis.session.SqlSession;
@@ -12,6 +13,7 @@ import org.jeecg.modules.pd.entity.PdUnit;
 import org.jeecg.modules.pd.mapper.PdUnitMapper;
 import org.jeecg.modules.pd.service.IPdProductService;
 import org.jeecg.modules.pd.service.IPdUnitService;
+import org.jeecg.modules.pd.util.JmUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -44,8 +46,8 @@ public class PdUnitServiceImpl extends ServiceImpl<PdUnitMapper, PdUnit> impleme
     }
 
     @Override
-    public Page<PdUnit> queryList(Page<PdUnit> pageList, PdUnit pdUnit) {
-        return pageList.setRecords(pdUnitMapper.queryList(pdUnit));
+    public Page<PdUnit> queryList(Page<PdUnit> page, PdUnit pdUnit) {
+        return pdUnitMapper.selectListByPage(page,pdUnit);
     }
 
     @Override
@@ -112,6 +114,23 @@ public class PdUnitServiceImpl extends ServiceImpl<PdUnitMapper, PdUnit> impleme
             return Result.error("删除失败!，系统异常");
         }
 
+
+    }
+
+    @Override
+    public Result<Object> generateUnitPyWb() {
+        LambdaQueryWrapper<PdUnit> query = new LambdaQueryWrapper<>();
+        List<PdUnit> list = this.list(query);
+        if(list!=null && list.size()>0){
+            for(PdUnit pdUnit :list){
+                //生成拼音简码
+                pdUnit.setPy(JmUtil.getAllFirstLetter(pdUnit.getName()));
+                //生成五笔简码
+                pdUnit.setWb(JmUtil.getWBCode(pdUnit.getName()));
+            }
+            this.updateBatchById(list);
+        }
+        return Result.ok("生成简码成功");
 
     }
 }

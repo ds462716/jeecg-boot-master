@@ -34,7 +34,14 @@
         a.remarks,
         a.depart_id,
         a.depart_parent_id,
-        a.del_flag
+        a.medical_record_no,
+        a.operation_name,
+        a.hospitalizations_num,
+        a.sqrt_doctor_id,
+        a.exe_dept_name,
+        a.del_flag,
+        a.visit_no,
+        a.dosage_type
 	</sql>
 
     <!-- 产品 -->
@@ -74,6 +81,7 @@
         pp.remarks,
         pp.jde_code,
         pp.validity_flag,
+        pp.biding_number,
         pp.del_flag
     </sql>
     <sql id="pdProductJoins">
@@ -87,8 +95,10 @@
 		dd.batch_no AS "batchNo",
 		dd.exp_date AS "expDate",
 		dd.dosage_count AS "dosageCount",
+		dd.amount_money AS "amountMoney",
 		dd.hy_charged AS "dhyCharged",
-		dd.charge_code AS "chargeCode"
+		dd.charge_code AS "chargeCode",
+		dd.ref_bar_code AS "refBarCode"
 	</sql>
     <sql id="pdDosageDetailJoins">
 		LEFT JOIN pd_dosage_detail dd on a.id = dd.dosage_id
@@ -122,6 +132,14 @@
     <!-- 科室 -->
     <sql id="sysDepartColumns">
         sd.depart_name AS "departName"
+    </sql>
+
+    <!--用户-->
+    <sql id="pdSysUserColumns">
+        b.realname AS dosageByName
+	</sql>
+    <sql id="pdSysUserJoins">
+        LEFT JOIN sys_user b ON b.id = a.dosage_by
     </sql>
 
     <sql id="sysDepartJoins">
@@ -164,6 +182,45 @@
         ORDER BY a.update_time desc,a.create_time desc
     </select>
 
+    <select id="selectListByPage" resultType="org.jeecg.modules.pd.entity.PdDosage" parameterType="org.jeecg.modules.pd.entity.PdDosage">
+        SELECT
+        <include refid="pdDosageColumns"/>,
+        <include refid="sysDepartColumns"/>,
+        b.realname AS dosageByName
+        FROM  pd_dosage a
+        LEFT JOIN pd_dosage_detail dd on a.id = dd.dosage_id
+        <include refid="sysDepartJoins"/>
+        LEFT JOIN sys_user b ON a.dosage_by = b.id
+        <where>
+            a.del_flag = #{entity.DEL_FLAG_NORMAL}
+             <if test="entity.refBarCode != null and entity.refBarCode != ''">
+                AND dd.ref_bar_code = #{entity.refBarCode}
+            </if>
+            <if test="entity.dosageNo != null and entity.dosageNo != ''">
+                AND a.dosage_no = #{entity.dosageNo}
+            </if>
+            <if test="entity.inHospitalNo != null and entity.inHospitalNo != ''">
+                AND (a.in_hospital_no LIKE concat('%', #{entity.inHospitalNo},'%') or a.outpatient_number LIKE concat('%',#{entity.inHospitalNo},'%'))
+            </if>
+            <if test="entity.dosageBy != null and entity.dosageBy != ''">
+                AND a.dosage_by = #{entity.dosageBy}
+            </if>
+            <if test="entity.departId != null and entity.departId != ''">
+                AND a.depart_id = #{entity.departId}
+            </if>
+            <if test="entity.departIdList != null and entity.departIdList.size() > 0">
+                and a.depart_id IN
+                <foreach collection="entity.departIdList" item="item" separator="," open="(" close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="entity.departParentId != null and entity.departParentId != ''">
+                AND a.depart_parent_id = #{entity.departParentId}
+            </if>
+        </where>
+        ORDER BY a.update_time desc,a.create_time desc
+    </select>
+
     <!-- 根据时间范围统计当日使用量 -->
     <select id="queryPdDosageCount" resultType="java.util.Map" >
         SELECT
@@ -187,6 +244,12 @@
                 #{item}
             </foreach>
         </if>
+            <if test="queryDateStart != null and queryDateStart != ''">
+                AND a.dosage_date &gt;= #{queryDateStart}
+            </if>
+            <if test="queryDateEnd != null and queryDateEnd != ''">
+                AND a.dosage_date &lt;= #{queryDateEnd}
+            </if>
         </where>
     </select>
 
@@ -231,15 +294,14 @@
     <select id="queryPdDosageTotalList" resultType="java.util.Map" >
         select
         IFNULL(d.name,'其他') as x,
-        sum(a.total_price) as y,
+        IFNULL(sum(a.total_price),0) as y,
         sum(b.dosage_count) as z
         from pd_dosage a
         left join pd_dosage_detail b on a.id=b.dosage_id
         left join pd_product c on b.product_id=c.id
         left join pd_category d on d.id=c.category_two
         where a.del_flag='0'
-        AND  DATE_SUB(CURDATE(), INTERVAL 30 DAY) &lt;= date(a.dosage_date)
-        and date(a.dosage_date) &lt;=CURDATE()
+        <!--AND  DATE_SUB(CURDATE(), INTERVAL 30 DAY) &lt;= date(a.dosage_date) and date(a.dosage_date) &lt;=CURDATE()-->
         <if test="departIdList != null and departIdList.size() > 0">
             and a.depart_id IN
             <foreach collection="departIdList" item="item" separator="," open="(" close=")">
@@ -248,6 +310,12 @@
         </if>
         <if test="departParentId != null and departParentId != ''">
             AND a.depart_parent_id = #{departParentId}
+        </if>
+        <if test="queryDateStart != null and queryDateStart != ''">
+            AND a.dosage_date &gt;= #{queryDateStart}
+        </if>
+        <if test="queryDateEnd != null and queryDateEnd != ''">
+            AND a.dosage_date &lt;= #{queryDateEnd}
         </if>
         group by x  order by y desc
     </select>
@@ -313,17 +381,55 @@
             <if test="spec != null and spec != ''">
                 AND pp.spec = #{spec}
             </if>
+            <if test="categoryOne != null and categoryOne != ''">
+                AND pp.category_one = #{categoryOne}
+            </if>
             <if test="productNumber != null and productNumber != ''">
                 AND pp.number LIKE concat('%',#{productNumber},'%')
             </if>
             <if test="batchNo != null and batchNo != ''">
                 AND dd.batch_no = #{batchNo}
             </if>
+            <if test="hyChargedList != null and hyChargedList.size() > 0">
+                AND dd.hy_charged IN
+                <foreach collection="hyChargedList" item="item" separator="," open="(" close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="hyCharged != null and hyCharged != ''">
+                AND dd.hy_charged = #{hyCharged}
+            </if>
+            <if test="refBarCode != null and refBarCode != ''">
+                AND dd.ref_bar_code = #{refBarCode}
+            </if>
             <if test="supplierId != null and supplierId != ''">
                 AND e.supplier_id = #{supplierId}
             </if>
+            <if test="queryDateStart != null and queryDateStart != ''">
+                AND date_format(a.dosage_date, "%Y-%m-%d") &gt;= #{queryDateStart}
+            </if>
+            <if test="queryDateEnd != null and queryDateEnd != ''">
+                AND date_format(a.dosage_date, "%Y-%m-%d") &lt;= #{queryDateEnd}
+            </if>
+            order by a.create_time desc
         </where>
     </select>
 
+    <select id="getByOne" resultType="org.jeecg.modules.pd.entity.PdDosage">
+        SELECT
+        <include refid="pdDosageColumns"/>,
+        <include refid="pdSysUserColumns"/>,
+        <include refid="sysDepartColumns"/>
+        FROM pd_dosage a
+        <include refid="pdSysUserJoins"/>
+        <include refid="sysDepartJoins"/>
+        <where>
+            a.del_flag =#{DEL_FLAG_NORMAL}
+            <if test="id != null and id != ''">
+                AND a.id = #{id}
+            </if>
+            order by create_time desc
+        </where>
+    </select>
 
 </mapper>

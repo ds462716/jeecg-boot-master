@@ -32,7 +32,7 @@
           </a-col>
           <a-col :md="6" :sm="8">
             <a-form-item label="入库类型">
-              <j-dict-select-tag v-model="queryParam.inType" dictCode="in_type"/>
+              <j-dict-select-tag-expand v-model="queryParam.inType" dictCode="in_type"/>
             </a-form-item>
           </a-col>
           <!--<a-col :md="6" :sm="8">-->
@@ -42,7 +42,7 @@
           <!--</a-col>-->
           <a-col :md="6" :sm="8">
             <a-form-item label="审核状态">
-              <j-dict-select-tag v-model="queryParam.auditStatus" dictCode="audit_status"/>
+              <j-dict-select-tag-expand v-model="queryParam.auditStatus" dictCode="audit_status"/>
             </a-form-item>
           </a-col>
           <a-col :md="6" :sm="8">
@@ -142,12 +142,14 @@
   import { JeecgListMixin } from '@/mixins/JeecgListMixin'
   import {initDictOptions, filterMultiDictText} from '@/components/dict/JDictSelectUtil'
   import PdStockRecordInExamineModal from "./modules/PdStockRecordInExamineModal";
+  import JDictSelectTagExpand from "@/components/dict/JDictSelectTagExpand"
 
   export default {
     name: "PdStockRecordInExamineList",
     mixins:[JeecgListMixin],
     components: {
-      PdStockRecordInExamineModal
+      PdStockRecordInExamineModal,
+      JDictSelectTagExpand
     },
     data () {
       return {

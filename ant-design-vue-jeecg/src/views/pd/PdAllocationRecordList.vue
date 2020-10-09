@@ -42,14 +42,15 @@
               <a-range-picker @change="rejectedDateChange" v-model="queryParam.queryDate"/>
             </a-form-item>
           </a-col>
+          <a-col :md="6" :sm="8">
+            <a-form-item label="审核状态">
+              <j-dict-select-tag-expand v-model="queryParam.auditStatus" dictCode="audit_status"/>
+            </a-form-item>
+          </a-col>
           <template v-if="toggleSearchStatus">
             <a-col :md="6" :sm="8">
-              <a-form-item label="审核状态">
-                <a-select v-model="queryParam.auditStatus" placeholder="请选择审核状态">
-                  <a-select-option value="1">待审核</a-select-option>
-                  <a-select-option value="2">审核通过</a-select-option>
-                  <a-select-option value="3">已驳回</a-select-option>
-                </a-select>
+              <a-form-item label="提交状态">
+                <j-dict-select-tag-expand v-model="queryParam.submitStatus" dictCode="submit_status"/>
               </a-form-item>
             </a-col>
           </template>
@@ -131,6 +132,7 @@
   import {initDictOptions, filterMultiDictText} from '@/components/dict/JDictSelectUtil'
   import PdAllocationRecordModal from './modules/NewPdAllocationRecordModal'
   import { deleteAction,getAction } from '@/api/manage'
+  import JDictSelectTagExpand from "@/components/dict/JDictSelectTagExpand"
 
   let timeout;
   let currentValue;
@@ -166,7 +168,8 @@
     name: "PdAllocationRecordList",
     mixins:[JeecgListMixin],
     components: {
-      PdAllocationRecordModal
+      PdAllocationRecordModal,
+      JDictSelectTagExpand
     },
     data () {
       return {

@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.pd.mapper.HisUserMapper">
+
+	<sql id="HisUserInfColumns">
+        a.id,
+        a.create_by,
+		a.create_time,
+		a.update_by,
+		a.update_time,
+		a.sys_org_code,
+		a.del_flag,
+		a.fsf_yhm,
+		a.fsf_yhid,
+		a.fsf_yhxm,
+		a.fsf_yhks
+	</sql>
+
+	<!--用户-->
+	<sql id="pdHisDepartColumns">
+        b.fsf_ksmc as "fsfKsmc"
+	</sql>
+	<sql id="pdHisDepartJoins">
+        LEFT JOIN ex_his_depart_inf b ON b.fsf_ksbh = a.fsf_yhks
+     </sql>
+
+
+	<!-- 科室 -->
+	<sql id="sysDepartColumns">
+        c.depart_name AS "departName"
+    </sql>
+
+	<sql id="sysDepartJoins">
+        LEFT JOIN sys_depart c ON b.spd_depart_id = c.id
+    </sql>
+
+	<!-- 列表查询 -->
+	<select id="selectList" resultType="org.jeecg.modules.pd.entity.HisUserInf">
+		SELECT
+		<include refid="HisUserInfColumns"/>,
+		<include refid="pdHisDepartColumns"/>,
+		<include refid="sysDepartColumns"/>
+		FROM ex_his_user_inf a
+		<include refid="pdHisDepartJoins"/>
+		<include refid="sysDepartJoins"/>
+		where 1=1 AND	a.del_flag =#{DEL_FLAG_NORMAL}
+			<if test="id != null and id != ''">
+				AND a.id = #{id}
+			</if>
+		<if test="userName != null and userName != ''">
+			AND a.fsf_yhxm LIKE concat('%',#{userName},'%')
+		</if>
+		<if test="departName != null and departName != ''">
+			AND (b.fsf_ksmc  LIKE concat('%',#{departName},'%') or a.fsf_yhks  LIKE concat('%',#{departName},'%'))
+		</if>
+	</select>
+
+
+
+	<!-- 列表查询 -->
+	<select id="selectListByPage" resultType="org.jeecg.modules.pd.entity.HisUserInf">
+		SELECT
+		<include refid="HisUserInfColumns"/>,
+		<include refid="pdHisDepartColumns"/>,
+		<include refid="sysDepartColumns"/>
+		FROM ex_his_user_inf a
+		<include refid="pdHisDepartJoins"/>
+		<include refid="sysDepartJoins"/>
+		where 1=1 AND	a.del_flag =#{entity.DEL_FLAG_NORMAL}
+		<if test="entity.id != null and entity.id != ''">
+			AND a.id = #{entity.id}
+		</if>
+		<if test="entity.userName != null and entity.userName != ''">
+			AND a.fsf_yhxm LIKE concat('%',#{entity.userName},'%')
+		</if>
+		<if test="entity.departName != null and entity.departName != ''">
+			AND (b.fsf_ksmc  LIKE concat('%',#{entity.departName},'%') or a.fsf_yhks  LIKE concat('%',#{entity.departName},'%'))
+		</if>
+		order by a.create_time desc
+	</select>
+
+
+	<!--删除所有HIS用戶信息-->
+	<delete id="deleteHisUserInf">
+		DELETE 	FROM  ex_his_user_inf
+    </delete>
+
+
+	<!-- 查询 -->
+	<select id="queryHisUserInfo" resultType="org.jeecg.modules.pd.entity.HisUserInf">
+		SELECT
+		<include refid="HisUserInfColumns"/>
+		FROM ex_his_user_inf a
+		where 1=1
+		AND	a.del_flag ="0"
+		<if test="fsfYhid != null and fsfYhid != ''">
+			AND a.fsf_yhid = #{fsfYhid}
+		</if>
+	</select>
+</mapper>

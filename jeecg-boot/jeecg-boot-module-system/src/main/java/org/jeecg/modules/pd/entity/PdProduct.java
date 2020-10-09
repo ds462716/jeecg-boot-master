@@ -6,6 +6,7 @@ import lombok.Data;
 import org.jeecgframework.poi.excel.annotation.Excel;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -70,10 +71,12 @@ public class PdProduct  extends BaseEntity {
 	/**一级分类*/
     private java.lang.String categoryOne;
 	@TableField(exist = false)
+	@Excel(name = "一级分类", width = 15)
 	private java.lang.String categoryOneName;
 	/**二级分类*/
     private java.lang.String categoryTwo;
 	@TableField(exist = false)
+	@Excel(name = "二级分类", width = 15)
 	private java.lang.String categoryTwoName;
 	/**产品组别*/
     private java.lang.String groupId;
@@ -90,11 +93,14 @@ public class PdProduct  extends BaseEntity {
 	/**供应商*/
     private java.lang.String supplierId;
 	@TableField(exist = false)
+	@Excel(name = "供应商", width = 15)
 	private java.lang.String supplierName;
 	/**进价*/
+	@TableField(strategy = FieldStrategy.IGNORED)//修改更新null字段
 	@Excel(name = "进价", width = 15)
     private java.math.BigDecimal purchasePrice;
 	/**出价*/
+	@TableField(strategy = FieldStrategy.IGNORED)//修改更新null字段
 	@Excel(name = "出价", width = 15)
     private java.math.BigDecimal sellingPrice;
 	/**注册证*/
@@ -323,5 +329,47 @@ public class PdProduct  extends BaseEntity {
 	/**
 	 * jde编码
 	 */
+	@Excel(name = "JDE编码", width = 15)
 	private String jdeCode;
+
+	@TableField(exist = false)
+	private BigDecimal fsfJe;//HIS价格
+	@TableField(exist = false)
+	private BigDecimal priceDifference;//价格差
+	@TableField(exist = false)
+	private String fsfXmmc;//HIS项目名称
+	@TableField(exist = false)
+	private String hisChargeCodeSynFlag;//0-全部；1-已对照；2-未对照
+
+	/**
+	 * 停用或启用0启用，1停用
+	 */
+	private String status;
+
+	/**
+	 * 赣州市立医院中标号
+	 */
+	@Excel(name = "中标号", width = 15)
+	private String bidingNumber;
+	/**
+	 * 赣州市立医院中标类型
+	 * 中标类型：（1：省标、2：市标 3：其他招标:4：备案）
+	 */
+	@Excel(name = "中标类型", width = 15)
+	private String bidingType;
+	/**
+	 * 赣州市立医院中标价
+	 */
+	@Excel(name = "中标价", width = 15)
+	private java.math.BigDecimal  bidingPrice;
+
+	/**
+	 * 赣州市立财务分类
+	 */
+	private String financeClassification;
+
+	/**
+	 * 省标码
+	 */
+	private String dartCode;
 }

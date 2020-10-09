@@ -1,5 +1,6 @@
 package org.jeecg.modules.pd.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
@@ -13,7 +14,9 @@ import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.pd.entity.PdUsePackage;
 import org.jeecg.modules.pd.entity.PdUsePackageDetail;
-import org.jeecg.modules.pd.service.*;
+import org.jeecg.modules.pd.service.IPdProductStockTotalService;
+import org.jeecg.modules.pd.service.IPdUsePackageDetailService;
+import org.jeecg.modules.pd.service.IPdUsePackageService;
 import org.jeecg.modules.pd.util.UUIDUtil;
 import org.jeecg.modules.pd.vo.PdProductStockTotalPage;
 import org.jeecgframework.poi.excel.ExcelImportUtil;
@@ -21,7 +24,6 @@ import org.jeecgframework.poi.excel.def.NormalExcelConstants;
 import org.jeecgframework.poi.excel.entity.ExportParams;
 import org.jeecgframework.poi.excel.entity.ImportParams;
 import org.jeecgframework.poi.excel.view.JeecgEntityExcelView;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -63,8 +65,27 @@ public class PdUsePackageController {
     @GetMapping(value = "/initModal")
     public Result<?> initModal(@RequestParam(name = "id") String id, HttpServletRequest req) {
         PdUsePackage pdUsePackage = new PdUsePackage();
-        pdUsePackage.setCode(UUIDUtil.generateOrderNoByType(PdConstant.ORDER_NO_FIRST_LETTER_DSB));
+        pdUsePackage.setCode(UUIDUtil.generateOrderNoByType(PdConstant.ORDER_NO_FIRST_LETTER_TB));
         return Result.ok(pdUsePackage);
+    }
+
+    /**
+     * 根据ids查询列表
+     * @param ids
+     * @return
+     */
+    @GetMapping(value = "/queryPdUsePackageListByIds")
+    public Result<?> queryPdUsePackageListByIds(@RequestParam(name = "ids", required = true) String ids) {
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        PdUsePackage pdUsePackage = new PdUsePackage();
+        pdUsePackage.setDepartParentId(sysUser.getDepartParentId());
+        pdUsePackage.setIdList(Arrays.asList(ids.split(",")));
+        List<PdUsePackage> list = pdUsePackageService.queryList(pdUsePackage);
+        for (PdUsePackage record : list) {
+            List<PdUsePackageDetail> detailList = pdUsePackageDetailService.selectByMainId(record.getId());
+            record.setPdUsePackageDetailList(detailList);
+        }
+        return Result.ok(list);
     }
 
     /**
@@ -84,9 +105,23 @@ public class PdUsePackageController {
        Page<PdUsePackage> page = new Page<>(pageNo, pageSize);
        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
        pdUsePackage.setDepartParentId(sysUser.getDepartParentId());
+       if(oConvertUtils.isNotEmpty(pdUsePackage.getDepartIds()) && !"undefined".equals(pdUsePackage.getDepartIds())) {
+           pdUsePackage.setDepartIdList(Arrays.asList(pdUsePackage.getDepartIds().split(",")));
+       }
        IPage<PdUsePackage> pageList = pdUsePackageService.queryList(page, pdUsePackage);
        return Result.ok(pageList);
    }
+
+    @GetMapping(value = "/queryUsePackageDetail")
+    public Result<?> queryUsePackageDetail(@RequestParam(name="testItemCode",required=true) String testItemCode) {
+        LambdaQueryWrapper<PdUsePackage> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(PdUsePackage::getCode, testItemCode);
+        PdUsePackage pdUsePackage = pdUsePackageService.getOne(queryWrapper);
+        if(pdUsePackage==null) {
+            return Result.error("未找到对应数据");
+        }
+        return Result.ok(pdUsePackage);
+    }
 
    /**
     *   添加
@@ -136,8 +171,8 @@ public class PdUsePackageController {
     */
    @DeleteMapping(value = "/delete")
    public Result<?> delete(@RequestParam(name="id",required=true) String id) {
-       pdUsePackageService.delMain(id);
-       return Result.ok("删除成功!");
+       Result<Object> resul = pdUsePackageService.deleteV(id);
+       return resul;
    }
 
    /**
@@ -148,8 +183,8 @@ public class PdUsePackageController {
     */
    @DeleteMapping(value = "/deleteBatch")
    public Result<?> deleteBatch(@RequestParam(name="ids",required=true) String ids) {
-       this.pdUsePackageService.delBatchMain(Arrays.asList(ids.split(",")));
-       return Result.ok("批量删除成功！");
+       Result<Object> resul = pdUsePackageService.deleteBatchV(ids);
+       return resul;
    }
 
    /**

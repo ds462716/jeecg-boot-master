@@ -15,6 +15,8 @@
 		<result column="sys_org_code" property="sysOrgCode" jdbcType="VARCHAR"/>
 		<result column="validity_flag" property="validityFlag" jdbcType="VARCHAR"/>
 		<result column="remarks" property="remarks" jdbcType="VARCHAR"/>
+		<result column="status" property="status" jdbcType="VARCHAR"/>
+		<result column="jde_code" property="jdeCode" jdbcType="VARCHAR"/>
 		<result column="del_flag" property="delFlag" jdbcType="VARCHAR"/>
 	</resultMap>
 
@@ -24,6 +26,7 @@
 		a.py,
 		a.wb,
 		a.zdy,
+		a.jde_code,
 		a.licence_name0,
 		a.licence_num0,
 		a.licence_date0,
@@ -92,6 +95,7 @@
 		a.validity_flag,
 		a.msg_send_state,
 		a.remarks,
+		a.status,
 		a.del_flag
 	</sql>
 
@@ -102,6 +106,7 @@
 		a.py,
 		a.wb,
 		a.zdy,
+		a.jde_code,
 		a.create_by,
 		a.create_time,
 		a.update_by,
@@ -110,6 +115,7 @@
 		a.validity_flag,
 		a.msg_send_state,
 		a.remarks,
+		a.status,
 		a.del_flag
 	</sql>
 
@@ -152,11 +158,45 @@
 		<if test="validityFlag != null and validityFlag != ''">
 			AND a.validity_flag = #{validityFlag}
 		</if>
+		<if test="status != null and status != ''">
+			AND a.status = #{status}
+		</if>
 		<if test="departId != null and departId != ''">
 			AND a.depart_id = #{departId}
 		</if>
 		<if test="departParentId != null and departParentId != ''">
 			AND a.depart_parent_id = #{departParentId}
+		</if>
+		<!-- 为了查询效率 只查询十条记录该方法用于下拉选择 -->
+		ORDER BY a.update_time desc,a.create_time desc
+	</select>
+
+	<!-- 物理分页 -->
+	<select id="selectListByPage" resultMap="resultMap" resultType="org.jeecg.modules.pd.entity.PdVender">
+		SELECT
+		<include refid="pdVenderColumns"/>
+		FROM pd_vender a
+		<include refid="pdVenderJoins"/>
+		<where>
+			a.del_flag = #{entity.DEL_FLAG_NORMAL}
+		</where>
+		<if test="entity.name != null and entity.name != ''">
+			AND (a.name LIKE concat('%',#{entity.name},'%')
+			or a.py LIKE concat('%',#{entity.name},'%')
+			or a.wb LIKE concat('%',#{entity.name},'%')
+			or a.zdy LIKE concat('%',#{entity.name},'%'))
+		</if>
+		<if test="entity.validityFlag != null and entity.validityFlag != ''">
+			AND a.validity_flag = #{entity.validityFlag}
+		</if>
+		<if test="entity.status != null and entity.status != ''">
+			AND a.status = #{entity.status}
+		</if>
+		<if test="entity.departId != null and entity.departId != ''">
+			AND a.depart_id = #{entity.departId}
+		</if>
+		<if test="entity.departParentId != null and entity.departParentId != ''">
+			AND a.depart_parent_id = #{entity.departParentId}
 		</if>
 		<!-- 为了查询效率 只查询十条记录该方法用于下拉选择 -->
 		ORDER BY a.update_time desc,a.create_time desc
@@ -176,6 +216,9 @@
 			or a.py LIKE concat('%',#{name},'%')
 			or a.wb LIKE concat('%',#{name},'%')
 			or a.zdy LIKE concat('%',#{name},'%'))
+		</if>
+		<if test="status != null and status != ''">
+			AND a.status = #{status}
 		</if>
 	</select>
 

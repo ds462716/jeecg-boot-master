@@ -1,8 +1,9 @@
 package org.jeecg.modules.pd.service;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import org.apache.ibatis.annotations.Param;
 import org.jeecg.common.api.vo.Result;
-import org.jeecg.modules.pd.entity.PdCategory;
 import org.jeecg.modules.pd.entity.PdProduct;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.jeecg.modules.pd.entity.PdProductStock;
@@ -20,9 +21,13 @@ import java.util.Map;
  */
 public interface IPdProductService extends IService<PdProduct> {
 
-    Page<PdProductPage> chooseProductList(Page<PdProductPage> pageList, PdProduct pdProduct);
+    IPage<PdProductPage> chooseProductList(Page<PdProductPage> pageList, PdProduct pdProduct);
 
-    Page<PdProduct> selectList(Page<PdProduct> pageList, PdProduct pdProduct);
+    IPage<PdProduct> selectList(Page<PdProduct> pageList, PdProduct pdProduct);
+
+    List<PdProduct> selectListForHisCharge(PdProduct pdProduct);
+
+    IPage<PdProduct> selectListForHisChargeByPage(Page<PdProduct> pageList, PdProduct pdProduct);
 
     void updateProduct(PdProduct pdProduct);
 
@@ -30,7 +35,7 @@ public interface IPdProductService extends IService<PdProduct> {
 
     Result<Map>  getScanCode(String Barcode1, String Barcode2, Result<Map> result);
 
-    Result<List<PdProductStock>> getStocks(String productBarCode, String Barcode2, Result<List<PdProductStock>> result);
+    Result<List<PdProductStock>> getStocks(String productBarCode, String Barcode2, String productFlag,String barCodeType,String nestatStatus,Result<List<PdProductStock>> result);
 
     void editChargeCodeBatch(String ids, String chargeCode);
 
@@ -41,6 +46,8 @@ public interface IPdProductService extends IService<PdProduct> {
     List<PdProduct> selectListByCT(PdProduct pdProduct);
 
     List<PdProduct> selectListByCTs(Map<String,Object> map);
+
+    List<PdProduct> selectListByChargeCode(PdProduct entity);
 
     Result<Object> importExcel(Map<String, MultipartFile> fileMap);
 
@@ -53,4 +60,14 @@ public interface IPdProductService extends IService<PdProduct> {
     void updateValidityFlag(PdProduct pdProduct);
 
     Result<Object> importExcelReagents(Map<String, MultipartFile> fileMap);
+
+    Result<List<PdProductStock>> openingQuotation(String barcode,String instrCode, Result<List<PdProductStock>> result);
+
+    Result<PdProductStock> uniqueScanCodeUrl(String barcode, String productFlag,String nestatStatus,Result<PdProductStock> result);
+
+    Result<List<PdProductStock>> closeIngQuotation(String barcode,String closeRemarks,String instrCode, Result<List<PdProductStock>> result);
+
+    List<PdProduct> queryList(PdProduct pdProduct);
+
+    IPage<PdProduct> queryPageListForHisCharge(Page<PdProduct> page, PdProduct pdProduct);
 }

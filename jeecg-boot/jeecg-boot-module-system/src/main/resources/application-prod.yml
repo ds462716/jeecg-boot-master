@@ -2,6 +2,7 @@ server:
   port: 8080
   tomcat:
     max-swallow-size: -1
+    max-http-post-size: 5MB
   servlet:
     context-path: /jeecg-boot
   compression:
@@ -83,7 +84,7 @@ spring:
         timeBetweenEvictionRunsMillis: 60000
         # 配置一个连接在池中最小生存的时间，单位是毫秒
         minEvictableIdleTimeMillis: 300000
-        validationQuery: SELECT 1 FROM DUAL
+        #validationQuery: SELECT 1 FROM DUAL
         testWhileIdle: true
         testOnBorrow: false
         testOnReturn: false
@@ -100,12 +101,18 @@ spring:
           username: root
           password: 1234
           driver-class-name: com.mysql.jdbc.Driver
-          # 多数据源配置
-          #multi-datasource1:
-          #url: jdbc:mysql://localhost:3306/jeecg-boot2?useUnicode=true&characterEncoding=utf8&autoReconnect=true&zeroDateTimeBehavior=convertToNull&transformedBitIsBoolean=true
-          #username: root
-          #password: root
-          #driver-class-name: com.mysql.jdbc.Driver
+          # 多数据源配置  --HIS系统生产环境
+        multi-datasource1:
+          url: jdbc:sqlserver://155.5.16.1:1433;databaseName=gzslyy_his
+          username: hcxt
+          password: tbyfsoft
+          driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
+          # 多数据源配置  --LIS系统生产环境
+        multi-datasource2:
+          url: jdbc:sqlserver://155.5.16.5:1433;databaseName=lisnet
+          username: hcxt
+          password: tbyfsoft
+          driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
   #redis 配置
   redis:
     database: 0
@@ -173,6 +180,8 @@ jeecg :
     minio_name: ??
     minio_pass: ??
     bucketName: ??
+    #医院代码-赣州市立医院
+  hospital_code: "GZSLYY"
 #cas单点登录
 cas:
   prefixUrl: http://cas.example.org:8443/cas

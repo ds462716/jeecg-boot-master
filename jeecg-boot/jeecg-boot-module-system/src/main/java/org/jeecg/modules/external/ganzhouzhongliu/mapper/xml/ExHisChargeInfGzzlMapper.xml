@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.external.ganzhouzhongliu.mapper.ExHisChargeInfGzzlMapper">
+
+    <!-- 查询住院病人信息 -->
+    <select id="queryZyPatientInfoList"   resultType="org.jeecg.modules.pd.entity.PdDosage">
+      select
+        a.gy_zyhm AS id,
+        a.gy_zyh AS inHospitalNo,
+        a.gy_zyhm AS medicalRecordNo,
+        a.gy_cs AS hospitalizationsNum,
+        a.gy_ks AS exeDeptName,
+        a.gy_ksdm AS exeDeptId,
+        a.gy_bq AS subordinateWardName,
+        a.gy_bqdh AS subordinateWardId,
+        a.gy_brch AS bedNumber,
+        a.gy_xm AS patientInfo,
+        a.gy_xb AS fsfXb,
+        a.gy_csrq AS fsfCsrq,
+        a.gy_zjhm AS cardId,
+        a.gy_ryrq AS admissionDate,
+        a.gy_zd AS admissionDiagnosis,
+        a.gy_zzys AS surgeonName,
+        a.gy_zzysbh AS surgeonId,
+        a.gy_brbs AS operativeNumber,
+        a.gy_ssmc AS operationName,
+        a.gy_sssj AS operationTime,
+        a.gy_ssks AS oprDeptName
+        from
+        v_GY_inpa_surg_info a
+        where 1 = 1
+        <if test="entity.inHospitalNo != null and entity.inHospitalNo != ''">
+            AND a.gy_zyh LIKE '%'+ #{entity.inHospitalNo} +'%'
+        </if>
+        <if test="entity.operativeNumber != null and entity.operativeNumber != ''">
+            AND a.gy_brbs LIKE '%'+ #{entity.operativeNumber} +'%'
+        </if>
+    </select>
+
+    <!-- 查询门诊病人信息 -->
+    <select id="queryMzPatientInfoList"   resultType="org.jeecg.modules.pd.entity.PdDosage">
+        select
+        a.gy_mzh AS id,
+        a.gy_mzh AS outpatientNumber,
+        a.gy_ks AS exeDeptName,
+        a.gy_ksdm AS exeDeptId,
+        a.gy_xm AS patientInfo,
+        a.gy_xb AS fsfXb,
+        a.gy_zjhm AS cardId,
+        a.gy_ryrq AS operationTime,
+        a.gy_zzys AS surgeonName,
+        a.gy_zzysbh AS sqrtDoctorId,
+        a.gy_brbs AS inspectioniItemsNumber,
+        a.gy_ssmc AS inspectioniItemsName,
+        a.gy_ssks AS oprDeptName
+         from
+        v_GY_Otpa_info a
+        where 1 = 1
+        <if test="entity.outpatientNumber != null and entity.outpatientNumber != ''">
+            AND a.gy_mzh LIKE '%'+ #{entity.outpatientNumber} +'%'
+        </if>
+    </select>
+
+    <!-- 查询收费项目代码 -->
+    <select id="queryHisChargeCode"   resultType="org.jeecg.modules.external.ganzhouzhongliu.entity.ExHisChargeCodeGzzl">
+        select
+        * from
+        v_GY_baseitem a
+        where 1 = 1
+        <if test="entity.gyXmbh != null and entity.gyXmbh != ''">
+            AND a.gy_xmbh LIKE '%'+ #{entity.gyXmbh} +'%'
+        </if>
+        <if test="entity.gyXmmc != null and entity.gyXmmc != ''">
+            AND (a.gy_xmmc LIKE '%'+ #{entity.gyXmmc} +'%'
+            or a.gy_pym LIKE '%'+ #{entity.gyXmmc} +'%'
+            or a.gy_wbm LIKE '%'+ #{entity.gyXmmc} +'%')
+        </if>
+    </select>
+
+
+</mapper>

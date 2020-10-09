@@ -8,7 +8,7 @@
             <a-form-item label="盘点科室">
               <a-select
                 showSearch
-                :departId="departValue"
+                :targetDepartId="departValue"
                 :defaultActiveFirstOption="false"
                 :allowClear="true"
                 :showArrow="true"
@@ -17,7 +17,7 @@
                 @change="departHandleChange"
                 @focus="departHandleSearch"
                 :notFoundContent="notFoundContent"
-                v-model="queryParam.departId"
+                v-model="queryParam.targetDepartId"
                 placeholder="请选择科室"
               >
                 <a-select-option v-for="d in departData" :key="d.value">{{d.text}}</a-select-option>
@@ -25,11 +25,8 @@
             </a-form-item>
           </a-col>
           <a-col :md="6" :sm="8">
-            <a-form-item label="盘点完成状态">
-              <a-select v-model="queryParam.checkStatus" placeholder="请选择盘点完成状态">
-                <a-select-option value="0">临时保存</a-select-option>
-                <a-select-option value="1">盘点完成</a-select-option>
-              </a-select>
+            <a-form-item label="提交状态">
+              <j-dict-select-tag-expand v-model="queryParam.checkStatus" dictCode="submit_status" placeholder="请选择提交状态"/>
             </a-form-item>
           </a-col>
          <!-- <template :md="6" v-if="toggleSearchStatus">
@@ -52,17 +49,16 @@
     
     <!-- 操作按钮区域 -->
     <div class="table-operator">
-      <a-button @click="handleAdd" type="primary" icon="plus">开始盘点</a-button>
-      <!--<a-button type="primary" icon="download" @click="handleExportXls('盘点记录表')">导出</a-button>
-      <a-upload name="file" :showUploadList="false" :multiple="false" :headers="tokenHeader" :action="importExcelUrl" @change="handleImportExcel">
-        <a-button type="primary" icon="import">导入</a-button>
-      </a-upload>-->
+      <a-button @click="handleAdd" type="primary" icon="plus">新增盘点单</a-button>
       <a-dropdown v-if="selectedRowKeys.length > 0">
-        <a-menu slot="overlay">
-          <a-menu-item key="1" @click="batchDel"><a-icon type="delete"/>删除</a-menu-item>
-        </a-menu>
-        <a-button style="margin-left: 8px"> 批量操作 <a-icon type="down" /></a-button>
-      </a-dropdown>
+      <a-menu slot="overlay">
+        <!--<a-menu-item key="1" @click="batchLocking"><a-icon type="lock"/>锁定库房</a-menu-item>-->
+        <!--<a-menu-item key="2" @click="batchUnlock"><a-icon type="unlock"/>解锁库房</a-menu-item>-->
+        <a-menu-item key="3" @click="batchDel"><a-icon type="delete"/>删除</a-menu-item>
+      </a-menu>
+      <a-button style="margin-left: 8px"> 批量操作 <a-icon type="down" /></a-button>
+    </a-dropdown>
+
     </div>
 
     <!-- table区域-begin -->
@@ -84,23 +80,38 @@
         :customRow="onClickRow"
         :rowSelection="{fixed:false,selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
         @change="handleTableChange">
-         <span slot="action" slot-scope="text, record">
-          <a  @click="handleEdit(record)">编辑</a>
+          <span slot="action" slot-scope="text, record">
+          <a @click="handleEdit(record)" v-bind:disabled="record.checkStatus=='2'">修改</a>
+          <a-divider type="vertical"/>
+          <a @click="handleDetail(record)">详情</a>
           <a-divider type="vertical" />
-            <a-menu-item>
-                <a href="javascript:;" @click="handleDetail(record)">详情</a>
-              </a-menu-item>
-           <a-divider type="vertical" />
-          <a-dropdown>
-            <a class="ant-dropdown-link" v-bind:disabled="record.checkStatus=='1'">更多 <a-icon type="down" /></a>
+          <a @click="locking(record)" v-bind:disabled="record.checkStatus=='2'">锁定库房</a>
+          <a-divider type="vertical" />
+          <a @click="unlock(record)" v-bind:disabled="record.checkStatus=='2'">解锁库房</a>
+          <a-divider type="vertical" />
+          <a @click="handleDelete(record)" v-bind:disabled="record.checkStatus=='2'">删除</a>
+
+
+         <!-- <a-dropdown>
+            <a class="ant-dropdown-link" v-bind:disabled="record.checkStatus=='2'" >更多 <a-icon type="down" /></a>
             <a-menu slot="overlay">
-              <a-menu-item>
-                <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.id)">
+              <a-menu-item v-show="record.checkStatus=='1' || record.checkStatus=='3'"> &lt;!&ndash;待提交、已撤回&ndash;&gt;
+                <a-popconfirm title="确定锁定吗?"  @confirm="() => locking(record)"  >
+                  <a>锁定库房</a>
+                </a-popconfirm>
+              </a-menu-item>
+              <a-menu-item v-show="record.checkStatus=='1' || record.checkStatus=='3'"> &lt;!&ndash;待提交、已撤回&ndash;&gt;
+                <a-popconfirm title="确定解锁吗?解锁后需要按键盘F5进行刷新"  @confirm="() => unlock(record)"  >
+                  <a>解锁库房</a>
+                </a-popconfirm>
+              </a-menu-item>
+              <a-menu-item v-show="record.checkStatus=='1' || record.checkStatus=='3'"> &lt;!&ndash;待提交、已撤回&ndash;&gt;
+                <a-popconfirm title="确定删除吗?"  @confirm="() => handleDelete(record.id)"  >
                   <a>删除</a>
                 </a-popconfirm>
               </a-menu-item>
             </a-menu>
-          </a-dropdown>
+          </a-dropdown>-->
         </span>
       </a-table>
     </div>
@@ -115,6 +126,7 @@
   import { deleteAction,getAction } from '@/api/manage'
   import {initDictOptions, filterMultiDictText} from '@/components/dict/JDictSelectUtil'
   import PdProductStockCheckModal from './modules/PdProductStockCheckModal'
+  import JDictSelectTagExpand from "@/components/dict/JDictSelectTagExpand"
 
   let timeout;
   let currentValue;
@@ -150,7 +162,8 @@
     name: "PdProductStockCheckList",
     mixins:[JeecgListMixin],
     components: {
-      PdProductStockCheckModal
+      PdProductStockCheckModal,
+      JDictSelectTagExpand
     },
     data () {
       return {
@@ -209,7 +222,7 @@
             dataIndex: 'profitLossCount'
           },
           {
-            title:'盘点状态',
+            title:'提交状态',
             align:"center",
             dataIndex: 'checkStatus',
             customRender:(text)=>{
@@ -217,6 +230,30 @@
                 return ''
               }else{
                 return filterMultiDictText(this.dictOptions['checkStatus'], text+"")
+              }
+            }
+          },
+          {
+            title:'审批状态',
+            align:"center",
+            dataIndex: 'auditStatus',
+            customRender:(text)=>{
+              if(!text){
+                return ''
+              }else{
+                return filterMultiDictText(this.dictOptions['auditStatus'], text+"")
+              }
+            }
+          },
+          {
+            title:'库房状态',
+            align:"center",
+            dataIndex: 'lockingState',
+            customRender:(text)=>{
+              if(!text){
+                return ''
+              }else{
+                return filterMultiDictText(this.dictOptions['lockingState'], text+"")
               }
             }
           },
@@ -231,12 +268,13 @@
           list: "/pd/pdProductStockCheck/list",
           delete: "/pd/pdProductStockCheck/delete",
           deleteBatch: "/pd/pdProductStockCheck/deleteBatch",
-          exportXlsUrl: "/pd/pdProductStockCheck/exportXls",
           queryDepart: "/pd/pdDepart/queryListTree",
+          locking: "/pd/pdProductStockCheckPermission/locking",
+          unlock: "/pd/pdProductStockCheckPermission/unlock",
         },
         dictOptions:{
           checkStatus:[],
-
+          lockingState:[]
         },
       }
     },
@@ -246,6 +284,21 @@
       }
     },
     methods: {
+      loadData(arg) {
+        //加载数据 若传入参数1则加载第一页的内容
+        if (arg === 1) {
+          this.ipagination.current = 1;
+        }
+        let params = this.getQueryParams();//查询条件
+        this.loading = true;
+        getAction(this.url.list, params).then((res) => {
+          if (res.success) {
+            this.dataSource = res.result.records;
+            this.ipagination.total = res.result.total;
+          }
+          this.loading = false;
+        })
+      },
       //科室查询start
       departHandleSearch(value) {
         fetch(value, data => (this.departData = data),this.url.queryDepart);
@@ -260,18 +313,27 @@
           this.$message.warning('请选择一条记录！');
           return;
         } else {
-          var ids = "";
-          var checkNos="";
+          let ids = "";
+          let checkNos1="",checkNos2="";
           for (let a = 0; a < this.selectionRows.length; a++) {
             let checkStatus= this.selectionRows[a].checkStatus;
-            if(checkStatus=='1'){
-              checkNos+=this.selectionRows[a].checkNo + ",";
-            }else{
-              ids += this.selectionRows[a].id + ",";
+            let lockingState= this.selectionRows[a].lockingState;
+            if(checkStatus == '2'){
+              checkNos1+=this.selectionRows[a].checkNo + ",";
             }
+
+            if(lockingState == '1'){
+              checkNos2+=this.selectionRows[a].checkNo + ",";
+            }
+
+            ids += this.selectionRows[a].id + ",";
           }
-          if(checkNos != ""){
-            this.$message.warning("盘点编号["+checkNos.substring(0,checkNos.length-1)+"]已盘点完成，不允许删除！")
+          if(checkNos1 != ""){
+            this.$message.warning("盘点编号["+checkNos1.substring(0,checkNos1.length-1)+"]已提交，不允许删除！")
+            return
+          }
+          if(checkNos2 != ""){
+            this.$message.warning("盘点编号["+checkNos2.substring(0,checkNos2.length-1)+"]库房已锁定，不允许删除！")
             return
           }
           var that = this;
@@ -296,9 +358,19 @@
         }
       },
       initDictConfig(){
-        initDictOptions('check_status').then((res) => {
+        initDictOptions('submit_status').then((res) => {
           if (res.success) {
             this.$set(this.dictOptions, 'checkStatus', res.result)
+          }
+        }),
+        initDictOptions('audit_status').then((res) => {
+          if (res.success) {
+            this.$set(this.dictOptions, 'auditStatus', res.result)
+          }
+        }),
+        initDictOptions('locking_state').then((res) => {
+          if (res.success) {
+            this.$set(this.dictOptions, 'lockingState', res.result)
           }
         })
 
@@ -331,7 +403,70 @@
             }
           }
         }
-      }
+      },
+      /**
+       * 锁定
+       */
+      locking(record){
+        let that = this;
+        deleteAction(that.url.locking, {id: record.targetDepartId,recordId:record.id}).then((res) => {
+          if (res.success) {
+            that.$message.success(res.message);
+            that.loadData();
+          } else {
+            that.$message.warning(res.message);
+          }
+        });
+      },
+      batchLocking(){ //批量删除
+        if (this.selectionRows.length <= 0) {
+          this.$message.warning('请选择一条记录！');
+          return;
+        } else {
+          let ids = "";
+          let checkNos1="",checkNos2="";
+          for (let a = 0; a < this.selectionRows.length; a++) {
+            let checkStatus= this.selectionRows[a].checkStatus;
+            let lockingState= this.selectionRows[a].lockingState;
+            if(checkStatus == '2'){
+              checkNos1+=this.selectionRows[a].checkNo + ",";
+            }
+
+            if(lockingState == '1'){
+              checkNos2+=this.selectionRows[a].checkNo + ",";
+            }
+
+            ids += this.selectionRows[a].id + ",";
+          }
+          if(checkNos1 != ""){
+            this.$message.warning("盘点编号["+checkNos1.substring(0,checkNos1.length-1)+"]已提交，不允许锁定！")
+            return
+          }
+          if(checkNos2 != ""){
+            this.$message.warning("盘点编号["+checkNos2.substring(0,checkNos2.length-1)+"]库房已锁定，不能再次锁定！")
+            return
+          }
+
+        }
+      },
+
+      /**
+       * 解锁
+       */
+      unlock(record){
+        let that = this;
+        deleteAction(that.url.unlock, {id: record.targetDepartId,recordId:record.id}).then((res) => {
+          if (res.success) {
+            that.$message.success(res.message);
+            that.loadData();
+          } else {
+            that.$message.warning(res.message);
+          }
+        });
+      },
+      batchUnlock(){
+
+      },
        
     }
   }

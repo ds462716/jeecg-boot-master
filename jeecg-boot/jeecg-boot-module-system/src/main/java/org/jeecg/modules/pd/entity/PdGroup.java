@@ -71,4 +71,9 @@ public class PdGroup  extends BaseEntity {
 	/**备注*/
 	@Excel(name = "备注", width = 15)
     private java.lang.String remarks;
+
+	/**
+	 * 停用或启用0启用，1停用
+	 */
+	private String status;
 }

@@ -13,9 +13,11 @@ import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.pd.entity.PdCategory;
 import org.jeecg.modules.pd.entity.PdProduct;
+import org.jeecg.modules.pd.entity.PdUnit;
 import org.jeecg.modules.pd.mapper.PdCategoryMapper;
 import org.jeecg.modules.pd.service.IPdCategoryService;
 import org.jeecg.modules.pd.service.IPdProductService;
+import org.jeecg.modules.pd.util.JmUtil;
 import org.jeecg.modules.system.entity.SysPermission;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -292,5 +294,22 @@ public class PdCategoryServiceImpl extends ServiceImpl<PdCategoryMapper, PdCateg
                 }
             }
         }
+    }
+
+    @Override
+    public Result<Object> generateUnitPyWb() {
+        LambdaQueryWrapper<PdCategory> query = new LambdaQueryWrapper<>();
+        List<PdCategory> list = this.list(query);
+        if(list!=null && list.size()>0){
+            for(PdCategory pdCategory :list){
+                //生成拼音简码
+                pdCategory.setPy(JmUtil.getAllFirstLetter(pdCategory.getName()));
+                //生成五笔简码
+                pdCategory.setWb(JmUtil.getWBCode(pdCategory.getName()));
+            }
+            this.updateBatchById(list);
+        }
+        return Result.ok("生成简码成功");
+
     }
 }

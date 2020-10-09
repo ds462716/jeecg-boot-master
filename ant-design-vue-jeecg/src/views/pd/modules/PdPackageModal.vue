@@ -14,37 +14,56 @@
       <a-form :form="form">
         <a-row>
 
-          <a-col :span="12">
-            <a-form-item label="定数包编号" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input v-decorator="[ 'code', validatorRules.code]" disabled="disabled" placeholder="请输入定数包编号"></a-input>
+          <a-col :span="8">
+            <a-form-item label="套包编号" :labelCol="labelCol" :wrapperCol="wrapperCol">
+              <a-input v-decorator="[ 'packageCode', validatorRules.packageCode]" disabled="disabled" placeholder="请输入套包编号"></a-input>
             </a-form-item>
           </a-col>
-          <a-col :span="12">
-            <a-form-item label="定数包名称" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input v-decorator="[ 'name', validatorRules.name]"  @change="pinyinTran" placeholder="请输入定数包名称"></a-input>
+          <a-col :span="8">
+            <a-form-item label="套包名称" :labelCol="labelCol" :wrapperCol="wrapperCol">
+              <a-input v-decorator="[ 'packageName', validatorRules.packageName]"  @change="pinyinTran" placeholder="请输入套包名称"></a-input>
             </a-form-item>
           </a-col>
-          <!--<a-col :span="12" v-show="false">-->
+          <a-col :span="8" v-if="isFirstdepart">
+            <a-form-item label="科室" :labelCol="labelCol" :wrapperCol="wrapperCol">
+              <a-select
+                showSearch
+                placeholder="请选择科室"
+                :defaultActiveFirstOption="false"
+                :showArrow="true"
+                :filterOption="false"
+                :allowClear="true"
+                @search="departHandleSearch"
+                @change="departHandleChange"
+                @focus="departHandleSearch"
+                :notFoundContent="notFoundContent"
+                v-decorator="[ 'departId', validatorRules.departId]"
+              >
+                <a-select-option v-for="d in departList" :key="d.id" :text="d.departName" >{{d.departName}}</a-select-option>
+              </a-select>
+            </a-form-item>
+          </a-col>
+          <!--<a-col :span="8" v-show="false">-->
             <!--<a-form-item label="产品总数" :labelCol="labelCol" :wrapperCol="wrapperCol">-->
-              <!--<a-input-number v-decorator="[ 'sum', validatorRules.sum]" placeholder="0" disabled="disabled" style="width: 100%"/>-->
+              <!--<a-input-number v-decorator="[ 'packageSum', validatorRules.packageSum]" placeholder="0" disabled="disabled" style="width: 100%"/>-->
             <!--</a-form-item>-->
           <!--</a-col>-->
-          <a-col :span="12">
+          <a-col :span="8">
             <a-form-item label="拼音简码" :labelCol="labelCol" :wrapperCol="wrapperCol">
               <a-input v-decorator="[ 'py', validatorRules.py]" placeholder="请输入拼音简码"></a-input>
             </a-form-item>
           </a-col>
-          <a-col :span="12">
+          <a-col :span="8">
             <a-form-item label="五笔简码" :labelCol="labelCol" :wrapperCol="wrapperCol">
               <a-input v-decorator="[ 'wb', validatorRules.wb]" placeholder="请输入五笔简码"></a-input>
             </a-form-item>
           </a-col>
-          <a-col :span="12">
+          <a-col :span="8">
             <a-form-item label="自定义码" :labelCol="labelCol" :wrapperCol="wrapperCol">
               <a-input v-decorator="[ 'zdy', validatorRules.zdy]" placeholder="请输入自定义码"></a-input>
             </a-form-item>
           </a-col>
-          <a-col :span="12">
+          <a-col :span="8">
             <a-form-item label="备注" :labelCol="labelCol" :wrapperCol="wrapperCol">
               <a-input v-decorator="[ 'remarks', validatorRules.remarks]" placeholder="请输入备注"></a-input>
             </a-form-item>
@@ -54,7 +73,7 @@
 
       <!-- 子表单区域 -->
       <a-tabs v-model="activeKey" @change="handleChangeTabs">
-        <a-tab-pane tab="定数包明细" :key="refKeys[0]" :forceRender="true">
+        <a-tab-pane tab="套包明细" :key="refKeys[0]" :forceRender="true">
           <div style="margin-bottom: 8px;">
             <a-button type="primary" icon="plus" @click="handleConfirmAdd">新增</a-button>
             <span style="padding-left: 8px;"></span>
@@ -118,23 +137,21 @@
       return {
         totalSum:'0',
 
-        labelCol: {
-          span: 6
-        },
-        wrapperCol: {
-          span: 16
-        },
-        labelCol2: {
-          span: 3
-        },
-        wrapperCol2: {
-          span: 20
-        },
+        labelCol: { span: 6 },
+        wrapperCol: { span: 16 },
+        labelCol2: { span: 3 },
+        wrapperCol2: { span: 20 },
+
+        departValue: undefined,
+        notFoundContent:"未找到内容",
+        departList:[],
+        isFirstdepart:true,
         // 新增时子表默认添加几行空数据
         addDefaultRowNum: 0,
         validatorRules: {
-          code: { rules: [{ required: true, message: '请输入定数包编号!' }] },
-          name: { rules: [{ required: true, message: '请输入定数包名称!' }] },
+          packageCode: { rules: [{ required: true, message: '请输入套包编号!' }] },
+          packageName: { rules: [{ required: true, message: '请输入套包名称!' }] },
+          departId: { rules: [{ required: true, message: '请选择科室!' }] },
           py:{},
           wb:{},
           zdy:{},
@@ -144,7 +161,7 @@
         tableKeys:['pdPackageDetail', ],
         activeKey: 'pdPackageDetail',
         id:0,
-        // 定数包明细
+        // 套包明细
         pdPackageDetailTable: {
           loading: false,
           dataSource: [],
@@ -158,7 +175,7 @@
             {
               title: '产品编号',
               align:"center",
-              key: 'productNumber'
+              key: 'number'
             },
             {
               title: '产品名称',
@@ -201,12 +218,13 @@
           add: "/pd/pdPackage/add",
           init: "/pd/pdPackage/initModal",
           edit: "/pd/pdPackage/edit",
+          departList:"/pd/pdDepart/getSysDepartList",
           pdPackageDetail: {
             list: '/pd/pdPackage/queryPdPackageDetailByMainId'
           },
         },
         popModal: {
-          title: '定数包管理',
+          title: '套包管理',
           visible: false,
           width: '100%',
           // width: '1200',
@@ -229,10 +247,13 @@
       },
       /** 调用完edit()方法之后会自动调用此方法 */
       editAfter() {
-        let fieldval = pick(this.model,'code','name','py','wb','zdy','remarks');
+        this.$nextTick(() => {
+          this.departHandleSearch();  // 初始化部门列表 用于数据回显
+        })
+        let fieldval = pick(this.model,'packageCode','packageName','py','wb','zdy','remarks','departId');
         this.$nextTick(() => {
           this.form.setFieldsValue(fieldval);
-          this.totalSum = this.model.sum;
+          this.totalSum = this.model.packageSum;
           // 加载子表数据
           if (this.model.id) {
             let params = { id: this.model.id }
@@ -240,8 +261,13 @@
           }else{
             getAction(this.url.init, {id:""}).then((res) => {
               if (res.success) {
+                if(res.result.departType == "1"){
+                  this.isFirstdepart = true;
+                }else{
+                  this.isFirstdepart = false;
+                }
                 this.$nextTick(() => {
-                  this.form.setFieldsValue({code:res.result.code});
+                  this.form.setFieldsValue({packageCode:res.result.packageCode,departId:res.result.departId});
                 })
               }
             })
@@ -261,7 +287,7 @@
         this.$message.error(msg)
       },
       popupCallback(row){
-        this.form.setFieldsValue(pick(row,'code','name','py','wb','zdy','remarks'))
+        this.form.setFieldsValue(pick(row,'packageCode','packageName','py','wb','zdy','remarks'))
       },
       pinyinTran(e){
         let val = e.target.value;
@@ -294,7 +320,7 @@
           }
           let formData = this.classifyIntoFormData(allValues)
           if(formData.pdPackageDetailList.length <= 0){
-            this.$message.warning("定数包产品数据为空，请选择产品！");
+            this.$message.warning("套包产品数据为空，请选择产品！");
             return;
           }
 
@@ -307,7 +333,7 @@
           }
 
           // 发起请求
-          formData.sum = this.totalSum;
+          formData.packageSum = this.totalSum;
           return this.request(formData)
         }).catch(e => {
           if (e.error === VALIDATE_NO_PASSED) {
@@ -369,7 +395,7 @@
         let data = {
           productId: row.productId,
           productName: row.productName,
-          productNumber : row.number,
+          number : row.number,
           spec: row.spec,
           unitName: row.unitName,
           venderName: row.venderName,
@@ -378,7 +404,19 @@
         }
         this.pdPackageDetailTable.dataSource.push(data);
         this.$refs.pdPackageDetail.add();
-      }
+      },
+      // 部门下拉框搜索
+      departHandleSearch(value){
+        getAction(this.url.departList,{departName:value,parentFlag:"0"}).then((res)=>{
+          if (!res.success) {
+            this.cmsFailed(res.message);
+          }
+          this.departList = res.result;
+        })
+      },
+      // 部门下拉框变更
+      departHandleChange(value,option){
+      },
     }
   }
 </script>

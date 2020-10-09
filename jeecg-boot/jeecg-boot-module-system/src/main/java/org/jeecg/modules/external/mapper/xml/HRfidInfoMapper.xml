@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.external.mapper.HRfidInfoMapper">
+
+
+
+    <!-- 根据rfid标签获取库存信息 -->
+    <select id="queryHrfidList" resultType="java.util.Map">
+        select
+        un.id  AS "refBarCode",
+        "1" AS "czNum",
+        prod.id AS "productId",
+        prod.number AS "productNo",
+        st.batch_no  AS "batchNo",
+        st.exp_date  AS "validDate",
+        st.product_bar_code AS "productBarCode",
+        st.stock_num  AS "stockNum",
+        st.record_detail_id as "rkmxId",
+        st.id  AS "productStockId",
+        prod.name  AS "productName",
+        prod.spec  AS "spec",
+        prod.version  AS "version",
+        prod.purchase_price AS "inPrice",
+        prod.selling_price AS "outPrice"
+        from pd_product_stock_unique_code un
+        left join 	pd_product_stock st on
+        un.product_stock_id=st.id
+        left join pd_product prod   on st.product_id=prod.id
+        <where>
+             1=1
+            <if test="rfIds != null and rfIds.size() > 0">
+                and un.id IN
+                <foreach collection="rfIds" item="item" separator="," open="(" close=")">
+                    #{item}
+                </foreach>
+            </if>
+        </where>
+    </select>
+
+    <!-- 获取rfid标签信息 -->
+    <select id="queryHrfid" resultType="java.util.Map">
+        SELECT
+        rfid.id AS "id",
+        rfid.rkmx_id AS "rkmxId",
+        rfid.stock_id AS "stockId",
+        rfid.product_no AS "productNo",
+        rfId.product_id AS "productId",
+        rfId.is_disable AS "isDisable",
+        rfId.batch_no AS "batchNo"
+        from h_rfid_info rfid
+        <where> 1=1
+            <if test="rfId != null and rfId != ''">
+                AND rfid.rf_id=#{rfId}
+            </if>
+            <if test="stockId != null and stockId != ''">
+                AND rfid.stock_id=#{stockId}
+            </if>
+            <if test="productNo != null and productNo != ''">
+                AND rfid.product_no=#{productNo}
+            </if>
+            <if test="productId != null and productId != ''">
+                AND rfid.product_id=#{productId}
+            </if>
+            <if test="batchNo != null and batchNo != ''">
+                AND rfid.batch_no=#{batchNo}
+            </if>
+            <if test="rfIds != null and rfIds.size() > 0">
+                and rfid.rf_id IN
+                <foreach collection="rfIds" item="item" separator="," open="(" close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="batchNos != null and batchNos.size() > 0">
+                and rfid.batch_no IN
+                <foreach collection="batchNos" item="item" separator="," open="(" close=")">
+                    #{item}
+                </foreach>
+            </if>
+        </where>
+    </select>
+
+
+</mapper>

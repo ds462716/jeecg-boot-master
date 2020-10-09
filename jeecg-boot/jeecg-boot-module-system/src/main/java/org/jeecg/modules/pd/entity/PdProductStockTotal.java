@@ -6,6 +6,7 @@ import lombok.Data;
 import org.jeecgframework.poi.excel.annotation.Excel;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 /**
@@ -34,7 +35,6 @@ public class PdProductStockTotal extends BaseEntity {
     @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
     private Date updateTime;
 	/**所属部门*/
-    @Excel(name = "所属部门", width = 15)
     private String sysOrgCode;
 	/**产品id*/
     private String productId;
@@ -57,6 +57,9 @@ public class PdProductStockTotal extends BaseEntity {
 	/**库存下限*/
     @Excel(name = "库存下限", width = 15)
     private Double limitDown;
+    /**自动补货数量*/
+    @Excel(name = "自动补货数量", width = 15)
+    private Double autoNum;
 	/**过期标识*/
     @Excel(name = "过期标识", width = 15)
     private String expStatus;
@@ -70,7 +73,6 @@ public class PdProductStockTotal extends BaseEntity {
 
     /**科室id*/
     @TableField(strategy = FieldStrategy.NOT_EMPTY)
-    @Excel(name = "科室ID", width = 15)
     private String departId;
     /** 所属父部门*/
     @TableField(strategy = FieldStrategy.NOT_EMPTY)
@@ -96,6 +98,9 @@ public class PdProductStockTotal extends BaseEntity {
     @Excel(name = "型号", width = 15)
     @TableField(exist = false)
     private String version;
+    @Excel(name = "批次号", width = 15)
+    @TableField(exist = false)
+    private String batchNo;
     /**生产厂家*/
     @Excel(name = "生产厂家", width = 15)
     @TableField(exist = false)
@@ -110,6 +115,29 @@ public class PdProductStockTotal extends BaseEntity {
 
     @TableField(exist = false)
     private String departIds; //批量查询用
+    //产品单价
+    @TableField(exist = false)
+    private BigDecimal purchasePrice;
+
+    @TableField(exist = false)
+    private String categoryOne;
+
+    @TableField(exist = false)
+    private String bidingNumber;
+
+    @TableField(exist = false)
+    private String chargeCode;
+
+    @TableField(exist = false)
+    private String sellingPrice;
+
+    @TableField(exist = false)
+    private String registration;
+
+    /*产品启动状态*/
+    @TableField(exist = false)
+    private String status;
+
 }
 
 

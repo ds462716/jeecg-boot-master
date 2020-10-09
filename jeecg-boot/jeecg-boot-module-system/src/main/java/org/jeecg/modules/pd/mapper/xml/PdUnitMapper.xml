@@ -15,6 +15,7 @@
             a.update_by,
             a.update_time,
             a.remarks,
+            a.status,
             a.del_flag,
             a.sys_org_code
         FROM pd_unit a
@@ -29,8 +30,49 @@
             <if test="unitType != null and unitType != ''">
                 AND a.unit_type = #{unitType}
             </if>
+            <if test="status != null and status != ''">
+                AND a.status = #{status}
+            </if>
             <if test="departParentId != null and departParentId != ''">
                 AND a.depart_parent_id = #{departParentId}
+            </if>
+        </where>
+        ORDER BY a.update_time desc,a.create_time desc
+    </select>
+    <!-- 物理分页 -->
+    <select id="selectListByPage" resultType="org.jeecg.modules.pd.entity.PdUnit" parameterType="org.jeecg.modules.pd.entity.PdUnit">
+        SELECT
+        a.id,
+        a.name,
+        a.unit_type,
+        a.py,
+        a.wb,
+        a.zdy,
+        a.create_by,
+        a.create_time,
+        a.update_by,
+        a.update_time,
+        a.remarks,
+        a.status,
+        a.del_flag,
+        a.sys_org_code
+        FROM pd_unit a
+        <where>
+            a.del_flag = #{entity.DEL_FLAG_NORMAL}
+            <if test="entity.name != null and entity.name != ''">
+                AND ( a.name LIKE concat('%',#{entity.name},'%')
+                or a.py LIKE concat('%',#{entity.name},'%')
+                or a.wb LIKE concat('%',#{entity.name},'%')
+                or a.zdy LIKE concat('%',#{entity.name},'%') )
+            </if>
+            <if test="entity.unitType != null and entity.unitType != ''">
+                AND a.unit_type = #{entity.unitType}
+            </if>
+            <if test="entity.status != null and entity.status != ''">
+                AND a.status = #{entity.status}
+            </if>
+            <if test="entity.departParentId != null and entity.departParentId != ''">
+                AND a.depart_parent_id = #{entity.departParentId}
             </if>
         </where>
         ORDER BY a.update_time desc,a.create_time desc

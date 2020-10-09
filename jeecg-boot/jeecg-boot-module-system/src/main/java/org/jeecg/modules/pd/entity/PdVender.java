@@ -216,4 +216,14 @@ public class PdVender  extends BaseEntity {
 	/**备注*/
 	@Excel(name = "备注", width = 15)
 	private String remarks;
+
+	/**
+	 * 停用或启用0启用，1停用
+	 */
+	private String status;
+	/**
+	 * jde编码
+	 */
+	@Excel(name = "JDE编码", width = 15)
+	private String jdeCode;
 }

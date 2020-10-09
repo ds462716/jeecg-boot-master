@@ -16,6 +16,7 @@
                 placeholder="请选择入库库房"
                 :supplierId="departValue"
                 :defaultActiveFirstOption="false"
+                :allowClear="true"
                 :showArrow="true"
                 :filterOption="false"
                 @search="departHandleSearch"
@@ -29,7 +30,7 @@
           </a-col>
           <a-col :md="6" :sm="8">
             <a-form-item label="出库类型">
-              <j-dict-select-tag v-model="queryParam.outType" dictCode="out_type"/>
+              <j-dict-select-tag-expand v-model="queryParam.outType" dictCode="out_type"/>
             </a-form-item>
           </a-col>
           <!--<a-col :md="6" :sm="8">-->
@@ -39,7 +40,7 @@
           <!--</a-col>-->
           <a-col :md="6" :sm="8">
             <a-form-item label="审核状态">
-              <j-dict-select-tag v-model="queryParam.auditStatus" dictCode="audit_status"/>
+              <j-dict-select-tag-expand v-model="queryParam.auditStatus" dictCode="audit_status"/>
             </a-form-item>
           </a-col>
           <a-col :md="6" :sm="8">
@@ -51,10 +52,10 @@
             <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
               <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
               <a-button type="primary" @click="searchReset" icon="reload" style="margin-left: 8px">重置</a-button>
-              <a @click="handleToggleSearch" style="margin-left: 8px">
-                {{ toggleSearchStatus ? '收起' : '展开' }}
-                <a-icon :type="toggleSearchStatus ? 'up' : 'down'"/>
-              </a>
+              <!--<a @click="handleToggleSearch" style="margin-left: 8px">-->
+                <!--{{ toggleSearchStatus ? '收起' : '展开' }}-->
+                <!--<a-icon :type="toggleSearchStatus ? 'up' : 'down'"/>-->
+              <!--</a>-->
             </span>
           </a-col>
         </a-row>
@@ -138,12 +139,14 @@
   import { JeecgListMixin } from '@/mixins/JeecgListMixin'
   import {initDictOptions, filterMultiDictText} from '@/components/dict/JDictSelectUtil'
   import PdStockRecordOutExamineModal from "./modules/PdStockRecordOutExamineModal";
+  import JDictSelectTagExpand from "@/components/dict/JDictSelectTagExpand"
 
   export default {
     name: "PdStockRecordOutExamineList",
     mixins:[JeecgListMixin],
     components: {
-      PdStockRecordOutExamineModal
+      PdStockRecordOutExamineModal,
+      JDictSelectTagExpand
     },
     data () {
       return {

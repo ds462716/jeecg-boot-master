@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.external.mapper.ExInspectionInfMapper">
+
+    <sql id="exInspectionInfColumns">
+        d.id,
+        d.jy_id,
+        d.product_id,
+        d.code,
+        d.create_by,
+        d.create_time,
+        d.update_by,
+        d.update_time,
+        d.sys_org_code,
+        d.depart_id,
+        d.depart_parent_id,
+        d.remarks,
+        d.status,
+        d.stock_id,
+        d.ref_bar_code
+	</sql>
+
+
+
+
+    <select id="selectList"  resultType="org.jeecg.modules.external.entity.ExInspectionInf">
+    select
+        <include refid="exInspectionInfColumns"/>
+        from  ex_inspection_inf d
+    </select>
+
+
+
+
+    <select id="selectListByPage" resultType="org.jeecg.modules.external.entity.ExInspectionInf" parameterType="org.jeecg.modules.external.entity.ExInspectionInf">
+        select
+        <include refid="exInspectionInfColumns"/>,
+        c.spec as "spec",
+        c.name as "productName",
+        c.number as "number",
+        c.version as "version",
+        e.name as "unitName",
+        b.name as "testItemName",
+        a.count as "count"
+        from  ex_inspection_inf d
+        left join pd_use_package_detail a  on a.product_Id=d.product_id
+        left join pd_use_package b  on b.id=a.package_id and d.code=b.code and b.del_flag='0'
+        left join pd_product c  on c.id=a.product_id and c.del_flag='0'
+        left join pd_unit e on e.id=c.spec_unit_id and e.del_flag='0'
+        where  a.del_flag='0'
+        <if test="entity.code != null and entity.code != ''">
+            AND b.code=#{entity.code}
+        </if>
+        <if test="entity.jyId != null and entity.jyId != ''">
+            AND d.jy_id=#{entity.jyId}
+        </if>
+        <if test="entity.status != null and entity.status != ''">
+            AND d.status=#{entity.status}
+        </if>
+        <if test="entity.number != null and entity.number != ''">
+            AND c.number LIKE concat('%',#{entity.number},'%')
+        </if>
+        <if test="entity.productName != null and entity.productName != ''">
+            AND (
+            c.name LIKE concat('%',#{entity.productName},'%')
+            or c.py LIKE concat('%',#{entity.productName},'%')
+            or c.wb LIKE concat('%',#{entity.productName},'%')
+            or c.zdy LIKE concat('%',#{entity.productName},'%')
+            or c.bname LIKE concat('%',#{entity.productName},'%')
+            or c.bpy LIKE concat('%',#{entity.productName},'%')
+            or c.bwb LIKE concat('%',#{entity.productName},'%')
+            )
+        </if>
+
+    </select>
+
+
+    <select id="queryPdUsePackageList"  resultType="org.jeecg.modules.pd.entity.PdUsePackageDetail">
+        SELECT  a.*,
+        d.number as "number",
+        d.name as "productName",
+        d.spec as spec,
+        d.id as "productId",
+        d.version as version,
+        d.spec_quantity as specQuantity,
+        d.product_flag as "productFlag",
+        c.status as "status"
+        FROM pd_use_package_detail a
+        left join pd_use_package b on a.package_id=b.id
+        left join ex_inspection_inf c on  b.code=c.code and c.product_id=a.product_id
+        <if test="jyId != null and jyId != ''">
+            AND c.jy_id=#{jyId}
+        </if>
+        left join pd_product d on d.id=a.product_id
+        where    a.del_flag='0'
+        <if test="code != null and code != ''">
+            AND b.code=#{code}
+        </if>
+        GROUP BY   productId
+    </select>
+
+</mapper>

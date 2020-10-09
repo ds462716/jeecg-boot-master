@@ -173,9 +173,9 @@
 		<where>
 			a.del_flag = #{parMap.DEL_FLAG_NORMAL}
 		</where>
-		<if test="parMap.name != null and parMap.name != ''">
+		<!--<if test="parMap.name != null and parMap.name != ''">
 			and a.realname like concat('%',#{parMap.name},'%')
-		</if>
+		</if>-->
 		<if test="parMap.username != null and parMap.username != ''">
 			and a.username like concat('%',#{parMap.username},'%')
 		</if>
@@ -183,13 +183,17 @@
 			and a.sex = #{parMap.sex}
 		</if>
 		<if test="parMap.realname != null and parMap.realname != ''">
-			and a.realname like concat('%',#{parMap.realname},'%')
+			and (a.realname like concat('%',#{parMap.realname},'%')
+			or a.py LIKE concat('%',#{parMap.realname},'%')
+			or a.wb LIKE concat('%',#{parMap.realname},'%')
+			or a.zdy LIKE concat('%',#{parMap.realname},'%')
+			)
 		</if>
 		<if test="parMap.phone != null and parMap.phone != ''">
 			and a.phone like concat('%',#{parMap.phone},'%')
 		</if>
 		<if test="parMap.status != null and parMap.status != ''">
-			and a.status = #{parMap.	status}
+			and a.status = #{parMap.status}
 		</if>
 		<if test="parMap.admin != null and parMap.admin != ''">
 			and a.username != #{parMap.admin}
@@ -210,6 +214,15 @@
 		</if>
 		<if test="parMap.deptParentId != null and parMap.deptParentId != ''">
 			and a.depart_parent_id = #{parMap.deptParentId}
+		</if>
+		<if test="parMap.realname != null and parMap.realname != ''">
+			and (a.realname like concat('%',#{parMap.realname},'%')
+			or a.py LIKE concat('%',#{parMap.realname},'%')
+			or a.wb LIKE concat('%',#{parMap.realname},'%')
+			or a.zdy LIKE concat('%',#{parMap.realname},'%'))
+		</if>
+		<if test="parMap.currentDepartId != null and parMap.currentDepartId != ''">
+			and a.id in (select s.user_id from sys_user_depart s where s.dep_id = #{parMap.currentDepartId})
 		</if>
 	</select>
 
@@ -254,4 +267,18 @@
 		AND a.del_flag = '0'
 	</select>
 
+
+
+	<select id="getUser" resultType="org.jeecg.modules.system.entity.SysUser">
+		SELECT
+		*
+		FROM sys_user a
+		WHERE a.del_flag ='0'
+		<if test="id != null and id != ''">
+			AND a.id = #{id}
+		</if>
+		<if test="username != null and username != ''">
+			AND a.username = #{username}
+		</if>
+	</select>
 </mapper>

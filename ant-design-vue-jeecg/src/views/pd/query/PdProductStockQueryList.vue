@@ -37,8 +37,17 @@
               <a-input placeholder="请输入产品编号" v-model="queryParam.number"></a-input>
             </a-form-item>
           </a-col>
-
           <template v-if="toggleSearchStatus">
+            <a-col :md="6" :sm="8">
+              <a-form-item label="是否试剂">
+                <j-dict-select-tag-expand type="list" v-model="queryParam.productFlag" dictCode="yn" placeholder="请选择"/>
+              </a-form-item>
+            </a-col>
+            <a-col :md="6" :sm="8">
+              <a-form-item label="使用状态">
+                <j-dict-select-tag-expand v-model="queryParam.nestatStatus" dictCode="nestat_status"/>
+              </a-form-item>
+            </a-col>
             <a-col :md="6" :sm="8">
               <a-form-item label="规格">
                 <a-input placeholder="请输入规格" v-model="queryParam.spec"></a-input>
@@ -52,6 +61,16 @@
             <a-col :md="6" :sm="8">
               <a-form-item label="批号">
                 <a-input placeholder="请输入批号" v-model="queryParam.batchNo"></a-input>
+              </a-form-item>
+            </a-col>
+            <a-col :md="6" :sm="8">
+              <a-form-item label="中标号">
+                <a-input placeholder="中标号" v-model="queryParam.bidingNumber"></a-input>
+              </a-form-item>
+            </a-col>
+            <a-col :md="6" :sm="8">
+              <a-form-item label="收费代码">
+                <a-input placeholder="收费代码" v-model="queryParam.chargeCode"></a-input>
               </a-form-item>
             </a-col>
             <a-col :md="6" :sm="8">
@@ -95,6 +114,26 @@
                 </a-select>
               </a-form-item>
             </a-col>
+            <a-col :md="6" :sm="8">
+              <a-form-item label="一级分类">
+                <a-select
+                  showSearch
+                  :categoryOne="categoryOneValue"
+                  placeholder="请选择一级分类"
+                  :defaultActiveFirstOption="false"
+                  :allowClear="true"
+                  :showArrow="true"
+                  :filterOption="false"
+                  @search="categoryOneHandleSearch"
+                  @change="categoryOneHandleChange"
+                  @focus="categoryOneHandleSearch"
+                  :notFoundContent="notFoundContent"
+                  v-model="queryParam.categoryOne"
+                >
+                  <a-select-option v-for="d in categoryOneData" :key="d.value">{{d.text}}</a-select-option>
+                </a-select>
+              </a-form-item>
+            </a-col>
           </template>
           <a-col :md="6" :sm="8">
             <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
@@ -111,9 +150,15 @@
       </a-form>
     </div>
     <!-- 查询区域-END -->
+    <div class="numberWARAP">
+      <div class="total">总数量：<span id="stockCount">{{validatorRules.stockCount}}</span></div>
+      <div class="nearTime">总金额：<span id="stockPrice">{{validatorRules.stockPrice}}</span></div>
+    </div>
     <!-- 操作按钮区域 -->
     <div class="table-operator">
-      <a-button type="primary" icon="download" @click="handleExportXls('库存明细')">导出</a-button>
+      <a-button type="primary" icon="download" @click="handleExportXls('库存明细','1')">导出</a-button>
+      <a-button type="primary" icon="download" v-show="isDisabledAuth('stock:form:sjExportXls')" @click="handleExportXls('库存明细','2')">试剂盘点导出</a-button>
+      <a-button type="primary" icon="download" v-show="isDisabledAuth('stock:form:hcExportXls')" @click="handleExportXls('库存明细','3')">耗材盘点导出</a-button>
     </div>
     <!-- table区域-begin -->
     <div>
@@ -128,8 +173,12 @@
         :pagination="ipagination"
         :loading="loading"
         :scroll="tableScroll"
+        :rowSelection="{fixed:true}"
         @change="handleTableChange"
         >
+        <template slot="ellipsisText" slot-scope="text">
+          <j-ellipsis :value="text" :length="textMaxLength"></j-ellipsis>
+        </template>
       </a-table>
     </div>
   </a-card>
@@ -137,13 +186,19 @@
 <script>
 
   import { JeecgListMixin ,handleEdit} from '@/mixins/JeecgListMixin'
-  import { getAction } from '@/api/manage'
-  import { filterObj } from '@/utils/util';
+  import { getAction ,downFile} from '@/api/manage'
+  import { filterObj } from '@/utils/util'
+  import {initDictOptions, filterMultiDictText} from '@/components/dict/JDictSelectUtil'
+  import JDictSelectTagExpand from "@/components/dict/JDictSelectTagExpand"
+  import JEllipsis from '@/components/jeecg/JEllipsis'
+  import { disabledAuthFilter } from "@/utils/authFilter"
 
   export default {
     name: "PdProductStockQueryList",
     mixins:[JeecgListMixin],
     components: {
+      JDictSelectTagExpand,
+      JEllipsis
     },
     data () {
       return {
@@ -153,21 +208,32 @@
         notFoundContent:"未找到内容",
         supplierValue: undefined,
         supplierData: [],
-
         venderValue: undefined,
         venderData: [],
+        categoryOneData: [],
+        categoryOneValue: undefined,
+        textMaxLength:20,
+        validatorRules: {
+          stockCount: {},//总数量
+          stockPrice: {},//总金额
+        },
         // 表头
         columns: [
-          /*{
-            title: '序号',
-            dataIndex: '',
-            key:'rowIndex',
-            width:60,
+          {
+            title:'产品名称',
             align:"center",
-            customRender:function (t,r,index) {
-              return parseInt(index)+1;
-            }
-          },*/
+            scopedSlots: {customRender: "ellipsisText"},
+            fixed: 'left',
+            width:220,
+            dataIndex: 'productName'
+          },
+          {
+            title:'产品编号',
+            align:"center",
+            fixed: 'left',
+            width:120,
+            dataIndex: 'number'
+          },
           {
             title:'所属科室',
             align:"center",
@@ -176,21 +242,22 @@
           {
             title:'货位',
             align:"center",
-            dataIndex: 'huoweiCode'
+            dataIndex: 'huoweiName'
           },
-          {
-            title:'产品名称',
+          /*{
+            title:'一级分类',
             align:"center",
-            dataIndex: 'productName'
-          },
+            dataIndex: 'categoryOne'
+          },*/
           {
-            title:'产品编号',
+            title:'产品类型',
             align:"center",
-            dataIndex: 'number'
+            dataIndex: 'productFlagName'
           },
           {
             title:'产品条码',
             align:"center",
+            scopedSlots: {customRender: "ellipsisText"},
             dataIndex: 'productBarCode'
           },
           {
@@ -214,9 +281,47 @@
             dataIndex: 'produceDate'
           },
           {
-            title:'数量',
+            title:'库存数量',
             align:"center",
             dataIndex: 'stockNum'
+          },
+          {
+            title:'规格单位',
+            align:"center",
+            dataIndex: 'specUnitName'
+          },
+          {
+            title:'库存规格数量',
+            align:"center",
+            dataIndex: 'specNum'
+          },
+          {
+            title:'中标号',
+            align:"center",
+            dataIndex: 'bidingNumber'
+          },
+          {
+            title:'HIS收费代码',
+            align:"center",
+            dataIndex: 'chargeCode'
+          },
+          {
+            title:'唯一码',
+            align:"center",
+            scopedSlots: {customRender: "ellipsisText"},
+            dataIndex: 'refBarCodes'
+          },
+          {
+            title:'使用状态',
+            align:"center",
+            dataIndex: 'nestatStatus',
+            customRender:(text)=>{
+              if(!text){
+                return ''
+              }else{
+                return filterMultiDictText(this.dictOptions['nestatStatus'], text+"")
+              }
+            }
           },
           {
             title:'进价',
@@ -236,34 +341,57 @@
           {
             title:'注册证号',
             align:"center",
+            scopedSlots: {customRender: "ellipsisText"},
             dataIndex: 'registration'
           },
           {
-            title:'JDE编号',
+            title:'产品JDE编号',
             align:"center",
             dataIndex: 'jdeCode'
           },
           {
             title:'生产厂家',
             align:"center",
+            scopedSlots: {customRender: "ellipsisText"},
             dataIndex: 'venderName'
+          },
+          {
+            title:'生产厂家JDE编号',
+            align:"center",
+            scopedSlots: {customRender: "ellipsisText"},
+            dataIndex: 'venderJdeCode'
           },
           {
             title:'供应商',
             align:"center",
+            scopedSlots: {customRender: "ellipsisText"},
             dataIndex: 'supplierName'
+          },
+          {
+            title:'供应商JDE编号',
+            align:"center",
+            scopedSlots: {customRender: "ellipsisText"},
+            dataIndex: 'supplierJdeCode'
+          },
+          {
+            title:'配送商',
+            align:"center",
+            scopedSlots: {customRender: "ellipsisText"},
+            dataIndex: 'distributorName'
           }
         ],
         url: {
           list: "/pd/pdProductStockTotal/queryList",
-          exportXlsUrl: "/pd/pdProductStockTotal/exportXls",
+          exportXlsUrl: "/pd/pdProductStockTotal/stockExportXls",
           queryDepart: "/pd/pdDepart/queryListTree",
           querySupplier:"/pd/pdSupplier/getSupplierList",
           queryVender:"/pd/pdVender/getVenderList",
+          queryCategoryOne:"/pd/pdCategory/getCategoryOneList?type=0",
         },
         dictOptions:{
+            nestatStatus:[],
         },
-        tableScroll:{x :13*147+50},
+        tableScroll:{x :3500},
       }
     },
     computed: {
@@ -272,6 +400,31 @@
       }
     },
     methods: {
+
+      loadData(arg) {
+        //加载数据 若传入参数1则加载第一页的内容
+        if (arg === 1) {
+          this.ipagination.current = 1;
+        }
+        var params = this.getQueryParams();//查询条件
+        this.loading = true;
+        getAction(this.url.list, params).then((res) => {
+          if (res.success) {
+            this.validatorRules.stockCount=res.result.stockCount;
+            this.validatorRules.stockPrice=res.result.stockPrice;
+            this.dataSource = res.result.page.records;
+            this.ipagination.total = res.result.page.total;
+          }
+          if(res.code===510){
+            this.$message.warning(res.message)
+          }
+          this.loading = false;
+        })
+      },
+
+
+
+
      //科室查询start
       departHandleSearch(value) {
         getAction(this.url.queryDepart,{departName:value}).then((res)=>{
@@ -301,6 +454,16 @@
         this.getList(value,this.url.queryVender,"2");
       },
       //生产厂家查询end
+
+      //一级分类查询start
+      categoryOneHandleSearch(value) {
+        this.getList(value,this.url.queryCategoryOne,"3");
+      },
+      categoryOneHandleChange(value) {
+        this.categoryOneValue = value;
+        this.getList(value,this.url.queryCategoryOne,"3");
+      },
+      //一级分类查询end
       getList(value,url,flag){
         getAction(url,{name:value}).then((res)=>{
           if (!res.success) {
@@ -318,6 +481,8 @@
             this.supplierData = data;
           }else if(flag == "2"){
             this.venderData = data;
+          }else if(flag == "3"){
+            this.categoryOneData = data;
           }
         })
       },
@@ -336,8 +501,63 @@
         param.departIds = this.queryParam.departIds+"";
         return filterObj(param);
       },
+
+
+      /**重写导出方法**/
+      handleExportXls(fileName,exportType){
+        if(!fileName || typeof fileName != "string"){
+          fileName = "导出文件"
+        }
+        fileName = fileName + "_" + new Date().toLocaleString();
+        let param = this.getQueryParams();//查询条件
+        if(this.selectedRowKeys && this.selectedRowKeys.length>0){
+          param['selections'] = this.selectedRowKeys.join(",")
+        }
+        console.log("导出参数",param)
+        param.exportType=exportType;
+        downFile(this.url.exportXlsUrl,param).then((data)=>{
+          if (!data) {
+            this.$message.warning("文件下载失败")
+            return
+          }
+          if (typeof window.navigator.msSaveBlob !== 'undefined') {
+            window.navigator.msSaveBlob(new Blob([data],{type: 'application/vnd.ms-excel'}), fileName+'.xls')
+          }else{
+            let url = window.URL.createObjectURL(new Blob([data],{type: 'application/vnd.ms-excel'}))
+            let link = document.createElement('a')
+            link.style.display = 'none'
+            link.href = url
+            link.setAttribute('download', fileName+'.xls')
+            document.body.appendChild(link)
+            link.click()
+            document.body.removeChild(link); //下载完成移除元素
+            window.URL.revokeObjectURL(url); //释放掉blob对象
+          }
+        })
+      },
+
+      initDictConfig(){ //静态字典值加载
+        initDictOptions('nestat_status').then((res) => {
+          if (res.success) {
+            this.$set(this.dictOptions, 'nestatStatus', res.result)
+          }
+        })
+      },
+      /**
+       * 校验权限
+       * @param code
+       * @returns {boolean|*}
+       */
+      isDisabledAuth(code){
+        return !disabledAuthFilter(code);
+      },
     }
   }
 </script>
-<style scoped>
+
+  <style scoped>
+  .numberWARAP{width:100%;height:30px;line-height:30px;margin:20px 0;}
+  .numberWARAP>div{float:left;width:50%;height:30px;line-height:30px;color:#666;font-size:16px;text-align:center;border-right:1px solid #ccc;}
+  .numberWARAP>div:nth-child(2){border:none;}
+  .changeColor .red td,.changeColor .red td a{color: red}
 </style>

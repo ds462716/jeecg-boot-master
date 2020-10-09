@@ -114,4 +114,10 @@ public interface ISysDepartService extends IService<SysDepart>{
 
     SysDepart queryDepartByOrgCode(String orgCode);
 
+    /**
+     * 获取当前当前的一级科室
+     * @param id
+     * @return
+     */
+    SysDepart getFirstById(String id);
 }

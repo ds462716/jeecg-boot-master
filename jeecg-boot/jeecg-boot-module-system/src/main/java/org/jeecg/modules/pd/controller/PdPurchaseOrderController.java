@@ -1,6 +1,7 @@
 package org.jeecg.modules.pd.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
@@ -82,8 +83,8 @@ public class PdPurchaseOrderController {
 		 LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
 		 pdPurchaseOrderPage.setDepartId(sysUser.getCurrentDepartId());
 		 pdPurchaseOrderPage.setDepartParentId(sysUser.getDepartParentId());
-		 page = pdPurchaseOrderService.selectList(page, pdPurchaseOrderPage);
-		 return Result.ok(page);
+		 IPage<PdPurchaseOrder> pageList = pdPurchaseOrderService.selectList(page, pdPurchaseOrderPage);//
+		 return Result.ok(pageList);
 	 }
 
 	 /**
@@ -114,8 +115,8 @@ public class PdPurchaseOrderController {
 		 }
 		 LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
 		 pdPurchaseOrderPage.setDepartParentId(sysUser.getDepartParentId());
-		 page = pdPurchaseOrderService.selectList(page, pdPurchaseOrderPage);
-		 return Result.ok(page);
+		 IPage<PdPurchaseOrder> pageList = pdPurchaseOrderService.selectList(page, pdPurchaseOrderPage);//
+		 return Result.ok(pageList);
 	 }
 
 	 /**
@@ -340,8 +341,12 @@ public class PdPurchaseOrderController {
 	 public boolean sendMsg(PdPurchaseOrderPage purchaseOrderPage) {
 		 Map<String, Object> map = new HashMap<>();
 		 LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
-		 List<String> userIdList =pdDepartService.findMenuUser(sysUser.getCurrentDepartId(),PdConstant.AUDIT_MENU_3);
-
+		 SysDepart sysDepart=sysDepartService.getById(sysUser.getCurrentDepartId());
+		 String departId=sysUser.getCurrentDepartId();
+		 if(!sysDepart.getParentId().equals(sysDepart.getDepartParentId())){
+			 departId=sysDepart.getParentId();
+		 }
+		 List<String> userIdList =pdDepartService.findMenuUser(departId,PdConstant.AUDIT_MENU_3);
 		 String url = "";
 		 QueryWrapper<SysPermission> queryWrapper = new QueryWrapper<SysPermission>();
 		 queryWrapper.eq("name",PdConstant.AUDIT_MENU_3);

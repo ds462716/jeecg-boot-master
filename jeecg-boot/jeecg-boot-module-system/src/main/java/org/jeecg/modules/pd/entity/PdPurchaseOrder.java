@@ -44,6 +44,12 @@ public class PdPurchaseOrder extends BaseEntity {
 	/**申购编号*/
     @Excel(name = "申购编号", width = 15)
     private String orderNo;
+    /**申购类型*/
+    @Excel(name = "申购类型", width = 15)
+    private String purchaseType;
+    /**补货类型*/
+    @Excel(name = "补货类型", width = 15)
+    private String repType;
     /**合并申购编号*/
     @Excel(name = "合并申购编号", width = 15)
     private String mergeOrderNo;

@@ -15,6 +15,10 @@
         <a-form-item  v-if="model.type=='Down'"  label="库存下限"    :labelCol="labelCol" :wrapperCol="wrapperCol">
           <a-input  style="width:100%;" ref="inputFocus" v-decorator="[ 'limitDown', validatorRules.limitDown]" placeholder="请输入值"></a-input>
         </a-form-item>
+      <a-form-item  v-if="model.type=='Down'"  label="自动补货量"    :labelCol="labelCol" :wrapperCol="wrapperCol">
+        <a-input  style="width:100%;" ref="inputFocus" v-decorator="[ 'autoNum', validatorRules.autoNum]" placeholder="请输入值"></a-input>
+        <span style="color: red;height:20%;">补货数量为空或为0时,不会自动补货。</span>
+      </a-form-item>
     </a-form>
   </a-spin>
 </a-modal>
@@ -56,6 +60,11 @@
               {pattern: '^(?:[1-9][0-9]*(?:\\.[0-9]+)?|0\\.(?!0+$)[0-9]+)$',
                 message: '格式不正确'
               }]},
+          /*autoNum:{rules: [{ required: true, message: '请输入值!'},
+              {pattern: '^(?:[1-9][0-9]*(?:\\.[0-9]+)?|0\\.(?!0+$)[0-9]+)$',
+                message: '格式不正确'
+              }]},*/
+          autoNum:{},
         },
         url: {
           edit : "/pd/pdProductStockTotal/updateProductStock",

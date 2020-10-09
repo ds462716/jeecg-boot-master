@@ -36,8 +36,8 @@ public class PdStockRecord extends BaseEntity {
     /**出入库类型：1-入库；2-出库*/
     @Excel(name = "出入库类型：1-入库；2-出库", width = 15)
     private String recordType;
-    /**出库类型 : 1-正常出库，2-调拨出库，3-退货出库*/
-    @Excel(name = "出库类型 : 1-正常出库，2-调拨出库，3-退货出库", width = 15)
+    /**出库类型 : 1-申领出库; 2-科室出库; 3-调拨出库; 4-退货出库*/
+    @Excel(name = "出库类型 : 1-申领出库; 2-科室出库; 3-调拨出库; 4-退货出库", width = 15)
     private String outType;
     /**入库类型 : 1-正常入库，2-退货入库，3-调拨入库*/
     @Excel(name = "入库类型 : 1-正常入库，2-退货入库，3-调拨入库", width = 15)
@@ -86,6 +86,9 @@ public class PdStockRecord extends BaseEntity {
     /**供应商ID*/
     @Excel(name = "供应商ID", width = 15)
     private String supplierId;
+    /**供应商ID*/
+    @Excel(name = "配送商ID", width = 15)
+    private String distributorId;
     /**操作人*/
     @Excel(name = "操作人", width = 15)
     private String submitBy;
@@ -111,12 +114,14 @@ public class PdStockRecord extends BaseEntity {
     /**退货单状态*/
     @Excel(name = "退货单状态", width = 15)
     private String returnStatus;
+    /**领用人**/
+    private String applyBy;
     /**扩展1*/
     @Excel(name = "扩展1", width = 15)
-    private String extend1;
+    private String extend1;   // 自动生成入库单时存对应的出库单号
     /**扩展2*/
     @Excel(name = "扩展2", width = 15)
-    private String extend2;
+    private String extend2;   // 自动生成盘点出入库单时存对应的存盘点单号
     /**扩展3*/
     @Excel(name = "扩展3", width = 15)
     private String extend3;
@@ -142,11 +147,16 @@ public class PdStockRecord extends BaseEntity {
     /**所属部门*/
     private String departId;
     private String departParentId;
+    private String barCodeType;
+    private String inOtherDepartId;//入库库房，用于器械科入库直接出库到该库房（赣州肿瘤医院）
 
     // pd_stock_record表外字段 ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
     @ExcelCollection(name="出入库明细表")
     @TableField(exist = false)
     private List<PdStockRecordDetail> pdStockRecordDetailList;
+    // 唯一码列表
+    @TableField(exist = false)
+    private List<PdStockRecordDetail> pdStockRecordDetailUniqueList;
     // 采购订单明细
     @TableField(exist = false)
     private List<PdPurchaseOrderMergeDetail> pdPurchaseOrderMergeDetail;
@@ -156,7 +166,7 @@ public class PdStockRecord extends BaseEntity {
     // 调拨单明细
     @TableField(exist = false)
     private List<PdAllocationDetail> pdAllocationDetailList;
-    // 定数包记录
+    // 套包记录
     @TableField(exist = false)
     private List<PdPackageRecord> pdPackageRecordList;
 
@@ -193,6 +203,9 @@ public class PdStockRecord extends BaseEntity {
     /**开关-是否允许入库证照过期的供应商**/
     @TableField(exist = false)
     private String allowStockInExpSupplier;
+    /**开关-是否显示二级条码框（入库、出库、退货）**/
+    @TableField(exist = false)
+    private String showSBarcode;
     /**出库单抬头**/
     @TableField(exist = false)
     private String stockOutText;
@@ -205,9 +218,20 @@ public class PdStockRecord extends BaseEntity {
     /** 出库部门名称 **/
     @TableField(exist = false)
     private String outDepartName;
+    @TableField(exist = false)
+    private String inOtherDepartName;
     /** 供应商名称 **/
     @TableField(exist = false)
     private String supplierName;
+    /** 配送商名称 **/
+    @TableField(exist = false)
+    private String distributorName;
+    /** 生产厂家名称 **/
+    @TableField(exist = false)
+    private String venderName;
+    /** 生产厂家Id **/
+    @TableField(exist = false)
+    private String venderId;
     /** 申请人姓名 **/
     @TableField(exist = false)
     private String submitByName;
@@ -223,9 +247,13 @@ public class PdStockRecord extends BaseEntity {
     @TableField(exist = false)
     private String productName;//产品名称
     @TableField(exist = false)
+    private String productId;//产品id
+    @TableField(exist = false)
     private String number;//产品编号
     @TableField(exist = false)
     private String spec;//产品规格
+    @TableField(exist = false)
+    private String unitName;//单位
     @TableField(exist = false)
     private String version;//产品型号
     @TableField(exist = false)
@@ -238,10 +266,48 @@ public class PdStockRecord extends BaseEntity {
     private Date expDate;//有效期
     @TableField(exist = false)
     private String productNum;//产品数量
+    @TableField(exist = false)
+    private String productFlag;//产品类型
     /** 查询日期起始 **/
     @TableField(exist = false)
     private String queryDateStart;
     /** 查询日期结束 **/
     @TableField(exist = false)
     private String queryDateEnd;
+    @TableField(exist = false)
+    private String hospitalCode;
+    /**产品类型名称or普通产品，0产品，1试剂*/
+    @TableField(exist = false)
+    private String productFlagName;
+    /**注册证*/
+    @TableField(exist = false)
+    private String registration;
+
+    @TableField(exist = false)
+    private String departType;//部门类型，1：1级库房，2二级库房
+
+    @TableField(exist = false)
+    private String onlyReturn;//只查退货出库
+    @TableField(exist = false)
+    private String exceptReturn;//除了退货出库
+
+
+    @TableField(exist = false)
+    private Double stockNum; //库存数量
+
+    @TableField(exist = false)
+    private BigDecimal stockPrice; //库存总金额
+
+    @TableField(exist = false)
+    private BigDecimal purchasePrice; //产品单价
+    @TableField(exist = false)
+    private String bidingNumber; //中标号
+    @TableField(exist = false)
+    private String categoryOne; //一级分类
+    @TableField(exist = false)
+    private String chargeCode;//收费代号
+    @TableField(exist = false)
+    private Double outProductNum; //出库数量
+    @TableField(exist = false)
+    private List<String> uniqueCode;// 唯一码 用于一体终端机唯一码出库
 }

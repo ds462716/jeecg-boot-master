@@ -23,4 +23,6 @@ public interface IPdCategoryService extends IService<PdCategory> {
     Result<Object> deleteV(String id);
 
     Result<Object> deleteBatchV(String ids);
+
+    Result<Object> generateUnitPyWb();
 }

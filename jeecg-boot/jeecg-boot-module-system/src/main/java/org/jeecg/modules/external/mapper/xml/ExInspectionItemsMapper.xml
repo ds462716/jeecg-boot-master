@@ -2,4 +2,200 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.jeecg.modules.external.mapper.ExInspectionItemsMapper">
 
+    <sql id="exInspectionItemsColumns">
+        a.id,
+        a.jy_id,
+        a.patient_name,
+        a.patient_sex,
+        a.patient_age,
+        a.card_id,
+        a.bar_code,
+        a.apply_doctor,
+        a.apply_department,
+        a.test_doctor,
+        a.test_department,
+        a.patient_type,
+        a.group_by,
+        a.receive_date,
+        a.test_date,
+        a.specimen_type,
+        a.state,
+        a.combination_name,
+        a.combination_code,
+        a.test_item_name,
+        a.test_item_code,
+        a.test_item_cost,
+        a.accept_status,
+        a.create_by,
+        a.create_time,
+        a.update_by,
+        a.update_time,
+        a.sys_org_code,
+        a.depart_id,
+        a.depart_parent_id,
+        a.remarks,
+        a.package_id,
+        a.instr_code,
+        a.instr_name
+	</sql>
+
+
+
+
+
+
+    <select id="selectList"  resultType="org.jeecg.modules.external.entity.ExInspectionItems">
+        SELECT
+        <include refid="exInspectionItemsColumns"/>,
+        b.fsf_yhxm as "applyDoctorName",
+        c.fsf_ksmc as "applyDepartmentName"
+          FROM ex_inspection_items  a
+        left join  ex_his_user_inf b on b.fsf_yhm=a.apply_doctor
+        left join  ex_his_depart_inf c on c.fsf_ksbh=a.apply_department
+        where 1=1
+        <if test="patientName != null and patientName != ''">
+            AND a.patient_name LIKE concat('%',#{patientName},'%')
+        </if>
+        <if test="testItemCode != null and testItemCode != ''">
+            AND a.test_item_code LIKE concat('%',#{testItemCode},'%')
+        </if>
+        <if test="acceptStatus != null and acceptStatus != ''">
+            AND a.accept_status=#{acceptStatus}
+        </if>
+        <if test="packageId != null and packageId != ''">
+            AND a.package_id=#{packageId}
+        </if>
+    </select>
+
+
+
+
+    <select id="selectListByPage" resultType="org.jeecg.modules.external.entity.ExInspectionItems" parameterType="org.jeecg.modules.external.entity.ExInspectionItems">
+        SELECT
+        <include refid="exInspectionItemsColumns"/>,
+        b.fsf_yhxm as "applyDoctorName",
+        c.fsf_ksmc as "applyDepartmentName"
+        FROM ex_inspection_items  a
+        left join  ex_his_user_inf b on b.fsf_yhm=a.apply_doctor
+        left join  ex_his_depart_inf c on c.fsf_ksbh=a.apply_department
+        where 1=1
+        <if test="entity.patientName != null and entity.patientName != ''">
+            AND a.patient_name LIKE concat('%',#{entity.patientName},'%')
+        </if>
+        <if test="entity.testItemName != null and entity.testItemName != ''">
+            AND a.test_item_name LIKE concat('%',#{entity.testItemName},'%')
+        </if>
+        <if test="entity.barCode != null and entity.barCode != ''">
+            AND a.bar_code LIKE concat('%',#{entity.barCode},'%')
+        </if>
+        <if test="entity.testItemCode != null and entity.testItemCode != ''">
+            AND a.test_item_code LIKE concat('%',#{entity.testItemCode},'%')
+        </if>
+        <if test="entity.acceptStatus != null and entity.acceptStatus != ''">
+            AND a.accept_status=#{entity.acceptStatus}
+        </if>
+        <if test="entity.queryDateStart != null and entity.queryDateStart != ''">
+            AND a.test_date &gt;= #{entity.queryDateStart}
+        </if>
+        <if test="entity.queryDateEnd != null and entity.queryDateEnd != ''">
+            AND substr(a.test_date,1,11) &lt;= #{entity.queryDateEnd}
+        </if>
+        <if test="entity.instrCode != null and entity.instrCode != ''">
+            AND a.instr_code=#{entity.instrCode}
+        </if>
+        order by a.test_date desc,a.create_time desc
+    </select>
+
+
+
+    <select id="patientListPage" resultType="org.jeecg.modules.external.entity.ExInspectionItems" parameterType="org.jeecg.modules.external.entity.ExInspectionItems">
+        SELECT
+        DISTINCT
+        <include refid="exInspectionItemsColumns"/>,
+        b.update_time as "inspectionTime",
+         d.count as "count"
+        from  ex_inspection_inf b
+        left join ex_inspection_items a on a.jy_id=b.jy_id and b.code=a.test_item_code
+        left join pd_use_package  c   on  a.test_item_code=c.code   and b.code=c.code and c.del_flag='0'
+        left join pd_use_package_detail d on c.id=d.package_id and d.del_flag='0'
+        where 1=1
+        <if test="entity.refBarCode != null and entity.refBarCode != ''">
+            AND  b.ref_bar_code = #{entity.refBarCode}
+        </if>
+        <if test="entity.patientName != null and entity.patientName != ''">
+            AND a.patient_name LIKE concat('%',#{entity.patientName},'%')
+        </if>
+        <if test="entity.cardId != null and entity.cardId != ''">
+            AND a.card_id LIKE concat('%',#{entity.cardId},'%')
+        </if>
+        <if test="entity.barCode != null and entity.barCode != ''">
+            AND a.bar_code LIKE concat('%',#{entity.barCode},'%')
+        </if>
+        <if test="entity.instrCode != null and entity.instrCode != ''">
+            AND a.instr_code=#{entity.instrCode}
+        </if>
+        order by b.create_time desc
+    </select>
+    <!-- 增量同步 -->
+    <select id="selectListIds"  resultType="String">
+        SELECT
+        jy_id as "jyId"
+        FROM ex_inspection_items  a
+        where 1=1
+      and  DATE_SUB(CURDATE(), INTERVAL 2 DAY)  &lt;= date(a.test_date)
+
+    </select>
+
+
+
+
+    <select id="inspectionMonthQuery" resultType="org.jeecg.modules.external.entity.ExInspectionItems"   parameterType="org.jeecg.modules.external.entity.ExInspectionItems">
+        select rr.month ,
+        sum(test_item_cost) as "itemPrice",
+        sum(num)  as "itemNum" from (
+        SELECT  DATE_FORMAT(x.Month, '%Y-%m') as month,null as test_item_cost, null as num    FROM   XNumber x
+        where  x.Month > DATE_SUB(CURDATE(), INTERVAL 1 YEAR)
+        and substr(x.Month,1,7) &lt;=substr(CURDATE(),1,7)
+        union all
+        select DATE_FORMAT(a.create_time, '%Y-%m') AS month, test_item_cost ,  "1"  as num
+        from ex_inspection_items a
+        left join ex_lab_instr_inf b on b.instr_code=a.instr_code
+        where
+        a.create_time > DATE_SUB(CURDATE(), INTERVAL 1 YEAR)
+        AND substr(a.create_time,1,7) &lt;=substr(CURDATE(),1,7)
+        <if test="month != null and month != ''">
+            AND DATE_FORMAT(a.create_time, '%Y-%m') =#{month}
+        </if>
+        <if test="departId != null and departId != ''">
+            b.test_depart_id=#{departId}
+        </if>
+        ) rr
+        where num>0
+        GROUP BY rr.month
+    </select>
+
+
+    <select id="selectExInsepectionMonth" resultType="org.jeecg.modules.external.entity.ExInspectionItems" parameterType="org.jeecg.modules.external.entity.ExInspectionItems">
+        select
+        tt.testItemName as "testItemName",
+        tt.testItemCode AS "testItemCode",
+        sum(tt.itemNum) as "itemNum",
+        sum(tt.itemPrice) as "itemPrice"
+        from (
+        SELECT test_item_name AS "testItemName", test_item_code AS "testItemCode", "1" AS "itemNum", test_item_cost AS
+        "itemPrice"
+        FROM ex_inspection_items a
+        WHERE 1 = 1
+        <if test="entity.month != null and entity.month != ''">
+            AND DATE_FORMAT(a.create_time, '%Y-%m') =#{entity.month}
+        </if>
+        <if test="entity.testItemName != null and entity.testItemName != ''">
+            AND a.test_item_name LIKE concat('%',#{entity.testItemName},'%')
+        </if>
+        <if test="entity.testItemCode != null and entity.testItemCode != ''">
+            AND a.test_item_code LIKE concat('%',#{entity.testItemCode},'%')
+        </if>
+        ) tt
+        GROUP BY tt.testItemName
+    </select>
 </mapper>

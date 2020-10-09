@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
+import java.util.List;
+
 /**
  * @Description: pd_on_off
  * @Author: jiangxz
@@ -23,5 +25,10 @@ public class PdOnOffServiceImpl extends ServiceImpl<PdOnOffMapper, PdOnOff> impl
     @Override
     public PdOnOff getOne(PdOnOff pdOnOff) {
         return pdOnOffMapper.getOne(pdOnOff);
+    }
+
+    @Override
+    public List<PdOnOff> selectOriginalList(PdOnOff pdOnOff) {
+        return pdOnOffMapper.selectOriginalList(pdOnOff);
     }
 }

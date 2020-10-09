@@ -363,7 +363,7 @@ public class BarCodeUtil {
 		}else if("00".equals(EANUPNBarcode.substring(0, 2))){
 			UPN = EANUPNBarcode.substring(2, 20);
 		} else if("93".equals(EANUPNBarcode.substring(0, 2))){
-			UPN = EANUPNBarcode.substring(0, 19);
+			UPN = EANUPNBarcode;
 		}else if(EANUPNBarcode.length()==13){
 			UPN = EANUPNBarcode.substring(0, 13);
 		}else{

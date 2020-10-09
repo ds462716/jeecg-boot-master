@@ -67,6 +67,9 @@
                 <a @click="handlePerssion(record)">授权</a>
               </a-menu-item>
               <a-menu-item>
+                <a @click="addDepartUser(record)">绑定用户</a>
+              </a-menu-item>
+              <a-menu-item>
                 <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.id)">
                   <a>删除</a>
                 </a-popconfirm>
@@ -83,6 +86,7 @@
     <!-- 表单区域 -->
     <depart-role-modal ref="modalForm" @ok="modalFormOk"/>
     <dept-role-auth-modal ref="modalDeptRole" />
+    <dept-role-user-info ref="deptRoleUserInfo" />
   </a-drawer>
 </template>
 
@@ -91,10 +95,15 @@
   import {getAction} from '@/api/manage'
   import DepartRoleModal from './DepartRoleModal'
   import DeptRoleAuthModal from './DeptRoleAuthModal'
+  import DeptRoleUserInfo from './DeptRoleUserInfo'
 
   export default {
     name: 'DeptRoleInfo',
-    components: { DeptRoleAuthModal, DepartRoleModal },
+    components: {
+      DeptRoleAuthModal,
+      DepartRoleModal,
+      DeptRoleUserInfo
+    },
     mixins: [JeecgListMixin],
     data() {
       return {
@@ -211,6 +220,10 @@
       handlePerssion: function(record){
         this.$refs.modalDeptRole.show(record.id,record.departId);
       },
+      addDepartUser: function(record){
+        this.$refs.deptRoleUserInfo.show(record.departId,record.id);
+      },
+
       // 根据屏幕变化,设置抽屉尺寸
       resetScreenSize(){
         let screenWidth = document.body.clientWidth;

@@ -23,6 +23,9 @@
 		<if test="type != null and type != ''">
 			AND a.type =#{type}
 		</if>
+		<if test="status != null and status != ''">
+			AND a.status =#{status}
+		</if>
 		<if test="parentId != null and parentId != ''">
 			AND a.parent_id =#{parentId}
 		</if>

@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.pd.mapper.PdProductStockUniqueCodeMapper">
+
+    <select id="selectListByPage" resultType="org.jeecg.modules.pd.entity.PdProductStockUniqueCode" >
+        SELECT
+        *
+        FROM pd_product_stock_unique_code a
+        <where>
+            a.del_flag = #{entity.DEL_FLAG_NORMAL}
+        </where>
+        <if test="entity.id != null and entity.id != ''">
+            AND a.id = #{entity.id}
+        </if>
+        <if test="entity.productStockId != null and entity.productStockId != ''">
+            AND a.product_stock_id = #{entity.productStockId}
+        </if>
+        <if test="entity.printType != null and entity.printType != ''">
+            AND a.print_type = #{entity.printType}
+        </if>
+        <if test="entity.codeState != null and entity.codeState != ''">
+            AND a.code_state = #{entity.codeState}
+        </if>
+        <if test="entity.uniqueCodeOrder != null and entity.uniqueCodeOrder != ''">
+            AND a.unique_code_order = #{entity.uniqueCodeOrder}
+        </if>
+        ORDER BY a.unique_code_order asc
+    </select>
+
+
+    <select id="selectListOne"  resultType="org.jeecg.modules.pd.entity.PdProductStockUniqueCode">
+        SELECT
+        *
+        FROM pd_product_stock_unique_code a
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+        </where>
+        <if test="id != null and id != ''">
+            AND a.id = #{id}
+        </if>
+        <if test="productStockId != null and productStockId != ''">
+            AND a.product_stock_id = #{productStockId}
+        </if>
+        <if test="printType != null and printType != ''">
+            AND a.print_type = #{printType}
+        </if>
+        <if test="codeState != null and codeState != ''">
+            AND a.code_state = #{codeState}
+        </if>
+        ORDER BY a.unique_code_order asc
+    </select>
+
+    <select id="selectListByGroup"  resultType="org.jeecg.modules.pd.entity.PdProductStock">
+        SELECT
+        *
+        FROM pd_product_stock a
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+        </where>
+        AND a.ref_bar_code = #{id}
+        group by a.depart_id
+    </select>
+
+
+
+    <select id="selectListUniqueCode"  resultType="String">
+        SELECT
+        a.id
+        FROM pd_product_stock_unique_code a
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+        </where>
+        <if test="id != null and id != ''">
+            AND a.id = #{id}
+        </if>
+        <if test="productStockId != null and productStockId != ''">
+            AND a.product_stock_id = #{productStockId}
+        </if>
+        <if test="printType != null and printType != ''">
+            AND a.print_type = #{printType}
+        </if>
+        <if test="codeState != null and codeState != ''">
+            AND a.code_state = #{codeState}
+        </if>
+        ORDER BY a.unique_code_order asc
+    </select>
+
+    <!-- 批量更新 -->
+    <update id="updatePrintNum">
+        UPDATE pd_product_stock_unique_code
+        <set>
+            print_num = print_num+1
+        </set>
+        <where>
+            id IN
+            <foreach collection="list" index="index" item="id" separator=","  open="(" close=")">
+                #{id,jdbcType=VARCHAR}
+            </foreach>
+        </where>
+    </update>
+
+</mapper>

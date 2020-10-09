@@ -28,10 +28,7 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -59,6 +56,10 @@ public class PdDepartController extends JeecgController<PdDepartConfig, IPdDepar
 
     @Autowired
     private ISysDepartService sysDepartService;
+
+    @Autowired
+    private ISysDepartRoleUserService sysDepartRoleUserService;
+
 
     /**
      * 查询数据 查出所有部门,并以树结构数据格式响应给前端
@@ -271,7 +272,7 @@ public class PdDepartController extends JeecgController<PdDepartConfig, IPdDepar
         user.setDepartParentId(sysUser.getDepartParentId());
         Map<String,Object> parMap = new HashMap<>();
         parMap.put("DEL_FLAG_NORMAL",PdConstant.DEL_FLAG_0);
-        parMap.put("name",user.getRealname()==null?"":user.getRealname());
+        //parMap.put("name",user.getRealname()==null?"":user.getRealname());
         parMap.put("username",user.getUsername()==null?"":user.getUsername());
         parMap.put("sex",user.getSex()==null?"":user.getSex());
         parMap.put("realname",user.getRealname()==null?"":user.getRealname());
@@ -296,6 +297,35 @@ public class PdDepartController extends JeecgController<PdDepartConfig, IPdDepar
         result.setResult(pageList);
         log.info(pageList.toString());
         return result;
+    }
+
+
+    /**
+     * 根据部门id查询用户信息
+     *
+     * @return
+     */
+    @RequestMapping(value = "/queryUserByDepartParentId", method = RequestMethod.GET)
+    public Result<List<SysUser>> queryUserByDepartParentId(SysUser user) {
+        Result<List<SysUser>> result = new Result<>();
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+
+        Map<String,Object> parMap = new HashMap<>();
+        parMap.put("DEL_FLAG_NORMAL",PdConstant.DEL_FLAG_0);
+        parMap.put("deptParentId",sysUser.getDepartParentId());
+        parMap.put("realname",user.getRealname());
+        parMap.put("currentDepartId",user.getCurrentDepartId());
+        List<SysUser> userList = pdDepartService.findUserList(parMap);
+
+        try {
+            result.setSuccess(true);
+            result.setResult(userList);
+            return result;
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            result.setSuccess(false);
+            return result;
+        }
     }
 
     /**
@@ -442,4 +472,65 @@ public class PdDepartController extends JeecgController<PdDepartConfig, IPdDepar
         }
         return result;
     }
+
+    /**
+     * 一键生成部门表的拼音简码和自定义码
+     * http://localhost:3000/jeecg-boot/pd/pdDepart/generatePyWb?_t=1592379417
+     * 调用以后需要随便找个部门更新下
+     */
+    @PostMapping(value = "generatePyWb")
+    public Result<Object> generatePyWb() {
+        Result<Object> result = new Result<>();
+        try{
+            result = pdDepartService.generatePyWb();
+        }catch(Exception e){
+            log.error(e.getMessage(), e);
+            result.setCode(500);
+            result.setMessage("粘贴失败");
+        }
+        return result;
+    }
+    /**
+     * 一键生成用户表的拼音简码和自定义码
+     * http://localhost:3000/jeecg-boot/pd/pdDepart/generateUserPyWb?_t=1592379417
+     */
+    @GetMapping(value = "generateUserPyWb")
+    public Result<Object> generateUserPyWb() {
+        Result<Object> result = new Result<>();
+        try{
+            result = pdDepartService.generateUserPyWb();
+        }catch(Exception e){
+            log.error(e.getMessage(), e);
+            result.setCode(500);
+            result.setMessage("粘贴失败");
+        }
+        return result;
+    }
+
+    @RequestMapping(value = "/saveDepartUserBatch", method = RequestMethod.DELETE)
+    public Result<SysUserDepart> saveDepartUserBatch(
+            @RequestParam(name="departRoleId") String departRoleId,
+            @RequestParam(name="userIds",required=true) String userIds) {
+        Result<SysUserDepart> result = new Result<SysUserDepart>();
+        try {
+            LambdaQueryWrapper<SysDepartRoleUser> query = new LambdaQueryWrapper<>();
+            query.eq(SysDepartRoleUser::getDroleId, departRoleId);
+            sysDepartRoleUserService.remove(query);
+            List<String> ids = Arrays.asList(userIds.split(","));
+            List<SysDepartRoleUser> sysDepartRoleUsers = new ArrayList<>();
+            for(String id :ids){
+                SysDepartRoleUser sysDepartRoleUser = new SysDepartRoleUser();
+                sysDepartRoleUser.setUserId(id);
+                sysDepartRoleUser.setDroleId(departRoleId);
+                sysDepartRoleUsers.add(sysDepartRoleUser);
+            }
+            sysDepartRoleUserService.saveBatch(sysDepartRoleUsers);
+            result.success("成功!");
+        }catch(Exception e) {
+            log.error(e.getMessage(), e);
+            result.error500("失败！");
+        }
+        return result;
+    }
+
 }

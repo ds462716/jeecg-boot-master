@@ -13,7 +13,7 @@
     <a-spin :spinning="confirmLoading">
       <div style="background:#ECECEC; padding:20px">
         <a-card title="" style="margin-bottom: 10px;">
-          <a-form :form="form">
+          <a-form :form="form" :selfUpdate = "true">
             <a-row>
               <a-col :span="6">
                 <a-form-item label="用量单号" :labelCol="labelCol" :wrapperCol="wrapperCol">
@@ -46,16 +46,28 @@
         <a-card style="margin-bottom: 10px;">
           <a-tabs v-model="activeKey" @change="handleChangeTabs">
             <a-tab-pane tab="产品明细" :key="refKeys[0]"  :forceRender="true">
-              <a-form v-show="!disableSubmit">
-                <a-row>
+              <a-form v-show="!disableSubmit"  :form="formOne" :selfUpdate = "true">
+                <a-row v-if="!showSBarcode">
                   <a-col :md="6" :sm="8">
                     <a-form-item label="产品编号" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                      <a-input ref="productNumberInput" v-focus placeholder="请输入产品编号" v-model="queryParam.productNumber" @keyup.enter.native="searchQuery(0)"></a-input>
+                      <a-input ref="productNumberInput" v-focus placeholder="请输入产品编号" v-decorator="[ 'productNumber']" @keyup.enter.native="onlyNumbersearchQuery"></a-input>
+                    </a-form-item>
+                  </a-col>
+                  <a-col :md="12" :sm="8">
+                    <a-form-item label="" :labelCol="labelCol" :wrapperCol="wrapperCol" style="text-align: left;padding-left: 15px;">
+                      提示：按<span style="color: red">Ctrl+Alt</span>键快速定位到扫码输入框
+                    </a-form-item>
+                  </a-col>
+                </a-row>
+                <a-row v-if="showSBarcode">
+                  <a-col :md="6" :sm="8">
+                    <a-form-item label="产品编号" :labelCol="labelCol" :wrapperCol="wrapperCol">
+                      <a-input ref="productNumberInput" v-focus placeholder="请输入产品编号" v-decorator="[ 'productNumber']" @keyup.enter.native="searchQuery(0)"></a-input>
                     </a-form-item>
                   </a-col>
                   <a-col :md="6" :sm="8">
                     <a-form-item label="二级条码" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                      <a-input ref="productBarCodeInput" placeholder="请输入二级条码" v-model="queryParam.productBarCode" @keyup.enter.native="searchQuery(1)"></a-input>
+                      <a-input ref="productBarCodeInput" placeholder="请输入二级条码" v-decorator="[ 'productBarCode']" @keyup.enter.native="searchQuery(1)"></a-input>
                     </a-form-item>
                   </a-col>
                   <a-col :md="12" :sm="8">
@@ -68,7 +80,7 @@
 
               <div style="margin-bottom: 8px;" v-show="!disableSubmit">
                 <a-button type="primary" icon="plus" @click="chooseProductList">选择产品</a-button>
-                <a-button type="primary" icon="plus" @click="choosePackageList" style="margin-left: 8px">选择定数包</a-button>
+                <a-button type="primary" icon="plus" @click="choosePackageList" style="margin-left: 8px">选择套包</a-button>
                 <a-popconfirm style="margin-left: 8px"
                               :title="`确定要删除吗?`"
                               @confirm="handleConfirmDelete">
@@ -105,7 +117,7 @@
         <a-card style="margin-bottom: 10px;">
           <a-tabs v-model="activeKey" @change="handleChangeTabs">
             <a-tab-pane tab="收费信息" :key="refKeys[0]"  :forceRender="true">
-              <a-form :form="form">
+              <a-form :form="form" :selfUpdate = "true">
                 <a-row>
                   <a-col :md="16" :sm="8">
                     <a-form-item label="执行收费" :labelCol="{span: 3}" :wrapperCol="{span: 20}">
@@ -260,6 +272,7 @@
     },
     data () {
       return {
+        formOne: this.$form.createForm(this),
         width:800,
         visible: false,
         model: {},
@@ -272,6 +285,8 @@
         totalPrice:'0.0000',
         activeKey: 'pdDosageDetail',
         refKeys: ['pdDosageDetail',],
+        showSBarcode:false,           //开关-是否显示二级条码框（入库、出库、退货） 1-显示；0-不显示
+
         //货区货位二级联动下拉框
         goodsAllocationList:[],
         queryParam:{},
@@ -439,6 +454,12 @@
                 let fieldval = pick(this.initData,'dosageNo','dosageDate','departName','outHuoweiCode','dosageByName','inHospitalNo','patientInfo','patientDetailInfo','outpatientNumber','operativeNumber','exeDeptName','exeDeptId','oprDeptName','oprDeptId','surgeonName','surgeonId','sqrtDoctorName','sqrtDoctorId','subordinateWardName','subordinateWardId','remarks');
                 this.form.setFieldsValue(fieldval);
                 this.goodsAllocationList = res.result.goodsAllocationList;
+                //开关-是否显示二级条码框（入库、出库、退货） 1-显示；0-不显示
+                if(res.result.showSBarcode && res.result.showSBarcode == "0"){
+                  this.showSBarcode = false;
+                }else{
+                  this.showSBarcode = true;
+                }
                 //获取光标
                 this.$refs['productNumberInput'].focus();
               }
@@ -464,6 +485,7 @@
         this.totalSum = 0;
         this.totalPrice = 0.0000;
         this.visible = false;
+        this.formOne.resetFields();
         this.pdDosageDetailTable.dataSource = [];
         this.eachAllTable((item) => {
           item.initialize()
@@ -472,10 +494,21 @@
       handleCancel () {
         this.close()
       },
+      // 只扫产品编号查询
+      onlyNumbersearchQuery(){
+        let productNumber = this.formOne.getFieldValue("productNumber");
+        if(!productNumber){
+          this.$message.error("请输入产品编号！");
+          this.$refs.productNumberInput.focus();
+          return;
+        }
+        this.formOne.setFieldsValue({productBarCode:productNumber});
+        this.searchQuery(1);
+      },
       // 扫码查询
       searchQuery(num) {
         let that = this;
-        let productNumber = this.queryParam.productNumber;
+        let productNumber = this.formOne.getFieldValue("productNumber");
         if(!productNumber){
           //清空扫码框
           this.clearQueryParam();
@@ -489,13 +522,13 @@
           this.$refs.productBarCodeInput.focus();
 
         }else if(num == 1){ //条码扫码
-          let productBarCode = this.queryParam.productBarCode;
+          let productBarCode = this.formOne.getFieldValue("productBarCode");
           if(!productBarCode){
             this.$message.error("请输入二级条码！");
             return;
           }
-          //解析条码
-          stockScanCode(productNumber,productBarCode).then((res) => {
+          //解析条码//
+          stockScanCode(productNumber,productBarCode,"0","1","0").then((res) => {
             if(res.code == "200" || res.code == "203"){
               let pdProductStockList = res.result;
               if(!pdProductStockList){
@@ -558,7 +591,7 @@
         this.$refs.pdChooseProductStockListModel.width = 1550;
         this.$refs.pdChooseProductStockListModel.show({});
       },
-      // 选择定数包
+      // 选择套包
       choosePackageList() {
 
       },
@@ -619,8 +652,7 @@
       },
       //清空扫码框
       clearQueryParam(){
-        this.queryParam.productNumber = "";
-        this.queryParam.productBarCode = "";
+        this.formOne.resetFields();
         this.$refs.productNumberInput.focus();
       },
       // 扫码 调用 新增一行

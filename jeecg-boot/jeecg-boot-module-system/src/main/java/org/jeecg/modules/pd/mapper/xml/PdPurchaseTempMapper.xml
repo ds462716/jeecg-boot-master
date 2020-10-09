@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.pd.mapper.PdPurchaseTempMapper">
+    <sql id="PdPurchaseTempColumns">
+        a.id,
+        a.temp_no,
+        a.temp_name,
+        a.user_id,
+        a.depart_id,
+        a.total_num,
+		a.create_by,
+		a.create_time,
+		a.update_by,
+		a.update_time,
+		a.sys_org_code,
+		a.remarks,
+		a.temp_type,
+		a.del_flag
+	</sql>
+
+    <sql id="PdPurchaseTempJoins">
+    </sql>
+
+    <!-- 科室 -->
+    <sql id="sysDepartColumns">
+        f.depart_name AS "departName"
+    </sql>
+
+    <sql id="sysDepartJoins">
+        LEFT JOIN sys_depart f ON a.depart_id = f.id
+    </sql>
+
+    <!--用户-->
+    <sql id="pdSysUserColumns">
+        b.realname as "realname"
+	</sql>
+    <sql id="pdSysUserJoins">
+        LEFT JOIN sys_user b ON b.id = a.user_id
+    </sql>
+
+    <select id="selectListByPage" resultType="org.jeecg.modules.pd.entity.PdPurchaseTemp">
+        SELECT
+        <include refid="PdPurchaseTempColumns"/>,
+        <include refid="sysDepartColumns"/>,
+        <include refid="pdSysUserColumns"/>
+        FROM pd_purchase_temp a
+        <include refid="PdPurchaseTempJoins"/>
+        <include refid="sysDepartJoins"/>
+        <include refid="pdSysUserJoins"/>
+        <where>
+            a.del_flag =#{entity.DEL_FLAG_NORMAL}
+            <if test="entity.id != null and entity.id != ''">
+                AND a.id = #{entity.id}
+            </if>
+            <if test="entity.tempNo != null and entity.tempNo != ''">
+                AND a.temp_no   LIKE concat('%',#{entity.tempNo},'%')
+            </if>
+            <if test="entity.tempName != null and entity.tempName != ''">
+                AND a.temp_name   LIKE concat('%',#{entity.tempName},'%')
+            </if>
+            <if test="entity.tempType != null and entity.tempType != ''">
+                AND a.temp_type  = #{entity.tempType}
+            </if>
+            <if test="entity.departId != null and entity.departId != ''">
+                AND (a.temp_type='2'  or a.depart_id= #{entity.departId})
+            </if>
+        </where>
+    </select>
+
+
+</mapper>

@@ -1,11 +1,15 @@
 <template>
-  <a-modal
-    :title="title"
-    :width="1500"
+  <j-modal
     :visible="visible"
-    :confirmLoading="confirmLoading"
+    :width="1200"
+    :title="title"
+    :lockScroll="lockScroll"
+    :fullscreen="fullscreen"
+    :switchFullscreen="switchFullscreen"
+    :maskClosable=disableSubmit
     @cancel="handleCancel"
-    cancelText="关闭">
+
+  >
     <template slot="footer">
       <a-button type="primary" @click="handleCancel">返回</a-button>
     </template>
@@ -29,7 +33,11 @@
                 <a-input placeholder="请输入产品名称" v-model="queryParam.productName"></a-input>
               </a-form-item>
             </a-col>
-
+            <a-col :md="6" :sm="8">
+              <a-form-item label="使用状态">
+                <j-dict-select-tag-expand v-model="queryParam.nestatStatus" dictCode="nestat_status"/>
+              </a-form-item>
+            </a-col>
             <template :md="6" v-if="toggleSearchStatus">
               <a-col :md="6" :sm="8">
                 <a-form-item label="规格">
@@ -43,12 +51,12 @@
               </a-col>
               <a-col :md="6" :sm="8">
                 <a-form-item label="是否久存">
-                  <j-dict-select-tag v-model="queryParam.isLong" dictCode="pd_isLong"/>
+                  <j-dict-select-tag-expand v-model="queryParam.isLong" dictCode="pd_isLong"/>
                 </a-form-item>
               </a-col>
               <a-col :md="6" :sm="8">
               <a-form-item label="是否过期">
-                <j-dict-select-tag v-model="queryParam.expStatus" dictCode="exp_status"/>
+                <j-dict-select-tag-expand v-model="queryParam.expStatus" dictCode="exp_status"/>
               </a-form-item>
             </a-col>
               <a-col :md="6" :sm="8">
@@ -76,8 +84,8 @@
       <!-- 操作按钮区域 -->
 
       <div class="table-operator">
-        <a-button v-show="this.model.productFlag=='1'" @click="handleUpdate()" type="primary"  >规格数量清零</a-button>
-      </div>
+        <a-button v-show="this.model.productFlag=='1'  &&  isDisabledAuth('stock:form:specRemove')" @click="handleUpdate()" type="primary"  >规格数量清零</a-button>
+       </div>
       <hr/>
       <div>
           <div class="ant-alert ant-alert-info" style="margin-bottom: 16px;">
@@ -100,7 +108,17 @@
          <span slot="action" slot-scope="text, record">
           <a  @click="yiHuoWei(record)">移库</a>
          <a-divider type="vertical"/>
-        <a v-bind:disabled="record.produceDate!=null" @click="handleEdit(record)">修改</a>
+           <a-dropdown>
+            <a class="ant-dropdown-link">更多 <a-icon type="down" /></a>
+            <a-menu slot="overlay">
+              <a-menu-item v-show="record.produceDate==null">
+               <a @click="handleEdit(record)">修改</a>
+              </a-menu-item>
+              <a-menu-item>
+                <a @click="findBarCodeDetail(record)">查看赋码</a>
+              </a-menu-item>
+            </a-menu>
+          </a-dropdown>
          </span>
       </a-table>
       </div>
@@ -111,7 +129,11 @@
      <pd-stock-huo-wei-modal ref="PdStockHuoWeiModal" @ok="modalFormOk"></pd-stock-huo-wei-modal>
      <!--規格數量清零-->
      <pd-product-stock-spec-modal ref="modalForm1" @ok="modalFormOk"></pd-product-stock-spec-modal>
-  </a-modal>
+    <!--查看唯一码-->
+     <pd-product-stock-unique-code-modal ref="modalUniqueForm1" @ok="modalFormOk"></pd-product-stock-unique-code-modal>
+
+
+  </j-modal>
 </template>
 
 <script>
@@ -124,6 +146,9 @@
   import PdStockHuoWeiModal from './PdStockHuoWeiModal'
   import PdProductStockSpecModal from './PdProductStockSpecModal'
   import JDate from "../../../components/jeecg/JDate";
+  import { disabledAuthFilter } from "@/utils/authFilter"
+  import PdProductStockUniqueCodeModal from "./PdProductStockUniqueCodeModal";
+  import JDictSelectTagExpand from "@/components/dict/JDictSelectTagExpand"
 
   const VALIDATE_NO_PASSED = Symbol()
   export { FormTypes, VALIDATE_NO_PASSED }
@@ -131,10 +156,12 @@
     name: "PdProductStockModel",
     mixins:[JeecgListMixin],
     components: {
+      PdProductStockUniqueCodeModal,
       JDate,
       PdUpdateStockModal,
       PdStockHuoWeiModal,
-      PdProductStockSpecModal
+      PdProductStockSpecModal,
+      JDictSelectTagExpand
     },
     data () {
       return {
@@ -149,6 +176,18 @@
           jCount:{},//近效期数量
         },
         confirmLoading: false,
+        lockScroll: false,
+        fullscreen: true,
+        switchFullscreen: false,
+        disableSubmit:false,
+        labelCol: {
+          xs: { span: 24 },
+          sm: { span: 5 },
+        },
+        wrapperCol: {
+          xs: { span: 24 },
+          sm: { span: 16 },
+        },
         // 表头
         columns: [
           {
@@ -189,7 +228,7 @@
           {
             title:'货位',
             align:"center",
-            dataIndex: 'huoweiCode'
+            dataIndex: 'huoweiName'
           },
           {
             title:'单位',
@@ -207,19 +246,31 @@
             dataIndex: 'registration'
           },
           {
-            title:'数量',
+            title:'库存数量',
             align:"center",
             dataIndex: 'stockNum'
           },
           {
             title:'规格单位',
             align:"center",
-            dataIndex: 'specUnitId'
+            dataIndex: 'specUnitName'
           },
           {
             title:'库存规格数量',
             align:"center",
             dataIndex: 'specNum'
+          },
+          {
+            title:'使用状态',
+            align:"center",
+            dataIndex: 'nestatStatus',
+            customRender:(text)=>{
+              if(!text){
+                return ''
+              }else{
+                return filterMultiDictText(this.dictOptions['nestatStatus'], text+"")
+              }
+            }
           },
           {
             title:'是否过期',
@@ -254,13 +305,14 @@
           }
         ],
         url: {
-          list: "/pd/pdProductStockTotal/chooseProductStockList",
+          list: "/pd/pdProductStockTotal/selectProductStockList",
         },
         dictOptions:{
           expStatus:[],
+          nestatStatus:[],
           isLong:[],
         },
-        tableScroll:{x :10*140+30},
+        tableScroll:{ x: 1300 },
       }
     },
     created () {
@@ -316,7 +368,7 @@
         });
 
          if(batchNos !=""){
-           this.$message.warning("只能清零已使用的规格库存数量！");
+           this.$message.warning("只能清零使用中产品的规格库存数量！");
            return;
          }
         this.$refs.modalForm1.edit({"ids":ids});
@@ -375,10 +427,30 @@
             this.$set(this.dictOptions, 'isLong', res.result)
           }
         })
+        initDictOptions('nestat_status').then((res) => {
+          if (res.success) {
+            this.$set(this.dictOptions, 'nestatStatus', res.result)
+          }
+        })
       },
       setdataCss(record,index) {
         let expire = record.expStatus;
         return "expire"+expire;
+      },
+      /**
+       * 校验权限
+       * @param code
+       * @returns {boolean|*}
+       */
+      isDisabledAuth(code){
+        return !disabledAuthFilter(code);
+      },
+
+      //如果是唯一码查询唯一码的详细内容
+      findBarCodeDetail(record){
+        this.$refs.modalUniqueForm1.show(record);
+        this.$refs.modalUniqueForm1.title = "查看赋码";
+        this.$refs.modalUniqueForm1.disableSubmit = false;
       },
     }
   }

@@ -2,8 +2,8 @@ package org.jeecg.modules.pd.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import org.jeecg.modules.pd.entity.PdDosage;
 import com.baomidou.mybatisplus.extension.service.IService;
+import org.jeecg.modules.pd.entity.PdDosage;
 import org.jeecg.modules.pd.entity.PdDosageDetail;
 
 import java.util.HashMap;
@@ -20,7 +20,7 @@ public interface IPdDosageService extends IService<PdDosage> {
 
     PdDosage initModal(String id);
 
-    void saveMain(PdDosage pdDosage,String displayFlag);
+    void saveMain(PdDosage pdDosage, String displayFlag);
 
     IPage<PdDosage> queryList(Page<PdDosage> page, PdDosage pdDosage);
 
@@ -36,5 +36,21 @@ public interface IPdDosageService extends IService<PdDosage> {
 
     List<PdDosage> queryPdDosageList(PdDosage pdDosage);
 
+    List<HashMap> queryPdDosageTotalList(PdDosage PdDosage);
+
     void dosageReturned(PdDosage pdDosage);
+
+    void dosageCnclFee(PdDosage pdDosage);
+
+    void dosageFee(PdDosage pdDosage);
+
+
+    /*市立医院用*/
+    List<PdDosageDetail> newSaveMain(PdDosage pdDosage, String displayFlag);
+    /*唯一码使用*/
+    List<PdDosageDetail> uniqueSubmit(PdDosage pdDosage, String isChargeFlag0);
+
+    void uniqueDosageReturned(PdDosage pdDosage);
+
+    void uniqueDosageCnclFee(PdDosage pdDosage);
 }

@@ -9,7 +9,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import java.util.*;
 
 /**
- * @Description: 定数包明细
+ * @Description: 套包明细
  * @Author: jiangxz
  * @Date:   2020-02-02
  * @Version: V1.0
@@ -22,8 +22,8 @@ public class PdPackageDetail extends BaseEntity {
 	/**主键*/
 	@TableId(type = IdType.ID_WORKER_STR)
 	private String id;
-	/**定数包id*/
-	@Excel(name = "定数包id", width = 15)
+	/**套包id*/
+	@Excel(name = "套包id", width = 15)
 	private String packageId;
 	/**产品id*/
 	private String productId;
@@ -68,12 +68,12 @@ public class PdPackageDetail extends BaseEntity {
     /*本科室库存数量*/
 	@TableField(exist = false)
 	private Double stockNum;
-	/*定数包编号*/
+	/*套包编号*/
 	@TableField(exist = false)
-	private String code;
-	/*定数包名称*/
+	private String packageCode;
+	/*套包名称*/
 	@TableField(exist = false)
-	private String name;
+	private String packageName;
 	/*产品编号*/
 	@TableField(exist = false)
 	private String number;
@@ -90,6 +90,6 @@ public class PdPackageDetail extends BaseEntity {
 	@TableField(exist = false)
 	private String unitName;
 	@TableField(exist = false)
-	private List<String> packageIds;		//定数包id集合
+	private List<String> packageIds;		//套包id集合
 
 }

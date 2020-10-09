@@ -1,18 +1,18 @@
 <template>
-  <a-modal
-    :title="title"
-    :width="1500"
+  <j-modal
     :visible="visible"
-    :confirmLoading="confirmLoading"
+    :width="1200"
+    :title="title"
+    :lockScroll="lockScroll"
+    :fullscreen="fullscreen"
+    :switchFullscreen="switchFullscreen"
     @cancel="handleCancel"
-    cancelText="关闭">
-    <template slot="footer">
-      <a-button type="primary" @click="handleCancel">返回</a-button>
-    </template>
-
+  >
     <a-spin :spinning="confirmLoading">
     <!-- 查询区域 -->
-    <div class="table-page-search-wrapper">
+   <!-- <div class="table-page-search-wrapper">-->
+      <div style="background:#ECECEC; padding:20px">
+        <a-card title="" style="margin-bottom: 10px;">
       <a-form layout="inline" @keyup.enter.native="searchQuery">
         <a-row :gutter="24">
           <a-col :md="6" :sm="8">
@@ -40,7 +40,7 @@
 
         </a-row>
       </a-form>
-    </div>
+        </a-card>
     <!-- 查询区域-END -->
     <!-- table区域-begin -->
     <div>
@@ -48,7 +48,7 @@
         <i class="anticon anticon-info-circle ant-alert-icon"></i> 已选择 <a style="font-weight: 600">{{ selectedRowKeys.length }}</a>项
         <a style="margin-left: 24px" @click="onClearSelected">清空</a>
       </div>
-
+      <a-card title="" style="margin-bottom: 10px;">
       <a-table
         ref="table"
         size="middle"
@@ -63,9 +63,14 @@
         :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
         @change="handleTableChange">
       </a-table>
+      </a-card>
     </div>
+      </div>
      </a-spin>
-  </a-modal>
+    <template slot="footer">
+      <a-button @click="handleCancel" type="margin-right: 15px;" style="margin-right: 15px;">关  闭</a-button>
+     </template>
+  </j-modal>
 </template>
 <script>
 
@@ -81,7 +86,10 @@
       return {
         form: this.$form.createForm(this),
         visible: false,
-        title:"操作",
+        title:"查看",
+        lockScroll: false,
+        fullscreen: true,
+        switchFullscreen: false,
         model:{},
         confirmLoading: false,
         description: '申购订单主表管理页面',
@@ -119,9 +127,9 @@
             dataIndex: 'spec'
           },
           {
-            title:'型号',
+            title:'中标号',
             align:"center",
-            dataIndex: 'version'
+            dataIndex: 'bidingNumber'
           },
           {
             title:'单位',

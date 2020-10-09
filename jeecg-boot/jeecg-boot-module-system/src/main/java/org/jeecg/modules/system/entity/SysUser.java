@@ -52,7 +52,15 @@ public class SysUser implements Serializable {
      */
     @Excel(name = "真实姓名", width = 15)
     private String realname;
-
+    /**拼音简码*/
+    @Excel(name = "拼音简码", width = 15)
+    private java.lang.String py;
+    /**五笔简码*/
+    @Excel(name = "五笔简码", width = 15)
+    private java.lang.String wb;
+    /**自定义码*/
+    @Excel(name = "自定义码", width = 15)
+    private java.lang.String zdy;
     /**
      * 密码
      */

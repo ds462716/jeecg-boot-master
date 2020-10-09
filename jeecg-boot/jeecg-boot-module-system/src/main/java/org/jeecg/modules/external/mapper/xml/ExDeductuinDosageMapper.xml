@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.external.mapper.ExDeductuinDosageMapper">
+    <sql id="exDeductuinDosageColumns">
+        a.id,
+        a.create_by,
+        a.create_time,
+        a.update_by,
+        a.update_time,
+        a.sys_org_code,
+        a.product_id,
+        a.exp_date,
+        a.batch_no,
+        a.product_bar_code,
+        a.patient_name,
+        a.in_hospital_no,
+        a.outpatient_number,
+        a.spec_unit_id,
+        a.spec_quantity,
+        a.spec_num,
+        a.spec_date,
+        a.stock_id,
+        a.person_name,
+        a.deductuin_type,
+        a.depart_id,
+        a.depart_parent_id,
+        a.del_flag
+	</sql>
+
+    <!--产品-->
+    <sql id="pdProductColumns">
+        c.number as "number",
+        c.name as "productName"
+ 	</sql>
+    <sql id="pdProductJoins">
+        LEFT JOIN pd_product c ON c.id = a.product_id
+    </sql>
+
+    <!-- 单位 -->
+    <sql id="pdUnitColumns">
+        b.name AS "specUnitName"
+    </sql>
+
+    <sql id="pdUnitJoins">
+        LEFT JOIN pd_unit b ON c.spec_unit_id = b.id
+     </sql>
+
+
+    <!-- 科室 -->
+    <sql id="sysDepartColumns">
+        sd.depart_name AS "departName"
+    </sql>
+
+    <sql id="sysDepartJoins">
+        LEFT JOIN sys_depart sd ON a.depart_id = sd.id
+    </sql>
+
+    <select id="selectListByPage"  resultType="org.jeecg.modules.external.entity.ExDeductuinDosage">
+        SELECT
+        <include refid="exDeductuinDosageColumns"/>,
+        <include refid="pdProductColumns"/>,
+        <include refid="pdUnitColumns"/>,
+        <include refid="sysDepartColumns"/>
+        FROM ex_deductuin_dosage a
+        <include refid="pdProductJoins"/>
+        <include refid="pdUnitJoins"/>
+        <include refid="sysDepartJoins"/>
+        <where>
+            a.del_flag = #{entity.DEL_FLAG_NORMAL}
+        </where>
+        <if test="entity.productName != null and entity.productName != ''">
+            AND (
+            c.name LIKE concat('%',#{entity.productName},'%')
+            or c.py LIKE concat('%',#{entity.productName},'%')
+            or c.wb LIKE concat('%',#{entity.productName},'%')
+            or c.bname LIKE concat('%',#{entity.productName},'%')
+            or c.bpy LIKE concat('%',#{entity.productName},'%')
+            or c.bwb LIKE concat('%',#{entity.productName},'%')
+            or c.zdy LIKE concat('%',#{entity.productName},'%')
+            )
+        </if>
+        <if test="entity.number != null and entity.number != ''">
+            AND c.number LIKE concat('%',#{entity.number},'%')
+        </if>
+        <if test="entity.batchNo != null and entity.batchNo != ''">
+            AND a.batch_no LIKE concat('%',#{entity.batchNo},'%')
+        </if>
+        <if test="entity.departParentId != null and entity.departParentId != ''">
+            AND a.depart_parent_id = #{entity.departParentId}
+        </if>
+        <if test="entity.departId != null and entity.departId != ''">
+            AND a.depart_id = #{entity.departId}
+        </if>
+        <if test="entity.deductuinType != null and entity.deductuinType != ''">
+            AND a.deductuin_type = #{entity.deductuinType}
+        </if>
+        <if test="entity.departIdList != null and entity.departIdList.size() > 0">
+            AND a.depart_id IN
+            <foreach collection="entity.departIdList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+
+        ORDER BY a.create_time desc
+    </select>
+
+</mapper>

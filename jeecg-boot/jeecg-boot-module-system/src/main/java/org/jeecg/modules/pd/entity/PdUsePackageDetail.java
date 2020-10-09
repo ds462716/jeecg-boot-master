@@ -9,7 +9,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import java.util.Date;
 
 /**
- * @Description: 定数包明细
+ * @Description: 套包明细
  * @Author: zxh
  * @Date:   2020年4月21日09:18:57
  * @Version: V1.0
@@ -52,6 +52,8 @@ public class PdUsePackageDetail extends BaseEntity {
 	/**所属部门*/
 	@Excel(name = "所属部门", width = 15)
 	private String sysOrgCode;
+	@Excel(name = "试剂使用类型", width = 15)
+	private String useType;
 
 	/**
 	 * 所属部门
@@ -108,6 +110,9 @@ public class PdUsePackageDetail extends BaseEntity {
 	//产品类型
 	@TableField(exist = false)
 	private String productFlagName;
+	//试剂扣减状态
+	@TableField(exist = false)
+	private String status;
 
 
 

@@ -30,6 +30,11 @@
               <a-input placeholder="请输入产品名称" v-model="queryParam.productName"></a-input>
             </a-form-item>
           </a-col>
+          <a-col :md="6" :sm="8">
+            <a-form-item label="是否试剂">
+              <j-dict-select-tag-expand type="list" v-model="queryParam.productFlag" dictCode="yn" placeholder="请选择"/>
+            </a-form-item>
+          </a-col>
           <template :md="6" v-if="toggleSearchStatus">
             <a-col :md="6" :sm="8">
               <a-form-item label="产品编号">
@@ -48,12 +53,37 @@
             </a-col>
             <a-col :md="6" :sm="8">
               <a-form-item label="是否久存">
-                <j-dict-select-tag v-model="queryParam.isLong" dictCode="pd_isLong"/>
+                <j-dict-select-tag-expand v-model="queryParam.isLong" dictCode="pd_isLong"/>
               </a-form-item>
             </a-col>
             <a-col :md="6" :sm="8">
               <a-form-item label="是否过期">
-                <j-dict-select-tag v-model="queryParam.expStatus" dictCode="exp_status"/>
+                <j-dict-select-tag-expand v-model="queryParam.expStatus" dictCode="exp_status"/>
+              </a-form-item>
+            </a-col>
+            <a-col :md="6" :sm="8">
+              <a-form-item label="一级分类">
+                <a-select
+                  showSearch
+                  :categoryOne="categoryOneValue"
+                  placeholder="请选择一级分类"
+                  :defaultActiveFirstOption="false"
+                  :allowClear="true"
+                  :showArrow="true"
+                  :filterOption="false"
+                  @search="categoryOneHandleSearch"
+                  @change="categoryOneHandleChange"
+                  @focus="categoryOneHandleSearch"
+                  :notFoundContent="notFoundContent"
+                  v-model="queryParam.categoryOne"
+                >
+                  <a-select-option v-for="d in categoryOneData" :key="d.value">{{d.text}}</a-select-option>
+                </a-select>
+              </a-form-item>
+            </a-col>
+            <a-col :md="6" :sm="8">
+              <a-form-item label="中标号">
+                <a-input placeholder="请输中标号" v-model="queryParam.bidingNumber"></a-input>
               </a-form-item>
             </a-col>
           </template>
@@ -83,7 +113,7 @@
      <div class="table-operator">
       <a-button @click="handleUpdate('Up')" type="primary" icon="plus">设置库存上限</a-button>
       <a-button @click="handleUpdate('Down')" type="primary" icon="plus">设置库存下限</a-button>
-      <a-button type="primary" icon="download" @click="handleExportXls('库存明细')">导出</a-button>
+      <!--<a-button type="primary" icon="download" @click="handleExportXls('库存明细')">导出</a-button>-->
     </div>
     <!-- table区域-begin -->
     <div>
@@ -107,6 +137,10 @@
         :scroll="tableScroll"
         :rowSelection="{fixed:false,selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
         @change="handleTableChange">
+
+        <template slot="ellipsisText" slot-scope="text">
+          <j-ellipsis :value="text" :length="textMaxLength"></j-ellipsis>
+        </template>
 
         <span slot="action" slot-scope="text, record">
           <a @click="handleEdit(record)">库存明细</a>&nbsp;&nbsp;&nbsp;
@@ -132,6 +166,8 @@
   import { getAction } from '@/api/manage'
   import {initDictOptions, filterMultiDictText} from '@/components/dict/JDictSelectUtil'
   import { filterObj } from '@/utils/util';
+  import JDictSelectTagExpand from "@/components/dict/JDictSelectTagExpand"
+  import JEllipsis from '@/components/jeecg/JEllipsis'
 
 
   export default {
@@ -140,7 +176,9 @@
     components: {
       PdProductStockTotalModal,
       PdProductStockModal,
-      PdStockRecordDetailInfoModal
+      PdStockRecordDetailInfoModal,
+      JDictSelectTagExpand,
+      JEllipsis
     },
     data () {
       return {
@@ -155,6 +193,9 @@
         departData: [],
         departValue: undefined,
         notFoundContent:"未找到内容",
+        categoryOneData: [],
+        categoryOneValue: undefined,
+        textMaxLength:20,
         // 表头
         columns: [
           /*{
@@ -175,7 +216,13 @@
           {
             title:'产品名称',
             align:"center",
+            scopedSlots: {customRender: "ellipsisText"},
             dataIndex: 'productName'
+          },
+          {
+            title:'产品类型',
+            align:"center",
+            dataIndex: 'productFlagName'
           },
           {
             title:'产品编号',
@@ -185,13 +232,14 @@
           {
             title:'规格',
             align:"center",
+            scopedSlots: {customRender: "ellipsisText"},
             dataIndex: 'spec'
           },
-          {
+          /*{
             title:'型号',
             align:"center",
             dataIndex: 'version'
-          },
+          },*/
           {
             title:'单位',
             align:"center",
@@ -211,6 +259,11 @@
             title:'库存下限',
             align:"center",
             dataIndex: 'limitDown'
+          },
+          {
+            title:'自动补货量',
+            align:"center",
+            dataIndex: 'autoNum'
           },
           {
             title:'是否过期',
@@ -250,6 +303,7 @@
           list: "/pd/pdProductStockTotal/list",
           exportXlsUrl: "/pd/pdProductStockTotal/exportXls",
           queryDepart: "/pd/pdDepart/queryListTree",
+          queryCategoryOne:"/pd/pdCategory/getCategoryOneList?type=0",
         },
         dictOptions:{
           expStatus:[],
@@ -371,7 +425,34 @@
         })
       },
       //科室查询end
+      //一级分类查询start
+      categoryOneHandleSearch(value) {
+        this.getList(value,this.url.queryCategoryOne);
+      },
+      categoryOneHandleChange(value) {
+        this.categoryOneValue = value;
+        this.getList(value,this.url.queryCategoryOne);
+      },
+      //一级分类查询end
 
+      getList(value,url){
+        getAction(url,{name:value}).then((res)=>{
+          if (!res.success) {
+            this.cmsFailed(res.message);
+          }
+          const result = res.result;
+          const data = [];
+          result.forEach(r => {
+            data.push({
+              value: r.id,
+              text: r.name,
+            });
+          });
+
+            this.categoryOneData = data;
+
+        })
+      },
       getQueryParams() {
         //获取查询条件
         let sqp = {}

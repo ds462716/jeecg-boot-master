@@ -340,6 +340,30 @@
               <j-dict-select-tag-expand  :disabled="disableSubmit" :trigger-change="true" dictCode="device_classification" v-decorator="['deviceClassification',validatorRules.deviceClassification]"  placeholder="请选择器械分类"/>
             </a-form-item>
           </a-col>
+          <a-col :lg="12">
+            <a-form-item label="中标号" :labelCol="labelCol" :wrapperCol="wrapperCol">
+              <a-input :disabled="disableSubmit" autocomplete="off" v-decorator="[ 'bidingNumber', validatorRules.bidingNumber]" ></a-input>
+            </a-form-item>
+          </a-col>
+        </a-row>
+        <a-row class="form-row" :gutter="{ xs: 8, sm: 16, md: 24, lg: 32 }">
+          <a-col :lg="12">
+            <a-form-item label="中标类型" :labelCol="labelCol" :wrapperCol="wrapperCol">
+              <j-dict-select-tag-expand  :disabled="disableSubmit" :trigger-change="true" dictCode="biding_type" v-decorator="['bidingType',validatorRules.bidingType]"  placeholder="请选择中标类型"/>
+            </a-form-item>
+          </a-col>
+          <a-col :lg="12">
+            <a-form-item label="中标价" :labelCol="labelCol" :wrapperCol="wrapperCol">
+              <a-input-number :disabled="disableSubmit" autocomplete="off" v-decorator="[ 'bidingPrice', validatorRules.bidingPrice]"  style="width: 100%"/>
+            </a-form-item>
+          </a-col>
+        </a-row>
+        <a-row class="form-row" :gutter="{ xs: 8, sm: 16, md: 24, lg: 32 }">
+          <a-col :lg="12">
+            <a-form-item label="财务分类" :labelCol="labelCol" :wrapperCol="wrapperCol">
+              <j-dict-select-tag-expand  :disabled="disableSubmit" :trigger-change="true" dictCode="finance_classification" v-decorator="['financeClassification',validatorRules.financeClassification]"  placeholder="财务分类"/>
+            </a-form-item>
+          </a-col>
         </a-row>
 
         <a-form-item label="描述" :labelCol="labelCol" :wrapperCol="wrapperCol">
@@ -582,6 +606,15 @@
           ]},
           jdeCode: {rules: [
           ]},
+          bidingNumber: {rules: [
+            ]},
+          bidingPrice: {rules: [
+            ]},
+          bidingType: {rules: [
+            ]},
+          financeClassification: {rules: [
+
+            ]},
         },
         isChargeRules:[
           {
@@ -677,6 +710,7 @@
             text: record.categoryOneName,
           });
           this.categoryOneData = categoryOneData;
+          this.categoryOneValue = record.categoryOne;
           //二级分类
           const categoryTwoData = [];
           categoryTwoData.push({
@@ -723,7 +757,7 @@
         this.focusDisable = false;
         this.visible = true;
         this.$nextTick(() => {
-          this.form.setFieldsValue(pick(this.model,'number','name','py','wb','bname','bpy','bwb','zdy','specUnitId','specQuantity','spec','version','unitId','power','pdProductRules','categoryOne','categoryTwo','groupId','venderId','isCharge','supplierId','purchasePrice','sellingPrice','registration','chargeCode','description','productFlag','isUrgent','upQuantity','purchasedQuantity','licenceName0','licenceNum0','licenceDate0','licenceSite0','licenceName1','licenceNum1','licenceDate1','licenceSite1','licenceName2','licenceNum2','licenceDate2','licenceSite2','licenceName3','licenceNum3','licenceDate3','licenceSite3','licenceName4','licenceNum4','licenceDate4','licenceSite4','licenceName5','licenceNum5','licenceDate5','licenceSite5','licenceName6','licenceNum6','licenceDate6','licenceSite6','licenceName7','licenceNum7','licenceDate7','licenceSite7','licenceName8','licenceNum8','licenceDate8','licenceSite8','licenceName9','licenceNum9','licenceDate9','licenceSite9','licenceName10','licenceNum10','licenceDate10','licenceSite10','licenceName11','licenceNum11','licenceDate11','licenceSite11','jdeCode','deviceClassification'))
+          this.form.setFieldsValue(pick(this.model,'number','name','py','wb','bname','bpy','bwb','zdy','specUnitId','specQuantity','spec','version','unitId','power','pdProductRules','categoryOne','categoryTwo','groupId','venderId','isCharge','supplierId','purchasePrice','sellingPrice','registration','chargeCode','description','productFlag','isUrgent','upQuantity','purchasedQuantity','bidingNumber','bidingType','bidingPrice','licenceName0','licenceNum0','licenceDate0','licenceSite0','licenceName1','licenceNum1','licenceDate1','licenceSite1','licenceName2','licenceNum2','licenceDate2','licenceSite2','licenceName3','licenceNum3','licenceDate3','licenceSite3','licenceName4','licenceNum4','licenceDate4','licenceSite4','licenceName5','licenceNum5','licenceDate5','licenceSite5','licenceName6','licenceNum6','licenceDate6','licenceSite6','licenceName7','licenceNum7','licenceDate7','licenceSite7','licenceName8','licenceNum8','licenceDate8','licenceSite8','licenceName9','licenceNum9','licenceDate9','licenceSite9','licenceName10','licenceNum10','licenceDate10','licenceSite10','licenceName11','licenceNum11','licenceDate11','licenceSite11','jdeCode','deviceClassification','financeClassification'))
           //获取光标
           let input = this.$refs['inputFocus'];
           input.focus();
@@ -745,6 +779,7 @@
         this.focusDisable = false;
         this.$emit('close');
         this.visible = false;
+        this.categoryTwoData = [];
       },
       handleOk () {
         const that = this;
@@ -793,7 +828,7 @@
         this.close()
       },
       popupCallback(row){
-        this.form.setFieldsValue(pick(row,'number','name','py','wb','bname','bpy','bwb','zdy','specUnitId','specQuantity','spec','version','unitId','power','categoryOne','categoryTwo','groupId','venderId','isCharge','supplierId','purchasePrice','sellingPrice','registration','chargeCode','description','productFlag','isUrgent','upQuantity','purchasedQuantity','licenceName0','licenceNum0','licenceDate0','licenceSite0','licenceName1','licenceNum1','licenceDate1','licenceSite1','licenceName2','licenceNum2','licenceDate2','licenceSite2','licenceName3','licenceNum3','licenceDate3','licenceSite3','licenceName4','licenceNum4','licenceDate4','licenceSite4','licenceName5','licenceNum5','licenceDate5','licenceSite5','licenceName6','licenceNum6','licenceDate6','licenceSite6','licenceName7','licenceNum7','licenceDate7','licenceSite7','licenceName8','licenceNum8','licenceDate8','licenceSite8','licenceName9','licenceNum9','licenceDate9','licenceSite9','licenceName10','licenceNum10','licenceDate10','licenceSite10','licenceName11','licenceNum11','licenceDate11','licenceSite11','jdeCode','deviceClassification'))
+        this.form.setFieldsValue(pick(row,'number','name','py','wb','bname','bpy','bwb','zdy','specUnitId','specQuantity','spec','version','unitId','power','categoryOne','categoryTwo','groupId','bidingNumber','bidingType','bidingPrice','venderId','isCharge','supplierId','purchasePrice','sellingPrice','registration','chargeCode','description','productFlag','isUrgent','upQuantity','purchasedQuantity','licenceName0','licenceNum0','licenceDate0','licenceSite0','licenceName1','licenceNum1','licenceDate1','licenceSite1','licenceName2','licenceNum2','licenceDate2','licenceSite2','licenceName3','licenceNum3','licenceDate3','licenceSite3','licenceName4','licenceNum4','licenceDate4','licenceSite4','licenceName5','licenceNum5','licenceDate5','licenceSite5','licenceName6','licenceNum6','licenceDate6','licenceSite6','licenceName7','licenceNum7','licenceDate7','licenceSite7','licenceName8','licenceNum8','licenceDate8','licenceSite8','licenceName9','licenceNum9','licenceDate9','licenceSite9','licenceName10','licenceNum10','licenceDate10','licenceSite10','licenceName11','licenceNum11','licenceDate11','licenceSite11','jdeCode','deviceClassification','financeClassification'))
       },
       pinyinTran(e){
         let val = e.target.value;
@@ -887,7 +922,7 @@
       //一级分类查询end
       handleFileUpload(event,index){
         let that = this;
-        this.imgIsShow[index].show=true;
+        //this.imgIsShow[index].show=true;
         event.preventDefault();
         let oFile = that.$refs.file[index].files[0];
         let bo = photoCheck(oFile,that);

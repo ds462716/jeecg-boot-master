@@ -76,8 +76,8 @@
               </a-form-item>
             </a-col>
             <a-col :md="6" :sm="8">
-              <a-form-item label="状态">
-                <a-select placeholder="状态" v-model="queryParam.validityFlag" >
+              <a-form-item label="过期状态">
+                <a-select placeholder="过期状态" :allowClear="true" v-model="queryParam.validityFlag" >
                   <a-select-option value="0">正常</a-select-option>
                   <a-select-option value="1">已过期</a-select-option>
                   <a-select-option value="2">近效期</a-select-option>
@@ -87,6 +87,71 @@
             <a-col :md="6" :sm="8">
               <a-form-item label="器械分类">
                 <j-dict-select-tag-expand v-model="queryParam.deviceClassification" dictCode="device_classification" placeholder="请选择器械分类"/>
+              </a-form-item>
+            </a-col>
+            <a-col :md="6" :sm="8">
+              <a-form-item label="一级分类">
+                <a-select
+                  showSearch
+                  :categoryOne="categoryOneValue"
+                  placeholder="请选择一级分类"
+                  :defaultActiveFirstOption="false"
+                  :allowClear="true"
+                  :showArrow="true"
+                  :filterOption="false"
+                  @search="categoryOneHandleSearch"
+                  @change="categoryOneHandleChange"
+                  @focus="categoryOneHandleSearch"
+                  :notFoundContent="notFoundContent"
+                  v-model="queryParam.categoryOne"
+                >
+                  <a-select-option v-for="d in categoryOneData" :key="d.value">{{d.text}}</a-select-option>
+                </a-select>
+              </a-form-item>
+            </a-col>
+            <a-col :md="6" :sm="8">
+              <a-form-item label="二级分类" :labelCol="labelCol" :wrapperCol="wrapperCol">
+                <a-select
+                  showSearch
+                  :categoryTwo="categoryTwoValue"
+                  placeholder="请选择二级分类"
+                  :defaultActiveFirstOption="false"
+                  :allowClear="true"
+                  :showArrow="true"
+                  :filterOption="false"
+                  @search="categoryTwoHandleSearch"
+                  @change="categoryTwoHandleChange"
+                  @focus="categoryTwoHandleSearch"
+                  :notFoundContent="notFoundContent"
+                  v-model="queryParam.categoryTwo"
+                >
+                  <a-select-option v-for="d in categoryTwoData" :key="d.value">{{d.text}}</a-select-option>
+                </a-select>
+              </a-form-item>
+            </a-col>
+            <a-col :md="6" :sm="8">
+              <a-form-item label="产品组别" :labelCol="labelCol" :wrapperCol="wrapperCol">
+                <a-select
+                  showSearch
+                  :groupId="groupValue"
+                  placeholder="请选择产品组别"
+                  :defaultActiveFirstOption="false"
+                  :allowClear="true"
+                  :showArrow="true"
+                  :filterOption="false"
+                  @search="groupHandleSearch"
+                  @change="groupHandleChange"
+                  @focus="groupHandleSearch"
+                  :notFoundContent="notFoundContent"
+                  v-model="queryParam.groupId"
+                >
+                  <a-select-option v-for="d in groupData" :key="d.value">{{d.text}}</a-select-option>
+                </a-select>
+              </a-form-item>
+            </a-col>
+            <a-col :md="6" :sm="8">
+              <a-form-item label="状态">
+                <j-dict-select-tag-expand v-model="queryParam.status" dictCode="disable_enable_status" placeholder="请选择状态"/>
               </a-form-item>
             </a-col>
           </template>
@@ -116,7 +181,9 @@
       <a-dropdown v-if="selectedRowKeys.length > 0">
         <a-menu slot="overlay">
           <a-menu-item key="1" @click="batchDel"><a-icon type="delete"/>删除</a-menu-item>
-          <a-menu-item key="2" @click="handleChargeCode"><a-icon type="edit"/>批量修改产品收费代码</a-menu-item>
+          <a-menu-item key="2" @click="batchDisable('1')"><a-icon type="lock" />停用</a-menu-item>
+          <a-menu-item key="3" @click="batchDisable('0')"><a-icon type="unlock" />启用</a-menu-item>
+          <a-menu-item key="4" @click="handleChargeCode"><a-icon type="edit"/>批量修改产品收费代码</a-menu-item>
         </a-menu>
         <a-button style="margin-left: 8px"> 批量操作 <a-icon type="down" /></a-button>
       </a-dropdown>
@@ -138,11 +205,15 @@
         :dataSource="dataSource"
         :pagination="ipagination"
         :loading="loading"
+        :scroll="tableScroll"
         :rowClassName="setdataCss"
         :customRow="onClickRow"
-        :rowSelection="{fixed:false,selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
-        
+        :rowSelection="{fixed:true,selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
         @change="handleTableChange">
+
+        <template slot="ellipsisText" slot-scope="text">
+          <j-ellipsis :value="text" :length="textMaxLength"></j-ellipsis>
+        </template>
 
         <template slot="htmlSlot" slot-scope="text">
           <div v-html="text"></div>
@@ -207,8 +278,11 @@
   import { JeecgListMixin } from '@/mixins/JeecgListMixin'
   import PdProductReagentsModal from './modules/PdProductReagentsModal'
   import {initDictOptions, filterMultiDictText} from '@/components/dict/JDictSelectUtil'
-  import { getAction } from  '@/api/manage'
+  import { getAction,postAction,httpAction } from  '@/api/manage'
   import JDictSelectTagExpand from "@/components/dict/JDictSelectTagExpand"
+  import { validateDuplicateValue } from '@/utils/util'
+  import JEllipsis from '@/components/jeecg/JEllipsis'
+  import pick from 'lodash.pick'
 
   let timeout;
   let currentValue;
@@ -241,16 +315,13 @@
     timeout = setTimeout(fake, 0);
   }
 
-  import { httpAction } from '@/api/manage'
-  import { validateDuplicateValue } from '@/utils/util'
-  import pick from 'lodash.pick'
-
   export default {
     name: "PdProductList",
     mixins:[JeecgListMixin],
     components: {
       PdProductReagentsModal,
-      JDictSelectTagExpand
+      JDictSelectTagExpand,
+      JEllipsis
     },
     data () {
       return {
@@ -260,9 +331,16 @@
         venderValue: undefined,
         supplierData: [],
         supplierValue: undefined,
+        groupData: [],
+        groupValue: undefined,
+        categoryOneData: [],
+        categoryOneValue: undefined,
+        categoryTwoData: [],
+        categoryTwoValue: undefined,
         chargeCodeVisible:false,
         confirmLoading: false,
         copyRecord:"",
+        textMaxLength:20,
         form: this.$form.createForm(this),
         model: {},
         labelCol: {
@@ -273,6 +351,7 @@
           xs: { span: 24 },
           sm: { span: 16 },
         },
+        tableScroll:{x :2400},
         validatorRules: {
           chargeCodeT: {rules: [
               {required: true, message: '请输入产品收费代码!'},
@@ -284,46 +363,66 @@
             title:'试剂编号',
             align:"center",
             width:120,
+            fixed: 'left',
             dataIndex: 'number'
           },
           {
             title:'试剂名称',
             align:"center",
+            width:220,
+            fixed: 'left',
+            scopedSlots: {customRender: "ellipsisText"},
             dataIndex: 'name'
           },
           {
             title:'规格',
             align:"center",
+            width:170,
+            scopedSlots: {customRender: "ellipsisText"},
             dataIndex: 'spec'
           },
           {
             title:'型号',
             align:"center",
+            width:120,
             dataIndex: 'version'
           },
           {
             title:'单位',
             align:"center",
+            width:50,
             dataIndex: 'unitName'
           },
           {
             title:'二级分类',
             align:"center",
+            width:150,
             dataIndex: 'categoryTwoName'
           },
           {
             title:'产品组别',
             align:"center",
+            width:100,
             dataIndex: 'groupName'
           },
           {
             title:'生产厂家',
             align:"center",
+            width:220,
+            scopedSlots: {customRender: "ellipsisText"},
             dataIndex: 'venderName'
+          },
+          {
+            title:'供应商',
+            align:"center",
+            width:220,
+            scopedSlots: {customRender: "ellipsisText"},
+            dataIndex: 'supplierName'
           },
           {
             title:'是否计费',
             align:"center",
+            width:50,
             dataIndex: 'isCharge',
             customRender:(text)=>{
               if(!text){
@@ -334,14 +433,35 @@
             }
           },
           {
-            title:'供应商',
+            title:'进价',
             align:"center",
-            dataIndex: 'supplierName'
+            width:90,
+            dataIndex: 'purchasePrice'
+          },
+          {
+            title:'出价',
+            align:"center",
+            width:90,
+            dataIndex: 'sellingPrice'
           },
           {
             title:'产品收费代码',
             align:"center",
+            width:110,
             dataIndex: 'chargeCode'
+          },
+          {
+            title:'状态',
+            align:"center",
+            width:50,
+            dataIndex: 'status',
+            customRender:(text)=>{
+              if(!text){
+                return ''
+              }else{
+                return filterMultiDictText(this.dictOptions['status'], text+"")
+              }
+            }
           },
           {
             title:'注册证',
@@ -352,6 +472,7 @@
             title: '操作',
             dataIndex: 'action',
             align:"center",
+            fixed: 'right',
             width:120,
             scopedSlots: { customRender: 'action' }
           }
@@ -364,10 +485,15 @@
           importExcelUrl: "pd/pdProduct/importExcelReagents",
           queryVender:"/pd/pdVender/getVenderList",
           querySupplier:"/pd/pdSupplier/getSupplierList",
+          queryGroup:"/pd/pdGroup/getGroupList",
+          queryCategoryOne:"/pd/pdCategory/getCategoryOneList?type=0",
+          queryCategoryTwo:"/pd/pdCategory/getCategoryOneList?type=1",
           editChargeCodeBatch:"/pd/pdProduct/editChargeCodeBatch",
+          batchDisable: "pd/pdProduct/batchDisable",
         },
         dictOptions:{
           isCharge:[],
+          status:[],
         },
       }
     },
@@ -389,6 +515,7 @@
         getAction(this.url.list, params).then((res) => {
           if (res.success) {
             this.dataSource = res.result.records;
+            this.ipagination.total = res.result.total;
           }
           this.loading = false;
         })
@@ -402,6 +529,11 @@
         initDictOptions('device_classification').then((res) => {
           if (res.success) {
             this.$set(this.dictOptions, 'deviceClassification', res.result)
+          }
+        }),
+        initDictOptions('disable_enable_status').then((res) => {
+          if (res.success) {
+            this.$set(this.dictOptions, 'status', res.result)
           }
         })
       },
@@ -422,6 +554,43 @@
         this.supplierValue = value;
         fetch(value, data => (this.supplierData = data),this.url.querySupplier);
       },
+      //供应商查询end
+      //组别查询start
+      groupHandleSearch(value) {
+        fetch(value, data => (this.groupData = data),this.url.queryGroup);
+      },
+      groupHandleChange(value) {
+        this.groupValue = value;
+        fetch(value, data => (this.groupData = data),this.url.queryGroup);
+      },
+      //组别查询end
+      //一级分类查询start
+      categoryOneHandleSearch(value) {
+        fetch(value, data => (this.categoryOneData = data),this.url.queryCategoryOne);
+      },
+      categoryOneHandleChange(value) {
+        this.categoryOneValue = value;
+        fetch(value, data => (this.categoryOneData = data),this.url.queryCategoryOne);
+        this.queryParam.categoryTwo="";
+      },
+      //一级分类查询end
+      //二级分类查询start
+      categoryTwoHandleSearch(value) {
+        let categoryOne = this.categoryOneValue;
+        if(!categoryOne){
+          categoryOne = "";
+        }
+        fetch(value, data => (this.categoryTwoData = data),this.url.queryCategoryTwo+"&parentId="+categoryOne);
+      },
+      categoryTwoHandleChange(value) {
+        let categoryOne = this.categoryOneValue;
+        if(!categoryOne){
+          categoryOne = "";
+        }
+        this.categoryTwoValue = value;
+        fetch(value, data => (this.categoryTwoData = data),this.url.queryCategoryTwo+"&parentId="+categoryOne);
+      },
+      //二级分类查询end
       //批量修改收费代码点击事件
       handleChargeCode(){
         this.form.resetFields();
@@ -552,7 +721,44 @@
             }
           }
         }
-      }
+      },
+      /**
+       * 批量启用或停用
+       * @param status
+       * @returns {boolean}
+       */
+      batchDisable(status) {
+        if (this.selectedRowKeys.length <= 0) {
+          this.$message.warning('请选择一条记录！');
+          return false;
+        } else {
+          let ids = "";
+          let that = this;
+          that.selectedRowKeys.forEach(function (val) {
+            ids += val + ",";
+          });
+          that.$confirm({
+            title: "确认操作",
+            content: "是否" + (status == 0 ? "启用" : "停用") + "选中产品?",
+            onOk: function () {
+              postAction(that.url.batchDisable, {ids: ids, status: status}).then((res) => {
+                if (res.success) {
+                  that.$message.success(res.message);
+                  that.loadData();
+                  that.onClearSelected();
+                } else {
+                  that.$message.warning(res.message);
+                }
+              });
+            }
+          });
+        }
+      },
+      //展开收起回显bug优化
+      handleToggleSearch(){
+        this.queryParam = {};
+        this.toggleSearchStatus = !this.toggleSearchStatus;
+      },
     }
   }
 </script>

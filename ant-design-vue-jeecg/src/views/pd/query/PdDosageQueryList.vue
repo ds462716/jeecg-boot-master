@@ -5,11 +5,11 @@
       <a-form layout="inline" @keyup.enter.native="searchQuery">
         <a-row :gutter="24">
           <a-col :span="6">
-            <a-form-item label="入库库房">
+            <a-form-item label="使用科室">
               <a-select
                 mode="multiple"
                 showSearch
-                placeholder="请选择入库库房"
+                placeholder="请选择使用科室"
                 :supplierId="departValue"
                 :defaultActiveFirstOption="false"
                 :showArrow="true"
@@ -30,11 +30,6 @@
             </a-form-item>
           </a-col>
           <a-col :md="6" :sm="8">
-            <a-form-item label="产品编号">
-              <a-input placeholder="请输入产品编号" v-model="queryParam.productNumber"></a-input>
-            </a-form-item>
-          </a-col>
-          <a-col :md="6" :sm="8">
             <a-form-item label="病人姓名">
               <a-input placeholder="请输入病人姓名" v-model="queryParam.patientInfo"></a-input>
             </a-form-item>
@@ -44,6 +39,48 @@
               <a-input placeholder="请输入住院号" v-model="queryParam.inHospitalNo"></a-input>
             </a-form-item>
           </a-col>
+          <a-col  :md="6" :sm="8">
+            <a-form-item label="使用日期">
+              <a-range-picker @change="dosageDateChange" v-model="queryParam.queryDate"/>
+            </a-form-item>
+          </a-col>
+          <template v-if="toggleSearchStatus">
+            <a-col :md="6" :sm="8">
+              <a-form-item label="产品编号">
+                <a-input placeholder="请输入产品编号" v-model="queryParam.productNumber"></a-input>
+              </a-form-item>
+            </a-col>
+            <a-col  :md="6" :sm="8">
+              <a-form-item label="收费状态">
+                <j-dict-select-tag-expand v-model="queryParam.hyCharged" dictCode="hy_charged"/>
+              </a-form-item>
+            </a-col>
+            <a-col  :md="6" :sm="8">
+              <a-form-item label="唯一码">
+                <a-input placeholder="请输入唯一码" v-model="queryParam.refBarCode"></a-input>
+              </a-form-item>
+            </a-col>
+            <a-col :md="6" :sm="8">
+              <a-form-item label="一级分类">
+                <a-select
+                  showSearch
+                  :categoryOne="categoryOneValue"
+                  placeholder="请选择一级分类"
+                  :defaultActiveFirstOption="false"
+                  :allowClear="true"
+                  :showArrow="true"
+                  :filterOption="false"
+                  @search="categoryOneHandleSearch"
+                  @change="categoryOneHandleChange"
+                  @focus="categoryOneHandleSearch"
+                  :notFoundContent="notFoundContent"
+                  v-model="queryParam.categoryOne"
+                >
+                  <a-select-option v-for="d in categoryOneData" :key="d.value">{{d.text}}</a-select-option>
+                </a-select>
+              </a-form-item>
+            </a-col>
+          </template>
           <a-col :md="6" :sm="8">
             <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
               <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
@@ -86,19 +123,25 @@
   import { JeecgListMixin} from '@/mixins/JeecgListMixin'
   import { httpAction,getAction,downFile } from '@/api/manage'
   import { filterObj } from '@/utils/util';
+  import {initDictOptions, filterMultiDictText} from '@/components/dict/JDictSelectUtil'
+  import JDictSelectTagExpand from "@/components/dict/JDictSelectTagExpand"
+
 
   export default {
     name: "PdDosageQueryList",
     mixins:[JeecgListMixin],
     components: {
+      JDictSelectTagExpand
     },
     data () {
       return {
         description: '用量明细查询',
-        tableScroll:{x :3500},
+        tableScroll:{x :3000},
         notFoundContent:"未找到内容",
         departValue: undefined,
         departList:[],
+        categoryOneData: [],
+        categoryOneValue: undefined,
         // 表头
         columns: [
           {
@@ -117,17 +160,17 @@
             dataIndex: 'dosageNo'
           },
           {
-            title:'用量库房',
+            title:'使用科室',
             align:"center",
             dataIndex: 'departName'
           },
-          {
+          /*{
             title:'货位',
             align:"center",
             dataIndex: 'outHuoweiName'
-          },
+          },*/
           {
-            title:'用量日期',
+            title:'使用日期',
             align:"center",
             dataIndex: 'dosageDate'
           },
@@ -136,10 +179,15 @@
             align:"center",
             dataIndex: 'productName'
           },
-          {
+          /*{
             title:'产品条码',
             align:"center",
             dataIndex: 'productBarCode'
+          },*/
+          {
+            title:'唯一码',
+            align:"center",
+            dataIndex: 'refBarCode'
           },
           {
             title:'规格',
@@ -171,6 +219,11 @@
             align:"center",
             dataIndex: 'unitName'
           },
+          {
+            title:'金额',
+            align:"center",
+            dataIndex: 'amountMoney'
+          },
           /*{
             title:'单价',
             align:"center",
@@ -186,16 +239,23 @@
             align:"center",
             dataIndex: 'venderName'
           },
-          /*{
-            title:'操作人',
+           {
+            title:'收费状态',
             align:"center",
-            dataIndex: 'stockNum'
-          },*/
-          {
+            dataIndex: 'hyCharged',
+             customRender:(text)=>{
+               if(!text){
+                 return ''
+               }else{
+                 return filterMultiDictText(this.dictOptions['hyCharged'], text+"")
+               }
+             }
+          },
+          /*{
             title:'执行科室',
             align:"center",
             dataIndex: 'exeDeptName'
-          },
+          },*/
           {
             title:'手术科室',
             align:"center",
@@ -229,6 +289,10 @@
           // departList:"/pd/pdDepart/getSysDepartList",
           departList: "/pd/pdDepart/queryListTree",
           exportXlsUrl: "/pd/pdDosage/exportXls",
+          queryCategoryOne:"/pd/pdCategory/getCategoryOneList?type=0",
+        },
+        dictOptions:{
+          hyCharged:[],
         },
       }
     },
@@ -238,6 +302,39 @@
       }
     },
     methods: {
+      dosageDateChange (value, dateString) {
+        this.queryParam.queryDateStart=dateString[0];
+        this.queryParam.queryDateEnd=dateString[1];
+      },
+
+      //一级分类查询start
+      categoryOneHandleSearch(value) {
+        this.getList(value,this.url.queryCategoryOne);
+      },
+      categoryOneHandleChange(value) {
+        this.categoryOneValue = value;
+        this.getList(value,this.url.queryCategoryOne);
+      },
+      getList(value,url){
+        getAction(url,{name:value}).then((res)=>{
+          if (!res.success) {
+            this.cmsFailed(res.message);
+          }
+          const result = res.result;
+          const data = [];
+          result.forEach(r => {
+            data.push({
+              value: r.id,
+              text: r.name,
+            });
+          });
+          this.categoryOneData = data;
+        })
+      },
+      //一级分类查询end
+
+
+
     // 部门下拉框搜索
       departHandleSearch(value){
         getAction(this.url.departList,{departName:value}).then((res)=>{
@@ -258,7 +355,47 @@
         param.pageNo = this.ipagination.current;
         param.pageSize = this.ipagination.pageSize;
         param.departIds = this.queryParam.departIds+"";
+        delete param.queryDate; //范围参数不传递后台，传后台会报错
         return filterObj(param);
+      },
+
+      /**重写导出方法**/
+      handleExportXls(fileName){
+        if(!fileName || typeof fileName != "string"){
+          fileName = "导出文件"
+        }
+        fileName = fileName + "_" + new Date().toLocaleString();
+        let param = this.getQueryParams();//查询条件
+        if(this.selectedRowKeys && this.selectedRowKeys.length>0){
+          param['selections'] = this.selectedRowKeys.join(",")
+        }
+        console.log("导出参数",param)
+        downFile(this.url.exportXlsUrl,param).then((data)=>{
+          if (!data) {
+            this.$message.warning("文件下载失败")
+            return
+          }
+          if (typeof window.navigator.msSaveBlob !== 'undefined') {
+            window.navigator.msSaveBlob(new Blob([data],{type: 'application/vnd.ms-excel'}), fileName+'.xls')
+          }else{
+            let url = window.URL.createObjectURL(new Blob([data],{type: 'application/vnd.ms-excel'}))
+            let link = document.createElement('a')
+            link.style.display = 'none'
+            link.href = url
+            link.setAttribute('download', fileName+'.xls')
+            document.body.appendChild(link)
+            link.click()
+            document.body.removeChild(link); //下载完成移除元素
+            window.URL.revokeObjectURL(url); //释放掉blob对象
+          }
+        })
+      },
+      initDictConfig(){ //静态字典值加载
+        initDictOptions('hy_charged').then((res) => {
+          if (res.success) {
+            this.$set(this.dictOptions, 'hyCharged', res.result)
+          }
+        })
       },
     }
   }

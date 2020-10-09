@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.external.mapper.HforcerRfidMapper">
+
+    <!-- 获取耗材柜rfid标签 -->
+    <select id="queryHforcerRfidList" resultType="java.util.Map">
+        SELECT
+        rfid.id AS "id",
+        rfid.rf_id AS "rfId",
+        rfid.forcer_id AS "forcerId",
+        rfid.forcer_number AS "forcerNumber"
+        from h_forcer_rfid rfid
+        <where>
+            1=1
+            <if test="forcerId != null and forcerId != ''">
+                AND rfid.forcer_id=#{forcerId}
+            </if>
+            <if test="forcerNumber != null and forcerNumber != ''">
+                AND rfid.forcer_number=#{forcerNumber}
+            </if>
+        </where>
+    </select>
+
+    <delete id="deleteByforcerId" parameterType="java.lang.String">
+		DELETE FROM h_forcer_rfid WHERE forcer_id = #{forcerId}
+	</delete>
+
+</mapper>

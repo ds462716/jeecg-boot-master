@@ -5,9 +5,9 @@
     <select id="queryList" resultType="org.jeecg.modules.pd.entity.PdPackage" parameterType="org.jeecg.modules.pd.entity.PdPackage">
         SELECT
         a.id,
-        a.code,
-        a.name,
-        a.sum,
+        a.package_code,
+        a.package_name,
+        a.package_sum,
         a.py,
         a.wb,
         a.zdy,
@@ -19,24 +19,26 @@
         a.del_flag,
         a.sys_org_code,
         a.depart_id,
-        a.depart_parent_id
+        a.depart_parent_id,
+        b.depart_name
         FROM pd_package a
+        left join sys_depart b on a.depart_id = b.id
         <where>
-            a.del_flag = #{DEL_FLAG_NORMAL}
-            <if test="name != null and name != ''">
-                AND ( a.name LIKE concat('%',#{name},'%')
-                or a.py LIKE concat('%',#{name},'%')
-                or a.wb LIKE concat('%',#{name},'%')
-                or a.zdy LIKE concat('%',#{name},'%') )
+            a.del_flag = #{entity.DEL_FLAG_NORMAL}
+            <if test="entity.packageName != null and entity.packageName != ''">
+                AND ( a.package_name LIKE concat('%',#{entity.packageName},'%')
+                or a.py LIKE concat('%',#{entity.packageName},'%')
+                or a.wb LIKE concat('%',#{entity.packageName},'%')
+                or a.zdy LIKE concat('%',#{entity.packageName},'%') )
             </if>
-            <if test="code != null and code != ''">
-                AND a.code LIKE concat('%',#{code},'%')
+            <if test="entity.packageCode != null and entity.packageCode != ''">
+                AND a.package_code LIKE concat('%',#{entity.packageCode},'%')
             </if>
-            <if test="departParentId != null and departParentId != ''">
-                AND a.depart_parent_id = #{departParentId}
+            <if test="entity.departParentId != null and entity.departParentId != ''">
+                AND a.depart_parent_id = #{entity.departParentId}
             </if>
-            <if test="departId != null and departId != ''">
-                AND a.depart_id = #{departId}
+            <if test="entity.departId != null and entity.departId != ''">
+                AND a.depart_id = #{entity.departId}
             </if>
         </where>
         ORDER BY a.update_time desc

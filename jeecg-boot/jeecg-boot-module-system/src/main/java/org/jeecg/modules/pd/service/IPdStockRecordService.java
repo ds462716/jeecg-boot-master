@@ -1,11 +1,13 @@
 package org.jeecg.modules.pd.service;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import org.jeecg.modules.pd.entity.PdStockRecordDetail;
-import org.jeecg.modules.pd.entity.PdStockRecord;
 import com.baomidou.mybatisplus.extension.service.IService;
+import org.jeecg.modules.pd.entity.*;
+
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -21,12 +23,12 @@ public interface IPdStockRecordService extends IService<PdStockRecord> {
 	 * 添加一对多
 	 *
 	 */
-	public void saveMain(PdStockRecord pdStockRecord, List<PdStockRecordDetail> pdStockRecordDetailList, String recordType) ;
+	public String saveMain(PdStockRecord pdStockRecord, List<PdStockRecordDetail> pdStockRecordDetailList, String recordType) ;
 
 	/**
 	 * 审核
 	 */
-	public void submit(PdStockRecord pdStockRecord, List<PdStockRecordDetail> pdStockRecordDetailList, String recordType) ;
+	public String submit(PdStockRecord pdStockRecord, List<PdStockRecordDetail> pdStockRecordDetailList, String recordType) ;
 
 	/**
 	 * 修改审核、提交状态
@@ -63,7 +65,7 @@ public interface IPdStockRecordService extends IService<PdStockRecord> {
 	 * @param pdStockRecord
 	 * @return
 	 */
-	Page<PdStockRecord> queryList(Page<PdStockRecord> pageList, PdStockRecord pdStockRecord,String recodeType);
+	IPage<PdStockRecord> queryList(Page<PdStockRecord> pageList, PdStockRecord pdStockRecord, String recodeType);
 
 	/**
 	 * 获取一条记录
@@ -92,11 +94,99 @@ public interface IPdStockRecordService extends IService<PdStockRecord> {
 	PdStockRecord initOutModal(String id);
 
 	/**
+	 * 初始化 库存初始化页面
+	 * @param id
+	 * @return
+	 */
+	PdStockRecord initInitModal(String id);
+
+	/**
+	 * 退货出库初始化页面
+	 * @param id
+	 * @return
+	 */
+	PdStockRecord initReturnModal(String id);
+
+	/**
 	 * 调入明细分页查询列表
 	 * @param pageList
 	 * @param pdStockRecord
 	 * @return
 	 */
 	Page<PdStockRecord> selectTransferList(Page<PdStockRecord> pageList, PdStockRecord pdStockRecord);
+
+
+	/**
+	 * 入库统计报表分页查询列表
+	 * @param pageList
+	 * @param pdStockRecord
+	 * @return
+	 */
+	Page<PdStockRecord> stockRecordReportQuery(Page<PdStockRecord> pageList, PdStockRecord pdStockRecord);
+
+	/**
+	 * 入库统计报表查询列表(不分页)
+	 * @param pdStockRecord
+	 * @return
+	 */
+	List<PdStockRecord> stockRecordReportQuery( PdStockRecord pdStockRecord);
+
+	/**
+	 * 入库统计报表 --根据产品按月统计入库金额
+	 * @param stockRecord
+	 * @return
+	 */
+	List<HashMap> queryRecordViewMoney(PdStockRecord stockRecord);
+	/**
+	 * 入库统计报表 --根据产品按月统计入库数量
+	 * @param stockRecord
+	 * @return
+	 */
+	List<HashMap> queryRecordViewCount(PdStockRecord stockRecord);
+	/**
+	 * 入库明细非分页--耗材柜接口查询用
+	 * @param pdStockRecord
+	 * @return
+	 */
+	public List<Map<String,Object>> findOutQueryList(PdStockRecord pdStockRecord);
+
+	/**
+	 * 获取开关
+	 * @return
+	 */
+	PdStockRecord getOnOff();
+
+	//供应商入库用量--分页
+	IPage<PdStockRecord> querySupplierCountPageList(Page<PdStockRecord> pageList, PdStockRecord pdStockRecord);
+    //供应商入库用量  不分页（导出用）
+	List<PdStockRecord> querySupplierCountList(PdStockRecord pdStockRecord);
+
+	/**
+	 * 盘盈入库
+	 * @param pdProductStockCheck
+	 * @return
+	 */
+	public String addInForStockCheck(PdProductStockCheck pdProductStockCheck, List<PdProductStockCheckChild> inChildList);
+
+	/**
+	 * 盘亏出库
+	 * @param pdProductStockCheck
+	 * @return
+	 */
+	public String addOutForStockCheck(PdProductStockCheck pdProductStockCheck, List<PdProductStockCheckChild> outChildList);
+
+	/**
+	 * 一体机终端出库接口
+	 * @param pdStockRecord
+	 * @return
+	 */
+	public String addOutForTerminal(PdStockRecord pdStockRecord, List<PdProductStock> stockList);
+
+	/**
+	 * 耗材柜出库接口
+	 * @param pdStockRecord
+	 * @return
+	 */
+	public String addOutForCabinet(PdStockRecord pdStockRecord);
 
 }

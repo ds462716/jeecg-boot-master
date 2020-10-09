@@ -1,5 +1,6 @@
 package org.jeecg.modules.pd.controller;
 
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -10,7 +11,10 @@ import org.jeecg.common.constant.PdConstant;
 import org.jeecg.common.system.base.controller.JeecgController;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.system.vo.LoginUser;
+import org.jeecg.common.util.oConvertUtils;
+import org.jeecg.modules.pd.entity.PdProduct;
 import org.jeecg.modules.pd.entity.PdSupplier;
+import org.jeecg.modules.pd.model.PdSupplierTreeModel;
 import org.jeecg.modules.pd.service.IPdSupplierService;
 import org.jeecg.modules.pd.util.FileUploadUtil;
 import org.jeecgframework.poi.excel.ExcelImportUtil;
@@ -28,6 +32,7 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -59,13 +64,10 @@ public class PdSupplierController extends JeecgController<PdSupplier, IPdSupplie
                                   @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
                                   @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
                                   HttpServletRequest req) {
-       Result<Page<PdSupplier>> result = new Result<>();
-       Page<PdSupplier> pageList = new Page<>(pageNo,pageSize);
+       Page<PdSupplier> page = new Page<>(pageNo,pageSize);
        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
        pdSupplier.setDepartParentId(sysUser.getDepartParentId());
-       pageList =pdSupplierService.selectList(pageList,pdSupplier);
-       result.setSuccess(true);
-       result.setResult(pageList);
+       IPage<PdSupplier> pageList =pdSupplierService.selectList(page,pdSupplier);
        return Result.ok(pageList);
    }
 
@@ -81,6 +83,7 @@ public class PdSupplierController extends JeecgController<PdSupplier, IPdSupplie
         try {
             LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
             pdSupplier.setDepartParentId(sysUser.getDepartParentId());
+            pdSupplier.setStatus(PdConstant.DISABLE_ENABLE_STATUS_0);//只查启用
             List<PdSupplier> list = pdSupplierService.selectList(pdSupplier);
             result.setResult(list);
             result.setSuccess(true);
@@ -88,6 +91,23 @@ public class PdSupplierController extends JeecgController<PdSupplier, IPdSupplie
             log.error(e.getMessage(), e);
         }
         log.info("======获取产品数据=====耗时:" + (System.currentTimeMillis() - start) + "毫秒");
+        return result;
+    }
+
+    /**
+     * 查询供应商以树节点的形式展示
+     * @return
+     */
+    @RequestMapping(value = "/queryTreeList", method = RequestMethod.GET)
+    public Result<List<PdSupplierTreeModel>> queryTreeList(PdSupplier pdSupplier) {
+        Result<List<PdSupplierTreeModel>> result = new Result<>();
+        try {
+            List<PdSupplierTreeModel> list = pdSupplierService.queryTreeList(pdSupplier);
+            result.setResult(list);
+            result.setSuccess(true);
+        } catch (Exception e) {
+            log.error(e.getMessage(),e);
+        }
         return result;
     }
 
@@ -409,5 +429,38 @@ public class PdSupplierController extends JeecgController<PdSupplier, IPdSupplie
        Result<Object> resul = pdSupplierService.importExcel(fileMap);
        return resul;
    }
+
+    /**
+     * 批量停用和启用status 0启用1停用
+     * @param jsonObject
+     * @return
+     */
+    @RequestMapping(value = "/batchDisable", method = RequestMethod.POST)
+    public Result<PdSupplier> batchDisable(@RequestBody JSONObject jsonObject) {
+        Result<PdSupplier> result = new Result<PdSupplier>();
+        try {
+            String ids = jsonObject.getString("ids");
+            String status = jsonObject.getString("status");
+            String[] arr = ids.split(",");
+            List<PdSupplier> pdSuppliers= new ArrayList<>();
+            for (String id : arr) {
+                if(oConvertUtils.isNotEmpty(id)) {
+                    PdSupplier pdSupplier = new PdSupplier();
+                    pdSupplier.setId(id);
+                    pdSupplier.setStatus(status);
+                    pdSuppliers.add(pdSupplier);
+                }
+            }
+            if(pdSuppliers!=null && pdSuppliers.size()>0){
+                pdSupplierService.updateBatchById(pdSuppliers);
+            }
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            result.error500("操作失败"+e.getMessage());
+        }
+        result.success("操作成功!");
+        return result;
+
+    }
 
 }

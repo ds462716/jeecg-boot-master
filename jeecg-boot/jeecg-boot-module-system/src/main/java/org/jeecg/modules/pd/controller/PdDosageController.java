@@ -1,51 +1,39 @@
 package org.jeecg.modules.pd.controller;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
+import com.alibaba.fastjson.JSON;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
+import org.jeecg.common.aspect.annotation.AutoLog;
 import org.jeecg.common.constant.PdConstant;
-import org.jeecg.common.system.query.QueryGenerator;
+import org.jeecg.common.system.base.controller.JeecgController;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.pd.entity.PdDosage;
-import org.jeecg.modules.pd.entity.PdDosageDetail;
 import org.jeecg.modules.pd.service.IPdDepartService;
 import org.jeecg.modules.pd.service.IPdDosageService;
-
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import lombok.extern.slf4j.Slf4j;
-
 import org.jeecg.modules.pd.vo.PdDosagePage;
+import org.jeecg.modules.pd.vo.PdDosagePageExcel;
 import org.jeecg.modules.system.entity.SysDepart;
-import org.jeecgframework.poi.excel.ExcelImportUtil;
 import org.jeecgframework.poi.excel.def.NormalExcelConstants;
 import org.jeecgframework.poi.excel.entity.ExportParams;
-import org.jeecgframework.poi.excel.entity.ImportParams;
 import org.jeecgframework.poi.excel.view.JeecgEntityExcelView;
-import org.jeecg.common.system.base.controller.JeecgController;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
-import com.alibaba.fastjson.JSON;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import org.jeecg.common.aspect.annotation.AutoLog;
 
- /**
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+/**
  * @Description: 用量表
  * @Author: zxh
  * @Date:   2020-03-13
@@ -60,6 +48,7 @@ public class PdDosageController extends JeecgController<PdDosage, IPdDosageServi
 	private IPdDosageService pdDosageService;
 	@Autowired
 	private IPdDepartService pdDepartService;
+
 	
 	/**
 	 * 分页列表查询
@@ -79,10 +68,30 @@ public class PdDosageController extends JeecgController<PdDosage, IPdDosageServi
 								   HttpServletRequest req) {
 		Page<PdDosage> page = new Page<PdDosage>(pageNo, pageSize);
 		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+
+
+
+		if(oConvertUtils.isNotEmpty(pdDosage.getDepartIds()) && !"undefined".equals(pdDosage.getDepartIds())) {
+			pdDosage.setDepartIdList(Arrays.asList(pdDosage.getDepartIds().split(",")));
+		}else{
+			//查询科室下所有下级科室的ID
+			SysDepart sysDepart=new SysDepart();
+			List<String> departList=pdDepartService.selectListDepart(sysDepart);
+			pdDosage.setDepartIdList(departList);
+		}
+		//pdProductStockCheck.setDepartParentId(sysUser.getDepartParentId());
+		//pdProductStockCheck.setDepartId(sysUser.getCurrentDepartId());
+
+
 		pdDosage.setDepartParentId(sysUser.getDepartParentId());
-		pdDosage.setDepartId(sysUser.getCurrentDepartId());
+		//pdDosage.setDepartId(sysUser.getCurrentDepartId());
 		IPage<PdDosage> pageList = pdDosageService.queryList(page, pdDosage);
-		return Result.ok(pageList);
+
+		Map<String,Object> map = new HashMap<>();
+		map.put("hospitalCode",sysUser.getHospitalCode());
+		map.put("pageList",pageList);
+
+		return Result.ok(map);
 	}
 	
 	/**
@@ -121,7 +130,9 @@ public class PdDosageController extends JeecgController<PdDosage, IPdDosageServi
 	  */
 	 @GetMapping(value = "/initModal")
 	 public Result<?> initModal(@RequestParam(name = "id") String id, HttpServletRequest req) {
+		 LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
 		 PdDosage pdDosage = pdDosageService.initModal(id);
+		 pdDosage.setHospitalCode(sysUser.getHospitalCode());
 		 return Result.ok(pdDosage);
 	 }
 
@@ -151,7 +162,7 @@ public class PdDosageController extends JeecgController<PdDosage, IPdDosageServi
 			 List<String> departList=pdDepartService.selectListDepart(sysDepart);
 			 pdDosage.setDepartIdList(departList);
 		 }
-
+		 pdDosage.setHyChargedList(Arrays.asList("0,1".split(",")));
 		 page = pdDosageService.queryPdDosageList(page, pdDosage);
 		 return Result.ok(page);
 	 }
@@ -178,7 +189,7 @@ public class PdDosageController extends JeecgController<PdDosage, IPdDosageServi
 	 public Result<?> dosageReturned(@RequestBody PdDosage pdDosage) {
 		 //不收费
 		 pdDosageService.dosageReturned(pdDosage);
-		 return Result.ok("添加成功！");
+		 return Result.ok("退回成功！");
 	 }
 
 	/**
@@ -245,14 +256,21 @@ public class PdDosageController extends JeecgController<PdDosage, IPdDosageServi
 			List<String> departList=pdDepartService.selectListDepart(sysDepart);
 			pdDosage.setDepartIdList(departList);
 		}
+		pdDosage.setHyChargedList(Arrays.asList("0,1".split(",")));
 		List<PdDosage> detailList = pdDosageService.queryPdDosageList(pdDosage);
-		List<PdDosagePage> exportList = JSON.parseArray(JSON.toJSONString(detailList), PdDosagePage.class);
 		// Step.4 AutoPoi 导出Excel
 		ModelAndView mv = new ModelAndView(new JeecgEntityExcelView());
 		mv.addObject(NormalExcelConstants.FILE_NAME, "用量");
-		mv.addObject(NormalExcelConstants.CLASS, PdDosagePage.class);
 		mv.addObject(NormalExcelConstants.PARAMS, new ExportParams("用量数据", "导出人:" + sysUser.getRealname(), "用量表"));
-		mv.addObject(NormalExcelConstants.DATA_LIST, exportList);
+       if(sysUser.getHospitalCode().equals("GZSLYY")){
+		   List<PdDosagePageExcel> gzslExportList = JSON.parseArray(JSON.toJSONString(detailList), PdDosagePageExcel.class);
+		   mv.addObject(NormalExcelConstants.CLASS, PdDosagePageExcel.class);
+		   mv.addObject(NormalExcelConstants.DATA_LIST, gzslExportList);
+	   }else{
+		   List<PdDosagePage> exportList = JSON.parseArray(JSON.toJSONString(detailList), PdDosagePage.class);
+		   mv.addObject(NormalExcelConstants.CLASS, PdDosagePage.class);
+		   mv.addObject(NormalExcelConstants.DATA_LIST, exportList);
+	   }
 		return mv;
     }
 

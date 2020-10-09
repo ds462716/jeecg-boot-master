@@ -74,4 +74,8 @@ public class PdUnit  extends BaseEntity {
 	@TableField(strategy = FieldStrategy.NOT_EMPTY)
 	private String departParentId;
 
+	/**
+	 * 停用或启用0启用，1停用
+	 */
+	private String status;
 }

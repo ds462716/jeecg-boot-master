@@ -1,19 +1,17 @@
 package org.jeecg.modules.pd.service.impl;
 
-import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import org.jeecg.modules.pd.entity.PdPurchaseOrder;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.jeecg.modules.pd.entity.PdStockRecord;
 import org.jeecg.modules.pd.entity.PdStockRecordDetail;
 import org.jeecg.modules.pd.mapper.PdStockRecordDetailMapper;
 import org.jeecg.modules.pd.service.IPdStockRecordDetailService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
-
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * @Description: 出入库明细表
@@ -35,17 +33,6 @@ public class PdStockRecordDetailServiceImpl extends ServiceImpl<PdStockRecordDet
 
 	/**
 	 * 分页查询列表
-	 * @param page
-	 * @param pdStockRecordDetail
-	 * @return
-	 */
-	@Override
-	public Page<PdStockRecordDetail> selectList(Page<PdStockRecordDetail> page, PdStockRecordDetail pdStockRecordDetail) {
-		return page.setRecords(pdStockRecordDetailMapper.selectList(pdStockRecordDetail));
-	}
-
-	/**
-	 * 查询列表
 	 * @param pdStockRecordDetail
 	 * @return
 	 */
@@ -53,6 +40,39 @@ public class PdStockRecordDetailServiceImpl extends ServiceImpl<PdStockRecordDet
 	public List<PdStockRecordDetail> selectList(PdStockRecordDetail pdStockRecordDetail) {
 		return pdStockRecordDetailMapper.selectList(pdStockRecordDetail);
 	}
+	@Override
+	public IPage<PdStockRecordDetail> selectList(Page<PdStockRecordDetail> pageList, PdStockRecordDetail pdStockRecordDetail) {
+		return pdStockRecordDetailMapper.selectList(pageList, pdStockRecordDetail);
+	}
+
+	/**
+	 * 查询入库单明细
+	 * @param pdStockRecordDetail
+	 * @return
+	 */
+	@Override
+	public List<PdStockRecordDetail> selectInList(PdStockRecordDetail pdStockRecordDetail) {
+		return pdStockRecordDetailMapper.selectInList(pdStockRecordDetail);
+	}
+	@Override
+	public IPage<PdStockRecordDetail> selectInList(Page<PdStockRecordDetail> pageList, PdStockRecordDetail pdStockRecordDetail) {
+		return pdStockRecordDetailMapper.selectInList(pageList, pdStockRecordDetail);
+	}
+
+	/**
+	 * 查询出库单明细
+	 * @param pdStockRecordDetail
+	 * @return
+	 */
+	@Override
+	public List<PdStockRecordDetail> selectOutList(PdStockRecordDetail pdStockRecordDetail) {
+		return pdStockRecordDetailMapper.selectOutList( pdStockRecordDetail);
+	}
+	@Override
+	public IPage<PdStockRecordDetail> selectOutList(Page<PdStockRecordDetail> pageList, PdStockRecordDetail pdStockRecordDetail) {
+		return pdStockRecordDetailMapper.selectOutList(pageList, pdStockRecordDetail);
+	}
+
 
 	/**
 	 * 查询明细
@@ -68,4 +88,48 @@ public class PdStockRecordDetailServiceImpl extends ServiceImpl<PdStockRecordDet
 	public Map<String, Object> queryStockRecordCount(PdStockRecordDetail detail) {
 		return pdStockRecordDetailMapper.queryStockRecordCount(detail);
 	}
+
+	@Override
+	public List<PdStockRecordDetail> selectListForRefBarCodeCheck(PdStockRecordDetail pdStockRecordDetail) {
+		return pdStockRecordDetailMapper.selectListForRefBarCodeCheck(pdStockRecordDetail);
+	}
+
+	@Override
+	public List<PdStockRecordDetail> chooseStockRecordDetailList(PdStockRecord pdStockRecord) {
+		return pdStockRecordDetailMapper.chooseStockRecordDetailList(pdStockRecord);
+	}
+
+	/**
+	 * 分页查询列表  库存管理  查询出入库明细
+	 * @param page
+	 * @param pdStockRecordDetail
+	 * @return
+	 */
+	@Override
+	public IPage<PdStockRecordDetail> selectStockRecordListPage(Page<PdStockRecordDetail> page, PdStockRecordDetail pdStockRecordDetail) {
+		return pdStockRecordDetailMapper.selectStockRecordList(page, pdStockRecordDetail);
+	}
+
+	@Override
+	public List<PdStockRecordDetail> selectStockRecordList( PdStockRecordDetail pdStockRecordDetail) {
+		return pdStockRecordDetailMapper.selectStockRecordList(pdStockRecordDetail);
+	}
+
+
+	/**
+	 * 用于市立医院供应室查询出库明细
+	 * @param page
+	 * @param pdStockRecordDetail
+	 * @return
+	 */
+	@Override
+	public IPage<PdStockRecordDetail> selectGZSLRecordDetailPage(Page<PdStockRecordDetail> page, PdStockRecordDetail pdStockRecordDetail) {
+		return pdStockRecordDetailMapper.selectGZSLRecordDetailList(page, pdStockRecordDetail);
+	}
+
+	@Override
+	public List<PdStockRecordDetail> selectGZSLRecordDetailList( PdStockRecordDetail pdStockRecordDetail) {
+		return pdStockRecordDetailMapper.selectGZSLRecordDetailList(pdStockRecordDetail);
+	}
+
 }

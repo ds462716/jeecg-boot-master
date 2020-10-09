@@ -16,4 +16,5 @@ public interface PdOnOffMapper extends BaseMapper<PdOnOff> {
 
     PdOnOff getOne(PdOnOff pdOnOff);
 
+    List<PdOnOff> selectOriginalList(PdOnOff pdOnOff);
 }

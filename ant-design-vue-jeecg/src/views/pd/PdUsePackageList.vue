@@ -4,24 +4,77 @@
     <div class="table-page-search-wrapper">
       <a-form layout="inline" @keyup.enter.native="searchQuery">
         <a-row :gutter="24">
-          <a-col :md="6" :sm="8">
-            <a-form-item label="定数包编号">
-              <a-input placeholder="请输入定数包编号" v-model="queryParam.code"></a-input>
+          <a-col :span="6">
+            <a-form-item label="检验科室">
+              <!--<a-select
+                mode="multiple"
+                showSearch
+                :departId="departValue"
+                :defaultActiveFirstOption="false"
+                :allowClear="true"
+                :showArrow="true"
+                :filterOption="false"
+                @search="departHandleSearch"
+                @focus="departHandleSearch"
+                :notFoundContent="notFoundContent"
+                v-model="queryParam.departIds"
+                placeholder="请选择科室"
+              >
+                <a-select-option v-for="d in departData" :key="d.id">{{d.departName}}</a-select-option>
+              </a-select>-->
+              <a-select
+                showSearch
+                :departId="departValue"
+                :defaultActiveFirstOption="false"
+                :allowClear="true"
+                :showArrow="true"
+                :filterOption="false"
+                @search="departHandleSearch"
+                @focus="departHandleSearch"
+                :notFoundContent="notFoundContent"
+                v-model="queryParam.testDepartId"
+                placeholder="请选择科室"
+              >
+                <a-select-option v-for="d in departData" :key="d.id">{{d.departName}}</a-select-option>
+              </a-select>
             </a-form-item>
           </a-col>
           <a-col :md="6" :sm="8">
-            <a-form-item label="定数包名称">
-              <a-input placeholder="定数包名称\拼音码\五笔码\自定义码" v-model="queryParam.name"></a-input>
+            <a-form-item label="检验项目编号">
+              <a-input placeholder="请输入检验项目编号" v-model="queryParam.code"></a-input>
             </a-form-item>
           </a-col>
+          <a-col :md="6" :sm="8">
+            <a-form-item label="检验项目名称">
+              <a-input placeholder="检验项目名称\拼音码\五笔码\自定义码" v-model="queryParam.name"></a-input>
+            </a-form-item>
+          </a-col>
+          <a-col :md="6" :sm="8">
+            <a-form-item label="扣减类型">
+              <j-dict-select-tag-expand v-model="queryParam.deductuinType" dictCode="deductuin_type"/>
+            </a-form-item>
+          </a-col>
+
+          <template v-if="toggleSearchStatus">
+            <a-col :md="6" :sm="8">
+              <a-form-item label="产品名称">
+                <a-input placeholder="请输入名称\拼音码\五笔码\自定义码" v-model="queryParam.productName"></a-input>
+              </a-form-item>
+            </a-col>
+            <a-col :md="6" :sm="8">
+              <a-form-item label="产品编号">
+                <a-input placeholder="请输入编号" v-model="queryParam.number"></a-input>
+              </a-form-item>
+            </a-col>
+          </template>
           <a-col :md="6" :sm="8">
             <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
               <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
               <a-button type="primary" @click="searchReset" icon="reload" style="margin-left: 8px">重置</a-button>
-              <!--<a @click="handleToggleSearch" style="margin-left: 8px">-->
-                <!--{{ toggleSearchStatus ? '收起' : '展开' }}-->
-                <!--<a-icon :type="toggleSearchStatus ? 'up' : 'down'"/>-->
-              <!--</a>-->
+             <a @click="handleToggleSearch" style="margin-left: 8px">
+               {{ toggleSearchStatus ? '收起' : '展开' }}
+                <a-icon :type="toggleSearchStatus ? 'up' : 'down'"/>
+              </a>
             </span>
           </a-col>
 
@@ -33,7 +86,7 @@
     <!-- 操作按钮区域 -->
     <div class="table-operator">
       <a-button @click="handleAdd" type="primary" icon="plus">新增</a-button>
-      <!--<a-button type="primary" icon="download" @click="handleExportXls('定数包')">导出</a-button>-->
+      <!--<a-button type="primary" icon="download" @click="handleExportXls('套包')">导出</a-button>-->
       <!--<a-upload name="file" :showUploadList="false" :multiple="false" :headers="tokenHeader" :action="importExcelUrl" @change="handleImportExcel">-->
         <!--<a-button type="primary" icon="import">导入</a-button>-->
       <!--</a-upload>-->
@@ -61,6 +114,7 @@
         :dataSource="dataSource"
         :pagination="ipagination"
         :loading="loading"
+        :customRow="onClickRow"
         :rowSelection="{fixed:false,selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
         @change="handleTableChange">
 
@@ -86,7 +140,8 @@
 
         <span slot="action" slot-scope="text, record">
           <a @click="handleEdit(record)">编辑</a>
-
+          <a-divider type="vertical" />
+          <a @click="handleDetail(record)">查看</a>
           <a-divider type="vertical" />
           <a-dropdown>
             <a class="ant-dropdown-link">更多 <a-icon type="down" /></a>
@@ -111,19 +166,27 @@
 
   import { JeecgListMixin } from '@/mixins/JeecgListMixin'
   import PdUsePackageModal from './modules/PdUsePackageModal'
+  import {initDictOptions, filterMultiDictText} from '@/components/dict/JDictSelectUtil'
+  import { getAction } from '@/api/manage'
+  import { filterObj } from '@/utils/util'
+  import JDictSelectTagExpand from "@/components/dict/JDictSelectTagExpand"
 
   export default {
     name: "PdUsePackageList",
     mixins:[JeecgListMixin],
     components: {
-      PdUsePackageModal
+      PdUsePackageModal,
+      JDictSelectTagExpand
     },
     data () {
       return {
         description: '检验项目管理页面',
+        departData: [],
+        departValue: undefined,
+        notFoundContent:"未找到内容",
         // 表头
         columns: [
-          {
+          /*{
             title: '#',
             dataIndex: '',
             key:'rowIndex',
@@ -132,7 +195,7 @@
             customRender:function (t,r,index) {
               return parseInt(index)+1;
             }
-          },
+          },*/
           {
             title:'检验项目编号',
             align:"center",
@@ -142,6 +205,23 @@
             title:'检验项目名称',
             align:"center",
             dataIndex: 'name'
+          },
+          {
+            title:'检验科室',
+            align:"center",
+            dataIndex: 'testDepartNames'
+          },
+          {
+            title:'扣减类型',
+            align:"center",
+            dataIndex: 'deductuinType',
+            customRender:(text)=>{
+              if(!text){
+                return ''
+              }else{
+                return filterMultiDictText(this.dictOptions['deductuinType'], text+"")
+              }
+            }
           },
           /*{
             title:'产品总数',
@@ -158,16 +238,16 @@
             align:"center",
             dataIndex: 'wb'
           },
-          {
+         /* {
             title:'自定义码',
             align:"center",
             dataIndex: 'zdy'
-          },
-          // {
-          //   title:'父机构',
-          //   align:"center",
-          //   dataIndex: 'departParentId'
-          // },
+          },*/
+            {
+             title:'备注',
+              align:"center",
+             dataIndex: 'remarks'
+            },
           {
             title: '操作',
             dataIndex: 'action',
@@ -181,9 +261,11 @@
           deleteBatch: "/pd/pdUsePackage/deleteBatch",
           exportXlsUrl: "/pd/pdUsePackage/exportXls",
           importExcelUrl: "pd/pdUsePackage/importExcel",
+          queryDepart: "/pd/pdDepart/queryListTree",
         },
         dictOptions:{
-        },
+          deductuinType:[],
+         },
 
       }
     },
@@ -193,7 +275,102 @@
       }
     },
     methods: {
+
+      loadData(arg) {
+        if(!this.url.list){
+          this.$message.error("请设置url.list属性!")
+          return
+        }
+        //加载数据 若传入参数1则加载第一页的内容
+        if (arg === 1) {
+          this.ipagination.current = 1;
+        }
+        var params = this.getQueryParams();//查询条件
+        this.loading = true;
+        getAction(this.url.list, params).then((res) => {
+          if (res.success) {
+            this.dataSource = res.result.records;
+            this.ipagination.total = res.result.total;
+            //解决新增页面初始化的问题
+            this.$refs.modalForm.departHandleSearch("");
+          }
+          if(res.code===510){
+            this.$message.warning(res.message)
+          }
+          this.loading = false;
+        })
+      },
+
+
+      getQueryParams() {
+        //获取查询条件
+        let sqp = {}
+        if(this.superQueryParams){
+          sqp['superQueryParams']=encodeURI(this.superQueryParams)
+        }
+        var param = Object.assign(sqp, this.queryParam, this.isorter ,this.filters);
+        param.field = this.getQueryField();
+        param.pageNo = this.ipagination.current;
+        param.pageSize = this.ipagination.pageSize;
+        param.testDepartId = this.queryParam.testDepartId;
+        return filterObj(param);
+      },
+
+
+
+
+      //科室查询start
+      departHandleSearch(value) {
+        getAction(this.url.queryDepart,{departName:value}).then((res)=>{
+          if (!res.success) {
+            this.cmsFailed(res.message);
+          }
+          this.departData = res.result;
+        })
+      },
+      //科室查询end
+
+
       initDictConfig(){
+        initDictOptions('deductuin_type').then((res) => {
+          if (res.success) {
+            this.$set(this.dictOptions, 'deductuinType', res.result)
+          }
+        })
+      },
+      /**
+       * 点击行选中checkbox
+       * @param record
+       * @returns {{on: {click: on.click}}}
+       */
+      onClickRow(record) {
+        return {
+          on: {
+            click: (e) => {
+              //点击操作那一行不选中表格的checkbox
+              let pathArray = e.path;
+              //获取当前点击的是第几列
+              let td = pathArray[0];
+              let cellIndex = td.cellIndex;
+              //获取tr
+              let tr = pathArray[1];
+              //获取一共多少列
+              let lie = tr.childElementCount;
+              if(lie && cellIndex){
+                if(parseInt(lie)-parseInt(cellIndex)!=1){
+                  //操作那一行
+                  let recordId = record.id;
+                  let index = this.selectedRowKeys.indexOf(recordId);
+                  if(index>=0){
+                    this.selectedRowKeys.splice(index, 1);
+                  }else{
+                    this.selectedRowKeys.push(recordId);
+                  }
+                }
+              }
+            }
+          }
+        }
       }
        
     }

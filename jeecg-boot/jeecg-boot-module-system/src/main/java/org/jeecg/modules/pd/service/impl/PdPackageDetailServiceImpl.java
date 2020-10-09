@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 /**
- * @Description: 定数包明细
+ * @Description: 套包明细
  * @Author: jiangxz
  * @Date:   2020-02-02
  * @Version: V1.0

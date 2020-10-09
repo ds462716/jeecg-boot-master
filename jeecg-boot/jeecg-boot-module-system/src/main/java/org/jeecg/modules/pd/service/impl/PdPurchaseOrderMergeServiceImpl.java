@@ -2,6 +2,7 @@ package org.jeecg.modules.pd.service.impl;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.toolkit.ObjectUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.apache.commons.collections.CollectionUtils;
@@ -55,7 +56,7 @@ public class PdPurchaseOrderMergeServiceImpl extends ServiceImpl<PdPurchaseOrder
      */
     @Override
     public Page<PdPurchaseOrderMerge> selectList(Page<PdPurchaseOrderMerge> page, PdPurchaseOrderMerge purchaseOrderMerge) {
-        return page.setRecords(pdPurchaseOrderMergeMapper.selectList(purchaseOrderMerge));
+        return   pdPurchaseOrderMergeMapper.selectListByPage(page,purchaseOrderMerge);
     }
 
     @Override
@@ -142,6 +143,11 @@ public class PdPurchaseOrderMergeServiceImpl extends ServiceImpl<PdPurchaseOrder
                  orderMergeDetail.setOrderNo(str);
                  orderMergeDetail.setSupplierId(entity.getSupplierId());
                  orderCount+=entity.getOrderNum();
+                BigDecimal purchasePrice=entity.getPurchasePrice();
+                 if(ObjectUtils.isNotEmpty(purchasePrice)){
+                     orderMergeDetail.setPurchasePrice(purchasePrice);
+                     orderMergeDetail.setPrice(purchasePrice.multiply(new BigDecimal(entity.getOrderNum())));
+                 }
                  dao.insert(orderMergeDetail);
                //pdPurchaseOrderMergeDetailMapper.insert(orderMergeDetail);
              }

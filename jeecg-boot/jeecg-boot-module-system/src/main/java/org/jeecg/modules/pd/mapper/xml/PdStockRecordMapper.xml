@@ -24,7 +24,9 @@
         a.humidity,
         a.out_depart_id,
         a.in_depart_id,
+        a.in_other_depart_id,
         a.supplier_id,
+        a.distributor_id,
         a.audit_by,
         a.audit_date,
         a.audit_status,
@@ -40,97 +42,114 @@
         a.sys_org_code,
         a.depart_id,
         a.depart_parent_id,
-        a.format
+        a.format,
+        a.apply_by,
+        a.bar_code_type
 	</sql>
 
 
-
-    <select id="selectList" resultType="org.jeecg.modules.pd.entity.PdStockRecord" parameterType="org.jeecg.modules.pd.entity.PdStockRecord">
-      select
+    <select id="selectList" resultType="org.jeecg.modules.pd.entity.PdStockRecord"
+            parameterType="org.jeecg.modules.pd.entity.PdStockRecord">
+        select
         <include refid="PdStockRecordDetailColumns"/>,
         b.depart_name as inDepartName,
         c.depart_name as outDepartName,
+        c1.depart_name as inOtherDepartName,
         d.name as supplierName,
         e.realname as submitByName,
-        f.realname as auditByName
-      from
+        f.realname as auditByName,
+        g.name as distributorName
+        from
         pd_stock_record a
         left join sys_depart b on a.in_depart_id = b.id
         left join sys_depart c on a.out_depart_id = c.id
+        left join sys_depart c1 on a.in_other_depart_id = c1.id
         left join pd_supplier d on a.supplier_id = d.id
         left join sys_user e on a.submit_by = e.id
         left join sys_user f on a.audit_by = f.id
+        left join pd_distributor g on a.distributor_id = g.id
         <where>
-            a.del_flag = #{DEL_FLAG_NORMAL}
-            <if test="recordNo != null and recordNo != ''">
-                AND a.record_no LIKE concat('%',#{recordNo},'%')
+            a.del_flag = #{entity.DEL_FLAG_NORMAL}
+            <if test="entity.recordNo != null and entity.recordNo != ''">
+                AND a.record_no LIKE concat('%',#{entity.recordNo},'%')
             </if>
-            <if test="recordType != null and recordType != ''">
-                AND a.record_type = #{recordType}
+            <if test="entity.recordType != null and entity.recordType != ''">
+                AND a.record_type = #{entity.recordType}
             </if>
-            <if test="outType != null and outType != ''">
-                AND a.out_type = #{outType}
+            <if test="entity.outType != null and entity.outType != ''">
+                AND a.out_type = #{entity.outType}
             </if>
-            <if test="inType != null and inType != ''">
-                AND a.in_type = #{inType}
+            <if test="entity.onlyReturn != null and entity.onlyReturn != ''">
+                AND a.out_type = '4'
             </if>
-            <if test="auditStatus != null and auditStatus != ''">
-                AND a.audit_status = #{auditStatus}
+            <if test="entity.exceptReturn != null and entity.exceptReturn != ''">
+                AND a.out_type &lt;&gt; '4'
             </if>
-            <if test="orderNo != null and orderNo != ''">
-                AND a.order_no = #{orderNo}
+            <if test="entity.inType != null and entity.inType != ''">
+                AND a.in_type = #{entity.inType}
             </if>
-            <if test="mergeOrderNo != null and mergeOrderNo != ''">
-                AND a.merge_order_no = #{mergeOrderNo}
+            <if test="entity.auditStatus != null and entity.auditStatus != ''">
+                AND a.audit_status = #{entity.auditStatus}
             </if>
-            <if test="allocationNo != null and allocationNo != ''">
-                AND a.allocation_no = #{allocationNo}
+            <if test="entity.orderNo != null and entity.orderNo != ''">
+                AND a.order_no = #{entity.orderNo}
             </if>
-            <if test="applyNo != null and applyNo != ''">
-                AND a.apply_no = #{applyNo}
+            <if test="entity.mergeOrderNo != null and entity.mergeOrderNo != ''">
+                AND a.merge_order_no = #{entity.mergeOrderNo}
             </if>
-            <if test="dosagertNo != null and dosagertNo != ''">
-                AND a.dosagert_no = #{dosagertNo}
+            <if test="entity.allocationNo != null and entity.allocationNo != ''">
+                AND a.allocation_no = #{entity.allocationNo}
             </if>
-            <if test="submitBy != null and submitBy != ''">
-                AND a.submit_by = #{submitBy}
+            <if test="entity.applyNo != null and entity.applyNo != ''">
+                AND a.apply_no = #{entity.applyNo}
             </if>
-            <if test="submitStatus != null and submitStatus != ''">
-                AND a.submit_status = #{submitStatus}
+            <if test="entity.dosagertNo != null and entity.dosagertNo != ''">
+                AND a.dosagert_no = #{entity.dosagertNo}
             </if>
-            <if test="outDepartId != null and outDepartId != ''">
-                AND a.out_depart_id = #{outDepartId}
+            <if test="entity.submitBy != null and entity.submitBy != ''">
+                AND a.submit_by = #{entity.submitBy}
             </if>
-            <if test="inDepartId != null and inDepartId != ''">
-                AND a.in_depart_id = #{inDepartId}
+            <if test="entity.submitStatus != null and entity.submitStatus != ''">
+                AND a.submit_status = #{entity.submitStatus}
             </if>
-            <if test="supplierId != null and supplierId != ''">
-                AND a.supplier_id = #{supplierId}
+            <if test="entity.outDepartId != null and entity.outDepartId != ''">
+                AND a.out_depart_id = #{entity.outDepartId}
             </if>
-            <if test="departId != null and departId != ''">
-                AND a.depart_id = #{departId}
+            <if test="entity.inDepartId != null and entity.inDepartId != ''">
+                AND a.in_depart_id = #{entity.inDepartId}
             </if>
-            <if test="departParentId != null and departParentId != ''">
-                AND a.depart_parent_id = #{departParentId}
+            <if test="entity.supplierId != null and entity.supplierId != ''">
+                AND a.supplier_id = #{entity.supplierId}
             </if>
-            <if test="queryDateStart != null and queryDateStart != ''">
-                AND a.submit_date &gt;= #{queryDateStart}
+            <if test="entity.distributorId != null and entity.distributorId != ''">
+                AND a.distributor_id = #{entity.distributorId}
             </if>
-            <if test="queryDateEnd != null and queryDateEnd != ''">
-                AND a.submit_date &lt;= #{queryDateEnd}
+            <if test="entity.departId != null and entity.departId != ''">
+                AND a.depart_id = #{entity.departId}
+            </if>
+            <if test="entity.departParentId != null and entity.departParentId != ''">
+                AND a.depart_parent_id = #{entity.departParentId}
+            </if>
+            <if test="entity.queryDateStart != null and entity.queryDateStart != ''">
+                AND date_format( a.submit_date, '%Y-%m-%d') &gt;= #{entity.queryDateStart}
+            </if>
+            <if test="entity.queryDateEnd != null and entity.queryDateEnd != ''">
+                AND date_format( a.submit_date, '%Y-%m-%d') &lt;= #{entity.queryDateEnd}
             </if>
         </where>
         order by a.create_time desc
     </select>
 
-    <select id="getOne" resultType="org.jeecg.modules.pd.entity.PdStockRecord" parameterType="org.jeecg.modules.pd.entity.PdStockRecord">
+    <select id="getOne" resultType="org.jeecg.modules.pd.entity.PdStockRecord"
+            parameterType="org.jeecg.modules.pd.entity.PdStockRecord">
         select
         <include refid="PdStockRecordDetailColumns"/>,
         b.depart_name as inDepartName,
         c.depart_name as outDepartName,
         d.name as supplierName,
         e.realname as submitByName,
-        f.realname as auditByName
+        f.realname as auditByName,
+        g.name as distributorName
         from
         pd_stock_record a
         left join sys_depart b on a.in_depart_id = b.id
@@ -138,6 +157,7 @@
         left join pd_supplier d on a.supplier_id = d.id
         left join sys_user e on a.submit_by = e.id
         left join sys_user f on a.audit_by = f.id
+        left join pd_distributor g on a.distributor_id = g.id
         <where>
             a.del_flag = #{DEL_FLAG_NORMAL}
             <if test="id != null and id != ''">
@@ -150,8 +170,7 @@
     </select>
 
 
-
-     <!--统计查询   调入明细查询-->
+    <!--统计查询   调入明细查询-->
     <select id="selectTransferList" resultType="org.jeecg.modules.pd.entity.PdStockRecord">
         SELECT DISTINCT
         a.record_no as "recordNo",
@@ -162,21 +181,21 @@
         pp.number as "number",
         pp.spec as "spec",
         pp.version as "version",
+        srp.id as id,
         srp.product_bar_code as "productBarCode",
         srp.batch_no as "batchNo",
         srp.exp_date as "expDate",
         srp.product_num as "productNum",
         srp.remarks as "remarks",
         e.realname as "submitByName"
-       FROM pd_stock_record a
-       LEFT JOIN pd_stock_record_detail srp ON a.id = srp.record_id
-       LEFT JOIN pd_product pp ON srp.product_id = pp.id
-       LEFT JOIN pd_stock_record sr ON a.allocation_no = sr.allocation_no
-       LEFT JOIN sys_depart c ON a.out_depart_id = c.id
-       LEFT JOIN sys_depart d ON a.in_depart_id = d.id
-       LEFT JOIN sys_user e on a.submit_by = e.id
+        FROM pd_stock_record a
+        LEFT JOIN pd_stock_record_detail srp ON a.id = srp.record_id
+        LEFT JOIN pd_product pp ON srp.product_id = pp.id
+        LEFT JOIN sys_depart c ON a.out_depart_id = c.id
+        LEFT JOIN sys_depart d ON a.in_depart_id = d.id
+        LEFT JOIN sys_user e on a.submit_by = e.id
         <where>
-            a.del_flag = #{DEL_FLAG_NORMAL} AND a.id != sr.id
+            a.del_flag = #{DEL_FLAG_NORMAL}
             <if test="recordType != null and recordType != ''">
                 AND a.record_type = #{recordType}
             </if>
@@ -186,14 +205,98 @@
             <if test="auditStatus != null and auditStatus != ''">
                 AND a.audit_status = #{auditStatus}
             </if>
-            <if test="inType != null and inType != ''">
-                AND a.in_type = #{inType}
+            <if test="outType != null and outType != ''">
+                AND a.out_type = #{outType}
             </if>
             <if test="departParentId != null and departParentId != ''">
                 AND a.depart_parent_id = #{departParentId}
             </if>
             ORDER BY a.update_time DESC, a.submit_date DESC
         </where>
+    </select>
+
+
+    <!--统计查询   入库统计报表-->
+    <select id="stockRecordReportQuery" resultType="org.jeecg.modules.pd.entity.PdStockRecord">
+        select
+        b.id as "productId",
+        b.number as "number",
+        b.name as "productName",
+        b.biding_number as "bidingNumber",
+        b.spec as "spec",
+        case
+        when b.product_flag = '0' then "耗材"
+        when b.product_flag = '1' then "试剂"
+        end as "productFlagName",
+        sum(a.product_num) as "totalSum",
+        sum(a.purchase_price * a.product_num) as "inTotalPrice",
+        c.name as "venderName",
+        d.name as "supplierName",
+        e.name as "unitName",
+        g.name as "distributorName"
+        from pd_stock_record_detail a
+        left join pd_stock_record f on a.record_id=f.id and f.del_flag=#{entity.DEL_FLAG_NORMAL}
+        left join pd_product b on a.product_id=b.id
+        left join pd_vender c on b.vender_id=c.id
+        left join pd_supplier d on b.supplier_id=d.id
+        left join pd_unit e on b.unit_id=e.id
+        left join pd_distributor g on a.distributor_id = g.id
+        where a.del_flag=#{entity.DEL_FLAG_NORMAL}
+        and a.create_time > DATE_SUB(CURDATE(), INTERVAL 1 YEAR)
+        and substr(a.create_time,1,7) &lt;=substr(CURDATE(),1,7)
+        and f.in_type = '1'
+        <if test="entity.departParentId != null and entity.departParentId != ''">
+            AND f.depart_parent_id = #{entity.departParentId}
+        </if>
+        <if test="entity.inDepartId != null and entity.inDepartId != ''">
+            AND f.in_depart_id = #{entity.inDepartId}
+        </if>
+        <if test="entity.productName != null and entity.productName != ''">
+            AND (
+            b.number LIKE concat('%',#{entity.productName},'%')
+            or b.name LIKE concat('%',#{entity.productName},'%')
+            or b.py LIKE concat('%',#{entity.productName},'%')
+            or b.wb LIKE concat('%',#{entity.productName},'%')
+            or b.bname LIKE concat('%',#{entity.productName},'%')
+            or b.bpy LIKE concat('%',#{entity.productName},'%')
+            or b.bwb LIKE concat('%',#{entity.productName},'%')
+            or b.zdy LIKE concat('%',#{entity.productName},'%')
+            )
+        </if>
+        <if test="entity.number != null and entity.number != ''">
+            AND b.number LIKE concat('%',#{entity.number},'%')
+        </if>
+        <if test="entity.supplierId != null and entity.supplierId != ''">
+            AND a.supplier_id = #{entity.supplierId}
+        </if>
+        <if test="entity.distributorId != null and entity.distributorId != ''">
+            AND a.distributor_id = #{entity.distributorId}
+        </if>
+        <if test="entity.spec != null and entity.spec != ''">
+            AND b.spec LIKE concat('%',#{entity.spec},'%')
+        </if>
+        <if test="entity.productFlag != null and entity.productFlag != ''">
+            AND b.product_flag = #{entity.productFlag}
+        </if>
+        <if test="entity.venderId != null and entity.venderId != ''">
+            AND b.vender_id = #{entity.venderId}
+        </if>
+        <if test="entity.registration != null and entity.registration != ''">
+            AND b.registration LIKE concat('%',#{entity.registration},'%')
+        </if>
+        <if test="entity.recordType != null and entity.recordType != ''">
+            AND f.record_type = #{entity.recordType}
+        </if>
+        <if test="entity.auditStatus != null and entity.auditStatus != ''">
+            AND f.audit_status = #{entity.auditStatus}
+        </if>
+        <if test="entity.queryDateStart != null and entity.queryDateStart != ''">
+            AND DATE_FORMAT(a.create_time, '%Y-%m-%d') &gt;= #{entity.queryDateStart}
+        </if>
+        <if test="entity.queryDateEnd != null and entity.queryDateEnd != ''">
+            AND DATE_FORMAT(a.create_time, '%Y-%m-%d') &lt;= #{entity.queryDateEnd}
+        </if>
+        GROUP BY b.number
     </select>
 
     <delete id="deleteById" parameterType="java.lang.String">
@@ -212,4 +315,256 @@
 		where
 			 id = #{id}
 	</update>
+
+    <!-- 按月统计金额-->
+    <select id="queryRecordViewMoney" resultType="java.util.Map">
+        select
+        c.type as "type",
+        ROUND(sum(c.y),2) as "金额"
+        from(
+        SELECT DATE_FORMAT(x.Month, '%Y-%m') as "type" ,
+        "0" as "y"
+        FROM XNumber x
+        where x.Month > DATE_SUB(CURDATE(), INTERVAL 1 YEAR)
+        and substr(x.Month,1,7) &lt;=substr(CURDATE(),1,7)
+        UNION ALL
+        SELECT DATE_FORMAT(a.create_time, '%Y-%m') AS "type",
+        a.product_num * a.purchase_price AS "y"
+        FROM pd_stock_record_detail a
+        left join pd_stock_record b on a.record_id=b.id and b.del_flag='0'
+        where b.record_type ='1'
+        AND b.in_type ='1'
+        AND b.audit_status ='2'
+        AND a.create_time > DATE_SUB(CURDATE(), INTERVAL 1 YEAR)
+        AND substr(a.create_time,1,7) &lt;=substr(CURDATE(),1,7)
+        <if test="productId != null and productId != ''">
+            and a.product_id=#{productId}
+        </if>
+        <if test="departParentId != null and departParentId != ''">
+            AND b.depart_parent_id = #{departParentId}
+        </if>
+        <if test="inDepartId != null and inDepartId != ''">
+            AND b.in_depart_id = #{inDepartId}
+        </if>
+        <if test="queryDateStart != null and queryDateStart != ''">
+            AND DATE_FORMAT(a.create_time, '%Y-%m-%d') &gt;= #{queryDateStart}
+        </if>
+        <if test="queryDateEnd != null and queryDateEnd != ''">
+            AND DATE_FORMAT(a.create_time, '%Y-%m-%d') &lt;= #{queryDateEnd}
+        </if>
+        ) c
+        GROUP BY type;
+    </select>
+
+
+    <!-- 按月统计数量-->
+    <select id="queryRecordViewCount" resultType="java.util.Map">
+        select
+        c.type as "type",
+        ROUND(sum(c.y),2) as "数量"
+        from(
+        SELECT DATE_FORMAT(x.Month, '%Y-%m') as "type" ,
+        "0" as "y"
+        FROM XNumber x
+        where x.Month > DATE_SUB(CURDATE(), INTERVAL 1 YEAR)
+        and substr(x.Month,1,7)  &lt;=substr(CURDATE(),1,7)
+        UNION ALL
+        SELECT DATE_FORMAT(a.create_time, '%Y-%m') AS "type",a.product_num AS "y"
+        FROM pd_stock_record_detail a
+        left join pd_stock_record b on a.record_id=b.id and b.del_flag='0'
+        where
+        b.record_type ='1'
+        AND b.in_type ='1'
+        AND b.audit_status ='2'
+        AND a.create_time > DATE_SUB(CURDATE(), INTERVAL 1 YEAR)
+        AND substr(a.create_time,1,7)  &lt;=substr(CURDATE(),1,7)
+        <if test="productId != null and productId != ''">
+            and a.product_id=#{productId}
+        </if>
+        <if test="departParentId != null and departParentId != ''">
+            AND b.depart_parent_id = #{departParentId}
+        </if>
+        <if test="inDepartId != null and inDepartId != ''">
+            AND b.in_depart_id = #{inDepartId}
+        </if>
+        <if test="queryDateStart != null and queryDateStart != ''">
+            AND DATE_FORMAT(a.create_time, '%Y-%m-%d') &gt;= #{queryDateStart}
+        </if>
+        <if test="queryDateEnd != null and queryDateEnd != ''">
+            AND DATE_FORMAT(a.create_time, '%Y-%m-%d') &lt;= #{queryDateEnd}
+        </if>
+        ) c
+        GROUP BY type;
+    </select>
+
+
+    <!-- 统计入库查询    耗材柜接口查询用 -->
+    <select id="findOutQueryList" resultType="java.util.Map">
+        SELECT
+        a.id AS "id",
+        a.in_depart_id AS "kfId",
+        pp.id AS "productId",
+        pp.number AS "productNo",
+        pp.name AS "productName",
+        pp.spec AS "productSpec",
+        pp.version AS "productVersion",
+        tt.name AS "unit",
+        pp.product_flag AS "productType",
+        vd.name AS "venderName",
+        pp.purchase_price AS "pruPrice",
+        srp.product_num AS "stockNum",
+        srp.batch_no AS "batchNo",
+        srp.exp_date AS "validDate"
+        FROM pd_stock_record a
+        left join pd_stock_record_detail srp ON a.id = srp.record_id
+        left join pd_product pp on srp.product_id = pp.id
+        LEFT JOIN pd_vender vd on pp.vender_id = vd.id
+        LEFT JOIN pd_unit tt on tt.id=pp.unit_id
+        <where>
+            a.del_flag = #{DEL_FLAG_NORMAL}
+            <if test="departId != null and departId != ''">
+                AND a.in_depart_id = #{departId}
+            </if>
+            <if test="recordNo != null and recordNo != ''">
+                AND a.record_no = #{recordNo}
+            </if>
+            <if test="recordType != null and recordType != ''">
+                AND a.record_type = #{recordType}
+            </if>
+            <if test="auditStatus != null and auditStatus != ''">
+                AND a.audit_status = #{auditStatus}
+            </if>
+        </where>
+    </select>
+
+
+    <select id="querySupplierCountPageList" resultType="org.jeecg.modules.pd.entity.PdStockRecord"
+            parameterType="org.jeecg.modules.pd.entity.PdStockRecord">
+        select
+        d.id as "supplierId",
+        d.name as "supplierName",
+        c.id as "productId",
+        c.name as "productName",
+        c.number as "number",
+        c.product_flag as "productFlag",
+        case
+        when c.product_flag = '0' then "耗材"
+        when c.product_flag = '1' then "试剂"
+        end as "productFlagName",
+        c.spec as "spec",
+        c.biding_number as "bidingNumber",
+        c.category_one as "categoryOne",
+        c.registration as "registration",
+        f.name as "unitName",
+        a.purchase_price as "purchasePrice",
+        IFNULL(a.purchase_price * sum(product_num) ,0) as "inTotalPrice",
+        sum(product_num) as "productNum",
+        g.stock_num as "stockNum",
+        IFNULL(g.stock_num * a.purchase_price ,0) as "stockPrice",
+        e.name as "venderName"
+        from pd_stock_record_detail a
+        left join pd_stock_record b on a.record_id=b.id
+        left join pd_product c on c.id=a.product_id
+        left join pd_supplier d on d.id=a.supplier_id
+        left join pd_vender e on e.id=c.vender_id
+        left join pd_unit f on f.id=c.unit_id
+        left join pd_product_stock_total g on g.product_id=a.product_id
+        <if test="entity.departId != null and entity.departId != ''">
+            AND g.depart_id = #{entity.departId}
+        </if>
+        where 1=1
+        <if test="entity.inDepartId != null and entity.inDepartId != ''">
+            AND b.in_depart_id = #{entity.inDepartId}
+        </if>
+        <if test="entity.recordType != null and entity.recordType != ''">
+            AND b.record_type = #{entity.recordType}
+        </if>
+        <if test="entity.inType != null and entity.inType != ''">
+            AND b.in_type = #{entity.inType}
+        </if>
+        <if test="entity.auditStatus != null and entity.auditStatus != ''">
+            AND b.audit_status =#{entity.auditStatus}
+        </if>
+        <if test="entity.departParentId != null and entity.departParentId != ''">
+            AND b.depart_parent_id = #{entity.departParentId}
+        </if>
+        <if test="entity.auditStatus != null and entity.auditStatus != ''">
+            AND b.audit_status = #{entity.auditStatus}
+        </if>
+        <if test="entity.productName != null and entity.productName != ''">
+            AND (
+            c.number LIKE concat('%',#{entity.productName},'%')
+            or c.name LIKE concat('%',#{entity.productName},'%')
+            or c.py LIKE concat('%',#{entity.productName},'%')
+            or c.wb LIKE concat('%',#{entity.productName},'%')
+            or c.bname LIKE concat('%',#{entity.productName},'%')
+            or c.bpy LIKE concat('%',#{entity.productName},'%')
+            or c.bwb LIKE concat('%',#{entity.productName},'%')
+            or c.zdy LIKE concat('%',#{entity.productName},'%')
+            )
+        </if>
+        <if test="entity.number != null and entity.number != ''">
+            AND c.number LIKE concat('%',#{entity.number},'%')
+        </if>
+        <if test="entity.productFlag != null and entity.productFlag != ''">
+            AND c.product_flag =#{entity.productFlag}
+        </if>
+        <if test="entity.spec != null and entity.spec != ''">
+            AND c.spec LIKE concat('%',#{entity.spec},'%')
+        </if>
+        <if test="entity.registration != null and entity.registration != ''">
+            AND c.registration LIKE concat('%',#{entity.registration},'%')
+        </if>
+        <if test="entity.bidingNumber != null and entity.bidingNumber != ''">
+            AND c.biding_number LIKE concat('%',#{entity.bidingNumber},'%')
+        </if>
+        <if test="entity.supplierId != null and entity.supplierId != ''">
+            AND a.supplier_id =#{entity.supplierId}
+        </if>
+        <if test="entity.categoryOne != null and entity.categoryOne != ''">
+            AND c.category_one =#{entity.categoryOne}
+        </if>
+        <if test="entity.venderId != null and entity.venderId != ''">
+            AND c.vender_id =#{entity.venderId}
+        </if>
+        <if test="entity.queryDateStart != null and entity.queryDateStart != ''">
+            AND date_format( b.submit_date, '%Y-%m-%d') &gt;= #{entity.queryDateStart}
+        </if>
+        <if test="entity.queryDateEnd != null and entity.queryDateEnd != ''">
+            AND date_format( b.submit_date, '%Y-%m-%d') &lt;= #{entity.queryDateEnd}
+        </if>
+        GROUP BY a.supplier_id,c.id
+        order by d.id desc
+    </select>
+
+
+    <!--根据供应商及产品ID统计出库数量及金额-->
+    <select id="queryApplyPriceList" resultType="org.jeecg.modules.pd.entity.PdStockRecord"
+            parameterType="org.jeecg.modules.pd.entity.PdStockRecord">
+        select
+        sum(product_num) as "outProductNum",
+        IFNULL(sum(product_num) * purchase_price ,0) as "outTotalPrice"
+        from pd_stock_record_detail a
+        left join pd_stock_record b on a.record_id=b.id
+        where 1=1
+        <if test="outDepartId != null and outDepartId != ''">
+            AND b.out_depart_id = #{outDepartId}
+        </if>
+        <if test="recordType != null and recordType != ''">
+            AND b.record_type = #{recordType}
+        </if>
+        <if test="outType != null and outType != ''">
+            AND b.out_type = #{outType}
+        </if>
+        <if test="productId != null and productId != ''">
+            AND a.product_id = #{productId}
+        </if>
+        <if test="supplierId != null and supplierId != ''">
+            AND a.supplier_id = #{supplierId}
+        </if>
+        <if test="distributorId != null and distributorId != ''">
+            AND a.distributor_id = #{distributorId}
+        </if>
+    </select>
+
 </mapper>

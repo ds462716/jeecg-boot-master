@@ -14,6 +14,9 @@ public interface PdConstant {
 	/** 成功标志 add by jiangxz 20200310 */
 	public static final String SUCCESS_200 = "200";
 
+	public static final String SUCCESS_0 = "0"; //成功标识
+	public static final String FAIL_1 = "-1";    //失败标识
+
 	/** 编码规则  start */
 	//应用标识符类型 固定长度
 	public static final String  IDENTIFIER_TYPE_1= "1";
@@ -50,21 +53,28 @@ public interface PdConstant {
 	/** 出入库类型  add by jiangxz 20200219 **/
 	public static final String RECODE_TYPE_1 = "1"; //入库
 	public static final String RECODE_TYPE_2 = "2"; //出库
+	public static final String RECODE_TYPE_3 = "3"; //初始化库存
+	public static final String RECODE_TYPE_4 = "4"; //盘点出入库单
 
 	/**入库类型 add by jiangxz 20200214*/
 	public static final String IN_TYPE_1 = "1";//正常入库
 	public static final String IN_TYPE_2 = "2";//退货入库
 	public static final String IN_TYPE_3 = "3";//调拨入库
+	public static final String IN_TYPE_4 = "4";//盘盈入库
 
 	/**入库类型 add by jiangxz 20200302*/
 	public static final String OUT_TYPE_1 = "1";//正常出库
 	public static final String OUT_TYPE_2 = "2";//科室出库
 	public static final String OUT_TYPE_3 = "3";//调拨出库
+	public static final String OUT_TYPE_4 = "4";//退货出库
+	public static final String OUT_TYPE_5 = "5";//盘亏出库
 
 	/***编码规则*/
 	//各种类型单号首字母
 	public final static String ORDER_NO_FIRST_LETTER_RK = "RK";//入库单
 	public final static String ORDER_NO_FIRST_LETTER_CK = "CK";//出库单
+	public final static String ORDER_NO_FIRST_LETTER_THCK = "THCK";//退货出库单
+	public final static String ORDER_NO_FIRST_LETTER_THRK = "THRK";//退货入库单
 	public final static String ORDER_NO_FIRST_LETTER_TH = "TH";//退货单
 	public final static String ORDER_NO_FIRST_LETTER_YL = "YL";//用量单
 	public final static String ORDER_NO_FIRST_LETTER_TYL = "TYL";//用量退回单
@@ -73,7 +83,12 @@ public interface PdConstant {
 	public final static String ORDER_NO_FIRST_LETTER_SG = "SG";//申购单
 	public final static String ORDER_NO_FIRST_LETTER_XC = "XC";//巡查单
 	public final static String ORDER_NO_FIRST_LETTER_PD = "PD";//盘点单
-	public final static String ORDER_NO_FIRST_LETTER_DSB = "DSB";//定数包
+	public final static String ORDER_NO_FIRST_LETTER_PDRK = "PDRK";//盘盈入库单
+	public final static String ORDER_NO_FIRST_LETTER_PDCK = "PDCK";//盘亏出库单
+	public final static String ORDER_NO_FIRST_LETTER_TB = "TB";//套包
+	public final static String ORDER_NO_FIRST_LETTER_FP = "FP";//发票
+	public final static String ORDER_NO_FIRST_LETTER_CSKC = "CSKC";//初始化库存
+	public final static String ORDER_NO_FIRST_LETTER_SGMB = "SGMB";//申购模板
 
 	//是否过期
 	public final static String PD_STATE="pd_state";
@@ -116,6 +131,12 @@ public interface PdConstant {
 	public final static String ON_OFF_STOCK_IN_EXP_PRODUCT = "on_off_stock_in_exp_product";
 	/**开关-是否允许入库证照过期的供应商**/
 	public final static String ON_OFF_STOCK_IN_EXP_SUPPLIER = "on_off_stock_in_exp_supplier";
+	/**开关-是否显示二级条码框（入库、出库、退货）**/
+	public final static String ON_OFF_SHOW_S_BARCODE = "on_off_show_s_barcode";
+	/**开关-是否根据规格数量扣减库存**/
+	public final static String ON_OFF_SPEC_NUM = "on_off_spec_num";
+	public final static Integer ON_OFF_SPEC_NUM_0 = 0; // 否
+	public final static Integer ON_OFF_SPEC_NUM_1 = 1; // 是
 
 
 	//系统消息提醒模板CODE
@@ -156,6 +177,12 @@ public interface PdConstant {
 	public final static String STOCK_LOG_TYPE_5 = "5";//耗材退货
 	public final static String STOCK_LOG_TYPE_6 = "6";//执行收费
 	public final static String STOCK_LOG_TYPE_7 = "7";//耗材院外退货
+	public final static String STOCK_LOG_TYPE_8 = "8";//套包打包
+	public final static String STOCK_LOG_TYPE_9 = "9";//套包拆包
+	public final static String STOCK_LOG_TYPE_10 = "10";//执行退费
+	public final static String STOCK_LOG_TYPE_11 = "11";//盘盈入库
+	public final static String STOCK_LOG_TYPE_12 = "12";//盘亏出库
+	public final static String STOCK_LOG_TYPE_13 = "13";//初始化库存
 
 
 	//生产厂家及供应商证照到期消息提醒发送状态
@@ -207,20 +234,28 @@ public interface PdConstant {
 	public final static String PURCHASE_ORDER_SUPPLIER_STATUS_4 = "3";//已收货
 
 	//器械使用收费状态
-	public final static String  CHARGE_FLAG_0 ="0";//收费
-	public final static String  CHARGE_FLAG_1 ="1";//不收费
+	public final static String  CHARGE_FLAG_0 ="0";//已收费
+	public final static String  CHARGE_FLAG_1 ="1";//未收费
 	public final static String  CHARGE_FLAG_2 ="2";//已退回
+	public final static String  CHARGE_FLAG_3 ="3";//已退费
 	public final static String  IS_CHARGE_FLAG_0 ="0";//有接口
 	public final static String  IS_CHARGE_FLAG_1 ="1";//没有接口
+
+	public final static String  IS_CHARGE_TYPE_0 ="0";//退费操作
+	public final static String  IS_CHARGE_TYPE_1 ="1";//收费操作
 
 	//产品分类类型
 	public final static String CATEGORY_TYPE_0 = "0";
 	public final static String CATEGORY_TYPE_1 = "1";
 
+	// 产品是否计费
+	public final static String  IS_CHARGE_0 ="0";//计费
+	public final static String  IS_CHARGE_1 ="1";//补计费
+
 
 	//产品属性类型
 	public final static String PROD_ATTR_1 = "1";//产品
-	public final static String PROD_ATTR_2 = "2";//定数包
+	public final static String PROD_ATTR_2 = "2";//套包
 
 	// 巡查结果
 	public final static String RESULT_QUALIFIED = "合格";
@@ -244,8 +279,76 @@ public interface PdConstant {
     public final static String STOCK_NESTAT_STATUS_1="1";//未使用
     public final static String STOCK_NESTAT_STATUS_2="2";//已用完
 
-	//定数包打包记录出库状态
-	public final static String PACKAGE_RECORD_STATUS_0="0";//出库状态：0-已出库；1-未出库
-	public final static String PACKAGE_RECORD_STATUS_1="1";//出库状态：0-已出库；1-未出库
+	//套包打包记录出库状态
+	public final static String PACKAGE_RECORD_STATUS_0="0";//出库状态：0-已出库
+	public final static String PACKAGE_RECORD_STATUS_1="1";//出库状态：1-未出库
 
+
+	//自动补货订单类别
+	public final static String AUTO_ORDER_0="0";//自动申领单
+	public final static String AUTO_ORDER_1="1";//自动采购单
+
+	//试剂扣减状态
+	public final static String ACCEPT_STATUS_0="0";//已扣减
+	public final static String ACCEPT_STATUS_1="1";//未配置检验项目
+	public final static String ACCEPT_STATUS_2="2";//未扣减
+	public final static String ACCEPT_STATUS_3="3";//未配置试剂用量
+	public final static String ACCEPT_STATUS_4="4";//部分扣减
+	//试剂扣减类型
+	public final static String DEDUCTUIN_TYPE_0="0";//自动扣减
+	public final static String DEDUCTUIN_TYPE_1="1";//人工扣减
+	public final static String DEDUCTUIN_TYPE_2="2";//无需扣减
+
+	//生成条码的类型
+	public final static String CODE_PRINT_TYPE_0 = "0";//批量打印的码
+	public final static String CODE_PRINT_TYPE_1 = "1";//唯一码
+
+	//生成条码的状态
+	public final static String CODE_PRINT_STATE_0 = "0";//正常状态
+	public final static String CODE_PRINT_STATE_1 = "1";//已退货
+	public final static String CODE_PRINT_STATE_2 = "2";//已用完
+
+	//退货类型
+	public final static String REJECTED_TYPE_0 = "0";//唯一码退货
+	public final static String REJECTED_TYPE_1 = "1";//普通码退货
+
+	//使用类型
+	public final static String DOSAGE_TYPE_0 = "0";//唯一码使用
+	public final static String DOSAGE_TYPE_1 = "1";//普通码使用
+
+	//试剂使用类型
+	public final static String USE_TYPE_0="0";//通用
+	public final static String USE_TYPE_1="1";//住院使用
+	public final static String USE_TYPE_2="2";//门诊使用
+
+	//病人类型
+	public final static String PATIENT_TYPE_1="住院";//住院病人
+	public final static String PATIENT_TYPE_2="门诊";//门诊病人
+
+	//闭瓶原因
+	public final static String CLOSE_REMARKS_0 = "0";//已用完
+	public final static String CLOSE_REMARKS_1 = "1";//已过期
+	public final static String CLOSE_REMARKS_2 = "2";//试剂迁移
+
+	public final static String DISABLE_ENABLE_STATUS_0 ="0";//启用
+	public final static String DISABLE_ENABLE_STATUS_1 ="1";//未启用
+
+	//发票状态
+	public final static String INVOICE_STATUS_1 ="1";//1-未完成
+	public final static String INVOICE_STATUS_2 ="2";//2-已完成
+
+	public final static String INVOICE_TYPE_1 ="1";//1-入库单发票
+	public final static String INVOICE_TYPE_2 ="2";//2-出库单发票
+
+	//盘点冻结权限的名称
+	public final static String IN_RECORD_EXAMINE = "入库审核按钮";//入库审核按钮
+	public final static String OUT_RECORD_EXAMINE = "出库审核按钮";//出库审核按钮
+	public final static String REJECTED_SAVE = "退货审核按钮权限";//退货审核按钮权限
+
+	//盘点锁定状态
+	public final String PRODUCT_STOCK_CHECK_LOCKING_STATE_1="1";//锁定状态
+	public final String PRODUCT_STOCK_CHECK_LOCKING_STATE_0="0";//正常状态
+
+	// 初始化库存 供应商id
+	public final String INIT_STOCK_SUPPLIER_ID = "1285060963299377153";
 }

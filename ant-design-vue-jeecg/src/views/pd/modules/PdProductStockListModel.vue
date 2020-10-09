@@ -1,5 +1,5 @@
 <template>
-  <a-modal
+  <j-modal
     :title="title"
     :width="width"
     :visible="visible"
@@ -28,7 +28,7 @@
               </a-form-item>
             </a-col>
             <template v-if="toggleSearchStatus">
-              <a-col :md="8" :sm="8">
+               <a-col :md="8" :sm="8">
                 <a-form-item label="供应商">
                   <a-select
                     ref="supplierSelect"
@@ -37,13 +37,14 @@
                     placeholder="请选择供应商"
                     :defaultActiveFirstOption="false"
                     :showArrow="true"
+                    :allowClear="true"
                     :filterOption="false"
                     @search="supplierHandleSearch"
                     @change="supplierHandleChange"
                     @focus="supplierHandleSearch"
                     :notFoundContent="notFoundContent"
                     v-model="queryParam.supplierId"
-                    :disabled="supplierSelecDisabled"
+
                   >
                     <a-select-option v-for="d in supplierData" :key="d.value">{{d.text}}</a-select-option>
                   </a-select>
@@ -64,6 +65,7 @@
                     @focus="venderHandleSearch"
                     :notFoundContent="notFoundContent"
                     v-model="queryParam.venderId"
+                    :disabled="supplierSelecDisabled"
                   >
                     <a-select-option v-for="d in venderData" :key="d.value">{{d.text}}</a-select-option>
                   </a-select>
@@ -85,20 +87,25 @@
         </a-form>
       </div>
       <!-- 查询区域-END -->
+      <div class="ant-alert ant-alert-info" style="margin-bottom: 16px;">
+        <i class="anticon anticon-info-circle ant-alert-icon"></i> 已选择 <a style="font-weight: 600">{{ selectedRowKeys.length }}</a>项
+        <a style="margin-left: 24px" @click="onClearSelected">清空</a>
+      </div>
       <a-table
         ref="table"
         size="middle"
         bordered
-        rowKey="productId"
+        rowKey="id"
         :columns="columns"
         :dataSource="dataSource"
         :pagination="ipagination"
         :loading="loading"
+        :customRow="onClickRow"
         :rowSelection="{fixed:false,selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
         @change="handleTableChange">
       </a-table>
     </a-spin>
-  </a-modal>
+  </j-modal>
 </template>
 
 <script>
@@ -128,7 +135,6 @@
         supplierValue: undefined,
         notFoundContent:"未找到内容",
         supplierData: [],
-
         // 表头
         columns: [
           /*{
@@ -155,6 +161,11 @@
             title:'产品名称',
             align:"center",
             dataIndex: 'productName'
+          },
+          {
+            title:'产品类型',
+            align:"center",
+            dataIndex: 'productFlagName'
           },
           {
             title:'规格',
@@ -252,6 +263,10 @@
       handleCancel () {
         this.close();
       },
+      onClearSelected() {
+        this.selectedRowKeys = [];
+        this.selectionRows = [];
+      },
       popupCallback(row){
 
       },
@@ -302,6 +317,42 @@
         fetch(value, data => (this.supplierData = data),this.url.querySupplier);
       },
       //供应商查询end
+      /**
+       * 点击行选中checkbox
+       * @param record
+       * @returns {{on: {click: on.click}}}
+       */
+      onClickRow(record) {
+        return {
+          on: {
+            click: (e) => {
+              //点击操作那一行不选中表格的checkbox
+              let pathArray = e.path;
+              //获取当前点击的是第几列
+              let td = pathArray[0];
+              let cellIndex = td.cellIndex;
+              //获取tr
+              let tr = pathArray[1];
+              //获取一共多少列
+              let lie = tr.childElementCount;
+              if(lie && cellIndex){
+                if(parseInt(lie)-parseInt(cellIndex)!=1){
+                  //操作那一行
+                  let recordId = record.id;
+                  let index = this.selectedRowKeys.indexOf(recordId);
+                  if(index>=0){
+                    this.selectedRowKeys.splice(index, 1);
+                    this.selectionRows.splice(index, 1);
+                  }else{
+                    this.selectedRowKeys.push(recordId);
+                    this.selectionRows.push(record);
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     }
   }
 

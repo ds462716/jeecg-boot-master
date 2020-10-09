@@ -7,6 +7,7 @@ import org.jeecg.modules.pd.entity.BaseEntity;
 import org.jeecgframework.poi.excel.annotation.Excel;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -73,10 +74,12 @@ public class PdProductReagents extends BaseEntity {
 	/**一级分类*/
     private String categoryOne;
 	@TableField(exist = false)
+	@Excel(name = "一级分类", width = 15)
 	private String categoryOneName;
 	/**二级分类*/
     private String categoryTwo;
 	@TableField(exist = false)
+	@Excel(name = "二级分类", width = 15)
 	private String categoryTwoName;
 	/**产品组别*/
     private String groupId;
@@ -93,6 +96,7 @@ public class PdProductReagents extends BaseEntity {
 	/**供应商*/
     private String supplierId;
 	@TableField(exist = false)
+	@Excel(name = "供应商", width = 15)
 	private String supplierName;
 	/**进价*/
 	@Excel(name = "进价", width = 15)
@@ -323,6 +327,21 @@ public class PdProductReagents extends BaseEntity {
 	@TableField(exist = false)
 	private  String  stockDepartId;
 
+	/**
+	 * 赣州市立医院中标号
+	 */
+	private String bidingNumber;
+	/**
+	 * 赣州市立医院中标类型
+	 * 中标类型：（1：省标、2：市标 3：其他招标:4：备案）
+	 */
+	@Excel(name = "中标类型 1：省标、2：市标 3：其他招标:4：备案", width = 15)
+	private String bidingType;
+	/**
+	 * 赣州市立医院中标价
+	 */
+	@Excel(name = "中标价", width = 15)
+	private BigDecimal bidingPrice;
 	/**
 	 * jde编码
 	 */

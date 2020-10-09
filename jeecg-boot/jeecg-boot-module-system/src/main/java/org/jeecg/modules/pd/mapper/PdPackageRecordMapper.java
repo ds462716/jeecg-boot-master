@@ -2,6 +2,8 @@ package org.jeecg.modules.pd.mapper;
 
 import java.util.List;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Param;
 import org.jeecg.modules.pd.entity.PdPackageRecord;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
@@ -15,6 +17,9 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 public interface PdPackageRecordMapper extends BaseMapper<PdPackageRecord> {
 
 
-    List<PdPackageRecord> queryList(PdPackageRecord pdPackageRecord);
+    List<PdPackageRecord> queryList(@Param("entity") PdPackageRecord pdPackageRecord);
+
+    IPage<PdPackageRecord> queryList(Page<PdPackageRecord> page, @Param("entity") PdPackageRecord pdPackageRecord);
+
 
 }

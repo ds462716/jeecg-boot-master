@@ -2,6 +2,7 @@ package org.jeecg.modules.pd.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
+import org.apache.ibatis.annotations.Param;
 import org.jeecg.modules.pd.entity.PdProductStock;
 
 import java.util.HashMap;
@@ -25,16 +26,41 @@ public interface IPdProductStockService extends IService<PdProductStock> {
 	 */
 	Page<PdProductStock> selectList(Page<PdProductStock> pageList, PdProductStock productStock);
 
+	Page<PdProductStock> queryProductStockList(Page<PdProductStock> pageList, PdProductStock productStock);
+
+	/**
+	 * 分页 用于库存选择器
+	 * @param page
+	 * @param pdProductStock
+	 * @return
+	 */
+	Page<PdProductStock> chooseProductStockList(Page<PdProductStock> page, @Param("entity") PdProductStock pdProductStock);
+
+	/**
+	 * 不分页，用于套包自动选择库存
+	 * @param pdProductStock
+	 * @return
+	 */
+	List<PdProductStock> chooseProductStockList(@Param("entity") PdProductStock pdProductStock);
+
 	public List<PdProductStock> selectByMainId(String mainId);
 
     List<PdProductStock> selectList(PdProductStock pdProductStock);
 
+    List<PdProductStock> queryProductStockList(PdProductStock pdProductStock);
+
+	/**
+	 * 获取一条记录
+	 * @param pdProductStock
+	 * @return
+	 */
+	PdProductStock getOne(PdProductStock pdProductStock);
 	/**
 	 * 更新库存明细表过期状态
 	 */
 	public void updateProductStock(PdProductStock productStock);
 
-	List<PdProductStock> getByOriginalProduct(PdProductStock pdProductStock);
+	Page<PdProductStock> getByOriginalProduct(Page<PdProductStock> pageList, PdProductStock pdProductStock);
 
     /**
      * 首页查询库存总数量
@@ -52,5 +78,20 @@ public interface IPdProductStockService extends IService<PdProductStock> {
 
 	Page<PdProductStock> queryList(Page<PdProductStock> pageList, PdProductStock productStock);
 
+	 PdProductStock queryStockCount(PdProductStock productStock);
+
+	List<PdProductStock> queryStockList(PdProductStock productStock);
+
+	/**
+	 * 更新条码类型
+	 */
+	public void updateStockBarCodeType(PdProductStock productStock);
+
+    List<PdProductStock> queryUniqueProductStockList(PdProductStock ps);
+
+    Page<PdProductStock> queryPrintList(Page<PdProductStock> page, PdProductStock productStock);
+
+
+	public List<Map<String, Object>> queryPdProductStockList(PdProductStock productStock);
 
 }

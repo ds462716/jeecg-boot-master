@@ -46,11 +46,13 @@ public class PdApplyDetail extends BaseEntity {
 	private String productId;
 	/**批号*/
 	private String batchNo;
-	/**所属定数包ID*/
+	/**所属套包ID*/
 	private String packageId;
-	/**'申领时定数包产品数量'*/
+	/**套包打包记录id*/
+	private String packageRecordId;
+	/**'申领时套包产品数量'*/
 	private Double packageNum;
-	/**产品属性：1、产品 2、定数包*/
+	/**产品属性：1、产品 2、套包*/
 	private String productAttr;
 	/**有效期*/
 	@JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd")
@@ -88,9 +90,14 @@ public class PdApplyDetail extends BaseEntity {
 	@Excel(name = "单位名称", width = 15)
 	private String unitName;//单位名称
 	@TableField(exist = false)
-	private String packageName;//定数包名称
+	private String packageName;//套包名称
 	@TableField(exist = false)
-	private String packageCode;//定数包编号
+	private String packageCode;//套包编号
+	@TableField(exist = false)
+	private String packageBarCode;//套包条码
+	@TableField(exist = false)
+	private String packageSum;//套包产品总数
+
 
 }
 

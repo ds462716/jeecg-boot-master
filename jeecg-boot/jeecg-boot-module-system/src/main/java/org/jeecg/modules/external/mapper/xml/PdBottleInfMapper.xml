@@ -1,0 +1,365 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.external.mapper.PdBottleInfMapper">
+
+
+
+    <select id="selectList"  resultType="org.jeecg.modules.external.entity.PdBottleInf">
+        SELECT
+        a.*,
+        c.name as "productName",
+        b.spec_quantity as "specQuantity",
+        (IFNULL(b.spec_quantity,0)  - IFNULL(a.spec_num,0))  as "sySpecNum",
+        b.batch_no as "batchNo",
+        b.exp_date as "expDate",
+        e.name as "unitName",
+        d.depart_name as "departName",
+        f.instr_name as "instrName"
+        from pd_bottle_inf a
+        left join pd_product_stock b on a.stock_id=b.id
+        left join pd_product c on c.id=b.product_id  and c.del_flag=#{entity.DEL_FLAG_NORMAL}
+        left join sys_depart d on d.id=a.depart_id and d.del_flag=#{entity.DEL_FLAG_NORMAL}
+        LEFT JOIN pd_unit e ON b.spec_unit_id = e.id and e.del_flag=#{entity.DEL_FLAG_NORMAL}
+        LEFT JOIN ex_lab_instr_inf f on f.instr_code=a.instr_code
+         where  a.del_flag=#{entity.DEL_FLAG_NORMAL}
+        <if test="entity.productName != null and entity.productName != ''">
+            AND (c.name LIKE concat('%',#{entity.productName},'%')
+            or c.py LIKE concat('%',#{entity.productName},'%')
+            or c.wb LIKE concat('%',#{entity.productName},'%')
+            or c.zdy LIKE concat('%',#{entity.productName},'%')
+            or c.bname LIKE concat('%',#{entity.productName},'%')
+            or c.bpy LIKE concat('%',#{entity.productName},'%')
+            or c.bwb LIKE concat('%',#{entity.productName},'%')
+            )
+        </if>
+        <if test="entity.boottleBy != null and entity.boottleBy != ''">
+            AND a.boottle_by  LIKE concat('%',#{entity.boottleBy},'%')
+        </if>
+        <if test="entity.departId != null and entity.departId != ''">
+            AND a.depart_id = #{entity.departId}
+        </if>
+        <if test="entity.closeRemarks != null and entity.closeRemarks != ''">
+            AND a.close_remarks = #{entity.closeRemarks}
+        </if>
+        <if test="entity.instrCode != null and entity.instrCode != ''">
+            AND a.instr_code = #{entity.instrCode}
+        </if>
+        <if test="entity.instrName != null and entity.instrName != ''">
+            AND f.instr_name = #{entity.instrName}
+        </if>
+        <if test="entity.refBarCode != null and entity.refBarCode != ''">
+            AND a.ref_bar_code   LIKE concat('%',#{entity.refBarCode},'%')
+        </if>
+        <if test="entity.departParentId != null and entity.departParentId != ''">
+            AND a.depart_parent_id = #{entity.departParentId}
+        </if>
+        <if test="entity.status != null and entity.status != ''">
+            AND a.status = #{entity.status}
+        </if>
+        <if test="entity.queryDateStart != null and entity.queryDateStart != ''">
+            AND DATE_FORMAT(a.create_time, '%Y-%m-%d') &gt;= #{entity.queryDateStart}
+        </if>
+        <if test="entity.queryDateEnd != null and entity.queryDateEnd != ''">
+            AND DATE_FORMAT(a.create_time, '%Y-%m-%d') &lt;= #{entity.queryDateEnd}
+        </if>
+        <if test="entity.departIdList != null and entity.departIdList.size() > 0">
+            AND a.depart_id IN
+            <foreach collection="entity.departIdList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+       ORDER BY  a.close_remarks , a.CREATE_TIME DESC
+    </select>
+
+
+
+
+
+
+
+    <select id="getOne" resultType="org.jeecg.modules.external.entity.PdBottleInf" parameterType="org.jeecg.modules.external.entity.PdBottleInf">
+
+        SELECT
+       *
+        FROM pd_bottle_inf a
+        <where>
+            1=1
+            <if test="id != null and id != ''">
+                AND a.id = #{id}
+            </if>
+            <if test="departId != null and departId != ''">
+                AND a.depart_id = #{departId}
+            </if>
+            <if test="refBarCode != null and refBarCode != ''">
+                AND a.ref_bar_code = #{refBarCode}
+            </if>
+            <if test="filterType != null and filterType != ''">
+                AND a.close_remarks  is null
+            </if>
+        </where>
+
+    </select>
+
+
+    <!-- 更新使用規格數量 -->
+    <update id="updateSpecNum">
+        UPDATE pd_bottle_inf
+        SET spec_num = spec_num+#{specNum}
+        WHERE ref_bar_code= #{refBarCode}
+        <if test="filterType != null and filterType != ''">
+            AND  close_remarks  is null
+        </if>
+    </update>
+
+
+    <!-- 根据开瓶信息查询库存明细 -->
+    <select id="queryProductStock" resultType="org.jeecg.modules.pd.entity.PdProductStock"  parameterType="org.jeecg.modules.pd.entity.PdProductStock">
+        select a.* from pd_product_stock a
+        left join pd_bottle_inf b on b.close_remarks is null  and b.stock_id=a.id
+        <where>
+             b.ref_bar_code=a.ref_bar_code
+             and nestat_status='0'
+            <if test="departId != null and departId != ''">
+                AND a.depart_id = #{departId}
+            </if>
+            <if test="refBarCode != null and refBarCode != ''">
+            AND a.ref_bar_code = #{refBarCode}
+            </if>
+            <if test="productId != null and productId != ''">
+                AND a.product_id = #{productId}
+            </if>
+             <if test="instrCode != null and instrCode != ''">
+                AND b.instr_code = #{instrCode}
+            </if>
+            <if test="departIdList != null and departIdList.size() > 0">
+                AND a.depart_id IN
+                <foreach collection="departIdList" item="item" separator="," open="(" close=")">
+                    #{item}
+                </foreach>
+            </if>
+        </where>
+
+    </select>
+
+
+    <select id="bottleInfReportQuery"  resultType="org.jeecg.modules.external.entity.PdBottleInf">
+
+	select
+	    c.id as "productId",
+	    c.number as  "number",
+	    c.name as "productName",
+        c.vender_id as "venderId",
+        c.biding_number as "bidingNumber",
+        g.name  as "venderName",
+		b.spec_quantity as "specQuantity",
+		count(*) as "num",
+		d.name as "specUnitName",
+        e.name as "unitName",
+        IFNULL(f.selling_price,0) * count(1) as "totalPrice"
+	from pd_bottle_inf a
+	left join pd_product_stock b on a.stock_id=b.id
+    left join pd_stock_record_detail f on f.id=b.record_detail_id and f.del_flag="0"
+	left join pd_product c on c.id=b.product_id and c.del_flag="0"
+	left join pd_unit d  on d.id=c.spec_unit_id  and d.del_flag="0"
+    left join pd_unit e  on e.id=c.unit_id and e.del_flag="0"
+    left join pd_vender g on c.vender_id=g.id  and g.del_flag="0"
+        where     (a.close_remarks  is null  or  close_remarks !=2)
+        and a.create_time > DATE_SUB(CURDATE(), INTERVAL 1 YEAR)
+        and substr(a.create_time,1,7) &lt;=substr(CURDATE(),1,7)
+        <if test="entity.productName != null and entity.productName != ''">
+            AND (c.name LIKE concat('%',#{entity.productName},'%')
+            or c.py LIKE concat('%',#{entity.productName},'%')
+            or c.wb LIKE concat('%',#{entity.productName},'%')
+            or c.zdy LIKE concat('%',#{entity.productName},'%')
+            or c.bname LIKE concat('%',#{entity.productName},'%')
+            or c.bpy LIKE concat('%',#{entity.productName},'%')
+            or c.bwb LIKE concat('%',#{entity.productName},'%')
+            )
+        </if>
+        <if test="entity.status != null and entity.status != ''">
+            AND a.status = #{entity.status}
+        </if>
+        <if test="entity.venderId != null and entity.venderId != ''">
+            AND c.vender_id = #{entity.venderId}
+        </if>
+        <if test="entity.supplierId != null and entity.supplierId != ''">
+            AND c.supplier_id = #{entity.supplierId}
+        </if>
+        <if test="entity.departParentId != null and entity.departParentId != ''">
+            AND a.depart_parent_id = #{entity.departParentId}
+        </if>
+        <if test="entity.number != null and entity.number != ''">
+            AND c.number   LIKE concat('%',#{entity.number},'%')
+        </if>
+        <if test="entity.queryDateStart != null and entity.queryDateStart != ''">
+            AND DATE_FORMAT(a.create_time, '%Y-%m-%d') &gt;= #{entity.queryDateStart}
+        </if>
+        <if test="entity.queryDateEnd != null and entity.queryDateEnd != ''">
+            AND DATE_FORMAT(a.create_time, '%Y-%m-%d') &lt;= #{entity.queryDateEnd}
+        </if>
+	GROUP BY productId
+
+    </select>
+
+
+    <select id="queryRecordViewCount" resultType="java.util.Map" >
+    select
+    c.createTime as "type",
+    sum(c.sum) as "数量"
+    from(
+        SELECT
+        DATE_FORMAT(x.Month, '%Y-%m') as "createTime",
+        "0"  as "sum"
+        FROM   XNumber x
+        where  x.Month > DATE_SUB(CURDATE(), INTERVAL 1 YEAR)
+        and substr(x.Month,1,7) &lt;=substr(CURDATE(),1,7)
+    UNION ALL
+   SELECT
+        DATE_FORMAT(a.create_time, '%Y-%m') as "createTime",
+       "1" as "sum"
+   FROM pd_bottle_inf a
+   LEFT JOIN pd_product_stock b ON a.stock_id = b.id
+   LEFT JOIN pd_product c ON c.id = b.product_id
+   LEFT JOIN pd_unit d ON d.id = c.spec_unit_id
+   LEFT JOIN pd_unit e ON e.id = c.unit_id
+        WHERE  (close_remarks !='2'  or close_remarks is null)
+        and   a.create_time > DATE_SUB(CURDATE(), INTERVAL 1 YEAR)
+        and substr(a.create_time,1,7) &lt;=substr(CURDATE(),1,7)
+        <if test="departParentId != null and  departParentId != ''">
+            AND a.depart_parent_id = #{ departParentId}
+        </if>
+        <if test="productId != null and  productId != ''">
+            AND b.product_Id = #{productId}
+        </if>
+        <if test="status != null and status != ''">
+            AND a.status = #{status}
+        </if>
+       ) c
+        GROUP BY  type
+     </select>
+
+
+    <select id="queryRecordViewMoney" resultType="java.util.Map" >
+        select
+        c.createTime as "type",
+        ROUND(sum(c.y),2) as "金额"
+        from(
+        SELECT
+        DATE_FORMAT(x.Month, '%Y-%m') as "createTime",
+        "0"  as "y"
+        FROM   XNumber x
+        where   x.Month > DATE_SUB(CURDATE(), INTERVAL 1 YEAR)
+        and substr(x.Month,1,7) &lt;=substr(CURDATE(),1,7)
+        UNION ALL
+        SELECT
+        DATE_FORMAT(a.create_time, '%Y-%m') as "createTime",
+        f.selling_price as "y"
+        FROM pd_bottle_inf a
+        LEFT JOIN pd_product_stock b ON a.stock_id = b.id
+        left join pd_stock_record_detail f on f.id=b.record_detail_id
+        LEFT JOIN pd_product c ON c.id = b.product_id
+        LEFT JOIN pd_unit d ON d.id = c.spec_unit_id
+        LEFT JOIN pd_unit e ON e.id = c.unit_id
+        WHERE  (close_remarks !='2'  or close_remarks is null)
+         and  a.create_time > DATE_SUB(CURDATE(), INTERVAL 1 YEAR)
+        and substr(a.create_time,1,7) &lt;=substr(CURDATE(),1,7)
+        <if test="departParentId != null and  departParentId != ''">
+            AND a.depart_parent_id = #{ departParentId}
+        </if>
+        <if test="productId != null and  productId != ''">
+            AND b.product_Id = #{productId}
+        </if>
+        <if test="status != null and status != ''">
+            AND a.status = #{status}
+        </if>
+        ) c
+        GROUP BY  type
+    </select>
+
+
+
+    <select id="inspectionMonthQuery"  resultType="org.jeecg.modules.external.entity.PdBottleInf">
+        select
+        tt.month as "month",sum(tt.je) as  "totalPrice" ,
+        sum(tt.num) as  "num"  from (
+        SELECT  DATE_FORMAT(x.Month, '%Y-%m') as month,null as je, null as num    FROM   XNumber x
+        where  x.Month > DATE_SUB(CURDATE(), INTERVAL 1 YEAR)
+        and substr(x.Month,1,7) &lt;=substr(CURDATE(),1,7)
+        union all
+        select DATE_FORMAT(a.create_time, '%Y-%m') AS month,d.selling_price  AS je, "1" as num
+        from pd_bottle_inf a
+        left join pd_product_stock b on a.stock_id=b.id
+        left join pd_stock_record_detail d on d.id=b.record_detail_id
+        left join pd_product c on c.id=b.product_id
+        where  (close_remarks !='2'  or close_remarks is null)
+        <if test="entity.departParentId != null and  entity.departParentId != ''">
+            AND a.depart_parent_id = #{entity.departParentId}
+        </if>
+        <if test="entity.departId != null and  entity.departId != ''">
+            AND a.depart_id = #{entity.departId}
+        </if>
+        <if test="entity.productName != null and  entity.productName != ''">
+            AND (c.name LIKE concat('%',#{entity.productName},'%')
+            or c.py LIKE concat('%',#{entity.productName},'%')
+            or c.wb LIKE concat('%',#{entity.productName},'%')
+            or c.zdy LIKE concat('%',#{entity.productName},'%')
+            or c.bname LIKE concat('%',#{entity.productName},'%')
+            or c.bpy LIKE concat('%',#{entity.productName},'%')
+            or c.bwb LIKE concat('%',#{entity.productName},'%')
+            )
+        </if>
+        <if test="entity.number != null and entity.number != ''">
+            AND c.number   LIKE concat('%',#{entity.number},'%')
+        </if>
+        <if test="entity.departId != null and  entity.departId != ''">
+            AND a.depart_id = #{entity.departId}
+        </if>
+        AND a.create_time > DATE_SUB(CURDATE(), INTERVAL 1 YEAR)
+        AND substr(a.create_time,1,7) &lt;=substr(CURDATE(),1,7)
+        ) tt
+        where num>0
+        GROUP BY tt.month
+    </select>
+
+
+    <select id="selectBottleInfMonth"  resultType="org.jeecg.modules.external.entity.PdBottleInf">
+     select c.name as "productName",
+     c.number as "number",
+     c.spec as "spec",
+     e.name as "unitName",
+     sum(d.selling_price)  AS "totalPrice",
+     sum(1) as "num"
+     from pd_bottle_inf a
+    left join pd_product_stock b on a.stock_id=b.id
+    left join pd_stock_record_detail d on d.id=b.record_detail_id
+    left join pd_product c on b.product_id=c.id
+    left join pd_unit e on e.id=c.unit_id
+    where   (close_remarks !='2'  or close_remarks is null)
+        <if test="entity.departParentId != null and  entity.departParentId != ''">
+            AND a.depart_parent_id = #{entity.departParentId}
+        </if>
+        <if test="entity.departId != null and  entity.departId != ''">
+            AND a.depart_id = #{entity.departId}
+        </if>
+        <if test="entity.productName != null and  entity.productName != ''">
+            AND (c.name LIKE concat('%',#{entity.productName},'%')
+            or c.py LIKE concat('%',#{entity.productName},'%')
+            or c.wb LIKE concat('%',#{entity.productName},'%')
+            or c.zdy LIKE concat('%',#{entity.productName},'%')
+            or c.bname LIKE concat('%',#{entity.productName},'%')
+            or c.bpy LIKE concat('%',#{entity.productName},'%')
+            or c.bwb LIKE concat('%',#{entity.productName},'%')
+            )
+        </if>
+        <if test="entity.number != null and  entity.number != ''">
+            AND c.number  LIKE concat('%',#{entity.number},'%')
+        </if>
+        <if test="entity.spec != null and  entity.spec != ''">
+            AND c.spec  LIKE concat('%',#{entity.spec},'%')
+        </if>
+        <if test="entity.month != null and  entity.month != ''">
+            AND DATE_FORMAT(a.create_time, '%Y-%m')  = #{entity.month}
+        </if>
+        group by c.number
+    </select>
+</mapper>

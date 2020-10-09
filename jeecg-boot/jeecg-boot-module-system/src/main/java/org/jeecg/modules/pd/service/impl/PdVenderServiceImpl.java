@@ -13,6 +13,7 @@ import org.jeecg.modules.pd.entity.PdVender;
 import org.jeecg.modules.pd.mapper.PdVenderMapper;
 import org.jeecg.modules.pd.service.IPdProductService;
 import org.jeecg.modules.pd.service.IPdVenderService;
+import org.jeecg.modules.pd.util.JmUtil;
 import org.jeecgframework.poi.excel.ExcelImportUtil;
 import org.jeecgframework.poi.excel.entity.ImportParams;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -70,7 +71,7 @@ public class PdVenderServiceImpl extends ServiceImpl<PdVenderMapper, PdVender> i
 
     @Override
     public Page<PdVender> selectList(Page<PdVender> page, PdVender pdVender) {
-        return page.setRecords(pdVenderMapper.selectList(pdVender));
+        return pdVenderMapper.selectListByPage(page,pdVender);
     }
 
     @Override
@@ -159,6 +160,14 @@ public class PdVenderServiceImpl extends ServiceImpl<PdVenderMapper, PdVender> i
                 for(PdVender ps :list){
                     if(oConvertUtils.isNotEmpty(ps.getName())){
                         if(checkName(pdVenders,ps)){
+                            if(oConvertUtils.isEmpty(ps.getPy())){
+                                //生成拼音简码
+                                ps.setPy(JmUtil.getAllFirstLetter(ps.getName()));
+                            }
+                            if(oConvertUtils.isEmpty(ps.getWb())){
+                                //生成五笔简码
+                                ps.setWb(JmUtil.getWBCode(ps.getName()));
+                            }
                             pdVenders.add(ps);
                         }else{
                             message = "导入失败,第"+(i+1)+"行名称不能重复";

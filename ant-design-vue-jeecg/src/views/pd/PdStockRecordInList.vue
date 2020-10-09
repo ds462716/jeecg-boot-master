@@ -32,17 +32,17 @@
           </a-col>
           <a-col :md="6" :sm="8">
             <a-form-item label="入库类型">
-              <j-dict-select-tag v-model="queryParam.inType" dictCode="in_type"/>
+              <j-dict-select-tag-expand v-model="queryParam.inType" dictCode="in_type"/>
             </a-form-item>
           </a-col>
           <a-col :md="6" :sm="8">
             <a-form-item label="提交状态">
-              <j-dict-select-tag v-model="queryParam.submitStatus" dictCode="submit_status"/>
+              <j-dict-select-tag-expand v-model="queryParam.submitStatus" dictCode="submit_status"/>
             </a-form-item>
           </a-col>
           <a-col :md="6" :sm="8">
             <a-form-item label="审核状态">
-              <j-dict-select-tag v-model="queryParam.auditStatus" dictCode="audit_status"/>
+              <j-dict-select-tag-expand v-model="queryParam.auditStatus" dictCode="audit_status"/>
             </a-form-item>
           </a-col>
           <a-col :md="6" :sm="8">
@@ -117,7 +117,7 @@
 
 <script>
 
-  // import JDictSelectTagExpand from "@/components/dict/JDictSelectTagExpand"
+  import JDictSelectTagExpand from "@/components/dict/JDictSelectTagExpand"
   import { filterObj } from '@/utils/util';
   import {getAction} from '@/api/manage'
   import { JeecgListMixin } from '@/mixins/JeecgListMixin'
@@ -130,7 +130,7 @@
     mixins:[JeecgListMixin],
     components: {
       PdStockRecordInModal,
-      // JDictSelectTagExpand
+      JDictSelectTagExpand
     },
     data () {
       return {

@@ -21,6 +21,8 @@
 		a.sys_org_code,
 		a.merge_order_no,
 		a.remarks,
+		a.purchase_type,
+		a.rep_type,
 		a.del_flag
 	</sql>
 
@@ -61,7 +63,7 @@
                 AND a.id = #{id}
             </if>
             <if test="orderNo != null and orderNo != ''">
-                AND a.order_no = #{orderNo}
+                AND a.order_no   LIKE concat('%',#{orderNo},'%')
             </if>
             <if test="auditStatus != null and auditStatus != ''">
                 AND a.audit_status = #{auditStatus}
@@ -74,6 +76,9 @@
             </if>
             <if test="departId != null and departId != ''">
                 AND a.depart_id = #{departId}
+            </if>
+            <if test="purchaseType != null and purchaseType != ''">
+                AND  a.purchase_type  = #{purchaseType}
             </if>
             <if test="departParentId != null and departParentId != ''">
                 AND a.depart_parent_id = #{departParentId}
@@ -105,6 +110,76 @@
             </if>
             <if test="queryDateEnd != null and queryDateEnd != ''">
                 AND a.order_date &lt;= #{queryDateEnd}
+            </if>
+            ORDER BY  field(a.audit_status, 1, 3, 2),a.update_time ASC
+        </where>
+    </select>
+
+
+
+
+    <select id="selectListByPage" resultType="org.jeecg.modules.pd.vo.PdPurchaseOrderPage">
+        SELECT
+        <include refid="PdPurchaseOrderColumns"/>,
+        <include refid="pdSysUserColumns"/>,
+        <include refid="sysDepartColumns"/>
+        FROM pd_purchase_order a
+        <include refid="PdPurchaseOrderJoins"/>
+        <include refid="pdSysUserJoins"/>
+        <include refid="sysDepartJoins"/>
+        <where>
+            a.del_flag =#{entity.DEL_FLAG_NORMAL}
+            <if test="entity.id != null and entity.id != ''">
+                AND a.id = #{entity.id}
+            </if>
+            <if test="entity.orderNo != null and entity.orderNo != ''">
+                AND a.order_no   LIKE concat('%',#{entity.orderNo},'%')
+            </if>
+            <if test="entity.auditStatus != null and entity.auditStatus != ''">
+                AND a.audit_status = #{entity.auditStatus}
+            </if>
+            <if test="entity.submitStatus != null and entity.submitStatus != ''">
+                AND a.submit_status = #{entity.submitStatus}
+            </if>
+            <if test="entity.deptName != null and entity.deptName != ''">
+                AND f.depart_name = #{entity.deptName}
+            </if>
+            <if test="entity.departId != null and entity.departId != ''">
+                AND a.depart_id = #{entity.departId}
+            </if>
+            <if test="entity.purchaseType != null and entity.purchaseType != ''">
+                AND  a.purchase_type  = #{entity.purchaseType}
+            </if>
+            <if test="entity.departParentId != null and entity.departParentId != ''">
+                AND a.depart_parent_id = #{entity.departParentId}
+            </if>
+            <if test="entity.mergeOrderNo != null and entity.mergeOrderNo != ''">
+                AND a.merge_order_no = #{entity.mergeOrderNo}
+            </if>
+            <if test="entity.submitStatusList != null and entity.submitStatusList.size() > 0">
+                and a.submit_status IN
+                <foreach collection="entity.submitStatusList" item="item" separator="," open="(" close=")">
+                    #{item}
+                </foreach>
+            </if>
+
+            <if test="entity.auditStatusList != null and entity.auditStatusList.size() > 0">
+                and a.audit_status IN
+                <foreach collection="entity.auditStatusList" item="item" separator="," open="(" close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="entity.departIdList != null and entity.departIdList.size() > 0">
+                and a.depart_id IN
+                <foreach collection="entity.departIdList" item="item" separator="," open="(" close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="entity.queryDateStart != null and entity.queryDateStart != ''">
+                AND a.order_date &gt;= #{entity.queryDateStart}
+            </if>
+            <if test="entity.queryDateEnd != null and entity.queryDateEnd != ''">
+                AND a.order_date &lt;= #{entity.queryDateEnd}
             </if>
             ORDER BY  field(a.audit_status, 1, 3, 2),a.update_time ASC
         </where>
@@ -253,6 +328,12 @@
                 #{item}
             </foreach>
         </if>
+        <if test="queryDateStart != null and queryDateStart != ''">
+            AND a.order_date &gt;= #{queryDateStart}
+        </if>
+        <if test="queryDateEnd != null and queryDateEnd != ''">
+            AND a.order_date &lt;= #{queryDateEnd}
+        </if>
     </select>
 
     <!-- 统计前一周的采购数量 -->
@@ -294,16 +375,15 @@
     <select id="queryPurchaseOrderTotalList" resultType="java.util.Map" >
         select
         IFNULL(d.name,'其他') as x,
-        sum(b.order_money) as y,
+        IFNULL(sum(b.order_money),0) as y,
         sum(b.order_num) as z
         from pd_purchase_order a
         left join pd_purchase_detail b on a.order_no=b.order_no
         left join pd_product c on b.product_id=c.id
         left join pd_category d on d.id=c.category_two
         where a.del_flag='0'  AND a.audit_status='2'
-        AND  DATE_SUB(CURDATE(), INTERVAL 30 DAY) &lt;= date(a.order_date)
-        and date(a.order_date) &lt;=CURDATE()
-        <if test="departIdList != null and departIdList.size() > 0">
+<!--   AND  DATE_SUB(CURDATE(), INTERVAL 30 DAY) &lt;= date(a.order_date) and date(a.order_date) &lt;=CURDATE() -->
+         <if test="departIdList != null and departIdList.size() > 0">
             and a.depart_id IN
             <foreach collection="departIdList" item="item" separator="," open="(" close=")">
                 #{item}
@@ -311,6 +391,12 @@
         </if>
         <if test="departParentId != null and departParentId != ''">
             AND a.depart_parent_id = #{departParentId}
+        </if>
+        <if test="queryDateStart != null and queryDateStart != ''">
+            AND a.order_date &gt;= #{queryDateStart}
+        </if>
+        <if test="queryDateEnd != null and queryDateEnd != ''">
+            AND a.order_date &lt;= #{queryDateEnd}
         </if>
         group by x  order by y desc
     </select>

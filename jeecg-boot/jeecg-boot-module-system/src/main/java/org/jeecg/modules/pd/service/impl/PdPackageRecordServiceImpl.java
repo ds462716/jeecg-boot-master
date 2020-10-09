@@ -1,7 +1,9 @@
 package org.jeecg.modules.pd.service.impl;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.MessageConstant;
@@ -11,9 +13,12 @@ import org.jeecg.common.util.DateUtils;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.pd.entity.PdPackageRecord;
 import org.jeecg.modules.pd.entity.PdPackageRecordDetail;
+import org.jeecg.modules.pd.entity.PdStockLog;
 import org.jeecg.modules.pd.mapper.PdPackageRecordDetailMapper;
 import org.jeecg.modules.pd.mapper.PdPackageRecordMapper;
 import org.jeecg.modules.pd.service.IPdPackageRecordService;
+import org.jeecg.modules.pd.service.IPdProductStockTotalService;
+import org.jeecg.modules.pd.service.IPdStockLogService;
 import org.jeecg.modules.pd.util.BarCodeUtil;
 import org.springframework.stereotype.Service;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -35,18 +40,54 @@ public class PdPackageRecordServiceImpl extends ServiceImpl<PdPackageRecordMappe
 	private PdPackageRecordMapper pdPackageRecordMapper;
 	@Autowired
 	private PdPackageRecordDetailMapper pdPackageRecordDetailMapper;
-	
+	@Autowired
+	private IPdProductStockTotalService pdProductStockTotalService;
+	@Autowired
+	private IPdStockLogService pdStockLogService;
+
 	@Override
-	@Transactional
-	public void saveMain(PdPackageRecord pdPackageRecord, List<PdPackageRecordDetail> pdPackageRecordDetailList) {
-		pdPackageRecordMapper.insert(pdPackageRecord);
-		if(pdPackageRecordDetailList!=null && pdPackageRecordDetailList.size()>0) {
-			for(PdPackageRecordDetail entity:pdPackageRecordDetailList) {
-				//外键设置
-				entity.setRecordId(pdPackageRecord.getId());
-				pdPackageRecordDetailMapper.insert(entity);
-			}
+	@Transactional(rollbackFor = Exception.class)
+	public Map<String, String> saveMain(PdPackageRecord pdPackageRecord, List<PdPackageRecordDetail> pdPackageRecordDetailList) {
+		Map<String, String> result = new HashMap<>();
+		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+
+		Integer packageCount = pdPackageRecord.getPackageCount();
+		if(packageCount == null || packageCount <=0){
+			throw new RuntimeException("请输入打包数量！");
 		}
+		if(oConvertUtils.isEmpty(pdPackageRecord.getRecordNo())){
+			throw new RuntimeException("打包编号为空！请刷新页面重新打包");
+		}
+		String time = DateUtils.date2Str(DateUtils.getDate(),DateUtils.yymmddhhmmssSSS.get());
+		for(int i = 0; i < packageCount; i++){
+			pdPackageRecord.setId(null); // 清空主键
+			pdPackageRecord.setCreateTime(null);
+			pdPackageRecord.setPackageBarCode(time+(i+1));
+			pdPackageRecord.setDepartId(sysUser.getCurrentDepartId());
+			pdPackageRecord.setDepartParentId(sysUser.getDepartParentId());
+			pdPackageRecord.setStatus(PdConstant.PACKAGE_RECORD_STATUS_1);
+			pdPackageRecordMapper.insert(pdPackageRecord);
+			if(pdPackageRecordDetailList!=null && pdPackageRecordDetailList.size()>0) {
+				for(PdPackageRecordDetail entity:pdPackageRecordDetailList) {
+					//外键设置
+					entity.setId(null);
+					entity.setRecordId(pdPackageRecord.getId());
+					pdPackageRecordDetailMapper.insert(entity);
+				}
+			}
+
+			// 扣减库存
+			String retStr = pdProductStockTotalService.updateOutStockForPackage(pdPackageRecord);
+			if(!PdConstant.TRUE.equals(retStr)){
+				throw new RuntimeException(retStr);
+			}
+			// 日志
+			this.saveStockLog(pdPackageRecord, PdConstant.STOCK_LOG_TYPE_8);
+		}
+
+		result.put("code", PdConstant.SUCCESS_200);
+		result.put("message", "审打包成功！");
+		return result;
 	}
 
 	@Override
@@ -70,17 +111,39 @@ public class PdPackageRecordServiceImpl extends ServiceImpl<PdPackageRecordMappe
 	@Override
 	@Transactional
 	public void delMain(String id) {
-//		pdPackageRecordDetailMapper.deleteByMainId(id);
+		PdPackageRecord pdPackageRecord = pdPackageRecordMapper.selectById(id);
+		if(PdConstant.PACKAGE_RECORD_STATUS_0.equals(pdPackageRecord.getStatus())){
+			throw new RuntimeException("该套包已出库，不能拆包！");
+		}
+		List<PdPackageRecordDetail> pdPackageRecordDetailList = pdPackageRecordDetailMapper.selectByMainId(id);
+		pdPackageRecord.setPdPackageRecordDetailList(pdPackageRecordDetailList);
+		// 拆包 库存还回
+		pdProductStockTotalService.updateInStockForPackage(pdPackageRecord);
+
 		pdPackageRecordMapper.deleteById(id);
 	}
 
 	@Override
 	@Transactional
-	public void delBatchMain(Collection<? extends Serializable> idList) {
+	public String delBatchMain(Collection<? extends Serializable> idList) {
+		List<String> messageList = new ArrayList<>();
 		for(Serializable id:idList) {
-//			pdPackageRecordDetailMapper.deleteByMainId(id.toString());
-			pdPackageRecordMapper.deleteById(id);
+			PdPackageRecord pdPackageRecord = pdPackageRecordMapper.selectById(id);
+			if(PdConstant.PACKAGE_RECORD_STATUS_1.equals(pdPackageRecord.getStatus())){
+				// 未出库状态
+				List<PdPackageRecordDetail> pdPackageRecordDetailList = pdPackageRecordDetailMapper.selectByMainId(id.toString());
+				pdPackageRecord.setPdPackageRecordDetailList(pdPackageRecordDetailList);
+				// 拆包 库存还回
+				pdProductStockTotalService.updateInStockForPackage(pdPackageRecord);
+				pdPackageRecordMapper.deleteById(id);
+			}else{
+				messageList.add(pdPackageRecord.getPackageBarCode());
+			}
 		}
+		if(CollectionUtils.isNotEmpty(messageList)){
+			return messageList.toString();
+		}
+		return "";
 	}
 
 	@Override
@@ -89,8 +152,8 @@ public class PdPackageRecordServiceImpl extends ServiceImpl<PdPackageRecordMappe
 	}
 
 	@Override
-	public Page<PdPackageRecord> queryList(Page<PdPackageRecord> pageList, PdPackageRecord pdPackageRecord) {
-		return pageList.setRecords(pdPackageRecordMapper.queryList(pdPackageRecord));
+	public IPage<PdPackageRecord> queryList(Page<PdPackageRecord> pageList, PdPackageRecord pdPackageRecord) {
+		return pdPackageRecordMapper.queryList(pageList, pdPackageRecord);
 	}
 
 	@Override
@@ -156,5 +219,33 @@ public class PdPackageRecordServiceImpl extends ServiceImpl<PdPackageRecordMappe
 		}
 		result.setResult(resultMap);
 		return  result;
+	}
+
+	/**
+	 * 保存套包打包日志
+	 * @param pdPackageRecord
+	 * @param type
+	 */
+	private void saveStockLog(PdPackageRecord pdPackageRecord, String type) {
+		//日志
+		List<PdPackageRecordDetail> detail = pdPackageRecord.getPdPackageRecordDetailList();
+		List<PdStockLog> logList = new ArrayList<PdStockLog>();
+		PdStockLog stockLog;
+		for (PdPackageRecordDetail psd : detail) {
+			stockLog = new PdStockLog();
+
+			stockLog.setInvoiceNo(pdPackageRecord.getPackageBarCode());
+			stockLog.setProductId(psd.getProductId());
+			stockLog.setProductBarCode(psd.getProductBarCode());
+			stockLog.setBatchNo(psd.getBatchNo());
+			stockLog.setProductNum(psd.getProductNum());
+			stockLog.setExpDate(psd.getExpDate());
+			stockLog.setInFrom("");
+			stockLog.setOutTo("");
+			stockLog.setLogType(type);
+			stockLog.setRecordTime(DateUtils.getDate());
+			logList.add(stockLog);
+		}
+		pdStockLogService.saveBatch(logList);
 	}
 }

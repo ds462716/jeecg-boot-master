@@ -140,4 +140,6 @@ public interface SysUserMapper extends BaseMapper<SysUser> {
     List<String> findMenuUser(@Param("departId")String departId, @Param("menuName")String menuName);
 
 	List<String> findDepartUserIds(@Param("departId") String departId);
+
+	SysUser getUser(SysUser user);
 }

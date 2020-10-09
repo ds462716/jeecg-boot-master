@@ -54,11 +54,11 @@
                   <a-input disabled="disabled" v-decorator="[ 'inDeptName', validatorRules.inDeptName]"></a-input>
                 </a-form-item>
               </a-col>
-              <a-col :span="12">
+            <!--  <a-col :span="12">
                 <a-form-item label="调拨总数量" :labelCol="labelCol" :wrapperCol="wrapperCol">
                   <a-input-number disabled="disabled" v-decorator="[ 'totalNum', validatorRules.totalNum]" style="width: 100%"/>
                 </a-form-item>
-              </a-col>
+              </a-col>-->
               <a-col :span="12">
                 <a-form-item label="备注" :labelCol="labelCol" :wrapperCol="wrapperCol">
                   <a-input v-decorator="[ 'remarks', validatorRules.remarks]"  style="width: 100%;height: 60px"></a-input>
@@ -99,7 +99,7 @@
 
               <span style="padding-left: 8px;"></span>
               <div style="margin-bottom: 8px;">
-                <a-button v-show="!disableSubmit" type="primary" icon="plus" @click="choicePackage">选择定数包</a-button>
+                <a-button v-show="!disableSubmit" type="primary" icon="plus" @click="choicePackage">选择套包</a-button>
                 <span style="padding-left: 8px;"></span>
                 <a-popconfirm
                   :title="`确定要删除吗?`"
@@ -114,7 +114,7 @@
               <a-table
                 ref="table"
                 bordered
-                rowKey="packageId"
+                rowKey="packageRecordId"
                 :columns="table2.columns"
                 :dataSource="table2.dataSource"
                 :loading="table1.loading"
@@ -149,6 +149,9 @@
                 />
         </span>
               </a-table>
+              <a-row style="margin-top:10px;text-align: right;padding-right: 5%">
+                <span style="font-weight: bold;font-size: large;padding-right: 5%">总数量：{{this.model.totalNum }}</span>
+              </a-row>
             </a-tab-pane>
           </a-tabs>
         </a-card>
@@ -186,7 +189,7 @@
   import JDate from '@/components/jeecg/JDate'
   import JDictSelectTag from "@/components/dict/JDictSelectTag"
   import PdAllocationDetailAddModal from './PdProductStockListModel'
-  import PdAllocationPackageAddModal from './PdChoosePackageListModel'
+  import PdAllocationPackageAddModal from './PdChoosePackageRecordListModel'
   import { JeecgListMixin } from '@/mixins/JeecgListMixin'
   import { filterObj } from '@/utils/util';
 
@@ -204,10 +207,9 @@
       return {
         model:{},
         title: '这里是标题',
-
-        lockScroll: true,
+        lockScroll: false,
         fullscreen: true,
-        switchFullscreen: true,
+        switchFullscreen: false,
         disableSubmit:false,
         confirmLoading: false,
         labelCol: {span: 6},
@@ -265,37 +267,51 @@
         table2:{
           dataSource:[],
           columns: [
-            {title: '#', dataIndex: 'packageId', key:'rowIndex', width:60, align:"center",
+            {title: '#', dataIndex: 'packageRecordId', key:'rowIndex', width:60, align:"center",
               customRender:function (t,r,index) {
                 return parseInt(index)+1;
               }
             },
-            {title:'定数包编号', align:"center",key:"packageCode", dataIndex: 'packageCode'},
-            {title:'定数包名称', align:"center", key:"packageName",dataIndex: 'packageName'},
-            {title:'产品总数', align:"center", key:"packageNum",dataIndex: 'packageNum'},
-            {title:'调拨数量', align:"center",key:"allocationNum",width: 100, dataIndex: 'allocationNum',
-              scopedSlots: { customRender: 'action' },
+            {title:'套包编号', align:"center",key:"packageCode", dataIndex: 'packageCode'},
+            {title:'套包名称', align:"center", key:"packageName",dataIndex: 'packageName'},
+            { title:'套包条码', align:"center", dataIndex: 'packageBarCode' },
+            {title:'产品总数', align:"center", key:"packageSum",dataIndex: 'packageSum'},
+            {title:'调拨数量', align:"center",key:"allocationNum",  dataIndex: 'allocationNum',
             },
+            { title:'打包人', align:"center", dataIndex: 'createBy' },
+            {title: '打包时间', align: "center", dataIndex: 'createTime'},
             {title:'备注', align:"center", key:"remarks",dataIndex: 'remarks'}
           ]
         },
         innerColumns:[
-          {title:'定数包编号', align:"center", width: 100, dataIndex: 'code'},
-          {title:'定数包名称', align:"center", width: 100, dataIndex: 'name'},
-          {title:'定数包产品数量', align:"center", width: 100, dataIndex: 'count'},
-          {title:'产品编号', align:"center", width: 100, dataIndex: 'number'},
-          {title:'产品名称', align:"center", dataIndex: 'productName'},
-          {title:'规格', align:"center", dataIndex: 'spec'},
-          {title:'型号', align:"center", dataIndex: 'version'},
-          {title:'单位', align:"center", dataIndex: 'unitName'},
-          /*{title:'库存数量', align:"center", dataIndex: 'stockNum'},*/
+          { title:'产品名称', align:"center", dataIndex: 'productName' },
+          { title:'产品编号', align:"center", dataIndex: 'productNumber' },
+          { title:'产品条码', align:"center",dataIndex: 'productBarCode' },
+          { title:'规格', align:"center", dataIndex: 'spec' },
+          { title:'批号', align:"center", dataIndex: 'batchNo' },
+          { title:'单位', align:"center", dataIndex: 'unitName' },
+          { title:'有效期', align:"center", dataIndex: 'expDate',
+            customRender:function (text) {
+              return !text?"":(text.length>10?text.substr(0,10):text)
+            }
+          },
+          { title:'入库单价', align:"center", dataIndex: 'purchasePrice' },
+          { title:'出库单价', align:"center", dataIndex: 'sellingPrice' },
+          { title:'套包产品数量', align:"center", dataIndex: 'productNum' },
+          { title:'出库金额', align:"center", dataIndex: 'outTotalPrice' },
+          { title:'库存数量', align:"center", dataIndex: 'stockNum' },
+          { title: '出库货位', align:"center", dataIndex: 'outHuoweiName' },
+          { title: '生产日期', align:"center", dataIndex: 'produceDate',
+            customRender:function (text) {
+              return !text?"":(text.length>10?text.substr(0,10):text)
+            }}
         ],
         url: {
           add: "/pd/pdAllocationRecord/add",
           edit: "/pd/pdAllocationRecord/edit",
           exportXlsUrl: "/pd/pdAllocationRecord/exportXls",
           querySysDepartList:"/pd/pdDepart/getSysTwoDepartList",
-          chooseDetailList:"/pd/pdPackage/queryPdPackageDetailList",
+          chooseDetailList:"/pd/pdPackageRecord/queryPdPackageRecordDetailByMainId",
           pdAllocationDetail: {
             list: '/pd/pdAllocationRecord/queryPdAllocationDetailList',
             packList: '/pd/pdAllocationRecord/queryAllocationDetailPack'
@@ -321,7 +337,7 @@
               let model={};
               this.model=res.result;
               this.$nextTick(() => {
-                this.form.setFieldsValue(pick(this.model,'allocationNo','allocationDate','totalNum','inDeptName','outDeptName','outDeptId','realName','remarks','rejectReason'))
+                this.form.setFieldsValue(pick(this.model,'allocationNo','allocationDate','inDeptName','outDeptName','outDeptId','realName','remarks','rejectReason'))
               })
             }
           })
@@ -337,8 +353,8 @@
         this.innerData=[];
         if(expanded===true){
           this.subloading = true;
-          this.expandedRowKeys.push(record.packageId);
-          getAction(this.url.chooseDetailList, {packageId: record.packageId}).then((res) => {
+          this.expandedRowKeys.push(record.packageRecordId);
+          getAction(this.url.chooseDetailList, {id: record.packageRecordId}).then((res) => {
             if (res.success) {
               this.subloading = false;
               this.innerData = res.result;
@@ -374,8 +390,6 @@
       },
       //选择产品
       choice() {
-
-
           //判断是否选择了出库科室
           let outDeptId = this.form.getFieldValue("outDeptId");
           if(outDeptId==null){
@@ -385,10 +399,16 @@
           this.$refs.PdAllocationDetailAddModal.show({departId:outDeptId});
       },
 
-      //选择定数包产品
+      //选择套包产品
       choicePackage() {
+        //判断是否选择了出库科室
+        let outDeptId = this.form.getFieldValue("outDeptId");
+        if(outDeptId==null){
+          this.$message.warning("请先选择出库科室")
+          return
+        }
         this.$refs.PdAllocationPackageAddModal.show();
-        this.$refs.PdAllocationPackageAddModal.title = "选择定数包";
+        this.$refs.PdAllocationPackageAddModal.title = "选择套包";
       },
 
       handleProdDelete() {  //删除产品
@@ -403,13 +423,13 @@
         }
       },
 
-      handlePackDelete() {  //删除定数包
+      handlePackDelete() {  //删除套包
         let dataId = [];
         if (this.selectionRows.length <= 0) {
           this.$message.warning('请选择一条记录！');
           return;
         } else {
-          //删除定数包
+          //删除套包
           let packageId= this.selectionRows[0].packageId;
           let data=this.table2.dataSource;
           data.forEach((item,index)=>{
@@ -428,10 +448,10 @@
       // 计算总数量
       getTotalNumAndPrice(rows){
         let totalNum=0;//总申领数量
-        let data=this.table2.dataSource;//定数包的
+        let data=this.table2.dataSource;//套包的
         const that = this;
         data.forEach((item,ids) => {
-          totalNum+=parseFloat(item.packageNum) * parseFloat(item.allocationNum);
+          totalNum+=parseFloat(item.packageSum) * parseFloat(item.allocationNum);
         });
         this.$nextTick(() => {
           if (rows.length <= 0) {
@@ -442,7 +462,7 @@
             totalNum += parseFloat(item.allocationNum);
           })
           this.model.totalNum = totalNum;
-          this.form.setFieldsValue(pick(this.model, 'totalNum'))
+          //this.form.setFieldsValue(pick(this.model, 'totalNum'))
         })
       },
       modalFormOk (formData) { //选择产品确定后返回所选择的数据
@@ -485,13 +505,14 @@
         this.table1.dataSource.push(data)
       },
 
-      modalFormInfoOk (formData) { //选择定数包产品确定后返回所选择的数据
+      modalFormInfoOk (rows) { //选择套包产品确定后返回所选择的数据
+        var  formData= rows.pdPackageRecordList;
         let data = [];
         let source=this.table2.dataSource;
         formData.forEach((item, idx) => {
           let bool = true;
           source.forEach((value, idx) => {
-            if(item.id==value.packageId){
+            if(item.packageId==value.packageId){
               bool=false;
             }
           })
@@ -510,13 +531,17 @@
 
       },
 
-      addPackRows(row) {  //新增定数包
+      addPackRows(row) {  //新增套包
         let data = {
-          packageId:row.id,
-          packageCode:row.code,
-          packageName:row.name,
-          packageNum:row.sum,
+          packageRecordId:row.id,
+          packageId:row.packageId,
+          packageCode:row.packageCode,
+          packageName:row.packageName,
+          packageSum:row.packageSum,
+          packageBarCode:row.packageBarCode,
           allocationNum:"1",
+          createBy:row.createBy,
+          /* createTime:row.createTime,*/
           remarks:row.remarks
         }
         this.table2.dataSource.push(data)
@@ -542,7 +567,7 @@
           // 发起请求
           let data= this.table2.dataSource;
           let packageName=null;
-          data.forEach((item,ids)=>{ //合并定数包
+          data.forEach((item,ids)=>{ //合并套包
             if(item.allocationNum <=0 || item.allocationNum=='' ||item.allocationNum==null){
               packageName+=item.packageName+",";
             }
@@ -550,7 +575,7 @@
           });
 
           if(packageName!=null){
-            that.$message.error("定数包调拨数量不能为空或不能为0");
+            that.$message.error("套包调拨数量不能为空或不能为0");
             return;
           }
 
@@ -588,7 +613,7 @@
       },
       /** 调用完edit()方法之后会自动调用此方法 */
       editAfter() {
-        let fieldval =  pick(this.model,'allocationNo','allocationDate','totalNum','inDeptName','outDeptName','outDeptId','realName','remarks','rejectReason')
+        let fieldval =  pick(this.model,'allocationNo','allocationDate','inDeptName','outDeptName','outDeptId','realName','remarks','rejectReason')
         this.$nextTick(() => {
           this.form.setFieldsValue(fieldval)
         })
@@ -599,7 +624,7 @@
           let params = {allocationNo: this.model.allocationNo,productAttr:"1"}
           this.requestSubTableData(this.url.pdAllocationDetail.list, params, this.table1)//加载产品
           params =  {allocationNo: this.model.allocationNo,productAttr:"2" }
-          this.requestSubTableData(this.url.pdAllocationDetail.packList, params, this.table2)//加载定数包
+          this.requestSubTableData(this.url.pdAllocationDetail.packList, params, this.table2)//加载套包
         }
       },
       /** 整理成formData */
@@ -615,7 +640,7 @@
         this.$message.error(msg)
       },
       popupCallback(row){
-        this.form.setFieldsValue(pick(row,'allocationNo','allocationDate','totalNum','inDeptName','outDeptName','outDeptId','realName','remarks','rejectReason'))
+        this.form.setFieldsValue(pick(row,'allocationNo','allocationDate','inDeptName','outDeptName','outDeptId','realName','remarks','rejectReason'))
       },
 
 

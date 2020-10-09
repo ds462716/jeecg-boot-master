@@ -4,10 +4,12 @@ import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import io.netty.util.internal.StringUtil;
+import org.apache.commons.lang.StringUtils;
 import org.jeecg.common.constant.CacheConstant;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.util.FillRuleUtil;
 import org.jeecg.common.util.YouBianCodeUtil;
+import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.system.entity.SysDepart;
 import org.jeecg.modules.system.mapper.SysDepartMapper;
 import org.jeecg.modules.system.model.DepartIdModel;
@@ -379,6 +381,28 @@ public class SysDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart
 	@Override
 	public SysDepart queryDepartByOrgCode(String orgCode) {
 		return sysDepartMapper.queryDepartByOrgCode(orgCode);
+	}
+
+	/**
+	 * 获取当前科室的一级科室，如果本身是一级科室则返回本身
+	 * @param id
+	 * @return
+	 */
+	@Override
+	public SysDepart getFirstById(String id) {
+		if(StringUtils.isEmpty(id)){
+			return null;
+		}
+		SysDepart sysDepart =  this.getById(id);
+		if(sysDepart == null){
+			return null;
+		}
+		String departType = sysDepart.getDepartType();
+		if("1".equals(departType)){
+			return sysDepart;
+		}else{
+			return this.getFirstById(sysDepart.getParentId());
+		}
 	}
 
 }

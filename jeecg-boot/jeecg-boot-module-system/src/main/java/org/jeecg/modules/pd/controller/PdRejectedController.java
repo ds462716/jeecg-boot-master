@@ -10,6 +10,8 @@ import java.net.URLDecoder;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.jeecg.common.api.vo.Result;
@@ -17,8 +19,12 @@ import org.jeecg.common.constant.PdConstant;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.oConvertUtils;
+import org.jeecg.modules.pd.entity.PdOnOff;
+import org.jeecg.modules.pd.entity.PdProductStockCheckPermission;
 import org.jeecg.modules.pd.entity.PdRejected;
 import org.jeecg.modules.pd.entity.PdRejectedDetail;
+import org.jeecg.modules.pd.service.IPdOnOffService;
+import org.jeecg.modules.pd.service.IPdProductStockCheckPermissionService;
 import org.jeecg.modules.pd.service.IPdRejectedDetailService;
 import org.jeecg.modules.pd.service.IPdRejectedService;
 
@@ -62,6 +68,10 @@ public class PdRejectedController extends JeecgController<PdRejected, IPdRejecte
     private IPdRejectedService pdRejectedService;
     @Autowired
     private IPdRejectedDetailService pdRejectedDetailService;
+    @Autowired
+    private IPdOnOffService pdOnOffService;
+    @Autowired
+    private IPdProductStockCheckPermissionService pdProductStockCheckPermissionService;
 
     /**
      * 初始化Modal页面
@@ -73,6 +83,7 @@ public class PdRejectedController extends JeecgController<PdRejected, IPdRejecte
     public Result<?> initModal(@RequestParam(name = "id") String id, HttpServletRequest req) {
         PdRejected pdRejected = new PdRejected();
 
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
         //获取退货单号
         pdRejected.setRejectedNo(UUIDUtil.generateOrderNoByType(PdConstant.ORDER_NO_FIRST_LETTER_TH));
         if (oConvertUtils.isNotEmpty(id)) {
@@ -80,6 +91,15 @@ public class PdRejectedController extends JeecgController<PdRejected, IPdRejecte
             pdRejectedDetail.setRejectedId(id);
             List<PdRejectedDetail> pdRejectedDetailList = pdRejectedDetailService.selectByMainId(pdRejectedDetail);
             pdRejected.setPdRejectedDetailList(pdRejectedDetailList);
+        }
+
+        PdOnOff query = new PdOnOff();
+        //开关-是否显示二级条码框（入库、出库、退货）   1-显示；0-不显示
+        query.setCode(PdConstant.ON_OFF_SHOW_S_BARCODE);
+        query.setDepartParentId(sysUser.getDepartParentId());
+        PdOnOff showSBarcode = pdOnOffService.getOne(query);
+        if (showSBarcode != null && showSBarcode.getValue() != null) {
+            pdRejected.setShowSBarcode(showSBarcode.getValue().toString());
         }
 
         return Result.ok(pdRejected);
@@ -117,16 +137,42 @@ public class PdRejectedController extends JeecgController<PdRejected, IPdRejecte
     @PostMapping(value = "/add")
     @RequiresPermissions("stock:form:addRejected")
     public Result<?> add(@RequestBody PdRejected pdRejected) {
+
+//        // 盘点不能 操作库存
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        List<PdProductStockCheckPermission> checkList = pdProductStockCheckPermissionService.list(new LambdaQueryWrapper<PdProductStockCheckPermission>().eq(PdProductStockCheckPermission::getTargetDepartId, sysUser.getCurrentDepartId()));
+        if(CollectionUtils.isNotEmpty(checkList)){
+            return Result.error("本库房正在盘点，不能退货！");
+        }
         pdRejectedService.save(pdRejected);
-        return Result.ok("添加成功！");
+        return Result.ok("退货成功！");
     }
 
     @PostMapping(value = "/submit")
-    @RequiresPermissions("stock:form:addRejected")
+    @RequiresPermissions("stock:rejectedSave")
     public Result<?> submit(@RequestBody PdRejected pdRejected) {
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        List<PdProductStockCheckPermission> checkList = pdProductStockCheckPermissionService.list(new LambdaQueryWrapper<PdProductStockCheckPermission>().eq(PdProductStockCheckPermission::getTargetDepartId, sysUser.getCurrentDepartId()));
+        if(CollectionUtils.isNotEmpty(checkList)){
+            return Result.error("本库房正在盘点，不能退货！");
+        }
+
         pdRejectedService.saveMain(pdRejected, pdRejected.getPdRejectedDetailList());
+        return Result.ok("退货成功！");
+    }
+
+    /**
+     * 唯一码保存
+     * @param pdRejected
+     * @return
+     */
+    @PostMapping(value = "/uniqueSubmit")
+    @RequiresPermissions("stock:form:addRejected")
+    public Result<?> uniqueSubmit(@RequestBody PdRejected pdRejected) {
+        pdRejectedService.uniqueSubmit(pdRejected, pdRejected.getPdRejectedDetailList());
         return Result.ok("添加成功！");
     }
+
 
     /**
      * 编辑
@@ -202,7 +248,7 @@ public class PdRejectedController extends JeecgController<PdRejected, IPdRejecte
         LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
         pdRejectedDetail.setDepartParentId(sysUser.getDepartParentId());
 
-        Page<PdRejectedDetail> list = pdRejectedDetailService.selectList(page,pdRejectedDetail);
+        IPage<PdRejectedDetail> list = pdRejectedDetailService.selectList(page,pdRejectedDetail);
 
         return Result.ok(list);
     }

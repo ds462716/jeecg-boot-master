@@ -83,7 +83,7 @@ spring:
         timeBetweenEvictionRunsMillis: 60000
         # 配置一个连接在池中最小生存的时间，单位是毫秒
         minEvictableIdleTimeMillis: 300000
-#        validationQuery: SELECT 1 FROM DUAL
+        #        validationQuery: SELECT 1 FROM DUAL
         testWhileIdle: true
         testOnBorrow: false
         testOnReturn: false
@@ -96,18 +96,21 @@ spring:
         connectionProperties: druid.stat.mergeSql\=true;druid.stat.slowSqlMillis\=5000
       datasource:
         master:
-          url: jdbc:mysql://119.23.56.26:3366/jeecg-boot?characterEncoding=UTF-8&useUnicode=true&useSSL=false
-          #url: jdbc:mysql://localhost:3306/jeecg-boot-l?characterEncoding=UTF-8&useUnicode=true&useSSL=false
+#          url: jdbc:mysql://119.23.56.26:3366/jeecg-boot?characterEncoding=UTF-8&useUnicode=true&useSSL=false
+          url: jdbc:mysql://localhost:3306/jj-spd?characterEncoding=UTF-8&useUnicode=true&useSSL=false
+#          username: spd-test
+#          password: 123456
           username: root
+#          password: gy@86776988
           password: 1234
           driver-class-name: com.mysql.jdbc.Driver
         # 多数据源配置
-#        multi-datasource1:
-#          url: jdbc:mysql://localhost:3306/jeecg-boot2?useUnicode=true&characterEncoding=utf8&autoReconnect=true&zeroDateTimeBehavior=convertToNull&transformedBitIsBoolean=true
-#          url: jdbc:sqlserver://192.168.1.102:1433;databaseName=SPD-SRM
-#          username: sa
-#          password: 123456
- #         driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
+  #        multi-datasource1:
+  #          url: jdbc:mysql://localhost:3306/jeecg-boot2?useUnicode=true&characterEncoding=utf8&autoReconnect=true&zeroDateTimeBehavior=convertToNull&transformedBitIsBoolean=true
+  #          url: jdbc:sqlserver://192.168.1.102:1433;databaseName=SPD-SRM
+  #          username: sa
+  #          password: 123456
+  #         driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
   #redis 配置
   redis:
     database: 0
@@ -175,6 +178,8 @@ jeecg :
     minio_name: ??
     minio_pass: ??
     bucketName: ??
+  hospital_code: "FCZYY"  #医院代码-丰城中医院
+#  hospital_code: "GZSLYY"  #医院代码-赣州市立医院
 #Mybatis输出sql日志
 logging:
   level:

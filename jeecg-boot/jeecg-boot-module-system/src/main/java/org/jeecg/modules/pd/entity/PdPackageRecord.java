@@ -32,18 +32,21 @@ public class PdPackageRecord extends BaseEntity {
 	@TableId(type = IdType.ID_WORKER_STR)
     @ApiModelProperty(value = "id")
     private String id;
-	/**定数包ID*/
-	@Excel(name = "定数包ID", width = 15)
-    @ApiModelProperty(value = "定数包ID")
+	/**套包ID*/
+	@Excel(name = "套包ID", width = 15)
+    @ApiModelProperty(value = "套包ID")
     private String packageId;
 	/**科室ID*/
 	@Excel(name = "科室ID", width = 15)
     @ApiModelProperty(value = "科室ID")
     private String departId;
     private String departParentId;
-	/**定数包流水码*/
-	@Excel(name = "定数包流水码", width = 15)
-    @ApiModelProperty(value = "定数包流水码")
+    @Excel(name = "打包编号", width = 15)
+    @ApiModelProperty(value = "打包编号")
+    private String recordNo;
+	/**套包流水码*/
+	@Excel(name = "套包流水码", width = 15)
+    @ApiModelProperty(value = "套包流水码")
     private String packageBarCode;
 	/**出库状态：0-已出库；1-未出库*/
 	@Excel(name = "出库状态：0-已出库；1-未出库", width = 15)
@@ -59,8 +62,8 @@ public class PdPackageRecord extends BaseEntity {
     private String createBy;
 	/**创建日期*/
 	@Excel(name = "创建日期", width = 15, format = "yyyy-MM-dd")
-	@JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd")
-    @DateTimeFormat(pattern="yyyy-MM-dd")
+	@JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd HH:mm:ss")
+    @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
     @ApiModelProperty(value = "创建日期")
     private Date createTime;
 	/**更新人*/
@@ -78,11 +81,11 @@ public class PdPackageRecord extends BaseEntity {
     private List<PdPackageRecordDetail> pdPackageRecordDetailList;
 
     @TableField(exist = false)
-    private String code;          //定数包编号
+    private String packageCode;          //套包编号
     @TableField(exist = false)
-    private String name;          //定数包名称
+    private String packageName;          //套包名称
     @TableField(exist = false)
-    private String sum;           //定数包产品总数
+    private String packageSum;           //套包产品总数
     @TableField(exist = false)
     private List<String> idList;
 
@@ -90,4 +93,11 @@ public class PdPackageRecord extends BaseEntity {
     private String productNumber; // 产品编号 查询用
     @TableField(exist = false)
     private String productName; // 产品名称 查询用
+    @TableField(exist = false)
+    private Integer packageCount; //打包数量
+    /**开关-是否显示二级条码框**/
+    @TableField(exist = false)
+    private String showSBarcode;
+    @TableField(exist = false)
+    private String departName;
 }

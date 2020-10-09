@@ -1,5 +1,6 @@
 package org.jeecg.modules.pd.service;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.modules.pd.entity.PdPackageRecordDetail;
@@ -22,7 +23,7 @@ public interface IPdPackageRecordService extends IService<PdPackageRecord> {
 	 * 添加一对多
 	 * 
 	 */
-	public void saveMain(PdPackageRecord pdPackageRecord,List<PdPackageRecordDetail> pdPackageRecordDetailList) ;
+	Map<String, String> saveMain(PdPackageRecord pdPackageRecord,List<PdPackageRecordDetail> pdPackageRecordDetailList) ;
 	
 	/**
 	 * 修改一对多
@@ -38,7 +39,7 @@ public interface IPdPackageRecordService extends IService<PdPackageRecord> {
 	/**
 	 * 批量删除一对多
 	 */
-	public void delBatchMain (Collection<? extends Serializable> idList);
+	public String delBatchMain (Collection<? extends Serializable> idList);
 
 	/**
 	 * 查询列表
@@ -53,10 +54,10 @@ public interface IPdPackageRecordService extends IService<PdPackageRecord> {
 	 * @param pdPackageRecord
 	 * @return
 	 */
-	Page<PdPackageRecord> queryList(Page<PdPackageRecord> pageList, PdPackageRecord pdPackageRecord);
+	IPage<PdPackageRecord> queryList(Page<PdPackageRecord> pageList, PdPackageRecord pdPackageRecord);
 
 	/**
-	 * 定数包打包记录扫码
+	 * 套包打包记录扫码
 	 * @param Barcode1
 	 * @param result
 	 * @return

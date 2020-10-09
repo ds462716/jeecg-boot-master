@@ -1,5 +1,6 @@
 package org.jeecg.modules.pd.controller;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -10,12 +11,15 @@ import java.net.URLDecoder;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.PdConstant;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.oConvertUtils;
+import org.jeecg.modules.pd.entity.PdProduct;
 import org.jeecg.modules.pd.entity.PdVender;
 import org.jeecg.modules.pd.service.IPdVenderService;
 
@@ -65,13 +69,10 @@ public class PdVenderController extends JeecgController<PdVender, IPdVenderServi
 								   @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
 								   @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
 								   HttpServletRequest req) {
-		Result<Page<PdVender>> result = new Result<>();
-		Page<PdVender> pageList = new Page<>(pageNo,pageSize);
+		Page<PdVender> page = new Page<>(pageNo,pageSize);
 		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
 		pdVender.setDepartParentId(sysUser.getDepartParentId());
-		pageList =pdVenderService.selectList(pageList,pdVender);
-		result.setSuccess(true);
-		result.setResult(pageList);
+		IPage<PdVender> pageList =pdVenderService.selectList(page,pdVender);
 		return Result.ok(pageList);
 	}
 
@@ -88,6 +89,7 @@ public class PdVenderController extends JeecgController<PdVender, IPdVenderServi
 		 try {
 			 LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
 			 pdVender.setDepartParentId(sysUser.getDepartParentId());
+			 pdVender.setStatus(PdConstant.DISABLE_ENABLE_STATUS_0);//只查启用
 			 List<PdVender> list = pdVenderService.selectList(pdVender);
 			 result.setResult(list);
 			 result.setSuccess(true);
@@ -415,6 +417,39 @@ public class PdVenderController extends JeecgController<PdVender, IPdVenderServi
 		Map<String, MultipartFile> fileMap = multipartRequest.getFileMap();
 		Result<Object> resul = pdVenderService.importExcel(fileMap);
 		return resul;
+	}
+
+	 /**
+	  * 批量停用和启用status 0启用1停用
+	  * @param jsonObject
+	  * @return
+	  */
+	@RequestMapping(value = "/batchDisable", method = RequestMethod.POST)
+	public Result<PdVender> batchDisable(@RequestBody JSONObject jsonObject) {
+		Result<PdVender> result = new Result<PdVender>();
+		try {
+			String ids = jsonObject.getString("ids");
+			String status = jsonObject.getString("status");
+			String[] arr = ids.split(",");
+			List<PdVender> pdVenders= new ArrayList<>();
+			for (String id : arr) {
+				if(oConvertUtils.isNotEmpty(id)) {
+					PdVender pdVender = new PdVender();
+					pdVender.setId(id);
+					pdVender.setStatus(status);
+					pdVenders.add(pdVender);
+				}
+			}
+			if(pdVenders!=null && pdVenders.size()>0){
+				pdVenderService.updateBatchById(pdVenders);
+			}
+		} catch (Exception e) {
+		 log.error(e.getMessage(), e);
+		 result.error500("操作失败"+e.getMessage());
+		}
+		result.success("操作成功!");
+		return result;
+
 	}
 
 }

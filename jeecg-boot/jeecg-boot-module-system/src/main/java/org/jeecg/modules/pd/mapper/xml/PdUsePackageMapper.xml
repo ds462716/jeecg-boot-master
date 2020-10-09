@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.jeecg.modules.pd.mapper.PdUsePackageMapper">
-
     <select id="queryList" resultType="org.jeecg.modules.pd.entity.PdUsePackage" parameterType="org.jeecg.modules.pd.entity.PdUsePackage">
-        SELECT
+        SELECT  DISTINCT
         a.id,
         a.code,
         a.name,
@@ -19,24 +18,65 @@
         a.del_flag,
         a.sys_org_code,
         a.depart_id,
-        a.depart_parent_id
+        a.test_depart_id,
+        d.depart_name as "testDepartName",
+        a.depart_parent_id,
+        a.deductuin_type
         FROM pd_use_package a
+        left join pd_use_package_detail b on a.id=b.package_id   AND b.del_flag='0'
+        left join pd_product c on c.id=b.product_id and c.del_flag='0'
+        left join sys_depart d on d.id=a.test_depart_id and d.del_flag='0'
         <where>
-            a.del_flag = #{DEL_FLAG_NORMAL}
-            <if test="name != null and name != ''">
-                AND ( a.name LIKE concat('%',#{name},'%')
-                or a.py LIKE concat('%',#{name},'%')
-                or a.wb LIKE concat('%',#{name},'%')
-                or a.zdy LIKE concat('%',#{name},'%') )
+            a.del_flag = #{entity.DEL_FLAG_NORMAL}
+            <if test="entity.name != null and entity.name != ''">
+                AND ( a.name LIKE concat('%',#{entity.name},'%')
+                or a.py LIKE concat('%',#{entity.name},'%')
+                or a.wb LIKE concat('%',#{entity.name},'%')
+                or a.zdy LIKE concat('%',#{entity.name},'%') )
             </if>
-            <if test="code != null and code != ''">
-                AND a.code LIKE concat('%',#{code},'%')
+            <if test="entity.productName != null and entity.productName != ''">
+                AND (
+                c.name LIKE concat('%',#{entity.productName},'%')
+                or c.py LIKE concat('%',#{entity.productName},'%')
+                or c.wb LIKE concat('%',#{entity.productName},'%')
+                or c.bname LIKE concat('%',#{entity.productName},'%')
+                or c.bpy LIKE concat('%',#{entity.productName},'%')
+                or c.bwb LIKE concat('%',#{entity.productName},'%')
+                or c.zdy LIKE concat('%',#{entity.productName},'%')
+                )
             </if>
-            <if test="departParentId != null and departParentId != ''">
-                AND a.depart_parent_id = #{departParentId}
+            <if test="entity.number != null and entity.number != ''">
+                AND c.number LIKE concat('%',#{entity.number},'%')
             </if>
-            <if test="departId != null and departId != ''">
-                AND a.depart_id = #{departId}
+            <if test="entity.code != null and entity.code != ''">
+                AND a.code LIKE concat('%',#{entity.code},'%')
+            </if>
+            <if test="entity.departParentId != null and entity.departParentId != ''">
+                AND a.depart_parent_id = #{entity.departParentId}
+            </if>
+            <if test="entity.departId != null and entity.departId != ''">
+                AND a.depart_id = #{entity.departId}
+            </if>
+            <if test="entity.deductuinType != null and entity.deductuinType != ''">
+                AND a.deductuin_type = #{entity.deductuinType}
+            </if>
+            <if test="entity.testDepartName != null and entity.testDepartName != ''">
+                AND d.depart_name  LIKE concat('%',#{entity.testDepartName},'%')
+            </if>
+            <if test="entity.testDepartId != null and entity.testDepartId != ''">
+                AND a.test_depart_id  LIKE concat('%',#{entity.testDepartId},'%')
+            </if>
+            <if test="entity.idList != null and entity.idList.size() > 0">
+                AND a.id IN
+                <foreach collection="entity.idList" item="item" separator="," open="(" close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="entity.departIdList != null and entity.departIdList.size() > 0">
+                and a.test_depart_id IN
+                <foreach collection="entity.departIdList" item="item" separator="," open="(" close=")">
+                    #{item}
+                </foreach>
             </if>
         </where>
         ORDER BY a.update_time desc

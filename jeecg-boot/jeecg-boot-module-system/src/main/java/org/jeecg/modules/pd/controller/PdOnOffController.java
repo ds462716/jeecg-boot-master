@@ -10,6 +10,7 @@ import java.net.URLDecoder;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.system.query.QueryGenerator;
@@ -74,23 +75,40 @@ public class PdOnOffController extends JeecgController<PdOnOff, IPdOnOffService>
 		pdOnOff.setDepartParentId(sysUser.getDepartParentId());
 		QueryWrapper<PdOnOff> queryWrapper = QueryGenerator.initQueryWrapper(pdOnOff, req.getParameterMap());
 		Page<PdOnOff> page = new Page<PdOnOff>(pageNo, pageSize);
-		IPage<PdOnOff> pageList = pdOnOffService.page(page, queryWrapper);
+		List<PdOnOff> pdOnOffList = pdOnOffService.list(queryWrapper);
 
-		if(pageList.getRecords()==null || pageList.getRecords().size()==0){
-			//如果没有就查询默认的
-			pdOnOff.setDepartParentId("");
-			queryWrapper = QueryGenerator.initQueryWrapper(pdOnOff, req.getParameterMap());
-			List<PdOnOff> pdOnOffList = pdOnOffService.list(queryWrapper);
+		PdOnOff original = new PdOnOff();
+		List<PdOnOff> originalList = pdOnOffService.selectOriginalList(original);
+		if(CollectionUtils.isEmpty(originalList)){
+			return Result.error("初始化失败，请联系管理员插入初始化开关数据！");
+		}
 
-			for(PdOnOff oo :pdOnOffList){
+		if(CollectionUtils.isEmpty(pdOnOffList)){
+			for(PdOnOff oo :originalList){
 				oo.setDepartParentId(sysUser.getDepartParentId());
 				oo.setDepartId(sysUser.getCurrentDepartId());
 				oo.setId(UUIDUtil.getUuid());
 			}
-			pdOnOffService.saveBatch(pdOnOffList);
-			page.setRecords(pdOnOffList);
-			return Result.ok(page);
+			pdOnOffService.saveBatch(originalList);
+		}else{
+			for(PdOnOff orig : originalList){
+				boolean isHas = false;
+				for(PdOnOff item : pdOnOffList){
+					if(orig.getCode().equals(item.getCode())){
+						isHas = true;
+						continue;
+					}
+				}
+				if(!isHas){
+					orig.setDepartParentId(sysUser.getDepartParentId());
+					orig.setDepartId(sysUser.getCurrentDepartId());
+					orig.setId(UUIDUtil.getUuid());
+					pdOnOffService.save(orig);
+				}
+			}
 		}
+
+		IPage<PdOnOff> pageList = pdOnOffService.page(page, queryWrapper);
 		return Result.ok(pageList);
 	}
 	

@@ -17,6 +17,7 @@
                 placeholder="请选择入库库房"
                 :supplierId="departValue"
                 :defaultActiveFirstOption="false"
+                :allowClear="true"
                 :showArrow="true"
                 :filterOption="false"
                 @search="departHandleSearch"
@@ -72,7 +73,7 @@
             </a-col>
             <a-col :md="6" :sm="8">
               <a-form-item label="入库类型">
-                <j-dict-select-tag v-model="queryParam.inType" dictCode="in_type"/>
+                <j-dict-select-tag-expand v-model="queryParam.inType" dictCode="in_type"/>
               </a-form-item>
             </a-col>
             <a-col :md="6" :sm="8">
@@ -151,6 +152,9 @@
         :loading="loading"
         :scroll="tableScroll"
         @change="handleTableChange">
+        <template slot="ellipsisText" slot-scope="text">
+          <j-ellipsis :value="text" :length="textMaxLength"></j-ellipsis>
+        </template>
       </a-table>
     </div>
   </a-card>
@@ -161,17 +165,20 @@
   import { filterObj } from '@/utils/util';
   import { JeecgListMixin} from '@/mixins/JeecgListMixin'
   import {initDictOptions, filterMultiDictText} from '@/components/dict/JDictSelectUtil'
+  import JDictSelectTagExpand from "@/components/dict/JDictSelectTagExpand"
+  import JEllipsis from '@/components/jeecg/JEllipsis'
 
   export default {
     name: "PdstockRecordInQueryList",
     mixins:[JeecgListMixin],
     components: {
-
+      JDictSelectTagExpand,JEllipsis
     },
     data () {
       return {
         description: '入库明细查询',
 
+        textMaxLength:15,
         notFoundContent:"未找到内容",
         supplierValue: undefined,
         supplierData: [],
@@ -195,7 +202,7 @@
             }
           },*/
           {
-            title:'入库单号',
+            title:'单号',
             align:"center",
             width:'100px',
             dataIndex: 'recordNo'
@@ -208,6 +215,25 @@
             customRender:function (text) {
               return !text?"":(text.length>10?text.substr(0,10):text)
             }
+          },
+          {
+            title:'入库类型',
+            align:"center",
+            dataIndex: 'inType',
+            width:'90px',
+            customRender:(text)=>{
+              if(!text){
+                return ''
+              }else{
+                return filterMultiDictText(this.dictOptions['inType'], text+"")
+              }
+            }
+          },
+          {
+            title:'出库科室',
+            align:"center",
+            width:'80px',
+            dataIndex: 'outDepartName'
           },
           {
             title:'入库科室',
@@ -270,11 +296,17 @@
             }
           },
           {
-            title:'数量',
+            title:'入库数量',
             align:"center",
             width:'90px',
             dataIndex: 'productNum'
           },
+          // {
+          //   title:'库存数量',
+          //   align:"center",
+          //   width:'90px',
+          //   dataIndex: 'stockNum'
+          // },
           {
             title:'单位',
             align:"center",
@@ -300,37 +332,68 @@
             dataIndex: 'venderName'
           },
           {
+            title:'生产厂家JDE编号',
+            align:"center",
+            width:'100px',
+            scopedSlots: {customRender: "ellipsisText"},
+            dataIndex: 'venderJdeCode'
+          },
+          {
             title:'供应商',
             align:"center",
             width:'250px',
             dataIndex: 'supplierName'
           },
           {
-            title:'注册证号',
+            title:'供应商JDE编号',
+            align:"center",
+            width:'100px',
+            scopedSlots: {customRender: "ellipsisText"},
+            dataIndex: 'supplierJdeCode'
+          },
+          {
+            title:'配送商',
             align:"center",
             width:'250px',
-            dataIndex: 'registration'
+            dataIndex: 'distributorName'
+          },
+          {
+            title:'注册证号',
+            align:"center",
+            width:'200px',
+            dataIndex: 'productRegistration'
+          },
+          {
+            title:'发票号',
+            align:"center",
+            width:'150px',
+            scopedSlots: {customRender: "ellipsisText"},
+            dataIndex: 'invoiceNo'
+          },
+          {
+            title:'发票代码',
+            align:"center",
+            width:'100px',
+            scopedSlots: {customRender: "ellipsisText"},
+            dataIndex: 'invoiceCode'
+          },
+          {
+            title:'发票日期',
+            align:"center",
+            width:'90px',
+            dataIndex: 'invoiceData',
+            customRender:function (text) {
+              return !text?"":(text.length>10?text.substr(0,10):text)
+            }
           },
           {
             title:'备注',
             align:"center",
+            width:'100px',
             dataIndex: 'remarks'
           },
           {
-            title:'入库类型',
-            align:"center",
-            dataIndex: 'inType',
-            width:'90px',
-            customRender:(text)=>{
-              if(!text){
-                return ''
-              }else{
-                return filterMultiDictText(this.dictOptions['inType'], text+"")
-              }
-            }
-          },
-          {
-            title:'JDE编号',
+            title:'产品JDE编号',
             align:"center",
             width:'100px',
             dataIndex: 'jdeCode'
@@ -338,7 +401,7 @@
           {
             title:'操作人',
             align:"center",
-            width:'100px',
+            width:'80px',
             dataIndex: 'realname'
           }
         ],
@@ -353,7 +416,7 @@
         dictOptions:{
           inType:[],
         },
-        tableScroll:{x :3500},
+        tableScroll:{x :4200},
       }
     },
     computed: {

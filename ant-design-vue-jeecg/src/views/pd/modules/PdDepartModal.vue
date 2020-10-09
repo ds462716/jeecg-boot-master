@@ -49,6 +49,7 @@
           <a-select :disabled="disableSubmit"  v-decorator="[ 'departType',{'initialValue':'2',rules:departType}]" placeholder="请选择部门类型">
             <a-select-option value="1">一级库房</a-select-option>
             <a-select-option value="2">二级库房</a-select-option>
+            <a-select-option value="3">三级库房</a-select-option>
           </a-select>
         </a-form-item>
         <a-form-item

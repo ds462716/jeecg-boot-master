@@ -96,4 +96,12 @@ public class PdRejected extends BaseEntity {
     private String queryExpDateStart;
     @TableField(exist = false)
     private String queryExpDateEnd;
+
+    private String rejectedType;//退货类型，唯一码退货和普通码退货
+    @Excel(name = "总数", width = 15)
+    @ApiModelProperty(value = "总数")
+    private Double totalSum;
+    /**开关-是否显示二级条码框（入库、出库、退货）**/
+    @TableField(exist = false)
+    private String showSBarcode;
 }

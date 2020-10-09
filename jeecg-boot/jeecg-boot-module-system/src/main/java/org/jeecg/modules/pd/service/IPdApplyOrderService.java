@@ -4,11 +4,13 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.jeecg.modules.pd.entity.PdApplyDetail;
 import org.jeecg.modules.pd.entity.PdApplyOrder;
+import org.jeecg.modules.pd.entity.PdProductStockTotal;
 import org.jeecg.modules.pd.vo.PdApplyOrderPage;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @Description: 申领单主表
@@ -58,4 +60,10 @@ public interface IPdApplyOrderService extends IService<PdApplyOrder> {
 	 * 首页查询  根据申领产品类区分统计申领金额及数量
 	 */
 	List<HashMap> queryApplyOrderTotalList(PdApplyOrderPage applyOrderPage);
+
+	/**
+	 * 自动生成申领单补货
+	 * @param stockTotalList
+	 */
+	public void autoApplyOrderInfo(Set<PdProductStockTotal> stockTotalList,String departId) ;
 }

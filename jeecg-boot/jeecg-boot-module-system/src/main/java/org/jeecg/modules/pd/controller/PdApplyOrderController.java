@@ -249,6 +249,8 @@ public class PdApplyOrderController {
 					if(applyNum>stockNum){
 						prodNames+=aList.get(0).getProductName();
  					}
+				}else{
+					return	Result.error(entity.getProductName());
 				}
 			}
 		}
@@ -331,7 +333,7 @@ public class PdApplyOrderController {
 	 }
 
 	 /**
-	  * 通过申领单号查询定数包明细
+	  * 通过申领单号查询套包明细
 	  *
 	  * @param applyDetail
 	  * @return

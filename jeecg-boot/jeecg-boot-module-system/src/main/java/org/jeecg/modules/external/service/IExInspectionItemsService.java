@@ -1,7 +1,11 @@
 package org.jeecg.modules.external.service;
 
-import org.jeecg.modules.external.entity.ExInspectionItems;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
+import org.jeecg.modules.external.entity.ExInspectionItems;
+
+import java.util.List;
 
 /**
  * @Description: 检查项目表
@@ -10,5 +14,25 @@ import com.baomidou.mybatisplus.extension.service.IService;
  * @Version: V1.0
  */
 public interface IExInspectionItemsService extends IService<ExInspectionItems> {
+
+    /**
+     * 分页查询
+     * @param pageList
+     * @param exInspectionItems
+     * @return
+     */
+    IPage<ExInspectionItems> selectList(Page<ExInspectionItems> pageList, ExInspectionItems exInspectionItems);
+
+    List<ExInspectionItems> selectList(ExInspectionItems exInspectionItems);
+
+    List<String> selectListIds();
+
+    void batchUsePackageDetail(String ids);
+
+    IPage<ExInspectionItems> patientList(Page<ExInspectionItems> pageList, ExInspectionItems exInspectionItems);
+
+    ExInspectionItems inspectionMonthQuery(ExInspectionItems exInspectionItems);
+
+    IPage<ExInspectionItems> selectExInsepectionMonth(Page<ExInspectionItems> pageList, ExInspectionItems exInspectionItems);
 
 }

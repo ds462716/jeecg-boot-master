@@ -13,7 +13,7 @@
     <a-spin :spinning="confirmLoading">
       <div style="background:#ECECEC; padding:20px">
         <a-card title="" style="margin-bottom: 10px;">
-          <a-form :form="form">
+          <a-form :form="form" :selfUpdate = "true">
             <a-row>
               <a-col :span="6">
                 <a-form-item label="用量单号" :labelCol="labelCol" :wrapperCol="wrapperCol">
@@ -46,16 +46,16 @@
         <a-card style="margin-bottom: 10px;">
           <a-tabs v-model="activeKey" @change="handleChangeTabs">
             <a-tab-pane tab="产品明细" :key="refKeys[0]"  :forceRender="true">
-              <a-form v-show="false">
+              <a-form v-show="false" :form="formOne" :selfUpdate = "true">
                 <a-row>
                   <a-col :md="6" :sm="8">
                     <a-form-item label="产品编号" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                      <a-input ref="productNumberInput" v-focus placeholder="请输入产品编号" v-model="queryParam.productNumber" @keyup.enter.native="searchQuery(0)"></a-input>
+                      <a-input ref="productNumberInput" v-focus placeholder="请输入产品编号" v-decorator="[ 'productNumber']" @keyup.enter.native="searchQuery(0)"></a-input>
                     </a-form-item>
                   </a-col>
                   <a-col :md="6" :sm="8">
                     <a-form-item label="二级条码" :labelCol="labelCol" :wrapperCol="wrapperCol">
-                      <a-input ref="productBarCodeInput" placeholder="请输入二级条码" v-model="queryParam.productBarCode" @keyup.enter.native="searchQuery(1)"></a-input>
+                      <a-input ref="productBarCodeInput" placeholder="请输入二级条码" v-decorator="[ 'productBarCode']" @keyup.enter.native="searchQuery(1)"></a-input>
                     </a-form-item>
                   </a-col>
                   <a-col :md="12" :sm="8">
@@ -68,7 +68,7 @@
 
               <div style="margin-bottom: 8px;" v-show="false">
                 <a-button type="primary" icon="plus" @click="chooseProductList">选择产品</a-button>
-                <a-button type="primary" icon="plus" @click="choosePackageList" style="margin-left: 8px">选择定数包</a-button>
+                <a-button type="primary" icon="plus" @click="choosePackageList" style="margin-left: 8px">选择套包</a-button>
                 <a-popconfirm style="margin-left: 8px"
                               :title="`确定要删除吗?`"
                               @confirm="handleConfirmDelete">
@@ -89,6 +89,7 @@
                 :actionButton="false"
                 :disabled="disableSubmit"
                 @valueChange="valueChange"
+                @selectRowChange="handleSelectRowChange"
                 style="text-overflow: ellipsis;"
               >
                 <!--:maxHeight 大于 600 后就会有BUG 一次性选择9条以上产品，会少显示一条-->
@@ -104,7 +105,7 @@
         <a-card style="margin-bottom: 10px;">
           <a-tabs v-model="activeKey" @change="handleChangeTabs">
             <a-tab-pane tab="收费信息" :key="refKeys[0]"  :forceRender="true">
-              <a-form :form="form">
+              <a-form :form="form" :selfUpdate = "true">
                 <a-row>
                   <!--<a-col :md="16" :sm="8">
                     <a-form-item label="执行收费" :labelCol="{span: 3}" :wrapperCol="{span: 20}">
@@ -258,6 +259,7 @@
     },
     data () {
       return {
+        formOne: this.$form.createForm(this),
         width:800,
         visible: false,
         model: {},
@@ -268,6 +270,7 @@
         hyCharged: true,
         totalSum:'0',
         totalPrice:'0.0000',
+        sRowIds:[],//选中行id
         activeKey: 'pdDosageDetail',
         refKeys: ['pdDosageDetail',],
         //货区货位二级联动下拉框
@@ -287,7 +290,7 @@
             { title: '批号', key: 'batchNo', width:"100px" },
             { title: '单位', key: 'unitName', width:"50px" },
             { title: '有效期', key: 'expDate', width:"100px" },
-            { title: '入库单价', key: 'purchasePrice', width:"80px" },
+            /*{ title: '入库单价', key: 'purchasePrice', width:"80px" },*/
             { title: '出库单价', key: 'sellingPrice', width:"80px" },
             {
               title: '用量数量', key: 'dosageCount', type: FormTypes.input,disabled:true, width:"80px",
@@ -353,9 +356,7 @@
             ]},
           sqrtDoctorName: {rules: [
             ]},
-          inHospitalNo: {rules: [
-              {required: true, message: '请输入住院号!'},
-            ]},
+          inHospitalNo: {rules: []},
           dosageBy: {rules: [
             ]},
           subordinateWardId: {rules: [
@@ -458,7 +459,9 @@
         this.$emit('close');
         this.totalSum = 0;
         this.totalPrice = 0.0000;
+        this.sRowIds = [];
         this.visible = false;
+        this.formOne.resetFields();
         this.pdDosageDetailTable.dataSource = [];
         this.eachAllTable((item) => {
           item.initialize()
@@ -470,7 +473,7 @@
       // 扫码查询
       searchQuery(num) {
         let that = this;
-        let productNumber = this.queryParam.productNumber;
+        let productNumber = this.formOne.getFieldValue("productNumber");
         if(!productNumber){
           //清空扫码框
           this.clearQueryParam();
@@ -484,13 +487,13 @@
           this.$refs.productBarCodeInput.focus();
 
         }else if(num == 1){ //条码扫码
-          let productBarCode = this.queryParam.productBarCode;
+          let productBarCode = this.formOne.getFieldValue("productBarCode");
           if(!productBarCode){
             this.$message.error("请输入二级条码！");
             return;
           }
           //解析条码
-          stockScanCode(productNumber,productBarCode).then((res) => {
+          stockScanCode(productNumber,productBarCode,"0","1","0").then((res) => {
             if(res.code == "200" || res.code == "203"){
               let pdProductStockList = res.result;
               if(!pdProductStockList){
@@ -553,7 +556,7 @@
         this.$refs.pdChooseProductStockListModel.width = 1550;
         this.$refs.pdChooseProductStockListModel.show({});
       },
-      // 选择定数包
+      // 选择套包
       choosePackageList() {
 
       },
@@ -566,8 +569,17 @@
           this.$message.error("请选择需要删除的数据！")
         }
       },
+      handleSelectRowChange(selectedIds){
+        this.sRowIds = selectedIds;
+        this.getTotalNumAndPrice([]);
+      },
       // 计算总数量和总价格
       getTotalNumAndPrice(rows){
+        if(this.sRowIds.length <= 0){
+          this.totalSum = "0";
+          this.totalPrice = "0.0000";
+          return;
+        }
         this.$nextTick(() => {
           if (rows.length <= 0) {
             let {values} = this.$refs.pdDosageDetail.getValuesSync({validate: false});
@@ -614,8 +626,7 @@
       },
       //清空扫码框
       clearQueryParam(){
-        this.queryParam.productNumber = "";
-        this.queryParam.productBarCode = "";
+        this.formOne.resetFields();
         this.$refs.productNumberInput.focus();
       },
       // 扫码 调用 新增一行
@@ -657,7 +668,7 @@
           let formData = this.classifyIntoFormData(allValues);
           let selectedArrays = this.$refs.pdDosageDetail.selectedRowIds;
           if(selectedArrays <= 0){
-            this.$message.warning("请勾选需要退费的产品");
+            this.$message.warning("请勾选需要还回的产品");
             return;
           }
           //查找出勾选的产品信息
@@ -673,6 +684,11 @@
               list.splice(i--, 1);
               continue;
             }
+            if(list[i].hyChargedText !='未收费'){
+              this.$message.warning(list[i].productName+"不是未收费产品,无法库存还回");
+              return;
+            }
+
             if(Number(list[i].dosageCount) > Number(list[i].leftRefundNum)){
               this.$message.error("["+list[i].productName+"]用量数量不能大于剩余可退数量！");
               return;

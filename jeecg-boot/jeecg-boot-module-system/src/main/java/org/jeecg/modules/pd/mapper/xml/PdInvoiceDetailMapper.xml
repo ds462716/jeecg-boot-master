@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.pd.mapper.PdInvoiceDetailMapper">
+
+	<delete id="deleteByMainId" parameterType="java.lang.String">
+		UPDATE  pd_invoice_detail
+		SET del_flag = '1'
+		WHERE
+			 invoice_id = #{mainId}
+	</delete>
+	
+	<select id="selectByMainId" parameterType="java.lang.String" resultType="org.jeecg.modules.pd.entity.PdInvoiceDetail">
+		SELECT * 
+		FROM  pd_invoice_detail
+		WHERE
+			 invoice_id = #{mainId}
+	</select>
+
+
+	<select id="selectInvoiceDetailList" parameterType="org.jeecg.modules.pd.entity.PdInvoiceDetail" resultType="org.jeecg.modules.pd.entity.PdInvoiceDetail">
+		SELECT
+			b.remarks AS remarks,
+			a.*,
+			b.invoice_reg_no AS invoice_reg_no,
+			b.invoice_no AS invoice_no,
+			b.invoice_code AS invoice_code,
+			b.invoice_data AS invoice_data,
+			b.invoice_money as invoice_money,
+			c.batch_no AS batch_no,
+			c.exp_date AS exp_date,
+			e.stock_num AS stock_num,
+			f.number AS product_number,
+			f.NAME AS product_name,
+			f.spec AS spec,
+			g.id AS supplier_id,
+			g.NAME AS supplier_name,
+			h.id AS vender_id,
+			h.NAME AS vender_name,
+			i.id AS unit_id,
+			i.NAME AS unit_name
+		FROM
+			pd_invoice_detail a
+			LEFT JOIN pd_invoice b ON a.invoice_id = b.id
+			LEFT JOIN pd_stock_record_detail c ON a.bill_detail_id = c.id
+			LEFT JOIN pd_stock_record d ON d.id = c.record_id
+			LEFT JOIN pd_product_stock e ON c.id = e.record_detail_id
+			LEFT JOIN pd_product f ON a.product_id = f.id
+			LEFT JOIN pd_supplier g ON c.supplier_id = g.id
+			LEFT JOIN pd_vender h ON f.vender_id = h.id
+			LEFT JOIN pd_unit i ON f.unit_id = i.id
+		<where>
+			a.del_flag = #{entity.DEL_FLAG_NORMAL}
+
+			<if test="entity.departId != null and entity.departId != ''">
+				AND a.depart_id = #{entity.departId}
+			</if>
+			<if test="entity.departParentId != null and entity.departParentId != ''">
+				AND a.depart_parent_id = #{entity.departParentId}
+			</if>
+			<if test="entity.status != null and entity.status != ''">
+				AND a.status = #{entity.status}
+			</if>
+			<if test="entity.billNo != null and entity.billNo != ''">
+				AND a.bill_no LIKE concat('%',#{entity.billNo},'%')
+			</if>
+
+			<if test="entity.invoiceRegNo != null and entity.invoiceRegNo != ''">
+				AND b.invoice_reg_no LIKE concat('%',#{entity.invoiceRegNo},'%')
+			</if>
+			<if test="entity.invoiceNo != null and entity.invoiceNo != ''">
+				AND b.invoice_no LIKE concat('%',#{entity.invoiceNo},'%')
+			</if>
+			<if test="entity.invoiceCode != null and entity.invoiceCode != ''">
+				AND b.invoice_code LIKE concat('%',#{entity.invoiceCode},'%')
+			</if>
+			<if test="entity.queryInvoiceDateStart != null and entity.queryInvoiceDateStart != ''">
+				AND date_format(b.invoice_data,'%Y-%m-%d') &gt;= #{entity.queryInvoiceDateStart}
+			</if>
+			<if test="entity.queryInvoiceDateEnd != null and entity.queryInvoiceDateEnd != ''">
+				AND date_format(b.invoice_data,'%Y-%m-%d') &lt;= #{entity.queryInvoiceDateEnd}
+			</if>
+
+			<if test="entity.queryExpDateStart != null and entity.queryExpDateStart != ''">
+				AND c.exp_date &gt;= #{entity.queryExpDateStart}
+			</if>
+			<if test="entity.queryExpDateEnd != null and entity.queryExpDateEnd != ''">
+				AND c.exp_date &lt;= #{entity.queryExpDateEnd}
+			</if>
+
+			<if test="entity.queryDateStart != null and entity.queryDateStart != ''">
+				AND date_format(d.audit_date,'%Y-%m-%d') &gt;= #{entity.queryDateStart}
+			</if>
+			<if test="entity.queryDateEnd != null and entity.queryDateEnd != ''">
+				AND date_format(d.audit_date,'%Y-%m-%d') &lt;= #{entity.queryDateEnd}
+			</if>
+			<if test="entity.supplierId != null and entity.supplierId != ''">
+				AND d.supplier_id = #{entity.supplierId}
+			</if>
+
+			<if test="entity.productNumber != null and entity.productNumber != ''">
+				AND f.number LIKE concat('%',#{entity.productNumber},'%')
+			</if>
+			<if test="entity.venderId != null and entity.venderId != ''">
+				AND f.vender_id = #{entity.venderId}
+			</if>
+			<if test="entity.spec != null and entity.spec != ''">
+				AND f.spec LIKE concat('%',#{entity.spec},'%')
+			</if>
+			<if test="entity.version != null and entity.version != ''">
+				AND f.version LIKE concat('%',#{entity.version},'%')
+			</if>
+			<if test="entity.registration != null and entity.registration != ''">
+				AND f.registration LIKE concat('%',#{entity.registration},'%')
+			</if>
+			<if test="entity.productName != null and entity.productName != ''">
+				AND (
+				f.number LIKE concat('%',#{entity.productName},'%')
+				or f.name LIKE concat('%',#{entity.productName},'%')
+				or f.py LIKE concat('%',#{entity.productName},'%')
+				or f.wb LIKE concat('%',#{entity.productName},'%')
+				or f.bname LIKE concat('%',#{entity.productName},'%')
+				or f.bpy LIKE concat('%',#{entity.productName},'%')
+				or f.bwb LIKE concat('%',#{entity.productName},'%')
+				or f.zdy LIKE concat('%',#{entity.productName},'%')
+				)
+			</if>
+		</where>
+		order by b.create_time desc,b.invoice_reg_no desc
+	</select>
+
+	<select id="selectByStockRecord" parameterType="org.jeecg.modules.pd.entity.PdInvoiceDetail" resultType="org.jeecg.modules.pd.entity.PdInvoiceDetail">
+		SELECT
+			a.id AS bill_detail_id,
+			a.product_id AS product_id,
+			a.product_num AS num,
+			a.purchase_price AS price,
+			a.product_num * IFNULL( a.purchase_price, 0 ) AS money,
+			a.batch_no AS batch_no,
+			a.exp_date AS exp_date,
+			b.record_no AS bill_no,
+			b.id AS bill_id,
+			b.audit_date AS bill_date,
+			c.id AS product_stock_id,
+			c.stock_num AS stock_num,
+			d.id AS id,
+			d.invoice_id AS invoice_id,
+			d.status AS status,
+			e.remarks AS remarks,
+			e.invoice_reg_no AS invoice_reg_no,
+			e.invoice_no AS invoice_no,
+			e.invoice_code AS invoice_code,
+			e.invoice_data AS invoice_data,
+			e.invoice_money as invoice_money,
+			f.number AS product_number,
+			f.NAME AS product_name,
+			f.spec AS spec,
+			g.id AS supplier_id,
+			g.NAME AS supplier_name,
+			h.id as vender_id,
+			h.name AS vender_name,
+			i.id as unit_id,
+			i.name AS unit_name
+		FROM
+			pd_stock_record_detail a
+		LEFT JOIN pd_stock_record b ON b.id = a.record_id
+		LEFT JOIN pd_product_stock c ON a.id = c.record_detail_id and b.in_depart_id = c.depart_id
+		LEFT JOIN (select * from pd_invoice_detail where del_flag = '0') d  ON d.bill_detail_id = a.id
+		LEFT JOIN (select * from pd_invoice where del_flag = '0') e ON d.invoice_id = e.id
+		LEFT JOIN pd_product f ON a.product_id = f.id
+		LEFT JOIN pd_supplier g ON a.supplier_id = g.id
+		left join pd_vender h on f.vender_id = h.id
+		LEFT JOIN pd_unit i ON f.unit_id = i.id
+		<where>
+			a.del_flag = #{entity.DEL_FLAG_NORMAL}
+			and c.del_flag = #{entity.DEL_FLAG_NORMAL}
+			and b.record_type = '1'
+			and b.supplier_id is not null
+			and b.supplier_id &lt;&gt; ''
+			and b.audit_status = '2'
+			<if test="entity.departId != null and entity.departId != ''">
+				AND a.depart_id = #{entity.departId}
+			</if>
+			<if test="entity.departParentId != null and entity.departParentId != ''">
+				AND a.depart_parent_id = #{entity.departParentId}
+			</if>
+			<if test="entity.queryExpDateStart != null and entity.queryExpDateStart != ''">
+				AND a.exp_date &gt;= #{entity.queryExpDateStart}
+			</if>
+			<if test="entity.queryExpDateEnd != null and entity.queryExpDateEnd != ''">
+				AND a.exp_date &lt;= #{entity.queryExpDateEnd}
+			</if>
+			<if test="entity.auditStatus != null and entity.auditStatus != ''">
+				AND b.audit_status = #{entity.auditStatus}
+			</if>
+			<if test="entity.billDetailIdList != null and entity.billDetailIdList.size() > 0">
+				and a.id IN
+				<foreach collection="entity.billDetailIdList" item="billDetailId" separator="," open="(" close=")">
+					#{billDetailId}
+				</foreach>
+			</if>
+
+			<if test="entity.recordNo != null and entity.recordNo != ''">
+				AND b.record_no LIKE concat('%',#{entity.recordNo},'%')
+			</if>
+			<if test="entity.queryDateStart != null and entity.queryDateStart != ''">
+				AND date_format(b.audit_date,'%Y-%m-%d') &gt;= #{entity.queryDateStart}
+			</if>
+			<if test="entity.queryDateEnd != null and entity.queryDateEnd != ''">
+				AND date_format(b.audit_date,'%Y-%m-%d') &lt;= #{entity.queryDateEnd}
+			</if>
+			<if test="entity.supplierId != null and entity.supplierId != ''">
+				AND b.supplier_id = #{entity.supplierId}
+			</if>
+			<if test="entity.status != null and entity.status != ''">
+ 				AND d.status = #{entity.status}
+			</if>
+			<if test="entity.productNumber != null and entity.productNumber != ''">
+				AND f.number LIKE concat('%',#{entity.productNumber},'%')
+			</if>
+			<if test="entity.venderId != null and entity.venderId != ''">
+				AND f.vender_id = #{entity.venderId}
+			</if>
+			<if test="entity.spec != null and entity.spec != ''">
+				AND f.spec LIKE concat('%',#{entity.spec},'%')
+			</if>
+			<if test="entity.version != null and entity.version != ''">
+				AND f.version LIKE concat('%',#{entity.version},'%')
+			</if>
+			<if test="entity.registration != null and entity.registration != ''">
+				AND f.registration LIKE concat('%',#{entity.registration},'%')
+			</if>
+			<if test="entity.productName != null and entity.productName != ''">
+				AND (
+				f.number LIKE concat('%',#{entity.productName},'%')
+				or f.name LIKE concat('%',#{entity.productName},'%')
+				or f.py LIKE concat('%',#{entity.productName},'%')
+				or f.wb LIKE concat('%',#{entity.productName},'%')
+				or f.bname LIKE concat('%',#{entity.productName},'%')
+				or f.bpy LIKE concat('%',#{entity.productName},'%')
+				or f.bwb LIKE concat('%',#{entity.productName},'%')
+				or f.zdy LIKE concat('%',#{entity.productName},'%')
+				)
+			</if>
+		</where>
+		ORDER BY a.create_time DESC,a.product_id DESC,b.record_no DESC
+	</select>
+</mapper>

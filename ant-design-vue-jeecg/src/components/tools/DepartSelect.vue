@@ -131,6 +131,7 @@
             store.commit('SET_INFO', userInfo);
             //console.log("---切换组织机构---userInfo-------",store.getters.userInfo.orgCode);
             this.departClear();
+            this.$router.push({ name: 'dashboard' });//解决跳转时权限不够bug2020年5月29日16:10:23  zxh
             location. reload();
           }
         })

@@ -80,6 +80,8 @@ public class PdCategoryTree implements Serializable {
 
 	private String remarks;
 
+	private String status;
+
 	/**
 	 * 更新时间
 	 */
@@ -107,6 +109,7 @@ public class PdCategoryTree implements Serializable {
 		this.updateBy = pdCategory.getUpdateBy();
 		this.updateTime = pdCategory.getUpdateTime();
 		this.title = pdCategory.getName();
+		this.status = pdCategory.getStatus();
 		this.remarks = pdCategory.getRemarks();
 		if (!pdCategory.isLeaf()) {
 			this.children = new ArrayList<PdCategoryTree>();
@@ -255,5 +258,13 @@ public class PdCategoryTree implements Serializable {
 
 	public void setRemarks(String remarks) {
 		this.remarks = remarks;
+	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
 	}
 }

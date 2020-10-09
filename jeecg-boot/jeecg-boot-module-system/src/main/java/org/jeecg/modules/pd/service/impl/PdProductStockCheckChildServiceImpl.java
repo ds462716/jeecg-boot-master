@@ -1,5 +1,6 @@
 package org.jeecg.modules.pd.service.impl;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.jeecg.modules.pd.entity.PdProductStockCheckChild;
 import org.jeecg.modules.pd.mapper.PdProductStockCheckChildMapper;
@@ -29,5 +30,15 @@ public class PdProductStockCheckChildServiceImpl extends ServiceImpl<PdProductSt
 	@Override
 	public List<PdProductStockCheckChild> selectByCheckNo(String checkNo) {
 		return pdProductStockCheckChildMapper.selectByCheckNo(checkNo);
+	}
+
+	@Override
+	public Page<PdProductStockCheckChild> pdProductStockCheckQueryList(Page<PdProductStockCheckChild> page, PdProductStockCheckChild child) {
+		return pdProductStockCheckChildMapper.pdProductStockCheckQueryList(page,child);
+	}
+
+	@Override
+	public List<PdProductStockCheckChild> pdProductStockCheckQueryList(PdProductStockCheckChild child) {
+		return pdProductStockCheckChildMapper.pdProductStockCheckQueryList(child);
 	}
 }

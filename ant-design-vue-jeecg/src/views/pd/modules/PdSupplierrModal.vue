@@ -10,7 +10,7 @@
   >
   
     <a-spin :spinning="confirmLoading">
-      <a-form :form="form" >
+      <a-form :form="form" :selfUpdate = "true">
         <a-form-item label="名称" :labelCol="labelCol" :wrapperCol="wrapperCol">
           <a-input ref="inputFocus" :disabled="focusDisable"  autocomplete="off" @change="pinyinTran" v-decorator="[ 'name', validatorRules.name]" :style="{width:'100%',margin:'0'}" placeholder="请输入名称"></a-input>
         </a-form-item>
@@ -23,6 +23,12 @@
         <a-form-item label="自定义码" :labelCol="labelCol" :wrapperCol="wrapperCol">
           <a-input :disabled="disableSubmit" autocomplete="off" v-decorator="[ 'zdy', validatorRules.zdy]"  :style="{width:'100%',margin:'0'}" ></a-input>
         </a-form-item>
+        <a-form-item label="供应商类别" :labelCol="labelCol" :wrapperCol="wrapperCol">
+          <j-dict-select-tag-expand :disabled="disableSubmit" type="list" v-decorator="['supplierType', validatorRules.supplierType]" :trigger-change="true" dictCode="supplier_type" placeholder="请选择类别"/>
+         </a-form-item>
+        <a-form-item label="JDE编码" :labelCol="labelCol" :wrapperCol="wrapperCol">
+          <a-input :disabled="disableSubmit" autocomplete="off" v-decorator="[ 'jdeCode', validatorRules.jdeCode]" ></a-input>
+        </a-form-item>
         <a-form-item label="备注" :labelCol="labelCol" :wrapperCol="wrapperCol">
           <a-input :disabled="disableSubmit" autocomplete="off" v-decorator="[ 'remarks', validatorRules.remarks]" :style="{width:'100%',margin:'0'}" ></a-input>
         </a-form-item>
@@ -32,7 +38,8 @@
             <div class="card-box" :class="imgIsValidity[index]">
               <div class="card-box-code" style="margin-top:10px;margin-left:10px;">
                 <a-form-item label="证照名称" :labelCol="labelCol2" :wrapperCol="wrapperCol2">
-                  <a-input :disabled="disableSubmit" autocomplete="off" v-decorator="[ 'licenceName'+index, validatorRules['licenceNum'+index]]" ></a-input>
+                  <!--<a-input :disabled="disableSubmit" autocomplete="off" v-decorator="[ 'licenceName'+index, validatorRules['licenceNum'+index]]" ></a-input>-->
+                  <j-dict-select-tag-expand  :disabled="disableSubmit" :trigger-change="true" dictCode="license_name" v-decorator="['licenceName'+index,validatorRules['licenceNum'+index]]"  placeholder="证照名称"/>
                 </a-form-item>
                 <a-form-item label="证照号码" :labelCol="labelCol2" :wrapperCol="wrapperCol2">
                   <a-input :disabled="disableSubmit" autocomplete="off" v-decorator="[ 'licenceNum'+index, validatorRules['licenceNum'+index]]" ></a-input>
@@ -89,12 +96,13 @@
   import { makeWb } from '@/utils/wubi'
   import { photoCheck } from '@/utils/fileUpload'
   import {duplicateCheckHasDelFlag } from '@/api/api'
-
+  import JDictSelectTagExpand from "@/components/dict/JDictSelectTagExpand"
   export default {
     name: "PdSupplierModal",
     components: { 
       JDate,
       JUpload,
+      JDictSelectTagExpand
     },
     data () {
       return {
@@ -146,6 +154,10 @@
           ]},
           zdy: {rules: [
           ]},
+          jdeCode: {rules: [
+            ]},
+          //supplierType:{rules:[ {required: true, message: '请选择类别!'}]}
+          supplierType:{rules:[]}
         },
         url: {
           add: "/pd/pdSupplier/save",
@@ -190,7 +202,7 @@
         this.focusDisable = false;
         this.visible = true;
         this.$nextTick(() => {
-          this.form.setFieldsValue(pick(this.model,'name','py','wb','zdy','licenceName0','licenceNum0','licenceDate0','licenceSite0','licenceName1','licenceNum1','licenceDate1','licenceSite1','licenceName2','licenceNum2','licenceDate2','licenceSite2','licenceName3','licenceNum3','licenceDate3','licenceSite3','licenceName4','licenceNum4','licenceDate4','licenceSite4','licenceName5','licenceNum5','licenceDate5','licenceSite5','licenceName6','licenceNum6','licenceDate6','licenceSite6','licenceName7','licenceNum7','licenceDate7','licenceSite7','licenceName8','licenceNum8','licenceDate8','licenceSite8','licenceName9','licenceNum9','licenceDate9','licenceSite9','licenceName10','licenceNum10','licenceDate10','licenceSite10','licenceName11','licenceNum11','licenceDate11','licenceSite11','remarks'))
+          this.form.setFieldsValue(pick(this.model,'name','py','wb','zdy','supplierType','jdeCode','licenceName0','licenceNum0','licenceDate0','licenceSite0','licenceName1','licenceNum1','licenceDate1','licenceSite1','licenceName2','licenceNum2','licenceDate2','licenceSite2','licenceName3','licenceNum3','licenceDate3','licenceSite3','licenceName4','licenceNum4','licenceDate4','licenceSite4','licenceName5','licenceNum5','licenceDate5','licenceSite5','licenceName6','licenceNum6','licenceDate6','licenceSite6','licenceName7','licenceNum7','licenceDate7','licenceSite7','licenceName8','licenceNum8','licenceDate8','licenceSite8','licenceName9','licenceNum9','licenceDate9','licenceSite9','licenceName10','licenceNum10','licenceDate10','licenceSite10','licenceName11','licenceNum11','licenceDate11','licenceSite11','remarks'))
           //获取光标
           let input = this.$refs['inputFocus'];
           input.focus();
@@ -267,7 +279,7 @@
       },
       handleFileUpload(event,index){
         let that = this;
-        this.imgIsShow[index].show=true;
+        //this.imgIsShow[index].show=true;
         event.preventDefault();
         let oFile = that.$refs.file[index].files[0];
         let bo = photoCheck(oFile,that);
